@@ -2,108 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3262E5F917
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:28:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB2C5F93F
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727094AbfGDN2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 09:28:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53916 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727044AbfGDN2A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 09:28:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Xc/4Za6oNGSLkMJvcP3Am29FNfb6aREUWZnvyZhLx/U=; b=uwisZ9EKHtaWlIlsNNAQ9l/9I7
-        xkKX0oCwzqABMR9wf2EONn/EesCSmSubenNgGBixanVAOUlYp0/EU4z4YPwe7fliA6MnR8oNsRA/I
-        vkIq+fttyKJxymPi4ayZsq9AKakrwVlxMOgtgTwK8sdF8YYQTWoVwN2X+bX5bkXkYsY0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hj1mG-0003mC-5r; Thu, 04 Jul 2019 15:27:56 +0200
-Date:   Thu, 4 Jul 2019 15:27:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benjamin Beckmeyer <beb@eks-engel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
-Message-ID: <20190704132756.GB13859@lunn.ch>
-References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
- <20190703155518.GE18473@lunn.ch>
- <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
+        id S1727234AbfGDNkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 09:40:14 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:44052 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727026AbfGDNkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:40:14 -0400
+Received: by mail-io1-f68.google.com with SMTP id s7so12871635iob.11
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 06:40:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FOC6m54qFzCKdSf2AHD5qRenMdphnUm3Kcp53LXRvFk=;
+        b=eIFir22wgjriGWmJM6IEAywzKTt2FJT6sTRppnJG58L8wuO5A5TUvbAbOGnNk4DJ8K
+         lonkHJTp8N2d0V7cCBNg39J38n8t1z3hMQDickWTTRDYRodr9+YccaZ3A6f+7+Q3q47p
+         4GMjXZi9WS0D8+UYKCf+zbFY1nSLVCcEDwTJWhG0aAFZWBKFE8veNsbQvtlTJ28gpj46
+         GvSGn5Q4fqulLg9quiABTuxbY0bG2PT5Enhy39NMRQWlyWP9mjl65iCXYnlyFXueHiev
+         yb44qc4+lcl109XNM02UE+nae1NcaGLlF/EvrhdavPFxMLkmsIJpAne2mYBHfVs0y/Z9
+         tSeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FOC6m54qFzCKdSf2AHD5qRenMdphnUm3Kcp53LXRvFk=;
+        b=DuhbBzA8kugT/L0d54ODSx2fYSYbmHrRfRZMNweWmCaEg+DKW/grSWOM+v1RuiitcD
+         IGgxJ02x6cEnHQQvOziQBVCFugFnJkQm2OT/oqlB7x1ax29Ld3r65Eab8oTOlX+0nI6W
+         4IxZtAgHK4a0s7aYtsyF/ZJixzkFPtsnLoPfmobzkEFntrtN2FR2JIXg8X2w1tQB//RG
+         psJ3PKLQZ0KasYBVbkDDkMFZ98eWha5LTmFWV0LQ//bM0pWqq9BfsJNm5U29pXHagx1K
+         /QFUCJoZhiSRBVSLm8LnEbE/eesa1yU9feSc4Z8yuKHe99zVTxYZGBRbSohK3/c88IAa
+         1aaA==
+X-Gm-Message-State: APjAAAX14O1gvkoNHoic1WQdkmSl4JU5Inu6gqWAL3nBn12bBMjew7Yx
+        DKwJdikdPZsI3KPIXDAJW4w9fumqbFGMrLHJrgS2dA==
+X-Google-Smtp-Source: APXvYqytkP0Jan2GuKxxG4n5TwDOgKJj2Lyya1+6cXAXEN1jlaiu4tnpOoySRM4+0QCFMg2wcaAHx4SBsMn9u7U4zgk=
+X-Received: by 2002:a5e:8210:: with SMTP id l16mr15733654iom.240.1562247613461;
+ Thu, 04 Jul 2019 06:40:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <1562113531-29296-1-git-send-email-john.hurley@netronome.com>
+ <1562113531-29296-6-git-send-email-john.hurley@netronome.com> <0130c56ef79f8bf360ddb0b01db5e7684f0bf62a.camel@redhat.com>
+In-Reply-To: <0130c56ef79f8bf360ddb0b01db5e7684f0bf62a.camel@redhat.com>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Thu, 4 Jul 2019 14:40:02 +0100
+Message-ID: <CAK+XE=kL9-0w+bUjEh84QwJ_60xOBKu54++MH337c+a5Tc3n0Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 5/5] selftests: tc-tests: actions: add MPLS tests
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 10:54:47AM +0200, Benjamin Beckmeyer wrote:
-> 
-> On 03.07.19 17:55, Andrew Lunn wrote:
-> > On Wed, Jul 03, 2019 at 03:10:34PM +0200, Benjamin Beckmeyer wrote:
-> >> Hey folks,
-> >>
-> >> I'm having a problem with a custom i.mx6ul board. When DSA is loaded I can't 
-> >> get access to the switch via MDIO, but the DSA is working properly. I set up
-> >> a bridge for testing and the switch is in forwarding mode and i can ping the 
-> >> board. But the MDIO access isn't working at address 2 for the switch. When I 
-> >> delete the DSA from the devicetree and start the board up, I can access the 
-> >> switch via MDIO.
-> >>
-> >> With DSA up and running:
-> >>
-> >> mii -i 2 0 0x9800
-> >> mii -i 2 1
-> >> phyid:2, reg:0x01 -> 0x4000
-> >> mii -i 2 0 0x9803
-> >> mii -i 2 1
-> >> phyid:2, reg:0x01 -> 0x4000
-> >> mii -i 2 1 0x1883
-> >> mii -i 2 1
-> >> phyid:2, reg:0x01 -> 0x4000
-> > Hi Benjamin
+On Thu, Jul 4, 2019 at 9:40 AM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> On Wed, 2019-07-03 at 01:25 +0100, John Hurley wrote:
+> > Add a new series of selftests to verify the functionality of act_mpls in
+> > TC.
 > >
-> > I'm guessing that the driver is also using register 0 and 1 at the
-> > same time you are, e.g. to poll the PHYs for link status etc.
+> > Signed-off-by: John Hurley <john.hurley@netronome.com>
+> > Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> > Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > ---
+> >  .../tc-testing/tc-tests/actions/mpls.json          | 812 +++++++++++++++++++++
+> >  1 file changed, 812 insertions(+)
+> >  create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
 > >
-> > There are trace points for MDIO, so you can get the kernel to log all
-> > registers access. That should confirm if i'm right.
-> >
-> > 	  Andrew
-> 
-> Hi Andrew,
-> you were absolutly right. The bus is really busy the whole time, I've 
-> checked that with the tracepoints in mdio_access.
-> 
-> But I'm still wondering why isn't that with a single chip addressing 
-> mode configured switch? I mean, okay, the switch has more ports, but
-> I've checked the accesses for both. The 6321(single chip addressing 
-> mode) has around 4-5 accesses to the MDIO bus and the 6390(multi chip 
-> addressing mode) has around 600 accesses per second. 
+>
+> hello John,
+>
+> (sorry for noticing this late). some scripts use
+>
+> tools/testing/selftests/tc-testing/config
+>
+> to rebuild vmlinux before running TDC. I think you should add a line
+> there that sets CONFIG_NET_ACT_MPLS=y.
+>
+> WDYT?
 
-Hi Benjamin
+Hi Davide,
+Thanks for pointing this out.
+Yes, I'll add it.
+Thanks
 
-In single chip mode, reading a register is atomic. With multi-chip,
-you need to access two registers, so it clearly is not atomic. And so
-any other action on the bus will cause you problems when doing things
-from user space without being able to take the register mutex.
-
-But 4-5 vs 600 suggests you don't have the interrupt line in your
-device tree. If you have the interrupt line connected to a GPIO, and
-the driver knows about it, it has no need to poll the PHYs. I also
-added support for 'polled interrupts', as a fall back when then
-interrupt is not listed in device tree. 10 times a second the driver
-polls the interrupt status register, and if any interrupts have
-happened within the switch, it triggers the needed handlers. Reading
-one status register every 100ms is much less effort than reading all
-the PHY status registers once per second.
-
-Still, 600 per second sounds too high. Do you have an SNMP agent
-getting statistics?
-
-	Andrew
+>
+> thanks!
+> --
+> davide
+>
