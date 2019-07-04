@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFECC5F999
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B50E75F9B3
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:07:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727321AbfGDOGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727251AbfGDOGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 4 Jul 2019 10:06:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:47476 "EHLO huawei.com"
+Received: from szxga07-in.huawei.com ([45.249.212.35]:47472 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726794AbfGDOGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 10:06:25 -0400
+        id S1726817AbfGDOGY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 10:06:24 -0400
 Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id D3FF16D6AA4EF09BC1FA;
+        by Forcepoint Email with ESMTP id DC89B1B48A6223FCA715;
         Thu,  4 Jul 2019 22:06:21 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
@@ -21,11 +21,15 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 0/9] net: hns3: some cleanups & bugfixes
-Date:   Thu, 4 Jul 2019 22:04:19 +0800
-Message-ID: <1562249068-40176-1-git-send-email-tanhuazhong@huawei.com>
+        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        "Huazhong Tan" <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 1/9] net: hns3: enable broadcast promisc mode when initializing VF
+Date:   Thu, 4 Jul 2019 22:04:20 +0800
+Message-ID: <1562249068-40176-2-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1562249068-40176-1-git-send-email-tanhuazhong@huawei.com>
+References: <1562249068-40176-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.212.132]
@@ -35,48 +39,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch-set includes cleanups and bugfixes for
-the HNS3 ethernet controller driver.
+From: Jian Shen <shenjian15@huawei.com>
 
-[patch 1/9] fixes VF's broadcast promisc mode not enabled after
-initializing.
+For revision 0x20, the broadcast promisc is enabled by firmware,
+it's unnecessary to enable it when initializing VF.
 
-[patch 2/9] adds hints for fibre port not support flow control.
+For revision 0x21, it's necessary to enable broadcast promisc mode
+when initializing or re-initializing VF, otherwise, it will be
+unable to send and receive promisc packets.
 
-[patch 3/9] fixes a port capbility updating issue.
+Fixes: f01f5559cac8 ("net: hns3: don't allow vf to enable promisc mode")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-[patch 4/9 - 9/9] adds some cleanups for HNS3 driver.
-
-Jian Shen (3):
-  net: hns3: enable broadcast promisc mode when initializing VF
-  net: hns3: fix flow control configure issue for fibre port
-  net: hns3: fix port capbility updating issue
-
-Peng Li (4):
-  net: hns3: add all IMP return code
-  net: hns3: set default value for param "type" in
-    hclgevf_bind_ring_to_vector
-  net: hns3: add default value for tc_size and tc_offset
-  net: hns3: set maximum length to resp_data_len for exceptional case
-
-Weihang Li (1):
-  net: hns3: check msg_data before memcpy in hclgevf_send_mbx_msg
-
-Yonglong Liu (1):
-  net: hns3: bitwise operator should use unsigned type
-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  9 +--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c | 43 ++++++++++---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  8 +++
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 74 ++++++++++++----------
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |  4 ++
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   | 38 +++++++++--
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   | 14 +++-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 19 ++++--
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c   |  3 +-
- 10 files changed, 149 insertions(+), 65 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 42006cc..ff7e8cb 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -2589,6 +2589,12 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
+ 		return ret;
+ 	}
+ 
++	if (pdev->revision >= 0x21) {
++		ret = hclgevf_set_promisc_mode(hdev, true);
++		if (ret)
++			return ret;
++	}
++
+ 	dev_info(&hdev->pdev->dev, "Reset done\n");
+ 
+ 	return 0;
+@@ -2668,9 +2674,11 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
+ 	 * firmware makes sure broadcast packets can be accepted.
+ 	 * For revision 0x21, default to enable broadcast promisc mode.
+ 	 */
+-	ret = hclgevf_set_promisc_mode(hdev, true);
+-	if (ret)
+-		goto err_config;
++	if (pdev->revision >= 0x21) {
++		ret = hclgevf_set_promisc_mode(hdev, true);
++		if (ret)
++			goto err_config;
++	}
+ 
+ 	/* Initialize RSS for this VF */
+ 	ret = hclgevf_rss_init_hw(hdev);
 -- 
 2.7.4
 
