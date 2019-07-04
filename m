@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3AC25F90C
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD585F90D
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727280AbfGDNVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 09:21:36 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:40980 "EHLO
+        id S1727297AbfGDNVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 09:21:40 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10998 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727026AbfGDNVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:21:36 -0400
+        by vger.kernel.org with ESMTP id S1727026AbfGDNVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:21:39 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x64DKFke030737;
-        Thu, 4 Jul 2019 06:21:34 -0700
+        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x64DKFkf030737;
+        Thu, 4 Jul 2019 06:21:37 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=2oCZIiLBe9/N8JLYpTNaCni8lzHQnfbYEv6F9c8UJSg=;
- b=jAf+8cVpNMAoWK+lbMyx6HApGeSQ+V/r3mKGAtBN5chTrtjZgbwwrX84/aD2n/3QOhlt
- 5KGBTJJrdYkSc0Cyfy54z3MwkSQXS2YNA6wT6jSOWXCMGe1rWZ/T9M4DCDHxuZlaRMFq
- FOPkVuaa1f8/ZCq3+2cnok1SzcPmtOjRpzBfzREllKQCJnATiZNM9qgZ8b9LDqHQIP97
- X3dHtK5cJVA8fZqYT4XOnmUC2UDOLAPAe1zyHP/aw1dMdQx12Ils+44pvS7MBECSjsb/
- K5FX2N/eUAWXU6PW2sZl2CuBYRognm9E54NS/KtcGNKAdqVnA9BrU1Qpen8z5OvUhy0I qA== 
+ content-type; s=pfpt0818; bh=lI39EMG3UN9QhqkoG0glw24VSY/3DtXjWK+88xDa9Sc=;
+ b=GN0cbG27rCEm4v+W6DilvJ8x7G7JDopxlDjc64jowAOvkcdlpZBKHEb0COYPeyq5OW8k
+ pRF7LyusyxDTsJ4lOt6+6FdI3g4rMI6K8yevGv08QVzWyGvK5yLAhkeCInAOtfy7C4Wn
+ /eKkBg29YJQbjVi8sAj0Hyv05CL7P2N8EXhGt/svcRrUQY8SBuFho6QdThcZHr/9YlfQ
+ YN8tECikZjDOzCTqbAijMpnPW9xT/mKy2CayXbtRPcDu39mFltKZInQ+rmK0eyA9Huft
+ UQbJhI0uGrzEO1os3mL/tGMPZZ7xEd7zJqcW1oEXE1Y7ulrV+Dj8Xjs+nhIKSN8xCJtw bg== 
 Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2th948237a-2
+        by mx0a-0016f401.pphosted.com with ESMTP id 2th948237n-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 04 Jul 2019 06:21:34 -0700
+        Thu, 04 Jul 2019 06:21:37 -0700
 Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 4 Jul
- 2019 06:21:33 -0700
+ 2019 06:21:36 -0700
 Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Thu, 4 Jul 2019 06:21:33 -0700
+ Transport; Thu, 4 Jul 2019 06:21:36 -0700
 Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id F30413F703F;
-        Thu,  4 Jul 2019 06:21:32 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 379873F703F;
+        Thu,  4 Jul 2019 06:21:36 -0700 (PDT)
 Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x64DLW7G013665;
-        Thu, 4 Jul 2019 06:21:32 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x64DLad0013669;
+        Thu, 4 Jul 2019 06:21:36 -0700
 Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x64DLWYu013664;
-        Thu, 4 Jul 2019 06:21:32 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x64DLZEe013668;
+        Thu, 4 Jul 2019 06:21:35 -0700
 From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
         <aelior@marvell.com>
-Subject: [PATCH net-next v2 3/4] qed*: Add new file for devlink implementation.
-Date:   Thu, 4 Jul 2019 06:20:10 -0700
-Message-ID: <20190704132011.13600-4-skalluru@marvell.com>
+Subject: [PATCH net-next v2 4/4] qed*: Add devlink support for configuration attributes.
+Date:   Thu, 4 Jul 2019 06:20:11 -0700
+Message-ID: <20190704132011.13600-5-skalluru@marvell.com>
 X-Mailer: git-send-email 2.12.0
 In-Reply-To: <20190704132011.13600-1-skalluru@marvell.com>
 References: <20190704132011.13600-1-skalluru@marvell.com>
@@ -60,405 +60,494 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Moving devlink implementation from qed to qede driver. The change is
-required as qede is the actual PCI driver and qed is only the control
-driver.
+This patch adds implementation for devlink callbacks for reading and
+configuring the device attributes.
 
 Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
 Signed-off-by: Ariel Elior <aelior@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed.h           |   1 -
- drivers/net/ethernet/qlogic/qed/qed_main.c      | 122 +++---------------------
- drivers/net/ethernet/qlogic/qede/Makefile       |   2 +-
- drivers/net/ethernet/qlogic/qede/qede.h         |   2 +
- drivers/net/ethernet/qlogic/qede/qede_devlink.c |  94 ++++++++++++++++++
- drivers/net/ethernet/qlogic/qede/qede_devlink.h |  18 ++++
- drivers/net/ethernet/qlogic/qede/qede_main.c    |  13 +++
- include/linux/qed/qed_if.h                      |   3 +
- 8 files changed, 143 insertions(+), 112 deletions(-)
- create mode 100644 drivers/net/ethernet/qlogic/qede/qede_devlink.c
- create mode 100644 drivers/net/ethernet/qlogic/qede/qede_devlink.h
+ Documentation/networking/devlink-params-qede.txt |  72 ++++++++
+ drivers/net/ethernet/qlogic/qed/qed_main.c       |  38 +++++
+ drivers/net/ethernet/qlogic/qede/qede.h          |   3 +
+ drivers/net/ethernet/qlogic/qede/qede_devlink.c  | 202 ++++++++++++++++++++++-
+ drivers/net/ethernet/qlogic/qede/qede_devlink.h  |  23 +++
+ include/linux/qed/qed_if.h                       |  16 ++
+ 6 files changed, 353 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/devlink-params-qede.txt
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index 89fe091..cebd822 100644
---- a/drivers/net/ethernet/qlogic/qed/qed.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -864,7 +864,6 @@ struct qed_dev {
- 	u32 rdma_max_srq_sge;
- 	u16 tunn_feature_mask;
- 
--	struct devlink			*dl;
- 	bool				iwarp_cmt;
- };
- 
+diff --git a/Documentation/networking/devlink-params-qede.txt b/Documentation/networking/devlink-params-qede.txt
+new file mode 100644
+index 0000000..f78a993
+--- /dev/null
++++ b/Documentation/networking/devlink-params-qede.txt
+@@ -0,0 +1,72 @@
++enable_sriov		[DEVICE, GENERIC]
++			Configuration mode: Permanent
++
++iwarp_cmt		[DEVICE, DRIVER-SPECIFIC]
++			Enable iWARP support over 100G device (CMT mode).
++			Type: Boolean
++			Configuration mode: runtime
++
++entity_id		[DEVICE, DRIVER-SPECIFIC]
++			Set the entity ID value to be used for this device
++			while reading/configuring the devlink attributes.
++			Type: u8
++			Configuration mode: runtime
++
++device_capabilities	[DEVICE, DRIVER-SPECIFIC]
++			Set the entity ID value to be used for this device
++			while reading/configuring the devlink attributes.
++			Type: u8
++			Configuration mode: runtime
++
++mf_mode			[DEVICE, DRIVER-SPECIFIC]
++			Configure Multi Function mode for the device.
++			Supported MF modes and the assoicated values are,
++			    MF allowed(0), Default(1), SPIO4(2), NPAR1.0(3),
++			    NPAR1.5(4), NPAR2.0(5), BD(6) and UFP(7)
++			Type: u8
++			Configuration mode: Permanent
++
++dcbx_mode		[PORT, DRIVER-SPECIFIC]
++			Configure DCBX mode for the device.
++			Supported dcbx modes are,
++			    Disabled(0), IEEE(1), CEE(2) and Dynamic(3)
++			Type: u8
++			Configuration mode: Permanent
++
++preboot_oprom		[PORT, DRIVER-SPECIFIC]
++			Enable Preboot Option ROM.
++			Type: Boolean
++			Configuration mode: Permanent
++
++preboot_boot_protocol	[PORT, DRIVER-SPECIFIC]
++			Configure preboot Boot protocol.
++			Possible values are,
++			    PXE(0), iSCSI Boot(3), FCoE Boot(4) and NONE(7)
++			Type: u8
++			Configuration mode: Permanent
++
++preboot_vlan		[PORT, DRIVER-SPECIFIC]
++			Preboot VLAN.
++			Type: u16
++			Configuration mode: Permanent
++
++preboot_vlan_value	[PORT, DRIVER-SPECIFIC]
++			Configure Preboot VLAN value.
++			Type: u16
++			Configuration mode: Permanent
++
++mba_delay_time		[PORT, DRIVER-SPECIFIC]
++			Configure MBA Delay Time. Supported range is [0-15].
++			Type: u8
++			Configuration mode: Permanent
++
++mba_setup_hot_key	[PORT, DRIVER-SPECIFIC]
++			Configure MBA setup Hot Key. Possible values are,
++			Ctrl S(0) and Ctrl B(1).
++			Type: u8
++			Configuration mode: Permanent
++
++mba_hide_setup_prompt	[PORT, DRIVER-SPECIFIC]
++			Configure MBA hide setup prompt.
++			Type: Boolean
++			Configuration mode: Permanent
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index 829dd60..f0183e2 100644
+index f0183e2..3d43140 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_main.c
 +++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -48,7 +48,6 @@
- #include <linux/crc32.h>
- #include <linux/qed/qed_if.h>
- #include <linux/qed/qed_ll2_if.h>
--#include <net/devlink.h>
- 
- #include "qed.h"
- #include "qed_sriov.h"
-@@ -343,107 +342,6 @@ static int qed_set_power_state(struct qed_dev *cdev, pci_power_t state)
- 	return 0;
+@@ -2388,6 +2388,42 @@ static void qed_set_iwarp_cmt(struct qed_dev *cdev, bool iwarp_cmt)
+ 	cdev->iwarp_cmt = iwarp_cmt;
  }
  
--struct qed_devlink {
--	struct qed_dev *cdev;
--};
--
--enum qed_devlink_param_id {
--	QED_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
--	QED_DEVLINK_PARAM_ID_IWARP_CMT,
--};
--
--static int qed_dl_param_get(struct devlink *dl, u32 id,
--			    struct devlink_param_gset_ctx *ctx)
--{
--	struct qed_devlink *qed_dl;
--	struct qed_dev *cdev;
--
--	qed_dl = devlink_priv(dl);
--	cdev = qed_dl->cdev;
--	ctx->val.vbool = cdev->iwarp_cmt;
--
--	return 0;
--}
--
--static int qed_dl_param_set(struct devlink *dl, u32 id,
--			    struct devlink_param_gset_ctx *ctx)
--{
--	struct qed_devlink *qed_dl;
--	struct qed_dev *cdev;
--
--	qed_dl = devlink_priv(dl);
--	cdev = qed_dl->cdev;
--	cdev->iwarp_cmt = ctx->val.vbool;
--
--	return 0;
--}
--
--static const struct devlink_param qed_devlink_params[] = {
--	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PARAM_ID_IWARP_CMT,
--			     "iwarp_cmt", DEVLINK_PARAM_TYPE_BOOL,
--			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
--			     qed_dl_param_get, qed_dl_param_set, NULL),
--};
--
--static const struct devlink_ops qed_dl_ops;
--
--static int qed_devlink_register(struct qed_dev *cdev)
--{
--	union devlink_param_value value;
--	struct qed_devlink *qed_dl;
--	struct devlink *dl;
--	int rc;
--
--	dl = devlink_alloc(&qed_dl_ops, sizeof(*qed_dl));
--	if (!dl)
--		return -ENOMEM;
--
--	qed_dl = devlink_priv(dl);
--
--	cdev->dl = dl;
--	qed_dl->cdev = cdev;
--
--	rc = devlink_register(dl, &cdev->pdev->dev);
--	if (rc)
--		goto err_free;
--
--	rc = devlink_params_register(dl, qed_devlink_params,
--				     ARRAY_SIZE(qed_devlink_params));
--	if (rc)
--		goto err_unregister;
--
--	value.vbool = false;
--	devlink_param_driverinit_value_set(dl,
--					   QED_DEVLINK_PARAM_ID_IWARP_CMT,
--					   value);
--
--	devlink_params_publish(dl);
--	cdev->iwarp_cmt = false;
--
--	return 0;
--
--err_unregister:
--	devlink_unregister(dl);
--
--err_free:
--	cdev->dl = NULL;
--	devlink_free(dl);
--
--	return rc;
--}
--
--static void qed_devlink_unregister(struct qed_dev *cdev)
--{
--	if (!cdev->dl)
--		return;
--
--	devlink_params_unregister(cdev->dl, qed_devlink_params,
--				  ARRAY_SIZE(qed_devlink_params));
--
--	devlink_unregister(cdev->dl);
--	devlink_free(cdev->dl);
--}
--
- /* probing */
- static struct qed_dev *qed_probe(struct pci_dev *pdev,
- 				 struct qed_probe_params *params)
-@@ -472,12 +370,6 @@ static struct qed_dev *qed_probe(struct pci_dev *pdev,
- 	}
- 	DP_INFO(cdev, "PCI init completed successfully\n");
- 
--	rc = qed_devlink_register(cdev);
--	if (rc) {
--		DP_INFO(cdev, "Failed to register devlink.\n");
--		goto err2;
--	}
--
- 	rc = qed_hw_prepare(cdev, QED_PCI_DEFAULT);
- 	if (rc) {
- 		DP_ERR(cdev, "hw prepare failed\n");
-@@ -507,8 +399,6 @@ static void qed_remove(struct qed_dev *cdev)
- 
- 	qed_set_power_state(cdev, PCI_D3hot);
- 
--	qed_devlink_unregister(cdev);
--
- 	qed_free_cdev(cdev);
- }
- 
-@@ -2488,6 +2378,16 @@ static u8 qed_get_affin_hwfn_idx(struct qed_dev *cdev)
- 	return QED_AFFIN_HWFN_IDX(cdev);
- }
- 
-+static bool qed_get_iwarp_cmt(struct qed_dev *cdev)
++static int qed_get_cfg_attr(struct qed_dev *cdev, u16 cmd, u8 entity, u32 flags,
++			    u8 *buf, int *len)
 +{
-+	return cdev->iwarp_cmt;
++	struct qed_hwfn *hwfn = QED_LEADING_HWFN(cdev);
++	struct qed_ptt *ptt;
++	int status = 0;
++
++	ptt = qed_ptt_acquire(hwfn);
++	if (!ptt)
++		return -EAGAIN;
++
++	status = qed_mcp_nvm_get_cfg(hwfn, ptt, cmd, entity, flags, buf, len);
++
++	qed_ptt_release(hwfn, ptt);
++
++	return status;
 +}
 +
-+static void qed_set_iwarp_cmt(struct qed_dev *cdev, bool iwarp_cmt)
++static int qed_set_cfg_attr(struct qed_dev *cdev, u16 cmd, u8 entity, u32 flags,
++			    u8 *buf, int len)
 +{
-+	cdev->iwarp_cmt = iwarp_cmt;
++	struct qed_hwfn *hwfn = QED_LEADING_HWFN(cdev);
++	struct qed_ptt *ptt;
++	int status = 0;
++
++	ptt = qed_ptt_acquire(hwfn);
++	if (!ptt)
++		return -EAGAIN;
++
++	status = qed_mcp_nvm_set_cfg(hwfn, ptt, cmd, entity, flags, buf, len);
++
++	qed_ptt_release(hwfn, ptt);
++
++	return status;
 +}
 +
  static struct qed_selftest_ops qed_selftest_ops_pass = {
  	.selftest_memory = &qed_selftest_memory,
  	.selftest_interrupt = &qed_selftest_interrupt,
-@@ -2536,6 +2436,8 @@ static u8 qed_get_affin_hwfn_idx(struct qed_dev *cdev)
- 	.db_recovery_del = &qed_db_recovery_del,
- 	.read_module_eeprom = &qed_read_module_eeprom,
+@@ -2438,6 +2474,8 @@ static void qed_set_iwarp_cmt(struct qed_dev *cdev, bool iwarp_cmt)
  	.get_affin_hwfn_idx = &qed_get_affin_hwfn_idx,
-+	.get_iwarp_cmt = &qed_get_iwarp_cmt,
-+	.set_iwarp_cmt = &qed_set_iwarp_cmt,
+ 	.get_iwarp_cmt = &qed_get_iwarp_cmt,
+ 	.set_iwarp_cmt = &qed_set_iwarp_cmt,
++	.get_cfg_attr = &qed_get_cfg_attr,
++	.set_cfg_attr = &qed_set_cfg_attr,
  };
  
  void qed_get_protocol_stats(struct qed_dev *cdev,
-diff --git a/drivers/net/ethernet/qlogic/qede/Makefile b/drivers/net/ethernet/qlogic/qede/Makefile
-index 3fc91d1..4585864 100644
---- a/drivers/net/ethernet/qlogic/qede/Makefile
-+++ b/drivers/net/ethernet/qlogic/qede/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_QEDE) := qede.o
- 
--qede-y := qede_main.o qede_fp.o qede_filter.o qede_ethtool.o qede_ptp.o
-+qede-y := qede_main.o qede_fp.o qede_filter.o qede_ethtool.o qede_ptp.o qede_devlink.o
- qede-$(CONFIG_DCB) += qede_dcbnl.o
- qede-$(CONFIG_QED_RDMA) += qede_rdma.o
 diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index b972ab0..35ad5cd 100644
+index 35ad5cd..e175d30 100644
 --- a/drivers/net/ethernet/qlogic/qede/qede.h
 +++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -262,6 +262,8 @@ struct qede_dev {
- 	struct qede_rdma_dev		rdma_info;
+@@ -54,6 +54,7 @@
  
+ #include <net/pkt_cls.h>
+ #include <net/tc_act/tc_gact.h>
++#include <net/devlink.h>
+ 
+ #define QEDE_MAJOR_VERSION		8
+ #define QEDE_MINOR_VERSION		37
+@@ -264,6 +265,8 @@ struct qede_dev {
  	struct bpf_prog *xdp_prog;
-+
-+	struct devlink			*dl;
+ 
+ 	struct devlink			*dl;
++	struct devlink_port		dl_port;
++	u8				cfg_entity_id;
  };
  
  enum QEDE_STATE {
 diff --git a/drivers/net/ethernet/qlogic/qede/qede_devlink.c b/drivers/net/ethernet/qlogic/qede/qede_devlink.c
-new file mode 100644
-index 0000000..3f362ac
---- /dev/null
+index 3f362ac..076a66a 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_devlink.c
 +++ b/drivers/net/ethernet/qlogic/qede/qede_devlink.c
-@@ -0,0 +1,94 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include "qede.h"
-+#include "qede_devlink.h"
-+
-+static int qede_dl_param_get(struct devlink *dl, u32 id,
-+			     struct devlink_param_gset_ctx *ctx)
-+{
-+	struct qede_devlink *qede_dl;
-+	struct qede_dev *edev;
-+
-+	qede_dl = devlink_priv(dl);
-+	edev = qede_dl->edev;
-+	ctx->val.vbool = edev->ops->common->get_iwarp_cmt(edev->cdev);
-+
-+	return 0;
-+}
-+
-+static int qede_dl_param_set(struct devlink *dl, u32 id,
-+			     struct devlink_param_gset_ctx *ctx)
-+{
-+	struct qede_devlink *qede_dl;
-+	struct qede_dev *edev;
-+
-+	qede_dl = devlink_priv(dl);
-+	edev = qede_dl->edev;
-+	edev->ops->common->set_iwarp_cmt(edev->cdev, ctx->val.vbool);
-+
-+	return 0;
-+}
-+
-+static const struct devlink_param qede_devlink_params[] = {
-+	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_PARAM_ID_IWARP_CMT,
-+			     "iwarp_cmt", DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     qede_dl_param_get, qede_dl_param_set, NULL),
+@@ -2,6 +2,31 @@
+ #include "qede.h"
+ #include "qede_devlink.h"
+ 
++static const struct qede_devlink_cfg_param cfg_params[] = {
++	{DEVLINK_PARAM_GENERIC_ID_ENABLE_SRIOV, QED_NVM_CFG_ID_ENABLE_SRIOV,
++	 DEVLINK_PARAM_TYPE_BOOL},
++	{QEDE_DEVLINK_ENTITY_ID, 0, DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_DEVICE_CAPABILITIES,
++	 QED_NVM_CFG_ID_DEVICE_CAPABILITIES, DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_MF_MODE, QED_NVM_CFG_ID_MF_MODE, DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_DCBX_MODE, QED_NVM_CFG_ID_DCBX_MODE,
++	 DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_PREBOOT_OPROM, QED_NVM_CFG_ID_PREBOOT_OPROM,
++	 DEVLINK_PARAM_TYPE_BOOL},
++	{QEDE_DEVLINK_PREBOOT_BOOT_PROTOCOL,
++	 QED_NVM_CFG_ID_PREBOOT_BOOT_PROTOCOL, DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_PREBOOT_VLAN, QED_NVM_CFG_ID_PREBOOT_VLAN,
++	 DEVLINK_PARAM_TYPE_U16},
++	{QEDE_DEVLINK_PREBOOT_VLAN_VALUE, QED_NVM_CFG_ID_PREBOOT_VLAN_VALUE,
++	 DEVLINK_PARAM_TYPE_U16},
++	{QEDE_DEVLINK_MBA_DELAY_TIME, QED_NVM_CFG_ID_MBA_DELAY_TIME,
++	 DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_MBA_SETUP_HOT_KEY, QED_NVM_CFG_ID_MBA_SETUP_HOT_KEY,
++	 DEVLINK_PARAM_TYPE_U8},
++	{QEDE_DEVLINK_MBA_HIDE_SETUP_PROMPT,
++	 QED_NVM_CFG_ID_MBA_HIDE_SETUP_PROMPT, DEVLINK_PARAM_TYPE_BOOL},
 +};
 +
-+static const struct devlink_ops qede_dl_ops;
-+
-+int qede_devlink_register(struct qede_dev *edev)
+ static int qede_dl_param_get(struct devlink *dl, u32 id,
+ 			     struct devlink_param_gset_ctx *ctx)
+ {
+@@ -28,11 +53,159 @@ static int qede_dl_param_set(struct devlink *dl, u32 id,
+ 	return 0;
+ }
+ 
++static int qede_dl_get_perm_cfg(struct devlink *dl, u32 id,
++				struct devlink_param_gset_ctx *ctx)
 +{
-+	union devlink_param_value value;
++	u8 buf[QEDE_DL_PARAM_BUF_LEN];
 +	struct qede_devlink *qede_dl;
-+	struct devlink *dl;
-+	int rc;
-+
-+	dl = devlink_alloc(&qede_dl_ops, sizeof(*qede_dl));
-+	if (!dl)
-+		return -ENOMEM;
++	int rc, idx, len = 0;
++	struct qede_dev *edev;
++	u32 flags;
 +
 +	qede_dl = devlink_priv(dl);
++	edev = qede_dl->edev;
 +
-+	edev->dl = dl;
-+	qede_dl->edev = edev;
++	if (id == QEDE_DEVLINK_ENTITY_ID) {
++		ctx->val.vu8 = edev->cfg_entity_id;
++		return 0;
++	}
 +
-+	rc = devlink_register(dl, &edev->pdev->dev);
++	for (idx = 0; idx < ARRAY_SIZE(cfg_params); idx++)
++		if (cfg_params[idx].id == id)
++			break;
++
++	if (idx == ARRAY_SIZE(cfg_params)) {
++		DP_ERR(edev, "Invalid command id %d\n", id);
++		return -EINVAL;
++	}
++
++	memset(buf, 0, QEDE_DL_PARAM_BUF_LEN);
++	flags = edev->cfg_entity_id ? QEDE_DL_PARAM_PF_GET_FLAGS :
++		QEDE_DL_PARAM_GET_FLAGS;
++
++	rc = edev->ops->common->get_cfg_attr(edev->cdev, cfg_params[idx].cmd,
++					     edev->cfg_entity_id, flags, buf,
++					     &len);
 +	if (rc)
-+		goto err_free;
-+
-+	rc = devlink_params_register(dl, qede_devlink_params,
-+				     ARRAY_SIZE(qede_devlink_params));
-+	if (rc)
-+		goto err_unregister;
-+
-+	value.vbool = false;
-+	devlink_param_driverinit_value_set(dl, QEDE_DEVLINK_PARAM_ID_IWARP_CMT,
-+					   value);
-+
-+	devlink_params_publish(dl);
-+	edev->ops->common->set_iwarp_cmt(edev->cdev, false);
-+
-+	return 0;
-+
-+err_unregister:
-+	devlink_unregister(dl);
-+
-+err_free:
-+	edev->dl = NULL;
-+	devlink_free(dl);
++		DP_ERR(edev, "Error = %d\n", rc);
++	else
++		memcpy(&ctx->val, buf, len);
 +
 +	return rc;
 +}
 +
-+void qede_devlink_unregister(struct qede_dev *edev)
++static int qede_dl_set_perm_cfg(struct devlink *dl, u32 id,
++				struct devlink_param_gset_ctx *ctx)
 +{
-+	if (!edev->dl)
-+		return;
-+
-+	devlink_params_unregister(edev->dl, qede_devlink_params,
-+				  ARRAY_SIZE(qede_devlink_params));
-+
-+	devlink_unregister(edev->dl);
-+	devlink_free(edev->dl);
-+}
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_devlink.h b/drivers/net/ethernet/qlogic/qede/qede_devlink.h
-new file mode 100644
-index 0000000..5aa79dd
---- /dev/null
-+++ b/drivers/net/ethernet/qlogic/qede/qede_devlink.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _QEDE_DEVLINK_H
-+#define _QEDE_DEVLINK_H
-+#include <net/devlink.h>
-+
-+struct qede_devlink {
++	u8 buf[QEDE_DL_PARAM_BUF_LEN];
++	struct qede_devlink *qede_dl;
++	int rc, idx, len = 0;
 +	struct qede_dev *edev;
-+};
++	u32 flags;
 +
-+enum qede_devlink_param_id {
-+	QEDE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-+	QEDE_DEVLINK_PARAM_ID_IWARP_CMT,
-+};
++	qede_dl = devlink_priv(dl);
++	edev = qede_dl->edev;
 +
-+int qede_devlink_register(struct qede_dev *edev);
-+void qede_devlink_unregister(struct qede_dev *edev);
-+
-+#endif
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index d4a2966..cef946f 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -62,6 +62,7 @@
- #include <linux/vmalloc.h>
- #include "qede.h"
- #include "qede_ptp.h"
-+#include "qede_devlink.h"
- 
- static char version[] =
- 	"QLogic FastLinQ 4xxxx Ethernet Driver qede " DRV_MODULE_VERSION "\n";
-@@ -1177,8 +1178,18 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
- 	edev->rx_copybreak = QEDE_RX_HDR_SIZE;
- 
- 	qede_log_probe(edev);
-+
-+	rc = qede_devlink_register(edev);
-+	if (rc) {
-+		DP_INFO(edev, "Failed to register devlink.\n");
-+		goto err5;
++	if (id == QEDE_DEVLINK_ENTITY_ID) {
++		edev->cfg_entity_id = ctx->val.vu8;
++		return 0;
 +	}
 +
++	for (idx = 0; idx < ARRAY_SIZE(cfg_params); idx++)
++		if (cfg_params[idx].id == id)
++			break;
++
++	if (idx == ARRAY_SIZE(cfg_params)) {
++		DP_ERR(edev, "Invalid command id %d\n", id);
++		return -EINVAL;
++	}
++
++	memset(buf, 0, QEDE_DL_PARAM_BUF_LEN);
++	switch (cfg_params[idx].type) {
++	case DEVLINK_PARAM_TYPE_BOOL:
++		len = 1;
++		break;
++	case DEVLINK_PARAM_TYPE_U8:
++		len = 1;
++		break;
++	case DEVLINK_PARAM_TYPE_U16:
++		len = 2;
++		break;
++	case DEVLINK_PARAM_TYPE_U32:
++		len = 4;
++		break;
++	case DEVLINK_PARAM_TYPE_STRING:
++		len = strlen(ctx->val.vstr);
++		break;
++	}
++
++	memcpy(buf, &ctx->val, len);
++	flags = edev->cfg_entity_id ? QEDE_DL_PARAM_PF_SET_FLAGS :
++		QEDE_DL_PARAM_SET_FLAGS;
++
++	rc = edev->ops->common->set_cfg_attr(edev->cdev, cfg_params[idx].cmd,
++					     edev->cfg_entity_id, flags, buf,
++					     len);
++	if (rc)
++		DP_ERR(edev, "Error = %d\n", rc);
++
++	return rc;
++}
++
+ static const struct devlink_param qede_devlink_params[] = {
+ 	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_PARAM_ID_IWARP_CMT,
+ 			     "iwarp_cmt", DEVLINK_PARAM_TYPE_BOOL,
+ 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+ 			     qede_dl_param_get, qede_dl_param_set, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_ENTITY_ID,
++			     "entity_id", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_GENERIC(ENABLE_SRIOV, BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			      qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_MF_MODE,
++			     "mf_mode", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_DEVICE_CAPABILITIES,
++			     "device_capabilities", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++};
++
++static const struct devlink_param qede_devlink_port_params[] = {
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_DCBX_MODE,
++			     "dcbx_mode", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_PREBOOT_OPROM,
++			     "preboot_oprom", DEVLINK_PARAM_TYPE_BOOL,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_PREBOOT_BOOT_PROTOCOL,
++			     "preboot_boot_protocol", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_PREBOOT_VLAN,
++			     "preboot_vlan", DEVLINK_PARAM_TYPE_U16,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_PREBOOT_VLAN_VALUE,
++			     "preboot_vlan_value", DEVLINK_PARAM_TYPE_U16,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_MBA_DELAY_TIME,
++			     "mba_delay_time", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_MBA_SETUP_HOT_KEY,
++			     "mba_setup_hot_key", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
++	DEVLINK_PARAM_DRIVER(QEDE_DEVLINK_MBA_HIDE_SETUP_PROMPT,
++			     "mba_hide_setup_prompt", DEVLINK_PARAM_TYPE_BOOL,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     qede_dl_get_perm_cfg, qede_dl_set_perm_cfg, NULL),
+ };
+ 
+ static const struct devlink_ops qede_dl_ops;
+@@ -66,11 +239,34 @@ int qede_devlink_register(struct qede_dev *edev)
+ 	devlink_param_driverinit_value_set(dl, QEDE_DEVLINK_PARAM_ID_IWARP_CMT,
+ 					   value);
+ 
++	devlink_port_attrs_set(&edev->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
++			       0, false, 0, NULL, 0);
++	rc = devlink_port_register(dl, &edev->dl_port, 0);
++	if (rc) {
++		DP_ERR(edev, "devlink_port_register failed");
++		goto err_param_unregister;
++	}
++	devlink_port_type_eth_set(&edev->dl_port, edev->ndev);
++
++	rc = devlink_port_params_register(&edev->dl_port,
++					  qede_devlink_port_params,
++					  ARRAY_SIZE(qede_devlink_port_params));
++	if (rc) {
++		DP_ERR(edev, "devlink_port_params_register failed");
++		goto err_port_unregister;
++	}
++
+ 	devlink_params_publish(dl);
++	devlink_port_params_publish(&edev->dl_port);
+ 	edev->ops->common->set_iwarp_cmt(edev->cdev, false);
+ 
  	return 0;
  
-+err5:
-+	if (!is_vf)
-+		qede_ptp_disable(edev);
- err4:
- 	qede_rdma_dev_remove(edev, (mode == QEDE_PROBE_RECOVERY));
- err3:
-@@ -1227,6 +1238,8 @@ static void __qede_remove(struct pci_dev *pdev, enum qede_remove_mode mode)
++err_port_unregister:
++	devlink_port_unregister(&edev->dl_port);
++err_param_unregister:
++	devlink_params_unregister(edev->dl, qede_devlink_params,
++				  ARRAY_SIZE(qede_devlink_params));
+ err_unregister:
+ 	devlink_unregister(dl);
  
- 	DP_INFO(edev, "Starting qede_remove\n");
+@@ -86,9 +282,13 @@ void qede_devlink_unregister(struct qede_dev *edev)
+ 	if (!edev->dl)
+ 		return;
  
-+	qede_devlink_unregister(edev);
++	devlink_port_params_unpublish(&edev->dl_port);
++	devlink_params_unpublish(edev->dl);
++	devlink_port_params_unregister(&edev->dl_port, qede_devlink_port_params,
++				       ARRAY_SIZE(qede_devlink_port_params));
+ 	devlink_params_unregister(edev->dl, qede_devlink_params,
+ 				  ARRAY_SIZE(qede_devlink_params));
+-
++	devlink_port_unregister(&edev->dl_port);
+ 	devlink_unregister(edev->dl);
+ 	devlink_free(edev->dl);
+ }
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_devlink.h b/drivers/net/ethernet/qlogic/qede/qede_devlink.h
+index 5aa79dd..57b5fcc 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_devlink.h
++++ b/drivers/net/ethernet/qlogic/qede/qede_devlink.h
+@@ -3,6 +3,12 @@
+ #define _QEDE_DEVLINK_H
+ #include <net/devlink.h>
+ 
++#define QEDE_DL_PARAM_GET_FLAGS		0xA
++#define QEDE_DL_PARAM_SET_FLAGS		0xE
++#define QEDE_DL_PARAM_PF_GET_FLAGS	0x1A
++#define QEDE_DL_PARAM_PF_SET_FLAGS	0x1E
++#define QEDE_DL_PARAM_BUF_LEN		32
 +
- 	qede_rdma_dev_remove(edev, (mode == QEDE_REMOVE_RECOVERY));
+ struct qede_devlink {
+ 	struct qede_dev *edev;
+ };
+@@ -10,6 +16,23 @@ struct qede_devlink {
+ enum qede_devlink_param_id {
+ 	QEDE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+ 	QEDE_DEVLINK_PARAM_ID_IWARP_CMT,
++	QEDE_DEVLINK_ENTITY_ID,
++	QEDE_DEVLINK_DEVICE_CAPABILITIES,
++	QEDE_DEVLINK_MF_MODE,
++	QEDE_DEVLINK_DCBX_MODE,
++	QEDE_DEVLINK_PREBOOT_OPROM,
++	QEDE_DEVLINK_PREBOOT_BOOT_PROTOCOL,
++	QEDE_DEVLINK_PREBOOT_VLAN,
++	QEDE_DEVLINK_PREBOOT_VLAN_VALUE,
++	QEDE_DEVLINK_MBA_DELAY_TIME,
++	QEDE_DEVLINK_MBA_SETUP_HOT_KEY,
++	QEDE_DEVLINK_MBA_HIDE_SETUP_PROMPT,
++};
++
++struct qede_devlink_cfg_param {
++	u16 id;
++	u16 cmd;
++	enum devlink_param_type type;
+ };
  
- 	if (mode != QEDE_REMOVE_RECOVERY) {
+ int qede_devlink_register(struct qede_dev *edev);
 diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index eef02e6..7c41304 100644
+index 7c41304..6430762 100644
 --- a/include/linux/qed/qed_if.h
 +++ b/include/linux/qed/qed_if.h
-@@ -1131,6 +1131,9 @@ struct qed_common_ops {
-  * @param cdev
-  */
- 	u8 (*get_affin_hwfn_idx)(struct qed_dev *cdev);
+@@ -48,6 +48,18 @@
+ #include <linux/qed/qed_chain.h>
+ #include <linux/io-64-nonatomic-lo-hi.h>
+ 
++#define QED_NVM_CFG_ID_MF_MODE			9
++#define QED_NVM_CFG_ID_DCBX_MODE		26
++#define QED_NVM_CFG_ID_PREBOOT_OPROM		59
++#define QED_NVM_CFG_ID_MBA_DELAY_TIME		61
++#define QED_NVM_CFG_ID_MBA_SETUP_HOT_KEY	62
++#define QED_NVM_CFG_ID_MBA_HIDE_SETUP_PROMPT	63
++#define QED_NVM_CFG_ID_PREBOOT_BOOT_PROTOCOL	69
++#define QED_NVM_CFG_ID_ENABLE_SRIOV		70
++#define QED_NVM_CFG_ID_DEVICE_CAPABILITIES	117
++#define QED_NVM_CFG_ID_PREBOOT_VLAN_VALUE	132
++#define QED_NVM_CFG_ID_PREBOOT_VLAN		133
 +
-+	bool (*get_iwarp_cmt)(struct qed_dev *cdev);
-+	void (*set_iwarp_cmt)(struct qed_dev *cdev, bool iwarp_cmt);
+ enum dcbx_protocol_type {
+ 	DCBX_PROTOCOL_ISCSI,
+ 	DCBX_PROTOCOL_FCOE,
+@@ -1134,6 +1146,10 @@ struct qed_common_ops {
+ 
+ 	bool (*get_iwarp_cmt)(struct qed_dev *cdev);
+ 	void (*set_iwarp_cmt)(struct qed_dev *cdev, bool iwarp_cmt);
++	int (*get_cfg_attr)(struct qed_dev *cdev, u16 cmd, u8 entity, u32 flags,
++			    u8 *buf, int *len);
++	int (*set_cfg_attr)(struct qed_dev *cdev, u16 cmd, u8 entity, u32 flags,
++			    u8 *buf, int len);
  };
  
  #define MASK_FIELD(_name, _value) \
