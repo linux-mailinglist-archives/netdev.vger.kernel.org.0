@@ -2,86 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 922325F3F9
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA2E5F407
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:47:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727063AbfGDHk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 03:40:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47100 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726199AbfGDHkZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 03:40:25 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0D91A2133F;
-        Thu,  4 Jul 2019 07:40:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562226024;
-        bh=cpEKmomI1qco2Y1+UNn5Q5duVRzevtRlz/bSZ6oJVWw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pP8hR1LapyiJvVnAHqMn1tozUemvOAzKh0mJWYzZ5lZQnSP+vksyuKQlutYX5QgZy
-         +Tu6xCVxnSs+UHhHu2oC9S82KqoSC9kcgYf8iT1+T94UWA0Zq6l0Qirk1TZzVtkNBg
-         WMg2sDsRQt6Ac5FV+EKr9ErXYfq9cJrBBGAK7zOs=
-Date:   Thu, 4 Jul 2019 10:40:21 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     dledford@redhat.com, jgg@mellanox.com, davem@davemloft.net,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, poswald@suse.com,
-        david.m.ertman@intel.com, Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: Re: [rdma 14/16] RDMA/irdma: Add ABI definitions
-Message-ID: <20190704074021.GH4727@mtr-leonro.mtl.com>
-References: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
- <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
+        id S1727211AbfGDHox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 03:44:53 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39943 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726120AbfGDHox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 03:44:53 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v19so4943479wmj.5
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 00:44:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=W65VeVUNIkHBy0pg3+jT/JsP/IOvzyC7CKYCmaZQDuU=;
+        b=iewLVq506SCTVdBm6/R6k70+NWzysUyjduq/ely+fOAqRHRsfmr33s9t9cRUT4yT0U
+         TMoLPig+a5I5klGLKoKtsxnVgRTvda7qQkwqXdVddEUf0gI9K2sQqwlbLTUn19xU7sID
+         h8sY4QF+3RQc7GIOtcd8A2o7GfjLiIXZSoiyIw8iuo0E/fpsOkDowEAeUb0YxUG1zNpj
+         oudLngvRj9HFP3t/5uFxtGGXaz4CoyTz9eSmR6bBZmV5PWTCS+Jv97osG9tsg+JIVZYV
+         Gr95slAJrCY63EnTlX3iT9bwcMACr2o02NBxl883FCVuTDpAeEDRV/J5rig5/BDhT7CA
+         QZWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=W65VeVUNIkHBy0pg3+jT/JsP/IOvzyC7CKYCmaZQDuU=;
+        b=XF7Tat3zRzkPNPvWmfDu7tO5nAbV+S311zjjp6Cjq5KmaBMAw8M+g+ycHrzFHC1IIo
+         wp685BuLDAnfue6vOaBWEx6aRnUatn57h+9KywC+pE0TBDHrz/Muy+a/ovJEqXY2x0Ww
+         /aK1+Nu7VuB/mISbEsRHvx/93B/OJSk+9fKEvurgYUQunfTI/ZHHkvROdCa/lcdTjH2d
+         YkN6x3rJeDH0y22paeB6EZRtshbpq4Lu9hdQLl2hCyXbwZxAZBPIelLsl4C0KiEcNjz7
+         y3HcR/F1DRJlnF+Al7fDNIYh2RdV29yfLXQi9hkZoHiYjxSIfee8/A1sXrRczr2oFgE4
+         ieUA==
+X-Gm-Message-State: APjAAAVaUb2SCDvJqU862mioGQ9zohZySMuFXMBfX27FwZXFlS7M3KKF
+        Ow5fFu1uGWFl2ac0HOWfEdCSHQ==
+X-Google-Smtp-Source: APXvYqwHFzxB79Ppgx6yUSJ/GmGP0nPqGR95RUYepw41gy4KlxIZVEk/SYna6jryANPp0QqmXwXO8w==
+X-Received: by 2002:a05:600c:2549:: with SMTP id e9mr11533764wma.46.1562226291354;
+        Thu, 04 Jul 2019 00:44:51 -0700 (PDT)
+Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
+        by smtp.gmail.com with ESMTPSA id l1sm3559271wmg.13.2019.07.04.00.44.50
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 04 Jul 2019 00:44:50 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 09:44:50 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
+ port attribute
+Message-ID: <20190704074450.GE2250@nanopsycho>
+References: <20190702104711.77618f6a@cakuba.netronome.com>
+ <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190702164252.6d4fe5e3@cakuba.netronome.com>
+ <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190702191536.4de1ac68@cakuba.netronome.com>
+ <AM0PR05MB486624D2D9BAD293CD5FB33CD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190703103720.GU2250@nanopsycho>
+ <20190703140958.GB18473@lunn.ch>
+ <20190703143431.GC2250@nanopsycho>
+ <AM0PR05MB48665F6CA614A3770D6ABCF4D1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <AM0PR05MB48665F6CA614A3770D6ABCF4D1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 07:12:57PM -0700, Jeff Kirsher wrote:
-> From: Mustafa Ismail <mustafa.ismail@intel.com>
+Wed, Jul 03, 2019 at 06:13:17PM CEST, parav@mellanox.com wrote:
 >
-> Add ABI definitions for irdma.
 >
-> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> ---
->  include/uapi/rdma/irdma-abi.h | 130 ++++++++++++++++++++++++++++++++++
->  1 file changed, 130 insertions(+)
->  create mode 100644 include/uapi/rdma/irdma-abi.h
->
-> diff --git a/include/uapi/rdma/irdma-abi.h b/include/uapi/rdma/irdma-abi.h
-> new file mode 100644
-> index 000000000000..bdfbda4c829e
-> --- /dev/null
-> +++ b/include/uapi/rdma/irdma-abi.h
-> @@ -0,0 +1,130 @@
-> +/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-> +/* Copyright (c) 2006 - 2019 Intel Corporation.  All rights reserved.
-> + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
-> + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
-> + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
-> + */
-> +
-> +#ifndef IRDMA_ABI_H
-> +#define IRDMA_ABI_H
-> +
-> +#include <linux/types.h>
-> +
-> +/* irdma must support legacy GEN_1 i40iw kernel
-> + * and user-space whose last ABI ver is 5
-> + */
-> +#define IRDMA_ABI_VER 6
+>> -----Original Message-----
+>> From: Jiri Pirko <jiri@resnulli.us>
+>> Sent: Wednesday, July 3, 2019 8:05 PM
+>> To: Andrew Lunn <andrew@lunn.ch>
+>> Cc: Parav Pandit <parav@mellanox.com>; Jakub Kicinski
+>> <jakub.kicinski@netronome.com>; Jiri Pirko <jiri@mellanox.com>;
+>> netdev@vger.kernel.org; Saeed Mahameed <saeedm@mellanox.com>;
+>> vivien.didelot@gmail.com; f.fainelli@gmail.com
+>> Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
+>> port attribute
+>> 
+>> Wed, Jul 03, 2019 at 04:09:58PM CEST, andrew@lunn.ch wrote:
+>> >> However, we expose it for DEVLINK_PORT_FLAVOUR_CPU and
+>> >> DEVLINK_PORT_FLAVOUR_DSA. Not sure if it makes sense there either.
+>> >> Ccing Florian, Andrew and Vivien.
+>> >> What do you guys think?
+>> >
+>> >Hi Jiri
+>> >
+>> >DSA and CPU ports are physical ports of the switch. And there can be
+>> >multiple DSA ports, and maybe sometime real soon now, multiple CPU
+>> >ports. So having a number associated with them is useful.
+>> 
+>> Okay. Makes sense.
+>> 
+>Ok. I should probably update the comment section for port_number as its scope is expanded.
+>Should I revise the series with updated comment?
 
-Can you please elaborate about it more?
-There is no irdma code in RDMA yet, so it makes me wonder why new define
-shouldn't start from 1.
+Please do. Also put a check to not fillup port_number attribute in case
+of pf/vf flavour. Thanks!
 
-Thanks
+>
+>> >
+>> >       Andrew
