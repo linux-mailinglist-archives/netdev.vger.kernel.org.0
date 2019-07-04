@@ -2,120 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 366395FDC9
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 909B05FDCA
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727308AbfGDU3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 16:29:13 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:46732 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfGDU3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:29:13 -0400
-Received: by mail-io1-f68.google.com with SMTP id i10so14822101iol.13
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:29:12 -0700 (PDT)
+        id S1727074AbfGDUae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 16:30:34 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:46621 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726743AbfGDUae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:30:34 -0400
+Received: by mail-lj1-f195.google.com with SMTP id v24so7164783ljg.13
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:30:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+DmhdBUVDfZDKio5ssgpD7eIo7Wvt6FDp3e2/ElxsF8=;
-        b=P3Zey+fXQABAWTDwMF343sY6ljT4fNTJsF3YgFJfA7VnQjR5aWMzIgHezeSy7VsaGW
-         ZuST5e00IpwKpBhUBW8Cbb+2qF6V1zOhtcDZ137/Ee37Mmoj1Z/V9KeFXGPYIz25L8sc
-         0RB5Jv9jQr5LmAfyA7+ddLKeMYvxDEv7P0V5dR3oYzqWZ2VYkdYajLINYm2yrtXPLW7E
-         7UM/pyEXdaQsjhR00At5ap1C0Vn/KiucYmN637wV80pesEkw67aepEKel75LrqU0hCW7
-         CJIdaZQjaZJUdBkZc6ivBOkxShQ9Yjm9fMYtlLe3aJxM5K79g1xj+/yEYqUguGf41PNU
-         SbnA==
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hDvNGTfpzti9ZMevfZxr+UUXUVHDJdSxhTZfmsWYqHo=;
+        b=YXrdw14IN06jCfqJuiPtx6MNvsbgBbkbmODggNSGKWmam4qcQNQseuibRExwBcmYDn
+         n4kEZbNr29QiFYWuH8YF4i92HEhNHTVoqm0w3wz7BIsf+MCW5F8tBx1jnda9qSsXE3re
+         hO+FXQRWsxqNUx5EJyz+4GqFaak9jqc0G7ci6IVlqCmRTGV2Ds0Iye5/P4s+tKWUpuN3
+         ZZtNzgIvuoD+1aH6dlnUQL7cvHpGXr0hA+53GJW6w6+zGsAfxabTejr+UcL5Jjh+umE2
+         LjmPjZd3fyAiycgS2KBd+qK+WBhZ03vvPeuQVnOmU+54yyckh8s/+lrAwxeQWJN/bvVE
+         UEKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+DmhdBUVDfZDKio5ssgpD7eIo7Wvt6FDp3e2/ElxsF8=;
-        b=VV7Vm0wfpNK8G3GUGGFNdovCDPlDXW8OYfLh75Fhw90/fw1yT8PBj2ki2UlZt5/HhV
-         NKCizyvE/9nRZzq1owp+CRzhwa0OgJJNjGDpHCOdru25bO2I6mJ63Y5ISbsrKZmnabi1
-         yc6yEUZ7VpXd5qmXPzthqufl19RCjUdqDm2Ecq5DywKWQLxfniPoXxjDc2OhbeOmwQmF
-         v3Sjy+4v6rn96ITAnfqJzEQM8viBgLmsYFG46/2TO4qjGnCF7gv7AseSVIL6QIum7UpR
-         7RaUBlixox+wrtTBQhG2TloMqQoYSHB/qpLw6k7dLYrCs351X639TapqsMN5SCzEE5Kc
-         wHmA==
-X-Gm-Message-State: APjAAAWWJwndTytfNYX6fSmoS06imuedwA8PBXnC5aYNWtgRW1hqwrfZ
-        KSvzrZbAzbBOOX4lTJ5lKKYFwA==
-X-Google-Smtp-Source: APXvYqzBiF/vIzfjkaHKn+SFaWXW++ugkFP7MsR6t9MOuhTSemx6ciBXmtf31CfrrNBVTIA465Rxug==
-X-Received: by 2002:a5e:9304:: with SMTP id k4mr260938iom.206.1562272152384;
-        Thu, 04 Jul 2019 13:29:12 -0700 (PDT)
-Received: from x220t ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id a2sm5636065iod.57.2019.07.04.13.29.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 04 Jul 2019 13:29:12 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 16:29:09 -0400
-From:   Alexander Aring <aring@mojatatu.com>
-To:     Lucas Bates <lucasb@mojatatu.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, mleitner@redhat.com,
-        vladbu@mellanox.com, dcaratti@redhat.com, kernel@mojatatu.com
-Subject: Re: [PATCH v2 net-next 3/3] tc-testing: introduce scapyPlugin for
- basic traffic
-Message-ID: <20190704202909.gmggf3agxjgvyjsj@x220t>
-References: <1562201102-4332-1-git-send-email-lucasb@mojatatu.com>
- <1562201102-4332-4-git-send-email-lucasb@mojatatu.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hDvNGTfpzti9ZMevfZxr+UUXUVHDJdSxhTZfmsWYqHo=;
+        b=d6XfqdghIqfYGIlYq6WHRf6jUg395rHj6eQuyli3zqbA74jQQBC2Q5Ncjxi1P6XRQS
+         ys2iVlfDGxbvpBAfPxkKKe8oBog108aQaN7RgMTy0MmZJ3uyLA8BBk2RJkoC6jO0akv3
+         2Y93+vMmfWQat+0upiRZnUuXMLD69ln1KJaqSSudMgI8nSfiitmwrP9+kiTgnZujjygi
+         H9hVVUip47dUNoSy26gojFfvBKn6OTukKKDZIG+V9aFswTqPkyzsUkiXiXHIJtyoOBXY
+         7w4vNtOlcsTK22VPjYFoPFfH6cU1R3eKhbHkoOcNosBrc9GYix0kyeGyZ+r7pG+543oC
+         1mTQ==
+X-Gm-Message-State: APjAAAVdUqw2OdxfNaKanbjOX+xCLOKVb0puFF7bnRcbdMx2Iav2npNO
+        M+jOu0wy05ZZJkmQD1c7epukMYkOeRhSmLBTY35jJA==
+X-Google-Smtp-Source: APXvYqxUK4CXo1PSxZL0K6TwnIt+O4gKyM24+nKJY/xOhFN0YFBbgoi2kUkZs4sv0uW6KkhridDbcJDYKzl6r6KkDqQ=
+X-Received: by 2002:a2e:2b8f:: with SMTP id r15mr32732ljr.210.1562272232034;
+ Thu, 04 Jul 2019 13:30:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1562201102-4332-4-git-send-email-lucasb@mojatatu.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190704181235.8966-1-saeedm@mellanox.com> <20190704181235.8966-15-saeedm@mellanox.com>
+ <20190704131237.239bfa56@cakuba.netronome.com>
+In-Reply-To: <20190704131237.239bfa56@cakuba.netronome.com>
+From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
+Date:   Thu, 4 Jul 2019 16:30:21 -0400
+Message-ID: <CALzJLG_qF=Yv58_EpV0bRm8_=Kn2AtsOywDDMjhwxSUOW44EAQ@mail.gmail.com>
+Subject: Re: [net-next 14/14] net/mlx5e: Add kTLS TX HW offload support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Jul 4, 2019 at 4:12 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Thu, 4 Jul 2019 18:16:15 +0000, Saeed Mahameed wrote:
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> > index 483d321d2151..6854f132d505 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> > @@ -50,6 +50,15 @@ static const struct counter_desc sw_stats_desc[] = {
+> >  #ifdef CONFIG_MLX5_EN_TLS
+> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_ooo) },
+> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_resync_bytes) },
+> > +
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo) },
+>
+> Why do you call this stat tx_ktls_ooo, and not tx_tls_ooo (extra 'k')?
+>
+> For nfp I used the stats' names from mlx5 FPGA to make sure we are all
+> consistent.  I've added them to the tls-offload.rst doc and Boris has
+> reviewed it.
+>
+>  * ``rx_tls_decrypted`` - number of successfully decrypted TLS segments
+>  * ``tx_tls_encrypted`` - number of in-order TLS segments passed to device
+>    for encryption
+>  * ``tx_tls_ooo`` - number of TX packets which were part of a TLS stream
+>    but did not arrive in the expected order
+>  * ``tx_tls_drop_no_sync_data`` - number of TX packets dropped because
+>    they arrived out of order and associated record could not be found
+>
+> Why can't you use the same names for the stats as you used for your mlx5
+> FPGA?
+>
 
-On Wed, Jul 03, 2019 at 08:45:02PM -0400, Lucas Bates wrote:
-> The scapyPlugin allows for simple traffic generation in tdc to
-> test various tc features. It was tested with scapy v2.4.2, but
-> should work with any successive version.
-> 
-> In order to use the plugin's functionality, scapy must be
-> installed. This can be done with:
->    pip3 install scapy
-> 
-> or to install 2.4.2:
->    pip3 install scapy==2.4.2
-> 
-> If the plugin is unable to import the scapy module, it will
-> terminate the tdc run.
-> 
-> The plugin makes use of a new key in the test case data, 'scapy'.
-> This block contains three other elements: 'iface', 'count', and
-> 'packet':
-> 
->         "scapy": {
->             "iface": "$DEV0",
->             "count": 1,
->             "packet": "Ether(type=0x800)/IP(src='16.61.16.61')/ICMP()"
->         },
-> 
-> * iface is the name of the device on the host machine from which
->   the packet(s) will be sent. Values contained within tdc_config.py's
->   NAMES dict can be used here - this is useful if paired with
->   nsPlugin
-> * count is the number of copies of this packet to be sent
-> * packet is a string detailing the different layers of the packet
->   to be sent. If a property isn't explicitly set, scapy will set
->   default values for you.
-> 
-> Layers in the packet info are separated by slashes. For info about
-> common TCP and IP properties, see:
-> https://blogs.sans.org/pen-testing/files/2016/04/ScapyCheatSheet_v0.2.pdf
-> 
-> Caution is advised when running tests using the scapy functionality,
-> since the plugin blindly sends the packet as defined in the test case
-> data.
-> 
-> See creating-testcases/scapy-example.json for sample test cases;
-> the first test is intended to pass while the second is intended to
-> fail. Consider using the matchJSON functionality for verification
-> when using scapy.
-> 
+Actually i agree here, I asked tariq to have FPGA TLS and new mlx5
+embedded TLS  mutually exclusive.
+so there shouldn't be any reason to have new counter names for non FPGA tls.
 
-Is there a way to introduce thrid party scapy level descriptions which
-are not upstream yet?
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_no_sync_data) },
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_bypass_req) },
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_bytes) },
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_packets) },
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_packets) },
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_bytes) },
+> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ctx) },
+> >  #endif
+> >
+> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_lro_packets) },
+>
+> Dave, please don't apply this, I will review in depth once I get
+> through the earlier 200 emails ;)
 
-- Alex
+Jakub can you please expedite ?
+Dave if it is ok with you i will re-spin and push a  new pull request
+with  mlx5-next dependencies + 2 Devlink fw version patches,
+and independently, i will post the TLS series for Jakub to review ?
