@@ -2,142 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84DD560D40
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 23:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B4E760D55
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 23:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbfGEVow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 17:44:52 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49732 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726559AbfGEVow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 17:44:52 -0400
-Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hjW0b-0002eV-FV; Fri, 05 Jul 2019 23:44:45 +0200
-Received: from [178.193.45.231] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hjW0b-0000iX-6b; Fri, 05 Jul 2019 23:44:45 +0200
-Subject: Re: [PATCH bpf-next 1/2] bpf, libbpf: add a new API
- bpf_object__reuse_maps()
-To:     Anton Protopopov <a.s.protopopov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andriin@fb.com
-References: <cover.1562359091.git.a.s.protopopov@gmail.com>
- <e183c0af99056f8ea4de06acb358ace7f3a3d6ae.1562359091.git.a.s.protopopov@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net>
-Date:   Fri, 5 Jul 2019 23:44:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1728273AbfGEVtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 17:49:55 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46362 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbfGEVtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 17:49:55 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h21so10355498qtn.13
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 14:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=h/A4tEl2mtBha7cHiuEYdkY3q6oP12EZ6C0/Om+AD10=;
+        b=WSx2lsXJMKNctZUo8/bf87Uvk5Fi7zcXw+qV0e6Q8AQjzRrwOAT528YRawwec7hge7
+         mVfSRjx3YMBkeTx24cG51ppvVAONcixhZgueA7zPAJYNLo1l8mtOvZT00ESxovvB9rfU
+         a5I50JSemGPaPw5hbCg61YbXa83GNjX8pWkpr8S6bySjaysb++e8WyOfrbAn/43XZwvg
+         DRUgbYcSEXRlJWM7/cQiIh6d4/a2IQdwhOMBSi//5JKIPKQpuuTKf8ZAcXr/nvftPYPj
+         OdKpHerRNb5SMMggJfG2ZVdyU8MUDdeZws0SbOF7JdZSnBEkJrLTMkbym1Y1uRtsSSgX
+         nQ9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=h/A4tEl2mtBha7cHiuEYdkY3q6oP12EZ6C0/Om+AD10=;
+        b=TcEKYzwJGweOwaPeqrZQQnbxLotLlEerU0z7ZTKSvYkS/Zl608VNpC/xa1QZHlBLnl
+         IcR1/M8N0740wF/1OYfQJN6SxA1+/ymIkOTU66Z4IQPEHOCr9W0ZzNhxDaNsNtLnmoRX
+         JewZ0w8TX/6EwKa33hGpLa1YtQlLMS9G7KlzDu4vW3xOXyvmumIMxs8CNIn9n7hXA7nm
+         qvgRegJrBIllNeiFs4lQrECpPpyupq2obJhwGQedLcJszN9gCyJFsFWjcOKleqSiAshP
+         PYEfVVHR+mjGbdjTXVW+t6Dys9gSPN/1cTHK49/UIWSUtHbwc/Z1/P1BILnCSKJ4P0LU
+         ZjbA==
+X-Gm-Message-State: APjAAAVHuOu2pxhjpi5qKJWz2SYJ2Hb96dK0BjJ2NwCp9HFp2kITayRG
+        srfGDQuQPo7qdXogWYqLwtIAbA==
+X-Google-Smtp-Source: APXvYqwBlDfCbZo7ZTpdIz2bIqflSAvvdtH0vqRV0LSfiC8SoRw/HCmTSvtjef6ryWsNF3JJv6vNYw==
+X-Received: by 2002:ac8:24b8:: with SMTP id s53mr4592196qts.276.1562363394280;
+        Fri, 05 Jul 2019 14:49:54 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t29sm4699697qtt.42.2019.07.05.14.49.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 05 Jul 2019 14:49:54 -0700 (PDT)
+Date:   Fri, 5 Jul 2019 14:49:49 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
+        mw@semihalf.com
+Subject: Re: [PATCH net-next 0/2] net: mvpp2: Add classification based on
+ the ETHER flow
+Message-ID: <20190705144949.1799b20a@cakuba.netronome.com>
+In-Reply-To: <20190705120913.25013-1-maxime.chevallier@bootlin.com>
+References: <20190705120913.25013-1-maxime.chevallier@bootlin.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <e183c0af99056f8ea4de06acb358ace7f3a3d6ae.1562359091.git.a.s.protopopov@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25501/Fri Jul  5 10:01:52 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/05/2019 10:44 PM, Anton Protopopov wrote:
-> Add a new API bpf_object__reuse_maps() which can be used to replace all maps in
-> an object by maps pinned to a directory provided in the path argument.  Namely,
-> each map M in the object will be replaced by a map pinned to path/M.name.
+On Fri,  5 Jul 2019 14:09:11 +0200, Maxime Chevallier wrote:
+> Hello everyone,
 > 
-> Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
-> ---
->  tools/lib/bpf/libbpf.c   | 34 ++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   |  2 ++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 37 insertions(+)
+> This series adds support for classification of the ETHER flow in the
+> mvpp2 driver.
 > 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 4907997289e9..84c9e8f7bfd3 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -3144,6 +3144,40 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
->  	return 0;
->  }
->  
-> +int bpf_object__reuse_maps(struct bpf_object *obj, const char *path)
-> +{
-> +	struct bpf_map *map;
-> +
-> +	if (!obj)
-> +		return -ENOENT;
-> +
-> +	if (!path)
-> +		return -EINVAL;
-> +
-> +	bpf_object__for_each_map(map, obj) {
-> +		int len, err;
-> +		int pinned_map_fd;
-> +		char buf[PATH_MAX];
+> The first patch allows detecting when a user specifies a flow_type that
+> isn't supported by the driver, while the second adds support for this
+> flow_type by adding the mapping between the ETHER_FLOW enum value and
+> the relevant classifier flow entries.
 
-We'd need to skip the case of bpf_map__is_internal(map) since they are always
-recreated for the given object.
-
-> +		len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
-> +		if (len < 0) {
-> +			return -EINVAL;
-> +		} else if (len >= PATH_MAX) {
-> +			return -ENAMETOOLONG;
-> +		}
-> +
-> +		pinned_map_fd = bpf_obj_get(buf);
-> +		if (pinned_map_fd < 0)
-> +			return pinned_map_fd;
-
-Should we rather have a new map definition attribute that tells to reuse
-the map if it's pinned in bpf fs, and if not, we create it and later on
-pin it? This is what iproute2 is doing and which we're making use of heavily.
-In bpf_object__reuse_maps() bailing out if bpf_obj_get() fails is perhaps
-too limiting for a generic API as new version of an object file may contain
-new maps which are not yet present in bpf fs at that point.
-
-> +		err = bpf_map__reuse_fd(map, pinned_map_fd);
-> +		if (err)
-> +			return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
->  {
->  	struct bpf_program *prog;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index d639f47e3110..7fe465a1be76 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -82,6 +82,8 @@ int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
->  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const char *path);
->  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
->  				      const char *path);
-> +LIBBPF_API int bpf_object__reuse_maps(struct bpf_object *obj,
-> +				      const char *path);
->  LIBBPF_API int bpf_object__pin_programs(struct bpf_object *obj,
->  					const char *path);
->  LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj,
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 2c6d835620d2..66a30be6696c 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -172,5 +172,6 @@ LIBBPF_0.0.4 {
->  		btf_dump__new;
->  		btf__parse_elf;
->  		bpf_object__load_xattr;
-> +		bpf_object__reuse_maps;
->  		libbpf_num_possible_cpus;
->  } LIBBPF_0.0.3;
-> 
-
+LGTM
