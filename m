@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A97F600E0
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 08:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F2C600E2
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 08:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbfGEGMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 02:12:08 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8707 "EHLO huawei.com"
+        id S1727887AbfGEGMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 02:12:18 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8708 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725827AbfGEGMH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 02:12:07 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 56F0F512B91DFB3938D8;
-        Fri,  5 Jul 2019 14:12:03 +0800 (CST)
-Received: from huawei.com (10.67.189.167) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Fri, 5 Jul 2019
- 14:11:52 +0800
+        id S1725827AbfGEGMS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 02:12:18 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 20313F38436F1FB3106C;
+        Fri,  5 Jul 2019 14:12:16 +0800 (CST)
+Received: from huawei.com (10.67.189.167) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Fri, 5 Jul 2019
+ 14:12:06 +0800
 From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-To:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
         <dingtianhong@huawei.com>, <xiaojiangfeng@huawei.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <leeyou.li@huawei.com>, <xiekunxun@huawei.com>,
         <jianping.liu@huawei.com>, <nixiaoming@huawei.com>
-Subject: [PATCH 06/10] net: hisilicon: dt-bindings: Add an field of port-handle
-Date:   Fri, 5 Jul 2019 14:11:46 +0800
-Message-ID: <1562307106-103760-1-git-send-email-xiaojiangfeng@huawei.com>
+Subject: [PATCH 07/10] net: hisilicon: Add group field to adapt HI13X1_GMAC
+Date:   Fri, 5 Jul 2019 14:12:00 +0800
+Message-ID: <1562307120-103799-1-git-send-email-xiaojiangfeng@huawei.com>
 X-Mailer: git-send-email 1.8.5.6
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -44,47 +44,51 @@ balancing of each processing unit.
 
 Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 ---
- Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt b/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt
-index d1df8a0..464c0da 100644
---- a/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt
-+++ b/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt
-@@ -10,6 +10,7 @@ Required properties:
- 	phandle, specifies a reference to the syscon ppe node
- 	port, port number connected to the controller
- 	channel, recv channel start from channel * number (RX_DESC_NUM)
-+	group, field in the pkg desc, in general, it is the same as the port.
- - phy-mode: see ethernet.txt [1].
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index 19d8cfd..5328219 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -178,6 +178,7 @@ struct hip04_priv {
+ 	int phy_mode;
+ 	int chan;
+ 	unsigned int port;
++	unsigned int group;
+ 	unsigned int speed;
+ 	unsigned int duplex;
+ 	unsigned int reg_inten;
+@@ -278,10 +279,10 @@ static void hip04_config_fifo(struct hip04_priv *priv)
+ 	val |= PPE_CFG_STS_RX_PKT_CNT_RC;
+ 	writel_relaxed(val, priv->base + PPE_CFG_STS_MODE);
  
- Optional properties:
-@@ -66,7 +67,7 @@ Example:
- 		reg = <0x28b0000 0x10000>;
- 		interrupts = <0 413 4>;
- 		phy-mode = "mii";
--		port-handle = <&ppe 31 0>;
-+		port-handle = <&ppe 31 0 31>;
- 	};
+-	val = BIT(priv->port);
++	val = BIT(priv->group);
+ 	regmap_write(priv->map, priv->port * 4 + PPE_CFG_POOL_GRP, val);
  
- 	ge0: ethernet@2800000 {
-@@ -74,7 +75,7 @@ Example:
- 		reg = <0x2800000 0x10000>;
- 		interrupts = <0 402 4>;
- 		phy-mode = "sgmii";
--		port-handle = <&ppe 0 1>;
-+		port-handle = <&ppe 0 1 0>;
- 		phy-handle = <&phy0>;
- 	};
+-	val = priv->port << PPE_CFG_QOS_VMID_GRP_SHIFT;
++	val = priv->group << PPE_CFG_QOS_VMID_GRP_SHIFT;
+ 	val |= PPE_CFG_QOS_VMID_MODE;
+ 	writel_relaxed(val, priv->base + PPE_CFG_QOS_VMID_GEN);
  
-@@ -83,6 +84,6 @@ Example:
- 		reg = <0x2880000 0x10000>;
- 		interrupts = <0 410 4>;
- 		phy-mode = "sgmii";
--		port-handle = <&ppe 8 2>;
-+		port-handle = <&ppe 8 2 8>;
- 		phy-handle = <&phy1>;
- 	};
+@@ -876,7 +877,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
+ 	}
+ #endif
+ 
+-	ret = of_parse_phandle_with_fixed_args(node, "port-handle", 2, 0, &arg);
++	ret = of_parse_phandle_with_fixed_args(node, "port-handle", 3, 0, &arg);
+ 	if (ret < 0) {
+ 		dev_warn(d, "no port-handle\n");
+ 		goto init_fail;
+@@ -884,6 +885,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
+ 
+ 	priv->port = arg.args[0];
+ 	priv->chan = arg.args[1] * RX_DESC_NUM;
++	priv->group = arg.args[2];
+ 
+ 	hrtimer_init(&priv->tx_coalesce_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 
 -- 
 1.8.5.6
 
