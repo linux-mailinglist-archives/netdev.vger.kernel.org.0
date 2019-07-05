@@ -2,54 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D35960E16
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 01:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC14260E17
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 01:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726164AbfGEXSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 19:18:09 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:44152 "EHLO
+        id S1726607AbfGEXTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 19:19:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:44172 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbfGEXSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 19:18:09 -0400
+        with ESMTP id S1725884AbfGEXTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 19:19:34 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8059015043C39;
-        Fri,  5 Jul 2019 16:18:08 -0700 (PDT)
-Date:   Fri, 05 Jul 2019 16:18:05 -0700 (PDT)
-Message-Id: <20190705.161805.2076674582891385494.davem@davemloft.net>
-To:     bigeasy@linutronix.de
-Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, jakub.kicinski@netronome.com,
-        oss-drivers@netronome.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 6/7] nfp: Use spinlock_t instead of struct spinlock
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id ACE9615043C44;
+        Fri,  5 Jul 2019 16:19:33 -0700 (PDT)
+Date:   Fri, 05 Jul 2019 16:19:33 -0700 (PDT)
+Message-Id: <20190705.161933.2002038370655051093.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, jiri@mellanox.com,
+        shalomt@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net] ipv4: Fix NULL pointer dereference in
+ ipv4_neigh_lookup()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190704153803.12739-7-bigeasy@linutronix.de>
-References: <20190704153803.12739-1-bigeasy@linutronix.de>
-        <20190704153803.12739-7-bigeasy@linutronix.de>
+In-Reply-To: <20190704162638.17913-1-idosch@idosch.org>
+References: <20190704162638.17913-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 05 Jul 2019 16:18:08 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 05 Jul 2019 16:19:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Date: Thu,  4 Jul 2019 17:38:02 +0200
+From: Ido Schimmel <idosch@idosch.org>
+Date: Thu,  4 Jul 2019 19:26:38 +0300
 
-> For spinlocks the type spinlock_t should be used instead of "struct
-> spinlock".
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> Use spinlock_t for spinlock's definition.
+> Both ip_neigh_gw4() and ip_neigh_gw6() can return either a valid pointer
+> or an error pointer, but the code currently checks that the pointer is
+> not NULL.
 > 
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: oss-drivers@netronome.com
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Fix this by checking that the pointer is not an error pointer, as this
+> can result in a NULL pointer dereference [1]. Specifically, I believe
+> that what happened is that ip_neigh_gw4() returned '-EINVAL'
+> (0xffffffffffffffea) to which the offset of 'refcnt' (0x70) was added,
+> which resulted in the address 0x000000000000005a.
+> 
+> [1]
+ ...
+> Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Reported-by: Shalom Toledo <shalomt@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-Applied to net-next, thanks.
+Applied, thanks.
