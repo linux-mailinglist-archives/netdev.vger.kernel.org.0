@@ -2,20 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B328C60BF9
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 21:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49E7060BEE
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 21:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbfGETze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 15:55:34 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:47355 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727179AbfGETze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 15:55:34 -0400
-X-Originating-IP: 90.76.143.236
+        id S1727260AbfGETzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 15:55:19 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:33835 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727179AbfGETzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 15:55:19 -0400
 Received: from localhost (lfbn-1-2078-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 1695840002;
-        Fri,  5 Jul 2019 19:55:27 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 8F498240005;
+        Fri,  5 Jul 2019 19:55:11 +0000 (UTC)
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     davem@davemloft.net, richardcochran@gmail.com,
         alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
@@ -23,9 +22,9 @@ To:     davem@davemloft.net, richardcochran@gmail.com,
 Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
         netdev@vger.kernel.org, linux-mips@vger.kernel.org,
         thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com
-Subject: [PATCH net-next v2 2/8] MIPS: dts: mscc: describe the PTP register range
-Date:   Fri,  5 Jul 2019 21:52:07 +0200
-Message-Id: <20190705195213.22041-3-antoine.tenart@bootlin.com>
+Subject: [PATCH net-next v2 3/8] Documentation/bindings: net: ocelot: document the PTP ready IRQ
+Date:   Fri,  5 Jul 2019 21:52:08 +0200
+Message-Id: <20190705195213.22041-4-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190705195213.22041-1-antoine.tenart@bootlin.com>
 References: <20190705195213.22041-1-antoine.tenart@bootlin.com>
@@ -36,35 +35,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds one register range within the mscc,vsc7514-switch node,
-to describe the PTP registers.
+One additional interrupt needs to be described within the Ocelot device
+tree node: the PTP ready one. This patch documents the binding needed to
+do so.
 
 Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 ---
- arch/mips/boot/dts/mscc/ocelot.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/net/mscc-ocelot.txt | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/mips/boot/dts/mscc/ocelot.dtsi b/arch/mips/boot/dts/mscc/ocelot.dtsi
-index 33ae74aaa1bb..1e55a778def5 100644
---- a/arch/mips/boot/dts/mscc/ocelot.dtsi
-+++ b/arch/mips/boot/dts/mscc/ocelot.dtsi
-@@ -120,6 +120,7 @@
- 			reg = <0x1010000 0x10000>,
- 			      <0x1030000 0x10000>,
- 			      <0x1080000 0x100>,
-+			      <0x10e0000 0x10000>,
- 			      <0x11e0000 0x100>,
- 			      <0x11f0000 0x100>,
- 			      <0x1200000 0x100>,
-@@ -134,7 +135,7 @@
- 			      <0x1800000 0x80000>,
- 			      <0x1880000 0x10000>,
- 			      <0x1060000 0x10000>;
--			reg-names = "sys", "rew", "qs", "port0", "port1",
-+			reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
- 				    "port2", "port3", "port4", "port5", "port6",
- 				    "port7", "port8", "port9", "port10", "qsys",
- 				    "ana", "s2";
+diff --git a/Documentation/devicetree/bindings/net/mscc-ocelot.txt b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
+index 4d05a3b0f786..3b6290b45ce5 100644
+--- a/Documentation/devicetree/bindings/net/mscc-ocelot.txt
++++ b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
+@@ -17,9 +17,10 @@ Required properties:
+   - "ana"
+   - "portX" with X from 0 to the number of last port index available on that
+     switch
+-- interrupts: Should contain the switch interrupts for frame extraction and
+-  frame injection
+-- interrupt-names: should contain the interrupt names: "xtr", "inj"
++- interrupts: Should contain the switch interrupts for frame extraction,
++  frame injection and PTP ready.
++- interrupt-names: should contain the interrupt names: "xtr", "inj". Can contain
++  "ptp_rdy" which is optional due to backward compatibility.
+ - ethernet-ports: A container for child nodes representing switch ports.
+ 
+ The ethernet-ports container has the following properties
+@@ -63,8 +64,8 @@ Example:
+ 			    "port2", "port3", "port4", "port5", "port6",
+ 			    "port7", "port8", "port9", "port10", "qsys",
+ 			    "ana";
+-		interrupts = <21 22>;
+-		interrupt-names = "xtr", "inj";
++		interrupts = <18 21 22>;
++		interrupt-names = "ptp_rdy", "xtr", "inj";
+ 
+ 		ethernet-ports {
+ 			#address-cells = <1>;
 -- 
 2.21.0
 
