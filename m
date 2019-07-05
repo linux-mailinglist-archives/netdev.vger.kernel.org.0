@@ -2,39 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6747B60D6B
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 23:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C91960D8E
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 00:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727390AbfGEV67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 17:58:59 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52600 "EHLO
+        id S1727898AbfGEWAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 18:00:50 -0400
+Received: from www62.your-server.de ([213.133.104.62]:53184 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbfGEV67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 17:58:59 -0400
+        with ESMTP id S1725884AbfGEWAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 18:00:49 -0400
 Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1hjWEL-0003Jo-77; Fri, 05 Jul 2019 23:58:57 +0200
+        id 1hjWG5-0003S0-M8; Sat, 06 Jul 2019 00:00:45 +0200
 Received: from [178.193.45.231] (helo=linux.home)
         by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89)
         (envelope-from <daniel@iogearbox.net>)
-        id 1hjWEK-0007Ms-Um; Fri, 05 Jul 2019 23:58:57 +0200
-Subject: Re: [PATCH bpf-next v2] tools: bpftool: add "prog run" subcommand to
- test-run programs
+        id 1hjWG5-0003Kn-AR; Sat, 06 Jul 2019 00:00:45 +0200
+Subject: Re: [PATCHv2] tools bpftool: Fix json dump crash on powerpc
 To:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Yonghong Song <ys114321@gmail.com>
-References: <20190705175433.22511-1-quentin.monnet@netronome.com>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
+References: <20190704085856.17502-1-jolsa@kernel.org>
+ <20190704134210.17b8407c@cakuba.netronome.com> <20190705121031.GA10777@krava>
+ <20190705102452.0831942a@cakuba.netronome.com>
+ <83d18af0-8efa-c8d5-3d99-01aed29915df@netronome.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <41b3c982-2c4b-ccfc-c548-f70c8fd42f73@iogearbox.net>
-Date:   Fri, 5 Jul 2019 23:58:56 +0200
+Message-ID: <5168f635-a23c-eac3-479d-747e55adfc4c@iogearbox.net>
+Date:   Sat, 6 Jul 2019 00:00:44 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
  Thunderbird/52.3.0
 MIME-Version: 1.0
-In-Reply-To: <20190705175433.22511-1-quentin.monnet@netronome.com>
+In-Reply-To: <83d18af0-8efa-c8d5-3d99-01aed29915df@netronome.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -45,39 +49,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/05/2019 07:54 PM, Quentin Monnet wrote:
-> Add a new "bpftool prog run" subcommand to run a loaded program on input
-> data (and possibly with input context) passed by the user.
+On 07/05/2019 07:26 PM, Quentin Monnet wrote:
+> 2019-07-05 10:24 UTC-0700 ~ Jakub Kicinski <jakub.kicinski@netronome.com>
+>> On Fri, 5 Jul 2019 14:10:31 +0200, Jiri Olsa wrote:
+>>> Michael reported crash with by bpf program in json mode on powerpc:
+>>>
+>>>   # bpftool prog -p dump jited id 14
+>>>   [{
+>>>         "name": "0xd00000000a9aa760",
+>>>         "insns": [{
+>>>                 "pc": "0x0",
+>>>                 "operation": "nop",
+>>>                 "operands": [null
+>>>                 ]
+>>>             },{
+>>>                 "pc": "0x4",
+>>>                 "operation": "nop",
+>>>                 "operands": [null
+>>>                 ]
+>>>             },{
+>>>                 "pc": "0x8",
+>>>                 "operation": "mflr",
+>>>   Segmentation fault (core dumped)
+>>>
+>>> The code is assuming char pointers in format, which is not always
+>>> true at least for powerpc. Fixing this by dumping the whole string
+>>> into buffer based on its format.
+>>>
+>>> Please note that libopcodes code does not check return values from
+>>> fprintf callback, but as per Jakub suggestion returning -1 on allocation
+>>> failure so we do the best effort to propagate the error. 
+>>>
+>>> Reported-by: Michael Petlan <mpetlan@redhat.com>
+>>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+>>
+>> Thanks, let me repost all the tags (Quentin, please shout if you're
+>> not ok with this :)):
 > 
-> Print output data (and output context if relevant) into a file or into
-> the console. Print return value and duration for the test run into the
-> console.
+> I confirm it's all good for me, thanks :)
 > 
-> A "repeat" argument can be passed to run the program several times in a
-> row.
-> 
-> The command does not perform any kind of verification based on program
-> type (Is this program type allowed to use an input context?) or on data
-> consistency (Can I work with empty input data?), this is left to the
-> kernel.
-> 
-> Example invocation:
-> 
->     # perl -e 'print "\x0" x 14' | ./bpftool prog run \
->             pinned /sys/fs/bpf/sample_ret0 \
->             data_in - data_out - repeat 5
->     0000000 0000 0000 0000 0000 0000 0000 0000      | ........ ......
->     Return value: 0, duration (average): 260ns
-> 
-> When one of data_in or ctx_in is "-", bpftool reads from standard input,
-> in binary format. Other formats (JSON, hexdump) might be supported (via
-> an optional command line keyword like "data_fmt_in") in the future if
-> relevant, but this would require doing more parsing in bpftool.
-> 
-> v2:
-> - Fix argument names for function check_single_stdin(). (Yonghong)
-> 
-> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>> Fixes: 107f041212c1 ("tools: bpftool: add JSON output for `bpftool prog dump jited *` command")
+>> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+>> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Looks great, thanks for adding, applied!
+Given merge window coming up, I've applied this to bpf-next, thanks everyone!
+
+P.s.: Jiri, please repost full/proper patch next time instead of inline reply.
