@@ -2,144 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8AC602E5
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 11:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB7E60307
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 11:24:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbfGEJI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 05:08:59 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:35713 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726116AbfGEJI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 05:08:58 -0400
-Received: by mail-ed1-f65.google.com with SMTP id w20so7624342edd.2;
-        Fri, 05 Jul 2019 02:08:57 -0700 (PDT)
+        id S1728218AbfGEJY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 05:24:28 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40030 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726921AbfGEJY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 05:24:28 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r1so2846968wrl.7
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 02:24:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kSiMC23ISGGQqVJSQMfXoclzcfCXE9jKziQow8Aqu58=;
-        b=bV5DgE/awiZCo70PJlZnyqIWgNigM3VnXItEoGqIjp2VwZAjg1Xtuv4hQpPEB0Jt6F
-         Fq5BSo7B/rY4PMP/4Nwu27G69SQWZt+J6PAH2WXApCEy7ZPAb3tfWAIIP1vcjgWxUGlW
-         eNQwjSrBPEfkUsBUD50OmCAvjzjhzwnTWIysIdTelYTQHmRPPTMScD6/trE7whDBf6HV
-         G2WCWOFKxTlOoQwaIFS2Tr5i7U7WxlJCtJalVwHV9bXmlsNH/BVDB9FOg1yy7PB5xxRR
-         H9Q5HcXpRB4X31oxQyBpicdAK4o0cRVRE8CevPbt2rFH5oT+MCW3xSEYts34UIcnBtz0
-         GbAA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=HHbqpLTt/UqK8u8skkn9x9YIdY8wkJ4ttRxZXF6EinY=;
+        b=yp5yQJh8jtfYUPLuGlLq2DfqpPBdGGO494xChqpf9zNWBSsXLE5a0248/NAxkoBO4/
+         0BsVaDdF03YgBQ/EiWOMx+7i4XiuJ0zQf7XlokIV1VYWJHiMZ3PDkE/KfYOab4VzMB+J
+         f/pVJLRXx+gS9twTb1Pgz2EXRdaLuXqYybXQVVic64Dl6MDkktWQB7g1huoxjSF5Uleo
+         KWEaVwh/WkLIXcfSUgaE+apFuFz8i+7Qp7PYmwtsyWVa2Ym0Ym+UO3OF2ienlhikB0yc
+         b4nd6B6ytLHgVQbS9mVjQWCRJczLAl4BYGmiNDVXuTYnaPhD6JUOdm5tiGTCbXBzkVMF
+         YL4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kSiMC23ISGGQqVJSQMfXoclzcfCXE9jKziQow8Aqu58=;
-        b=JHHPGUKSpXxpFwYBds1FPWCCwK+2aq3Ggph5/1/HQAvPFPzB3qBnwRMoM0EAjPhQf6
-         oTyN3fEuUuXJul5RhFfohiIQRj/NwVxuHCfIcnzciwuKbo1CnWm/+jhZPnp3qqnL/70b
-         fj+Mhg2ghHlEsAuAc+dsz+kYrCym7wDtIxdH/3Z/ti9nVHlWhvAWMlOBCu/DhgXzZd1r
-         +vD+PM/C7Ram3ZUs6jAvbHbIQUDmLZlwEucmQcBGzwDzJzujDeSqVWq9QILdMFNGmFPB
-         bxIMtXlvHyloBh5491/pmM+NGCe1g3YjTaQLhk9j4Dph6Ph0oIp3JNRIFDa5fJxOzcWI
-         4mHw==
-X-Gm-Message-State: APjAAAVHZoJdrNDHXvy62olkreQfsn95/LJ53GiDfeQMxl/DUFHAnQF9
-        XXgxWr5kG43loH2EDzlkdK7GNLRnPklTFHCK2Bg=
-X-Google-Smtp-Source: APXvYqx22fS+pUeLNsjnHvqrFs6EQGY5EsmKNI1CNKh15QT+gqZBMDoV2f19y7PER6ojlIisVn9BH1EpPtvyAEyWL8k=
-X-Received: by 2002:a17:906:b7d8:: with SMTP id fy24mr2518380ejb.230.1562317736258;
- Fri, 05 Jul 2019 02:08:56 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=HHbqpLTt/UqK8u8skkn9x9YIdY8wkJ4ttRxZXF6EinY=;
+        b=WUnWj0soRxNXCG23+WCnc7PY6+1TEYD/2F+bOaDk6GcDfooNK8qVmLgnZ4ZVmzd7Lj
+         bPWblqMcDVoKgQCnMGoSFAPR+a/+L2gwRxd5Ab5IIU3DTEN7B+wKd9LauVIZ5+GC+i6R
+         /VOZ05NxF60+jN7vNRoVmAO9rpN9uiu7383w9EMLdEaMblZStR8s5W+mrxlRjMCBSRQJ
+         MOTBk7nN/u32A4yL1s0h3dfJ9YBSPmGqANlIMrEaHn5/TWxW6bOvhwFh505N8YQZsIcN
+         GapCVEMgThESo2bAcAz8RWg7rxkuhYNbGDz8xu0Mi9Uxgyd7VYliv8wuv04By06lcH5N
+         sX6A==
+X-Gm-Message-State: APjAAAUCglicu4s/7OWk5KWqHQbieT1N9mP/N7bkwJpUhMTL3M75iTXM
+        ITWA0R1MOqWVEwlw3+4oDUT1Cw==
+X-Google-Smtp-Source: APXvYqwfVWZ2uyQrHtW79irxr4cfhJhTkvjPeAqMQ25Qa5108rnUpXmlpdEPv1K0U4PAXpWDPp+JbQ==
+X-Received: by 2002:adf:e50c:: with SMTP id j12mr3191191wrm.117.1562318666604;
+        Fri, 05 Jul 2019 02:24:26 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id o126sm7447501wmo.1.2019.07.05.02.24.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 05 Jul 2019 02:24:25 -0700 (PDT)
+References: <20190705001803.30094-1-luke.r.nels@gmail.com>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Luke Nelson <lukenels@cs.washington.edu>
+Cc:     linux-kernel@vger.kernel.org, Luke Nelson <luke.r.nels@gmail.com>,
+        Song Liu <liu.song.a23@gmail.com>,
+        Jiong Wang <jiong.wang@netronome.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next] Enable zext optimization for more RV64G ALU ops
+In-reply-to: <20190705001803.30094-1-luke.r.nels@gmail.com>
+Date:   Fri, 05 Jul 2019 10:24:22 +0100
+Message-ID: <8736jk4ywp.fsf@netronome.com>
 MIME-Version: 1.0
-References: <1561131532-14860-1-git-send-email-claudiu.manoil@nxp.com>
- <1561131532-14860-5-git-send-email-claudiu.manoil@nxp.com>
- <20190621164940.GL31306@lunn.ch> <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
- <20190624115558.GA5690@piout.net> <20190624142625.GR31306@lunn.ch>
- <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
- <20190624162431.GX31306@lunn.ch> <20190624182614.GC5690@piout.net>
- <CA+h21hqGtA5ou7a3wjSuHxa_4fXk4GZohTAxnUdfLZjV3nq5Eg@mail.gmail.com> <20190705044945.GA30115@lunn.ch>
-In-Reply-To: <20190705044945.GA30115@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 5 Jul 2019 12:08:45 +0300
-Message-ID: <CA+h21hqU1H1PefBWKjnsmkMsLhx0p0HJTsp-UYrSgmVnsfqULA@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
- port DT node
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Allan Nielsen <Allan.Nielsen@microsemi.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
 
-On Fri, 5 Jul 2019 at 07:49, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Hi Vladimir
->
-> > - DSA is typically used for discrete switches, switchdev is typically
-> > used for embedded ones.
->
-> Typically DSA is for discrete switches, but not exclusively. The
-> b53/SF2 is embedded in a number of Broadcom SoCs. So this is no
-> different to Ocelot, except ARM vs MIPS. Also, i would disagree that
-> switchdev is used for embedded ones. Mellonex devices are discrete, on
-> a PCIe bus. I believe Netronome devices are also discrete PCIe
-> devices. In fact, i think ocelot is the only embedded switchdev
-> switch.
->
-> So embedded vs discrete plays no role here at all.
->
+Luke Nelson writes:
 
-drivers/staging/fsl-dpaa2/ethsw/ is another example of switchdev
-driver for an embedded switch.
-I would give it to you that the sample size is probably too small to
-say 'typically', but my point was that in order to support cascaded
-switches it makes more sense for those to be discrete.
-
-> > - The D in DSA is for cascaded switches. Apart from the absence of
-> > such a "Ocelot SoC" driver (which maybe can be written, I don't know),
-> > I think the switching core itself has some fundamental limitations
-> > that make a DSA implementation questionable:
+> commit 66d0d5a854a6 ("riscv: bpf: eliminate zero extension code-gen")
+> added the new zero-extension optimization for some BPF ALU operations.
 >
-> There is no requirement to implement D in DSA. In fact, only Marvell
-> does. None of the other switches do. And you will also find that most
-> boards with a Marvell switch use a single device. D in DSA is totally
-> optional. In fact, DSA is built from the ground up that nearly
-> everything is optional. Take a look at mv88e6060, as an example. It
-> implements nearly nothing. It cannot even offload a bridge to the
-> switch.
+> Since then, bugs in the JIT that have been fixed in the bpf tree require
+> this optimization to be added to other operations: commit 1e692f09e091
+> ("bpf, riscv: clear high 32 bits for ALU32 add/sub/neg/lsh/rsh/arsh"),
+> and commit fe121ee531d1 ("bpf, riscv: clear target register high 32-bits
+> for and/or/xor on ALU32")
 >
+> Now that these have been merged to bpf-next, the zext optimization can
+> be enabled for the fixed operations.
 
-Let me see if I get your point.
-The D is optional, and the S is optional. So what's left? :)
-Also, there's a big difference between "the hardware can't do it" and
-"the driver doesn't implement it". If I follow your argument, would
-you write a DSA driver for a device that doesn't do L2 switching?
-Along that same line, what benefit does the DSA model bring to a
-switch that can't do cascading, compared to switchdev? I'm asking this
-as a user, not as a developer.
+LGTM, thanks.
 
-> > So my conclusion is that DSA for Felix/Ocelot doesn't make a lot of
-> > sense if the whole purpose is to hide the CPU-facing netdev.
+Acked-by: Jiong Wang <jiong.wang@netronome.com>
+
 >
-> You actually convinced me the exact opposite. You described the
-> headers which are needed to implement DSA. The switch sounds like it
-> can do what DSA requires. So DSA is the correct model.
+> Cc: Song Liu <liu.song.a23@gmail.com>
+> Cc: Jiong Wang <jiong.wang@netronome.com>
+> Cc: Xi Wang <xi.wang@gmail.com>
+> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+> ---
+>  arch/riscv/net/bpf_jit_comp.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 >
->      Andrew
+> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+> index 876cb9c705ce..5451ef3845f2 100644
+> --- a/arch/riscv/net/bpf_jit_comp.c
+> +++ b/arch/riscv/net/bpf_jit_comp.c
+> @@ -757,31 +757,31 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  	case BPF_ALU | BPF_ADD | BPF_X:
+>  	case BPF_ALU64 | BPF_ADD | BPF_X:
+>  		emit(is64 ? rv_add(rd, rd, rs) : rv_addw(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  	case BPF_ALU | BPF_SUB | BPF_X:
+>  	case BPF_ALU64 | BPF_SUB | BPF_X:
+>  		emit(is64 ? rv_sub(rd, rd, rs) : rv_subw(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  	case BPF_ALU | BPF_AND | BPF_X:
+>  	case BPF_ALU64 | BPF_AND | BPF_X:
+>  		emit(rv_and(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  	case BPF_ALU | BPF_OR | BPF_X:
+>  	case BPF_ALU64 | BPF_OR | BPF_X:
+>  		emit(rv_or(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  	case BPF_ALU | BPF_XOR | BPF_X:
+>  	case BPF_ALU64 | BPF_XOR | BPF_X:
+>  		emit(rv_xor(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  	case BPF_ALU | BPF_MUL | BPF_X:
+> @@ -811,13 +811,13 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  	case BPF_ALU | BPF_RSH | BPF_X:
+>  	case BPF_ALU64 | BPF_RSH | BPF_X:
+>  		emit(is64 ? rv_srl(rd, rd, rs) : rv_srlw(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  	case BPF_ALU | BPF_ARSH | BPF_X:
+>  	case BPF_ALU64 | BPF_ARSH | BPF_X:
+>  		emit(is64 ? rv_sra(rd, rd, rs) : rv_sraw(rd, rd, rs), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
+>  
+> @@ -826,7 +826,7 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  	case BPF_ALU64 | BPF_NEG:
+>  		emit(is64 ? rv_sub(rd, RV_REG_ZERO, rd) :
+>  		     rv_subw(rd, RV_REG_ZERO, rd), ctx);
+> -		if (!is64)
+> +		if (!is64 && !aux->verifier_zext)
+>  			emit_zext_32(rd, ctx);
+>  		break;
 
-Somebody actually asked, with the intention of building a board, if
-it's possible to cascade the LS1028A embedded switch (Felix) with
-discrete SJA1105 devices - Felix being at the top of the switch tree.
-Does the DSA model support heterogeneous setups (parsing stacked
-headers)? I can't tell if that's how EDSA tags work. With switchdev
-for Felix there wouldn't be any problem - it just wouldn't be part of
-the DSA tree and its own driver would remove its tags before DSA would
-look at the rest.
-
-Regards,
--Vladimir
