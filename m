@@ -2,97 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4BBA607F4
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 16:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0D80607F8
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 16:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfGEOfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 10:35:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54100 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725837AbfGEOfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 10:35:33 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hjPJC-0004tf-T1; Fri, 05 Jul 2019 16:35:30 +0200
-Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hjPJC-00031e-MN; Fri, 05 Jul 2019 16:35:30 +0200
-Subject: Re: [PATCH bpf-next v3] libbpf: add xsk_ring_prod__nb_free() function
-To:     Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org
-Cc:     ast@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        andrii.nakryiko@gmail.com, magnus.karlsson@gmail.com
-References: <ea49f66f73aedcdade979605dab6b2474e2dc4cb.1562145300.git.echaudro@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c86151f8-9a16-d2e4-a888-d0836ff3c10a@iogearbox.net>
-Date:   Fri, 5 Jul 2019 16:35:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1727229AbfGEOgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 10:36:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56228 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725837AbfGEOgt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 10:36:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=38NEboaXdSeyWuU7v89kKFG7xDV4dw3xD2Yt889bIMo=; b=sW94YvLDJYgfKhHmEGFEwV24QV
+        EM563sTsqO+Vudy4k9sNYTjx2yZrfrfLCAOC6c/5Y2Q5CDGBPFsTlRdT/rIVfPPMVoyG/DXY3rbUw
+        mBsE+7Y4oqASqGm6z6zuunePmGlS6g+oHTVTkxkAL6+xGW9JUTc8iSVB4wk6R/it0dos=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hjPKR-0001ZC-BZ; Fri, 05 Jul 2019 16:36:47 +0200
+Date:   Fri, 5 Jul 2019 16:36:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Benjamin Beckmeyer <beb@eks-engel.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
+Message-ID: <20190705143647.GC4428@lunn.ch>
+References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+ <20190703155518.GE18473@lunn.ch>
+ <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
+ <20190704132756.GB13859@lunn.ch>
+ <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
+ <20190704155347.GJ18473@lunn.ch>
+ <ba64f1f9-14c7-2835-f6e7-0dd07039fb18@eks-engel.de>
 MIME-Version: 1.0
-In-Reply-To: <ea49f66f73aedcdade979605dab6b2474e2dc4cb.1562145300.git.echaudro@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25501/Fri Jul  5 10:01:52 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ba64f1f9-14c7-2835-f6e7-0dd07039fb18@eks-engel.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/03/2019 02:52 PM, Eelco Chaudron wrote:
-> When an AF_XDP application received X packets, it does not mean X
-> frames can be stuffed into the producer ring. To make it easier for
-> AF_XDP applications this API allows them to check how many frames can
-> be added into the ring.
+On Fri, Jul 05, 2019 at 02:41:43PM +0200, Benjamin Beckmeyer wrote:
+> >> &mdio0 {
+> >>         interrupt-parent = <&gpio1>;
+> >>         interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+> >>
+> >>         switch0: switch0@2 {
+> >>                 compatible = "marvell,mv88e6190";
+> >>                 reg = <2>;
+> >>                 pinctrl-0 = <&pinctrl_gpios>;
+> >>                 reset-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
+> >>                 dsa,member = <0 0>;
+> > This is wrong. The interrupt is a switch property, not an MDIO bus
+> > property. So it belongs inside the switch node.
+> >
+> > 	  Andrew
 > 
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> Hi Andrew,
+> 
+> in the documentation for Marvell DSA the interrupt properties are in 
+> the MDIO part. Maybe the documentation for device tree is wrong or 
+> unclear?
 
-The commit log as it is along with the code is a bit too confusing for
-readers. After all you only do a rename below. It would need to additionally
-state that the rename is as per libbpf convention (xyz__ prefix) in order to
-denote that this API is exposed to be used by applications.
+Ah. Yes. The documentation is wrong. I will fix that.
 
-Given you are doing this for xsk_prod_nb_free(), should we do the same for
-xsk_cons_nb_avail() as well? Extending XDP sample app would be reasonable
-addition as well in this context.
+> 
+> I switched to the kernel 5.1.16 to take advantage of your new code.
+> At the moment I deleted all interrupt properties from my device tree 
+> and if I get you right now the access should be trigger all 100ms but 
+> I have accesses within the tracing about 175 times a second.
+> 
+> Here is a snip from my trace without IRQ
+> 2188000.etherne-223   [000] ....   109.932406: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x01 val:0x40a8
+>  2188000.etherne-223   [000] ....   109.932501: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b64
+>  2188000.etherne-223   [000] ....   109.933113: mdio_access: 2188000.ethernet-1 write phy:0x02 reg:0x00 val:0x9b60
+>  2188000.etherne-223   [000] ....   109.933261: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b60
+>  2188000.etherne-223   [000] ....   109.933359: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x01 val:0xc801
 
-> ---
-> 
-> v2 -> v3
->  - Removed cache by pass option
-> 
-> v1 -> v2
->  - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
->  - Add caching so it will only touch global state when needed
-> 
->  tools/lib/bpf/xsk.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 82ea71a0f3ec..3411556e04d9 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -76,7 +76,7 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx, __u32 idx)
->  	return &descs[idx & rx->mask];
->  }
->  
-> -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
-> +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 nb)
->  {
->  	__u32 free_entries = r->cached_cons - r->cached_prod;
->  
-> @@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
->  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
->  					    size_t nb, __u32 *idx)
->  {
-> -	if (xsk_prod_nb_free(prod, nb) < nb)
-> +	if (xsk_prod__nb_free(prod, nb) < nb)
->  		return 0;
->  
->  	*idx = prod->cached_prod;
-> 
+>  2188000.etherne-223   [000] ....   110.041683: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b60
+>  2188000.etherne-223   [000] ....   110.041817: mdio_access: 2188000.ethernet-1 write phy:0x02 reg:0x00 val:0x9b60
+>  2188000.etherne-223   [000] ....   110.041919: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b60
+>  2188000.etherne-223   [000] ....   110.042025: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x01 val:0xc801
 
+These four access are one switch register access. The first read will
+be checking that the busy bit is not set. The second sets up a read to
+switch register 0x00 device address 1b, i.e. global 1. So this is the
+interrupt status register. The third read is checking that the busy
+bit is cleared. And the last is the actual value of the register.
+
+> 
+> Am I doing it right with the tracing points? I run just
+> 
+> echo 1 > /sys/kernel/debug/tracing/events/mdio/mdio_access/enable
+> cat /sys/kernel/debug/tracing/trace
+
+That looks correct.
+
+I think you are going to have to parse the register writes/reads to
+figure out what switch registers it is accessing. That should
+hopefully make it clearer why it is making so many accesses.
+
+> Here is the another device tree I tried, but with this I get accesses 
+> on the bus in about every 50 microseconds!
+> 
+> --snip
+> &mdio0 {
+>         switch0: switch0@2 {
+>                 compatible = "marvell,mv88e6190";
+>                 reg = <2>;
+>                 pinctrl-0 = <&pinctrl_switch_irq>;
+>                 interrupt-parent = <&gpio1>;
+>                 interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
+>                 interrupt-controller;
+>                 #interrupt-cells = <2>;
+>                 dsa,member = <0 0>;
+> 
+>                 ports {
+>                         #address-cells = <1>;
+>                         #size-cells = <0>;
+> --snip
+
+That looks sensible.
+
+     Andrew
