@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF13A6050B
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 13:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E91C160526
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 13:14:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728613AbfGELFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 07:05:12 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:33858 "EHLO mx1.redhat.com"
+        id S1727907AbfGELOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 07:14:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40716 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728576AbfGELFL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 07:05:11 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        id S1727066AbfGELOH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 07:14:07 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5D1D63073AFE;
-        Fri,  5 Jul 2019 11:05:11 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-117-149.ams2.redhat.com [10.36.117.149])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5113084335;
-        Fri,  5 Jul 2019 11:05:09 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: [PATCH v3 3/3] vsock/virtio: fix flush of works during the .remove()
-Date:   Fri,  5 Jul 2019 13:04:54 +0200
-Message-Id: <20190705110454.95302-4-sgarzare@redhat.com>
-In-Reply-To: <20190705110454.95302-1-sgarzare@redhat.com>
-References: <20190705110454.95302-1-sgarzare@redhat.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id 5538F34CF;
+        Fri,  5 Jul 2019 11:14:06 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F6ED7F76E;
+        Fri,  5 Jul 2019 11:13:56 +0000 (UTC)
+Date:   Fri, 5 Jul 2019 13:13:54 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v7 net-next 5/5] net: ethernet: ti: cpsw: add XDP
+ support
+Message-ID: <20190705131354.15a9313c@carbon>
+In-Reply-To: <20190704231406.27083-6-ivan.khoronzhuk@linaro.org>
+References: <20190704231406.27083-1-ivan.khoronzhuk@linaro.org>
+        <20190704231406.27083-6-ivan.khoronzhuk@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 05 Jul 2019 11:05:11 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Fri, 05 Jul 2019 11:14:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch moves the flush of works after vdev->config->del_vqs(vdev),
-because we need to be sure that no workers run before to free the
-'vsock' object.
+On Fri,  5 Jul 2019 02:14:06 +0300
+Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-Since we stopped the workers using the [tx|rx|event]_run flags,
-we are sure no one is accessing the device while we are calling
-vdev->config->reset(vdev), so we can safely move the workers' flush.
+> +static int cpsw_xdp_tx_frame(struct cpsw_priv *priv, struct xdp_frame *xdpf,
+> +			     struct page *page)
+> +{
+> +	struct cpsw_common *cpsw = priv->cpsw;
+> +	struct cpsw_meta_xdp *xmeta;
+> +	struct cpdma_chan *txch;
+> +	dma_addr_t dma;
+> +	int ret, port;
+> +
+> +	xmeta = (void *)xdpf + CPSW_XMETA_OFFSET;
+> +	xmeta->ndev = priv->ndev;
+> +	xmeta->ch = 0;
+> +	txch = cpsw->txv[0].ch;
+> +
+> +	port = priv->emac_port + cpsw->data.dual_emac;
+> +	if (page) {
+> +		dma = page_pool_get_dma_addr(page);
+> +		dma += xdpf->data - (void *)xdpf;
 
-Before the vdev->config->del_vqs(vdev), workers can be scheduled
-by VQ callbacks, so we must flush them after del_vqs(), to avoid
-use-after-free of 'vsock' object.
+This code is only okay because this only happens for XDP_TX, where you
+know this head-room calculation will be true.  The "correct"
+calculation of the head-room would be:
 
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+  dma += xdpf->headroom + sizeof(struct xdp_frame);
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 4dbdce7746bd..0815d1357861 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -681,12 +681,6 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	rcu_assign_pointer(the_virtio_vsock, NULL);
- 	synchronize_rcu();
- 
--	flush_work(&vsock->loopback_work);
--	flush_work(&vsock->rx_work);
--	flush_work(&vsock->tx_work);
--	flush_work(&vsock->event_work);
--	flush_work(&vsock->send_pkt_work);
--
- 	/* Reset all connected sockets when the device disappear */
- 	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
- 
-@@ -741,6 +735,15 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	/* Delete virtqueues and flush outstanding callbacks if any */
- 	vdev->config->del_vqs(vdev);
- 
-+	/* Other works can be queued before 'config->del_vqs()', so we flush
-+	 * all works before to free the vsock object to avoid use after free.
-+	 */
-+	flush_work(&vsock->loopback_work);
-+	flush_work(&vsock->rx_work);
-+	flush_work(&vsock->tx_work);
-+	flush_work(&vsock->event_work);
-+	flush_work(&vsock->send_pkt_work);
-+
- 	mutex_unlock(&the_virtio_vsock_mutex);
- 
- 	kfree(vsock);
+The reason behind not using xdpf pointer itself as "data_hard_start",
+is to allow struct xdp_frame to be located in another memory area.
+This will be useful for e.g. AF_XDP transmit, or other zero-copy
+transmit to go through ndo_xdp_xmit() (as we don't want userspace to
+be-able to e.g. "race" change xdpf->len during transmit/DMA-completion).
+
+
+> +		ret = cpdma_chan_submit_mapped(txch, cpsw_xdpf_to_handle(xdpf),
+> +					       dma, xdpf->len, port);
+> +	} else {
+> +		if (sizeof(*xmeta) > xdpf->headroom) {
+> +			xdp_return_frame_rx_napi(xdpf);
+> +			return -EINVAL;
+> +		}
+> +
+> +		ret = cpdma_chan_submit(txch, cpsw_xdpf_to_handle(xdpf),
+> +					xdpf->data, xdpf->len, port);
+> +	}
+
+
+
 -- 
-2.20.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
