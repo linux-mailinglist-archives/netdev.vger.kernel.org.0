@@ -2,79 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 444416057A
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 13:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91EC860587
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 13:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728347AbfGELnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 07:43:55 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44254 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728093AbfGELnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 07:43:55 -0400
-Received: by mail-ed1-f68.google.com with SMTP id k8so7974823edr.11
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 04:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=6oFL8GERdlcAKtO6YkFSZSINNeoUGRbh56lm7IAVzdE=;
-        b=k1NT0I+gvAS21HJ6aTI3hpCVcRcX7x22XGTtHsLh26rPjMtiEvTF0t6TpkwZKry1Bh
-         x0UcuFfmD7gtgRUPzJOFKraMnJezJrwJddynpsBQuw5RBvnwIe/+g97A8Zn1YIIkIHQr
-         10kKv8wWZM86xr7NgG4QiGTFuEOUmfjvsGxk9iCEJoPjoWWc///8SYWL6Sojk6WwyCeC
-         SVt1QhaZhkgQZB0xhfGQzsMbHoG/3CFiAOqqnzhcSGJXy4m3L7GNAmA10XQkA/XD0obU
-         3I+KvFRuLtjjsMmHrAncMobTt1URLqxvxiL8HXAevl8sMWPxl2Q2PMO9fpikSS00Gjbl
-         dcvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6oFL8GERdlcAKtO6YkFSZSINNeoUGRbh56lm7IAVzdE=;
-        b=CkTC1khOWt51TsW6OrYQFTCQHnYZB/r9rBnzjeHH00C+23j2APD675Wt1rv9AvhaKa
-         /PGHZWkxhBTuFUTitHXMz358SN1U+BO3xMjhMF/98ls6f4lOzA1ByGiDiSVBlAJjksg+
-         3AycCIxGJWD3zp7yG3U2mSzaCut1RUtW3oHYIE2JoTx9WbEKBhjFXK9LRCdSBKls0msU
-         nO2h7LaGA306KNyD/OHekvJqUo6RO7RoOsmUNkp/Z/lhyOwXAszKOc7QzU19uIIKAaE8
-         TaAgKsaf49Tbx7w3cfMyewtDKDE4AsmpH6dk+98pvyamJKMj0DOcUf5xZuQve1EP/NlL
-         kB4g==
-X-Gm-Message-State: APjAAAVU27tlOvSZP6nZJ4QrUMM1iLXHVW+1uzwmHCq7dK0oHvkUgq23
-        P+fgNlVlbvS6rH6ckxu2iy8=
-X-Google-Smtp-Source: APXvYqx+NFN6B1EN8YKYc5NL/tgi36I/ztwKOE5uvR8+ib5TMRcJ4p/SS3lfdGDhzTQNQqph3X9Ueg==
-X-Received: by 2002:a17:906:d7ab:: with SMTP id pk11mr3089188ejb.216.1562327033549;
-        Fri, 05 Jul 2019 04:43:53 -0700 (PDT)
-Received: from localhost.localdomain (D96447CA.static.ziggozakelijk.nl. [217.100.71.202])
-        by smtp.gmail.com with ESMTPSA id j16sm577722ejq.66.2019.07.05.04.43.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 05 Jul 2019 04:43:53 -0700 (PDT)
-From:   Frank de Brabander <debrabander@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Frank de Brabander <debrabander@gmail.com>
-Subject: [PATCH] selftests: txring_overwrite: fix incorrect test of mmap() return value
-Date:   Fri,  5 Jul 2019 13:43:14 +0200
-Message-Id: <1562326994-4569-1-git-send-email-debrabander@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728720AbfGELqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 07:46:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56846 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728316AbfGELqN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 07:46:13 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CC9E63082DD3;
+        Fri,  5 Jul 2019 11:46:12 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D7F052C5;
+        Fri,  5 Jul 2019 11:46:07 +0000 (UTC)
+Date:   Fri, 5 Jul 2019 13:46:06 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
+        ard.biesheuvel@linaro.org, arnd@arndb.de, brouer@redhat.com
+Subject: Re: [net-next, PATCH, v3] net: netsec: Sync dma for device on
+ buffer allocation
+Message-ID: <20190705134606.6a4ffde8@carbon>
+In-Reply-To: <1562323667-6945-1-git-send-email-ilias.apalodimas@linaro.org>
+References: <1562323667-6945-1-git-send-email-ilias.apalodimas@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Fri, 05 Jul 2019 11:46:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If mmap() fails it returns MAP_FAILED, which is defined as ((void *) -1).
-The current if-statement incorrectly tests if *ring is NULL.
+On Fri,  5 Jul 2019 13:47:47 +0300
+Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
 
-Signed-off-by: Frank de Brabander <debrabander@gmail.com>
----
- tools/testing/selftests/net/txring_overwrite.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Quoting Arnd,
+> We have to do a sync_single_for_device /somewhere/ before the
+> buffer is given to the device. On a non-cache-coherent machine with
+> a write-back cache, there may be dirty cache lines that get written back
+> after the device DMA's data into it (e.g. from a previous memset
+> from before the buffer got freed), so you absolutely need to flush any
+> dirty cache lines on it first.
+> 
+> Since the coherency is configurable in this device make sure we cover
+> all configurations by explicitly syncing the allocated buffer for the
+> device before refilling it's descriptors
+> 
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> ---
+> Changes since v2:
+> - Only sync for the portion of the packet owned by the NIC as suggested by 
+>   Jesper
 
-diff --git a/tools/testing/selftests/net/txring_overwrite.c b/tools/testing/selftests/net/txring_overwrite.c
-index fd8b1c6..7d9ea03 100644
---- a/tools/testing/selftests/net/txring_overwrite.c
-+++ b/tools/testing/selftests/net/txring_overwrite.c
-@@ -113,7 +113,7 @@ static int setup_tx(char **ring)
- 
- 	*ring = mmap(0, req.tp_block_size * req.tp_block_nr,
- 		     PROT_READ | PROT_WRITE, MAP_SHARED, fdt, 0);
--	if (!*ring)
-+	if (*ring == MAP_FAILED)
- 		error(1, errno, "mmap");
- 
- 	return fdt;
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Some general comments below.
+
+>  drivers/net/ethernet/socionext/netsec.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index 5544a722543f..6b954ad88842 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -727,6 +727,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+>  {
+>  
+>  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+> +	enum dma_data_direction dma_dir;
+>  	struct page *page;
+>  
+>  	page = page_pool_dev_alloc_pages(dring->page_pool);
+> @@ -742,6 +743,8 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+>  	 * cases and reserve enough space for headroom + skb_shared_info
+>  	 */
+>  	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+> +	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+> +	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
+
+Following the API this seems to turn into a noop if dev_is_dma_coherent().
+
+Thus, I don't think it is worth optimizing further, as I suggested
+earlier, with only sync of previous packet length.   This sync of the
+"full" possible payload-data area (without headroom) is likely the best
+and simplest option.  I don't think we should extend and complicate
+the API for optimizing for non-coherent DMA hardware.
+
 -- 
-2.7.4
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
