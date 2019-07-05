@@ -2,146 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE63609A6
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:48:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7AAC609B4
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727483AbfGEPsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 11:48:46 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:36699 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726805AbfGEPsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:48:45 -0400
-Received: by mail-io1-f67.google.com with SMTP id o9so4445029iom.3
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sWKzZ4l2oG1uHiftjLeI9M6SAByLvoxEawDVvdCU9es=;
-        b=AW1zE9WwNnwKmaDOEDr9qUeCRGksjEeXUQRHqqqG0+h5m8JSHCZBGvL/fhGyPn4lH8
-         3l0BchUgPFcCJJCyHVRc2A21adHkgoYpznNcAvbk6Lc8w/MUsw0pM8JVGy4D2uqVJ6nP
-         j0kaQq2VOoScO8YW91Ug6pbAym5dZ7BUUZMkrBn2N+79WIU1QZikcZ7Xpjq6XthuZLLW
-         tytvj+35IruF39L34PRJ9ZZOireaGW4paF0TOjaBe3RvK0eljsQq6vU2LvJdLCdOFRLk
-         lpTWuAHaF8zn1FeZfI4ClZ2qpEcbINmqaf80OyFaSBK+/UemTL/SxoQ3sT9O3DU8lQ82
-         b34w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sWKzZ4l2oG1uHiftjLeI9M6SAByLvoxEawDVvdCU9es=;
-        b=pCaHJpO5Yd4fkRu+Qz4aYXr2jBmPr1BM8WjQHgDcVjoapFdtt1cJWiHM/000BX2lxG
-         o43RLGCyc87Nz1T4Zor4jklbjA2I/1hVrNk2mYhLA2ecf9H1c99Vs0eCAxglC1eEAF4J
-         BXNmuUxf8LSdD8KioL4LwEYvvKaRth5xGpVoK71Xu8NTWVZkspmH16Kkv30VpPp3MUZN
-         2ruBtJvCtJ+0Udeth0BIORbRn/lHQK/oG/nxhrG0CUtBPkgZZqDTbCIitDEBnK5OB0Zv
-         ky2UNtgVspHYqc4lVwv1cy+QrF0uCz9SIsbXHs75WZYkOdy9dyeCB3Wf/Agrv0clSggc
-         mKRA==
-X-Gm-Message-State: APjAAAVq8pL07Xglj1JBK9jrBtefNbZirGPDC0VmyzgO3qdgmmPHEnuV
-        cDhYyqEOhSuJkLDbnepZFvLHeT0mLUh0LGaMlPJ6Bw==
-X-Google-Smtp-Source: APXvYqxteQikD8RDI1mrbsJR81IJ6iSofkhpqOpCfA+Cd25ZxQxbLnqofMOnU4//vy4Z5+IH5UESTz2vlc8kWQhrhIs=
-X-Received: by 2002:a5d:80d6:: with SMTP id h22mr4931637ior.231.1562341724560;
- Fri, 05 Jul 2019 08:48:44 -0700 (PDT)
+        id S1726012AbfGEPuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 11:50:23 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23334 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726069AbfGEPuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:50:20 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x65FlE81001288
+        for <netdev@vger.kernel.org>; Fri, 5 Jul 2019 08:50:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=xkfVDaA/seYp3oZaorvGYgYRxTjVCnsA6u4Wt+j/r9M=;
+ b=obExs04OZ6ecakDthNKtM705T/9fLuaj2isPozbxR3bN7yA6DryY5872E7pgIb2fEDdk
+ ZpIpazgY35ET4Z3HvALLolQJswr8gAiY9uli8mWDnAb9uyMSeqlLlf9pf3AG7nNNvIZF
+ 98dTeyLkY3jd2D2ic7RRu+Pdm8utDNJLVdA= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2tj6yd0kr3-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:50:18 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 5 Jul 2019 08:50:18 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 39587861628; Fri,  5 Jul 2019 08:50:16 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v5 bpf-next 0/4] capture integers in BTF type info for map defs
+Date:   Fri, 5 Jul 2019 08:50:08 -0700
+Message-ID: <20190705155012.3539722-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <000000000000d3f34b058c3d5a4f@google.com> <20190626184251.GE3116@mit.edu>
- <20190626210351.GF3116@mit.edu> <20190626224709.GH3116@mit.edu>
- <CACT4Y+YTpUErjEmjrqki-tJ0Lyx0c53MQDGVS4CixfmcAnuY=A@mail.gmail.com> <20190705151658.GP26519@linux.ibm.com>
-In-Reply-To: <20190705151658.GP26519@linux.ibm.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 5 Jul 2019 17:48:31 +0200
-Message-ID: <CACT4Y+aNLHrYj1pYbkXO7CKESLeB-5enkSDK7ksgkMA3KtwJ+w@mail.gmail.com>
-Subject: Re: INFO: rcu detected stall in ext4_write_checks
-To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        David Miller <davem@davemloft.net>, eladr@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-05_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=988 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907050193
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 5, 2019 at 5:17 PM Paul E. McKenney <paulmck@linux.ibm.com> wrote:
->
-> On Fri, Jul 05, 2019 at 03:24:26PM +0200, Dmitry Vyukov wrote:
-> > On Thu, Jun 27, 2019 at 12:47 AM Theodore Ts'o <tytso@mit.edu> wrote:
-> > >
-> > > More details about what is going on.  First, it requires root, because
-> > > one of that is required is using sched_setattr (which is enough to
-> > > shoot yourself in the foot):
-> > >
-> > > sched_setattr(0, {size=0, sched_policy=0x6 /* SCHED_??? */, sched_flags=0, sched_nice=0, sched_priority=0, sched_runtime=2251799813724439, sched_deadline=4611686018427453437, sched_period=0}, 0) = 0
-> > >
-> > > This is setting the scheduler policy to be SCHED_DEADLINE, with a
-> > > runtime parameter of 2251799.813724439 seconds (or 26 days) and a
-> > > deadline of 4611686018.427453437 seconds (or 146 *years*).  This means
-> > > a particular kernel thread can run for up to 26 **days** before it is
-> > > scheduled away, and if a kernel reads gets woken up or sent a signal,
-> > > no worries, it will wake up roughly seven times the interval that Rip
-> > > Van Winkle spent snoozing in a cave in the Catskill Mountains (in
-> > > Washington Irving's short story).
-> > >
-> > > We then kick off a half-dozen threads all running:
-> > >
-> > >    sendfile(fd, fd, &pos, 0x8080fffffffe);
-> > >
-> > > (and since count is a ridiculously large number, this gets cut down to):
-> > >
-> > >    sendfile(fd, fd, &pos, 2147479552);
-> > >
-> > > Is it any wonder that we are seeing RCU stalls?   :-)
-> >
-> > +Peter, Ingo for sched_setattr and +Paul for rcu
-> >
-> > First of all: is it a semi-intended result of a root (CAP_SYS_NICE)
-> > doing local DoS abusing sched_setattr? It would perfectly reasonable
-> > to starve other processes, but I am not sure about rcu. In the end the
-> > high prio process can use rcu itself, and then it will simply blow
-> > system memory by stalling rcu. So it seems that rcu stalls should not
-> > happen as a result of weird sched_setattr values. If that is the case,
-> > what needs to be fixed? sched_setattr? rcu? sendfile?
->
-> Does the (untested, probably does not even build) patch shown below help?
-> This patch assumes that the kernel was built with CONFIG_PREEMPT=n.
-> And that I found all the tight loops on the do_sendfile() code path.
+This patch set implements an update to how BTF-defined maps are specified. The
+change is in how integer attributes, e.g., type, max_entries, map_flags, are
+specified: now they are captured as part of map definition struct's BTF type
+information (using array dimension), eliminating the need for compile-time
+data initialization and keeping all the metadata in one place.
 
-The config used when this happened is referenced from here:
-https://syzkaller.appspot.com/bug?extid=4bfbbf28a2e50ab07368
-and it contains:
-CONFIG_PREEMPT=y
+All existing selftests that were using BTF-defined maps are updated, along
+with some other selftests, that were switched to new syntax.
 
-So... what does this mean? The loop should have been preempted without
-the cond_resched() then, right?
+v4->v5:
+- revert sample_map_ret0.c, which is loaded with iproute2 (kernel test robot);
+v3->v4:
+- add acks;
+- fix int -> uint type in commit message;
+v2->v3:
+- rename __int into __uint (Yonghong);
+v1->v2:
+- split bpf_helpers.h change from libbpf change (Song).
 
-> > If this is semi-intended, the only option I see is to disable
-> > something in syzkaller: sched_setattr entirely, or drop CAP_SYS_NICE,
-> > or ...? Any preference either way?
->
-> Long-running tight loops in the kernel really should contain
-> cond_resched() or better.
->
->                                                         Thanx, Paul
->
-> ------------------------------------------------------------------------
->
-> diff --git a/fs/splice.c b/fs/splice.c
-> index 25212dcca2df..50aa3286764a 100644
-> --- a/fs/splice.c
-> +++ b/fs/splice.c
-> @@ -985,6 +985,7 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
->                         sd->pos = prev_pos + ret;
->                         goto out_release;
->                 }
-> +               cond_resched();
->         }
->
->  done:
->
+Andrii Nakryiko (4):
+  libbpf: capture value in BTF type info for BTF-defined map defs
+  selftests/bpf: add __uint and __type macro for BTF-defined maps
+  selftests/bpf: convert selftests using BTF-defined maps to new syntax
+  selftests/bpf: convert legacy BPF maps to BTF-defined ones
+
+ tools/lib/bpf/libbpf.c                        |  58 +++++----
+ tools/testing/selftests/bpf/bpf_helpers.h     |   3 +
+ tools/testing/selftests/bpf/progs/bpf_flow.c  |  28 ++---
+ .../selftests/bpf/progs/get_cgroup_id_kern.c  |  26 ++---
+ .../testing/selftests/bpf/progs/netcnt_prog.c |  20 ++--
+ tools/testing/selftests/bpf/progs/pyperf.h    |  90 +++++++-------
+ .../selftests/bpf/progs/socket_cookie_prog.c  |  13 +--
+ .../bpf/progs/sockmap_verdict_prog.c          |  48 ++++----
+ .../testing/selftests/bpf/progs/strobemeta.h  |  68 +++++------
+ .../selftests/bpf/progs/test_btf_newkv.c      |  13 +--
+ .../bpf/progs/test_get_stack_rawtp.c          |  39 +++----
+ .../selftests/bpf/progs/test_global_data.c    |  37 +++---
+ tools/testing/selftests/bpf/progs/test_l4lb.c |  65 ++++-------
+ .../selftests/bpf/progs/test_l4lb_noinline.c  |  65 ++++-------
+ .../selftests/bpf/progs/test_map_in_map.c     |  30 ++---
+ .../selftests/bpf/progs/test_map_lock.c       |  26 ++---
+ .../testing/selftests/bpf/progs/test_obj_id.c |  12 +-
+ .../bpf/progs/test_select_reuseport_kern.c    |  67 ++++-------
+ .../bpf/progs/test_send_signal_kern.c         |  26 ++---
+ .../bpf/progs/test_sock_fields_kern.c         |  78 +++++--------
+ .../selftests/bpf/progs/test_spin_lock.c      |  36 +++---
+ .../bpf/progs/test_stacktrace_build_id.c      |  55 ++++-----
+ .../selftests/bpf/progs/test_stacktrace_map.c |  52 +++------
+ .../selftests/bpf/progs/test_tcp_estats.c     |  13 +--
+ .../selftests/bpf/progs/test_tcpbpf_kern.c    |  26 ++---
+ .../selftests/bpf/progs/test_tcpnotify_kern.c |  28 ++---
+ tools/testing/selftests/bpf/progs/test_xdp.c  |  26 ++---
+ .../selftests/bpf/progs/test_xdp_loop.c       |  26 ++---
+ .../selftests/bpf/progs/test_xdp_noinline.c   |  81 +++++--------
+ .../selftests/bpf/progs/xdp_redirect_map.c    |  12 +-
+ .../testing/selftests/bpf/progs/xdping_kern.c |  12 +-
+ .../selftests/bpf/test_queue_stack_map.h      |  30 ++---
+ .../testing/selftests/bpf/test_sockmap_kern.h | 110 +++++++++---------
+ 33 files changed, 559 insertions(+), 760 deletions(-)
+
+-- 
+2.17.1
+
