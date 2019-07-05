@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8938960B62
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 20:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18B0160B83
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 20:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727477AbfGES1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 14:27:51 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:39820 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfGES1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 14:27:50 -0400
-Received: by mail-qt1-f194.google.com with SMTP id l9so3782288qtu.6;
-        Fri, 05 Jul 2019 11:27:50 -0700 (PDT)
+        id S1727205AbfGESqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 14:46:48 -0400
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:39767 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfGESqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 14:46:48 -0400
+Received: by mail-qk1-f201.google.com with SMTP id j17so10152119qki.6
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 11:46:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=55JbN6zcysMUy2ZEV0xCsehVFqfZmF31tReahPIbYpE=;
-        b=lkW117w9uXyWCnnqNc8EFXZb0GASxBo2JqAAECSQuoYYsXmO1K/rMjNLo3vTpxzwBL
-         ial1FrtYO+8wcH03o1reYVaDuR1ZisT8/kevcTR9ew7Feq/FXU8JMGsUpIqN7YwFyir/
-         LHk78kOK0NQsO7OFT0YkYKrvRl6RT1hS3EGkM9jm9yJDll+AWnhGSUuKELYFleeHQeQZ
-         woS8IIW5HbqQM6hgtfCzVd+jqHwSz4qJqjDjGa7aHIO752Hwh3MGZXk6rXVJuwjsOiRg
-         4rpy1L9dW6CjOJYGSODLYvqUtSCrcTaqNCiVkvqzhq4qmWaBmrYXYMoZ2Yj3GAOIFw2l
-         aTig==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=LPRFSq2jkU0dV73F1lMLde+MhHFzOkKJem3K3J6dAi0=;
+        b=kbQqTZXJdTH8T/Llj9Ooyjl+SlCPPBF1cJpg73hImYwD9h0HRdYB82yRUkuIvFfQR6
+         QEIuhYPUWeC2UK3Cn1I5UxRvM3FEkom46Z5p9iLzO+ESEdME4tJKCInvgDPTwJRfQPX5
+         uetNBN4UZzkOdLReuOga9ulDZGkpqqHyZzSjPXnCF36AKCAlgsZa8EZalyh7IWkO12q4
+         KmMo8hW5XOZeO0rLW16E9qZKovkDgQqr4bq84GJPedEFWtcMcTYb2DewFj4SB5hvR/Ad
+         o0VFTr+Xq5gjPiD238zaQ5LWCBYqN1A7JaLiV/9OvQBbAURySyxgJG+NaH0ADmJHZmJT
+         8L5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=55JbN6zcysMUy2ZEV0xCsehVFqfZmF31tReahPIbYpE=;
-        b=iTSt/m0ONj0G0ft5MXYk5iGcZ7GaOhyKpEpGBvJhRQWMHCEITIIC6lMP4y32Xly3zw
-         F3r//EbGXLVxKcfS+Tb1r6PtB4jxihgVS3iFMrhpjOPxdLT6MgraRT1Sqfz2LLNyOAXb
-         UDAW77PCyhRIF7w5RTd0RJiIvh8tXmlQmwmGRxx7oW0yNo+FrCX5wK9URCuLAGrkAHqj
-         BcYVmnXib5JbhHZyPxbEHYrDd3WA8DBwyPWBClpcLTRZtgSmKJd3KprU4jKHIKd/2KOw
-         daFYBUxYR1qAnhY+Nh4XjQha2TcIeMchDLNY+STxahN4ju1eA56o0CaZDPY8jeNZIytS
-         3LWQ==
-X-Gm-Message-State: APjAAAVCyKSPkYrrC/g4m3j9JFK/XxUbAcZkbXIRAfTPga2dbBfXnn7E
-        VYcMnkJJjqr+UhaUPi5Dxgk=
-X-Google-Smtp-Source: APXvYqxB0nlDAdH81y5ICSoFhLT2CIwCJsk09y2JWx23A0hHg/1YDABx7FwqwLndRwtvWMh26oHIyA==
-X-Received: by 2002:ac8:47cd:: with SMTP id d13mr3751315qtr.156.1562351269354;
-        Fri, 05 Jul 2019 11:27:49 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c0a8:11d1::107e? ([2620:10d:c091:480::a5e6])
-        by smtp.gmail.com with ESMTPSA id a6sm4028410qth.76.2019.07.05.11.27.47
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 05 Jul 2019 11:27:48 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
-To:     Daniel Drake <drake@endlessm.com>
-Cc:     Chris Chiu <chiu@endlessm.com>, Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-References: <20190627095247.8792-1-chiu@endlessm.com>
- <CAD8Lp44R0a1=fVi=fGv69w1ppdcaFV01opkdkhaX-eJ=K=tYeA@mail.gmail.com>
- <4c99866e-55b7-8852-c078-6b31dce21ee4@gmail.com>
- <CAD8Lp47mWH1-VsZaHr6_qmSU2EEOr9tQJ3CUhfi_JkQGgKpegA@mail.gmail.com>
- <89dbfb9d-a31a-9ecb-66bd-42ac0fc49e70@gmail.com>
- <CAD8Lp44HLPgOU+Z+w4Pq6ukLjZv2hM0=uBL7pWzQp+RsdRgG6Q@mail.gmail.com>
-Message-ID: <c9c4ab99-2cb8-5e5d-227e-d56efdb46504@gmail.com>
-Date:   Fri, 5 Jul 2019 14:27:46 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <CAD8Lp44HLPgOU+Z+w4Pq6ukLjZv2hM0=uBL7pWzQp+RsdRgG6Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=LPRFSq2jkU0dV73F1lMLde+MhHFzOkKJem3K3J6dAi0=;
+        b=JyQlKP2gcU9Q8Nbe/inOCyhDIaFHKvPV9IIDHYJaS7mXY9J9OlhUqSGvNP/EiF1jes
+         9/ta501nO4i4Srk/g8zA2zUEdRbNUfjnPSZ99I19nPqOtVdO3o3mLfgwR/zjGtIYtnvd
+         aQE0z0VTmN2bdUw18TkdxbFsgV+MoJH5PG2De92Gxspw9C5QZ2fIzC5L+ZTJgUj2l8Tk
+         chgp8q7rhqWafFZ9eu7U4n5+kUFLLhjIJMl5TA36LelpfysjvIg0PSudZaKFY1wQ1u3m
+         v6X+vT9YrRydF8MOKlrAuSXo+rZtZhenzme/cZ/dzi6TwSNOaSrlIjnLXhLmiQZ9qVoO
+         XXkw==
+X-Gm-Message-State: APjAAAWh6oabwXPsmjgENe8wyFZo+uuW3lIw6zqQzL0wYtV7Gi224smc
+        QEbfi19s8qhJYFZdy9eAEb2a5HntRMtsIOHs8dO6su6P3Gi/6VdqoK3NmT86IVy9GUbNu9Vyilb
+        dCwgJiWFfy/KnNpGCTxaanwfif/7FBR0JBZ6C1J9jeAxQDzrZvM3R/lEAgoLmsz56
+X-Google-Smtp-Source: APXvYqz7LKKOQ83PfBF0cu+4Y/AGrexUsLcG3xrt1rXKbxiuX63y8IGy0KWLgDZuBTB/RyjCkQv5Z8cJRMBB
+X-Received: by 2002:a0c:9890:: with SMTP id f16mr4585961qvd.165.1562352407110;
+ Fri, 05 Jul 2019 11:46:47 -0700 (PDT)
+Date:   Fri,  5 Jul 2019 11:46:43 -0700
+Message-Id: <20190705184643.249884-1-ppenkov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [net-next] net: fib_rules: do not flow dissect local packets
+From:   Petar Penkov <ppenkov@google.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        edumazet@google.com, Petar Penkov <ppenkov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/4/19 11:44 PM, Daniel Drake wrote:
-> On Wed, Jul 3, 2019 at 8:59 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
->> My point is this seems to be very dongle dependent :( We have to be
->> careful not breaking it for some users while fixing it for others.
-> 
-> Do you still have your device?
-> 
-> Once we get to the point when you are happy with Chris's two patches
-> here on a code review level, we'll reach out to other driver
-> contributors plus people who previously complained about these types
-> of problems, and see if we can get some wider testing.
+Rules matching on loopback iif do not need early flow dissection as the
+packet originates from the host. Stop counting such rules in
+fib_rule_requires_fldissect
 
-I should have them, but I won't have access to them for another 2.5
-weeks unfortunately.
+Signed-off-by: Petar Penkov <ppenkov@google.com>
+---
+ include/net/fib_rules.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Cheers,
-Jes
-
+diff --git a/include/net/fib_rules.h b/include/net/fib_rules.h
+index eba8465e1d86..20dcadd8eed9 100644
+--- a/include/net/fib_rules.h
++++ b/include/net/fib_rules.h
+@@ -180,9 +180,9 @@ static inline bool fib_rule_port_range_compare(struct fib_rule_port_range *a,
+ 
+ static inline bool fib_rule_requires_fldissect(struct fib_rule *rule)
+ {
+-	return rule->ip_proto ||
++	return rule->iifindex != LOOPBACK_IFINDEX && (rule->ip_proto ||
+ 		fib_rule_port_range_set(&rule->sport_range) ||
+-		fib_rule_port_range_set(&rule->dport_range);
++		fib_rule_port_range_set(&rule->dport_range));
+ }
+ 
+ struct fib_rules_ops *fib_rules_register(const struct fib_rules_ops *,
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
