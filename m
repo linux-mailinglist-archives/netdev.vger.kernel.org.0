@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7594860C3C
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 22:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B12C660C7C
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 22:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727905AbfGEUTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 16:19:43 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43800 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727171AbfGEUTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 16:19:43 -0400
-Received: by mail-qk1-f195.google.com with SMTP id m14so8751177qka.10
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 13:19:42 -0700 (PDT)
+        id S1728020AbfGEUlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 16:41:20 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:35488 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725813AbfGEUlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 16:41:20 -0400
+Received: by mail-oi1-f194.google.com with SMTP id a127so7999729oii.2;
+        Fri, 05 Jul 2019 13:41:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=a94rPwiDKZBynDwcIq7yFbwkjjIuPyUKO7AfOFCvAuU=;
-        b=UvE+RGmJSRLlC9P58kULI19PU418zqZ+AjTd1NcOD2JP92DtS2P2prHebhyM8MpqCT
-         gkWTt+j45AVEw9tcZHT09DWpannAE4U1apPEd+aPm5HciPNmzVBnINOyY7EGhUeN4fEi
-         WOZ4oNndPNMbjK9rAudHDyDCw2lhkb84DFF1/y6X+UirymKLmCzqk9sA3tDdhcRxDBWx
-         hMQ9QoWWn3W9uParjPJ2C+PIjrpnYaMjrL9IRZW5FvnQz+Eju26NlroyXYqnWQbzztsb
-         h8gd6vRObWmmh86QNLpxD/7jeoZOXBnYSil3210g73E1JgbX1eDwdioOP3Ef/pCpO284
-         WrWA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D9oh07kJUZMEQmkUtGac/tlJsPmWRKPEi2PyfWbAHi8=;
+        b=lTJhy59O+20pFN9B4Svqv+YZgf0KaSBDMDlj2ZWFRBZHMcFDiFtaG3eniahJbcjGLM
+         aQw22L3Hud9w+a/aN7M0Y2falUKTp+0rrt+jruekyl6jvBQC/cCgux9lvjAekPiWM05L
+         xfGhzT0y/ert8q5BaG7ie6kYCqVIJ2pbdJ/Mnc2UcZCaQJCrc259PTi0LI4ymWToOtvH
+         3YsY74YwjFilXvJ++ODqbfUCMG4CwzIcdFfmsRDncGReeRGwp92mj9U4468UKjLn+IjA
+         A+3hEF70rS7Myj0gTQhuemYy2VuIE4PRmaXpOutVJZtd+y6M3Rk+QOJu62pfpxHZT5KI
+         ufHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=a94rPwiDKZBynDwcIq7yFbwkjjIuPyUKO7AfOFCvAuU=;
-        b=E8qS4xY2VIt5+Nz2kltEQ7z7W1HevLeetrHGZCsm/TvNqf84bvb20QtnOAvADkTU2B
-         qxpcvC25n+whKaicRWvYpKMFaRNH+j3QrxMC0H9Hj+NdT/mEdOLXZZBTOafR0haddVyp
-         jXf8bvkdMlMN/i4o7v5GBIlc3antHXlCNS72kygCjuAiCm/KH2EiOb4Aay+eK5qenRGw
-         QULDcTNbzYfvDEV618DJN/wQ40mcnFgUEq2FA2yPn3LAw9cYhwhdoBanVwZ3mRzIQl9A
-         6+/lWGel76SOfJNn0FeYZl7v5vImWrX1+KGTRRrDTWszZUFUisZbj0pgIKizD0ZFShX3
-         2U5w==
-X-Gm-Message-State: APjAAAUtg3xKTQWq2MkY/Rj07UkU9Ovd+bBbag+LOZ1Q7IiBC6ORxY34
-        COe8YcLI4p6CFlwGuGE3VjC8IHJ16Yc=
-X-Google-Smtp-Source: APXvYqwt8i8yUpa0wiPkyjQV1ea5mLGBLO6f1oGBB3qaXxEaWFC53pUqBz6YPtwo5N6mdEt6XWO4aA==
-X-Received: by 2002:a37:aa10:: with SMTP id t16mr2990301qke.332.1562357982519;
-        Fri, 05 Jul 2019 13:19:42 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c18sm3971611qkk.73.2019.07.05.13.19.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D9oh07kJUZMEQmkUtGac/tlJsPmWRKPEi2PyfWbAHi8=;
+        b=BWedCazLGhR5Osqt+Gnwj1FFIl9R2kf0PJFUtEpH4E9lkPCe3F5j4k2/HhTZ6hTyOx
+         gnQulXILqw1eBt84MA7CnyerbwIaxr0y4PkExS0N16as/7VZNrTrzoSOZx5tmigiorwH
+         4LqmAVDezEYjT/JbZ8QNXntWBMLmCmjrUGWtMsQXkG1T7MTzKtaDaZo30DxBdEGHpsIO
+         Jq/V5ATjsSrQsuwjiW56/PxZZc8UEsz1WQ9DigtEhAPCT8m/CJedd5ZMCGWdaOben5re
+         NxK2HaE+BPH60QLLSvGQ0RzaJ8vGEsTjA9J7RYNrDrONhSQPyKaPJDYCZp1mgsr6zkJl
+         NQIA==
+X-Gm-Message-State: APjAAAU7SBmohYWRqfbu2V60Wr4bm8kJfdWxEIVtJCQED7qLx9svapxy
+        P8PL0UUdxvRm5BpD5qU2boo=
+X-Google-Smtp-Source: APXvYqyJKpL6z8YsY5rdCCHBSSU5cC7EMVZ74+PzMgEm/GJ5faCwzUqYBruyMY3eRr7/BbQ1RXj18A==
+X-Received: by 2002:aca:b788:: with SMTP id h130mr3202843oif.85.1562359279480;
+        Fri, 05 Jul 2019 13:41:19 -0700 (PDT)
+Received: from localhost.members.linode.com ([2600:3c00::f03c:91ff:fe99:7fe5])
+        by smtp.gmail.com with ESMTPSA id q82sm3059229oif.30.2019.07.05.13.41.18
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 05 Jul 2019 13:19:42 -0700 (PDT)
-Date:   Fri, 5 Jul 2019 13:19:38 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Tariq Toukan <tariqt@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>, moshe@mellanox.com
-Subject: Re: [PATCH net-next 00/12] mlx5 TLS TX HW offload support
-Message-ID: <20190705131938.43b889ff@cakuba.netronome.com>
-In-Reply-To: <1562340622-4423-1-git-send-email-tariqt@mellanox.com>
-References: <1562340622-4423-1-git-send-email-tariqt@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        Fri, 05 Jul 2019 13:41:19 -0700 (PDT)
+From:   Anton Protopopov <a.s.protopopov@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Anton Protopopov <a.s.protopopov@gmail.com>
+Subject: [PATCH bpf-next 0/2]  libbpf: add an option to reuse maps when loading a program
+Date:   Fri,  5 Jul 2019 20:40:37 +0000
+Message-Id: <cover.1562359091.git.a.s.protopopov@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  5 Jul 2019 18:30:10 +0300, Tariq Toukan wrote:
-> Hi Dave,
-> 
-> This series from Eran and me, adds TLS TX HW offload support to
-> the mlx5 driver.
-> 
-> This offloads the kTLS encryption process from kernel to the 
-> Mellanox NIC, saving CPU cycles and improving utilization.
-> 
-> Upon a new TLS connection request, driver is responsible to create
-> a dedicated HW context and configure it according to the crypto info,
-> so HW can do the encryption itself.
-> 
-> When the HW context gets out-of-sync (i.e. due to packets retransmission),
-> driver is responsible for the re-sync process.
-> This is done by posting special resync descriptors to the HW.
-> 
-> Feature is supported on Mellanox Connect-X 6DX, and newer.
-> Series was tested on SimX simulator.
-> 
-> Series generated against net-next commit [1], with Saeed's request pulled [2]:
-> 
-> [1] c4cde5804d51 Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
-> [2] git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2019-07-04-v2
-> 
-> Changes from last pull request:
-> Fixed comments from Jakub:
-> Patch 4:
-> - Replace zero  memset with a call to memzero_explicit().
-> Patch 11:
-> - Fix stats counters names.
-> - Drop TLS SKB with non-matching netdev.
+The following two patches add an option for users to reuse existing maps when
+loading a program using the bpf_prog_load_xattr function.  A user can specify a
+directory containing pinned maps inside the bpf_prog_load_attr structure, and in
+this case the bpf_prog_load_xattr function will replace (bpf_map__reuse_fd) all
+maps defined in the object with file descriptors obtained from corresponding
+entries from the specified directory.
 
-You guys probably really want to make 5.3 with this, so please feel free
-to follow up on the comments to patch 12 separately.
+Anton Protopopov (2):
+  bpf, libbpf: add a new API bpf_object__reuse_maps()
+  bpf, libbpf: add an option to reuse existing maps in bpf_prog_load_xattr
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+ tools/lib/bpf/libbpf.c   | 42 ++++++++++++++++++++++++++++++++++++++++
+ tools/lib/bpf/libbpf.h   |  3 +++
+ tools/lib/bpf/libbpf.map |  1 +
+ 3 files changed, 46 insertions(+)
+
+--
+2.19.1
