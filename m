@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B86C06028C
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 10:46:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB666028D
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 10:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727885AbfGEIqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 04:46:18 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37480 "EHLO a.mx.secunet.com"
+        id S1727935AbfGEIqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 04:46:19 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37482 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726116AbfGEIqR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 04:46:17 -0400
+        id S1727714AbfGEIqS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 04:46:18 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 3725B20251;
+        by a.mx.secunet.com (Postfix) with ESMTP id 7AC77200AC;
         Fri,  5 Jul 2019 10:46:16 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id LDAKellvtiSW; Fri,  5 Jul 2019 10:46:15 +0200 (CEST)
+        with ESMTP id 3pmRvAjmLUh0; Fri,  5 Jul 2019 10:46:16 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 0529B200AC;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0613520254;
         Fri,  5 Jul 2019 10:46:15 +0200 (CEST)
 Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
  (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 5 Jul 2019
  10:46:14 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 5BAD831809B6;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 609EB31809BA;
  Fri,  5 Jul 2019 10:46:14 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 7/9] xfrm: fix bogus WARN_ON with ipv6
-Date:   Fri, 5 Jul 2019 10:46:08 +0200
-Message-ID: <20190705084610.3646-8-steffen.klassert@secunet.com>
+Subject: [PATCH 8/9] xfrm: remove empty xfrmi_init_net
+Date:   Fri, 5 Jul 2019 10:46:09 +0200
+Message-ID: <20190705084610.3646-9-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190705084610.3646-1-steffen.klassert@secunet.com>
 References: <20190705084610.3646-1-steffen.klassert@secunet.com>
@@ -47,33 +47,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Li RongQing <lirongqing@baidu.com>
 
-net/xfrm/xfrm_input.c:378:17: warning: this statement may fall through [-Wimplicit-fallthrough=]
-skb->protocol = htons(ETH_P_IPV6);
+Pointer members of an object with static storage duration, if not
+explicitly initialized, will be initialized to a NULL pointer. The
+net namespace API checks if this pointer is not NULL before using it,
+it are safe to remove the function.
 
-... the fallthrough then causes a bogus WARN_ON().
-
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 4c203b0454b ("xfrm: remove eth_proto value from xfrm_state_afinfo")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/xfrm/xfrm_input.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/xfrm/xfrm_interface.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 8a00cc94c32c..6088bc2dc11e 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -376,6 +376,7 @@ static int xfrm_prepare_input(struct xfrm_state *x, struct sk_buff *skb)
- 		break;
- 	case AF_INET6:
- 		skb->protocol = htons(ETH_P_IPV6);
-+		break;
- 	default:
- 		WARN_ON_ONCE(1);
- 		break;
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index ad3a2555c517..f8eb9e342173 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -793,11 +793,6 @@ static void __net_exit xfrmi_destroy_interfaces(struct xfrmi_net *xfrmn)
+ 	unregister_netdevice_many(&list);
+ }
+ 
+-static int __net_init xfrmi_init_net(struct net *net)
+-{
+-	return 0;
+-}
+-
+ static void __net_exit xfrmi_exit_net(struct net *net)
+ {
+ 	struct xfrmi_net *xfrmn = net_generic(net, xfrmi_net_id);
+@@ -808,7 +803,6 @@ static void __net_exit xfrmi_exit_net(struct net *net)
+ }
+ 
+ static struct pernet_operations xfrmi_net_ops = {
+-	.init = xfrmi_init_net,
+ 	.exit = xfrmi_exit_net,
+ 	.id   = &xfrmi_net_id,
+ 	.size = sizeof(struct xfrmi_net),
 -- 
 2.17.1
 
