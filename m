@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 512086096F
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3418360974
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:37:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727856AbfGEPhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 11:37:18 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:42451 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbfGEPhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:37:16 -0400
-Received: by mail-oi1-f195.google.com with SMTP id s184so7408504oie.9;
-        Fri, 05 Jul 2019 08:37:16 -0700 (PDT)
+        id S1727923AbfGEPh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 11:37:57 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:43233 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725497AbfGEPh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:37:56 -0400
+Received: by mail-io1-f68.google.com with SMTP id k20so19930120ios.10
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:37:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GL9oaQ7aSmi87cgYtRx3op+78jgv3Fv6Jy0wzvHhBt8=;
-        b=sZ4OLw4Dc6sqhgU4Mq+GY/FN1BgB1Y13l2wW8vgl9NBVZLbQLQtWe/pNH765J2su2S
-         5V8eA6+btAIuXz9laMNsqX3ji96AGLdHypTbXJus0EbqSVzd0pem6m7zad0CLXjsSrwo
-         dfAF8Wjw1reBJzaonp+KxbubbGFK8oXAnCUaNYs5UFCZDmrrdRfj3qKaesYc/tVMFxhG
-         kzkY9v+F+j2+fiI1QeVmHdCTBh14BEybC17StzOJPB+dP0bHVJglnGZYD4vynSKdrur+
-         RLWAdogjw48SYBgJdfmTLteTxeL7ZmB7Ho87nwYnJSgflHqRo8FdwOLTpvL8pQV7ush4
-         c3UQ==
+        bh=lOr9WynCRIVjZxMowKGtt+hDolLK7h0Dax9Syp7GuWg=;
+        b=U+1qmkBflWYpk+qlwGgw1IOxZHTjTAWjgxlnxqIsZ+8nnz+PpfhF9Kn74s2q+uPUFZ
+         /ptLH7q0gdrWYeFR5VCDMMsTRV26VXyZDYWaZeu/g5Xdz0ex55YTjNnjwL1XTU7kDijB
+         ZsiTuTlJcQfeFP0VQ8Lvuif5ac/1nkS/vViTPFwkVwpl2QZfuWWHhWpAJzrlVG/7adSX
+         OWSCpdpMjTCzH9LYvhxooPPQnY856FzTVaJbvaNuV5As+qEKqRpZG3wmU9ID9qySrzG1
+         OBzP44DOxM7JSo7Oe0ZIYSQ6WhZySMgYf8m+SGiw5k+VOMgyZPpCZ3gvyiQvx806bSzE
+         TPtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=GL9oaQ7aSmi87cgYtRx3op+78jgv3Fv6Jy0wzvHhBt8=;
-        b=SKb5arAQ6d0v/mobfDgNGevZpx/fkJ4GI8yxMef88Tm3R0Fi3scXQ5hRRC0h0VuHdw
-         ecHaRjHcxzjPKhiGpezJ7902ZL6adXmjWEzhEnAp5LaxpS37cqQg4IIvSvLlh0sbFAlE
-         Z0egvB1SOQSXZQ7t5HuyALAFQuAVHMtkj6q9tkQ/RT+ApjTPaoz68Rsv82H8FYWMOLmk
-         ZGuxWAj5nddOGh6NyqxgAHpwks2E5umnWDPUgH7xUjl2WAH9VPUYL005YAustLe5+H3R
-         1w3qRxHDDwCnIUc7osc3ncTsF0P+HCYqkdQKYe8wz5MmQOHYrenb7qomqHLTtiT6+Skq
-         ZnIQ==
-X-Gm-Message-State: APjAAAWxm6amOiY63Ro5uxYItz9gOujv3EisdrsYBUheeueUwuMYJ5/w
-        Fh7BV/p/UkC01ttg34iakZOUXMS8
-X-Google-Smtp-Source: APXvYqyP8GjJc1akuas2Yhv+I0GMhMqsycyajMD5d0MKgEHdLPf6bazVxYepkqGauzX+ifvt1bc5Jg==
-X-Received: by 2002:aca:d648:: with SMTP id n69mr568317oig.46.1562341035523;
-        Fri, 05 Jul 2019 08:37:15 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id y4sm3222371otj.56.2019.07.05.08.37.13
+        bh=lOr9WynCRIVjZxMowKGtt+hDolLK7h0Dax9Syp7GuWg=;
+        b=q2hMUNRqANpc9KTRrlgBj5OklMGlbO87sGWq2qdJtcbggJ8D1CJkJfuRwA8qpRzHf5
+         0ECX+CrT124S7HuZpIrecVZFbFo1YRh0YwN/bkIqg+I/qkjzO/l5A908Toy23c0j7It3
+         1r1foLPxOLalVQeSl+zWgF8HS1MfF1WqJPSW7Srq4Eu8snnON6gNfLNwoWkwJVaM39Fc
+         RKrgR3PEx+ff7gCSIB94FHPU0259PWcIoMDGDsUVoJCECXVEJkgSDRvuher+lcXwMrDM
+         LWxpdXANhGtxhtlUL6BaulXvoHQnZzDlWuR/5VsqS61cxZmbRt8Vi38fcJ8eyaOFsXRy
+         BT5Q==
+X-Gm-Message-State: APjAAAVJQBTRHEgs+FU8tmjF6Dob35Aw84vqlZPQCgoul3AGU4br8Zi0
+        SowxQwHkpaQwt50AOh3xew8=
+X-Google-Smtp-Source: APXvYqzu9rRVthXkcrZec8g4KFY4Y2N+ENBOIBhtk5METk6tYq1CgLl6WFoFKa073YW6gU4KTT6RWg==
+X-Received: by 2002:a5d:80d6:: with SMTP id h22mr4878645ior.231.1562341075633;
+        Fri, 05 Jul 2019 08:37:55 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:5078:a90d:5ed1:4862? ([2601:284:8200:5cfb:5078:a90d:5ed1:4862])
+        by smtp.googlemail.com with ESMTPSA id h18sm6656445iob.80.2019.07.05.08.37.54
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 05 Jul 2019 08:37:14 -0700 (PDT)
-Subject: Re: [PATCH v3 3/4] net: dsa: vsc73xx: add support for parallel mode
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     linus.walleij@linaro.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190704222907.2888-1-paweldembicki@gmail.com>
- <20190704222907.2888-4-paweldembicki@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <f40b8651-05b5-3e1d-6f6a-2d9f5cf2d2d3@gmail.com>
-Date:   Fri, 5 Jul 2019 08:37:12 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Fri, 05 Jul 2019 08:37:54 -0700 (PDT)
+Subject: Re: [PATCH net] ipv4: Fix NULL pointer dereference in
+ ipv4_neigh_lookup()
+To:     David Miller <davem@davemloft.net>, idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, shalomt@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+References: <20190704162638.17913-1-idosch@idosch.org>
+ <20190704.122449.742393341056317443.davem@davemloft.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <dfb3bb3c-c077-7b8f-75e9-4185d997b024@gmail.com>
+Date:   Fri, 5 Jul 2019 09:37:53 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <20190704222907.2888-4-paweldembicki@gmail.com>
+In-Reply-To: <20190704.122449.742393341056317443.davem@davemloft.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,18 +67,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/4/2019 3:29 PM, Pawel Dembicki wrote:
-> This patch add platform part of vsc73xx driver.
-> It allows to use chip connected to a parallel memory bus and work in
-> memory-mapped I/O mode. (aka PI bus in chip manual)
+On 7/4/19 1:24 PM, David Miller wrote:
+> From: Ido Schimmel <idosch@idosch.org>
+> Date: Thu,  4 Jul 2019 19:26:38 +0300
 > 
-> By default device is working in big endian mode.
+>> Both ip_neigh_gw4() and ip_neigh_gw6() can return either a valid pointer
+>> or an error pointer, but the code currently checks that the pointer is
+>> not NULL.
+>  ...
+>> @@ -447,7 +447,7 @@ static struct neighbour *ipv4_neigh_lookup(const struct dst_entry *dst,
+>>  		n = ip_neigh_gw4(dev, pkey);
+>>  	}
+>>  
+>> -	if (n && !refcount_inc_not_zero(&n->refcnt))
+>> +	if (!IS_ERR(n) && !refcount_inc_not_zero(&n->refcnt))
+>>  		n = NULL;
+>>  
+>>  	rcu_read_unlock_bh();
 > 
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Don't the callers expect only non-error pointers?
+> 
+> All of this stuff is so confusing and fragile...
+> 
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+The intention was to fold the lookup and neigh_create calls into a
+single helper.
+
+The lookup can return NULL if an entry does not exist; the create can
+return an ERR_PTR (variety of reasons in ___neigh_create). So the end
+result is that the new helper (lookup + create) can return a valid neigh
+entry or an ERR_PTR.
+
+When I converted ipv4_neigh_lookup and folded in the refcount bump, I
+missed updating the above check to account for ERR_PTR.
+
+Ido's patch looks correct to me. Thanks, Ido.
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
