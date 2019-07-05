@@ -2,160 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 092E560B12
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 19:26:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6DDA60B15
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 19:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728077AbfGER0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 13:26:44 -0400
-Received: from mail-wr1-f54.google.com ([209.85.221.54]:36872 "EHLO
-        mail-wr1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728047AbfGER0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 13:26:44 -0400
-Received: by mail-wr1-f54.google.com with SMTP id n9so1509668wrr.4
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 10:26:42 -0700 (PDT)
+        id S1728112AbfGERaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 13:30:01 -0400
+Received: from mail-qk1-f181.google.com ([209.85.222.181]:33159 "EHLO
+        mail-qk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727962AbfGERaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 13:30:01 -0400
+Received: by mail-qk1-f181.google.com with SMTP id r6so8448715qkc.0
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 10:30:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TeYeBcfv24B0DakZR049hsv/5IqJieRYrN3VQLpo+Yk=;
-        b=PjPImhCJHJQkYzVczllMDRFvOFJM+GIwvPmHN6fb0JypDtWJNPbxPUNfF/GC5yIZLC
-         59A3I9FmGdvxe0Q9TsG9Ad/qXZfPuc+QaQvzZ+klzPUtN6vwwDAHP7X/LQR2oKArN7DN
-         pe+A2jK+gW1012FvWUnKigUGAETva+Au3iW64EG0olCvJEQh57zOhCKQZQ999a7QU85s
-         Sxdz9drEzCdaWpooOprPh9PKCQzXLB3enTkYp/oA78so/MTL+qi8/7kMM/pCL2XbtnYP
-         f7/kEeVtJFfV79/1JX70kiYe3k2RVnFsFBizfjfxpevZIzvjcmJWAxlZiCAR6T6PQDb0
-         0mvQ==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=dsq1XoSH1bXMiLenJUvhB3MIycIH4BSqoXC0jOmalQQ=;
+        b=fjXjqSwc5PaS+nqxEhNR62DGHBFoFKic4e7DfMEyeKOBCsl97W+y8IuBKva6ybTNfM
+         mDrfOn63GNpPocOcZn2dKGBaZgKVVvEI/A1ciAeJcPSo7QLe2AW0Vt6x+HVcZq4Ky2WC
+         zezUZscpNH6CKqWlL6dIwrGYu+zh0O/VkHRNtcTqgJvjZENpdXMG/Kx1NDj/ExLCC4L/
+         pf1QTHh2joL2yANP/cXBN3ddM2Ri/hNudXPpbjHoyz2LEA3jJHXVJh15Cf5hhM9BWC7t
+         xEKlIiZFx48x2cRij0fv90NzKSb4Buy9dveziaPiWzeYKAv5LYTk7KV6MC8oIor4e3q7
+         Kkbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=TeYeBcfv24B0DakZR049hsv/5IqJieRYrN3VQLpo+Yk=;
-        b=nHvplSVHVaeLqMs2gfK8nR5fajeF2RhSpgt90bLMUywTgpUD85O7Xz77EQ+G4G6PMN
-         ClMfNlTvA8zMO+7RhOytS/h7tih078T8rI7Em5tCbNCsn/JTPW2P++7Ai8uKlzgO+uAg
-         lTLymwGeqQ8SCft89CN648/kDwIr8pSbqZwMX36H0EA6wtkdePE/6DTg6Aj11iu0ak4f
-         js8WYWggub4LC7fxNa8YlihNzTcKF7AzPtysh8cPQOkKSF4o1lOl74ICD+SPKQfCmgWE
-         o9WANIPiJWJ8SQcUk73cig2pyI0bV2fH4/F2kpTwfGGaGek4YFUYpS4ci5x9CyjeZeEM
-         MasQ==
-X-Gm-Message-State: APjAAAXmWGQ265iNr/KCk/ai9JwwPrnoMK5R5w4BfzTXToxTVOIFRmSe
-        N6tWNPXBtBNvTAzMnOTBjuLxKQ==
-X-Google-Smtp-Source: APXvYqyBZC38NsIrIMPcdT3/9zOoKV0bdg4yIdb9lij6Wlnwz3qcl/M0UPy6xsXNpbIhqjXucchKYA==
-X-Received: by 2002:a5d:4d10:: with SMTP id z16mr4895854wrt.112.1562347601895;
-        Fri, 05 Jul 2019 10:26:41 -0700 (PDT)
-Received: from [172.20.1.254] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id x11sm7631232wmi.26.2019.07.05.10.26.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 05 Jul 2019 10:26:41 -0700 (PDT)
-Subject: Re: [PATCHv2] tools bpftool: Fix json dump crash on powerpc
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
-References: <20190704085856.17502-1-jolsa@kernel.org>
- <20190704134210.17b8407c@cakuba.netronome.com> <20190705121031.GA10777@krava>
- <20190705102452.0831942a@cakuba.netronome.com>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- mQINBFnqRlsBEADfkCdH/bkkfjbglpUeGssNbYr/TD4aopXiDZ0dL2EwafFImsGOWmCIIva2
- MofTQHQ0tFbwY3Ir74exzU9X0aUqrtHirQHLkKeMwExgDxJYysYsZGfM5WfW7j8X4aVwYtfs
- AVRXxAOy6/bw1Mccq8ZMTYKhdCgS3BfC7qK+VYC4bhM2AOWxSQWlH5WKQaRbqGOVLyq8Jlxk
- 2FGLThUsPRlXKz4nl+GabKCX6x3rioSuNoHoWdoPDKsRgYGbP9LKRRQy3ZeJha4x+apy8rAM
- jcGHppIrciyfH38+LdV1FVi6sCx8sRKX++ypQc3fa6O7d7mKLr6uy16xS9U7zauLu1FYLy2U
- N/F1c4F+bOlPMndxEzNc/XqMOM9JZu1XLluqbi2C6JWGy0IYfoyirddKpwzEtKIwiDBI08JJ
- Cv4jtTWKeX8pjTmstay0yWbe0sTINPh+iDw+ybMwgXhr4A/jZ1wcKmPCFOpb7U3JYC+ysD6m
- 6+O/eOs21wVag/LnnMuOKHZa2oNsi6Zl0Cs6C7Vve87jtj+3xgeZ8NLvYyWrQhIHRu1tUeuf
- T8qdexDphTguMGJbA8iOrncHXjpxWhMWykIyN4TYrNwnyhqP9UgqRPLwJt5qB1FVfjfAlaPV
- sfsxuOEwvuIt19B/3pAP0nbevNymR3QpMPRl4m3zXCy+KPaSSQARAQABtC1RdWVudGluIE1v
- bm5ldCA8cXVlbnRpbi5tb25uZXRAbmV0cm9ub21lLmNvbT6JAj0EEwEIACcFAlnqRlsCGyMF
- CQlmAYAFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQNvcEyYwwfB7tChAAqFWG30+DG3Sx
- B7lfPaqs47oW98s5tTMprA+0QMqUX2lzHX7xWb5v8qCpuujdiII6RU0ZhwNKh/SMJ7rbYlxK
- qCOw54kMI+IU7UtWCej+Ps3LKyG54L5HkBpbdM8BLJJXZvnMqfNWx9tMISHkd/LwogvCMZrP
- TAFkPf286tZCIz0EtGY/v6YANpEXXrCzboWEiIccXRmbgBF4VK/frSveuS7OHKCu66VVbK7h
- kyTgBsbfyQi7R0Z6w6sgy+boe7E71DmCnBn57py5OocViHEXRgO/SR7uUK3lZZ5zy3+rWpX5
- nCCo0C1qZFxp65TWU6s8Xt0Jq+Fs7Kg/drI7b5/Z+TqJiZVrTfwTflqPRmiuJ8lPd+dvuflY
- JH0ftAWmN3sT7cTYH54+HBIo1vm5UDvKWatTNBmkwPh6d3cZGALZvwL6lo0KQHXZhCVdljdQ
- rwWdE25aCQkhKyaCFFuxr3moFR0KKLQxNykrVTJIRuBS8sCyxvWcZYB8tA5gQ/DqNKBdDrT8
- F9z2QvNE5LGhWDGddEU4nynm2bZXHYVs2uZfbdZpSY31cwVS/Arz13Dq+McMdeqC9J2wVcyL
- DJPLwAg18Dr5bwA8SXgILp0QcYWtdTVPl+0s82h+ckfYPOmkOLMgRmkbtqPhAD95vRD7wMnm
- ilTVmCi6+ND98YblbzL64YG5Ag0EWepGWwEQAM45/7CeXSDAnk5UMXPVqIxF8yCRzVe+UE0R
- QQsdNwBIVdpXvLxkVwmeu1I4aVvNt3Hp2eiZJjVndIzKtVEoyi5nMvgwMVs8ZKCgWuwYwBzU
- Vs9eKABnT0WilzH3gA5t9LuumekaZS7z8IfeBlZkGXEiaugnSAESkytBvHRRlQ8b1qnXha3g
- XtxyEqobKO2+dI0hq0CyUnGXT40Pe2woVPm50qD4HYZKzF5ltkl/PgRNHo4gfGq9D7dW2OlL
- 5I9qp+zNYj1G1e/ytPWuFzYJVT30MvaKwaNdurBiLc9VlWXbp53R95elThbrhEfUqWbAZH7b
- ALWfAotD07AN1msGFCES7Zes2AfAHESI8UhVPfJcwLPlz/Rz7/K6zj5U6WvH6aj4OddQFvN/
- icvzlXna5HljDZ+kRkVtn+9zrTMEmgay8SDtWliyR8i7fvnHTLny5tRnE5lMNPRxO7wBwIWX
- TVCoBnnI62tnFdTDnZ6C3rOxVF6FxUJUAcn+cImb7Vs7M5uv8GufnXNUlsvsNS6kFTO8eOjh
- 4fe5IYLzvX9uHeYkkjCNVeUH5NUsk4NGOhAeCS6gkLRA/3u507UqCPFvVXJYLSjifnr92irt
- 0hXm89Ms5fyYeXppnO3l+UMKLkFUTu6T1BrDbZSiHXQoqrvU9b1mWF0CBM6aAYFGeDdIVe4x
- ABEBAAGJAiUEGAEIAA8FAlnqRlsCGwwFCQlmAYAACgkQNvcEyYwwfB4QwhAAqBTOgI9k8MoM
- gVA9SZj92vYet9gWOVa2Inj/HEjz37tztnywYVKRCRfCTG5VNRv1LOiCP1kIl/+crVHm8g78
- iYc5GgBKj9O9RvDm43NTDrH2uzz3n66SRJhXOHgcvaNE5ViOMABU+/pzlg34L/m4LA8SfwUG
- ducP39DPbF4J0OqpDmmAWNYyHh/aWf/hRBFkyM2VuizN9cOS641jrhTO/HlfTlYjIb4Ccu9Y
- S24xLj3kkhbFVnOUZh8celJ31T9GwCK69DXNwlDZdri4Bh0N8DtRfrhkHj9JRBAun5mdwF4m
- yLTMSs4Jwa7MaIwwb1h3d75Ws7oAmv7y0+RgZXbAk2XN32VM7emkKoPgOx6Q5o8giPRX8mpc
- PiYojrO4B4vaeKAmsmVer/Sb5y9EoD7+D7WygJu2bDrqOm7U7vOQybzZPBLqXYxl/F5vOobC
- 5rQZgudR5bI8uQM0DpYb+Pwk3bMEUZQ4t497aq2vyMLRi483eqT0eG1QBE4O8dFNYdK5XUIz
- oHhplrRgXwPBSOkMMlLKu+FJsmYVFeLAJ81sfmFuTTliRb3Fl2Q27cEr7kNKlsz/t6vLSEN2
- j8x+tWD8x53SEOSn94g2AyJA9Txh2xBhWGuZ9CpBuXjtPrnRSd8xdrw36AL53goTt/NiLHUd
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Message-ID: <83d18af0-8efa-c8d5-3d99-01aed29915df@netronome.com>
-Date:   Fri, 5 Jul 2019 18:26:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=dsq1XoSH1bXMiLenJUvhB3MIycIH4BSqoXC0jOmalQQ=;
+        b=LbPILrwKujljruqyMUUEo+s7rNPgAtNXTGN+ts9QxNCHov8u4LkYEMUS3aFseVzztl
+         ruhxsuYqQqSx9Q6ZqvgiNxdiGzGel3UbQcdJ4d+r5IIHH56qdo1wTJTmOON4+FpOris8
+         hGESB8Mr5jTz3YUNFdS7wTlQfH5n9Kd8kL9eXGSNDbH/P9QWJ/G+kbBHFzS1bCGmFq8R
+         RsT/FA8WfkDZ7DLm4NL0AxY4MbJ1SKnuJTKphC45Ov7NRhJRKYPLQYuFtc71VzCL2Kwg
+         gL22jEs1TcgwkpmqcxJ/T1NWCMXoYaysaYq0aaDRvDl5r/DDdidRaIDhmmeBvmS3Yd08
+         c7oA==
+X-Gm-Message-State: APjAAAXUqUMt9OZBu4WoGMjAf2dHybAsgdBP3iY5rT155okMm/RKz1wB
+        lwCxCXmdVYgUBYK+Asqg2b4=
+X-Google-Smtp-Source: APXvYqzVePVRmBQJsiB2hsbduOgJM0feS/DXxK4NSA4fs804eAhtgrfzzhIqJENVCKalXg164Zp1lw==
+X-Received: by 2002:a37:e40a:: with SMTP id y10mr4005972qkf.134.1562347799777;
+        Fri, 05 Jul 2019 10:29:59 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id f26sm4792500qtf.44.2019.07.05.10.29.58
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 05 Jul 2019 10:29:58 -0700 (PDT)
+Date:   Fri, 5 Jul 2019 13:29:57 -0400
+Message-ID: <20190705132957.GB6495@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     vtolkm@gmail.com
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: loss of connectivity after enabling vlan_filtering
+In-Reply-To: <53bd8ffc-1c0a-334d-67d5-3a74b76670e8@gmail.com>
+References: <e5252bf0-f9c1-3e40-aebd-8c091dbb3e64@gmail.com>
+ <20190629224927.GA26554@lunn.ch>
+ <6226b473-b232-e1d3-40e9-18d118dd82c4@gmail.com>
+ <20190629231119.GC26554@lunn.ch>
+ <53bd8ffc-1c0a-334d-67d5-3a74b76670e8@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190705102452.0831942a@cakuba.netronome.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-07-05 10:24 UTC-0700 ~ Jakub Kicinski <jakub.kicinski@netronome.com>
-> On Fri, 5 Jul 2019 14:10:31 +0200, Jiri Olsa wrote:
->> Michael reported crash with by bpf program in json mode on powerpc:
->>
->>   # bpftool prog -p dump jited id 14
->>   [{
->>         "name": "0xd00000000a9aa760",
->>         "insns": [{
->>                 "pc": "0x0",
->>                 "operation": "nop",
->>                 "operands": [null
->>                 ]
->>             },{
->>                 "pc": "0x4",
->>                 "operation": "nop",
->>                 "operands": [null
->>                 ]
->>             },{
->>                 "pc": "0x8",
->>                 "operation": "mflr",
->>   Segmentation fault (core dumped)
->>
->> The code is assuming char pointers in format, which is not always
->> true at least for powerpc. Fixing this by dumping the whole string
->> into buffer based on its format.
->>
->> Please note that libopcodes code does not check return values from
->> fprintf callback, but as per Jakub suggestion returning -1 on allocation
->> failure so we do the best effort to propagate the error. 
->>
->> Reported-by: Michael Petlan <mpetlan@redhat.com>
->> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> 
-> Thanks, let me repost all the tags (Quentin, please shout if you're
-> not ok with this :)):
+On Sun, 30 Jun 2019 01:23:02 +0200, vtolkm@googlemail.com wrote:
+> A simple soul might infer that mv88e6xxx includes MV88E6060, at least
+> that happened to me apparently (being said simpleton).
 
-I confirm it's all good for me, thanks :)
+I agree that is confusing, that is why I don't like the 'xxx' naming
+convention in general, found in many drivers. I'd prefer to stick with a
+reference model, or product category, like soho in this case. But it was
+initially written like this, so no reason to change its name now. I still
+plan to merge mv88e6060 into mv88e6xxx, but it is unfortunately low priority
+because I still don't have a platform with a 88E6060 on it.
 
-> 
-> Fixes: 107f041212c1 ("tools: bpftool: add JSON output for `bpftool prog dump jited *` command")
-> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> 
+Thanks,
 
+	Vivien
