@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 521316021E
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 10:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0139D60220
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 10:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727317AbfGEI1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 04:27:12 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:36428 "EHLO a.mx.secunet.com"
+        id S1727460AbfGEI1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 04:27:16 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:36418 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727365AbfGEI1L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727358AbfGEI1L (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 5 Jul 2019 04:27:11 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 0C96920251;
-        Fri,  5 Jul 2019 10:27:10 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 74B5C200B0;
+        Fri,  5 Jul 2019 10:27:09 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id lmNuAJece9wl; Fri,  5 Jul 2019 10:27:09 +0200 (CEST)
+        with ESMTP id 0K_sdIqGrFx4; Fri,  5 Jul 2019 10:27:08 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id E3F46201DB;
+        by a.mx.secunet.com (Postfix) with ESMTPS id E02F52024F;
         Fri,  5 Jul 2019 10:27:05 +0200 (CEST)
 Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
  (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 5 Jul 2019
  10:27:05 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 3689C31808DE;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 39E5431809B6;
  Fri,  5 Jul 2019 10:27:05 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 6/7] xfrm: policy: fix bydst hlist corruption on hash rebuild
-Date:   Fri, 5 Jul 2019 10:26:59 +0200
-Message-ID: <20190705082700.31107-7-steffen.klassert@secunet.com>
+Subject: [PATCH 7/7] xfrm interface: fix memory leak on creation
+Date:   Fri, 5 Jul 2019 10:27:00 +0200
+Message-ID: <20190705082700.31107-8-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190705082700.31107-1-steffen.klassert@secunet.com>
 References: <20190705082700.31107-1-steffen.klassert@secunet.com>
@@ -47,151 +47,220 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-syzbot reported following spat:
+The following commands produce a backtrace and return an error but the xfrm
+interface is created (in the wrong netns):
+$ ip netns add foo
+$ ip netns add bar
+$ ip -n foo netns set bar 0
+$ ip -n foo link add xfrmi0 link-netnsid 0 type xfrm dev lo if_id 23
+RTNETLINK answers: Invalid argument
+$ ip -n bar link ls xfrmi0
+2: xfrmi0@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 00:00:00:00:00:00 brd 00:00:00:00:00:00
 
-BUG: KASAN: use-after-free in __write_once_size include/linux/compiler.h:221
-BUG: KASAN: use-after-free in hlist_del_rcu include/linux/rculist.h:455
-BUG: KASAN: use-after-free in xfrm_hash_rebuild+0xa0d/0x1000 net/xfrm/xfrm_policy.c:1318
-Write of size 8 at addr ffff888095e79c00 by task kworker/1:3/8066
-Workqueue: events xfrm_hash_rebuild
-Call Trace:
- __write_once_size include/linux/compiler.h:221 [inline]
- hlist_del_rcu include/linux/rculist.h:455 [inline]
- xfrm_hash_rebuild+0xa0d/0x1000 net/xfrm/xfrm_policy.c:1318
- process_one_work+0x814/0x1130 kernel/workqueue.c:2269
-Allocated by task 8064:
- __kmalloc+0x23c/0x310 mm/slab.c:3669
- kzalloc include/linux/slab.h:742 [inline]
- xfrm_hash_alloc+0x38/0xe0 net/xfrm/xfrm_hash.c:21
- xfrm_policy_init net/xfrm/xfrm_policy.c:4036 [inline]
- xfrm_net_init+0x269/0xd60 net/xfrm/xfrm_policy.c:4120
- ops_init+0x336/0x420 net/core/net_namespace.c:130
- setup_net+0x212/0x690 net/core/net_namespace.c:316
+Here is the backtrace:
+[   79.879174] WARNING: CPU: 0 PID: 1178 at net/core/dev.c:8172 rollback_registered_many+0x86/0x3c1
+[   79.880260] Modules linked in: xfrm_interface nfsv3 nfs_acl auth_rpcgss nfsv4 nfs lockd grace sunrpc fscache button parport_pc parport serio_raw evdev pcspkr loop ext4 crc16 mbcache jbd2 crc32c_generic ide_cd_mod ide_gd_mod cdrom ata_$
+eneric ata_piix libata scsi_mod 8139too piix psmouse i2c_piix4 ide_core 8139cp mii i2c_core floppy
+[   79.883698] CPU: 0 PID: 1178 Comm: ip Not tainted 5.2.0-rc6+ #106
+[   79.884462] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+[   79.885447] RIP: 0010:rollback_registered_many+0x86/0x3c1
+[   79.886120] Code: 01 e8 d7 7d c6 ff 0f 0b 48 8b 45 00 4c 8b 20 48 8d 58 90 49 83 ec 70 48 8d 7b 70 48 39 ef 74 44 8a 83 d0 04 00 00 84 c0 75 1f <0f> 0b e8 61 cd ff ff 48 b8 00 01 00 00 00 00 ad de 48 89 43 70 66
+[   79.888667] RSP: 0018:ffffc900015ab740 EFLAGS: 00010246
+[   79.889339] RAX: ffff8882353e5700 RBX: ffff8882353e56a0 RCX: ffff8882353e5710
+[   79.890174] RDX: ffffc900015ab7e0 RSI: ffffc900015ab7e0 RDI: ffff8882353e5710
+[   79.891029] RBP: ffffc900015ab7e0 R08: ffffc900015ab7e0 R09: ffffc900015ab7e0
+[   79.891866] R10: ffffc900015ab7a0 R11: ffffffff82233fec R12: ffffc900015ab770
+[   79.892728] R13: ffffffff81eb7ec0 R14: ffff88822ed6cf00 R15: 00000000ffffffea
+[   79.893557] FS:  00007ff350f31740(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
+[   79.894581] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   79.895317] CR2: 00000000006c8580 CR3: 000000022c272000 CR4: 00000000000006f0
+[   79.896137] Call Trace:
+[   79.896464]  unregister_netdevice_many+0x12/0x6c
+[   79.896998]  __rtnl_newlink+0x6e2/0x73b
+[   79.897446]  ? __kmalloc_node_track_caller+0x15e/0x185
+[   79.898039]  ? pskb_expand_head+0x5f/0x1fe
+[   79.898556]  ? stack_access_ok+0xd/0x2c
+[   79.899009]  ? deref_stack_reg+0x12/0x20
+[   79.899462]  ? stack_access_ok+0xd/0x2c
+[   79.899927]  ? stack_access_ok+0xd/0x2c
+[   79.900404]  ? __module_text_address+0x9/0x4f
+[   79.900910]  ? is_bpf_text_address+0x5/0xc
+[   79.901390]  ? kernel_text_address+0x67/0x7b
+[   79.901884]  ? __kernel_text_address+0x1a/0x25
+[   79.902397]  ? unwind_get_return_address+0x12/0x23
+[   79.903122]  ? __cmpxchg_double_slab.isra.37+0x46/0x77
+[   79.903772]  rtnl_newlink+0x43/0x56
+[   79.904217]  rtnetlink_rcv_msg+0x200/0x24c
 
-The faulting address is the address of the old chain head,
-free'd by xfrm_hash_resize().
+In fact, each time a xfrm interface was created, a netdev was allocated
+by __rtnl_newlink()/rtnl_create_link() and then another one by
+xfrmi_newlink()/xfrmi_create(). Only the second one was registered, it's
+why the previous commands produce a backtrace: dev_change_net_namespace()
+was called on a netdev with reg_state set to NETREG_UNINITIALIZED (the
+first one).
 
-In xfrm_hash_rehash(), chain heads get re-initialized without
-any hlist_del_rcu:
-
- for (i = hmask; i >= 0; i--)
-    INIT_HLIST_HEAD(odst + i);
-
-Then, hlist_del_rcu() gets called on the about to-be-reinserted policy
-when iterating the per-net list of policies.
-
-hlist_del_rcu() will then make chain->first be nonzero again:
-
-static inline void __hlist_del(struct hlist_node *n)
-{
-   struct hlist_node *next = n->next;   // address of next element in list
-   struct hlist_node **pprev = n->pprev;// location of previous elem, this
-                                        // can point at chain->first
-        WRITE_ONCE(*pprev, next);       // chain->first points to next elem
-        if (next)
-                next->pprev = pprev;
-
-Then, when we walk chainlist to find insertion point, we may find a
-non-empty list even though we're supposedly reinserting the first
-policy to an empty chain.
-
-To fix this first unlink all exact and inexact policies instead of
-zeroing the list heads.
-
-Add the commands equivalent to the syzbot reproducer to xfrm_policy.sh,
-without fix KASAN catches the corruption as it happens, SLUB poisoning
-detects it a bit later.
-
-Reported-by: syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com
-Fixes: 1548bc4e0512 ("xfrm: policy: delete inexact policies from inexact list on hash rebuild")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+CC: Lorenzo Colitti <lorenzo@google.com>
+CC: Benedict Wong <benedictwong@google.com>
+CC: Steffen Klassert <steffen.klassert@secunet.com>
+CC: Shannon Nelson <shannon.nelson@oracle.com>
+CC: Antony Antony <antony@phenome.org>
+CC: Eyal Birger <eyal.birger@gmail.com>
+Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Reported-by: Julien Floret <julien.floret@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/xfrm/xfrm_policy.c                     | 12 ++++++----
- tools/testing/selftests/net/xfrm_policy.sh | 27 +++++++++++++++++++++-
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ net/xfrm/xfrm_interface.c | 98 +++++++++++----------------------------
+ 1 file changed, 28 insertions(+), 70 deletions(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 7eefdc9be2a7..c411662141ae 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -1276,13 +1276,17 @@ static void xfrm_hash_rebuild(struct work_struct *work)
- 
- 		hlist_for_each_entry_safe(policy, n,
- 					  &net->xfrm.policy_inexact[dir],
--					  bydst_inexact_list)
-+					  bydst_inexact_list) {
-+			hlist_del_rcu(&policy->bydst);
- 			hlist_del_init(&policy->bydst_inexact_list);
-+		}
- 
- 		hmask = net->xfrm.policy_bydst[dir].hmask;
- 		odst = net->xfrm.policy_bydst[dir].table;
--		for (i = hmask; i >= 0; i--)
--			INIT_HLIST_HEAD(odst + i);
-+		for (i = hmask; i >= 0; i--) {
-+			hlist_for_each_entry_safe(policy, n, odst + i, bydst)
-+				hlist_del_rcu(&policy->bydst);
-+		}
- 		if ((dir & XFRM_POLICY_MASK) == XFRM_POLICY_OUT) {
- 			/* dir out => dst = remote, src = local */
- 			net->xfrm.policy_bydst[dir].dbits4 = rbits4;
-@@ -1311,8 +1315,6 @@ static void xfrm_hash_rebuild(struct work_struct *work)
- 		chain = policy_hash_bysel(net, &policy->selector,
- 					  policy->family, dir);
- 
--		hlist_del_rcu(&policy->bydst);
--
- 		if (!chain) {
- 			void *p = xfrm_policy_inexact_insert(policy, dir, 0);
- 
-diff --git a/tools/testing/selftests/net/xfrm_policy.sh b/tools/testing/selftests/net/xfrm_policy.sh
-index 71d7fdc513c1..5445943bf07f 100755
---- a/tools/testing/selftests/net/xfrm_policy.sh
-+++ b/tools/testing/selftests/net/xfrm_policy.sh
-@@ -257,6 +257,29 @@ check_exceptions()
- 	return $lret
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index ad3a2555c517..7dbe0c608df5 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -133,7 +133,7 @@ static void xfrmi_dev_free(struct net_device *dev)
+ 	free_percpu(dev->tstats);
  }
  
-+check_hthresh_repeat()
-+{
-+	local log=$1
-+	i=0
-+
-+	for i in $(seq 1 10);do
-+		ip -net ns1 xfrm policy update src e000:0001::0000 dst ff01::0014:0000:0001 dir in tmpl src :: dst :: proto esp mode tunnel priority 100 action allow || break
-+		ip -net ns1 xfrm policy set hthresh6 0 28 || break
-+
-+		ip -net ns1 xfrm policy update src e000:0001::0000 dst ff01::01 dir in tmpl src :: dst :: proto esp mode tunnel priority 100 action allow || break
-+		ip -net ns1 xfrm policy set hthresh6 0 28 || break
-+	done
-+
-+	if [ $i -ne 10 ] ;then
-+		echo "FAIL: $log" 1>&2
-+		ret=1
-+		return 1
-+	fi
-+
-+	echo "PASS: $log"
-+	return 0
-+}
-+
- #check for needed privileges
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
-@@ -404,7 +427,9 @@ for n in ns3 ns4;do
- 	ip -net $n xfrm policy set hthresh4 32 32 hthresh6 128 128
- 	sleep $((RANDOM%5))
- done
--check_exceptions "exceptions and block policies after hresh change to normal"
-+check_exceptions "exceptions and block policies after htresh change to normal"
-+
-+check_hthresh_repeat "policies with repeated htresh change"
+-static int xfrmi_create2(struct net_device *dev)
++static int xfrmi_create(struct net_device *dev)
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+ 	struct net *net = dev_net(dev);
+@@ -156,54 +156,7 @@ static int xfrmi_create2(struct net_device *dev)
+ 	return err;
+ }
  
- for i in 1 2 3 4;do ip netns del ns$i;done
+-static struct xfrm_if *xfrmi_create(struct net *net, struct xfrm_if_parms *p)
+-{
+-	struct net_device *dev;
+-	struct xfrm_if *xi;
+-	char name[IFNAMSIZ];
+-	int err;
+-
+-	if (p->name[0]) {
+-		strlcpy(name, p->name, IFNAMSIZ);
+-	} else {
+-		err = -EINVAL;
+-		goto failed;
+-	}
+-
+-	dev = alloc_netdev(sizeof(*xi), name, NET_NAME_UNKNOWN, xfrmi_dev_setup);
+-	if (!dev) {
+-		err = -EAGAIN;
+-		goto failed;
+-	}
+-
+-	dev_net_set(dev, net);
+-
+-	xi = netdev_priv(dev);
+-	xi->p = *p;
+-	xi->net = net;
+-	xi->dev = dev;
+-	xi->phydev = dev_get_by_index(net, p->link);
+-	if (!xi->phydev) {
+-		err = -ENODEV;
+-		goto failed_free;
+-	}
+-
+-	err = xfrmi_create2(dev);
+-	if (err < 0)
+-		goto failed_dev_put;
+-
+-	return xi;
+-
+-failed_dev_put:
+-	dev_put(xi->phydev);
+-failed_free:
+-	free_netdev(dev);
+-failed:
+-	return ERR_PTR(err);
+-}
+-
+-static struct xfrm_if *xfrmi_locate(struct net *net, struct xfrm_if_parms *p,
+-				   int create)
++static struct xfrm_if *xfrmi_locate(struct net *net, struct xfrm_if_parms *p)
+ {
+ 	struct xfrm_if __rcu **xip;
+ 	struct xfrm_if *xi;
+@@ -211,17 +164,11 @@ static struct xfrm_if *xfrmi_locate(struct net *net, struct xfrm_if_parms *p,
  
+ 	for (xip = &xfrmn->xfrmi[0];
+ 	     (xi = rtnl_dereference(*xip)) != NULL;
+-	     xip = &xi->next) {
+-		if (xi->p.if_id == p->if_id) {
+-			if (create)
+-				return ERR_PTR(-EEXIST);
+-
++	     xip = &xi->next)
++		if (xi->p.if_id == p->if_id)
+ 			return xi;
+-		}
+-	}
+-	if (!create)
+-		return ERR_PTR(-ENODEV);
+-	return xfrmi_create(net, p);
++
++	return NULL;
+ }
+ 
+ static void xfrmi_dev_uninit(struct net_device *dev)
+@@ -686,21 +633,33 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct net *net = dev_net(dev);
+-	struct xfrm_if_parms *p;
++	struct xfrm_if_parms p;
+ 	struct xfrm_if *xi;
++	int err;
+ 
+-	xi = netdev_priv(dev);
+-	p = &xi->p;
+-
+-	xfrmi_netlink_parms(data, p);
++	xfrmi_netlink_parms(data, &p);
+ 
+ 	if (!tb[IFLA_IFNAME])
+ 		return -EINVAL;
+ 
+-	nla_strlcpy(p->name, tb[IFLA_IFNAME], IFNAMSIZ);
++	nla_strlcpy(p.name, tb[IFLA_IFNAME], IFNAMSIZ);
+ 
+-	xi = xfrmi_locate(net, p, 1);
+-	return PTR_ERR_OR_ZERO(xi);
++	xi = xfrmi_locate(net, &p);
++	if (xi)
++		return -EEXIST;
++
++	xi = netdev_priv(dev);
++	xi->p = p;
++	xi->net = net;
++	xi->dev = dev;
++	xi->phydev = dev_get_by_index(net, p.link);
++	if (!xi->phydev)
++		return -ENODEV;
++
++	err = xfrmi_create(dev);
++	if (err < 0)
++		dev_put(xi->phydev);
++	return err;
+ }
+ 
+ static void xfrmi_dellink(struct net_device *dev, struct list_head *head)
+@@ -717,9 +676,8 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ 
+ 	xfrmi_netlink_parms(data, &xi->p);
+ 
+-	xi = xfrmi_locate(net, &xi->p, 0);
+-
+-	if (IS_ERR_OR_NULL(xi)) {
++	xi = xfrmi_locate(net, &xi->p);
++	if (!xi) {
+ 		xi = netdev_priv(dev);
+ 	} else {
+ 		if (xi->dev != dev)
 -- 
 2.17.1
 
