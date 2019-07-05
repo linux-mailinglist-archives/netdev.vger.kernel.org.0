@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E3B960BF1
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 21:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B7060BF4
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 21:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727409AbfGETzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 15:55:22 -0400
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:48429 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727179AbfGETzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 15:55:22 -0400
+        id S1727620AbfGETz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 15:55:26 -0400
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:47471 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727179AbfGETz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 15:55:26 -0400
 X-Originating-IP: 90.76.143.236
 Received: from localhost (lfbn-1-2078-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 4A8BD20002;
-        Fri,  5 Jul 2019 19:55:15 +0000 (UTC)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 29E0B1C0008;
+        Fri,  5 Jul 2019 19:55:19 +0000 (UTC)
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     davem@davemloft.net, richardcochran@gmail.com,
         alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
@@ -23,9 +23,9 @@ To:     davem@davemloft.net, richardcochran@gmail.com,
 Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
         netdev@vger.kernel.org, linux-mips@vger.kernel.org,
         thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com
-Subject: [PATCH net-next v2 4/8] MIPS: dts: mscc: describe the PTP ready interrupt
-Date:   Fri,  5 Jul 2019 21:52:09 +0200
-Message-Id: <20190705195213.22041-5-antoine.tenart@bootlin.com>
+Subject: [PATCH net-next v2 5/8] net: mscc: describe the PTP register range
+Date:   Fri,  5 Jul 2019 21:52:10 +0200
+Message-Id: <20190705195213.22041-6-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190705195213.22041-1-antoine.tenart@bootlin.com>
 References: <20190705195213.22041-1-antoine.tenart@bootlin.com>
@@ -36,29 +36,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a description of the PTP ready interrupt, which can be
-triggered when a PTP timestamp is available on an hardware FIFO.
+This patch adds support for using the PTP register range, and adds a
+description of its registers. This bank is used when configuring PTP.
 
 Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 ---
- arch/mips/boot/dts/mscc/ocelot.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.h       |  9 ++++++
+ drivers/net/ethernet/mscc/ocelot_board.c | 10 +++++-
+ drivers/net/ethernet/mscc/ocelot_ptp.h   | 41 ++++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_regs.c  | 11 +++++++
+ 4 files changed, 70 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_ptp.h
 
-diff --git a/arch/mips/boot/dts/mscc/ocelot.dtsi b/arch/mips/boot/dts/mscc/ocelot.dtsi
-index 1e55a778def5..797d336db54d 100644
---- a/arch/mips/boot/dts/mscc/ocelot.dtsi
-+++ b/arch/mips/boot/dts/mscc/ocelot.dtsi
-@@ -139,8 +139,8 @@
- 				    "port2", "port3", "port4", "port5", "port6",
- 				    "port7", "port8", "port9", "port10", "qsys",
- 				    "ana", "s2";
--			interrupts = <21 22>;
--			interrupt-names = "xtr", "inj";
-+			interrupts = <18 21 22>;
-+			interrupt-names = "ptp_rdy", "xtr", "inj";
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index f7eeb4806897..e0da8b4eddf2 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -23,6 +23,7 @@
+ #include "ocelot_sys.h"
+ #include "ocelot_qs.h"
+ #include "ocelot_tc.h"
++#include "ocelot_ptp.h"
  
- 			ethernet-ports {
- 				#address-cells = <1>;
+ #define PGID_AGGR    64
+ #define PGID_SRC     80
+@@ -71,6 +72,7 @@ enum ocelot_target {
+ 	SYS,
+ 	S2,
+ 	HSIO,
++	PTP,
+ 	TARGET_MAX,
+ };
+ 
+@@ -343,6 +345,13 @@ enum ocelot_reg {
+ 	S2_CACHE_ACTION_DAT,
+ 	S2_CACHE_CNT_DAT,
+ 	S2_CACHE_TG_DAT,
++	PTP_PIN_CFG = PTP << TARGET_OFFSET,
++	PTP_PIN_TOD_SEC_MSB,
++	PTP_PIN_TOD_SEC_LSB,
++	PTP_PIN_TOD_NSEC,
++	PTP_CFG_MISC,
++	PTP_CLK_CFG_ADJ_CFG,
++	PTP_CLK_CFG_ADJ_FREQ,
+ };
+ 
+ enum ocelot_regfield {
+diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+index 58bde1a9eacb..c508e51c1e28 100644
+--- a/drivers/net/ethernet/mscc/ocelot_board.c
++++ b/drivers/net/ethernet/mscc/ocelot_board.c
+@@ -182,6 +182,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 	struct {
+ 		enum ocelot_target id;
+ 		char *name;
++		u8 optional:1;
+ 	} res[] = {
+ 		{ SYS, "sys" },
+ 		{ REW, "rew" },
+@@ -189,6 +190,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		{ ANA, "ana" },
+ 		{ QS, "qs" },
+ 		{ S2, "s2" },
++		{ PTP, "ptp", 1 },
+ 	};
+ 
+ 	if (!np && !pdev->dev.platform_data)
+@@ -205,8 +207,14 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		struct regmap *target;
+ 
+ 		target = ocelot_io_platform_init(ocelot, pdev, res[i].name);
+-		if (IS_ERR(target))
++		if (IS_ERR(target)) {
++			if (res[i].optional) {
++				ocelot->targets[res[i].id] = NULL;
++				continue;
++			}
++
+ 			return PTR_ERR(target);
++		}
+ 
+ 		ocelot->targets[res[i].id] = target;
+ 	}
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.h b/drivers/net/ethernet/mscc/ocelot_ptp.h
+new file mode 100644
+index 000000000000..9ede14a12573
+--- /dev/null
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.h
+@@ -0,0 +1,41 @@
++/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
++/*
++ * Microsemi Ocelot Switch driver
++ *
++ * License: Dual MIT/GPL
++ * Copyright (c) 2017 Microsemi Corporation
++ */
++
++#ifndef _MSCC_OCELOT_PTP_H_
++#define _MSCC_OCELOT_PTP_H_
++
++#define PTP_PIN_CFG_RSZ			0x20
++#define PTP_PIN_TOD_SEC_MSB_RSZ		PTP_PIN_CFG_RSZ
++#define PTP_PIN_TOD_SEC_LSB_RSZ		PTP_PIN_CFG_RSZ
++#define PTP_PIN_TOD_NSEC_RSZ		PTP_PIN_CFG_RSZ
++
++#define PTP_PIN_CFG_DOM			BIT(0)
++#define PTP_PIN_CFG_SYNC		BIT(2)
++#define PTP_PIN_CFG_ACTION(x)		((x) << 3)
++#define PTP_PIN_CFG_ACTION_MASK		PTP_PIN_CFG_ACTION(0x7)
++
++enum {
++	PTP_PIN_ACTION_IDLE = 0,
++	PTP_PIN_ACTION_LOAD,
++	PTP_PIN_ACTION_SAVE,
++	PTP_PIN_ACTION_CLOCK,
++	PTP_PIN_ACTION_DELTA,
++	PTP_PIN_ACTION_NOSYNC,
++	PTP_PIN_ACTION_SYNC,
++};
++
++#define PTP_CFG_MISC_PTP_EN		BIT(2)
++
++#define PSEC_PER_SEC			1000000000000LL
++
++#define PTP_CFG_CLK_ADJ_CFG_ENA		BIT(0)
++#define PTP_CFG_CLK_ADJ_CFG_DIR		BIT(1)
++
++#define PTP_CFG_CLK_ADJ_FREQ_NS		BIT(30)
++
++#endif
+diff --git a/drivers/net/ethernet/mscc/ocelot_regs.c b/drivers/net/ethernet/mscc/ocelot_regs.c
+index 6c387f994ec5..e59977d20400 100644
+--- a/drivers/net/ethernet/mscc/ocelot_regs.c
++++ b/drivers/net/ethernet/mscc/ocelot_regs.c
+@@ -234,6 +234,16 @@ static const u32 ocelot_s2_regmap[] = {
+ 	REG(S2_CACHE_TG_DAT,               0x000388),
+ };
+ 
++static const u32 ocelot_ptp_regmap[] = {
++	REG(PTP_PIN_CFG,                   0x000000),
++	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
++	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
++	REG(PTP_PIN_TOD_NSEC,              0x00000c),
++	REG(PTP_CFG_MISC,                  0x0000a0),
++	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
++	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
++};
++
+ static const u32 *ocelot_regmap[] = {
+ 	[ANA] = ocelot_ana_regmap,
+ 	[QS] = ocelot_qs_regmap,
+@@ -241,6 +251,7 @@ static const u32 *ocelot_regmap[] = {
+ 	[REW] = ocelot_rew_regmap,
+ 	[SYS] = ocelot_sys_regmap,
+ 	[S2] = ocelot_s2_regmap,
++	[PTP] = ocelot_ptp_regmap,
+ };
+ 
+ static const struct reg_field ocelot_regfields[] = {
 -- 
 2.21.0
 
