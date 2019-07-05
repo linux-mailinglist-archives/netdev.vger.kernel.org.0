@@ -2,160 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EEC06067B
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 15:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6348660682
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 15:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728977AbfGENSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 09:18:18 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34393 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728664AbfGENSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 09:18:18 -0400
-Received: by mail-io1-f66.google.com with SMTP id k8so19147093iot.1
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 06:18:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pRtQGOFldLgGE7qJqe1c/CUsqsRLF9F1riuLbw6yyJs=;
-        b=lJIBBAa4dahLP/b9AXN6UgjzFVq0DrkIuIt64/jaRG20TBTpO3CnEPoPccNo6QbN51
-         Rn889prtBvG0KxRt98TgSvQSWsDPFicrLqsuVPEN7IwewqSzO5TvAUG/87lLsqDH5tw4
-         ejt7pCK0lFDN0EOFSf9x3L02OlEYPq3w5ZHv/+z7da0E+d/CNtKw45lIKPhTpZrQ2nYt
-         C6YBCClsw8L58BDpl3mJ2RUk1UnMxKFQPopYvw83EAfI4S1Se/H61yPYj3UQFbsx3nBi
-         lwojRqpap0CC6R14IJyex23CYqqVBmQy5r02PRJG4HhZDR4aoQY2qiQOyJvTapTakmNS
-         sTmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pRtQGOFldLgGE7qJqe1c/CUsqsRLF9F1riuLbw6yyJs=;
-        b=OMIEisUIpFJ/at8A977NjXVJ8D/eS+DyfvUYwyr/RfnyH3oUD9vgsYXOrUDHDJDxTL
-         W6+mWGlwlzjk+qnYZyt0KF440LZ9q3yBDsI3HNJZylp7oXoIp1wkYhuGNaosdhpADWHl
-         3ukfdp4MKe6KDyQaL/lhqrJJkFj9ddW+3mMGIQGhXh88G/NzIPzrQGbooHacN1uFS3tB
-         uKgDTupnbd3qnAQrpWxGJC1eFNSMRPJP0QDigN+rng9dwG4h4SVcG9A/fs4olwYpe6nO
-         Y/zS4s7TZ/XwCNh0SEJ/c8bVA/2g5n9R3u6cyvIkvRSUCXG8KoPekARV8pgpxY7zp88M
-         h/tA==
-X-Gm-Message-State: APjAAAVJFV8IkZqkHzLbqmlnPPyszad56mxxx2S2YJShVG+NPbBnlDsl
-        2QmnK/nEF/IKFHGPqF4+wzvNcM+pGQuskjDsepxaNA==
-X-Google-Smtp-Source: APXvYqwHcTdVO68Zki0+63QSWBONxJLklr7LXnf8O1UNup1dM0NT4WpEphqYVGaOt5adDzriIMut7G9Wn7lr0NEz8U0=
-X-Received: by 2002:a6b:641a:: with SMTP id t26mr4198845iog.3.1562332697230;
- Fri, 05 Jul 2019 06:18:17 -0700 (PDT)
+        id S1729026AbfGENT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 09:19:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55782 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726794AbfGENT1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 09:19:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=nWbKLFHL+b+hFBq0825QJ0Fh8N/yT85HADdlrJpqwCQ=; b=3GP3RPKu7ZpFV7+cfZjE+vohUc
+        Bex/2CpZC7Ala0E0eG4LZVetEHQEb/pfJHowfchWGZpWrdgaXwHw7j7iVZVhdnGDzqhJtwb9f/Eeo
+        KLOig8uZwjFnSMbwTDYL8WRA0Mk0Pe6SrZtuUPnX5rsJaDgQ9SE3ZqwIKhT9NdjVOm9A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hjO7O-0001Br-S6; Fri, 05 Jul 2019 15:19:14 +0200
+Date:   Fri, 5 Jul 2019 15:19:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Allan Nielsen <Allan.Nielsen@microsemi.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
+ port DT node
+Message-ID: <20190705131914.GA4428@lunn.ch>
+References: <20190621164940.GL31306@lunn.ch>
+ <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
+ <20190624115558.GA5690@piout.net>
+ <20190624142625.GR31306@lunn.ch>
+ <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
+ <20190624162431.GX31306@lunn.ch>
+ <20190624182614.GC5690@piout.net>
+ <CA+h21hqGtA5ou7a3wjSuHxa_4fXk4GZohTAxnUdfLZjV3nq5Eg@mail.gmail.com>
+ <20190705044945.GA30115@lunn.ch>
+ <VI1PR04MB4880DEA9D7836A68E0EE141396F50@VI1PR04MB4880.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <000000000000d3f34b058c3d5a4f@google.com> <20190626184251.GE3116@mit.edu>
-In-Reply-To: <20190626184251.GE3116@mit.edu>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 5 Jul 2019 15:18:06 +0200
-Message-ID: <CACT4Y+aHgz9cPa7OnVsNeHim72i6zVdjnbvVb0Z1oN2B8QLZqg@mail.gmail.com>
-Subject: Re: INFO: rcu detected stall in ext4_write_checks
-To:     "Theodore Ts'o" <tytso@mit.edu>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        David Miller <davem@davemloft.net>, eladr@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     syzkaller <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR04MB4880DEA9D7836A68E0EE141396F50@VI1PR04MB4880.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 8:43 PM Theodore Ts'o <tytso@mit.edu> wrote:
->
-> On Wed, Jun 26, 2019 at 10:27:08AM -0700, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org=
-/pu..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=3D1435aaf6a00=
-000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=3De5c77f8090a=
-3b96b
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=3D4bfbbf28a2e50=
-ab07368
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D11234c41a=
-00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D15d7f026a00=
-000
-> >
-> > The bug was bisected to:
-> >
-> > commit 0c81ea5db25986fb2a704105db454a790c59709c
-> > Author: Elad Raz <eladr@mellanox.com>
-> > Date:   Fri Oct 28 19:35:58 2016 +0000
-> >
-> >     mlxsw: core: Add port type (Eth/IB) set API
->
-> Um, so this doesn't pass the laugh test.
->
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=3D10393a89=
-a00000
->
-> It looks like the automated bisection machinery got confused by two
-> failures getting triggered by the same repro; the symptoms changed
-> over time.  Initially, the failure was:
->
-> crashed: INFO: rcu detected stall in {sys_sendfile64,ext4_file_write_iter=
-}
->
-> Later, the failure changed to something completely different, and much
-> earlier (before the test was even started):
->
-> run #5: basic kernel testing failed: failed to copy test binary to VM: fa=
-iled to run ["scp" "-P" "22" "-F" "/dev/null" "-o" "UserKnownHostsFile=3D/d=
-ev/null" "-o" "BatchMode=3Dyes" "-o" "IdentitiesOnly=3Dyes" "-o" "StrictHos=
-tKeyChecking=3Dno" "-o" "ConnectTimeout=3D10" "-i" "/syzkaller/jobs/linux/w=
-orkdir/image/key" "/tmp/syz-executor216456474" "root@10.128.15.205:./syz-ex=
-ecutor216456474"]: exit status 1
-> Connection timed out during banner exchange
-> lost connection
->
-> Looks like an opportunity to improve the bisection engine?
+> Nice discussion, again, but there's a missing point that has not been
+> brought up yet.  We actually intend to support the following hardware
+> configuration: a single PCI device consisting of the Microsemi's switch core
+> and our DMA rings.
+> The hardware supports this configuration into a single PCI function (PF), 
+> with a unique PCI function id (0xe111), so that the same driver has access to 
+> both switch registers and DMA rings connected to the CPU port.  This device
+> would qualify  as a  switchdev device, and we can simply reuse the existing
+> ocelot code for the switch core part.  The initial patch set was the first step in
+> supporting the switch core on our platform, we just need to add the support
+> for the DMA rings part, to make it a complete switchdev solution.
 
-Hi Ted,
+Hi Claudiu
 
-Yes, these infrastructure errors plague bisections episodically.
-That's https://github.com/google/syzkaller/issues/1250
+It sound like in the end you will have a core library and then two
+drivers wrapped around it, giving a pure switchdev device with polled
+IO or DMA, and a DSA driver using a CPU port.
 
-It did not confuse bisection explicitly as it understands that these
-are infrastructure failures rather then a kernel crash, e.g. here you
-may that it correctly identified that this run was OK and started
-bisection in v4.10 v4.9 range besides 2 scp failures:
-
-testing release v4.9
-testing commit 69973b830859bc6529a7a0468ba0d80ee5117826 with gcc (GCC) 5.5.=
-0
-run #0: basic kernel testing failed: failed to copy test binary to VM:
-failed to run ["scp" ...]: exit status 1
-Connection timed out during banner exchange
-run #1: basic kernel testing failed: failed to copy test binary to VM:
-failed to run ["scp" ....]: exit status 1
-Connection timed out during banner exchange
-run #2: OK
-run #3: OK
-run #4: OK
-run #5: OK
-run #6: OK
-run #7: OK
-run #8: OK
-run #9: OK
-# git bisect start v4.10 v4.9
-
-Though, of course, it may confuse bisection indirectly by reducing
-number of tests per commit.
-
-So far I wasn't able to gather any significant info about these
-failures. We gather console logs, but on these runs they are empty.
-It's easy to blame everything onto GCE but I don't have any bit of
-information that would point either way. These failures just appear
-randomly in production and usually in batches...
+   Andrew
