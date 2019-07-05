@@ -2,148 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DDEB60D9C
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 00:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F5D60DA7
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 00:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727577AbfGEWEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 18:04:40 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:34274 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbfGEWEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 18:04:40 -0400
-Received: by mail-io1-f65.google.com with SMTP id k8so22106954iot.1
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 15:04:39 -0700 (PDT)
+        id S1725973AbfGEWKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 18:10:44 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35929 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbfGEWKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 18:10:44 -0400
+Received: by mail-qk1-f195.google.com with SMTP id g18so8959863qkl.3
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 15:10:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OVtvfpSoOIsfL09a8+f0FZvtld36cPLdAovABb8C+WI=;
-        b=pC2d604RG2225SWqSI0F/60mLgBDf3DlMBkb5zbYSL/0KR4UuHX94l1Li5DcOaRb3V
-         1fg6yCuq4z/PK95RiKdFMWmF33sH1NvS4bwQmfzSHS4mA9ghe8vTx2ICwAdx5x8bTnHL
-         /KBJpGrhwGNV3PRY/sBPZbKuCLeNxgupXLGKKc6m23g1pOD8PtxGzIOsQYGjwS+xTpLv
-         3IJmjWGUPB9WbAUJMLGPlyiNXf3N0yLLJn+pYBGwEy9qWUszOV+dH3BWw3qpO5y6yRXl
-         RnUJrCxV67tpThQ20UNlMjj/w3G3jJqE5FNNAG+5wSVIq8/MUEsA3kb/xUqs1GUy6s14
-         hm6w==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ZlXZXANEqyyJDmq5LpFVDNlNq6aG7IsK78skhDQh4Cw=;
+        b=tWv5BBHcZ1T8Uzg7q+hgdIMtSB2ueX2Sl6eNsMAp60iULrHW5THDlkQpe+wtnwBQEy
+         CldA99gNkB6zvR2OhcIpzWib1oqpLm/qERThqRoevlMrB0X8+dPU7uW+eqHDPbQutjHs
+         uZGoN7DIwpD7sR/dVoFfTrsrfhkqBsQJf/YO8r1GEHyb3tDsGKC5DPoJ5dDk/cGXuMlU
+         o/tvGgWmJ/wlharwI/b8wrww8HXapXurncE3EBdFQuxfhXZ9KmDGXypcNTVsQoYF2LgD
+         dyDiGj8QQbHvPpqJG+i+Jcar97HgFiCfwv5wKZGAAKqemxTTvhXzfdu84xo8w9UZ5xH3
+         qvag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OVtvfpSoOIsfL09a8+f0FZvtld36cPLdAovABb8C+WI=;
-        b=KoMUE63pfEogiBTAVdxyInYIxbTI4D3QgRiL7tOmlt/lD2tUL/8Z7Zh84gwbBuUIQj
-         6hJWwq5zriaUJxtjnkdRcUy5GxwEQvLNGsCpXFB6ZyyAa+nzJCFVCdMpDBPA82AZe35v
-         agmmBVBfi61qft3XJ13UZelxf4MEdnx5z96F/NNhsafnncbmayWrJ3EByMtlQmeki3Hf
-         siOtAe8M3LFBAkt/TwvtdPyXsnw1PQAUkTWiEZq8R62baMpG00mNrcmUFwFDmpmNqd37
-         CLxVlPicH/Gn6LVtfCsgNrpdPQSO9wfb0ZA7ZWxf0WV2rutl6H3+CkjRd+LxpjlEgX7P
-         JlWw==
-X-Gm-Message-State: APjAAAUMunloV7YgsPQpL1/o9WL2B22JIFMYUCndM0+Ass3Hqagm1koF
-        cl9RWFijU98z3JfM6lf6xwPht7OwlRSlqnvjzWg=
-X-Google-Smtp-Source: APXvYqzTJnZlaArguv0mOWeoHdEPTo+dgPdYyr5kGW5KSJV5ukrJYfpV415WjVo4mIW1rqvPC+RDTE3M9tX6WOphANs=
-X-Received: by 2002:a5e:8b43:: with SMTP id z3mr6554091iom.287.1562364279239;
- Fri, 05 Jul 2019 15:04:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ZlXZXANEqyyJDmq5LpFVDNlNq6aG7IsK78skhDQh4Cw=;
+        b=f1X1lKn3s7tAgvor4FfIxEijzfWfYCb1vllWRaUp0wupXhMcybfQ7a27r4Ika2cF1K
+         +Fh7VYKbf5ey0RU+aKpyncrndCh4aPsUU83gZwJl/J0cAZvy3ZkWspbV2/Z8tZiruZTb
+         Hx+ZTOjpDcUTw4QTPHIQGaGVJJQc4YTUykwxEamvJKNdaQRFaThjjhvTxobaEMlhpY1I
+         8mmr8ep+5J9dSKjYRs7DlANLz0k9avaMnCFIYZHWWiT8fSrbb6O+Btg2P7DxYaaIqTk0
+         0o/wi8qYYQLCufSgZGAQwzc8vLO8I+KopRS0ItBT1Hm2NHnKDA6mu2+qWYorVnXhfPVW
+         wrGA==
+X-Gm-Message-State: APjAAAXBE9cz1yUVucJkq6OPlHaos8PBwFeaEbzls4kVJPqLNP5G/8tp
+        KXR7jseVn5Fm7Mt7vg3t8IWC5A==
+X-Google-Smtp-Source: APXvYqzCGy3CqgrPHG5MpMv4+PZPUvQxRnvb55S8rLjW41ANXxFeoSFHTxrMqzRLH4q4dkIUXv5Nrg==
+X-Received: by 2002:a37:f511:: with SMTP id l17mr4497194qkk.99.1562364642980;
+        Fri, 05 Jul 2019 15:10:42 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id r5sm4462321qkc.42.2019.07.05.15.10.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 05 Jul 2019 15:10:42 -0700 (PDT)
+Date:   Fri, 5 Jul 2019 15:10:38 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org,
+        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com
+Subject: Re: [PATCH net-next v2 8/8] net: mscc: PTP Hardware Clock (PHC)
+ support
+Message-ID: <20190705151038.0581a052@cakuba.netronome.com>
+In-Reply-To: <20190705195213.22041-9-antoine.tenart@bootlin.com>
+References: <20190705195213.22041-1-antoine.tenart@bootlin.com>
+        <20190705195213.22041-9-antoine.tenart@bootlin.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <156234940798.2378.9008707939063611210.stgit@alrua-x1> <156234940855.2378.3580468359411972045.stgit@alrua-x1>
-In-Reply-To: <156234940855.2378.3580468359411972045.stgit@alrua-x1>
-From:   Y Song <ys114321@gmail.com>
-Date:   Fri, 5 Jul 2019 15:04:03 -0700
-Message-ID: <CAH3MdRVHnG+cbHUmwFpkjdtBMVOVasoekxKHKn_upQuDxe5v7Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] xdp: Add devmap_hash map type for looking up
- devices by hashed index
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 5, 2019 at 11:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> A common pattern when using xdp_redirect_map() is to create a device map
-> where the lookup key is simply ifindex. Because device maps are arrays,
-> this leaves holes in the map, and the map has to be sized to fit the
-> largest ifindex, regardless of how many devices actually are actually
-> needed in the map.
->
-> This patch adds a second type of device map where the key is looked up
-> using a hashmap, instead of being used as an array index. This allows map=
-s
-> to be densely packed, so they can be smaller.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  include/linux/bpf.h                     |    7 +
->  include/linux/bpf_types.h               |    1
->  include/trace/events/xdp.h              |    3
->  include/uapi/linux/bpf.h                |    7 +
->  kernel/bpf/devmap.c                     |  192 +++++++++++++++++++++++++=
-++++++
->  kernel/bpf/verifier.c                   |    2
->  net/core/filter.c                       |    9 +
->  tools/bpf/bpftool/map.c                 |    1
->  tools/include/uapi/linux/bpf.h          |    7 +
->  tools/lib/bpf/libbpf_probes.c           |    1
->  tools/testing/selftests/bpf/test_maps.c |   16 +++
->  11 files changed, 237 insertions(+), 9 deletions(-)
+On Fri,  5 Jul 2019 21:52:13 +0200, Antoine Tenart wrote:
+> This patch adds support for PTP Hardware Clock (PHC) to the Ocelot
+> switch for both PTP 1-step and 2-step modes.
+> 
+> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 
-Could you break this patch into multiple commits for easy backporting
-and easy syncing to libbpf repo?
-For example, you can break it into 4 patches:
-   . kernel patch
-   . sync uapi bpf.h
-   . tools/lib/bpf/libbpf_probes.c
-   . other tools changes.
+> @@ -596,11 +606,50 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+>  
+>  	dev->stats.tx_packets++;
+>  	dev->stats.tx_bytes += skb->len;
+> -	dev_kfree_skb_any(skb);
+> +
+> +	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP &&
+> +	    port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+> +		struct ocelot_skb *oskb =
+> +			kzalloc(sizeof(struct ocelot_skb), GFP_KERNEL);
 
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index bfdb54dd2ad1..f9a506147c8a 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -713,6 +713,7 @@ struct xdp_buff;
->  struct sk_buff;
->
->  struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 k=
-ey);
-> +struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, =
-u32 key);
->  void __dev_map_flush(struct bpf_map *map);
->  int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
->                     struct net_device *dev_rx);
-> @@ -799,6 +800,12 @@ static inline struct net_device  *__dev_map_lookup_e=
-lem(struct bpf_map *map,
->         return NULL;
+I think this is the TX path, you can't use GFP_KERNEL here.
+
+> +
+> +		oskb->skb = skb;
+> +		oskb->id = port->ts_id % 4;
+> +		port->ts_id++;
+> +
+> +		list_add_tail(&oskb->head, &port->skbs);
+> +	} else {
+> +		dev_kfree_skb_any(skb);
+> +	}
+>  
+>  	return NETDEV_TX_OK;
 >  }
->
-> +static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_=
-map *map,
-> +                                                            u32 key)
+
+> +static int ocelot_hwstamp_set(struct ocelot_port *port, struct ifreq *ifr)
 > +{
-> +       return NULL;
+> +	struct ocelot *ocelot = port->ocelot;
+> +	struct hwtstamp_config cfg;
+> +
+> +	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
+> +		return -EFAULT;
+> +
+> +	/* reserved for future extensions */
+> +	if (cfg.flags)
+> +		return -EINVAL;
+> +
+> +	/* Tx type sanity check */
+> +	switch (cfg.tx_type) {
+> +	case HWTSTAMP_TX_ON:
+> +		port->ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
+> +		break;
+> +	case HWTSTAMP_TX_ONESTEP_SYNC:
+> +		/* IFH_REW_OP_ONE_STEP_PTP updates the correctional field, we
+> +		 * need to update the origin time.
+> +		 */
+> +		port->ptp_cmd = IFH_REW_OP_ORIGIN_PTP;
+> +		break;
+> +	case HWTSTAMP_TX_OFF:
+> +		port->ptp_cmd = 0;
+> +		break;
+> +	default:
+> +		return -ERANGE;
+> +	}
+> +
+> +	mutex_lock(&ocelot->ptp_lock);
+> +
+> +	switch (cfg.rx_filter) {
+> +	case HWTSTAMP_FILTER_NONE:
+> +		break;
+> +	case HWTSTAMP_FILTER_ALL:
+> +	case HWTSTAMP_FILTER_SOME:
+> +	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
+> +	case HWTSTAMP_FILTER_NTP_ALL:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+> +		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+> +		break;
+> +	default:
+> +		mutex_unlock(&ocelot->ptp_lock);
+> +		return -ERANGE;
+> +	}
+
+No device reconfig, so the PTP RX stamping is always enabled?  Perhaps
+consider setting 
+
+	ocelot->hwtstamp_config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT
+
+at probe?
+
+> +	/* Commit back the result & save it */
+> +	memcpy(&ocelot->hwtstamp_config, &cfg, sizeof(cfg));
+> +	mutex_unlock(&ocelot->ptp_lock);
+> +
+> +	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
 > +}
 > +
->  static inline void __dev_map_flush(struct bpf_map *map)
->  {
+> +static int ocelot_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+> +{
+> +	struct ocelot_port *port = netdev_priv(dev);
+> +	struct ocelot *ocelot = port->ocelot;
+> +
+> +	/* The function is only used for PTP operations for now */
+> +	if (!ocelot->ptp)
+> +		return -EOPNOTSUPP;
+> +
+> +	switch (cmd) {
+> +	case SIOCSHWTSTAMP:
+> +		return ocelot_hwstamp_set(port, ifr);
+> +	case SIOCGHWTSTAMP:
+> +		return ocelot_hwstamp_get(port, ifr);
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+> +
+>  static const struct net_device_ops ocelot_port_netdev_ops = {
+>  	.ndo_open			= ocelot_port_open,
+>  	.ndo_stop			= ocelot_port_stop,
+> @@ -933,6 +1073,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
+>  	.ndo_set_features		= ocelot_set_features,
+>  	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
+>  	.ndo_setup_tc			= ocelot_setup_tc,
+> +	.ndo_do_ioctl			= ocelot_ioctl,
+>  };
+>  
+>  static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
+> @@ -1014,12 +1155,42 @@ static int ocelot_get_sset_count(struct net_device *dev, int sset)
+>  	return ocelot->num_stats;
 >  }
-> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> index eec5aeeeaf92..36a9c2325176 100644
-> --- a/include/linux/bpf_types.h
-> +++ b/include/linux/bpf_types.h
-> @@ -62,6 +62,7 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY_OF_MAPS, array_of_maps_=
-map_ops)
->  BPF_MAP_TYPE(BPF_MAP_TYPE_HASH_OF_MAPS, htab_of_maps_map_ops)
->  #ifdef CONFIG_NET
->  BPF_MAP_TYPE(BPF_MAP_TYPE_DEVMAP, dev_map_ops)
-> +BPF_MAP_TYPE(BPF_MAP_TYPE_DEVMAP_HASH, dev_map_hash_ops)
->  BPF_MAP_TYPE(BPF_MAP_TYPE_SK_STORAGE, sk_storage_map_ops)
->  #if defined(CONFIG_BPF_STREAM_PARSER)
->  BPF_MAP_TYPE(BPF_MAP_TYPE_SOCKMAP, sock_map_ops)
-[...]
+>  
+> +static int ocelot_get_ts_info(struct net_device *dev,
+> +			      struct ethtool_ts_info *info)
+> +{
+> +	struct ocelot_port *ocelot_port = netdev_priv(dev);
+> +	struct ocelot *ocelot = ocelot_port->ocelot;
+> +	int ret;
+> +
+> +	if (!ocelot->ptp)
+> +		return -EOPNOTSUPP;
+
+Hmm.. why does software timestamping depend on PTP?
+
+> +	ret = ethtool_op_get_ts_info(dev, info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	info->phc_index = ocelot->ptp_clock ?
+> +			  ptp_clock_index(ocelot->ptp_clock) : -1;
+> +	info->so_timestamping |= SOF_TIMESTAMPING_TX_SOFTWARE |
+> +				 SOF_TIMESTAMPING_RX_SOFTWARE |
+> +				 SOF_TIMESTAMPING_SOFTWARE |
+> +				 SOF_TIMESTAMPING_TX_HARDWARE |
+> +				 SOF_TIMESTAMPING_RX_HARDWARE |
+> +				 SOF_TIMESTAMPING_RAW_HARDWARE;
+> +	info->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ON) |
+> +			 BIT(HWTSTAMP_TX_ONESTEP_SYNC);
+> +	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) | BIT(HWTSTAMP_FILTER_ALL);
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct ethtool_ops ocelot_ethtool_ops = {
+>  	.get_strings		= ocelot_get_strings,
+>  	.get_ethtool_stats	= ocelot_get_ethtool_stats,
+>  	.get_sset_count		= ocelot_get_sset_count,
+>  	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
+>  	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
+> +	.get_ts_info		= ocelot_get_ts_info,
+>  };
+>  
+>  static int ocelot_port_attr_stp_state_set(struct ocelot_port *ocelot_port,
