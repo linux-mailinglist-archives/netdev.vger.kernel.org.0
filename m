@@ -2,102 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D4E96093D
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:25:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAE8A60944
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbfGEPY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 11:24:59 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53243 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727663AbfGEPY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:24:59 -0400
-Received: by mail-wm1-f65.google.com with SMTP id s3so9446979wms.2
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:24:57 -0700 (PDT)
+        id S1727675AbfGEP1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 11:27:15 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:38519 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727464AbfGEP1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:27:15 -0400
+Received: by mail-io1-f66.google.com with SMTP id j6so19920038ioa.5
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:27:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=776FeSmsIvO9BAuOMfeYFd0GoNy4MOugdcwM/WuTqsg=;
-        b=PBgHa7BQApvEk3m/50z6wziaw2Yv01CO3uBItHINnz4ARhdSYZX/h/XULODQ7roknM
-         NqXltRZuqAO6z2id1WpdesjpwtCY04gypErUOUmV5gKFajMA67bCIZ3vA1AB5OqhuK3N
-         HgCHq9gQwesyRZ3Ov/OjAyMct5QUJeHySzX6dhh+f/WPco6uM/3JWEehGRyry/l/1TLL
-         wqS2IauQSempUSqAoOw4K9yN+wepHNjVmxhAka9uBfUfOlpSSoqYEFb7Z1CASVzNAc8h
-         XPIdkNm2jMJplehxOjzNqY4i4WKqYPR6DDfU3Aj1paFwNKVSAGg8xVdf6eEw3uKDSMOs
-         CjbQ==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=X4prCoXhdxUgUpU/MzEnjk3EaHYjR3W9KuopoQW7Ozs=;
+        b=lfTepz19eQ5uu+IoIpGKiILc2WmbLYm0tNy0yeofOW9CpmnkzZHx2OfDyUH3KcNb/B
+         SQhewQo9RvJJ21wLJaaIvnLwa9rptXu5WNi3PRomD5EvnuDL8SeIvndpDUQ0wve7kzVK
+         cBnpYOViJ6jTPqMxTWJVEyf3XqlH+ee9w9ysa4T7zb7Peo2OLFiaefvAlaloHYGIoLmy
+         DOr+H6XD4BF7fKYR22H7ffa24nBHBSLQfNAAbFH3lUb7diX2q+Zik15HTMnqIt8fP0/1
+         o+z2mNN6lfXHumf9v3lTLTMUWIjlZ3ABeTcmEBDKf4GmcApyxtyfVXPwdLlCQ71KMmzE
+         hSOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=776FeSmsIvO9BAuOMfeYFd0GoNy4MOugdcwM/WuTqsg=;
-        b=BhwLkiCYrOGYFIqCPM5fORfC70fcbbBcyE8Z/FPXg+C46TaqiUr/eb69qrBNdxuaDs
-         z5QIuY60PvKfqEjH3+XvMuQVSdeAfi8/CcuxaJbIK/ZhHU528FwvKt+W6Jvb+mjO348r
-         /SuAS3wnJfC4gRSGC8ppK4yyqvyTsaNMt/vMYMqFIjxnALGIpCU1KypjdDMOsPtdKpLo
-         lJC9tzd7YlF8I45I5FFOw+O9QMciZD8+WeCqUWIW4+AhLs6WZ4g5S1UKP2UssZMUKJqN
-         PpBEGR5YsSJfsxlB32bFxCEVaXMqSpLuz4GTHHXglS5/lQWBnDwxTb0yo+dz/YaBZyzR
-         157w==
-X-Gm-Message-State: APjAAAXLGlJu9bC+zrf0LT7ibGvAqN1v3I39D7v++8eTJqF2dHhMnUiz
-        RCOlLpYSuEOkN6dsMnPmNx2VtA==
-X-Google-Smtp-Source: APXvYqwIn+CAMTXhiaR2OhdbdPqYr3i7rcxaiDbB1iTdnKqBy7Yo87Yv81S7nEiWLwHuACvpF1sKxA==
-X-Received: by 2002:a7b:c84c:: with SMTP id c12mr3851618wml.70.1562340297200;
-        Fri, 05 Jul 2019 08:24:57 -0700 (PDT)
-Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
-        by smtp.gmail.com with ESMTPSA id c30sm789893wrb.15.2019.07.05.08.24.55
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=X4prCoXhdxUgUpU/MzEnjk3EaHYjR3W9KuopoQW7Ozs=;
+        b=sEnYIcsWcQjopKLuxfc1pEoBTB6LF9pqrVbJMh20+T6hHKHpfMuMGTF+xKRVJcreV3
+         8/xGDiQQaiPAcbu8u9t/xrKSL2gils6xto9X6TrVjsW2quh1SYGSHzSn9oyKBYO2We/Z
+         IuUfSZEtHJeYfzeL7yNbgcerAt4E1jBzmHrKtGnGhTlTFAI67BGACHA/pLGvPrPqX16r
+         W9kh8QwHMg+QehfUjmOs2aDApRzGxF6Y+cJb5BNEgc93iOOBHMVeQ9mRpu/3n3RuHWrH
+         DAjrAx3gEO30PBRFtfkf1XGVVhcJlvHC9bfgx2lARLnY8EWE1Cl9VNtPT9pOGMpyM9Hk
+         Z3kA==
+X-Gm-Message-State: APjAAAXjneAchZGPBzZeiJcx3Y82BsJeReV81QUcgquUD+aEzAuZ8Z1T
+        FVR6G9X0TxfYsbQUREkRWO5yaQ==
+X-Google-Smtp-Source: APXvYqzp11a80fs0GhFSc6TIr7rueB6dBWrEOFT9pX4krFfwVGocixtfE70i3RahzQ+UYaBUH5M0dA==
+X-Received: by 2002:a6b:fb02:: with SMTP id h2mr3154610iog.289.1562340434933;
+        Fri, 05 Jul 2019 08:27:14 -0700 (PDT)
+Received: from sevai ([64.26.149.125])
+        by smtp.gmail.com with ESMTPSA id a8sm6976243ioh.29.2019.07.05.08.27.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 05 Jul 2019 08:24:56 -0700 (PDT)
-Date:   Fri, 5 Jul 2019 18:24:53 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH net-next v3 3/3] net: stmmac: Introducing support for
- Page Pool
-Message-ID: <20190705152453.GA24683@apalos>
-References: <cover.1562311299.git.joabreu@synopsys.com>
- <384dab52828c4b65596ef4202562a574eed93b91.1562311299.git.joabreu@synopsys.com>
- <20190705132905.GA15433@apalos>
- <BN8PR12MB32666359FABD7D7E55FE4761D3F50@BN8PR12MB3266.namprd12.prod.outlook.com>
+        Fri, 05 Jul 2019 08:27:14 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        xiyou.wangcong@gmail.com, dsahern@gmail.com,
+        willemdebruijn.kernel@gmail.com, dcaratti@redhat.com,
+        simon.horman@netronome.com, jakub.kicinski@netronome.com,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net-next v6 5/5] selftests: tc-tests: actions: add MPLS tests
+References: <1562249802-24937-1-git-send-email-john.hurley@netronome.com>
+        <1562249802-24937-6-git-send-email-john.hurley@netronome.com>
+Date:   Fri, 05 Jul 2019 11:27:13 -0400
+In-Reply-To: <1562249802-24937-6-git-send-email-john.hurley@netronome.com>
+        (John Hurley's message of "Thu, 4 Jul 2019 15:16:42 +0100")
+Message-ID: <851rz4o626.fsf@mojatatu.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB32666359FABD7D7E55FE4761D3F50@BN8PR12MB3266.namprd12.prod.outlook.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jose, 
+John Hurley <john.hurley@netronome.com> writes:
 
-On Fri, Jul 05, 2019 at 03:21:16PM +0000, Jose Abreu wrote:
-> From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> 
-> > I think this look ok for now. One request though, on page_pool_free 
-> 
-> Thanks for the review!
-> 
-> > A patch currently under review will slightly change that [1] and [2]
-> > Can you defer this a bit till that one gets merged?
-> > The only thing you'll have to do is respin this and replace page_pool_free()
-> > with page_pool_destroy()
-> 
-> As we are in end of release cycle net-next may close soon so maybe this 
-> can be merged and I can send a follow-up patch later if that's okay by 
-> you and David ?
-Well ideally we'd like to get the change in before the merge window ourselves,
-since we dont want to remove->re-add the same function in stable kernels. If
-that doesn't go in i am fine fixing it in the next merge window i guess, since
-it offers substantial speedups
+> Add a new series of selftests to verify the functionality of act_mpls in
+> TC.
+>
+> Signed-off-by: John Hurley <john.hurley@netronome.com>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> ---
+>  tools/testing/selftests/tc-testing/config          |   1 +
+>  .../tc-testing/tc-tests/actions/mpls.json          | 812 +++++++++++++++++++++
+>  2 files changed, 813 insertions(+)
+>  create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
+>
 
+[...]
 
-Thanks
-/Ilias
+Thanks for contributing tdc test cases. It would make sense to add tests
+for max values and exceeding max allowed values, e.g. for mpls labels,
+ttl and such, as we already do for other actions.
