@@ -2,130 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D80607F8
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 16:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF7760833
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 16:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727229AbfGEOgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 10:36:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56228 "EHLO vps0.lunn.ch"
+        id S1727291AbfGEOpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 10:45:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56416 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725837AbfGEOgt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 10:36:49 -0400
+        id S1725926AbfGEOpY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 10:45:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=38NEboaXdSeyWuU7v89kKFG7xDV4dw3xD2Yt889bIMo=; b=sW94YvLDJYgfKhHmEGFEwV24QV
-        EM563sTsqO+Vudy4k9sNYTjx2yZrfrfLCAOC6c/5Y2Q5CDGBPFsTlRdT/rIVfPPMVoyG/DXY3rbUw
-        mBsE+7Y4oqASqGm6z6zuunePmGlS6g+oHTVTkxkAL6+xGW9JUTc8iSVB4wk6R/it0dos=;
+        bh=EZeBhVxNapTqKm+TwpOXvO0xXIhyUhxpE2tEItylRz8=; b=RzdT0cQsutnBd57fPrKQA8JTW1
+        GldevCdIm0HRpXI6Da4ODBN0o4CjiqNoJu93oqsfoxv+9q2EPFOvMKpS6o3PoTf6ZqUuOZVgD40Xf
+        BrrUKZZhwHKX77ZKAJ4M5KnkzhkiD7o8BLpj8BADo4bw9H5PJMc4dYHCro1Yy3FBdMTE=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hjPKR-0001ZC-BZ; Fri, 05 Jul 2019 16:36:47 +0200
-Date:   Fri, 5 Jul 2019 16:36:47 +0200
+        id 1hjPSf-0001fm-1w; Fri, 05 Jul 2019 16:45:17 +0200
+Date:   Fri, 5 Jul 2019 16:45:17 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benjamin Beckmeyer <beb@eks-engel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
-Message-ID: <20190705143647.GC4428@lunn.ch>
-References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
- <20190703155518.GE18473@lunn.ch>
- <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
- <20190704132756.GB13859@lunn.ch>
- <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
- <20190704155347.GJ18473@lunn.ch>
- <ba64f1f9-14c7-2835-f6e7-0dd07039fb18@eks-engel.de>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org,
+        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com
+Subject: Re: [PATCH net-next 1/8] Documentation/bindings: net: ocelot:
+ document the PTP bank
+Message-ID: <20190705144517.GD4428@lunn.ch>
+References: <20190701100327.6425-1-antoine.tenart@bootlin.com>
+ <20190701100327.6425-2-antoine.tenart@bootlin.com>
+ <20190701135214.GD25795@lunn.ch>
+ <20190705133016.GD3926@kwain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ba64f1f9-14c7-2835-f6e7-0dd07039fb18@eks-engel.de>
+In-Reply-To: <20190705133016.GD3926@kwain>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 05, 2019 at 02:41:43PM +0200, Benjamin Beckmeyer wrote:
-> >> &mdio0 {
-> >>         interrupt-parent = <&gpio1>;
-> >>         interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-> >>
-> >>         switch0: switch0@2 {
-> >>                 compatible = "marvell,mv88e6190";
-> >>                 reg = <2>;
-> >>                 pinctrl-0 = <&pinctrl_gpios>;
-> >>                 reset-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
-> >>                 dsa,member = <0 0>;
-> > This is wrong. The interrupt is a switch property, not an MDIO bus
-> > property. So it belongs inside the switch node.
-> >
-> > 	  Andrew
-> 
+On Fri, Jul 05, 2019 at 03:30:16PM +0200, Antoine Tenart wrote:
 > Hi Andrew,
 > 
-> in the documentation for Marvell DSA the interrupt properties are in 
-> the MDIO part. Maybe the documentation for device tree is wrong or 
-> unclear?
-
-Ah. Yes. The documentation is wrong. I will fix that.
-
+> On Mon, Jul 01, 2019 at 03:52:14PM +0200, Andrew Lunn wrote:
+> > On Mon, Jul 01, 2019 at 12:03:20PM +0200, Antoine Tenart wrote:
+> > > One additional register range needs to be described within the Ocelot
+> > > device tree node: the PTP. This patch documents the binding needed to do
+> > > so.
+> > 
+> > Are there any more register banks? Maybe just add them all?
 > 
-> I switched to the kernel 5.1.16 to take advantage of your new code.
-> At the moment I deleted all interrupt properties from my device tree 
-> and if I get you right now the access should be trigger all 100ms but 
-> I have accesses within the tracing about 175 times a second.
+> I checked and there are (just a few) more. I also saw your other comment
+> about interrupts, and it's also true there.
 > 
-> Here is a snip from my trace without IRQ
-> 2188000.etherne-223   [000] ....   109.932406: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x01 val:0x40a8
->  2188000.etherne-223   [000] ....   109.932501: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b64
->  2188000.etherne-223   [000] ....   109.933113: mdio_access: 2188000.ethernet-1 write phy:0x02 reg:0x00 val:0x9b60
->  2188000.etherne-223   [000] ....   109.933261: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b60
->  2188000.etherne-223   [000] ....   109.933359: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x01 val:0xc801
+> Those definitions aren't related to the PHC so I'll prepare a patch for
+> a following series to add all the missing parts.
 
->  2188000.etherne-223   [000] ....   110.041683: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b60
->  2188000.etherne-223   [000] ....   110.041817: mdio_access: 2188000.ethernet-1 write phy:0x02 reg:0x00 val:0x9b60
->  2188000.etherne-223   [000] ....   110.041919: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x00 val:0x1b60
->  2188000.etherne-223   [000] ....   110.042025: mdio_access: 2188000.ethernet-1 read  phy:0x02 reg:0x01 val:0xc801
-
-These four access are one switch register access. The first read will
-be checking that the busy bit is not set. The second sets up a read to
-switch register 0x00 device address 1b, i.e. global 1. So this is the
-interrupt status register. The third read is checking that the busy
-bit is cleared. And the last is the actual value of the register.
-
+Thanks.
+ 
+> > Also, you should probably add a comment that despite it being in the
+> > Required part of the binding, it is actually optional.
 > 
-> Am I doing it right with the tracing points? I run just
-> 
-> echo 1 > /sys/kernel/debug/tracing/events/mdio/mdio_access/enable
-> cat /sys/kernel/debug/tracing/trace
+> I'm not sure about this: optional properties means some parts of the h/w
+> can be missing or not wired. It's not the case here, it's "optional" in
+> the driver only for dt compatibility (so that an older dt blob can work
+> with a newer kernel image), but it's now mandatory in the binding.
 
-That looks correct.
+Hi Antoine
 
-I think you are going to have to parse the register writes/reads to
-figure out what switch registers it is accessing. That should
-hopefully make it clearer why it is making so many accesses.
+If the driver can work without it, it is clearly optional. You just
+get reduced functionality. That is the thing with DT. You can never
+add more required properties after the first commit without breaking
+backwards compatibility. To make the documentation fit the driver,
+somewhere you need to state they are optional. Either by placing the
+new properties in the optional section of the binding, or add a
+comment.
 
-> Here is the another device tree I tried, but with this I get accesses 
-> on the bus in about every 50 microseconds!
-> 
-> --snip
-> &mdio0 {
->         switch0: switch0@2 {
->                 compatible = "marvell,mv88e6190";
->                 reg = <2>;
->                 pinctrl-0 = <&pinctrl_switch_irq>;
->                 interrupt-parent = <&gpio1>;
->                 interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
->                 interrupt-controller;
->                 #interrupt-cells = <2>;
->                 dsa,member = <0 0>;
-> 
->                 ports {
->                         #address-cells = <1>;
->                         #size-cells = <0>;
-> --snip
-
-That looks sensible.
-
-     Andrew
+	Andrew
