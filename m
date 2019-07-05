@@ -2,87 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE8A60944
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC93760957
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfGEP1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 11:27:15 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:38519 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727464AbfGEP1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:27:15 -0400
-Received: by mail-io1-f66.google.com with SMTP id j6so19920038ioa.5
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=X4prCoXhdxUgUpU/MzEnjk3EaHYjR3W9KuopoQW7Ozs=;
-        b=lfTepz19eQ5uu+IoIpGKiILc2WmbLYm0tNy0yeofOW9CpmnkzZHx2OfDyUH3KcNb/B
-         SQhewQo9RvJJ21wLJaaIvnLwa9rptXu5WNi3PRomD5EvnuDL8SeIvndpDUQ0wve7kzVK
-         cBnpYOViJ6jTPqMxTWJVEyf3XqlH+ee9w9ysa4T7zb7Peo2OLFiaefvAlaloHYGIoLmy
-         DOr+H6XD4BF7fKYR22H7ffa24nBHBSLQfNAAbFH3lUb7diX2q+Zik15HTMnqIt8fP0/1
-         o+z2mNN6lfXHumf9v3lTLTMUWIjlZ3ABeTcmEBDKf4GmcApyxtyfVXPwdLlCQ71KMmzE
-         hSOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=X4prCoXhdxUgUpU/MzEnjk3EaHYjR3W9KuopoQW7Ozs=;
-        b=sEnYIcsWcQjopKLuxfc1pEoBTB6LF9pqrVbJMh20+T6hHKHpfMuMGTF+xKRVJcreV3
-         8/xGDiQQaiPAcbu8u9t/xrKSL2gils6xto9X6TrVjsW2quh1SYGSHzSn9oyKBYO2We/Z
-         IuUfSZEtHJeYfzeL7yNbgcerAt4E1jBzmHrKtGnGhTlTFAI67BGACHA/pLGvPrPqX16r
-         W9kh8QwHMg+QehfUjmOs2aDApRzGxF6Y+cJb5BNEgc93iOOBHMVeQ9mRpu/3n3RuHWrH
-         DAjrAx3gEO30PBRFtfkf1XGVVhcJlvHC9bfgx2lARLnY8EWE1Cl9VNtPT9pOGMpyM9Hk
-         Z3kA==
-X-Gm-Message-State: APjAAAXjneAchZGPBzZeiJcx3Y82BsJeReV81QUcgquUD+aEzAuZ8Z1T
-        FVR6G9X0TxfYsbQUREkRWO5yaQ==
-X-Google-Smtp-Source: APXvYqzp11a80fs0GhFSc6TIr7rueB6dBWrEOFT9pX4krFfwVGocixtfE70i3RahzQ+UYaBUH5M0dA==
-X-Received: by 2002:a6b:fb02:: with SMTP id h2mr3154610iog.289.1562340434933;
-        Fri, 05 Jul 2019 08:27:14 -0700 (PDT)
-Received: from sevai ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id a8sm6976243ioh.29.2019.07.05.08.27.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 05 Jul 2019 08:27:14 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     John Hurley <john.hurley@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        xiyou.wangcong@gmail.com, dsahern@gmail.com,
-        willemdebruijn.kernel@gmail.com, dcaratti@redhat.com,
-        simon.horman@netronome.com, jakub.kicinski@netronome.com,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH net-next v6 5/5] selftests: tc-tests: actions: add MPLS tests
-References: <1562249802-24937-1-git-send-email-john.hurley@netronome.com>
-        <1562249802-24937-6-git-send-email-john.hurley@netronome.com>
-Date:   Fri, 05 Jul 2019 11:27:13 -0400
-In-Reply-To: <1562249802-24937-6-git-send-email-john.hurley@netronome.com>
-        (John Hurley's message of "Thu, 4 Jul 2019 15:16:42 +0100")
-Message-ID: <851rz4o626.fsf@mojatatu.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1727972AbfGEPa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 11:30:56 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52421 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727907AbfGEPav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:30:51 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 5 Jul 2019 18:30:42 +0300
+Received: from dev-l-vrt-207-011.mtl.labs.mlnx. (dev-l-vrt-207-011.mtl.labs.mlnx [10.134.207.11])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x65FUfOZ029656;
+        Fri, 5 Jul 2019 18:30:41 +0300
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Eran Ben Elisha <eranbe@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        moshe@mellanox.com, Tariq Toukan <tariqt@mellanox.com>
+Subject: [PATCH net-next 00/12] mlx5 TLS TX HW offload support
+Date:   Fri,  5 Jul 2019 18:30:10 +0300
+Message-Id: <1562340622-4423-1-git-send-email-tariqt@mellanox.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Hurley <john.hurley@netronome.com> writes:
+Hi Dave,
 
-> Add a new series of selftests to verify the functionality of act_mpls in
-> TC.
->
-> Signed-off-by: John Hurley <john.hurley@netronome.com>
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
-> Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> ---
->  tools/testing/selftests/tc-testing/config          |   1 +
->  .../tc-testing/tc-tests/actions/mpls.json          | 812 +++++++++++++++++++++
->  2 files changed, 813 insertions(+)
->  create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
->
+This series from Eran and me, adds TLS TX HW offload support to
+the mlx5 driver.
 
-[...]
+This offloads the kTLS encryption process from kernel to the 
+Mellanox NIC, saving CPU cycles and improving utilization.
 
-Thanks for contributing tdc test cases. It would make sense to add tests
-for max values and exceeding max allowed values, e.g. for mpls labels,
-ttl and such, as we already do for other actions.
+Upon a new TLS connection request, driver is responsible to create
+a dedicated HW context and configure it according to the crypto info,
+so HW can do the encryption itself.
+
+When the HW context gets out-of-sync (i.e. due to packets retransmission),
+driver is responsible for the re-sync process.
+This is done by posting special resync descriptors to the HW.
+
+Feature is supported on Mellanox Connect-X 6DX, and newer.
+Series was tested on SimX simulator.
+
+Series generated against net-next commit [1], with Saeed's request pulled [2]:
+
+[1] c4cde5804d51 Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
+[2] git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2019-07-04-v2
+
+Changes from last pull request:
+Fixed comments from Jakub:
+Patch 4:
+- Replace zero  memset with a call to memzero_explicit().
+Patch 11:
+- Fix stats counters names.
+- Drop TLS SKB with non-matching netdev.
+
+Regards,
+Tariq
+
+Eran Ben Elisha (1):
+  net/mlx5e: Tx, Don't implicitly assume SKB-less wqe has one WQEBB
+
+Tariq Toukan (11):
+  net/mlx5: Accel, Expose accel wrapper for IPsec FPGA function
+  net/mlx5: Kconfig, Better organize compilation flags
+  net/mlx5: Add crypto library to support create/destroy encryption key
+  net/mlx5: Accel, Add core TLS support for the Connect-X family
+  net/mlx5e: Move helper functions to a new txrx datapath header
+  net/mlx5e: Tx, Enforce L4 inline copy when needed
+  net/mlx5e: Tx, Make SQ WQE fetch function type generic
+  net/mlx5e: Tx, Unconstify SQ stop room
+  net/mlx5e: Re-work TIS creation functions
+  net/mlx5e: Introduce a fenced NOP WQE posting function
+  net/mlx5e: Add kTLS TX HW offload support
+
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |  52 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |  10 +-
+ .../net/ethernet/mellanox/mlx5/core/accel/ipsec.c  |   9 +
+ .../net/ethernet/mellanox/mlx5/core/accel/ipsec.h  |   7 +-
+ .../net/ethernet/mellanox/mlx5/core/accel/tls.c    |  45 +-
+ .../net/ethernet/mellanox/mlx5/core/accel/tls.h    |  51 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       | 114 +----
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  | 208 ++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |   1 +
+ .../mellanox/mlx5/core/en_accel/en_accel.h         |   1 +
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.c    |  93 +++++
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |  97 +++++
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 459 +++++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en_accel/tls.c |   5 +
+ .../net/ethernet/mellanox/mlx5/core/en_accel/tls.h |  11 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |   7 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.h         |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  27 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |  28 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  14 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  98 ++---
+ .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.h   |  75 ----
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c       |   6 +
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  14 +-
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.h  |   2 +
+ .../ethernet/mellanox/mlx5/core/ipoib/ipoib_vlan.c |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/crypto.c   |  72 ++++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   2 +-
+ include/linux/mlx5/accel.h                         |   2 +-
+ 31 files changed, 1232 insertions(+), 287 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/crypto.c
+
+-- 
+1.8.3.1
+
