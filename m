@@ -2,116 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5058960A67
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 18:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D1360AA0
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 18:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728579AbfGEQmW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 5 Jul 2019 12:42:22 -0400
-Received: from mga17.intel.com ([192.55.52.151]:63163 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726302AbfGEQmW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 12:42:22 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Jul 2019 09:42:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,455,1557212400"; 
-   d="scan'208";a="169707545"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
-  by orsmga006.jf.intel.com with ESMTP; 05 Jul 2019 09:42:21 -0700
-Received: from fmsmsx153.amr.corp.intel.com (10.18.125.6) by
- FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 5 Jul 2019 09:42:20 -0700
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.213]) by
- FMSMSX153.amr.corp.intel.com ([169.254.9.7]) with mapi id 14.03.0439.000;
- Fri, 5 Jul 2019 09:42:20 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>
-CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "poswald@suse.com" <poswald@suse.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>
-Subject: RE: [rdma 14/16] RDMA/irdma: Add ABI definitions
-Thread-Topic: [rdma 14/16] RDMA/irdma: Add ABI definitions
-Thread-Index: AQHVMg3zRd8VsRoltkutexKRUKIO/aa6iLSAgABOBQCAAWQucA==
-Date:   Fri, 5 Jul 2019 16:42:19 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7A684DAAA@fmsmsx124.amr.corp.intel.com>
-References: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
- <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
- <20190704074021.GH4727@mtr-leonro.mtl.com>
- <20190704121933.GD3401@mellanox.com>
-In-Reply-To: <20190704121933.GD3401@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNDZlNmEzNGQtZGNiNy00MDUzLTgyYjYtZTc4NWNmMzg5ODFmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQ2d2cG53Vm0wMFwvWHRPQjZXek9xU1dXSmhDTm1lNWpaR2ViMlhDVWZQbytMdzhJRVlqNExvUzZJRHRlVlJRblgifQ==
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.107]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726085AbfGEQrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 12:47:40 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41398 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbfGEQrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 12:47:40 -0400
+Received: by mail-pf1-f195.google.com with SMTP id m30so4543002pff.8;
+        Fri, 05 Jul 2019 09:47:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UtlLnC5TRAlG4W/Cn5rW/mrY7NUfn+eVWfGDgCrn+NA=;
+        b=EebMt4kHNNU4St1gh9pQPrRyjq+dQefGVdIKshWZVxKDgEdSSjoCU10RiNuZpqvx+u
+         W5LUAZupTXPHjQQtNl/tGo9zufcf6hq6WIQFhOWKA9iGvWTkqEuqKBgVGscD26m4CPI6
+         BBvTl8J9E4IMV5B7iZoQ/21tKk07FcWKlsrVMyFdDiS+3vHQ8pzgcyjpcMhrqWI8t0SK
+         kRcyw9KNk5pGBOz48qJur1kjak+sg4mcRS3rrQlfsbBRh/A1YbqL4URCQwVbEVEkP1Kt
+         8irPJH+JSx1BTQfWCgejQH4+0ERmYyhu49xTF64FjGuhz25CHlcDvLRrVNvf2XbnMCxj
+         5skA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UtlLnC5TRAlG4W/Cn5rW/mrY7NUfn+eVWfGDgCrn+NA=;
+        b=XSxcMZfLSQCuSo3B1W1NOgT8NBGtwlKbbUubiNodIMsosGguFvP0+Q7oqYYD+Ih30n
+         QIHDqV0CjkiRBofE3XKRlAvQeDMpxXJqVaONtfIwLRqnuw2qwtCTB5sPE2lOU1H/0Eok
+         vvNvnqsfxXop4/jd0gvH5Cgd0uvSzHcdnQHq0lH3NPj1dqsySKTfzPFgO+Tkz4oqbU06
+         4WMvJRSslRer7xANGhbMFRZ7Vlsh+26eE5YOeQz0bx6Ib4pUwVGeikjzQSVWToxykqz5
+         WDX89GazTZuRV2lIDNXF2rfzkoVpRR2sTwgr/f4SDxo0u6cX5zD/sitgt11X92L1ckjE
+         Pa+g==
+X-Gm-Message-State: APjAAAVK3xlN7j7DVr88MHBqc8BFAH2w3l9vMu9W1BxrInKEL/wAOrDR
+        iiLzwBxfw8P1jm0tF/TeW2c=
+X-Google-Smtp-Source: APXvYqzzuUnoz+i03eSU2aVxxDunTmUAZtNVengEaVs6Y7I7Wb6EZzQ8Z1/26tcM9ViWUO5VsxFVCA==
+X-Received: by 2002:a63:6c7:: with SMTP id 190mr6428633pgg.7.1562345259913;
+        Fri, 05 Jul 2019 09:47:39 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id v3sm9053586pfm.188.2019.07.05.09.47.38
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 05 Jul 2019 09:47:39 -0700 (PDT)
+Date:   Fri, 5 Jul 2019 09:47:36 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, ralf@linux-mips.org,
+        paul.burton@mips.com, jhogan@kernel.org, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        allan.nielsen@microchip.com
+Subject: Re: [PATCH net-next 8/8] net: mscc: PTP Hardware Clock (PHC) support
+Message-ID: <20190705164736.x6dy2oc6jo5db65v@localhost>
+References: <20190701100327.6425-1-antoine.tenart@bootlin.com>
+ <20190701100327.6425-9-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190701100327.6425-9-antoine.tenart@bootlin.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [rdma 14/16] RDMA/irdma: Add ABI definitions
-> 
-> On Thu, Jul 04, 2019 at 10:40:21AM +0300, Leon Romanovsky wrote:
-> > On Wed, Jul 03, 2019 at 07:12:57PM -0700, Jeff Kirsher wrote:
-> > > From: Mustafa Ismail <mustafa.ismail@intel.com>
-> > >
-> > > Add ABI definitions for irdma.
-> > >
-> > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > > include/uapi/rdma/irdma-abi.h | 130
-> > > ++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 130 insertions(+)
-> > >  create mode 100644 include/uapi/rdma/irdma-abi.h
-> > >
-> > > diff --git a/include/uapi/rdma/irdma-abi.h
-> > > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
-> > > 000000000000..bdfbda4c829e
-> > > +++ b/include/uapi/rdma/irdma-abi.h
-> > > @@ -0,0 +1,130 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-> > > +/* Copyright (c) 2006 - 2019 Intel Corporation.  All rights reserved.
-> > > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
-> > > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
-> > > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
-> > > + */
-> > > +
-> > > +#ifndef IRDMA_ABI_H
-> > > +#define IRDMA_ABI_H
-> > > +
-> > > +#include <linux/types.h>
-> > > +
-> > > +/* irdma must support legacy GEN_1 i40iw kernel
-> > > + * and user-space whose last ABI ver is 5  */ #define IRDMA_ABI_VER
-> > > +6
-> >
-> > Can you please elaborate about it more?
-> > There is no irdma code in RDMA yet, so it makes me wonder why new
-> > define shouldn't start from 1.
-> 
-> It is because they are ABI compatible with the current user space, which raises the
-> question why we even have this confusing header file..
+On Mon, Jul 01, 2019 at 12:03:27PM +0200, Antoine Tenart wrote:
 
-It is because we need to support current providers/i40iw user-space.
-Our user-space patch series will introduce a new provider (irdma) whose ABI
-ver. is also 6 (capable of supporting X722 and which will work with i40iw driver
-on older kernels) and removes providers/i40iw from rdma-core.
+> +void ocelot_get_hwtimestamp(struct ocelot *ocelot, struct timespec64 *ts)
+> +{
+> +	/* Read current PTP time to get seconds */
+> +	u32 val = ocelot_read_rix(ocelot, PTP_PIN_CFG, TOD_ACC_PIN);
 
+This register is protected by ocelot->ptp_clock_lock from other code
+paths, but not in this one!
+
+> +	val &= ~(PTP_PIN_CFG_SYNC | PTP_PIN_CFG_ACTION_MASK | PTP_PIN_CFG_DOM);
+> +	val |= PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_SAVE);
+> +	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
+> +	ts->tv_sec = ocelot_read_rix(ocelot, PTP_PIN_TOD_SEC_LSB, TOD_ACC_PIN);
+	...
+> +}
+
+
+> +static int ocelot_init_timestamp(struct ocelot *ocelot)
+> +{
+> +	ocelot->ptp_info = ocelot_ptp_clock_info;
+> +
+> +	ocelot->ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
+> +	if (IS_ERR(ocelot->ptp_clock))
+> +		return PTR_ERR(ocelot->ptp_clock);
+
+You need to handle the NULL case:
+
+ptp_clock_register() - register a PTP hardware clock driver
+
+@info:   Structure describing the new clock.
+@parent: Pointer to the parent device of the new clock.
+
+Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+support is missing at the configuration level, this function
+returns NULL, and drivers are expected to gracefully handle that
+case separately.
+
+> +
+> +	ocelot_write(ocelot, SYS_PTP_CFG_PTP_STAMP_WID(30), SYS_PTP_CFG);
+> +	ocelot_write(ocelot, 0xffffffff, ANA_TABLES_PTP_ID_LOW);
+> +	ocelot_write(ocelot, 0xffffffff, ANA_TABLES_PTP_ID_HIGH);
+> +
+> +	ocelot_write(ocelot, PTP_CFG_MISC_PTP_EN, PTP_CFG_MISC);
+> +
+> +	return 0;
+> +}
+
+Thanks,
+Richard
