@@ -2,82 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6348660682
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 15:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F064D6068C
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 15:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbfGENT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 09:19:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55782 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726794AbfGENT1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 09:19:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nWbKLFHL+b+hFBq0825QJ0Fh8N/yT85HADdlrJpqwCQ=; b=3GP3RPKu7ZpFV7+cfZjE+vohUc
-        Bex/2CpZC7Ala0E0eG4LZVetEHQEb/pfJHowfchWGZpWrdgaXwHw7j7iVZVhdnGDzqhJtwb9f/Eeo
-        KLOig8uZwjFnSMbwTDYL8WRA0Mk0Pe6SrZtuUPnX5rsJaDgQ9SE3ZqwIKhT9NdjVOm9A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hjO7O-0001Br-S6; Fri, 05 Jul 2019 15:19:14 +0200
-Date:   Fri, 5 Jul 2019 15:19:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Allan Nielsen <Allan.Nielsen@microsemi.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
- port DT node
-Message-ID: <20190705131914.GA4428@lunn.ch>
-References: <20190621164940.GL31306@lunn.ch>
- <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
- <20190624115558.GA5690@piout.net>
- <20190624142625.GR31306@lunn.ch>
- <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
- <20190624162431.GX31306@lunn.ch>
- <20190624182614.GC5690@piout.net>
- <CA+h21hqGtA5ou7a3wjSuHxa_4fXk4GZohTAxnUdfLZjV3nq5Eg@mail.gmail.com>
- <20190705044945.GA30115@lunn.ch>
- <VI1PR04MB4880DEA9D7836A68E0EE141396F50@VI1PR04MB4880.eurprd04.prod.outlook.com>
+        id S1728949AbfGENYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 09:24:39 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:42942 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728837AbfGENYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 09:24:38 -0400
+Received: by mail-io1-f68.google.com with SMTP id u19so19082102ior.9
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 06:24:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=wP9NlDr6bD2aoiL7N4bfYIJ/HvdrRGHcleGNGuB8Lwo=;
+        b=nBNukwLBUd5AQhriWQmUXLkxZbfqi6PZ4W3zlMZkZG/1YOHx7j4znzzYNMVhLCYk3A
+         ud+0nMr53C/I3MkH4eic+fx740oYIWYW6lTwugV//iXUd3Ftl+NpHzT5RXoO1K00AzUR
+         3L5mbruThN+Et7gXXFdd7ATCYHy21DXF3WDwfdPqym8yPbidBs8jZcRWOKpEIc1QOQLv
+         4oU69IY5aobjQEhkFK/TyPgGhI/cfHQV81VEB4tdyGynxlEdomG068JRJwm6sPjlo5zJ
+         NUnp0H1Z5IhnPiEfC168MlrWYaXg3sTEOXtTCrW6Ad7qT56KRyucMW+6lY17LEFmOA9V
+         Srkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=wP9NlDr6bD2aoiL7N4bfYIJ/HvdrRGHcleGNGuB8Lwo=;
+        b=hCbK0TDc+d6mNjVxUFJiMczYdbYODJstOJtftGWvF2ZGkmuleBWto+HPMRkDFqwUHW
+         r2OXxHxjIvCJC5P9F3XeVk7bOmsYFFcTrw3ecIZT8iITDk8YhbONNLRlls0Dnis2++8D
+         HNvp+56jMbYxGivHUu0UE8rOni4hykDnMMVVJC8MOMm/iB1Y92buYndT7YlJUrSXJ8vy
+         4LuuBp92NPzssv41t5YFjWQKZnn29yhvniG3FA1pLK4umGpHMjc7DmYFqm2U7t35sygi
+         Tdd+oJvxsFkP2gf6mlNu4nKAMDwMsETDoRfA6tmsqX0SZHmhy5vBHFcc06ZN96HBeIk/
+         gwMA==
+X-Gm-Message-State: APjAAAWO3dYUv1x1R0+6IsB906suz0rPrf9jT4sDiMDB9sevgfOXA2CE
+        3ALeatbFBp0uxxk4yRK1Flsj3DtoiUgu6owYFd6wxA==
+X-Google-Smtp-Source: APXvYqwOfWMpuGkg9RKdi1dW9m3N/UTu38SQFu4df6Dl5WRhRKX6+Q2277z0Av7zSHTMO8XgkKHfaRS0fHak0CXooIs=
+X-Received: by 2002:a5d:80d6:: with SMTP id h22mr4158590ior.231.1562333077745;
+ Fri, 05 Jul 2019 06:24:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB4880DEA9D7836A68E0EE141396F50@VI1PR04MB4880.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <000000000000d3f34b058c3d5a4f@google.com> <20190626184251.GE3116@mit.edu>
+ <20190626210351.GF3116@mit.edu> <20190626224709.GH3116@mit.edu>
+In-Reply-To: <20190626224709.GH3116@mit.edu>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 5 Jul 2019 15:24:26 +0200
+Message-ID: <CACT4Y+YTpUErjEmjrqki-tJ0Lyx0c53MQDGVS4CixfmcAnuY=A@mail.gmail.com>
+Subject: Re: INFO: rcu detected stall in ext4_write_checks
+To:     "Theodore Ts'o" <tytso@mit.edu>,
+        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        David Miller <davem@davemloft.net>, eladr@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Nice discussion, again, but there's a missing point that has not been
-> brought up yet.  We actually intend to support the following hardware
-> configuration: a single PCI device consisting of the Microsemi's switch core
-> and our DMA rings.
-> The hardware supports this configuration into a single PCI function (PF), 
-> with a unique PCI function id (0xe111), so that the same driver has access to 
-> both switch registers and DMA rings connected to the CPU port.  This device
-> would qualify  as a  switchdev device, and we can simply reuse the existing
-> ocelot code for the switch core part.  The initial patch set was the first step in
-> supporting the switch core on our platform, we just need to add the support
-> for the DMA rings part, to make it a complete switchdev solution.
+On Thu, Jun 27, 2019 at 12:47 AM Theodore Ts'o <tytso@mit.edu> wrote:
+>
+> More details about what is going on.  First, it requires root, because
+> one of that is required is using sched_setattr (which is enough to
+> shoot yourself in the foot):
+>
+> sched_setattr(0, {size=0, sched_policy=0x6 /* SCHED_??? */, sched_flags=0, sched_nice=0, sched_priority=0, sched_runtime=2251799813724439, sched_deadline=4611686018427453437, sched_period=0}, 0) = 0
+>
+> This is setting the scheduler policy to be SCHED_DEADLINE, with a
+> runtime parameter of 2251799.813724439 seconds (or 26 days) and a
+> deadline of 4611686018.427453437 seconds (or 146 *years*).  This means
+> a particular kernel thread can run for up to 26 **days** before it is
+> scheduled away, and if a kernel reads gets woken up or sent a signal,
+> no worries, it will wake up roughly seven times the interval that Rip
+> Van Winkle spent snoozing in a cave in the Catskill Mountains (in
+> Washington Irving's short story).
+>
+> We then kick off a half-dozen threads all running:
+>
+>    sendfile(fd, fd, &pos, 0x8080fffffffe);
+>
+> (and since count is a ridiculously large number, this gets cut down to):
+>
+>    sendfile(fd, fd, &pos, 2147479552);
+>
+> Is it any wonder that we are seeing RCU stalls?   :-)
 
-Hi Claudiu
++Peter, Ingo for sched_setattr and +Paul for rcu
 
-It sound like in the end you will have a core library and then two
-drivers wrapped around it, giving a pure switchdev device with polled
-IO or DMA, and a DSA driver using a CPU port.
+First of all: is it a semi-intended result of a root (CAP_SYS_NICE)
+doing local DoS abusing sched_setattr? It would perfectly reasonable
+to starve other processes, but I am not sure about rcu. In the end the
+high prio process can use rcu itself, and then it will simply blow
+system memory by stalling rcu. So it seems that rcu stalls should not
+happen as a result of weird sched_setattr values. If that is the case,
+what needs to be fixed? sched_setattr? rcu? sendfile?
 
-   Andrew
+If this is semi-intended, the only option I see is to disable
+something in syzkaller: sched_setattr entirely, or drop CAP_SYS_NICE,
+or ...? Any preference either way?
