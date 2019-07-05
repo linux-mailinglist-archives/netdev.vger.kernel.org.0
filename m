@@ -2,682 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 098EE609BD
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:50:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49300609B1
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 17:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728147AbfGEPua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 11:50:30 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36248 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728148AbfGEPu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:50:29 -0400
-Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x65FmuMk028551
-        for <netdev@vger.kernel.org>; Fri, 5 Jul 2019 08:50:27 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=gmJ3Ww64nIC0eN9Aoi+uNs3Il4pcq7m6YpvGThhq5aM=;
- b=Dbf84trzJwZcdiwitA6Qvw8WDw/iGzIcYO7o+Zli1/j53k2p1b7AUalbbvYiH/kxA2Zt
- Riysm2GETgOqF1M9MPILbW/bmY15owQKSssh9b7napOY64ndhGClH/qdDjU+P5KC6M2H
- 6IkaTAAY/M44HipIm9CUoNLRJX7I1tMYW7k= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2thtd92tq7-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:50:27 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 5 Jul 2019 08:50:25 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 61A9686162B; Fri,  5 Jul 2019 08:50:24 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v5 bpf-next 4/4] selftests/bpf: convert legacy BPF maps to BTF-defined ones
-Date:   Fri, 5 Jul 2019 08:50:12 -0700
-Message-ID: <20190705155012.3539722-5-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190705155012.3539722-1-andriin@fb.com>
-References: <20190705155012.3539722-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1727016AbfGEPuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 11:50:19 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:39152 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbfGEPuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 11:50:19 -0400
+Received: by mail-qt1-f196.google.com with SMTP id l9so3321369qtu.6
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 08:50:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=un/QMDgD7xRIOUszwS2wGlz52tslEmbgVJUy/OVF8os=;
+        b=lFlwULSPUbKrvW+iNcCcGnarrV9/iZivr9wvTC5jRF8sye15li8rovk4EI+B5fvE+m
+         hHdQEihBW4yOrOtdwQ2MyCA1DLY1Fk65Frx4r/LXn+fyYT8cu/QxSYF97Z45c/NZ12QK
+         X0RzaAh/Z947F8XK1hD0hpATMQ4gz2O9m+4Ui3HoB9A5FuRcwnuHSlWSKrFkk1sVlaNl
+         Bup/3WXWZaYKW8rgSaAH785jRNXZaCwKZ1wAbCoQoZVsxOev28nd+9/gxqgm3h/4QLTr
+         4xZ2SsM3Xa9HwGO2uAOdDYlCmtnZZJpbZf5tlvtXNNsjS/lfF6dOsY12g3sjkQmHUr4r
+         kvFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=un/QMDgD7xRIOUszwS2wGlz52tslEmbgVJUy/OVF8os=;
+        b=Mk+GeqSLzg9KFiD3Exy8BHhGDYf7aeMyuyaMgV7lnTVX/J/qW3Ns53HiMr4bUImAiN
+         jIdgtD6iQSIMJ5XF0A6IbCfF8JpUC+Z6hnetbfnT1t3Mlhi1RWQ4jiWId2wsXNaCgGs4
+         hfZ+sO6aV087wkQ87Sgquopba4NLaC+SphNrnY7aVamJYIcXaxpHJADg1GxFKTHmnXy8
+         pD4FG+nSN3okilJU0QAJYt7z0qkkLOrKVItQVrpdGDn4nneKMnJj49tTffhC3KnLRp9m
+         DXFFnn8bUROm9+ISZN6Wql0QWxIm5mj8SLidfTSRSUARbjB7W54QENLZ7WdT3PDrFyC8
+         tryg==
+X-Gm-Message-State: APjAAAWHkNnS3U39eADGkZyH24mpuKbZ0AQAql7ioibo3kIK+4EzmqsS
+        JoqMpiB+/9rwXlXtZ8aoyUdd8w==
+X-Google-Smtp-Source: APXvYqzCHlx84qPO9Fcty4PLwQ299M+9+HbG7YB5mC4W2Jwi/Ecm1FWK2FDHnEkXJtDx3bfebkp86w==
+X-Received: by 2002:ac8:450e:: with SMTP id q14mr477512qtn.132.1562341817828;
+        Fri, 05 Jul 2019 08:50:17 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id q56sm4224593qtq.64.2019.07.05.08.50.17
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 05 Jul 2019 08:50:17 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hjQTY-0006jc-Vo; Fri, 05 Jul 2019 12:50:16 -0300
+Date:   Fri, 5 Jul 2019 12:50:16 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v5 00/17] Statistics counter support
+Message-ID: <20190705155016.GA25864@ziepe.ca>
+References: <20190702100246.17382-1-leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-05_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907050193
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190702100246.17382-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert selftests that were originally left out and new ones added
-recently to consistently use BTF-defined maps.
+On Tue, Jul 02, 2019 at 01:02:29PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
+> 
+> Changelog:
+>  v4 -> v5:
+>  * Patch #6 and #14 - consolidated many counter release functions,
+>    removed mutex lock protection from dealloc_counter() call
+>    and simplified kref_put/kref_get operations.
+>  * Added Saeed's ACK tags.
+>  v3 -> v4:
+>  * Add counter_dealloc() callback function
+>  * Moved to kref implementation
+>  * Fixed lock during spinlock
+>  v2 -> v3:
+>  * We didn't change use of atomics over kref for management of unbind
+>    counter from QP. The reason to it that bind and unbind are non-symmetric
+>    in regards of put and get, so we need to count differently memory
+>    release flows of HW objects (restrack) and SW bind operations.
+>  * Everything else was addressed.
+>  v1 -> v2:
+>  * Rebased to latest rdma-next
+>  v0 -> v1:
+>  * Changed wording of counter comment
+>  * Removed unneeded assignments
+>  * Added extra patch to present global counters
+> 
+> 
+> Hi,
+> 
+> This series from Mark provides dynamic statistics infrastructure.
+> He uses netlink interface to configure and retrieve those counters.
+> 
+> This infrastructure allows to users monitor various objects by binding
+> to them counters. As the beginning, we used QP object as target for
+> those counters, but future patches will include ODP MR information too.
+> 
+> Two binding modes are supported:
+>  - Auto: This allows a user to build automatic set of objects to a counter
+>    according to common criteria. For example in a per-type scheme, where in
+>    one process all QPs with same QP type are bound automatically to a single
+>    counter.
+>  - Manual: This allows a user to manually bind objects on a counter.
+> 
+> Those two modes are mutual-exclusive with separation between processes,
+> objects created by different processes cannot be bound to a same counter.
+> 
+> For objects which don't support counter binding, we will return
+> pre-allocated counters.
+> 
+> $ rdma statistic qp set link mlx5_2/1 auto type on
+> $ rdma statistic qp set link mlx5_2/1 auto off
+> $ rdma statistic qp bind link mlx5_2/1 lqpn 178
+> $ rdma statistic qp unbind link mlx5_2/1 cntn 4 lqpn 178
+> $ rdma statistic show
+> $ rdma statistic qp mode
+> 
+> Thanks
+> 
+> 
+> Mark Zhang (17):
+>   net/mlx5: Add rts2rts_qp_counters_set_id field in hca cap
+>   RDMA/restrack: Introduce statistic counter
+>   RDMA/restrack: Add an API to attach a task to a resource
+>   RDMA/restrack: Make is_visible_in_pid_ns() as an API
+>   RDMA/counter: Add set/clear per-port auto mode support
+>   RDMA/counter: Add "auto" configuration mode support
+>   IB/mlx5: Support set qp counter
+>   IB/mlx5: Add counter set id as a parameter for
+>     mlx5_ib_query_q_counters()
+>   IB/mlx5: Support statistic q counter configuration
+>   RDMA/nldev: Allow counter auto mode configration through RDMA netlink
+>   RDMA/netlink: Implement counter dumpit calback
+>   IB/mlx5: Add counter_alloc_stats() and counter_update_stats() support
+>   RDMA/core: Get sum value of all counters when perform a sysfs stat
+>     read
+>   RDMA/counter: Allow manual mode configuration support
+>   RDMA/nldev: Allow counter manual mode configration through RDMA
+>     netlink
+>   RDMA/nldev: Allow get counter mode through RDMA netlink
+>   RDMA/nldev: Allow get default counter statistics through RDMA netlink
 
-Reported-by: kernel test robot <rong.a.chen@intel.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Acked-by: Yonghong Song <yhs@fb.com>
----
- .../selftests/bpf/progs/get_cgroup_id_kern.c  |  26 ++---
- tools/testing/selftests/bpf/progs/pyperf.h    |  90 +++++++-------
- .../bpf/progs/sockmap_verdict_prog.c          |  48 ++++----
- .../testing/selftests/bpf/progs/strobemeta.h  |  68 +++++------
- .../selftests/bpf/progs/test_map_in_map.c     |  30 ++---
- .../testing/selftests/bpf/progs/test_obj_id.c |  12 +-
- .../selftests/bpf/progs/test_xdp_loop.c       |  26 ++---
- .../selftests/bpf/progs/xdp_redirect_map.c    |  12 +-
- .../testing/selftests/bpf/progs/xdping_kern.c |  12 +-
- .../selftests/bpf/test_queue_stack_map.h      |  30 ++---
- .../testing/selftests/bpf/test_sockmap_kern.h | 110 +++++++++---------
- 11 files changed, 228 insertions(+), 236 deletions(-)
+Okay, applied to for-next
 
-diff --git a/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c b/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c
-index 014dba10b8a5..16c54ade6888 100644
---- a/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c
-+++ b/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c
-@@ -4,19 +4,19 @@
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
- 
--struct bpf_map_def SEC("maps") cg_ids = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
--	.max_entries = 1,
--};
--
--struct bpf_map_def SEC("maps") pidmap = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u32),
--	.max_entries = 1,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} cg_ids SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u32);
-+} pidmap SEC(".maps");
- 
- SEC("tracepoint/syscalls/sys_enter_nanosleep")
- int trace(void *ctx)
-diff --git a/tools/testing/selftests/bpf/progs/pyperf.h b/tools/testing/selftests/bpf/progs/pyperf.h
-index abf6224649be..003fe106fc70 100644
---- a/tools/testing/selftests/bpf/progs/pyperf.h
-+++ b/tools/testing/selftests/bpf/progs/pyperf.h
-@@ -58,14 +58,6 @@ typedef struct {
- } Event;
- 
- 
--struct bpf_elf_map {
--	__u32 type;
--	__u32 size_key;
--	__u32 size_value;
--	__u32 max_elem;
--	__u32 flags;
--};
--
- typedef int pid_t;
- 
- typedef struct {
-@@ -118,47 +110,47 @@ static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
- 	return true;
- }
- 
--struct bpf_elf_map SEC("maps") pidmap = {
--	.type = BPF_MAP_TYPE_HASH,
--	.size_key = sizeof(int),
--	.size_value = sizeof(PidData),
--	.max_elem = 1,
--};
--
--struct bpf_elf_map SEC("maps") eventmap = {
--	.type = BPF_MAP_TYPE_HASH,
--	.size_key = sizeof(int),
--	.size_value = sizeof(Event),
--	.max_elem = 1,
--};
--
--struct bpf_elf_map SEC("maps") symbolmap = {
--	.type = BPF_MAP_TYPE_HASH,
--	.size_key = sizeof(Symbol),
--	.size_value = sizeof(int),
--	.max_elem = 1,
--};
--
--struct bpf_elf_map SEC("maps") statsmap = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.size_key = sizeof(Stats),
--	.size_value = sizeof(int),
--	.max_elem = 1,
--};
--
--struct bpf_elf_map SEC("maps") perfmap = {
--	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
--	.size_key = sizeof(int),
--	.size_value = sizeof(int),
--	.max_elem = 32,
--};
--
--struct bpf_elf_map SEC("maps") stackmap = {
--	.type = BPF_MAP_TYPE_STACK_TRACE,
--	.size_key = sizeof(int),
--	.size_value = sizeof(long long) * 127,
--	.max_elem = 1000,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, PidData);
-+} pidmap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, Event);
-+} eventmap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1);
-+	__type(key, Symbol);
-+	__type(value, int);
-+} symbolmap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, Stats);
-+} statsmap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-+	__uint(max_entries, 32);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} perfmap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
-+	__uint(max_entries, 1000);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(long long) * 127);
-+} stackmap SEC(".maps");
- 
- static __always_inline int __on_event(struct pt_regs *ctx)
- {
-diff --git a/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c b/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c
-index d85c874ef25e..433e23918a62 100644
---- a/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c
-+++ b/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c
-@@ -4,33 +4,33 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def SEC("maps") sock_map_rx = {
--	.type = BPF_MAP_TYPE_SOCKMAP,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 20);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} sock_map_rx SEC(".maps");
- 
--struct bpf_map_def SEC("maps") sock_map_tx = {
--	.type = BPF_MAP_TYPE_SOCKMAP,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 20);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} sock_map_tx SEC(".maps");
- 
--struct bpf_map_def SEC("maps") sock_map_msg = {
--	.type = BPF_MAP_TYPE_SOCKMAP,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 20);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} sock_map_msg SEC(".maps");
- 
--struct bpf_map_def SEC("maps") sock_map_break = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 20);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_map_break SEC(".maps");
- 
- SEC("sk_skb2")
- int bpf_prog2(struct __sk_buff *skb)
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
-index 553bc3b62e89..8a399bdfd920 100644
---- a/tools/testing/selftests/bpf/progs/strobemeta.h
-+++ b/tools/testing/selftests/bpf/progs/strobemeta.h
-@@ -204,40 +204,40 @@ struct strobelight_bpf_sample {
- 	char dummy_safeguard;
- };
- 
--struct bpf_map_def SEC("maps") samples = {
--	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 32,
--};
--
--struct bpf_map_def SEC("maps") stacks_0 = {
--	.type = BPF_MAP_TYPE_STACK_TRACE,
--	.key_size = sizeof(uint32_t),
--	.value_size = sizeof(uint64_t) * PERF_MAX_STACK_DEPTH,
--	.max_entries = 16,
--};
--
--struct bpf_map_def SEC("maps") stacks_1 = {
--	.type = BPF_MAP_TYPE_STACK_TRACE,
--	.key_size = sizeof(uint32_t),
--	.value_size = sizeof(uint64_t) * PERF_MAX_STACK_DEPTH,
--	.max_entries = 16,
--};
--
--struct bpf_map_def SEC("maps") sample_heap = {
--	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size = sizeof(uint32_t),
--	.value_size = sizeof(struct strobelight_bpf_sample),
--	.max_entries = 1,
--};
--
--struct bpf_map_def SEC("maps") strobemeta_cfgs = {
--	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size = sizeof(pid_t),
--	.value_size = sizeof(struct strobemeta_cfg),
--	.max_entries = STROBE_MAX_CFGS,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-+	__uint(max_entries, 32);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} samples SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
-+	__uint(max_entries, 16);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint64_t) * PERF_MAX_STACK_DEPTH);
-+} stacks_0 SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
-+	__uint(max_entries, 16);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint64_t) * PERF_MAX_STACK_DEPTH);
-+} stacks_1 SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, uint32_t);
-+	__type(value, struct strobelight_bpf_sample);
-+} sample_heap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__uint(max_entries, STROBE_MAX_CFGS);
-+	__type(key, pid_t);
-+	__type(value, struct strobemeta_cfg);
-+} strobemeta_cfgs SEC(".maps");
- 
- /* Type for the dtv.  */
- /* https://github.com/lattera/glibc/blob/master/nptl/sysdeps/x86_64/tls.h#L34 */
-diff --git a/tools/testing/selftests/bpf/progs/test_map_in_map.c b/tools/testing/selftests/bpf/progs/test_map_in_map.c
-index 2985f262846e..113226115365 100644
---- a/tools/testing/selftests/bpf/progs/test_map_in_map.c
-+++ b/tools/testing/selftests/bpf/progs/test_map_in_map.c
-@@ -5,23 +5,23 @@
- #include <linux/types.h>
- #include "bpf_helpers.h"
- 
--struct bpf_map_def SEC("maps") mim_array = {
--	.type = BPF_MAP_TYPE_ARRAY_OF_MAPS,
--	.key_size = sizeof(int),
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
-+	__uint(max_entries, 1);
-+	__uint(map_flags, 0);
-+	__uint(key_size, sizeof(__u32));
- 	/* must be sizeof(__u32) for map in map */
--	.value_size = sizeof(__u32),
--	.max_entries = 1,
--	.map_flags = 0,
--};
--
--struct bpf_map_def SEC("maps") mim_hash = {
--	.type = BPF_MAP_TYPE_HASH_OF_MAPS,
--	.key_size = sizeof(int),
-+	__uint(value_size, sizeof(__u32));
-+} mim_array SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH_OF_MAPS);
-+	__uint(max_entries, 1);
-+	__uint(map_flags, 0);
-+	__uint(key_size, sizeof(int));
- 	/* must be sizeof(__u32) for map in map */
--	.value_size = sizeof(__u32),
--	.max_entries = 1,
--	.map_flags = 0,
--};
-+	__uint(value_size, sizeof(__u32));
-+} mim_hash SEC(".maps");
- 
- SEC("xdp_mimtest")
- int xdp_mimtest0(struct xdp_md *ctx)
-diff --git a/tools/testing/selftests/bpf/progs/test_obj_id.c b/tools/testing/selftests/bpf/progs/test_obj_id.c
-index 726340fa6fe0..3d30c02bdae9 100644
---- a/tools/testing/selftests/bpf/progs/test_obj_id.c
-+++ b/tools/testing/selftests/bpf/progs/test_obj_id.c
-@@ -13,12 +13,12 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def SEC("maps") test_map_id = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
--	.max_entries = 1,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} test_map_id SEC(".maps");
- 
- SEC("test_obj_id_dummy")
- int test_obj_id(struct __sk_buff *skb)
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_loop.c b/tools/testing/selftests/bpf/progs/test_xdp_loop.c
-index 7fa4677df22e..97175f73c3fe 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_loop.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_loop.c
-@@ -18,19 +18,19 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def SEC("maps") rxcnt = {
--	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
--	.max_entries = 256,
--};
--
--struct bpf_map_def SEC("maps") vip2tnl = {
--	.type = BPF_MAP_TYPE_HASH,
--	.key_size = sizeof(struct vip),
--	.value_size = sizeof(struct iptnl_info),
--	.max_entries = MAX_IPTNL_ENTRIES,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__uint(max_entries, 256);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} rxcnt SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, MAX_IPTNL_ENTRIES);
-+	__type(key, struct vip);
-+	__type(value, struct iptnl_info);
-+} vip2tnl SEC(".maps");
- 
- static __always_inline void count_tx(__u32 protocol)
- {
-diff --git a/tools/testing/selftests/bpf/progs/xdp_redirect_map.c b/tools/testing/selftests/bpf/progs/xdp_redirect_map.c
-index e87a985b9df9..1c5f298d7196 100644
---- a/tools/testing/selftests/bpf/progs/xdp_redirect_map.c
-+++ b/tools/testing/selftests/bpf/progs/xdp_redirect_map.c
-@@ -3,12 +3,12 @@
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
- 
--struct bpf_map_def SEC("maps") tx_port = {
--	.type = BPF_MAP_TYPE_DEVMAP,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 8,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_DEVMAP);
-+	__uint(max_entries, 8);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} tx_port SEC(".maps");
- 
- SEC("redirect_map_0")
- int xdp_redirect_map_0(struct xdp_md *xdp)
-diff --git a/tools/testing/selftests/bpf/progs/xdping_kern.c b/tools/testing/selftests/bpf/progs/xdping_kern.c
-index 87393e7c667c..112a2857f4e2 100644
---- a/tools/testing/selftests/bpf/progs/xdping_kern.c
-+++ b/tools/testing/selftests/bpf/progs/xdping_kern.c
-@@ -17,12 +17,12 @@
- 
- #include "xdping.h"
- 
--struct bpf_map_def SEC("maps") ping_map = {
--	.type = BPF_MAP_TYPE_HASH,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(struct pinginfo),
--	.max_entries = 256,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 256);
-+	__type(key, __u32);
-+	__type(value, struct pinginfo);
-+} ping_map SEC(".maps");
- 
- static __always_inline void swap_src_dst_mac(void *data)
- {
-diff --git a/tools/testing/selftests/bpf/test_queue_stack_map.h b/tools/testing/selftests/bpf/test_queue_stack_map.h
-index 295b9b3bc5c7..0e014d3b2b36 100644
---- a/tools/testing/selftests/bpf/test_queue_stack_map.h
-+++ b/tools/testing/selftests/bpf/test_queue_stack_map.h
-@@ -10,21 +10,21 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def __attribute__ ((section("maps"), used)) map_in = {
--	.type = MAP_TYPE,
--	.key_size = 0,
--	.value_size = sizeof(__u32),
--	.max_entries = 32,
--	.map_flags = 0,
--};
--
--struct bpf_map_def __attribute__ ((section("maps"), used)) map_out = {
--	.type = MAP_TYPE,
--	.key_size = 0,
--	.value_size = sizeof(__u32),
--	.max_entries = 32,
--	.map_flags = 0,
--};
-+struct {
-+	__uint(type, MAP_TYPE);
-+	__uint(max_entries, 32);
-+	__uint(map_flags, 0);
-+	__uint(key_size, 0);
-+	__uint(value_size, sizeof(__u32));
-+} map_in SEC(".maps");
-+
-+struct {
-+	__uint(type, MAP_TYPE);
-+	__uint(max_entries, 32);
-+	__uint(map_flags, 0);
-+	__uint(key_size, 0);
-+	__uint(value_size, sizeof(__u32));
-+} map_out SEC(".maps");
- 
- SEC("test")
- int _test(struct __sk_buff *skb)
-diff --git a/tools/testing/selftests/bpf/test_sockmap_kern.h b/tools/testing/selftests/bpf/test_sockmap_kern.h
-index 4e7d3da21357..d008b41b7d8d 100644
---- a/tools/testing/selftests/bpf/test_sockmap_kern.h
-+++ b/tools/testing/selftests/bpf/test_sockmap_kern.h
-@@ -28,61 +28,61 @@
-  * are established and verdicts are decided.
-  */
- 
--struct bpf_map_def SEC("maps") sock_map = {
--	.type = TEST_MAP_TYPE,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
--
--struct bpf_map_def SEC("maps") sock_map_txmsg = {
--	.type = TEST_MAP_TYPE,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
--
--struct bpf_map_def SEC("maps") sock_map_redir = {
--	.type = TEST_MAP_TYPE,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 20,
--};
--
--struct bpf_map_def SEC("maps") sock_apply_bytes = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 1
--};
--
--struct bpf_map_def SEC("maps") sock_cork_bytes = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 1
--};
--
--struct bpf_map_def SEC("maps") sock_bytes = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 6
--};
--
--struct bpf_map_def SEC("maps") sock_redir_flags = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 1
--};
--
--struct bpf_map_def SEC("maps") sock_skb_opts = {
--	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
--	.max_entries = 1
--};
-+struct {
-+	__uint(type, TEST_MAP_TYPE);
-+	__uint(max_entries, 20);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} sock_map SEC(".maps");
-+
-+struct {
-+	__uint(type, TEST_MAP_TYPE);
-+	__uint(max_entries, 20);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} sock_map_txmsg SEC(".maps");
-+
-+struct {
-+	__uint(type, TEST_MAP_TYPE);
-+	__uint(max_entries, 20);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} sock_map_redir SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_apply_bytes SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_cork_bytes SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 6);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_bytes SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_redir_flags SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_skb_opts SEC(".maps");
- 
- SEC("sk_skb1")
- int bpf_prog1(struct __sk_buff *skb)
--- 
-2.17.1
-
+Thanks,
+Jason
