@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E8F600D3
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 08:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08FA4600D6
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 08:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbfGEGLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 02:11:13 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:44788 "EHLO huawei.com"
+        id S1727768AbfGEGLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 02:11:34 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:44994 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725772AbfGEGLN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 02:11:13 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 3CF5090D64F6A7756C51;
-        Fri,  5 Jul 2019 14:11:11 +0800 (CST)
+        id S1725772AbfGEGLe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 02:11:34 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 7FFC1CF4EB6D5BD339E6;
+        Fri,  5 Jul 2019 14:11:31 +0800 (CST)
 Received: from huawei.com (10.67.189.167) by DGGEMS412-HUB.china.huawei.com
  (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Fri, 5 Jul 2019
- 14:11:05 +0800
+ 14:11:25 +0800
 From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
         <dingtianhong@huawei.com>, <xiaojiangfeng@huawei.com>
@@ -25,9 +25,9 @@ CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <leeyou.li@huawei.com>, <xiekunxun@huawei.com>,
         <jianping.liu@huawei.com>, <nixiaoming@huawei.com>
-Subject: [PATCH 03/10] net: hisilicon: Cleanup for cast to restricted __be32
-Date:   Fri, 5 Jul 2019 14:10:59 +0800
-Message-ID: <1562307059-103641-1-git-send-email-xiaojiangfeng@huawei.com>
+Subject: [PATCH 04/10] net: hisilicon: HI13X1_GMAX skip write LOCAL_PAGE_REG
+Date:   Fri, 5 Jul 2019 14:11:13 +0800
+Message-ID: <1562307073-103681-1-git-send-email-xiaojiangfeng@huawei.com>
 X-Mailer: git-send-email 1.8.5.6
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -38,38 +38,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the following warning from sparse:
-hip04_eth.c:533:23: warning: cast to restricted __be16
-hip04_eth.c:533:23: warning: cast to restricted __be16
-hip04_eth.c:533:23: warning: cast to restricted __be16
-hip04_eth.c:533:23: warning: cast to restricted __be16
-hip04_eth.c:534:23: warning: cast to restricted __be32
-hip04_eth.c:534:23: warning: cast to restricted __be32
-hip04_eth.c:534:23: warning: cast to restricted __be32
-hip04_eth.c:534:23: warning: cast to restricted __be32
-hip04_eth.c:534:23: warning: cast to restricted __be32
-hip04_eth.c:534:23: warning: cast to restricted __be32
+HI13X1_GMAC changed the offsets and bitmaps for
+GE_TX_LOCAL_PAGE_REG registers in the same peripheral
+device on different models of the hip04_eth. With the
+default configuration, HI13X1_GMAC can also work without
+any writes to the GE_TX_LOCAL_PAGE_REG register.
 
 Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hip04_eth.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index 31f13cf..d8f0619 100644
+index d8f0619..fe61b01 100644
 --- a/drivers/net/ethernet/hisilicon/hip04_eth.c
 +++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -530,8 +530,8 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
- 		priv->rx_phys[priv->rx_head] = 0;
+@@ -308,8 +308,10 @@ static void hip04_config_fifo(struct hip04_priv *priv)
+ 	val |= GE_RX_STRIP_PAD | GE_RX_PAD_EN;
+ 	writel_relaxed(val, priv->base + GE_RECV_CONTROL_REG);
  
- 		desc = (struct rx_desc *)skb->data;
--		len = be16_to_cpu(desc->pkt_len);
--		err = be32_to_cpu(desc->pkt_err);
-+		len = be16_to_cpu((__force __be16)desc->pkt_len);
-+		err = be32_to_cpu((__force __be32)desc->pkt_err);
++#ifndef CONFIG_HI13X1_GMAC
+ 	val = GE_AUTO_NEG_CTL;
+ 	writel_relaxed(val, priv->base + GE_TX_LOCAL_PAGE_REG);
++#endif
+ }
  
- 		if (0 == len) {
- 			dev_kfree_skb_any(skb);
+ static void hip04_mac_enable(struct net_device *ndev)
 -- 
 1.8.5.6
 
