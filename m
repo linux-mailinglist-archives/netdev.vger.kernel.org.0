@@ -2,80 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB4160A5F
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 18:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5058960A67
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 18:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728556AbfGEQjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 12:39:39 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:54247 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbfGEQjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 12:39:39 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-1-2078-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 37C4024000A;
-        Fri,  5 Jul 2019 16:39:30 +0000 (UTC)
-Date:   Fri, 5 Jul 2019 18:39:29 +0200
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        richardcochran@gmail.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, ralf@linux-mips.org,
-        paul.burton@mips.com, jhogan@kernel.org, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com
-Subject: Re: [PATCH net-next 1/8] Documentation/bindings: net: ocelot:
- document the PTP bank
-Message-ID: <20190705163929.GK3926@kwain>
-References: <20190701100327.6425-1-antoine.tenart@bootlin.com>
- <20190701100327.6425-2-antoine.tenart@bootlin.com>
- <20190701135214.GD25795@lunn.ch>
- <20190705133016.GD3926@kwain>
- <20190705144517.GD4428@lunn.ch>
+        id S1728579AbfGEQmW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 5 Jul 2019 12:42:22 -0400
+Received: from mga17.intel.com ([192.55.52.151]:63163 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726302AbfGEQmW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 12:42:22 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Jul 2019 09:42:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,455,1557212400"; 
+   d="scan'208";a="169707545"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+  by orsmga006.jf.intel.com with ESMTP; 05 Jul 2019 09:42:21 -0700
+Received: from fmsmsx153.amr.corp.intel.com (10.18.125.6) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 5 Jul 2019 09:42:20 -0700
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.213]) by
+ FMSMSX153.amr.corp.intel.com ([169.254.9.7]) with mapi id 14.03.0439.000;
+ Fri, 5 Jul 2019 09:42:20 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>
+CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "poswald@suse.com" <poswald@suse.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>
+Subject: RE: [rdma 14/16] RDMA/irdma: Add ABI definitions
+Thread-Topic: [rdma 14/16] RDMA/irdma: Add ABI definitions
+Thread-Index: AQHVMg3zRd8VsRoltkutexKRUKIO/aa6iLSAgABOBQCAAWQucA==
+Date:   Fri, 5 Jul 2019 16:42:19 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7A684DAAA@fmsmsx124.amr.corp.intel.com>
+References: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
+ <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
+ <20190704074021.GH4727@mtr-leonro.mtl.com>
+ <20190704121933.GD3401@mellanox.com>
+In-Reply-To: <20190704121933.GD3401@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNDZlNmEzNGQtZGNiNy00MDUzLTgyYjYtZTc4NWNmMzg5ODFmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQ2d2cG53Vm0wMFwvWHRPQjZXek9xU1dXSmhDTm1lNWpaR2ViMlhDVWZQbytMdzhJRVlqNExvUzZJRHRlVlJRblgifQ==
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190705144517.GD4428@lunn.ch>
-User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Fri, Jul 05, 2019 at 04:45:17PM +0200, Andrew Lunn wrote:
-> On Fri, Jul 05, 2019 at 03:30:16PM +0200, Antoine Tenart wrote:
-> > 
-> > I'm not sure about this: optional properties means some parts of the h/w
-> > can be missing or not wired. It's not the case here, it's "optional" in
-> > the driver only for dt compatibility (so that an older dt blob can work
-> > with a newer kernel image), but it's now mandatory in the binding.
+> Subject: Re: [rdma 14/16] RDMA/irdma: Add ABI definitions
 > 
-> If the driver can work without it, it is clearly optional. You just
-> get reduced functionality. That is the thing with DT. You can never
-> add more required properties after the first commit without breaking
-> backwards compatibility. To make the documentation fit the driver,
-> somewhere you need to state they are optional. Either by placing the
-> new properties in the optional section of the binding, or add a
-> comment.
+> On Thu, Jul 04, 2019 at 10:40:21AM +0300, Leon Romanovsky wrote:
+> > On Wed, Jul 03, 2019 at 07:12:57PM -0700, Jeff Kirsher wrote:
+> > > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> > >
+> > > Add ABI definitions for irdma.
+> > >
+> > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > > include/uapi/rdma/irdma-abi.h | 130
+> > > ++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 130 insertions(+)
+> > >  create mode 100644 include/uapi/rdma/irdma-abi.h
+> > >
+> > > diff --git a/include/uapi/rdma/irdma-abi.h
+> > > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
+> > > 000000000000..bdfbda4c829e
+> > > +++ b/include/uapi/rdma/irdma-abi.h
+> > > @@ -0,0 +1,130 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
+> > > +/* Copyright (c) 2006 - 2019 Intel Corporation.  All rights reserved.
+> > > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
+> > > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
+> > > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
+> > > + */
+> > > +
+> > > +#ifndef IRDMA_ABI_H
+> > > +#define IRDMA_ABI_H
+> > > +
+> > > +#include <linux/types.h>
+> > > +
+> > > +/* irdma must support legacy GEN_1 i40iw kernel
+> > > + * and user-space whose last ABI ver is 5  */ #define IRDMA_ABI_VER
+> > > +6
+> >
+> > Can you please elaborate about it more?
+> > There is no irdma code in RDMA yet, so it makes me wonder why new
+> > define shouldn't start from 1.
+> 
+> It is because they are ABI compatible with the current user space, which raises the
+> question why we even have this confusing header file..
 
-The documentation is unrelated to the driver. It's the documentation of
-the binding itself, which is only describing the h/w.
+It is because we need to support current providers/i40iw user-space.
+Our user-space patch series will introduce a new provider (irdma) whose ABI
+ver. is also 6 (capable of supporting X722 and which will work with i40iw driver
+on older kernels) and removes providers/i40iw from rdma-core.
 
-But I discussed this with a someone and I got to the same conclusion as
-your statement, because there can be old dt blobs in the wild and the
-binding documentation can be used to make new code. That code should be
-aware of required/optional properties.
-
-I'll fix this in v2.
-
-Thanks!
-Antoine
-
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
