@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 514C160697
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 15:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8972B60799
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 16:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727903AbfGENaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 09:30:24 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:49129 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726921AbfGENaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 09:30:24 -0400
-X-Originating-IP: 86.250.200.211
-Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 24B5B6000B;
-        Fri,  5 Jul 2019 13:30:17 +0000 (UTC)
-Date:   Fri, 5 Jul 2019 15:30:16 +0200
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        richardcochran@gmail.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, ralf@linux-mips.org,
-        paul.burton@mips.com, jhogan@kernel.org, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com
-Subject: Re: [PATCH net-next 1/8] Documentation/bindings: net: ocelot:
- document the PTP bank
-Message-ID: <20190705133016.GD3926@kwain>
-References: <20190701100327.6425-1-antoine.tenart@bootlin.com>
- <20190701100327.6425-2-antoine.tenart@bootlin.com>
- <20190701135214.GD25795@lunn.ch>
+        id S1727835AbfGEOPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 10:15:15 -0400
+Received: from mail-io1-f45.google.com ([209.85.166.45]:33056 "EHLO
+        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727740AbfGEOPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 10:15:14 -0400
+Received: by mail-io1-f45.google.com with SMTP id z3so4479335iog.0
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 07:15:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=Rnem+XHvujn5Z9R0/zYPTv9mWreT6X8SEUPYmA/4/kc=;
+        b=bPXKVPy+zFXWKerVo2tlKC5RMeCux7ng3O4xBzNdrsrwCNtfxQ1NjJcjcrdz05lBz3
+         Juho+CEgQ63XT2wbNKIPQezeCujC9Rv3vkasdf1acUWjG8zNfXTK+9DBAmWc/oNmNqms
+         LxgRfdGFllJFDBPNd4SNbCG/EnLsI5oqet34QM2k6OP2CWR1b/DKVCjEwv7ZTx36h84d
+         niJrfxgQtKUhTT2dnQNykDB2c5dOCACJ4wqEe59aACUBaE+Zv57CoFHD85/FthDI2ufY
+         bIXRGW6WE90HyOSHMVMqPqFZumwqfWD/fOdKDki0uy1aErmaWEaO6Xl3MrcYxFwFxiEw
+         XOYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Rnem+XHvujn5Z9R0/zYPTv9mWreT6X8SEUPYmA/4/kc=;
+        b=hV3P4fdkCUvuI9R4TQ1hklJYyONyz6edc9Ty9jRapSy4ZHamg1NDZMUixreMhNYSqU
+         7AOijVi11D1ScAfP9H0H/Mx/2wDyd0lAtoRcLKbxAcFc+Aw3wuCu0N7VV3qrAMDBSzc6
+         ZQAyN+uyqVdxvt9AAbJ4a2ChvI+OGzthsk3Ng1W8r7n38zJjUOnLIDlfk4c8mgDFvw9c
+         1Si6hTzMwNB02o/yxv2TfkqVz2ZR0koZX5xz+2sqhGlelc1DJGIxD4U6E1h+TLA1HGCE
+         X2MvisIn+rEXqhvtpM/lCusvDWxhebi7VcaE6Avlu330uvCdY3yQBNE8HFe4vdj2q9Yd
+         4LFA==
+X-Gm-Message-State: APjAAAXQqgw7nn+dtPst7V3zhT/niGz31foZH1ufe1UN7m0UdI6BFwvB
+        T4p8NOSJAlTnjrE+t19RfjAK/wwMdxi/HSLgKJwrd/Pt
+X-Google-Smtp-Source: APXvYqxLrMl1r0clC3YKNkrj6mdMZJ/V+eQgeZAnLEuzDh8evXEbJ6jfsjWm52Z2zAfju3W+MXC3yD/mjYnnWCmjyC4=
+X-Received: by 2002:a5d:9618:: with SMTP id w24mr4371241iol.279.1562336113779;
+ Fri, 05 Jul 2019 07:15:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190701135214.GD25795@lunn.ch>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+From:   Loganaden Velvindron <loganaden@gmail.com>
+Date:   Fri, 5 Jul 2019 18:15:00 +0400
+Message-ID: <CAOp4FwSB_FRhpf1H0CdkvfgeYKc53E56yMkQViW4_w_9dY0CVg@mail.gmail.com>
+Subject: Request for backport of 96125bf9985a75db00496dd2bc9249b777d2b19b
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Dave Taht <dave.taht@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi folks,
 
-On Mon, Jul 01, 2019 at 03:52:14PM +0200, Andrew Lunn wrote:
-> On Mon, Jul 01, 2019 at 12:03:20PM +0200, Antoine Tenart wrote:
-> > One additional register range needs to be described within the Ocelot
-> > device tree node: the PTP. This patch documents the binding needed to do
-> > so.
-> 
-> Are there any more register banks? Maybe just add them all?
+I read the guidelines for LTS/stable.
+https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
 
-I checked and there are (just a few) more. I also saw your other comment
-about interrupts, and it's also true there.
 
-Those definitions aren't related to the PHC so I'll prepare a patch for
-a following series to add all the missing parts.
+Although this is not a bugfix, I am humbly submitting a request so
+that commit id
+-- 96125bf9985a75db00496dd2bc9249b777d2b19b Allow 0.0.0.0/8 as a valid
+address range --  is backported to all LTS kernels.
 
-> Also, you should probably add a comment that despite it being in the
-> Required part of the binding, it is actually optional.
+My motivation for such a request is that we need this patch to be as
+widely deployed as possible and as early as possible for interop and
+hopefully move into better utilization of ipv4 addresses space. Hence
+my request for it be added to -stable.
 
-I'm not sure about this: optional properties means some parts of the h/w
-can be missing or not wired. It's not the case here, it's "optional" in
-the driver only for dt compatibility (so that an older dt blob can work
-with a newer kernel image), but it's now mandatory in the binding.
-
-Thanks!
-Antoine
-
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Kind regards,
+//Logan
