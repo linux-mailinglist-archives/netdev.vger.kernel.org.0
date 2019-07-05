@@ -2,98 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E91C160526
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 13:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 444416057A
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 13:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727907AbfGELOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 07:14:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40716 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727066AbfGELOH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jul 2019 07:14:07 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5538F34CF;
-        Fri,  5 Jul 2019 11:14:06 +0000 (UTC)
-Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F6ED7F76E;
-        Fri,  5 Jul 2019 11:13:56 +0000 (UTC)
-Date:   Fri, 5 Jul 2019 13:13:54 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH v7 net-next 5/5] net: ethernet: ti: cpsw: add XDP
- support
-Message-ID: <20190705131354.15a9313c@carbon>
-In-Reply-To: <20190704231406.27083-6-ivan.khoronzhuk@linaro.org>
-References: <20190704231406.27083-1-ivan.khoronzhuk@linaro.org>
-        <20190704231406.27083-6-ivan.khoronzhuk@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Fri, 05 Jul 2019 11:14:06 +0000 (UTC)
+        id S1728347AbfGELnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 07:43:55 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:44254 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728093AbfGELnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 07:43:55 -0400
+Received: by mail-ed1-f68.google.com with SMTP id k8so7974823edr.11
+        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 04:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=6oFL8GERdlcAKtO6YkFSZSINNeoUGRbh56lm7IAVzdE=;
+        b=k1NT0I+gvAS21HJ6aTI3hpCVcRcX7x22XGTtHsLh26rPjMtiEvTF0t6TpkwZKry1Bh
+         x0UcuFfmD7gtgRUPzJOFKraMnJezJrwJddynpsBQuw5RBvnwIe/+g97A8Zn1YIIkIHQr
+         10kKv8wWZM86xr7NgG4QiGTFuEOUmfjvsGxk9iCEJoPjoWWc///8SYWL6Sojk6WwyCeC
+         SVt1QhaZhkgQZB0xhfGQzsMbHoG/3CFiAOqqnzhcSGJXy4m3L7GNAmA10XQkA/XD0obU
+         3I+KvFRuLtjjsMmHrAncMobTt1URLqxvxiL8HXAevl8sMWPxl2Q2PMO9fpikSS00Gjbl
+         dcvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6oFL8GERdlcAKtO6YkFSZSINNeoUGRbh56lm7IAVzdE=;
+        b=CkTC1khOWt51TsW6OrYQFTCQHnYZB/r9rBnzjeHH00C+23j2APD675Wt1rv9AvhaKa
+         /PGHZWkxhBTuFUTitHXMz358SN1U+BO3xMjhMF/98ls6f4lOzA1ByGiDiSVBlAJjksg+
+         3AycCIxGJWD3zp7yG3U2mSzaCut1RUtW3oHYIE2JoTx9WbEKBhjFXK9LRCdSBKls0msU
+         nO2h7LaGA306KNyD/OHekvJqUo6RO7RoOsmUNkp/Z/lhyOwXAszKOc7QzU19uIIKAaE8
+         TaAgKsaf49Tbx7w3cfMyewtDKDE4AsmpH6dk+98pvyamJKMj0DOcUf5xZuQve1EP/NlL
+         kB4g==
+X-Gm-Message-State: APjAAAVU27tlOvSZP6nZJ4QrUMM1iLXHVW+1uzwmHCq7dK0oHvkUgq23
+        P+fgNlVlbvS6rH6ckxu2iy8=
+X-Google-Smtp-Source: APXvYqx+NFN6B1EN8YKYc5NL/tgi36I/ztwKOE5uvR8+ib5TMRcJ4p/SS3lfdGDhzTQNQqph3X9Ueg==
+X-Received: by 2002:a17:906:d7ab:: with SMTP id pk11mr3089188ejb.216.1562327033549;
+        Fri, 05 Jul 2019 04:43:53 -0700 (PDT)
+Received: from localhost.localdomain (D96447CA.static.ziggozakelijk.nl. [217.100.71.202])
+        by smtp.gmail.com with ESMTPSA id j16sm577722ejq.66.2019.07.05.04.43.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 05 Jul 2019 04:43:53 -0700 (PDT)
+From:   Frank de Brabander <debrabander@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Frank de Brabander <debrabander@gmail.com>
+Subject: [PATCH] selftests: txring_overwrite: fix incorrect test of mmap() return value
+Date:   Fri,  5 Jul 2019 13:43:14 +0200
+Message-Id: <1562326994-4569-1-git-send-email-debrabander@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  5 Jul 2019 02:14:06 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+If mmap() fails it returns MAP_FAILED, which is defined as ((void *) -1).
+The current if-statement incorrectly tests if *ring is NULL.
 
-> +static int cpsw_xdp_tx_frame(struct cpsw_priv *priv, struct xdp_frame *xdpf,
-> +			     struct page *page)
-> +{
-> +	struct cpsw_common *cpsw = priv->cpsw;
-> +	struct cpsw_meta_xdp *xmeta;
-> +	struct cpdma_chan *txch;
-> +	dma_addr_t dma;
-> +	int ret, port;
-> +
-> +	xmeta = (void *)xdpf + CPSW_XMETA_OFFSET;
-> +	xmeta->ndev = priv->ndev;
-> +	xmeta->ch = 0;
-> +	txch = cpsw->txv[0].ch;
-> +
-> +	port = priv->emac_port + cpsw->data.dual_emac;
-> +	if (page) {
-> +		dma = page_pool_get_dma_addr(page);
-> +		dma += xdpf->data - (void *)xdpf;
+Signed-off-by: Frank de Brabander <debrabander@gmail.com>
+---
+ tools/testing/selftests/net/txring_overwrite.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This code is only okay because this only happens for XDP_TX, where you
-know this head-room calculation will be true.  The "correct"
-calculation of the head-room would be:
-
-  dma += xdpf->headroom + sizeof(struct xdp_frame);
-
-The reason behind not using xdpf pointer itself as "data_hard_start",
-is to allow struct xdp_frame to be located in another memory area.
-This will be useful for e.g. AF_XDP transmit, or other zero-copy
-transmit to go through ndo_xdp_xmit() (as we don't want userspace to
-be-able to e.g. "race" change xdpf->len during transmit/DMA-completion).
-
-
-> +		ret = cpdma_chan_submit_mapped(txch, cpsw_xdpf_to_handle(xdpf),
-> +					       dma, xdpf->len, port);
-> +	} else {
-> +		if (sizeof(*xmeta) > xdpf->headroom) {
-> +			xdp_return_frame_rx_napi(xdpf);
-> +			return -EINVAL;
-> +		}
-> +
-> +		ret = cpdma_chan_submit(txch, cpsw_xdpf_to_handle(xdpf),
-> +					xdpf->data, xdpf->len, port);
-> +	}
-
-
-
+diff --git a/tools/testing/selftests/net/txring_overwrite.c b/tools/testing/selftests/net/txring_overwrite.c
+index fd8b1c6..7d9ea03 100644
+--- a/tools/testing/selftests/net/txring_overwrite.c
++++ b/tools/testing/selftests/net/txring_overwrite.c
+@@ -113,7 +113,7 @@ static int setup_tx(char **ring)
+ 
+ 	*ring = mmap(0, req.tp_block_size * req.tp_block_nr,
+ 		     PROT_READ | PROT_WRITE, MAP_SHARED, fdt, 0);
+-	if (!*ring)
++	if (*ring == MAP_FAILED)
+ 		error(1, errno, "mmap");
+ 
+ 	return fdt;
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.7.4
+
