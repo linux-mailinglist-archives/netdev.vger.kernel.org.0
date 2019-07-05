@@ -2,98 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39BD0600C1
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 08:02:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9619600C7
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 08:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbfGEGCD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 5 Jul 2019 02:02:03 -0400
-Received: from mail.windriver.com ([147.11.1.11]:44326 "EHLO
-        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725772AbfGEGCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 02:02:03 -0400
-Received: from ALA-HCA.corp.ad.wrs.com ([147.11.189.40])
-        by mail.windriver.com (8.15.2/8.15.1) with ESMTPS id x65620xC012341
-        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
-        Thu, 4 Jul 2019 23:02:00 -0700 (PDT)
-Received: from ALA-MBD.corp.ad.wrs.com ([169.254.3.194]) by
- ALA-HCA.corp.ad.wrs.com ([147.11.189.40]) with mapi id 14.03.0439.000; Thu, 4
- Jul 2019 23:02:00 -0700
-From:   "Hallsmark, Per" <Per.Hallsmark@windriver.com>
-To:     Alexey Dobriyan <adobriyan@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2] let proc net directory inodes reflect to active net
- namespace
-Thread-Topic: [PATCH v2] let proc net directory inodes reflect to active net
- namespace
-Thread-Index: AQHVL/ymVpzynCXU5k63SMVA/ahJHqa6ioEAgAD/xW0=
-Date:   Fri, 5 Jul 2019 06:02:00 +0000
-Message-ID: <B7B4BB465792624BAF51F33077E99065DC5DA1B0@ALA-MBD.corp.ad.wrs.com>
-References: <B7B4BB465792624BAF51F33077E99065DC5D8E5D@ALA-MBD.corp.ad.wrs.com>,<20190704073200.GA2165@avx2>
-In-Reply-To: <20190704073200.GA2165@avx2>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [128.224.18.249]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726724AbfGEGKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 02:10:25 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8143 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725772AbfGEGKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jul 2019 02:10:25 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id D2DFDE7F8C25C049652C;
+        Fri,  5 Jul 2019 14:10:19 +0800 (CST)
+Received: from huawei.com (10.67.189.167) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Fri, 5 Jul 2019
+ 14:10:10 +0800
+From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <dingtianhong@huawei.com>, <xiaojiangfeng@huawei.com>
+CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <leeyou.li@huawei.com>, <xiekunxun@huawei.com>,
+        <jianping.liu@huawei.com>, <nixiaoming@huawei.com>
+Subject: [PATCH] net: hisilicon: Add an tx_desc to adapt HI13X1_GMAC
+Date:   Fri, 5 Jul 2019 14:10:03 +0800
+Message-ID: <1562307003-103516-1-git-send-email-xiaojiangfeng@huawei.com>
+X-Mailer: git-send-email 1.8.5.6
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.189.167]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Alexey,
+HI13X1 changed the offsets and bitmaps for tx_desc
+registers in the same peripheral device on different
+models of the hip04_eth.
 
-Sounds excellent! Could you please drop a notifier of such?
+Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 34 +++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
-For our usecase, the ipv6 is statically linked (=y) and then this happens way before
-userland starts (thus no access to procfs) so I believe we should be able to continue
-as is until we can replace with your proper patch. Agree?
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index 780fc46..6256357 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -76,8 +76,15 @@
+ /* TX descriptor config */
+ #define TX_FREE_MEM			BIT(0)
+ #define TX_READ_ALLOC_L3		BIT(1)
+-#define TX_FINISH_CACHE_INV		BIT(2)
++#if defined(CONFIG_HI13X1_GMAC)
++#define TX_CLEAR_WB			BIT(7)
++#define TX_RELEASE_TO_PPE		BIT(4)
++#define TX_FINISH_CACHE_INV		BIT(6)
++#define TX_POOL_SHIFT			16
++#else
+ #define TX_CLEAR_WB			BIT(4)
++#define TX_FINISH_CACHE_INV		BIT(2)
++#endif
+ #define TX_L3_CHECKSUM			BIT(5)
+ #define TX_LOOP_BACK			BIT(11)
+ 
+@@ -124,6 +131,7 @@
+ /* buf unit size is cache_line_size, which is 64, so the shift is 6 */
+ #define PPE_BUF_SIZE_SHIFT		6
+ #define PPE_TX_BUF_HOLD			BIT(31)
++#define CACHE_LINE_MASK			0x3F
+ #else
+ #define PPE_CFG_QOS_VMID_GRP_SHIFT	8
+ #define PPE_CFG_RX_CTRL_ALIGN_SHIFT	11
+@@ -163,11 +171,22 @@
+ #define HIP04_MIN_TX_COALESCE_FRAMES	100
+ 
+ struct tx_desc {
++#if defined(CONFIG_HI13X1_GMAC)
++	u32 reserved1[2];
++	u32 send_addr;
++	u16 send_size;
++	u16 data_offset;
++	u32 reserved2[7];
++	u32 cfg;
++	u32 wb_addr;
++	u32 reserved3[3];
++#else
+ 	u32 send_addr;
+ 	u32 send_size;
+ 	u32 next_addr;
+ 	u32 cfg;
+ 	u32 wb_addr;
++#endif
+ } __aligned(64);
+ 
+ struct rx_desc {
+@@ -505,11 +524,20 @@ static void hip04_start_tx_timer(struct hip04_priv *priv)
+ 
+ 	priv->tx_skb[tx_head] = skb;
+ 	priv->tx_phys[tx_head] = phys;
+-	desc->send_addr = (__force u32)cpu_to_be32(phys);
++
+ 	desc->send_size = (__force u32)cpu_to_be32(skb->len);
++#if defined(CONFIG_HI13X1_GMAC)
++	desc->cfg = (__force u32)cpu_to_be32(TX_CLEAR_WB | TX_FINISH_CACHE_INV
++		| TX_RELEASE_TO_PPE | priv->port << TX_POOL_SHIFT);
++	desc->data_offset = (__force u32)cpu_to_be32(phys & CACHE_LINE_MASK);
++	desc->send_addr =  (__force u32)cpu_to_be32(phys & ~CACHE_LINE_MASK);
++#else
+ 	desc->cfg = (__force u32)cpu_to_be32(TX_CLEAR_WB | TX_FINISH_CACHE_INV);
++	desc->send_addr = (__force u32)cpu_to_be32(phys);
++#endif
+ 	phys = priv->tx_desc_dma + tx_head * sizeof(struct tx_desc);
+-	desc->wb_addr = (__force u32)cpu_to_be32(phys);
++	desc->wb_addr = (__force u32)cpu_to_be32(phys +
++		offsetof(struct tx_desc, send_addr));
+ 	skb_tx_timestamp(skb);
+ 
+ 	hip04_set_xmit_desc(priv, phys);
+-- 
+1.8.5.6
 
-Also still wonder about the others that creates directories in procfs net, that do not
-call proc_net_mkdir().
-My second patch changed to use proc_net_mkdir for dev_snmp6 directory, so if proc_net_mkdir is fixed
-it should cover at least the ipv6 snmp counters. But I think there's other that could benefit of same?
-Like :
-
-net/netfilter/xt_hashlimit.c:   hashlimit_net->ipt_hashlimit = proc_mkdir("ipt_hashlimit", net->proc_net);
-net/netfilter/xt_hashlimit.c:   hashlimit_net->ip6t_hashlimit = proc_mkdir("ip6t_hashlimit", net->proc_net);
-
-Wouldn't those also want to be reflected by a net namespace change?
-Just an example, there are others too.
-
-BR,
-Per
-
---
-Per Hallsmark                        per.hallsmark@windriver.com
-Senior Member Technical Staff        Wind River AB
-Mobile: +46733249340                 Office: +46859461127
-Torshamnsgatan 27                    164 40 Kista
-________________________________________
-From: Alexey Dobriyan [adobriyan@gmail.com]
-Sent: Thursday, July 04, 2019 09:32
-To: Hallsmark, Per
-Cc: David S. Miller; linux-kernel@vger.kernel.org; netdev@vger.kernel.org
-Subject: Re: [PATCH v2] let proc net directory inodes reflect to active net namespace
-
-On Mon, Jul 01, 2019 at 11:06:34AM +0000, Hallsmark, Per wrote:
-
-> +struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name,
-> +                                   struct proc_dir_entry *parent)
-> +{
-> +     struct proc_dir_entry *pde;
-> +
-> +     pde = proc_mkdir_data(name, 0, parent, net);
-> +     if (!pde)
-> +             return NULL;
-> +     pde->proc_dops = &proc_net_dentry_ops;
-
-OK, this is buggy in a different way:
-once proc_mkdir_data() returns, proc entry is live and should be fully
-ready, so dentry operations should be glued before that.
-
-I'll send proper patch.
