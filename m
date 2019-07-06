@@ -2,131 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED8DA6121D
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 18:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2177961223
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 18:17:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726887AbfGFQPW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 6 Jul 2019 12:15:22 -0400
-Received: from mga17.intel.com ([192.55.52.151]:61174 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726760AbfGFQPV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Jul 2019 12:15:21 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jul 2019 09:15:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,459,1557212400"; 
-   d="scan'208";a="165071593"
-Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
-  by fmsmga008.fm.intel.com with ESMTP; 06 Jul 2019 09:15:20 -0700
-Received: from fmsmsx158.amr.corp.intel.com (10.18.116.75) by
- fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Sat, 6 Jul 2019 09:15:20 -0700
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.213]) by
- fmsmsx158.amr.corp.intel.com ([169.254.15.188]) with mapi id 14.03.0439.000;
- Sat, 6 Jul 2019 09:15:20 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "poswald@suse.com" <poswald@suse.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>
-Subject: RE: [rdma 14/16] RDMA/irdma: Add ABI definitions
-Thread-Topic: [rdma 14/16] RDMA/irdma: Add ABI definitions
-Thread-Index: AQHVMg3zRd8VsRoltkutexKRUKIO/aa6iLSAgABOBQCAAWQucIAAgTaAgAEIy0A=
-Date:   Sat, 6 Jul 2019 16:15:20 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7A68512AA@fmsmsx124.amr.corp.intel.com>
-References: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
- <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
- <20190704074021.GH4727@mtr-leonro.mtl.com>
- <20190704121933.GD3401@mellanox.com>
- <9DD61F30A802C4429A01CA4200E302A7A684DAAA@fmsmsx124.amr.corp.intel.com>
- <20190705171650.GI31525@mellanox.com>
-In-Reply-To: <20190705171650.GI31525@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMWQ0YjdjYTQtZWY1Ni00NjcxLWE4NmEtNTAwOTBkNzBmYWViIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiMmhhYW5PNnphWlZcL0V3XC9PeEpXbFwvTWtFazFTdUJRejhiUGtPMlBub3FYNEpIZ3o4SzVzY0h4a2JUazZGcVNBTCJ9
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.106]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727079AbfGFQRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 12:17:01 -0400
+Received: from smtpq1.tb.mail.iss.as9143.net ([212.54.42.164]:57208 "EHLO
+        smtpq1.tb.mail.iss.as9143.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726712AbfGFQRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 12:17:00 -0400
+Received: from [212.54.42.117] (helo=lsmtp3.tb.mail.iss.as9143.net)
+        by smtpq1.tb.mail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <carlo@alinoe.com>)
+        id 1hjnMv-0004vb-LO; Sat, 06 Jul 2019 18:16:57 +0200
+Received: from 92-109-146-195.cable.dynamic.v4.ziggo.nl ([92.109.146.195] helo=mail9.alinoe.com)
+        by lsmtp3.tb.mail.iss.as9143.net with esmtp (Exim 4.90_1)
+        (envelope-from <carlo@alinoe.com>)
+        id 1hjnMv-0001St-HZ; Sat, 06 Jul 2019 18:16:57 +0200
+Received: from carlo by mail9.alinoe.com with local (Exim 4.86_2)
+        (envelope-from <carlo@alinoe.com>)
+        id 1hjnMv-0004O2-1f; Sat, 06 Jul 2019 18:16:57 +0200
+Date:   Sat, 6 Jul 2019 18:16:57 +0200
+From:   Carlo Wood <carlo@alinoe.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: Kernel BUG: epoll_wait() (and epoll_pwait) stall for 206 ms per
+ call on sockets with a small-ish snd/rcv buffer.
+Message-ID: <20190706181657.7ff57395@hikaru>
+In-Reply-To: <20190706034508.43aabff0@hikaru>
+References: <20190706034508.43aabff0@hikaru>
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: <locally generated>
+X-SA-Exim-Mail-From: carlo@alinoe.com
+X-SA-Exim-Scanned: No (on mail9.alinoe.com); SAEximRunCond expanded to false
+X-SourceIP: 92.109.146.195
+X-Ziggo-spambar: /
+X-Ziggo-spamscore: 0.0
+X-Ziggo-spamreport: CMAE Analysis: v=2.3 cv=JMuPTPCb c=1 sm=1 tr=0 a=at3gEZHPcpTZPMkiLtqVSg==:17 a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=0o9FgrsRnhwA:10 a=wuZ7hZSPAAAA:20 a=BjFOTwK7AAAA:8 a=iakwcyFGwDD5B9_yiY4A:9 a=CjuIK1q_8ugA:10 a=N3Up1mgHhB-0MyeZKEz1:22
+X-Ziggo-Spam-Status: No
+X-Spam-Status: No
+X-Spam-Flag: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [rdma 14/16] RDMA/irdma: Add ABI definitions
-> 
-> On Fri, Jul 05, 2019 at 04:42:19PM +0000, Saleem, Shiraz wrote:
-> > > Subject: Re: [rdma 14/16] RDMA/irdma: Add ABI definitions
-> > >
-> > > On Thu, Jul 04, 2019 at 10:40:21AM +0300, Leon Romanovsky wrote:
-> > > > On Wed, Jul 03, 2019 at 07:12:57PM -0700, Jeff Kirsher wrote:
-> > > > > From: Mustafa Ismail <mustafa.ismail@intel.com>
-> > > > >
-> > > > > Add ABI definitions for irdma.
-> > > > >
-> > > > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > > > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > > > > include/uapi/rdma/irdma-abi.h | 130
-> > > > > ++++++++++++++++++++++++++++++++++
-> > > > >  1 file changed, 130 insertions(+)  create mode 100644
-> > > > > include/uapi/rdma/irdma-abi.h
-> > > > >
-> > > > > diff --git a/include/uapi/rdma/irdma-abi.h
-> > > > > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
-> > > > > 000000000000..bdfbda4c829e
-> > > > > +++ b/include/uapi/rdma/irdma-abi.h
-> > > > > @@ -0,0 +1,130 @@
-> > > > > +/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-> > > > > +/* Copyright (c) 2006 - 2019 Intel Corporation.  All rights reserved.
-> > > > > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
-> > > > > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
-> > > > > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
-> > > > > + */
-> > > > > +
-> > > > > +#ifndef IRDMA_ABI_H
-> > > > > +#define IRDMA_ABI_H
-> > > > > +
-> > > > > +#include <linux/types.h>
-> > > > > +
-> > > > > +/* irdma must support legacy GEN_1 i40iw kernel
-> > > > > + * and user-space whose last ABI ver is 5  */ #define
-> > > > > +IRDMA_ABI_VER
-> > > > > +6
-> > > >
-> > > > Can you please elaborate about it more?
-> > > > There is no irdma code in RDMA yet, so it makes me wonder why new
-> > > > define shouldn't start from 1.
-> > >
-> > > It is because they are ABI compatible with the current user space,
-> > > which raises the question why we even have this confusing header file..
-> >
-> > It is because we need to support current providers/i40iw user-space.
-> > Our user-space patch series will introduce a new provider (irdma)
-> > whose ABI ver. is also 6 (capable of supporting X722 and which will
-> > work with i40iw driver on older kernels) and removes providers/i40iw from rdma-
-> core.
-> 
-> Why on earth would we do that?
-> 
-A unified library providers/irdma to go in hand with the driver irdma and uses the ABI header.
-It can support the new network device e810 and existing x722 iWARP device. It obsoletes
-providers/i40iw and extends its ABI. So why keep providers/i40iw around in rdma-core?
+I improved the test case a bit:
 
-Shiraz 
+https://github.com/CarloWood/ai-evio-testsuite/blob/2a9ae49e3ae39eea7cb1d105883254370f53831b/src/epoll_bug.c
 
+If the bug doesn't show, please increase burst_size and/or decrease
+sndbuf_size and rcvbuf_size.
+
+The output that I get with VERBOSE defined is for example:
+
+[...snip...]
+wrote 34784 bytes to 6 (total written now 9665792), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9665792), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9700576), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9700576), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9735360), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9735360), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9770144), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9770144), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9804928), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9804928), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9839712), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9839712), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9874496), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9874496), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9909280), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9909280), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9944064), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9944064), left in pipe line: 0
+wrote 34784 bytes to 6 (total written now 9978848), now in pipe line: 34784
+Read 34784 bytes from fd 5 (total read now 9978848), left in pipe line: 0
+wrote 21152 bytes to 6 (total written now 10000000), now in pipe line: 21152
+Read 21152 bytes from fd 5 (total read now 10000000), left in pipe line: 0
+epoll_wait() stalled 193 milliseconds!
+Read 21888 bytes from fd 6 (total read now 70912), left in pipe line: 21888
+epoll_wait() stalled 255 milliseconds!
+Read 21888 bytes from fd 6 (total read now 92800), left in pipe line: 0
+write(5, buf, 9907200) = 43776 (total written now 136576), now in pipe line: 43776
+epoll_wait() stalled 211 milliseconds!
+Read 21888 bytes from fd 6 (total read now 114688), left in pipe line: 21888
+epoll_wait() stalled 207 milliseconds!
+write(5, buf, 9863424) = 38272 (total written now 174848), now in pipe line: 60160
+Read 16384 bytes from fd 6 (total read now 131072), left in pipe line: 43776
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 152960), left in pipe line: 21888
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 174848), left in pipe line: 0
+write(5, buf, 9825152) = 43776 (total written now 218624), now in pipe line: 43776
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 196736), left in pipe line: 21888
+epoll_wait() stalled 211 milliseconds!
+Read 21888 bytes from fd 6 (total read now 218624), left in pipe line: 0
+write(5, buf, 9781376) = 43776 (total written now 262400), now in pipe line: 43776
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 240512), left in pipe line: 21888
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 262400), left in pipe line: 0
+write(5, buf, 9737600) = 43776 (total written now 306176), now in pipe line: 43776
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 284288), left in pipe line: 21888
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 306176), left in pipe line: 0
+write(5, buf, 9693824) = 43776 (total written now 349952), now in pipe line: 43776
+epoll_wait() stalled 207 milliseconds!
+Read 21888 bytes from fd 6 (total read now 328064), left in pipe line: 21888
+epoll_wait() stalled 207 milliseconds!
+write(5, buf, 9650048) = 38272 (total written now 388224), now in pipe line: 60160
+Read 16384 bytes from fd 6 (total read now 344448), left in pipe line: 43776
+epoll_wait() stalled 207 milliseconds!
+... etc. etc.
+
+
+It seems that the problem always occur right after stopping to write data in one
+direction, and then happens for the way back.
+
+In the case above the burst_size is set to 10000000 bytes, and it writes
+that amount and reads it on the other side successfully.
+
+What I think is going on however is that the data on the way back is stalling,
+during which the "forward" burst finishes (without the epoll_wait stalling it
+is VERY fast). Above you see:
+
+Read 21152 bytes from fd 5 (total read now 10000000), left in pipe line: 0
+epoll_wait() stalled 193 milliseconds!
+
+But since we know that the stall always seems to be 207ms, I'm pretty sure
+that actually it stalled 14 ms before that, and needed 14 ms to finish the
+complete burst in one direction.
+
+-- 
+Carlo Wood <carlo@alinoe.com>
