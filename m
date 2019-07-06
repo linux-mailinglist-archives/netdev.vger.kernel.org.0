@@ -2,141 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2177961223
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 18:17:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 220A761227
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 18:21:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbfGFQRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 12:17:01 -0400
-Received: from smtpq1.tb.mail.iss.as9143.net ([212.54.42.164]:57208 "EHLO
-        smtpq1.tb.mail.iss.as9143.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726712AbfGFQRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 12:17:00 -0400
-Received: from [212.54.42.117] (helo=lsmtp3.tb.mail.iss.as9143.net)
-        by smtpq1.tb.mail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <carlo@alinoe.com>)
-        id 1hjnMv-0004vb-LO; Sat, 06 Jul 2019 18:16:57 +0200
-Received: from 92-109-146-195.cable.dynamic.v4.ziggo.nl ([92.109.146.195] helo=mail9.alinoe.com)
-        by lsmtp3.tb.mail.iss.as9143.net with esmtp (Exim 4.90_1)
-        (envelope-from <carlo@alinoe.com>)
-        id 1hjnMv-0001St-HZ; Sat, 06 Jul 2019 18:16:57 +0200
-Received: from carlo by mail9.alinoe.com with local (Exim 4.86_2)
-        (envelope-from <carlo@alinoe.com>)
-        id 1hjnMv-0004O2-1f; Sat, 06 Jul 2019 18:16:57 +0200
-Date:   Sat, 6 Jul 2019 18:16:57 +0200
-From:   Carlo Wood <carlo@alinoe.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: Kernel BUG: epoll_wait() (and epoll_pwait) stall for 206 ms per
- call on sockets with a small-ish snd/rcv buffer.
-Message-ID: <20190706181657.7ff57395@hikaru>
-In-Reply-To: <20190706034508.43aabff0@hikaru>
-References: <20190706034508.43aabff0@hikaru>
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+        id S1726808AbfGFQVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 12:21:38 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40702 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726522AbfGFQVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 12:21:38 -0400
+Received: by mail-wm1-f68.google.com with SMTP id v19so12409686wmj.5
+        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 09:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=PrFKzR5QjZfT0ElLH8h9hZJ57dHDh8iwbBvqIiGc5gU=;
+        b=Dz7qLx0dUgJaUHrfqrUut8lSK2gsbiC73QqWuBz9neUt0TaRs9kVX0w0jSxoXnVJaM
+         Ww/BgNfKYoshxLQ6M/BC6Md/w2OwPoHslBi5BEPrTAnXB9GU3ian1VhIiwsxfOzzZJqZ
+         hFrEulX40ml3ftDO1TzKyJzA5bQANhQEEAUp/pUHzSBiMkfRTabaLbQ3VnNuo5/VIy1r
+         oGCOEz4fRq8ZKmVPyopV9aqPrbqNt5ihxAYZBCNUCrxxHNoCSzS4M+HpGrA20jMdLU2A
+         nucrAtJeWPNMlDdurIm9Rd5xKyeqgD5rnlp4ZS3Am8BJSBJIfEe3QaABlW4S6dHTeCPA
+         2k/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=PrFKzR5QjZfT0ElLH8h9hZJ57dHDh8iwbBvqIiGc5gU=;
+        b=qZLpEq2jN7XcHyJyZ1u2WwQvPfJ7gJKmcrUbOUDEEunKKve5csxlE3RiBbWUKzcjHz
+         AA2uAa8PN/ebVBjsRVG/kI8BVrcSaBjbqKPuyc4llmPkTsLPXUizBnaO3H0IPa/X3sCR
+         Ex28j3aorViwbvM1CNHCuUlb7iqlPXHYKBHevbKB6bgfppEnOawXqj9VptCH/QpPyxX/
+         337fZ9N6OAnOHDNjNSuy0XlYKc82+gXxKLu70vWrWTUfxmW4nqqLRM+5jt+QYtRk5TAR
+         Mbo37CWAnCT0entMdV0cPHvKGqDXuiZDyBoAqGN/xo2rtkKspnMo74mP58WytMPQi7Mb
+         IKqQ==
+X-Gm-Message-State: APjAAAWGGzBLENvFlrJK/pXFVdvpz/wz3DC9vKOi+2mAdktG0EZzT+2M
+        C6x44Lhae/Uf8Sg19wp0oZqg+27rgMIJwg==
+X-Google-Smtp-Source: APXvYqxq50ZlLLF3KgkkKUASo5RDtX3N94ZdqrtSJuPLWqUUKAkVdxRfTtroVRtYOQv2T7j7ajQI5w==
+X-Received: by 2002:a1c:f914:: with SMTP id x20mr8866588wmh.142.1562430095991;
+        Sat, 06 Jul 2019 09:21:35 -0700 (PDT)
+Received: from [192.168.2.163] (p4FDE22F7.dip0.t-ipconnect.de. [79.222.34.247])
+        by smtp.gmail.com with ESMTPSA id w20sm33178445wra.96.2019.07.06.09.21.35
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Sat, 06 Jul 2019 09:21:35 -0700 (PDT)
+Subject: Re: [PATCH 3/4] net: mvmdio: print warning when orion-mdio has too
+ many clocks
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+References: <20190706151900.14355-1-josua@solid-run.com>
+ <20190706151900.14355-4-josua@solid-run.com> <20190706160925.GI4428@lunn.ch>
+From:   Josua Mayer <josua@solid-run.com>
+Message-ID: <8d24d716-2f64-37d3-a7f2-1725d48c7d5f@solid-run.com>
+Date:   Sat, 6 Jul 2019 18:21:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190706160925.GI4428@lunn.ch>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: <locally generated>
-X-SA-Exim-Mail-From: carlo@alinoe.com
-X-SA-Exim-Scanned: No (on mail9.alinoe.com); SAEximRunCond expanded to false
-X-SourceIP: 92.109.146.195
-X-Ziggo-spambar: /
-X-Ziggo-spamscore: 0.0
-X-Ziggo-spamreport: CMAE Analysis: v=2.3 cv=JMuPTPCb c=1 sm=1 tr=0 a=at3gEZHPcpTZPMkiLtqVSg==:17 a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=0o9FgrsRnhwA:10 a=wuZ7hZSPAAAA:20 a=BjFOTwK7AAAA:8 a=iakwcyFGwDD5B9_yiY4A:9 a=CjuIK1q_8ugA:10 a=N3Up1mgHhB-0MyeZKEz1:22
-X-Ziggo-Spam-Status: No
-X-Spam-Status: No
-X-Spam-Flag: No
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I improved the test case a bit:
+Hi Andrew,
 
-https://github.com/CarloWood/ai-evio-testsuite/blob/2a9ae49e3ae39eea7cb1d105883254370f53831b/src/epoll_bug.c
+Am 06.07.19 um 18:09 schrieb Andrew Lunn:
+> On Sat, Jul 06, 2019 at 05:18:59PM +0200, josua@solid-run.com wrote:
+>> From: Josua Mayer <josua@solid-run.com>
+>>
+>> Print a warning when device tree specifies more than the maximum of four
+>> clocks supported by orion-mdio. Because reading from mdio can lock up
+>> the Armada 8k when a required clock is not initialized, it is important
+>> to notify the user when a specified clock is ignored.
+>>
+>> Signed-off-by: Josua Mayer <josua@solid-run.com>
+>> ---
+>>  drivers/net/ethernet/marvell/mvmdio.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
+>> index e17d563e97a6..89a99bf8e87b 100644
+>> --- a/drivers/net/ethernet/marvell/mvmdio.c
+>> +++ b/drivers/net/ethernet/marvell/mvmdio.c
+>> @@ -326,6 +326,10 @@ static int orion_mdio_probe(struct platform_device *pdev)
+>>  		clk_prepare_enable(dev->clk[i]);
+>>  	}
+>>  
+>> +	if (!IS_ERR(of_clk_get(pdev->dev.of_node, i)))
+>> +		dev_warn(dev, "unsupported number of clocks, limiting to the first "
+>> +			 __stringify(ARRAY_SIZE(dev->clk)) "\n");
+>> +
+> Hi Josua
+>
+> Humm. Say getting clock 0 returned -EINVAL, or some other error code.
+> We break out of the loop, since such errors are being ignored. We then
+> hit this new code. Getting clock 1 works, and then we incorrectly
+> print this message.
 
-If the bug doesn't show, please increase burst_size and/or decrease
-sndbuf_size and rcvbuf_size.
+Good point about breaking out of the loop! I did indeed not take the
+break condition of the loop into account.
 
-The output that I get with VERBOSE defined is for example:
+I can not exactly follow your example though. The first failure of
+of_clk_get will trigger break and exit the loop,
+and then we would indeed print the wrong message ... .
 
-[...snip...]
-wrote 34784 bytes to 6 (total written now 9665792), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9665792), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9700576), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9700576), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9735360), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9735360), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9770144), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9770144), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9804928), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9804928), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9839712), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9839712), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9874496), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9874496), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9909280), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9909280), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9944064), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9944064), left in pipe line: 0
-wrote 34784 bytes to 6 (total written now 9978848), now in pipe line: 34784
-Read 34784 bytes from fd 5 (total read now 9978848), left in pipe line: 0
-wrote 21152 bytes to 6 (total written now 10000000), now in pipe line: 21152
-Read 21152 bytes from fd 5 (total read now 10000000), left in pipe line: 0
-epoll_wait() stalled 193 milliseconds!
-Read 21888 bytes from fd 6 (total read now 70912), left in pipe line: 21888
-epoll_wait() stalled 255 milliseconds!
-Read 21888 bytes from fd 6 (total read now 92800), left in pipe line: 0
-write(5, buf, 9907200) = 43776 (total written now 136576), now in pipe line: 43776
-epoll_wait() stalled 211 milliseconds!
-Read 21888 bytes from fd 6 (total read now 114688), left in pipe line: 21888
-epoll_wait() stalled 207 milliseconds!
-write(5, buf, 9863424) = 38272 (total written now 174848), now in pipe line: 60160
-Read 16384 bytes from fd 6 (total read now 131072), left in pipe line: 43776
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 152960), left in pipe line: 21888
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 174848), left in pipe line: 0
-write(5, buf, 9825152) = 43776 (total written now 218624), now in pipe line: 43776
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 196736), left in pipe line: 21888
-epoll_wait() stalled 211 milliseconds!
-Read 21888 bytes from fd 6 (total read now 218624), left in pipe line: 0
-write(5, buf, 9781376) = 43776 (total written now 262400), now in pipe line: 43776
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 240512), left in pipe line: 21888
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 262400), left in pipe line: 0
-write(5, buf, 9737600) = 43776 (total written now 306176), now in pipe line: 43776
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 284288), left in pipe line: 21888
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 306176), left in pipe line: 0
-write(5, buf, 9693824) = 43776 (total written now 349952), now in pipe line: 43776
-epoll_wait() stalled 207 milliseconds!
-Read 21888 bytes from fd 6 (total read now 328064), left in pipe line: 21888
-epoll_wait() stalled 207 milliseconds!
-write(5, buf, 9650048) = 38272 (total written now 388224), now in pipe line: 60160
-Read 16384 bytes from fd 6 (total read now 344448), left in pipe line: 43776
-epoll_wait() stalled 207 milliseconds!
-... etc. etc.
+>
+> Rather than getting the i'th clock, get ARRAY_SIZE(dev->clk)'th clock.
+I will gladly make the change in a v2.
+>        Andrew
 
+-
+Josua
 
-It seems that the problem always occur right after stopping to write data in one
-direction, and then happens for the way back.
-
-In the case above the burst_size is set to 10000000 bytes, and it writes
-that amount and reads it on the other side successfully.
-
-What I think is going on however is that the data on the way back is stalling,
-during which the "forward" burst finishes (without the epoll_wait stalling it
-is VERY fast). Above you see:
-
-Read 21152 bytes from fd 5 (total read now 10000000), left in pipe line: 0
-epoll_wait() stalled 193 milliseconds!
-
-But since we know that the stall always seems to be 207ms, I'm pretty sure
-that actually it stalled 14 ms before that, and needed 14 ms to finish the
-complete burst in one direction.
-
--- 
-Carlo Wood <carlo@alinoe.com>
