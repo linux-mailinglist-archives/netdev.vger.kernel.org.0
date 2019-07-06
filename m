@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C3B3611DE
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 17:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E628B611E1
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 17:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbfGFPbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 11:31:09 -0400
-Received: from mo4-p05-ob.smtp.rzone.de ([85.215.255.131]:28984 "EHLO
+        id S1726921AbfGFPbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 11:31:13 -0400
+Received: from mo4-p05-ob.smtp.rzone.de ([85.215.255.130]:29948 "EHLO
         mo4-p05-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfGFPbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 11:31:09 -0400
-X-Greylist: delayed 718 seconds by postgrey-1.27 at vger.kernel.org; Sat, 06 Jul 2019 11:31:09 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1562427068;
+        with ESMTP id S1726887AbfGFPbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 11:31:13 -0400
+X-Greylist: delayed 717 seconds by postgrey-1.27 at vger.kernel.org; Sat, 06 Jul 2019 11:31:12 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1562427071;
         s=strato-dkim-0002; d=jm0.eu;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=6IxTDqC+QHelMHB1CGki1VGMkwd9+YyaJlHxjWYobWs=;
-        b=LTYAx2e2aUF5p4PSqJGwybqhXhJFks6GyFTcWL7cjSDvfYnyFE2uaz2Coz0b6rLVob
-        mt4FOPArBiZ577mJzUIgxbq9cQQtCxvcHx1npq2XHW0lQWBf4V390+MNshZVB0vEdlf5
-        yEd1Ncn/SYK2AMhGShUex+5K1+WrFH1ydegJHmHb9HiCKPbIT9o5tptHzqQRvNu7pbhg
-        WtYkE8blxuYwkN/daeVNtmVd0fajP2v9fZVPV4vgAEW318r48/Fc5ENDBgLCVrGR4OJr
-        AXcedGsUnwzbLIpUtDslfOhC8xe+HILMtveJcd0cIA1DoMztsKqN0eORsJsP7CCly1qF
-        4DMQ==
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=6ZpbWk6c/a+q3XFLVvoxD8tk7MslyJIN8F03pvj5GTo=;
+        b=o5YsGGR10DzdQO8lxWe7F8tJOh9nqSzpUhXhv+Btp1Uo9xcVHcmEexuYRuUByXBOt1
+        yHxoIsxVthYEIwfCpGmYD5WZQvUuUXxCCeT4GFnVlXsDOUhyeesNz/qIH8+wdlbvjMKE
+        zShPw9WqZuqGf5ftMlY4PfSzyL7VUCqP96FQCfFNLee/RkDL8fqgymQGnXcafah258Eb
+        wEkNeY+gjgPJZwQ+CYqOmqkXovRAJKWuQZA0yOXbEcGEmK6aAFm28j0kEUvSzDc4O/lY
+        2U1dXsfLZsGR2KunP0/YErnDcN0spZJV/nEpni+7EFF7BsnskTszOU6RhfnMF5HUBMK1
+        6oEQ==
 X-RZG-AUTH: ":JmMXYEHmdv4HaV2cbPh7iS0wbr/uKIfGM0EPWe8EZQbw/dDJ/fVPBaXaSiaF5/mu26zWKwNU"
 X-RZG-CLASS-ID: mo05
 Received: from linux-1tvp.lan
         by smtp.strato.de (RZmta 44.24 DYNA|AUTH)
-        with ESMTPSA id h0a328v66FJ76MU
+        with ESMTPSA id h0a328v66FJ96MV
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Sat, 6 Jul 2019 17:19:07 +0200 (CEST)
+        Sat, 6 Jul 2019 17:19:09 +0200 (CEST)
 From:   josua@solid-run.com
 To:     netdev@vger.kernel.org
-Cc:     Josua Mayer <josua@solid-run.com>
-Subject: [PATCH 0/4] Fix hang of Armada 8040 SoC in orion-mdio
-Date:   Sat,  6 Jul 2019 17:18:56 +0200
-Message-Id: <20190706151900.14355-1-josua@solid-run.com>
+Cc:     Josua Mayer <josua@solid-run.com>, stable@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: [PATCH 1/4] dt-bindings: allow up to four clocks for orion-mdio
+Date:   Sat,  6 Jul 2019 17:18:57 +0200
+Message-Id: <20190706151900.14355-2-josua@solid-run.com>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20190706151900.14355-1-josua@solid-run.com>
+References: <20190706151900.14355-1-josua@solid-run.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -45,28 +50,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Josua Mayer <josua@solid-run.com>
 
-With a modular kernel as configured by Debian a hang was observed with
-the Armada 8040 SoC in the Clearfog GT and Macchiatobin boards.
+Armada 8040 needs four clocks to be enabled for MDIO accesses to work.
+Update the binding to allow the extra clock to be specified.
 
-The 8040 SoC actually requires four clocks to be enabled for the mdio
-interface to function. All 4 clocks are already specified in
-armada-cp110.dtsi. It has however been missed that the orion-mdio driver
-only supports enabling up to three clocks.
+Cc: stable@vger.kernel.org
+Fixes: 6d6a331f44a1 ("dt-bindings: allow up to three clocks for orion-mdio")
+Signed-off-by: Josua Mayer <josua@solid-run.com>
+---
+ Documentation/devicetree/bindings/net/marvell-orion-mdio.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This patch-set allows the orion-mdio driver to handle four clocks and
-adds a warning when more clocks are specified to prevent this particular
-oversight in the future.
-
-Josua Mayer (4):
-  dt-bindings: allow up to four clocks for orion-mdio
-  net: mvmdio: allow up to four clocks to be specified for orion-mdio
-  net: mvmdio: print warning when orion-mdio has too many clocks
-  net: mvmdio: defer probe of orion-mdio if a clock is not ready
-
- Documentation/devicetree/bindings/net/marvell-orion-mdio.txt |  2 +-
- drivers/net/ethernet/marvell/mvmdio.c                        | 11 ++++++++++-
- 2 files changed, 11 insertions(+), 2 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/marvell-orion-mdio.txt b/Documentation/devicetree/bindings/net/marvell-orion-mdio.txt
+index 42cd81090a2c..3f3cfc1d8d4d 100644
+--- a/Documentation/devicetree/bindings/net/marvell-orion-mdio.txt
++++ b/Documentation/devicetree/bindings/net/marvell-orion-mdio.txt
+@@ -16,7 +16,7 @@ Required properties:
+ 
+ Optional properties:
+ - interrupts: interrupt line number for the SMI error/done interrupt
+-- clocks: phandle for up to three required clocks for the MDIO instance
++- clocks: phandle for up to four required clocks for the MDIO instance
+ 
+ The child nodes of the MDIO driver are the individual PHY devices
+ connected to this MDIO bus. They must have a "reg" property given the
 -- 
 2.16.4
 
