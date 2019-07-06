@@ -2,159 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4619060E51
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 02:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F37A60E7A
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 04:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726038AbfGFAq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 20:46:29 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44951 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbfGFAq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 20:46:29 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1hjYqQ-0004Ac-8H; Sat, 06 Jul 2019 00:46:26 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 82FBC5FF68; Fri,  5 Jul 2019 17:46:24 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 7D1BF9FA39;
-        Fri,  5 Jul 2019 17:46:24 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     "Brian J. Murrell" <brian@interlinx.bc.ca>
-cc:     netdev@vger.kernel.org
-Subject: Re: bonded active-backup ethernet-wifi drops packets
-In-reply-to: <8d40b6ed3bf8a7540cff26e3834f0296228d9922.camel@interlinx.bc.ca>
-References: <0292e9eefb12f1b1e493f5af8ab78fa00744ed20.camel@interlinx.bc.ca> <8d40b6ed3bf8a7540cff26e3834f0296228d9922.camel@interlinx.bc.ca>
-Comments: In-reply-to "Brian J. Murrell" <brian@interlinx.bc.ca>
-   message dated "Thu, 04 Jul 2019 11:12:20 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1725983AbfGFCFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 22:05:15 -0400
+Received: from smtpq1.tb.mail.iss.as9143.net ([212.54.42.164]:46824 "EHLO
+        smtpq1.tb.mail.iss.as9143.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725878AbfGFCFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 22:05:15 -0400
+X-Greylist: delayed 1204 seconds by postgrey-1.27 at vger.kernel.org; Fri, 05 Jul 2019 22:05:14 EDT
+Received: from [212.54.42.116] (helo=lsmtp2.tb.mail.iss.as9143.net)
+        by smtpq1.tb.mail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <carlo@alinoe.com>)
+        id 1hjZlE-0005ru-Ur; Sat, 06 Jul 2019 03:45:08 +0200
+Received: from 92-109-146-195.cable.dynamic.v4.ziggo.nl ([92.109.146.195] helo=mail9.alinoe.com)
+        by lsmtp2.tb.mail.iss.as9143.net with esmtp (Exim 4.90_1)
+        (envelope-from <carlo@alinoe.com>)
+        id 1hjZlE-0000XQ-RB; Sat, 06 Jul 2019 03:45:08 +0200
+Received: from carlo by mail9.alinoe.com with local (Exim 4.86_2)
+        (envelope-from <carlo@alinoe.com>)
+        id 1hjZlE-0008Mn-Ay; Sat, 06 Jul 2019 03:45:08 +0200
+Date:   Sat, 6 Jul 2019 03:45:08 +0200
+From:   Carlo Wood <carlo@alinoe.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: epoll_wait() (and epoll_pwait) stall for 206 ms per call on sockets
+ with a small-ish snd/rcv buffer.
+Message-ID: <20190706034508.43aabff0@hikaru>
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6133.1562373984.1@famine>
-Date:   Fri, 05 Jul 2019 17:46:24 -0700
-Message-ID: <6134.1562373984@famine>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: <locally generated>
+X-SA-Exim-Mail-From: carlo@alinoe.com
+X-SA-Exim-Scanned: No (on mail9.alinoe.com); SAEximRunCond expanded to false
+X-SourceIP: 92.109.146.195
+X-Ziggo-spambar: /
+X-Ziggo-spamscore: 0.0
+X-Ziggo-spamreport: CMAE Analysis: v=2.3 cv=T6A4sMCQ c=1 sm=1 tr=0 a=at3gEZHPcpTZPMkiLtqVSg==:17 a=kj9zAlcOel0A:10 a=0o9FgrsRnhwA:10 a=wuZ7hZSPAAAA:20 a=BjFOTwK7AAAA:8 a=oT9XYXiVWPge-gFa0EkA:9 a=B5CQuviRsAY1c27Y:21 a=3ffTBhku1zIx7Z6q:21 a=CjuIK1q_8ugA:10 a=N3Up1mgHhB-0MyeZKEz1:22
+X-Ziggo-Spam-Status: No
+X-Spam-Status: No
+X-Spam-Flag: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Brian J. Murrell <brian@interlinx.bc.ca> wrote:
+Hi all,
 
->On Tue, 2019-06-18 at 14:57 -0400, Brian J. Murrell wrote:
->> Hi.
->> 
->> I have an active-backup bonded connection on a 5.1.6 kernel where the
->> slaves are an Ethernet interface and a wifi interface.  The goal is
->> to
->> have network transparent (i.e. same and IP address on both
->> interfaces)
->> interface which takes advantage of high-speed and low-latency when it
->> can be physically plugged into the wired network but have portability
->> when unplugged through WiFi.
->> 
->> It all works, mostly.  :-/
->> 
->> I find that even when the primary interface, being the Ethernet
->> interface is plugged in and active, the bonded interface will drop
->> packets periodically.
->> 
->> If I down the bonded interface and plumb the Ethernet interface
->> directly, not as a slave of the bonded interface, no such packet
->> dropping occurs.
->> 
->> My measure of packet dropping, is by observing the output of "sudo
->> ping
->> -f <ip_address>.  In less than a few minutes even, on the bonded
->> interface, even with the Ethernet interface as the active slave, I
->> will
->> have a long string of dots indicating pings that were never
->> replied.  On the unbonded Ethernet interface, no dots, even when
->> measured over many days.
->> 
->> My bonding config:
->> 
->> $ cat /proc/net/bonding/bond0
->> Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
->> 
->> Bonding Mode: fault-tolerance (active-backup)
->> Primary Slave: enp0s31f6 (primary_reselect always)
->> Currently Active Slave: enp0s31f6
->> MII Status: up
->> MII Polling Interval (ms): 100
->> Up Delay (ms): 0
->> Down Delay (ms): 0
->> 
->> Slave Interface: enp0s31f6
->> MII Status: up
->> Speed: 1000 Mbps
->> Duplex: full
->> Link Failure Count: 0
->> Permanent HW addr: 0c:54:15:4a:b2:0d
->> Slave queue ID: 0
->> 
->> Slave Interface: wlp2s0
->> MII Status: up
->> Speed: Unknown
->> Duplex: Unknown
->> Link Failure Count: 1
->> Permanent HW addr: 0c:54:15:4a:b2:0d
->> Slave queue ID: 0
->> 
->> Current interface config/stats:
->> 
->> $ ifconfig bond0
->> bond0: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500
->>         inet 10.75.22.245  netmask 255.255.255.0  broadcast
->> 10.75.22.255
->>         inet6 fe80::ee66:b8c9:d55:a28f  prefixlen 64  scopeid
->> 0x20<link>
->>         inet6 2001:123:ab:123:d36d:5e5d:acc8:e9bc  prefixlen
->> 64  scopeid 0x0<global>
->>         ether 0c:54:15:4a:b2:0d  txqueuelen 1000  (Ethernet)
->>         RX packets 1596206  bytes 165221404 (157.5 MiB)
->>         RX errors 0  dropped 0  overruns 0  frame 0
->>         TX packets 1590552  bytes 162689350 (155.1 MiB)
->>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->> 
->> Devices:
->> 00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection
->> (2) I219-LM (rev 31)
->> 02:00.0 Network controller: Intel Corporation Wireless 8265 / 8275
->> (rev 78)
->> 
->> Happy to provide any other useful information.
->> 
->> Any ideas why the dropping, only when using the bonded interface?
->
->Wondering if I have the wrong list with this question.  Is there a list
->where this question would be more on-topic or focused?
+hopefully I'm reporting this in the right place.
 
-	Not that I'm aware of; netdev is where bonding development
-discussions and such take place.
+While working on my C++ networking library, I ran into a problem that
+I have traced back to the kernel itself.
 
->Perhaps I didn't provide enough information?  I am happy to provide
->whatever is needed.  I just don't know what more is needed at this
->point.
+The problem is related to setting a socket buffer size (snd/rcv).
 
-	I did set this up and test it, but haven't had time to analyze
-in depth.
+At first I noticed the problem while trying to test the thread-safety
+of my lock free stream buffer implementation, with std::streambuf
+interface, that allows reading and writing by different threads
+at the same time. In order to test this, I read data from a socket
+into a buffer and write that back to the same socket from the
+same buffer. This resulted in a speed of only a few 10kB/s bandwidth,
+and after investigation turned out to be caused by epoll_pwait()
+not returning until 205 to 208 ms had passed, even though data was
+already available.
 
-	What I saw was that ping (IPv4) flood worked fine, bonded or
-not, over a span of several hours.  However, ping6 showed small numbers
-of drops on a ping6 flood when bonded, on the order of 200 drops out of
-48,000,000 requests sent.  Zero losses when no bond in the stack.  Both
-tests to the same peer connected to the same switch.  All of the above
-with the bond using the Ethernet slave.  I haven't tracked down where
-those losses are occurring, so I don't know if it's on the transmit or
-receive sides (or both).
+At first I thought it could be a bug in libev that I was using as
+wrapper around epoll - so I ripped that out and wrote my own code to
+interface with epoll, but with the same result. Next I changed the test
+into a one-way stream: just send data from one socket to another (not
+back); also with the same result. Then I wrote a test application that
+was standalone, single threaded and in C. Here I discovered that first
+calling connect() on a socket and then (immediately after) setting the
+socket buffer sizes caused the stall to occur. Assuming that this
+is not allowed I thought I had solved it.
 
-	I did this testing on a laptop with iwlwifi (Centrino 6205) and
-an e1000e (82579LM) network device, using the a kernel built from
-net-next as of earlier this week (it claimed to be 5.2.0-rc5+).
+But, back to sending data back and forth over the TCP connection
+caused the problem to return.
 
-	-J
+I wrote again a standalone C program, single threaded, that
+reproduces the problem.
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+You can find this program here (I'm scared to trigger spam filters
+by attaching it here, but let me know if that is OK):
+https://github.com/CarloWood/ai-evio-testsuite/blob/e6e36b66256ec5d1760d2b7b96b34d60a12477aa/src/epoll_bug.c
+
+With socket snd/rcv buffers smaller than 32kB I always get
+the problem, but using 64kB (65536 bytes) I don't, on my box.
+
+I tested this with kernels 4.15, 5.2.0-rc7 and had someone
+else confirm it with 5.1.15.
+
+When running the program as-is, it will start printing a flood
+of "epoll_wait() was delayed!" meaning that epoll_wait() didn't
+return within 10 ms. The actual delay can be seen with for
+example strace -T. You can also uncomment the commented printf's
+which will print what is the amount of bytes written to and read
+from each socket and therefore what is the number of bytes that
+are still "in the pipe line".
+
+What I observe is that the number of bytes in the pipe line is
+very constant (because this just writes till no more can be
+written, and then - on the other end - reads till there is nothing
+to be read anymore - and that single threaded) until suddenly
+that amount jumps UP to about 2.5 MB - then is SLOWLY eaten till
+a say 1.5 MB (without that epoll says more can be written)
+when suddenly more can be written and it fills up the pipe line
+again.
+
+I have no idea where those mega bytes of data are buffered; the
+socket buffers are WAY smaller.
+
+Obviously I have no idea if this is a problem with epoll itself,
+or that there is a problem with TCP/IP for this case.
+But I am not a kernel hacker, so all I could to was provide this
+little test case that allows you to reproduce it.
+
+-- 
+Carlo Wood <carlo@alinoe.com>
