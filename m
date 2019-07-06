@@ -2,262 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E54C60F36
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 08:16:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C37060F39
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 08:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbfGFGQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 02:16:38 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50605 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725971AbfGFGQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 02:16:37 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 6 Jul 2019 09:16:34 +0300
-Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x666GS6F028564;
-        Sat, 6 Jul 2019 09:16:33 +0300
-From:   Parav Pandit <parav@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jiri@mellanox.com, saeedm@mellanox.com,
-        jakub.kicinski@netronome.com, Parav Pandit <parav@mellanox.com>
-Subject: [PATCH net-next v3 3/3] net/mlx5e: Register devlink ports for physical link, PCI PF, VFs
-Date:   Sat,  6 Jul 2019 01:16:26 -0500
-Message-Id: <20190706061626.31440-4-parav@mellanox.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190706061626.31440-1-parav@mellanox.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
- <20190706061626.31440-1-parav@mellanox.com>
+        id S1726164AbfGFGRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 02:17:02 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46210 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725973AbfGFGRB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 02:17:01 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x66690oq022216;
+        Sat, 6 Jul 2019 02:16:33 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2tjnsngkuv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 06 Jul 2019 02:16:33 -0400
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x66694lV022634;
+        Sat, 6 Jul 2019 02:16:32 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2tjnsngkuq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 06 Jul 2019 02:16:32 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x6664SRP027778;
+        Sat, 6 Jul 2019 06:16:32 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma01wdc.us.ibm.com with ESMTP id 2tjk95rtv1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 06 Jul 2019 06:16:32 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x666GVZt42795392
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 6 Jul 2019 06:16:31 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B09C1B205F;
+        Sat,  6 Jul 2019 06:16:31 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7A76DB2065;
+        Sat,  6 Jul 2019 06:16:31 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.80.215.71])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Sat,  6 Jul 2019 06:16:31 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id 49D5216C6AC7; Fri,  5 Jul 2019 23:16:31 -0700 (PDT)
+Date:   Fri, 5 Jul 2019 23:16:31 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     "Theodore Ts'o" <tytso@mit.edu>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        David Miller <davem@davemloft.net>, eladr@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: INFO: rcu detected stall in ext4_write_checks
+Message-ID: <20190706061631.GV26519@linux.ibm.com>
+Reply-To: paulmck@linux.ibm.com
+References: <000000000000d3f34b058c3d5a4f@google.com>
+ <20190626184251.GE3116@mit.edu>
+ <20190626210351.GF3116@mit.edu>
+ <20190626224709.GH3116@mit.edu>
+ <CACT4Y+YTpUErjEmjrqki-tJ0Lyx0c53MQDGVS4CixfmcAnuY=A@mail.gmail.com>
+ <20190705151658.GP26519@linux.ibm.com>
+ <CACT4Y+aNLHrYj1pYbkXO7CKESLeB-5enkSDK7ksgkMA3KtwJ+w@mail.gmail.com>
+ <20190705191055.GT26519@linux.ibm.com>
+ <20190706042801.GD11665@mit.edu>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190706042801.GD11665@mit.edu>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-06_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907060080
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register devlink port of physical port, PCI PF and PCI VF flavour
-for each PF, VF when a given devlink instance is in switchdev mode.
+On Sat, Jul 06, 2019 at 12:28:01AM -0400, Theodore Ts'o wrote:
+> On Fri, Jul 05, 2019 at 12:10:55PM -0700, Paul E. McKenney wrote:
+> > 
+> > Exactly, so although my patch might help for CONFIG_PREEMPT=n, it won't
+> > help in your scenario.  But looking at the dmesg from your URL above,
+> > I see the following:
+> 
+> I just tested with CONFIG_PREEMPT=n
+> 
+> % grep CONFIG_PREEMPT /build/ext4-64/.config
+> CONFIG_PREEMPT_NONE=y
+> # CONFIG_PREEMPT_VOLUNTARY is not set
+> # CONFIG_PREEMPT is not set
+> CONFIG_PREEMPT_COUNT=y
+> CONFIG_PREEMPTIRQ_TRACEPOINTS=y
+> # CONFIG_PREEMPTIRQ_EVENTS is not set
+> 
+> And with your patch, it's still not helping.
+> 
+> I think that's because SCHED_DEADLINE is a real-time style scheduler:
+> 
+>        In  order  to fulfill the guarantees that are made when a thread is ad‐
+>        mitted to the SCHED_DEADLINE policy,  SCHED_DEADLINE  threads  are  the
+>        highest  priority  (user  controllable)  threads  in the system; if any
+>        SCHED_DEADLINE thread is runnable, it will preempt any thread scheduled
+>        under one of the other policies.
+> 
+> So a SCHED_DEADLINE process is not going yield control of the CPU,
+> even if it calls cond_resched() until the thread has run for more than
+> the sched_runtime parameter --- which for the syzkaller repro, was set
+> at 26 days.
+> 
+> There are some safety checks when using SCHED_DEADLINE:
+> 
+>        The kernel requires that:
+> 
+>            sched_runtime <= sched_deadline <= sched_period
+> 
+>        In  addition,  under  the  current implementation, all of the parameter
+>        values must be at least 1024 (i.e., just over one microsecond, which is
+>        the  resolution  of the implementation), and less than 2^63.  If any of
+>        these checks fails, sched_setattr(2) fails with the error EINVAL.
+> 
+>        The  CBS  guarantees  non-interference  between  tasks,  by  throttling
+>        threads that attempt to over-run their specified Runtime.
+> 
+>        To ensure deadline scheduling guarantees, the kernel must prevent situ‐
+>        ations where the set of SCHED_DEADLINE threads is not feasible (schedu‐
+>        lable)  within  the given constraints.  The kernel thus performs an ad‐
+>        mittance test when setting or changing SCHED_DEADLINE  policy  and  at‐
+>        tributes.   This admission test calculates whether the change is feasi‐
+>        ble; if it is not, sched_setattr(2) fails with the error EBUSY.
+> 
+> The problem is that SCHED_DEADLINE is designed for sporadic tasks:
+> 
+>        A  sporadic  task is one that has a sequence of jobs, where each job is
+>        activated at most once per period.  Each job also has a relative  dead‐
+>        line,  before which it should finish execution, and a computation time,
+>        which is the CPU time necessary for executing the job.  The moment when
+>        a  task wakes up because a new job has to be executed is called the ar‐
+>        rival time (also referred to as the request time or release time).  The
+>        start time is the time at which a task starts its execution.  The abso‐
+>        lute deadline is thus obtained by adding the relative deadline  to  the
+>        arrival time.
+> 
+> It appears that kernel's admission control before allowing
+> SCHED_DEADLINE to be set on a thread was designed for sane
+> applications, and not abusive ones.  Given that process started doing
+> abusive things *after* SCHED_DEADLINE policy was set, in order kernel
+> to figure out that in fact SCHED_DEADLINE should be denied for any
+> arbitrary kernel thread would require either (a) solving the halting
+> problem, or (b) being able to anticipate the future (in which case,
+> we should be using that kernel algorithm to play the stock market  :-)
 
-Implement ndo_get_devlink_port callback API to make use of registered
-devlink ports.
-This eliminates ndo_get_phys_port_name() and ndo_get_port_parent_id()
-callbacks. Hence, remove them.
+26 days will definitely get you a large collection of RCU CPU stall
+warnings!  Thank you for digging into this, Ted.
 
-An example output with 2 VFs, without a PF and single uplink port is
-below.
+I suppose RCU could take the dueling-banjos approach and use increasingly
+aggressive scheduler policies itself, up to and including SCHED_DEADLINE,
+until it started getting decent forward progress.  However, that
+sounds like the something that just might have unintended consequences,
+particularly if other kernel subsystems were to also play similar
+games of dueling banjos.
 
-$devlink port show
-pci/0000:06:00.0/65535: type eth netdev ens2f0 flavour physical
-pci/0000:05:00.0/1: type eth netdev eth1 flavour pcivf pfnum 0 vfnum 0
-pci/0000:05:00.0/2: type eth netdev eth2 flavour pcivf pfnum 0 vfnum 1
+Alternatively, is it possible to provide stricter admission control?
+For example, what sorts of policies do SCHED_DEADLINE users actually use?
 
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Signed-off-by: Parav Pandit <parav@mellanox.com>
----
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 108 +++++++++++++-----
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   1 +
- 2 files changed, 78 insertions(+), 31 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 529f8e4b32c6..6810b9fa0705 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -37,6 +37,7 @@
- #include <net/act_api.h>
- #include <net/netevent.h>
- #include <net/arp.h>
-+#include <net/devlink.h>
- 
- #include "eswitch.h"
- #include "en.h"
-@@ -1119,32 +1120,6 @@ static int mlx5e_rep_close(struct net_device *dev)
- 	return ret;
- }
- 
--static int mlx5e_rep_get_phys_port_name(struct net_device *dev,
--					char *buf, size_t len)
--{
--	struct mlx5e_priv *priv = netdev_priv(dev);
--	struct mlx5e_rep_priv *rpriv = priv->ppriv;
--	struct mlx5_eswitch_rep *rep = rpriv->rep;
--	unsigned int fn;
--	int ret;
--
--	fn = PCI_FUNC(priv->mdev->pdev->devfn);
--	if (fn >= MLX5_MAX_PORTS)
--		return -EOPNOTSUPP;
--
--	if (rep->vport == MLX5_VPORT_UPLINK)
--		ret = snprintf(buf, len, "p%d", fn);
--	else if (rep->vport == MLX5_VPORT_PF)
--		ret = snprintf(buf, len, "pf%d", fn);
--	else
--		ret = snprintf(buf, len, "pf%dvf%d", fn, rep->vport - 1);
--
--	if (ret >= len)
--		return -EOPNOTSUPP;
--
--	return 0;
--}
--
- static int
- mlx5e_rep_setup_tc_cls_flower(struct mlx5e_priv *priv,
- 			      struct tc_cls_flower_offload *cls_flower, int flags)
-@@ -1298,17 +1273,24 @@ static int mlx5e_uplink_rep_set_vf_vlan(struct net_device *dev, int vf, u16 vlan
- 	return 0;
- }
- 
-+static struct devlink_port *mlx5e_get_devlink_port(struct net_device *dev)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(dev);
-+	struct mlx5e_rep_priv *rpriv = priv->ppriv;
-+
-+	return &rpriv->dl_port;
-+}
-+
- static const struct net_device_ops mlx5e_netdev_ops_rep = {
- 	.ndo_open                = mlx5e_rep_open,
- 	.ndo_stop                = mlx5e_rep_close,
- 	.ndo_start_xmit          = mlx5e_xmit,
--	.ndo_get_phys_port_name  = mlx5e_rep_get_phys_port_name,
- 	.ndo_setup_tc            = mlx5e_rep_setup_tc,
-+	.ndo_get_devlink_port = mlx5e_get_devlink_port,
- 	.ndo_get_stats64         = mlx5e_rep_get_stats,
- 	.ndo_has_offload_stats	 = mlx5e_rep_has_offload_stats,
- 	.ndo_get_offload_stats	 = mlx5e_rep_get_offload_stats,
- 	.ndo_change_mtu          = mlx5e_rep_change_mtu,
--	.ndo_get_port_parent_id	 = mlx5e_rep_get_port_parent_id,
- };
- 
- static const struct net_device_ops mlx5e_netdev_ops_uplink_rep = {
-@@ -1316,8 +1298,8 @@ static const struct net_device_ops mlx5e_netdev_ops_uplink_rep = {
- 	.ndo_stop                = mlx5e_close,
- 	.ndo_start_xmit          = mlx5e_xmit,
- 	.ndo_set_mac_address     = mlx5e_uplink_rep_set_mac,
--	.ndo_get_phys_port_name  = mlx5e_rep_get_phys_port_name,
- 	.ndo_setup_tc            = mlx5e_rep_setup_tc,
-+	.ndo_get_devlink_port = mlx5e_get_devlink_port,
- 	.ndo_get_stats64         = mlx5e_get_stats,
- 	.ndo_has_offload_stats	 = mlx5e_rep_has_offload_stats,
- 	.ndo_get_offload_stats	 = mlx5e_rep_get_offload_stats,
-@@ -1330,7 +1312,6 @@ static const struct net_device_ops mlx5e_netdev_ops_uplink_rep = {
- 	.ndo_get_vf_config       = mlx5e_get_vf_config,
- 	.ndo_get_vf_stats        = mlx5e_get_vf_stats,
- 	.ndo_set_vf_vlan         = mlx5e_uplink_rep_set_vf_vlan,
--	.ndo_get_port_parent_id	 = mlx5e_rep_get_port_parent_id,
- 	.ndo_set_features        = mlx5e_set_features,
- };
- 
-@@ -1731,6 +1712,55 @@ static const struct mlx5e_profile mlx5e_uplink_rep_profile = {
- 	.max_tc			= MLX5E_MAX_NUM_TC,
- };
- 
-+static bool
-+is_devlink_port_supported(const struct mlx5_core_dev *dev,
-+			  const struct mlx5e_rep_priv *rpriv)
-+{
-+	return rpriv->rep->vport == MLX5_VPORT_UPLINK ||
-+	       rpriv->rep->vport == MLX5_VPORT_PF ||
-+	       mlx5_eswitch_is_vf_vport(dev->priv.eswitch, rpriv->rep->vport);
-+}
-+
-+static int register_devlink_port(struct mlx5_core_dev *dev,
-+				 struct mlx5e_rep_priv *rpriv)
-+{
-+	struct devlink *devlink = priv_to_devlink(dev);
-+	struct mlx5_eswitch_rep *rep = rpriv->rep;
-+	struct netdev_phys_item_id ppid = {};
-+	int ret;
-+
-+	if (!is_devlink_port_supported(dev, rpriv))
-+		return 0;
-+
-+	ret = mlx5e_rep_get_port_parent_id(rpriv->netdev, &ppid);
-+	if (ret)
-+		return ret;
-+
-+	if (rep->vport == MLX5_VPORT_UPLINK)
-+		devlink_port_attrs_set(&rpriv->dl_port,
-+				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
-+				       PCI_FUNC(dev->pdev->devfn), false, 0,
-+				       &ppid.id[0], ppid.id_len);
-+	else if (rep->vport == MLX5_VPORT_PF)
-+		devlink_port_attrs_pci_pf_set(&rpriv->dl_port,
-+					      &ppid.id[0], ppid.id_len,
-+					      dev->pdev->devfn);
-+	else if (mlx5_eswitch_is_vf_vport(dev->priv.eswitch, rpriv->rep->vport))
-+		devlink_port_attrs_pci_vf_set(&rpriv->dl_port,
-+					      &ppid.id[0], ppid.id_len,
-+					      dev->pdev->devfn,
-+					      rep->vport - 1);
-+
-+	return devlink_port_register(devlink, &rpriv->dl_port, rep->vport);
-+}
-+
-+static void unregister_devlink_port(struct mlx5_core_dev *dev,
-+				    struct mlx5e_rep_priv *rpriv)
-+{
-+	if (is_devlink_port_supported(dev, rpriv))
-+		devlink_port_unregister(&rpriv->dl_port);
-+}
-+
- /* e-Switch vport representors */
- static int
- mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
-@@ -1782,15 +1812,27 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- 		goto err_detach_netdev;
- 	}
- 
-+	err = register_devlink_port(dev, rpriv);
-+	if (err) {
-+		esw_warn(dev, "Failed to register devlink port %d\n",
-+			 rep->vport);
-+		goto err_neigh_cleanup;
-+	}
-+
- 	err = register_netdev(netdev);
- 	if (err) {
- 		pr_warn("Failed to register representor netdev for vport %d\n",
- 			rep->vport);
--		goto err_neigh_cleanup;
-+		goto err_devlink_cleanup;
- 	}
- 
-+	if (is_devlink_port_supported(dev, rpriv))
-+		devlink_port_type_eth_set(&rpriv->dl_port, netdev);
- 	return 0;
- 
-+err_devlink_cleanup:
-+	unregister_devlink_port(dev, rpriv);
-+
- err_neigh_cleanup:
- 	mlx5e_rep_neigh_cleanup(rpriv);
- 
-@@ -1813,9 +1855,13 @@ mlx5e_vport_rep_unload(struct mlx5_eswitch_rep *rep)
- 	struct mlx5e_rep_priv *rpriv = mlx5e_rep_to_rep_priv(rep);
- 	struct net_device *netdev = rpriv->netdev;
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5_core_dev *dev = priv->mdev;
- 	void *ppriv = priv->ppriv;
- 
-+	if (is_devlink_port_supported(dev, rpriv))
-+		devlink_port_type_clear(&rpriv->dl_port);
- 	unregister_netdev(netdev);
-+	unregister_devlink_port(dev, rpriv);
- 	mlx5e_rep_neigh_cleanup(rpriv);
- 	mlx5e_detach_netdev(priv);
- 	if (rep->vport == MLX5_VPORT_UPLINK)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-index d4585f3b8cb2..c56e6ee4350c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -86,6 +86,7 @@ struct mlx5e_rep_priv {
- 	struct mlx5_flow_handle *vport_rx_rule;
- 	struct list_head       vport_sqs_list;
- 	struct mlx5_rep_uplink_priv uplink_priv; /* valid for uplink rep */
-+	struct devlink_port dl_port;
- };
- 
- static inline
--- 
-2.19.2
-
+							Thanx, Paul
