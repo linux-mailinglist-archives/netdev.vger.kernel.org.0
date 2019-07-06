@@ -2,153 +2,330 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 579ED6125A
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 19:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE9A61271
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 19:42:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbfGFRYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 13:24:40 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44970 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726915AbfGFRYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 13:24:39 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x66HJe4w021781;
-        Sat, 6 Jul 2019 10:24:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
- date : message-id : references : in-reply-to : content-type : content-id :
- content-transfer-encoding : mime-version; s=facebook;
- bh=Ldte9sXV6mtCtLQ+o7ONf3LStBbbHU2ezaoiX3M6f80=;
- b=D2wUijhSsp/TgQbfq834Lj8OdpQMtHU+gSYQyGQ6zbTb061ymhrRwgf7zlnx1Ic9bjMz
- bPGUU7zTvYkVEPs7hyMVa1AV2kxSdTFWxEkAz4wqb87VrLJ0uZiVQxm2iYeWKGw76GP+
- C7ehnhNtwm0H9j+/r03xhkDow8jWHrSjwws= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2tjpy7hae7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 06 Jul 2019 10:24:19 -0700
-Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Sat, 6 Jul 2019 10:24:19 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Sat, 6 Jul 2019 10:24:18 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Sat, 6 Jul 2019 10:24:18 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ldte9sXV6mtCtLQ+o7ONf3LStBbbHU2ezaoiX3M6f80=;
- b=VIJu4OZzn9fpBX6mbkMzq5+JQckgcqKwOVq4bNFDuBqE9N11H9cNS4VMVrb1IzCu4QW7JZDLtAZziD8zmBKiiNsxGeSsQP1PCUloSa0mW5cmpAaOVYDMvFZZv4nSD31GfOSu4uLCjzLG76uzhd7ekgo6P1rCaGziA7mrW9G+9Sc=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2392.namprd15.prod.outlook.com (52.135.198.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.18; Sat, 6 Jul 2019 17:24:17 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::e499:ecba:ec04:abac]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::e499:ecba:ec04:abac%5]) with mapi id 15.20.2052.019; Sat, 6 Jul 2019
- 17:24:17 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        id S1726993AbfGFRmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 13:42:43 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34795 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726877AbfGFRmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 13:42:42 -0400
+Received: by mail-qt1-f194.google.com with SMTP id k10so6591069qtq.1;
+        Sat, 06 Jul 2019 10:42:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uippvqttXYUbA5qCRTOY4oG+aWLS6ZiufCdu6ZQKDTI=;
+        b=LuWVxLHfpFlsZshjmfoSG6iyted7pScGf1SZhRP4gDMmnTbFkuLuXpYNvCqt+IwyqY
+         QpQ3rviCtLihY/puFy/EF2l2Mgu7rZuNCW7DZHT4Wh1WSjd7ZTIeo6h3f9FT4NP0s7uy
+         N5moIcUB9F+aYjRFsQ3UXdaEidLKNGdebQQEPp17IMcUYumlVzofjEoVpQmkLpDB4+Ld
+         8pC0XSRK9jXWdwKDs0B06FMGgJsNiS/C7iz6ZyBa6+Bmf+QVFoWM4BIYmIWwjyAVa4D2
+         bEB4Q81YN6ml5JLylFsRiUxqTS5ZCgfWvjS0W5rO+BGfjT6Rw/yrnNrkv3KP65zhnox6
+         Rmmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uippvqttXYUbA5qCRTOY4oG+aWLS6ZiufCdu6ZQKDTI=;
+        b=t1QFgO6hW9dUnfSfC/PVx4ZQ0W2Dfz03WTnIrlX8oKi93KehteCTcDDJvpvt68m2O5
+         iMeP4//N+gqzUwAGjKqYYeXoFErRex28ZdlXnrVrZ1y4DlNnfJnyQd7ifA7ZMbYaU548
+         2jnueize8cJkKcRqIWjZdXuoXa8qhz9BVEFke+9HvJethaSYPpZ+ZBXgHqoR9R+b/Nq4
+         uByw5BFIdy0qEPRLrQHsp6ih7Aye5NLeaopbkX7cSgVnN9mKqVGfWNd12sm0dPrpwhQX
+         itPHk/p9048+GoaL0QaosU1VTHPNeMkA5jhwiVmxRk6GQmWxLHgq5DY9mrxg4VmIgduN
+         D3Rg==
+X-Gm-Message-State: APjAAAXYOzemidC1iyczH+5vqNrlHysR4HCyDvGi5NeXll30IC/JqNSh
+        gpgk4LIxcVyABfC2fDpgRxv3U5m/YZBwe6WEYbc=
+X-Google-Smtp-Source: APXvYqzecxwJkG6J0FFmwvwVwehmiZXN4uMszUG3EW9ybELxltQHL1MtuQT0WH3EX0ZzWt8S96EP+x+4x+j2mO74uvc=
+X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr8406642qvh.78.1562434961246;
+ Sat, 06 Jul 2019 10:42:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190701235903.660141-1-andriin@fb.com> <20190701235903.660141-9-andriin@fb.com>
+ <ed0d9c3d-da7c-b925-e3a6-767098765850@fb.com>
+In-Reply-To: <ed0d9c3d-da7c-b925-e3a6-767098765850@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 6 Jul 2019 10:42:30 -0700
+Message-ID: <CAEf4BzZhXS1q_tLGdbwarRRQMx0YfhugYwCKZM=7RUKa=2uHMA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 8/9] selftests/bpf: add kprobe/uprobe selftests
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         "daniel@iogearbox.net" <daniel@iogearbox.net>,
         Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v6 bpf-next 0/5] libbpf: add perf buffer abstraction and
- API
-Thread-Topic: [PATCH v6 bpf-next 0/5] libbpf: add perf buffer abstraction and
- API
-Thread-Index: AQHVM8BniIv3Up8LBE+vvAUcvPhlbqa918GA
-Date:   Sat, 6 Jul 2019 17:24:16 +0000
-Message-ID: <9a79b554-d0fb-5b27-4af3-23ba33d96bdd@fb.com>
-References: <20190706060220.1801632-1-andriin@fb.com>
-In-Reply-To: <20190706060220.1801632-1-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR03CA0018.namprd03.prod.outlook.com
- (2603:10b6:300:117::28) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::1:c7d4]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7d4a1216-cba6-47cf-4964-08d70236c5db
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2392;
-x-ms-traffictypediagnostic: BYAPR15MB2392:
-x-microsoft-antispam-prvs: <BYAPR15MB239259C67063F3B6C3C61FBFD3F40@BYAPR15MB2392.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:425;
-x-forefront-prvs: 00909363D5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(376002)(136003)(366004)(39860400002)(199004)(189003)(46003)(11346002)(476003)(446003)(486006)(186003)(316002)(102836004)(2906002)(66476007)(6506007)(36756003)(5660300002)(66556008)(64756008)(81156014)(73956011)(66446008)(110136005)(99286004)(6116002)(66946007)(478600001)(76176011)(52116002)(14454004)(2616005)(53546011)(386003)(86362001)(6246003)(256004)(25786009)(31696002)(7736002)(2501003)(31686004)(2201001)(6636002)(6512007)(81166006)(229853002)(53936002)(71190400001)(6436002)(71200400001)(8676002)(305945005)(68736007)(8936002)(6486002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2392;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: PchGA4X2Obp0KPgvyRENvU0LRefXt9YM7q3HqKjO+kq4tbzsOwFzVMZg9us8gQMO3DZrd9vEAXGMMV8CCvmD9a+iN746yRjtwa60WT/JE9EbP6+M4jmdinYLJQjE5X7cOhk2YThsNEXSweQ59FkYrEiTTn3XJYAergKRvrjVWMT6mJlZxdyW13fAKNrlNvH376W7uiptEIoRLg9V122CfvLyfAr8d/TFQ3Rcyn+mkBuCDv+AvU4Bgl89vI44xe1FcuCDNsa/4DaHYfQhXTt5rp/aOlE3kzMhBxIv6mz2Z3BOMU6RImljy3sHe0cB9lx6mNpt9ezL8Nbn4y3dk75UabUQ/MfM27ie8lXJgd+AtlY0TszuEGbGKM5a98ZXxZyYV6kdoTPKCLKYuu1JZLkfCv0NJpnKwOHgOtTzpNqGolE=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5004B6BE92DB294AB6162C2BC688D726@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d4a1216-cba6-47cf-4964-08d70236c5db
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2019 17:24:16.8975
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2392
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-06_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907060230
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDcvNS8xOSAxMTowMiBQTSwgQW5kcmlpIE5ha3J5aWtvIHdyb3RlOg0KPiBUaGlzIHBh
-dGNoc2V0IGFkZHMgYSBoaWdoLWxldmVsIEFQSSBmb3Igc2V0dGluZyB1cCBhbmQgcG9sbGluZyBw
-ZXJmIGJ1ZmZlcnMNCj4gYXNzb2NpYXRlZCB3aXRoIEJQRl9NQVBfVFlQRV9QRVJGX0VWRU5UX0FS
-UkFZIG1hcC4gRGV0YWlscyBvZiBBUElzIGFyZQ0KPiBkZXNjcmliZWQgaW4gY29ycmVzcG9uZGlu
-ZyBjb21taXQuDQo+IA0KPiBQYXRjaCAjMSBhZGRzIGEgc2V0IG9mIEFQSXMgdG8gc2V0IHVwIGFu
-ZCB3b3JrIHdpdGggcGVyZiBidWZmZXIuDQo+IFBhdGNoICMyIGVuaGFuY2VzIGxpYmJwZiB0byBz
-dXBwb3J0IGF1dG8tc2V0dGluZyBQRVJGX0VWRU5UX0FSUkFZIG1hcCBzaXplLg0KPiBQYXRjaCAj
-MyBhZGRzIHRlc3QuDQo+IFBhdGNoICM0IGNvbnZlcnRzIGJwZnRvb2wgbWFwIGV2ZW50X3BpcGUg
-dG8gbmV3IEFQSS4NCj4gUGF0Y2ggIzUgdXBkYXRlcyBSRUFETUUgdG8gbWVudGlvbiBwZXJmX2J1
-ZmZlcl8gcHJlZml4Lg0KPiANCj4gdjUtPnY2Og0KPiAtIGZpeCBDOTkgZm9yIGxvb3AgdmFyaWFi
-bGUgaW5pdGlhbGl6YXRpb24gdXNhZ2UgKFlvbmdob25nKTsNCj4gdjQtPnY1Og0KPiAtIGluaXRp
-YWxpemUgcGVyZl9idWZmZXJfcmF3X29wdHMgaW4gYnBmdG9vbCBtYXAgZXZlbnRfcGlwZSAoSmFr
-dWIpOw0KPiAtIGFkZCBwZXJmX2J1ZmZlcl8gdG8gUkVBRE1FOw0KPiB2My0+djQ6DQo+IC0gZml4
-ZWQgYnBmdG9vbCBldmVudF9waXBlIGNtZCBlcnJvciBoYW5kbGluZyAoSmFrdWIpOw0KPiB2Mi0+
-djM6DQo+IC0gYWRkZWQgcGVyZl9idWZmZXJfX25ld19yYXcgZm9yIG1vcmUgbG93LWxldmVsIGNv
-bnRyb2w7DQo+IC0gY29udmVydGVkIGJwZnRvb2wgbWFwIGV2ZW50X3BpcGUgdG8gbmV3IEFQSSAo
-RGFuaWVsKTsNCj4gLSBmaXhlZCBidWcgd2l0aCBlcnJvciBoYW5kbGluZyBpbiBjcmVhdGVfbWFw
-cyAoU29uZyk7DQo+IHYxLT52MjoNCj4gLSBhZGQgYXV0by1zaXppbmcgb2YgUEVSRl9FVkVOVF9B
-UlJBWSBtYXBzOw0KPiANCj4gQW5kcmlpIE5ha3J5aWtvICg1KToNCj4gICAgbGliYnBmOiBhZGQg
-cGVyZiBidWZmZXIgQVBJDQo+ICAgIGxpYmJwZjogYXV0by1zZXQgUEVSRl9FVkVOVF9BUlJBWSBz
-aXplIHRvIG51bWJlciBvZiBDUFVzDQo+ICAgIHNlbGZ0ZXN0cy9icGY6IHRlc3QgcGVyZiBidWZm
-ZXIgQVBJDQo+ICAgIHRvb2xzL2JwZnRvb2w6IHN3aXRjaCBtYXAgZXZlbnRfcGlwZSB0byBsaWJi
-cGYncyBwZXJmX2J1ZmZlcg0KPiAgICBsaWJicGY6IGFkZCBwZXJmX2J1ZmZlcl8gcHJlZml4IHRv
-IFJFQURNRQ0KPiANCj4gICB0b29scy9icGYvYnBmdG9vbC9tYXBfcGVyZl9yaW5nLmMgICAgICAg
-ICAgICAgfCAyMDEgKysrLS0tLS0tDQo+ICAgdG9vbHMvbGliL2JwZi9SRUFETUUucnN0ICAgICAg
-ICAgICAgICAgICAgICAgIHwgICAzICstDQo+ICAgdG9vbHMvbGliL2JwZi9saWJicGYuYyAgICAg
-ICAgICAgICAgICAgICAgICAgIHwgMzk3ICsrKysrKysrKysrKysrKysrLQ0KPiAgIHRvb2xzL2xp
-Yi9icGYvbGliYnBmLmggICAgICAgICAgICAgICAgICAgICAgICB8ICA0OSArKysNCj4gICB0b29s
-cy9saWIvYnBmL2xpYmJwZi5tYXAgICAgICAgICAgICAgICAgICAgICAgfCAgIDQgKw0KPiAgIC4u
-Li9zZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvcGVyZl9idWZmZXIuYyAgICB8ICA5NCArKysrKw0K
-PiAgIC4uLi9zZWxmdGVzdHMvYnBmL3Byb2dzL3Rlc3RfcGVyZl9idWZmZXIuYyAgICB8ICAyNSAr
-Kw0KPiAgIDcgZmlsZXMgY2hhbmdlZCwgNjI4IGluc2VydGlvbnMoKyksIDE0NSBkZWxldGlvbnMo
-LSkNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3By
-b2dfdGVzdHMvcGVyZl9idWZmZXIuYw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCB0b29scy90ZXN0
-aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ3MvdGVzdF9wZXJmX2J1ZmZlci5jDQoNCldpdGggYSBtaW5v
-ciBjb21tZW50IG9uIHBhdGNoIDMvNSBpbiBhIGRpZmZlcmVudCB0aHJlYWQsDQpMR1RNLiBBY2sg
-Zm9yIHRoZSB3aG9sZSBzZXJpZXMuDQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNv
-bT4NCg0K
+On Sat, Jul 6, 2019 at 10:21 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 7/1/19 4:59 PM, Andrii Nakryiko wrote:
+> > Add tests verifying kprobe/kretprobe/uprobe/uretprobe APIs work as
+> > expected.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > Reviewed-by: Stanislav Fomichev <sdf@google.com>
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> > ---
+> >   .../selftests/bpf/prog_tests/attach_probe.c   | 166 ++++++++++++++++++
+> >   .../selftests/bpf/progs/test_attach_probe.c   |  55 ++++++
+> >   2 files changed, 221 insertions(+)
+> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> >   create mode 100644 tools/testing/selftests/bpf/progs/test_attach_probe.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > new file mode 100644
+> > index 000000000000..a4686395522c
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > @@ -0,0 +1,166 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <test_progs.h>
+> > +
+> > +ssize_t get_base_addr() {
+> > +     size_t start;
+> > +     char buf[256];
+> > +     FILE *f;
+> > +
+> > +     f = fopen("/proc/self/maps", "r");
+> > +     if (!f)
+> > +             return -errno;
+> > +
+> > +     while (fscanf(f, "%zx-%*x %s %*s\n", &start, buf) == 2) {
+> > +             if (strcmp(buf, "r-xp") == 0) {
+> > +                     fclose(f);
+> > +                     return start;
+> > +             }
+> > +     }
+> > +
+> > +     fclose(f);
+> > +     return -EINVAL;
+> > +}
+> > +
+> > +#ifdef __x86_64__
+> > +#define SYS_KPROBE_NAME "__x64_sys_nanosleep"
+> > +#else
+> > +#define SYS_KPROBE_NAME "sys_nanosleep"
+> > +#endif
+> > +
+> > +void test_attach_probe(void)
+> > +{
+> > +     const char *kprobe_name = "kprobe/sys_nanosleep";
+> > +     const char *kretprobe_name = "kretprobe/sys_nanosleep";
+> > +     const char *uprobe_name = "uprobe/trigger_func";
+> > +     const char *uretprobe_name = "uretprobe/trigger_func";
+> > +     const int kprobe_idx = 0, kretprobe_idx = 1;
+> > +     const int uprobe_idx = 2, uretprobe_idx = 3;
+> > +     const char *file = "./test_attach_probe.o";
+> > +     struct bpf_program *kprobe_prog, *kretprobe_prog;
+> > +     struct bpf_program *uprobe_prog, *uretprobe_prog;
+> > +     struct bpf_object *obj;
+> > +     int err, prog_fd, duration = 0, res;
+> > +     struct bpf_link *kprobe_link = NULL;
+> > +     struct bpf_link *kretprobe_link = NULL;
+> > +     struct bpf_link *uprobe_link = NULL;
+> > +     struct bpf_link *uretprobe_link = NULL;
+> > +     int results_map_fd;
+> > +     size_t uprobe_offset;
+> > +     ssize_t base_addr;
+> > +
+> > +     base_addr = get_base_addr();
+> > +     if (CHECK(base_addr < 0, "get_base_addr",
+> > +               "failed to find base addr: %zd", base_addr))
+> > +             return;
+> > +     uprobe_offset = (size_t)&get_base_addr - base_addr;
+> > +
+> > +     /* load programs */
+> > +     err = bpf_prog_load(file, BPF_PROG_TYPE_KPROBE, &obj, &prog_fd);
+> > +     if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
+> > +             return;
+> > +
+> > +     kprobe_prog = bpf_object__find_program_by_title(obj, kprobe_name);
+> > +     if (CHECK(!kprobe_prog, "find_probe",
+> > +               "prog '%s' not found\n", kprobe_name))
+> > +             goto cleanup;
+> > +     kretprobe_prog = bpf_object__find_program_by_title(obj, kretprobe_name);
+> > +     if (CHECK(!kretprobe_prog, "find_probe",
+> > +               "prog '%s' not found\n", kretprobe_name))
+> > +             goto cleanup;
+> > +     uprobe_prog = bpf_object__find_program_by_title(obj, uprobe_name);
+> > +     if (CHECK(!uprobe_prog, "find_probe",
+> > +               "prog '%s' not found\n", uprobe_name))
+> > +             goto cleanup;
+> > +     uretprobe_prog = bpf_object__find_program_by_title(obj, uretprobe_name);
+> > +     if (CHECK(!uretprobe_prog, "find_probe",
+> > +               "prog '%s' not found\n", uretprobe_name))
+> > +             goto cleanup;
+> > +
+> > +     /* load maps */
+> > +     results_map_fd = bpf_find_map(__func__, obj, "results_map");
+> > +     if (CHECK(results_map_fd < 0, "find_results_map",
+> > +               "err %d\n", results_map_fd))
+> > +             goto cleanup;
+> > +
+> > +     kprobe_link = bpf_program__attach_kprobe(kprobe_prog,
+> > +                                              false /* retprobe */,
+> > +                                              SYS_KPROBE_NAME);
+> > +     if (CHECK(IS_ERR(kprobe_link), "attach_kprobe",
+> > +               "err %ld\n", PTR_ERR(kprobe_link))) {
+> > +             kprobe_link = NULL;
+> > +             goto cleanup;
+> > +     }
+> > +     kretprobe_link = bpf_program__attach_kprobe(kretprobe_prog,
+> > +                                                 true /* retprobe */,
+> > +                                                 SYS_KPROBE_NAME);
+> > +     if (CHECK(IS_ERR(kretprobe_link), "attach_kretprobe",
+> > +               "err %ld\n", PTR_ERR(kretprobe_link))) {
+> > +             kretprobe_link = NULL;
+> > +             goto cleanup;
+> > +     }
+> > +     uprobe_link = bpf_program__attach_uprobe(uprobe_prog,
+> > +                                              false /* retprobe */,
+> > +                                              0 /* self pid */,
+> > +                                              "/proc/self/exe",
+> > +                                              uprobe_offset);
+> > +     if (CHECK(IS_ERR(uprobe_link), "attach_uprobe",
+> > +               "err %ld\n", PTR_ERR(uprobe_link))) {
+> > +             uprobe_link = NULL;
+> > +             goto cleanup;
+> > +     }
+> > +     uretprobe_link = bpf_program__attach_uprobe(uretprobe_prog,
+> > +                                                 true /* retprobe */,
+> > +                                                 -1 /* any pid */,
+> > +                                                 "/proc/self/exe",
+> > +                                                 uprobe_offset);
+> > +     if (CHECK(IS_ERR(uretprobe_link), "attach_uretprobe",
+> > +               "err %ld\n", PTR_ERR(uretprobe_link))) {
+> > +             uretprobe_link = NULL;
+> > +             goto cleanup;
+> > +     }
+> > +
+> > +     /* trigger & validate kprobe && kretprobe */
+> > +     usleep(1);
+> > +
+> > +     err = bpf_map_lookup_elem(results_map_fd, &kprobe_idx, &res);
+> > +     if (CHECK(err, "get_kprobe_res",
+> > +               "failed to get kprobe res: %d\n", err))
+> > +             goto cleanup;
+> > +     if (CHECK(res != kprobe_idx + 1, "check_kprobe_res",
+> > +               "wrong kprobe res: %d\n", res))
+> > +             goto cleanup;
+> > +
+> > +     err = bpf_map_lookup_elem(results_map_fd, &kretprobe_idx, &res);
+> > +     if (CHECK(err, "get_kretprobe_res",
+> > +               "failed to get kretprobe res: %d\n", err))
+> > +             goto cleanup;
+> > +     if (CHECK(res != kretprobe_idx + 1, "check_kretprobe_res",
+> > +               "wrong kretprobe res: %d\n", res))
+> > +             goto cleanup;
+> > +
+> > +     /* trigger & validate uprobe & uretprobe */
+> > +     get_base_addr();
+> > +
+> > +     err = bpf_map_lookup_elem(results_map_fd, &uprobe_idx, &res);
+> > +     if (CHECK(err, "get_uprobe_res",
+> > +               "failed to get uprobe res: %d\n", err))
+> > +             goto cleanup;
+> > +     if (CHECK(res != uprobe_idx + 1, "check_uprobe_res",
+> > +               "wrong uprobe res: %d\n", res))
+> > +             goto cleanup;
+> > +
+> > +     err = bpf_map_lookup_elem(results_map_fd, &uretprobe_idx, &res);
+> > +     if (CHECK(err, "get_uretprobe_res",
+> > +               "failed to get uretprobe res: %d\n", err))
+> > +             goto cleanup;
+> > +     if (CHECK(res != uretprobe_idx + 1, "check_uretprobe_res",
+> > +               "wrong uretprobe res: %d\n", res))
+> > +             goto cleanup;
+> > +
+> > +cleanup:
+> > +     bpf_link__destroy(kprobe_link);
+> > +     bpf_link__destroy(kretprobe_link);
+> > +     bpf_link__destroy(uprobe_link);
+> > +     bpf_link__destroy(uretprobe_link);
+> > +     bpf_object__close(obj);
+> > +}
+> > diff --git a/tools/testing/selftests/bpf/progs/test_attach_probe.c b/tools/testing/selftests/bpf/progs/test_attach_probe.c
+> > new file mode 100644
+> > index 000000000000..7a7c5cd728c8
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/test_attach_probe.c
+> > @@ -0,0 +1,55 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +// Copyright (c) 2017 Facebook
+> > +
+> > +#include <linux/ptrace.h>
+> > +#include <linux/bpf.h>
+> > +#include "bpf_helpers.h"
+> > +
+> > +struct {
+> > +     int type;
+> > +     int max_entries;
+> > +     int *key;
+> > +     int *value;
+> > +} results_map SEC(".maps") = {
+> > +     .type = BPF_MAP_TYPE_ARRAY,
+> > +     .max_entries = 4,
+> > +};
+>
+> After the new .maps convention patch is merged, test_progs is broken due
+> to this. The above .maps definition needs to be updated to
+>
+> struct {
+>         __uint(type, BPF_MAP_TYPE_ARRAY);
+>         __uint(max_entries, 4);
+>         __type(key, int);
+>         __type(value, int);
+> } results_map SEC(".maps");
+>
+
+Yep, noticed that yesterday. Fixed in [0].
+
+  [0] https://patchwork.ozlabs.org/patch/1128383/
+
+> > +
+> > +SEC("kprobe/sys_nanosleep")
+> > +int handle_sys_nanosleep_entry(struct pt_regs *ctx)
+> > +{
+> > +     const int key = 0, value = 1;
+> > +
+> > +     bpf_map_update_elem(&results_map, &key, &value, 0);
+> > +     return 0;
+> > +}
+> > +
+> > +SEC("kretprobe/sys_nanosleep")
+> > +int handle_sys_getpid_return(struct pt_regs *ctx)
+> > +{
+> > +     const int key = 1, value = 2;
+> > +
+> > +     bpf_map_update_elem(&results_map, &key, &value, 0);
+> > +     return 0;
+> > +}
+> > +
+> > +SEC("uprobe/trigger_func")
+> > +int handle_uprobe_entry(struct pt_regs *ctx)
+> > +{
+> > +     const int key = 2, value = 3;
+> > +
+> > +     bpf_map_update_elem(&results_map, &key, &value, 0);
+> > +     return 0;
+> > +}
+> > +
+> > +SEC("uretprobe/trigger_func")
+> > +int handle_uprobe_return(struct pt_regs *ctx)
+> > +{
+> > +     const int key = 3, value = 4;
+> > +
+> > +     bpf_map_update_elem(&results_map, &key, &value, 0);
+> > +     return 0;
+> > +}
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > +__u32 _version SEC("version") = 1;
+> >
