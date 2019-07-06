@@ -2,134 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCD860FB0
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 11:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC70160FBC
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 12:03:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725973AbfGFJ5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 05:57:44 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:36117 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbfGFJ5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 05:57:44 -0400
-Received: by mail-ot1-f65.google.com with SMTP id r6so11366478oti.3
-        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 02:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gn3xZbV6ZlIPpwbrnydWHOfv7rLLexeeWox6YhTkMQ4=;
-        b=aaVlGhH37aU3LmoMGkUHSJ/r8rcTX/z1pudUYN3DQdgLo4nUmdcTLdqpf0Vk1eoXQA
-         SC6vuhvZqQhsEIXKxfcLDWaabFrnh5XiA+MfyPHeByAI1jvp9FQ2PIIgbmkkhfShvR+S
-         0LAM6jrzCH9xZhtdEbsmN4GBkQq35m9vVyjQLTcsZqzq4O7Kp/ZhavyyYH4aNLjNzgsz
-         uSyvtnyJqQ9izMo3e0Ha3BJnTfGFkYwhqKYqTEyk4Bf55v/rAoQFU0wN3iv4l31YnPJ2
-         fUMp3Ku5+IydE6CAyQa6q6oLGiZWPGbJlSRFvOZhjNLFmb//r3QiuAZubud8zLLgJf00
-         9PPQ==
+        id S1726061AbfGFKDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 06:03:02 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:56801 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725957AbfGFKDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 06:03:02 -0400
+Received: by mail-io1-f72.google.com with SMTP id u25so12483424iol.23
+        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 03:03:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gn3xZbV6ZlIPpwbrnydWHOfv7rLLexeeWox6YhTkMQ4=;
-        b=dPJfe0syMxOo2WRX0Kqc2Cae2H4uJsGZohLctl88V5MmY+PPjf9NgnV6wnIjHKvwL7
-         MsnmAHxoHSaLeN1lnZbY7ukKn0nTBolar4Mk7ou10yn+Tsb58z9YO84L1kWx5GKOmIiH
-         jWcEl3h1JL5HFOUdrXxBes0lppGlN0YnNVSrllbc8gxp2z55GjNXOG1glwK4ulIDjOLE
-         mQDF1IsmLg+k+L3T1nCS+kMjO+qz1Zc/Q6NDBwJQPIjGhb2Bj7EoD1sbLY7Z5CVYzYWK
-         fnP/ZQ9pgUtBpX8ZKEof7y9XBOpv3BP9XnLP0yqLDwY9pqoyi/82omkUc4H/I/0y5Vbm
-         5cYA==
-X-Gm-Message-State: APjAAAW8b3Q06Jw0pF33VARUCwyQnlDCN/SLKEjUMW13moPUasYlASNY
-        vEtO3RLZUr8+3I7B1m3iQ5Ao2peY6sDKA5huZhM=
-X-Google-Smtp-Source: APXvYqzzrRmyLftxjcnect8e6dyA1etpgjqLATspbaEMyHeoLg026QpQIfykI1XK0Gqn/oceydd72MsCgradZEakMBw=
-X-Received: by 2002:a9d:77c2:: with SMTP id w2mr6322022otl.192.1562407063362;
- Sat, 06 Jul 2019 02:57:43 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Qm137e0H+OzKUvg8fQKGJb+KR6rd7KtPVRsyDyBLEVg=;
+        b=soTcCy3+soon0lKMSL0uT3d3k8/Daxbm5utME8rI3fba5FBYXF6KDYpTz6AvO9uQQF
+         W5QS60NR57TkQnYbUiyJJ07YOczhm1GC03Li2rHwa0n6qgBnAzJvrlAee+H8FqrblFjs
+         9uYsZQcJiZ1rNjKwByBEfkF+Q7aPr7SwvLt44Cg9rw4hcF2UEpdROashLB/YCPBpkq91
+         5ntpqSXYRyfRxiDqK9po9J81d49lqNIotzcugismpFEbfthEl94cevCoaGht7PDtfOPa
+         8EKoEaUYt00JDrKcEb1wkYYJyMJ5EdK3b+2D2YSQSlR7Tm+cmCsqVFXoFpTQ2nJY2fe2
+         dytQ==
+X-Gm-Message-State: APjAAAUL1DW5C+noe4IioMZ0i5EQRhZk5tFClpg5ugrikICR7Ew+QogM
+        whw1DZcNGxgquP9cK2hzP8xi/dDatAY9e9spaoFqzimghtXs
+X-Google-Smtp-Source: APXvYqzL5e3ypX1jJXHpvuBVMxjbJV7Cu3ztlSK8YF2btdIvJK6HCHRsq6Z2osYCguuMf47C29F0oW3CnewvquZyzPhbzIbUZ0W9
 MIME-Version: 1.0
-References: <ea49f66f73aedcdade979605dab6b2474e2dc4cb.1562145300.git.echaudro@redhat.com>
- <c86151f8-9a16-d2e4-a888-d0836ff3c10a@iogearbox.net>
-In-Reply-To: <c86151f8-9a16-d2e4-a888-d0836ff3c10a@iogearbox.net>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Sat, 6 Jul 2019 11:57:32 +0200
-Message-ID: <CAJ8uoz0LjXMaVgnf7_UkfRwN2Dx11m1Th5FXyf1vgGWDd5Tswg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] libbpf: add xsk_ring_prod__nb_free() function
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Eelco Chaudron <echaudro@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a6b:8f93:: with SMTP id r141mr8804929iod.145.1562407380981;
+ Sat, 06 Jul 2019 03:03:00 -0700 (PDT)
+Date:   Sat, 06 Jul 2019 03:03:00 -0700
+In-Reply-To: <CACT4Y+YjdV8CqX5=PzKsHnLsJOzsydqiq3igYDm_=nSdmFo2YQ@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f02455058d00503e@google.com>
+Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
+From:   syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, dvyukov@google.com,
+        ebiggers@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 5, 2019 at 4:35 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 07/03/2019 02:52 PM, Eelco Chaudron wrote:
-> > When an AF_XDP application received X packets, it does not mean X
-> > frames can be stuffed into the producer ring. To make it easier for
-> > AF_XDP applications this API allows them to check how many frames can
-> > be added into the ring.
-> >
-> > Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->
-> The commit log as it is along with the code is a bit too confusing for
-> readers. After all you only do a rename below. It would need to additionally
-> state that the rename is as per libbpf convention (xyz__ prefix) in order to
-> denote that this API is exposed to be used by applications.
->
-> Given you are doing this for xsk_prod_nb_free(), should we do the same for
-> xsk_cons_nb_avail() as well? Extending XDP sample app would be reasonable
-> addition as well in this context.
+Hello,
 
-Sorry for the late reply Eelco. My e-mail filter is apparently not set
-up correctly since it does not catch mails where I am on the CC line.
-Will fix.
+syzbot has tested the proposed patch but the reproducer still triggered  
+crash:
+kernel BUG at net/rxrpc/local_object.c:LINE!
 
-At the same time you are rewording the commit log according to
-Daniel's suggestion, could you please also add a line or two
-explaining how to use the nb parameter? If you set it to the size of
-the ring, you will get the exact amount of slots available, at the
-cost of performance (you touch shared state for sure). nb is there to
-limit the touching of shared state. The same kind of comment in the
-header file would be great too.
+rxrpc: Assertion failed
+------------[ cut here ]------------
+kernel BUG at net/rxrpc/local_object.c:468!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 10548 Comm: udevd Not tainted 5.2.0-rc7+ #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:rxrpc_local_rcu net/rxrpc/local_object.c:468 [inline]
+RIP: 0010:rxrpc_local_rcu.cold+0x11/0x13 net/rxrpc/local_object.c:462
+Code: 83 eb 20 e9 74 ff ff ff e8 68 a9 2d fb eb cc 4c 89 ef e8 7e a9 2d fb  
+eb e2 e8 97 f2 f4 fa 48 c7 c7 e0 8c 15 88 e8 2f f8 de fa <0f> 0b e8 84 f2  
+f4 fa 48 c7 c7 e0 8c 15 88 e8 1c f8 de fa 0f 0b e8
+RSP: 0018:ffff8880ae909de8 EFLAGS: 00010282
+RAX: 0000000000000017 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815ad9e6 RDI: ffffed1015d213af
+RBP: ffff8880ae909df8 R08: 0000000000000017 R09: ffffed1015d260a1
+R10: ffffed1015d260a0 R11: ffff8880ae930507 R12: ffff888095d10940
+R13: ffff888095d10940 R14: ffffffff867b9b10 R15: ffff8880ae909e78
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000625208 CR3: 00000000a11ba000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  <IRQ>
+  __rcu_reclaim kernel/rcu/rcu.h:222 [inline]
+  rcu_do_batch kernel/rcu/tree.c:2092 [inline]
+  invoke_rcu_callbacks kernel/rcu/tree.c:2310 [inline]
+  rcu_core+0xba5/0x1500 kernel/rcu/tree.c:2291
+  __do_softirq+0x25c/0x94c kernel/softirq.c:292
+  invoke_softirq kernel/softirq.c:373 [inline]
+  irq_exit+0x180/0x1d0 kernel/softirq.c:413
+  exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+  smp_apic_timer_interrupt+0x13b/0x550 arch/x86/kernel/apic/apic.c:1068
+  apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:806
+  </IRQ>
+RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:767  
+[inline]
+RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160  
+[inline]
+RIP: 0010:_raw_spin_unlock_irqrestore+0x95/0xe0  
+kernel/locking/spinlock.c:191
+Code: 48 c7 c0 30 76 b2 88 48 ba 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c  
+10 00 75 39 48 83 3d 82 18 95 01 00 74 24 48 89 df 57 9d <0f> 1f 44 00 00  
+bf 01 00 00 00 e8 dc 2e 30 fa 65 8b 05 bd 9f e4 78
+RSP: 0018:ffff8880a78bf728 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
+RAX: 1ffffffff1164ec6 RBX: 0000000000000286 RCX: 1ffff11011248d84
+RDX: dffffc0000000000 RSI: ffff888089246c00 RDI: 0000000000000286
+RBP: ffff8880a78bf738 R08: ffff888089246380 R09: ffff888089246c20
+R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff8a758108
+R13: 0000000000000286 R14: ffffffff8a758108 R15: 0000000000000000
+  __debug_check_no_obj_freed lib/debugobjects.c:798 [inline]
+  debug_check_no_obj_freed+0x200/0x464 lib/debugobjects.c:817
+  free_pages_prepare mm/page_alloc.c:1140 [inline]
+  free_pcp_prepare mm/page_alloc.c:1156 [inline]
+  free_unref_page_prepare mm/page_alloc.c:2947 [inline]
+  free_unref_page_list+0x1f9/0xc30 mm/page_alloc.c:3016
+  release_pages+0x5df/0x1930 mm/swap.c:795
+  free_pages_and_swap_cache+0x2a0/0x3d0 mm/swap_state.c:295
+  tlb_batch_pages_flush mm/mmu_gather.c:49 [inline]
+  tlb_flush_mmu_free mm/mmu_gather.c:184 [inline]
+  tlb_flush_mmu+0x89/0x630 mm/mmu_gather.c:191
+  tlb_finish_mmu+0x98/0x3b0 mm/mmu_gather.c:272
+  exit_mmap+0x2cd/0x510 mm/mmap.c:3147
+  __mmput kernel/fork.c:1063 [inline]
+  mmput+0x15f/0x4c0 kernel/fork.c:1084
+  exec_mmap fs/exec.c:1047 [inline]
+  flush_old_exec+0x8c8/0x1c00 fs/exec.c:1280
+  load_elf_binary+0xa53/0x56c0 fs/binfmt_elf.c:867
+  search_binary_handler fs/exec.c:1658 [inline]
+  search_binary_handler+0x16d/0x570 fs/exec.c:1635
+  exec_binprm fs/exec.c:1701 [inline]
+  __do_execve_file.isra.0+0x1310/0x22f0 fs/exec.c:1821
+  do_execveat_common fs/exec.c:1868 [inline]
+  do_execve fs/exec.c:1885 [inline]
+  __do_sys_execve fs/exec.c:1961 [inline]
+  __se_sys_execve fs/exec.c:1956 [inline]
+  __x64_sys_execve+0x8f/0xc0 fs/exec.c:1956
+  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x7f67dfd66207
+Code: Bad RIP value.
+RSP: 002b:00007fff900c3538 EFLAGS: 00000202 ORIG_RAX: 000000000000003b
+RAX: ffffffffffffffda RBX: 00000000ffffffff RCX: 00007f67dfd66207
+RDX: 0000000000695c20 RSI: 00007fff900c3630 RDI: 00007fff900c4640
+RBP: 0000000000625500 R08: 00000000000020d5 R09: 00000000000020d5
+R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000695c20
+R13: 0000000000000007 R14: 0000000000691250 R15: 0000000000000005
+Modules linked in:
+---[ end trace 5b4a4001a18479d0 ]---
+RIP: 0010:rxrpc_local_rcu net/rxrpc/local_object.c:468 [inline]
+RIP: 0010:rxrpc_local_rcu.cold+0x11/0x13 net/rxrpc/local_object.c:462
+Code: 83 eb 20 e9 74 ff ff ff e8 68 a9 2d fb eb cc 4c 89 ef e8 7e a9 2d fb  
+eb e2 e8 97 f2 f4 fa 48 c7 c7 e0 8c 15 88 e8 2f f8 de fa <0f> 0b e8 84 f2  
+f4 fa 48 c7 c7 e0 8c 15 88 e8 1c f8 de fa 0f 0b e8
+RSP: 0018:ffff8880ae909de8 EFLAGS: 00010282
+RAX: 0000000000000017 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815ad9e6 RDI: ffffed1015d213af
+RBP: ffff8880ae909df8 R08: 0000000000000017 R09: ffffed1015d260a1
+R10: ffffed1015d260a0 R11: ffff8880ae930507 R12: ffff888095d10940
+R13: ffff888095d10940 R14: ffffffff867b9b10 R15: ffff8880ae909e78
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f67dfd661dd CR3: 00000000a11ba000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-Have you found any use of the  xsk_cons_nb_avail() function from your
-sample application? If so, let us add it to the public API.
 
-Thanks: Magnus
+Tested on:
 
-> > ---
-> >
-> > v2 -> v3
-> >  - Removed cache by pass option
-> >
-> > v1 -> v2
-> >  - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
-> >  - Add caching so it will only touch global state when needed
-> >
-> >  tools/lib/bpf/xsk.h | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> > index 82ea71a0f3ec..3411556e04d9 100644
-> > --- a/tools/lib/bpf/xsk.h
-> > +++ b/tools/lib/bpf/xsk.h
-> > @@ -76,7 +76,7 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx, __u32 idx)
-> >       return &descs[idx & rx->mask];
-> >  }
-> >
-> > -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
-> > +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 nb)
-> >  {
-> >       __u32 free_entries = r->cached_cons - r->cached_prod;
-> >
-> > @@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
-> >  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
-> >                                           size_t nb, __u32 *idx)
-> >  {
-> > -     if (xsk_prod_nb_free(prod, nb) < nb)
-> > +     if (xsk_prod__nb_free(prod, nb) < nb)
-> >               return 0;
-> >
-> >       *idx = prod->cached_prod;
-> >
->
+commit:         69bf4b6b Revert "mm: page cache: store only head pages in ..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=146e5673a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6451f0da3d42d53
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
