@@ -2,116 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7255760EA3
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 05:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB8260EA5
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 05:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbfGFDsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 23:48:18 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46482 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbfGFDsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 23:48:18 -0400
-Received: by mail-qk1-f194.google.com with SMTP id r4so9260150qkm.13;
-        Fri, 05 Jul 2019 20:48:18 -0700 (PDT)
+        id S1726641AbfGFDtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 23:49:36 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36950 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725813AbfGFDtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 23:49:36 -0400
+Received: by mail-qt1-f196.google.com with SMTP id y26so510647qto.4;
+        Fri, 05 Jul 2019 20:49:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DabwQXrOf2oSk9o/xQ+gP0B0AlkbZlu7q/sdN31xjis=;
-        b=tnIbbYNqlUiXOkoJVIp5L+zugiOMBUOEu0BTZAJgKSL0HKHYyfH4e+XhiQW87JpFZ1
-         rSCUw8tITMM+lPoMOpAm84s3SQ+kh8ibqTa0EOAkmCgMj9yp+o7lSO6HpcI4EiWa0bK1
-         DI76jtbJ6NG6+JOCNCbfT2yrlmA9e1Rloyn+fukP6+6ovCYFsDSJbCqHg1I4XWP+3XwV
-         dpigiKv2uoE6hlwMies0sRx5POOeCj7+JZTpLJSkFGumjRwjKzqBYeC4r42mVasZ6Nx4
-         01ar2V0nG3OH1kGT5FM6Ee4qlst3S9ImLAeiFHnhfOjuCfI47Pq5EZYGz9cmv5ZfAq24
-         fFMg==
+        bh=bAjXEEE6xaO7eo6N+SXxu0e8F5JAk6jM9rnN023UKVs=;
+        b=lMSxZJCrkBtqAc3dA15lNLO5hwlnz1e6OqFEVdBjwHlJq2ZsELjTYwHMDEzxPuVjf+
+         2l3W8gDKotuw4JmCB4RHc1tUOk95qNNJXAOdJBbCDXlxIsUP6g06i4rPm1FbNIiuQtbY
+         4oO+MwRzc7SDA9oXld2vDQg9BVWXkaDZOa1aJgOnGBT4tuJ8k6MSMg7YiTkHF2zWXGAP
+         wCpOvI+Dbi69tIn4OuRwtLl2yGaRFKo/u4iyRxwIeQ43rRUlGHDUVn/Tq23cdbPCNyx3
+         emjKxnb29qkA6Iw6PKqZJ1XnbwRGdbtmK4Rs10Z6H/JVXU43BuV1QFB0IX2NIO3UM6yW
+         NS/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DabwQXrOf2oSk9o/xQ+gP0B0AlkbZlu7q/sdN31xjis=;
-        b=eAoYk9LhnIhqVBI0HjfJ24JaZ+AclRftNs8VlLFEOgtKaqzxH3iB+x9skDNg/+ixVp
-         pAqHR8baPVGkgSeD50Wsu8k4cibREoY7ZZFljcR1zEdo1lLk6m4QR2jYDGENvP21UUxj
-         NonmvskGI+p3KS3O33T7Meez9n23/Qi5baax6iSDQFaG3AUZd5lZFdNkpi2l4MWMq7FV
-         Jk1Hnj1K90SuLk0UlrBQcmsMx1GS3Pi8L1qK/K+jQRlCOaYq4byG8j0/ew9fbudWQQZj
-         HNSYdO1nR5x5sW3n97PCPtFVyXsJHuGPR69GqSEsf1AjSTV6AJ0D9XKFpiyho4yR/+Fk
-         1lOQ==
-X-Gm-Message-State: APjAAAWyfARYPzWHf4Ky+PnZbWfi7Fim/xXA82jiiStN4AqUI7iSfL1B
-        Iq4exy9v5FGM8pbgRAijuTnSI9zvcLVCYWIuOeM=
-X-Google-Smtp-Source: APXvYqy6TGGzqdcimhRpL+3xenOZdA7OvWjYYF7BhSMgL+gE6SBVVOohWE8w/Rnx1EN/6ckxfOf3ZrStlYvawlbG6W4=
-X-Received: by 2002:a37:660d:: with SMTP id a13mr5809103qkc.36.1562384897466;
- Fri, 05 Jul 2019 20:48:17 -0700 (PDT)
+        bh=bAjXEEE6xaO7eo6N+SXxu0e8F5JAk6jM9rnN023UKVs=;
+        b=QQn1ZnTIfCKt4lz3UHrWhvrziYzOvu0Lg+dld4G5IMHrEMMfrKezbpptCuA8se/hWJ
+         dYPlIU9TqQQwXssRyc/NOIAzgx8Tse42vXun9nXceeVF2PGI3rkO3kjYJ9idt8NuHZDa
+         U2NFH16VznRw/Is8iOJe40PI3tmKi/x0cfxXnVhwRM5ZWRjr5t+z4Ru4b917mmAIqi8p
+         2EiT65WdOolCSmzj4PDMM2Hkc3wbz6JS0Y2UrxX3xj/d8/rGIfnUl1OOcyV3Oh8vPrYd
+         dKE4+JMiP6i4U0W7zPOGIDCL/PuFxxv71Oyk4q0I56aHUEjsu4gQ2JmrgVPbSppa9X0I
+         N5pA==
+X-Gm-Message-State: APjAAAXNcKZ6l619i5vLZcnZKpJlKkmdvyv8qTvGKM5vioz/OJMhehiF
+        AvCOx8Xz1bX1mL2J5yHbwywleX20AngFzfulrI4=
+X-Google-Smtp-Source: APXvYqwPRP7cnqU8kKjTs5KotKQCauoBq85i8kKBLXKE8ZgdEwEqtG8gxC1e9xDTWdlf/LhuMcqPCmGRjOQ0//4vcP8=
+X-Received: by 2002:a0c:c107:: with SMTP id f7mr6023063qvh.150.1562384975476;
+ Fri, 05 Jul 2019 20:49:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190701235903.660141-1-andriin@fb.com> <20190701235903.660141-5-andriin@fb.com>
- <5e494d84-5db9-3d57-ccb3-c619cbae7833@iogearbox.net> <CAEf4BzaHM5432VS-1wDxKJXr7U-9zkM+A_XsU+1p77YCd8VRgg@mail.gmail.com>
- <CAEf4BzaUeLDgwzBc0EbXnzahe8wxf9CNVFa_isgRp8rwJ0OSjQ@mail.gmail.com> <a24b3328-2d4a-17f2-3aa3-756af7432e6b@iogearbox.net>
-In-Reply-To: <a24b3328-2d4a-17f2-3aa3-756af7432e6b@iogearbox.net>
+References: <20190705155012.3539722-1-andriin@fb.com> <86f8f511-655c-bf9e-8d78-f2e3f65efdb9@iogearbox.net>
+In-Reply-To: <86f8f511-655c-bf9e-8d78-f2e3f65efdb9@iogearbox.net>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 5 Jul 2019 20:48:05 -0700
-Message-ID: <CAEf4BzYxqrFSYi-o-510g8tsz76Zc-OBdwSfeZS8tjR+=mJOYQ@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 4/9] libbpf: add kprobe/uprobe attach API
+Date:   Fri, 5 Jul 2019 20:49:23 -0700
+Message-ID: <CAEf4BzbkAq=C5NF1_XRc1WNE-i7pavt48k9D7kEM_oTS3pWADA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 0/4] capture integers in BTF type info for map defs
 To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+Cc:     Andrii Nakryiko <andriin@fb.com>, Kernel Team <kernel-team@fb.com>,
         Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 5, 2019 at 1:46 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Fri, Jul 5, 2019 at 2:15 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> On 07/04/2019 02:57 AM, Andrii Nakryiko wrote:
-> > On Wed, Jul 3, 2019 at 9:47 AM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> [...]
-> >>   [1] https://lore.kernel.org/bpf/20190621045555.4152743-4-andriin@fb.com/T/#m6cfc141e7b57970bc948134bf671a46972b95134
-> >>
-> >>> with bpf_link with destructor looks good to me, but my feedback from back then was
-> >>> that all the kprobe/uprobe/tracepoint/raw_tracepoint should be split API-wise, so
-> >>> you'll end up with something like the below, that is, 1) a set of functions that
-> >>> only /create/ the bpf_link handle /once/, and 2) a helper that allows /attaching/
-> >>> progs to one or multiple bpf_links. The set of APIs would look like:
-> >>>
-> >>> struct bpf_link *bpf_link__create_kprobe(bool retprobe, const char *func_name);
-> >>> struct bpf_link *bpf_link__create_uprobe(bool retprobe, pid_t pid,
-> >>>                                          const char *binary_path,
-> >>>                                          size_t func_offset);
-> >>> int bpf_program__attach_to_link(struct bpf_link *link, struct bpf_program *prog);
-> >>> int bpf_link__destroy(struct bpf_link *link);
-> >>>
-> >>> This seems much more natural to me. Right now you sort of do both in one single API.
-> >>
-> >> It felt that way for me as well, until I implemented it and used it in
-> >> selftests. And then it felt unnecessarily verbose without giving any
-> >> benefit. I still have a local patchset with that change, I can post it
-> >> as RFC, if you don't trust my judgement. Please let me know.
-> >>
-> >>> Detangling the bpf_program__attach_{uprobe,kprobe}() would also avoid that you have
-> >>> to redo all the perf_event_open_probe() work over and over in order to get the pfd
+> On 07/05/2019 05:50 PM, Andrii Nakryiko wrote:
+> > This patch set implements an update to how BTF-defined maps are specified. The
+> > change is in how integer attributes, e.g., type, max_entries, map_flags, are
+> > specified: now they are captured as part of map definition struct's BTF type
+> > information (using array dimension), eliminating the need for compile-time
+> > data initialization and keeping all the metadata in one place.
 > >
-> > So re-reading this again, I wonder if you meant that with separate
-> > bpf_link (or rather bpf_hook in that case) creation and attachment
-> > operations, one would be able to create single bpf_hook for same
-> > kprobe and then attach multiple BPF programs to that single pfd
-> > representing that specific probe.
+> > All existing selftests that were using BTF-defined maps are updated, along
+> > with some other selftests, that were switched to new syntax.
 > >
-> > If that's how I should have read it, I agree that it probably would be
-> > possible for some types of hooks, but not for every type of hook. But
-> > furthermore, how often in practice same application attaches many
-> > different BPF programs to the same hook? And it's also hard to imagine
-> > that hook creation (i.e., creating such FD for BPF hook), would ever
-> > be a bottleneck.
+> > v4->v5:
+> > - revert sample_map_ret0.c, which is loaded with iproute2 (kernel test robot);
+> > v3->v4:
+> > - add acks;
+> > - fix int -> uint type in commit message;
+> > v2->v3:
+> > - rename __int into __uint (Yonghong);
+> > v1->v2:
+> > - split bpf_helpers.h change from libbpf change (Song).
 > >
-> > So I still think it's not a strong reason to go with API that's harder
-> > to use for typical use cases just because of hypothetical benefits in
-> > some extreme cases.
+> > Andrii Nakryiko (4):
+> >   libbpf: capture value in BTF type info for BTF-defined map defs
+> >   selftests/bpf: add __uint and __type macro for BTF-defined maps
+> >   selftests/bpf: convert selftests using BTF-defined maps to new syntax
+> >   selftests/bpf: convert legacy BPF maps to BTF-defined ones
+> >
+> >  tools/lib/bpf/libbpf.c                        |  58 +++++----
+> >  tools/testing/selftests/bpf/bpf_helpers.h     |   3 +
+> >  tools/testing/selftests/bpf/progs/bpf_flow.c  |  28 ++---
+> >  .../selftests/bpf/progs/get_cgroup_id_kern.c  |  26 ++---
+> >  .../testing/selftests/bpf/progs/netcnt_prog.c |  20 ++--
+> >  tools/testing/selftests/bpf/progs/pyperf.h    |  90 +++++++-------
+> >  .../selftests/bpf/progs/socket_cookie_prog.c  |  13 +--
+> >  .../bpf/progs/sockmap_verdict_prog.c          |  48 ++++----
+> >  .../testing/selftests/bpf/progs/strobemeta.h  |  68 +++++------
+> >  .../selftests/bpf/progs/test_btf_newkv.c      |  13 +--
+> >  .../bpf/progs/test_get_stack_rawtp.c          |  39 +++----
+> >  .../selftests/bpf/progs/test_global_data.c    |  37 +++---
+> >  tools/testing/selftests/bpf/progs/test_l4lb.c |  65 ++++-------
+> >  .../selftests/bpf/progs/test_l4lb_noinline.c  |  65 ++++-------
+> >  .../selftests/bpf/progs/test_map_in_map.c     |  30 ++---
+> >  .../selftests/bpf/progs/test_map_lock.c       |  26 ++---
+> >  .../testing/selftests/bpf/progs/test_obj_id.c |  12 +-
+> >  .../bpf/progs/test_select_reuseport_kern.c    |  67 ++++-------
+> >  .../bpf/progs/test_send_signal_kern.c         |  26 ++---
+> >  .../bpf/progs/test_sock_fields_kern.c         |  78 +++++--------
+> >  .../selftests/bpf/progs/test_spin_lock.c      |  36 +++---
+> >  .../bpf/progs/test_stacktrace_build_id.c      |  55 ++++-----
+> >  .../selftests/bpf/progs/test_stacktrace_map.c |  52 +++------
+> >  .../selftests/bpf/progs/test_tcp_estats.c     |  13 +--
+> >  .../selftests/bpf/progs/test_tcpbpf_kern.c    |  26 ++---
+> >  .../selftests/bpf/progs/test_tcpnotify_kern.c |  28 ++---
+> >  tools/testing/selftests/bpf/progs/test_xdp.c  |  26 ++---
+> >  .../selftests/bpf/progs/test_xdp_loop.c       |  26 ++---
+> >  .../selftests/bpf/progs/test_xdp_noinline.c   |  81 +++++--------
+> >  .../selftests/bpf/progs/xdp_redirect_map.c    |  12 +-
+> >  .../testing/selftests/bpf/progs/xdping_kern.c |  12 +-
+> >  .../selftests/bpf/test_queue_stack_map.h      |  30 ++---
+> >  .../testing/selftests/bpf/test_sockmap_kern.h | 110 +++++++++---------
+> >  33 files changed, 559 insertions(+), 760 deletions(-)
 >
-> Was thinking along that lines, yes, as we run over an array of BPF progs,
-> but I just double checked the kernel code again and the relationship of
-> a BPF prog to perf_event is really just 1:1, just that the backing tp_event
-> (trace_event_call) contains the shared array. Given that, all makes sense
-> and there is no point in splitting. Therefore, applied, thanks!
+> LGTM, applied, thanks! Shouldn't we also move __uint and __type macros
+> into libbpf as otherwise people tend to redefine this over and over?
 
-Great, thanks a lot!
+
+Yes, we need something like bpf_helpers.h as part of libbpf for
+inclusion into BPF programs. It's on my todo list as part of BPF CO-RE
+project as well.
