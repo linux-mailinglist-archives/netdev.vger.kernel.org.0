@@ -2,114 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D61611C4
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 17:03:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3B3611DE
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 17:31:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727134AbfGFPDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 11:03:03 -0400
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:33313 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727071AbfGFPDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 11:03:01 -0400
-Received: from callcc.thunk.org ([66.31.38.53])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id x66F2QVf014555
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 6 Jul 2019 11:02:27 -0400
-Received: by callcc.thunk.org (Postfix, from userid 15806)
-        id 57CD742002E; Sat,  6 Jul 2019 11:02:26 -0400 (EDT)
-Date:   Sat, 6 Jul 2019 11:02:26 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        David Miller <davem@davemloft.net>, eladr@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: Re: INFO: rcu detected stall in ext4_write_checks
-Message-ID: <20190706150226.GG11665@mit.edu>
-Mail-Followup-To: Theodore Ts'o <tytso@mit.edu>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        David Miller <davem@davemloft.net>, eladr@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        John Stultz <john.stultz@linaro.org>, linux-ext4@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
-References: <000000000000d3f34b058c3d5a4f@google.com>
- <20190626184251.GE3116@mit.edu>
- <20190626210351.GF3116@mit.edu>
- <20190626224709.GH3116@mit.edu>
- <CACT4Y+YTpUErjEmjrqki-tJ0Lyx0c53MQDGVS4CixfmcAnuY=A@mail.gmail.com>
- <20190705151658.GP26519@linux.ibm.com>
- <CACT4Y+aNLHrYj1pYbkXO7CKESLeB-5enkSDK7ksgkMA3KtwJ+w@mail.gmail.com>
- <20190705191055.GT26519@linux.ibm.com>
- <20190706042801.GD11665@mit.edu>
- <20190706061631.GV26519@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190706061631.GV26519@linux.ibm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726880AbfGFPbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 11:31:09 -0400
+Received: from mo4-p05-ob.smtp.rzone.de ([85.215.255.131]:28984 "EHLO
+        mo4-p05-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbfGFPbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 11:31:09 -0400
+X-Greylist: delayed 718 seconds by postgrey-1.27 at vger.kernel.org; Sat, 06 Jul 2019 11:31:09 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1562427068;
+        s=strato-dkim-0002; d=jm0.eu;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=6IxTDqC+QHelMHB1CGki1VGMkwd9+YyaJlHxjWYobWs=;
+        b=LTYAx2e2aUF5p4PSqJGwybqhXhJFks6GyFTcWL7cjSDvfYnyFE2uaz2Coz0b6rLVob
+        mt4FOPArBiZ577mJzUIgxbq9cQQtCxvcHx1npq2XHW0lQWBf4V390+MNshZVB0vEdlf5
+        yEd1Ncn/SYK2AMhGShUex+5K1+WrFH1ydegJHmHb9HiCKPbIT9o5tptHzqQRvNu7pbhg
+        WtYkE8blxuYwkN/daeVNtmVd0fajP2v9fZVPV4vgAEW318r48/Fc5ENDBgLCVrGR4OJr
+        AXcedGsUnwzbLIpUtDslfOhC8xe+HILMtveJcd0cIA1DoMztsKqN0eORsJsP7CCly1qF
+        4DMQ==
+X-RZG-AUTH: ":JmMXYEHmdv4HaV2cbPh7iS0wbr/uKIfGM0EPWe8EZQbw/dDJ/fVPBaXaSiaF5/mu26zWKwNU"
+X-RZG-CLASS-ID: mo05
+Received: from linux-1tvp.lan
+        by smtp.strato.de (RZmta 44.24 DYNA|AUTH)
+        with ESMTPSA id h0a328v66FJ76MU
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Sat, 6 Jul 2019 17:19:07 +0200 (CEST)
+From:   josua@solid-run.com
+To:     netdev@vger.kernel.org
+Cc:     Josua Mayer <josua@solid-run.com>
+Subject: [PATCH 0/4] Fix hang of Armada 8040 SoC in orion-mdio
+Date:   Sat,  6 Jul 2019 17:18:56 +0200
+Message-Id: <20190706151900.14355-1-josua@solid-run.com>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 05, 2019 at 11:16:31PM -0700, Paul E. McKenney wrote:
-> I suppose RCU could take the dueling-banjos approach and use increasingly
-> aggressive scheduler policies itself, up to and including SCHED_DEADLINE,
-> until it started getting decent forward progress.  However, that
-> sounds like the something that just might have unintended consequences,
-> particularly if other kernel subsystems were to also play similar
-> games of dueling banjos.
+From: Josua Mayer <josua@solid-run.com>
 
-So long as the RCU threads are well-behaved, using SCHED_DEADLINE
-shouldn't have much of an impact on the system --- and the scheduling
-parameters that you can specify on SCHED_DEADLINE allows you to
-specify the worst-case impact on the system while also guaranteeing
-that the SCHED_DEADLINE tasks will urn in the first place.  After all,
-that's the whole point of SCHED_DEADLINE.
+With a modular kernel as configured by Debian a hang was observed with
+the Armada 8040 SoC in the Clearfog GT and Macchiatobin boards.
 
-So I wonder if the right approach is during the the first userspace
-system call to shced_setattr to enable a (any) real-time priority
-scheduler (SCHED_DEADLINE, SCHED_FIFO or SCHED_RR) on a userspace
-thread, before that's allowed to proceed, the RCU kernel threads are
-promoted to be SCHED_DEADLINE with appropriately set deadline
-parameters.  That way, a root user won't be able to shoot the system
-in the foot, and since the vast majority of the time, there shouldn't
-be any processes running with real-time priorities, we won't be
-changing the behavior of a normal server system.
+The 8040 SoC actually requires four clocks to be enabled for the mdio
+interface to function. All 4 clocks are already specified in
+armada-cp110.dtsi. It has however been missed that the orion-mdio driver
+only supports enabling up to three clocks.
 
-(I suspect there might be some audio applications that might try to
-set real-time priorities, but for desktop systems, it's probably more
-important that the system not tie its self into knots since the
-average desktop user isn't going to be well equipped to debug the
-problem.)
+This patch-set allows the orion-mdio driver to handle four clocks and
+adds a warning when more clocks are specified to prevent this particular
+oversight in the future.
 
-> Alternatively, is it possible to provide stricter admission control?
+Josua Mayer (4):
+  dt-bindings: allow up to four clocks for orion-mdio
+  net: mvmdio: allow up to four clocks to be specified for orion-mdio
+  net: mvmdio: print warning when orion-mdio has too many clocks
+  net: mvmdio: defer probe of orion-mdio if a clock is not ready
 
-I think that's an orthogonal issue; better admission control would be
-nice, but it looks to me that it's going to be fundamentally an issue
-of tweaking hueristics, and a fool-proof solution that will protect
-against all malicious userspace applications (including syzkaller) is
-going to require solving the halting problem.  So while it would be
-nice to improve the admission control, I don't think that's a going to
-be a general solution.
+ Documentation/devicetree/bindings/net/marvell-orion-mdio.txt |  2 +-
+ drivers/net/ethernet/marvell/mvmdio.c                        | 11 ++++++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-					- Ted
+-- 
+2.16.4
+
