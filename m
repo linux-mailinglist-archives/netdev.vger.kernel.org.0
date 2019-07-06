@@ -2,251 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D40C660E34
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 01:57:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4619060E51
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 02:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbfGEX5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jul 2019 19:57:41 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38904 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725878AbfGEX5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 19:57:41 -0400
-Received: by mail-lj1-f196.google.com with SMTP id r9so10657108ljg.5
-        for <netdev@vger.kernel.org>; Fri, 05 Jul 2019 16:57:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FOOdXogZL2vDHEfOpwyLAfpnSunCRf1ktSXTScEaYbc=;
-        b=e3kBZcgE4AAfwzUSIJXnvpmBp0um3fKmC8Po2fg5Y7z3/zUCBkazsNoPuemPp90sHI
-         L0/qrEQcN+M2DqMKs4AQzR3TkxvFWxMq+KaupBzzrGMJdHfdxqB/4adwbodSfroEhopY
-         kk9vSXdOcZVhduFnRkyP1SBq7rwvNDEOlS1j9luEBCB+OWIMZvpNUddiFK1q0p7+jOXd
-         25a3iYl3kgxBY12bW0mqqIq/iy+dlflZ76kjd7rX0Z1RRT3LafMliwGQtI1xFeau8LbN
-         6igetIBmn+Dey/Oq7QUVG2rcAdwZrwQQyR5AFTU02F+UlX7pxyioJa8HIPBokpJjohE9
-         v/Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=FOOdXogZL2vDHEfOpwyLAfpnSunCRf1ktSXTScEaYbc=;
-        b=sgjabZ+EVcHZKvMIqSxec+CHXoKAy6VXX0uRrwcFqkJ3zf5Q3jt0CNBA1DcepIa0ZZ
-         wVelIiFdBtJkOxjV+s69IupRy8yE/g/XFWIplpmgVNn1M5WQb5RM1ekOVuKQ2enU+x5e
-         3IKyq35yiI9CzRPKAf8EN0fueUedU8JouWz19DWgOV+IyiXS6dlpm27tgjDx99lhvSMu
-         +MCQ61VaJT6gtdi9qdH3yyxjMadZkL4m9HQKPNOwFGknCqFl9A+f8pGNNm/JPWHXJNid
-         FbPa8S5Prv776k+ofwTNoloGt+bWcKS3czP3mEmfVWw/9aHIwxLMsffrPBKNWrUmbtkm
-         NUGw==
-X-Gm-Message-State: APjAAAVjw1xy++wNbfT0tqJWqX7DO6C/MDynaArHSDneez2tFwA+ibek
-        nIRW+00RgB/EvqzsElG6YhBavQ==
-X-Google-Smtp-Source: APXvYqxe0w5H5Lbp3dMEIZwHUQGUfuP7CAE1qp4H3oP/Way0mfB+mOYm7wPaWPRw3rhpzwkBl3uYMA==
-X-Received: by 2002:a05:651c:92:: with SMTP id 18mr3575260ljq.35.1562371059181;
-        Fri, 05 Jul 2019 16:57:39 -0700 (PDT)
-Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id d7sm263922lfa.86.2019.07.05.16.57.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 05 Jul 2019 16:57:38 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net
-Cc:     ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH v9 net-next 2/5] net: ethernet: ti: davinci_cpdma: add dma mapped submit
-Date:   Sat,  6 Jul 2019 02:57:34 +0300
-Message-Id: <20190705235734.10776-1-ivan.khoronzhuk@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190705150502.6600-3-ivan.khoronzhuk@linaro.org>
-References: <20190705150502.6600-3-ivan.khoronzhuk@linaro.org>
+        id S1726038AbfGFAq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jul 2019 20:46:29 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:44951 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725813AbfGFAq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jul 2019 20:46:29 -0400
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1hjYqQ-0004Ac-8H; Sat, 06 Jul 2019 00:46:26 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 82FBC5FF68; Fri,  5 Jul 2019 17:46:24 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 7D1BF9FA39;
+        Fri,  5 Jul 2019 17:46:24 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     "Brian J. Murrell" <brian@interlinx.bc.ca>
+cc:     netdev@vger.kernel.org
+Subject: Re: bonded active-backup ethernet-wifi drops packets
+In-reply-to: <8d40b6ed3bf8a7540cff26e3834f0296228d9922.camel@interlinx.bc.ca>
+References: <0292e9eefb12f1b1e493f5af8ab78fa00744ed20.camel@interlinx.bc.ca> <8d40b6ed3bf8a7540cff26e3834f0296228d9922.camel@interlinx.bc.ca>
+Comments: In-reply-to "Brian J. Murrell" <brian@interlinx.bc.ca>
+   message dated "Thu, 04 Jul 2019 11:12:20 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <6133.1562373984.1@famine>
+Date:   Fri, 05 Jul 2019 17:46:24 -0700
+Message-ID: <6134.1562373984@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case if dma mapped packet needs to be sent, like with XDP
-page pool, the "mapped" submit can be used. This patch adds dma
-mapped submit based on regular one.
+Brian J. Murrell <brian@interlinx.bc.ca> wrote:
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>On Tue, 2019-06-18 at 14:57 -0400, Brian J. Murrell wrote:
+>> Hi.
+>> 
+>> I have an active-backup bonded connection on a 5.1.6 kernel where the
+>> slaves are an Ethernet interface and a wifi interface.  The goal is
+>> to
+>> have network transparent (i.e. same and IP address on both
+>> interfaces)
+>> interface which takes advantage of high-speed and low-latency when it
+>> can be physically plugged into the wired network but have portability
+>> when unplugged through WiFi.
+>> 
+>> It all works, mostly.  :-/
+>> 
+>> I find that even when the primary interface, being the Ethernet
+>> interface is plugged in and active, the bonded interface will drop
+>> packets periodically.
+>> 
+>> If I down the bonded interface and plumb the Ethernet interface
+>> directly, not as a slave of the bonded interface, no such packet
+>> dropping occurs.
+>> 
+>> My measure of packet dropping, is by observing the output of "sudo
+>> ping
+>> -f <ip_address>.  In less than a few minutes even, on the bonded
+>> interface, even with the Ethernet interface as the active slave, I
+>> will
+>> have a long string of dots indicating pings that were never
+>> replied.  On the unbonded Ethernet interface, no dots, even when
+>> measured over many days.
+>> 
+>> My bonding config:
+>> 
+>> $ cat /proc/net/bonding/bond0
+>> Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+>> 
+>> Bonding Mode: fault-tolerance (active-backup)
+>> Primary Slave: enp0s31f6 (primary_reselect always)
+>> Currently Active Slave: enp0s31f6
+>> MII Status: up
+>> MII Polling Interval (ms): 100
+>> Up Delay (ms): 0
+>> Down Delay (ms): 0
+>> 
+>> Slave Interface: enp0s31f6
+>> MII Status: up
+>> Speed: 1000 Mbps
+>> Duplex: full
+>> Link Failure Count: 0
+>> Permanent HW addr: 0c:54:15:4a:b2:0d
+>> Slave queue ID: 0
+>> 
+>> Slave Interface: wlp2s0
+>> MII Status: up
+>> Speed: Unknown
+>> Duplex: Unknown
+>> Link Failure Count: 1
+>> Permanent HW addr: 0c:54:15:4a:b2:0d
+>> Slave queue ID: 0
+>> 
+>> Current interface config/stats:
+>> 
+>> $ ifconfig bond0
+>> bond0: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500
+>>         inet 10.75.22.245  netmask 255.255.255.0  broadcast
+>> 10.75.22.255
+>>         inet6 fe80::ee66:b8c9:d55:a28f  prefixlen 64  scopeid
+>> 0x20<link>
+>>         inet6 2001:123:ab:123:d36d:5e5d:acc8:e9bc  prefixlen
+>> 64  scopeid 0x0<global>
+>>         ether 0c:54:15:4a:b2:0d  txqueuelen 1000  (Ethernet)
+>>         RX packets 1596206  bytes 165221404 (157.5 MiB)
+>>         RX errors 0  dropped 0  overruns 0  frame 0
+>>         TX packets 1590552  bytes 162689350 (155.1 MiB)
+>>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+>> 
+>> Devices:
+>> 00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection
+>> (2) I219-LM (rev 31)
+>> 02:00.0 Network controller: Intel Corporation Wireless 8265 / 8275
+>> (rev 78)
+>> 
+>> Happy to provide any other useful information.
+>> 
+>> Any ideas why the dropping, only when using the bonded interface?
+>
+>Wondering if I have the wrong list with this question.  Is there a list
+>where this question would be more on-topic or focused?
+
+	Not that I'm aware of; netdev is where bonding development
+discussions and such take place.
+
+>Perhaps I didn't provide enough information?  I am happy to provide
+>whatever is needed.  I just don't know what more is needed at this
+>point.
+
+	I did set this up and test it, but haven't had time to analyze
+in depth.
+
+	What I saw was that ping (IPv4) flood worked fine, bonded or
+not, over a span of several hours.  However, ping6 showed small numbers
+of drops on a ping6 flood when bonded, on the order of 200 drops out of
+48,000,000 requests sent.  Zero losses when no bond in the stack.  Both
+tests to the same peer connected to the same switch.  All of the above
+with the bond using the Ethernet slave.  I haven't tracked down where
+those losses are occurring, so I don't know if it's on the transmit or
+receive sides (or both).
+
+	I did this testing on a laptop with iwlwifi (Centrino 6205) and
+an e1000e (82579LM) network device, using the a kernel built from
+net-next as of earlier this week (it claimed to be 5.2.0-rc5+).
+
+	-J
+
 ---
-
-v9..v8
-- fix potential warnings on arm64 caused by typos in type casting
-
- drivers/net/ethernet/ti/davinci_cpdma.c | 89 ++++++++++++++++++++++---
- drivers/net/ethernet/ti/davinci_cpdma.h |  4 ++
- 2 files changed, 83 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
-index 5cf1758d425b..4e693c3aab27 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.c
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -139,6 +139,7 @@ struct submit_info {
- 	int directed;
- 	void *token;
- 	void *data;
-+	int flags;
- 	int len;
- };
- 
-@@ -184,6 +185,8 @@ static struct cpdma_control_info controls[] = {
- 				 (directed << CPDMA_TO_PORT_SHIFT));	\
- 	} while (0)
- 
-+#define CPDMA_DMA_EXT_MAP		BIT(16)
-+
- static void cpdma_desc_pool_destroy(struct cpdma_ctlr *ctlr)
- {
- 	struct cpdma_desc_pool *pool = ctlr->pool;
-@@ -1015,6 +1018,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 	struct cpdma_chan		*chan = si->chan;
- 	struct cpdma_ctlr		*ctlr = chan->ctlr;
- 	int				len = si->len;
-+	int				swlen = len;
- 	struct cpdma_desc __iomem	*desc;
- 	dma_addr_t			buffer;
- 	u32				mode;
-@@ -1036,16 +1040,22 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 		chan->stats.runt_transmit_buff++;
- 	}
- 
--	buffer = dma_map_single(ctlr->dev, si->data, len, chan->dir);
--	ret = dma_mapping_error(ctlr->dev, buffer);
--	if (ret) {
--		cpdma_desc_free(ctlr->pool, desc, 1);
--		return -EINVAL;
--	}
--
- 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
- 	cpdma_desc_to_port(chan, mode, si->directed);
- 
-+	if (si->flags & CPDMA_DMA_EXT_MAP) {
-+		buffer = (dma_addr_t)si->data;
-+		dma_sync_single_for_device(ctlr->dev, buffer, len, chan->dir);
-+		swlen |= CPDMA_DMA_EXT_MAP;
-+	} else {
-+		buffer = dma_map_single(ctlr->dev, si->data, len, chan->dir);
-+		ret = dma_mapping_error(ctlr->dev, buffer);
-+		if (ret) {
-+			cpdma_desc_free(ctlr->pool, desc, 1);
-+			return -EINVAL;
-+		}
-+	}
-+
- 	/* Relaxed IO accessors can be used here as there is read barrier
- 	 * at the end of write sequence.
- 	 */
-@@ -1055,7 +1065,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 	writel_relaxed(mode | len, &desc->hw_mode);
- 	writel_relaxed((uintptr_t)si->token, &desc->sw_token);
- 	writel_relaxed(buffer, &desc->sw_buffer);
--	writel_relaxed(len, &desc->sw_len);
-+	writel_relaxed(swlen, &desc->sw_len);
- 	desc_read(desc, sw_len);
- 
- 	__cpdma_chan_submit(chan, desc);
-@@ -1079,6 +1089,32 @@ int cpdma_chan_idle_submit(struct cpdma_chan *chan, void *token, void *data,
- 	si.data = data;
- 	si.len = len;
- 	si.directed = directed;
-+	si.flags = 0;
-+
-+	spin_lock_irqsave(&chan->lock, flags);
-+	if (chan->state == CPDMA_STATE_TEARDOWN) {
-+		spin_unlock_irqrestore(&chan->lock, flags);
-+		return -EINVAL;
-+	}
-+
-+	ret = cpdma_chan_submit_si(&si);
-+	spin_unlock_irqrestore(&chan->lock, flags);
-+	return ret;
-+}
-+
-+int cpdma_chan_idle_submit_mapped(struct cpdma_chan *chan, void *token,
-+				  dma_addr_t data, int len, int directed)
-+{
-+	struct submit_info si;
-+	unsigned long flags;
-+	int ret;
-+
-+	si.chan = chan;
-+	si.token = token;
-+	si.data = (void *)data;
-+	si.len = len;
-+	si.directed = directed;
-+	si.flags = CPDMA_DMA_EXT_MAP;
- 
- 	spin_lock_irqsave(&chan->lock, flags);
- 	if (chan->state == CPDMA_STATE_TEARDOWN) {
-@@ -1103,6 +1139,32 @@ int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
- 	si.data = data;
- 	si.len = len;
- 	si.directed = directed;
-+	si.flags = 0;
-+
-+	spin_lock_irqsave(&chan->lock, flags);
-+	if (chan->state != CPDMA_STATE_ACTIVE) {
-+		spin_unlock_irqrestore(&chan->lock, flags);
-+		return -EINVAL;
-+	}
-+
-+	ret = cpdma_chan_submit_si(&si);
-+	spin_unlock_irqrestore(&chan->lock, flags);
-+	return ret;
-+}
-+
-+int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
-+			     dma_addr_t data, int len, int directed)
-+{
-+	struct submit_info si;
-+	unsigned long flags;
-+	int ret;
-+
-+	si.chan = chan;
-+	si.token = token;
-+	si.data = (void *)data;
-+	si.len = len;
-+	si.directed = directed;
-+	si.flags = CPDMA_DMA_EXT_MAP;
- 
- 	spin_lock_irqsave(&chan->lock, flags);
- 	if (chan->state != CPDMA_STATE_ACTIVE) {
-@@ -1140,10 +1202,17 @@ static void __cpdma_chan_free(struct cpdma_chan *chan,
- 	uintptr_t			token;
- 
- 	token      = desc_read(desc, sw_token);
--	buff_dma   = desc_read(desc, sw_buffer);
- 	origlen    = desc_read(desc, sw_len);
- 
--	dma_unmap_single(ctlr->dev, buff_dma, origlen, chan->dir);
-+	buff_dma   = desc_read(desc, sw_buffer);
-+	if (origlen & CPDMA_DMA_EXT_MAP) {
-+		origlen &= ~CPDMA_DMA_EXT_MAP;
-+		dma_sync_single_for_cpu(ctlr->dev, buff_dma, origlen,
-+					chan->dir);
-+	} else {
-+		dma_unmap_single(ctlr->dev, buff_dma, origlen, chan->dir);
-+	}
-+
- 	cpdma_desc_free(pool, desc, 1);
- 	(*chan->handler)((void *)token, outlen, status);
- }
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.h b/drivers/net/ethernet/ti/davinci_cpdma.h
-index 9343c8c73c1b..0271a20c2e09 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.h
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.h
-@@ -77,8 +77,12 @@ int cpdma_chan_stop(struct cpdma_chan *chan);
- 
- int cpdma_chan_get_stats(struct cpdma_chan *chan,
- 			 struct cpdma_chan_stats *stats);
-+int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
-+			     dma_addr_t data, int len, int directed);
- int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
- 		      int len, int directed);
-+int cpdma_chan_idle_submit_mapped(struct cpdma_chan *chan, void *token,
-+				  dma_addr_t data, int len, int directed);
- int cpdma_chan_idle_submit(struct cpdma_chan *chan, void *token, void *data,
- 			   int len, int directed);
- int cpdma_chan_process(struct cpdma_chan *chan, int quota);
--- 
-2.17.1
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
