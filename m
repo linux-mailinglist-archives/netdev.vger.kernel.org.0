@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76337612C1
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 21:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A54612C4
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 21:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbfGFTAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 15:00:36 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35912 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbfGFTAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 15:00:35 -0400
-Received: by mail-io1-f65.google.com with SMTP id o9so10443039iom.3
-        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 12:00:35 -0700 (PDT)
+        id S1727026AbfGFTDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 15:03:01 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40329 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726743AbfGFTDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 15:03:01 -0400
+Received: by mail-io1-f68.google.com with SMTP id h6so17827208iom.7
+        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 12:03:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=t4g0Ot5nO3b0oZ80HFYhNovlAUiDmHNptUC+ENhO6x8=;
-        b=vKlVHlGgPV904jUiGHdoizM7x06qpGL7BAoSjUfLjoa4IppMDL2GEdAxFIYPD7291+
-         c62tPslyTcGjMx+SEgQKG6xwF8e569lLdY3hCVaN9NhVKArmvwsns5UABA5CxJ2E31ET
-         uJERVikGKVoLEh0xKJ6bh6yQKyKIXj23Vq+1PK0GPAYT/YJu6tBjWAUGiUnuLIHmy1jy
-         Qx+Nf9RJFNL2KIsQp6bvBYTFzdPbQ7o3LTWTigeSSF2R9Q8jw5eaRWyx7gZD1vbK02q6
-         A1A/diPZHJFvPFME5126TKFoweM2gv9qKfU7fvbBjYbMJlCs/NwQKatkdRXZ1nkMU8Q9
-         VfOw==
+        bh=Qrfe3707bQFohyFDg2fih45GDF/NiT2yWaAqNLSrQ1I=;
+        b=tKQHER214YwAzH2tP+60jGSUYZrSSE5HSnoevG616VJSPsMMnp+iH8CyssbEW6lVuY
+         pMaJmZTFIrkq8xkrV1obHQW+WE6u/vJ4l3A+St90dZiqbzjmqbMEjhQhGEQTusuu+3/h
+         VBicZ9hDSOoETLbxAEiXF3BLHXGhB6t7ljR0jhZG4HO83Luily5LVXun/Fv5IkXWDT7N
+         6xmQnon22VGHWdkvMjoIiu2dl1L5GoW8obTOCnF3QJGAYdJYzIf+RtjVMQPgcKhW0FIx
+         kd6tHN9FtyYYiadMiaHfD/nwFnal95gTI5yaauQ6iHyS9Ev5519SnMws70Fu/7YmglaD
+         1hDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=t4g0Ot5nO3b0oZ80HFYhNovlAUiDmHNptUC+ENhO6x8=;
-        b=ERc0KQRRcLHh0OKn5ZRsn2gHRS4RyC38fWcEttLx41HzCTi2nOCS/ukeLouF4e4eU4
-         o+R1E6UsIN++54dB9mwq7bKVspF/OqY/uxREoAVPIuC1wCGREgntPxAwztNSpnbfM/jN
-         saTBnR4argC6NPZTfUtTz8ucqdQ9Jacgr9LX5EAiwbJiOkBBlicIe1LYrwHdwDdHO0yl
-         s0R0sDJIw0o+plHQxZclFscH9MCgOwI+LGNRqbg95ANBiaED23D5EUKkr3gvXb8zMxF4
-         z2U1dm5rg0b33yPHCh9skXGq26ChmTkcrF2NbBLsZb/X606elaBmdkOcI1L1Q3uz5CvJ
-         mgPw==
-X-Gm-Message-State: APjAAAUbO//QL7eIJIMDLKSWsKwa/ENf1FLBM/q2t+cTAV3E1u6AavJL
-        kYUTTPt5KsfTcrnNai/QO7U/2mr0wf4aVEPl4co=
-X-Google-Smtp-Source: APXvYqxwR3RMfxbuij2WUbc5eBVDSnJtCRGbGy+pqdLM+NokNehGvUjN29BW1NBa6BlAwxdA+UtuMetqoAAQrjWUPZo=
-X-Received: by 2002:a6b:bf01:: with SMTP id p1mr10180536iof.181.1562439634934;
- Sat, 06 Jul 2019 12:00:34 -0700 (PDT)
+        bh=Qrfe3707bQFohyFDg2fih45GDF/NiT2yWaAqNLSrQ1I=;
+        b=Wvv9cRURWdETpROmENMWv0YY42xXtK4Q5aECxEoTlfEZw/Lm43Lxkd2eB/4Cwe8CeY
+         x8cbBspzLK/cfFvzADeHrdEkdR0N9ZdFaTdJ+BNl7qod/5eo+RJxLEWXGAQebs4mCkMY
+         SV1+sgaZ9we6rwWn4Sc1/3PoLgAaisCvDcNd2QQmdxgtF+L7JGPiNtsO+JBertfOB9Ff
+         0uSHUMie0v4T++v0LSYgyeFH6Ha/qdurQiLV1S0bB7pLXyvIt6f85icM28fSnp2q+hwC
+         +QOrAoyZZX3GcuvPVQKDp1KY0wE0uoccLCZhkPAi3l5J71JwvdK/4ayivJvSBXq8a3gQ
+         M7xw==
+X-Gm-Message-State: APjAAAUxLX/zPvKOp8XZYdLO0j19tDJ3vlcNINdtQGgrWUJ6pQ96Rg+g
+        S+j1MQSZLHS/17cDHFzwmHBpBytlEUUYhB9HrM8=
+X-Google-Smtp-Source: APXvYqxcdsnXl+N4cnaUawcWa61k/0B6P0+h5NS4SrUxbXBTv9H7jIbJWUCmw7xNH58y5EEY9bv+PlBjyO+QuEtPQio=
+X-Received: by 2002:a6b:dd18:: with SMTP id f24mr8623980ioc.97.1562439780098;
+ Sat, 06 Jul 2019 12:03:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <156240283550.10171.1727292671613975908.stgit@alrua-x1> <156240283571.10171.11997723639222073086.stgit@alrua-x1>
-In-Reply-To: <156240283571.10171.11997723639222073086.stgit@alrua-x1>
+References: <156240283550.10171.1727292671613975908.stgit@alrua-x1> <156240283578.10171.1470306115442701328.stgit@alrua-x1>
+In-Reply-To: <156240283578.10171.1470306115442701328.stgit@alrua-x1>
 From:   Y Song <ys114321@gmail.com>
-Date:   Sat, 6 Jul 2019 11:59:59 -0700
-Message-ID: <CAH3MdRX8ED3rb_sJQ5XKV+0Z0ihs7sj4-cL3upEJkGd6G2r+ow@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/6] include/bpf.h: Remove map_insert_ctx() stubs
+Date:   Sat, 6 Jul 2019 12:02:24 -0700
+Message-ID: <CAH3MdRVKtwjyjPigr2490m+Ermdq6D58DsdqTvsvjdqzGsPW1w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/6] xdp: Refactor devmap allocation code for reuse
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -67,13 +67,99 @@ t.com> wrote:
 >
 > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> When we changed the device and CPU maps to use linked lists instead of
-> bitmaps, we also removed the need for the map_insert_ctx() helpers to kee=
-p
-> track of the bitmaps inside each map. However, it seems I forgot to remov=
-e
-> the function definitions stubs, so remove those here.
+> The subsequent patch to add a new devmap sub-type can re-use much of the
+> initialisation and allocation code, so refactor it into separate function=
+s.
 >
 > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
 Acked-by: Yonghong Song <yhs@fb.com>
+
+> ---
+>  kernel/bpf/devmap.c |  137 +++++++++++++++++++++++++++++++--------------=
+------
+>  1 file changed, 84 insertions(+), 53 deletions(-)
+>
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index d83cf8ccc872..a2fe16362129 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -60,7 +60,7 @@ struct xdp_bulk_queue {
+>  struct bpf_dtab_netdev {
+>         struct net_device *dev; /* must be first member, due to tracepoin=
+t */
+>         struct bpf_dtab *dtab;
+> -       unsigned int bit;
+> +       unsigned int idx; /* keep track of map index for tracepoint */
+>         struct xdp_bulk_queue __percpu *bulkq;
+>         struct rcu_head rcu;
+>  };
+> @@ -75,28 +75,22 @@ struct bpf_dtab {
+>  static DEFINE_SPINLOCK(dev_map_lock);
+>  static LIST_HEAD(dev_map_list);
+>
+> -static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+> +static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr,
+> +                           bool check_memlock)
+>  {
+> -       struct bpf_dtab *dtab;
+>         int err, cpu;
+>         u64 cost;
+>
+> -       if (!capable(CAP_NET_ADMIN))
+> -               return ERR_PTR(-EPERM);
+> -
+>         /* check sanity of attributes */
+>         if (attr->max_entries =3D=3D 0 || attr->key_size !=3D 4 ||
+>             attr->value_size !=3D 4 || attr->map_flags & ~DEV_CREATE_FLAG=
+_MASK)
+> -               return ERR_PTR(-EINVAL);
+> +               return -EINVAL;
+>
+>         /* Lookup returns a pointer straight to dev->ifindex, so make sur=
+e the
+>          * verifier prevents writes from the BPF side
+>          */
+>         attr->map_flags |=3D BPF_F_RDONLY_PROG;
+>
+> -       dtab =3D kzalloc(sizeof(*dtab), GFP_USER);
+> -       if (!dtab)
+> -               return ERR_PTR(-ENOMEM);
+>
+>         bpf_map_init_from_attr(&dtab->map, attr);
+>
+> @@ -107,9 +101,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *=
+attr)
+>         /* if map size is larger than memlock limit, reject it */
+>         err =3D bpf_map_charge_init(&dtab->map.memory, cost);
+>         if (err)
+> -               goto free_dtab;
+> -
+> -       err =3D -ENOMEM;
+> +               return -EINVAL;
+>
+>         dtab->flush_list =3D alloc_percpu(struct list_head);
+>         if (!dtab->flush_list)
+> @@ -124,19 +116,38 @@ static struct bpf_map *dev_map_alloc(union bpf_attr=
+ *attr)
+>         if (!dtab->netdev_map)
+>                 goto free_percpu;
+>
+> -       spin_lock(&dev_map_lock);
+> -       list_add_tail_rcu(&dtab->list, &dev_map_list);
+> -       spin_unlock(&dev_map_lock);
+> -
+> -       return &dtab->map;
+> +       return 0;
+>
+>  free_percpu:
+>         free_percpu(dtab->flush_list);
+>  free_charge:
+>         bpf_map_charge_finish(&dtab->map.memory);
+> -free_dtab:
+> -       kfree(dtab);
+> -       return ERR_PTR(err);
+> +       return -ENOMEM;
+> +}
+> +
+[...]
