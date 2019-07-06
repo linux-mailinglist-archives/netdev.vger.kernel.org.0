@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F13896112F
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 16:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A7861130
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 16:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbfGFOzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 10:55:42 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:45581 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfGFOzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 10:55:42 -0400
-Received: by mail-yw1-f68.google.com with SMTP id m16so3434388ywh.12
-        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 07:55:41 -0700 (PDT)
+        id S1726876AbfGFOzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 10:55:44 -0400
+Received: from mail-yw1-f48.google.com ([209.85.161.48]:34122 "EHLO
+        mail-yw1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbfGFOzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 10:55:43 -0400
+Received: by mail-yw1-f48.google.com with SMTP id q128so3469179ywc.1
+        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 07:55:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FrcqR+x/T0FHnAvk5QuMcNg+0Qq9PIKhmvLXtxVB26w=;
-        b=UFG2Oh0VSW/pDhzWdrzxtlTd6zCubSpcfEnnC9l25zYnRJuXxomd4e7K7n7IoZYgQr
-         uFeVOWDTB6kRuRQIm+hiFqZT8ILVLvbGmJSDpGmJOTEVlZWQDKklWuutNRirtpJMEKKI
-         5uOXrIhbPtRob59yepMJxA4M4VCP14hFYGU0yxG+PjSClxp9Nrh/ByzXYk8S3OFGkLYF
-         Ed77rWiBvG4O/aZto0p7bF1v1CCmgSe9IpuzLCeyzaodYTNNaZWrdg38l2DqHmpnDC1e
-         lwwtyk6ENEsirI0clbrkLSQJLSIAm/mWOW/9RO6gIjuOVh1dpeJrixVPGxvA3nd4OOtl
-         bo5A==
+        bh=L2lnu0/zJWQ4oznV2r074DRPHDYnXLsbpeIU/l6oa2E=;
+        b=MgJdeidyrdgA+63aG14sTUSvf0DUTgdVKugs+ioyRWEx9BxPDIJi+mCtfbJMaW/usU
+         O3QJ4t5gEqyo4XMdaRH4UAdkJKJ2+TdgcErs30d+EX+/DwnErjSthc+i9i8bnSmKq26Y
+         /3Q+zVkZDVjz04YWFl/zL6JX0r1G2M/AcBGM45SvKfHO/SltDLL+QfMeIoyZVSPR3PP3
+         I07eR1u5u6Di58Z32jEE+OCqIbf0To0stlGVM6Ogz9GyIF5PoY6Nz58xjMl9Jj9SQCej
+         LlXG2L0VGO/oP9Ont3rmOY2yR5vCi29Z/NqM9GemJwnafTmYVy6N7vufMj+X3tkpes/F
+         zAKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=FrcqR+x/T0FHnAvk5QuMcNg+0Qq9PIKhmvLXtxVB26w=;
-        b=iMIKFnJ3E0WS2RrppZ9Fdk0bvHFA0IsfnuQBTQbEMDRVRxnhw3oqr/xB5N5zf4T1BC
-         MYDry+UGhErYvOa1uG5h2x7YkOK5xZEnaVYKwNROmFr4roPBWJmRe3BqLLOf+FE2Q4qx
-         IK8W2LIaLBV8RZmpuCuDeLw1M3PZx55duwVPtvYbZcchcAuBCc/hHPFbIJ0sKYmSxqfg
-         eqzxgbeiHCaYeVlplHQG5HZVVseMP8ZnoSvykjC3y6DRLyGSxQ9i8aCWTTZx3n7wNqTI
-         rsHIYmE+yrqdcoTYsauv7y7DE7Rl7msGZqrG+EvRifMhTFeqJxa5PF7x47Cmk182gtVH
-         4yOw==
-X-Gm-Message-State: APjAAAXRZeM/rryVk/Y/zy076VQ2gYmAI+wDwQcsaZ+qAvXTc3dpq12R
-        uZ6NMNrBv+X4CzcXyc1etIkec6QwoQ==
-X-Google-Smtp-Source: APXvYqwORA+/KZtkS+BsoMQ41HRVoWMjStHhADlGv0aI096WTKh4/zdyVqsntjo0Xqt6216F5G0w5Q==
-X-Received: by 2002:a81:9b83:: with SMTP id s125mr6176967ywg.249.1562424941247;
-        Sat, 06 Jul 2019 07:55:41 -0700 (PDT)
+        bh=L2lnu0/zJWQ4oznV2r074DRPHDYnXLsbpeIU/l6oa2E=;
+        b=S3bxIJ6v0j44s8KnaIKH3KtdMvn3u3DyQkm7MiPkS596mMGpHFCVJ9toLfpB/DLYCN
+         sGZoXVzlgrj0JPDrWmP2hQhANqV0KP6dwc9XVTEk/lE7Lhv6K+AUPfKaHO/U0g6eCEhf
+         CBhBICo4nvtIOqGwTzS+nMrX26TGifVDFaXRkAE/MZlWeTthCsq7ek+WFkRnG5caQ0Tp
+         k1W9uulQCfCTXTV5r8OE36oocYnbFepXHWUuvWNKrJQLLI67LJC95BpSkGLmWUuIvHCW
+         S7146WtZrjqEuPmLArTAIKApQ0nysyAs+NzRWVUZ/tG8eDu0MJq91HX+vn7yoSRm/2ug
+         A0AA==
+X-Gm-Message-State: APjAAAX2RfAyGq9KKG+YEEUwyETUM/Ih0kTQa8kllNDgARcAdgQnTP9r
+        HTwXjOXUzg3PaBA+lLEFvmIG0fhzrw==
+X-Google-Smtp-Source: APXvYqyQBNKWuyNaMOaZSMkKOq/ynn9Rub+xPFmhcDiAT9uHhtiv7eV/d4IywOINAcYrcHTmpz4sMQ==
+X-Received: by 2002:a81:bd54:: with SMTP id n20mr6257835ywk.507.1562424942904;
+        Sat, 06 Jul 2019 07:55:42 -0700 (PDT)
 Received: from localhost.localdomain (75-58-56-234.lightspeed.rlghnc.sbcglobal.net. [75.58.56.234])
-        by smtp.gmail.com with ESMTPSA id q63sm4586361ywq.17.2019.07.06.07.55.40
+        by smtp.gmail.com with ESMTPSA id q63sm4586361ywq.17.2019.07.06.07.55.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 06 Jul 2019 07:55:40 -0700 (PDT)
+        Sat, 06 Jul 2019 07:55:42 -0700 (PDT)
 From:   Stephen Suryaputra <ssuryaextr@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     idosch@idosch.org, nikolay@cumulusnetworks.com, dsahern@gmail.com,
         Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH net-next v2 1/3] ipv4: Multipath hashing on inner L3 needs to consider inner IPv6 pkts
-Date:   Sat,  6 Jul 2019 10:55:17 -0400
-Message-Id: <20190706145519.13488-2-ssuryaextr@gmail.com>
+Subject: [PATCH net-next v2 2/3] ipv6: Support multipath hashing on inner IP pkts
+Date:   Sat,  6 Jul 2019 10:55:18 -0400
+Message-Id: <20190706145519.13488-3-ssuryaextr@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190706145519.13488-1-ssuryaextr@gmail.com>
 References: <20190706145519.13488-1-ssuryaextr@gmail.com>
@@ -58,57 +58,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 363887a2cdfe ("ipv4: Support multipath hashing on inner IP pkts
-for GRE tunnel") supports multipath policy value of 2, Layer 3 or inner
-Layer 3 if present, but it only considers inner IPv4. There is a use
-case of IPv6 is tunneled by IPv4 GRE, thus add the ability to hash on
-inner IPv6 addresses.
+Make the same support as commit 363887a2cdfe ("ipv4: Support multipath
+hashing on inner IP pkts for GRE tunnel") for outer IPv6. The hashing
+considers both IPv4 and IPv6 pkts when they are tunneled by IPv6 GRE.
 
-Fixes: 363887a2cdfe ("ipv4: Support multipath hashing on inner IP pkts for GRE tunnel")
 Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
 ---
- net/ipv4/route.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ Documentation/networking/ip-sysctl.txt |  1 +
+ net/ipv6/route.c                       | 36 ++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index dc1f510a7c81..abaa7f9371e5 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1964,17 +1964,30 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 		break;
- 	case 2:
- 		memset(&hash_keys, 0, sizeof(hash_keys));
--		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 		/* skb is currently provided only when forwarding */
- 		if (skb) {
- 			struct flow_keys keys;
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index f0e6d1f53485..48c79e78817b 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -1473,6 +1473,7 @@ fib_multipath_hash_policy - INTEGER
+ 	Possible values:
+ 	0 - Layer 3 (source and destination addresses plus flow label)
+ 	1 - Layer 4 (standard 5-tuple)
++	2 - Layer 3 or inner Layer 3 if present
  
- 			skb_flow_dissect_flow_keys(skb, &keys, 0);
--
--			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
--			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
+ anycast_src_echo_reply - BOOLEAN
+ 	Controls the use of anycast addresses as source addresses for ICMPv6
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 39361f57351a..4d2e6b31a8d6 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -2370,6 +2370,42 @@ u32 rt6_multipath_hash(const struct net *net, const struct flowi6 *fl6,
+ 			hash_keys.basic.ip_proto = fl6->flowi6_proto;
+ 		}
+ 		break;
++	case 2:
++		memset(&hash_keys, 0, sizeof(hash_keys));
++		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++		if (skb) {
++			struct flow_keys keys;
++
++			if (!flkeys) {
++				skb_flow_dissect_flow_keys(skb, &keys, 0);
++				flkeys = &keys;
++			}
++
 +			/* Inner can be v4 or v6 */
-+			if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
++			if (flkeys->control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
 +				hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+				hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
-+				hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
-+			} else if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++				hash_keys.addrs.v4addrs.src = flkeys->addrs.v4addrs.src;
++				hash_keys.addrs.v4addrs.dst = flkeys->addrs.v4addrs.dst;
++			} else if (flkeys->control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
 +				hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-+				hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
-+				hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
-+				hash_keys.tags.flow_label = keys.tags.flow_label;
-+				hash_keys.basic.ip_proto = keys.basic.ip_proto;
++				hash_keys.addrs.v6addrs.src = flkeys->addrs.v6addrs.src;
++				hash_keys.addrs.v6addrs.dst = flkeys->addrs.v6addrs.dst;
++				hash_keys.tags.flow_label = flkeys->tags.flow_label;
++				hash_keys.basic.ip_proto = flkeys->basic.ip_proto;
 +			} else {
 +				/* Same as case 0 */
-+				hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+				ip_multipath_l3_keys(skb, &hash_keys);
++				hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++				ip6_multipath_l3_keys(skb, &hash_keys, flkeys);
 +			}
- 		} else {
- 			/* Same as case 0 */
-+			hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 			hash_keys.addrs.v4addrs.src = fl4->saddr;
- 			hash_keys.addrs.v4addrs.dst = fl4->daddr;
- 		}
++		} else {
++			/* Same as case 0 */
++			hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++			hash_keys.addrs.v6addrs.src = fl6->saddr;
++			hash_keys.addrs.v6addrs.dst = fl6->daddr;
++			hash_keys.tags.flow_label = (__force u32)flowi6_get_flowlabel(fl6);
++			hash_keys.basic.ip_proto = fl6->flowi6_proto;
++		}
++		break;
+ 	}
+ 	mhash = flow_hash_from_keys(&hash_keys);
+ 
 -- 
 2.17.1
 
