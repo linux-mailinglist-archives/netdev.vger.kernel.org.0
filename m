@@ -2,83 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E18611DF
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 17:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2CAD611FB
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 17:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbfGFPbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 11:31:10 -0400
-Received: from mo4-p05-ob.smtp.rzone.de ([85.215.255.131]:25374 "EHLO
-        mo4-p05-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726887AbfGFPbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 11:31:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1562427069;
-        s=strato-dkim-0002; d=jm0.eu;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=TDT9sxXhvLoNnEX3mNdqO9PUoFgyTAhRMUVAZRcGM7A=;
-        b=MI1QETPSMx0oT9ueQJp+8Y9G67ZnUfdo5GB86BHY4OqTGCWRtFOjX+q2JObMmUi/dE
-        cxAvg4PqxcDK+U7f+tHp8LrP+eAhy4DDO2wT7CYrOvcCdglHS6MGpHqP2e5cHNUh03cC
-        RP4DquuSdHJpm6wZ043a+OTSR61HKtBYPR/rJZHbYyLn3cVXwRxkLT28dNd4YohYNvhL
-        KNq+tKAGFRWNBPK2icvyMS/UPV7rfv8FhCkJbbZCDr8DE/oQBAOumhA9v8uO9jW7W3NX
-        12tJIAECbUro51Lbo5oFvKGacmvC2Aw6nob4/cc+Yebwo+KH4GuIkB4p0Ba33Jrdc+OJ
-        TjMw==
-X-RZG-AUTH: ":JmMXYEHmdv4HaV2cbPh7iS0wbr/uKIfGM0EPWe8EZQbw/dDJ/fVPBaXaSiaF5/mu26zWKwNU"
-X-RZG-CLASS-ID: mo05
-Received: from linux-1tvp.lan
-        by smtp.strato.de (RZmta 44.24 DYNA|AUTH)
-        with ESMTPSA id h0a328v66FJF6MY
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Sat, 6 Jul 2019 17:19:15 +0200 (CEST)
-From:   josua@solid-run.com
-To:     netdev@vger.kernel.org
-Cc:     Josua Mayer <josua@solid-run.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4/4] net: mvmdio: defer probe of orion-mdio if a clock is not ready
-Date:   Sat,  6 Jul 2019 17:19:00 +0200
-Message-Id: <20190706151900.14355-5-josua@solid-run.com>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20190706151900.14355-1-josua@solid-run.com>
+        id S1726973AbfGFPrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 11:47:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58048 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726760AbfGFPrM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Jul 2019 11:47:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=1eI4tCmPmpE27U/r/gWKuKPvYgiN7t8Zw9O+A9SMlFk=; b=COKvlU7CIc90CEhoAhau31KFjj
+        lVnmusI213K30YJwZsw5pIP85rSwiSNPdqa8OZrWQZFTKOzrqG4Gf+AdzyINhjry1rbT04eCUEq3r
+        1W68XxtTEWpgRL7INzUPaz0JLLnELRG12wB0Cm6q55TsRyKb+fzoSkO9Ftah2cmjDjUw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hjmu2-0000MY-JY; Sat, 06 Jul 2019 17:47:06 +0200
+Date:   Sat, 6 Jul 2019 17:47:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     josua@solid-run.com
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 1/4] dt-bindings: allow up to four clocks for orion-mdio
+Message-ID: <20190706154706.GE4428@lunn.ch>
 References: <20190706151900.14355-1-josua@solid-run.com>
+ <20190706151900.14355-2-josua@solid-run.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190706151900.14355-2-josua@solid-run.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Josua Mayer <josua@solid-run.com>
+On Sat, Jul 06, 2019 at 05:18:57PM +0200, josua@solid-run.com wrote:
+> From: Josua Mayer <josua@solid-run.com>
+> 
+> Armada 8040 needs four clocks to be enabled for MDIO accesses to work.
+> Update the binding to allow the extra clock to be specified.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 6d6a331f44a1 ("dt-bindings: allow up to three clocks for orion-mdio")
+> Signed-off-by: Josua Mayer <josua@solid-run.com>
 
-Defer probing of the orion-mdio interface when enabling of either of the
-clocks defer probing. This avoids locking up the Armada 8k SoC when mdio
-is used before all clocks have been enabled.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Josua Mayer <josua@solid-run.com>
----
- drivers/net/ethernet/marvell/mvmdio.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
-index 89a99bf8e87b..1034013426ad 100644
---- a/drivers/net/ethernet/marvell/mvmdio.c
-+++ b/drivers/net/ethernet/marvell/mvmdio.c
-@@ -321,6 +321,10 @@ static int orion_mdio_probe(struct platform_device *pdev)
- 
- 	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
- 		dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
-+		if (dev->clk[i] == PTR_ERR(-EPROBE_DEFER)) {
-+			ret = -EPROBE_DEFER;
-+			goto out_clk;
-+		}
- 		if (IS_ERR(dev->clk[i]))
- 			break;
- 		clk_prepare_enable(dev->clk[i]);
-@@ -366,6 +370,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
- 	if (dev->err_interrupt > 0)
- 		writel(0, dev->regs + MVMDIO_ERR_INT_MASK);
- 
-+out_clk:
- 	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
- 		if (IS_ERR(dev->clk[i]))
- 			break;
--- 
-2.16.4
-
+    Andrew
