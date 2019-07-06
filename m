@@ -2,114 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 220A761227
-	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 18:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4280861244
+	for <lists+netdev@lfdr.de>; Sat,  6 Jul 2019 18:52:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726808AbfGFQVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jul 2019 12:21:38 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40702 "EHLO
+        id S1726983AbfGFQwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jul 2019 12:52:07 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52674 "EHLO
         mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726522AbfGFQVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 12:21:38 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v19so12409686wmj.5
-        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 09:21:36 -0700 (PDT)
+        with ESMTP id S1726522AbfGFQwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jul 2019 12:52:07 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s3so11913307wms.2
+        for <netdev@vger.kernel.org>; Sat, 06 Jul 2019 09:52:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=PrFKzR5QjZfT0ElLH8h9hZJ57dHDh8iwbBvqIiGc5gU=;
-        b=Dz7qLx0dUgJaUHrfqrUut8lSK2gsbiC73QqWuBz9neUt0TaRs9kVX0w0jSxoXnVJaM
-         Ww/BgNfKYoshxLQ6M/BC6Md/w2OwPoHslBi5BEPrTAnXB9GU3ian1VhIiwsxfOzzZJqZ
-         hFrEulX40ml3ftDO1TzKyJzA5bQANhQEEAUp/pUHzSBiMkfRTabaLbQ3VnNuo5/VIy1r
-         oGCOEz4fRq8ZKmVPyopV9aqPrbqNt5ihxAYZBCNUCrxxHNoCSzS4M+HpGrA20jMdLU2A
-         nucrAtJeWPNMlDdurIm9Rd5xKyeqgD5rnlp4ZS3Am8BJSBJIfEe3QaABlW4S6dHTeCPA
-         2k/A==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=FygySr8XbWbcTUQL4Crt79hGB3bXqN6kmV0yD7rjlFI=;
+        b=suKaUvvze9rGS+n5HCbJ3SglDJWIauw6KqSYDnkXI7JTCsIokI55Y1b3fO7nr3XpSE
+         q1sV/zgQ8djFXu1oDyO5sFjq/lGdIUeY9eNUhdbTONO5edj1Tmff+lZxJNtxQmC13tsI
+         1wliQnQS/TiTk3uBCriEQ0q4tdYRkH3I9cpfiDmMNzo2RKdanQ3uooxYIcZPH7IoTuyJ
+         zUGUt8OFDYG03kbCQ9HJhuFz/U7tE1fQNPaJRiJFplvqHHrTBXXF2aCjEf0yoeWefrM7
+         pEEzeX0Np3DHNxQh4ZhHLgn2a4mvH0nBpICwMzcspSn+/Ie5oIByikeGT3nLj+siTccF
+         Ywzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=PrFKzR5QjZfT0ElLH8h9hZJ57dHDh8iwbBvqIiGc5gU=;
-        b=qZLpEq2jN7XcHyJyZ1u2WwQvPfJ7gJKmcrUbOUDEEunKKve5csxlE3RiBbWUKzcjHz
-         AA2uAa8PN/ebVBjsRVG/kI8BVrcSaBjbqKPuyc4llmPkTsLPXUizBnaO3H0IPa/X3sCR
-         Ex28j3aorViwbvM1CNHCuUlb7iqlPXHYKBHevbKB6bgfppEnOawXqj9VptCH/QpPyxX/
-         337fZ9N6OAnOHDNjNSuy0XlYKc82+gXxKLu70vWrWTUfxmW4nqqLRM+5jt+QYtRk5TAR
-         Mbo37CWAnCT0entMdV0cPHvKGqDXuiZDyBoAqGN/xo2rtkKspnMo74mP58WytMPQi7Mb
-         IKqQ==
-X-Gm-Message-State: APjAAAWGGzBLENvFlrJK/pXFVdvpz/wz3DC9vKOi+2mAdktG0EZzT+2M
-        C6x44Lhae/Uf8Sg19wp0oZqg+27rgMIJwg==
-X-Google-Smtp-Source: APXvYqxq50ZlLLF3KgkkKUASo5RDtX3N94ZdqrtSJuPLWqUUKAkVdxRfTtroVRtYOQv2T7j7ajQI5w==
-X-Received: by 2002:a1c:f914:: with SMTP id x20mr8866588wmh.142.1562430095991;
-        Sat, 06 Jul 2019 09:21:35 -0700 (PDT)
-Received: from [192.168.2.163] (p4FDE22F7.dip0.t-ipconnect.de. [79.222.34.247])
-        by smtp.gmail.com with ESMTPSA id w20sm33178445wra.96.2019.07.06.09.21.35
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Sat, 06 Jul 2019 09:21:35 -0700 (PDT)
-Subject: Re: [PATCH 3/4] net: mvmdio: print warning when orion-mdio has too
- many clocks
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-References: <20190706151900.14355-1-josua@solid-run.com>
- <20190706151900.14355-4-josua@solid-run.com> <20190706160925.GI4428@lunn.ch>
-From:   Josua Mayer <josua@solid-run.com>
-Message-ID: <8d24d716-2f64-37d3-a7f2-1725d48c7d5f@solid-run.com>
-Date:   Sat, 6 Jul 2019 18:21:34 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=FygySr8XbWbcTUQL4Crt79hGB3bXqN6kmV0yD7rjlFI=;
+        b=AeWlbqvEwrOw2ears1dipEePto3g6A+usJ0002tfbF8yfC4himAAyGuZ1JZpnN5pE3
+         cjfMvSkhkl7n1xFAvYDLHZ5hRGoyDJ0JQLTIp+l5diVKUtaNOOn2Aeqivdi6hW5ikr7Z
+         VdOyN8i58bmus4CFCRCjk11dvSz3zS2I50No3tvsaeACu0hzN51vAXF3AC5Q+PXactQb
+         iCpQSWq5HLftHCowmalCQ/udtw3jc08zKhL3jr4qRqc38SyQjVgmDWIdSo4DrvoSKU7W
+         YsHBamA2exOjW2w6yjQHkMluVHAAGrikW2A/gcCIPAYAMnT1b17OpXKjPBmb9YX568YY
+         MSxg==
+X-Gm-Message-State: APjAAAWzCbIN+2L3AKrbifm9XXtGb9nEberKPln2UWV/BXNEUew/5Aej
+        JHIkeF2EgorJSk0ChChT5UpiHG8=
+X-Google-Smtp-Source: APXvYqxUfbdCMXAZDvyTLQwmfBGbQuuhuUTVNRpUsO9Kg2/1P+MJjtmp5/Y2DqFQ74jz1SFqwJk6dg==
+X-Received: by 2002:a1c:b189:: with SMTP id a131mr8842622wmf.7.1562431924325;
+        Sat, 06 Jul 2019 09:52:04 -0700 (PDT)
+Received: from avx2 ([46.53.252.147])
+        by smtp.gmail.com with ESMTPSA id g11sm9537291wru.24.2019.07.06.09.52.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 06 Jul 2019 09:52:03 -0700 (PDT)
+Date:   Sat, 6 Jul 2019 19:52:02 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Per.Hallsmark@windriver.com
+Subject: [PATCH 1/2] proc: revalidate directories created with
+ proc_net_mkdir()
+Message-ID: <20190706165201.GA10550@avx2>
 MIME-Version: 1.0
-In-Reply-To: <20190706160925.GI4428@lunn.ch>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+/proc/net directories may contain content which depends on net namespace.
+Such dentries should be revalidated after setns(CLONE_NEWNET).
 
-Am 06.07.19 um 18:09 schrieb Andrew Lunn:
-> On Sat, Jul 06, 2019 at 05:18:59PM +0200, josua@solid-run.com wrote:
->> From: Josua Mayer <josua@solid-run.com>
->>
->> Print a warning when device tree specifies more than the maximum of four
->> clocks supported by orion-mdio. Because reading from mdio can lock up
->> the Armada 8k when a required clock is not initialized, it is important
->> to notify the user when a specified clock is ignored.
->>
->> Signed-off-by: Josua Mayer <josua@solid-run.com>
->> ---
->>  drivers/net/ethernet/marvell/mvmdio.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
->> index e17d563e97a6..89a99bf8e87b 100644
->> --- a/drivers/net/ethernet/marvell/mvmdio.c
->> +++ b/drivers/net/ethernet/marvell/mvmdio.c
->> @@ -326,6 +326,10 @@ static int orion_mdio_probe(struct platform_device *pdev)
->>  		clk_prepare_enable(dev->clk[i]);
->>  	}
->>  
->> +	if (!IS_ERR(of_clk_get(pdev->dev.of_node, i)))
->> +		dev_warn(dev, "unsupported number of clocks, limiting to the first "
->> +			 __stringify(ARRAY_SIZE(dev->clk)) "\n");
->> +
-> Hi Josua
->
-> Humm. Say getting clock 0 returned -EINVAL, or some other error code.
-> We break out of the loop, since such errors are being ignored. We then
-> hit this new code. Getting clock 1 works, and then we incorrectly
-> print this message.
+See
+	commit 1fde6f21d90f8ba5da3cb9c54ca991ed72696c43
+	proc: fix /proc/net/* after setns(2)
 
-Good point about breaking out of the loop! I did indeed not take the
-break condition of the loop into account.
+The patch is all about "pde_force_lookup()" line.
 
-I can not exactly follow your example though. The first failure of
-of_clk_get will trigger break and exit the loop,
-and then we would indeed print the wrong message ... .
+	[redid original patch --adobriyan]
 
->
-> Rather than getting the i'th clock, get ARRAY_SIZE(dev->clk)'th clock.
-I will gladly make the change in a v2.
->        Andrew
+Reported-by: "Hallsmark, Per" <Per.Hallsmark@windriver.com>
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+---
 
+ fs/proc/generic.c       |   25 ++++++++++++++++++-------
+ fs/proc/internal.h      |    3 +++
+ fs/proc/proc_net.c      |   17 +++++++++++++++++
+ include/linux/proc_fs.h |   16 ++++++++--------
+ 4 files changed, 46 insertions(+), 15 deletions(-)
+
+--- a/fs/proc/generic.c
++++ b/fs/proc/generic.c
+@@ -459,26 +459,37 @@ struct proc_dir_entry *proc_symlink(const char *name,
+ }
+ EXPORT_SYMBOL(proc_symlink);
+ 
+-struct proc_dir_entry *proc_mkdir_data(const char *name, umode_t mode,
+-		struct proc_dir_entry *parent, void *data)
++struct proc_dir_entry *_proc_mkdir(const char *name, umode_t mode,
++				   struct proc_dir_entry **parent, void *data)
+ {
+ 	struct proc_dir_entry *ent;
+ 
+ 	if (mode == 0)
+ 		mode = S_IRUGO | S_IXUGO;
+ 
+-	ent = __proc_create(&parent, name, S_IFDIR | mode, 2);
++	ent = __proc_create(parent, name, S_IFDIR | mode, 2);
+ 	if (ent) {
+ 		ent->data = data;
+ 		ent->proc_fops = &proc_dir_operations;
+ 		ent->proc_iops = &proc_dir_inode_operations;
+-		parent->nlink++;
+-		ent = proc_register(parent, ent);
+-		if (!ent)
+-			parent->nlink--;
+ 	}
+ 	return ent;
+ }
++
++struct proc_dir_entry *proc_mkdir_data(const char *name, umode_t mode,
++		struct proc_dir_entry *parent, void *data)
++{
++	struct proc_dir_entry *pde;
++
++	pde = _proc_mkdir(name, mode, &parent, data);
++	if (!pde)
++		return NULL;
++	parent->nlink++;
++	pde = proc_register(parent, pde);
++	if (!pde)
++		parent->nlink--;
++	return pde;
++}
+ EXPORT_SYMBOL_GPL(proc_mkdir_data);
+ 
+ struct proc_dir_entry *proc_mkdir_mode(const char *name, umode_t mode,
+--- a/fs/proc/internal.h
++++ b/fs/proc/internal.h
+@@ -299,3 +299,6 @@ extern unsigned long task_statm(struct mm_struct *,
+ 				unsigned long *, unsigned long *,
+ 				unsigned long *, unsigned long *);
+ extern void task_mem(struct seq_file *, struct mm_struct *);
++
++struct proc_dir_entry *_proc_mkdir(const char *name, umode_t mode,
++				   struct proc_dir_entry **parent, void *data);
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -251,6 +251,23 @@ struct proc_dir_entry *proc_create_net_single_write(const char *name, umode_t mo
+ }
+ EXPORT_SYMBOL_GPL(proc_create_net_single_write);
+ 
++struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name,
++				      struct proc_dir_entry *parent)
++{
++	struct proc_dir_entry *pde;
++
++	pde = _proc_mkdir(name, 0, &parent, net);
++	if (!pde)
++		return NULL;
++	pde_force_lookup(pde);
++	parent->nlink++;
++	pde = proc_register(parent, pde);
++	if (!pde)
++		parent->nlink++;
++	return pde;
++}
++EXPORT_SYMBOL_GPL(proc_net_mkdir);
++
+ static struct net *get_proc_task_net(struct inode *dir)
+ {
+ 	struct task_struct *task;
+--- a/include/linux/proc_fs.h
++++ b/include/linux/proc_fs.h
+@@ -8,6 +8,7 @@
+ #include <linux/types.h>
+ #include <linux/fs.h>
+ 
++struct net;
+ struct proc_dir_entry;
+ struct seq_file;
+ struct seq_operations;
+@@ -73,6 +74,8 @@ struct proc_dir_entry *proc_create_net_single_write(const char *name, umode_t mo
+ 						    int (*show)(struct seq_file *, void *),
+ 						    proc_write_t write,
+ 						    void *data);
++struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name, struct proc_dir_entry *parent);
++
+ extern struct pid *tgid_pidfd_to_pid(const struct file *file);
+ 
+ #else /* CONFIG_PROC_FS */
+@@ -115,6 +118,11 @@ static inline int remove_proc_subtree(const char *name, struct proc_dir_entry *p
+ #define proc_create_net(name, mode, parent, state_size, ops) ({NULL;})
+ #define proc_create_net_single(name, mode, parent, show, data) ({NULL;})
+ 
++static inline struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name, struct proc_dir_entry *parent)
++{
++	return NULL;
++}
++
+ static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
+ {
+ 	return ERR_PTR(-EBADF);
+@@ -122,14 +130,6 @@ static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
+ 
+ #endif /* CONFIG_PROC_FS */
+ 
+-struct net;
 -
-Josua
-
+-static inline struct proc_dir_entry *proc_net_mkdir(
+-	struct net *net, const char *name, struct proc_dir_entry *parent)
+-{
+-	return proc_mkdir_data(name, 0, parent, net);
+-}
+-
+ struct ns_common;
+ int open_related_ns(struct ns_common *ns,
+ 		   struct ns_common *(*get_ns)(struct ns_common *ns));
