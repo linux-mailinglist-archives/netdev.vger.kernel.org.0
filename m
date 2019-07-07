@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4D961492
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 11:36:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B76C261496
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 11:55:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbfGGJeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 05:34:50 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:34033 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfGGJeu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 05:34:50 -0400
-Received: by mail-qt1-f193.google.com with SMTP id k10so7641427qtq.1
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 02:34:49 -0700 (PDT)
+        id S1727262AbfGGJv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 05:51:59 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38934 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbfGGJv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 05:51:59 -0400
+Received: by mail-qk1-f195.google.com with SMTP id i125so11047214qkd.6
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 02:51:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=wPOV8xL8pj4Px0S4iOeNHsj59y051UjB79Vy7COW/+w=;
-        b=RX5/1rTrLjyQs9DURDNuiucVFQ4z1IV71xsU0eNTF34IzM9nOqmonAEJaWtgZ2yEDZ
-         kj/R6GR4Pb7+0sWMoOyLZb6uIfYLlw9Z0QysqAHhFx+jerDmBiXTb6bIuXav6vzoUxGo
-         Q6+6KM1LoBU81+aXOXvmSRpqwmZv3JVBFEdTddDaJDCq2OaNcpbjiU6uRSOIUmQBDjfe
-         bwckMdCOZMe8oPBhglavzxGHizZpqJGtAAMD5AcNsj/Ecuroh0AmEy7SCvL9tc2nXR2+
-         16dSoD/E0Q+fClqJcG7Ta4dzyPEtOByjVBP/Hn2rtQSCCT4fyx9NLktphxPFjVKImx2m
-         wGFg==
+        bh=8GvucgS17aftUma/RBU9uvxDl/j9cGEIytSN2G79hxk=;
+        b=ljqAzHYm0MgXMTk0xGa4VtzYV1OuPXELu2VsHKbgrwZ+Qb+P7Zu1lGRnmOJNSyP5gZ
+         no5yPDJpZmZ75vLlCJEgpT/cUGJgI0b9Zgv9U5drCDSMzpuyLPkKKeYtpZ7T2i5Q2k42
+         s/tSo3REkY/KFs7A9TZRKiqcDkQoF1NYpG8V3IrhKeZ49lfkD91zKq8Mbnzt47jgvVKF
+         EfLnWqd721H5RuOkdUz0j5KgcmbLCefEjnwVy6OhNxZ+enyk/wEjHEZfI0QCsTPgduFZ
+         7p/ujssWqpPc91y1zyESY9M2MevLB3qMy+/kZw3U+WNWpvmRnlclsfT8hsyFj/Nk4Lq4
+         nTbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=wPOV8xL8pj4Px0S4iOeNHsj59y051UjB79Vy7COW/+w=;
-        b=dFX3Aqki5xG136ZN5+3e/pGesAk7Iqih5o+se9PzHePiCZRKhGdG+ZdMPvvGlyBJmp
-         gxKRAaildTJpm8f5liVHFPK7elC1iMiXkaXfq0Vtt02UwaDH0Qd6Gx3CDh3gmcrB+Zbo
-         PrSXjcHdRIQ/Sfj48LS4MJMYHWRKL9Q2ZBtbE/AGvUXNiPVSho2Pp91zgZXA5ClvHtFe
-         xTq71WnG2zk8dBE66MptJ0LfU+99dheoHxAiU6qKa3flLDmAMTR7zsOF/jOY9Wr3REnA
-         FJ88T3dW3QCAwYKXdAi2enzE8U0W7gybR9RkJRYRGI3hqklC0ssHCEq3N8XSl3iUT+ob
-         SA5A==
-X-Gm-Message-State: APjAAAX67sTUiG6H26UnvrADArFcJT7hgy9SPQeg+RdRm+J4bdCymsh8
-        ibOUW0eIQHMh4JhIz9ao55MS04djrgY=
-X-Google-Smtp-Source: APXvYqwGsjFLyyyWy/x59r58ZXlLKwisEPOISVviaLxBexQ3CPYCGJKkujAQP3qn+Ys1hSiKKgI5hA==
-X-Received: by 2002:ad4:5311:: with SMTP id y17mr10417455qvr.1.1562492088487;
-        Sun, 07 Jul 2019 02:34:48 -0700 (PDT)
+        bh=8GvucgS17aftUma/RBU9uvxDl/j9cGEIytSN2G79hxk=;
+        b=CrRpdladydgWgqaCT9a/azDn2BAKzluwqI64FggMqTP0/Gr9JPOrtDxR+ikIurf8PL
+         s+Lr8fdePSFt5NwmAEmZWV2c6DCsH9G9nxOW2ChjXzv9RTdlNMbOsSX5d15TKyXdmOv/
+         9AkVdXH5/Iu/0F4AO0gxA4uvGwh4+N28g4DTrKTAwWUmT+FDkOFGtoS7ZHwdvaSdr/+D
+         XSyEqMfCLXpNDfHSU0+ETyJiqtjfp6EuhgJQacw+nKUGpigWPxBENKwgmv44qmPI7YoL
+         QVrmKKQttZSlVqB7/j7HBlLZG77+f5fss3tlEQxQ5XLFtkT1EKreN4ui3JX2OXdsbK0+
+         3KmQ==
+X-Gm-Message-State: APjAAAXtW36z4PnhSkhiQ0y9cw6M9DhCgkYPkGPJJinqcPbQPdzH4qFu
+        8AtcdqJqgwvYWPIO5vxpl0pL6zcbL3g=
+X-Google-Smtp-Source: APXvYqyFj7v/wNrPvXf+shctwCalK0gBKTSfv8aeoZHXxUqRutov7Km3DRynR+APrlH5M/UumzlQiA==
+X-Received: by 2002:a05:620a:15d3:: with SMTP id o19mr9832162qkm.213.1562493117817;
+        Sun, 07 Jul 2019 02:51:57 -0700 (PDT)
 Received: from willemb.nyc.corp.google.com ([2620:0:1003:315:55eb:ba49:fa6:b843])
-        by smtp.gmail.com with ESMTPSA id k123sm5791496qkf.13.2019.07.07.02.34.47
+        by smtp.gmail.com with ESMTPSA id p59sm297866qtd.75.2019.07.07.02.51.56
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 07 Jul 2019 02:34:47 -0700 (PDT)
+        Sun, 07 Jul 2019 02:51:57 -0700 (PDT)
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next] ipv6: elide flowlabel check if no exclusive leases exist
-Date:   Sun,  7 Jul 2019 05:34:45 -0400
-Message-Id: <20190707093445.15121-1-willemdebruijn.kernel@gmail.com>
+Cc:     davem@davemloft.net, linyunsheng@huawei.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next v2] skbuff: increase verbosity when dumping skb data
+Date:   Sun,  7 Jul 2019 05:51:55 -0400
+Message-Id: <20190707095155.58578-1-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -60,271 +61,185 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Willem de Bruijn <willemb@google.com>
 
-Processes can request ipv6 flowlabels with cmsg IPV6_FLOWINFO.
-If not set, by default an autogenerated flowlabel is selected.
+skb_warn_bad_offload and netdev_rx_csum_fault trigger on hard to debug
+issues. Dump more state and the header.
 
-Explicit flowlabels require a control operation per label plus a
-datapath check on every connection (every datagram if unconnected).
-This is particularly expensive on unconnected sockets multiplexing
-many flows, such as QUIC.
+Optionally dump the entire packet and linear segment. This is required
+to debug checksum bugs that may include bytes past skb_tail_pointer().
 
-In the common case, where no lease is exclusive, the check can be
-safely elided, as both lease request and check trivially succeed.
-Indeed, autoflowlabel does the same even with exclusive leases.
+Both call sites call this function inside a net_ratelimit() block.
+Limit full packet log further to a hard limit of can_dump_full (5).
 
-Elide the check if no process has requested an exclusive lease.
+Based on an earlier patch by Cong Wang, see link below.
 
-fl6_sock_lookup previously returns either a reference to a lease or
-NULL to denote failure. Modify to return a real error and update
-all callers. On return NULL, they can use the label and will elide
-the atomic_dec in fl6_sock_release.
+Changes v1 -> v2
+  - dump frag_list only on full_pkt
 
-This is an optimization. Robust applications still have to revert to
-requesting leases if the fast path fails due to an exclusive lease.
-
-Changes RFC->v1:
-  - use static_key_false_deferred to rate limit jump label operations
-    - call static_key_deferred_flush to stop timers on exit
-  - move decrement out of RCU context
-  - defer optimization also if opt data is associated with a lease
-  - updated all fp6_sock_lookup callers, not just udp
-
+Link: https://patchwork.ozlabs.org/patch/1000841/
 Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- include/net/ipv6.h       | 14 +++++++++++++-
- net/dccp/ipv6.c          |  2 +-
- net/ipv6/ip6_flowlabel.c | 27 +++++++++++++++++++++++----
- net/ipv6/raw.c           |  4 ++--
- net/ipv6/tcp_ipv6.c      |  2 +-
- net/ipv6/udp.c           |  4 ++--
- net/l2tp/l2tp_ip6.c      |  4 ++--
- net/sctp/ipv6.c          |  2 +-
- 8 files changed, 45 insertions(+), 14 deletions(-)
+ include/linux/skbuff.h |  1 +
+ net/core/dev.c         | 16 ++-----
+ net/core/skbuff.c      | 99 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 104 insertions(+), 12 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 8eca5fb30376f..8dfc65639aa4c 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -13,6 +13,7 @@
- #include <linux/hardirq.h>
- #include <linux/jhash.h>
- #include <linux/refcount.h>
-+#include <linux/jump_label_ratelimit.h>
- #include <net/if_inet6.h>
- #include <net/ndisc.h>
- #include <net/flow.h>
-@@ -389,7 +390,18 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
- 		kfree_rcu(opt, rcu);
- }
- 
--struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
-+struct ip6_flowlabel *__fl6_sock_lookup(struct sock *sk, __be32 label);
-+
-+extern struct static_key_false_deferred ipv6_flowlabel_exclusive;
-+static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
-+						    __be32 label)
-+{
-+	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key))
-+		return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
-+
-+	return NULL;
-+}
-+
- struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
- 					 struct ip6_flowlabel *fl,
- 					 struct ipv6_txoptions *fopt);
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 85c10c8f50bd1..1b7381ff787b3 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -830,7 +830,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 		if (fl6.flowlabel & IPV6_FLOWLABEL_MASK) {
- 			struct ip6_flowlabel *flowlabel;
- 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--			if (flowlabel == NULL)
-+			if (IS_ERR(flowlabel))
- 				return -EINVAL;
- 			fl6_sock_release(flowlabel);
- 		}
-diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
-index 545e339b8c4fb..ad284b1fd308a 100644
---- a/net/ipv6/ip6_flowlabel.c
-+++ b/net/ipv6/ip6_flowlabel.c
-@@ -17,6 +17,7 @@
- #include <linux/slab.h>
- #include <linux/export.h>
- #include <linux/pid_namespace.h>
-+#include <linux/jump_label_ratelimit.h>
- 
- #include <net/net_namespace.h>
- #include <net/sock.h>
-@@ -53,6 +54,9 @@ static DEFINE_SPINLOCK(ip6_fl_lock);
- 
- static DEFINE_SPINLOCK(ip6_sk_fl_lock);
- 
-+DEFINE_STATIC_KEY_DEFERRED_FALSE(ipv6_flowlabel_exclusive, HZ);
-+EXPORT_SYMBOL(ipv6_flowlabel_exclusive);
-+
- #define for_each_fl_rcu(hash, fl)				\
- 	for (fl = rcu_dereference_bh(fl_ht[(hash)]);		\
- 	     fl != NULL;					\
-@@ -90,6 +94,13 @@ static struct ip6_flowlabel *fl_lookup(struct net *net, __be32 label)
- 	return fl;
- }
- 
-+static bool fl_shared_exclusive(struct ip6_flowlabel *fl)
-+{
-+	return fl->share == IPV6_FL_S_EXCL ||
-+	       fl->share == IPV6_FL_S_PROCESS ||
-+	       fl->share == IPV6_FL_S_USER;
-+}
-+
- static void fl_free_rcu(struct rcu_head *head)
- {
- 	struct ip6_flowlabel *fl = container_of(head, struct ip6_flowlabel, rcu);
-@@ -103,8 +114,13 @@ static void fl_free_rcu(struct rcu_head *head)
- 
- static void fl_free(struct ip6_flowlabel *fl)
- {
--	if (fl)
--		call_rcu(&fl->rcu, fl_free_rcu);
-+	if (!fl)
-+		return;
-+
-+	if (fl_shared_exclusive(fl) || fl->opt)
-+		static_branch_slow_dec_deferred(&ipv6_flowlabel_exclusive);
-+
-+	call_rcu(&fl->rcu, fl_free_rcu);
- }
- 
- static void fl_release(struct ip6_flowlabel *fl)
-@@ -240,7 +256,7 @@ static struct ip6_flowlabel *fl_intern(struct net *net,
- 
- /* Socket flowlabel lists */
- 
--struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label)
-+struct ip6_flowlabel *__fl6_sock_lookup(struct sock *sk, __be32 label)
- {
- 	struct ipv6_fl_socklist *sfl;
- 	struct ipv6_pinfo *np = inet6_sk(sk);
-@@ -260,7 +276,7 @@ struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label)
- 	rcu_read_unlock_bh();
- 	return NULL;
- }
--EXPORT_SYMBOL_GPL(fl6_sock_lookup);
-+EXPORT_SYMBOL_GPL(__fl6_sock_lookup);
- 
- void fl6_free_socklist(struct sock *sk)
- {
-@@ -419,6 +435,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 7ece49d5f8ef7..1fdfdbb34e8e8 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1024,6 +1024,7 @@ static inline bool skb_unref(struct sk_buff *skb)
+ void skb_release_head_state(struct sk_buff *skb);
+ void kfree_skb(struct sk_buff *skb);
+ void kfree_skb_list(struct sk_buff *segs);
++void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
+ void skb_tx_error(struct sk_buff *skb);
+ void consume_skb(struct sk_buff *skb);
+ void __consume_stateless_skb(struct sk_buff *skb);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 58529318b3a94..fc676b2610e3c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2900,12 +2900,10 @@ static void skb_warn_bad_offload(const struct sk_buff *skb)
+ 		else
+ 			name = netdev_name(dev);
  	}
- 	fl->dst = freq->flr_dst;
- 	atomic_set(&fl->users, 1);
-+	if (fl_shared_exclusive(fl) || fl->opt)
-+		static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
- 	switch (fl->share) {
- 	case IPV6_FL_S_EXCL:
- 	case IPV6_FL_S_ANY:
-@@ -854,6 +872,7 @@ int ip6_flowlabel_init(void)
- 
- void ip6_flowlabel_cleanup(void)
- {
-+	static_key_deferred_flush(&ipv6_flowlabel_exclusive);
- 	del_timer(&ip6_fl_gc_timer);
- 	unregister_pernet_subsys(&ip6_flowlabel_net_ops);
+-	WARN(1, "%s: caps=(%pNF, %pNF) len=%d data_len=%d gso_size=%d "
+-	     "gso_type=%d ip_summed=%d\n",
++	skb_dump(KERN_WARNING, skb, false);
++	WARN(1, "%s: caps=(%pNF, %pNF)\n",
+ 	     name, dev ? &dev->features : &null_features,
+-	     skb->sk ? &skb->sk->sk_route_caps : &null_features,
+-	     skb->len, skb->data_len, skb_shinfo(skb)->gso_size,
+-	     skb_shinfo(skb)->gso_type, skb->ip_summed);
++	     skb->sk ? &skb->sk->sk_route_caps : &null_features);
  }
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 70693bc7ad9d2..8a6131991e38f 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -834,7 +834,7 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
- 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
- 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--				if (!flowlabel)
-+				if (IS_ERR(flowlabel))
- 					return -EINVAL;
- 			}
- 		}
-@@ -876,7 +876,7 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		}
- 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
- 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--			if (!flowlabel)
-+			if (IS_ERR(flowlabel))
- 				return -EINVAL;
- 		}
- 		if (!(opt->opt_nflen|opt->opt_flen))
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 4f3f99b398209..d56a9019a0feb 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -171,7 +171,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 		if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
- 			struct ip6_flowlabel *flowlabel;
- 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--			if (!flowlabel)
-+			if (IS_ERR(flowlabel))
- 				return -EINVAL;
- 			fl6_sock_release(flowlabel);
- 		}
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 4406e059da680..827fe73850788 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1319,7 +1319,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
- 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
- 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--				if (!flowlabel)
-+				if (IS_ERR(flowlabel))
- 					return -EINVAL;
- 			}
- 		}
-@@ -1371,7 +1371,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		}
- 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
- 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--			if (!flowlabel)
-+			if (IS_ERR(flowlabel))
- 				return -EINVAL;
- 		}
- 		if (!(opt->opt_nflen|opt->opt_flen))
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 1a76a0a4e3abb..687e23a8b3266 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -536,7 +536,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			fl6.flowlabel = lsa->l2tp_flowinfo & IPV6_FLOWINFO_MASK;
- 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
- 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--				if (flowlabel == NULL)
-+				if (IS_ERR(flowlabel))
- 					return -EINVAL;
- 			}
- 		}
-@@ -577,7 +577,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		}
- 		if ((fl6.flowlabel & IPV6_FLOWLABEL_MASK) && !flowlabel) {
- 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--			if (flowlabel == NULL)
-+			if (IS_ERR(flowlabel))
- 				return -EINVAL;
- 		}
- 		if (!(opt->opt_nflen|opt->opt_flen))
-diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
-index 64e0a594a6516..e5f2fc726a983 100644
---- a/net/sctp/ipv6.c
-+++ b/net/sctp/ipv6.c
-@@ -253,7 +253,7 @@ static void sctp_v6_get_dst(struct sctp_transport *t, union sctp_addr *saddr,
- 		struct ip6_flowlabel *flowlabel;
  
- 		flowlabel = fl6_sock_lookup(sk, fl6->flowlabel);
--		if (!flowlabel)
-+		if (IS_ERR(flowlabel))
- 			goto out;
- 		fl6_sock_release(flowlabel);
+ /*
+@@ -3124,13 +3122,7 @@ void netdev_rx_csum_fault(struct net_device *dev, struct sk_buff *skb)
+ {
+ 	if (net_ratelimit()) {
+ 		pr_err("%s: hw csum failure\n", dev ? dev->name : "<unknown>");
+-		if (dev)
+-			pr_err("dev features: %pNF\n", &dev->features);
+-		pr_err("skb len=%u data_len=%u pkt_type=%u gso_size=%u gso_type=%u nr_frags=%u ip_summed=%u csum=%x csum_complete_sw=%d csum_valid=%d csum_level=%u\n",
+-		       skb->len, skb->data_len, skb->pkt_type,
+-		       skb_shinfo(skb)->gso_size, skb_shinfo(skb)->gso_type,
+-		       skb_shinfo(skb)->nr_frags, skb->ip_summed, skb->csum,
+-		       skb->csum_complete_sw, skb->csum_valid, skb->csum_level);
++		skb_dump(KERN_ERR, skb, true);
+ 		dump_stack();
  	}
+ }
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5323441a12ccf..cdb0ccdaac0bf 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -707,6 +707,105 @@ void kfree_skb_list(struct sk_buff *segs)
+ }
+ EXPORT_SYMBOL(kfree_skb_list);
+ 
++/* Dump skb information and contents.
++ *
++ * Must only be called from net_ratelimit()-ed paths.
++ *
++ * Dumps up to can_dump_full whole packets if full_pkt, headers otherwise.
++ */
++void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
++{
++	static atomic_t can_dump_full = ATOMIC_INIT(5);
++	struct skb_shared_info *sh = skb_shinfo(skb);
++	struct net_device *dev = skb->dev;
++	struct sock *sk = skb->sk;
++	struct sk_buff *list_skb;
++	bool has_mac, has_trans;
++	int headroom, tailroom;
++	int i, len, seg_len;
++
++	if (full_pkt)
++		full_pkt = atomic_dec_if_positive(&can_dump_full) >= 0;
++
++	if (full_pkt)
++		len = skb->len;
++	else
++		len = min_t(int, skb->len, MAX_HEADER + 128);
++
++	headroom = skb_headroom(skb);
++	tailroom = skb_tailroom(skb);
++
++	has_mac = skb_mac_header_was_set(skb);
++	has_trans = skb_transport_header_was_set(skb);
++
++	printk("%sskb len=%u headroom=%u headlen=%u tailroom=%u\n"
++	       "mac=(%d,%d) net=(%d,%d) trans=%d\n"
++	       "shinfo(txflags=%u nr_frags=%u gso(size=%hu type=%u segs=%hu))\n"
++	       "csum(0x%x ip_summed=%u complete_sw=%u valid=%u level=%u)\n"
++	       "hash(0x%x sw=%u l4=%u) proto=0x%04x pkttype=%u iif=%d\n",
++	       level, skb->len, headroom, skb_headlen(skb), tailroom,
++	       has_mac ? skb->mac_header : -1,
++	       has_mac ? skb_mac_header_len(skb) : -1,
++	       skb->network_header,
++	       has_trans ? skb_network_header_len(skb) : -1,
++	       has_trans ? skb->transport_header : -1,
++	       sh->tx_flags, sh->nr_frags,
++	       sh->gso_size, sh->gso_type, sh->gso_segs,
++	       skb->csum, skb->ip_summed, skb->csum_complete_sw,
++	       skb->csum_valid, skb->csum_level,
++	       skb->hash, skb->sw_hash, skb->l4_hash,
++	       ntohs(skb->protocol), skb->pkt_type, skb->skb_iif);
++
++	if (dev)
++		printk("%sdev name=%s feat=0x%pNF\n",
++		       level, dev->name, &dev->features);
++	if (sk)
++		printk("%ssk family=%hu type=%hu proto=%hu\n",
++		       level, sk->sk_family, sk->sk_type, sk->sk_protocol);
++
++	if (full_pkt && headroom)
++		print_hex_dump(level, "skb headroom: ", DUMP_PREFIX_OFFSET,
++			       16, 1, skb->head, headroom, false);
++
++	seg_len = min_t(int, skb_headlen(skb), len);
++	if (seg_len)
++		print_hex_dump(level, "skb linear:   ", DUMP_PREFIX_OFFSET,
++			       16, 1, skb->data, seg_len, false);
++	len -= seg_len;
++
++	if (full_pkt && tailroom)
++		print_hex_dump(level, "skb tailroom: ", DUMP_PREFIX_OFFSET,
++			       16, 1, skb_tail_pointer(skb), tailroom, false);
++
++	for (i = 0; len && i < skb_shinfo(skb)->nr_frags; i++) {
++		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
++		u32 p_off, p_len, copied;
++		struct page *p;
++		u8 *vaddr;
++
++		skb_frag_foreach_page(frag, frag->page_offset,
++				      skb_frag_size(frag), p, p_off, p_len,
++				      copied) {
++			seg_len = min_t(int, p_len, len);
++			vaddr = kmap_atomic(p);
++			print_hex_dump(level, "skb frag:     ",
++				       DUMP_PREFIX_OFFSET,
++				       16, 1, vaddr + p_off, seg_len, false);
++			kunmap_atomic(vaddr);
++			len -= seg_len;
++			if (!len)
++				break;
++		}
++	}
++
++	if (full_pkt && skb_has_frag_list(skb)) {
++		printk("skb fraglist:\n");
++		skb_walk_frags(skb, list_skb)
++			skb_dump(level, list_skb, true);
++	}
++}
++EXPORT_SYMBOL(skb_dump);
++
+ /**
+  *	skb_tx_error - report an sk_buff xmit error
+  *	@skb: buffer that triggered an error
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
