@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D0561451
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3271661452
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727276AbfGGIAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 04:00:07 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:42245 "EHLO
+        id S1727283AbfGGIAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 04:00:11 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:60807 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726330AbfGGIAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:00:07 -0400
+        by vger.kernel.org with ESMTP id S1726330AbfGGIAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:00:09 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 51CD02813;
-        Sun,  7 Jul 2019 04:00:06 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id E8B642779;
+        Sun,  7 Jul 2019 04:00:08 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 07 Jul 2019 04:00:06 -0400
+  by compute3.internal (MEProxy); Sun, 07 Jul 2019 04:00:08 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=uLCdbSSGO3BXKqvOIY+yol8eeam27K2jkeCDzuxhBKU=; b=IqiqQhZW
-        dGUcn3vNTabKy7TUHsD6aCIgKo0jReTrxMfsygv9YhkdLVCYsgJv69+L6W9VZLC8
-        2XSc1oHffyPzORXeHmzWyOCcFZWQbB33zAu8E/rWeKZbTiobM2UVHpfYTO81X/WM
-        pHkW7cmP2//0AU65P+xN7IJE/K9dMlWy+TRmdIUC3AJI/xNLiy/8L8q/1tt89AAG
-        a5/z5MJuYElrY10NLlhsvbTix7nESo+JcDu5MlXfE5lpT31467KlRrMSiSxRwODH
-        2P3aB43NoR43pZahlKbFfJ+z7fhLU+tXwJAtCzV2BQHTxkMsnsIpBt6rnuNTW6G/
-        zLxnOAfUHAdFSw==
-X-ME-Sender: <xms:hqYhXWDKRBm1ZBCjL33iaRnSw0m4VqGWdKNLeDn2l2pvrV5h3qMFmw>
+        fm3; bh=Aip6OODWzRJzpsO7Q0iKtlSZAiL1Tg1FXgROgrcmw+I=; b=cwgmQ/Fl
+        Pw7irQwGLOTXtUUjSY6UymdkSuJJGOFsmXMUwlaEvYhHbAlki77GUB1DZNVGbAvz
+        OfDIRj5bRLqLgNDSQHuQzGhLrR/VzpAffQG31/GVayvzq+hTSZS8zqHYaczbjEET
+        ZHGVLAprANFksUYEVCrxUTrJurh04Nok9OK9OuxNNi/nJUF2pAUKCwvGmtzb/yel
+        COTTTSowgzSRZJLwp7tgLD50ib9XlSx/M6NCc226Ygik+m60Foq+aGm4cmZdsLkC
+        W1sN1VK2Juz2T4TjzX1A7lOxB/6vJuOiod1E5Iknhd312MrsUupMO5xF9cXJGcOd
+        mus5j0uEQh7fUQ==
+X-ME-Sender: <xms:iKYhXapjaO9vNw8DCsspX_5f0wmRkpJE9tSW0HOxLvwTff0mh8VjQw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,13 +35,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:hqYhXbKaHOLYLntdvfVx7TJGSFXgzQ4-hPWw-25W_GuHxyAA_B-2qQ>
-    <xmx:hqYhXfl_4wLrPjKmo5PKUPELmTUerWY11OCfN2Uc3V_oAa-g_DObWw>
-    <xmx:hqYhXUYvalBQ8cZ6dbi65YROUn0UXGHbdVgba1QiR476tSgJveC9fA>
-    <xmx:hqYhXWabGjFmUP4J-vJiax94XzrR5a_VQWwHefJtJ_UPiwzaY_Ejmw>
+X-ME-Proxy: <xmx:iKYhXdWklU6LSce8HiFttzxVVtWV8GF1Go7W2jsz0HuRWrb19sGlvA>
+    <xmx:iKYhXcCoGl7fGAM0lJ8aJP7uDCfmSwVFeh9bRVYo0U7b_ysTY0dVOw>
+    <xmx:iKYhXWzNcFMp0uOYLGnCCpV13OH3szqYDTJZvXFI22k-vvsGnYTOmQ>
+    <xmx:iKYhXei75erNxB6V-ScsSuM9eH-l5JBoYs06sb1LIqWN7AeNXF_j1g>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B63E5380083;
-        Sun,  7 Jul 2019 04:00:02 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4C7AC38008A;
+        Sun,  7 Jul 2019 04:00:06 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
         f.fainelli@gmail.com, vivien.didelot@gmail.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 06/11] Documentation: Add description of netdevsim traps
-Date:   Sun,  7 Jul 2019 10:58:23 +0300
-Message-Id: <20190707075828.3315-7-idosch@idosch.org>
+Subject: [PATCH net-next 07/11] mlxsw: core: Add API to set trap action
+Date:   Sun,  7 Jul 2019 10:58:24 +0300
+Message-Id: <20190707075828.3315-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190707075828.3315-1-idosch@idosch.org>
 References: <20190707075828.3315-1-idosch@idosch.org>
@@ -66,90 +66,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
+Up until now the action of a trap was never changed during its lifetime.
+This is going to change by subsequent patches that will allow devlink to
+control the action of certain traps.
+
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../networking/devlink-trap-netdevsim.rst     | 20 +++++++++++++++++++
- Documentation/networking/devlink-trap.rst     | 11 ++++++++++
- Documentation/networking/index.rst            |  1 +
- drivers/net/netdevsim/dev.c                   |  3 +++
- 4 files changed, 35 insertions(+)
- create mode 100644 Documentation/networking/devlink-trap-netdevsim.rst
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 12 ++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h |  3 +++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/Documentation/networking/devlink-trap-netdevsim.rst b/Documentation/networking/devlink-trap-netdevsim.rst
-new file mode 100644
-index 000000000000..b721c9415473
---- /dev/null
-+++ b/Documentation/networking/devlink-trap-netdevsim.rst
-@@ -0,0 +1,20 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+======================
-+Devlink Trap netdevsim
-+======================
-+
-+Driver-specific Traps
-+=====================
-+
-+.. list-table:: List of Driver-specific Traps Registered by ``netdevsim``
-+   :widths: 5 5 90
-+
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``fid_miss``
-+     - ``exception``
-+     - When a packet enters the device it is classified to a filtering
-+       indentifier (FID) based on the ingress port and VLAN. This trap is used
-+       to trap packets for which a FID could not be found
-diff --git a/Documentation/networking/devlink-trap.rst b/Documentation/networking/devlink-trap.rst
-index 4a4fd42f5372..906cdeb0d1f3 100644
---- a/Documentation/networking/devlink-trap.rst
-+++ b/Documentation/networking/devlink-trap.rst
-@@ -153,6 +153,17 @@ be added to the following table:
-      - Traps packets that the device decided to drop because they could not be
-        enqueued to a transmission queue which is full
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 17ceac7505e5..6ec07ecfb5f6 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1477,6 +1477,18 @@ void mlxsw_core_trap_unregister(struct mlxsw_core *mlxsw_core,
+ }
+ EXPORT_SYMBOL(mlxsw_core_trap_unregister);
  
-+Driver-specific Packet Traps
-+============================
++int mlxsw_core_trap_action_set(struct mlxsw_core *mlxsw_core,
++			       const struct mlxsw_listener *listener,
++			       enum mlxsw_reg_hpkt_action action)
++{
++	char hpkt_pl[MLXSW_REG_HPKT_LEN];
 +
-+Device drivers can register driver-specific packet traps, but these must be
-+clearly documented. Such traps can correspond to device-specific exceptions and
-+help debug packet drops caused by these exceptions. The following list includes
-+links to the description of driver-specific traps registered by various device
-+drivers:
++	mlxsw_reg_hpkt_pack(hpkt_pl, action, listener->trap_id,
++			    listener->trap_group, listener->is_ctrl);
++	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(hpkt), hpkt_pl);
++}
++EXPORT_SYMBOL(mlxsw_core_trap_action_set);
 +
-+  * :doc:`/devlink-trap-netdevsim`
-+
- Generic Packet Trap Groups
- ==========================
+ static u64 mlxsw_core_tid_get(struct mlxsw_core *mlxsw_core)
+ {
+ 	return atomic64_inc_return(&mlxsw_core->emad.tid);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index 8efcff4b59cb..19cea16c30bb 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -128,6 +128,9 @@ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
+ void mlxsw_core_trap_unregister(struct mlxsw_core *mlxsw_core,
+ 				const struct mlxsw_listener *listener,
+ 				void *priv);
++int mlxsw_core_trap_action_set(struct mlxsw_core *mlxsw_core,
++			       const struct mlxsw_listener *listener,
++			       enum mlxsw_reg_hpkt_action action);
  
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 86a814e4d450..37eabc17894c 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -15,6 +15,7 @@ Contents:
-    dsa/index
-    devlink-info-versions
-    devlink-trap
-+   devlink-trap-netdevsim
-    ieee802154
-    kapi
-    z8530book
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 2d8c60c3326c..2892b3154940 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -218,6 +218,9 @@ struct nsim_trap_data {
- 	spinlock_t trap_lock;	/* Protects trap_items_arr */
- };
- 
-+/* All driver-specific traps must be documented in
-+ * Documentation/networking/devlink-trap-netdevsim.rst
-+ */
- enum {
- 	NSIM_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
- 	NSIM_TRAP_ID_FID_MISS,
+ typedef void mlxsw_reg_trans_cb_t(struct mlxsw_core *mlxsw_core, char *payload,
+ 				  size_t payload_len, unsigned long cb_priv);
 -- 
 2.20.1
 
