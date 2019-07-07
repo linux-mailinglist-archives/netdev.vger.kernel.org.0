@@ -2,68 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E8A61766
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 22:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938936176B
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 22:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727482AbfGGUHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 16:07:53 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:41974 "EHLO
+        id S1727410AbfGGUTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 16:19:14 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42118 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbfGGUHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 16:07:52 -0400
+        with ESMTP id S1727304AbfGGUTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 16:19:14 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 604121527D7F4;
-        Sun,  7 Jul 2019 13:07:52 -0700 (PDT)
-Date:   Sun, 07 Jul 2019 13:07:51 -0700 (PDT)
-Message-Id: <20190707.130751.259550761475180.davem@davemloft.net>
-To:     albin_yang@163.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tglx@linutronix.de
-Subject: Re: [PATCH net] nfc: fix potential illegal memory access
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9C3001527D81B;
+        Sun,  7 Jul 2019 13:19:13 -0700 (PDT)
+Date:   Sun, 07 Jul 2019 13:19:13 -0700 (PDT)
+Message-Id: <20190707.131913.135693864850820307.davem@davemloft.net>
+To:     lucien.xin@gmail.com
+Cc:     netdev@vger.kernel.org, jon.maloy@ericsson.com,
+        ying.xue@windriver.com, tipc-discussion@lists.sourceforge.net
+Subject: Re: [PATCH net-next] tipc: use rcu dereference functions properly
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1562506660-15853-1-git-send-email-albin_yang@163.com>
-References: <1562506660-15853-1-git-send-email-albin_yang@163.com>
+In-Reply-To: <20190706.151544.2015985674047795584.davem@davemloft.net>
+References: <CADvbK_emyKTg8=ye8n2ZTBx0QFK9gPL02aVDfn44DuyUTP-ofw@mail.gmail.com>
+        <CADvbK_eDnUMSaoT65hco2PF5-f1PO=CKBeMPz3sTRZvg5qKGVA@mail.gmail.com>
+        <20190706.151544.2015985674047795584.davem@davemloft.net>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 07 Jul 2019 13:07:52 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 07 Jul 2019 13:19:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Wei <albin_yang@163.com>
-Date: Sun,  7 Jul 2019 21:37:40 +0800
+From: David Miller <davem@davemloft.net>
+Date: Sat, 06 Jul 2019 15:15:44 -0700 (PDT)
 
-> The frags_q is used before __skb_queue_head_init when conn_info is
-> NULL. It may result in illegal memory access.
+> From: Xin Long <lucien.xin@gmail.com>
+> Date: Sat, 6 Jul 2019 14:48:48 +0800
 > 
-> Signed-off-by: Yang Wei <albin_yang@163.com>
-> ---
->  net/nfc/nci/data.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>> Hi, David, I saw this patch in "Changes Requested".
 > 
-> diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
-> index 0a0c265..b5f16cb 100644
-> --- a/net/nfc/nci/data.c
-> +++ b/net/nfc/nci/data.c
-> @@ -104,14 +104,14 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
->  
->  	pr_debug("conn_id 0x%x, total_len %d\n", conn_id, total_len);
->  
-> +	__skb_queue_head_init(&frags_q);
-> +
->  	conn_info = nci_get_conn_info_by_conn_id(ndev, conn_id);
->  	if (!conn_info) {
->  		rc = -EPROTO;
->  		goto free_exit;
->  	}
->  
-> -	__skb_queue_head_init(&frags_q);
-> -
+> I just put it back to Under Review, thanks.
 
-Just change the goto into "goto exit;", much simpler one-line fix.
+Applied to net-next, thank you.
