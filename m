@@ -2,461 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A43246147E
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 985CC61486
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 11:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727272AbfGGI4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 04:56:47 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42146 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727229AbfGGI4r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:56:47 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Jul 2019 11:56:40 +0300
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x678ucJw005552;
-        Sun, 7 Jul 2019 11:56:40 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>
-Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-Subject: [PATCH net-next iproute2 3/3] tc: flower: Add matching on conntrack info
-Date:   Sun,  7 Jul 2019 11:53:48 +0300
-Message-Id: <1562489628-5925-4-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1562489628-5925-1-git-send-email-paulb@mellanox.com>
-References: <1562489628-5925-1-git-send-email-paulb@mellanox.com>
+        id S1727227AbfGGJHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 05:07:52 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:43067 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725822AbfGGJHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 05:07:52 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9889F1BF8;
+        Sun,  7 Jul 2019 05:07:51 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 07 Jul 2019 05:07:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; bh=x8lXpDRZEO+kJnbsaHqRuaESgj+i+FFLo/tF3IYSR
+        vQ=; b=tHjTbQAi+jz81QV1JPIpp4++7BmunyQYQ+Q8cBbZSdC8Uu+abNjabLBo/
+        VE0rbxSGDvwLzkUPpXzAl4ASX2U7G6Sc6/nmfa//+/F1IFrGh+aSUwe9GTvMAfOv
+        yF84RP3NQIABOStFJEjghqPxaMapj90YPu12SuHNFbJZHQdlREunqUYPyS9DbNjM
+        kYQeIlPa5DlPl93g4uQrry30lq8GlzTfkGrZKxB4ZvwRmHHDskq09GN9UBP/umoV
+        JUVw06tAM15CEy3gv3tj9vaoUyGnVWIjFon6lWytR7OJo6X2W7M7k00L3xWOdXbM
+        QaZBD0S2AF7zBGzqPRM1zesamI5cQ==
+X-ME-Sender: <xms:ZrYhXYPw0z2rnT66RKMUGTTgyDcykg9cbouav93bmY4LP_jj-DlH8Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeekgddugecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjfgesthekredttderudenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:ZrYhXXZ02lgDir9yc_8DqrmpiJnMKGPq635Uj5hHEGGfnWFc0ruZJg>
+    <xmx:ZrYhXfsJW65dZThNzZnmrRSQbwftd7UFQxxQUxoH7KGRdgxkuhXW7Q>
+    <xmx:ZrYhXRORlEvRVvqpwwN6LydixRDKPGEtF2PeM5D13LFNWOmBQzcDMg>
+    <xmx:Z7YhXf-O8T1mlp0auM5yct2qPDqhqraX17BMLBGulSdd2P5nOeHntw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 902FA8005C;
+        Sun,  7 Jul 2019 05:07:49 -0400 (EDT)
+Date:   Sun, 7 Jul 2019 12:07:47 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, nikolay@cumulusnetworks.com,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bridge@lists.linux-foundation.org,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+Message-ID: <20190707090747.GA5516@splinter>
+References: <20190620235639.24102-1-vivien.didelot@gmail.com>
+ <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+ <20190621172952.GB9284@t480s.localdomain>
+ <20190623070949.GB13466@splinter>
+ <20190623072605.2xqb56tjydqz2jkx@shell.armlinux.org.uk>
+ <20190623074427.GA21875@splinter>
+ <20190629162945.GB17143@splinter>
+ <20190630165601.GC2500@otheros>
+ <20190702171158.GA7182@splinter>
+ <20190702231308.GA2414@otheros>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190702231308.GA2414@otheros>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matches on conntrack state, zone, mark, and label.
+On Wed, Jul 03, 2019 at 01:13:08AM +0200, Linus Lüssing wrote:
+> Hi Ido,
+> 
+> > Do you differentiate between IPv4 and IPv6 in batman-adv?
+> 
+> For most things, yes: The querier state is kept separately for
+> IPv4 and IPv6. And we do have something like a "router node"
+> flag to signalize that a node needs all multicast traffic, which
+> is split into IPv4 and IPv6.
+> 
+> The "MDB" equivalent in batman-adv (multicast entries in our "TT",
+> translation table) are on MAC address base right now, not on an IP
+> address base yet, so that sounds similar to what you do in mlxsw?
 
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Yossi Kuperman <yossiku@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Acked-by: Roi Dayan <roid@mellanox.com>
----
- include/uapi/linux/pkt_cls.h |  17 +++
- man/man8/tc-flower.8         |  35 ++++++
- tc/f_flower.c                | 276 ++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 327 insertions(+), 1 deletion(-)
+Yes.
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 8cc6b67..6992df1 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -106,6 +106,7 @@ enum tca_id {
- 	TCA_ID_SAMPLE = TCA_ACT_SAMPLE,
- 	/* other actions go here */
- 	TCA_ID_CTINFO,
-+	TCA_ID_CT,
- 	__TCA_ID_MAX = 255
- };
- 
-@@ -535,12 +536,28 @@ enum {
- 	TCA_FLOWER_KEY_PORT_DST_MIN,	/* be16 */
- 	TCA_FLOWER_KEY_PORT_DST_MAX,	/* be16 */
- 
-+	TCA_FLOWER_KEY_CT_STATE,	/* u16 */
-+	TCA_FLOWER_KEY_CT_STATE_MASK,	/* u16 */
-+	TCA_FLOWER_KEY_CT_ZONE,		/* u16 */
-+	TCA_FLOWER_KEY_CT_ZONE_MASK,	/* u16 */
-+	TCA_FLOWER_KEY_CT_MARK,		/* u32 */
-+	TCA_FLOWER_KEY_CT_MARK_MASK,	/* u32 */
-+	TCA_FLOWER_KEY_CT_LABELS,	/* u128 */
-+	TCA_FLOWER_KEY_CT_LABELS_MASK,	/* u128 */
-+
- 	__TCA_FLOWER_MAX,
- };
- 
- #define TCA_FLOWER_MAX (__TCA_FLOWER_MAX - 1)
- 
- enum {
-+	TCA_FLOWER_KEY_CT_FLAGS_NEW = 1 << 0, /* Beginning of a new connection. */
-+	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
-+	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
-+	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
-+};
-+
-+enum {
- 	TCA_FLOWER_KEY_ENC_OPTS_UNSPEC,
- 	TCA_FLOWER_KEY_ENC_OPTS_GENEVE, /* Nested
- 					 * TCA_FLOWER_KEY_ENC_OPT_GENEVE_
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index adff41e..04ee194 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -289,6 +289,41 @@ bits is assumed.
- .TQ
- .BI enc_ttl " NUMBER"
- .TQ
-+.BR
-+.TP
-+.BI ct_state " CT_STATE"
-+.TQ
-+.BI ct_zone " CT_MASKED_ZONE"
-+.TQ
-+.BI ct_mark " CT_MASKED_MARK"
-+.TQ
-+.BI ct_label " CT_MASKED_LABEL"
-+Matches on connection tracking info
-+.RS
-+.TP
-+.I CT_STATE
-+Match the connection state, and can ne combination of [{+|-}flag] flags, where flag can be one of
-+.RS
-+.TP
-+trk - Tracked connection.
-+.TP
-+new - New connection.
-+.TP
-+est - Established connection.
-+.TP
-+Example: +trk+est
-+.RE
-+.TP
-+.I CT_MASKED_ZONE
-+Match the connection zone, and can be masked.
-+.TP
-+.I CT_MASKED_MARK
-+32bit match on the connection mark, and can be masked.
-+.TP
-+.I CT_MASKED_LABEL
-+128bit match on the connection label, and can be masked.
-+.RE
-+.TP
- .BI geneve_opts " OPTIONS"
- Match on IP tunnel metadata. Key id
- .I NUMBER
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 70d40d3..a2a2301 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -82,9 +82,14 @@ static void explain(void)
- 		"			enc_ttl MASKED-IP_TTL |\n"
- 		"			geneve_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS | \n"
--		"			enc_dst_port [ port_number ] }\n"
-+		"			enc_dst_port [ port_number ] |\n"
-+		"			ct_state MASKED_CT_STATE |\n"
-+		"			ct_label MASKED_CT_LABEL |\n"
-+		"			ct_mark MASKED_CT_MARK |\n"
-+		"			ct_zone MASKED_CT_ZONE }\n"
- 		"	FILTERID := X:Y:Z\n"
- 		"	MASKED_LLADDR := { LLADDR | LLADDR/MASK | LLADDR/BITS }\n"
-+		"	MASKED_CT_STATE := combination of {+|-} and flags trk,est,new\n"
- 		"	ACTION-SPEC := ... look at individual actions\n"
- 		"\n"
- 		"NOTE:	CLASSID, IP-PROTO are parsed as hexadecimal input.\n"
-@@ -214,6 +219,159 @@ static int flower_parse_matching_flags(char *str,
- 	return 0;
- }
- 
-+static int flower_parse_u16(char *str, int value_type, int mask_type,
-+			    struct nlmsghdr *n)
-+{
-+	__u16 value, mask;
-+	char *slash;
-+
-+	slash = strchr(str, '/');
-+	if (slash)
-+		*slash = '\0';
-+
-+	if (get_u16(&value, str, 0))
-+		return -1;
-+
-+	if (slash) {
-+		if (get_u16(&mask, slash + 1, 0))
-+			return -1;
-+	} else {
-+		mask = UINT16_MAX;
-+	}
-+
-+	addattr16(n, MAX_MSG, value_type, value);
-+	addattr16(n, MAX_MSG, mask_type, mask);
-+
-+	return 0;
-+}
-+
-+static int flower_parse_u32(char *str, int value_type, int mask_type,
-+			    struct nlmsghdr *n)
-+{
-+	__u32 value, mask;
-+	char *slash;
-+
-+	slash = strchr(str, '/');
-+	if (slash)
-+		*slash = '\0';
-+
-+	if (get_u32(&value, str, 0))
-+		return -1;
-+
-+	if (slash) {
-+		if (get_u32(&mask, slash + 1, 0))
-+			return -1;
-+	} else {
-+		mask = UINT32_MAX;
-+	}
-+
-+	addattr32(n, MAX_MSG, value_type, value);
-+	addattr32(n, MAX_MSG, mask_type, mask);
-+
-+	return 0;
-+}
-+
-+static int flower_parse_ct_mark(char *str, struct nlmsghdr *n)
-+{
-+	return flower_parse_u32(str,
-+				TCA_FLOWER_KEY_CT_MARK,
-+				TCA_FLOWER_KEY_CT_MARK_MASK,
-+				n);
-+}
-+
-+static int flower_parse_ct_zone(char *str, struct nlmsghdr *n)
-+{
-+	return flower_parse_u16(str,
-+				TCA_FLOWER_KEY_CT_ZONE,
-+				TCA_FLOWER_KEY_CT_ZONE_MASK,
-+				n);
-+}
-+
-+static int flower_parse_ct_labels(char *str, struct nlmsghdr *n)
-+{
-+#define LABELS_SIZE	16
-+	uint8_t labels[LABELS_SIZE], lmask[LABELS_SIZE];
-+	char *slash, *mask = NULL;
-+	size_t slen, slen_mask = 0;
-+
-+	slash = index(str, '/');
-+	if (slash) {
-+		*slash = 0;
-+		mask = slash + 1;
-+		slen_mask = strlen(mask);
-+	}
-+
-+	slen = strlen(str);
-+	if (slen > LABELS_SIZE * 2 || slen_mask > LABELS_SIZE * 2) {
-+		char errmsg[128];
-+
-+		snprintf(errmsg, sizeof(errmsg),
-+				"%zd Max allowed size %d",
-+				slen, LABELS_SIZE*2);
-+		invarg(errmsg, str);
-+	}
-+
-+	if (hex2mem(str, labels, slen / 2) < 0)
-+		invarg("labels must be a hex string\n", str);
-+	addattr_l(n, MAX_MSG, TCA_FLOWER_KEY_CT_LABELS, labels, slen / 2);
-+
-+	if (mask) {
-+		if (hex2mem(mask, lmask, slen_mask / 2) < 0)
-+			invarg("labels mask must be a hex string\n", mask);
-+	} else {
-+		memset(lmask, 0xff, sizeof(lmask));
-+		slen_mask = sizeof(lmask) * 2;
-+	}
-+	addattr_l(n, MAX_MSG, TCA_FLOWER_KEY_CT_LABELS_MASK, lmask,
-+		  slen_mask / 2);
-+
-+	return 0;
-+}
-+
-+static struct flower_ct_states {
-+	char *str;
-+	int flag;
-+} flower_ct_states[] = {
-+	{ "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
-+	{ "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
-+	{ "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
-+};
-+
-+static int flower_parse_ct_state(char *str, struct nlmsghdr *n)
-+{
-+	int flags = 0, mask = 0,  len, i;
-+	bool p;
-+
-+	while (*str != '\0') {
-+		if (*str == '+')
-+			p = true;
-+		else if (*str == '-')
-+			p = false;
-+		else
-+			return -1;
-+
-+		for (i = 0; i < ARRAY_SIZE(flower_ct_states); i++) {
-+			len = strlen(flower_ct_states[i].str);
-+			if (strncmp(str + 1, flower_ct_states[i].str, len))
-+				continue;
-+
-+			if (p)
-+				flags |= flower_ct_states[i].flag;
-+			mask |= flower_ct_states[i].flag;
-+			break;
-+		}
-+
-+		if (i == ARRAY_SIZE(flower_ct_states))
-+			return -1;
-+
-+		str += len + 1;
-+	}
-+
-+	addattr16(n, MAX_MSG, TCA_FLOWER_KEY_CT_STATE, flags);
-+	addattr16(n, MAX_MSG, TCA_FLOWER_KEY_CT_STATE_MASK, mask);
-+	return 0;
-+}
-+
- static int flower_parse_ip_proto(char *str, __be16 eth_type, int type,
- 				 __u8 *p_ip_proto, struct nlmsghdr *n)
- {
-@@ -898,6 +1056,34 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 			flags |= TCA_CLS_FLAGS_SKIP_HW;
- 		} else if (matches(*argv, "skip_sw") == 0) {
- 			flags |= TCA_CLS_FLAGS_SKIP_SW;
-+		} else if (matches(*argv, "ct_state") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_state(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_state\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "ct_zone") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_zone(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_zone\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "ct_mark") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_mark(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_mark\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "ct_label") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_labels(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_label\"\n");
-+				return -1;
-+			}
- 		} else if (matches(*argv, "indev") == 0) {
- 			NEXT_ARG();
- 			if (check_ifname(*argv))
-@@ -1590,6 +1776,85 @@ static void flower_print_tcp_flags(const char *name, struct rtattr *flags_attr,
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
- 
-+static void flower_print_ct_state(struct rtattr *flags_attr,
-+				  struct rtattr *mask_attr)
-+{
-+	SPRINT_BUF(out);
-+	uint16_t state;
-+	uint16_t state_mask;
-+	size_t done = 0;
-+	int i;
-+
-+	if (!flags_attr)
-+		return;
-+
-+	state = rta_getattr_u16(flags_attr);
-+	if (mask_attr)
-+		state_mask = rta_getattr_u16(mask_attr);
-+	else
-+		state_mask = UINT16_MAX;
-+
-+	for (i = 0; i < ARRAY_SIZE(flower_ct_states); i++) {
-+		if (!(state_mask & flower_ct_states[i].flag))
-+			continue;
-+
-+		if (state & flower_ct_states[i].flag)
-+			done += sprintf(out + done, "+%s",
-+					flower_ct_states[i].str);
-+		else
-+			done += sprintf(out + done, "-%s",
-+					flower_ct_states[i].str);
-+	}
-+
-+	print_string(PRINT_ANY, "ct_state", "\n  ct_state %s", out);
-+}
-+
-+static void flower_print_ct_label(struct rtattr *attr,
-+				  struct rtattr *mask_attr)
-+{
-+	const unsigned char *str;
-+	bool print_mask = false;
-+	int data_len, i;
-+	SPRINT_BUF(out);
-+	char *p;
-+
-+	if (!attr)
-+		return;
-+
-+	data_len = RTA_PAYLOAD(attr);
-+	hexstring_n2a(RTA_DATA(attr), data_len, out, sizeof(out));
-+	p = out + data_len*2;
-+
-+	data_len = RTA_PAYLOAD(attr);
-+	str = RTA_DATA(mask_attr);
-+	if (data_len != 16)
-+		print_mask = true;
-+	for (i = 0; !print_mask && i < data_len; i++) {
-+		if (str[i] != 0xff)
-+			print_mask = true;
-+	}
-+	if (print_mask) {
-+		*p++ = '/';
-+		hexstring_n2a(RTA_DATA(mask_attr), data_len, p,
-+			      sizeof(out)-(p-out));
-+		p += data_len*2;
-+	}
-+	*p = '\0';
-+
-+	print_string(PRINT_ANY, "ct_label", "\n  ct_label %s", out);
-+}
-+
-+static void flower_print_ct_zone(struct rtattr *attr,
-+				 struct rtattr *mask_attr)
-+{
-+	print_masked_u16("ct_zone", attr, mask_attr);
-+}
-+
-+static void flower_print_ct_mark(struct rtattr *attr,
-+				 struct rtattr *mask_attr)
-+{
-+	print_masked_u32("ct_mark", attr, mask_attr);
-+}
- 
- static void flower_print_key_id(const char *name, struct rtattr *attr)
- {
-@@ -1949,6 +2214,15 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 				    tb[TCA_FLOWER_KEY_FLAGS],
- 				    tb[TCA_FLOWER_KEY_FLAGS_MASK]);
- 
-+	flower_print_ct_state(tb[TCA_FLOWER_KEY_CT_STATE],
-+			      tb[TCA_FLOWER_KEY_CT_STATE_MASK]);
-+	flower_print_ct_zone(tb[TCA_FLOWER_KEY_CT_ZONE],
-+			     tb[TCA_FLOWER_KEY_CT_ZONE_MASK]);
-+	flower_print_ct_mark(tb[TCA_FLOWER_KEY_CT_MARK],
-+			     tb[TCA_FLOWER_KEY_CT_MARK_MASK]);
-+	flower_print_ct_label(tb[TCA_FLOWER_KEY_CT_LABELS],
-+			      tb[TCA_FLOWER_KEY_CT_LABELS_MASK]);
-+
- 	close_json_object();
- 
- 	if (tb[TCA_FLOWER_FLAGS]) {
--- 
-1.8.3.1
+> Regarding querier state, we periodically ask the
+> bridge via "br_multicast_has_querier_anywhere(dev, ETH_P_IP)"
+> and "br_multicast_has_querier_anywhere(dev, ETH_P_IPV6)".
+> 
+> (Something more event based with handler functions would probably
+> be nicer, but this was the easier thing to start with.)
 
+Thanks for the reference. Will check the code. I believe that we will
+add switchdev notifications for querier state change, so it might be
+useful for you as well.
+
+> > 1. All the IPv6 MDB entries need to be removed from the device. At least
+> > in mlxsw, we do not have a way to ignore only IPv6 entries. From the
+> > device's perspective, an MDB entry is just a multicast DMAC with a
+> > bitmap of ports packets should be replicated to.
+> 
+> Ah, I see, yes. We had a similar "issue". Initially we just always
+> added any multicast entry into our translation table offered by
+> the IP stack or bridge, no matter what a querier state or "router
+> node" state said. Which would have led to a node receiving two
+> copies of a multicast packet if it were both a querier or router
+> and were also having a listener announced via IGMP/MLD.
+> 
+> So there we also just recently changed that, to filter out
+> IPv6 multicast TT entries if this node were also announcing itself as
+> an MLD querier or IPv6 router. And same, independently for
+> IPv4/IGMP.
+
+This is actually not a problem with mlxsw. The ports a packet should be
+replicated to are represented using a bitmap. It does not matter if we
+set the bit because it has an MDB entry or because it is an mrouter
+port. And obviously it does not matter if we set it twice :)
+
+> > 2. We need to split the flood tables used for IPv4 and IPv6 unregistered
+> > multicast packets. For IPv4, packets should only be flooded to mrouter
+> > ports whereas for IPv6 packets should be flooded to all the member
+> > ports.
+> 
+> This one I do not fully understand yet. Why don't you apply the
+> "flood to all ports" (in the no IGMP querier present case)
+> for IPv4, too?
+> 
+> Sure, for IPv4 nothing "essential" will break, as IPv4 unicast
+> does not rely on multicast (contrary to IPv6, due to NDP, as you
+> mentioned). But still there would be potential multicast packet loss
+> for a 239.x.x.x listener on the local link, for instance, wouldn't
+> there?
+> 
+> 
+> If I'm not mistaken, we do not apply differing behaviour for IPv4
+> vs. IPv6 in the bridge either and would flood on all ports for IPv4
+> with no querier present, too.
+
+I think I was not clear, so I will explain again. I was referring to a
+situation where IPv4 has a querier, but IPv6 does not. In this case, the
+bridge will flood IPv4 unregistered multicast packets to mrouter ports
+only. On the other hand, IPv6 unregistered multicast packets will be
+flooded to all the ports. Based on my reading of the code, this is
+controlled by 'mcast_hit' in br_handle_frame_finish().
+
+In mlxsw, each packet type (e.g., unknown unicast, IPvX unregistered
+multicast) is associated with a flood table (basically a huge matrix,
+where row corresponds to VLAN and column corresponds to a port). If we
+are to handle the case where IPv4 unregistered multicast packets need to
+be flooded to mrouter ports only, whereas IPv6 unregistered multicast
+packets need to be flooded to all the ports, then we need to use a
+separate flood table for each.
+
+Alternatively, we can use the same flood table, but flood to all the
+ports if IPv4 or IPv6 querier is missing. I do not think anything will
+break, it is just very efficient. This seems to be allowed by RFC 4541
+(Section 2.1.2):
+
+"If a switch receives an unregistered packet, it must forward that
+packet on all ports to which an IGMP router is attached. A switch may
+default to forwarding unregistered packets on all ports."
+
+> Regards, Linus
+
+Linus, thanks a lot for the great feedback. I really appreciate it!
