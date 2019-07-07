@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CA506144B
+	by mail.lfdr.de (Postfix) with ESMTP id 98B016144C
 	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 09:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727147AbfGGH7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 03:59:52 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:34355 "EHLO
+        id S1727215AbfGGH7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 03:59:53 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:35549 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726325AbfGGH7w (ORCPT
+        by vger.kernel.org with ESMTP id S1726330AbfGGH7w (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 03:59:52 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id CA6DD2663;
-        Sun,  7 Jul 2019 03:59:50 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 17B7426BA;
+        Sun,  7 Jul 2019 03:59:52 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 07 Jul 2019 03:59:50 -0400
+  by compute3.internal (MEProxy); Sun, 07 Jul 2019 03:59:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=vMhwabHkb/nc0cEgz
-        MWAcNzE8UsW5rbapeQfp8FFajI=; b=yJLQQjPDBnROEWaPo3M7YKxj6ZcViMJZ0
-        r+OkBxQsCf1SPLg48uMZZxbh7DBM8OC6ok2XjE+lFmcYXKbhKXlqgcd9/eRFa0Ob
-        eXXozyu0yXuFX0PcOrYHQwmh4CwpAJv9X0YE5Rm9gztOh7QbdrMau0I0pWfPwcOQ
-        x4WzalYUVc24trDIe036paH67QBvwXldjAX5OS+9Apeb+toOb89LjTjlUQR71pia
-        +SO7ehpdNh/aKaByYH40kaphuA2/mv8zfq1eR2nIwoVR2hrEFIpEiLbB+Z0qPF4P
-        OehscI22lNef7nUjFDB3+2e/RKy3PksglRL8SXHwHELMkzXYfzOIA==
-X-ME-Sender: <xms:daYhXQPGF-YFCZX3OGCKW27xoXaItHPaJ-Wiahvlyr587d4gd0EhZA>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=epTN4h+lk0G5dF79hvEeB9l+4EUUUzVJZSkNKrqt0vw=; b=HUPNaSyF
+        HVuyfbDv7uq7p/jTP7hBkqV5ftKI146Aw3vVtiJvbj2Pcb9NIzDJETQgxggJVT8x
+        w63zSuI2+4H3hMjSBVRT5etMmpbhROb3B6FnqpQWlKRHOyonIcrFoau4jw7eN9T9
+        pqDaaE9Wz4cIBAxIKYAW/qNgr21WjoaMK2CWqWEWJjkVSK+3IOUvoVgBaSqbk5+A
+        pxOlqN3vTQdPDRlVfWobL5K3uYAX41TmCta2Z8cGJHYgQQAEcs6hdsc2xceQzmXw
+        mLKQDl2vYe5GX1p9IcgzE4kxwQYLgg6Wi27X1S23MXArgzCkhY0ZwUvAOaYUIbj8
+        /65PaJvbiGLgyA==
+X-ME-Sender: <xms:d6YhXf6fWqlKGeZa2HklGRt5VC_itYBBEEZS8gGcJw4gl_oraiN5Xw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
-    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
-    iigvpedt
-X-ME-Proxy: <xmx:daYhXQrkVlYpisoeKe8QkfWtlf7_V2vuRE4s5fWh-RLsYilE98Q7ZQ>
-    <xmx:daYhXWlVebju6t1j1iuQAmHijftMxpszlgLsjxvFPL0nMJg30-e-NQ>
-    <xmx:daYhXQzSMmmf2KFUm8CAbdWciwap3xgIbJExNGxT2u7Tt4xQ81LW3A>
-    <xmx:dqYhXe5oIRmqAQB8CQawKNTDOQyvWCIFHsY_tlzA_cNUncmuLqWwmA>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
+    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
+    ufhiiigvpedt
+X-ME-Proxy: <xmx:d6YhXcEyNxomQnZryENfB0BfrjiCgcB9ghfTYyXpLCrZSfIvQefmOQ>
+    <xmx:d6YhXYsFONSo-_dG-HEhTaAFYkD9R5cbfGuyqiU3_AGoCNJqQsA6Dw>
+    <xmx:d6YhXY-W35-2QZt-EPDwRRscjENrMN5FhS8EZTZqd48xbHjpGdIXOg>
+    <xmx:eKYhXVhuQJRwFqB_jAHswVuIUKvE0ALNUk-_nsUM_pRdN1vQg_jL-A>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E187C380074;
-        Sun,  7 Jul 2019 03:59:46 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 73603380075;
+        Sun,  7 Jul 2019 03:59:49 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
@@ -50,10 +51,12 @@ Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
         f.fainelli@gmail.com, vivien.didelot@gmail.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
-Date:   Sun,  7 Jul 2019 10:58:17 +0300
-Message-Id: <20190707075828.3315-1-idosch@idosch.org>
+Subject: [PATCH net-next 01/11] devlink: Create helper to fill port type information
+Date:   Sun,  7 Jul 2019 10:58:18 +0300
+Message-Id: <20190707075828.3315-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190707075828.3315-1-idosch@idosch.org>
+References: <20190707075828.3315-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,151 +66,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Users have several ways to debug the kernel and understand why a packet
-was dropped. For example, using "drop monitor" and "perf". Both
-utilities trace kfree_skb(), which is the function called when a packet
-is freed as part of a failure. The information provided by these tools
-is invaluable when trying to understand the cause of a packet loss.
+The function that fills port attributes in a netlink message fills the
+port type attributes together with other attributes such as the device
+handle.
 
-In recent years, large portions of the kernel data path were offloaded
-to capable devices. Today, it is possible to perform L2 and L3
-forwarding in hardware, as well as tunneling (IP-in-IP and VXLAN).
-Different TC classifiers and actions are also offloaded to capable
-devices, at both ingress and egress.
+The port type attributes will also need to be filled for trapped packets
+by a subsequent patch.
 
-However, when the data path is offloaded it is not possible to achieve
-the same level of introspection as tools such "perf" and "drop monitor"
-become irrelevant.
+Prevent code duplication and create a helper that can be used from both
+places.
 
-This patchset aims to solve this by allowing users to monitor packets
-that the underlying device decided to drop along with relevant metadata
-such as the drop reason and ingress port.
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ net/core/devlink.c | 49 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 29 insertions(+), 20 deletions(-)
 
-The above is achieved by exposing a fundamental capability of devices
-capable of data path offloading - packet trapping. While the common use
-case for packet trapping is the trapping of packets required for the
-correct functioning of the control plane (e.g., STP, BGP packets),
-packets can also be trapped due to other reasons such as exceptions
-(e.g., TTL error) and drops (e.g., blackhole route).
-
-Given this ability is not specific to a port, but rather to a device, it
-is exposed using devlink. Each capable driver is expected to register
-its supported packet traps with devlink and report trapped packets to
-devlink as they income. devlink will perform accounting of received
-packets and bytes and will potentially generate an event to user space
-using a new generic netlink multicast group.
-
-While this patchset is concerned with traps corresponding to dropped
-packets, the interface itself is generic and can be used to expose traps
-corresponding to control packets in the future. The API is vendor
-neutral and similar to the API exposed by SAI which is implemented by
-several vendors already.
-
-The implementation in this patchset is on top of both mlxsw and
-netdevsim so that people could experiment with the interface and provide
-useful feedback.
-
-Patches #1-#4 add the devlink-trap infrastructure.
-
-Patches #5-#6 add an example implementation of netdevsim.
-
-Patches #7-#11 add a real world implementation over mlxsw.
-
-Tests for both the core infrastructure (over netdevsim) and mlxsw will
-be sent separately as RFC as they are dependent on the acceptance of the
-iproute2 changes.
-
-Example
-=======
-
-Instantiate netdevsim
----------------------
-
-# echo "10 1" > /sys/bus/netdevsim/new_device
-# ip link set dev eth0 up
-
-List supported traps
---------------------
-
-# devlink trap show
-netdevsim/netdevsim10:
-  name source_mac_is_multicast type drop generic true report false action drop group l2_drops
-  name vlan_tag_mismatch type drop generic true report false action drop group l2_drops
-  name ingress_vlan_filter type drop generic true report false action drop group l2_drops
-  name ingress_spanning_tree_filter type drop generic true report false action drop group l2_drops
-  name port_list_is_empty type drop generic true report false action drop group l2_drops
-  name port_loopback_filter type drop generic true report false action drop group l2_drops
-  name fid_miss type exception generic false report false action trap group l2_drops
-  name blackhole_route type drop generic true report false action drop group l3_drops
-  name ttl_value_is_too_small type exception generic true report false action trap group l3_drops
-  name tail_drop type drop generic true report false action drop group buffer_drops
-
-Enable a trap
--------------
-
-# devlink trap set netdevsim/netdevsim10 trap blackhole_route action trap report true
-
-Query statistics
-----------------
-
-# devlink -s trap show netdevsim/netdevsim10 trap blackhole_route
-netdevsim/netdevsim10:
-  name blackhole_route type drop generic true report true action trap group l3_drops
-    stats:
-        rx:
-          bytes 18744 packets 132
-
-Monitor dropped packets
------------------------
-
-# devlink -v mon trap-report
-[trap-report,report] netdevsim/netdevsim10: name blackhole_route type drop group l3_drops length 142 timestamp Sun Jun 30 20:26:12 2019 835605178 nsec
-  input_port:
-    netdevsim/netdevsim10/0: type eth netdev eth0
-
-Future plans
-============
-
-* Provide more drop reasons as well as more metadata
-
-v1:
-* Rename trap names to make them more generic
-* Change policer settings in mlxsw
-
-Ido Schimmel (11):
-  devlink: Create helper to fill port type information
-  devlink: Add packet trap infrastructure
-  devlink: Add generic packet traps and groups
-  Documentation: Add devlink-trap documentation
-  netdevsim: Add devlink-trap support
-  Documentation: Add description of netdevsim traps
-  mlxsw: core: Add API to set trap action
-  mlxsw: reg: Add new trap action
-  mlxsw: Add layer 2 discard trap IDs
-  mlxsw: Add trap group for layer 2 discards
-  mlxsw: spectrum: Add devlink-trap support
-
- .../networking/devlink-trap-netdevsim.rst     |   20 +
- Documentation/networking/devlink-trap.rst     |  190 +++
- Documentation/networking/index.rst            |    2 +
- drivers/net/ethernet/mellanox/mlxsw/Makefile  |    2 +-
- drivers/net/ethernet/mellanox/mlxsw/core.c    |   64 +
- drivers/net/ethernet/mellanox/mlxsw/core.h    |   12 +
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |   10 +
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |   17 +
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |   13 +
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  270 ++++
- drivers/net/ethernet/mellanox/mlxsw/trap.h    |    7 +
- drivers/net/netdevsim/dev.c                   |  273 +++-
- drivers/net/netdevsim/netdevsim.h             |    1 +
- include/net/devlink.h                         |  175 +++
- include/uapi/linux/devlink.h                  |   68 +
- net/core/devlink.c                            | 1312 ++++++++++++++++-
- 16 files changed, 2409 insertions(+), 27 deletions(-)
- create mode 100644 Documentation/networking/devlink-trap-netdevsim.rst
- create mode 100644 Documentation/networking/devlink-trap.rst
- create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 89c533778135..755a9a32015e 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -527,6 +527,33 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+ 	return 0;
+ }
+ 
++static int devlink_nl_port_type_fill(struct sk_buff *msg,
++				     const struct devlink_port *devlink_port)
++{
++	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
++		return -EMSGSIZE;
++
++	if (devlink_port->type == DEVLINK_PORT_TYPE_ETH) {
++		struct net_device *netdev = devlink_port->type_dev;
++
++		if (netdev &&
++		    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
++				 netdev->ifindex) ||
++		     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
++				    netdev->name)))
++			return -EMSGSIZE;
++	} else if (devlink_port->type == DEVLINK_PORT_TYPE_IB) {
++		struct ib_device *ibdev = devlink_port->type_dev;
++
++		if (ibdev &&
++		    nla_put_string(msg, DEVLINK_ATTR_PORT_IBDEV_NAME,
++				   ibdev->name))
++			return -EMSGSIZE;
++	}
++
++	return 0;
++}
++
+ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+ 				struct devlink_port *devlink_port,
+ 				enum devlink_command cmd, u32 portid,
+@@ -544,30 +571,12 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+ 		goto nla_put_failure;
+ 
+ 	spin_lock(&devlink_port->type_lock);
+-	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
+-		goto nla_put_failure_type_locked;
+ 	if (devlink_port->desired_type != DEVLINK_PORT_TYPE_NOTSET &&
+ 	    nla_put_u16(msg, DEVLINK_ATTR_PORT_DESIRED_TYPE,
+ 			devlink_port->desired_type))
+ 		goto nla_put_failure_type_locked;
+-	if (devlink_port->type == DEVLINK_PORT_TYPE_ETH) {
+-		struct net_device *netdev = devlink_port->type_dev;
+-
+-		if (netdev &&
+-		    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
+-				 netdev->ifindex) ||
+-		     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
+-				    netdev->name)))
+-			goto nla_put_failure_type_locked;
+-	}
+-	if (devlink_port->type == DEVLINK_PORT_TYPE_IB) {
+-		struct ib_device *ibdev = devlink_port->type_dev;
+-
+-		if (ibdev &&
+-		    nla_put_string(msg, DEVLINK_ATTR_PORT_IBDEV_NAME,
+-				   ibdev->name))
+-			goto nla_put_failure_type_locked;
+-	}
++	if (devlink_nl_port_type_fill(msg, devlink_port))
++		goto nla_put_failure_type_locked;
+ 	spin_unlock(&devlink_port->type_lock);
+ 	if (devlink_nl_port_attrs_put(msg, devlink_port))
+ 		goto nla_put_failure;
 -- 
 2.20.1
 
