@@ -2,174 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 985CC61486
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 11:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E4D961492
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 11:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727227AbfGGJHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 05:07:52 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:43067 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725822AbfGGJHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 05:07:52 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9889F1BF8;
-        Sun,  7 Jul 2019 05:07:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 07 Jul 2019 05:07:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=x8lXpDRZEO+kJnbsaHqRuaESgj+i+FFLo/tF3IYSR
-        vQ=; b=tHjTbQAi+jz81QV1JPIpp4++7BmunyQYQ+Q8cBbZSdC8Uu+abNjabLBo/
-        VE0rbxSGDvwLzkUPpXzAl4ASX2U7G6Sc6/nmfa//+/F1IFrGh+aSUwe9GTvMAfOv
-        yF84RP3NQIABOStFJEjghqPxaMapj90YPu12SuHNFbJZHQdlREunqUYPyS9DbNjM
-        kYQeIlPa5DlPl93g4uQrry30lq8GlzTfkGrZKxB4ZvwRmHHDskq09GN9UBP/umoV
-        JUVw06tAM15CEy3gv3tj9vaoUyGnVWIjFon6lWytR7OJo6X2W7M7k00L3xWOdXbM
-        QaZBD0S2AF7zBGzqPRM1zesamI5cQ==
-X-ME-Sender: <xms:ZrYhXYPw0z2rnT66RKMUGTTgyDcykg9cbouav93bmY4LP_jj-DlH8Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeekgddugecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggugfgjfgesthekredttderudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
-    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:ZrYhXXZ02lgDir9yc_8DqrmpiJnMKGPq635Uj5hHEGGfnWFc0ruZJg>
-    <xmx:ZrYhXfsJW65dZThNzZnmrRSQbwftd7UFQxxQUxoH7KGRdgxkuhXW7Q>
-    <xmx:ZrYhXRORlEvRVvqpwwN6LydixRDKPGEtF2PeM5D13LFNWOmBQzcDMg>
-    <xmx:Z7YhXf-O8T1mlp0auM5yct2qPDqhqraX17BMLBGulSdd2P5nOeHntw>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 902FA8005C;
-        Sun,  7 Jul 2019 05:07:49 -0400 (EDT)
-Date:   Sun, 7 Jul 2019 12:07:47 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, nikolay@cumulusnetworks.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bridge@lists.linux-foundation.org,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        b.a.t.m.a.n@lists.open-mesh.org
-Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
-Message-ID: <20190707090747.GA5516@splinter>
-References: <20190620235639.24102-1-vivien.didelot@gmail.com>
- <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
- <20190621172952.GB9284@t480s.localdomain>
- <20190623070949.GB13466@splinter>
- <20190623072605.2xqb56tjydqz2jkx@shell.armlinux.org.uk>
- <20190623074427.GA21875@splinter>
- <20190629162945.GB17143@splinter>
- <20190630165601.GC2500@otheros>
- <20190702171158.GA7182@splinter>
- <20190702231308.GA2414@otheros>
+        id S1727235AbfGGJeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 05:34:50 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:34033 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbfGGJeu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 05:34:50 -0400
+Received: by mail-qt1-f193.google.com with SMTP id k10so7641427qtq.1
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 02:34:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wPOV8xL8pj4Px0S4iOeNHsj59y051UjB79Vy7COW/+w=;
+        b=RX5/1rTrLjyQs9DURDNuiucVFQ4z1IV71xsU0eNTF34IzM9nOqmonAEJaWtgZ2yEDZ
+         kj/R6GR4Pb7+0sWMoOyLZb6uIfYLlw9Z0QysqAHhFx+jerDmBiXTb6bIuXav6vzoUxGo
+         Q6+6KM1LoBU81+aXOXvmSRpqwmZv3JVBFEdTddDaJDCq2OaNcpbjiU6uRSOIUmQBDjfe
+         bwckMdCOZMe8oPBhglavzxGHizZpqJGtAAMD5AcNsj/Ecuroh0AmEy7SCvL9tc2nXR2+
+         16dSoD/E0Q+fClqJcG7Ta4dzyPEtOByjVBP/Hn2rtQSCCT4fyx9NLktphxPFjVKImx2m
+         wGFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wPOV8xL8pj4Px0S4iOeNHsj59y051UjB79Vy7COW/+w=;
+        b=dFX3Aqki5xG136ZN5+3e/pGesAk7Iqih5o+se9PzHePiCZRKhGdG+ZdMPvvGlyBJmp
+         gxKRAaildTJpm8f5liVHFPK7elC1iMiXkaXfq0Vtt02UwaDH0Qd6Gx3CDh3gmcrB+Zbo
+         PrSXjcHdRIQ/Sfj48LS4MJMYHWRKL9Q2ZBtbE/AGvUXNiPVSho2Pp91zgZXA5ClvHtFe
+         xTq71WnG2zk8dBE66MptJ0LfU+99dheoHxAiU6qKa3flLDmAMTR7zsOF/jOY9Wr3REnA
+         FJ88T3dW3QCAwYKXdAi2enzE8U0W7gybR9RkJRYRGI3hqklC0ssHCEq3N8XSl3iUT+ob
+         SA5A==
+X-Gm-Message-State: APjAAAX67sTUiG6H26UnvrADArFcJT7hgy9SPQeg+RdRm+J4bdCymsh8
+        ibOUW0eIQHMh4JhIz9ao55MS04djrgY=
+X-Google-Smtp-Source: APXvYqwGsjFLyyyWy/x59r58ZXlLKwisEPOISVviaLxBexQ3CPYCGJKkujAQP3qn+Ys1hSiKKgI5hA==
+X-Received: by 2002:ad4:5311:: with SMTP id y17mr10417455qvr.1.1562492088487;
+        Sun, 07 Jul 2019 02:34:48 -0700 (PDT)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:315:55eb:ba49:fa6:b843])
+        by smtp.gmail.com with ESMTPSA id k123sm5791496qkf.13.2019.07.07.02.34.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 07 Jul 2019 02:34:47 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next] ipv6: elide flowlabel check if no exclusive leases exist
+Date:   Sun,  7 Jul 2019 05:34:45 -0400
+Message-Id: <20190707093445.15121-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190702231308.GA2414@otheros>
-User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 01:13:08AM +0200, Linus Lüssing wrote:
-> Hi Ido,
-> 
-> > Do you differentiate between IPv4 and IPv6 in batman-adv?
-> 
-> For most things, yes: The querier state is kept separately for
-> IPv4 and IPv6. And we do have something like a "router node"
-> flag to signalize that a node needs all multicast traffic, which
-> is split into IPv4 and IPv6.
-> 
-> The "MDB" equivalent in batman-adv (multicast entries in our "TT",
-> translation table) are on MAC address base right now, not on an IP
-> address base yet, so that sounds similar to what you do in mlxsw?
+From: Willem de Bruijn <willemb@google.com>
 
-Yes.
+Processes can request ipv6 flowlabels with cmsg IPV6_FLOWINFO.
+If not set, by default an autogenerated flowlabel is selected.
 
-> Regarding querier state, we periodically ask the
-> bridge via "br_multicast_has_querier_anywhere(dev, ETH_P_IP)"
-> and "br_multicast_has_querier_anywhere(dev, ETH_P_IPV6)".
-> 
-> (Something more event based with handler functions would probably
-> be nicer, but this was the easier thing to start with.)
+Explicit flowlabels require a control operation per label plus a
+datapath check on every connection (every datagram if unconnected).
+This is particularly expensive on unconnected sockets multiplexing
+many flows, such as QUIC.
 
-Thanks for the reference. Will check the code. I believe that we will
-add switchdev notifications for querier state change, so it might be
-useful for you as well.
+In the common case, where no lease is exclusive, the check can be
+safely elided, as both lease request and check trivially succeed.
+Indeed, autoflowlabel does the same even with exclusive leases.
 
-> > 1. All the IPv6 MDB entries need to be removed from the device. At least
-> > in mlxsw, we do not have a way to ignore only IPv6 entries. From the
-> > device's perspective, an MDB entry is just a multicast DMAC with a
-> > bitmap of ports packets should be replicated to.
-> 
-> Ah, I see, yes. We had a similar "issue". Initially we just always
-> added any multicast entry into our translation table offered by
-> the IP stack or bridge, no matter what a querier state or "router
-> node" state said. Which would have led to a node receiving two
-> copies of a multicast packet if it were both a querier or router
-> and were also having a listener announced via IGMP/MLD.
-> 
-> So there we also just recently changed that, to filter out
-> IPv6 multicast TT entries if this node were also announcing itself as
-> an MLD querier or IPv6 router. And same, independently for
-> IPv4/IGMP.
+Elide the check if no process has requested an exclusive lease.
 
-This is actually not a problem with mlxsw. The ports a packet should be
-replicated to are represented using a bitmap. It does not matter if we
-set the bit because it has an MDB entry or because it is an mrouter
-port. And obviously it does not matter if we set it twice :)
+fl6_sock_lookup previously returns either a reference to a lease or
+NULL to denote failure. Modify to return a real error and update
+all callers. On return NULL, they can use the label and will elide
+the atomic_dec in fl6_sock_release.
 
-> > 2. We need to split the flood tables used for IPv4 and IPv6 unregistered
-> > multicast packets. For IPv4, packets should only be flooded to mrouter
-> > ports whereas for IPv6 packets should be flooded to all the member
-> > ports.
-> 
-> This one I do not fully understand yet. Why don't you apply the
-> "flood to all ports" (in the no IGMP querier present case)
-> for IPv4, too?
-> 
-> Sure, for IPv4 nothing "essential" will break, as IPv4 unicast
-> does not rely on multicast (contrary to IPv6, due to NDP, as you
-> mentioned). But still there would be potential multicast packet loss
-> for a 239.x.x.x listener on the local link, for instance, wouldn't
-> there?
-> 
-> 
-> If I'm not mistaken, we do not apply differing behaviour for IPv4
-> vs. IPv6 in the bridge either and would flood on all ports for IPv4
-> with no querier present, too.
+This is an optimization. Robust applications still have to revert to
+requesting leases if the fast path fails due to an exclusive lease.
 
-I think I was not clear, so I will explain again. I was referring to a
-situation where IPv4 has a querier, but IPv6 does not. In this case, the
-bridge will flood IPv4 unregistered multicast packets to mrouter ports
-only. On the other hand, IPv6 unregistered multicast packets will be
-flooded to all the ports. Based on my reading of the code, this is
-controlled by 'mcast_hit' in br_handle_frame_finish().
+Changes RFC->v1:
+  - use static_key_false_deferred to rate limit jump label operations
+    - call static_key_deferred_flush to stop timers on exit
+  - move decrement out of RCU context
+  - defer optimization also if opt data is associated with a lease
+  - updated all fp6_sock_lookup callers, not just udp
 
-In mlxsw, each packet type (e.g., unknown unicast, IPvX unregistered
-multicast) is associated with a flood table (basically a huge matrix,
-where row corresponds to VLAN and column corresponds to a port). If we
-are to handle the case where IPv4 unregistered multicast packets need to
-be flooded to mrouter ports only, whereas IPv6 unregistered multicast
-packets need to be flooded to all the ports, then we need to use a
-separate flood table for each.
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ include/net/ipv6.h       | 14 +++++++++++++-
+ net/dccp/ipv6.c          |  2 +-
+ net/ipv6/ip6_flowlabel.c | 27 +++++++++++++++++++++++----
+ net/ipv6/raw.c           |  4 ++--
+ net/ipv6/tcp_ipv6.c      |  2 +-
+ net/ipv6/udp.c           |  4 ++--
+ net/l2tp/l2tp_ip6.c      |  4 ++--
+ net/sctp/ipv6.c          |  2 +-
+ 8 files changed, 45 insertions(+), 14 deletions(-)
 
-Alternatively, we can use the same flood table, but flood to all the
-ports if IPv4 or IPv6 querier is missing. I do not think anything will
-break, it is just very efficient. This seems to be allowed by RFC 4541
-(Section 2.1.2):
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 8eca5fb30376f..8dfc65639aa4c 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -13,6 +13,7 @@
+ #include <linux/hardirq.h>
+ #include <linux/jhash.h>
+ #include <linux/refcount.h>
++#include <linux/jump_label_ratelimit.h>
+ #include <net/if_inet6.h>
+ #include <net/ndisc.h>
+ #include <net/flow.h>
+@@ -389,7 +390,18 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
+ 		kfree_rcu(opt, rcu);
+ }
+ 
+-struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
++struct ip6_flowlabel *__fl6_sock_lookup(struct sock *sk, __be32 label);
++
++extern struct static_key_false_deferred ipv6_flowlabel_exclusive;
++static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
++						    __be32 label)
++{
++	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key))
++		return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
++
++	return NULL;
++}
++
+ struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
+ 					 struct ip6_flowlabel *fl,
+ 					 struct ipv6_txoptions *fopt);
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index 85c10c8f50bd1..1b7381ff787b3 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -830,7 +830,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 		if (fl6.flowlabel & IPV6_FLOWLABEL_MASK) {
+ 			struct ip6_flowlabel *flowlabel;
+ 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-			if (flowlabel == NULL)
++			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 			fl6_sock_release(flowlabel);
+ 		}
+diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
+index 545e339b8c4fb..ad284b1fd308a 100644
+--- a/net/ipv6/ip6_flowlabel.c
++++ b/net/ipv6/ip6_flowlabel.c
+@@ -17,6 +17,7 @@
+ #include <linux/slab.h>
+ #include <linux/export.h>
+ #include <linux/pid_namespace.h>
++#include <linux/jump_label_ratelimit.h>
+ 
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+@@ -53,6 +54,9 @@ static DEFINE_SPINLOCK(ip6_fl_lock);
+ 
+ static DEFINE_SPINLOCK(ip6_sk_fl_lock);
+ 
++DEFINE_STATIC_KEY_DEFERRED_FALSE(ipv6_flowlabel_exclusive, HZ);
++EXPORT_SYMBOL(ipv6_flowlabel_exclusive);
++
+ #define for_each_fl_rcu(hash, fl)				\
+ 	for (fl = rcu_dereference_bh(fl_ht[(hash)]);		\
+ 	     fl != NULL;					\
+@@ -90,6 +94,13 @@ static struct ip6_flowlabel *fl_lookup(struct net *net, __be32 label)
+ 	return fl;
+ }
+ 
++static bool fl_shared_exclusive(struct ip6_flowlabel *fl)
++{
++	return fl->share == IPV6_FL_S_EXCL ||
++	       fl->share == IPV6_FL_S_PROCESS ||
++	       fl->share == IPV6_FL_S_USER;
++}
++
+ static void fl_free_rcu(struct rcu_head *head)
+ {
+ 	struct ip6_flowlabel *fl = container_of(head, struct ip6_flowlabel, rcu);
+@@ -103,8 +114,13 @@ static void fl_free_rcu(struct rcu_head *head)
+ 
+ static void fl_free(struct ip6_flowlabel *fl)
+ {
+-	if (fl)
+-		call_rcu(&fl->rcu, fl_free_rcu);
++	if (!fl)
++		return;
++
++	if (fl_shared_exclusive(fl) || fl->opt)
++		static_branch_slow_dec_deferred(&ipv6_flowlabel_exclusive);
++
++	call_rcu(&fl->rcu, fl_free_rcu);
+ }
+ 
+ static void fl_release(struct ip6_flowlabel *fl)
+@@ -240,7 +256,7 @@ static struct ip6_flowlabel *fl_intern(struct net *net,
+ 
+ /* Socket flowlabel lists */
+ 
+-struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label)
++struct ip6_flowlabel *__fl6_sock_lookup(struct sock *sk, __be32 label)
+ {
+ 	struct ipv6_fl_socklist *sfl;
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+@@ -260,7 +276,7 @@ struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label)
+ 	rcu_read_unlock_bh();
+ 	return NULL;
+ }
+-EXPORT_SYMBOL_GPL(fl6_sock_lookup);
++EXPORT_SYMBOL_GPL(__fl6_sock_lookup);
+ 
+ void fl6_free_socklist(struct sock *sk)
+ {
+@@ -419,6 +435,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
+ 	}
+ 	fl->dst = freq->flr_dst;
+ 	atomic_set(&fl->users, 1);
++	if (fl_shared_exclusive(fl) || fl->opt)
++		static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
+ 	switch (fl->share) {
+ 	case IPV6_FL_S_EXCL:
+ 	case IPV6_FL_S_ANY:
+@@ -854,6 +872,7 @@ int ip6_flowlabel_init(void)
+ 
+ void ip6_flowlabel_cleanup(void)
+ {
++	static_key_deferred_flush(&ipv6_flowlabel_exclusive);
+ 	del_timer(&ip6_fl_gc_timer);
+ 	unregister_pernet_subsys(&ip6_flowlabel_net_ops);
+ }
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 70693bc7ad9d2..8a6131991e38f 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -834,7 +834,7 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
+ 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
+ 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-				if (!flowlabel)
++				if (IS_ERR(flowlabel))
+ 					return -EINVAL;
+ 			}
+ 		}
+@@ -876,7 +876,7 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		}
+ 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
+ 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-			if (!flowlabel)
++			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 		}
+ 		if (!(opt->opt_nflen|opt->opt_flen))
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 4f3f99b398209..d56a9019a0feb 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -171,7 +171,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 		if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
+ 			struct ip6_flowlabel *flowlabel;
+ 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-			if (!flowlabel)
++			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 			fl6_sock_release(flowlabel);
+ 		}
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 4406e059da680..827fe73850788 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1319,7 +1319,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
+ 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
+ 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-				if (!flowlabel)
++				if (IS_ERR(flowlabel))
+ 					return -EINVAL;
+ 			}
+ 		}
+@@ -1371,7 +1371,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		}
+ 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
+ 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-			if (!flowlabel)
++			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 		}
+ 		if (!(opt->opt_nflen|opt->opt_flen))
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 1a76a0a4e3abb..687e23a8b3266 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -536,7 +536,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			fl6.flowlabel = lsa->l2tp_flowinfo & IPV6_FLOWINFO_MASK;
+ 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
+ 				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-				if (flowlabel == NULL)
++				if (IS_ERR(flowlabel))
+ 					return -EINVAL;
+ 			}
+ 		}
+@@ -577,7 +577,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		}
+ 		if ((fl6.flowlabel & IPV6_FLOWLABEL_MASK) && !flowlabel) {
+ 			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-			if (flowlabel == NULL)
++			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 		}
+ 		if (!(opt->opt_nflen|opt->opt_flen))
+diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
+index 64e0a594a6516..e5f2fc726a983 100644
+--- a/net/sctp/ipv6.c
++++ b/net/sctp/ipv6.c
+@@ -253,7 +253,7 @@ static void sctp_v6_get_dst(struct sctp_transport *t, union sctp_addr *saddr,
+ 		struct ip6_flowlabel *flowlabel;
+ 
+ 		flowlabel = fl6_sock_lookup(sk, fl6->flowlabel);
+-		if (!flowlabel)
++		if (IS_ERR(flowlabel))
+ 			goto out;
+ 		fl6_sock_release(flowlabel);
+ 	}
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
-"If a switch receives an unregistered packet, it must forward that
-packet on all ports to which an IGMP router is attached. A switch may
-default to forwarding unregistered packets on all ports."
-
-> Regards, Linus
-
-Linus, thanks a lot for the great feedback. I really appreciate it!
