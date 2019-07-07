@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D56886176C
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 22:24:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C347E6176F
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 22:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727482AbfGGUX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 16:23:59 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:39094 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727304AbfGGUX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 16:23:59 -0400
-Received: by mail-ed1-f68.google.com with SMTP id m10so12669033edv.6
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 13:23:57 -0700 (PDT)
+        id S1727499AbfGGU2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 16:28:37 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:44438 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727304AbfGGU2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 16:28:36 -0400
+Received: by mail-ed1-f67.google.com with SMTP id k8so12642400edr.11
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 13:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fOkgVnrH50pk9BCeUnlqH+zy9Aka8ZHT0XgwB9txUu8=;
-        b=DqAz9cE581Kbu/5fHTTt0ts6dlqww4TfLy1YGHHDXBv47xuKNiqg/a3yFKs0tLcT36
-         KIIc7XElQB7fw8J8MTLD1v9pfpXD/GN2+JSAzm2guorQTuMR9po4QBypiq5A/mqEvjsD
-         Nm8A0Vg4Wyna/2hkfFwLfF3ZdvdFNMZWQ/JMxQMzui4CRlTKOvwvs699yGvTlf/x3N2S
-         zv+yPcNu4mRgAqmF/m7bjzXhPRcBZpncBethWkfOZVcH8GniYMuo8hS/c71Ps4J8k4G/
-         uR1myyReW/mRGvXLKWyrQkaz5bu3FtD4Ddpa22metvzr5J1eQ9LvVjnwhCbhu6LYVwCs
-         bcKw==
+        bh=1Vk/w8aVbR01nk+PcSPbfm51PoM62chtu6XzbTNR+5w=;
+        b=sfk7Y9owqbcwUGY4kulUCY0FnEkbRABT2a0KMYlHNbqeQCW1Vlh65GYC3X9EluY9bq
+         JOwHC2JFDrxZciiIrqpveLL4OG+kH+4G2ndGDyW5WglPcMEJpNk/ZQzFTVPmABNXhbRy
+         76zfKG3kLw5/KUaLvCf/U3aGgRqBXDQYdL8VUzqiMpvmc+7V5KOadqDIVr9aYt6mhQBz
+         pmZZEg12ARDk4sOlvWazmXTZgLjS+x5NLzDctPulqBLXSs/+flVotZinEm+OAUz8nNAf
+         MPhtT2Tv0QJvRWvpux7M++XQWCo3egEJtcJM4c9ND4rMAFIuTn4iekYnu2tTBJTGsFHQ
+         QOHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fOkgVnrH50pk9BCeUnlqH+zy9Aka8ZHT0XgwB9txUu8=;
-        b=NBtvS1CCkBsWQarYbLnV8LP4KrH4qdaZTOue5z9YlArSX7N1EIE56OzVDcvDq94eME
-         6MJdLr6FgCePomlbkASBKXJxpSuuCzxPfQ8xCapNxLgl7l7mi40XKDhgNle0niTyGoQY
-         edX3UsAWH5ywO9jKclHLJ60nFhSBc83JgAUDVIjOt5geTJaBl5RcaIKdwVd8qanLSfhq
-         aiZQVN0OVdEJVVTsm0eOZUrFY7b7RiiQQoVgdscH9QKnZkYDSw9gk7RxffcD1X9RKwmz
-         ho5Zg2PLDDiH86Sw5nynACjj497/qwy7s/KarZAvDOULR5Tfoa3Vw6iKBPoQyMCCKmUO
-         LPgg==
-X-Gm-Message-State: APjAAAX0ehgKw80kNJgcFG0synWnTWVP08jT6dSvCrhz8QcCtx5I46c/
-        TudapoSxfgAyBwyRRnFhCTsk6YRlw5ybWYM2mdk=
-X-Google-Smtp-Source: APXvYqyzhJKYcuFEfJLz7iStFkLibxMT8fTJycjidcrSnTCRh/KRmt1gKaocsOh+R5ZJcke0JUJQNGQQ99RGlrJJE/0=
-X-Received: by 2002:aa7:c559:: with SMTP id s25mr16282552edr.117.1562531037225;
- Sun, 07 Jul 2019 13:23:57 -0700 (PDT)
+        bh=1Vk/w8aVbR01nk+PcSPbfm51PoM62chtu6XzbTNR+5w=;
+        b=VJVYZKVXsbAZ3kl0GKCd9asex+JqFmgWZNLcSsdZbcRxv/8OyAvIiL1A9pLt5/z4O5
+         MuJHVs35BIgtER8zofiGwZCx3MPUFsgrrw2IC4BmZPur1T+Fx2Hxtcgzh+gzWtkN3ej0
+         62GMHwOEWIm7qOt6+qLxMr3TZrDsyrRcLghss6ae8d5fZNouUx0fpfCgLT7EVug76Uve
+         WaZutmEYHo2T7skjix/esDRg5Oo4EpYXRs7Yw1OME9G3mPFM1rKnMvTRGeTamF07ajX7
+         +MNuyHnd90bAFDQnyVjGiVlqlNyUl2eX+BDR3N/zGnbhXh46CNo0IFQ7LcZ0uvnn15H5
+         2QXw==
+X-Gm-Message-State: APjAAAWW0Gliqun7GqwuvTfT6lK9Cn54Az56gmkmZ7FbvQ89saj2Ie2i
+        4rTweyK5dRuYUGXpN3YvmLlz04nhJpFZ5ZmQCYSNbRMmPOM=
+X-Google-Smtp-Source: APXvYqzjm2DwJtRiRna4NtadMBqKmr4mJnZ+rlBExWD1RSSA2u1iLbgK5/VLOk6PymIIcPbdPs/td/COZyB5OYh+piY=
+X-Received: by 2002:a17:906:b7d8:: with SMTP id fy24mr13645786ejb.230.1562531315216;
+ Sun, 07 Jul 2019 13:28:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190707172921.17731-1-olteanv@gmail.com> <20190707172921.17731-3-olteanv@gmail.com>
- <20190707173951.GB21188@lunn.ch>
-In-Reply-To: <20190707173951.GB21188@lunn.ch>
+References: <20190707172921.17731-1-olteanv@gmail.com> <20190707174702.GC21188@lunn.ch>
+In-Reply-To: <20190707174702.GC21188@lunn.ch>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 7 Jul 2019 23:23:46 +0300
-Message-ID: <CA+h21ho1LqPgZOfPjAnKufUBUzC=S4O6jk1TXfQ1ymN_3GFcDg@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 2/6] taprio: Add support for hardware offloading
+Date:   Sun, 7 Jul 2019 23:28:24 +0300
+Message-ID: <CA+h21hoZ-ZgweMEDSBjANVhkVTNDONA+YkSz5y6TAJWByHHzDg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 0/6] tc-taprio offload for SJA1105 DSA
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -63,33 +62,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 7 Jul 2019 at 20:39, Andrew Lunn <andrew@lunn.ch> wrote:
+On Sun, 7 Jul 2019 at 20:47, Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> On Sun, Jul 07, 2019 at 08:29:17PM +0300, Vladimir Oltean wrote:
-> > From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> >
-> > This allows taprio to offload the schedule enforcement to capable
-> > network cards, resulting in more precise windows and less CPU usage.
-> >
-> > The important detail here is the difference between the gate_mask in
-> > taprio and gate_mask for the network driver. For the driver, each bit
-> > in gate_mask references a transmission queue: bit 0 for queue 0, bit 1
-> > for queue 1, and so on. This is done so the driver doesn't need to
-> > know about traffic classes.
-> >
-> > Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> > Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> > - Configuring the switch over SPI cannot apparently be done from this
+> >   ndo_setup_tc callback because it runs in atomic context. I also have
+> >   some downstream patches to offload tc clsact matchall with mirred
+> >   action, but in that case it looks like the atomic context restriction
+> >   does not apply.
 >
-> Hi Vladimir
+> There have been similar problems in the past. We can probably have the
+> DSA layer turn it into a notifier. Look at the dsa_port_mdb_*
+> functions for example.
 >
-> Your SOB is also needed here.
->
->      Andrew
+>           Andrew
 
-Hi Andrew,
-
-I thought I'd added it, but it looks like I edited the patch and then
-overwrote it, instead of operating on the git history.
-Next time!
+Ok, thanks. I thought the dsa_port_notify functions are just to be
+called from switchdev. I'm still not sure I fully understand, but I'll
+try to switch to that in v2 and see what happens.
 
 -Vladimir
