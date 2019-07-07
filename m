@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A98615B3
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 19:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C357A615B2
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 19:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727427AbfGGR3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 13:29:46 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:36033 "EHLO
+        id S1727434AbfGGR3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 13:29:42 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38456 "EHLO
         mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727416AbfGGR3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 13:29:42 -0400
-Received: by mail-wm1-f65.google.com with SMTP id g67so7911897wme.1
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 10:29:38 -0700 (PDT)
+        with ESMTP id S1727426AbfGGR3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 13:29:41 -0400
+Received: by mail-wm1-f65.google.com with SMTP id s15so14118535wmj.3
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 10:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dvFi5mx45b37+pGtmgRj4eItTZ6iaE9A0Ucx9Pj6C6s=;
-        b=obzNKAl0y2mXJ3YqNqCBr6oaN/914SLzkAuvIfyfd7GAeipW6uyPHVn1Xvtz8eIkQY
-         i2VL4FNeqLS4DHA+W9R6s8BUTP3i3T/MJzxO/9p181Y4A1drBj3GgmYSZqnOoV7Wq88t
-         YPNYYz0fi0YqYJFgJ98T2XJs7USDJsVc0vKnCis74K3mtI6R9Z+GD9j+2w5A11TtoTW9
-         VbMZP7vvwj7j4JgO9BAMpkznFoli33WmvcBbHUwWqmRcm4RZfAB7Z4HqHatgerHN9KWh
-         U1r1X3HzvvtGrcA3LiGR5abTEG9yUQ4XqXhhtkPOC2SSHvha8PIB1+eDMrie5B81rANj
-         Fuyw==
+        bh=1Yy+EllIuFIeHh+2l2fUyLKdsx7arkax3CnTrvl8+W0=;
+        b=XcWjvAt6aSY/4x8hDI+MjyBtshhmmiPALWWdAWClh0GW1q73qw/g6QsFQFezOtWXkI
+         Q3VW98BP8WFkodOw9srp9gDKwhNuQFZ3cAc38GzRV0J2qgirTPGkEYuSUDajd1/Cv+9k
+         eqV7wwUYOhAsmEJrZ+KTBunJSMbAYk46a+a/yGNn3UzQeK/luy2HI9acm8mCvB2DL/9w
+         Os+ntFmV9vkokHGUvNf81H8vF/JLk1JPbhJMMdvjuUYBPCFjAjb7TAyoaS+vvKz3o4bQ
+         MiUP/MAD6hMW99ChOkTLCVr6aeTRhcR+/DlpFWvsjjh6xrWdKKFfuDFK7YUxNN28/Uqm
+         WxKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dvFi5mx45b37+pGtmgRj4eItTZ6iaE9A0Ucx9Pj6C6s=;
-        b=SirvV1hUsghorJmAiJBD3QYkEc4rfBjVbTUW9Kb75TbyfLBvIpygagHDTh6tjJKvYL
-         pd7bjS+2Frc4zcK7xn3sHw/tjdnnWPJs4Nwq+YvZApaa8hv1NajyB+5Jc39onMTKFo1L
-         gga1ADTY/EOxho1zcoyD7NfR5pc6VFg8l8K5MQLieyzZvpS6xT7YaEBH1e61TOnelurS
-         mRm137HaJCnDRurEiJIT4JIp5zm5b7LGTGYgX5Ypxzn1HT0EC9rXMLmvkMOPMI5UcMlD
-         24ZMHCj4aVetgSbxCzLcRoHZaQ1Cexk/7qjeZpaim2v/mUY4cWR7WAhDx8f6T6eiF4Zq
-         znOQ==
-X-Gm-Message-State: APjAAAWfAf2TkRQKwuO5x9v9w/LLON0T5JLshi7qKlvxmtwmoKIWR4aQ
-        xqB5qEjte9ljsQ9agfe3It0=
-X-Google-Smtp-Source: APXvYqwxzA2Tx4SeB5CwJip/QfLcWiaszpfLJfQ8XGzmECaQ6A7AVvaB6V4/IjqkXcAOUxjBAQTmcg==
-X-Received: by 2002:a1c:2015:: with SMTP id g21mr12405750wmg.33.1562520577919;
-        Sun, 07 Jul 2019 10:29:37 -0700 (PDT)
+        bh=1Yy+EllIuFIeHh+2l2fUyLKdsx7arkax3CnTrvl8+W0=;
+        b=c+hW7Z1tpy5zfFp/CN5hzQDZuIwLDKnhtJx3ha/2w1tzkynuErrQG0hO5QO92loSYm
+         YZq4qRCdmBhDZ74u5HjT0L7Ix3dUu6CcvdcjIlPblpOfTNLoxAjaSyVChsYY5iD4MILb
+         iBz09ScLQdO4nm7HqZa9rjQHRfHWU7EuP3zffDWGQf45vZRWRMXNDcUKnVAd1L3gobeT
+         LIfK7i0LbrYQPAvc/RgGKRwm0LZnLxGt43jZFAAmIENsFLpk+Q/saYcNHGFJa8mjscBL
+         EBamxe8Pq60i7Im5tNaGEPqsDBogUNcYaXhct1nxvMDQBEMI+/I4DjFm7lCRyrcJVMHm
+         zPEA==
+X-Gm-Message-State: APjAAAUPow9Oas1p6WASukwHerOi3lCL94p1j1tZFlj5eaISCr9yh/0F
+        b+z7NQCIyiHlfgXcEq4M+14=
+X-Google-Smtp-Source: APXvYqx2pb/V1zicA5zbFiEqaA1aTp/irmCAojxADmF5zNpK103R1p9oo5ygUNoXiuOpV2tWbMP2WA==
+X-Received: by 2002:a7b:c455:: with SMTP id l21mr13007893wmi.114.1562520579333;
+        Sun, 07 Jul 2019 10:29:39 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.252.192])
-        by smtp.gmail.com with ESMTPSA id g14sm14280463wro.11.2019.07.07.10.29.36
+        by smtp.gmail.com with ESMTPSA id g14sm14280463wro.11.2019.07.07.10.29.37
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 07 Jul 2019 10:29:37 -0700 (PDT)
+        Sun, 07 Jul 2019 10:29:38 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, vinicius.gomes@intel.com,
@@ -50,9 +50,9 @@ To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
 Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
         Jose.Abreu@synopsys.com, ilias.apalodimas@linaro.org,
         netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [RFC PATCH net-next 4/6] net: dsa: sja1105: Add static config tables for scheduling
-Date:   Sun,  7 Jul 2019 20:29:19 +0300
-Message-Id: <20190707172921.17731-5-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 5/6] net: dsa: sja1105: Advertise the 8 TX queues
+Date:   Sun,  7 Jul 2019 20:29:20 +0300
+Message-Id: <20190707172921.17731-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190707172921.17731-1-olteanv@gmail.com>
 References: <20190707172921.17731-1-olteanv@gmail.com>
@@ -61,464 +61,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to support tc-taprio offload, the TTEthernet egress scheduling
-core registers must be made visible through the static interface.
+This is a preparation patch for the tc-taprio offload (and potentially
+for other future offloads such as tc-mqprio).
+
+Instead of looking directly at skb->priority during xmit, let's get the
+netdev queue and the queue-to-traffic-class mapping, and put the
+resulting traffic class into the dsa_8021q PCP field. The switch is
+configured with a 1-to-1 PCP-to-ingress-queue-to-egress-queue mapping
+(see vlan_pmap in sja1105_main.c), so the effect is that we can inject
+into a front-panel's egress traffic class through VLAN tagging from
+Linux, completely transparently.
+
+Unfortunately the switch doesn't look at the VLAN PCP in the case of
+management traffic to/from the CPU (link-local frames at
+01-80-C2-xx-xx-xx or 01-1B-19-xx-xx-xx) so we can't alter the
+transmission queue of this type of traffic on a frame-by-frame basis. It
+is only selected through the "hostprio" setting which ATM is harcoded in
+the driver to 7.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- .../net/dsa/sja1105/sja1105_dynamic_config.c  |   8 +
- .../net/dsa/sja1105/sja1105_static_config.c   | 167 ++++++++++++++++++
- .../net/dsa/sja1105/sja1105_static_config.h   |  48 ++++-
- 3 files changed, 222 insertions(+), 1 deletion(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 7 ++++++-
+ net/dsa/tag_sja1105.c                  | 3 ++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index 9988c9d18567..91da430045ff 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -488,6 +488,8 @@ sja1105et_general_params_entry_packing(void *buf, void *entry_ptr,
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index bc7e4e030b07..30761e6545a3 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -384,7 +384,9 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 		/* Disallow dynamic changing of the mirror port */
+ 		.mirr_ptacu = 0,
+ 		.switchid = priv->ds->index,
+-		/* Priority queue for link-local frames trapped to CPU */
++		/* Priority queue for link-local management frames
++		 * (both ingress to and egress from CPU - PTP, STP etc)
++		 */
+ 		.hostprio = 7,
+ 		.mac_fltres1 = SJA1105_LINKLOCAL_FILTER_A,
+ 		.mac_flt1    = SJA1105_LINKLOCAL_FILTER_A_MASK,
+@@ -1704,6 +1706,9 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	 */
+ 	ds->vlan_filtering_is_global = true;
  
- /* SJA1105E/T: First generation */
- struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
-+	[BLK_IDX_SCHEDULE] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {0},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.entry_packing = sja1105et_dyn_l2_lookup_entry_packing,
- 		.cmd_packing = sja1105et_l2_lookup_cmd_packing,
-@@ -529,6 +531,8 @@ struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- 		.packed_size = SJA1105ET_SIZE_MAC_CONFIG_DYN_CMD,
- 		.addr = 0x36,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {0},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.entry_packing = sja1105et_l2_lookup_params_entry_packing,
- 		.cmd_packing = sja1105et_l2_lookup_params_cmd_packing,
-@@ -552,6 +556,8 @@ struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- 
- /* SJA1105P/Q/R/S: Second generation */
- struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
-+	[BLK_IDX_SCHEDULE] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {0},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.entry_packing = sja1105pqrs_dyn_l2_lookup_entry_packing,
- 		.cmd_packing = sja1105pqrs_l2_lookup_cmd_packing,
-@@ -593,6 +599,8 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 		.packed_size = SJA1105PQRS_SIZE_MAC_CONFIG_DYN_CMD,
- 		.addr = 0x4B,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {0},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.entry_packing = sja1105et_l2_lookup_params_entry_packing,
- 		.cmd_packing = sja1105et_l2_lookup_params_cmd_packing,
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.c b/drivers/net/dsa/sja1105/sja1105_static_config.c
-index b31c737dc560..0d03e13e9909 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.c
-@@ -371,6 +371,63 @@ size_t sja1105pqrs_mac_config_entry_packing(void *buf, void *entry_ptr,
- 	return size;
- }
- 
-+static size_t
-+sja1105_schedule_entry_points_params_entry_packing(void *buf, void *entry_ptr,
-+						   enum packing_op op)
-+{
-+	struct sja1105_schedule_entry_points_params_entry *entry = entry_ptr;
-+	const size_t size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_PARAMS_ENTRY;
++	/* Advertise the 8 egress queues */
++	ds->num_tx_queues = SJA1105_NUM_TC;
 +
-+	sja1105_packing(buf, &entry->clksrc,    31, 30, size, op);
-+	sja1105_packing(buf, &entry->actsubsch, 29, 27, size, op);
-+	return size;
-+}
-+
-+static size_t
-+sja1105_schedule_entry_points_entry_packing(void *buf, void *entry_ptr,
-+					    enum packing_op op)
-+{
-+	struct sja1105_schedule_entry_points_entry *entry = entry_ptr;
-+	const size_t size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_ENTRY;
-+
-+	sja1105_packing(buf, &entry->subschindx, 31, 29, size, op);
-+	sja1105_packing(buf, &entry->delta,      28, 11, size, op);
-+	sja1105_packing(buf, &entry->address,    10, 1,  size, op);
-+	return size;
-+}
-+
-+static size_t sja1105_schedule_params_entry_packing(void *buf, void *entry_ptr,
-+						    enum packing_op op)
-+{
-+	const size_t size = SJA1105_SIZE_SCHEDULE_PARAMS_ENTRY;
-+	struct sja1105_schedule_params_entry *entry = entry_ptr;
-+	int offset, i;
-+
-+	for (i = 0, offset = 16; i < 8; i++, offset += 10)
-+		sja1105_packing(buf, &entry->subscheind[i],
-+				offset + 9, offset + 0, size, op);
-+	return size;
-+}
-+
-+static size_t sja1105_schedule_entry_packing(void *buf, void *entry_ptr,
-+					     enum packing_op op)
-+{
-+	const size_t size = SJA1105_SIZE_SCHEDULE_ENTRY;
-+	struct sja1105_schedule_entry *entry = entry_ptr;
-+
-+	sja1105_packing(buf, &entry->winstindex,  63, 54, size, op);
-+	sja1105_packing(buf, &entry->winend,      53, 53, size, op);
-+	sja1105_packing(buf, &entry->winst,       52, 52, size, op);
-+	sja1105_packing(buf, &entry->destports,   51, 47, size, op);
-+	sja1105_packing(buf, &entry->setvalid,    46, 46, size, op);
-+	sja1105_packing(buf, &entry->txen,        45, 45, size, op);
-+	sja1105_packing(buf, &entry->resmedia_en, 44, 44, size, op);
-+	sja1105_packing(buf, &entry->resmedia,    43, 36, size, op);
-+	sja1105_packing(buf, &entry->vlindex,     35, 26, size, op);
-+	sja1105_packing(buf, &entry->delta,       25, 8,  size, op);
-+	return size;
-+}
-+
- size_t sja1105_vlan_lookup_entry_packing(void *buf, void *entry_ptr,
- 					 enum packing_op op)
- {
-@@ -447,11 +504,15 @@ static void sja1105_table_write_crc(u8 *table_start, u8 *crc_ptr)
-  * before blindly indexing kernel memory with the blk_idx.
-  */
- static u64 blk_id_map[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = BLKID_SCHEDULE,
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = BLKID_SCHEDULE_ENTRY_POINTS,
- 	[BLK_IDX_L2_LOOKUP] = BLKID_L2_LOOKUP,
- 	[BLK_IDX_L2_POLICING] = BLKID_L2_POLICING,
- 	[BLK_IDX_VLAN_LOOKUP] = BLKID_VLAN_LOOKUP,
- 	[BLK_IDX_L2_FORWARDING] = BLKID_L2_FORWARDING,
- 	[BLK_IDX_MAC_CONFIG] = BLKID_MAC_CONFIG,
-+	[BLK_IDX_SCHEDULE_PARAMS] = BLKID_SCHEDULE_PARAMS,
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = BLKID_SCHEDULE_ENTRY_POINTS_PARAMS,
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = BLKID_L2_LOOKUP_PARAMS,
- 	[BLK_IDX_L2_FORWARDING_PARAMS] = BLKID_L2_FORWARDING_PARAMS,
- 	[BLK_IDX_AVB_PARAMS] = BLKID_AVB_PARAMS,
-@@ -461,6 +522,13 @@ static u64 blk_id_map[BLK_IDX_MAX] = {
+ 	/* The DSA/switchdev model brings up switch ports in standalone mode by
+ 	 * default, and that means vlan_filtering is 0 since they're not under
+ 	 * a bridge, so it's safe to set up switch tagging at this time.
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 1d96c9d4a8e9..9ae84990f730 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -89,7 +89,8 @@ static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
+ 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+ 	struct dsa_switch *ds = dp->ds;
+ 	u16 tx_vid = dsa_8021q_tx_vid(ds, dp->index);
+-	u8 pcp = skb->priority;
++	u16 queue_mapping = skb_get_queue_mapping(skb);
++	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
  
- const char *sja1105_static_config_error_msg[] = {
- 	[SJA1105_CONFIG_OK] = "",
-+	[SJA1105_TTETHERNET_NOT_SUPPORTED] =
-+		"schedule-table present, but TTEthernet is "
-+		"only supported on T and Q/S",
-+	[SJA1105_INCORRECT_TTETHERNET_CONFIGURATION] =
-+		"schedule-table present, but one of "
-+		"schedule-entry-points-table, schedule-parameters-table or "
-+		"schedule-entry-points-parameters table is empty",
- 	[SJA1105_MISSING_L2_POLICING_TABLE] =
- 		"l2-policing-table needs to have at least one entry",
- 	[SJA1105_MISSING_L2_FORWARDING_TABLE] =
-@@ -508,6 +576,21 @@ sja1105_static_config_check_valid(const struct sja1105_static_config *config)
- #define IS_FULL(blk_idx) \
- 	(tables[blk_idx].entry_count == tables[blk_idx].ops->max_entry_count)
- 
-+	if (tables[BLK_IDX_SCHEDULE].entry_count) {
-+		if (config->device_id != SJA1105T_DEVICE_ID &&
-+		    config->device_id != SJA1105QS_DEVICE_ID)
-+			return SJA1105_TTETHERNET_NOT_SUPPORTED;
-+
-+		if (tables[BLK_IDX_SCHEDULE_ENTRY_POINTS].entry_count == 0)
-+			return SJA1105_INCORRECT_TTETHERNET_CONFIGURATION;
-+
-+		if (!IS_FULL(BLK_IDX_SCHEDULE_PARAMS))
-+			return SJA1105_INCORRECT_TTETHERNET_CONFIGURATION;
-+
-+		if (!IS_FULL(BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS))
-+			return SJA1105_INCORRECT_TTETHERNET_CONFIGURATION;
-+	}
-+
- 	if (tables[BLK_IDX_L2_POLICING].entry_count == 0)
- 		return SJA1105_MISSING_L2_POLICING_TABLE;
- 
-@@ -614,6 +697,8 @@ sja1105_static_config_get_length(const struct sja1105_static_config *config)
- 
- /* SJA1105E: First generation, no TTEthernet */
- struct sja1105_table_ops sja1105e_table_ops[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {0},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.packing = sja1105et_l2_lookup_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_entry),
-@@ -644,6 +729,8 @@ struct sja1105_table_ops sja1105e_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105ET_SIZE_MAC_CONFIG_ENTRY,
- 		.max_entry_count = SJA1105_MAX_MAC_CONFIG_COUNT,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {0},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.packing = sja1105et_l2_lookup_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_params_entry),
-@@ -678,6 +765,18 @@ struct sja1105_table_ops sja1105e_table_ops[BLK_IDX_MAX] = {
- 
- /* SJA1105T: First generation, TTEthernet */
- struct sja1105_table_ops sja1105t_table_ops[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = {
-+		.packing = sja1105_schedule_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_COUNT,
-+	},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {
-+		.packing = sja1105_schedule_entry_points_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry_points_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_ENTRY_POINTS_COUNT,
-+	},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.packing = sja1105et_l2_lookup_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_entry),
-@@ -708,6 +807,18 @@ struct sja1105_table_ops sja1105t_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105ET_SIZE_MAC_CONFIG_ENTRY,
- 		.max_entry_count = SJA1105_MAX_MAC_CONFIG_COUNT,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {
-+		.packing = sja1105_schedule_params_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_params_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_PARAMS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_PARAMS_COUNT,
-+	},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {
-+		.packing = sja1105_schedule_entry_points_params_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry_points_params_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_PARAMS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_ENTRY_POINTS_PARAMS_COUNT,
-+	},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.packing = sja1105et_l2_lookup_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_params_entry),
-@@ -742,6 +853,8 @@ struct sja1105_table_ops sja1105t_table_ops[BLK_IDX_MAX] = {
- 
- /* SJA1105P: Second generation, no TTEthernet, no SGMII */
- struct sja1105_table_ops sja1105p_table_ops[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {0},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.packing = sja1105pqrs_l2_lookup_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_entry),
-@@ -772,6 +885,8 @@ struct sja1105_table_ops sja1105p_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_MAC_CONFIG_ENTRY,
- 		.max_entry_count = SJA1105_MAX_MAC_CONFIG_COUNT,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {0},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.packing = sja1105pqrs_l2_lookup_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_params_entry),
-@@ -806,6 +921,18 @@ struct sja1105_table_ops sja1105p_table_ops[BLK_IDX_MAX] = {
- 
- /* SJA1105Q: Second generation, TTEthernet, no SGMII */
- struct sja1105_table_ops sja1105q_table_ops[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = {
-+		.packing = sja1105_schedule_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_COUNT,
-+	},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {
-+		.packing = sja1105_schedule_entry_points_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry_points_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_ENTRY_POINTS_COUNT,
-+	},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.packing = sja1105pqrs_l2_lookup_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_entry),
-@@ -836,6 +963,18 @@ struct sja1105_table_ops sja1105q_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_MAC_CONFIG_ENTRY,
- 		.max_entry_count = SJA1105_MAX_MAC_CONFIG_COUNT,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {
-+		.packing = sja1105_schedule_params_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_params_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_PARAMS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_PARAMS_COUNT,
-+	},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {
-+		.packing = sja1105_schedule_entry_points_params_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry_points_params_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_PARAMS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_ENTRY_POINTS_PARAMS_COUNT,
-+	},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.packing = sja1105pqrs_l2_lookup_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_params_entry),
-@@ -870,6 +1009,8 @@ struct sja1105_table_ops sja1105q_table_ops[BLK_IDX_MAX] = {
- 
- /* SJA1105R: Second generation, no TTEthernet, SGMII */
- struct sja1105_table_ops sja1105r_table_ops[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {0},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.packing = sja1105pqrs_l2_lookup_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_entry),
-@@ -900,6 +1041,8 @@ struct sja1105_table_ops sja1105r_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_MAC_CONFIG_ENTRY,
- 		.max_entry_count = SJA1105_MAX_MAC_CONFIG_COUNT,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {0},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {0},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.packing = sja1105pqrs_l2_lookup_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_params_entry),
-@@ -934,6 +1077,18 @@ struct sja1105_table_ops sja1105r_table_ops[BLK_IDX_MAX] = {
- 
- /* SJA1105S: Second generation, TTEthernet, SGMII */
- struct sja1105_table_ops sja1105s_table_ops[BLK_IDX_MAX] = {
-+	[BLK_IDX_SCHEDULE] = {
-+		.packing = sja1105_schedule_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_COUNT,
-+	},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = {
-+		.packing = sja1105_schedule_entry_points_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry_points_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_ENTRY_POINTS_COUNT,
-+	},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.packing = sja1105pqrs_l2_lookup_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_entry),
-@@ -964,6 +1119,18 @@ struct sja1105_table_ops sja1105s_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_MAC_CONFIG_ENTRY,
- 		.max_entry_count = SJA1105_MAX_MAC_CONFIG_COUNT,
- 	},
-+	[BLK_IDX_SCHEDULE_PARAMS] = {
-+		.packing = sja1105_schedule_params_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_params_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_PARAMS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_PARAMS_COUNT,
-+	},
-+	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {
-+		.packing = sja1105_schedule_entry_points_params_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_schedule_entry_points_params_entry),
-+		.packed_entry_size = SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_PARAMS_ENTRY,
-+		.max_entry_count = SJA1105_MAX_SCHEDULE_ENTRY_POINTS_PARAMS_COUNT,
-+	},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
- 		.packing = sja1105pqrs_l2_lookup_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_l2_lookup_params_entry),
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.h b/drivers/net/dsa/sja1105/sja1105_static_config.h
-index 684465fc0882..7f87022a2d61 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.h
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.h
-@@ -11,11 +11,15 @@
- 
- #define SJA1105_SIZE_DEVICE_ID				4
- #define SJA1105_SIZE_TABLE_HEADER			12
-+#define SJA1105_SIZE_SCHEDULE_ENTRY			8
-+#define SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_ENTRY	4
- #define SJA1105_SIZE_L2_POLICING_ENTRY			8
- #define SJA1105_SIZE_VLAN_LOOKUP_ENTRY			8
- #define SJA1105_SIZE_L2_FORWARDING_ENTRY		8
- #define SJA1105_SIZE_L2_FORWARDING_PARAMS_ENTRY		12
- #define SJA1105_SIZE_XMII_PARAMS_ENTRY			4
-+#define SJA1105_SIZE_SCHEDULE_PARAMS_ENTRY		12
-+#define SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_PARAMS_ENTRY	4
- #define SJA1105ET_SIZE_L2_LOOKUP_ENTRY			12
- #define SJA1105ET_SIZE_MAC_CONFIG_ENTRY			28
- #define SJA1105ET_SIZE_L2_LOOKUP_PARAMS_ENTRY		4
-@@ -29,11 +33,15 @@
- 
- /* UM10944.pdf Page 11, Table 2. Configuration Blocks */
- enum {
-+	BLKID_SCHEDULE					= 0x00,
-+	BLKID_SCHEDULE_ENTRY_POINTS			= 0x01,
- 	BLKID_L2_LOOKUP					= 0x05,
- 	BLKID_L2_POLICING				= 0x06,
- 	BLKID_VLAN_LOOKUP				= 0x07,
- 	BLKID_L2_FORWARDING				= 0x08,
- 	BLKID_MAC_CONFIG				= 0x09,
-+	BLKID_SCHEDULE_PARAMS				= 0x0A,
-+	BLKID_SCHEDULE_ENTRY_POINTS_PARAMS		= 0x0B,
- 	BLKID_L2_LOOKUP_PARAMS				= 0x0D,
- 	BLKID_L2_FORWARDING_PARAMS			= 0x0E,
- 	BLKID_AVB_PARAMS				= 0x10,
-@@ -42,11 +50,15 @@ enum {
- };
- 
- enum sja1105_blk_idx {
--	BLK_IDX_L2_LOOKUP = 0,
-+	BLK_IDX_SCHEDULE = 0,
-+	BLK_IDX_SCHEDULE_ENTRY_POINTS,
-+	BLK_IDX_L2_LOOKUP,
- 	BLK_IDX_L2_POLICING,
- 	BLK_IDX_VLAN_LOOKUP,
- 	BLK_IDX_L2_FORWARDING,
- 	BLK_IDX_MAC_CONFIG,
-+	BLK_IDX_SCHEDULE_PARAMS,
-+	BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS,
- 	BLK_IDX_L2_LOOKUP_PARAMS,
- 	BLK_IDX_L2_FORWARDING_PARAMS,
- 	BLK_IDX_AVB_PARAMS,
-@@ -59,11 +71,15 @@ enum sja1105_blk_idx {
- 	BLK_IDX_INVAL = -1,
- };
- 
-+#define SJA1105_MAX_SCHEDULE_COUNT			1024
-+#define SJA1105_MAX_SCHEDULE_ENTRY_POINTS_COUNT		2048
- #define SJA1105_MAX_L2_LOOKUP_COUNT			1024
- #define SJA1105_MAX_L2_POLICING_COUNT			45
- #define SJA1105_MAX_VLAN_LOOKUP_COUNT			4096
- #define SJA1105_MAX_L2_FORWARDING_COUNT			13
- #define SJA1105_MAX_MAC_CONFIG_COUNT			5
-+#define SJA1105_MAX_SCHEDULE_PARAMS_COUNT		1
-+#define SJA1105_MAX_SCHEDULE_ENTRY_POINTS_PARAMS_COUNT	1
- #define SJA1105_MAX_L2_LOOKUP_PARAMS_COUNT		1
- #define SJA1105_MAX_L2_FORWARDING_PARAMS_COUNT		1
- #define SJA1105_MAX_GENERAL_PARAMS_COUNT		1
-@@ -83,6 +99,23 @@ enum sja1105_blk_idx {
- #define SJA1105R_PART_NO				0x9A86
- #define SJA1105S_PART_NO				0x9A87
- 
-+struct sja1105_schedule_entry {
-+	u64 winstindex;
-+	u64 winend;
-+	u64 winst;
-+	u64 destports;
-+	u64 setvalid;
-+	u64 txen;
-+	u64 resmedia_en;
-+	u64 resmedia;
-+	u64 vlindex;
-+	u64 delta;
-+};
-+
-+struct sja1105_schedule_params_entry {
-+	u64 subscheind[8];
-+};
-+
- struct sja1105_general_params_entry {
- 	u64 vllupformat;
- 	u64 mirr_ptacu;
-@@ -112,6 +145,17 @@ struct sja1105_general_params_entry {
- 	u64 replay_port;
- };
- 
-+struct sja1105_schedule_entry_points_entry {
-+	u64 subschindx;
-+	u64 delta;
-+	u64 address;
-+};
-+
-+struct sja1105_schedule_entry_points_params_entry {
-+	u64 clksrc;
-+	u64 actsubsch;
-+};
-+
- struct sja1105_vlan_lookup_entry {
- 	u64 ving_mirr;
- 	u64 vegr_mirr;
-@@ -256,6 +300,8 @@ sja1105_static_config_get_length(const struct sja1105_static_config *config);
- 
- typedef enum {
- 	SJA1105_CONFIG_OK = 0,
-+	SJA1105_TTETHERNET_NOT_SUPPORTED,
-+	SJA1105_INCORRECT_TTETHERNET_CONFIGURATION,
- 	SJA1105_MISSING_L2_POLICING_TABLE,
- 	SJA1105_MISSING_L2_FORWARDING_TABLE,
- 	SJA1105_MISSING_L2_FORWARDING_PARAMS_TABLE,
+ 	/* Transmitting management traffic does not rely upon switch tagging,
+ 	 * but instead SPI-installed management routes. Part 2 of this
 -- 
 2.17.1
 
