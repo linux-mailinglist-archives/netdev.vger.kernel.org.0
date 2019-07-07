@@ -2,220 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 155BC6146A
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:04:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F6261464
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbfGGIEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 04:04:14 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:53677 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726330AbfGGIEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:04:13 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 562E810C1;
-        Sun,  7 Jul 2019 04:04:12 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 07 Jul 2019 04:04:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=PV+fn2vemsXVAVxVshNQ7xt7/QHldGk4wNxIbRvMIUo=; b=PWmwT+Ma
-        gmafITnwxJGatEKVxkDru0E9bHJzCzxnVZv0IydtEXj1/NdjHkKzw5+qI6jpgxEU
-        uqzwr0XXW76wG84jvM9blBrlJR0NVX00HWEbNDzOpiqZ40cv7DwPEVNxv6LPh+mo
-        TrRmn4m5+viwKrP5AS7hKsOvCrrqlTofrNP33Qv90GggJdfSV03SrW/5xsczaJRr
-        axkiqyDOnIwRao1iPROqCTTLFXU+tECUvvFzaqAfYMKhUmcgHMGEzz0RcCdVvcS3
-        9OLWgBEAZQAhLykbbERTJZW450Pn40l3NqALGjDbiPl1yh8IIeWrmgWnedbUOGEW
-        X/Rha23FEql9Pg==
-X-ME-Sender: <xms:fKchXQ1EZ79UZmdlIOOGC8I-WGMhzVwpHm1G-ENmQcalBV0KOBK0-g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:fKchXYqtPKf81KNeJcpZGQncW3UpjRMze0itfqRahhNZVNOf_SDebw>
-    <xmx:fKchXaO3lChn6CI1EKeEeosOu37Ob0e5ZnleGIpA3Et_Ky-ScmIdrQ>
-    <xmx:fKchXUNHpMBmag90k-AsU1LtZjlfLKSo8acHRgq0AhpqlYpnLySSDw>
-    <xmx:fKchXZQ3yEY1acvRXOIRoTUwX98jO7yFd-5GMZo2FVqUWxmFTIq_zQ>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C2BC18005B;
-        Sun,  7 Jul 2019 04:04:09 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, andy@greyhouse.net,
-        pablo@netfilter.org, jakub.kicinski@netronome.com,
-        pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH net-next 5/5] selftests: mlxsw: Add a test case for devlink-trap
-Date:   Sun,  7 Jul 2019 11:03:36 +0300
-Message-Id: <20190707080336.3794-6-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190707080336.3794-1-idosch@idosch.org>
-References: <20190707075828.3315-1-idosch@idosch.org>
- <20190707080336.3794-1-idosch@idosch.org>
+        id S1727351AbfGGID4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 04:03:56 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:34364 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbfGGID4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:03:56 -0400
+Received: by mail-wr1-f65.google.com with SMTP id u18so13824221wru.1
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 01:03:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qkZmtsG71ih4mS94NubBDgyYrfekkCkePaPJUCF/CWQ=;
+        b=r9LsjyyRDlSXEVhK3dkvqLIFwPFAZ4zQ4Z6qTlUzcZCg7vurfC5b/BN3Kua9iSrwBZ
+         hHaJMj7KzvOR6unhiOOpNUcVj70JXhMUaZMUA0qz+NL4+G7RF+NxkNa4RyJ/ZCNjNZM2
+         RbJ0UkPi+HkbWnIvc2F1Vm1upw4xcul08aYulCdrMuG+tebJJWez34LEcp32GIckCNu7
+         IW0POSM4/lAOd0LSLa36pCEjbvM64YbANAisAc4i/Qz7ez1FKHztJO5APvimlEYfg9/P
+         yJW3eP/QBcOl0P3/8pzl1lOs4Klj533WLzIhCMy9YLayM90KxWpDTeOmY1165JamYjka
+         xNnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qkZmtsG71ih4mS94NubBDgyYrfekkCkePaPJUCF/CWQ=;
+        b=s6LTiXZY4tixu9qz2n5q9c6IADOU5NwYcKX0hmv1K60Uf85BjaEg33dNg7J/g3uKjQ
+         /PuAQykrXJUmYoab0krd/+OsS5bvWNJX+SnRCnqgDiY3++MGap+Voz/Wlzri/jd7SPDu
+         F/yweSqpdeep1kW8fT7MmZmj6ZQccVRXp8GidFlS3W5x5Nx/X5Lx8Bq7sipBZlfDJMHs
+         u95iuYjC1SZMzSx4qfj9Ry+QKnemiR+bErdbFF/cjqCpujKp45P9FC5Po12mtCXuJktd
+         c7RK2llEeR5gIOiwtcBiAhxdvMyHHkPiNzL4fPcjo8vZyaJCkQDaZbS2QyXsQZhPIjRf
+         zBXQ==
+X-Gm-Message-State: APjAAAXQKfy0ecwhhkzJGa5LzbUfzFgstwxo84ZJyo7mpYQUNHFCFbcW
+        Pt0VwiwCuNhP2lU0sNw0dw==
+X-Google-Smtp-Source: APXvYqze0sSv+Q+dTynZFjoGtCOodov9cAnkW5DMR0wjilTeQ5SO4SFWvzhyqO3ut+Gn8oWI7FQWZw==
+X-Received: by 2002:adf:f904:: with SMTP id b4mr12982627wrr.291.1562486634070;
+        Sun, 07 Jul 2019 01:03:54 -0700 (PDT)
+Received: from avx2 ([46.53.251.222])
+        by smtp.gmail.com with ESMTPSA id y16sm13634202wru.28.2019.07.07.01.03.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 07 Jul 2019 01:03:53 -0700 (PDT)
+Date:   Sun, 7 Jul 2019 11:03:51 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Per.Hallsmark@windriver.com
+Subject: Re: [PATCH 1/2] proc: revalidate directories created with
+ proc_net_mkdir()
+Message-ID: <20190707080351.GA6236@avx2>
+References: <20190706165201.GA10550@avx2>
+ <20190707010317.GR17978@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190707010317.GR17978@ZenIV.linux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Sun, Jul 07, 2019 at 02:03:20AM +0100, Al Viro wrote:
+> On Sat, Jul 06, 2019 at 07:52:02PM +0300, Alexey Dobriyan wrote:
+> > +struct proc_dir_entry *_proc_mkdir(const char *name, umode_t mode,
+> > +				   struct proc_dir_entry **parent, void *data)
+> 
+> 	Two underscores, please...
 
-Test generic devlink-trap functionality over mlxsw. These tests are not
-specific to a single trap, but do not check the devlink-trap common
-infrastructure either.
+Second underscore is more typing, I never understood it.
 
-Currently, the only test case is device deletion (by reloading the
-driver) while packets are being trapped.
+> > +	parent->nlink++;
+> > +	pde = proc_register(parent, pde);
+> > +	if (!pde)
+> > +		parent->nlink++;
+> 
+> 	Really?
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/devlink_trap.sh         | 130 ++++++++++++++++++
- 1 file changed, 130 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap.sh
-
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap.sh
-new file mode 100755
-index 000000000000..8e1d0dc44256
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap.sh
-@@ -0,0 +1,130 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test generic devlink-trap functionality over mlxsw. These tests are not
-+# specific to a single trap, but do not check the devlink-trap common
-+# infrastructure either.
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	dev_del_test
-+"
-+NUM_NETIFS=4
-+source $lib_dir/tc_common.sh
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+h1_create()
-+{
-+	simple_if_init $h1
-+}
-+
-+h1_destroy()
-+{
-+	simple_if_fini $h1
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2
-+}
-+
-+switch_create()
-+{
-+	ip link add dev br0 type bridge vlan_filtering 1 mcast_snooping 0
-+
-+	ip link set dev $swp1 master br0
-+	ip link set dev $swp2 master br0
-+
-+	ip link set dev br0 up
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 up
-+}
-+
-+switch_destroy()
-+{
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+
-+	ip link del dev br0
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	swp1=${NETIFS[p2]}
-+
-+	swp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+
-+	switch_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+dev_del_test()
-+{
-+	local trap_name="source_mac_is_multicast"
-+	local smac=01:02:03:04:05:06
-+	local num_iter=5
-+	local mz_pid
-+	local i
-+
-+	$MZ $h1 -c 0 -p 100 -a $smac -b bcast -t ip -q &
-+	mz_pid=$!
-+
-+	# The purpose of this test is to make sure we correctly dismantle a
-+	# port while packets are trapped from it. This is done by reloading the
-+	# the driver while the 'ingress_smac_mc_drop' trap is triggered.
-+	RET=0
-+
-+	for i in $(seq 1 $num_iter); do
-+		log_info "Iteration $i / $num_iter"
-+
-+		devlink_trap_action_set $trap_name "trap"
-+		devlink_trap_report_set $trap_name "true"
-+		sleep 1
-+
-+		devlink_reload
-+		# Allow netdevices to be re-created following the reload
-+		sleep 20
-+
-+		cleanup
-+		setup_prepare
-+		setup_wait
-+	done
-+
-+	log_test "Device delete"
-+
-+	kill $mz_pid && wait $mz_pid &> /dev/null
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.20.1
-
+And ->nlink is a separate bug.
