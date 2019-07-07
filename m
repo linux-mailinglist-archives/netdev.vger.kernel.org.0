@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD63161455
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 360DC61456
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727312AbfGGIAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 04:00:17 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:55093 "EHLO
+        id S1727319AbfGGIAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 04:00:20 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:48665 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726330AbfGGIAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:00:17 -0400
+        by vger.kernel.org with ESMTP id S1726330AbfGGIAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:00:20 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7E9862770;
-        Sun,  7 Jul 2019 04:00:16 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 360722813;
+        Sun,  7 Jul 2019 04:00:19 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 07 Jul 2019 04:00:16 -0400
+  by compute3.internal (MEProxy); Sun, 07 Jul 2019 04:00:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=IaBjeI75X49HyHxIj7D4X98hIWZkwE5IIOUlGh2++/I=; b=NZ+LpI/a
-        IBmxofN2cmhNMMw/uVtGe94mztAoJgazUQubIxtBU6QP+iuzwtcKlc9Jc4777jxw
-        a+h4HQCy/gWBqY+ZcnaldZ9Os97QHLPnI4tB2Ennf/wXfCdJG7prNw5QmlfVL6i9
-        7b292Hil7t0+27Xi3jyOcOOAKCMVXlYhNt8fPq3ucoBQNu6ZAzSX0ERBFPKWoSmd
-        VHHr3SnMsWgpv9O6+L4f4bkyvN6tY/wffDygFHEtKH/mrZfU1axSRcNwJubD+OKq
-        33EzeF4ysiuBtPWJeYB4uJLzjUdsmETmhbPvsMuT3yAWUT8OYPBIV197/BMplMW1
-        HcriOIJrThN9Hw==
-X-ME-Sender: <xms:kKYhXU0Zl3yC35iq6aHyE2jIz0356mCzObejDgCltusnWH4ybo-3_Q>
+        fm3; bh=9Kmv/5Y04embg7Eoq87bNr1VNAGyCbKfnVa6O1yqKMU=; b=b3Pi5KvI
+        ur41uzU9v4uw7tyX32WzK5R4DZlJ4bvR9h/jCimrnrw0sB5v505vwf4UQRp0QgB6
+        r2/H3OvH/4MP2NI9nalGPytqV5WjsoIvm/U9POSWcmIwDRhJd4c+ykz0u4XwlexC
+        FbdyKpwT19kFOYh5tRSHl1Ec9mWSiBeeuu0qzlsiY0HDY5nhV6MHa0e6RomW8oXK
+        ugBA60nuQLFSA0qJG921ssdASaH2wqJVBwdij6bo4WREDKHc/x3Uo2BncOPcOQHp
+        4cOXoD1wgCUIRE+OYDm47iEXcoKLji89eWqUZDLI8S8xwzXvfQJxz4wo7vvuhYgz
+        Kjl2k9K+HxYl0Q==
+X-ME-Sender: <xms:kqYhXSdeFGXZy8UkkwQh3VWz7W7cc5Fair9Y1gt2pOiXd4q1M67rzQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,13 +35,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:kKYhXcfqjDwC9vSy08FyiQx_L-5fFJI_Rr0ZPc028rvq5wD46xNG-w>
-    <xmx:kKYhXY61RDlYFu3WnI-qh5sTE6NpqcrZ8-cQZg4nIsKFQy_J2LNHcw>
-    <xmx:kKYhXRhkEUJ8vjUc7uLEdkB6Xzg-utl-MD3z5c39n3WPIe7LnBO5Bw>
-    <xmx:kKYhXWfAMVp9WKwQKTfEHO-g1VjJ8B156VZbkm_QJNJfLaN4mN57nw>
+X-ME-Proxy: <xmx:kqYhXciAg9YqLX_GYgEt8wbEuGees0cseOsP1sTM4S7Ap6w-VZe6lw>
+    <xmx:kqYhXe-l3Y3DYlPXmooZrt2F7vpdqJeGRKofcABoMoWA3lZrmWeH4Q>
+    <xmx:kqYhXaaK86LopbxSbCLZs65E3B2UZt6d4R1dVlBAQVr6fR2YTDEb7A>
+    <xmx:k6YhXbSfrQR0CFeoXJvBAlrWSHe5iLeCN1cddXT7hOjZkXlUdoZNCg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E0ADE380084;
-        Sun,  7 Jul 2019 04:00:13 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 794DC380086;
+        Sun,  7 Jul 2019 04:00:16 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
         f.fainelli@gmail.com, vivien.didelot@gmail.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 10/11] mlxsw: Add trap group for layer 2 discards
-Date:   Sun,  7 Jul 2019 10:58:27 +0300
-Message-Id: <20190707075828.3315-11-idosch@idosch.org>
+Subject: [PATCH net-next 11/11] mlxsw: spectrum: Add devlink-trap support
+Date:   Sun,  7 Jul 2019 10:58:28 +0300
+Message-Id: <20190707075828.3315-12-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190707075828.3315-1-idosch@idosch.org>
 References: <20190707075828.3315-1-idosch@idosch.org>
@@ -66,34 +66,483 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Discard trap groups are defined in a different enum so that they could
-all share the same policer ID: MLXSW_REG_HTGT_TRAP_GROUP_MAX + 1.
+Register supported packet traps (layer 2 drops only, currently) and
+associated trap group with devlink during driver initialization. The
+code is placed in a new file (spectrum_trap.c) to which the existing
+packet traps will be moved to once they are exposed via devlink.
+
+The amount of traffic generated by these packet drop traps is capped at
+700Kpps to ensure the CPU is not overwhelmed by incoming packets.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |   2 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  52 ++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   9 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  17 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  13 +
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 270 ++++++++++++++++++
+ 6 files changed, 362 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 55211218ec1a..22138d15079f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -5422,6 +5422,14 @@ enum mlxsw_reg_htgt_trap_group {
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_LBERROR,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_PTP0,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_PTP1,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/Makefile b/drivers/net/ethernet/mellanox/mlxsw/Makefile
+index 171b36bd8a4e..0e86a581d45b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/Makefile
++++ b/drivers/net/ethernet/mellanox/mlxsw/Makefile
+@@ -29,7 +29,7 @@ mlxsw_spectrum-objs		:= spectrum.o spectrum_buffers.o \
+ 				   spectrum_mr_tcam.o spectrum_mr.o \
+ 				   spectrum_qdisc.o spectrum_span.o \
+ 				   spectrum_nve.o spectrum_nve_vxlan.o \
+-				   spectrum_dpipe.o
++				   spectrum_dpipe.o spectrum_trap.o
+ mlxsw_spectrum-$(CONFIG_MLXSW_SPECTRUM_DCB)	+= spectrum_dcb.o
+ mlxsw_spectrum-$(CONFIG_PTP_1588_CLOCK)		+= spectrum_ptp.o
+ obj-$(CONFIG_MLXSW_MINIMAL)	+= mlxsw_minimal.o
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 6ec07ecfb5f6..963a2b4b61b1 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1017,6 +1017,54 @@ static int mlxsw_devlink_flash_update(struct devlink *devlink,
+ 					  component, extack);
+ }
+ 
++static int mlxsw_devlink_trap_init(struct devlink *devlink,
++				   const struct devlink_trap *trap,
++				   void *trap_ctx)
++{
++	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
++	struct mlxsw_driver *mlxsw_driver = mlxsw_core->driver;
 +
-+	__MLXSW_REG_HTGT_TRAP_GROUP_MAX,
-+	MLXSW_REG_HTGT_TRAP_GROUP_MAX = __MLXSW_REG_HTGT_TRAP_GROUP_MAX - 1
-+};
++	if (!mlxsw_driver->trap_init)
++		return -EOPNOTSUPP;
++	return mlxsw_driver->trap_init(mlxsw_core, trap, trap_ctx);
++}
 +
-+enum mlxsw_reg_htgt_discard_trap_group {
-+	MLXSW_REG_HTGT_DISCARD_TRAP_GROUP_BASE = MLXSW_REG_HTGT_TRAP_GROUP_MAX,
-+	MLXSW_REG_HTGT_TRAP_GROUP_SP_L2_DISCARDS,
++static void mlxsw_devlink_trap_fini(struct devlink *devlink,
++				    const struct devlink_trap *trap,
++				    void *trap_ctx)
++{
++	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
++	struct mlxsw_driver *mlxsw_driver = mlxsw_core->driver;
++
++	if (!mlxsw_driver->trap_fini)
++		return;
++	mlxsw_driver->trap_fini(mlxsw_core, trap, trap_ctx);
++}
++
++static int mlxsw_devlink_trap_action_set(struct devlink *devlink,
++					 const struct devlink_trap *trap,
++					 enum devlink_trap_action action)
++{
++	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
++	struct mlxsw_driver *mlxsw_driver = mlxsw_core->driver;
++
++	if (!mlxsw_driver->trap_action_set)
++		return -EOPNOTSUPP;
++	return mlxsw_driver->trap_action_set(mlxsw_core, trap, action);
++}
++
++static int
++mlxsw_devlink_trap_group_init(struct devlink *devlink,
++			      const struct devlink_trap_group *group)
++{
++	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
++	struct mlxsw_driver *mlxsw_driver = mlxsw_core->driver;
++
++	if (!mlxsw_driver->trap_group_init)
++		return -EOPNOTSUPP;
++	return mlxsw_driver->trap_group_init(mlxsw_core, group);
++}
++
+ static const struct devlink_ops mlxsw_devlink_ops = {
+ 	.reload				= mlxsw_devlink_core_bus_device_reload,
+ 	.port_type_set			= mlxsw_devlink_port_type_set,
+@@ -1034,6 +1082,10 @@ static const struct devlink_ops mlxsw_devlink_ops = {
+ 	.sb_occ_tc_port_bind_get	= mlxsw_devlink_sb_occ_tc_port_bind_get,
+ 	.info_get			= mlxsw_devlink_info_get,
+ 	.flash_update			= mlxsw_devlink_flash_update,
++	.trap_init			= mlxsw_devlink_trap_init,
++	.trap_fini			= mlxsw_devlink_trap_fini,
++	.trap_action_set		= mlxsw_devlink_trap_action_set,
++	.trap_group_init		= mlxsw_devlink_trap_group_init,
  };
  
- /* reg_htgt_trap_group
+ static int
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index 19cea16c30bb..b65a17d49e43 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -292,6 +292,15 @@ struct mlxsw_driver {
+ 	int (*flash_update)(struct mlxsw_core *mlxsw_core,
+ 			    const char *file_name, const char *component,
+ 			    struct netlink_ext_ack *extack);
++	int (*trap_init)(struct mlxsw_core *mlxsw_core,
++			 const struct devlink_trap *trap, void *trap_ctx);
++	void (*trap_fini)(struct mlxsw_core *mlxsw_core,
++			  const struct devlink_trap *trap, void *trap_ctx);
++	int (*trap_action_set)(struct mlxsw_core *mlxsw_core,
++			       const struct devlink_trap *trap,
++			       enum devlink_trap_action action);
++	int (*trap_group_init)(struct mlxsw_core *mlxsw_core,
++			       const struct devlink_trap_group *group);
+ 	void (*txhdr_construct)(struct sk_buff *skb,
+ 				const struct mlxsw_tx_info *tx_info);
+ 	int (*resources_register)(struct mlxsw_core *mlxsw_core);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index ce285fbeebd3..c7e1c32b8af2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4635,6 +4635,12 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+ 		goto err_traps_init;
+ 	}
+ 
++	err = mlxsw_sp_devlink_traps_init(mlxsw_sp);
++	if (err) {
++		dev_err(mlxsw_sp->bus_info->dev, "Failed to initialize devlink traps\n");
++		goto err_devlink_traps_init;
++	}
++
+ 	err = mlxsw_sp_buffers_init(mlxsw_sp);
+ 	if (err) {
+ 		dev_err(mlxsw_sp->bus_info->dev, "Failed to initialize buffers\n");
+@@ -4768,6 +4774,8 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+ err_lag_init:
+ 	mlxsw_sp_buffers_fini(mlxsw_sp);
+ err_buffers_init:
++	mlxsw_sp_devlink_traps_fini(mlxsw_sp);
++err_devlink_traps_init:
+ 	mlxsw_sp_traps_fini(mlxsw_sp);
+ err_traps_init:
+ 	mlxsw_sp_fids_fini(mlxsw_sp);
+@@ -4840,6 +4848,7 @@ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
+ 	mlxsw_sp_span_fini(mlxsw_sp);
+ 	mlxsw_sp_lag_fini(mlxsw_sp);
+ 	mlxsw_sp_buffers_fini(mlxsw_sp);
++	mlxsw_sp_devlink_traps_fini(mlxsw_sp);
+ 	mlxsw_sp_traps_fini(mlxsw_sp);
+ 	mlxsw_sp_fids_fini(mlxsw_sp);
+ 	mlxsw_sp_kvdl_fini(mlxsw_sp);
+@@ -5201,6 +5210,10 @@ static struct mlxsw_driver mlxsw_sp1_driver = {
+ 	.sb_occ_port_pool_get		= mlxsw_sp_sb_occ_port_pool_get,
+ 	.sb_occ_tc_port_bind_get	= mlxsw_sp_sb_occ_tc_port_bind_get,
+ 	.flash_update			= mlxsw_sp_flash_update,
++	.trap_init			= mlxsw_sp_trap_init,
++	.trap_fini			= mlxsw_sp_trap_fini,
++	.trap_action_set		= mlxsw_sp_trap_action_set,
++	.trap_group_init		= mlxsw_sp_trap_group_init,
+ 	.txhdr_construct		= mlxsw_sp_txhdr_construct,
+ 	.resources_register		= mlxsw_sp1_resources_register,
+ 	.kvd_sizes_get			= mlxsw_sp_kvd_sizes_get,
+@@ -5231,6 +5244,10 @@ static struct mlxsw_driver mlxsw_sp2_driver = {
+ 	.sb_occ_port_pool_get		= mlxsw_sp_sb_occ_port_pool_get,
+ 	.sb_occ_tc_port_bind_get	= mlxsw_sp_sb_occ_tc_port_bind_get,
+ 	.flash_update			= mlxsw_sp_flash_update,
++	.trap_init			= mlxsw_sp_trap_init,
++	.trap_fini			= mlxsw_sp_trap_fini,
++	.trap_action_set		= mlxsw_sp_trap_action_set,
++	.trap_group_init		= mlxsw_sp_trap_group_init,
+ 	.txhdr_construct		= mlxsw_sp_txhdr_construct,
+ 	.resources_register		= mlxsw_sp2_resources_register,
+ 	.params_register		= mlxsw_sp2_params_register,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index abbb563db440..d0f96fa7cf9d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -950,4 +950,17 @@ void mlxsw_sp_port_nve_fini(struct mlxsw_sp_port *mlxsw_sp_port);
+ int mlxsw_sp_nve_init(struct mlxsw_sp *mlxsw_sp);
+ void mlxsw_sp_nve_fini(struct mlxsw_sp *mlxsw_sp);
+ 
++/* spectrum_trap.c */
++int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp);
++void mlxsw_sp_devlink_traps_fini(struct mlxsw_sp *mlxsw_sp);
++int mlxsw_sp_trap_init(struct mlxsw_core *mlxsw_core,
++		       const struct devlink_trap *trap, void *trap_ctx);
++void mlxsw_sp_trap_fini(struct mlxsw_core *mlxsw_core,
++			const struct devlink_trap *trap, void *trap_ctx);
++int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
++			     const struct devlink_trap *trap,
++			     enum devlink_trap_action action);
++int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
++			     const struct devlink_trap_group *group);
++
+ #endif
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+new file mode 100644
+index 000000000000..bf9f74838577
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -0,0 +1,270 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
++/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
++
++#include <linux/kernel.h>
++#include <net/devlink.h>
++#include <uapi/linux/devlink.h>
++
++#include "core.h"
++#include "reg.h"
++#include "spectrum.h"
++
++#define MLXSW_SP_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
++
++static void mlxsw_sp_rx_drop_listener(struct sk_buff *skb, u8 local_port,
++				      void *priv);
++
++#define MLXSW_SP_TRAP_DROP(_id, _group_id)				      \
++	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				      \
++			     DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
++			     MLXSW_SP_TRAP_METADATA)
++
++#define MLXSW_SP_RXL_DISCARD(_id, _group_id)				      \
++	MLXSW_RXL(mlxsw_sp_rx_drop_listener, DISCARD_##_id, DISCARD, false,   \
++		  SP_##_group_id, DISCARD)
++
++static struct devlink_trap mlxsw_sp_traps_arr[] = {
++	MLXSW_SP_TRAP_DROP(SMAC_MC, L2_DROPS),
++	MLXSW_SP_TRAP_DROP(VLAN_TAG_MISMATCH, L2_DROPS),
++	MLXSW_SP_TRAP_DROP(INGRESS_VLAN_FILTER, L2_DROPS),
++	MLXSW_SP_TRAP_DROP(INGRESS_STP_FILTER, L2_DROPS),
++	MLXSW_SP_TRAP_DROP(EMPTY_TX_LIST, L2_DROPS),
++	MLXSW_SP_TRAP_DROP(PORT_LOOPBACK_FILTER, L2_DROPS),
++};
++
++static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
++	MLXSW_SP_RXL_DISCARD(ING_PACKET_SMAC_MC, L2_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(ING_SWITCH_VTAG_ALLOW, L2_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(ING_SWITCH_VLAN, L2_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(ING_SWITCH_STP, L2_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(LOOKUP_SWITCH_UC, L2_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(LOOKUP_SWITCH_MC_NULL, L2_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(LOOKUP_SWITCH_LB, L2_DISCARDS),
++};
++
++/* Mapping between hardware trap and devlink trap. Multiple hardware traps can
++ * be mapped to the same devlink trap. Order is according to
++ * 'mlxsw_sp_listeners_arr'.
++ */
++static u16 mlxsw_sp_listener_devlink_map[] = {
++	DEVLINK_TRAP_GENERIC_ID_SMAC_MC,
++	DEVLINK_TRAP_GENERIC_ID_VLAN_TAG_MISMATCH,
++	DEVLINK_TRAP_GENERIC_ID_INGRESS_VLAN_FILTER,
++	DEVLINK_TRAP_GENERIC_ID_INGRESS_STP_FILTER,
++	DEVLINK_TRAP_GENERIC_ID_EMPTY_TX_LIST,
++	DEVLINK_TRAP_GENERIC_ID_EMPTY_TX_LIST,
++	DEVLINK_TRAP_GENERIC_ID_PORT_LOOPBACK_FILTER,
++};
++
++static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
++				u8 local_port,
++				struct mlxsw_sp_port *mlxsw_sp_port)
++{
++	struct mlxsw_sp_port_pcpu_stats *pcpu_stats;
++
++	if (unlikely(!mlxsw_sp_port)) {
++		dev_warn_ratelimited(mlxsw_sp->bus_info->dev, "Port %d: skb received for non-existent port\n",
++				     local_port);
++		kfree_skb(skb);
++		return -EINVAL;
++	}
++
++	skb->dev = mlxsw_sp_port->dev;
++
++	pcpu_stats = this_cpu_ptr(mlxsw_sp_port->pcpu_stats);
++	u64_stats_update_begin(&pcpu_stats->syncp);
++	pcpu_stats->rx_packets++;
++	pcpu_stats->rx_bytes += skb->len;
++	u64_stats_update_end(&pcpu_stats->syncp);
++
++	return 0;
++}
++
++static void mlxsw_sp_rx_drop_listener(struct sk_buff *skb, u8 local_port,
++				      void *trap_ctx)
++{
++	struct devlink_port *in_devlink_port;
++	struct mlxsw_sp_port *mlxsw_sp_port;
++	struct mlxsw_sp *mlxsw_sp;
++	struct devlink *devlink;
++
++	mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
++	mlxsw_sp_port = mlxsw_sp->ports[local_port];
++
++	if (mlxsw_sp_rx_listener(mlxsw_sp, skb, local_port, mlxsw_sp_port))
++		return;
++
++	devlink = priv_to_devlink(mlxsw_sp->core);
++	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
++							   local_port);
++	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
++	consume_skb(skb);
++}
++
++int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
++{
++	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
++
++	if (WARN_ON(ARRAY_SIZE(mlxsw_sp_listener_devlink_map) !=
++		    ARRAY_SIZE(mlxsw_sp_listeners_arr)))
++		return -EINVAL;
++
++	return devlink_traps_register(devlink, mlxsw_sp_traps_arr,
++				      ARRAY_SIZE(mlxsw_sp_traps_arr),
++				      mlxsw_sp);
++}
++
++void mlxsw_sp_devlink_traps_fini(struct mlxsw_sp *mlxsw_sp)
++{
++	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
++
++	devlink_traps_unregister(devlink, mlxsw_sp_traps_arr,
++				 ARRAY_SIZE(mlxsw_sp_traps_arr));
++}
++
++int mlxsw_sp_trap_init(struct mlxsw_core *mlxsw_core,
++		       const struct devlink_trap *trap, void *trap_ctx)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
++		struct mlxsw_listener *listener;
++		int err;
++
++		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
++			continue;
++		listener = &mlxsw_sp_listeners_arr[i];
++
++		err = mlxsw_core_trap_register(mlxsw_core, listener, trap_ctx);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++void mlxsw_sp_trap_fini(struct mlxsw_core *mlxsw_core,
++			const struct devlink_trap *trap, void *trap_ctx)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
++		struct mlxsw_listener *listener;
++
++		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
++			continue;
++		listener = &mlxsw_sp_listeners_arr[i];
++
++		mlxsw_core_trap_unregister(mlxsw_core, listener, trap_ctx);
++	}
++}
++
++int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
++			     const struct devlink_trap *trap,
++			     enum devlink_trap_action action)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
++		enum mlxsw_reg_hpkt_action hw_action;
++		struct mlxsw_listener *listener;
++		int err;
++
++		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
++			continue;
++		listener = &mlxsw_sp_listeners_arr[i];
++
++		switch (action) {
++		case DEVLINK_TRAP_ACTION_DROP:
++			hw_action = MLXSW_REG_HPKT_ACTION_DISCARD;
++			break;
++		case DEVLINK_TRAP_ACTION_TRAP:
++			/* Drop traps need to use TRAP_EXCEPTION, so that an
++			 * error is counted.
++			 */
++			hw_action = MLXSW_REG_HPKT_ACTION_TRAP_EXCEPTION_TO_CPU;
++			if (trap->type != DEVLINK_TRAP_TYPE_DROP)
++				hw_action = MLXSW_REG_HPKT_ACTION_TRAP_TO_CPU;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		err = mlxsw_core_trap_action_set(mlxsw_core, listener,
++						 hw_action);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++#define MLXSW_SP_DISCARD_POLICER_ID	(MLXSW_REG_HTGT_TRAP_GROUP_MAX + 1)
++
++static int
++mlxsw_sp_trap_group_policer_init(struct mlxsw_sp *mlxsw_sp,
++				 const struct devlink_trap_group *group)
++{
++	enum mlxsw_reg_qpcr_ir_units ir_units;
++	char qpcr_pl[MLXSW_REG_QPCR_LEN];
++	u16 policer_id;
++	u8 burst_size;
++	bool is_bytes;
++	u32 rate;
++
++	switch (group->id) {
++	case DEVLINK_TRAP_GROUP_GENERIC_ID_L2_DROPS:
++		policer_id = MLXSW_SP_DISCARD_POLICER_ID;
++		ir_units = MLXSW_REG_QPCR_IR_UNITS_M;
++		is_bytes = false;
++		rate = 700 * 1024; /* 700Kpps */
++		burst_size = 7;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	mlxsw_reg_qpcr_pack(qpcr_pl, policer_id, ir_units, is_bytes, rate,
++			    burst_size);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qpcr), qpcr_pl);
++}
++
++static int
++__mlxsw_sp_trap_group_init(struct mlxsw_sp *mlxsw_sp,
++			   const struct devlink_trap_group *group)
++{
++	char htgt_pl[MLXSW_REG_HTGT_LEN];
++	u8 priority, tc, group_id;
++	u16 policer_id;
++
++	switch (group->id) {
++	case DEVLINK_TRAP_GROUP_GENERIC_ID_L2_DROPS:
++		group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_L2_DISCARDS;
++		policer_id = MLXSW_SP_DISCARD_POLICER_ID;
++		priority = 0;
++		tc = 1;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	mlxsw_reg_htgt_pack(htgt_pl, group_id, policer_id, priority, tc);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(htgt), htgt_pl);
++}
++
++int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
++			     const struct devlink_trap_group *group)
++{
++	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++	int err;
++
++	err = mlxsw_sp_trap_group_policer_init(mlxsw_sp, group);
++	if (err)
++		return err;
++
++	err = __mlxsw_sp_trap_group_init(mlxsw_sp, group);
++	if (err)
++		return err;
++
++	return 0;
++}
 -- 
 2.20.1
 
