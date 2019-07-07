@@ -2,244 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B76C261496
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 11:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4BB8614AC
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 12:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727262AbfGGJv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 05:51:59 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:38934 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfGGJv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 05:51:59 -0400
-Received: by mail-qk1-f195.google.com with SMTP id i125so11047214qkd.6
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 02:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8GvucgS17aftUma/RBU9uvxDl/j9cGEIytSN2G79hxk=;
-        b=ljqAzHYm0MgXMTk0xGa4VtzYV1OuPXELu2VsHKbgrwZ+Qb+P7Zu1lGRnmOJNSyP5gZ
-         no5yPDJpZmZ75vLlCJEgpT/cUGJgI0b9Zgv9U5drCDSMzpuyLPkKKeYtpZ7T2i5Q2k42
-         s/tSo3REkY/KFs7A9TZRKiqcDkQoF1NYpG8V3IrhKeZ49lfkD91zKq8Mbnzt47jgvVKF
-         EfLnWqd721H5RuOkdUz0j5KgcmbLCefEjnwVy6OhNxZ+enyk/wEjHEZfI0QCsTPgduFZ
-         7p/ujssWqpPc91y1zyESY9M2MevLB3qMy+/kZw3U+WNWpvmRnlclsfT8hsyFj/Nk4Lq4
-         nTbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8GvucgS17aftUma/RBU9uvxDl/j9cGEIytSN2G79hxk=;
-        b=CrRpdladydgWgqaCT9a/azDn2BAKzluwqI64FggMqTP0/Gr9JPOrtDxR+ikIurf8PL
-         s+Lr8fdePSFt5NwmAEmZWV2c6DCsH9G9nxOW2ChjXzv9RTdlNMbOsSX5d15TKyXdmOv/
-         9AkVdXH5/Iu/0F4AO0gxA4uvGwh4+N28g4DTrKTAwWUmT+FDkOFGtoS7ZHwdvaSdr/+D
-         XSyEqMfCLXpNDfHSU0+ETyJiqtjfp6EuhgJQacw+nKUGpigWPxBENKwgmv44qmPI7YoL
-         QVrmKKQttZSlVqB7/j7HBlLZG77+f5fss3tlEQxQ5XLFtkT1EKreN4ui3JX2OXdsbK0+
-         3KmQ==
-X-Gm-Message-State: APjAAAXtW36z4PnhSkhiQ0y9cw6M9DhCgkYPkGPJJinqcPbQPdzH4qFu
-        8AtcdqJqgwvYWPIO5vxpl0pL6zcbL3g=
-X-Google-Smtp-Source: APXvYqyFj7v/wNrPvXf+shctwCalK0gBKTSfv8aeoZHXxUqRutov7Km3DRynR+APrlH5M/UumzlQiA==
-X-Received: by 2002:a05:620a:15d3:: with SMTP id o19mr9832162qkm.213.1562493117817;
-        Sun, 07 Jul 2019 02:51:57 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:315:55eb:ba49:fa6:b843])
-        by smtp.gmail.com with ESMTPSA id p59sm297866qtd.75.2019.07.07.02.51.56
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 07 Jul 2019 02:51:57 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linyunsheng@huawei.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next v2] skbuff: increase verbosity when dumping skb data
-Date:   Sun,  7 Jul 2019 05:51:55 -0400
-Message-Id: <20190707095155.58578-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+        id S1727371AbfGGK2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 06:28:50 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46999 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727125AbfGGK2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 06:28:49 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 627762134B;
+        Sun,  7 Jul 2019 06:28:48 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 07 Jul 2019 06:28:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=aaMt57
+        yZYfyil/RreBDqceJPqRXy35bdrymaxqJSnG0=; b=JJ1AE9s7DWlohY0kD+lIAU
+        N0ROSJOzMtfx+PJcACFCxvV30Rvz9uawSSTRdxVRED1GHj0MLU+GK5tRyuaZnMOV
+        uRapzg48IzwAzjY3RzMspym7FI6qzUaU8WGjWsBFAvIHK6LxiU3zfTu//ti0p/ON
+        f0u0o6OXK1WvKkHpaMbkcTrWBQgC/H8CC8zy6Xeo/5UWfBT/TKKPoiqqLaJ2venY
+        7xteTbB1/lRDu6MtRvcGhZtfo6v+cqqLhUF7sinU63JCpboDlqIHInHSWft29vcQ
+        3PmKjV1xxc4hoQNuuOwjJU7ZxHVM+ccVekZOQpRuUt0xD6/qfiRBInvRn27WdhkA
+        ==
+X-ME-Sender: <xms:XskhXU7pRXDy-25UglLzLCMed0cpNMd7_KUDB5rA6KCrsuvsJ54m8Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeekgdefvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:X8khXUWH2fIz3CKSbrvH-_qjhSsS-66wHu7MWsa8_6Gh5E9c-iNFYQ>
+    <xmx:X8khXWFGko-gGKALZLspX-yVswH7Q53QWWlfu9bhpjUIem4fkdoGMA>
+    <xmx:X8khXUczZJYmnnSxatnzt2IQx8cPkNatk-rizb6IgzMBMGR6vBLoAA>
+    <xmx:YMkhXUi65k6X11Nqw9yjWz874i2Myh1XuEQfZJ8FqHBa5jLy2cCLhw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 83D6B8005A;
+        Sun,  7 Jul 2019 06:28:46 -0400 (EDT)
+Date:   Sun, 7 Jul 2019 13:28:44 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+Message-ID: <20190707102844.GA8487@splinter>
+References: <20190620235639.24102-1-vivien.didelot@gmail.com>
+ <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+ <20190621172952.GB9284@t480s.localdomain>
+ <20190623070949.GB13466@splinter>
+ <20190705120149.GB17996@t480s.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190705120149.GB17996@t480s.localdomain>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Fri, Jul 05, 2019 at 12:01:49PM -0400, Vivien Didelot wrote:
+> Hi Ido,
+> 
+> On Sun, 23 Jun 2019 07:09:52 +0000, Ido Schimmel <idosch@mellanox.com> wrote:
+> > > Russell, Ido, Florian, so far I understand that a multicast-unaware
+> > > bridge must flood unknown traffic everywhere (CPU included);
+> > > and a multicast-aware bridge must only flood its ports if their
+> > > mcast_flood is on, and known traffic targeting the bridge must be
+> > > offloaded accordingly. Do you guys agree with this?
+> > 
+> > When multicast snooping is enabled unregistered multicast traffic should
+> > only be flooded to mrouter ports.
+> 
+> I've figured out that this is what I need to prevent the flooding of undesired
+> multicast traffic to the CPU port of the switch. The bridge itself has a
+> multicast_router attribute which can be disabled, that is when I should drop
+> unknown multicast traffic.
+> 
+> However with SWITCHDEV_ATTR_ID_BRIDGE_MROUTER implemented, this
+> attribute is always called with .mrouter=0, regardless the value of
+> /sys/class/net/br0/bridge/multicast_router. Do I miss something here?
 
-skb_warn_bad_offload and netdev_rx_csum_fault trigger on hard to debug
-issues. Dump more state and the header.
+Hi Vivien,
 
-Optionally dump the entire packet and linear segment. This is required
-to debug checksum bugs that may include bytes past skb_tail_pointer().
+I just checked this and it seems to work as expected:
 
-Both call sites call this function inside a net_ratelimit() block.
-Limit full packet log further to a hard limit of can_dump_full (5).
+# echo 2 > /sys/class/net/br0/bridge/multicast_router
 
-Based on an earlier patch by Cong Wang, see link below.
+We get a notification with mrouter=1 to mlxsw
 
-Changes v1 -> v2
-  - dump frag_list only on full_pkt
+# echo 0 > /sys/class/net/br0/bridge/multicast_router
 
-Link: https://patchwork.ozlabs.org/patch/1000841/
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- include/linux/skbuff.h |  1 +
- net/core/dev.c         | 16 ++-----
- net/core/skbuff.c      | 99 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 104 insertions(+), 12 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 7ece49d5f8ef7..1fdfdbb34e8e8 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1024,6 +1024,7 @@ static inline bool skb_unref(struct sk_buff *skb)
- void skb_release_head_state(struct sk_buff *skb);
- void kfree_skb(struct sk_buff *skb);
- void kfree_skb_list(struct sk_buff *segs);
-+void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
- void skb_tx_error(struct sk_buff *skb);
- void consume_skb(struct sk_buff *skb);
- void __consume_stateless_skb(struct sk_buff *skb);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 58529318b3a94..fc676b2610e3c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2900,12 +2900,10 @@ static void skb_warn_bad_offload(const struct sk_buff *skb)
- 		else
- 			name = netdev_name(dev);
- 	}
--	WARN(1, "%s: caps=(%pNF, %pNF) len=%d data_len=%d gso_size=%d "
--	     "gso_type=%d ip_summed=%d\n",
-+	skb_dump(KERN_WARNING, skb, false);
-+	WARN(1, "%s: caps=(%pNF, %pNF)\n",
- 	     name, dev ? &dev->features : &null_features,
--	     skb->sk ? &skb->sk->sk_route_caps : &null_features,
--	     skb->len, skb->data_len, skb_shinfo(skb)->gso_size,
--	     skb_shinfo(skb)->gso_type, skb->ip_summed);
-+	     skb->sk ? &skb->sk->sk_route_caps : &null_features);
- }
- 
- /*
-@@ -3124,13 +3122,7 @@ void netdev_rx_csum_fault(struct net_device *dev, struct sk_buff *skb)
- {
- 	if (net_ratelimit()) {
- 		pr_err("%s: hw csum failure\n", dev ? dev->name : "<unknown>");
--		if (dev)
--			pr_err("dev features: %pNF\n", &dev->features);
--		pr_err("skb len=%u data_len=%u pkt_type=%u gso_size=%u gso_type=%u nr_frags=%u ip_summed=%u csum=%x csum_complete_sw=%d csum_valid=%d csum_level=%u\n",
--		       skb->len, skb->data_len, skb->pkt_type,
--		       skb_shinfo(skb)->gso_size, skb_shinfo(skb)->gso_type,
--		       skb_shinfo(skb)->nr_frags, skb->ip_summed, skb->csum,
--		       skb->csum_complete_sw, skb->csum_valid, skb->csum_level);
-+		skb_dump(KERN_ERR, skb, true);
- 		dump_stack();
- 	}
- }
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 5323441a12ccf..cdb0ccdaac0bf 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -707,6 +707,105 @@ void kfree_skb_list(struct sk_buff *segs)
- }
- EXPORT_SYMBOL(kfree_skb_list);
- 
-+/* Dump skb information and contents.
-+ *
-+ * Must only be called from net_ratelimit()-ed paths.
-+ *
-+ * Dumps up to can_dump_full whole packets if full_pkt, headers otherwise.
-+ */
-+void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
-+{
-+	static atomic_t can_dump_full = ATOMIC_INIT(5);
-+	struct skb_shared_info *sh = skb_shinfo(skb);
-+	struct net_device *dev = skb->dev;
-+	struct sock *sk = skb->sk;
-+	struct sk_buff *list_skb;
-+	bool has_mac, has_trans;
-+	int headroom, tailroom;
-+	int i, len, seg_len;
-+
-+	if (full_pkt)
-+		full_pkt = atomic_dec_if_positive(&can_dump_full) >= 0;
-+
-+	if (full_pkt)
-+		len = skb->len;
-+	else
-+		len = min_t(int, skb->len, MAX_HEADER + 128);
-+
-+	headroom = skb_headroom(skb);
-+	tailroom = skb_tailroom(skb);
-+
-+	has_mac = skb_mac_header_was_set(skb);
-+	has_trans = skb_transport_header_was_set(skb);
-+
-+	printk("%sskb len=%u headroom=%u headlen=%u tailroom=%u\n"
-+	       "mac=(%d,%d) net=(%d,%d) trans=%d\n"
-+	       "shinfo(txflags=%u nr_frags=%u gso(size=%hu type=%u segs=%hu))\n"
-+	       "csum(0x%x ip_summed=%u complete_sw=%u valid=%u level=%u)\n"
-+	       "hash(0x%x sw=%u l4=%u) proto=0x%04x pkttype=%u iif=%d\n",
-+	       level, skb->len, headroom, skb_headlen(skb), tailroom,
-+	       has_mac ? skb->mac_header : -1,
-+	       has_mac ? skb_mac_header_len(skb) : -1,
-+	       skb->network_header,
-+	       has_trans ? skb_network_header_len(skb) : -1,
-+	       has_trans ? skb->transport_header : -1,
-+	       sh->tx_flags, sh->nr_frags,
-+	       sh->gso_size, sh->gso_type, sh->gso_segs,
-+	       skb->csum, skb->ip_summed, skb->csum_complete_sw,
-+	       skb->csum_valid, skb->csum_level,
-+	       skb->hash, skb->sw_hash, skb->l4_hash,
-+	       ntohs(skb->protocol), skb->pkt_type, skb->skb_iif);
-+
-+	if (dev)
-+		printk("%sdev name=%s feat=0x%pNF\n",
-+		       level, dev->name, &dev->features);
-+	if (sk)
-+		printk("%ssk family=%hu type=%hu proto=%hu\n",
-+		       level, sk->sk_family, sk->sk_type, sk->sk_protocol);
-+
-+	if (full_pkt && headroom)
-+		print_hex_dump(level, "skb headroom: ", DUMP_PREFIX_OFFSET,
-+			       16, 1, skb->head, headroom, false);
-+
-+	seg_len = min_t(int, skb_headlen(skb), len);
-+	if (seg_len)
-+		print_hex_dump(level, "skb linear:   ", DUMP_PREFIX_OFFSET,
-+			       16, 1, skb->data, seg_len, false);
-+	len -= seg_len;
-+
-+	if (full_pkt && tailroom)
-+		print_hex_dump(level, "skb tailroom: ", DUMP_PREFIX_OFFSET,
-+			       16, 1, skb_tail_pointer(skb), tailroom, false);
-+
-+	for (i = 0; len && i < skb_shinfo(skb)->nr_frags; i++) {
-+		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-+		u32 p_off, p_len, copied;
-+		struct page *p;
-+		u8 *vaddr;
-+
-+		skb_frag_foreach_page(frag, frag->page_offset,
-+				      skb_frag_size(frag), p, p_off, p_len,
-+				      copied) {
-+			seg_len = min_t(int, p_len, len);
-+			vaddr = kmap_atomic(p);
-+			print_hex_dump(level, "skb frag:     ",
-+				       DUMP_PREFIX_OFFSET,
-+				       16, 1, vaddr + p_off, seg_len, false);
-+			kunmap_atomic(vaddr);
-+			len -= seg_len;
-+			if (!len)
-+				break;
-+		}
-+	}
-+
-+	if (full_pkt && skb_has_frag_list(skb)) {
-+		printk("skb fraglist:\n");
-+		skb_walk_frags(skb, list_skb)
-+			skb_dump(level, list_skb, true);
-+	}
-+}
-+EXPORT_SYMBOL(skb_dump);
-+
- /**
-  *	skb_tx_error - report an sk_buff xmit error
-  *	@skb: buffer that triggered an error
--- 
-2.22.0.410.gd8fdbe21b5-goog
-
+We get a notification with mrouter=0 to mlxsw
