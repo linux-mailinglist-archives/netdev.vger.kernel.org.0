@@ -2,69 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFEC661C9B
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 11:57:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B91617CE
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 00:32:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729985AbfGHJ5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 05:57:11 -0400
-Received: from [197.254.217.239] ([197.254.217.239]:47546 "EHLO mail.cert.sd"
-        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729185AbfGHJ5L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 05:57:11 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.cert.sd (Postfix) with ESMTP id AC9E1468183;
-        Mon,  8 Jul 2019 01:05:21 +0200 (CAT)
-Received: from mail.cert.sd ([127.0.0.1])
-        by localhost (mail.cert.sd [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 7sn2zf8Ax6fI; Mon,  8 Jul 2019 01:05:21 +0200 (CAT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.cert.sd (Postfix) with ESMTP id F212E490D43;
-        Mon,  8 Jul 2019 00:12:38 +0200 (CAT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.cert.sd F212E490D43
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cert.sd;
-        s=3B54D788-828F-11E8-945F-63B06BDA8568; t=1562537560;
-        bh=i6jGklZsYhvyS6O+r4vHl3fsu2UV4hnEJS7rdZ4svBg=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=rIcUTcMVYzKsNf/onXeg+P7CCHayj/2gx6RaskB/RsHinMsj9p4ynj9E1ual+LE6R
-         S/27xBE7kIUq4IG1iJdVUF5DTwqxt8gibJ/GJtKE4VBitF3XdZBOxxsMSDDdLDk5W+
-         Eyr2YQQOgV8DRj00VtLw/NsWOSSUjnvCcJHxWhNTXQU+6qpTrYfPPvCUrcueD+hj6T
-         VGRJadtjazOsanG/5FKyadXH4FYkM5itPXrRYkQSPH9xsPbv5cg7ZqozRaoru60zQV
-         CGnR0PAE8u6pF3ywb5TdTos3llYwR9pl3te8f4/x4bUjKD7ufSGebZ1PpUn1hBQRhY
-         +2GhRGlTzItyA==
-X-Virus-Scanned: amavisd-new at mail.cert.sd
-Received: from mail.cert.sd ([127.0.0.1])
-        by localhost (mail.cert.sd [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id mPfA3NbmGTlS; Mon,  8 Jul 2019 00:12:38 +0200 (CAT)
-Received: from [192.168.0.103] (unknown [105.112.51.76])
-        by mail.cert.sd (Postfix) with ESMTPSA id 29AC85EFC54;
-        Sun,  7 Jul 2019 21:32:51 +0200 (CAT)
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: CASH GRANT / SPENDEN !!!
-To:     Recipients <moamar@cert.sd>
-From:   "LISA ROBINSON" <moamar@cert.sd>
-Date:   Sun, 07 Jul 2019 20:23:24 +0100
-Reply-To: charitylisajohnrobinson900@usa.com
-X-Antivirus: Avast (VPS 190707-4, 07/07/2019), Outbound message
-X-Antivirus-Status: Clean
-Message-Id: <20190707193252.29AC85EFC54@mail.cert.sd>
+        id S1727843AbfGGWcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 18:32:31 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:46133 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727820AbfGGWcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 18:32:31 -0400
+Received: by mail-qt1-f193.google.com with SMTP id h21so14055985qtn.13
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 15:32:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+V6wlvQVGFrqENZccXmvvMg7fnrq9npJuDnFhROskBQ=;
+        b=Db2JghIgVwGQKfE70hTws0FZnMwhrsBuc9PztShElSaDQgScHLOk+TK5d7Mo6pMNe8
+         Q1HQTohoJI25jsVtaXBn8ZewDfVb/kW+71qklPobuc9SNeFCJylmgvqaXRt92VO3aOrh
+         xTTOeZH9S9obPYEp+4j4bbuVSkc55ehXxuv8iofxqsDDK3VSCDVTvPI7aP25d6kzXTr0
+         QaTJdNaKDEaCQx5y2HBpRmkf22B5/4QA6MAkoPTd3UAx0SYgHb3S/X5GsNJTWieCveV+
+         604tafrSz5jtggTZQuUKh3hy7y+Z1pFOXE+npLYalfybEZ0eHpJNquA3x6c5wJZrwiOQ
+         6VAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+V6wlvQVGFrqENZccXmvvMg7fnrq9npJuDnFhROskBQ=;
+        b=AKPLGDS3Igsh4BpH835HODHEF6cW5HwmRvvwbhMWvMM2C+9bxFcRvIYXiWm3iLlc2k
+         yfBJX19I5ksXi8o1KizxY/a4bCmQraPEDvlGrWncwxJlLL0OsvUid6W/Z6FE9WdGxgC8
+         l8I91oGzwIqVrRlbdqVg8EylCH+Qygs3rdxFJEMN2t+2zCrK32PJHGLU0KxiHDFqvKst
+         1nMF+IeVIaSSMKDv++3YVkfULX7OarV26bkrjjvma16v9GCze6+5sVnQ01KEl8kPnREE
+         AHR/xY4mDiMiqFxB3TDkQSm6IoPa+ejCF5GP2VJPh0bwUMMuiTyQ484dhqZfMMZZdR1s
+         15XA==
+X-Gm-Message-State: APjAAAUvdBACqA6O/PgAd6cxn7G9HgUkFqJndHM5zU5klHzncXIqtTqM
+        MZ8Ch3Iptw0CRt+oAuBs2FdsYJ7W
+X-Google-Smtp-Source: APXvYqyYDArsgZ9+HbmmkNNKyW0i/ZqgADY9RDRuzjKE/xn1Sazs3LOL8k3mU5u/CjTxLiixZAMZ0A==
+X-Received: by 2002:ac8:4442:: with SMTP id m2mr11954226qtn.107.1562538750292;
+        Sun, 07 Jul 2019 15:32:30 -0700 (PDT)
+Received: from localhost.localdomain (c-75-69-96-209.hsd1.nh.comcast.net. [75.69.96.209])
+        by smtp.gmail.com with ESMTPSA id z19sm6011048qtu.43.2019.07.07.15.32.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 07 Jul 2019 15:32:29 -0700 (PDT)
+From:   "kwangdo.yi" <kwangdo.yi@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "kwangdo.yi" <kwangdo.yi@gmail.com>
+Subject: [PATCH] phy: added a PHY_BUSY state into phy_state_machine
+Date:   Sun,  7 Jul 2019 18:32:12 -0400
+Message-Id: <1562538732-20700-1-git-send-email-kwangdo.yi@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sehr geehrter Empf=E4nger, Sie wurden ausgew=E4hlt, um von Frau Lisa Robins=
-on (1.200.000,00 USD) als wohlt=E4tige Spende / Stipendium zu erhalten. Dah=
-er m=FCssen Sie sie f=FCr weitere Informationen per E-Mail kontaktieren.
+When mdio driver polling the phy state in the phy_state_machine,
+sometimes it results in -ETIMEDOUT and link is down. But the phy
+is still alive and just didn't meet the polling deadline. 
+Closing the phy link in this case seems too radical. Failing to 
+meet the deadline happens very rarely. When stress test runs for 
+tens of hours with multiple target boards (Xilinx Zynq7000 with
+marvell 88E1512 PHY, Xilinx custom emac IP), it happens. This 
+patch gives another chance to the phy_state_machine when polling 
+timeout happens. Only two consecutive failing the deadline is 
+treated as the real phy halt and close the connection.
 
 
-Dear Beneficiary, You have been selected to receive ($1,200,000.00 USD) as =
-charity donation/grant from Mrs. Lisa Robinson.Therefore, you are required =
-to contact her through email for more details. 
-
+Signed-off-by: kwangdo.yi <kwangdo.yi@gmail.com>
 ---
-This email has been checked for viruses by Avast antivirus software.
-https://www.avast.com/antivirus
+ drivers/net/phy/phy.c | 6 ++++++
+ include/linux/phy.h   | 1 +
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index e888542..9e8138b 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -919,7 +919,13 @@ void phy_state_machine(struct work_struct *work)
+ 		break;
+ 	case PHY_NOLINK:
+ 	case PHY_RUNNING:
++	case PHY_BUSY:
+ 		err = phy_check_link_status(phydev);
++		if (err == -ETIMEDOUT && old_state == PHY_RUNNING) {
++			phy->state = PHY_BUSY;
++			err = 0;
++
++		}
+ 		break;
+ 	case PHY_FORCING:
+ 		err = genphy_update_link(phydev);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 6424586..4a49401 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -313,6 +313,7 @@ enum phy_state {
+ 	PHY_RUNNING,
+ 	PHY_NOLINK,
+ 	PHY_FORCING,
++	PHY_BUSY,
+ };
+ 
+ /**
+-- 
+2.7.4
 
