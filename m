@@ -2,76 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6BB6175A
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 21:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3442A6175B
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 21:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbfGGTry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 15:47:54 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53719 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727438AbfGGTrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 15:47:53 -0400
-Received: by mail-wm1-f67.google.com with SMTP id x15so13693848wmj.3
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 12:47:52 -0700 (PDT)
+        id S1727459AbfGGTuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 15:50:18 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38794 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727438AbfGGTuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 15:50:18 -0400
+Received: by mail-wr1-f66.google.com with SMTP id g17so4624795wrr.5
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 12:50:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=J8acB5kVvmCD07ngZ88bXchqjSiy3kNncDOBOzae0Bc=;
-        b=Df4ccF2KVxWYV9ewpNLWfP4+I25X64YElxKCY3quI9h9c41l27Y8aidGY0PvHweBhz
-         m/qB244rtizqUsa8pzwbgOGcWrHEiDA9kyIj/GZv/+1EMpd2dc9OMBzj1KnVQVSWORZD
-         7FRFyL/3I7uPwjF6vEP4wPkthAlseFG/l1CtzfNmzgb4r/Rt7jZZ7tgaqch8WgRCwgsX
-         +G6jaNfZCqIDG/37v035tY6VkF8ZEHB0cGHOpUvNQEChdl0Gq+DKPZmclaDScADyZo97
-         T3uayKPDr7llLTzhz9lXeyeoMwD+qrJehhWqBQxoYoAQfdMjV5VGQDJU9FnchQji5aat
-         D3aw==
+        bh=sTKiWxtvihHAGqMWK1L8Ly16evb/n0hip/8dJkZkZR0=;
+        b=X1IRsLF6HS4HkcseMO7zMXwiFMuPzcotNRIGySrX7TunNsgY3XUX3rn+F+Cqux54TF
+         Ba/AXMc8GNx8wEs5ucSM8WNgDVqtnGrbWJhmRRuNLPwsBxd1AviiQffQvdtBq8fF1b+g
+         mWrM+qkkI0VoVa56c472thEbrt/FU+nezw3cRH9qXEE/t5Zt2+3CcTS0/Sor+H6ZvM2P
+         /kue8LwJM2azyGG57DUjeey2vMf79u4w0AQrVJa+b/o3e2djJnBFHCk0cVgwKbZu4AOX
+         DdHFEnYZRhWFNr9ovIzhTGZ4JUOAREWG8kgQBlDxs9w/p856ho2C/6SeQ6lLUPK7ITZk
+         y6CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=J8acB5kVvmCD07ngZ88bXchqjSiy3kNncDOBOzae0Bc=;
-        b=nzMMKBXwU5bRo3PrqCkS4dovhyx4wlzBksSu0CfsJxhC+hva+my2ta6c9XpKIS/AXE
-         u2W8DPYoiZfvzQM6i8mRS9TF6D4JL8M5p7/s0fZoUWrhWflAyeKrix/WJqfh05u0w073
-         FybpiWIjQROCToNTaqqQFfVU4EpjVkan3CETCE/i/p+CWwEU3uWNomBb6LZq189Zu3XP
-         /KKmEtfXAEDFRF83kmVPzHc+JzTz8zF7zun9D8rW+40T8A/CncyUIDNyFEFzzfLmE/EM
-         oGK2F0O7n3X70I41ivcawIVtqwlyMV+tlsgwWPmka/18sbHX7iA7Bjl2Vaoi2th7694K
-         LWyA==
-X-Gm-Message-State: APjAAAXDDFCMt0Irq42Nc3nfkgVdnAL6JomNHU8fdHsDQqW86CY2oL3G
-        tz7dHRv236Rpy0Y1Wd3enodwhQ==
-X-Google-Smtp-Source: APXvYqxI8MuxAIiqJ5+pgmE/U1q+quR+oheoU007lGatSAgUHx95je2YP6lZBjgfqLdH8LopbPAYsA==
-X-Received: by 2002:a1c:c2d5:: with SMTP id s204mr13342470wmf.174.1562528871639;
-        Sun, 07 Jul 2019 12:47:51 -0700 (PDT)
+        bh=sTKiWxtvihHAGqMWK1L8Ly16evb/n0hip/8dJkZkZR0=;
+        b=ZHyDW3gW9cicwMO6ZslrOX0WUE6cN7RFTE2bTDkfh+n5TJav6wJh/biDbUAsmxHltD
+         v/htSPyfb/BJTCecb3l5Z/PzBQyBgLw/L+jgZ4l4ujDObjxO2CNv8HtY9IwEXHVCxnSb
+         exk9ANg/slRJitpNoZtfIsdNSwGwSnks2++3tNi8YprDdfYJSbOykjgXFHo4oqItRYai
+         qZAJ+sqx7c2/4DfEBtFeBdAFpABiMBvUNHjrjRakG0+Ab2za71zZlRjk9vT4bspggYyC
+         y90bq1A07QktRW7ouMEyg15Id3XW7b66UI0aX07QjywhK05p2tpnmsvlOGzQnVEKsuKA
+         jgCA==
+X-Gm-Message-State: APjAAAWLdSO8D2bVOY4U28yxy7BxNcpKXCaUln8hh52mNv8ErJTTgcnz
+        /5XfmaAKLoAK9uFMiEEH+8R8kg==
+X-Google-Smtp-Source: APXvYqz3/8MEGUwofv1K+k3BKc/S4hnX9TiDj4yoxRfjfQhXU6dU9FWORUYLlkmaaSP69ukhS03SBg==
+X-Received: by 2002:a5d:6783:: with SMTP id v3mr14498552wru.318.1562529016311;
+        Sun, 07 Jul 2019 12:50:16 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id u186sm13180749wmu.26.2019.07.07.12.47.51
+        by smtp.gmail.com with ESMTPSA id 72sm14138580wrk.22.2019.07.07.12.50.15
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 07 Jul 2019 12:47:51 -0700 (PDT)
-Date:   Sun, 7 Jul 2019 21:47:50 +0200
+        Sun, 07 Jul 2019 12:50:15 -0700 (PDT)
+Date:   Sun, 7 Jul 2019 21:50:15 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Parav Pandit <parav@mellanox.com>
 Cc:     netdev@vger.kernel.org, jiri@mellanox.com, saeedm@mellanox.com,
         jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v4 1/4] devlink: Refactor physical port
- attributes
-Message-ID: <20190707194750.GA2306@nanopsycho.orion>
+Subject: Re: [PATCH net-next v4 2/4] devlink: Introduce PCI PF port flavour
+ and port attribute
+Message-ID: <20190707195015.GB2306@nanopsycho.orion>
 References: <20190701122734.18770-1-parav@mellanox.com>
  <20190706182350.11929-1-parav@mellanox.com>
- <20190706182350.11929-2-parav@mellanox.com>
+ <20190706182350.11929-3-parav@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190706182350.11929-2-parav@mellanox.com>
+In-Reply-To: <20190706182350.11929-3-parav@mellanox.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Jul 06, 2019 at 08:23:47PM CEST, parav@mellanox.com wrote:
->To support additional devlink port flavours and to support few common
->and few different port attributes, make following changes.
+Sat, Jul 06, 2019 at 08:23:48PM CEST, parav@mellanox.com wrote:
+>In an eswitch, PCI PF may have port which is normally represented
+>using a representor netdevice.
+>To have better visibility of eswitch port, its association with
+>PF and a representor netdevice, introduce a PCI PF port
+>flavour and port attriute.
 >
->1. Move physical port attributes to a different structure
->2. Return such attritubes in netlink response only for physical ports
->(PHYSICAL, CPU and DSA)
+>When devlink port flavour is PCI PF, fill up PCI PF attributes of the
+>port.
+>
+>Extend port name creation using PCI PF number on best effort basis.
+>So that vendor drivers can skip defining their own scheme.
+>
+>$ devlink port show
+>pci/0000:05:00.0/0: type eth netdev eth0 flavour pcipf pfnum 0
+>
+>Signed-off-by: Parav Pandit <parav@mellanox.com>
 
-2 changes, 2 patches please.
-
+Acked-by: Jiri Pirko <jiri@mellanox.com>
