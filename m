@@ -2,103 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4BB8614AC
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 12:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC325614C5
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 13:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727371AbfGGK2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 06:28:50 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46999 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727125AbfGGK2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 06:28:49 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 627762134B;
-        Sun,  7 Jul 2019 06:28:48 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 07 Jul 2019 06:28:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=aaMt57
-        yZYfyil/RreBDqceJPqRXy35bdrymaxqJSnG0=; b=JJ1AE9s7DWlohY0kD+lIAU
-        N0ROSJOzMtfx+PJcACFCxvV30Rvz9uawSSTRdxVRED1GHj0MLU+GK5tRyuaZnMOV
-        uRapzg48IzwAzjY3RzMspym7FI6qzUaU8WGjWsBFAvIHK6LxiU3zfTu//ti0p/ON
-        f0u0o6OXK1WvKkHpaMbkcTrWBQgC/H8CC8zy6Xeo/5UWfBT/TKKPoiqqLaJ2venY
-        7xteTbB1/lRDu6MtRvcGhZtfo6v+cqqLhUF7sinU63JCpboDlqIHInHSWft29vcQ
-        3PmKjV1xxc4hoQNuuOwjJU7ZxHVM+ccVekZOQpRuUt0xD6/qfiRBInvRn27WdhkA
-        ==
-X-ME-Sender: <xms:XskhXU7pRXDy-25UglLzLCMed0cpNMd7_KUDB5rA6KCrsuvsJ54m8Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeekgdefvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
-    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:X8khXUWH2fIz3CKSbrvH-_qjhSsS-66wHu7MWsa8_6Gh5E9c-iNFYQ>
-    <xmx:X8khXWFGko-gGKALZLspX-yVswH7Q53QWWlfu9bhpjUIem4fkdoGMA>
-    <xmx:X8khXUczZJYmnnSxatnzt2IQx8cPkNatk-rizb6IgzMBMGR6vBLoAA>
-    <xmx:YMkhXUi65k6X11Nqw9yjWz874i2Myh1XuEQfZJ8FqHBa5jLy2cCLhw>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 83D6B8005A;
-        Sun,  7 Jul 2019 06:28:46 -0400 (EDT)
-Date:   Sun, 7 Jul 2019 13:28:44 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
-Message-ID: <20190707102844.GA8487@splinter>
-References: <20190620235639.24102-1-vivien.didelot@gmail.com>
- <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
- <20190621172952.GB9284@t480s.localdomain>
- <20190623070949.GB13466@splinter>
- <20190705120149.GB17996@t480s.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190705120149.GB17996@t480s.localdomain>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+        id S1726658AbfGGLx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 07:53:27 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58836 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726344AbfGGLx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 07:53:26 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 7 Jul 2019 14:53:19 +0300
+Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x67BrJLn031039;
+        Sun, 7 Jul 2019 14:53:19 +0300
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Eran Ben Elisha <eranbe@mellanox.com>,
+        ayal@mellanox.com, jiri@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>, moshe@mellanox.com,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: [PATCH net-next 00/16] mlx5e devlink health reporters
+Date:   Sun,  7 Jul 2019 14:52:52 +0300
+Message-Id: <1562500388-16847-1-git-send-email-tariqt@mellanox.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 05, 2019 at 12:01:49PM -0400, Vivien Didelot wrote:
-> Hi Ido,
-> 
-> On Sun, 23 Jun 2019 07:09:52 +0000, Ido Schimmel <idosch@mellanox.com> wrote:
-> > > Russell, Ido, Florian, so far I understand that a multicast-unaware
-> > > bridge must flood unknown traffic everywhere (CPU included);
-> > > and a multicast-aware bridge must only flood its ports if their
-> > > mcast_flood is on, and known traffic targeting the bridge must be
-> > > offloaded accordingly. Do you guys agree with this?
-> > 
-> > When multicast snooping is enabled unregistered multicast traffic should
-> > only be flooded to mrouter ports.
-> 
-> I've figured out that this is what I need to prevent the flooding of undesired
-> multicast traffic to the CPU port of the switch. The bridge itself has a
-> multicast_router attribute which can be disabled, that is when I should drop
-> unknown multicast traffic.
-> 
-> However with SWITCHDEV_ATTR_ID_BRIDGE_MROUTER implemented, this
-> attribute is always called with .mrouter=0, regardless the value of
-> /sys/class/net/br0/bridge/multicast_router. Do I miss something here?
+Hi Dave,
 
-Hi Vivien,
+I'm submitting this series myself as Saeed is on vacation.
 
-I just checked this and it seems to work as expected:
+This series from Aya to the mlx5e driver introduces changes in
+devlink health reporters.
+Most noticeable is adding a new reporter, RX reporter, which
+reports and recovers from timeout and completion errors in the
+receive path.
 
-# echo 2 > /sys/class/net/br0/bridge/multicast_router
+In patches 1-6, we  perform TX reporter cleanup. In order to maintain
+the code flow as similar as possible between RX and TX reporters.
+In patch 7, we prepare for code sharing, generalize and move shared
+functionality.
+Patches 8-10 refactor and extend TX reporter diagnostics information
+to align the TX reporter diagnostics output with the RX reporter's
+diagnostics output.
+Patch 11 adds RX reporter, initially supports only the diagnostics
+call back.
+In patch 12 we split ICOSQ open/close functions into two stages, to call
+specific parts from the recover flow.
+Patches 13-16 introduce recovery flows for: RX timeout on ICOSQ, completion
+error on receive path.
 
-We get a notification with mrouter=1 to mlxsw
+Series generated against net-next commit:
+23f30c41c732 Merge branch 'mlx5-TLS-TX-HW-offload-support'
 
-# echo 0 > /sys/class/net/br0/bridge/multicast_router
+Regards,
+Tariq
 
-We get a notification with mrouter=0 to mlxsw
+
+Aya Levin (15):
+  Revert "net/mlx5e: Fix mlx5e_tx_reporter_create return value"
+  net/mlx5e: Fix error flow in tx reporter diagnose
+  net/mlx5e: Set tx reporter only on successful creation
+  net/mlx5e: TX reporter cleanup
+  net/mlx5e: Rename reporter header file
+  net/mlx5e: Change naming convention for reporter's functions
+  net/mlx5e: Generalize tx reporter's functionality
+  net/mlx5e: Extend tx diagnose function
+  net/mlx5e: Extend tx reporter diagnostics output
+  net/mlx5e: Add cq info to tx reporter diagnose
+  net/mlx5e: Add support to rx reporter diagnose
+  net/mlx5e: Split open/close ICOSQ into stages
+  net/mlx5e: Recover from CQE error on ICOSQ
+  net/mlx5e: Recover from rx timeout
+  net/mlx5e: Recover from CQE with error on RQ
+
+Saeed Mahameed (1):
+  net/mlx5e: RX, Handle CQE with error at the earliest stage
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  32 ++
+ .../net/ethernet/mellanox/mlx5/core/en/health.c    | 205 +++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en/health.h    |  53 +++
+ .../net/ethernet/mellanox/mlx5/core/en/reporter.h  |  15 -
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   | 390 +++++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 226 ++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  84 +++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  62 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/wq.c       |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/wq.h       |   1 +
+ 13 files changed, 883 insertions(+), 200 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/health.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/health.h
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/reporter.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+
+-- 
+1.8.3.1
+
