@@ -2,374 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C9261461
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2891C61467
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 10:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727341AbfGGIDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 04:03:42 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36973 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727188AbfGGIDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:03:42 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Jul 2019 11:03:38 +0300
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6783bM3006520;
-        Sun, 7 Jul 2019 11:03:38 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>
-Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-Subject: [PATCH net-next v4 4/4] tc-tests: Add tc action ct tests
-Date:   Sun,  7 Jul 2019 11:03:32 +0300
-Message-Id: <1562486612-22770-5-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1562486612-22770-1-git-send-email-paulb@mellanox.com>
-References: <1562486612-22770-1-git-send-email-paulb@mellanox.com>
+        id S1727367AbfGGIEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 04:04:06 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:53075 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726330AbfGGIEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jul 2019 04:04:05 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C8C4F11DC;
+        Sun,  7 Jul 2019 04:04:04 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 07 Jul 2019 04:04:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=rn7r4S6fTdo+QWjbtGIgGCl3J9+Y7fng1dCo53X9Sm8=; b=SK0R7ypd
+        8gc++dLyeUxQjBKNInuHLBz5RlF8UICwDjOaeb9qpsc+WlQV0QW87VLRSQh8QY3m
+        DpdC2AGbT8gLqLPjBrUHxmXIT7vcibnMqAEpcpFv6VD/dvkuqnpWT8tn0rmMSdiB
+        7Mt4qbVd6vbiUAd6EWNckJpdhs0M48lVwAnZfRrFkZbxSVRPn5avGLAF6putVYBM
+        kBE9UNA+hZEckUkMcQhLe8kgF9nUbdHros25WJGpuxmi8Yw0VZcqjvMOdwC9cmXy
+        K5IEajAcpbresvqBrJ1BUAG8ZBcC5W5rrZi/Vw4QYWCpHtZLgM+ouz/84OmzgaOI
+        K8UXst/Xzr+alg==
+X-ME-Sender: <xms:dKchXeE5Oq-DSIk4wJxne5NSoyy2pDTLg4ePwwyfVbagSNkbo0F3lw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfeejgdduvdejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
+    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
+    ufhiiigvpedt
+X-ME-Proxy: <xmx:dKchXXD6-5J6kgdw0VRDq6Jzjcea4UWEClQ_VIIHnjCgKyZ94GbmRg>
+    <xmx:dKchXd_XKD3BaykzZx6iLqqYzttbMikrB38coOWlqq01DQF8rawcCQ>
+    <xmx:dKchXZeGvPr8vXQNF9Ps9IeFDxFmA2yp44nWqf5wllCOvXa96Qi-hA>
+    <xmx:dKchXbtoszPALwLwThpwT1XY-w6hzs3pivg0dSiINip1IPI6nceV0A>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2CF998005A;
+        Sun,  7 Jul 2019 04:04:02 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, andy@greyhouse.net,
+        pablo@netfilter.org, jakub.kicinski@netronome.com,
+        pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [RFC PATCH net-next 2/5] Documentation: Add a section for devlink-trap testing
+Date:   Sun,  7 Jul 2019 11:03:33 +0300
+Message-Id: <20190707080336.3794-3-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190707080336.3794-1-idosch@idosch.org>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707080336.3794-1-idosch@idosch.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add 13 tests ensuring the command line is doing what is supposed to do.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Marcelo Ricardo Leitner <mleitner@redhat.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../selftests/tc-testing/tc-tests/actions/ct.json  | 314 +++++++++++++++++++++
- 1 file changed, 314 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
+ Documentation/networking/devlink-trap.rst | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json b/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
-new file mode 100644
-index 0000000..62b82fe
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
-@@ -0,0 +1,314 @@
-+[
-+    {
-+        "id": "696a",
-+        "name": "Add simple ct action",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct zone 0 pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "9f20",
-+        "name": "Add ct clear action",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct clear index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct clear pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "5bea",
-+        "name": "Try ct with zone",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct zone 404 index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct zone 404 pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "d5d6",
-+        "name": "Try ct with zone, commit",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct zone 404 commit index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit zone 404 pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "029f",
-+        "name": "Try ct with zone, commit, mark",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct zone 404 commit mark 0x42 index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit mark 66 zone 404 pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "a58d",
-+        "name": "Try ct with zone, commit, mark, nat",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct zone 404 commit mark 0x42 nat src addr 5.5.5.7 index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit mark 66 zone 404 nat src addr 5.5.5.7 pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "901b",
-+        "name": "Try ct with full nat ipv4 range syntax",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct commit nat src addr 5.5.5.7-5.5.6.0 port 1000-2000 index 44",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit zone 0 nat src addr 5.5.5.7-5.5.6.0 port 1000-2000 pipe.*index 44 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "072b",
-+        "name": "Try ct with full nat ipv6 syntax",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct commit nat src addr 2001::1 port 1000-2000 index 44",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit zone 0 nat src addr 2001::1 port 1000-2000 pipe.*index 44 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "3420",
-+        "name": "Try ct with full nat ipv6 range syntax",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct commit nat src addr 2001::1-2001::10 port 1000-2000 index 44",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit zone 0 nat src addr 2001::1-2001::10 port 1000-2000 pipe.*index 44 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "4470",
-+        "name": "Try ct with full nat ipv6 range syntax + force",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct commit force nat src addr 2001::1-2001::10 port 1000-2000 index 44",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct commit force zone 0 nat src addr 2001::1-2001::10 port 1000-2000 pipe.*index 44 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "5d88",
-+        "name": "Try ct with label",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct label 123123 index 44",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct zone 0 label 12312300000000000000000000000000 pipe.*index 44 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "04d4",
-+        "name": "Try ct with label with mask",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct label 12312300000000000000000000000001/ffffffff000000000000000000000001 index 44",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct zone 0 label 12312300000000000000000000000001/ffffffff000000000000000000000001 pipe.*index 44 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-+        "id": "9751",
-+        "name": "Try ct with mark + mask",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct mark 0x42/0xf0 index 42",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct mark 66/0xf0 zone 0 pipe.*index 42 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    }
-+]
+diff --git a/Documentation/networking/devlink-trap.rst b/Documentation/networking/devlink-trap.rst
+index 906cdeb0d1f3..b29aac6fe5fd 100644
+--- a/Documentation/networking/devlink-trap.rst
++++ b/Documentation/networking/devlink-trap.rst
+@@ -188,3 +188,12 @@ following table:
+    * - ``buffer_drops``
+      - Contains packet traps for packets that were dropped by the device due to
+        an enqueue decision
++
++Testing
++=======
++
++See ``tools/testing/selftests/net/devlink_trap.sh`` for a test covering the
++core infrastructure. Test cases should be added for any new functionality.
++
++Device drivers should focus their tests on device-specific functionality, such
++as the triggering of supported packet traps.
 -- 
-1.8.3.1
+2.20.1
 
