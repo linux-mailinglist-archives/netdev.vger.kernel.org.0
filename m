@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5358361418
-	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 07:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B1B61423
+	for <lists+netdev@lfdr.de>; Sun,  7 Jul 2019 07:27:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbfGGFEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 01:04:48 -0400
-Received: from mga03.intel.com ([134.134.136.65]:9900 "EHLO mga03.intel.com"
+        id S1725892AbfGGFWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jul 2019 01:22:24 -0400
+Received: from mga14.intel.com ([192.55.52.115]:8345 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726751AbfGGFEs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Jul 2019 01:04:48 -0400
+        id S1725819AbfGGFWY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Jul 2019 01:22:24 -0400
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jul 2019 22:04:20 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jul 2019 22:22:21 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,461,1557212400"; 
-   d="gz'50?scan'50,208,50";a="172980719"
+   d="gz'50?scan'50,208,50";a="172982378"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Jul 2019 22:04:19 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 06 Jul 2019 22:22:19 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1hjzLW-0006gs-Dd; Sun, 07 Jul 2019 13:04:18 +0800
-Date:   Sun, 7 Jul 2019 13:04:06 +0800
+        id 1hjzcw-000EE1-Nx; Sun, 07 Jul 2019 13:22:18 +0800
+Date:   Sun, 7 Jul 2019 13:21:30 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     josua@solid-run.com
 Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
         Josua Mayer <josua@solid-run.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 3/4] net: mvmdio: print warning when orion-mdio has too
- many clocks
-Message-ID: <201907071352.i752LLXy%lkp@intel.com>
-References: <20190706151900.14355-4-josua@solid-run.com>
+Subject: Re: [PATCH 4/4] net: mvmdio: defer probe of orion-mdio if a clock is
+ not ready
+Message-ID: <201907071323.DJuUlAXP%lkp@intel.com>
+References: <20190706151900.14355-5-josua@solid-run.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="VbJkn9YxBvnuCH5J"
+Content-Type: multipart/mixed; boundary="X1bOJ3K7DJ5YkBrT"
 Content-Disposition: inline
-In-Reply-To: <20190706151900.14355-4-josua@solid-run.com>
+In-Reply-To: <20190706151900.14355-5-josua@solid-run.com>
 X-Patchwork-Hint: ignore
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
@@ -46,16 +46,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---VbJkn9YxBvnuCH5J
+--X1bOJ3K7DJ5YkBrT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 Hi,
 
-Thank you for the patch! Yet something to improve:
+Thank you for the patch! Perhaps something to improve:
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.2-rc7 next-20190705]
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.2-rc7 next-20190705]
 [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
 url:    https://github.com/0day-ci/linux/commits/josua-solid-run-com/Fix-hang-of-Armada-8040-SoC-in-orion-mdio/20190707-111919
@@ -70,14 +70,25 @@ reproduce:
 If you fix the issue, kindly add following tag
 Reported-by: kbuild test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
+   drivers/net/ethernet/marvell/mvmdio.c: In function 'orion_mdio_probe':
+>> drivers/net/ethernet/marvell/mvmdio.c:324:30: warning: passing argument 1 of 'PTR_ERR' makes pointer from integer without a cast [-Wint-conversion]
+      if (dev->clk[i] == PTR_ERR(-EPROBE_DEFER)) {
+                                 ^
+   In file included from include/linux/clk.h:12:0,
+                    from drivers/net/ethernet/marvell/mvmdio.c:20:
+   include/linux/err.h:29:33: note: expected 'const void *' but argument is of type 'int'
+    static inline long __must_check PTR_ERR(__force const void *ptr)
+                                    ^~~~~~~
+>> drivers/net/ethernet/marvell/mvmdio.c:324:19: warning: comparison between pointer and integer
+      if (dev->clk[i] == PTR_ERR(-EPROBE_DEFER)) {
+                      ^~
    In file included from include/linux/node.h:18:0,
                     from include/linux/cpu.h:17,
                     from include/linux/of_device.h:5,
                     from drivers/net/ethernet/marvell/mvmdio.c:26:
-   drivers/net/ethernet/marvell/mvmdio.c: In function 'orion_mdio_probe':
->> drivers/net/ethernet/marvell/mvmdio.c:330:12: error: passing argument 1 of '_dev_warn' from incompatible pointer type [-Werror=incompatible-pointer-types]
+   drivers/net/ethernet/marvell/mvmdio.c:334:12: error: passing argument 1 of '_dev_warn' from incompatible pointer type [-Werror=incompatible-pointer-types]
       dev_warn(dev, "unsupported number of clocks, limiting to the first "
                ^
    include/linux/device.h:1487:12: note: in definition of macro 'dev_warn'
@@ -88,7 +99,7 @@ All errors (new ones prefixed by >>):
          ^~~~~~~~~
    cc1: some warnings being treated as errors
 
-vim +/_dev_warn +330 drivers/net/ethernet/marvell/mvmdio.c
+vim +/PTR_ERR +324 drivers/net/ethernet/marvell/mvmdio.c
 
    275	
    276	static int orion_mdio_probe(struct platform_device *pdev)
@@ -139,72 +150,77 @@ vim +/_dev_warn +330 drivers/net/ethernet/marvell/mvmdio.c
    321	
    322		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
    323			dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
-   324			if (IS_ERR(dev->clk[i]))
-   325				break;
-   326			clk_prepare_enable(dev->clk[i]);
-   327		}
-   328	
-   329		if (!IS_ERR(of_clk_get(pdev->dev.of_node, i)))
- > 330			dev_warn(dev, "unsupported number of clocks, limiting to the first "
-   331				 __stringify(ARRAY_SIZE(dev->clk)) "\n");
+ > 324			if (dev->clk[i] == PTR_ERR(-EPROBE_DEFER)) {
+   325				ret = -EPROBE_DEFER;
+   326				goto out_clk;
+   327			}
+   328			if (IS_ERR(dev->clk[i]))
+   329				break;
+   330			clk_prepare_enable(dev->clk[i]);
+   331		}
    332	
-   333		dev->err_interrupt = platform_get_irq(pdev, 0);
-   334		if (dev->err_interrupt > 0 &&
-   335		    resource_size(r) < MVMDIO_ERR_INT_MASK + 4) {
-   336			dev_err(&pdev->dev,
-   337				"disabling interrupt, resource size is too small\n");
-   338			dev->err_interrupt = 0;
-   339		}
-   340		if (dev->err_interrupt > 0) {
-   341			ret = devm_request_irq(&pdev->dev, dev->err_interrupt,
-   342						orion_mdio_err_irq,
-   343						IRQF_SHARED, pdev->name, dev);
-   344			if (ret)
-   345				goto out_mdio;
-   346	
-   347			writel(MVMDIO_ERR_INT_SMI_DONE,
-   348				dev->regs + MVMDIO_ERR_INT_MASK);
-   349	
-   350		} else if (dev->err_interrupt == -EPROBE_DEFER) {
-   351			ret = -EPROBE_DEFER;
-   352			goto out_mdio;
-   353		}
-   354	
-   355		ret = of_mdiobus_register(bus, pdev->dev.of_node);
-   356		if (ret < 0) {
-   357			dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
-   358			goto out_mdio;
-   359		}
-   360	
-   361		platform_set_drvdata(pdev, bus);
-   362	
-   363		return 0;
+   333		if (!IS_ERR(of_clk_get(pdev->dev.of_node, i)))
+   334			dev_warn(dev, "unsupported number of clocks, limiting to the first "
+   335				 __stringify(ARRAY_SIZE(dev->clk)) "\n");
+   336	
+   337		dev->err_interrupt = platform_get_irq(pdev, 0);
+   338		if (dev->err_interrupt > 0 &&
+   339		    resource_size(r) < MVMDIO_ERR_INT_MASK + 4) {
+   340			dev_err(&pdev->dev,
+   341				"disabling interrupt, resource size is too small\n");
+   342			dev->err_interrupt = 0;
+   343		}
+   344		if (dev->err_interrupt > 0) {
+   345			ret = devm_request_irq(&pdev->dev, dev->err_interrupt,
+   346						orion_mdio_err_irq,
+   347						IRQF_SHARED, pdev->name, dev);
+   348			if (ret)
+   349				goto out_mdio;
+   350	
+   351			writel(MVMDIO_ERR_INT_SMI_DONE,
+   352				dev->regs + MVMDIO_ERR_INT_MASK);
+   353	
+   354		} else if (dev->err_interrupt == -EPROBE_DEFER) {
+   355			ret = -EPROBE_DEFER;
+   356			goto out_mdio;
+   357		}
+   358	
+   359		ret = of_mdiobus_register(bus, pdev->dev.of_node);
+   360		if (ret < 0) {
+   361			dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
+   362			goto out_mdio;
+   363		}
    364	
-   365	out_mdio:
-   366		if (dev->err_interrupt > 0)
-   367			writel(0, dev->regs + MVMDIO_ERR_INT_MASK);
+   365		platform_set_drvdata(pdev, bus);
+   366	
+   367		return 0;
    368	
-   369		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
-   370			if (IS_ERR(dev->clk[i]))
-   371				break;
-   372			clk_disable_unprepare(dev->clk[i]);
-   373			clk_put(dev->clk[i]);
-   374		}
-   375	
-   376		return ret;
-   377	}
-   378	
+   369	out_mdio:
+   370		if (dev->err_interrupt > 0)
+   371			writel(0, dev->regs + MVMDIO_ERR_INT_MASK);
+   372	
+   373	out_clk:
+   374		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
+   375			if (IS_ERR(dev->clk[i]))
+   376				break;
+   377			clk_disable_unprepare(dev->clk[i]);
+   378			clk_put(dev->clk[i]);
+   379		}
+   380	
+   381		return ret;
+   382	}
+   383	
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---VbJkn9YxBvnuCH5J
+--X1bOJ3K7DJ5YkBrT
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICBJ7IV0AAy5jb25maWcAjFxbk9s2sn7Pr1AlL7sPiUVSt9lT8wCSkISIJGgClDTzgtJO
+H4sICEl/IV0AAy5jb25maWcAjFxbk9s2sn7Pr1AlL7sPiUVSt9lT8wCSkISIJGgClDTzgtJO
 ZO/UzsWlmcna//40QFFsgKCSlCs2v27cG30DoF9++mVEPt5fnw/vjw+Hp6cfo6/Hl+Pp8H78
 Y/Tl8en4f6OUjwouRzRl8jdgzh5fPr5/OpyeR9Pfwt/Gv54e5qPN8fRyfBolry9fHr9+QOHH
 15effvkJ/vwC4PM3qOf0rxGU+fVJl/7168vH8fDvx1+/PjyM/rFKkn+O5r9NfhsDf8KLJVup
@@ -1519,4 +1535,4 @@ LV6vTGruxQnZcw9y4M26rfeguVLb0qzHzIb6+XSvnbn8+a1rKqV0qdTH5Z1e+7gj36nyCLXA
 2kfoKBDK7lBqtN5UDqjBwL5l45ET6ZT7RZcsHUdTJb6Lyfeq2oWrNHk0TAyr5Y5bPDAyuSAH
 hmS2d9KrxFmVvFb9wFWgDKuC/w+gRC6dBYAEAA==
 
---VbJkn9YxBvnuCH5J--
+--X1bOJ3K7DJ5YkBrT--
