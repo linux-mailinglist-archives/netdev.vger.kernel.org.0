@@ -2,50 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 597C7629BA
+	by mail.lfdr.de (Postfix) with ESMTP id C2369629BB
 	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404068AbfGHThJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 15:37:09 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:36421 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391726AbfGHThI (ORCPT
+        id S2404677AbfGHThK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 15:37:10 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:33020 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391735AbfGHThI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 15:37:08 -0400
-Received: by mail-io1-f69.google.com with SMTP id k21so20194578ioj.3
+Received: by mail-io1-f71.google.com with SMTP id 132so17570168iou.0
         for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 12:37:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=rvU9EpJ/ZrGJ01qsksyZdkenSMAoMztu/ZdDa0dDQNo=;
-        b=Ng1GZxmY1QAl2b3jB4jyIkgF6Q5oIYQJzL+CwL0vXp+kWGvzax1fFGDMZu9A0VnDiM
-         z29EhMD0gl188X0tL7Oj8t/zxMkIw5hcZjKY/kXXc/FkmpfUQBz1k69iW3peUgOi8gL3
-         C/3ztJU7xfnaWfY0IOdhb32ZTFAAj548n632RLr5UVFUq1IeUby1LbXacW958vpGjDRs
-         YACGrU8VMpU8VAjgYmROwwy/8tQ16Qu58F+/OdYlByu8S6t/Rfhf7+4k2kfxNRfeDhP+
-         dAriJNPl29PDKQcOGCCLqMQ4LctTM7A1InnyIAfksFfsJNF9dD7JJWUMlsUFDKTbl7Rd
-         LXoQ==
-X-Gm-Message-State: APjAAAXHbQ7N5aJeMmKDw0i/jG8usBml6z7YrgJXPyZYTuvPO6bXr2D7
-        XjDt4TCURoqux2VsDELAUzJ4QGQbUCLK2fqctig3PpBBFtH0
-X-Google-Smtp-Source: APXvYqziWldilP8K4vSOqdpjtylCdvMsx2+OcaZ8+SIDv2t9XOOmVzSHETzg0mpxmT6eA7sqSzsBIXyu2E8IBvgCWRHVNPt/xftW
+        bh=gnWX0kUsdC0eHJTIMNthjAqQdaNjnsisdz8RZUKdFIY=;
+        b=fkZz7Zw2YPIL1xvLpF+VVr6FPBO1mlQ7/LbEEbUi2x55Vmh3ZcDQhUoqtD6sfGt1kd
+         va+PtXtsx/uq11uXLyFgvnikyTPmf2qkvxxjLgGC/bazIT2BQ8jgntLUIzzN50Z3Y8s7
+         c7eqzf8fiwuBmdE/TgA/kv8b0rZlQ3L9Lc+ShwCVC4Taf/PhHjvO4OicsD4+J5B3mqJ2
+         9jYbdFCRNjUdrIaUy3yqfl+jMNufzT0uiDVGhJ7UUjrn/l9FuEIe/5SAg1KOxye2kM5K
+         HC+CVaaNsQk8TMijn76ImhUIgEyjLeavBmT9o6y8iaT7V1NmKgQ8FgyjQFdMsoKvnGtL
+         mJlA==
+X-Gm-Message-State: APjAAAV96mTwgY1irKgEl+SO7VU3VidJxGESHjtGVLs61yGBazYC3R3h
+        NnxWD0kY35UYJDanGz82I1Co4WVfucMk7JQfO4P57y1lMepE
+X-Google-Smtp-Source: APXvYqx+P1gcjJTw+mYefApBU6g5uc8dauxNcKbcisA1Nv5cDy/iQvYLMOG+J0EhTcQjjvIVy1AbUhYpOOcfSYCQF1cvNV+G5XW6
 MIME-Version: 1.0
-X-Received: by 2002:a02:ca19:: with SMTP id i25mr24171955jak.6.1562614626405;
- Mon, 08 Jul 2019 12:37:06 -0700 (PDT)
-Date:   Mon, 08 Jul 2019 12:37:06 -0700
+X-Received: by 2002:a02:ab83:: with SMTP id t3mr23245388jan.133.1562614627005;
+ Mon, 08 Jul 2019 12:37:07 -0700 (PDT)
+Date:   Mon, 08 Jul 2019 12:37:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ba542e058d309136@google.com>
-Subject: possible deadlock in rtnl_lock (6)
-From:   syzbot <syzbot+174ce29c2308dec5bc68@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bjorn.topel@intel.com, bpf@vger.kernel.org,
-        christian@brauner.io, daniel@iogearbox.net, davem@davemloft.net,
-        dsahern@gmail.com, edumazet@google.com, hawk@kernel.org,
-        i.maximets@samsung.com, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, johannes.berg@intel.com,
-        john.fastabend@gmail.com, jonathan.lemon@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, magnus.karlsson@intel.com,
-        netdev@vger.kernel.org, petrm@mellanox.com,
-        roopa@cumulusnetworks.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
-        yhs@fb.com
+Message-ID: <000000000000c3810f058d30910b@google.com>
+Subject: WARNING: held lock freed! (2)
+From:   syzbot <syzbot+e54ed2cb16c6da22c549@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -56,177 +49,204 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    537de0c8 ipv4: Fix NULL pointer dereference in ipv4_neigh_..
+HEAD commit:    9d1bc24b bonding: validate ip header before check IPPROTO_..
 git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=14521cc3a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=90f5d2d9c1e7421c
-dashboard link: https://syzkaller.appspot.com/bug?extid=174ce29c2308dec5bc68
+console output: https://syzkaller.appspot.com/x/log.txt?x=152fab25a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e7c31a94f66cc0aa
+dashboard link: https://syzkaller.appspot.com/bug?extid=e54ed2cb16c6da22c549
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1777debba00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16969b53a00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11ad60bba00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=165d2453a00000
 
 The bug was bisected to:
 
-commit 455302d1c9ae9318660aaeb9748a01ff414c9741
-Author: Ilya Maximets <i.maximets@samsung.com>
-Date:   Fri Jun 28 08:04:07 2019 +0000
+commit c8c8218ec5af5d2598381883acbefbf604e56b5e
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Jun 27 21:30:58 2019 +0000
 
-     xdp: fix hang while unregistering device bound to xdp socket
+     netrom: fix a memory leak in nr_rx_frame()
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1179943da00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=1379943da00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1579943da00000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1489854ba00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1689854ba00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1289854ba00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+174ce29c2308dec5bc68@syzkaller.appspotmail.com
-Fixes: 455302d1c9ae ("xdp: fix hang while unregistering device bound to xdp  
-socket")
+Reported-by: syzbot+e54ed2cb16c6da22c549@syzkaller.appspotmail.com
+Fixes: c8c8218ec5af ("netrom: fix a memory leak in nr_rx_frame()")
 
-======================================================
-WARNING: possible circular locking dependency detected
-5.2.0-rc6+ #76 Not tainted
-------------------------------------------------------
-syz-executor613/9114 is trying to acquire lock:
-000000002c564901 (rtnl_mutex){+.+.}, at: rtnl_lock+0x17/0x20  
-net/core/rtnetlink.c:72
-
-but task is already holding lock:
-0000000039d6ee9b (&xs->mutex){+.+.}, at: xsk_bind+0x16a/0xe70  
-net/xdp/xsk.c:422
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #2 (&xs->mutex){+.+.}:
-        __mutex_lock_common kernel/locking/mutex.c:926 [inline]
-        __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
-        mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
-        xsk_notifier+0x149/0x290 net/xdp/xsk.c:730
-        notifier_call_chain+0xc2/0x230 kernel/notifier.c:95
-        __raw_notifier_call_chain kernel/notifier.c:396 [inline]
-        raw_notifier_call_chain+0x2e/0x40 kernel/notifier.c:403
-        call_netdevice_notifiers_info+0x3f/0x90 net/core/dev.c:1749
-        call_netdevice_notifiers_extack net/core/dev.c:1761 [inline]
-        call_netdevice_notifiers net/core/dev.c:1775 [inline]
-        rollback_registered_many+0x9b9/0xfc0 net/core/dev.c:8206
-        rollback_registered+0x109/0x1d0 net/core/dev.c:8248
-        unregister_netdevice_queue net/core/dev.c:9295 [inline]
-        unregister_netdevice_queue+0x1ee/0x2c0 net/core/dev.c:9288
-        br_dev_delete+0x145/0x1a0 net/bridge/br_if.c:383
-        br_del_bridge+0xd7/0x120 net/bridge/br_if.c:483
-        br_ioctl_deviceless_stub+0x2a4/0x7b0 net/bridge/br_ioctl.c:376
-        sock_ioctl+0x44b/0x780 net/socket.c:1141
-        vfs_ioctl fs/ioctl.c:46 [inline]
-        file_ioctl fs/ioctl.c:509 [inline]
-        do_vfs_ioctl+0xd5f/0x1380 fs/ioctl.c:696
-        ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
-        __do_sys_ioctl fs/ioctl.c:720 [inline]
-        __se_sys_ioctl fs/ioctl.c:718 [inline]
-        __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
-        do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
--> #1 (&net->xdp.lock){+.+.}:
-        __mutex_lock_common kernel/locking/mutex.c:926 [inline]
-        __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
-        mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
-        xsk_notifier+0xa7/0x290 net/xdp/xsk.c:726
-        notifier_call_chain+0xc2/0x230 kernel/notifier.c:95
-        __raw_notifier_call_chain kernel/notifier.c:396 [inline]
-        raw_notifier_call_chain+0x2e/0x40 kernel/notifier.c:403
-        call_netdevice_notifiers_info+0x3f/0x90 net/core/dev.c:1749
-        call_netdevice_notifiers_extack net/core/dev.c:1761 [inline]
-        call_netdevice_notifiers net/core/dev.c:1775 [inline]
-        rollback_registered_many+0x9b9/0xfc0 net/core/dev.c:8206
-        rollback_registered+0x109/0x1d0 net/core/dev.c:8248
-        unregister_netdevice_queue net/core/dev.c:9295 [inline]
-        unregister_netdevice_queue+0x1ee/0x2c0 net/core/dev.c:9288
-        br_dev_delete+0x145/0x1a0 net/bridge/br_if.c:383
-        br_del_bridge+0xd7/0x120 net/bridge/br_if.c:483
-        br_ioctl_deviceless_stub+0x2a4/0x7b0 net/bridge/br_ioctl.c:376
-        sock_ioctl+0x44b/0x780 net/socket.c:1141
-        vfs_ioctl fs/ioctl.c:46 [inline]
-        file_ioctl fs/ioctl.c:509 [inline]
-        do_vfs_ioctl+0xd5f/0x1380 fs/ioctl.c:696
-        ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
-        __do_sys_ioctl fs/ioctl.c:720 [inline]
-        __se_sys_ioctl fs/ioctl.c:718 [inline]
-        __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
-        do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
--> #0 (rtnl_mutex){+.+.}:
-        lock_acquire+0x16f/0x3f0 kernel/locking/lockdep.c:4303
-        __mutex_lock_common kernel/locking/mutex.c:926 [inline]
-        __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
-        mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
-        rtnl_lock+0x17/0x20 net/core/rtnetlink.c:72
-        xdp_umem_assign_dev+0xbe/0x8b0 net/xdp/xdp_umem.c:96
-        xsk_bind+0x4d7/0xe70 net/xdp/xsk.c:488
-        __sys_bind+0x239/0x290 net/socket.c:1653
-        __do_sys_bind net/socket.c:1664 [inline]
-        __se_sys_bind net/socket.c:1662 [inline]
-        __x64_sys_bind+0x73/0xb0 net/socket.c:1662
-        do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-other info that might help us debug this:
-
-Chain exists of:
-   rtnl_mutex --> &net->xdp.lock --> &xs->mutex
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&xs->mutex);
-                                lock(&net->xdp.lock);
-                                lock(&xs->mutex);
-   lock(rtnl_mutex);
-
-  *** DEADLOCK ***
-
-1 lock held by syz-executor613/9114:
-  #0: 0000000039d6ee9b (&xs->mutex){+.+.}, at: xsk_bind+0x16a/0xe70  
-net/xdp/xsk.c:422
+=========================
+WARNING: held lock freed!
+5.2.0-rc6+ #75 Not tainted
+-------------------------
+syz-executor315/8559 is freeing memory ffff88809faed2c0-ffff88809faedabf,  
+with a lock still held there!
+00000000cf45dbdb (sk_lock-AF_NETROM){+.+.}, at: lock_sock  
+include/net/sock.h:1522 [inline]
+00000000cf45dbdb (sk_lock-AF_NETROM){+.+.}, at: nr_release+0x11a/0x3b0  
+net/netrom/af_netrom.c:522
+2 locks held by syz-executor315/8559:
+  #0: 00000000c0a19dcd (&sb->s_type->i_mutex_key#11){+.+.}, at: inode_lock  
+include/linux/fs.h:778 [inline]
+  #0: 00000000c0a19dcd (&sb->s_type->i_mutex_key#11){+.+.}, at:  
+__sock_release+0x89/0x2a0 net/socket.c:600
+  #1: 00000000cf45dbdb (sk_lock-AF_NETROM){+.+.}, at: lock_sock  
+include/net/sock.h:1522 [inline]
+  #1: 00000000cf45dbdb (sk_lock-AF_NETROM){+.+.}, at: nr_release+0x11a/0x3b0  
+net/netrom/af_netrom.c:522
 
 stack backtrace:
-CPU: 1 PID: 9114 Comm: syz-executor613 Not tainted 5.2.0-rc6+ #76
+CPU: 0 PID: 8559 Comm: syz-executor315 Not tainted 5.2.0-rc6+ #75
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
 Call Trace:
   __dump_stack lib/dump_stack.c:77 [inline]
   dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_circular_bug.cold+0x1cc/0x28f kernel/locking/lockdep.c:1565
-  check_prev_add kernel/locking/lockdep.c:2310 [inline]
-  check_prevs_add kernel/locking/lockdep.c:2418 [inline]
-  validate_chain kernel/locking/lockdep.c:2800 [inline]
-  __lock_acquire+0x3755/0x5490 kernel/locking/lockdep.c:3793
-  lock_acquire+0x16f/0x3f0 kernel/locking/lockdep.c:4303
-  __mutex_lock_common kernel/locking/mutex.c:926 [inline]
-  __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
-  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
-  rtnl_lock+0x17/0x20 net/core/rtnetlink.c:72
-  xdp_umem_assign_dev+0xbe/0x8b0 net/xdp/xdp_umem.c:96
-  xsk_bind+0x4d7/0xe70 net/xdp/xsk.c:488
-  __sys_bind+0x239/0x290 net/socket.c:1653
-  __do_sys_bind net/socket.c:1664 [inline]
-  __se_sys_bind net/socket.c:1662 [inline]
-  __x64_sys_bind+0x73/0xb0 net/socket.c:1662
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  print_freed_lock_bug kernel/locking/lockdep.c:5077 [inline]
+  debug_check_no_locks_freed.cold+0x9d/0xa9 kernel/locking/lockdep.c:5110
+  kfree+0xb1/0x220 mm/slab.c:3752
+  sk_prot_free net/core/sock.c:1636 [inline]
+  __sk_destruct+0x4f7/0x6e0 net/core/sock.c:1722
+  sk_destruct+0x7b/0x90 net/core/sock.c:1730
+  __sk_free+0xce/0x300 net/core/sock.c:1741
+  sk_free+0x42/0x50 net/core/sock.c:1752
+  sock_put include/net/sock.h:1725 [inline]
+  nr_destroy_socket+0x3df/0x4a0 net/netrom/af_netrom.c:288
+  nr_release+0x323/0x3b0 net/netrom/af_netrom.c:530
+  __sock_release+0xce/0x2a0 net/socket.c:601
+  sock_close+0x1b/0x30 net/socket.c:1273
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:185 [inline]
+  exit_to_usermode_loop+0x273/0x2c0 arch/x86/entry/common.c:168
+  prepare_exit_to_usermode arch/x86/entry/common.c:199 [inline]
+  syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
+  do_syscall_64+0x58e/0x680 arch/x86/entry/common.c:304
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x447909
-Code: e8 cc e7 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+RIP: 0033:0x447269
+Code: e8 7c 14 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 3b 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fb2a478fd98 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 00000000006dcc58 RCX: 0000000000447909
-RDX: 0000000000000010 RSI: 0000000020000040 RDI: 0000000000000005
-RBP: 00000000006dcc50 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dcc5c
-R13: 0000003066736362 R14: 0000000000000000 R15: 0000003066736362
+ff 0f 83 cb 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f653a7bed88 EFLAGS: 00000246 ORIG_RAX: 000000000000002d
+RAX: ffffffffffffff95 RBX: 00000000006dcc48 RCX: 0000000000447269
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00000000006dcc40 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dcc4c
+R13: 0000003066736362 R14: 002cc7eb47000000 R15: 0000003066736362
+==================================================================
+BUG: KASAN: use-after-free in debug_spin_lock_before  
+kernel/locking/spinlock_debug.c:83 [inline]
+BUG: KASAN: use-after-free in do_raw_spin_lock+0x28a/0x2e0  
+kernel/locking/spinlock_debug.c:112
+Read of size 4 at addr ffff88809faed34c by task syz-executor315/8559
+
+CPU: 1 PID: 8559 Comm: syz-executor315 Not tainted 5.2.0-rc6+ #75
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.cold+0x7c/0x20d mm/kasan/report.c:188
+  __kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
+  kasan_report+0x12/0x20 mm/kasan/common.c:614
+  __asan_report_load4_noabort+0x14/0x20 mm/kasan/generic_report.c:131
+  debug_spin_lock_before kernel/locking/spinlock_debug.c:83 [inline]
+  do_raw_spin_lock+0x28a/0x2e0 kernel/locking/spinlock_debug.c:112
+  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
+  _raw_spin_lock_bh+0x3b/0x50 kernel/locking/spinlock.c:175
+  spin_lock_bh include/linux/spinlock.h:343 [inline]
+  release_sock+0x20/0x1c0 net/core/sock.c:2928
+  nr_release+0x2df/0x3b0 net/netrom/af_netrom.c:553
+  __sock_release+0xce/0x2a0 net/socket.c:601
+  sock_close+0x1b/0x30 net/socket.c:1273
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:185 [inline]
+  exit_to_usermode_loop+0x273/0x2c0 arch/x86/entry/common.c:168
+  prepare_exit_to_usermode arch/x86/entry/common.c:199 [inline]
+  syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
+  do_syscall_64+0x58e/0x680 arch/x86/entry/common.c:304
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x447269
+Code: e8 7c 14 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 cb 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f653a7bed88 EFLAGS: 00000246 ORIG_RAX: 000000000000002d
+RAX: ffffffffffffff95 RBX: 00000000006dcc48 RCX: 0000000000447269
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00000000006dcc40 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dcc4c
+R13: 0000003066736362 R14: 002cc7eb47000000 R15: 0000003066736362
+
+Allocated by task 8562:
+  save_stack+0x23/0x90 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_kmalloc mm/kasan/common.c:489 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:503
+  __do_kmalloc mm/slab.c:3660 [inline]
+  __kmalloc+0x15c/0x740 mm/slab.c:3669
+  kmalloc include/linux/slab.h:552 [inline]
+  sk_prot_alloc+0x19c/0x2e0 net/core/sock.c:1599
+  sk_alloc+0x39/0xf70 net/core/sock.c:1653
+  nr_make_new net/netrom/af_netrom.c:476 [inline]
+  nr_rx_frame+0x733/0x1e70 net/netrom/af_netrom.c:959
+  nr_loopback_timer+0x7b/0x170 net/netrom/nr_loopback.c:59
+  call_timer_fn+0x193/0x720 kernel/time/timer.c:1322
+  expire_timers kernel/time/timer.c:1366 [inline]
+  __run_timers kernel/time/timer.c:1685 [inline]
+  __run_timers kernel/time/timer.c:1653 [inline]
+  run_timer_softirq+0x66f/0x1740 kernel/time/timer.c:1698
+  __do_softirq+0x25c/0x94c kernel/softirq.c:292
+
+Freed by task 8559:
+  save_stack+0x23/0x90 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
+  __cache_free mm/slab.c:3432 [inline]
+  kfree+0xcf/0x220 mm/slab.c:3755
+  sk_prot_free net/core/sock.c:1636 [inline]
+  __sk_destruct+0x4f7/0x6e0 net/core/sock.c:1722
+  sk_destruct+0x7b/0x90 net/core/sock.c:1730
+  __sk_free+0xce/0x300 net/core/sock.c:1741
+  sk_free+0x42/0x50 net/core/sock.c:1752
+  sock_put include/net/sock.h:1725 [inline]
+  nr_destroy_socket+0x3df/0x4a0 net/netrom/af_netrom.c:288
+  nr_release+0x323/0x3b0 net/netrom/af_netrom.c:530
+  __sock_release+0xce/0x2a0 net/socket.c:601
+  sock_close+0x1b/0x30 net/socket.c:1273
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:185 [inline]
+  exit_to_usermode_loop+0x273/0x2c0 arch/x86/entry/common.c:168
+  prepare_exit_to_usermode arch/x86/entry/common.c:199 [inline]
+  syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
+  do_syscall_64+0x58e/0x680 arch/x86/entry/common.c:304
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff88809faed2c0
+  which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 140 bytes inside of
+  2048-byte region [ffff88809faed2c0, ffff88809faedac0)
+The buggy address belongs to the page:
+page:ffffea00027ebb00 refcount:1 mapcount:0 mapping:ffff8880aa400c40  
+index:0x0 compound_mapcount: 0
+flags: 0x1fffc0000010200(slab|head)
+raw: 01fffc0000010200 ffffea000242cd08 ffffea00023df908 ffff8880aa400c40
+raw: 0000000000000000 ffff88809faec1c0 0000000100000003 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88809faed200: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+  ffff88809faed280: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+> ffff88809faed300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                               ^
+  ffff88809faed380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88809faed400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
 ---
