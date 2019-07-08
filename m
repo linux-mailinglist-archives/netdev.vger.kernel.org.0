@@ -2,88 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C986962AB9
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 23:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5253E62ABE
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 23:15:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405242AbfGHVOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 17:14:08 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:32977 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732264AbfGHVOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 17:14:07 -0400
-Received: by mail-pf1-f195.google.com with SMTP id g2so3404780pfq.0
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 14:14:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ec3RLAcaGcUATAhuXbEUjkg1n8nFb8G78jY1lJIpSwk=;
-        b=Tzef4UBU9kd8gua7HeT6CVdvtUILs3KDNaZJpQFoRQd8q1agJ7MUOxWGApeb2oHIke
-         wTTXRa7enmLn226Rjmn5DUbUDYpHL6OCDzPYZ9P1aYwFeW4gF/9dwsrhIKZTX2HHCPcu
-         2X4lo81+v0QR2k5gIyu52bEeqqt4i7r7uoeWHqDDBGdPFbBTZ83Q6CZCWJmg95SdGNAH
-         4h8N8Tf5FIYjdaJ/I8yNKNb775dWkmjSMq77mpSo/gMP6ZveqS15KU4luHiGibEF/2f4
-         SmdBp2l/fF7M1oU/TSnCyA3zbMCtSA35HiFjenJWNXsDz84W9uuQxsxiLTZKoKpEgrd6
-         tkHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ec3RLAcaGcUATAhuXbEUjkg1n8nFb8G78jY1lJIpSwk=;
-        b=RqYMPa8eh3yQfsA+TYhrBAs4jWnyP5oLG7jorbxgkkzcoNABJfnY0yadZMKtHCMlVw
-         x+rwzRi8a/u7rbWwFfczomk2yj0BbOMvrVh2Jns8ye6O7jbkP8I9NzjC7MhV2DPXKBGj
-         KenWsNI0PYOihxD/oq4xWGmZGtwsq9wTkymDN2lkJnbSrhKK7IciJBkbFKKNP9Yc1sLk
-         1RzMHkJSPzZwsR1CGJ3jcPwmFO/zSpLWdpqblJox/VLQsMT57q+1Wl5GSCzbMOTQ6hQq
-         YjDc5RmTjN/9zy7lNlSuWjHaUczScYMQDYzQaul5vUfUarzKASvaShKokB9BASN38pF9
-         pJqg==
-X-Gm-Message-State: APjAAAXsaYRACIjvUlk3HV+fJAfojs0Hu3miZ17XzCKTFIh2+Kuau768
-        xwOaTe8zS36uWqP5Q2jWrjvn5w==
-X-Google-Smtp-Source: APXvYqzNQfdKBJxBXy6Rk0hiQ1yqAI5YN6O//bnSRhW43uc4hiv5YmfGBfI+CXuqve2BsRkvX0Y6/Q==
-X-Received: by 2002:a63:4104:: with SMTP id o4mr27142522pga.345.1562620446912;
-        Mon, 08 Jul 2019 14:14:06 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s193sm20128473pgc.32.2019.07.08.14.14.06
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 14:14:06 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 14:14:03 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, saeedm@mellanox.com
-Subject: Re: [PATCH net-next v5 3/5] devlink: Introduce PCI PF port flavour
- and port attribute
-Message-ID: <20190708141403.1c01c5de@cakuba.netronome.com>
-In-Reply-To: <20190708041549.56601-4-parav@mellanox.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190708041549.56601-1-parav@mellanox.com>
-        <20190708041549.56601-4-parav@mellanox.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S2403783AbfGHVPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 17:15:21 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58494 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727662AbfGHVPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 17:15:21 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A7B14136DDD39;
+        Mon,  8 Jul 2019 14:15:19 -0700 (PDT)
+Date:   Mon, 08 Jul 2019 14:15:15 -0700 (PDT)
+Message-Id: <20190708.141515.1767939731073284700.davem@davemloft.net>
+To:     Jose.Abreu@synopsys.com
+Cc:     ilias.apalodimas@linaro.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, Joao.Pinto@synopsys.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com, brouer@redhat.com,
+        arnd@arndb.de
+Subject: Re: [PATCH net-next v3 3/3] net: stmmac: Introducing support for
+ Page Pool
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <BN8PR12MB32667BCA58B617432CACE677D3F60@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <BN8PR12MB32666359FABD7D7E55FE4761D3F50@BN8PR12MB3266.namprd12.prod.outlook.com>
+        <20190705152453.GA24683@apalos>
+        <BN8PR12MB32667BCA58B617432CACE677D3F60@BN8PR12MB3266.namprd12.prod.outlook.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 08 Jul 2019 14:15:20 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  7 Jul 2019 23:15:47 -0500, Parav Pandit wrote:
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 3e5f8204c36f..88b2cf207cb2 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -519,6 +519,11 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
->  	if (devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_PHYSICAL &&
->  	    devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_CPU &&
->  	    devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_DSA)
->  		return 0;
-> +	if (devlink_port->attrs.flavour == DEVLINK_PORT_FLAVOUR_PCI_PF) {
+From: Jose Abreu <Jose.Abreu@synopsys.com>
+Date: Mon, 8 Jul 2019 16:08:07 +0000
 
-Thanks for making the changes!  I'm not sure how this would work, tho.
-We return early if flavour is not phys/cpu/dsa, so how can flavour be
-pci here?..
+> From: Ilias Apalodimas <ilias.apalodimas@linaro.org> | Date: Fri, Jul 
+> 05, 2019 at 16:24:53
+> 
+>> Well ideally we'd like to get the change in before the merge window ourselves,
+>> since we dont want to remove->re-add the same function in stable kernels. If
+>> that doesn't go in i am fine fixing it in the next merge window i guess, since
+>> it offers substantial speedups
+> 
+> I think the series is marked as "Changes Requested" in patchwork. What's 
+> the status of this ?
 
-> +		if (nla_put_u16(msg, DEVLINK_ATTR_PORT_PCI_PF_NUMBER,
-> +				attrs->pci_pf.pf))
-> +			return -EMSGSIZE;
-> +	}
->  	if (nla_put_u32(msg, DEVLINK_ATTR_PORT_NUMBER,
->  			attrs->physical.port_number))
->  		return -EMSGSIZE;
+That means I expect a respin based upon feedback or similar.  If Ilias and
+you agreed to put this series in as-is, my apologies and just resend the
+series with appropriate ACK and Review tags added.
+
+Thanks.
