@@ -2,281 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B745F629B3
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:35:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 597C7629BA
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390589AbfGHTe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 15:34:58 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:50464 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730494AbfGHTe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 15:34:58 -0400
-Received: by mail-wm1-f66.google.com with SMTP id v15so678477wml.0
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 12:34:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=c/VoOijD/o/a9S7SAtsd4MVibZj/e2rPBRywd/KNKUU=;
-        b=Jej8YDGPAZ3xqHs9kE10RzEfLg0j7nEbScK/D57+/wIm2KVKybavI7HiCmmixVEFhG
-         CMDepNmV4BKZGDzzSxJYfLiX0c7EUvugfCOyd8gKHNKauQqra7wLAVg79kQeB6c7/nZe
-         4BLP6TEJlMbfYbPU2tGqCsnjTvBIorSJuq2CihpC2mGlwd3Hf4mlealYM9QfbV9WHpjK
-         qLsvq+cIX856AslbT4qHdP+j+gylQvhabqInxWZvdm+BYWV1xUjC2I1OPCvazebJqAU8
-         WoJrSSC5ZSVR7mSBalxAFRIhHPSSmDDQ1r6W6s9101oMYOF+HE0yuGET2nia6HTaAnIA
-         tEjg==
+        id S2404068AbfGHThJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 15:37:09 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:36421 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391726AbfGHThI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 15:37:08 -0400
+Received: by mail-io1-f69.google.com with SMTP id k21so20194578ioj.3
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 12:37:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=c/VoOijD/o/a9S7SAtsd4MVibZj/e2rPBRywd/KNKUU=;
-        b=WnjQbiRusrVrS/QcpE6lbSw1N2nvSlPeruf87gTh9EHpWP3P+Qfwgdr/XbIgruSZ9Z
-         aw7Q0vrLvJbfC1CGW4KErJkZQCPV4ArldcS3Oy2iGmLaflA+CEt+Syi+pLwd40g8l2Uv
-         s6tMBcPmTLvAM1TVGFm6YAYzGokVEGFirYXxh/EzKxHKO7kiR8mxrQipyg61KZK6WJLY
-         0uAXxDC1Q4Wy3VHx6GQCRVxASMWYwqFpBkuFnnFRXLTOrexA/DrnBaLiS+GPGT1BZmNQ
-         eWRATXDP/AIr7mN03iWuIuxYRkf4jii+7YXTSjSrjtFA41ECzeVYpnm74KXOkBXj3l3m
-         VgPQ==
-X-Gm-Message-State: APjAAAXeVMPgCGkLc10wxbwOqlGvG/6dNf39RbphKc2BTTbklSI76pO/
-        61BZlF3LjYvl/RKek/UsRqI0bA==
-X-Google-Smtp-Source: APXvYqxudTwX0F1weUky6q85PS7Fiho0hKGuacZFp4xSqQf0r2gqyeXNVYmoyDtgSscv4QXhfxY05w==
-X-Received: by 2002:a1c:d185:: with SMTP id i127mr18572929wmg.63.1562614495042;
-        Mon, 08 Jul 2019 12:34:55 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id e3sm5495750wrt.93.2019.07.08.12.34.54
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 12:34:54 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 21:34:54 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 19/19] ionic: Add basic devlink interface
-Message-ID: <20190708193454.GF2282@nanopsycho.orion>
-References: <20190708192532.27420-1-snelson@pensando.io>
- <20190708192532.27420-20-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=rvU9EpJ/ZrGJ01qsksyZdkenSMAoMztu/ZdDa0dDQNo=;
+        b=Ng1GZxmY1QAl2b3jB4jyIkgF6Q5oIYQJzL+CwL0vXp+kWGvzax1fFGDMZu9A0VnDiM
+         z29EhMD0gl188X0tL7Oj8t/zxMkIw5hcZjKY/kXXc/FkmpfUQBz1k69iW3peUgOi8gL3
+         C/3ztJU7xfnaWfY0IOdhb32ZTFAAj548n632RLr5UVFUq1IeUby1LbXacW958vpGjDRs
+         YACGrU8VMpU8VAjgYmROwwy/8tQ16Qu58F+/OdYlByu8S6t/Rfhf7+4k2kfxNRfeDhP+
+         dAriJNPl29PDKQcOGCCLqMQ4LctTM7A1InnyIAfksFfsJNF9dD7JJWUMlsUFDKTbl7Rd
+         LXoQ==
+X-Gm-Message-State: APjAAAXHbQ7N5aJeMmKDw0i/jG8usBml6z7YrgJXPyZYTuvPO6bXr2D7
+        XjDt4TCURoqux2VsDELAUzJ4QGQbUCLK2fqctig3PpBBFtH0
+X-Google-Smtp-Source: APXvYqziWldilP8K4vSOqdpjtylCdvMsx2+OcaZ8+SIDv2t9XOOmVzSHETzg0mpxmT6eA7sqSzsBIXyu2E8IBvgCWRHVNPt/xftW
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190708192532.27420-20-snelson@pensando.io>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+X-Received: by 2002:a02:ca19:: with SMTP id i25mr24171955jak.6.1562614626405;
+ Mon, 08 Jul 2019 12:37:06 -0700 (PDT)
+Date:   Mon, 08 Jul 2019 12:37:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ba542e058d309136@google.com>
+Subject: possible deadlock in rtnl_lock (6)
+From:   syzbot <syzbot+174ce29c2308dec5bc68@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bjorn.topel@intel.com, bpf@vger.kernel.org,
+        christian@brauner.io, daniel@iogearbox.net, davem@davemloft.net,
+        dsahern@gmail.com, edumazet@google.com, hawk@kernel.org,
+        i.maximets@samsung.com, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, johannes.berg@intel.com,
+        john.fastabend@gmail.com, jonathan.lemon@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, magnus.karlsson@intel.com,
+        netdev@vger.kernel.org, petrm@mellanox.com,
+        roopa@cumulusnetworks.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
+        yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 08, 2019 at 09:25:32PM CEST, snelson@pensando.io wrote:
->Add a devlink interface for access to information that isn't
->normally available through ethtool or the iplink interface.
->
->Example:
->	$ ./devlink -j -p dev info pci/0000:b6:00.0
->	{
->	    "info": {
->		"pci/0000:b6:00.0": {
->		    "driver": "ionic",
->		    "serial_number": "FLM18420073",
->		    "versions": {
->			"fixed": {
->			    "fw_version": "0.11.0-50",
->			    "fw_status": "0x1",
->			    "fw_heartbeat": "0x716ce",
->			    "asic_type": "0x0",
->			    "asic_rev": "0x0"
->			}
->		    }
->		}
->	    }
->	}
->
->Signed-off-by: Shannon Nelson <snelson@pensando.io>
->---
-> drivers/net/ethernet/pensando/ionic/Makefile  |  2 +-
-> drivers/net/ethernet/pensando/ionic/ionic.h   |  1 +
-> .../ethernet/pensando/ionic/ionic_bus_pci.c   |  7 ++
-> .../ethernet/pensando/ionic/ionic_devlink.c   | 89 +++++++++++++++++++
-> .../ethernet/pensando/ionic/ionic_devlink.h   | 12 +++
-> 5 files changed, 110 insertions(+), 1 deletion(-)
-> create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.h
->
->diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
->index 4f3cfbf36c23..ce187c7b33a8 100644
->--- a/drivers/net/ethernet/pensando/ionic/Makefile
->+++ b/drivers/net/ethernet/pensando/ionic/Makefile
->@@ -5,4 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
-> 
-> ionic-y := ionic_main.o ionic_bus_pci.o ionic_dev.o ionic_ethtool.o \
-> 	   ionic_lif.o ionic_rx_filter.o ionic_txrx.o ionic_debugfs.o \
->-	   ionic_stats.o
->+	   ionic_stats.o ionic_devlink.o
->diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
->index cd08166f73a9..a0034bc5b4a1 100644
->--- a/drivers/net/ethernet/pensando/ionic/ionic.h
->+++ b/drivers/net/ethernet/pensando/ionic/ionic.h
->@@ -44,6 +44,7 @@ struct ionic {
-> 	DECLARE_BITMAP(intrs, INTR_CTRL_REGS_MAX);
-> 	struct work_struct nb_work;
-> 	struct notifier_block nb;
->+	struct devlink *dl;
-> };
-> 
-> struct ionic_admin_ctx {
->diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->index 98c12b770c7f..a8c99254489f 100644
->--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->@@ -10,6 +10,7 @@
-> #include "ionic_bus.h"
-> #include "ionic_lif.h"
-> #include "ionic_debugfs.h"
->+#include "ionic_devlink.h"
-> 
-> /* Supported devices */
-> static const struct pci_device_id ionic_id_table[] = {
->@@ -212,9 +213,14 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> 		goto err_out_deinit_lifs;
-> 	}
-> 
->+	err = ionic_devlink_register(ionic);
->+	if (err)
->+		dev_err(dev, "Cannot register devlink (ignored): %d\n", err);
->+
-> 	return 0;
-> 
-> err_out_deinit_lifs:
->+	ionic_devlink_unregister(ionic);
-> 	ionic_lifs_deinit(ionic);
-> err_out_free_lifs:
-> 	ionic_lifs_free(ionic);
->@@ -247,6 +253,7 @@ static void ionic_remove(struct pci_dev *pdev)
-> 	struct ionic *ionic = pci_get_drvdata(pdev);
-> 
-> 	if (ionic) {
->+		ionic_devlink_unregister(ionic);
-> 		ionic_lifs_unregister(ionic);
-> 		ionic_lifs_deinit(ionic);
-> 		ionic_lifs_free(ionic);
->diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->new file mode 100644
->index 000000000000..fbbfcdde292f
->--- /dev/null
->+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->@@ -0,0 +1,89 @@
->+// SPDX-License-Identifier: GPL-2.0
->+/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->+
->+#include <linux/module.h>
->+#include <linux/netdevice.h>
->+
->+#include "ionic.h"
->+#include "ionic_bus.h"
->+#include "ionic_lif.h"
->+#include "ionic_devlink.h"
->+
->+struct ionic_devlink {
->+	struct ionic *ionic;
->+};
->+
->+static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
->+			     struct netlink_ext_ack *extack)
->+{
->+	struct ionic *ionic = *(struct ionic **)devlink_priv(dl);
->+	struct ionic_dev *idev = &ionic->idev;
->+	char buf[16];
->+	u32 val;
->+
->+	devlink_info_driver_name_put(req, DRV_NAME);
->+
->+	devlink_info_version_fixed_put(req, "fw_version",
->+				       idev->dev_info.fw_version);
->+
->+	val = ioread8(&idev->dev_info_regs->fw_status);
->+	snprintf(buf, sizeof(buf), "0x%x", val);
->+	devlink_info_version_fixed_put(req, "fw_status", buf);
->+
->+	val = ioread32(&idev->dev_info_regs->fw_heartbeat);
->+	snprintf(buf, sizeof(buf), "0x%x", val);
->+	devlink_info_version_fixed_put(req, "fw_heartbeat", buf);
->+
->+	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_type);
->+	devlink_info_version_fixed_put(req, "asic_type", buf);
->+
->+	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_rev);
->+	devlink_info_version_fixed_put(req, "asic_rev", buf);
->+
->+	devlink_info_serial_number_put(req, idev->dev_info.serial_num);
->+
->+	return 0;
->+}
->+
->+static const struct devlink_ops ionic_dl_ops = {
->+	.info_get	= ionic_dl_info_get,
->+};
->+
->+int ionic_devlink_register(struct ionic *ionic)
->+{
->+	struct devlink *dl;
->+	struct ionic **ip;
->+	int err;
->+
->+	dl = devlink_alloc(&ionic_dl_ops, sizeof(struct ionic *));
+Hello,
 
-Oups. Something is wrong with your flow. The devlink alloc is allocating
-the structure that holds private data (per-device data) for you. This is
-misuse :/
+syzbot found the following crash on:
 
-You are missing one parent device struct apparently.
+HEAD commit:    537de0c8 ipv4: Fix NULL pointer dereference in ipv4_neigh_..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=14521cc3a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=90f5d2d9c1e7421c
+dashboard link: https://syzkaller.appspot.com/bug?extid=174ce29c2308dec5bc68
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1777debba00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16969b53a00000
 
-Oh, I think I see something like it. The unused "struct ionic_devlink".
+The bug was bisected to:
+
+commit 455302d1c9ae9318660aaeb9748a01ff414c9741
+Author: Ilya Maximets <i.maximets@samsung.com>
+Date:   Fri Jun 28 08:04:07 2019 +0000
+
+     xdp: fix hang while unregistering device bound to xdp socket
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1179943da00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1379943da00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1579943da00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+174ce29c2308dec5bc68@syzkaller.appspotmail.com
+Fixes: 455302d1c9ae ("xdp: fix hang while unregistering device bound to xdp  
+socket")
+
+======================================================
+WARNING: possible circular locking dependency detected
+5.2.0-rc6+ #76 Not tainted
+------------------------------------------------------
+syz-executor613/9114 is trying to acquire lock:
+000000002c564901 (rtnl_mutex){+.+.}, at: rtnl_lock+0x17/0x20  
+net/core/rtnetlink.c:72
+
+but task is already holding lock:
+0000000039d6ee9b (&xs->mutex){+.+.}, at: xsk_bind+0x16a/0xe70  
+net/xdp/xsk.c:422
+
+which lock already depends on the new lock.
 
 
->+	if (!dl) {
->+		dev_warn(ionic->dev, "devlink_alloc failed");
->+		return -ENOMEM;
->+	}
->+
->+	ip = (struct ionic **)devlink_priv(dl);
->+	*ip = ionic;
->+	ionic->dl = dl;
->+
->+	err = devlink_register(dl, ionic->dev);
->+	if (err) {
->+		dev_warn(ionic->dev, "devlink_register failed: %d\n", err);
->+		goto err_dl_free;
->+	}
->+
->+	return 0;
->+
->+err_dl_free:
->+	ionic->dl = NULL;
->+	devlink_free(dl);
->+	return err;
->+}
->+
->+void ionic_devlink_unregister(struct ionic *ionic)
->+{
->+	if (!ionic->dl)
->+		return;
->+
->+	devlink_unregister(ionic->dl);
->+	devlink_free(ionic->dl);
->+}
->diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
->new file mode 100644
->index 000000000000..35528884e29f
->--- /dev/null
->+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
->@@ -0,0 +1,12 @@
->+/* SPDX-License-Identifier: GPL-2.0 */
->+/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->+
->+#ifndef _IONIC_DEVLINK_H_
->+#define _IONIC_DEVLINK_H_
->+
->+#include <net/devlink.h>
->+
->+int ionic_devlink_register(struct ionic *ionic);
->+void ionic_devlink_unregister(struct ionic *ionic);
->+
->+#endif /* _IONIC_DEVLINK_H_ */
->-- 
->2.17.1
->
+the existing dependency chain (in reverse order) is:
+
+-> #2 (&xs->mutex){+.+.}:
+        __mutex_lock_common kernel/locking/mutex.c:926 [inline]
+        __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
+        mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
+        xsk_notifier+0x149/0x290 net/xdp/xsk.c:730
+        notifier_call_chain+0xc2/0x230 kernel/notifier.c:95
+        __raw_notifier_call_chain kernel/notifier.c:396 [inline]
+        raw_notifier_call_chain+0x2e/0x40 kernel/notifier.c:403
+        call_netdevice_notifiers_info+0x3f/0x90 net/core/dev.c:1749
+        call_netdevice_notifiers_extack net/core/dev.c:1761 [inline]
+        call_netdevice_notifiers net/core/dev.c:1775 [inline]
+        rollback_registered_many+0x9b9/0xfc0 net/core/dev.c:8206
+        rollback_registered+0x109/0x1d0 net/core/dev.c:8248
+        unregister_netdevice_queue net/core/dev.c:9295 [inline]
+        unregister_netdevice_queue+0x1ee/0x2c0 net/core/dev.c:9288
+        br_dev_delete+0x145/0x1a0 net/bridge/br_if.c:383
+        br_del_bridge+0xd7/0x120 net/bridge/br_if.c:483
+        br_ioctl_deviceless_stub+0x2a4/0x7b0 net/bridge/br_ioctl.c:376
+        sock_ioctl+0x44b/0x780 net/socket.c:1141
+        vfs_ioctl fs/ioctl.c:46 [inline]
+        file_ioctl fs/ioctl.c:509 [inline]
+        do_vfs_ioctl+0xd5f/0x1380 fs/ioctl.c:696
+        ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
+        __do_sys_ioctl fs/ioctl.c:720 [inline]
+        __se_sys_ioctl fs/ioctl.c:718 [inline]
+        __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
+        do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+-> #1 (&net->xdp.lock){+.+.}:
+        __mutex_lock_common kernel/locking/mutex.c:926 [inline]
+        __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
+        mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
+        xsk_notifier+0xa7/0x290 net/xdp/xsk.c:726
+        notifier_call_chain+0xc2/0x230 kernel/notifier.c:95
+        __raw_notifier_call_chain kernel/notifier.c:396 [inline]
+        raw_notifier_call_chain+0x2e/0x40 kernel/notifier.c:403
+        call_netdevice_notifiers_info+0x3f/0x90 net/core/dev.c:1749
+        call_netdevice_notifiers_extack net/core/dev.c:1761 [inline]
+        call_netdevice_notifiers net/core/dev.c:1775 [inline]
+        rollback_registered_many+0x9b9/0xfc0 net/core/dev.c:8206
+        rollback_registered+0x109/0x1d0 net/core/dev.c:8248
+        unregister_netdevice_queue net/core/dev.c:9295 [inline]
+        unregister_netdevice_queue+0x1ee/0x2c0 net/core/dev.c:9288
+        br_dev_delete+0x145/0x1a0 net/bridge/br_if.c:383
+        br_del_bridge+0xd7/0x120 net/bridge/br_if.c:483
+        br_ioctl_deviceless_stub+0x2a4/0x7b0 net/bridge/br_ioctl.c:376
+        sock_ioctl+0x44b/0x780 net/socket.c:1141
+        vfs_ioctl fs/ioctl.c:46 [inline]
+        file_ioctl fs/ioctl.c:509 [inline]
+        do_vfs_ioctl+0xd5f/0x1380 fs/ioctl.c:696
+        ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
+        __do_sys_ioctl fs/ioctl.c:720 [inline]
+        __se_sys_ioctl fs/ioctl.c:718 [inline]
+        __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
+        do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+-> #0 (rtnl_mutex){+.+.}:
+        lock_acquire+0x16f/0x3f0 kernel/locking/lockdep.c:4303
+        __mutex_lock_common kernel/locking/mutex.c:926 [inline]
+        __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
+        mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
+        rtnl_lock+0x17/0x20 net/core/rtnetlink.c:72
+        xdp_umem_assign_dev+0xbe/0x8b0 net/xdp/xdp_umem.c:96
+        xsk_bind+0x4d7/0xe70 net/xdp/xsk.c:488
+        __sys_bind+0x239/0x290 net/socket.c:1653
+        __do_sys_bind net/socket.c:1664 [inline]
+        __se_sys_bind net/socket.c:1662 [inline]
+        __x64_sys_bind+0x73/0xb0 net/socket.c:1662
+        do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+other info that might help us debug this:
+
+Chain exists of:
+   rtnl_mutex --> &net->xdp.lock --> &xs->mutex
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(&xs->mutex);
+                                lock(&net->xdp.lock);
+                                lock(&xs->mutex);
+   lock(rtnl_mutex);
+
+  *** DEADLOCK ***
+
+1 lock held by syz-executor613/9114:
+  #0: 0000000039d6ee9b (&xs->mutex){+.+.}, at: xsk_bind+0x16a/0xe70  
+net/xdp/xsk.c:422
+
+stack backtrace:
+CPU: 1 PID: 9114 Comm: syz-executor613 Not tainted 5.2.0-rc6+ #76
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_circular_bug.cold+0x1cc/0x28f kernel/locking/lockdep.c:1565
+  check_prev_add kernel/locking/lockdep.c:2310 [inline]
+  check_prevs_add kernel/locking/lockdep.c:2418 [inline]
+  validate_chain kernel/locking/lockdep.c:2800 [inline]
+  __lock_acquire+0x3755/0x5490 kernel/locking/lockdep.c:3793
+  lock_acquire+0x16f/0x3f0 kernel/locking/lockdep.c:4303
+  __mutex_lock_common kernel/locking/mutex.c:926 [inline]
+  __mutex_lock+0xf7/0x1310 kernel/locking/mutex.c:1073
+  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1088
+  rtnl_lock+0x17/0x20 net/core/rtnetlink.c:72
+  xdp_umem_assign_dev+0xbe/0x8b0 net/xdp/xdp_umem.c:96
+  xsk_bind+0x4d7/0xe70 net/xdp/xsk.c:488
+  __sys_bind+0x239/0x290 net/socket.c:1653
+  __do_sys_bind net/socket.c:1664 [inline]
+  __se_sys_bind net/socket.c:1662 [inline]
+  __x64_sys_bind+0x73/0xb0 net/socket.c:1662
+  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x447909
+Code: e8 cc e7 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 3b 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fb2a478fd98 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 00000000006dcc58 RCX: 0000000000447909
+RDX: 0000000000000010 RSI: 0000000020000040 RDI: 0000000000000005
+RBP: 00000000006dcc50 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dcc5c
+R13: 0000003066736362 R14: 0000000000000000 R15: 0000003066736362
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
