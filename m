@@ -2,128 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0EE861F05
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 14:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC9F461F0C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 14:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731061AbfGHMzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 08:55:48 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:34242 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728892AbfGHMzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 08:55:48 -0400
-Received: by mail-ot1-f67.google.com with SMTP id n5so16092733otk.1;
-        Mon, 08 Jul 2019 05:55:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CY+RhrJnFubDDbiIrZyXLw75lUiZRz6EsymCdcoavtU=;
-        b=Z9up9DnIbbzEPrOeVYd3kVUZBMS2iboPj5o5STcjHMieEqNt/dTfFU4CNU8fU5dzhF
-         25RAOwnbV3i5pWDG6mC3nRP+kMyT78l7KyotlymAiu8XgKqu91tWK75oQpL5ooVYgZ8l
-         8flq1vMs0tiTjVpt/NDoHV++fZgaGkJczlWzI4dkIbgO7HSNr6jK6cJ2lPglJmxZaOoV
-         b59dnAugs4VlN66UkobyfqrY1CJN7OzbsBSAp7mBApX8P0ODUKAvaVoWCYk5wglPCuUr
-         qEo7m1S07GboTjQl3KB3OiGAwC3Is708lnEKMKOZsb/Vx/gRMqL/4hpVfd5PojsurdM3
-         0+AQ==
-X-Gm-Message-State: APjAAAWIxBzaidgWdRsZ1XOeCFNdF+MCq4vP9KIG3ixP9IcsoaFyf+qE
-        6hVHK1vhZqlzK988YpmX0IoSjjW6sbSjaLPny1g=
-X-Google-Smtp-Source: APXvYqwFL+4zysqtgbh6jv5g14+D5Us7ngVON2WHlU6B+9Snut3IlCo9BTRpnxbrZ0gGR07NZEcR37cPFaCeGkiGBpc=
-X-Received: by 2002:a9d:529:: with SMTP id 38mr14377098otw.145.1562590546625;
- Mon, 08 Jul 2019 05:55:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <1560513214-28031-1-git-send-email-fabrizio.castro@bp.renesas.com>
- <1560513214-28031-2-git-send-email-fabrizio.castro@bp.renesas.com> <20190617093023.nhvrvujg52gcglko@verge.net.au>
-In-Reply-To: <20190617093023.nhvrvujg52gcglko@verge.net.au>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 8 Jul 2019 14:55:35 +0200
-Message-ID: <CAMuHMdVdKVMiOZJVPyM_Y6YNvDsdTwf+EhmS3VJPUb_zOrf7Yw@mail.gmail.com>
-Subject: Re: [PATCH 1/6] dt-bindings: can: rcar_canfd: document r8a774a1 support
-To:     Simon Horman <horms@verge.net.au>
-Cc:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        id S1731098AbfGHM4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 08:56:24 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:57603 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728892AbfGHM4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 08:56:24 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue106 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MbBQU-1iLzrJ3Egy-00bXQy; Mon, 08 Jul 2019 14:55:57 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-can@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] [net-next] net/mlx5e: xsk: dynamically allocate mlx5e_channel_param
+Date:   Mon,  8 Jul 2019 14:55:41 +0200
+Message-Id: <20190708125554.3863901-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:4ftv1gHczqjAf8xH9IXsCPbra/fMKRspDTr8cIcpEuGznocAdGy
+ iZhmNDyoSPnpnBZOyDHtT8Ynn4XQ9kQfpsqHva0dKZA5Ld4hMScUjAMHEbG6PrAbwLC6ASg
+ g539BORMN8W974gKpYHP5K9v2Y2f956yutZO9dA6870giJkCXQ71FrqA8iO4eyLCZFzDhgI
+ VQdm2P+yiXXKN+C7144Mw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:S7/kq/cX7g0=:jQ0xc1zhHRNbrh7x+xMeHd
+ cA/orRXHrovfvXEwHXZJ26K0GbHxI2WZd/m4ZhxS4FbYUQCEDMUNy2qB1IFuJjaqe4Ok79Rw+
+ xsVajdjRZLKA8iteii1S1tU6D3sQnjcMYzK9cBDLynaRMXbMijhwmTSSWvoElvXCgDhCTHqgW
+ w0ZKb8UsaLYUJXJV+rtGWcvRINaruEIKSrH6zyPkiFs/7W8mhOpuPxnLYfSic/nmn9RqgeY16
+ 9PpuKCJVcOTuXrv7FXqdCpcEkbg09EeepsRjKkKsJ9YvEiTXd49QbJ9EalG6aIK2+5SXA2OCH
+ FfCwVe4ZWBH2Bf3cWn+IvsRaj/wv13R9p3joz6YNOZAPX0H5LLXq2sA6ckW2FC+QvSKaef0FP
+ IGttL7qBy2wgExG+3GFBaWQHx5wWeH3fnAslbBWvM6JvbHjCUMueZa6l/jnSzleM8dgP1n2dF
+ 3Kb7dt3tQKmc2ANAboFjOqOfOZqzpiye/4XZ1aBxc0wFo6nao0p9Xw+RjcYWxsEBKIY+2US1E
+ Q7A0Ivd4/DgYN0zZDRXUko+thJnndO3/iuaeeJi9C0fcbmplbWvxWHZqPB94wdycirbrWGTbF
+ 4BEHT3RgOKgOABrcp2tsqgnipoNcJTPr1Bq+Up14Mf3MERyrLi7AS4bXJNtz9L2BBMWBbtb/D
+ pVfYxu7EZc+0WEYxD2gQWQwH4ouF7OYRnkAuotdjafrWCeio59oFCnNdU4D/4x9PfSKA6DpwF
+ 7+b1dGFK0pTWht8vSCelCEwDbGj1EbJRNNE0DA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 11:30 AM Simon Horman <horms@verge.net.au> wrote:
-> On Fri, Jun 14, 2019 at 12:53:29PM +0100, Fabrizio Castro wrote:
-> > Document the support for rcar_canfd on R8A774A1 SoC devices.
-> >
-> > Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> > Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
+The structure is too large to put on the stack, resulting in a
+warning on 32-bit ARM:
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c:59:5: error: stack frame size of 1344 bytes in function
+      'mlx5e_open_xsk' [-Werror,-Wframe-larger-than=]
 
-> > ---
-> > Hello Simon,
-> >
-> > I think it would make more sense if this patch went through you as it
-> > sits on series:
-> > https://lkml.org/lkml/2019/5/9/941
-> >
-> > Do you think that's doable?
->
-> That seems reasonable to me.
->
-> Dave are you happy with me taking this, and 2/6, through
-> the renesas tree?
+Use kzalloc() instead.
 
-As the previous change to this file was acked by Dave, and went in through
-the Renesas tree, have I applied this patch and patch 2/6, and queued
-it for v5.4.
+Fixes: a038e9794541 ("net/mlx5e: Add XSK zero-copy support")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ .../mellanox/mlx5/core/en/xsk/setup.c         | 25 ++++++++++++-------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-Thanks!
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+index aaffa6f68dc0..db9bbec68dbf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+@@ -60,24 +60,28 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 		   struct mlx5e_xsk_param *xsk, struct xdp_umem *umem,
+ 		   struct mlx5e_channel *c)
+ {
+-	struct mlx5e_channel_param cparam = {};
++	struct mlx5e_channel_param *cparam;
+ 	struct dim_cq_moder icocq_moder = {};
+ 	int err;
+ 
+ 	if (!mlx5e_validate_xsk_param(params, xsk, priv->mdev))
+ 		return -EINVAL;
+ 
+-	mlx5e_build_xsk_cparam(priv, params, xsk, &cparam);
++	cparam = kzalloc(sizeof(*cparam), GFP_KERNEL);
++	if (!cparam)
++		return -ENOMEM;
+ 
+-	err = mlx5e_open_cq(c, params->rx_cq_moderation, &cparam.rx_cq, &c->xskrq.cq);
++	mlx5e_build_xsk_cparam(priv, params, xsk, cparam);
++
++	err = mlx5e_open_cq(c, params->rx_cq_moderation, &cparam->rx_cq, &c->xskrq.cq);
+ 	if (unlikely(err))
+-		return err;
++		goto err_kfree_cparam;
+ 
+-	err = mlx5e_open_rq(c, params, &cparam.rq, xsk, umem, &c->xskrq);
++	err = mlx5e_open_rq(c, params, &cparam->rq, xsk, umem, &c->xskrq);
+ 	if (unlikely(err))
+ 		goto err_close_rx_cq;
+ 
+-	err = mlx5e_open_cq(c, params->tx_cq_moderation, &cparam.tx_cq, &c->xsksq.cq);
++	err = mlx5e_open_cq(c, params->tx_cq_moderation, &cparam->tx_cq, &c->xsksq.cq);
+ 	if (unlikely(err))
+ 		goto err_close_rq;
+ 
+@@ -87,18 +91,18 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	 * is disabled and then reenabled, but the SQ continues receiving CQEs
+ 	 * from the old UMEM.
+ 	 */
+-	err = mlx5e_open_xdpsq(c, params, &cparam.xdp_sq, umem, &c->xsksq, true);
++	err = mlx5e_open_xdpsq(c, params, &cparam->xdp_sq, umem, &c->xsksq, true);
+ 	if (unlikely(err))
+ 		goto err_close_tx_cq;
+ 
+-	err = mlx5e_open_cq(c, icocq_moder, &cparam.icosq_cq, &c->xskicosq.cq);
++	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->xskicosq.cq);
+ 	if (unlikely(err))
+ 		goto err_close_sq;
+ 
+ 	/* Create a dedicated SQ for posting NOPs whenever we need an IRQ to be
+ 	 * triggered and NAPI to be called on the correct CPU.
+ 	 */
+-	err = mlx5e_open_icosq(c, params, &cparam.icosq, &c->xskicosq);
++	err = mlx5e_open_icosq(c, params, &cparam->icosq, &c->xskicosq);
+ 	if (unlikely(err))
+ 		goto err_close_icocq;
+ 
+@@ -123,6 +127,9 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ err_close_rx_cq:
+ 	mlx5e_close_cq(&c->xskrq.cq);
+ 
++err_kfree_cparam:
++	kfree(cparam);
++
+ 	return err;
+ }
+ 
+-- 
+2.20.0
 
-> >  Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt b/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
-> > index 32f051f..00afaff 100644
-> > --- a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
-> > +++ b/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
-> > @@ -4,6 +4,7 @@ Renesas R-Car CAN FD controller Device Tree Bindings
-> >  Required properties:
-> >  - compatible: Must contain one or more of the following:
-> >    - "renesas,rcar-gen3-canfd" for R-Car Gen3 and RZ/G2 compatible controllers.
-> > +  - "renesas,r8a774a1-canfd" for R8A774A1 (RZ/G2M) compatible controller.
-> >    - "renesas,r8a774c0-canfd" for R8A774C0 (RZ/G2E) compatible controller.
-> >    - "renesas,r8a7795-canfd" for R8A7795 (R-Car H3) compatible controller.
-> >    - "renesas,r8a7796-canfd" for R8A7796 (R-Car M3-W) compatible controller.
-> > @@ -32,10 +33,10 @@ enable/disable the respective channel.
-> >  Required properties for "renesas,r8a774c0-canfd", "renesas,r8a7795-canfd",
-> >  "renesas,r8a7796-canfd", "renesas,r8a77965-canfd", and "renesas,r8a77990-canfd"
-> >  compatible:
-> > -In R8A774C0, R8A7795, R8A7796, R8A77965, and R8A77990 SoCs, canfd clock is a
-> > -div6 clock and can be used by both CAN and CAN FD controller at the same time.
-> > -It needs to be scaled to maximum frequency if any of these controllers use it.
-> > -This is done using the below properties:
-> > +In R8A774A1, R8A774C0, R8A7795, R8A7796, R8A77965, and R8A77990 SoCs, canfd
-> > +clock is a div6 clock and can be used by both CAN and CAN FD controller at the
-> > +same time. It needs to be scaled to maximum frequency if any of these
-> > +controllers use it. This is done using the below properties:
-> >
-> >  - assigned-clocks: phandle of canfd clock.
-> >  - assigned-clock-rates: maximum frequency of this clock.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
