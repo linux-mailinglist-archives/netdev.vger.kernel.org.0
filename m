@@ -2,171 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A267861CAD
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 12:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB10561CF5
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 12:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729226AbfGHKCo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jul 2019 06:02:44 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:37391 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728596AbfGHKCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 06:02:44 -0400
-Received: by mail-ed1-f68.google.com with SMTP id w13so14006976eds.4
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 03:02:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=YxPCAS5xHdU7kgcXFsEO2tRjh2GlEkpffR9+LkAmjzU=;
-        b=Gex1zIXLco2KtsN/XQiCCCprqH/q5KEL+nXMIT+ZoFz66PAa7widROgctleMJoLeDN
-         KQklbpHK3J/7Myc4G+JfDuO3S3cdXr6yXbUXh3aP15IypGIUXQkjs0filesmmYH0Mmiq
-         9E7vFsZtbGB0ITtyzxdU/GV1ML9c9FEdpDottPVnG/LoRL5I8/2y13tYn2bFJiodA0rq
-         Tqq0hVHcNI0S1hMtoBVaL/vfVJAOAoi87Zwt/NmhfAckeyziNLM25t1gEPZQeTxtm6X9
-         HA5Z4f9+pMzwd3kihle+iW+zbC+rqF7ll8DOjJVRZ9Bt9zbA01FeNV0CJt4fAVtVA/+i
-         Cjkg==
-X-Gm-Message-State: APjAAAVUIxIlzOZ2G4MGl4MJI/SyqBT8MGaXDI7DNhXDLJPuBC4ITanb
-        ENFFajtWu5iabLMzyfIcT19xzQ==
-X-Google-Smtp-Source: APXvYqyCVYpc0Zby1IGt8qiLoY8uM3dYEBpdqJmk/HSWe8969JnqCf/d0Wz/85VGJxUVnf9UOUO9Ew==
-X-Received: by 2002:a50:ba78:: with SMTP id 53mr17088170eds.6.1562580162026;
-        Mon, 08 Jul 2019 03:02:42 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id m39sm5606412edm.96.2019.07.08.03.02.41
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 03:02:41 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D641D181CE6; Mon,  8 Jul 2019 12:02:40 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Y Song <ys114321@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/6] xdp: Add devmap_hash map type
-In-Reply-To: <CAH3MdRVB5Wq7_SPShk=xQaoGBdcdzRfb-t02JWOETRxY9QrKGA@mail.gmail.com>
-References: <156240283550.10171.1727292671613975908.stgit@alrua-x1> <CAH3MdRVB5Wq7_SPShk=xQaoGBdcdzRfb-t02JWOETRxY9QrKGA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 08 Jul 2019 12:02:40 +0200
-Message-ID: <87sgrgzvwf.fsf@toke.dk>
+        id S1725977AbfGHKcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 06:32:45 -0400
+Received: from mail.us.es ([193.147.175.20]:34234 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725869AbfGHKco (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 06:32:44 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id BB95CBAE86
+        for <netdev@vger.kernel.org>; Mon,  8 Jul 2019 12:32:42 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id ACE6DA0AAC
+        for <netdev@vger.kernel.org>; Mon,  8 Jul 2019 12:32:42 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AC2B9DA704; Mon,  8 Jul 2019 12:32:42 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 98181FB37C;
+        Mon,  8 Jul 2019 12:32:40 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 08 Jul 2019 12:32:40 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 683D34265A31;
+        Mon,  8 Jul 2019 12:32:40 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/15] Netfilter/IPVS updates for net-next
+Date:   Mon,  8 Jul 2019 12:32:22 +0200
+Message-Id: <20190708103237.28061-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Y Song <ys114321@gmail.com> writes:
+Hi,
 
-> On Sat, Jul 6, 2019 at 1:47 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> This series adds a new map type, devmap_hash, that works like the existing
->> devmap type, but using a hash-based indexing scheme. This is useful for the use
->> case where a devmap is indexed by ifindex (for instance for use with the routing
->> table lookup helper). For this use case, the regular devmap needs to be sized
->> after the maximum ifindex number, not the number of devices in it. A hash-based
->> indexing scheme makes it possible to size the map after the number of devices it
->> should contain instead.
->>
->> This was previously part of my patch series that also turned the regular
->> bpf_redirect() helper into a map-based one; for this series I just pulled out
->> the patches that introduced the new map type.
->>
->> Changelog:
->>
->> v2:
->>
->> - Split commit adding the new map type so uapi and tools changes are separate.
->>
->> Changes to these patches since the previous series:
->>
->> - Rebase on top of the other devmap changes (makes this one simpler!)
->> - Don't enforce key==val, but allow arbitrary indexes.
->> - Rename the type to devmap_hash to reflect the fact that it's just a hashmap now.
->>
->> ---
->>
->> Toke Høiland-Jørgensen (6):
->>       include/bpf.h: Remove map_insert_ctx() stubs
->>       xdp: Refactor devmap allocation code for reuse
->>       uapi/bpf: Add new devmap_hash type
->>       xdp: Add devmap_hash map type for looking up devices by hashed index
->>       tools/libbpf_probes: Add new devmap_hash type
->>       tools: Add definitions for devmap_hash map type
->
-> Thanks for re-organize the patch. I guess this can be tweaked a little more
-> to better suit for syncing between kernel and libbpf repo.
->
-> Let me provide a little bit background here. The below is
-> a sync done by Andrii from kernel/tools to libbpf repo.
->
-> =============
-> commit 39de6711795f6d1583ae96ed8d13892bc4475ac1
-> Author: Andrii Nakryiko <andriin@fb.com>
-> Date:   Tue Jun 11 09:56:11 2019 -0700
->
->     sync: latest libbpf changes from kernel
->
->     Syncing latest libbpf commits from kernel repository.
->     Baseline commit:   e672db03ab0e43e41ab6f8b2156a10d6e40f243d
->     Checkpoint commit: 5e2ac390fbd08b2a462db66cef2663e4db0d5191
->
->     Andrii Nakryiko (9):
->       libbpf: fix detection of corrupted BPF instructions section
->       libbpf: preserve errno before calling into user callback
->       libbpf: simplify endianness check
->       libbpf: check map name retrieved from ELF
->       libbpf: fix error code returned on corrupted ELF
->       libbpf: use negative fd to specify missing BTF
->       libbpf: simplify two pieces of logic
->       libbpf: typo and formatting fixes
->       libbpf: reduce unnecessary line wrapping
->
->     Hechao Li (1):
->       bpf: add a new API libbpf_num_possible_cpus()
->
->     Jonathan Lemon (2):
->       bpf/tools: sync bpf.h
->       libbpf: remove qidconf and better support external bpf programs.
->
->     Quentin Monnet (1):
->       libbpf: prevent overwriting of log_level in bpf_object__load_progs()
->
->      include/uapi/linux/bpf.h |   4 +
->      src/libbpf.c             | 207 ++++++++++++++++++++++-----------------
->      src/libbpf.h             |  16 +++
->      src/libbpf.map           |   1 +
->      src/xsk.c                | 103 ++++++-------------
->      5 files changed, 167 insertions(+), 164 deletions(-)
-> ==========
->
-> You can see the commits at tools/lib/bpf and
-> commits at tools/include/uapi/{linux/[bpf.h, btf.h], ...}
-> are sync'ed to libbpf repo.
->
-> So we would like kernel commits to be aligned that way for better
-> automatic syncing.
->
-> Therefore, your current patch set could be changed from
->    >       include/bpf.h: Remove map_insert_ctx() stubs
->    >       xdp: Refactor devmap allocation code for reuse
->    >       uapi/bpf: Add new devmap_hash type
->    >       xdp: Add devmap_hash map type for looking up devices by hashed index
->    >       tools/libbpf_probes: Add new devmap_hash type
->    >       tools: Add definitions for devmap_hash map type
-> to
->       1. include/bpf.h: Remove map_insert_ctx() stubs
->       2. xdp: Refactor devmap allocation code for reuse
->       3. kernel non-tools changes (the above patch #3 and #4)
->       4. tools/include/uapi change (part of the above patch #6)
->       5. tools/libbpf_probes change
->       6. other tools/ change (the above patch #6 - new patch #4).
->
-> Thanks!
+The following patchset contains Netfilter/IPVS updates for net-next:
 
-Ah, right, got the two uapi updates mixed up I guess. Will fix and
-respin :)
+1) Move bridge keys in nft_meta to nft_meta_bridge, from wenxu.
 
--Toke
+2) Support for bridge pvid matching, from wenxu.
+
+3) Support for bridge vlan protocol matching, also from wenxu.
+
+4) Add br_vlan_get_pvid_rcu(), to fetch the bridge port pvid
+   from packet path.
+
+5) Prefer specific family extension in nf_tables.
+
+6) Autoload specific family extension in case it is missing.
+
+7) Add synproxy support to nf_tables, from Fernando Fernandez Mancera.
+
+8) Support for GRE encapsulation in IPVS, from Vadim Fedorenko.
+
+9) ICMP handling for GRE encapsulation, from Julian Anastasov.
+
+10) Remove unused parameter in nf_queue, from Florian Westphal.
+
+11) Replace seq_printf() by seq_puts() in nf_log, from Markus Elfring.
+
+12) Rename nf_SYNPROXY.h => nf_synproxy.h before this header becomes
+    public.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 77cf8edbc0e7db6d68d1a49cf954849fb92cfa7c:
+
+  tipc: simplify stale link failure criteria (2019-06-25 13:28:57 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 0ef1efd1354d732d040f29b2005420f83fcdd8f4:
+
+  netfilter: nf_tables: force module load in case select_ops() returns -EAGAIN (2019-07-06 08:37:36 +0200)
+
+----------------------------------------------------------------
+Fernando Fernandez Mancera (1):
+      netfilter: nf_tables: Add synproxy support
+
+Florian Westphal (1):
+      netfilter: nf_queue: remove unused hook entries pointer
+
+Julian Anastasov (1):
+      ipvs: strip gre tunnel headers from icmp errors
+
+Markus Elfring (1):
+      netfilter: nf_log: Replace a seq_printf() call by seq_puts() in seq_show()
+
+Pablo Neira Ayuso (5):
+      netfilter: rename nf_SYNPROXY.h to nf_synproxy.h
+      bridge: add br_vlan_get_pvid_rcu()
+      netfilter: nf_tables: add nft_expr_type_request_module()
+      netfilter: nf_tables: __nft_expr_type_get() selects specific family type
+      netfilter: nf_tables: force module load in case select_ops() returns -EAGAIN
+
+Vadim Fedorenko (1):
+      ipvs: allow tunneling with gre encapsulation
+
+wenxu (5):
+      netfilter: nft_meta: move bridge meta keys into nft_meta_bridge
+      netfilter: nft_meta_bridge: Remove the br_private.h header
+      netfilter: nft_meta_bridge: add NFT_META_BRI_IIFPVID support
+      bridge: add br_vlan_get_proto()
+      netfilter: nft_meta_bridge: Add NFT_META_BRI_IIFVPROTO support
+
+ include/linux/if_bridge.h                          |  12 +
+ include/net/netfilter/nf_conntrack_synproxy.h      |   1 +
+ include/net/netfilter/nf_queue.h                   |   3 +-
+ include/net/netfilter/nf_synproxy.h                |   5 +
+ include/net/netfilter/nft_meta.h                   |  44 ++++
+ include/uapi/linux/ip_vs.h                         |   1 +
+ .../netfilter/{nf_SYNPROXY.h => nf_synproxy.h}     |   4 +
+ include/uapi/linux/netfilter/nf_tables.h           |  20 ++
+ include/uapi/linux/netfilter/xt_SYNPROXY.h         |   2 +-
+ net/bridge/br_input.c                              |   2 +-
+ net/bridge/br_vlan.c                               |  29 ++-
+ net/bridge/netfilter/Kconfig                       |   6 +
+ net/bridge/netfilter/Makefile                      |   1 +
+ net/bridge/netfilter/nft_meta_bridge.c             | 163 ++++++++++++
+ net/netfilter/Kconfig                              |  11 +
+ net/netfilter/Makefile                             |   1 +
+ net/netfilter/core.c                               |   2 +-
+ net/netfilter/ipvs/ip_vs_core.c                    |  46 +++-
+ net/netfilter/ipvs/ip_vs_ctl.c                     |   1 +
+ net/netfilter/ipvs/ip_vs_xmit.c                    |  66 ++++-
+ net/netfilter/nf_log.c                             |   2 +-
+ net/netfilter/nf_queue.c                           |   8 +-
+ net/netfilter/nf_synproxy_core.c                   |   2 +-
+ net/netfilter/nf_tables_api.c                      |  36 ++-
+ net/netfilter/nf_tables_core.c                     |   1 +
+ net/netfilter/nft_meta.c                           |  85 +++---
+ net/netfilter/nft_synproxy.c                       | 287 +++++++++++++++++++++
+ 27 files changed, 757 insertions(+), 84 deletions(-)
+ create mode 100644 include/net/netfilter/nft_meta.h
+ rename include/uapi/linux/netfilter/{nf_SYNPROXY.h => nf_synproxy.h} (71%)
+ create mode 100644 net/bridge/netfilter/nft_meta_bridge.c
+ create mode 100644 net/netfilter/nft_synproxy.c
