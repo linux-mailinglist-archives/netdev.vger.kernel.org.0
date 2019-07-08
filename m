@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B376627CE
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC165627D5
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 20:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389215AbfGHR60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 13:58:26 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45018 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729052AbfGHR60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:58:26 -0400
-Received: by mail-qt1-f193.google.com with SMTP id 44so15059000qtg.11;
-        Mon, 08 Jul 2019 10:58:25 -0700 (PDT)
+        id S1730987AbfGHSBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 14:01:09 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:46522 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729052AbfGHSBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 14:01:09 -0400
+Received: by mail-ot1-f68.google.com with SMTP id z23so17086339ote.13;
+        Mon, 08 Jul 2019 11:01:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DXpdoTfcMjqdZs/kMrwaOv0ehGSPPA6c8mOe+DaQM6A=;
-        b=fK/eF7tTQHTpoWKBc82dbKoNvCfA3uxxH5nAW23leewCt0vW3JIgNJSEM0h9+edkAD
-         hn5or9/VENE+iEZ3CTr0QCC4O9tYWsiNynwR2PfPy5PyzxDYpFbbSA+O/qZySDUgqe9M
-         PyxJokqh6/N+Mn0AG/gk/5fWXL8PcGgzpcycCDu0o3jfXo6AtOszI5BzCPNlSE9+dWdI
-         +mC1SCdUCR5BLG95nqMt+eMQdjqXqY1yL07D9Kw8c5E1gMeABFu2LSxRpZ9E4srOpfbn
-         QZy084U1+WlJfEyCLohrVnEVVnBpc/zSpoIVqXLEwtv6vXW6LOnjiUCSy3dTezCuiFQf
-         wNDQ==
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JMLSGXlT3iSJpmRh2GfhH2MTdPzvNG/RLBCIaq7q1DE=;
+        b=NhkzIgYsc+jkVgoi0AEKjTLWDp+VadO9nPKXg2stTXuCL5wne3ibdTnsCCoNlzYecT
+         EISOiMD2fCqGI6QyjXvVkJ+BRtsSx2RW6uh2C/pvy5TPfIxII7Ng3wENwYJPnCFCI6tf
+         C0NJBed6hhRtVOn22MySx/ZZY4U/AZef11ywmDZ5ePGxk4vAFWx/UlXJbfWJx8kTPGvH
+         Qj9l8M0JetjAL+fcnEQT6NhU3RCGwI+MKJqEXo603rvT4jUisT1rnxjn8at1P7QdJu/Q
+         +1oCZqiZH7yDdJK6PTdI+8qQbItEABdlrShXfNPaMmxcrI84ew/w6owmZAUEGCxtb/e3
+         wsVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DXpdoTfcMjqdZs/kMrwaOv0ehGSPPA6c8mOe+DaQM6A=;
-        b=ZlcESWpxD/AQamGlcl1PhS8zYiURwz38awIFps7D04Sbedsn05eeI/jUGbcDSSjEPi
-         zItMtQdnLS+Lop+/y3DGP2XOnADQy8F8Pwo1cKMKC3FTpkSB9zx8m4ve4vsrYxJJTBU8
-         XB5Lzrj6zaR4rw/HBKRQfXSfgY+Z3/yXvh11SiYjisKJqdipz5T+sRVKJ5Bp9mf/W8R2
-         Pd0hm9T1WA/M94lwPOLD5urDJB18ruqmbQ+3jCNNLFcqTeUT4oyazPvfly3ci9uBzuEV
-         dAw9iZlInvELmB++wkphQ82ZTTS2W1S5t4mPz35vcYu767tlAfqgFQe782jfVyXlBMcu
-         BUwg==
-X-Gm-Message-State: APjAAAWNpQFdP8s2iTV78JyMauaE0fuLBhl+5sX7PxlY7dzP5dgtItAy
-        VK1PLJB5DjcTUFHsbJ1mJwQ6QNxzO8oyaCvFCfINUuozvUM5GVbd
-X-Google-Smtp-Source: APXvYqxAEvi3WalOd9E7g982oDgX3nFv/Z84EKiOOXZxsmT9pYwmDis0TUBze2jaZ1celBz7+367c3Kct2TFEvw0hfU=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr14726137qty.141.1562608704941;
- Mon, 08 Jul 2019 10:58:24 -0700 (PDT)
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JMLSGXlT3iSJpmRh2GfhH2MTdPzvNG/RLBCIaq7q1DE=;
+        b=V/3UealP2QuBuDLAvoSvj/BfSkzyqfowfzEDhJx4pWT/vmhI1VnxizdiwU7ize2f3b
+         xd5rUrrluuxSC4S26p0fDKEgUGOctAfy6jP+C2JdPjf2wim2OvejTNjJsAwJLKXfSNiQ
+         J+hG+7yTRfKI/NP5h303+unxHyZMpgz9mGuB7qwEPZYQM+Icb1XOu7kzQkYXt/QZxlG4
+         I892Tjx9xSNSurcrfrYd9kzauqqzitQ/UByoHlwvJS288bNvsOfUPvLVLh+YOZeRXGF9
+         HkWhXhyxRYrkq6ykFAiImBATvqH2oRPpW6ZzvsN53GJBazJiV1gnyfu+1zgmcQ8ThYtN
+         RWkA==
+X-Gm-Message-State: APjAAAW/uERfS1EWhPRuQGp5MgZT/8qrJmq6kbnwZa49IiJfdj7iFgHZ
+        f3JDSv0caEDbrOH86aki158220kK
+X-Google-Smtp-Source: APXvYqz3Y0Vo9g1LDItsxpblqPdB8IwklWfZ2sznAXdTgLFhHNqdDhyzwRq3ICdJzzXTxdqlIdOMUA==
+X-Received: by 2002:a9d:6b89:: with SMTP id b9mr1579766otq.322.1562608868717;
+        Mon, 08 Jul 2019 11:01:08 -0700 (PDT)
+Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
+        by smtp.gmail.com with ESMTPSA id f17sm127906otl.25.2019.07.08.11.01.07
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Jul 2019 11:01:07 -0700 (PDT)
+Subject: Re: [PATCH] rtw88/pci: Rearrange the memory usage for skb in RX ISR
+To:     Jian-Hong Pan <jian-hong@endlessm.com>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com,
+        Daniel Drake <drake@endlessm.com>, stable@vger.kernel.org
+References: <20190708063252.4756-1-jian-hong@endlessm.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+Message-ID: <212a37b0-583b-1062-64fd-f0fb0d4f982f@lwfinger.net>
+Date:   Mon, 8 Jul 2019 13:01:06 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <CAH+k93FQkiwRXwgRGrUJEpmAGZBL03URKDmx8uVA9MnLrDKn0Q@mail.gmail.com>
-In-Reply-To: <CAH+k93FQkiwRXwgRGrUJEpmAGZBL03URKDmx8uVA9MnLrDKn0Q@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 8 Jul 2019 10:58:14 -0700
-Message-ID: <CAEf4Bzb-EM41TLAkshQa=nVwiVuYnEYyhVL38gcaG=OaHoJJ6Q@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 4/9] libbpf: add kprobe/uprobe attach API
-To:     Matt Hart <matthew.hart@linaro.org>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190708063252.4756-1-jian-hong@endlessm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 8, 2019 at 8:11 AM Matt Hart <matthew.hart@linaro.org> wrote:
->
-> Hi all,
->
-> I bisected a perf build error on ARMv7 to this patch:
-> libbpf.c: In function =E2=80=98perf_event_open_probe=E2=80=99:
-> libbpf.c:4112:17: error: cast from pointer to integer of different
-> size [-Werror=3Dpointer-to-int-cast]
->   attr.config1 =3D (uint64_t)(void *)name; /* kprobe_func or uprobe_path =
-*/
->                  ^
->
-> Is this a known issue?
+On 7/8/19 1:32 AM, Jian-Hong Pan wrote:
+> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+> index cfe05ba7280d..1bfc99ae6b84 100644
+> --- a/drivers/net/wireless/realtek/rtw88/pci.c
+> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
+> @@ -786,6 +786,15 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
+>   		rx_desc = skb->data;
+>   		chip->ops->query_rx_desc(rtwdev, rx_desc, &pkt_stat, &rx_status);
+>   
+> +		/* discard current skb if the new skb cannot be allocated as a
+> +		 * new one in rx ring later
+> +		 * */
+> +		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
+> +		if (WARN(!new, "rx routine starvation\n")) {
+> +			new = skb;
+> +			goto next_rp;
 
-No, thanks for reporting!
+This should probably be a WARN_ONCE() rather than WARN(), otherwise the logs 
+will be flooded once this condition triggers.
 
-It should be
-
-attr.config1 =3D (uint64_t)(uintptr_t)(void *)name;
-
-to avoid warning on 32-bit architectures.
-
-I'll post a fix later today, but if you could verify this fixes
-warning for you, I'd really appreciate that! Thanks!
+Larry
