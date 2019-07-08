@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9209361EB1
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 14:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03AAE61EB9
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 14:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729786AbfGHMn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 08:43:57 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39223 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727052AbfGHMn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 08:43:56 -0400
-Received: by mail-wr1-f67.google.com with SMTP id x4so16929388wrt.6
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 05:43:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KiFKXnsw35cJhRU1HfiX45r7hJn4aM30316XTobK8W4=;
-        b=FYqxhELL5eIljiwK/DzaH7UvmnIhEC6YawEJt1vEv1CBHIpK5g5FblngpERB59j9wQ
-         Wa1Pg2JxA5axBD2H6xMEyfTyCZqjDen02Ru0YPjKIVeJCnhFdptZ+oO69j/k5ipcQIpL
-         RQYwxnyNRPSRsXV7OygUCJNf98SoJQI6Jw+yOYVsYKlYNjAmxeG3WN3JG27Kjws4VFSu
-         inDP3o2LkU2Z+tozRfN5SBT/q2Sd44B4ZGQilGO8koviEZ9sZinZSNQ7crRvHpU9SZs0
-         6mSmkwQ2reMnPvd73YPSqW/cGulNkHt3rRjucPx5RWbEEcB2F6NRIrGYO6kJDbhThvTk
-         ctpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KiFKXnsw35cJhRU1HfiX45r7hJn4aM30316XTobK8W4=;
-        b=IP62M+HOhByW8qbuaTxo6a8usmWkgl28oa5JJ/bFPnt438u/Qy29ocz4M2XDPZL/ti
-         slgrAe8e4HVeYvPS50AxJE+w4iuUmPfVphtytsW/qYID1L/k7vQcuJF09PP5Zis2EymQ
-         epfbq7JWlxMNBNoeA5KUJNxe4ZgZXGPwDiVatbsyHgJfzDCN2l/1EnrJhayuaW0DGgZ4
-         w5sZU8xM5zozTbvJ+szQyjaA6QR7cHDPU75YHQG8hyIrYeMjZkkQx3EripVbo4cDT7FU
-         Zn1axkqX7RDjJhTfLVscoSMPbDwvdaTbjrjLLdpN7W4Q/dp+QjqJRY7Ww3PycoSBwc7i
-         vQIg==
-X-Gm-Message-State: APjAAAV3cDy2HpLyBD9PGpwSNNIbrO+OkoMY0O0WXXXS5WtbKzsZvZTp
-        pAzVECWGa0TIMRtgjEmiFpzu6w==
-X-Google-Smtp-Source: APXvYqyRIrO+4ziMW93XeGm2sYDPz5rOmwxPFlleuWcSLtmXQGp2qFlrgdZGHTNpI/bp3zlBaSrtcw==
-X-Received: by 2002:adf:e2c7:: with SMTP id d7mr18284565wrj.272.1562589834969;
-        Mon, 08 Jul 2019 05:43:54 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id c14sm12878729wrr.56.2019.07.08.05.43.54
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 05:43:54 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 14:43:53 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Tariq Toukan <tariqt@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@mellanox.com>, ayal@mellanox.com,
-        jiri@mellanox.com, Saeed Mahameed <saeedm@mellanox.com>,
-        moshe@mellanox.com
-Subject: Re: [PATCH net-next 08/16] net/mlx5e: Extend tx diagnose function
-Message-ID: <20190708124353.GF2201@nanopsycho>
-References: <1562500388-16847-1-git-send-email-tariqt@mellanox.com>
- <1562500388-16847-9-git-send-email-tariqt@mellanox.com>
+        id S1730944AbfGHMqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 08:46:25 -0400
+Received: from mout.kundenserver.de ([212.227.17.24]:40887 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727052AbfGHMqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 08:46:24 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MMoXC-1i3ErY1LKW-00Ikwr; Mon, 08 Jul 2019 14:45:48 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [RFC] Revert "bpf: Fix ORC unwinding in non-JIT BPF code"
+Date:   Mon,  8 Jul 2019 14:45:23 +0200
+Message-Id: <20190708124547.3515538-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562500388-16847-9-git-send-email-tariqt@mellanox.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:dpxQFSIW823RM1QEm3jyJ5Ha9S1hG/XgAyEwAb3Bq2BvwHXqmM/
+ IMvuMeO0a9ZBslErXc907kOvrpZhGClXPWQ0MV/6wEMhDCIPsSZvjkEVXkhWrGM0uB572cV
+ I1EsBb6U3wlPhkXTdSAOzNmpNgkNIliOOeruG1o7av3v/bs0YBkmJ4LELIHhHO6CvrN1tNH
+ yDwqfhVgZr6YvA0uE5VAw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eJXlBJYTykY=:SOrJNMR1+bV+vkq0dCEYi3
+ 9wdptLA35N9QnDbxnKJ8XlfW01u3+UZR71IYehoLlQGqlp6yxRvgKjfM0wRAX41aWiTk6vrI7
+ jLnS5/Zsk5Omaxtg+ovyWkZadQs0oKJwQmuPzwiIFIAK2K30wQNgEs1Wy9NzXG2rijFKpUC8O
+ xgVlz2c2bOcZbZPjrpEgZGgN8avGEen+RI0QoW1gngnkN8SQj6R2WflkAVtFti7tvATzospdj
+ 0APFlxxT0HCtClop/Fl2ug7gS0KnDNF5PCJL88+YLQD4NtuX2wTzMugnUbcs3vVHkcyOMUhmP
+ SKStL8u5kyRJJelounUII8CjBLEST1q358hMnABRsJHPpzY+pj9on0bKJig+DWGzC7g3OV7wi
+ 5XfVnIX5M9V2Fw1UoFjrF2svlUSL/Ss/vYszc7WwLMM6BJMANY61OfRZpktc8Q/9F0QUAau3M
+ OBBoRsZDZLkv13OgSyjwzTe0/apm3BT4gTmv79ddRHuRau3GJy6e3DJTc3dWMqXlt9o4cAuuD
+ uFwWJBUXNsu5T+y2lNu6BcLRVVZtIvA0YcwvPTwgrE8tDYkgh+WZhJxvtfztzHOg5SThJGP7q
+ 4Piu6LAjQ0EQNidgovzkoKEfbpa5koKHhSFs5YSPLrgFnzpStx2AHdMCOfUS6FbWhmL8hUqi3
+ 6PKIJMkD4fZVS8lXYbU4wBoty9nYPvp8EhuBYHyT53Ab6LATBIAJnDIc4yGNS8o9bN2eGtOBd
+ oZ+b4mrmMoSdLhr/iB2xH7uq8G0+s1WE96epGw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jul 07, 2019 at 01:53:00PM CEST, tariqt@mellanox.com wrote:
->From: Aya Levin <ayal@mellanox.com>
->
->The following patches in the set enhance the diagnostics info of tx
->reporter. Therefore, it is better to pass a pointer to the SQ for
->further data extraction.
->
->Signed-off-by: Aya Levin <ayal@mellanox.com>
->Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+Apparently this was a bit premature, at least I still get this
+warning with gcc-8.1:
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x44d2: sibling call from callable instruction with modified stack frame
+
+This reverts commit b22cf36c189f31883ad0238a69ccf82aa1f3b16b.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ kernel/bpf/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 7e98f36a14e2..16079550db6d 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1299,7 +1299,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+ {
+ #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
+ #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
+-	static const void * const jumptable[256] __annotate_jump_table = {
++	static const void *jumptable[256] = {
+ 		[0 ... 255] = &&default_label,
+ 		/* Now overwrite non-defaults ... */
+ 		BPF_INSN_MAP(BPF_INSN_2_LBL, BPF_INSN_3_LBL),
+@@ -1558,6 +1558,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+ 		BUG_ON(1);
+ 		return 0;
+ }
++STACK_FRAME_NON_STANDARD(___bpf_prog_run); /* jump table */
+ 
+ #define PROG_NAME(stack_size) __bpf_prog_run##stack_size
+ #define DEFINE_BPF_PROG_RUN(stack_size) \
+-- 
+2.20.0
+
