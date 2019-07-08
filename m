@@ -2,92 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E6362696
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:48:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F8762699
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732870AbfGHQse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 12:48:34 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:36957 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730341AbfGHQse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:48:34 -0400
-Received: by mail-ot1-f66.google.com with SMTP id s20so16886448otp.4
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 09:48:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hEJiFjkdHYVeR3K4SHQIvRtGqvUMlHnXZqvajLoLJY8=;
-        b=HXgtBfQ2/gIQzVaHNnrx5mV2GweY+LaUI+ZYhMW7ME7JcSCQ3u6Xev114cMOU+mrkx
-         39Z0w9TP1zdIGTXkKs3YBVpEITsGu58DD20m0b2p5upB+7xFqr1Z7P/jNKXQEhQ3prk7
-         NjDyJIgzv5wli5ooS/0nAPsX8U8XjLr0gNM1P0+ySc2UUhT0fzxf+v/9mDepKtq4QNyD
-         n7GEzR52+sVIH6ZKZoTLC4cpuU5NSkfe8Yfh6Ks+6eadO5Xf/JJX8UDC4t6KliFHIAwz
-         poroEtVcZER4WRXXel3uKIxgpxLN5ym4KIOdqC/gVovc6pzbk2YZYkHwaGKHrRw3+/3g
-         F0+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hEJiFjkdHYVeR3K4SHQIvRtGqvUMlHnXZqvajLoLJY8=;
-        b=I9mbCWaaCtqpS7aUxCX4WCOhVSiMr7DleAl/hu6aLTn7jm+bVRonw2aG2M1FlBO8il
-         K05VrQbM7dotnutru2UmIp8vWzyZ/Gk+B+mOZSMpwjKhyLS4+eB+n2mh5QpiqHM1kzTs
-         YR7Eu2s5FrtzYun44XT6+etVSCMnMQVSg/c7TKV48M6Xp3ygDWWv38wMnGloudXcsKja
-         F6A2bj+H7H5RUNeDT3tUEXgVcBVc1PrIMy3fTDfRG4eBsMZqw0IC94yOszRGhvS01I3M
-         z39iiLwlZznf650hpE5h9B4brOrYSfrK3HTVWTnZjlp753iYmSqmdqW/c/Pbux0Fxke/
-         /xNw==
-X-Gm-Message-State: APjAAAWEYQUg0Cc7FuqCPsnLHaK7/k+sU0RMbgOD5vbIlMj3L/AzVte9
-        MkepKSA1o63vbSvx5XgCYYSwgKbPRNgOqSKUmmQH8g==
-X-Google-Smtp-Source: APXvYqwgoUi449XeXMj/OC0JQG+PyPaTEfbjQyBK4qplkxOOafmELb9/Xy+ilqeGu4PHMXGxflr+e/Cj8cZC/OY9tpw=
-X-Received: by 2002:a9d:19e5:: with SMTP id k92mr7528701otk.65.1562604513635;
- Mon, 08 Jul 2019 09:48:33 -0700 (PDT)
+        id S2389713AbfGHQtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 12:49:04 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8596 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728973AbfGHQtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:49:02 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x68GeOQ0028398;
+        Mon, 8 Jul 2019 09:48:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=WKdp+07t86SOmJ3AiTfwh1azCfTXS+2lijIgVGWqhHU=;
+ b=kxDsibpjPHalbsLpn+vaSSErj8UH60uCVDvlU6PHXhQd8IS7cnvRqJWOkeLy6l2Z0yOF
+ UgUP58P7COkRsUIM8NLCbzVnYHcq1qmJXFJAnpoquLHDI6n+UXWNOiahLI4bra0CoXsv
+ x5eTRpOLdYgF+TltVUPU3nNZbKwtqN3D+Bw= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tm4tph56n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 08 Jul 2019 09:48:18 -0700
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 8 Jul 2019 09:48:18 -0700
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 8 Jul 2019 09:48:17 -0700
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 8 Jul 2019 09:48:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WKdp+07t86SOmJ3AiTfwh1azCfTXS+2lijIgVGWqhHU=;
+ b=ElkdhHimGxFLC7J/jKk0df2P8ldBJsj4mIYXIjLTHtNzO0KIJAWspMmcblG3vS+g5D0owLtaKpy1y/6xMXAhSwmt2zFJHxt539vaZEKeEADYlOFTFSypJ6QtSW2PRgYvoaI6fzDAhy0cuNaEngeE/B+41RAn6z5OdNJosknmhLM=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB3509.namprd15.prod.outlook.com (20.179.60.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.18; Mon, 8 Jul 2019 16:48:16 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::e499:ecba:ec04:abac]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::e499:ecba:ec04:abac%5]) with mapi id 15.20.2052.020; Mon, 8 Jul 2019
+ 16:48:16 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "Jesper Dangaard Brouer" <brouer@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Subject: Re: [PATCH bpf-next v3 5/6] tools/libbpf_probes: Add new devmap_hash
+ type
+Thread-Topic: [PATCH bpf-next v3 5/6] tools/libbpf_probes: Add new devmap_hash
+ type
+Thread-Index: AQHVNXu+LwsuyEUGZ0W5+fRnEgeAZabA7uOA
+Date:   Mon, 8 Jul 2019 16:48:16 +0000
+Message-ID: <3e448637-682e-825a-a8a2-108de7b8e4ed@fb.com>
+References: <156258334704.1664.15289699152225647059.stgit@alrua-x1>
+ <156258334745.1664.1686759894096070590.stgit@alrua-x1>
+In-Reply-To: <156258334745.1664.1686759894096070590.stgit@alrua-x1>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BN6PR18CA0021.namprd18.prod.outlook.com
+ (2603:10b6:404:121::31) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::2:7bd2]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 41129969-c277-476a-240c-08d703c412df
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB3509;
+x-ms-traffictypediagnostic: BYAPR15MB3509:
+x-microsoft-antispam-prvs: <BYAPR15MB3509ED2D7C1EAC79879E08E0D3F60@BYAPR15MB3509.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:421;
+x-forefront-prvs: 00922518D8
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(136003)(346002)(376002)(366004)(199004)(189003)(68736007)(486006)(66476007)(4744005)(66446008)(66556008)(66946007)(7736002)(6116002)(64756008)(73956011)(25786009)(8676002)(2616005)(476003)(446003)(99286004)(14454004)(86362001)(2906002)(31696002)(71200400001)(71190400001)(46003)(305945005)(186003)(11346002)(81156014)(8936002)(256004)(54906003)(6486002)(81166006)(386003)(6506007)(53546011)(52116002)(478600001)(110136005)(76176011)(4326008)(102836004)(5660300002)(36756003)(229853002)(53936002)(316002)(6436002)(6512007)(31686004)(6246003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3509;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 7Nj/gOTKHN4aQyGkV9nfzoyTkR3SR+jWEjdZRX2GItQylTKBlzqA1Chda4FeGRiQktfYPb/JezaJdCj5ysI3ej8p8V9SQ8FB5pSW2VhZ05ovf88ayuhXExAvBLjQM5PJimGYtfsmOTLz5JbB5EHu5dXUFTEneihp5z44P11n2Cvi1Vzldo/D4Iy01XDwqxOcDjC62UhREDFyHYiDUmUV7N647C/cUxfX1tHuj7Xn43fyvUMHVkzmsP8Bf7jfCvBIx9arCP5xnFclNvo6ks5tpfCK29UMN9pUmWxiHbAoQQ00cXWwyeAE3t3JHx3JsNxhdbsSuZtwvj3paq8L1usZo/Gl2KVm/45pqGpaz8kSW6KPCcwgTm/qPI33vD8YD5OmBvnYeT4u4Y5vmdHjO2ZDy4O2MYvPbu16XzaHBJ8pkJw=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <04E8E9CF774D824E9B626B75D6ECB147@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1562201102-4332-1-git-send-email-lucasb@mojatatu.com>
- <1562201102-4332-2-git-send-email-lucasb@mojatatu.com> <20190704202130.tv2ivy5tjj7pjasj@x220t>
-In-Reply-To: <20190704202130.tv2ivy5tjj7pjasj@x220t>
-From:   Lucas Bates <lucasb@mojatatu.com>
-Date:   Mon, 8 Jul 2019 12:48:12 -0400
-Message-ID: <CAMDBHY+Mg9W0wJRQWeUBHCk=G0Qp4nij8B4Oz77XA6AK2Dt7Gw@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 1/3] tc-testing: Add JSON verification to tdc
-To:     Alexander Aring <aring@mojatatu.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Davide Caratti <dcaratti@redhat.com>, kernel@mojatatu.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41129969-c277-476a-240c-08d703c412df
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2019 16:48:16.3300
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3509
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-08_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=938 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907080206
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 4, 2019 at 4:21 PM Alexander Aring <aring@mojatatu.com> wrote:
-
-> why you just use eval() as pattern matching operation and let the user
-> define how to declare a matching mechanism instead you introduce another
-> static matching scheme based on a json description?
->
-> Whereas in eval() you could directly use the python bool expression
-> parser to make whatever you want.
->
-> I don't know, I see at some points you will hit limitations what you can
-> express with this matchFOO and we need to introduce another matchBAR,
-> whereas in providing the code it should be no problem expression
-> anything. If you want smaller shortcuts writing matching patterns you
-> can implement them and using in your eval() operation.
-
-Regarding hitting limitations: quite possibly, yes.
-
-Using eval() to provide code for matching is going to put more of a
-dependency on the test writer knowing Python.  I know it's not a
-terribly difficult language to pick up, but it's still setting a
-higher barrier to entry.  This is the primary reason I scrapped the
-work I had presented at Netdev 1.2 in Tokyo, where all the tests were
-coded using Python's unittest framework - I want to be sure it's as
-easy as possible for people to use tdc and write tests for it.
-
-Unless I'm off-base here?
-
-Lucas
+DQoNCk9uIDcvOC8xOSAzOjU1IEFNLCBUb2tlIEjDuGlsYW5kLUrDuHJnZW5zZW4gd3JvdGU6DQo+
+IEZyb206IFRva2UgSMO4aWxhbmQtSsO4cmdlbnNlbiA8dG9rZUByZWRoYXQuY29tPg0KPiANCj4g
+VGhpcyBhZGRzIHRoZSBkZWZpbml0aW9uIGZvciBCUEZfTUFQX1RZUEVfREVWTUFQX0hBU0ggdG8g
+bGliYnBmX3Byb2Jlcy5jIGluDQo+IHRvb2xzL2xpYi9icGYuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5
+OiBUb2tlIEjDuGlsYW5kLUrDuHJnZW5zZW4gPHRva2VAcmVkaGF0LmNvbT4NCg0KQWNrZWQtYnk6
+IFlvbmdob25nIFNvbmcgPHloc0BmYi5jb20+DQoNCj4gLS0tDQo+ICAgdG9vbHMvbGliL2JwZi9s
+aWJicGZfcHJvYmVzLmMgfCAgICAxICsNCj4gICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24o
+KykNCj4gDQo+IGRpZmYgLS1naXQgYS90b29scy9saWIvYnBmL2xpYmJwZl9wcm9iZXMuYyBiL3Rv
+b2xzL2xpYi9icGYvbGliYnBmX3Byb2Jlcy5jDQo+IGluZGV4IGFjZTFhMDcwOGQ5OS4uNGIwYjAz
+NjRmNWZjIDEwMDY0NA0KPiAtLS0gYS90b29scy9saWIvYnBmL2xpYmJwZl9wcm9iZXMuYw0KPiAr
+KysgYi90b29scy9saWIvYnBmL2xpYmJwZl9wcm9iZXMuYw0KPiBAQCAtMjQ0LDYgKzI0NCw3IEBA
+IGJvb2wgYnBmX3Byb2JlX21hcF90eXBlKGVudW0gYnBmX21hcF90eXBlIG1hcF90eXBlLCBfX3Uz
+MiBpZmluZGV4KQ0KPiAgIAljYXNlIEJQRl9NQVBfVFlQRV9BUlJBWV9PRl9NQVBTOg0KPiAgIAlj
+YXNlIEJQRl9NQVBfVFlQRV9IQVNIX09GX01BUFM6DQo+ICAgCWNhc2UgQlBGX01BUF9UWVBFX0RF
+Vk1BUDoNCj4gKwljYXNlIEJQRl9NQVBfVFlQRV9ERVZNQVBfSEFTSDoNCj4gICAJY2FzZSBCUEZf
+TUFQX1RZUEVfU09DS01BUDoNCj4gICAJY2FzZSBCUEZfTUFQX1RZUEVfQ1BVTUFQOg0KPiAgIAlj
+YXNlIEJQRl9NQVBfVFlQRV9YU0tNQVA6DQo+IA0K
