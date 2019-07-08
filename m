@@ -2,102 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48C5461A0C
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 06:35:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF9161A1C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 06:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727543AbfGHEet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 00:34:49 -0400
-Received: from mail-eopbgr00082.outbound.protection.outlook.com ([40.107.0.82]:55040
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727341AbfGHEet (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 00:34:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+8IEFy0j/cvJPEg2lpWlXPbKH2DmHJMxuzF2m8WC1cI=;
- b=LuYC+Hzq+zicV2AcqsUFWy5dJH+HCzN9UAieIPy4mJuuWRQ3zUweFv1L9Y+7bphSIhwsXxEJXuObK6YQTOXwqonnJieBKuaAbHi5ieBqbpYmd5MbvC+qE02GSzubBTTziUT5Wy0/PvTnRhhPK5n/3K321eh+kgtSwzX9r/+Udh0=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4739.eurprd05.prod.outlook.com (52.133.54.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.19; Mon, 8 Jul 2019 04:34:44 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2052.020; Mon, 8 Jul 2019
- 04:34:44 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: RE: [PATCH net-next v4 1/4] devlink: Refactor physical port
- attributes
-Thread-Topic: [PATCH net-next v4 1/4] devlink: Refactor physical port
- attributes
-Thread-Index: AQHVNCgCbOZkfu9kn0+tEYjsZEs6lKa/kWcAgACTJsA=
-Date:   Mon, 8 Jul 2019 04:34:43 +0000
-Message-ID: <AM0PR05MB4866E4C5F2173BB44E5CC772D1F60@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
- <20190706182350.11929-1-parav@mellanox.com>
- <20190706182350.11929-2-parav@mellanox.com>
- <20190707194750.GA2306@nanopsycho.orion>
-In-Reply-To: <20190707194750.GA2306@nanopsycho.orion>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.16.209]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5b8befe4-df22-4853-ec65-08d7035d99c1
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4739;
-x-ms-traffictypediagnostic: AM0PR05MB4739:
-x-microsoft-antispam-prvs: <AM0PR05MB4739AAE9C0B254FB2251F010D1F60@AM0PR05MB4739.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
-x-forefront-prvs: 00922518D8
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(39860400002)(346002)(366004)(136003)(13464003)(199004)(189003)(25786009)(11346002)(14454004)(9686003)(476003)(486006)(256004)(4326008)(71200400001)(71190400001)(6116002)(446003)(78486014)(3846002)(102836004)(53546011)(6506007)(4744005)(186003)(7736002)(86362001)(68736007)(316002)(26005)(5660300002)(55236004)(33656002)(76116006)(73956011)(66946007)(74316002)(66476007)(66556008)(64756008)(66446008)(6436002)(52536014)(7696005)(76176011)(9456002)(8676002)(99286004)(55016002)(54906003)(2906002)(305945005)(81166006)(81156014)(8936002)(6916009)(229853002)(66066001)(478600001)(6246003)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4739;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: YZddzfKK6k79E8FEUwLJiWm4S25sfecpMKvB41inWbWQlpJteJgyIiOR3mNLhoqfg2GyurT3sIfquKqay2Mu4MNULl8rXgcT94K2qTLSIEmZlfPTU86N1yb8M2ZPGyNlBKt9d/VQ23ula4jvBI+fSbKw3HzD3IQwvHUDijTzJUI3Ri9v4ADdhF3M+N9o/wC8z3EKHpC3B3pTgOzQr9ZlhmrNP4GF86Vac3TO3Wc/JI0jgnkRbg0y+99S0NLob85qHEB5NhpkLp3kpz0wX7nBc2GYW7/+/Osoa5ItrysVC0WouliuEtU98DXj16YWKDWYulEEiyCKJWJA4OX7PzYvrxGccjKS9WlOvYHOrfSQRTShcHtRb1V/5k/Hgn1k/5mWjcnnhwhSmhFlJB+B3+K8trmZIcz5jijEJZpa821RvIY=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727518AbfGHEmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 00:42:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59526 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727313AbfGHEmb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 00:42:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=95LVqDfvWrexjilvILPfhiRz12KB/E9HZD332mFUWbM=; b=Uavy7v0G9LFF5LKjlxRUY+5bVp
+        Ii0IO0L3BhWE2uOu6UDKwC2n+phnnsUMv76YvCuCJ+zlAslUAAtv2rhf+EXhFFnAh0u/pK7jn5Ay3
+        4wr7UNEqzdx2102Mf1KkyznsT+s8PyeqoYPNdRJ/btUbqdacMPFxKDqHO3NSon5asjMc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hkLTw-0008Tq-JM; Mon, 08 Jul 2019 06:42:28 +0200
+Date:   Mon, 8 Jul 2019 06:42:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "kwangdo.yi" <kwangdo.yi@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] phy: added a PHY_BUSY state into phy_state_machine
+Message-ID: <20190708044228.GA32068@lunn.ch>
+References: <1562538732-20700-1-git-send-email-kwangdo.yi@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b8befe4-df22-4853-ec65-08d7035d99c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2019 04:34:44.0280
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4739
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562538732-20700-1-git-send-email-kwangdo.yi@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Jul 07, 2019 at 06:32:12PM -0400, kwangdo.yi wrote:
+> When mdio driver polling the phy state in the phy_state_machine,
+> sometimes it results in -ETIMEDOUT and link is down. But the phy
+> is still alive and just didn't meet the polling deadline. 
+> Closing the phy link in this case seems too radical. Failing to 
+> meet the deadline happens very rarely. When stress test runs for 
+> tens of hours with multiple target boards (Xilinx Zynq7000 with
+> marvell 88E1512 PHY, Xilinx custom emac IP), it happens. This 
+> patch gives another chance to the phy_state_machine when polling 
+> timeout happens. Only two consecutive failing the deadline is 
+> treated as the real phy halt and close the connection.
 
+Hi Kwangdo
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Monday, July 8, 2019 1:18 AM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: netdev@vger.kernel.org; Jiri Pirko <jiri@mellanox.com>; Saeed
-> Mahameed <saeedm@mellanox.com>; jakub.kicinski@netronome.com
-> Subject: Re: [PATCH net-next v4 1/4] devlink: Refactor physical port
-> attributes
->=20
-> Sat, Jul 06, 2019 at 08:23:47PM CEST, parav@mellanox.com wrote:
-> >To support additional devlink port flavours and to support few common
-> >and few different port attributes, make following changes.
-> >
-> >1. Move physical port attributes to a different structure 2. Return
-> >such attritubes in netlink response only for physical ports (PHYSICAL,
-> >CPU and DSA)
->=20
-> 2 changes, 2 patches please.
-Done in v5.
+I agree with Florian here. This does not seem like a PHY problem. It
+is an MDIO bus problem. ETIMEDOUT is only returned from
+xemaclite_mdio_wait().
+
+What value are using for HZ? If you have 1000, jiffies + 2 could well
+be too short.
+
+   Andrew
