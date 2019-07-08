@@ -2,150 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 096F261FAA
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 15:42:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F125261FC5
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 15:47:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731353AbfGHNmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 09:42:13 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41582 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731309AbfGHNmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 09:42:13 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d17so16613968qtj.8
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 06:42:12 -0700 (PDT)
+        id S1731445AbfGHNrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 09:47:36 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:18056 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728461AbfGHNre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 09:47:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aktISE9FNKl+9E0cCMN9ZoByrRQIkB6waCq6B1EqK3o=;
-        b=CxAB4nKX/+BggqIX1Ekd9sH/yIK2lob63tWtVmJWT4dDzJkVpffPduma/AdFolek59
-         XFBpuCXp3VxFx2wE1f5XygAfaQS8lT/8oHCTgyTATGrliUU1m73q8dc2QqeARbfcdwm1
-         knDgIa9wquefO3igO75zCxYTiPWH5sRZfQPxC7vIriv2vYzkIZOV4RT2ulHgfG5yXo+r
-         SnSypCRcudbY+fXFkZo0tfOOvgdBg61Nm1GA6r1Ux/8Nzm25B3t9W6fcSHDOrtivZCLb
-         Rf2YQe2JQs+ovc8AQaEgeEkjwzjXrAJpjLwNQ6v/zBhF0mNtDaCq12RbJxxhBZRrVx/O
-         FkqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aktISE9FNKl+9E0cCMN9ZoByrRQIkB6waCq6B1EqK3o=;
-        b=GkaBw8KtarPeZ+hlS41bmOvFbIyEjWMxQUzoRwk7avvMZ8rW3tSYOLAUf2C0ngd6LZ
-         lrYcK29Fu6D5UPge3bGtarpIAosVDpBjiuTkrUi7dV/424lzvt7Ss6ujEVuG6LrAEeJs
-         p1OFqhfRnHu0tQfIZngQbmiVj6g3tk3erJXp1OtCBW/jPoNLjY7tTyySZHKDY5T7cJwX
-         x+AjOzgpCmJrFKJzIbiSSPSwcpZhroG/UzSOEGp2/qG9sfvbS9pvPuD0F2UMuhKIKNjm
-         /3Qaah7IlHNy3U4KQSgtjGLs80gB+HqevSxcl8ztmWBLhQQ1iXxITTI5s/1zEkSE+2S5
-         WYZg==
-X-Gm-Message-State: APjAAAWwAmGlycGv3wYFjAbGQMuHj2nXHiEPWjS0/ZeI0bHEIjvbk8eJ
-        u+J+qruH9IIvcIUmiwEQ0BQ=
-X-Google-Smtp-Source: APXvYqzfjUMyDQhMa/qEFiS9CXu6eHQC2JKqCO+1nXLuu8QtFF/8NtU+YFomradNbr/v9Q/9lVJsng==
-X-Received: by 2002:ac8:7219:: with SMTP id a25mr14277841qtp.234.1562593332280;
-        Mon, 08 Jul 2019 06:42:12 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.172.139])
-        by smtp.gmail.com with ESMTPSA id v7sm3710259qte.86.2019.07.08.06.42.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 06:42:11 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id EFD49C0A68; Mon,  8 Jul 2019 10:42:08 -0300 (-03)
-Date:   Mon, 8 Jul 2019 10:42:08 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>,
-        Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-Subject: Re: [PATCH net-next v5 1/4] net/sched: Introduce action ct
-Message-ID: <20190708134208.GD3390@localhost.localdomain>
-References: <1562575880-30891-1-git-send-email-paulb@mellanox.com>
- <1562575880-30891-2-git-send-email-paulb@mellanox.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1562593654; x=1594129654;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=8rBFJB8HIcpTjcsHbBXFV53kwcbzuXnP7q+tigJQQ98=;
+  b=b0Sy/VRqd2Y+sXCrRls33VGd8Z5Fl602gYAd3SbOl9Eardn8nNh3Z9Rn
+   CEwnProHBY+9mPU0IQMpmGdXj5Fks900duBmroOg9uMjadrrxlnlTsfiO
+   X2dnwxJWB2roz4HIkLfn+UrTLs49qXsYKm5QGpsVL22+JWLQM3ZMAHVsU
+   M=;
+X-IronPort-AV: E=Sophos;i="5.62,466,1554768000"; 
+   d="scan'208";a="814935336"
+Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-1d-98acfc19.us-east-1.amazon.com) ([10.47.22.34])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 08 Jul 2019 13:47:23 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-98acfc19.us-east-1.amazon.com (Postfix) with ESMTPS id 0344DA1E28;
+        Mon,  8 Jul 2019 13:47:20 +0000 (UTC)
+Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 8 Jul 2019 13:47:20 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.162.144) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 8 Jul 2019 13:47:16 +0000
+Subject: Re: [PATCH v5 rdma-next 1/6] RDMA/core: Create mmap database and
+ cookie helper functions
+To:     Michal Kalderon <michal.kalderon@marvell.com>,
+        <ariel.elior@marvell.com>, <jgg@ziepe.ca>, <dledford@redhat.com>
+CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <20190708091503.14723-1-michal.kalderon@marvell.com>
+ <20190708091503.14723-2-michal.kalderon@marvell.com>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <da67a821-1b26-c795-ff43-af17324f07e5@amazon.com>
+Date:   Mon, 8 Jul 2019 16:47:11 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562575880-30891-2-git-send-email-paulb@mellanox.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190708091503.14723-2-michal.kalderon@marvell.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.162.144]
+X-ClientProxiedBy: EX13D08UWB003.ant.amazon.com (10.43.161.186) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 08, 2019 at 11:51:17AM +0300, Paul Blakey wrote:
-..
-> +static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-> +				   u8 family, u16 zone)
+On 08/07/2019 12:14, Michal Kalderon wrote:
+> diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+> index 8a6ccb936dfe..a830c2c5d691 100644
+> --- a/drivers/infiniband/core/device.c
+> +++ b/drivers/infiniband/core/device.c
+> @@ -2521,6 +2521,7 @@ void ib_set_device_ops(struct ib_device *dev, const struct ib_device_ops *ops)
+>  	SET_DEVICE_OP(dev_ops, map_mr_sg_pi);
+>  	SET_DEVICE_OP(dev_ops, map_phys_fmr);
+>  	SET_DEVICE_OP(dev_ops, mmap);
+> +	SET_DEVICE_OP(dev_ops, mmap_free);
+>  	SET_DEVICE_OP(dev_ops, modify_ah);
+>  	SET_DEVICE_OP(dev_ops, modify_cq);
+>  	SET_DEVICE_OP(dev_ops, modify_device);
+> diff --git a/drivers/infiniband/core/rdma_core.c b/drivers/infiniband/core/rdma_core.c
+> index ccf4d069c25c..7166741834c8 100644
+> --- a/drivers/infiniband/core/rdma_core.c
+> +++ b/drivers/infiniband/core/rdma_core.c
+> @@ -817,6 +817,7 @@ static void ufile_destroy_ucontext(struct ib_uverbs_file *ufile,
+>  	rdma_restrack_del(&ucontext->res);
+>  
+>  	ib_dev->ops.dealloc_ucontext(ucontext);
+> +	rdma_user_mmap_entries_remove_free(ucontext);
+
+This should happen before dealloc_ucontext.
+
+> +struct rdma_user_mmap_entry *
+> +rdma_user_mmap_entry_get(struct ib_ucontext *ucontext, u64 key, u64 len)
 > +{
-> +	enum ip_conntrack_info ctinfo;
-> +	struct nf_conn *ct;
-> +	int err = 0;
-> +	bool frag;
+> +	struct rdma_user_mmap_entry *entry;
+> +	u64 mmap_page;
 > +
-> +	/* Previously seen (loopback)? Ignore. */
-> +	ct = nf_ct_get(skb, &ctinfo);
-> +	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
-> +		return 0;
+> +	mmap_page = key >> PAGE_SHIFT;
+> +	if (mmap_page > U32_MAX)
+> +		return NULL;
 > +
-> +	if (family == NFPROTO_IPV4)
-> +		err = tcf_ct_ipv4_is_fragment(skb, &frag);
-> +	else
-> +		err = tcf_ct_ipv6_is_fragment(skb, &frag);
-> +	if (err || !frag)
-> +		return err;
+> +	entry = xa_load(&ucontext->mmap_xa, mmap_page);
+> +	if (!entry || rdma_user_mmap_get_key(entry) != key ||
+
+I wonder if the 'rdma_user_mmap_get_key(entry) != key' check is still needed.
+
+> +/*
+> + * This is only called when the ucontext is destroyed and there can be no
+> + * concurrent query via mmap or allocate on the xarray, thus we can be sure no
+> + * other thread is using the entry pointer. We also know that all the BAR
+> + * pages have either been zap'd or munmaped at this point.  Normal pages are
+> + * refcounted and will be freed at the proper time.
+> + */
+> +void rdma_user_mmap_entries_remove_free(struct ib_ucontext *ucontext)
+> +{
+> +	struct rdma_user_mmap_entry *entry;
+> +	unsigned long mmap_page;
 > +
-> +	skb_get(skb);
+> +	xa_for_each(&ucontext->mmap_xa, mmap_page, entry) {
+> +		xa_erase(&ucontext->mmap_xa, mmap_page);
 > +
-> +	if (family == NFPROTO_IPV4) {
-> +		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
-> +
-> +		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-> +		local_bh_disable();
-> +		err = ip_defrag(net, skb, user);
-> +		local_bh_enable();
-> +		if (err && err != -EINPROGRESS)
-> +			goto out_free;
-> +	} else { /* NFPROTO_IPV6 */
-> +		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-> +
-> +		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
-> +		err = nf_ct_frag6_gather(net, skb, user);
+> +		ibdev_dbg(ucontext->device,
+> +			  "mmap: obj[0x%p] key[%#llx] addr[%#llx] len[%#llx] removed\n",
+> +			  entry->obj, rdma_user_mmap_get_key(entry),
+> +			  entry->address, entry->length);
+> +		if (ucontext->device->ops.mmap_free)
+> +			ucontext->device->ops.mmap_free(entry->address,
+> +							entry->length,
+> +							entry->mmap_flag);
 
-This doesn't build without IPv6 enabled.
-ERROR: "nf_ct_frag6_gather" [net/sched/act_ct.ko] undefined!
+Pass entry instead?
 
-We need to (copy and pasted):
-
-@@ -179,7 +179,9 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-                local_bh_enable();
-                if (err && err != -EINPROGRESS)
-                        goto out_free;
--       } else { /* NFPROTO_IPV6 */
-+       }
-+#if IS_ENABLED(IPV6)
-+       else { /* NFPROTO_IPV6 */
-                enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-
-                memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
-@@ -187,6 +189,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-                if (err && err != -EINPROGRESS)
-                        goto out_free;
-        }
-+#endif
-
-        skb_clear_hash(skb);
-        skb->ignore_df = 1;
-
-> +		if (err && err != -EINPROGRESS)
-> +			goto out_free;
+> +		kfree(entry);
 > +	}
-> +
-> +	skb_clear_hash(skb);
-> +	skb->ignore_df = 1;
-> +	return err;
-> +
-> +out_free:
-> +	kfree_skb(skb);
-> +	return err;
 > +}
+> +
+>  void uverbs_user_mmap_disassociate(struct ib_uverbs_file *ufile)
+>  {
+>  	struct rdma_umap_priv *priv, *next_priv;
+> diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+> index 26e9c2594913..54ce3fdae180 100644
+> --- a/include/rdma/ib_verbs.h
+> +++ b/include/rdma/ib_verbs.h
+> @@ -1425,6 +1425,8 @@ struct ib_ucontext {
+>  	 * Implementation details of the RDMA core, don't use in drivers:
+>  	 */
+>  	struct rdma_restrack_entry res;
+> +	struct xarray mmap_xa;
+> +	u32 mmap_xa_page;
+>  };
+>  
+>  struct ib_uobject {
+> @@ -2311,6 +2313,7 @@ struct ib_device_ops {
+>  			      struct ib_udata *udata);
+>  	void (*dealloc_ucontext)(struct ib_ucontext *context);
+>  	int (*mmap)(struct ib_ucontext *context, struct vm_area_struct *vma);
+> +	void (*mmap_free)(u64 address, u64 length, u8 mmap_flag);
+
+I feel like this callback needs some documentation.
+
+>  	void (*disassociate_ucontext)(struct ib_ucontext *ibcontext);
+>  	int (*alloc_pd)(struct ib_pd *pd, struct ib_udata *udata);
+>  	void (*dealloc_pd)(struct ib_pd *pd, struct ib_udata *udata);
+> @@ -2706,9 +2709,23 @@ void  ib_set_client_data(struct ib_device *device, struct ib_client *client,
+>  void ib_set_device_ops(struct ib_device *device,
+>  		       const struct ib_device_ops *ops);
+>  
+> +#define RDMA_USER_MMAP_INVALID U64_MAX
+> +struct rdma_user_mmap_entry {
+> +	void  *obj;
+
+I know EFA is the culprit here, but please remove the extra space :).
+
+> +	u64 address;
+> +	u64 length;
+> +	u32 mmap_page;
+> +	u8 mmap_flag;
+> +};
+> +
