@@ -2,158 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A324561ABA
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 08:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCA861ABF
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 08:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbfGHGgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 02:36:45 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:42485 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728519AbfGHGgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 02:36:45 -0400
-Received: by mail-pl1-f196.google.com with SMTP id ay6so7706705plb.9
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 23:36:44 -0700 (PDT)
+        id S1729102AbfGHGh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 02:37:56 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35708 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728525AbfGHGh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 02:37:56 -0400
+Received: by mail-pg1-f194.google.com with SMTP id s27so7136687pgl.2;
+        Sun, 07 Jul 2019 23:37:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U5faaB2QS25gWcbZp0574GO7urSkcBDHpx7JYrayj6s=;
-        b=k8AtqPPBAIU9BFgDc1LoJIroW15SoAkdAibpdma80r6iYC7+o9XxniV5aE+9a8Kcy7
-         JsfzCV4LoqoMGDyWAXbL8IqAQQ6ANOsk74ESWQ972qbNDrsf0Irzbm8rGHqwIZwaewZ7
-         xkEHNYC2wm5qTxlC8E8dWNp8znXKneU6XMJxcjqwsyaNSHV6/76+2bcasa5kmADB+UPl
-         hrxgyIIvLY8QT2pUiwg+zKSWMI72eaq9go97g8Mey4V6Z/F0DBGAgHPc80HwTl4ARX9N
-         GUUEo6RT5DvII4ycF6gwUa1uuC0n630vdKZU5IWN1FBLlL+7AtHDxs+y2iUQNTzI8yo1
-         02kg==
+        d=gmail.com; s=20161025;
+        h=sender:from:to:subject:date:message-id;
+        bh=yEeJ0/+qhOXMvZlC71qdNTbuwGZpqThMJW5wphAArgY=;
+        b=puPUinBZbbxSifsinP7NIei+rmd3EpEBHFRAnKoqwkoM6vdeKOwt+SbBzkwyGQdUeS
+         Lq7jq/YQzuYjUop+1iRf7DAHsFpRoLWsflvx0UcxJFB87mlA+CojH2EmpjbrB5WXvlJS
+         6zj542gwZ9eViQYThRVxdkLa2pP6Mi5RkciCiqV2lmgskmTsxrEP3s0hV0ZWqwpvHeVs
+         96izHoZZpglXTLG1ibgywjatF5ayaFaBm5aP9ZoaLjopd9EfYLkT0K4lynabwAhyRCP1
+         lEWAS9AsUDyY84Y3kxcqi8fKtrtmaQeqsYmwJQW3GWi1ZfC0g5ZpRbHerA48yKzY4I4U
+         SnGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U5faaB2QS25gWcbZp0574GO7urSkcBDHpx7JYrayj6s=;
-        b=tAXar5m+3MVaTcyscH968PqxA6+m6oCD8EuEq2eWnVxtHA84M223ax5STrY5SqW4+C
-         kt5iCjeO8/3GtNgCo4V1gOA97A+QwVPjb3aCkKmLNmTxNNmK/gcQGm03FcVcv1GDdgqF
-         h94kSW/nYN7pJ7ym7G2xffqz7pbM2VFFkTmboSYWpBXNH1HaIKWnD8cI5IHC/CpHEGO3
-         jNYyh4Jkoz7/EPIxe0D47pL5av6bH+McRwvKaQB8/ATkVKKfR4RgVM3FlLBSN1kRXxeo
-         HvWnP4TGW3roJRFR8P5uZfEI8MOaBX8dS4A4zQ2NLWqZsCukOpU1mlkMiwxawlFxwu3z
-         3Qog==
-X-Gm-Message-State: APjAAAXkBk1EIsAOg92W/PSxyenhrXbi8X3Aknn1/u+Hk4qAAMKRKK6u
-        fJhjYoOZp6Jm6MZ/2mbIl1Z4ng==
-X-Google-Smtp-Source: APXvYqxA2c9ltYeJuPS/96QyMzXMHZoAV+lGrhI7hijTtcZlfz7f4W53t2DqphIMtl/XnK0J1m4Lvw==
-X-Received: by 2002:a17:902:724:: with SMTP id 33mr21908419pli.49.1562567804038;
-        Sun, 07 Jul 2019 23:36:44 -0700 (PDT)
-Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
-        by smtp.gmail.com with ESMTPSA id s66sm21388130pgs.39.2019.07.07.23.36.41
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 07 Jul 2019 23:36:43 -0700 (PDT)
-From:   Jian-Hong Pan <jian-hong@endlessm.com>
-To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com,
-        Jian-Hong Pan <jian-hong@endlessm.com>,
-        Daniel Drake <drake@endlessm.com>, stable@vger.kernel.org
-Subject: [PATCH] rtw88/pci: Rearrange the memory usage for skb in RX ISR
-Date:   Mon,  8 Jul 2019 14:32:53 +0800
-Message-Id: <20190708063252.4756-1-jian-hong@endlessm.com>
-X-Mailer: git-send-email 2.22.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:from:to:subject:date:message-id;
+        bh=yEeJ0/+qhOXMvZlC71qdNTbuwGZpqThMJW5wphAArgY=;
+        b=n2lXpUndHOQAwBcO/0PHz6ocFjjw/c7pXLED6jROvNu/PyqCEnpnDQqF2Z+rMUlfRC
+         3iD4sHa2ffhwLp7QQGKpNEAtoaHcALjpRRqqao3+gaRKwHR2XGnVY53C/E7CFn/PJO3J
+         cmM2kFk32K4uEt1ft+URRq59Zmbcnk1gmOXgBsi6eolIZHkSOgj2l/ADBIgOOwDI1oqS
+         xljh9SnVMJp66jYcAsFSrbuqNlKaa6LQUU/DmoXoKXZSl+cKSwyEIyS+zVEbr+LN0W80
+         MzzRIlXsHKQIz9LxlNGBkLTwYMvP4iWW7sGBjLckblm3t5d77p6Dm9RCQ711XynwKH4l
+         mIVQ==
+X-Gm-Message-State: APjAAAVVKhExz6CevHB5L0StSfBguYYYeO2PctPffAWy9H+PoVkUQbEi
+        eL6tWbS41in/0Me2KyKJvmE=
+X-Google-Smtp-Source: APXvYqyNlhSSjHOzwA17kQ5Em+gCAOgkxUQ/u2unNcCC9Q2UJGj3PHTwFSQAQFbVIu5NXgMASck/zw==
+X-Received: by 2002:a17:90a:db08:: with SMTP id g8mr22384413pjv.39.1562567875035;
+        Sun, 07 Jul 2019 23:37:55 -0700 (PDT)
+Received: from localhost (114-32-69-186.HINET-IP.hinet.net. [114.32.69.186])
+        by smtp.gmail.com with ESMTPSA id l25sm6602761pff.143.2019.07.07.23.37.53
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 07 Jul 2019 23:37:54 -0700 (PDT)
+From:   AceLan Kao <acelan.kao@canonical.com>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] r8169: add enable_aspm parameter
+Date:   Mon,  8 Jul 2019 14:37:51 +0800
+Message-Id: <20190708063751.16234-1-acelan.kao@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Testing with RTL8822BE hardware, when available memory is low, we
-frequently see a kernel panic and system freeze.
+We have many commits in the driver which enable and then disable ASPM
+function over and over again.
+   commit b75bb8a5b755 ("r8169: disable ASPM again")
+   commit 0866cd15029b ("r8169: enable ASPM on RTL8106E")
+   commit 94235460f9ea ("r8169: Align ASPM/CLKREQ setting function with vendor driver")
+   commit aa1e7d2c31ef ("r8169: enable ASPM on RTL8168E-VL")
+   commit f37658da21aa ("r8169: align ASPM entry latency setting with vendor driver")
+   commit a99790bf5c7f ("r8169: Reinstate ASPM Support")
+   commit 671646c151d4 ("r8169: Don't disable ASPM in the driver")
+   commit 4521e1a94279 ("Revert "r8169: enable internal ASPM and clock request settings".")
+   commit d64ec841517a ("r8169: enable internal ASPM and clock request settings")
 
-First, rtw_pci_rx_isr encounters a memory allocation failure (trimmed):
+This function is very important for production, and if we can't come out
+a solution to make both happy, I'd suggest we add a parameter in the
+driver to toggle it.
 
-rx routine starvation
-WARNING: CPU: 7 PID: 9871 at drivers/net/wireless/realtek/rtw88/pci.c:822 rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
-[ 2356.580313] RIP: 0010:rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
-
-Then we see a variety of different error conditions and kernel panics,
-such as this one (trimmed):
-
-rtw_pci 0000:02:00.0: pci bus timeout, check dma status
-skbuff: skb_over_panic: text:00000000091b6e66 len:415 put:415 head:00000000d2880c6f data:000000007a02b1ea tail:0x1df end:0xc0 dev:<NULL>
-------------[ cut here ]------------
-kernel BUG at net/core/skbuff.c:105!
-invalid opcode: 0000 [#1] SMP NOPTI
-RIP: 0010:skb_panic+0x43/0x45
-
-When skb allocation fails and the "rx routine starvation" is hit, the
-function returns immediately without updating the RX ring. At this
-point, the RX ring may continue referencing an old skb which was already
-handed off to ieee80211_rx_irqsafe(). When it comes to be used again,
-bad things happen.
-
-This patch allocates a new skb first in RX ISR. If we don't have memory
-available, we discard the current frame, allowing the existing skb to be
-reused in the ring. Otherwise, we simplify the code flow and just hand
-over the RX-populated skb over to mac80211.
-
-In addition, to fixing the kernel crash, the RX routine should now
-generally behave better under low memory conditions.
-
-Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=204053
-Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
-Reviewed-by: Daniel Drake <drake@endlessm.com>
-Cc: <stable@vger.kernel.org>
+Signed-off-by: AceLan Kao <acelan.kao@canonical.com>
 ---
- drivers/net/wireless/realtek/rtw88/pci.c | 28 +++++++++++-------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/realtek/r8169.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index cfe05ba7280d..1bfc99ae6b84 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -786,6 +786,15 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
- 		rx_desc = skb->data;
- 		chip->ops->query_rx_desc(rtwdev, rx_desc, &pkt_stat, &rx_status);
+diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
+index d06a61f00e78..f557cb36e2c6 100644
+--- a/drivers/net/ethernet/realtek/r8169.c
++++ b/drivers/net/ethernet/realtek/r8169.c
+@@ -702,10 +702,13 @@ struct rtl8169_private {
  
-+		/* discard current skb if the new skb cannot be allocated as a
-+		 * new one in rx ring later
-+		 * */
-+		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
-+		if (WARN(!new, "rx routine starvation\n")) {
-+			new = skb;
-+			goto next_rp;
-+		}
-+
- 		/* offset from rx_desc to payload */
- 		pkt_offset = pkt_desc_sz + pkt_stat.drv_info_sz +
- 			     pkt_stat.shift;
-@@ -803,25 +812,14 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
- 			skb_put(skb, pkt_stat.pkt_len);
- 			skb_reserve(skb, pkt_offset);
+ typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
  
--			/* alloc a smaller skb to mac80211 */
--			new = dev_alloc_skb(pkt_stat.pkt_len);
--			if (!new) {
--				new = skb;
--			} else {
--				skb_put_data(new, skb->data, skb->len);
--				dev_kfree_skb_any(skb);
--			}
- 			/* TODO: merge into rx.c */
- 			rtw_rx_stats(rtwdev, pkt_stat.vif, skb);
--			memcpy(new->cb, &rx_status, sizeof(rx_status));
--			ieee80211_rx_irqsafe(rtwdev->hw, new);
-+			memcpy(skb->cb, &rx_status, sizeof(rx_status));
-+			ieee80211_rx_irqsafe(rtwdev->hw, skb);
- 		}
++static int enable_aspm;
+ MODULE_AUTHOR("Realtek and the Linux r8169 crew <netdev@vger.kernel.org>");
+ MODULE_DESCRIPTION("RealTek RTL-8169 Gigabit Ethernet driver");
+ module_param_named(debug, debug.msg_enable, int, 0);
+ MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 16=all)");
++module_param(enable_aspm, int, 0);
++MODULE_PARM_DESC(enable_aspm, "Enable ASPM support (0 = disable, 1 = enable");
+ MODULE_SOFTDEP("pre: realtek");
+ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE(FIRMWARE_8168D_1);
+@@ -7163,10 +7166,12 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (rc)
+ 		return rc;
  
--		/* skb delivered to mac80211, alloc a new one in rx ring */
--		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
--		if (WARN(!new, "rx routine starvation\n"))
--			return;
--
-+next_rp:
-+		/* skb delivered to mac80211, attach the new one into rx ring */
- 		ring->buf[cur_rp] = new;
- 		rtw_pci_reset_rx_desc(rtwdev, new, ring, cur_rp, buf_desc_sz);
+-	/* Disable ASPM completely as that cause random device stop working
+-	 * problems as well as full system hangs for some PCIe devices users.
+-	 */
+-	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1);
++	if (!enable_aspm) {
++		/* Disable ASPM completely as that cause random device stop working
++		 * problems as well as full system hangs for some PCIe devices users.
++		 */
++		pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1);
++	}
  
+ 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+ 	rc = pcim_enable_device(pdev);
 -- 
-2.22.0
+2.17.1
 
