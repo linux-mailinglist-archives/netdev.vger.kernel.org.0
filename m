@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D25C626B5
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:57:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D514626B8
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391583AbfGHQ5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 12:57:45 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42620 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbfGHQ5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:57:45 -0400
-Received: by mail-pg1-f196.google.com with SMTP id t132so7980152pgb.9;
-        Mon, 08 Jul 2019 09:57:44 -0700 (PDT)
+        id S2391590AbfGHQ5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 12:57:50 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35364 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391585AbfGHQ5u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:57:50 -0400
+Received: by mail-pl1-f193.google.com with SMTP id w24so8575878plp.2;
+        Mon, 08 Jul 2019 09:57:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=FGuvks4Nb/N1nZ4oOQYx8el0XJowxnu5ZBzEi0FZcmk=;
-        b=b/nmKNvJigdzo6yQSIFqJWuzwAVE9qhG5DClwI/AVF9jQ/AKOoJeU4MV7Bp2K/bzAe
-         A861NNzChOsCTMfWixj1tmgamweXk/PFvx2/lP4H9y1K8+rUQZEVeg3iWm6znS+6jLsv
-         EUUgwd6MWyLMAB1MUYw/uSBJ2LVFRNCbPf0uB43aWtiN9BEKq3EuW9lGy8EIeyZeuU/O
-         uBuiRDvxoG5hHFnRWVwsk8neD/SF0T1A1ipG1M2on4LrkD74wlwNtLSz6UCAS/gZfXHu
-         gQD5YXDPSCJRIDfA3f34HIJB8ZvXfVuKVwNYwEZ7tt7rf9AWNX5QKTbABfGM4djVnpWL
-         X8Kw==
+        bh=RAoKx9mz5JWp2hq7L9ozatzLp5ZOOuU3FDgxWeBPxPY=;
+        b=LQmRIBrJY8zJpWTk3WW0d1wmUgqNCZcHBB1O+3a/qRdkfXNha46FAXQsyqA/fjv0yy
+         6brqWThW0iN2Z2aOadDsM+ZP2Dbn72SOaOS5fg8VYbDXbpTuvYBnBp6fdekQNYkaibzS
+         zlACctbxyJbSFtAdT1k9jE8fGosnET0LfmuJYFL/3TLblfiQyxsW6WmJ8z5PEMcY7+Ma
+         1482yu7MisoJChrFwNORUv6UnEmZgle63OGNuay+RJUc4jfSZo9D3CVT9bBQ/xf0MnoW
+         RSObXman/7GcY39jd5Im5l6GM4a1kbGxdwzc5c4LgSgL+FomaQMYVXeOQj43zl5DnRQC
+         ZMaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=FGuvks4Nb/N1nZ4oOQYx8el0XJowxnu5ZBzEi0FZcmk=;
-        b=SCBERj3pxfH6BVJwn3/n80bcw1g/fdj6zLn0VXkTWs1p+qzrlJLi2sLfx7No/RXGqt
-         zHIpLhKFDwVbAoVPtvon87/drmWXY/4LxXqh5tEkR+fK+pjLvZkxeU7CvTxN2QirMXdm
-         qN/T18aHO83404uvKIuXpW5HlCI6hG19nm7NymuTmit0HS3Lz8V36nXY4PvhWNDxEDmp
-         9Ww0VLir7X+WSZWzuxXNNhsVCGMXQsE6D9PBPEhuf883/nrfAndxFA3vrGo28SlmzPwc
-         DAxWBektjwY8pz3+jPaDlNz/gBhgNLwZQbZXpkjE03ymrYxvtiCaT7bRTL0IqTQaxy1x
-         Sy5Q==
-X-Gm-Message-State: APjAAAUEXlW4kgUqpbRQ5qLi2Sa/0L4iPjh4bQL4JUxIoG2s96hPA1U1
-        OhsoddndwohtHXUYiTYIZFX/Vc8A
-X-Google-Smtp-Source: APXvYqxfh31ksvHXIMVPCFdA0LtuKMVWAx1SIuXIJpVe3ll6UkuzkbAAsVrn8V3T0SN4hnsJMcdh1Q==
-X-Received: by 2002:a63:c203:: with SMTP id b3mr25425413pgd.450.1562605061304;
-        Mon, 08 Jul 2019 09:57:41 -0700 (PDT)
+        bh=RAoKx9mz5JWp2hq7L9ozatzLp5ZOOuU3FDgxWeBPxPY=;
+        b=Lq7KBi4byTGwRR+tguCgOm8IeV5WroXMEhMvJgHH7s+PHWQ4iKHKG8eeR2oiABhl/+
+         wNLYwOHt0RuNTd7IXWxGLqF7Ee/T/lyLCQ1o1qSSq/l4y4k+wmk7NATxW6uEEfRxDlh3
+         g6COpo5RT5E5dQV5X/v+ZceHnIiI8X2pzDi5bJXBIWUNyK91iPD48z8rlGDPVknWF2GB
+         uQ38tbwFsLWa6JLj21E2hiAXoleZIwpUukiWlqKHqcf4+/IWcdZJZ8Ert4iDRKmFuYtP
+         xMmO9pw6ret5kFsHOkT5NwGqXqKIsh4gyeQ/RAO1LzWwi71XKYtAg4pqCq8dDCNG+cdh
+         v6EA==
+X-Gm-Message-State: APjAAAVscOgiYC2/U7XaHa1ofsEbY6LqSZEaKLQiQk7Yr/ylf/nXDM8a
+        djFTE2T1SYjvslIZ1WQhAt8LhaSU
+X-Google-Smtp-Source: APXvYqycxnyqVdtSnefbWdOy/I5TI3BanY+9Kddp4TCrE4fVQya1pRGluKzq8QrodAtCtKABaLUr2w==
+X-Received: by 2002:a17:902:2aa8:: with SMTP id j37mr25185331plb.316.1562605069636;
+        Mon, 08 Jul 2019 09:57:49 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 65sm20247866pgf.30.2019.07.08.09.57.40
+        by smtp.gmail.com with ESMTPSA id x1sm103348pjo.4.2019.07.08.09.57.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 08 Jul 2019 09:57:40 -0700 (PDT)
+        Mon, 08 Jul 2019 09:57:49 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
-Subject: [PATCH net-next 3/4] sctp: rename asoc intl_enable to asoc peer.intl_capable
-Date:   Tue,  9 Jul 2019 00:57:06 +0800
-Message-Id: <acc7f14e1ddd65d0515074c030c63fd339261b46.1562604972.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 4/4] sctp: rename sp strm_interleave to ep intl_enable
+Date:   Tue,  9 Jul 2019 00:57:07 +0800
+Message-Id: <9143b75d086dbec5aed55e4ba49d90c781f45c9a.1562604972.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <40a905e7b9733c7bdca74af31ab86586fbb91cd0.1562604972.git.lucien.xin@gmail.com>
+In-Reply-To: <acc7f14e1ddd65d0515074c030c63fd339261b46.1562604972.git.lucien.xin@gmail.com>
 References: <cover.1562604972.git.lucien.xin@gmail.com>
  <988dac46cfecb6ae4fa21e40bf16da6faf3da6ab.1562604972.git.lucien.xin@gmail.com>
  <40a905e7b9733c7bdca74af31ab86586fbb91cd0.1562604972.git.lucien.xin@gmail.com>
+ <acc7f14e1ddd65d0515074c030c63fd339261b46.1562604972.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1562604972.git.lucien.xin@gmail.com>
 References: <cover.1562604972.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -63,138 +64,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To keep consistent with other asoc features, we move intl_enable
-to peer.intl_capable in asoc.
+Like other endpoint features, strm_interleave should be moved to
+sctp_endpoint and renamed to intl_enable.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/sctp/structs.h   | 33 +++++++++++++++++----------------
- net/sctp/sm_make_chunk.c     |  4 ++--
- net/sctp/socket.c            |  2 +-
- net/sctp/stream_interleave.c |  4 ++--
- net/sctp/stream_sched.c      |  2 +-
- 5 files changed, 23 insertions(+), 22 deletions(-)
+ include/net/sctp/structs.h | 2 +-
+ net/sctp/sm_make_chunk.c   | 4 ++--
+ net/sctp/socket.c          | 8 ++++----
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 7f35b8e..c41b57b 100644
+index c41b57b..ba5c4f6 100644
 --- a/include/net/sctp/structs.h
 +++ b/include/net/sctp/structs.h
-@@ -1679,28 +1679,30 @@ struct sctp_association {
- 		__be16 addip_disabled_mask;
+@@ -219,7 +219,6 @@ struct sctp_sock {
+ 		disable_fragments:1,
+ 		v4mapped:1,
+ 		frag_interleave:1,
+-		strm_interleave:1,
+ 		recvrcvinfo:1,
+ 		recvnxtinfo:1,
+ 		data_ready_signalled:1;
+@@ -1324,6 +1323,7 @@ struct sctp_endpoint {
+ 	struct list_head endpoint_shared_keys;
+ 	__u16 active_key_id;
+ 	__u8  auth_enable:1,
++	      intl_enable:1,
+ 	      prsctp_enable:1,
+ 	      reconf_enable:1;
  
- 		/* These are capabilities which our peer advertised.  */
--		__u8	ecn_capable:1,      /* Can peer do ECN? */
-+		__u16	ecn_capable:1,      /* Can peer do ECN? */
- 			ipv4_address:1,     /* Peer understands IPv4 addresses? */
- 			ipv6_address:1,     /* Peer understands IPv6 addresses? */
- 			hostname_address:1, /* Peer understands DNS addresses? */
- 			asconf_capable:1,   /* Does peer support ADDIP? */
- 			prsctp_capable:1,   /* Can peer do PR-SCTP? */
- 			reconf_capable:1,   /* Can peer do RE-CONFIG? */
--			auth_capable:1;     /* Is peer doing SCTP-AUTH? */
--
--		/* sack_needed : This flag indicates if the next received
--		 *             : packet is to be responded to with a
--		 *             : SACK. This is initialized to 0.  When a packet
--		 *             : is received sack_cnt is incremented. If this value
--		 *             : reaches 2 or more, a SACK is sent and the
--		 *             : value is reset to 0. Note: This is used only
--		 *             : when no DATA chunks are received out of
--		 *             : order.  When DATA chunks are out of order,
--		 *             : SACK's are not delayed (see Section 6).
--		 */
--		__u8    sack_needed:1,     /* Do we need to sack the peer? */
-+			intl_capable:1,     /* Can peer do INTERLEAVE */
-+			auth_capable:1,     /* Is peer doing SCTP-AUTH? */
-+			/* sack_needed:
-+			 *   This flag indicates if the next received
-+			 *   packet is to be responded to with a
-+			 *   SACK. This is initialized to 0.  When a packet
-+			 *   is received sack_cnt is incremented. If this value
-+			 *   reaches 2 or more, a SACK is sent and the
-+			 *   value is reset to 0. Note: This is used only
-+			 *   when no DATA chunks are received out of
-+			 *   order.  When DATA chunks are out of order,
-+			 *   SACK's are not delayed (see Section 6).
-+			 */
-+			sack_needed:1,     /* Do we need to sack the peer? */
- 			sack_generation:1,
- 			zero_window_announced:1;
-+
- 		__u32	sack_cnt;
- 
- 		__u32   adaptation_ind;	 /* Adaptation Code point. */
-@@ -2049,8 +2051,7 @@ struct sctp_association {
- 
- 	__u8 need_ecne:1,	/* Need to send an ECNE Chunk? */
- 	     temp:1,		/* Is it a temporary association? */
--	     force_delay:1,
--	     intl_enable:1;
-+	     force_delay:1;
- 
- 	__u8 strreset_enable;
- 	__u8 strreset_outstanding; /* request param count on the fly */
 diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index 227bbac..31ab2c6 100644
+index 31ab2c6..ed39396 100644
 --- a/net/sctp/sm_make_chunk.c
 +++ b/net/sctp/sm_make_chunk.c
-@@ -438,7 +438,7 @@ struct sctp_chunk *sctp_make_init_ack(const struct sctp_association *asoc,
+@@ -269,7 +269,7 @@ struct sctp_chunk *sctp_make_init(const struct sctp_association *asoc,
  	if (sp->adaptation_ind)
  		chunksize += sizeof(aiparam);
  
--	if (asoc->intl_enable) {
-+	if (asoc->peer.intl_capable) {
+-	if (sp->strm_interleave) {
++	if (asoc->ep->intl_enable) {
  		extensions[num_ext] = SCTP_CID_I_DATA;
  		num_ext += 1;
  	}
-@@ -2028,7 +2028,7 @@ static void sctp_process_ext_param(struct sctp_association *asoc,
+@@ -2027,7 +2027,7 @@ static void sctp_process_ext_param(struct sctp_association *asoc,
+ 				asoc->peer.asconf_capable = 1;
  			break;
  		case SCTP_CID_I_DATA:
- 			if (sctp_sk(asoc->base.sk)->strm_interleave)
--				asoc->intl_enable = 1;
-+				asoc->peer.intl_capable = 1;
+-			if (sctp_sk(asoc->base.sk)->strm_interleave)
++			if (asoc->ep->intl_enable)
+ 				asoc->peer.intl_capable = 1;
  			break;
  		default:
- 			break;
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index da2a3c2..b679b61 100644
+index b679b61..0fc5b90 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -7710,7 +7710,7 @@ static int sctp_getsockopt_interleaving_supported(struct sock *sk, int len,
+@@ -1913,7 +1913,7 @@ static int sctp_sendmsg_to_asoc(struct sctp_association *asoc,
+ 		if (err)
+ 			goto err;
+ 
+-		if (sp->strm_interleave) {
++		if (asoc->ep->intl_enable) {
+ 			timeo = sock_sndtimeo(sk, 0);
+ 			err = sctp_wait_for_connect(asoc, &timeo);
+ 			if (err) {
+@@ -3581,7 +3581,7 @@ static int sctp_setsockopt_fragment_interleave(struct sock *sk,
+ 	sctp_sk(sk)->frag_interleave = !!val;
+ 
+ 	if (!sctp_sk(sk)->frag_interleave)
+-		sctp_sk(sk)->strm_interleave = 0;
++		sctp_sk(sk)->ep->intl_enable = 0;
+ 
+ 	return 0;
+ }
+@@ -4484,7 +4484,7 @@ static int sctp_setsockopt_interleaving_supported(struct sock *sk,
  		goto out;
  	}
  
--	params.assoc_value = asoc ? asoc->intl_enable
-+	params.assoc_value = asoc ? asoc->peer.intl_capable
- 				  : sctp_sk(sk)->strm_interleave;
+-	sp->strm_interleave = !!params.assoc_value;
++	sp->ep->intl_enable = !!params.assoc_value;
+ 
+ 	retval = 0;
+ 
+@@ -7711,7 +7711,7 @@ static int sctp_getsockopt_interleaving_supported(struct sock *sk, int len,
+ 	}
+ 
+ 	params.assoc_value = asoc ? asoc->peer.intl_capable
+-				  : sctp_sk(sk)->strm_interleave;
++				  : sctp_sk(sk)->ep->intl_enable;
  
  	if (put_user(len, optlen))
-diff --git a/net/sctp/stream_interleave.c b/net/sctp/stream_interleave.c
-index afbf122..40c40be 100644
---- a/net/sctp/stream_interleave.c
-+++ b/net/sctp/stream_interleave.c
-@@ -1358,6 +1358,6 @@ void sctp_stream_interleave_init(struct sctp_stream *stream)
- 	struct sctp_association *asoc;
- 
- 	asoc = container_of(stream, struct sctp_association, stream);
--	stream->si = asoc->intl_enable ? &sctp_stream_interleave_1
--				       : &sctp_stream_interleave_0;
-+	stream->si = asoc->peer.intl_capable ? &sctp_stream_interleave_1
-+					     : &sctp_stream_interleave_0;
- }
-diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-index b8fa7ab..99e5f69 100644
---- a/net/sctp/stream_sched.c
-+++ b/net/sctp/stream_sched.c
-@@ -228,7 +228,7 @@ int sctp_sched_get_value(struct sctp_association *asoc, __u16 sid,
- void sctp_sched_dequeue_done(struct sctp_outq *q, struct sctp_chunk *ch)
- {
- 	if (!list_is_last(&ch->frag_list, &ch->msg->chunks) &&
--	    !q->asoc->intl_enable) {
-+	    !q->asoc->peer.intl_capable) {
- 		struct sctp_stream_out *sout;
- 		__u16 sid;
- 
+ 		goto out;
 -- 
 2.1.0
 
