@@ -2,123 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A25DD62145
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 17:14:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 431B462552
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 17:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730197AbfGHPN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 11:13:59 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45653 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbfGHPN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 11:13:59 -0400
-Received: by mail-ed1-f68.google.com with SMTP id e2so8142182edi.12
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 08:13:58 -0700 (PDT)
+        id S1732263AbfGHPPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 11:15:09 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34395 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732253AbfGHPPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 11:15:08 -0400
+Received: by mail-pl1-f195.google.com with SMTP id i2so8451242plt.1
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 08:15:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JxUQURsKuRML9kY6UhtzFtnOQHOYUvHcx3HxeIXuQBA=;
+        b=u273nrBnzw4ft6QG/68VVqOCnmvyVqTEGF/MXRllZCzWQpYsq8RhpBmtcNa+UPvRNC
+         nz899bKe2vMGGXYI3Pqgl2rZkpG7MzP+xxk1xtSuRRibjjGMCMU9h3muaJ0f8fVdqDMI
+         EoiRGzNZ3noxYv2puMxIvGJ/LUwScP/m1I1TecWyO+RZMOWYOgD43HkBlsG6Nzn++RUA
+         s26QDXMLoRkkYNP+BZngMwfTq9di/6OO0IkO3IC54N+K6QSdDClia/ZmA7V8WOKHMOwv
+         d4/iN41jcXByCY+FcttVka0740BXRF2DY+be8o3bnLE1+lVmNVN9zK7sRtunQTrnzfYO
+         ru+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VoEGvRZIbR2MT8Tlaag7Yj92AA+lSowumqLl0+Yfn5M=;
-        b=CoEPCH+zQjFdrgcByJryhM28ai0t6vp5d/MMsQJCkCN7SRZn5p4MWIbbj0FrTDmkNe
-         IXZ3o53t+w0rBy3feXhIF4UVfS9e0dCOZLRpUuj9ZBZ2Z11Jm5xY6mLY8R4BrkvA7tcd
-         I/iBofibdMEbOV64l+k9zBs+589JRQfWQn2HVpfZS31ozc9MAxKsosgD0Si/2aiWjmEO
-         5yNC9DCAQUSfCxGyHZLEPEbzCFnUx7YIO+3M+5Q/6+ObryG0qncZBqsm6U9FNgOb/9AY
-         AhtHPLSROFsmGap513/YgZNZaArop0ndwosISiLYcsztnvsKBQ+ER6nboCVmFxov+B0Q
-         ILcA==
-X-Gm-Message-State: APjAAAWjc1dVCxeAayc07SQvTHfS+NPug1EgBRxuwZpAKrBZpUX8fcm6
-        mkzHwjOkDQntLtB7f5IeIXnXKRxVo1vjXvVQK9Dmy57EKIc=
-X-Google-Smtp-Source: APXvYqwhVgEmtWDr+IpH8/xVS+iawRTvMl/fWqGUcyTam4w+8KN9+yoA0ftyJ+QH1vTh2W0W78X0DQoSKxHoblgCPCM=
-X-Received: by 2002:a17:906:2101:: with SMTP id 1mr16795278ejt.182.1562598837949;
- Mon, 08 Jul 2019 08:13:57 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JxUQURsKuRML9kY6UhtzFtnOQHOYUvHcx3HxeIXuQBA=;
+        b=cNaeRFDfx13l0oo1SX1kBmZy0+PZu8mV+T03tLCA0k5p6HQdyn4lRHnScy8KtQEfpa
+         x2QnGqSlwqqetUjNIKSgloe4CY9kEMWgegymugeSXcDxu+/N0+nVJXnWhVpL1PmGGfsD
+         Ie1GP+voy77XPvbjKoc5JrIeLN1CWP2yCidiSMr3orv4KV2o1NMd13Sw3ThKWpzIfDNQ
+         BKnC1WiIuO99fSWkafojNPG7TAkGm4uV/+Fq+YMupr4GcXRJsvQH8aG0snfg+TDKnLfu
+         Deur1XH11tBJGw0ggcxrC5lhy1Svon9AERO3GwotLaQPlbr5gtgIVPOTQkjd66ycJbWc
+         G0yA==
+X-Gm-Message-State: APjAAAUmpTTtq3n/mpOo8CZWdVnaCs6XzKNRrItnzAza20xn60A3rA+E
+        evYqvi8x3hLgnDTxeFM3TE5d1Q==
+X-Google-Smtp-Source: APXvYqyjsDn6bi10c1cBDKg2WMNJIA2iqOrHw7qZOOnSzE4t1Xm80ZoVpvbjalxfbU0dPzAi4OQVWA==
+X-Received: by 2002:a17:902:2b8a:: with SMTP id l10mr25545714plb.283.1562598907966;
+        Mon, 08 Jul 2019 08:15:07 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id s66sm23363661pgs.39.2019.07.08.08.15.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 08:15:07 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 08:15:01 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Roman Mashak <mrv@mojatatu.com>
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+Subject: Re: [PATCH iproute2 1/2] tc: added mask parameter in skbedit action
+Message-ID: <20190708081501.665e7ddb@hermes.lan>
+In-Reply-To: <1562195132-9829-1-git-send-email-mrv@mojatatu.com>
+References: <1562195132-9829-1-git-send-email-mrv@mojatatu.com>
 MIME-Version: 1.0
-References: <f1535e547aa6da8216ca2a0da7c06b645a132929.1562578533.git.aclaudi@redhat.com>
-In-Reply-To: <f1535e547aa6da8216ca2a0da7c06b645a132929.1562578533.git.aclaudi@redhat.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Mon, 8 Jul 2019 17:14:49 +0200
-Message-ID: <CAPpH65xb5cnqpTP5mNsT28wf6103hkM+Ega7D1EbyFffce=ixw@mail.gmail.com>
-Subject: Re: [PATCH iproute2] ip-route: fix json formatting for metrics
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 8, 2019 at 11:38 AM Andrea Claudi <aclaudi@redhat.com> wrote:
->
-> Setting metrics for routes currently lead to non-parsable
-> json output. For example:
->
-> $ ip link add type dummy
-> $ ip route add 192.168.2.0 dev dummy0 metric 100 mtu 1000 rto_min 3
-> $ ip -j route | jq
-> parse error: ':' not as part of an object at line 1, column 319
->
-> Fixing this opening a json object in the metrics array and using
-> print_string() instead of fprintf().
->
-> This is the output for the above commands applying this patch:
->
-> $ ip -j route | jq
-> [
->   {
->     "dst": "192.168.2.0",
->     "dev": "dummy0",
->     "scope": "link",
->     "metric": 100,
->     "flags": [],
->     "metrics": [
->       {
->         "mtu": 1000,
->         "rto_min": 3
->       }
->     ]
->   }
-> ]
->
-> Fixes: 663c3cb23103f ("iproute: implement JSON and color output")
-> Fixes: 968272e791710 ("iproute: refactor metrics print")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  ip/iproute.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/ip/iproute.c b/ip/iproute.c
-> index 1669e0138259e..2f9b612b0b506 100644
-> --- a/ip/iproute.c
-> +++ b/ip/iproute.c
-> @@ -578,6 +578,7 @@ static void print_rta_metrics(FILE *fp, const struct rtattr *rta)
->         int i;
->
->         open_json_array(PRINT_JSON, "metrics");
-> +       open_json_object(NULL);
->
->         parse_rtattr(mxrta, RTAX_MAX, RTA_DATA(rta), RTA_PAYLOAD(rta));
->
-> @@ -611,7 +612,7 @@ static void print_rta_metrics(FILE *fp, const struct rtattr *rta)
->                         print_rtax_features(fp, val);
->                         break;
->                 default:
-> -                       fprintf(fp, "%u ", val);
-> +                       print_uint(PRINT_ANY, mx_names[i], "%u ", val);
->                         break;
->
->                 case RTAX_RTT:
-> @@ -639,6 +640,7 @@ static void print_rta_metrics(FILE *fp, const struct rtattr *rta)
->                 }
->         }
->
-> +       close_json_object();
->         close_json_array(PRINT_JSON, NULL);
->  }
->
-> --
-> 2.20.1
->
+On Wed,  3 Jul 2019 19:05:31 -0400
+Roman Mashak <mrv@mojatatu.com> wrote:
 
-Sorry, I forgot to add:
-Reported-by: Frank Hofmann <fhofmann@cloudflare.com>
+> +	if (tb[TCA_SKBEDIT_MASK]) {
+> +		print_uint(PRINT_ANY, "mask", "/0x%x",
+> +			   rta_getattr_u32(tb[TCA_SKBEDIT_MASK]));
 
-Regards,
-Andrea
+Why not print in hex with.
+
+	print_hex(PRINT_ANY, "mask", "/%#x",
+			rta_getattr_u32(tb[TCA_SKBEDIT_MASK]));
