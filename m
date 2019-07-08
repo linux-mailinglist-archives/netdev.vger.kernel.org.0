@@ -2,139 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 017B461A84
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 08:03:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1ED561A8C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 08:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728375AbfGHGDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 02:03:21 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38251 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727218AbfGHGDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 02:03:21 -0400
-Received: by mail-wm1-f67.google.com with SMTP id s15so15015532wmj.3
-        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 23:03:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=0k6bSvcU9O/QJnBhAJGLcZJTgSTBgLOXSurZ2xzE7js=;
-        b=lQvTkTYEJ/sMp1IXbhfq2Y2RWZR0CsX3F1LBZlbkRQVDgnqew+qXd8euBmniOoV/DR
-         SWO59l5RSsCl3DCNB/ndh8sgP5oGZ8pfSg+NMpOAUfXUMrRKii6F87pfpIGnzkSlDsC9
-         wBGrRB7k0COlbRG+bb6YDIqc8WtA8rCXX0YPSZImQcpsqO0RO45MxbX9lumaTgpfiSvy
-         us5vqPvunBFYxHHOZGmMwuN5oz+pGv7Q9+S0GYtSep4KAFfOMhJjBI6AngZ4ToWGRsuM
-         kURaKNh5hcQiCwK8O1Xyx2l+g6uc1fSBNju5dktJiN/ZTL66q1s4OqLQrJ5Fh6YVS6Lz
-         sShQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0k6bSvcU9O/QJnBhAJGLcZJTgSTBgLOXSurZ2xzE7js=;
-        b=RWupCiHG2T1dPiMqUGiUg5Y91GRLOfXWXEk4ZfYjD+l4htyOKSUUeBmQkf6xR6dZzu
-         hhpwAzP3TEBDOE1yXaGJHLLN5uyUv5LsthNtWGC/ejN+G4oy/qLwmYuQtakm14Skp+Vt
-         Yf2heUlzbeACC0gOncwWIhzYjyuY5+k7ascPubFDF8fbRbqV4pu/BB9xwL9Xb7Aukzw3
-         vMFjs6GNLaYfifBRHBugMlVZ3h/3rKQUL/V2eWEHsbILzidNPPLG2kSsR7tddDdIhDb/
-         G3+j4Cv5ay4h1jnS3jyYa5tzKyPEcw5KN8Ow0TrD6YkSUU+rFySMo+9eOxdLxcNGV2/L
-         tpEw==
-X-Gm-Message-State: APjAAAV2MrKF97RMHLycp2CqR4eN/yxA69Jtm70CYXWKVaVpdsNiKK1u
-        sITMMelx1x4PwXwR2znL8QU=
-X-Google-Smtp-Source: APXvYqxT/YZnTm8S2ODiZMLclzb9aoQVdq/YeOQ9ELHKMQJ40lSc8owtWZwUu8qm/ZT5sjRjo0X4Cw==
-X-Received: by 2002:a1c:c545:: with SMTP id v66mr15267992wmf.51.1562565798588;
-        Sun, 07 Jul 2019 23:03:18 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:6cab:1c3d:9973:65c0? (p200300EA8BD60C006CAB1C3D997365C0.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:6cab:1c3d:9973:65c0])
-        by smtp.googlemail.com with ESMTPSA id u1sm14432661wml.14.2019.07.07.23.03.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 07 Jul 2019 23:03:17 -0700 (PDT)
-Subject: Re: [PATCH] phy: added a PHY_BUSY state into phy_state_machine
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "kwangdo.yi" <kwangdo.yi@gmail.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-References: <1562538732-20700-1-git-send-email-kwangdo.yi@gmail.com>
- <539888f4-e5be-7ad5-53ce-63dd182708b1@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <cd7591e7-4a4a-b5a6-21af-045acd89923d@gmail.com>
-Date:   Mon, 8 Jul 2019 08:03:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729033AbfGHGSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 02:18:02 -0400
+Received: from mga09.intel.com ([134.134.136.24]:6540 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727218AbfGHGSC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 02:18:02 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Jul 2019 23:18:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,465,1557212400"; 
+   d="scan'208";a="173175976"
+Received: from npg-dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.66])
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Jul 2019 23:17:58 -0700
+Date:   Mon, 8 Jul 2019 14:16:25 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, mst@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com
+Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
+Message-ID: <20190708061625.GA15936@___>
+References: <20190703091339.1847-1-tiwei.bie@intel.com>
+ <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
+ <20190703115245.GA22374@___>
+ <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com>
+ <20190703130817.GA1978@___>
+ <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
+ <20190704062134.GA21116@___>
+ <20190705084946.67b8f9f5@x1.home>
 MIME-Version: 1.0
-In-Reply-To: <539888f4-e5be-7ad5-53ce-63dd182708b1@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190705084946.67b8f9f5@x1.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.07.2019 05:07, Florian Fainelli wrote:
-> +Andrew, Heiner (please CC PHY library maintainers).
+On Fri, Jul 05, 2019 at 08:49:46AM -0600, Alex Williamson wrote:
+> On Thu, 4 Jul 2019 14:21:34 +0800
+> Tiwei Bie <tiwei.bie@intel.com> wrote:
+> > On Thu, Jul 04, 2019 at 12:31:48PM +0800, Jason Wang wrote:
+> > > On 2019/7/3 下午9:08, Tiwei Bie wrote:  
+> > > > On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:  
+> > > > > On 2019/7/3 下午7:52, Tiwei Bie wrote:  
+> > > > > > On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:  
+> > > > > > > On 2019/7/3 下午5:13, Tiwei Bie wrote:  
+> > > > > > > > Details about this can be found here:
+> > > > > > > > 
+> > > > > > > > https://lwn.net/Articles/750770/
+> > > > > > > > 
+> > > > > > > > What's new in this version
+> > > > > > > > ==========================
+> > > > > > > > 
+> > > > > > > > A new VFIO device type is introduced - vfio-vhost. This addressed
+> > > > > > > > some comments from here:https://patchwork.ozlabs.org/cover/984763/
+> > > > > > > > 
+> > > > > > > > Below is the updated device interface:
+> > > > > > > > 
+> > > > > > > > Currently, there are two regions of this device: 1) CONFIG_REGION
+> > > > > > > > (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
+> > > > > > > > device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
+> > > > > > > > can be used to notify the device.
+> > > > > > > > 
+> > > > > > > > 1. CONFIG_REGION
+> > > > > > > > 
+> > > > > > > > The region described by CONFIG_REGION is the main control interface.
+> > > > > > > > Messages will be written to or read from this region.
+> > > > > > > > 
+> > > > > > > > The message type is determined by the `request` field in message
+> > > > > > > > header. The message size is encoded in the message header too.
+> > > > > > > > The message format looks like this:
+> > > > > > > > 
+> > > > > > > > struct vhost_vfio_op {
+> > > > > > > > 	__u64 request;
+> > > > > > > > 	__u32 flags;
+> > > > > > > > 	/* Flag values: */
+> > > > > > > >     #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
+> > > > > > > > 	__u32 size;
+> > > > > > > > 	union {
+> > > > > > > > 		__u64 u64;
+> > > > > > > > 		struct vhost_vring_state state;
+> > > > > > > > 		struct vhost_vring_addr addr;
+> > > > > > > > 	} payload;
+> > > > > > > > };
+> > > > > > > > 
+> > > > > > > > The existing vhost-kernel ioctl cmds are reused as the message
+> > > > > > > > requests in above structure.  
+> > > > > > > Still a comments like V1. What's the advantage of inventing a new protocol?  
+> > > > > > I'm trying to make it work in VFIO's way..
+> > > > > >   
+> > > > > > > I believe either of the following should be better:
+> > > > > > > 
+> > > > > > > - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
+> > > > > > > extend it with e.g notify region. The advantages is that all exist userspace
+> > > > > > > program could be reused without modification (or minimal modification). And
+> > > > > > > vhost API hides lots of details that is not necessary to be understood by
+> > > > > > > application (e.g in the case of container).  
+> > > > > > Do you mean reusing vhost's ioctl on VFIO device fd directly,
+> > > > > > or introducing another mdev driver (i.e. vhost_mdev instead of
+> > > > > > using the existing vfio_mdev) for mdev device?  
+> > > > > Can we simply add them into ioctl of mdev_parent_ops?  
+> > > > Right, either way, these ioctls have to be and just need to be
+> > > > added in the ioctl of the mdev_parent_ops. But another thing we
+> > > > also need to consider is that which file descriptor the userspace
+> > > > will do the ioctl() on. So I'm wondering do you mean let the
+> > > > userspace do the ioctl() on the VFIO device fd of the mdev
+> > > > device?
+> > > >   
+> > > 
+> > > Yes.  
+> > 
+> > Got it! I'm not sure what's Alex opinion on this. If we all
+> > agree with this, I can do it in this way.
+> > 
+> > > Is there any other way btw?  
+> > 
+> > Just a quick thought.. Maybe totally a bad idea. I was thinking
+> > whether it would be odd to do non-VFIO's ioctls on VFIO's device
+> > fd. So I was wondering whether it's possible to allow binding
+> > another mdev driver (e.g. vhost_mdev) to the supported mdev
+> > devices. The new mdev driver, vhost_mdev, can provide similar
+> > ways to let userspace open the mdev device and do the vhost ioctls
+> > on it. To distinguish with the vfio_mdev compatible mdev devices,
+> > the device API of the new vhost_mdev compatible mdev devices
+> > might be e.g. "vhost-net" for net?
+> > 
+> > So in VFIO case, the device will be for passthru directly. And
+> > in VHOST case, the device can be used to accelerate the existing
+> > virtualized devices.
+> > 
+> > How do you think?
 > 
-> On 7/7/2019 3:32 PM, kwangdo.yi wrote:
->> When mdio driver polling the phy state in the phy_state_machine,
->> sometimes it results in -ETIMEDOUT and link is down. But the phy
->> is still alive and just didn't meet the polling deadline. 
->> Closing the phy link in this case seems too radical. Failing to 
->> meet the deadline happens very rarely. When stress test runs for 
->> tens of hours with multiple target boards (Xilinx Zynq7000 with
->> marvell 88E1512 PHY, Xilinx custom emac IP), it happens. This 
->> patch gives another chance to the phy_state_machine when polling 
->> timeout happens. Only two consecutive failing the deadline is 
->> treated as the real phy halt and close the connection.
+> VFIO really can't prevent vendor specific ioctls on the device file
+> descriptor for mdevs, but a) we'd want to be sure the ioctl address
+> space can't collide with ioctls we'd use for vfio defined purposes and
+> b) maybe the VFIO user API isn't what you want in the first place if
+> you intend to mostly/entirely ignore the defined ioctl set and replace
+> them with your own.  In the case of the latter, you're also not getting
+> the advantages of the existing VFIO userspace code, so why expose a
+> VFIO device at all.
+
+Yeah, I totally agree.
+
 > 
-In addition to what Florian said already there's at least one
-issue apart from the quite hacky approach in general.
+> The mdev interface does provide a general interface for creating and
+> managing virtual devices, vfio-mdev is just one driver on the mdev
+> bus.  Parav (Mellanox) has been doing work on mdev-core to help clean
+> out vfio-isms from the interface, aiui, with the intent of implementing
+> another mdev bus driver for using the devices within the kernel.
 
-Let's say we are in interrupt mode and the timeout happens when
-reading the PHY status after a link-down interrupt. When ignoring
-the error we miss the transition and phylib will report a wrong
-link status.
+Great to know this! I found below series after some searching:
 
-I also would prefer to first check for the root cause and try to
-fix it, before adding hacks to upper layers for ignoring errors.
+https://lkml.org/lkml/2019/3/8/821
 
-> How about simply increasing the MDIO polling timeout in the Xilinx EMAC
-> driver instead? Or if the PHY is where the timeout needs to be
-> increased, allow the PHY device drivers to advertise min/max timeouts
-> such that the MDIO bus layer can use that information?
+In above series, the new mlx5_core mdev driver will do the probe
+by calling mlx5_get_core_dev() first on the parent device of the
+mdev device. In vhost_mdev, maybe we can also keep track of all
+the compatible mdev devices and use this info to do the probe.
+But we also need a way to allow vfio_mdev driver to distinguish
+and reject the incompatible mdev devices.
+
+> It
+> seems like this vhost-mdev driver might be similar, using mdev but not
+> necessarily vfio-mdev to expose devices.  Thanks,
+
+Yeah, I also think so!
+
+Thanks!
+Tiwei
+
 > 
->>
->>
->> Signed-off-by: kwangdo.yi <kwangdo.yi@gmail.com>
->> ---
->>  drivers/net/phy/phy.c | 6 ++++++
->>  include/linux/phy.h   | 1 +
->>  2 files changed, 7 insertions(+)
->>
->> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
->> index e888542..9e8138b 100644
->> --- a/drivers/net/phy/phy.c
->> +++ b/drivers/net/phy/phy.c
->> @@ -919,7 +919,13 @@ void phy_state_machine(struct work_struct *work)
->>  		break;
->>  	case PHY_NOLINK:
->>  	case PHY_RUNNING:
->> +	case PHY_BUSY:
->>  		err = phy_check_link_status(phydev);
->> +		if (err == -ETIMEDOUT && old_state == PHY_RUNNING) {
->> +			phy->state = PHY_BUSY;
->> +			err = 0;
->> +
->> +		}
->>  		break;
->>  	case PHY_FORCING:
->>  		err = genphy_update_link(phydev);
->> diff --git a/include/linux/phy.h b/include/linux/phy.h
->> index 6424586..4a49401 100644
->> --- a/include/linux/phy.h
->> +++ b/include/linux/phy.h
->> @@ -313,6 +313,7 @@ enum phy_state {
->>  	PHY_RUNNING,
->>  	PHY_NOLINK,
->>  	PHY_FORCING,
->> +	PHY_BUSY,
->>  };
->>  
->>  /**
->>
-> 
-
+> Alex
