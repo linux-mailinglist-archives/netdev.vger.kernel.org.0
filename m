@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E2461D50
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 12:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 194BC61D4E
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 12:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730249AbfGHK4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 06:56:00 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:43055 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730231AbfGHKzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 06:55:54 -0400
-Received: by mail-ed1-f66.google.com with SMTP id e3so14117905edr.10
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 03:55:52 -0700 (PDT)
+        id S1730241AbfGHKzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 06:55:55 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:45688 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730227AbfGHKzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 06:55:53 -0400
+Received: by mail-ed1-f65.google.com with SMTP id e2so7387419edi.12
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 03:55:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=pYK/cSR/paK9aJBfuEv538yo/J01fWBVfiBWc+2kCDE=;
-        b=TABEBmISZF+3ASgTYr0MNJL3PuRfxWudTZyF9j1ZL8Oii+TEDVmDEoE2YKZnWbdBvI
-         w6y39VDW0DwU3ya4IYDImoeJcHkEpSNaEc3fbyojBI3megj6JgJV0od1hyTuWeon+ezJ
-         ygb02BDg7z3OAUkr2zZM9VP/Mi1pYbyVYpCI6TC4q1CwJNOTryaYjW9wJYbixT1ZFwYR
-         iAQkuMCpS4mEDzdNl6rAR5m4747MkSiCcYSqkQ9/fz5aulL9mjmWEEm+3oZzzKwDxiR7
-         4N8R7q8JS2GscK/fsfQyJPTrIhbZPDrqDbB1JxHCItP6oBkF8aPkJLaGylda1aX0yPkq
-         HQVQ==
-X-Gm-Message-State: APjAAAWj/Viqpx58Z9G1MiEabv3dIWtft5SFuD51n0u3eGXWTitaGnF2
-        gl61bRursucDSWYyYXRIDhAClg==
-X-Google-Smtp-Source: APXvYqzRmvDwq9P70oBhK0psujsaSQzXSVV9gB1Ku24UAdfvmaQgbyYdXZIk33TeWLpu9SyTXGyeug==
-X-Received: by 2002:a17:906:19cc:: with SMTP id h12mr13340385ejd.304.1562583352127;
-        Mon, 08 Jul 2019 03:55:52 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id s27sm525517ejb.74.2019.07.08.03.55.48
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        bh=IwR/15qggsBH3q8b1gVAQVtbXh5R7KpXBSUcu/x8jys=;
+        b=FTzlKeGCc8nrcAo5OhQ+x4HYc+BoZ2ziwLlCFXNb0FyFLbiwIc9eHAldui1LIJoqwf
+         cdgUexw3OehHq9w0aTZP0WxaVhOzKfiOrMImntAvpM5TrqnaWr6sMtv3IRkVqOzrbVll
+         HPhlWn4G1mGr4w3zfZDZ1K+RUEmK/H1qQrKN+D5bWzQeDJzmYAlqE+ZfxWg21c48V7lY
+         nE1Q3HjYjRckFlHX+bIqagGmFas3mBdcBG6qGGNxZXT5r1XFLO1GTRwxZGGNEU9fg8xa
+         UNdLjgChCM+bE/sncRiorSRy25X33GBwUNyFqpHFcF1BLlPzI33YwVSAonq1dtHVEXRM
+         Jn6g==
+X-Gm-Message-State: APjAAAUx+mFwri8GVV4IJFni6oXaE+C75wpObLvJ0Q0w86aVP3q65cWn
+        /d6dC81Q25aiiE5Xx62IRiMQPQ==
+X-Google-Smtp-Source: APXvYqzxwEzc2OdvxyxteUJXFx1lAINBjzW6JQ37qlFzpRwa3PxSfbnh3WGldAsWlF4nwEUSufvYew==
+X-Received: by 2002:a50:84a1:: with SMTP id 30mr19648057edq.44.1562583350820;
         Mon, 08 Jul 2019 03:55:50 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id l38sm5546750eda.1.2019.07.08.03.55.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 03:55:48 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 8C567181CEF; Mon,  8 Jul 2019 12:55:47 +0200 (CEST)
-Subject: [PATCH bpf-next v3 6/6] tools: Add definitions for devmap_hash map
- type
+        id 4F96A181CE8; Mon,  8 Jul 2019 12:55:47 +0200 (CEST)
+Subject: [PATCH bpf-next v3 2/6] xdp: Refactor devmap allocation code for
+ reuse
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
@@ -46,7 +46,7 @@ Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
         =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
         Yonghong Song <yhs@fb.com>
 Date:   Mon, 08 Jul 2019 12:55:47 +0200
-Message-ID: <156258334751.1664.9165590129307902073.stgit@alrua-x1>
+Message-ID: <156258334726.1664.3203645971059402915.stgit@alrua-x1>
 In-Reply-To: <156258334704.1664.15289699152225647059.stgit@alrua-x1>
 References: <156258334704.1664.15289699152225647059.stgit@alrua-x1>
 User-Agent: StGit/0.19-dirty
@@ -60,97 +60,233 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This adds selftest and bpftool updates for the devmap_hash map type.
+The subsequent patch to add a new devmap sub-type can re-use much of the
+initialisation and allocation code, so refactor it into separate functions.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Acked-by: Yonghong Song <yhs@fb.com>
 ---
- tools/bpf/bpftool/Documentation/bpftool-map.rst |    2 +-
- tools/bpf/bpftool/bash-completion/bpftool       |    4 ++--
- tools/bpf/bpftool/map.c                         |    3 ++-
- tools/testing/selftests/bpf/test_maps.c         |   16 ++++++++++++++++
- 4 files changed, 21 insertions(+), 4 deletions(-)
+ kernel/bpf/devmap.c |  137 +++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 84 insertions(+), 53 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-index 490b4501cb6e..61d1d270eb5e 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-@@ -46,7 +46,7 @@ MAP COMMANDS
- |	*TYPE* := { **hash** | **array** | **prog_array** | **perf_event_array** | **percpu_hash**
- |		| **percpu_array** | **stack_trace** | **cgroup_array** | **lru_hash**
- |		| **lru_percpu_hash** | **lpm_trie** | **array_of_maps** | **hash_of_maps**
--|		| **devmap** | **sockmap** | **cpumap** | **xskmap** | **sockhash**
-+|		| **devmap** | **devmap_hash** | **sockmap** | **cpumap** | **xskmap** | **sockhash**
- |		| **cgroup_storage** | **reuseport_sockarray** | **percpu_cgroup_storage**
- |		| **queue** | **stack** }
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index d83cf8ccc872..a2fe16362129 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -60,7 +60,7 @@ struct xdp_bulk_queue {
+ struct bpf_dtab_netdev {
+ 	struct net_device *dev; /* must be first member, due to tracepoint */
+ 	struct bpf_dtab *dtab;
+-	unsigned int bit;
++	unsigned int idx; /* keep track of map index for tracepoint */
+ 	struct xdp_bulk_queue __percpu *bulkq;
+ 	struct rcu_head rcu;
+ };
+@@ -75,28 +75,22 @@ struct bpf_dtab {
+ static DEFINE_SPINLOCK(dev_map_lock);
+ static LIST_HEAD(dev_map_list);
  
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index ba37095e1f62..411d810bfd10 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -458,8 +458,8 @@ _bpftool()
-                                 perf_event_array percpu_hash percpu_array \
-                                 stack_trace cgroup_array lru_hash \
-                                 lru_percpu_hash lpm_trie array_of_maps \
--                                hash_of_maps devmap sockmap cpumap xskmap \
--                                sockhash cgroup_storage reuseport_sockarray \
-+                                hash_of_maps devmap devmap_hash sockmap cpumap \
-+                                xskmap sockhash cgroup_storage reuseport_sockarray \
-                                 percpu_cgroup_storage queue stack' -- \
-                                                    "$cur" ) )
-                             return 0
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index 5da5a7311f13..bfbbc6b4cb83 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -37,6 +37,7 @@ const char * const map_type_name[] = {
- 	[BPF_MAP_TYPE_ARRAY_OF_MAPS]		= "array_of_maps",
- 	[BPF_MAP_TYPE_HASH_OF_MAPS]		= "hash_of_maps",
- 	[BPF_MAP_TYPE_DEVMAP]			= "devmap",
-+	[BPF_MAP_TYPE_DEVMAP_HASH]		= "devmap_hash",
- 	[BPF_MAP_TYPE_SOCKMAP]			= "sockmap",
- 	[BPF_MAP_TYPE_CPUMAP]			= "cpumap",
- 	[BPF_MAP_TYPE_XSKMAP]			= "xskmap",
-@@ -1271,7 +1272,7 @@ static int do_help(int argc, char **argv)
- 		"       TYPE := { hash | array | prog_array | perf_event_array | percpu_hash |\n"
- 		"                 percpu_array | stack_trace | cgroup_array | lru_hash |\n"
- 		"                 lru_percpu_hash | lpm_trie | array_of_maps | hash_of_maps |\n"
--		"                 devmap | sockmap | cpumap | xskmap | sockhash |\n"
-+		"                 devmap | devmap_hash | sockmap | cpumap | xskmap | sockhash |\n"
- 		"                 cgroup_storage | reuseport_sockarray | percpu_cgroup_storage }\n"
- 		"       " HELP_SPEC_OPTIONS "\n"
- 		"",
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index a3fbc571280a..086319caf2d9 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -508,6 +508,21 @@ static void test_devmap(unsigned int task, void *data)
- 	close(fd);
- }
+-static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
++static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr,
++			    bool check_memlock)
+ {
+-	struct bpf_dtab *dtab;
+ 	int err, cpu;
+ 	u64 cost;
  
-+static void test_devmap_hash(unsigned int task, void *data)
-+{
-+	int fd;
-+	__u32 key, value;
-+
-+	fd = bpf_create_map(BPF_MAP_TYPE_DEVMAP_HASH, sizeof(key), sizeof(value),
-+			    2, 0);
-+	if (fd < 0) {
-+		printf("Failed to create devmap_hash '%s'!\n", strerror(errno));
-+		exit(1);
-+	}
-+
-+	close(fd);
+-	if (!capable(CAP_NET_ADMIN))
+-		return ERR_PTR(-EPERM);
+-
+ 	/* check sanity of attributes */
+ 	if (attr->max_entries == 0 || attr->key_size != 4 ||
+ 	    attr->value_size != 4 || attr->map_flags & ~DEV_CREATE_FLAG_MASK)
+-		return ERR_PTR(-EINVAL);
++		return -EINVAL;
+ 
+ 	/* Lookup returns a pointer straight to dev->ifindex, so make sure the
+ 	 * verifier prevents writes from the BPF side
+ 	 */
+ 	attr->map_flags |= BPF_F_RDONLY_PROG;
+ 
+-	dtab = kzalloc(sizeof(*dtab), GFP_USER);
+-	if (!dtab)
+-		return ERR_PTR(-ENOMEM);
+ 
+ 	bpf_map_init_from_attr(&dtab->map, attr);
+ 
+@@ -107,9 +101,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+ 	/* if map size is larger than memlock limit, reject it */
+ 	err = bpf_map_charge_init(&dtab->map.memory, cost);
+ 	if (err)
+-		goto free_dtab;
+-
+-	err = -ENOMEM;
++		return -EINVAL;
+ 
+ 	dtab->flush_list = alloc_percpu(struct list_head);
+ 	if (!dtab->flush_list)
+@@ -124,19 +116,38 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+ 	if (!dtab->netdev_map)
+ 		goto free_percpu;
+ 
+-	spin_lock(&dev_map_lock);
+-	list_add_tail_rcu(&dtab->list, &dev_map_list);
+-	spin_unlock(&dev_map_lock);
+-
+-	return &dtab->map;
++	return 0;
+ 
+ free_percpu:
+ 	free_percpu(dtab->flush_list);
+ free_charge:
+ 	bpf_map_charge_finish(&dtab->map.memory);
+-free_dtab:
+-	kfree(dtab);
+-	return ERR_PTR(err);
++	return -ENOMEM;
 +}
 +
- static void test_queuemap(unsigned int task, void *data)
++static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
++{
++	struct bpf_dtab *dtab;
++	int err;
++
++	if (!capable(CAP_NET_ADMIN))
++		return ERR_PTR(-EPERM);
++
++	dtab = kzalloc(sizeof(*dtab), GFP_USER);
++	if (!dtab)
++		return ERR_PTR(-ENOMEM);
++
++	err = dev_map_init_map(dtab, attr, true);
++	if (err) {
++		kfree(dtab);
++		return ERR_PTR(err);
++	}
++
++	spin_lock(&dev_map_lock);
++	list_add_tail_rcu(&dtab->list, &dev_map_list);
++	spin_unlock(&dev_map_lock);
++
++	return &dtab->map;
+ }
+ 
+ static void dev_map_free(struct bpf_map *map)
+@@ -235,7 +246,7 @@ static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags,
+ out:
+ 	bq->count = 0;
+ 
+-	trace_xdp_devmap_xmit(&obj->dtab->map, obj->bit,
++	trace_xdp_devmap_xmit(&obj->dtab->map, obj->idx,
+ 			      sent, drops, bq->dev_rx, dev, err);
+ 	bq->dev_rx = NULL;
+ 	__list_del_clearprev(&bq->flush_node);
+@@ -412,17 +423,52 @@ static int dev_map_delete_elem(struct bpf_map *map, void *key)
+ 	return 0;
+ }
+ 
+-static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
+-				u64 map_flags)
++static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
++						    struct bpf_dtab *dtab,
++						    u32 ifindex,
++						    unsigned int idx)
  {
- 	const int MAP_SIZE = 32;
-@@ -1675,6 +1690,7 @@ static void run_all_tests(void)
- 	test_arraymap_percpu_many_keys();
+-	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
+-	struct net *net = current->nsproxy->net_ns;
+ 	gfp_t gfp = GFP_ATOMIC | __GFP_NOWARN;
++	struct bpf_dtab_netdev *dev;
++	struct xdp_bulk_queue *bq;
++	int cpu;
++
++	dev = kmalloc_node(sizeof(*dev), gfp, dtab->map.numa_node);
++	if (!dev)
++		return ERR_PTR(-ENOMEM);
++
++	dev->bulkq = __alloc_percpu_gfp(sizeof(*dev->bulkq),
++					sizeof(void *), gfp);
++	if (!dev->bulkq) {
++		kfree(dev);
++		return ERR_PTR(-ENOMEM);
++	}
++
++	for_each_possible_cpu(cpu) {
++		bq = per_cpu_ptr(dev->bulkq, cpu);
++		bq->obj = dev;
++	}
++
++	dev->dev = dev_get_by_index(net, ifindex);
++	if (!dev->dev) {
++		free_percpu(dev->bulkq);
++		kfree(dev);
++		return ERR_PTR(-EINVAL);
++	}
++
++	dev->idx = idx;
++	dev->dtab = dtab;
++
++	return dev;
++}
++
++static int __dev_map_update_elem(struct net *net, struct bpf_map *map,
++				 void *key, void *value, u64 map_flags)
++{
++	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
+ 	struct bpf_dtab_netdev *dev, *old_dev;
+ 	u32 ifindex = *(u32 *)value;
+-	struct xdp_bulk_queue *bq;
+ 	u32 i = *(u32 *)key;
+-	int cpu;
  
- 	test_devmap(0, NULL);
-+	test_devmap_hash(0, NULL);
- 	test_sockmap(0, NULL);
+ 	if (unlikely(map_flags > BPF_EXIST))
+ 		return -EINVAL;
+@@ -434,31 +480,9 @@ static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 	if (!ifindex) {
+ 		dev = NULL;
+ 	} else {
+-		dev = kmalloc_node(sizeof(*dev), gfp, map->numa_node);
+-		if (!dev)
+-			return -ENOMEM;
+-
+-		dev->bulkq = __alloc_percpu_gfp(sizeof(*dev->bulkq),
+-						sizeof(void *), gfp);
+-		if (!dev->bulkq) {
+-			kfree(dev);
+-			return -ENOMEM;
+-		}
+-
+-		for_each_possible_cpu(cpu) {
+-			bq = per_cpu_ptr(dev->bulkq, cpu);
+-			bq->obj = dev;
+-		}
+-
+-		dev->dev = dev_get_by_index(net, ifindex);
+-		if (!dev->dev) {
+-			free_percpu(dev->bulkq);
+-			kfree(dev);
+-			return -EINVAL;
+-		}
+-
+-		dev->bit = i;
+-		dev->dtab = dtab;
++		dev = __dev_map_alloc_node(net, dtab, ifindex, i);
++		if (IS_ERR(dev))
++			return PTR_ERR(dev);
+ 	}
  
- 	test_map_large();
+ 	/* Use call_rcu() here to ensure rcu critical sections have completed
+@@ -472,6 +496,13 @@ static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 	return 0;
+ }
+ 
++static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
++			       u64 map_flags)
++{
++	return __dev_map_update_elem(current->nsproxy->net_ns,
++				     map, key, value, map_flags);
++}
++
+ const struct bpf_map_ops dev_map_ops = {
+ 	.map_alloc = dev_map_alloc,
+ 	.map_free = dev_map_free,
 
