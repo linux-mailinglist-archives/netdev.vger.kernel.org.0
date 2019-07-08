@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D5EB62B34
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 23:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D4F62B37
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 23:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732710AbfGHVrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 17:47:12 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38609 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730589AbfGHVrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 17:47:12 -0400
-Received: by mail-qt1-f194.google.com with SMTP id n11so19589617qtl.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 14:47:11 -0700 (PDT)
+        id S1732549AbfGHVxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 17:53:17 -0400
+Received: from mail-pl1-f180.google.com ([209.85.214.180]:40732 "EHLO
+        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730443AbfGHVxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 17:53:17 -0400
+Received: by mail-pl1-f180.google.com with SMTP id a93so8953029pla.7
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 14:53:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=gWr/D+5oyDrWHtBMH3oyotq+QixFWAAPaOacnO7XOrM=;
-        b=UlAuKPoUL2qI52YDbODzhuqSNJTCZBT6/IZMh77v6hEtYbEu0nhxuRTktLZ/rgd1gJ
-         YqQsEXUkzKbhSL1zZQ5Ka7LOV7FWBlM+zR/Jt+LS3OVY6FWvEcm6wLq2K08QHwn8qSbr
-         mM1/i4xdaFyzKapVIbUfnK72TL+n+PiSVf0ju7kMwtw1EoAqcmteqO2W3aWRAJaSDNh6
-         F/Nd31qTSy2FvasixuIrOgbrUkUNXwk9D4yaRHRD8mIu80lCBZLv1Aj60nHc2B1iPpSZ
-         NrDEqQ6gY9Bx3KXHDYPDKZNkztUb5AiShouoO3YwiNqOR7wRiOMPLussCWpXCcbePoaE
-         4gQQ==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=sfk5YphuNTK1Oqu49Hg+KnxGjmamT3wRgTV1hs7P+ms=;
+        b=eC3Svy3R3Daw5lR5goSWkqOOMgBoZgXuk+8lsNrN3TeKzTxlSdZ9iTd0I9ztzGKtzR
+         4yfNo535io7+SO5g75D0q+7QWAiuhsm+z3ox2q4vU3X1ICsGUqt7kZSSeYsTLj78bld0
+         0yhsMz9xuyqUETcxaMjS3IY5eZVIPlU4dR/b8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=gWr/D+5oyDrWHtBMH3oyotq+QixFWAAPaOacnO7XOrM=;
-        b=udE92vt9jT1b/mUbtr9xhdKBgkE9nV8NTbXoPWoCCUZOjn5Cz308n90dawGsWNoHOH
-         +8QR1e4Yso/x1e9ROAEfcX7OA2puAzGKgnBn+8jaj1S2LrxmU+PPzt7sBcPRcHHQKD2s
-         rRU3IwUz/OoqNii25D8wmlpCmVKEQzLkCikZ0c15y+1k7SWiLbxDczc+7J0tUkbnga++
-         YhpsLNaX+nbSKbMWqVKKsj5/Md18d6XNqbhrITy2fBBFI+s1xFJiMDbwBheue8EOpzhC
-         CGUtfPeF5pIrjYauAeBB4SjZDta2auAV8SzMW3CEUpbCmv20dC667rWSY6Czg+8XRwWR
-         hxIA==
-X-Gm-Message-State: APjAAAW54dLm6tGZ5we42yAD2s8ay4xW6YWWwtcJjtWLsvYXkZOzTQwZ
-        rAXrNCX+XpnX6CpWCowgldO3hw==
-X-Google-Smtp-Source: APXvYqyLQszLOY0niaJl8UxjHHQYJhnPnOGwrS+YdVh+SXBIRc1X6stQqzn+K4l+jyZ/GHy0wQTxdw==
-X-Received: by 2002:a0c:e908:: with SMTP id a8mr16540771qvo.214.1562622431087;
-        Mon, 08 Jul 2019 14:47:11 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id x1sm7683655qkj.22.2019.07.08.14.47.10
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 14:47:11 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 14:47:06 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Ariel Elior" <aelior@marvell.com>, Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [EXT] Re: [PATCH net-next v2 4/4] qed*: Add devlink support for
- configuration attributes.
-Message-ID: <20190708144706.46ad7a50@cakuba.netronome.com>
-In-Reply-To: <MN2PR18MB25280224F5DDDFE8D86B234CD3F60@MN2PR18MB2528.namprd18.prod.outlook.com>
-References: <20190704132011.13600-1-skalluru@marvell.com>
-        <20190704132011.13600-5-skalluru@marvell.com>
-        <20190704150747.05fd63f4@cakuba.netronome.com>
-        <DM6PR18MB25242BC08136A2C528C1A695D3F50@DM6PR18MB2524.namprd18.prod.outlook.com>
-        <20190705123907.1918581f@cakuba.netronome.com>
-        <MN2PR18MB25280224F5DDDFE8D86B234CD3F60@MN2PR18MB2528.namprd18.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=sfk5YphuNTK1Oqu49Hg+KnxGjmamT3wRgTV1hs7P+ms=;
+        b=e83IhU9vLzc7r8p/a6juy6wZzhrQ2mqXMcKty6V65NUFw0IWnJOszUjd54ty9xEqRY
+         Lghi1wm5ukQKN2Okcl/7LWCTkFM7DdPVjDT8hFSw9c+O5G+tEEIq4wBgGMzhLYQUNNyH
+         9mU4o6eGqj1L29SzwEb5CIQUXUxpxRKaxLR2yZNbSII7M8Dl0Ldp+KKNPpHgQ9KU4wxl
+         MXjZewwZb+0U9zKxbLVaO6PvOP4fGTAuR2IDS47EaKcvFRjVBooFeLc6UPgBclR0c0aO
+         0z10GoQ3TMVGpXylBa7/BDOkyY/WN6yxVDpmOh9hezeQRTzTIbDwnXKc1El6faLbgBcT
+         ASUw==
+X-Gm-Message-State: APjAAAVY8OX5fE7UQSNER4oL5MuIuf3qBG2jDmsn+DIIVA+NHojxdOTk
+        f4+3Wv55ek7huqo9kdx85ah8bg==
+X-Google-Smtp-Source: APXvYqyqd85+C7qnBPgB4+Nft1toU5zg8Nm+B2FUFO7b/Qos47ljde0UBK9TE9VNeTt7AjFQqjOeYQ==
+X-Received: by 2002:a17:902:7483:: with SMTP id h3mr27571852pll.28.1562622796585;
+        Mon, 08 Jul 2019 14:53:16 -0700 (PDT)
+Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x9sm11352157pfn.177.2019.07.08.14.53.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Jul 2019 14:53:16 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net, gospo@broadcom.com
+Cc:     netdev@vger.kernel.org, hawk@kernel.org, ast@kernel.org,
+        ilias.apalodimas@linaro.org
+Subject: [PATCH net-next v2 0/4] bnxt_en: Add XDP_REDIRECT support.
+Date:   Mon,  8 Jul 2019 17:53:00 -0400
+Message-Id: <1562622784-29918-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Jul 2019 02:31:15 +0000, Sudarsana Reddy Kalluru wrote:
-> > > > > +			Type: u8
-> > > > > +			Configuration mode: Permanent
-> > > > > +
-> > > > > +dcbx_mode		[PORT, DRIVER-SPECIFIC]
-> > > > > +			Configure DCBX mode for the device.
-> > > > > +			Supported dcbx modes are,
-> > > > > +			    Disabled(0), IEEE(1), CEE(2) and
-> > > > > Dynamic(3)
-> > > > > +			Type: u8
-> > > > > +			Configuration mode: Permanent  
-> > > >
-> > > > Why is this a permanent parameter?
-> > > >  
-> > > This specifies the dcbx_mode to be configured in non-volatile memory.
-> > > The value is persistent and is used in the next load of OS or the mfw.  
-> > 
-> > And it can't be changed at runtime?  
->
-> Run time dcbx params are not affected via this interface, it only
-> updates config on permanent storage of the port.
+This patch series adds XDP_REDIRECT support by Andy Gospodarek.
 
-IOW it affects the defaults after boot?  It'd be preferable to have 
-the DCB uAPI handle "persistent"/default settings if that's the case.
+Andy Gospodarek (3):
+  bnxt_en: rename some xdp functions
+  bnxt_en: optimized XDP_REDIRECT support
+  bnxt_en: add page_pool support
+
+Michael Chan (1):
+  bnxt_en: Refactor __bnxt_xmit_xdp().
+
+ drivers/net/ethernet/broadcom/Kconfig             |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  72 ++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  17 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c     | 144 +++++++++++++++++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h     |   7 +-
+ 6 files changed, 214 insertions(+), 29 deletions(-)
+
+-- 
+2.5.1
+
