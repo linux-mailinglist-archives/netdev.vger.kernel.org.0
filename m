@@ -2,149 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9D561C0D
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 11:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C724E61C1A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 11:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729148AbfGHJDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 05:03:02 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43430 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727352AbfGHJDB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 05:03:01 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DECE981F25;
-        Mon,  8 Jul 2019 09:02:59 +0000 (UTC)
-Received: from [10.36.116.197] (ovpn-116-197.ams2.redhat.com [10.36.116.197])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1C19E608A4;
-        Mon,  8 Jul 2019 09:02:56 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Magnus Karlsson" <magnus.karlsson@gmail.com>
-Cc:     "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Network Development" <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCH bpf-next v3] libbpf: add xsk_ring_prod__nb_free() function
-Date:   Mon, 08 Jul 2019 11:02:55 +0200
-Message-ID: <657FF257-B598-4AF6-8ADB-775424A893E1@redhat.com>
-In-Reply-To: <CAJ8uoz0LjXMaVgnf7_UkfRwN2Dx11m1Th5FXyf1vgGWDd5Tswg@mail.gmail.com>
-References: <ea49f66f73aedcdade979605dab6b2474e2dc4cb.1562145300.git.echaudro@redhat.com>
- <c86151f8-9a16-d2e4-a888-d0836ff3c10a@iogearbox.net>
- <CAJ8uoz0LjXMaVgnf7_UkfRwN2Dx11m1Th5FXyf1vgGWDd5Tswg@mail.gmail.com>
+        id S1729681AbfGHJKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 05:10:04 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35770 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726284AbfGHJKE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 05:10:04 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y4so7543858wrm.2
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 02:10:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nApOmxa/nTZssl96687LobLLtQEE95aAXmDznI6KUpI=;
+        b=xSR/Vz6cpt09stA0c41KLhwvu1dUG3Eehg75wMim4sj7gB3nMys+y1Qja7XSqbHhgk
+         O/CbnBSurvylqlPt7+GG6VNcOuBE1Ghna/u6CuhLgr9FKqcWjCDxpFw/cwaPOFY84ZMo
+         WvzBoVLKgqsV3S3HlbrRkAitVCSfINQ0Odlw8bfS76PkzhUNJTe5Nw6Zgk+BUUHeW7BT
+         XsCv2C5qRf3xo1JhSuA8Yxmu9yXF621yo8fuTu2KQQQefj0dSqoZzWikK4z1JeeK+R0O
+         OeeVtOMTWKq4vqPoJfbx1FnE6KVwxZ70NcoB0rHLMXITVV6e6fPcrwmsa45sS6fkwbF+
+         wdVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nApOmxa/nTZssl96687LobLLtQEE95aAXmDznI6KUpI=;
+        b=ILoQeol519unaCCJO1kkJNVhqBhjR+x/ij/gp+HNunydw7venw9n/RKAGc3CoZuuuS
+         J6ObNhgdxOkdZT7o4PfOWJ6/1vx3oTuRHNE3GBTQN8x/fzLf/xMlHqsoSlhz+tOCMlMF
+         +OOh0ph9xWP8BuNrGwfta7r5q6Hi/ZGlZAmN7WpxHOwxPNTFJIAeU10ey6yEtRmozna8
+         5UYwS+6/BBJhmnstDknLT8CEysGfuaya77iiRRAmgme7Ytr55yTi0ViX/enLOSWo+rr4
+         foz8GPiEiBWAUmDLsnLe8e6ugl+K0cllVdPoL7mUTFMY8SBshshVS4Tajx7oNwmtomxI
+         Q7Sw==
+X-Gm-Message-State: APjAAAVTgSsj88ml3YgFgOFC2nNyqAZ9mK5WuvNNi4Nxoo+8WVHxZBLF
+        UI9rdXCluMpAsLww7+UozHMrxQ==
+X-Google-Smtp-Source: APXvYqyjS32Qxfrpd1TCGrSwfuupNPwNIOg3TDdhDzJVSXyqQXBXOhCNkI8VK+ycY0C/+eb/1Fkkiw==
+X-Received: by 2002:a5d:6908:: with SMTP id t8mr18561323wru.147.1562577002107;
+        Mon, 08 Jul 2019 02:10:02 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.187.142])
+        by smtp.gmail.com with ESMTPSA id t6sm18065447wmb.29.2019.07.08.02.10.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Jul 2019 02:10:01 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v2 6/6] tools: Add definitions for devmap_hash
+ map type
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+References: <156240283550.10171.1727292671613975908.stgit@alrua-x1>
+ <156240283611.10171.18010849007723279211.stgit@alrua-x1>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <767cade7-4cc4-b47d-a8ca-a30c01e0ba47@netronome.com>
+Date:   Mon, 8 Jul 2019 10:10:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <156240283611.10171.18010849007723279211.stgit@alrua-x1>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Mon, 08 Jul 2019 09:03:01 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2019-07-06 10:47 UTC+0200 ~ Toke Høiland-Jørgensen <toke@redhat.com>
+> From: Toke Høiland-Jørgensen <toke@redhat.com>
+> 
+> This adds a selftest, syncs the tools/ uapi header and adds the
+> devmap_hash name to bpftool for the new devmap_hash map type.
+> 
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  tools/bpf/bpftool/map.c                 |    1 +
+>  tools/include/uapi/linux/bpf.h          |    1 +
+>  tools/testing/selftests/bpf/test_maps.c |   16 ++++++++++++++++
+>  3 files changed, 18 insertions(+)
+> 
+> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+> index 5da5a7311f13..c345f819b840 100644
+> --- a/tools/bpf/bpftool/map.c
+> +++ b/tools/bpf/bpftool/map.c
+> @@ -37,6 +37,7 @@ const char * const map_type_name[] = {
+>  	[BPF_MAP_TYPE_ARRAY_OF_MAPS]		= "array_of_maps",
+>  	[BPF_MAP_TYPE_HASH_OF_MAPS]		= "hash_of_maps",
+>  	[BPF_MAP_TYPE_DEVMAP]			= "devmap",
+> +	[BPF_MAP_TYPE_DEVMAP_HASH]		= "devmap_hash",
+>  	[BPF_MAP_TYPE_SOCKMAP]			= "sockmap",
+>  	[BPF_MAP_TYPE_CPUMAP]			= "cpumap",
+>  	[BPF_MAP_TYPE_XSKMAP]			= "xskmap",
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index cecf42c871d4..8afaa0a19c67 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -134,6 +134,7 @@ enum bpf_map_type {
+>  	BPF_MAP_TYPE_QUEUE,
+>  	BPF_MAP_TYPE_STACK,
+>  	BPF_MAP_TYPE_SK_STORAGE,
+> +	BPF_MAP_TYPE_DEVMAP_HASH,
+>  };
+>  
+>  /* Note that tracing related programs such as
 
+Hi Toke, thanks for the bpftool update!
 
-On 6 Jul 2019, at 11:57, Magnus Karlsson wrote:
+Could you please also complete the documentation and bash completion for
+the map type? We probably want to add the new name to the "bpftool map
+help" message [0], to the manual page [1], and to the bash completion
+file [2].
 
-> On Fri, Jul 5, 2019 at 4:35 PM Daniel Borkmann <daniel@iogearbox.net> 
-> wrote:
->>
->> On 07/03/2019 02:52 PM, Eelco Chaudron wrote:
->>> When an AF_XDP application received X packets, it does not mean X
->>> frames can be stuffed into the producer ring. To make it easier for
->>> AF_XDP applications this API allows them to check how many frames 
->>> can
->>> be added into the ring.
->>>
->>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>
->> The commit log as it is along with the code is a bit too confusing 
->> for
->> readers. After all you only do a rename below. It would need to 
->> additionally
->> state that the rename is as per libbpf convention (xyz__ prefix) in 
->> order to
->> denote that this API is exposed to be used by applications.
->>
->> Given you are doing this for xsk_prod_nb_free(), should we do the 
->> same for
->> xsk_cons_nb_avail() as well? Extending XDP sample app would be 
->> reasonable
->> addition as well in this context.
->
-> Sorry for the late reply Eelco. My e-mail filter is apparently not set
-> up correctly since it does not catch mails where I am on the CC line.
-> Will fix.
->
-> At the same time you are rewording the commit log according to
-> Daniel's suggestion, could you please also add a line or two
-> explaining how to use the nb parameter? If you set it to the size of
-> the ring, you will get the exact amount of slots available, at the
-> cost of performance (you touch shared state for sure). nb is there to
-> limit the touching of shared state. The same kind of comment in the
-> header file would be great too.
+Thanks,
+Quentin
 
-Will do this and change the example to use this new function, so it will 
-work when sending single packets to it.
-
-I’m on PTO in two days, so will do this once I’m back rather than 
-try to rush it in.
-
->
-> Have you found any use of the  xsk_cons_nb_avail() function from your
-> sample application? If so, let us add it to the public API.
-
-The problem is the xsk_ring_prod__reserve() API, it return 0 if the 
-available nb’s < requested nb’s. So in order to reserve enough slots 
-we have frame buffers available we need to know how many slots are 
-available, hence we need the __nb_fee() function.
-
-For the related xsk_ring_cons__peek() function we do not need this, as 
-it will return the available entries requested or less.
-
->
-> Thanks: Magnus
->
->>> ---
->>>
->>> v2 -> v3
->>>  - Removed cache by pass option
->>>
->>> v1 -> v2
->>>  - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
->>>  - Add caching so it will only touch global state when needed
->>>
->>>  tools/lib/bpf/xsk.h | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
->>> index 82ea71a0f3ec..3411556e04d9 100644
->>> --- a/tools/lib/bpf/xsk.h
->>> +++ b/tools/lib/bpf/xsk.h
->>> @@ -76,7 +76,7 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons 
->>> *rx, __u32 idx)
->>>       return &descs[idx & rx->mask];
->>>  }
->>>
->>> -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 
->>> nb)
->>> +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, 
->>> __u32 nb)
->>>  {
->>>       __u32 free_entries = r->cached_cons - r->cached_prod;
->>>
->>> @@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct 
->>> xsk_ring_cons *r, __u32 nb)
->>>  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod 
->>> *prod,
->>>                                           size_t nb, __u32 *idx)
->>>  {
->>> -     if (xsk_prod_nb_free(prod, nb) < nb)
->>> +     if (xsk_prod__nb_free(prod, nb) < nb)
->>>               return 0;
->>>
->>>       *idx = prod->cached_prod;
->>>
->>
+[0]
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/bpf/bpftool/map.c?h=v5.2-rc6#n1271
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/bpf/bpftool/Documentation/bpftool-map.rst?h=v5.2-rc6#n46
+[2]
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/bpf/bpftool/bash-completion/bpftool?h=v5.2-rc6#n449
