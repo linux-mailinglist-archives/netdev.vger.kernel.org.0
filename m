@@ -2,78 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F9961DC8
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 13:29:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6EE561E52
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 14:23:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730444AbfGHL3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 07:29:45 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36627 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730225AbfGHL3p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 07:29:45 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n4so16685051wrs.3
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 04:29:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=HGNoIO92XfU6BmjuZO8ZcP7puW9Oo2FIlAYY2neFLYI=;
-        b=MDoniH5KY+4VzpEkjcLecoHcPsLrS7IZDyFfK4b8jNIN5CnAysuDsIwptsmyni5Jlp
-         7XtSmQ/1tGA6dURY0otOhMPEz7umCleNrGPSq1U8WtS0KGwrfeWM7OigmjEaIlQmk6sL
-         w/Mqalp5HMztd/TCHdBeiRPNA7hYOEb1NAd/EzQikT5GantQSfs57vXmVMM7oJvsGY01
-         nJmexVzkbOFc3Qa2++z7F0ijJUS1OR9zcVdWonTZTx5oSSEcT86mvEe03LX2fPsUHjAl
-         wosCf0p4q9lKSzeEJalxYz1N08OqRboTd7HIL4QwtCc1vLdn0XzQXrGRlFzbchwjsXmt
-         UWhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=HGNoIO92XfU6BmjuZO8ZcP7puW9Oo2FIlAYY2neFLYI=;
-        b=YdRShKJEVkZ9hHMuSJWPULiiBf5aR5RIDHzflCFS5mCQR5gILSjUzYB5rveg/mMTEm
-         1TwsmjsTXzUwRfPcBW5OYLrcUIkUext7LYUupSJkDywUaU3IenVhkQ3HPevfWt53mo65
-         HE2qNBVLvP5Zqdg8NQHTca3j3G1/pyVal3m+qXPCPvB/rrnZGMfbToRcVYpQK9vPUzQj
-         iQehaZHhIJfth02a6xneeOQL86AOn2im1M8Gy4IZV+uoeZ35AAXe8eKpxZL7T6p+I/8S
-         VPVE5yJDKTgWEVfyvdLtI7UFiD9SeXIrMDwmIZr95mshHz6cTEf5GTRj/JM3A4NFMG1p
-         SXHg==
-X-Gm-Message-State: APjAAAVVDnGcnRBUIKVTDPOWExOZ8G77ZfchT5UvLY5909Mz8MtU/qoA
-        o823rPXmxtFRXGcz+N9yz9J16vRHQlQ=
-X-Google-Smtp-Source: APXvYqyVQlpK/cF3uf2Mkxu0CWvPKud8z5tJRgOBZk9g/XXOfU6SwN3s8uwRz144SbNJTf1ZJoBOUw==
-X-Received: by 2002:adf:dcc6:: with SMTP id x6mr18721836wrm.322.1562585383145;
-        Mon, 08 Jul 2019 04:29:43 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id t6sm18531106wmb.29.2019.07.08.04.29.42
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 04:29:42 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 13:29:40 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Tariq Toukan <tariqt@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@mellanox.com>, ayal@mellanox.com,
-        jiri@mellanox.com, Saeed Mahameed <saeedm@mellanox.com>,
-        moshe@mellanox.com
-Subject: Re: [PATCH net-next 06/16] net/mlx5e: Change naming convention for
- reporter's functions
-Message-ID: <20190708112940.GD2201@nanopsycho>
-References: <1562500388-16847-1-git-send-email-tariqt@mellanox.com>
- <1562500388-16847-7-git-send-email-tariqt@mellanox.com>
+        id S1729606AbfGHMW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 08:22:57 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39532 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728964AbfGHMW5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 08:22:57 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id B5FC9AC66;
+        Mon,  8 Jul 2019 12:22:54 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 0238FE00B7; Mon,  8 Jul 2019 14:22:51 +0200 (CEST)
+Date:   Mon, 8 Jul 2019 14:22:51 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 05/15] ethtool: helper functions for netlink
+ interface
+Message-ID: <20190708122251.GB24474@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <44957b13e8edbced71aca893908d184eb9e57341.1562067622.git.mkubecek@suse.cz>
+ <20190702130515.GO2250@nanopsycho>
+ <20190702163437.GE20101@unicorn.suse.cz>
+ <20190703100435.GS2250@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1562500388-16847-7-git-send-email-tariqt@mellanox.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190703100435.GS2250@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jul 07, 2019 at 01:52:58PM CEST, tariqt@mellanox.com wrote:
->From: Aya Levin <ayal@mellanox.com>
->
->Change from mlx5e_tx_reporter_* to mlx5e_reporter_tx_*. In the following
->patches in the set rx reporter is added, the new naming convention is
->more uniformed.
->
->Signed-off-by: Aya Levin <ayal@mellanox.com>
->Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+On Wed, Jul 03, 2019 at 12:04:35PM +0200, Jiri Pirko wrote:
+> Tue, Jul 02, 2019 at 06:34:37PM CEST, mkubecek@suse.cz wrote:
+> >On Tue, Jul 02, 2019 at 03:05:15PM +0200, Jiri Pirko wrote:
+> >> Tue, Jul 02, 2019 at 01:50:04PM CEST, mkubecek@suse.cz wrote:
+> >> >+/**
+> >> >+ * ethnl_is_privileged() - check if request has sufficient privileges
+> >> >+ * @skb: skb with client request
+> >> >+ *
+> >> >+ * Checks if client request has CAP_NET_ADMIN in its netns. Unlike the flags
+> >> >+ * in genl_ops, this allows finer access control, e.g. allowing or denying
+> >> >+ * the request based on its contents or witholding only part of the data
+> >> >+ * from unprivileged users.
+> >> >+ *
+> >> >+ * Return: true if request is privileged, false if not
+> >> >+ */
+> >> >+static inline bool ethnl_is_privileged(struct sk_buff *skb)
+> >> 
+> >> I wonder why you need this helper. Genetlink uses
+> >> ops->flags & GENL_ADMIN_PERM for this. 
+> >
+> >It's explained in the function description. Sometimes we need finer
+> >control than by request message type. An example is the WoL password:
+> >ETHTOOL_GWOL is privileged because of it but I believe there si no
+> >reason why unprivileged user couldn't see enabled WoL modes, we can
+> >simply omit the password for him. (Also, it allows to combine query for
+> >WoL settings with other unprivileged settings.)
+> 
+> Why can't we have rather:
+> ETHTOOL_WOL_GET for all
+> ETHTOOL_WOL_PASSWORD_GET  with GENL_ADMIN_PERM
+> ?
+> Better to stick with what we have in gennetlink rather then to bend the
+> implementation from the very beginning I think.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+We can. But it would also mean two separate SET requests (or breaking
+the rule that _GET_REPLY, _SET and _NTF share the layout). That would be
+unfortunate as ethtool_ops callback does not actually allow setting only
+the modes so that the ETHTOOL_MSG_WOL_SET request (which would have to
+go first as many drivers ignore .sopass if WAKE_MAGICSECURE is not set)
+would have to pass a different password (most likely just leaving what
+->get_wol() put there) and that password would be actually set until the
+second request arrives. There goes the idea of getting rid of ioctl
+interface raciness...
+
+I would rather see returning to WoL modes not being visible to
+unprivileged users than that (even if there is no actual reason for it).
+Anyway, shortening the series left WoL settings out if the first part so
+that I can split this out for now and leave the discussion for when we
+get to WoL one day.
+
+> >> >+/**
+> >> >+ * ethnl_reply_header_size() - total size of reply header
+> >> >+ *
+> >> >+ * This is an upper estimate so that we do not need to hold RTNL lock longer
+> >> >+ * than necessary (to prevent rename between size estimate and composing the
+> >> 
+> >> I guess this description is not relevant anymore. I don't see why to
+> >> hold rtnl mutex for this function...
+> >
+> >You don't need it for this function, it's the other way around: unless
+> >you hold RTNL lock for the whole time covering both checking needed
+> >message size and filling the message - and we don't - the device could
+> >be renamed in between. Thus if we returned size based on current device
+> >name, it might not be sufficient at the time the header is filled.
+> >That's why this function returns maximum possible size (which is
+> >actually a constant).
+> 
+> I suggest to avoid the description. It is misleading. Perhaps something
+> to have in a patch description but not here in code.
+
+The reason I put the comment there was to prevent someone "optimizing"
+the helper by using strlen() later. Maybe something shorter and more to
+the point, e.g.
+
+  Using IFNAMSIZ is faster and prevents a race if the device is renamed
+  before we fill the name into skb.
+
+?
+
+Michal
