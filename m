@@ -2,98 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AEED62A50
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 22:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E08862A61
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 22:33:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404962AbfGHUWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 16:22:24 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45638 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725869AbfGHUWY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 16:22:24 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E1050AD85;
-        Mon,  8 Jul 2019 20:22:21 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id EFFA4E00B7; Mon,  8 Jul 2019 22:22:19 +0200 (CEST)
-Date:   Mon, 8 Jul 2019 22:22:19 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 04/15] ethtool: introduce ethtool netlink
- interface
-Message-ID: <20190708202219.GE24474@unicorn.suse.cz>
-References: <cover.1562067622.git.mkubecek@suse.cz>
- <e7fa3ad7e9cf4d7a8f9a2085e3166f7260845b0a.1562067622.git.mkubecek@suse.cz>
- <20190702122521.GN2250@nanopsycho>
- <20190702145241.GD20101@unicorn.suse.cz>
- <20190703084151.GR2250@nanopsycho>
- <20190708172729.GC24474@unicorn.suse.cz>
- <20190708192629.GD2282@nanopsycho.orion>
+        id S2405021AbfGHUc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 16:32:59 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40788 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730207AbfGHUc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 16:32:59 -0400
+Received: by mail-lj1-f196.google.com with SMTP id m8so7799923lji.7
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 13:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=QmhLmLZUpQw51TcWj6xz/UWa7Fe+O+3V90DXK/aEFco=;
+        b=guiXzaD+Q8k8J8Y2zzy+eGlckI4Qfj/1ia32W8QPEpVyDxD+5hgsVF1EBjtMcdA2s/
+         5R6J5f6GgfGC+nFAbBkYPeDw/XfsFDCoboRXhsd0sXhsudSf3059LbepmLdXf+bGovGT
+         qc6zCll9qpQztznsNGoUo1/z6sIst7IWs3z+Pv7nR02bMmC5DCviI65aoqFu1kzeunE8
+         sJFWmex7qjLe3ziuuenXDF2zBUBKL8qpBXz1MQYcrJEwVtkCqsinEygD57Y8dbRhrT+j
+         eNRMf0cE5rKvU5kEP5hfxK9mWRVAK1SjUcuMmd409q26ptgM28q5w2oyc86eWpf2IN5O
+         UeiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=QmhLmLZUpQw51TcWj6xz/UWa7Fe+O+3V90DXK/aEFco=;
+        b=eqBdrvdLUH6vRNig4S+2avwK7xRsfA5Mkao7Sr6TMHYDg8CWrv0GEvk0zrihqxtglH
+         x6U5an8wHqu6Rq4zOE/QfD2vHeJyn+ftGqB8YjFudwEN3ahKnNiUc17aSOjhFtONNqmx
+         9t1Jn5UHwNI+75aRR/1apKzRp5o2NBvam2SCuDl/ZWUtd1e61SwQFaW5ida7dINMHHam
+         6QCl/1/J1tgJfSA4omg3lqMMPwvCwAma96z6mOcsurWMxfydyB21QgAtu/dYpeGYmL0j
+         nHPRjohoe+lM/+Waaa/9NnwaNJxwj7IFBA6F6KJB5iojqL38Ocx+GIm7I/dEkAd/kOzt
+         hzCw==
+X-Gm-Message-State: APjAAAVBjsWuUqfc1UP/KPEdQ/cIzMLbgZarJxUAWbYGRkOxTqaR+8hj
+        p53y+vmd1SSVCuoasusCkNEivQ==
+X-Google-Smtp-Source: APXvYqwVRisXI+W1yDsrFdBvfB5lZcfxm6xx+YU6rvWYruaiHxMRpCBIx1t+9hogA9dGSL6dnfZZgQ==
+X-Received: by 2002:a2e:981:: with SMTP id 123mr11792658ljj.66.1562617977232;
+        Mon, 08 Jul 2019 13:32:57 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id z23sm2925562lfq.77.2019.07.08.13.32.56
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 08 Jul 2019 13:32:56 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 23:32:54 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com
+Subject: Re: [PATCH v8 net-next 0/5] net: ethernet: ti: cpsw: Add XDP support
+Message-ID: <20190708203252.GA12580@khorivan>
+Mail-Followup-To: David Miller <davem@davemloft.net>,
+        grygorii.strashko@ti.com, hawk@kernel.org, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com
+References: <20190705150502.6600-1-ivan.khoronzhuk@linaro.org>
+ <20190707.183146.1123763637704790378.davem@davemloft.net>
+ <20190707.183511.503486832061897586.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20190708192629.GD2282@nanopsycho.orion>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190707.183511.503486832061897586.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 08, 2019 at 09:26:29PM +0200, Jiri Pirko wrote:
-> Mon, Jul 08, 2019 at 07:27:29PM CEST, mkubecek@suse.cz wrote:
-> >
-> >There are two reasons for this design. First is to reduce the number of
-> >requests needed to get the information. This is not so much a problem of
-> >ethtool itself; the only existing commands that would result in multiple
-> >request messages would be "ethtool <dev>" and "ethtool -s <dev>". Maybe
-> >also "ethtool -x/-X <dev>" but even if the indirection table and hash
-> >key have different bits assigned now, they don't have to be split even
-> >if we split other commands. It may be bigger problem for daemons wanting
-> >to keep track of system configuration which would have to issue many
-> >requests whenever a new device appears.
-> >
-> >Second reason is that with 8-bit genetlink command/message id, the space
-> >is not as infinite as it might seem. I counted quickly, right now the
-> >full series uses 14 ids for kernel messages, with split you propose it
-> >would most likely grow to 44. For full implementation of all ethtool
-> >functionality, we could get to ~60 ids. It's still only 1/4 of the
-> >available space but it's not clear what the future development will look
-> >like. We would certainly need to be careful not to start allocating new
-> >commands for single parameters and try to be foreseeing about what can
-> >be grouped together. But we will need to do that in any case.
-> >
-> >On kernel side, splitting existing messages would make some things a bit
-> >easier. It would also reduce the number of scenarios where only part of
-> >requested information is available or only part of a SET request fails.
-> 
-> Okay, I got your point. So why don't we look at if from the other angle.
-> Why don't we have only single get/set command that would be in general
-> used to get/set ALL info from/to the kernel. Where we can have these
-> bits (perhaps rather varlen bitfield) to for user to indicate which data
-> is he interested in? This scales. The other commands would be
-> just for action.
-> 
-> Something like RTM_GETLINK/RTM_SETLINK. Makes sense?
+On Sun, Jul 07, 2019 at 06:35:11PM -0700, David Miller wrote:
+>From: David Miller <davem@davemloft.net>
+>Date: Sun, 07 Jul 2019 18:31:46 -0700 (PDT)
+>
+>> From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> Date: Fri,  5 Jul 2019 18:04:57 +0300
+>>
+>>> This patchset adds XDP support for TI cpsw driver and base it on
+>>> page_pool allocator. It was verified on af_xdp socket drop,
+>>> af_xdp l2f, ebpf XDP_DROP, XDP_REDIRECT, XDP_PASS, XDP_TX.
+>>>
+>>> It was verified with following configs enabled:
+>>  ...
+>>
+>> I'm applying this to net-next, please deal with whatever follow-ups are
+>> necessary.
+>
+>Nevermind, you really have to fix this:
+>
+>drivers/net/ethernet/ti/davinci_cpdma.c: In function ‘cpdma_chan_submit_si’:
+>drivers/net/ethernet/ti/davinci_cpdma.c:1047:12: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+>   buffer = (u32)si->data;
+>            ^
+>drivers/net/ethernet/ti/davinci_cpdma.c: In function ‘cpdma_chan_idle_submit_mapped’:
+>drivers/net/ethernet/ti/davinci_cpdma.c:1114:12: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+>  si.data = (void *)(u32)data;
+>            ^
+>drivers/net/ethernet/ti/davinci_cpdma.c: In function ‘cpdma_chan_submit_mapped’:
+>drivers/net/ethernet/ti/davinci_cpdma.c:1164:12: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+>  si.data = (void *)(u32)data;
+>            ^
+Actrually that's fixed in reply v9 patch.
+But, nevermind, i will send v9 for whole series.
 
-It's certainly an option but at the first glance it seems as just moving
-what I tried to avoid one level lower. It would work around the u8 issue
-(but as Johannes pointed out, we can handle it with genetlink when/if
-the time comes). We would almost certainly have to split the replies
-into multiple messages to keep the packet size reasonable. I'll have to
-think more about the consequences for both kernel and userspace.
-
-My gut feeling is that out of the two extreme options (one universal
-message type and message types corresponding to current infomask bits),
-the latter is more appealing. After all, ethtool has been gathering
-features that would need those ~60 message types for 20 years.
-
-Michal
+-- 
+Regards,
+Ivan Khoronzhuk
