@@ -2,73 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 380C061F6E
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 15:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE2761F75
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 15:19:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731100AbfGHNRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 09:17:50 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39401 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727352AbfGHNRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 09:17:49 -0400
-Received: by mail-qk1-f193.google.com with SMTP id w190so695423qkc.6;
-        Mon, 08 Jul 2019 06:17:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V+wz0H7gl6Q8zjC86ZgnxBevLyGHVnIvyQ3olnsvn8E=;
-        b=fjJxDPyFBybE513GphmBzJNiI70XekMgiG/AZaGOdL0cgXs2PZE+gyW0OE9tAmh8AJ
-         ryieVUBI2sqF1yUC+uF5doJF+ycYQpGL7ntNuJIUMn04R2OQpY9wtgU4duXuKnduqjWy
-         JwjccKHArKxO+ypso89Mo9XBAc+iP8rnrqtN2lrA5/sYhtPXWGlln8n6t43PMOTlNPNB
-         n/sGC8LpQMXqCiOjrHinmb+xWGqtwJUrWjklnP/RTR41UMJbJXjAZnAvJKGHCBaNy0sz
-         djrXbmqc0d3szCj3kFyiFRV/qZU9gSsA5J75KqnIo6ACnaR5+cL9y4wUI5z8HTNkDEOh
-         9yjA==
-X-Gm-Message-State: APjAAAWMRiibaw4/lMS2fYmR2VspnE5h/W4qWmox53fsM9cIyciLmHvd
-        4+GdZ7oooKi/yNmcrwiyQLV63+wKgQuidGpAkqw=
-X-Google-Smtp-Source: APXvYqyIS1Sjxxl24XUtXEUwisidsyy4+zyUtieDs6+t7pHB0J8zaYr1exFbHgLoYk5Qry+Zjrak17QcUlXg0jtwXFc=
-X-Received: by 2002:a37:5f45:: with SMTP id t66mr14271104qkb.286.1562591868590;
- Mon, 08 Jul 2019 06:17:48 -0700 (PDT)
+        id S1731267AbfGHNTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 09:19:14 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:37901 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727352AbfGHNTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 09:19:14 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C7215251E;
+        Mon,  8 Jul 2019 09:19:12 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 08 Jul 2019 09:19:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=II31xQ
+        tEcDron6N68cewQ84Ftg8YAwfeuqB1zQwW5nI=; b=dAjyeA763i4BnIWNmRb/qA
+        Y8ujkyiv/ux0l1Hn+QCigimzjDxuCjJS5PWCc8rC1fgvBtaxE8zNMK4Jiw6cv1VE
+        zNCiwz6ehk7jqIERzR2tZGK9ZcNU7MtZOg1UCc+XTpTXeJCWrglNSiXN4EHJ85wZ
+        H5bXQSkEkeqAdrdvFckMYm+K7pdFqi0Xr9pkgo0GImL33DyaqR1wz+VPb4nOdn1J
+        ho7aB5vGDfxvhwYY5h3PufwIKvRrWOrJR4rsztiCDu2S6DvCzR2UJXoeitKMzcV/
+        T4agE+FZXpBdIpoOOngnRcLmx8NALG6gCbvdSPtPOvLU49vzBQHjTebErrGTDDrQ
+        ==
+X-ME-Sender: <xms:zkIjXVGcfyhA_Qxl5tnFakkIHM8MjwW6l-maD27elLEvL5Utm03fkw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrgedtgdeihecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:zkIjXbqtutmWrVqok1T5GVMVDRrrkbK24E2k5PDBzkm8gwZIFDJ2CA>
+    <xmx:zkIjXZlbM67IVYnrmdKNOx9W3k_M9ouf2UFgHvTYs6X25lCKWHe8yA>
+    <xmx:zkIjXQu28re7040MbCInz46jXcKqv35B47Z0bUkzWm1GfDVmtDfrfQ>
+    <xmx:0EIjXUY1gDa9A3gCuAhV2bsy0Qyj9oLRvQcZHrfzmYtLK7Bq16BojA>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id D67E2380079;
+        Mon,  8 Jul 2019 09:19:09 -0400 (EDT)
+Date:   Mon, 8 Jul 2019 16:19:08 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, andy@greyhouse.net,
+        pablo@netfilter.org, jakub.kicinski@netronome.com,
+        pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
+Message-ID: <20190708131908.GA13672@splinter>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707.124541.451040901050013496.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20190708124547.3515538-1-arnd@arndb.de> <20190708130010.pnxlzi5vptuyppxz@treble>
-In-Reply-To: <20190708130010.pnxlzi5vptuyppxz@treble>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 8 Jul 2019 15:17:31 +0200
-Message-ID: <CAK8P3a0NggP8KbETOfXqoNfu6Gc13QTT+ME3SbK14nWaTWXvCg@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] Revert "bpf: Fix ORC unwinding in non-JIT BPF code"
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190707.124541.451040901050013496.davem@davemloft.net>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 8, 2019 at 3:11 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
->
-> On Mon, Jul 08, 2019 at 02:45:23PM +0200, Arnd Bergmann wrote:
-> > Apparently this was a bit premature, at least I still get this
-> > warning with gcc-8.1:
-> >
-> > kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x44d2: sibling call from callable instruction with modified stack frame
-> >
-> > This reverts commit b22cf36c189f31883ad0238a69ccf82aa1f3b16b.
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->
-> Yes, I have been working on a fix.
->
-> The impact is that ORC unwinding is broken in this function for
-> CONFIG_RETPOLINE=n.
->
-> I don't think we want to revert this patch though, because that will
-> broaden the impact to the CONFIG_RETPOLINE=y case.  Anyway I hope to
-> have fixes soon.
+On Sun, Jul 07, 2019 at 12:45:41PM -0700, David Miller wrote:
+> From: Ido Schimmel <idosch@idosch.org>
+> Date: Sun,  7 Jul 2019 10:58:17 +0300
+> 
+> > Users have several ways to debug the kernel and understand why a packet
+> > was dropped. For example, using "drop monitor" and "perf". Both
+> > utilities trace kfree_skb(), which is the function called when a packet
+> > is freed as part of a failure. The information provided by these tools
+> > is invaluable when trying to understand the cause of a packet loss.
+> > 
+> > In recent years, large portions of the kernel data path were offloaded
+> > to capable devices. Today, it is possible to perform L2 and L3
+> > forwarding in hardware, as well as tunneling (IP-in-IP and VXLAN).
+> > Different TC classifiers and actions are also offloaded to capable
+> > devices, at both ingress and egress.
+> > 
+> > However, when the data path is offloaded it is not possible to achieve
+> > the same level of introspection as tools such "perf" and "drop monitor"
+> > become irrelevant.
+> > 
+> > This patchset aims to solve this by allowing users to monitor packets
+> > that the underlying device decided to drop along with relevant metadata
+> > such as the drop reason and ingress port.
+> 
+> We are now going to have 5 or so ways to capture packets passing through
+> the system, this is nonsense.
+> 
+> AF_PACKET, kfree_skb drop monitor, perf, XDP perf events, and now this
+> devlink thing.
+> 
+> This is insanity, too many ways to do the same thing and therefore the
+> worst possible user experience.
+> 
+> Pick _ONE_ method to trap packets and forward normal kfree_skb events,
+> XDP perf events, and these taps there too.
+> 
+> I mean really, think about it from the average user's perspective.  To
+> see all drops/pkts I have to attach a kfree_skb tracepoint, and not just
+> listen on devlink but configure a special tap thing beforehand and then
+> if someone is using XDP I gotta setup another perf event buffer capture
+> thing too.
 
-Ok, sounds good. Thanks,
+Let me try to explain again because I probably wasn't clear enough. The
+devlink-trap mechanism is not doing the same thing as other solutions.
 
-     Arnd
+The packets we are capturing in this patchset are packets that the
+kernel (the CPU) never saw up until now - they were silently dropped by
+the underlying device performing the packet forwarding instead of the
+CPU.
+
+For each such packet we get valuable metadata from the underlying device
+such as the drop reason and the ingress port. With time, even more
+reasons and metadata could be provided (e.g., egress port, traffic
+class). Netlink provides a structured and extensible way to report the
+packet along with the metadata to interested users. The tc-sample action
+uses a similar concept.
+
+I would like to emphasize that these dropped packets are not injected to
+the kernel's receive path and therefore not subject to kfree_skb() and
+related infrastructure. There is no need to waste CPU cycles on packets
+we already know were dropped (and why). Further, hardware tail/early
+drops will not be dropped by the kernel, given its qdiscs are probably
+empty.
+
+Regarding the use of devlink, current ASICs can forward packets at
+6.4Tb/s. We do not want to overwhelm the CPU with dropped packets and
+therefore we give users the ability to control - via devlink - the
+trapping of certain packets to the CPU and their reporting to user
+space. In the future, devlink-trap can be extended to support the
+configuration of the hardware policers of each trap.
