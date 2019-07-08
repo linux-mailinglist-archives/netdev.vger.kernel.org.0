@@ -2,146 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D6761B30
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 09:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1243461B35
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 09:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729407AbfGHHXN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jul 2019 03:23:13 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:37073 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbfGHHXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 03:23:13 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x687N1D1015818, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x687N1D1015818
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Mon, 8 Jul 2019 15:23:01 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Mon, 8 Jul
- 2019 15:23:01 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Jian-Hong Pan <jian-hong@endlessm.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>,
-        Daniel Drake <drake@endlessm.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] rtw88/pci: Rearrange the memory usage for skb in RX ISR
-Thread-Topic: [PATCH] rtw88/pci: Rearrange the memory usage for skb in RX ISR
-Thread-Index: AQHVNVeEOhZgR6M53kuE5XrXitIVDqbAR+xA
-Date:   Mon, 8 Jul 2019 07:23:00 +0000
-Message-ID: <F7CD281DE3E379468C6D07993EA72F84D1861A6D@RTITMBSVM04.realtek.com.tw>
-References: <20190708063252.4756-1-jian-hong@endlessm.com>
-In-Reply-To: <20190708063252.4756-1-jian-hong@endlessm.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.183]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1729395AbfGHHZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 03:25:47 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46652 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbfGHHZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 03:25:47 -0400
+Received: by mail-wr1-f66.google.com with SMTP id z1so11153613wru.13
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 00:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=lCaSEeMFnhbVIobyvJo3DfxumLlxHpD765VDSsYl93w=;
+        b=bMUerKkPidvIsaTdoGKiCZ6nso8JTqIny1FjGjNu0sB1MO3e5f+bjJhNdFjN4d++Hu
+         Czd2uessXBtSelE0h1r76htvEn7kUx4IqZQSld5npEeem+IVy0CpSLlNVPyE52sSU7D9
+         7DZstKMHTppDjUzwIJn7W/vjWYjWW4gQrat/zgJe3PhQ+fDj0a5xXJ1t5YfU5f4BloDM
+         qKgJ/OGRlacVbkU5jFgeTqxJrvBNFSzM02rbmkX5+blMSfu10KCkHCzVLAGaJA0PyOUd
+         +7HN60/fn7L6XXTIUhq3nBO/jZctTgdsiYGphVQ+Uz6PcG8yGFxcJ8/EtzIRMDu44UlF
+         xnvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lCaSEeMFnhbVIobyvJo3DfxumLlxHpD765VDSsYl93w=;
+        b=BKPOa/efVzxAzMvr78X9d5SYw4/9O+n+s8yqw2iZdSVrQfnjbJAoz700p/JCsee8lB
+         LMRa7VmHqWVnPcybcEEHFIVd8GeJ/TXXIt5hVEMcfaJhwuCxbUpofkZqdD7AB7etiUqA
+         7U+gqHMPabg17ounTl47iklUkXzSXrnP/exZQswHyrsdW04sXV5qgHNqmhRZIQ3V/V13
+         UzovnIDEJqx1E3rV+72UEHWfFAWG3Rd0MndRBVlg3Xg+I2X/OGgbB/jNYoEU729xvylY
+         nyErPAtYjotxdyReZbJLyeVb3xA2xcGs8tM82zh5q0Xw9iOz8cWbDo8lRc+aAkckTz8+
+         Lljg==
+X-Gm-Message-State: APjAAAXI6CXS521MsLPqBlLt3m+GbvTcRDyN2Mlzyi+LwhGSKJ+/HACR
+        480xsfWQhU1QngguoZSmyuPjiL5Z1Vo=
+X-Google-Smtp-Source: APXvYqzcLrP6sC4fqPFgtEIjiDjZevNUnVAswHQspHzqtme5Bvhp6SLxaMyQoS3iHfqN4oI/QsXu9Q==
+X-Received: by 2002:adf:82a8:: with SMTP id 37mr17506848wrc.332.1562570744621;
+        Mon, 08 Jul 2019 00:25:44 -0700 (PDT)
+Received: from apalos.lan (athedsl-428434.home.otenet.gr. [79.131.225.144])
+        by smtp.gmail.com with ESMTPSA id h11sm14288461wro.73.2019.07.08.00.25.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 08 Jul 2019 00:25:43 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
+        davem@davemloft.net
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [PATCH] net: netsec: Sync dma for device on buffer allocation
+Date:   Mon,  8 Jul 2019 10:25:41 +0300
+Message-Id: <1562570741-25108-1-git-send-email-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [PATCH] rtw88/pci: Rearrange the memory usage for skb in RX ISR
+cd1973a9215a ("net: netsec: Sync dma for device on buffer allocation")
+was merged on it's v1 instead of the v3.
+Merge the proper patch version
 
-nit, "rtw88: pci:" would be better.
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+---
+ drivers/net/ethernet/socionext/netsec.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> 
-> 
-> When skb allocation fails and the "rx routine starvation" is hit, the
-> function returns immediately without updating the RX ring. At this
-> point, the RX ring may continue referencing an old skb which was already
-> handed off to ieee80211_rx_irqsafe(). When it comes to be used again,
-> bad things happen.
-> 
-> This patch allocates a new skb first in RX ISR. If we don't have memory
-> available, we discard the current frame, allowing the existing skb to be
-> reused in the ring. Otherwise, we simplify the code flow and just hand
-> over the RX-populated skb over to mac80211.
-> 
-> In addition, to fixing the kernel crash, the RX routine should now
-> generally behave better under low memory conditions.
-> 
-> Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=204053
-> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
-> Reviewed-by: Daniel Drake <drake@endlessm.com>
-> Cc: <stable@vger.kernel.org>
-> ---
->  drivers/net/wireless/realtek/rtw88/pci.c | 28 +++++++++++-------------
->  1 file changed, 13 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c
-> b/drivers/net/wireless/realtek/rtw88/pci.c
-> index cfe05ba7280d..1bfc99ae6b84 100644
-> --- a/drivers/net/wireless/realtek/rtw88/pci.c
-> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
-> @@ -786,6 +786,15 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev,
-> struct rtw_pci *rtwpci,
->  		rx_desc = skb->data;
->  		chip->ops->query_rx_desc(rtwdev, rx_desc, &pkt_stat, &rx_status);
-> 
-> +		/* discard current skb if the new skb cannot be allocated as a
-> +		 * new one in rx ring later
-> +		 * */
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index f6e261c6a059..460777449cd9 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -743,9 +743,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+ 	 */
+ 	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+ 	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+-	dma_sync_single_for_device(priv->dev,
+-				   *dma_handle - NETSEC_RXBUF_HEADROOM,
+-				   PAGE_SIZE, dma_dir);
++	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
+ 
+ 	return page_address(page);
+ }
+-- 
+2.20.1
 
-nit, comment indentation.
-
-> +		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
-> +		if (WARN(!new, "rx routine starvation\n")) {
-> +			new = skb;
-> +			goto next_rp;
-> +		}
-> +
->  		/* offset from rx_desc to payload */
->  		pkt_offset = pkt_desc_sz + pkt_stat.drv_info_sz +
->  			     pkt_stat.shift;
-> @@ -803,25 +812,14 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev,
-> struct rtw_pci *rtwpci,
->  			skb_put(skb, pkt_stat.pkt_len);
->  			skb_reserve(skb, pkt_offset);
-> 
-> -			/* alloc a smaller skb to mac80211 */
-> -			new = dev_alloc_skb(pkt_stat.pkt_len);
-> -			if (!new) {
-> -				new = skb;
-> -			} else {
-> -				skb_put_data(new, skb->data, skb->len);
-> -				dev_kfree_skb_any(skb);
-> -			}
-
-I am not sure if it's fine to deliver every huge SKB to mac80211.
-Because it will then be delivered to TCP/IP stack.
-Hence I think either it should be tested to know if the performance
-would be impacted or find out a more efficient way to send
-smaller SKB to mac80211 stack.
-
->  			/* TODO: merge into rx.c */
->  			rtw_rx_stats(rtwdev, pkt_stat.vif, skb);
-> -			memcpy(new->cb, &rx_status, sizeof(rx_status));
-> -			ieee80211_rx_irqsafe(rtwdev->hw, new);
-> +			memcpy(skb->cb, &rx_status, sizeof(rx_status));
-> +			ieee80211_rx_irqsafe(rtwdev->hw, skb);
->  		}
-> 
-> -		/* skb delivered to mac80211, alloc a new one in rx ring */
-> -		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
-> -		if (WARN(!new, "rx routine starvation\n"))
-> -			return;
-> -
-> +next_rp:
-> +		/* skb delivered to mac80211, attach the new one into rx ring */
->  		ring->buf[cur_rp] = new;
->  		rtw_pci_reset_rx_desc(rtwdev, new, ring, cur_rp, buf_desc_sz);
-> 
-
---
-
-Yan-Hsuan
