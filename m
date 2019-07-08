@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B928861D4F
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 12:55:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB70861D77
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 13:03:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730245AbfGHKz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 06:55:57 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35142 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730228AbfGHKzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 06:55:53 -0400
-Received: by mail-ed1-f66.google.com with SMTP id w20so14138652edd.2
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 03:55:51 -0700 (PDT)
+        id S1727668AbfGHLDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 07:03:31 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38510 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbfGHLDb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 07:03:31 -0400
+Received: by mail-wr1-f65.google.com with SMTP id g17so6424001wrr.5
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 04:03:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=t/ktZMzFQrqvJKwmpRsumXxECkWWkK6dC9+TTTnwy9w=;
+        b=Ow8bd2sJjLBkVrDRECMvUe5/PFWOp8Y8i+Mr/XfHdbDzL3MbNqFNTMssHqY+Uke5UU
+         Llo9PXpjP1rRQsOckJeERduxYZRm2+vEG2kwA9sbNRLSeZy7JebDyBPLV0/Myz/k+BQJ
+         gOkaBJfot07MDf4VsPyq7B7cAQapQEhuD6jxYbON5t7C0fJTMYxLtpSqfx0d8DvYM25j
+         v3gCOZO9tQms/rHKJMEm6/lG48ISJH+piMQTxbHOboBbVrseMqLWfFR/oZRy5Yat46YS
+         xJWmrjXZcd9IP3WBGHa/1kIHY+96xE0SjVdWgL5g1g1/BlBPeF5Uytsgr9W/2fePt8Qz
+         Hvsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=YzAlqk3Y5FSFz8PAiXf231hvJXeKFQjxzcquZVCtDHQ=;
-        b=pi/3VRa9hcY0R3ywoogl9D32eQeE9kHMCj37r+0qOKeayajfCs00pkirVCR//zzjfn
-         2sXk5TVnNHjWB4fZJc0gh5aHMP0VQgPBYnxgA1y61/CPzIoGazW72KTZvSP/EvUTur5l
-         M5laq2WZlQGyl6Zh3fTMU1l1XUHVOoMnkq7IK7c5XvMj2UfB+NYO7ytE+2k9JP6LdsV8
-         H2GBimkmFNiPUyFqOgWCmcKVwMDdQ6dZkiuwEPnAM+NyPJCIrK2nuyyApLl85XK+yTlO
-         I5SY9NdIY8dcYP4gILvyIgORPi9phNjrvOnYBFlUUihgUmIvkhkog1TZlfHemW7UK0NU
-         7Atw==
-X-Gm-Message-State: APjAAAVDuiQO7wPu25HgVk1dAIOaNcl5ibETF5ujcSuZa33iDNgsC1Ty
-        5dASrGstfgTWnDDgoKR8gQuUOg==
-X-Google-Smtp-Source: APXvYqwvIaBRLfHzbCHyWTr5c/6bmtBpSrP/SohGpNrBJqdWm1HLcMcVl1iJYaCDHlW+brKUcTH65g==
-X-Received: by 2002:a50:941c:: with SMTP id p28mr13080664eda.103.1562583351392;
-        Mon, 08 Jul 2019 03:55:51 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id i6sm5609278eda.79.2019.07.08.03.55.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=t/ktZMzFQrqvJKwmpRsumXxECkWWkK6dC9+TTTnwy9w=;
+        b=tQJCym38wbKCKXoUulv1HQpw2jmLhDAvFU1uTYxlJoLnb5s9zE1KasLlZpvjFK2uHT
+         kM3lcPCv7Ot1B4yD1aVAopl5j/uliMOriEga2Uh0x1OTqqujxTkGJq615qso8UQAezLD
+         LC7pKTpiUAovT2mtuJZD99UhTplX9GNsfj+g9BYTAsgvC5hXQYwKkNidfUNtqH0dtgRg
+         n7U6NMOaIvMvm0+A50MQz/g2wORV3Sj6xI+qzDzZABRyZPWoGiN2li5+xtlDRB28gzFc
+         0PH9FdcuGm/ZaiiERkQOc8SQfCW+vbXwvFQpQmUkZo7mNVNBsS1yVB0KgcEK8hpXLoPG
+         UpcQ==
+X-Gm-Message-State: APjAAAWl4z3NyirSxFiQZ8/HoFhA5OY7FEeb+q/vtGT3XYPJdEj5UZZk
+        +8nJ+TBEY2dlOeHqBtMfCc66OgT6dUI=
+X-Google-Smtp-Source: APXvYqxwd1XrxI3OAX2pTx3vKdCeIqs9suKp5feyy3HvDR0+fuw5TxxdPQNVT78W83yr1PRxfzDT9Q==
+X-Received: by 2002:a5d:4b8b:: with SMTP id b11mr4820706wrt.294.1562583809243;
+        Mon, 08 Jul 2019 04:03:29 -0700 (PDT)
+Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
+        by smtp.gmail.com with ESMTPSA id g11sm10283146wrq.92.2019.07.08.04.03.28
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 03:55:50 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7DEF5181CEE; Mon,  8 Jul 2019 12:55:47 +0200 (CEST)
-Subject: [PATCH bpf-next v3 5/6] tools/libbpf_probes: Add new devmap_hash type
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Date:   Mon, 08 Jul 2019 12:55:47 +0200
-Message-ID: <156258334745.1664.1686759894096070590.stgit@alrua-x1>
-In-Reply-To: <156258334704.1664.15289699152225647059.stgit@alrua-x1>
-References: <156258334704.1664.15289699152225647059.stgit@alrua-x1>
-User-Agent: StGit/0.19-dirty
+        Mon, 08 Jul 2019 04:03:28 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 13:03:26 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Tariq Toukan <tariqt@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eran Ben Elisha <eranbe@mellanox.com>, ayal@mellanox.com,
+        jiri@mellanox.com, Saeed Mahameed <saeedm@mellanox.com>,
+        moshe@mellanox.com
+Subject: Re: [PATCH net-next 01/16] Revert "net/mlx5e: Fix
+ mlx5e_tx_reporter_create return value"
+Message-ID: <20190708110326.GA2201@nanopsycho>
+References: <1562500388-16847-1-git-send-email-tariqt@mellanox.com>
+ <1562500388-16847-2-git-send-email-tariqt@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562500388-16847-2-git-send-email-tariqt@mellanox.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+Sun, Jul 07, 2019 at 01:52:53PM CEST, tariqt@mellanox.com wrote:
+>From: Aya Levin <ayal@mellanox.com>
+>
+>This reverts commit 2e5b0534622fa87fd570d54af2d01ce304b88077.
+>
+>This commit was needed prior to commit f6b19b354d50 ("net: devlink:
+>select NET_DEVLINK from drivers") Then, reporter's pointer could have
+>been a NULL. But with NET_DEVLINK mandatory to MLX5_CORE in Kconfig,
+>pointer can only hold an error in bad path.
+>
+>Signed-off-by: Aya Levin <ayal@mellanox.com>
+>Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
 
-This adds the definition for BPF_MAP_TYPE_DEVMAP_HASH to libbpf_probes.c in
-tools/lib/bpf.
+I'm not sure if the patch name "Revert: ..." is correct. I would rather
+just describe the change and don't mention the "revert" even in the
+patch description.
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/lib/bpf/libbpf_probes.c |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index ace1a0708d99..4b0b0364f5fc 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -244,6 +244,7 @@ bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
- 	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
- 	case BPF_MAP_TYPE_HASH_OF_MAPS:
- 	case BPF_MAP_TYPE_DEVMAP:
-+	case BPF_MAP_TYPE_DEVMAP_HASH:
- 	case BPF_MAP_TYPE_SOCKMAP:
- 	case BPF_MAP_TYPE_CPUMAP:
- 	case BPF_MAP_TYPE_XSKMAP:
-
+The patch looks good.
+Acked-by: Jiri Pirko <jiri@mellanox.com>
