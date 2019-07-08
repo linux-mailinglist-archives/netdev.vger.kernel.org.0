@@ -2,54 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB01F61CA0
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 11:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8C7061CAC
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 12:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730015AbfGHJ53 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jul 2019 05:57:29 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:46305 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729185AbfGHJ53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 05:57:29 -0400
-Received: by mail-ed1-f66.google.com with SMTP id d4so13967950edr.13
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 02:57:28 -0700 (PDT)
+        id S1729920AbfGHKBw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jul 2019 06:01:52 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:35200 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728596AbfGHKBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 06:01:51 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w20so13999490edd.2
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 03:01:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version:content-transfer-encoding;
-        bh=9MAGqQmzjLDN+1MxtG+/WK6dk3U8014eI3HfqI8NgWI=;
-        b=IeJCzfal+qI+sWAgc4ttm7OISmHkS3IGaXkYZKSqGYod7zRtsYy0DTRg6hdYZPQXlu
-         cZPUObTRQAejBxzKc1XfKDdtPzBfrJRjFnfPoVpsMwXYuDTfh2zWLWoFz6qIwUnFXV+0
-         Zr0WSyt6FLszPhKQQ2hOXciis7k7Iu1lymcFlD05NazCFbiAUF970Rm/tutSaPGjpYYo
-         mhC9h6AGgGs4OyvZUzWuJWFxo7ZPaxffdulmPK5LLGbS/iRMIFLb67A+iRaBH3NQQRfs
-         GTtqmQmvZm5BPkfxj4f7un1zjaIGjkoKnrcE+jHmvEHeMTYtBqZzTJS0hrd6ORUWtH97
-         tFYw==
-X-Gm-Message-State: APjAAAU1+l4gtCMGgbsp/yx9QWwR+TWTV88GzIdQABYfks4hufCe/zet
-        km9yyqqsFdaUhu1bukLSd5D3cA==
-X-Google-Smtp-Source: APXvYqwpyC70Qrrsyc8lZf/HQb2fCRoNLquCJ7cfSu071ApXrObrvHcvlPW/LSqb6quFLv5eBME7jw==
-X-Received: by 2002:a17:906:85d7:: with SMTP id i23mr15527699ejy.119.1562579847781;
-        Mon, 08 Jul 2019 02:57:27 -0700 (PDT)
+        bh=8tQ5ypLBkhcFt2CRayk+Xv0ffeKwabb5TFqPnVPjNN0=;
+        b=GoKg3JdCEFCANuD/8DtsX9LKj1dKGyTgFmsnqg4FdsIqPIWp8TY/U1evqlTnJUjWNx
+         ayJKwTAs/zKbs4DRd+9ItZOYMMfGrdGBfwk/pV5720ku4heLesBrB9pYzSfsRkvGvOn0
+         LeRnAtCXG6RiLpylcnHxOHpth+VB3nrmFtPeyt9u8Zc0H3HcHL6RRSFtEAsbX5XDeruU
+         JkqvsN0b/aJjjytkgrVBdCyfWgwZbjzuVSx9ycJZDENLfT1mYSTrAJkb49vwN6y8JTha
+         mlanognNRKsUctZLwnpgpiyV5RZWl8WKODeJVi2K7juJHvM/28qjUvZhexvdMkcteHsm
+         yn8w==
+X-Gm-Message-State: APjAAAVj7RmzEWTQQM2579cBKoAt+0XWrue9zyK2VL1t0ITm2xYTcjPd
+        fS273rT5aY/2aKZAqKGzKQVcnA==
+X-Google-Smtp-Source: APXvYqwwadQLy+Sx8hVRYrrBAzUHmFMp9YAEiI/eAZx67rYn4cmOabadTCepqJMxKetMEUM+EWBwqg==
+X-Received: by 2002:a17:906:959:: with SMTP id j25mr15414218ejd.94.1562580110152;
+        Mon, 08 Jul 2019 03:01:50 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id 9sm3396949ejf.50.2019.07.08.02.57.27
+        by smtp.gmail.com with ESMTPSA id se3sm437293ejb.31.2019.07.08.03.01.49
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 02:57:27 -0700 (PDT)
+        Mon, 08 Jul 2019 03:01:49 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id DAF96181CE6; Mon,  8 Jul 2019 11:57:26 +0200 (CEST)
+        id D2E5F181CE6; Mon,  8 Jul 2019 12:01:48 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBl?= =?utf-8?B?bA==?= 
-        <bjorn.topel@gmail.com>
-Subject: Re: [PATCH bpf-next v2 6/6] tools: Add definitions for devmap_hash map type
-In-Reply-To: <767cade7-4cc4-b47d-a8ca-a30c01e0ba47@netronome.com>
-References: <156240283550.10171.1727292671613975908.stgit@alrua-x1> <156240283611.10171.18010849007723279211.stgit@alrua-x1> <767cade7-4cc4-b47d-a8ca-a30c01e0ba47@netronome.com>
+To:     David Miller <davem@davemloft.net>, michael.chan@broadcom.com
+Cc:     gospo@broadcom.com, netdev@vger.kernel.org, hawk@kernel.org,
+        ast@kernel.org
+Subject: Re: [PATCH net-next 0/4] bnxt_en: Add XDP_REDIRECT support.
+In-Reply-To: <20190706.152646.270873493821496746.davem@davemloft.net>
+References: <1562398578-26020-1-git-send-email-michael.chan@broadcom.com> <20190706.152646.270873493821496746.davem@davemloft.net>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 08 Jul 2019 11:57:26 +0200
-Message-ID: <87y318zw55.fsf@toke.dk>
+Date:   Mon, 08 Jul 2019 12:01:48 +0200
+Message-ID: <87v9wczvxv.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
@@ -58,53 +53,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quentin Monnet <quentin.monnet@netronome.com> writes:
+David Miller <davem@davemloft.net> writes:
 
-> 2019-07-06 10:47 UTC+0200 ~ Toke Høiland-Jørgensen <toke@redhat.com>
->> From: Toke Høiland-Jørgensen <toke@redhat.com>
->> 
->> This adds a selftest, syncs the tools/ uapi header and adds the
->> devmap_hash name to bpftool for the new devmap_hash map type.
->> 
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>  tools/bpf/bpftool/map.c                 |    1 +
->>  tools/include/uapi/linux/bpf.h          |    1 +
->>  tools/testing/selftests/bpf/test_maps.c |   16 ++++++++++++++++
->>  3 files changed, 18 insertions(+)
->> 
->> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
->> index 5da5a7311f13..c345f819b840 100644
->> --- a/tools/bpf/bpftool/map.c
->> +++ b/tools/bpf/bpftool/map.c
->> @@ -37,6 +37,7 @@ const char * const map_type_name[] = {
->>  	[BPF_MAP_TYPE_ARRAY_OF_MAPS]		= "array_of_maps",
->>  	[BPF_MAP_TYPE_HASH_OF_MAPS]		= "hash_of_maps",
->>  	[BPF_MAP_TYPE_DEVMAP]			= "devmap",
->> +	[BPF_MAP_TYPE_DEVMAP_HASH]		= "devmap_hash",
->>  	[BPF_MAP_TYPE_SOCKMAP]			= "sockmap",
->>  	[BPF_MAP_TYPE_CPUMAP]			= "cpumap",
->>  	[BPF_MAP_TYPE_XSKMAP]			= "xskmap",
->> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
->> index cecf42c871d4..8afaa0a19c67 100644
->> --- a/tools/include/uapi/linux/bpf.h
->> +++ b/tools/include/uapi/linux/bpf.h
->> @@ -134,6 +134,7 @@ enum bpf_map_type {
->>  	BPF_MAP_TYPE_QUEUE,
->>  	BPF_MAP_TYPE_STACK,
->>  	BPF_MAP_TYPE_SK_STORAGE,
->> +	BPF_MAP_TYPE_DEVMAP_HASH,
->>  };
->>  
->>  /* Note that tracing related programs such as
+> From: Michael Chan <michael.chan@broadcom.com>
+> Date: Sat,  6 Jul 2019 03:36:14 -0400
 >
-> Hi Toke, thanks for the bpftool update!
+>> This patch series adds XDP_REDIRECT support by Andy Gospodarek.
 >
-> Could you please also complete the documentation and bash completion for
-> the map type? We probably want to add the new name to the "bpftool map
-> help" message [0], to the manual page [1], and to the bash completion
-> file [2].
+> I'll give Jesper et al. a chance to review this.
 
-Sure, can do :)
+Couldn't find any issues other than what Ilias already pointed out. So,
+assuming these get resolved, you can add my
 
--Toke
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
