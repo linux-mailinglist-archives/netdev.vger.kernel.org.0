@@ -2,158 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B2E61BE6
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 10:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE3061BF0
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 10:51:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727775AbfGHIsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 04:48:17 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:53019 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727376AbfGHIsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 04:48:16 -0400
-Received: from localhost (lfbn-1-2078-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id D3CA6100014;
-        Mon,  8 Jul 2019 08:48:09 +0000 (UTC)
-Date:   Mon, 8 Jul 2019 10:48:09 +0200
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        richardcochran@gmail.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, ralf@linux-mips.org,
-        paul.burton@mips.com, jhogan@kernel.org, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com
-Subject: Re: [PATCH net-next v2 8/8] net: mscc: PTP Hardware Clock (PHC)
- support
-Message-ID: <20190708084809.GB2932@kwain>
-References: <20190705195213.22041-1-antoine.tenart@bootlin.com>
- <20190705195213.22041-9-antoine.tenart@bootlin.com>
- <20190705151038.0581a052@cakuba.netronome.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190705151038.0581a052@cakuba.netronome.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+        id S1728854AbfGHIvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 04:51:33 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48954 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727877AbfGHIvc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 04:51:32 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 8 Jul 2019 11:51:27 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x688pRJ0001066;
+        Mon, 8 Jul 2019 11:51:27 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>
+Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: [PATCH net-next v5 0/4] net/sched: Introduce tc connection tracking
+Date:   Mon,  8 Jul 2019 11:51:16 +0300
+Message-Id: <1562575880-30891-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
+Hi,
 
-On Fri, Jul 05, 2019 at 03:10:38PM -0700, Jakub Kicinski wrote:
-> On Fri,  5 Jul 2019 21:52:13 +0200, Antoine Tenart wrote:
-> > @@ -596,11 +606,50 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
-> >  
-> >  	dev->stats.tx_packets++;
-> >  	dev->stats.tx_bytes += skb->len;
-> > -	dev_kfree_skb_any(skb);
-> > +
-> > +	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP &&
-> > +	    port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-> > +		struct ocelot_skb *oskb =
-> > +			kzalloc(sizeof(struct ocelot_skb), GFP_KERNEL);
-> 
-> I think this is the TX path, you can't use GFP_KERNEL here.
+This patch series add connection tracking capabilities in tc sw datapath.
+It does so via a new tc action, called act_ct, and new tc flower classifier matching
+on conntrack state, mark and label.
 
-I'll fix it.
+Usage is as follows:
+$ tc qdisc add dev ens1f0_0 ingress
+$ tc qdisc add dev ens1f0_1 ingress
 
-> > +static int ocelot_hwstamp_set(struct ocelot_port *port, struct ifreq *ifr)
-> > +{
-> > +	struct ocelot *ocelot = port->ocelot;
-> > +	struct hwtstamp_config cfg;
-> > +
-> > +	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-> > +		return -EFAULT;
-> > +
-> > +	/* reserved for future extensions */
-> > +	if (cfg.flags)
-> > +		return -EINVAL;
-> > +
-> > +	/* Tx type sanity check */
-> > +	switch (cfg.tx_type) {
-> > +	case HWTSTAMP_TX_ON:
-> > +		port->ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
-> > +		break;
-> > +	case HWTSTAMP_TX_ONESTEP_SYNC:
-> > +		/* IFH_REW_OP_ONE_STEP_PTP updates the correctional field, we
-> > +		 * need to update the origin time.
-> > +		 */
-> > +		port->ptp_cmd = IFH_REW_OP_ORIGIN_PTP;
-> > +		break;
-> > +	case HWTSTAMP_TX_OFF:
-> > +		port->ptp_cmd = 0;
-> > +		break;
-> > +	default:
-> > +		return -ERANGE;
-> > +	}
-> > +
-> > +	mutex_lock(&ocelot->ptp_lock);
-> > +
-> > +	switch (cfg.rx_filter) {
-> > +	case HWTSTAMP_FILTER_NONE:
-> > +		break;
-> > +	case HWTSTAMP_FILTER_ALL:
-> > +	case HWTSTAMP_FILTER_SOME:
-> > +	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-> > +	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-> > +	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-> > +	case HWTSTAMP_FILTER_NTP_ALL:
-> > +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-> > +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-> > +	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-> > +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-> > +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-> > +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-> > +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-> > +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-> > +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-> > +		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-> > +		break;
-> > +	default:
-> > +		mutex_unlock(&ocelot->ptp_lock);
-> > +		return -ERANGE;
-> > +	}
-> 
-> No device reconfig, so the PTP RX stamping is always enabled?  Perhaps
-> consider setting 
-> 
-> 	ocelot->hwtstamp_config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT
-> 
-> at probe?
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 2
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_state +trk+new \
+  action ct zone 2 commit mark 0xbb nat src addr 5.5.5.7 pipe \
+  action mirred egress redirect dev ens1f0_1
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_1
 
-That's right. Would set the ptp flag to 0 also be an option here (so
-that we respect HWTSTAMP_FILTER_NONE at least in the driver)?
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 1
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 1 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_0
 
-> > +	/* Commit back the result & save it */
-> > +	memcpy(&ocelot->hwtstamp_config, &cfg, sizeof(cfg));
-> > +	mutex_unlock(&ocelot->ptp_lock);
-> > +
-> > +	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-> > +}
-> >  
-> > +static int ocelot_get_ts_info(struct net_device *dev,
-> > +			      struct ethtool_ts_info *info)
-> > +{
-> > +	struct ocelot_port *ocelot_port = netdev_priv(dev);
-> > +	struct ocelot *ocelot = ocelot_port->ocelot;
-> > +	int ret;
-> > +
-> > +	if (!ocelot->ptp)
-> > +		return -EOPNOTSUPP;
-> 
-> Hmm.. why does software timestamping depend on PTP?
+The pattern used in the design here closely resembles OvS, as the plan is to also offload
+OvS conntrack rules to tc. OvS datapath rules uses it's recirculation mechanism to send
+specific packets to conntrack, and return with the new conntrack state (ct_state) on some other recirc_id
+to be matched again (we use goto chain for this).
 
-Because it depends on the "PTP" register bank (and the "PTP" interrupt)
-being described and available. This is why I named the flag 'ptp', but
-it could be named 'timestamp' or 'ts' as well.
+This results in the following OvS datapath rules:
 
-Thanks,
-Antoine
+recirc_id(0),in_port(ens1f0_0),ct_state(-trk),... actions:ct(zone=2),recirc(2)
+recirc_id(2),in_port(ens1f0_0),ct_state(+new+trk),ct_mark(0xbb),... actions:ct(commit,zone=2,nat(src=5.5.5.7),mark=0xbb),ens1f0_1
+recirc_id(2),in_port(ens1f0_0),ct_state(+est+trk),ct_mark(0xbb),... actions:ct(zone=2,nat),ens1f0_1
+
+recirc_id(1),in_port(ens1f0_1),ct_state(-trk),... actions:ct(zone=2),recirc(1)
+recirc_id(1),in_port(ens1f0_1),ct_state(+est+trk),... actions:ct(zone=2,nat),ens1f0_0
+
+Changelog:
+	See individual patches.
+
+Paul Blakey (4):
+  net/sched: Introduce action ct
+  net/flow_dissector: add connection tracking dissection
+  net/sched: cls_flower: Add matching on conntrack info
+  tc-tests: Add tc action ct tests
+
+ include/linux/skbuff.h                             |  10 +
+ include/net/flow_dissector.h                       |  15 +
+ include/net/flow_offload.h                         |   5 +
+ include/net/tc_act/tc_ct.h                         |  63 ++
+ include/uapi/linux/pkt_cls.h                       |  17 +
+ include/uapi/linux/tc_act/tc_ct.h                  |  41 +
+ net/core/flow_dissector.c                          |  44 +
+ net/sched/Kconfig                                  |  11 +
+ net/sched/Makefile                                 |   1 +
+ net/sched/act_ct.c                                 | 979 +++++++++++++++++++++
+ net/sched/cls_api.c                                |   5 +
+ net/sched/cls_flower.c                             | 127 ++-
+ .../selftests/tc-testing/tc-tests/actions/ct.json  | 314 +++++++
+ 13 files changed, 1627 insertions(+), 5 deletions(-)
+ create mode 100644 include/net/tc_act/tc_ct.h
+ create mode 100644 include/uapi/linux/tc_act/tc_ct.h
+ create mode 100644 net/sched/act_ct.c
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
 
 -- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+1.8.3.1
+
