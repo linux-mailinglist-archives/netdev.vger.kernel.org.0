@@ -2,219 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E91C62A74
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 22:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6665962A88
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 22:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405078AbfGHUhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 16:37:55 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:34093 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728778AbfGHUhy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 16:37:54 -0400
-Received: by mail-vs1-f65.google.com with SMTP id m23so9147528vso.1;
-        Mon, 08 Jul 2019 13:37:54 -0700 (PDT)
+        id S2405172AbfGHUnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 16:43:31 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42057 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732097AbfGHUn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 16:43:29 -0400
+Received: by mail-wr1-f66.google.com with SMTP id a10so17484102wrp.9
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 13:43:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Xoa10/Gq2LsbDcHbD/zmcjTEfAiOzl03k2kvaddEK8I=;
-        b=If51vIsL7yPZW21MtnWt+bTp4RSPcdYSmTPezAYqyAmyKdGplWPwpjHGv/R17U4DRl
-         wbulsoepnOHaV+pXXYLHOM+7mPS9+nWIZ7kYqin7Whau62E3xp5ub0m0wOhNzsLq7KPK
-         jQ+FrWq+chu4WuY6k/J9N3/4LgbFu9xQuX6Uq6cWu2MWtZL2sidO+jh65yhSy5QgM2xb
-         AM3iPXxAf6w0QTYFoYERB0MjMNF27QBC+Si0+aU0CoFIWxnjLK2M40F5hlyePRzitUAo
-         LuMkEkfYjvONaLhN1MV1l/q8wrQx1DOCz83IUlGKqT79Gm3QyxocY1q8HinLy52/w5cc
-         pNKQ==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
+         :subject:mime-version:content-transfer-encoding;
+        bh=R0n8Z37vuiuzeaTBasaidvJ2vtLHJp1fKzn9/xOAFFs=;
+        b=qEe8JyevDvWoiXnfHt851w8szzgIcwnnHRmpgqbeaAhl2GWMtBhVG8q4RWkAhQw/P2
+         A1eFQlsVU8dKrcpXLuGhb5UWn/t3Ip8YoWt/CApR21GPzHcuu0ac3l5D7y4Nc0/n84Ba
+         1OSZwvA4gECQryu4Y76iWMjvGKUrI/5Zp3dzMqNJqxXeKBC4BDi/0F4TIw0+MN+7Irtr
+         ad3VGJDCtsnt9ESmUIXSqUY565I//px3FGiJQMEonbSXgIzUi1rxcIQlMDAe9Jw2KnXr
+         CFOSAjDm7IHvK4yUwHB/NlotTcYkYKYATSGRDUMvYxDL/CO5hexUmi6pvRkY9W5tNVO2
+         asgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Xoa10/Gq2LsbDcHbD/zmcjTEfAiOzl03k2kvaddEK8I=;
-        b=TbaRMyBB9pNqFFmwSbP8UB+fneUzCgNERXdoVDLfqz8pyrzR7bUg0yIuKk3bi27k+J
-         imy/NyqSszL4P1VwzykSeBS1LmhbY18Ij/41ha0K85XPXFjxxyEKA+74Z0AJf6E3QPpQ
-         /j6WXDl+wleBtSjpdBTLo5eT4R2EejlebgWsSHIHOvBdUWwmiLSrzYKnvQSKlyAWIvkc
-         BZUzzEVh4oIIPcAtJ9Bz++aOKxTiR6gKC7X89/dyfoR5wLteTXzpzzEJv0YkiPTZ7Pby
-         PInTsPqGu9WCszS62M2TBgedDSExdoaAgJmwtsnmZCkHYpBqDyAOCxQHpX0TeBF93hJ0
-         3oWw==
-X-Gm-Message-State: APjAAAVexHnF6rC/sy5EUDSEe7WW5kKAiXkf6R1bDGHZzmj+AIU/VWpl
-        3xeHRWHVsE8Ol75dRfQrQT0ELqIA9Ge2kvwCFIE=
-X-Google-Smtp-Source: APXvYqyKUAyDAUmKtQRJrzk8olKBT8tNX2An90vKRAXEJbU4YNiOrXP7FJ+rifu8ESxHw5/FbEjihG9YUmIZnnfWuzA=
-X-Received: by 2002:a67:eb19:: with SMTP id a25mr11726259vso.109.1562618273573;
- Mon, 08 Jul 2019 13:37:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:subject:mime-version
+         :content-transfer-encoding;
+        bh=R0n8Z37vuiuzeaTBasaidvJ2vtLHJp1fKzn9/xOAFFs=;
+        b=VLFtWJ1DJuyaAlZTAccWubwFid1QT4WQHQnPNEmRxnEh+Cpamyq76qlV4sRXk2hErh
+         b+q4mEWffPe91ZnCgzRiTRLBbhZfI7quD/tKdmt8RfUovQ5rKS6JSRtREBZxVhqtnGw5
+         Rrv4VMkbR6rLz2+lwbl+Vnv3UbGw70GFDDv38ZIjcaotAt0rgcMJukE/b53JuC4jYGvc
+         5cL/KDr8uR3GMxmY+ivJQBfbR7zXLBKymKAzuA9ZK23yXpTknJmFKMPNZZQ7J+VTgMNg
+         qtO8MtBsbWPq1i8tas92Kq3tCxwtd5o4lJ4iElQxdDEg4rBbxuxLqbA6WmZvWi7DBC8l
+         tYMA==
+X-Gm-Message-State: APjAAAUVbZX5NraIyIP7d6vDOPdYejS2yN84683CFt+bJoXrQVlH/mjq
+        Pw1m81nZstCb5Q5Qu3LIbI4K
+X-Google-Smtp-Source: APXvYqwBcNCqy91bApdr+fF8sBg0c2jOBD02VfVxlPkgirUQznuNw302/Bj1HSjN1wTHDZ2B4vbj0Q==
+X-Received: by 2002:adf:ce82:: with SMTP id r2mr19648257wrn.223.1562618607220;
+        Mon, 08 Jul 2019 13:43:27 -0700 (PDT)
+Received: from [10.149.209.138] ([46.189.67.107])
+        by smtp.gmail.com with ESMTPSA id y7sm536362wmm.19.2019.07.08.13.43.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 08 Jul 2019 13:43:26 -0700 (PDT)
+From:   Paul Moore <paul@paul-moore.com>
+To:     Richard Guy Briggs <rgb@redhat.com>
+CC:     Tycho Andersen <tycho@tycho.ws>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        <containers@lists.linux-foundation.org>,
+        <linux-api@vger.kernel.org>,
+        "Linux-Audit Mailing List" <linux-audit@redhat.com>,
+        <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <sgrubb@redhat.com>,
+        <omosnace@redhat.com>, <dhowells@redhat.com>, <simo@redhat.com>,
+        Eric Paris <eparis@parisplace.org>, <ebiederm@xmission.com>,
+        <nhorman@tuxdriver.com>
+Date:   Mon, 08 Jul 2019 22:43:23 +0200
+Message-ID: <16bd353a5f8.280e.85c95baa4474aabc7814e68940a78392@paul-moore.com>
+In-Reply-To: <20190708181237.5poheliito7zpvmc@madcap2.tricolour.ca>
+References: <20190529145742.GA8959@cisco>
+ <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+ <20190529153427.GB8959@cisco>
+ <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+ <20190529222835.GD8959@cisco>
+ <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+ <20190530170913.GA16722@mail.hallyn.com>
+ <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
+ <20190530212900.GC5739@cisco>
+ <CAHC9VhT5HPt9rCJoDutdvA3r1Y1GOHfpXe2eJ54atNC1=Vd8LA@mail.gmail.com>
+ <20190708181237.5poheliito7zpvmc@madcap2.tricolour.ca>
+User-Agent: AquaMail/1.20.0-1462 (build: 102100002)
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
 MIME-Version: 1.0
-References: <cover.1562359091.git.a.s.protopopov@gmail.com>
- <e183c0af99056f8ea4de06acb358ace7f3a3d6ae.1562359091.git.a.s.protopopov@gmail.com>
- <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net> <CAEf4BzaGGVv2z8jB8MnT7=gnn4nG0cp7DGYxfnnnpohOT=ujCA@mail.gmail.com>
-In-Reply-To: <CAEf4BzaGGVv2z8jB8MnT7=gnn4nG0cp7DGYxfnnnpohOT=ujCA@mail.gmail.com>
-From:   Anton Protopopov <a.s.protopopov@gmail.com>
-Date:   Mon, 8 Jul 2019 16:37:42 -0400
-Message-ID: <CAGn_itw=BqWXn7ibg6M7j4r2T5CMo0paBhBoQQv7b+x7D2g2ww@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf, libbpf: add a new API bpf_object__reuse_maps()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=D0=BF=D0=BD, 8 =D0=B8=D1=8E=D0=BB. 2019 =D0=B3. =D0=B2 13:54, Andrii Nakry=
-iko <andrii.nakryiko@gmail.com>:
->
-> On Fri, Jul 5, 2019 at 2:53 PM Daniel Borkmann <daniel@iogearbox.net> wro=
-te:
-> >
-> > On 07/05/2019 10:44 PM, Anton Protopopov wrote:
-> > > Add a new API bpf_object__reuse_maps() which can be used to replace a=
-ll maps in
-> > > an object by maps pinned to a directory provided in the path argument=
-.  Namely,
-> > > each map M in the object will be replaced by a map pinned to path/M.n=
-ame.
-> > >
-> > > Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
-> > > ---
-> > >  tools/lib/bpf/libbpf.c   | 34 ++++++++++++++++++++++++++++++++++
-> > >  tools/lib/bpf/libbpf.h   |  2 ++
-> > >  tools/lib/bpf/libbpf.map |  1 +
-> > >  3 files changed, 37 insertions(+)
-> > >
-> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > index 4907997289e9..84c9e8f7bfd3 100644
-> > > --- a/tools/lib/bpf/libbpf.c
-> > > +++ b/tools/lib/bpf/libbpf.c
-> > > @@ -3144,6 +3144,40 @@ int bpf_object__unpin_maps(struct bpf_object *=
-obj, const char *path)
-> > >       return 0;
-> > >  }
-> > >
-> > > +int bpf_object__reuse_maps(struct bpf_object *obj, const char *path)
->
-> As is, bpf_object__reuse_maps() can be easily implemented by user
-> applications, as it's only using public libbpf APIs, so I'm not 100%
-> sure we need to add method like that to libbpf.
+On July 8, 2019 8:12:56 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 
-The bpf_object__reuse_maps() can definitely be implemented by user
-applications, however, to use it a user also needs to re-implement the
-bpf_prog_load_xattr funciton, so it seemed to me that adding this
-functionality to the library is a better way.
+> On 2019-05-30 19:26, Paul Moore wrote:
+>> On Thu, May 30, 2019 at 5:29 PM Tycho Andersen <tycho@tycho.ws> wrote:
+>>> On Thu, May 30, 2019 at 03:29:32PM -0400, Paul Moore wrote:
+>>>>
+>>>>
+>>>> [REMINDER: It is an "*audit* container ID" and not a general
+>>>> "container ID" ;)  Smiley aside, I'm not kidding about that part.]
+>>>
+>>> This sort of seems like a distinction without a difference; presumably
+>>> audit is going to want to differentiate between everything that people
+>>> in userspace call a container. So you'll have to support all this
+>>> insanity anyway, even if it's "not a container ID".
+>>
+>> That's not quite right.  Audit doesn't care about what a container is,
+>> or is not, it also doesn't care if the "audit container ID" actually
+>> matches the ID used by the container engine in userspace and I think
+>> that is a very important line to draw.  Audit is simply given a value
+>> which it calls the "audit container ID", it ensures that the value is
+>> inherited appropriately (e.g. children inherit their parent's audit
+>> container ID), and it uses the value in audit records to provide some
+>> additional context for log analysis.  The distinction isn't limited to
+>> the value itself, but also to how it is used; it is an "audit
+>> container ID" and not a "container ID" because this value is
+>> exclusively for use by the audit subsystem.  We are very intentionally
+>> not adding a generic container ID to the kernel.  If the kernel does
+>> ever grow a general purpose container ID we will be one of the first
+>> ones in line to make use of it, but we are not going to be the ones to
+>> generically add containers to the kernel.  Enough people already hate
+>> audit ;)
+>>
+>>>> I'm not interested in supporting/merging something that isn't useful;
+>>>> if this doesn't work for your use case then we need to figure out what
+>>>> would work.  It sounds like nested containers are much more common in
+>>>> the lxc world, can you elaborate a bit more on this?
+>>>>
+>>>>
+>>>> As far as the possible solutions you mention above, I'm not sure I
+>>>> like the per-userns audit container IDs, I'd much rather just emit the
+>>>> necessary tracking information via the audit record stream and let the
+>>>> log analysis tools figure it out.  However, the bigger question is how
+>>>> to limit (re)setting the audit container ID when you are in a non-init
+>>>> userns.  For reasons already mentioned, using capable() is a non
+>>>> starter for everything but the initial userns, and using ns_capable()
+>>>> is equally poor as it essentially allows any userns the ability to
+>>>> munge it's audit container ID (obviously not good).  It appears we
+>>>> need a different method for controlling access to the audit container
+>>>> ID.
+>>>
+>>> One option would be to make it a string, and have it be append only.
+>>> That should be safe with no checks.
+>>>
+>>> I know there was a long thread about what type to make this thing. I
+>>> think you could accomplish the append-only-ness with a u64 if you had
+>>> some rule about only allowing setting lower order bits than those that
+>>> are already set. With 4 bits for simplicity:
+>>>
+>>> 1100         # initial container id
+>>> 1100 -> 1011 # not allowed
+>>> 1100 -> 1101 # allowed, but now 1101 is set in stone since there are
+>>>       # no lower order bits left
+>>>
+>>> There are probably fancier ways to do it if you actually understand
+>>> math :)
+>>
+>> ;)
+>>
+>>> Since userns nesting is limited to 32 levels (right now, IIRC), and
+>>> you have 64 bits, this might be reasonable. You could just teach
+>>> container engines to use the first say N bits for themselves, with a 1
+>>> bit for the barrier at the end.
+>>
+>> I like the creativity, but I worry that at some point these
+>> limitations are going to be raised (limits have a funny way of doing
+>> that over time) and we will be in trouble.  I say "trouble" because I
+>> want to be able to quickly do an audit container ID comparison and
+>> we're going to pay a penalty for these larger values (we'll need this
+>> when we add multiple auditd support and the requisite record routing).
+>>
+>> Thinking about this makes me also realize we probably need to think a
+>> bit longer about audit container ID conflicts between orchestrators.
+>> Right now we just take the value that is given to us by the
+>> orchestrator, but if we want to allow multiple container orchestrators
+>> to work without some form of cooperation in userspace (I think we have
+>> to assume the orchestrators will not talk to each other) we likely
+>> need to have some way to block reuse of an audit container ID.  We
+>> would either need to prevent the orchestrator from explicitly setting
+>> an audit container ID to a currently in use value, or instead generate
+>> the audit container ID in the kernel upon an event triggered by the
+>> orchestrator (e.g. a write to a /proc file).  I suspect we should
+>> start looking at the idr code, I think we will need to make use of it.
+>
+> To address this, I'd suggest that it is enforced to only allow the
+> setting of descendants and to maintain a master list of audit container
+> identifiers (with a hash table if necessary later) that includes the
+> container owner.
+>
+> This also allows the orchestrator/engine to inject processes into
+> existing containers by checking that the audit container identifier is
+> only used again by the same owner.
+>
+> I have working code for both.
 
->
-> > > +{
-> > > +     struct bpf_map *map;
-> > > +
-> > > +     if (!obj)
-> > > +             return -ENOENT;
-> > > +
-> > > +     if (!path)
-> > > +             return -EINVAL;
-> > > +
-> > > +     bpf_object__for_each_map(map, obj) {
-> > > +             int len, err;
-> > > +             int pinned_map_fd;
-> > > +             char buf[PATH_MAX];
-> >
-> > We'd need to skip the case of bpf_map__is_internal(map) since they are =
-always
-> > recreated for the given object.
-> >
-> > > +             len =3D snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map_=
-_name(map));
-> > > +             if (len < 0) {
-> > > +                     return -EINVAL;
-> > > +             } else if (len >=3D PATH_MAX) {
-> > > +                     return -ENAMETOOLONG;
-> > > +             }
-> > > +
-> > > +             pinned_map_fd =3D bpf_obj_get(buf);
-> > > +             if (pinned_map_fd < 0)
-> > > +                     return pinned_map_fd;
-> >
-> > Should we rather have a new map definition attribute that tells to reus=
-e
-> > the map if it's pinned in bpf fs, and if not, we create it and later on
-> > pin it? This is what iproute2 is doing and which we're making use of he=
-avily.
->
-> I'd like something like that as well. This would play nicely with
-> recently added BTF-defined maps as well.
->
-> I think it should be not just pin/don't pin flag, but rather pinning
-> strategy, to accommodate various typical strategies of handling maps
-> that are already pinned. So something like this:
->
-> 1. BPF_PIN_NOTHING - default, don't pin;
-> 2. BPF_PIN_EXCLUSIVE - pin, but if map is already pinned - fail;
-> 3. BPF_PIN_SET - pin; if existing map exists, reset its state to be
-> exact state of object's map;
-> 4. BPF_PIN_MERGE - pin, if map exists, fill in NULL entries only (this
-> is how Cilium is pinning PROG_ARRAY maps, if I understand correctly);
-> 5. BPF_PIN_MERGE_OVERWRITE - pin, if map exists, overwrite non-NULL value=
-s.
->
-> This list is only for illustrative purposes, ideally people that have
-> a lot of experience using pinning for real-world use cases would chime
-> in on what strategies are useful and make sense.
+Just a quick note that due to some holiday travel I'm not going to be able =
+to adequately respond to your latest messages on this thread for at least a=
+nother week, likely a bit more.  I'm only checking mail to put out fires, a=
+nd the audit container ID work tends to be something that starts them ;)
 
-My case was simply to reuse existing maps when reloading a program.
-Does it make sense for you to add only the simplest cases of listed above?
+--
+paul moore
+www.paul-moore.com
 
-Also, libbpf doesn't use standard naming conventions for pinning maps.
-Does it make sense to provide a list of already open maps to the
-bpf_prog_load_xattr function as an attribute? In this case a user
-can execute his own policy on pinning, but still will have an option
-to reuse, reset, and merge maps.
 
->
-> > In bpf_object__reuse_maps() bailing out if bpf_obj_get() fails is perha=
-ps
-> > too limiting for a generic API as new version of an object file may con=
-tain
-> > new maps which are not yet present in bpf fs at that point.
-> >
-> > > +             err =3D bpf_map__reuse_fd(map, pinned_map_fd);
-> > > +             if (err)
-> > > +                     return err;
-> > > +     }
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > >  int bpf_object__pin_programs(struct bpf_object *obj, const char *pat=
-h)
-> > >  {
-> > >       struct bpf_program *prog;
-> > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > > index d639f47e3110..7fe465a1be76 100644
-> > > --- a/tools/lib/bpf/libbpf.h
-> > > +++ b/tools/lib/bpf/libbpf.h
-> > > @@ -82,6 +82,8 @@ int bpf_object__variable_offset(const struct bpf_ob=
-ject *obj, const char *name,
-> > >  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const ch=
-ar *path);
-> > >  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
-> > >                                     const char *path);
-> > > +LIBBPF_API int bpf_object__reuse_maps(struct bpf_object *obj,
-> > > +                                   const char *path);
-> > >  LIBBPF_API int bpf_object__pin_programs(struct bpf_object *obj,
-> > >                                       const char *path);
-> > >  LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj,
-> > > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > > index 2c6d835620d2..66a30be6696c 100644
-> > > --- a/tools/lib/bpf/libbpf.map
-> > > +++ b/tools/lib/bpf/libbpf.map
-> > > @@ -172,5 +172,6 @@ LIBBPF_0.0.4 {
-> > >               btf_dump__new;
-> > >               btf__parse_elf;
-> > >               bpf_object__load_xattr;
-> > > +             bpf_object__reuse_maps;
-> > >               libbpf_num_possible_cpus;
-> > >  } LIBBPF_0.0.3;
-> > >
-> >
+
+
