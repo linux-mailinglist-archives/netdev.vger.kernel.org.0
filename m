@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 377FD62645
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:32:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A7062648
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403846AbfGHQcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 12:32:02 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50657 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391222AbfGHQcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:32:01 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v15so169131wml.0
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 09:31:59 -0700 (PDT)
+        id S2403826AbfGHQcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 12:32:04 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50661 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391302AbfGHQcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:32:02 -0400
+Received: by mail-wm1-f67.google.com with SMTP id v15so169191wml.0
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 09:32:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VlE58to9TTVfrjMnyVImg3zsIB7+2ppqPmsgEMdOy2c=;
-        b=Grr8WxQhCPvZ332TotGRFDiZwOd7++mipYJuZveUuYIYr3Nb3dlUDfvUIR/OWbsURt
-         7STlhQFB4hrXA2V4zM06BYJrnpA2MU16hbxTHrgFOy3/2hT0pkfqS2p9/NRD3aD8CHMr
-         1p4r3q0Cnpr5bPsfSUMGJo3af8t29aw2h5zcU=
+        bh=/djGN8HAFa0Qe2S92JYcPQLF+TKLfL6yZ4KqqnYg5ZY=;
+        b=TV2o9ftDatxvZ1Naqph4aaWZ/G4ATmwqdVK/1bl8m5hVjBsVKTvm03MfKGpIA6FXkq
+         ueOGpwc3RH2T1ckfwS4DEDJxqcXvzsj+3MEBikwAawCJMO4rNLdOCba0OmUyFuaQ5tWK
+         thP7y3FyV/myim4Cr6LkzEynPAn/hitx9veU0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VlE58to9TTVfrjMnyVImg3zsIB7+2ppqPmsgEMdOy2c=;
-        b=T/B1z/c355fLQe7ta1PCMCuV8qOGpoMBPqbVKnYgeoTmL1rXuFuyprmSfPGXLBjJ5R
-         Sps4X2GZ5l7mJ6rui83iLJlzkzRlKXH1fGWvS4peqlVtUmUv2zWrvoVFACWOf7gjW2Ev
-         EuM5TBfx64nuyPU8FBdG6a7wWnoCkGufsZJDYAyTFIL4g+ekkzv3HyFJhzMSXLB2Rr2o
-         03hGmgjJ3jKfDXrMGbuEokxFlqSDje1sjrAF7VlP0ar5F7mp1Nwc0ehjiAmnIaSee9Ee
-         riUS9XTcsccbhteL2xhHLnqO7Tx5Z7Tv2q0PPgxzSEidRg4/F+9d7u/82qoYfVy3Kjk8
-         I42g==
-X-Gm-Message-State: APjAAAWuigPCA+TlRJq1eRU+ZsYUcDlP2/v6T/IBAoh6bq1SdliYWdAL
-        QBx87/WE2mqIIXT7Qzkoranrjg==
-X-Google-Smtp-Source: APXvYqwKuFWHwgF4G2XeMIYuCGrmTeqp3ayh9AABUaNBLK83crwPIJSbXnYHsMfKfIGI3EQm869tKA==
-X-Received: by 2002:a1c:2015:: with SMTP id g21mr17048889wmg.33.1562603518883;
-        Mon, 08 Jul 2019 09:31:58 -0700 (PDT)
+        bh=/djGN8HAFa0Qe2S92JYcPQLF+TKLfL6yZ4KqqnYg5ZY=;
+        b=WtEwicR8I1vVhgGK9aETV4M5JUEOnGjkS1z7OdHJ+IB1jjsZnVo5Km2AKM30cjBG4A
+         BYq+UdnNTk3WJn5MfUf0LgBvlkYTJ3UjN6qRsIQxuJ7+XF5LNkjxH/OU3ELvLPLWKP6t
+         F4JmngdwaoT5nygt30niQyRPn+pps6ebW0VI3/OJkvkV5tO4cpkQvB8Cc2COChcdCfrJ
+         v8dcWH6AEX+p6yqPSMJpUxKCXWlni7HXQOLOiiFKtliZIJghXr2igSWHG2ZNmcC53bBB
+         sVu7V7TOwI/TfLTOWZNoJ5sBx5G3W/saptnxW0bRg5EqMv5dz5NOtnyY2U6jm7jyckRE
+         VjTw==
+X-Gm-Message-State: APjAAAUDczrP3vpEamcoKKzJluhzRqLGyZLRsU2oueCY742mEo4lIOKB
+        OzpB1nseTxphwCm0CcJsrmlZXw==
+X-Google-Smtp-Source: APXvYqygSV8fYEBriB90aid/dziVjejXmPEUn++Hsvpp+mxZfwRWeb0Mn/9waunu837TVcLxeDLq8A==
+X-Received: by 2002:a1c:a942:: with SMTP id s63mr17505499wme.76.1562603520152;
+        Mon, 08 Jul 2019 09:32:00 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5aedbe.dynamic.kabel-deutschland.de. [95.90.237.190])
-        by smtp.gmail.com with ESMTPSA id e6sm18255086wrw.23.2019.07.08.09.31.57
+        by smtp.gmail.com with ESMTPSA id e6sm18255086wrw.23.2019.07.08.09.31.59
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 09:31:58 -0700 (PDT)
+        Mon, 08 Jul 2019 09:31:59 -0700 (PDT)
 From:   Krzesimir Nowak <krzesimir@kinvolk.io>
 To:     linux-kernel@vger.kernel.org
 Cc:     Alban Crequy <alban@kinvolk.io>,
@@ -56,9 +56,9 @@ Cc:     Alban Crequy <alban@kinvolk.io>,
         Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, xdp-newbies@vger.kernel.org,
         Krzesimir Nowak <krzesimir@kinvolk.io>
-Subject: [bpf-next v3 10/12] bpf: Implement bpf_prog_test_run for perf event programs
-Date:   Mon,  8 Jul 2019 18:31:19 +0200
-Message-Id: <20190708163121.18477-11-krzesimir@kinvolk.io>
+Subject: [bpf-next v3 11/12] selftests/bpf: Add tests for bpf_prog_test_run for perf events progs
+Date:   Mon,  8 Jul 2019 18:31:20 +0200
+Message-Id: <20190708163121.18477-12-krzesimir@kinvolk.io>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190708163121.18477-1-krzesimir@kinvolk.io>
 References: <20190708163121.18477-1-krzesimir@kinvolk.io>
@@ -69,104 +69,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As an input, test run for perf event program takes struct
-bpf_perf_event_data as ctx_in and struct bpf_perf_event_value as
-data_in. For an output, it basically ignores ctx_out and data_out.
-
-The implementation sets an instance of struct bpf_perf_event_data_kern
-in such a way that the BPF program reading data from context will
-receive what we passed to the bpf prog test run in ctx_in. Also BPF
-program can call bpf_perf_prog_read_value to receive what was passed
-in data_in.
-
-Changes since v2:
-- drop the changes in perf event verifier test - they are not needed
-  anymore after reworked ctx size handling
+The tests check if ctx and data are correctly prepared from ctx_in and
+data_in, so accessing the ctx and using the bpf_perf_prog_read_value
+work as expected.
 
 Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 ---
- kernel/trace/bpf_trace.c | 60 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ tools/testing/selftests/bpf/test_verifier.c   | 48 ++++++++++
+ .../selftests/bpf/verifier/perf_event_run.c   | 96 +++++++++++++++++++
+ 2 files changed, 144 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/verifier/perf_event_run.c
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index ca1255d14576..b870fc2314d0 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -19,6 +19,8 @@
- #include "trace_probe.h"
- #include "trace.h"
+diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+index 6f124cc4ee34..484ea8842b06 100644
+--- a/tools/testing/selftests/bpf/test_verifier.c
++++ b/tools/testing/selftests/bpf/test_verifier.c
+@@ -295,6 +295,54 @@ static void bpf_fill_scale(struct bpf_test *self)
+ 	}
+ }
  
-+#include <trace/events/bpf_test_run.h>
-+
- #define bpf_event_rcu_dereference(p)					\
- 	rcu_dereference_protected(p, lockdep_is_held(&bpf_event_mutex))
- 
-@@ -1160,7 +1162,65 @@ const struct bpf_verifier_ops perf_event_verifier_ops = {
- 	.convert_ctx_access	= pe_prog_convert_ctx_access,
- };
- 
-+static int pe_prog_test_run(struct bpf_prog *prog,
-+			    const union bpf_attr *kattr,
-+			    union bpf_attr __user *uattr)
++static void bpf_fill_perf_event_test_run_check(struct bpf_test *self)
 +{
-+	struct bpf_perf_event_data_kern real_ctx = {0, };
-+	struct perf_sample_data sample_data = {0, };
-+	struct bpf_perf_event_data *fake_ctx;
-+	struct bpf_perf_event_value *value;
-+	struct perf_event event = {0, };
-+	u32 retval = 0, duration = 0;
-+	int err;
++	compiletime_assert(
++		sizeof(struct bpf_perf_event_data) <= TEST_CTX_LEN,
++		"buffer for ctx is too short to fit struct bpf_perf_event_data");
++	compiletime_assert(
++		sizeof(struct bpf_perf_event_value) <= TEST_DATA_LEN,
++		"buffer for data is too short to fit struct bpf_perf_event_value");
 +
-+	if (kattr->test.data_size_out || kattr->test.data_out)
-+		return -EINVAL;
-+	if (kattr->test.ctx_size_out || kattr->test.ctx_out)
-+		return -EINVAL;
++	struct bpf_perf_event_data ctx = {
++		.regs = (bpf_user_pt_regs_t) {
++			.r15 = 1,
++			.r14 = 2,
++			.r13 = 3,
++			.r12 = 4,
++			.rbp = 5,
++			.rbx = 6,
++			.r11 = 7,
++			.r10 = 8,
++			.r9 = 9,
++			.r8 = 10,
++			.rax = 11,
++			.rcx = 12,
++			.rdx = 13,
++			.rsi = 14,
++			.rdi = 15,
++			.orig_rax = 16,
++			.rip = 17,
++			.cs = 18,
++			.eflags = 19,
++			.rsp = 20,
++			.ss = 21,
++		},
++		.sample_period = 1,
++		.addr = 2,
++	};
++	struct bpf_perf_event_value data = {
++		.counter = 1,
++		.enabled = 2,
++		.running = 3,
++	};
 +
-+	fake_ctx = bpf_receive_ctx(kattr, sizeof(struct bpf_perf_event_data));
-+	if (IS_ERR(fake_ctx))
-+		return PTR_ERR(fake_ctx);
-+
-+	value = bpf_receive_data(kattr, sizeof(struct bpf_perf_event_value));
-+	if (IS_ERR(value)) {
-+		kfree(fake_ctx);
-+		return PTR_ERR(value);
-+	}
-+
-+	real_ctx.regs = &fake_ctx->regs;
-+	real_ctx.data = &sample_data;
-+	real_ctx.event = &event;
-+	perf_sample_data_init(&sample_data, fake_ctx->addr,
-+			      fake_ctx->sample_period);
-+	event.cpu = smp_processor_id();
-+	event.oncpu = -1;
-+	event.state = PERF_EVENT_STATE_OFF;
-+	local64_set(&event.count, value->counter);
-+	event.total_time_enabled = value->enabled;
-+	event.total_time_running = value->running;
-+	/* make self as a leader - it is used only for checking the
-+	 * state field
-+	 */
-+	event.group_leader = &event;
-+	err = bpf_test_run(prog, &real_ctx, kattr->test.repeat,
-+			   BPF_TEST_RUN_PLAIN, &retval, &duration);
-+	if (err) {
-+		kfree(value);
-+		kfree(fake_ctx);
-+		return err;
-+	}
-+
-+	err = bpf_test_finish(uattr, retval, duration);
-+	trace_bpf_test_finish(&err);
-+	kfree(value);
-+	kfree(fake_ctx);
-+	return err;
++	memcpy(self->ctx, &ctx, sizeof(ctx));
++	memcpy(self->data, &data, sizeof(data));
++	free(self->fill_insns);
++	self->fill_insns = NULL;
 +}
 +
- const struct bpf_prog_ops perf_event_prog_ops = {
-+	.test_run	= pe_prog_test_run,
- };
- 
- static DEFINE_MUTEX(bpf_event_mutex);
+ /* BPF_SK_LOOKUP contains 13 instructions, if you need to fix up maps */
+ #define BPF_SK_LOOKUP(func)						\
+ 	/* struct bpf_sock_tuple tuple = {} */				\
+diff --git a/tools/testing/selftests/bpf/verifier/perf_event_run.c b/tools/testing/selftests/bpf/verifier/perf_event_run.c
+new file mode 100644
+index 000000000000..3f877458a7f8
+--- /dev/null
++++ b/tools/testing/selftests/bpf/verifier/perf_event_run.c
+@@ -0,0 +1,96 @@
++#define PER_LOAD_AND_CHECK_PTREG(PT_REG_FIELD, VALUE)			\
++	PER_LOAD_AND_CHECK_CTX(offsetof(bpf_user_pt_regs_t, PT_REG_FIELD), VALUE)
++#define PER_LOAD_AND_CHECK_EVENT(PED_FIELD, VALUE)			\
++	PER_LOAD_AND_CHECK_CTX(offsetof(struct bpf_perf_event_data, PED_FIELD), VALUE)
++#define PER_LOAD_AND_CHECK_CTX(OFFSET, VALUE)				\
++	PER_LOAD_AND_CHECK_64(BPF_REG_4, BPF_REG_1, OFFSET, VALUE)
++#define PER_LOAD_AND_CHECK_VALUE(PEV_FIELD, VALUE)			\
++	PER_LOAD_AND_CHECK_64(BPF_REG_7, BPF_REG_6, offsetof(struct bpf_perf_event_value, PEV_FIELD), VALUE)
++#define PER_LOAD_AND_CHECK_64(DST, SRC, OFFSET, VALUE)			\
++	BPF_LDX_MEM(BPF_DW, DST, SRC, OFFSET),				\
++	BPF_JMP_IMM(BPF_JEQ, DST, VALUE, 2),				\
++	BPF_MOV64_IMM(BPF_REG_0, VALUE),				\
++	BPF_EXIT_INSN()
++
++{
++	"check if regs contain expected values",
++	.insns = {
++	PER_LOAD_AND_CHECK_PTREG(r15, 1),
++	PER_LOAD_AND_CHECK_PTREG(r14, 2),
++	PER_LOAD_AND_CHECK_PTREG(r13, 3),
++	PER_LOAD_AND_CHECK_PTREG(r12, 4),
++	PER_LOAD_AND_CHECK_PTREG(rbp, 5),
++	PER_LOAD_AND_CHECK_PTREG(rbx, 6),
++	PER_LOAD_AND_CHECK_PTREG(r11, 7),
++	PER_LOAD_AND_CHECK_PTREG(r10, 8),
++	PER_LOAD_AND_CHECK_PTREG(r9, 9),
++	PER_LOAD_AND_CHECK_PTREG(r8, 10),
++	PER_LOAD_AND_CHECK_PTREG(rax, 11),
++	PER_LOAD_AND_CHECK_PTREG(rcx, 12),
++	PER_LOAD_AND_CHECK_PTREG(rdx, 13),
++	PER_LOAD_AND_CHECK_PTREG(rsi, 14),
++	PER_LOAD_AND_CHECK_PTREG(rdi, 15),
++	PER_LOAD_AND_CHECK_PTREG(orig_rax, 16),
++	PER_LOAD_AND_CHECK_PTREG(rip, 17),
++	PER_LOAD_AND_CHECK_PTREG(cs, 18),
++	PER_LOAD_AND_CHECK_PTREG(eflags, 19),
++	PER_LOAD_AND_CHECK_PTREG(rsp, 20),
++	PER_LOAD_AND_CHECK_PTREG(ss, 21),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
++	.ctx_len = sizeof(struct bpf_perf_event_data),
++	.data_len = sizeof(struct bpf_perf_event_value),
++	.fill_helper = bpf_fill_perf_event_test_run_check,
++	.override_data_out_len = true,
++},
++{
++	"check if sample period and addr contain expected values",
++	.insns = {
++	PER_LOAD_AND_CHECK_EVENT(sample_period, 1),
++	PER_LOAD_AND_CHECK_EVENT(addr, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
++	.ctx_len = sizeof(struct bpf_perf_event_data),
++	.data_len = sizeof(struct bpf_perf_event_value),
++	.fill_helper = bpf_fill_perf_event_test_run_check,
++	.override_data_out_len = true,
++},
++{
++	"check if bpf_perf_prog_read_value returns expected data",
++	.insns = {
++	// allocate space for a struct bpf_perf_event_value
++	BPF_MOV64_REG(BPF_REG_6, BPF_REG_10),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -(int)sizeof(struct bpf_perf_event_value)),
++	// prepare parameters for bpf_perf_prog_read_value(ctx, struct bpf_perf_event_value*, u32)
++	// BPF_REG_1 already contains the context
++	BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
++	BPF_MOV64_IMM(BPF_REG_3, sizeof(struct bpf_perf_event_value)),
++	BPF_EMIT_CALL(BPF_FUNC_perf_prog_read_value),
++	// check the return value
++	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 1),
++	BPF_EXIT_INSN(),
++	// check if the fields match the expected values
++	PER_LOAD_AND_CHECK_VALUE(counter, 1),
++	PER_LOAD_AND_CHECK_VALUE(enabled, 2),
++	PER_LOAD_AND_CHECK_VALUE(running, 3),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
++	.ctx_len = sizeof(struct bpf_perf_event_data),
++	.data_len = sizeof(struct bpf_perf_event_value),
++	.fill_helper = bpf_fill_perf_event_test_run_check,
++	.override_data_out_len = true,
++},
++#undef PER_LOAD_AND_CHECK_64
++#undef PER_LOAD_AND_CHECK_VALUE
++#undef PER_LOAD_AND_CHECK_CTX
++#undef PER_LOAD_AND_CHECK_EVENT
++#undef PER_LOAD_AND_CHECK_PTREG
 -- 
 2.20.1
 
