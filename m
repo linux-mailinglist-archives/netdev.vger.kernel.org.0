@@ -2,69 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3668562414
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 17:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5059B6243D
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 17:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389240AbfGHPkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 11:40:11 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:40466 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389237AbfGHP2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 11:28:13 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hkVYj-0001pK-2F; Mon, 08 Jul 2019 17:28:05 +0200
-Date:   Mon, 8 Jul 2019 17:28:05 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Paul Blakey <paulb@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>, netdev@vger.kernel.org,
+        id S2391002AbfGHPlB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jul 2019 11:41:01 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:33793 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388961AbfGHPk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 11:40:59 -0400
+Received: by mail-ed1-f67.google.com with SMTP id s49so15012360edb.1
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 08:40:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=gpabKwZ1bNUL7t3UenMyF9Ve1OhXBiRptpD+URICtjo=;
+        b=APAl+ahPeHoVoLDFumSMN+DnZt+5ldUJR0pjLBk74Wprp8sDBU2MMar6i68EnqbWMW
+         LYgsBI5c4eBIxHjLDZETHWmTRLE9j6LmVjGNKkVHOe0V0uCayAu/u8DDcCSFCCi+wphB
+         ULdQcgVtcmm54futj0ybNfaSv2Si1PMlK+NCmeSsVhEMdXSRxikCxMdoQEvvLtgUhj1t
+         B42WjGfZiPpMLKhFT22IGTeIRbDNLgs97xmvx/shrhjyji14X87G+y6G3pFsmfuFsKoT
+         eRIOl8TR9cGFUiwxMa30JD/LJPq02x6hWEgOsR6DYEsHMo5U3cDnmYGi82Z7/JlO95wC
+         TCCg==
+X-Gm-Message-State: APjAAAUx/4s3PjN3OftMjBpv+hS9WEqaXgHnsY4NnLZG9aNG2Xjos066
+        uwulzBbdZZPh9+Q/2PjOntwb7w==
+X-Google-Smtp-Source: APXvYqxyj+h6BlmPXsp5aYKBY+4iBkJVhJuv2TafN22quB7QdHm+S/e2sGeXnMWpSMEfyMoB0Nnw0A==
+X-Received: by 2002:a17:906:ece1:: with SMTP id qt1mr17424095ejb.171.1562600457767;
+        Mon, 08 Jul 2019 08:40:57 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id b30sm5847389ede.88.2019.07.08.08.40.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 08:40:57 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 925B8181CE7; Mon,  8 Jul 2019 17:40:56 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jonathan Lemon <jlemon@flugsvamp.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
         David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>,
-        Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-Subject: Re: [PATCH net-next v5 1/4] net/sched: Introduce action ct
-Message-ID: <20190708152805.dul3kgu4csr64fqk@breakpoint.cc>
-References: <1562575880-30891-1-git-send-email-paulb@mellanox.com>
- <1562575880-30891-2-git-send-email-paulb@mellanox.com>
- <20190708134208.GD3390@localhost.localdomain>
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] xdp: Add devmap_hash map type
+In-Reply-To: <53906C87-8AF9-4048-8CA0-AE38C023AEF7@flugsvamp.com>
+References: <156234940798.2378.9008707939063611210.stgit@alrua-x1> <53906C87-8AF9-4048-8CA0-AE38C023AEF7@flugsvamp.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 08 Jul 2019 17:40:56 +0200
+Message-ID: <87bly4zg8n.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190708134208.GD3390@localhost.localdomain>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> > +	} else { /* NFPROTO_IPV6 */
-> > +		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-> > +
-> > +		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
-> > +		err = nf_ct_frag6_gather(net, skb, user);
-> 
-> This doesn't build without IPv6 enabled.
-> ERROR: "nf_ct_frag6_gather" [net/sched/act_ct.ko] undefined!
-> 
-> We need to (copy and pasted):
-> 
-> @@ -179,7 +179,9 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
->                 local_bh_enable();
->                 if (err && err != -EINPROGRESS)
->                         goto out_free;
-> -       } else { /* NFPROTO_IPV6 */
-> +       }
-> +#if IS_ENABLED(IPV6)
-> +       else { /* NFPROTO_IPV6 */
->                 enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
+"Jonathan Lemon" <jlemon@flugsvamp.com> writes:
 
-Good catch, but it should be
-#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
-just like ovs conntrack.c ,
+> On 5 Jul 2019, at 10:56, Toke Høiland-Jørgensen wrote:
+>
+>> This series adds a new map type, devmap_hash, that works like the 
+>> existing
+>> devmap type, but using a hash-based indexing scheme. This is useful 
+>> for the use
+>> case where a devmap is indexed by ifindex (for instance for use with 
+>> the routing
+>> table lookup helper). For this use case, the regular devmap needs to 
+>> be sized
+>> after the maximum ifindex number, not the number of devices in it. A 
+>> hash-based
+>> indexing scheme makes it possible to size the map after the number of 
+>> devices it
+>> should contain instead.
+>
+> This device hash map is sized at NETDEV_HASHENTRIES == 2^8 == 256. Is
+> this actually smaller than an array? What ifindex values are you
+> seeing?
+
+Well, not in all cases, certainly. But machines with lots of virtual
+interfaces (e.g., container hosts) can easily exceed that. Also, for a
+devmap we charge the full size of max_entries * struct bpf_dtab_netdev
+towards the locked memory cost on map creation. And since sizeof(struct
+bpf_dtab_netdev) is 64, the size of the hashmap only corresponds to 32
+entries...
+
+But more importantly, it's a UI issue: Say you want to create a simple
+program that uses the fib_lookup helper (something like the xdp_fwd
+example under samples/bpf/). You know that you only want to route
+between a couple of interfaces, so you naturally create a devmap that
+can hold, say, 8 entries (just to be sure). This works fine on your
+initial test, where the machine only has a couple of physical interfaces
+brought up at boot. But then you try to run the same program on your
+production server, where the interfaces you need to use just happen to
+have ifindexes higher than 8, and now it breaks for no discernible
+reason. Or even worse, if you remove and re-add an interface, you may no
+longer be able to insert it into your map because the ifindex changed...
+
+-Toke
