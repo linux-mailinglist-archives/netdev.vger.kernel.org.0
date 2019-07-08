@@ -2,225 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E376270A
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBEB46270C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732879AbfGHR0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 13:26:18 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35703 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728744AbfGHR0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:26:17 -0400
-Received: by mail-wr1-f68.google.com with SMTP id y4so9445423wrm.2
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 10:26:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=laIe1oO3/TD+SpjZO01kcORWWEtDlsMggr6g/ttesJw=;
-        b=TWyabnrOZMEw0USJiM8upXVFlA94tYNdp4t4iQ8BwPeCWQHkfbbnqqV4UAbTO1l8o9
-         eP2bcd2BNRebTDAk0h0gIbwbi8apTjx6qnoB7JWMExNpnCTq6Hu70XGzyl4PXxCbqKVk
-         0iuWAxe0rAzPacLd7VlrIFxdUVXgcO2YoSdcvi0XY0BG+N4EFkiV53NVpmy2azrH7eGO
-         3Vpmh6arWETyzAileD8oY1t3wgUCjz305nfuPrD7qzpZQlQU/Rsq707dWIkRSj3opeIZ
-         m34x5u/eEOdUC5/q65w9ZVnlWsfPkjgEsPrfKapI/yXjOayUIbwhOlVb984tXagwlE+x
-         ykhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=laIe1oO3/TD+SpjZO01kcORWWEtDlsMggr6g/ttesJw=;
-        b=JdEtWOwfSOhFrsUeSLSh53rWXUhFdD98zJZGvmBE/rajgSQroPw/ZFIgpP4V5kYsos
-         zJnT4QckT8RNRh1f1WaeC+HR6ClK6nWb9uhzNDAaG1nk8xIrauvnKvEG3aAbPg4r4FoJ
-         qX5nYptD/DS98aPROVtQJy9uMJINlPQPwWo/JfAhyGD/B5QxrWQAXCISQl0oZy2+8VR3
-         PU2nslp+GTPdb/jPQV8YuXnYSSMzixL9y3FDuvlksPBe9wvoTcw5qSG6ayqOa7BWSflW
-         mMwfI3fzHGjrge1iDg79+05Q3Z/0F9+Paa18qW/YP2pxxV1S+6KQWOrboeqso4lc5rQl
-         IATg==
-X-Gm-Message-State: APjAAAUIZmaV7N1rfewOlQ2OS0LQsdLWMvn+gLPTHeWNx7k4WZL8NJ4r
-        eWprG1jPi9nCct1D429eHvYEwQ==
-X-Google-Smtp-Source: APXvYqzL7etP72TdaZ1/WXt96wqAcjrj3TDD1y4V+6nk9kkw8lyLHOmPxS65F05L1bsz4YOvuwiLCw==
-X-Received: by 2002:a5d:4f01:: with SMTP id c1mr4860990wru.43.1562606774614;
-        Mon, 08 Jul 2019 10:26:14 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id w24sm122566wmc.30.2019.07.08.10.26.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 10:26:14 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 19:26:13 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
-        marcelo.leitner@gmail.com, mkubecek@suse.cz,
-        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
-        cphealy@gmail.com, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next,v3 05/11] net: flow_offload: add list handling
- functions
-Message-ID: <20190708172613.GA2282@nanopsycho.orion>
-References: <20190708160614.2226-1-pablo@netfilter.org>
- <20190708160614.2226-6-pablo@netfilter.org>
+        id S1733129AbfGHR1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 13:27:33 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42434 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728744AbfGHR1d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 13:27:33 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 65D94AFE2;
+        Mon,  8 Jul 2019 17:27:31 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 9676BE00B7; Mon,  8 Jul 2019 19:27:29 +0200 (CEST)
+Date:   Mon, 8 Jul 2019 19:27:29 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 04/15] ethtool: introduce ethtool netlink
+ interface
+Message-ID: <20190708172729.GC24474@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <e7fa3ad7e9cf4d7a8f9a2085e3166f7260845b0a.1562067622.git.mkubecek@suse.cz>
+ <20190702122521.GN2250@nanopsycho>
+ <20190702145241.GD20101@unicorn.suse.cz>
+ <20190703084151.GR2250@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190708160614.2226-6-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190703084151.GR2250@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 08, 2019 at 06:06:07PM CEST, pablo@netfilter.org wrote:
->This patch adds the list handling functions for the flow block API:
->
->* flow_block_cb_lookup() allows drivers to look up for existing flow blocks.
->* flow_block_cb_add() adds a flow block to the list to be registered by the
->  core.
-
-Per driver? You say "per driver" in the "remove" part.
-
-
->* flow_block_cb_remove() to remove a flow block from the list of existing
->  flow blocks per driver and to request the core to unregister this.
->
->The flow block API also annotates the netns this flow block belongs to.
->
->Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
->---
->v3: extracted from former patch "net: flow_offload: add flow_block_cb API".
->
-> include/net/flow_offload.h | 20 ++++++++++++++++++++
-> net/core/flow_offload.c    | 18 ++++++++++++++++++
-> net/sched/cls_api.c        |  3 +++
-> 3 files changed, 41 insertions(+)
->
->diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->index bcc4e2fef6ba..06acde2960fa 100644
->--- a/include/net/flow_offload.h
->+++ b/include/net/flow_offload.h
->@@ -251,12 +251,16 @@ struct flow_block_offload {
-> 	enum flow_block_command command;
-> 	enum flow_block_binder_type binder_type;
-> 	struct tcf_block *block;
->+	struct net *net;
->+	struct list_head cb_list;
-> 	struct list_head *driver_block_list;
-> 	struct netlink_ext_ack *extack;
-> };
+On Wed, Jul 03, 2019 at 10:41:51AM +0200, Jiri Pirko wrote:
+> Tue, Jul 02, 2019 at 04:52:41PM CEST, mkubecek@suse.cz wrote:
+> >On Tue, Jul 02, 2019 at 02:25:21PM +0200, Jiri Pirko wrote:
+> >> Tue, Jul 02, 2019 at 01:49:59PM CEST, mkubecek@suse.cz wrote:
+> >> >+
+> >> >+    ETHTOOL_A_HEADER_DEV_INDEX	(u32)		device ifindex
+> >> >+    ETHTOOL_A_HEADER_DEV_NAME	(string)	device name
+> >> >+    ETHTOOL_A_HEADER_INFOMASK	(u32)		info mask
+> >> >+    ETHTOOL_A_HEADER_GFLAGS	(u32)		flags common for all requests
+> >> >+    ETHTOOL_A_HEADER_RFLAGS	(u32)		request specific flags
+> >> >+
+> >> >+ETHTOOL_A_HEADER_DEV_INDEX and ETHTOOL_A_HEADER_DEV_NAME identify the device
+> >> >+message relates to. One of them is sufficient in requests, if both are used,
+> >> >+they must identify the same device. Some requests, e.g. global string sets, do
+> >> >+not require device identification. Most GET requests also allow dump requests
+> >> >+without device identification to query the same information for all devices
+> >> >+providing it (each device in a separate message).
+> >> >+
+> >> >+Optional info mask allows to ask only for a part of data provided by GET
+> >> 
+> >> How this "infomask" works? What are the bits related to? Is that request
+> >> specific?
+> >
+> >The interpretation is request specific, the information returned for
+> >a GET request is divided into multiple parts and client can choose to
+> >request one of them (usually one). In the code so far, infomask bits
+> >correspond to top level (nest) attributes but I would rather not make it
+> >a strict rule.
 > 
-> struct flow_block_cb {
->+	struct list_head	driver_list;
-> 	struct list_head	list;
->+	struct net		*net;
-> 	tc_setup_cb_t		*cb;
-> 	void			*cb_ident;
-> 	void			*cb_priv;
->@@ -269,6 +273,22 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
-> 					  void (*release)(void *cb_priv));
-> void flow_block_cb_free(struct flow_block_cb *block_cb);
-> 
->+struct flow_block_cb *flow_block_cb_lookup(struct net *net,
->+					   struct list_head *driver_flow_block_list,
->+					   tc_setup_cb_t *cb, void *cb_ident);
->+
->+static inline void flow_block_cb_add(struct flow_block_cb *block_cb,
->+				     struct flow_block_offload *offload)
->+{
->+	list_add_tail(&block_cb->driver_list, &offload->cb_list);
->+}
->+
->+static inline void flow_block_cb_remove(struct flow_block_cb *block_cb,
->+					struct flow_block_offload *offload)
->+{
->+	list_move(&block_cb->driver_list, &offload->cb_list);
->+}
->+
-> int flow_block_cb_setup_simple(struct flow_block_offload *f,
-> 			       struct list_head *driver_list, tc_setup_cb_t *cb,
-> 			       void *cb_ident, void *cb_priv, bool ingress_only);
->diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
->index d08148cb6953..85fd5f4a1e0f 100644
->--- a/net/core/flow_offload.c
->+++ b/net/core/flow_offload.c
->@@ -176,6 +176,7 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
-> 	if (!block_cb)
-> 		return ERR_PTR(-ENOMEM);
-> 
->+	block_cb->net = net;
-> 	block_cb->cb = cb;
-> 	block_cb->cb_ident = cb_ident;
-> 	block_cb->cb_priv = cb_priv;
->@@ -194,6 +195,23 @@ void flow_block_cb_free(struct flow_block_cb *block_cb)
-> }
-> EXPORT_SYMBOL(flow_block_cb_free);
-> 
->+struct flow_block_cb *flow_block_cb_lookup(struct net *net,
->+					   struct list_head *driver_block_list,
+> Wait, so it is a matter of verbosity? If you have multiple parts and the
+> user is able to chose one of them, why don't you rather have multiple
+> get commands, one per bit. This infomask construct seems redundant to me.
 
-In the header, you call this "driver_flow_block_list".
+I thought it was a matter of verbosity because it is a very basic
+element of the design, it was even advertised in the cover letter among
+the basic ideas, it has been there since the very beginning and in five
+previous versions through year and a half, noone did question it. That's
+why I thought you objected against unclear description, not against the
+concept as such.
 
-Where is this list coming from? In general, I don't think it is good to
-have struct list_head as an arg of exported symbol. Should be contained
-in some struct. Looks like this might be the "struct
-flow_block_offload"?
+There are two reasons for this design. First is to reduce the number of
+requests needed to get the information. This is not so much a problem of
+ethtool itself; the only existing commands that would result in multiple
+request messages would be "ethtool <dev>" and "ethtool -s <dev>". Maybe
+also "ethtool -x/-X <dev>" but even if the indirection table and hash
+key have different bits assigned now, they don't have to be split even
+if we split other commands. It may be bigger problem for daemons wanting
+to keep track of system configuration which would have to issue many
+requests whenever a new device appears.
 
-Does this have anything to do with "struct list_head
-*driver_block_list"? This is very confusing...
+Second reason is that with 8-bit genetlink command/message id, the space
+is not as infinite as it might seem. I counted quickly, right now the
+full series uses 14 ids for kernel messages, with split you propose it
+would most likely grow to 44. For full implementation of all ethtool
+functionality, we could get to ~60 ids. It's still only 1/4 of the
+available space but it's not clear what the future development will look
+like. We would certainly need to be careful not to start allocating new
+commands for single parameters and try to be foreseeing about what can
+be grouped together. But we will need to do that in any case.
 
+On kernel side, splitting existing messages would make some things a bit
+easier. It would also reduce the number of scenarios where only part of
+requested information is available or only part of a SET request fails.
 
-
->+					   tc_setup_cb_t *cb, void *cb_ident)
->+{
->+	struct flow_block_cb *block_cb;
->+
->+	list_for_each_entry(block_cb, driver_block_list, driver_list) {
->+		if (block_cb->net == net &&
->+		    block_cb->cb == cb &&
->+		    block_cb->cb_ident == cb_ident)
->+			return block_cb;
->+	}
->+
->+	return NULL;
->+}
->+EXPORT_SYMBOL(flow_block_cb_lookup);
->+
-> int flow_block_cb_setup_simple(struct flow_block_offload *f,
-> 			       struct list_head *driver_block_list,
-> 			       tc_setup_cb_t *cb, void *cb_ident, void *cb_priv,
->diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->index fa0c451aca59..72761b43ae41 100644
->--- a/net/sched/cls_api.c
->+++ b/net/sched/cls_api.c
->@@ -679,6 +679,7 @@ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
-> 	struct tc_block_offload bo = {
-> 		.command	= command,
-> 		.binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
->+		.net		= dev_net(indr_dev->dev),
-> 		.block		= indr_dev->block,
-> 	};
-> 
->@@ -767,6 +768,7 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
-> 	struct tc_block_offload bo = {
-> 		.command	= command,
-> 		.binder_type	= ei->binder_type,
->+		.net		= dev_net(dev),
-> 		.block		= block,
-> 		.extack		= extack,
-> 	};
->@@ -795,6 +797,7 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
-> {
-> 	struct tc_block_offload bo = {};
-> 
->+	bo.net = dev_net(dev);
-> 	bo.command = command;
-> 	bo.binder_type = ei->binder_type;
-> 	bo.block = block;
->-- 
->2.11.0
->
+Michal
