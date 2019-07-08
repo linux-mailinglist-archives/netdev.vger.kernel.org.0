@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB92C6265A
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58ABF6263C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 18:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391522AbfGHQcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 12:32:36 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45674 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389286AbfGHQb4 (ORCPT
+        id S2390552AbfGHQb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 12:31:58 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51936 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389383AbfGHQb4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 12:31:56 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f9so17832423wre.12
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 09:31:54 -0700 (PDT)
+Received: by mail-wm1-f67.google.com with SMTP id 207so162615wma.1
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 09:31:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lzYpaDtUNAMchDHQ5mVavWSVxemrZT4NQs1IRkRW66Q=;
-        b=ZyD5dW8nuNYNP+nX4Td3kyXt1a5K3nWXeOqKr8xVZP9rEglO8POBabo0xUar/gJ9Ty
-         gfFpaGdGJEGTen/crmSnq/idDmP+4qdZ+MAnsH2SrX1GQPIozuLlLUyiZ7lSuxmjqo30
-         oRB6kpJ1lWc7VsBn8xN7GZDGTm7uJLG7pWxoU=
+        bh=Z2q/9DY/eMlLakYA2goJPIRtdbZUH+0KxlPnLmYNTOY=;
+        b=f3sofSU/bXru9qax++aOgBk+uAlSYw6diTvQz4Zb6xU+ePOE1k+PF6XybmrF8zA8Lm
+         cxUhOmVfIKOmnI0trsImIeXpuUUW+sKjTOhPWo3MCCGcHCf+iQIseb8AfeR7KKbyPnKH
+         4z9UWgWFHpp2PrqssJUgvo0yyedi5hHUcIboQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lzYpaDtUNAMchDHQ5mVavWSVxemrZT4NQs1IRkRW66Q=;
-        b=CTTpE1VNkZMSN7oJcffFaCkO53caxrQccLMoeCLVrgrUDzr+wC9k5qOQ2r0L/Dup6X
-         mAJtbkq1SX/NNfmYZC1O2Estk4aXoTk9U4QGM00FkpnWgW/gzKr+/SPe71FWQtgw2CQh
-         SatfDHVWHYbOOSco8iKgbdU84a8xrHI9C+cIeDpnUF31/Q+NGCRhHO+VWLn2ymA7c2bA
-         KAJmBHDszYm5N9gvYfuWkKN8YTlMxtgXSZ/SS42p5+ZrycjwdgipC7qrqvdOAWe3BV77
-         nnhYwG4rTrUMABSuRK8Z6Cw3CYjaZGnJeYAIYcarYhedFY8u/0muZkENF8Z8p30C3Sbc
-         /zoA==
-X-Gm-Message-State: APjAAAXqTxj5KniQF1CmUQYX8Mt1gRyWBnqFz1f4EomnSXadSxGrNjqI
-        0ex2DlLAOt9G69YaIG/RxxhFwA==
-X-Google-Smtp-Source: APXvYqzDVSViY5HVVYRgFb8v3N1wc1MFi5lzXRopegl9JYz0+mT8xKR31nPz40eySxSRzlooFazs6A==
-X-Received: by 2002:adf:ce05:: with SMTP id p5mr19075288wrn.197.1562603513828;
-        Mon, 08 Jul 2019 09:31:53 -0700 (PDT)
+        bh=Z2q/9DY/eMlLakYA2goJPIRtdbZUH+0KxlPnLmYNTOY=;
+        b=AXy40I4rFrZzSibuDadvgUbXaEsRQD4xaPLlXkPl4fNnzM97Wt00NeHiIEOSKDG8GZ
+         nZorki38ghY2mCTFOIoCk8UUQjypAGZPZ0d/o5SMmrde2/O7OnVhWjammFETl0iC5qCf
+         n4wOjHqS+PbNt9kkKBG5HMZMo9ZXNaJxHpSq2stvg+I3+8HAVMBwAdGuHHkL1NU2zDUz
+         3To+iplyGIimCm+0IOy0GXt0YDmFp/o4uxehlxivG77EONQo0gK39MauRtn8JOb58Z1s
+         zFXQ1CJI+HtQNcSVoTLjrpXsow7Zd7w6pprKPDY/Plw31l7Mp1qUU2DMEq0eCxwi8Thw
+         rxMg==
+X-Gm-Message-State: APjAAAX5F7ItQUEP5CPSplk8GrUewYaxnH3X3DoXy1Ec2GdKiXsBX9C2
+        Hg3kXerf5w3WdW9gxiFKcmgk7Q==
+X-Google-Smtp-Source: APXvYqwgF4eK6PEywYbJMZghzfU39cx60C67Re6v5ey3Aa4/20vDkjnYdTfyPjo4Ljm9od9zONwd/g==
+X-Received: by 2002:a1c:2314:: with SMTP id j20mr17401953wmj.152.1562603514984;
+        Mon, 08 Jul 2019 09:31:54 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5aedbe.dynamic.kabel-deutschland.de. [95.90.237.190])
-        by smtp.gmail.com with ESMTPSA id e6sm18255086wrw.23.2019.07.08.09.31.52
+        by smtp.gmail.com with ESMTPSA id e6sm18255086wrw.23.2019.07.08.09.31.53
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 09:31:53 -0700 (PDT)
+        Mon, 08 Jul 2019 09:31:54 -0700 (PDT)
 From:   Krzesimir Nowak <krzesimir@kinvolk.io>
 To:     linux-kernel@vger.kernel.org
 Cc:     Alban Crequy <alban@kinvolk.io>,
@@ -56,9 +56,9 @@ Cc:     Alban Crequy <alban@kinvolk.io>,
         Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, xdp-newbies@vger.kernel.org,
         Krzesimir Nowak <krzesimir@kinvolk.io>
-Subject: [bpf-next v3 06/12] selftests/bpf: Make sure that preexisting tests for perf event work
-Date:   Mon,  8 Jul 2019 18:31:15 +0200
-Message-Id: <20190708163121.18477-7-krzesimir@kinvolk.io>
+Subject: [bpf-next v3 07/12] tools headers: Adopt compiletime_assert from kernel sources
+Date:   Mon,  8 Jul 2019 18:31:16 +0200
+Message-Id: <20190708163121.18477-8-krzesimir@kinvolk.io>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190708163121.18477-1-krzesimir@kinvolk.io>
 References: <20190708163121.18477-1-krzesimir@kinvolk.io>
@@ -69,51 +69,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are going to introduce a test run implementation for perf event in
-a later commit and it will not allow passing any data out or ctx out
-to it, and requires their sizes to be specified to zero. To avoid test
-failures when the feature is introduced, override the data out size to
-zero. That will also cause NULL buffer to be sent to the kernel.
+This will come in handy to verify that the hardcoded size of the
+context data in bpf_test struct is high enough to hold some struct.
 
 Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 ---
- .../testing/selftests/bpf/verifier/perf_event_sample_period.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/include/linux/compiler.h | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-index 471c1a5950d8..19f5d824b275 100644
---- a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-+++ b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-@@ -13,6 +13,7 @@
- 	},
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-+	.override_data_out_len = true,
- },
- {
- 	"check bpf_perf_event_data->sample_period half load permitted",
-@@ -29,6 +30,7 @@
- 	},
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-+	.override_data_out_len = true,
- },
- {
- 	"check bpf_perf_event_data->sample_period word load permitted",
-@@ -45,6 +47,7 @@
- 	},
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-+	.override_data_out_len = true,
- },
- {
- 	"check bpf_perf_event_data->sample_period dword load permitted",
-@@ -56,4 +59,5 @@
- 	},
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-+	.override_data_out_len = true,
- },
+diff --git a/tools/include/linux/compiler.h b/tools/include/linux/compiler.h
+index 1827c2f973f9..b4e97751000a 100644
+--- a/tools/include/linux/compiler.h
++++ b/tools/include/linux/compiler.h
+@@ -172,4 +172,32 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+ # define __fallthrough
+ #endif
+ 
++
++#ifdef __OPTIMIZE__
++# define __compiletime_assert(condition, msg, prefix, suffix)		\
++	do {								\
++		extern void prefix ## suffix(void) __compiletime_error(msg); \
++		if (!(condition))					\
++			prefix ## suffix();				\
++	} while (0)
++#else
++# define __compiletime_assert(condition, msg, prefix, suffix) do { } while (0)
++#endif
++
++#define _compiletime_assert(condition, msg, prefix, suffix) \
++	__compiletime_assert(condition, msg, prefix, suffix)
++
++/**
++ * compiletime_assert - break build and emit msg if condition is false
++ * @condition: a compile-time constant condition to check
++ * @msg:       a message to emit if condition is false
++ *
++ * In tradition of POSIX assert, this macro will break the build if the
++ * supplied condition is *false*, emitting the supplied error message if the
++ * compiler has support to do so.
++ */
++#define compiletime_assert(condition, msg) \
++	_compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
++
++
+ #endif /* _TOOLS_LINUX_COMPILER_H */
 -- 
 2.20.1
 
