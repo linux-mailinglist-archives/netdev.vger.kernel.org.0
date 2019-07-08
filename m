@@ -2,46 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6CB62BE8
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 00:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A0062C16
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 00:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728597AbfGHWkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 18:40:35 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:59686 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728510AbfGHWkf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 18:40:35 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3197212D6C874;
-        Mon,  8 Jul 2019 15:40:35 -0700 (PDT)
-Date:   Mon, 08 Jul 2019 15:40:34 -0700 (PDT)
-Message-Id: <20190708.154034.2114427019293786374.davem@davemloft.net>
-To:     debrabander@gmail.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] selftests: txring_overwrite: fix incorrect test of
- mmap() return value
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1562326994-4569-1-git-send-email-debrabander@gmail.com>
-References: <1562326994-4569-1-git-send-email-debrabander@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 08 Jul 2019 15:40:35 -0700 (PDT)
+        id S1727065AbfGHWrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 18:47:37 -0400
+Received: from relay1.mentorg.com ([192.94.38.131]:64027 "EHLO
+        relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbfGHWrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 18:47:37 -0400
+Received: from svr-orw-mbx-01.mgc.mentorg.com ([147.34.90.201])
+        by relay1.mentorg.com with esmtps (TLSv1.2:ECDHE-RSA-AES256-SHA384:256)
+        id 1hkcQ3-0005v2-Rm from George_Davis@mentor.com ; Mon, 08 Jul 2019 15:47:35 -0700
+Received: from localhost (147.34.91.1) by svr-orw-mbx-01.mgc.mentorg.com
+ (147.34.90.201) with Microsoft SMTP Server (TLS) id 15.0.1320.4; Mon, 8 Jul
+ 2019 15:47:33 -0700
+Date:   Mon, 8 Jul 2019 18:47:32 -0400
+From:   "George G. Davis" <george_davis@mentor.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: sysctl: cleanup net_sysctl_init error exit paths
+Message-ID: <20190708224732.GA8009@mam-gdavis-lt>
+References: <1558020189-16843-1-git-send-email-george_davis@mentor.com>
+ <20190516.142744.1107545161556108780.davem@davemloft.net>
+ <20190517144345.GA16926@mam-gdavis-lt>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190517144345.GA16926@mam-gdavis-lt>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-ClientProxiedBy: svr-orw-mbx-03.mgc.mentorg.com (147.34.90.203) To
+ svr-orw-mbx-01.mgc.mentorg.com (147.34.90.201)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Frank de Brabander <debrabander@gmail.com>
-Date: Fri,  5 Jul 2019 13:43:14 +0200
+Hello David,
 
-> If mmap() fails it returns MAP_FAILED, which is defined as ((void *) -1).
-> The current if-statement incorrectly tests if *ring is NULL.
+On Fri, May 17, 2019 at 10:43:45AM -0400, George G. Davis wrote:
+> Hello David,
 > 
-> Signed-off-by: Frank de Brabander <debrabander@gmail.com>
+> On Thu, May 16, 2019 at 02:27:44PM -0700, David Miller wrote:
+> > From: "George G. Davis" <george_davis@mentor.com>
+> > Date: Thu, 16 May 2019 11:23:08 -0400
+> > 
+> > > Unwind net_sysctl_init error exit goto spaghetti code
+> > > 
+> > > Suggested-by: Joshua Frkuska <joshua_frkuska@mentor.com>
+> > > Signed-off-by: George G. Davis <george_davis@mentor.com>
+> > 
+> > Cleanups are not appropriate until the net-next tree opens back up.
+> > 
+> > So please resubmit at that time.
+> 
+> I fear that I may be distracted by other shiny objects by then but
+> I'll make a reminder and try to resubmit during the next merge window.
 
-Applied with fixes tag added and queued up for -stable, thanks.
+Since the "Linux 5.2" kernel has been released [1], I'm guessing that the
+net-next merge window is open now? If yes, the patch remains unchanged
+since my initial post. Please consider applying or let me know when to
+resubmit when the net-next merge window is again open.
+
+TIA!
+
+
+> 
+> Thanks!
+> 
+> > 
+> > Thank you.
+> 
+> -- 
+> Regards,
+> George
+
+-- 
+Regards,
+George
+[1] https://lwn.net/Articles/792995/
