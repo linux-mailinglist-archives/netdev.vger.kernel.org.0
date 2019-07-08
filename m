@@ -2,184 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA24627BB
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 537B3627BD
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:54:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731133AbfGHRy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 13:54:26 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:41846 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727576AbfGHRy0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:54:26 -0400
-Received: by mail-qk1-f193.google.com with SMTP id v22so13986429qkj.8;
-        Mon, 08 Jul 2019 10:54:25 -0700 (PDT)
+        id S1732681AbfGHRyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 13:54:50 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:41843 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732420AbfGHRyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:54:50 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d17so17505640qtj.8
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 10:54:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u4F7C/sV/odeCH+W9PMSNpHsM7J09hRexHDNA3lJNWc=;
-        b=XgYD1/u95qUNmWA4XvhmxxBgEdAaBIVnMwRm4+DSEOBZbmdJamzoE+0YkZ4RW20plL
-         l7mPfcanv4k/hXnC06/cfo8GKSsDhVNjdD9fljXFsYvHpI/HHRQVbs6PkHdsF7K4j/x0
-         eVn/7mH0T012NU+0Cb0MBG93yGNWGgZ9kQ18nfmqPjn5krdmEDRaS527yF/TldrWN698
-         FdXOuMY7H32piU8YTMitD+LnlA1CGSvKguzFkJu4Hs3ATX4Oa3IrYOpWe+i1xQz3KWa4
-         CU13m0knRWeDbwy6I1fqYTZh22Lk1K+HoicaItk97fcf3LeERFT/j/W7gHiov2P8zgNt
-         QSmQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=pjUKYFfrPOyRPh7bu1OgTOJa9phpVsHoUi8n0k3sask=;
+        b=iEy2Lvfza/T/WCZP4hmx+cyfo8jbMWqfV0OyQBn9XFESl/LjVntq5QI3rpDWyZDseQ
+         wTTLN+LgRIKKk+RIhyOVDukbNEfeWco0a2s40DE9h6+11HRp3mOv89zNYhIYow9mqGV4
+         vipLU2py5JFqbslFZDy+8uRrWMtSdwtT/Q8siwHOcH5EXaBU5+dBbTS9gB0d1D/An+Dr
+         eGDALf/+P57TaAFJfOXY4uzCx9P9UjEm7KSnaKmR+SS96kRa+3Qz39wJkQ0ff8k1iCEm
+         nNpyTIw5SbvUw4eg2xfHg232ifNZadrX04vzendUHbtOVck/rqFWtl+PsMHBpxgW/elj
+         Pq3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u4F7C/sV/odeCH+W9PMSNpHsM7J09hRexHDNA3lJNWc=;
-        b=tnUih2wTsCXloQosXGNvLpWNqPtAtItRgiSfuaPJErfzJt0nw5dB3pP35noXxT6NC5
-         tF4qn38LI4dEsbsJnV1g2whES4TTDasGGdPdDpToTQZ1WDDvSk1yjLZ2NaT6gS20iWBC
-         s90fF98MPP3+whlolysTeuN/ehLRCzyxTDcao8ARGgetruXglBKnfq8Zd3TjkVbgBL7r
-         lV90KFH8UEX8XDrYdal2L6XqCqrsHPn91oWlPSON6OSvQc579DS5wjtQrV7S0y7uxMoH
-         9hqlUjkB0XbjFVrZOYKQi+HX/Z0ZlTLKqtUFsSyOWtOKBJ2AanfwPJ/2YDXUFwuoxpma
-         R9eQ==
-X-Gm-Message-State: APjAAAXr4OPT2X3YKjTssMidsyeLhZanWhPc4A9+8qmA70nUGNc9TPbG
-        ++0SyELZ3crioiyvT1u6x09ZYQJfwj5unGWxV6M=
-X-Google-Smtp-Source: APXvYqyQ45p40cTwBps+eik6OzNyUlDBNZXh1tfc4f5IiVk6V7Vmbj9v0jH5hkQF+F9w/LQgGBst9wOgU7+dlp1u0vA=
-X-Received: by 2002:a37:9b48:: with SMTP id d69mr13551030qke.449.1562608464860;
- Mon, 08 Jul 2019 10:54:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=pjUKYFfrPOyRPh7bu1OgTOJa9phpVsHoUi8n0k3sask=;
+        b=YW9dd6sFH4YCvjdkBJFBGAKlASy4mXTwGcscY7k0++ZIlyY4Er3zOEvjPDAFpwbiLd
+         xtODvGb2Eeuhn/q6k8wudyZGeNB0KTM2DIImJHsJ/M6FhIUdtv9kyEhwXwyDmtltgcZx
+         zj5iFlijrmWeuzO7zZjNn+v10dOCIRLmaGB/E99ClQI5tBV02UEi6bU7A13vBUr8VzAE
+         kLtQfgtSYVCBsGhyYlnb8dPBQogAXHHEXfvoj8neMt/isO5M91Uk36Qs70MCYPuPzttK
+         uV1Gk1nBoUmmNqzGKxDNW/UP5niWATtKqeNlCVCAWdz5V1Izj1SdcNvJh3gDtuiE0XVa
+         aMOw==
+X-Gm-Message-State: APjAAAUI8+MOQBpZsh/P1Tb7i0JBdMPQbaLqi384VFV61dgmsAbj2wW3
+        nfEnQpP1JzmBQ+TSFFyzL78=
+X-Google-Smtp-Source: APXvYqyMURFmoKUzXB4PZHXn5vzOBemelvDHN/p8bgP6W5wJDq9Czip+43AkAqNWJEeVKaOM/OkjEA==
+X-Received: by 2002:a0c:bd1f:: with SMTP id m31mr16046862qvg.54.1562608489296;
+        Mon, 08 Jul 2019 10:54:49 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:5853:8fda:3106:4b2a:a3ee])
+        by smtp.gmail.com with ESMTPSA id c26sm7479317qtp.40.2019.07.08.10.54.48
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 10:54:48 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 21013C0A68; Mon,  8 Jul 2019 14:54:46 -0300 (-03)
+Date:   Mon, 8 Jul 2019 14:54:46 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>, Justin Pettit <jpettit@ovn.org>,
+        John Hurley <john.hurley@netronome.com>,
+        Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        Simon Horman <simon.horman@netronome.com>
+Subject: Re: [PATCH net-next iproute2 2/3] tc: Introduce tc ct action
+Message-ID: <20190708175446.GL3449@localhost.localdomain>
+References: <1562489628-5925-1-git-send-email-paulb@mellanox.com>
+ <1562489628-5925-3-git-send-email-paulb@mellanox.com>
 MIME-Version: 1.0
-References: <cover.1562359091.git.a.s.protopopov@gmail.com>
- <e183c0af99056f8ea4de06acb358ace7f3a3d6ae.1562359091.git.a.s.protopopov@gmail.com>
- <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net>
-In-Reply-To: <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 8 Jul 2019 10:54:13 -0700
-Message-ID: <CAEf4BzaGGVv2z8jB8MnT7=gnn4nG0cp7DGYxfnnnpohOT=ujCA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf, libbpf: add a new API bpf_object__reuse_maps()
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Anton Protopopov <a.s.protopopov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562489628-5925-3-git-send-email-paulb@mellanox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 5, 2019 at 2:53 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 07/05/2019 10:44 PM, Anton Protopopov wrote:
-> > Add a new API bpf_object__reuse_maps() which can be used to replace all maps in
-> > an object by maps pinned to a directory provided in the path argument.  Namely,
-> > each map M in the object will be replaced by a map pinned to path/M.name.
-> >
-> > Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
-> > ---
-> >  tools/lib/bpf/libbpf.c   | 34 ++++++++++++++++++++++++++++++++++
-> >  tools/lib/bpf/libbpf.h   |  2 ++
-> >  tools/lib/bpf/libbpf.map |  1 +
-> >  3 files changed, 37 insertions(+)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 4907997289e9..84c9e8f7bfd3 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -3144,6 +3144,40 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
-> >       return 0;
-> >  }
-> >
-> > +int bpf_object__reuse_maps(struct bpf_object *obj, const char *path)
+On Sun, Jul 07, 2019 at 11:53:47AM +0300, Paul Blakey wrote:
+> New tc action to send packets to conntrack module, commit
+> them, and set a zone, labels, mark, and nat on the connection.
+> 
+> It can also clear the packet's conntrack state by using clear.
+> 
+> Usage:
+>    ct clear
+>    ct commit [force] [zone] [mark] [label] [nat]
 
-As is, bpf_object__reuse_maps() can be easily implemented by user
-applications, as it's only using public libbpf APIs, so I'm not 100%
-sure we need to add method like that to libbpf.
+Isn't the 'commit' also optional? More like
+    ct [commit [force]] [zone] [mark] [label] [nat]
 
-> > +{
-> > +     struct bpf_map *map;
-> > +
-> > +     if (!obj)
-> > +             return -ENOENT;
-> > +
-> > +     if (!path)
-> > +             return -EINVAL;
-> > +
-> > +     bpf_object__for_each_map(map, obj) {
-> > +             int len, err;
-> > +             int pinned_map_fd;
-> > +             char buf[PATH_MAX];
->
-> We'd need to skip the case of bpf_map__is_internal(map) since they are always
-> recreated for the given object.
->
-> > +             len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
-> > +             if (len < 0) {
-> > +                     return -EINVAL;
-> > +             } else if (len >= PATH_MAX) {
-> > +                     return -ENAMETOOLONG;
-> > +             }
-> > +
-> > +             pinned_map_fd = bpf_obj_get(buf);
-> > +             if (pinned_map_fd < 0)
-> > +                     return pinned_map_fd;
->
-> Should we rather have a new map definition attribute that tells to reuse
-> the map if it's pinned in bpf fs, and if not, we create it and later on
-> pin it? This is what iproute2 is doing and which we're making use of heavily.
+>    ct [nat] [zone]
+> 
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Signed-off-by: Yossi Kuperman <yossiku@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> Acked-by: Roi Dayan <roid@mellanox.com>
+> ---
+...
+> +static void
+> +usage(void)
+> +{
+> +	fprintf(stderr,
+> +		"Usage: ct clear\n"
+> +		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC]\n"
 
-I'd like something like that as well. This would play nicely with
-recently added BTF-defined maps as well.
+Ditto here then.
 
-I think it should be not just pin/don't pin flag, but rather pinning
-strategy, to accommodate various typical strategies of handling maps
-that are already pinned. So something like this:
+> +		"	ct [nat] [zone ZONE]\n"
+> +		"Where: ZONE is the conntrack zone table number\n"
+> +		"	NAT_SPEC is {src|dst} addr addr1[-addr2] [port port1[-port2]]\n"
+> +		"\n");
+> +	exit(-1);
+> +}
+...
 
-1. BPF_PIN_NOTHING - default, don't pin;
-2. BPF_PIN_EXCLUSIVE - pin, but if map is already pinned - fail;
-3. BPF_PIN_SET - pin; if existing map exists, reset its state to be
-exact state of object's map;
-4. BPF_PIN_MERGE - pin, if map exists, fill in NULL entries only (this
-is how Cilium is pinning PROG_ARRAY maps, if I understand correctly);
-5. BPF_PIN_MERGE_OVERWRITE - pin, if map exists, overwrite non-NULL values.
+The validation below doesn't enforce that commit must be there for
+such case.
 
-This list is only for illustrative purposes, ideally people that have
-a lot of experience using pinning for real-world use cases would chime
-in on what strategies are useful and make sense.
-
-> In bpf_object__reuse_maps() bailing out if bpf_obj_get() fails is perhaps
-> too limiting for a generic API as new version of an object file may contain
-> new maps which are not yet present in bpf fs at that point.
->
-> > +             err = bpf_map__reuse_fd(map, pinned_map_fd);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
-> >  {
-> >       struct bpf_program *prog;
-> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > index d639f47e3110..7fe465a1be76 100644
-> > --- a/tools/lib/bpf/libbpf.h
-> > +++ b/tools/lib/bpf/libbpf.h
-> > @@ -82,6 +82,8 @@ int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
-> >  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const char *path);
-> >  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
-> >                                     const char *path);
-> > +LIBBPF_API int bpf_object__reuse_maps(struct bpf_object *obj,
-> > +                                   const char *path);
-> >  LIBBPF_API int bpf_object__pin_programs(struct bpf_object *obj,
-> >                                       const char *path);
-> >  LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj,
-> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > index 2c6d835620d2..66a30be6696c 100644
-> > --- a/tools/lib/bpf/libbpf.map
-> > +++ b/tools/lib/bpf/libbpf.map
-> > @@ -172,5 +172,6 @@ LIBBPF_0.0.4 {
-> >               btf_dump__new;
-> >               btf__parse_elf;
-> >               bpf_object__load_xattr;
-> > +             bpf_object__reuse_maps;
-> >               libbpf_num_possible_cpus;
-> >  } LIBBPF_0.0.3;
-> >
->
+> +static int
+> +parse_ct(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
+> +		struct nlmsghdr *n)
+> +{
+> +	struct tc_ct sel = {};
+> +	char **argv = *argv_p;
+> +	struct rtattr *tail;
+> +	int argc = *argc_p;
+> +	int ct_action = 0;
+> +	int ret;
+> +
+> +	tail = addattr_nest(n, MAX_MSG, tca_id);
+> +
+> +	if (argc && matches(*argv, "ct") == 0)
+> +		NEXT_ARG_FWD();
+> +
+> +	while (argc > 0) {
+> +		if (matches(*argv, "zone") == 0) {
+> +			NEXT_ARG();
+> +
+> +			if (ct_parse_u16(*argv,
+> +					 TCA_CT_ZONE, TCA_CT_UNSPEC, n)) {
+> +				fprintf(stderr, "ct: Illegal \"zone\"\n");
+> +				return -1;
+> +			}
+> +		} else if (matches(*argv, "nat") == 0) {
+> +			ct_action |= TCA_CT_ACT_NAT;
+> +
+> +			NEXT_ARG();
+> +			if (matches(*argv, "src") == 0)
+> +				ct_action |= TCA_CT_ACT_NAT_SRC;
+> +			else if (matches(*argv, "dst") == 0)
+> +				ct_action |= TCA_CT_ACT_NAT_DST;
+> +			else
+> +				continue;
+> +
+> +			NEXT_ARG();
+> +			if (matches(*argv, "addr") != 0)
+> +				usage();
+> +
+> +			NEXT_ARG();
+> +			ret = ct_parse_nat_addr_range(*argv, n);
+> +			if (ret) {
+> +				fprintf(stderr, "ct: Illegal nat address range\n");
+> +				return -1;
+> +			}
+> +
+> +			NEXT_ARG_FWD();
+> +			if (matches(*argv, "port") != 0)
+> +				continue;
+> +
+> +			NEXT_ARG();
+> +			ret = ct_parse_nat_port_range(*argv, n);
+> +			if (ret) {
+> +				fprintf(stderr, "ct: Illegal nat port range\n");
+> +				return -1;
+> +			}
+> +		} else if (matches(*argv, "clear") == 0) {
+> +			ct_action |= TCA_CT_ACT_CLEAR;
+> +		} else if (matches(*argv, "commit") == 0) {
+> +			ct_action |= TCA_CT_ACT_COMMIT;
+> +		} else if (matches(*argv, "force") == 0) {
+> +			ct_action |= TCA_CT_ACT_FORCE;
+> +		} else if (matches(*argv, "index") == 0) {
+> +			NEXT_ARG();
+> +			if (get_u32(&sel.index, *argv, 10)) {
+> +				fprintf(stderr, "ct: Illegal \"index\"\n");
+> +				return -1;
+> +			}
+> +		} else if (matches(*argv, "mark") == 0) {
+> +			NEXT_ARG();
+> +
+> +			ret = ct_parse_mark(*argv, n);
+> +			if (ret) {
+> +				fprintf(stderr, "ct: Illegal \"mark\"\n");
+> +				return -1;
+> +			}
+> +		} else if (matches(*argv, "label") == 0) {
+> +			NEXT_ARG();
+> +
+> +			ret = ct_parse_labels(*argv, n);
+> +			if (ret) {
+> +				fprintf(stderr, "ct: Illegal \"label\"\n");
+> +				return -1;
+> +			}
+> +		} else if (matches(*argv, "help") == 0) {
+> +			usage();
+> +		} else {
+> +			break;
+> +		}
+> +		NEXT_ARG_FWD();
+> +	}
+> +
+> +	if (ct_action & TCA_CT_ACT_CLEAR &&
+> +	    ct_action & ~TCA_CT_ACT_CLEAR) {
+> +		fprintf(stderr, "ct: clear can only be used alone\n");
+> +		return -1;
+> +	}
+> +
+> +	if (ct_action & TCA_CT_ACT_NAT_SRC &&
+> +	    ct_action & TCA_CT_ACT_NAT_DST) {
+> +		fprintf(stderr, "ct: src and dst nat can't be used together\n");
+> +		return -1;
+> +	}
+> +
+> +	if ((ct_action & TCA_CT_ACT_COMMIT) &&
+> +	    (ct_action & TCA_CT_ACT_NAT) &&
+> +	    !(ct_action & (TCA_CT_ACT_NAT_SRC | TCA_CT_ACT_NAT_DST))) {
+> +		fprintf(stderr, "ct: commit and nat must set src or dst\n");
+> +		return -1;
+> +	}
+> +
+> +	if (!(ct_action & TCA_CT_ACT_COMMIT) &&
+> +	    (ct_action & (TCA_CT_ACT_NAT_SRC | TCA_CT_ACT_NAT_DST))) {
+> +		fprintf(stderr, "ct: src or dst is only valid if commit is set\n");
+> +		return -1;
+> +	}
+> +
+> +	parse_action_control_dflt(&argc, &argv, &sel.action, false,
+> +				  TC_ACT_PIPE);
+> +	NEXT_ARG_FWD();
+> +
+> +	addattr16(n, MAX_MSG, TCA_CT_ACTION, ct_action);
+> +	addattr_l(n, MAX_MSG, TCA_CT_PARMS, &sel, sizeof(sel));
+> +	addattr_nest_end(n, tail);
+> +
+> +	*argc_p = argc;
+> +	*argv_p = argv;
+> +	return 0;
+> +}
+...
