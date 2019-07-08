@@ -2,67 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EED62133
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 17:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A25DD62145
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 17:14:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732150AbfGHPLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 11:11:40 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:41440 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbfGHPLj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 11:11:39 -0400
-Received: by mail-lf1-f66.google.com with SMTP id 62so11188783lfa.8
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 08:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=hZydHmlFZUA08A8AkXYNhkywEFittozBRDXwaReLd4w=;
-        b=ZyfpFTbSR7O/9h7MfIdBAHiER+L8NEo14rVkzdymDHVNoCrOlM0Ot7aB8vfdn99U4e
-         YxA3eMnCQMZ+5iEQHJXxZgg2EwBnKh30vkk0eTnqkkqKF3Tr2iSYYat5ZjtAqfomvl3L
-         WywGKGaxufYT8w2H8Ta/th3tuSqv5kK1HGFeUlnTiuOZeszNlhKbqg6zhDsOf8vOGkZI
-         eq/UMa3zYQYQGqFH5xHQz1QUFeUQ9WusZMH4A+rbQlczAVQkHtv3pqGz3U8Fj1/lKRPj
-         aO+PcbzJenN8Qe5/pRUJD/UX26Rg+tFKa2ncLCKzfO4hpHX9DSWkyEFWSsH5/xKm0/tt
-         2TMA==
+        id S1730197AbfGHPN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 11:13:59 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:45653 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725977AbfGHPN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 11:13:59 -0400
+Received: by mail-ed1-f68.google.com with SMTP id e2so8142182edi.12
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 08:13:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=hZydHmlFZUA08A8AkXYNhkywEFittozBRDXwaReLd4w=;
-        b=OTsKeaxJXAnPL3M+JYwMtVXBn0z1ZQuUwav2xk94v7lZy4heKy414RnBfvSJnE+HCQ
-         ItxbT7cmjG5R0OYoq5g31rlH4RtNrGvBeA8W8NearBzVkOo7KZek1k22BE8TZnwj7t+9
-         yD7EmOeU2pV6T/gL7y5a95s54aFRzQWcU/xGW7rvdS8xZXnxxRAbQQ8oFZ5/bgxr4gNb
-         Vur6Pcd/Cr57ppXtkaoGSp1sQT8crgvWl07VGOm68xm3xRO/LrrEwlmy8lE51Cmg66eA
-         ROMT5hcqfeafrb76tsuSWKKncxu9BrAcikuRpx/AF5vhK80P+/5kVcC92C3vjAamJjT3
-         jQEQ==
-X-Gm-Message-State: APjAAAXjmk0YayvFl9YK2w8FizN6HbsgwuoTGoUg8/ohtGHsFtkh/VI8
-        2WZUv0UUvMlTDd+X+1WVtD5nuQ/UtZLXailpabBAiO4z0ZW4tQ==
-X-Google-Smtp-Source: APXvYqwXuXgNhUrUvwHXPLkW4YnCzBX0FsRm3Oi1zeNNFxryz9wYAgPHQuklpNIAxAWBMans2qOyri1HwW3NLnnyTY8=
-X-Received: by 2002:ac2:5981:: with SMTP id w1mr8712451lfn.85.1562598696740;
- Mon, 08 Jul 2019 08:11:36 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VoEGvRZIbR2MT8Tlaag7Yj92AA+lSowumqLl0+Yfn5M=;
+        b=CoEPCH+zQjFdrgcByJryhM28ai0t6vp5d/MMsQJCkCN7SRZn5p4MWIbbj0FrTDmkNe
+         IXZ3o53t+w0rBy3feXhIF4UVfS9e0dCOZLRpUuj9ZBZ2Z11Jm5xY6mLY8R4BrkvA7tcd
+         I/iBofibdMEbOV64l+k9zBs+589JRQfWQn2HVpfZS31ozc9MAxKsosgD0Si/2aiWjmEO
+         5yNC9DCAQUSfCxGyHZLEPEbzCFnUx7YIO+3M+5Q/6+ObryG0qncZBqsm6U9FNgOb/9AY
+         AhtHPLSROFsmGap513/YgZNZaArop0ndwosISiLYcsztnvsKBQ+ER6nboCVmFxov+B0Q
+         ILcA==
+X-Gm-Message-State: APjAAAWjc1dVCxeAayc07SQvTHfS+NPug1EgBRxuwZpAKrBZpUX8fcm6
+        mkzHwjOkDQntLtB7f5IeIXnXKRxVo1vjXvVQK9Dmy57EKIc=
+X-Google-Smtp-Source: APXvYqwhVgEmtWDr+IpH8/xVS+iawRTvMl/fWqGUcyTam4w+8KN9+yoA0ftyJ+QH1vTh2W0W78X0DQoSKxHoblgCPCM=
+X-Received: by 2002:a17:906:2101:: with SMTP id 1mr16795278ejt.182.1562598837949;
+ Mon, 08 Jul 2019 08:13:57 -0700 (PDT)
 MIME-Version: 1.0
-From:   Matt Hart <matthew.hart@linaro.org>
-Date:   Mon, 8 Jul 2019 16:11:26 +0100
-Message-ID: <CAH+k93FQkiwRXwgRGrUJEpmAGZBL03URKDmx8uVA9MnLrDKn0Q@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 4/9] libbpf: add kprobe/uprobe attach API
-To:     andriin@fb.com
-Cc:     andrii.nakryiko@gmail.com, ast@fb.com, bpf@vger.kernel.org,
-        daniel@iogearbox.net, kernel-team@fb.com, netdev@vger.kernel.org,
-        sdf@fomichev.me
+References: <f1535e547aa6da8216ca2a0da7c06b645a132929.1562578533.git.aclaudi@redhat.com>
+In-Reply-To: <f1535e547aa6da8216ca2a0da7c06b645a132929.1562578533.git.aclaudi@redhat.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Mon, 8 Jul 2019 17:14:49 +0200
+Message-ID: <CAPpH65xb5cnqpTP5mNsT28wf6103hkM+Ega7D1EbyFffce=ixw@mail.gmail.com>
+Subject: Re: [PATCH iproute2] ip-route: fix json formatting for metrics
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Mon, Jul 8, 2019 at 11:38 AM Andrea Claudi <aclaudi@redhat.com> wrote:
+>
+> Setting metrics for routes currently lead to non-parsable
+> json output. For example:
+>
+> $ ip link add type dummy
+> $ ip route add 192.168.2.0 dev dummy0 metric 100 mtu 1000 rto_min 3
+> $ ip -j route | jq
+> parse error: ':' not as part of an object at line 1, column 319
+>
+> Fixing this opening a json object in the metrics array and using
+> print_string() instead of fprintf().
+>
+> This is the output for the above commands applying this patch:
+>
+> $ ip -j route | jq
+> [
+>   {
+>     "dst": "192.168.2.0",
+>     "dev": "dummy0",
+>     "scope": "link",
+>     "metric": 100,
+>     "flags": [],
+>     "metrics": [
+>       {
+>         "mtu": 1000,
+>         "rto_min": 3
+>       }
+>     ]
+>   }
+> ]
+>
+> Fixes: 663c3cb23103f ("iproute: implement JSON and color output")
+> Fixes: 968272e791710 ("iproute: refactor metrics print")
+> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> ---
+>  ip/iproute.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/ip/iproute.c b/ip/iproute.c
+> index 1669e0138259e..2f9b612b0b506 100644
+> --- a/ip/iproute.c
+> +++ b/ip/iproute.c
+> @@ -578,6 +578,7 @@ static void print_rta_metrics(FILE *fp, const struct rtattr *rta)
+>         int i;
+>
+>         open_json_array(PRINT_JSON, "metrics");
+> +       open_json_object(NULL);
+>
+>         parse_rtattr(mxrta, RTAX_MAX, RTA_DATA(rta), RTA_PAYLOAD(rta));
+>
+> @@ -611,7 +612,7 @@ static void print_rta_metrics(FILE *fp, const struct rtattr *rta)
+>                         print_rtax_features(fp, val);
+>                         break;
+>                 default:
+> -                       fprintf(fp, "%u ", val);
+> +                       print_uint(PRINT_ANY, mx_names[i], "%u ", val);
+>                         break;
+>
+>                 case RTAX_RTT:
+> @@ -639,6 +640,7 @@ static void print_rta_metrics(FILE *fp, const struct rtattr *rta)
+>                 }
+>         }
+>
+> +       close_json_object();
+>         close_json_array(PRINT_JSON, NULL);
+>  }
+>
+> --
+> 2.20.1
+>
 
-I bisected a perf build error on ARMv7 to this patch:
-libbpf.c: In function =E2=80=98perf_event_open_probe=E2=80=99:
-libbpf.c:4112:17: error: cast from pointer to integer of different
-size [-Werror=3Dpointer-to-int-cast]
-  attr.config1 =3D (uint64_t)(void *)name; /* kprobe_func or uprobe_path */
-                 ^
+Sorry, I forgot to add:
+Reported-by: Frank Hofmann <fhofmann@cloudflare.com>
 
-Is this a known issue?
+Regards,
+Andrea
