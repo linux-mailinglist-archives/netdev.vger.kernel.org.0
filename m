@@ -2,185 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1ED561A8C
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 08:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A324561ABA
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 08:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729033AbfGHGSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 02:18:02 -0400
-Received: from mga09.intel.com ([134.134.136.24]:6540 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727218AbfGHGSC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 02:18:02 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Jul 2019 23:18:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,465,1557212400"; 
-   d="scan'208";a="173175976"
-Received: from npg-dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.66])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Jul 2019 23:17:58 -0700
-Date:   Mon, 8 Jul 2019 14:16:25 +0800
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>, mst@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com
-Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
-Message-ID: <20190708061625.GA15936@___>
-References: <20190703091339.1847-1-tiwei.bie@intel.com>
- <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
- <20190703115245.GA22374@___>
- <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com>
- <20190703130817.GA1978@___>
- <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
- <20190704062134.GA21116@___>
- <20190705084946.67b8f9f5@x1.home>
+        id S1728927AbfGHGgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 02:36:45 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:42485 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728519AbfGHGgp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 02:36:45 -0400
+Received: by mail-pl1-f196.google.com with SMTP id ay6so7706705plb.9
+        for <netdev@vger.kernel.org>; Sun, 07 Jul 2019 23:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U5faaB2QS25gWcbZp0574GO7urSkcBDHpx7JYrayj6s=;
+        b=k8AtqPPBAIU9BFgDc1LoJIroW15SoAkdAibpdma80r6iYC7+o9XxniV5aE+9a8Kcy7
+         JsfzCV4LoqoMGDyWAXbL8IqAQQ6ANOsk74ESWQ972qbNDrsf0Irzbm8rGHqwIZwaewZ7
+         xkEHNYC2wm5qTxlC8E8dWNp8znXKneU6XMJxcjqwsyaNSHV6/76+2bcasa5kmADB+UPl
+         hrxgyIIvLY8QT2pUiwg+zKSWMI72eaq9go97g8Mey4V6Z/F0DBGAgHPc80HwTl4ARX9N
+         GUUEo6RT5DvII4ycF6gwUa1uuC0n630vdKZU5IWN1FBLlL+7AtHDxs+y2iUQNTzI8yo1
+         02kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U5faaB2QS25gWcbZp0574GO7urSkcBDHpx7JYrayj6s=;
+        b=tAXar5m+3MVaTcyscH968PqxA6+m6oCD8EuEq2eWnVxtHA84M223ax5STrY5SqW4+C
+         kt5iCjeO8/3GtNgCo4V1gOA97A+QwVPjb3aCkKmLNmTxNNmK/gcQGm03FcVcv1GDdgqF
+         h94kSW/nYN7pJ7ym7G2xffqz7pbM2VFFkTmboSYWpBXNH1HaIKWnD8cI5IHC/CpHEGO3
+         jNYyh4Jkoz7/EPIxe0D47pL5av6bH+McRwvKaQB8/ATkVKKfR4RgVM3FlLBSN1kRXxeo
+         HvWnP4TGW3roJRFR8P5uZfEI8MOaBX8dS4A4zQ2NLWqZsCukOpU1mlkMiwxawlFxwu3z
+         3Qog==
+X-Gm-Message-State: APjAAAXkBk1EIsAOg92W/PSxyenhrXbi8X3Aknn1/u+Hk4qAAMKRKK6u
+        fJhjYoOZp6Jm6MZ/2mbIl1Z4ng==
+X-Google-Smtp-Source: APXvYqxA2c9ltYeJuPS/96QyMzXMHZoAV+lGrhI7hijTtcZlfz7f4W53t2DqphIMtl/XnK0J1m4Lvw==
+X-Received: by 2002:a17:902:724:: with SMTP id 33mr21908419pli.49.1562567804038;
+        Sun, 07 Jul 2019 23:36:44 -0700 (PDT)
+Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
+        by smtp.gmail.com with ESMTPSA id s66sm21388130pgs.39.2019.07.07.23.36.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 07 Jul 2019 23:36:43 -0700 (PDT)
+From:   Jian-Hong Pan <jian-hong@endlessm.com>
+To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com,
+        Jian-Hong Pan <jian-hong@endlessm.com>,
+        Daniel Drake <drake@endlessm.com>, stable@vger.kernel.org
+Subject: [PATCH] rtw88/pci: Rearrange the memory usage for skb in RX ISR
+Date:   Mon,  8 Jul 2019 14:32:53 +0800
+Message-Id: <20190708063252.4756-1-jian-hong@endlessm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190705084946.67b8f9f5@x1.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 05, 2019 at 08:49:46AM -0600, Alex Williamson wrote:
-> On Thu, 4 Jul 2019 14:21:34 +0800
-> Tiwei Bie <tiwei.bie@intel.com> wrote:
-> > On Thu, Jul 04, 2019 at 12:31:48PM +0800, Jason Wang wrote:
-> > > On 2019/7/3 下午9:08, Tiwei Bie wrote:  
-> > > > On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:  
-> > > > > On 2019/7/3 下午7:52, Tiwei Bie wrote:  
-> > > > > > On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:  
-> > > > > > > On 2019/7/3 下午5:13, Tiwei Bie wrote:  
-> > > > > > > > Details about this can be found here:
-> > > > > > > > 
-> > > > > > > > https://lwn.net/Articles/750770/
-> > > > > > > > 
-> > > > > > > > What's new in this version
-> > > > > > > > ==========================
-> > > > > > > > 
-> > > > > > > > A new VFIO device type is introduced - vfio-vhost. This addressed
-> > > > > > > > some comments from here:https://patchwork.ozlabs.org/cover/984763/
-> > > > > > > > 
-> > > > > > > > Below is the updated device interface:
-> > > > > > > > 
-> > > > > > > > Currently, there are two regions of this device: 1) CONFIG_REGION
-> > > > > > > > (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
-> > > > > > > > device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
-> > > > > > > > can be used to notify the device.
-> > > > > > > > 
-> > > > > > > > 1. CONFIG_REGION
-> > > > > > > > 
-> > > > > > > > The region described by CONFIG_REGION is the main control interface.
-> > > > > > > > Messages will be written to or read from this region.
-> > > > > > > > 
-> > > > > > > > The message type is determined by the `request` field in message
-> > > > > > > > header. The message size is encoded in the message header too.
-> > > > > > > > The message format looks like this:
-> > > > > > > > 
-> > > > > > > > struct vhost_vfio_op {
-> > > > > > > > 	__u64 request;
-> > > > > > > > 	__u32 flags;
-> > > > > > > > 	/* Flag values: */
-> > > > > > > >     #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
-> > > > > > > > 	__u32 size;
-> > > > > > > > 	union {
-> > > > > > > > 		__u64 u64;
-> > > > > > > > 		struct vhost_vring_state state;
-> > > > > > > > 		struct vhost_vring_addr addr;
-> > > > > > > > 	} payload;
-> > > > > > > > };
-> > > > > > > > 
-> > > > > > > > The existing vhost-kernel ioctl cmds are reused as the message
-> > > > > > > > requests in above structure.  
-> > > > > > > Still a comments like V1. What's the advantage of inventing a new protocol?  
-> > > > > > I'm trying to make it work in VFIO's way..
-> > > > > >   
-> > > > > > > I believe either of the following should be better:
-> > > > > > > 
-> > > > > > > - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
-> > > > > > > extend it with e.g notify region. The advantages is that all exist userspace
-> > > > > > > program could be reused without modification (or minimal modification). And
-> > > > > > > vhost API hides lots of details that is not necessary to be understood by
-> > > > > > > application (e.g in the case of container).  
-> > > > > > Do you mean reusing vhost's ioctl on VFIO device fd directly,
-> > > > > > or introducing another mdev driver (i.e. vhost_mdev instead of
-> > > > > > using the existing vfio_mdev) for mdev device?  
-> > > > > Can we simply add them into ioctl of mdev_parent_ops?  
-> > > > Right, either way, these ioctls have to be and just need to be
-> > > > added in the ioctl of the mdev_parent_ops. But another thing we
-> > > > also need to consider is that which file descriptor the userspace
-> > > > will do the ioctl() on. So I'm wondering do you mean let the
-> > > > userspace do the ioctl() on the VFIO device fd of the mdev
-> > > > device?
-> > > >   
-> > > 
-> > > Yes.  
-> > 
-> > Got it! I'm not sure what's Alex opinion on this. If we all
-> > agree with this, I can do it in this way.
-> > 
-> > > Is there any other way btw?  
-> > 
-> > Just a quick thought.. Maybe totally a bad idea. I was thinking
-> > whether it would be odd to do non-VFIO's ioctls on VFIO's device
-> > fd. So I was wondering whether it's possible to allow binding
-> > another mdev driver (e.g. vhost_mdev) to the supported mdev
-> > devices. The new mdev driver, vhost_mdev, can provide similar
-> > ways to let userspace open the mdev device and do the vhost ioctls
-> > on it. To distinguish with the vfio_mdev compatible mdev devices,
-> > the device API of the new vhost_mdev compatible mdev devices
-> > might be e.g. "vhost-net" for net?
-> > 
-> > So in VFIO case, the device will be for passthru directly. And
-> > in VHOST case, the device can be used to accelerate the existing
-> > virtualized devices.
-> > 
-> > How do you think?
-> 
-> VFIO really can't prevent vendor specific ioctls on the device file
-> descriptor for mdevs, but a) we'd want to be sure the ioctl address
-> space can't collide with ioctls we'd use for vfio defined purposes and
-> b) maybe the VFIO user API isn't what you want in the first place if
-> you intend to mostly/entirely ignore the defined ioctl set and replace
-> them with your own.  In the case of the latter, you're also not getting
-> the advantages of the existing VFIO userspace code, so why expose a
-> VFIO device at all.
+Testing with RTL8822BE hardware, when available memory is low, we
+frequently see a kernel panic and system freeze.
 
-Yeah, I totally agree.
+First, rtw_pci_rx_isr encounters a memory allocation failure (trimmed):
 
-> 
-> The mdev interface does provide a general interface for creating and
-> managing virtual devices, vfio-mdev is just one driver on the mdev
-> bus.  Parav (Mellanox) has been doing work on mdev-core to help clean
-> out vfio-isms from the interface, aiui, with the intent of implementing
-> another mdev bus driver for using the devices within the kernel.
+rx routine starvation
+WARNING: CPU: 7 PID: 9871 at drivers/net/wireless/realtek/rtw88/pci.c:822 rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
+[ 2356.580313] RIP: 0010:rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
 
-Great to know this! I found below series after some searching:
+Then we see a variety of different error conditions and kernel panics,
+such as this one (trimmed):
 
-https://lkml.org/lkml/2019/3/8/821
+rtw_pci 0000:02:00.0: pci bus timeout, check dma status
+skbuff: skb_over_panic: text:00000000091b6e66 len:415 put:415 head:00000000d2880c6f data:000000007a02b1ea tail:0x1df end:0xc0 dev:<NULL>
+------------[ cut here ]------------
+kernel BUG at net/core/skbuff.c:105!
+invalid opcode: 0000 [#1] SMP NOPTI
+RIP: 0010:skb_panic+0x43/0x45
 
-In above series, the new mlx5_core mdev driver will do the probe
-by calling mlx5_get_core_dev() first on the parent device of the
-mdev device. In vhost_mdev, maybe we can also keep track of all
-the compatible mdev devices and use this info to do the probe.
-But we also need a way to allow vfio_mdev driver to distinguish
-and reject the incompatible mdev devices.
+When skb allocation fails and the "rx routine starvation" is hit, the
+function returns immediately without updating the RX ring. At this
+point, the RX ring may continue referencing an old skb which was already
+handed off to ieee80211_rx_irqsafe(). When it comes to be used again,
+bad things happen.
 
-> It
-> seems like this vhost-mdev driver might be similar, using mdev but not
-> necessarily vfio-mdev to expose devices.  Thanks,
+This patch allocates a new skb first in RX ISR. If we don't have memory
+available, we discard the current frame, allowing the existing skb to be
+reused in the ring. Otherwise, we simplify the code flow and just hand
+over the RX-populated skb over to mac80211.
 
-Yeah, I also think so!
+In addition, to fixing the kernel crash, the RX routine should now
+generally behave better under low memory conditions.
 
-Thanks!
-Tiwei
+Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=204053
+Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+Reviewed-by: Daniel Drake <drake@endlessm.com>
+Cc: <stable@vger.kernel.org>
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 28 +++++++++++-------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
 
-> 
-> Alex
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index cfe05ba7280d..1bfc99ae6b84 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -786,6 +786,15 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
+ 		rx_desc = skb->data;
+ 		chip->ops->query_rx_desc(rtwdev, rx_desc, &pkt_stat, &rx_status);
+ 
++		/* discard current skb if the new skb cannot be allocated as a
++		 * new one in rx ring later
++		 * */
++		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
++		if (WARN(!new, "rx routine starvation\n")) {
++			new = skb;
++			goto next_rp;
++		}
++
+ 		/* offset from rx_desc to payload */
+ 		pkt_offset = pkt_desc_sz + pkt_stat.drv_info_sz +
+ 			     pkt_stat.shift;
+@@ -803,25 +812,14 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
+ 			skb_put(skb, pkt_stat.pkt_len);
+ 			skb_reserve(skb, pkt_offset);
+ 
+-			/* alloc a smaller skb to mac80211 */
+-			new = dev_alloc_skb(pkt_stat.pkt_len);
+-			if (!new) {
+-				new = skb;
+-			} else {
+-				skb_put_data(new, skb->data, skb->len);
+-				dev_kfree_skb_any(skb);
+-			}
+ 			/* TODO: merge into rx.c */
+ 			rtw_rx_stats(rtwdev, pkt_stat.vif, skb);
+-			memcpy(new->cb, &rx_status, sizeof(rx_status));
+-			ieee80211_rx_irqsafe(rtwdev->hw, new);
++			memcpy(skb->cb, &rx_status, sizeof(rx_status));
++			ieee80211_rx_irqsafe(rtwdev->hw, skb);
+ 		}
+ 
+-		/* skb delivered to mac80211, alloc a new one in rx ring */
+-		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
+-		if (WARN(!new, "rx routine starvation\n"))
+-			return;
+-
++next_rp:
++		/* skb delivered to mac80211, attach the new one into rx ring */
+ 		ring->buf[cur_rp] = new;
+ 		rtw_pci_reset_rx_desc(rtwdev, new, ring, cur_rp, buf_desc_sz);
+ 
+-- 
+2.22.0
+
