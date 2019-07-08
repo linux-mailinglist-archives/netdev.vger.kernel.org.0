@@ -2,196 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F171462966
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A1762972
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:28:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403992AbfGHTZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 15:25:23 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43165 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403956AbfGHTZU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 15:25:20 -0400
-Received: by mail-pl1-f193.google.com with SMTP id cl9so8744966plb.10
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 12:25:20 -0700 (PDT)
+        id S2404078AbfGHTZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 15:25:40 -0400
+Received: from mail-pl1-f180.google.com ([209.85.214.180]:42327 "EHLO
+        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729229AbfGHTZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 15:25:39 -0400
+Received: by mail-pl1-f180.google.com with SMTP id ay6so8767475plb.9
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 12:25:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RvgoMdD3Hp5MNxLK+UifXpyN/q0ZxRgeuu9cUaFHqr8=;
-        b=SpMlpQid2jj35QITypL4R5jsoWc0eG7EtxUCSVBodyEYgZle89BhBjfYFUQcF2IcgI
-         mXOOm3S92C45cfdZOxjxUNPEiD0QpH1HZiyzpYze+Mrg3gwzJZnA0thsvhG+Ajpoyf6/
-         6XTwCEWLcN8yOYJBHr+iZ35NTAosHvvbZSfqY=
+        d=pensando.io; s=google;
+        h=from:to:subject:date:message-id;
+        bh=1dP/zwhmzMB9vkMBfGquwVdLp++VSGlpX32AFkHYz48=;
+        b=fy/OJcEov6KmuTCeUkNt+4j5REVETiYHmDy7ceAls2WoPmJqReshXyt6lnCjhPJw2i
+         K2+hkfgrlS5PZ1AQ8lzLFt1ux4/IfQz5icusGeis3dT2iktzQ4p115FadH/m5vUVrt2H
+         ncjgFPmE4vl/2ZtgZd8qB2fPyIjkY7dajpvy8w2TY8dAWBCBgfKAwOg/a/CFxkz5gnoN
+         UmYPifXxng8aSd2UwvH3ChR4qGEdqZi9B9NUmxRAVKSGi1XDsRkLJ/qvxzyv6hCa2FMC
+         h48U0Hpt1jJu35bQyuRHf7ffLALTLhqJ72W2GzgRep7/sfW/1xDIyjpL+gIEAYaApI7h
+         ubGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RvgoMdD3Hp5MNxLK+UifXpyN/q0ZxRgeuu9cUaFHqr8=;
-        b=PUOPJYaCjPDwrhRJHwFed9WK8UTt0ERE9WygTY9SrDnoei4u34VNnFXbv/ST0k3Q7S
-         TteWn0XzAkZB1/j4MMjFeXPiEuDJe6KTp2205MCojcZ9JmZlXmLLxW4ORaKwtm55vHP8
-         Q8fvnPRYU0yyB9zHKXjqwtJlYGU3jxqIzSwoSA/3LXvmeb8Us3c1a3NVdNiAhfkS5ai2
-         Yyc/oFakG5GChx5r0VwJlUhLzbdugbyibCXfuzFzxwsRAc4cKYUJePEVVmQL3BpmXvah
-         DFotoJooMdzK2zRIHIlnA/B3x4LGIL/cCVa5DZCPGL9QkFVWL/a0roQoK4df9jRJ/nnY
-         Beuw==
-X-Gm-Message-State: APjAAAX9vMT5KyWy7Gjeuqw+ZmjZLUbn/n6okuXVpvXMA2YQxfnahD+u
-        E1Mu6+m0lWmGdCVhSwRnabnBgg==
-X-Google-Smtp-Source: APXvYqyYbItR6VGpkLNF5CZeyV8kogEprG74LIry/HE4PBk2qDVJtcyVuPh67bU1HhhmNxBuH27ERw==
-X-Received: by 2002:a17:902:fe93:: with SMTP id x19mr25192719plm.77.1562613920330;
-        Mon, 08 Jul 2019 12:25:20 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id e13sm14330516pff.45.2019.07.08.12.25.19
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=1dP/zwhmzMB9vkMBfGquwVdLp++VSGlpX32AFkHYz48=;
+        b=mGbzkp05ljqguHJ18suQ1Q3RZjaMhJvCYQC+Z8aFF5ZksFZN2bg9tzXOBtozzyNL8I
+         6OIqZ5V9z6fwonJDE5njqwkzpcsLya2UIHM3pNnr+O/NWup+QzcRBtVWa2hxKT33oUEf
+         9ISUVgVs8ALvNiY6hXBgGVcesYqmPoPlCVmcXuxHrp6e5J/Bd+Fmkgq7cphO748td4+r
+         000uvs4nzFj/UP+ZJcyKCP/iygUEJ0xiBuYMv97tA5aBrhaXEzLwpGc2BYqxy1QPfVN2
+         Cg2LMczZbyOjLfOeje1Gmgl6Ch0aw1rpNSpeut/TXFMdMv4MkuHeoNnYu45cDie3BA0A
+         OcUA==
+X-Gm-Message-State: APjAAAXdW4WbcDYVQhRChclPP7N2zduuio0GTuOW21OzlNhLre2JzHBh
+        0o3EjZUNwFb0pcgaAaCutW0YwfkZKrU=
+X-Google-Smtp-Source: APXvYqz0TaGSgbh9hHYK84umdVUxRozbZgUpiA8HEEN09VI3sdyUQxmqhaCnzCXjKH5Jglw+ufA9Dg==
+X-Received: by 2002:a17:902:ba98:: with SMTP id k24mr21013651pls.294.1562613938099;
+        Mon, 08 Jul 2019 12:25:38 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id n19sm20006770pfa.11.2019.07.08.12.25.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 08 Jul 2019 12:25:19 -0700 (PDT)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v3 7/7] net: phy: realtek: configure RTL8211E LEDs
-Date:   Mon,  8 Jul 2019 12:24:59 -0700
-Message-Id: <20190708192459.187984-8-mka@chromium.org>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-In-Reply-To: <20190708192459.187984-1-mka@chromium.org>
-References: <20190708192459.187984-1-mka@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 08 Jul 2019 12:25:37 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     snelson@pensando.io, netdev@vger.kernel.org
+Subject: [PATCH v3 net-next 00/19] Add ionic driver
+Date:   Mon,  8 Jul 2019 12:25:13 -0700
+Message-Id: <20190708192532.27420-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Configure the RTL8211E LEDs behavior when the device tree property
-'realtek,led-modes' is specified.
+This is a patch series that adds the ionic driver, supporting the Pensando
+ethernet device.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
-TODO: DT validation
+In this initial patchset we implement basic transmit and receive.  Later
+patchsets will add more advanced features.
 
-Changes in v3:
-- sanity check led-modes values
-- set LACR bits in a more readable way
-- use phydev_err() instead of dev_err()
-- log an error if LED configuration fails
+Our thanks to Andrew Lunn, Michal Kubecek, Jacub Kicinski, and the ever
+present kbuild test robots for their comments and suggestions.
 
-Changes in v2:
-- patch added to the series
----
- drivers/net/phy/realtek.c | 72 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 70 insertions(+), 2 deletions(-)
+New in v3:
+ - use le32_to_cpu() on queue_count[] values in debugfs
+ - dma_free_coherent() can handle NULL pointers
+ - remove unused SS_TEST from ethtool handlers
+ - one more case of stop the tx ring if there is no room
+ - remove a couple of stray // comments
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 5854412403b5..e9fb67654c4e 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -9,10 +9,12 @@
-  * Copyright (c) 2004 Freescale Semiconductor, Inc.
-  */
- #include <linux/bitops.h>
-+#include <linux/bits.h>
- #include <linux/device.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/phy.h>
-+#include <dt-bindings/net/realtek.h>
- 
- #define RTL821x_PHYSR				0x11
- #define RTL821x_PHYSR_DUPLEX			BIT(13)
-@@ -34,6 +36,15 @@
- #define RTL8211E_EEE_LED_MODE1			0x05
- #define RTL8211E_EEE_LED_MODE2			0x06
- 
-+/* RTL8211E extension page 44 */
-+#define RTL8211E_LACR				0x1a
-+#define RLT8211E_LACR_LEDACTCTRL_SHIFT		4
-+#define RLT8211E_LACR_LEDACTCTRL_MASK		GENMASK(6, 4)
-+#define RTL8211E_LCR				0x1c
-+#define RTL8211E_LCR_LEDCTRL_MASK		(GENMASK(2, 0) | \
-+						 GENMASK(6, 4) | \
-+						 GENMASK(10, 8))
-+
- /* RTL8211E extension page 160 */
- #define RTL8211E_SCR				0x1a
- #define RTL8211E_SCR_DISABLE_RXC_SSC		BIT(2)
-@@ -123,6 +134,62 @@ static void rtl8211e_disable_eee_led_mode(struct phy_device *phydev)
- 	phy_restore_page(phydev, oldpage, err);
- }
- 
-+static int rtl8211e_config_leds(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	int count, i, oldpage, ret;
-+	u16 lacr_bits = 0, lcr_bits = 0;
-+
-+	if (!dev->of_node)
-+		return 0;
-+
-+	if (of_property_read_bool(dev->of_node, "realtek,eee-led-mode-disable"))
-+		rtl8211e_disable_eee_led_mode(phydev);
-+
-+	count = of_property_count_elems_of_size(dev->of_node,
-+						"realtek,led-modes",
-+						sizeof(u32));
-+	if (count < 0 || count > 3)
-+		return -EINVAL;
-+
-+	for (i = 0; i < count; i++) {
-+		u32 val;
-+
-+		of_property_read_u32_index(dev->of_node,
-+					   "realtek,led-modes", i, &val);
-+		if ((val > RTL8211E_LINK_10_100_1000 &&
-+		    val < RTL8211E_LINK_ACTIVITY) ||
-+		    val > (RTL8211E_LINK_ACTIVITY | RTL8211E_LINK_10_100_1000))
-+			return -EINVAL;
-+
-+		if (val & RTL8211E_LINK_ACTIVITY)
-+			lacr_bits |= BIT(RLT8211E_LACR_LEDACTCTRL_SHIFT + i);
-+
-+		lcr_bits |= (u16)(val & 0xf) << (i * 4);
-+	}
-+
-+	oldpage = rtl8211e_select_ext_page(phydev, 44);
-+	if (oldpage < 0) {
-+		phydev_err(phydev, "failed to select extended page: %d\n", oldpage);
-+		goto err;
-+	}
-+
-+	ret = __phy_modify(phydev, RTL8211E_LACR,
-+			   RLT8211E_LACR_LEDACTCTRL_MASK, lacr_bits);
-+	if (ret) {
-+		phydev_err(phydev, "failed to write LACR reg: %d\n", ret);
-+		goto err;
-+	}
-+
-+	ret = __phy_modify(phydev, RTL8211E_LCR,
-+			   RTL8211E_LCR_LEDCTRL_MASK, lcr_bits);
-+	if (ret)
-+		phydev_err(phydev, "failed to write LCR reg: %d\n", ret);
-+
-+err:
-+	return phy_restore_page(phydev, oldpage, ret);
-+}
-+
- static int rtl8201_ack_interrupt(struct phy_device *phydev)
- {
- 	int err;
-@@ -267,8 +334,9 @@ static int rtl8211e_config_init(struct phy_device *phydev)
- 				   ret);
- 	}
- 
--	if (of_property_read_bool(dev->of_node, "realtek,eee-led-mode-disable"))
--		rtl8211e_disable_eee_led_mode(phydev);
-+	ret = rtl8211e_config_leds(phydev);
-+	if (ret)
-+		phydev_err(phydev, "LED configuration failed: %d\n", ret);
- 
- 	/* enable TX/RX delay for rgmii-* modes, and disable them for rgmii. */
- 	switch (phydev->interface) {
+New in v2:
+ - removed debugfs error checking and cut down on debugfs use
+ - remove redundant bounds checking on incoming values for mtu and ethtool
+ - don't alloc rx_filter memory until the match type has been checked
+ - free the ionic struct on remove
+ - simplified link_up and netif_carrier_ok comparison
+ - put stats into ethtool -S, out of debugfs
+ - moved dev_cmd and dev_info dumping to ethtool -d, out of debugfs
+ - added devlink support
+ - used kernel's rss init routines rather than open code
+ - set the Kbuild dependant on 64BIT
+ - cut down on some unnecessary log messaging
+ - cleaned up ionic_get_link_ksettings
+ - cleaned up other little code bits here and there
+
+Shannon Nelson (19):
+  ionic: Add basic framework for IONIC Network device driver
+  ionic: Add hardware init and device commands
+  ionic: Add port management commands
+  ionic: Add basic lif support
+  ionic: Add interrupts and doorbells
+  ionic: Add basic adminq support
+  ionic: Add adminq action
+  ionic: Add notifyq support
+  ionic: Add the basic NDO callbacks for netdev support
+  ionic: Add management of rx filters
+  ionic: Add Rx filter and rx_mode ndo support
+  ionic: Add async link status check and basic stats
+  ionic: Add initial ethtool support
+  ionic: Add Tx and Rx handling
+  ionic: Add netdev-event handling
+  ionic: Add driver stats
+  ionic: Add RSS support
+  ionic: Add coalesce and other features
+  ionic: Add basic devlink interface
+
+ .../networking/device_drivers/index.rst       |    1 +
+ .../device_drivers/pensando/ionic.rst         |   64 +
+ MAINTAINERS                                   |    8 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/pensando/Kconfig         |   32 +
+ drivers/net/ethernet/pensando/Makefile        |    6 +
+ drivers/net/ethernet/pensando/ionic/Makefile  |    8 +
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   72 +
+ .../net/ethernet/pensando/ionic/ionic_bus.h   |   16 +
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  291 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.c   |  283 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.h   |   38 +
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  535 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  284 ++
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   89 +
+ .../ethernet/pensando/ionic/ionic_devlink.h   |   12 +
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |  788 +++++
+ .../ethernet/pensando/ionic/ionic_ethtool.h   |    9 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 2552 +++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 2262 +++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  270 ++
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  553 ++++
+ .../net/ethernet/pensando/ionic/ionic_regs.h  |  133 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.c |  142 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.h |   34 +
+ .../net/ethernet/pensando/ionic/ionic_stats.c |  333 +++
+ .../net/ethernet/pensando/ionic/ionic_stats.h |   53 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  879 ++++++
+ .../net/ethernet/pensando/ionic/ionic_txrx.h  |   15 +
+ 30 files changed, 9764 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/pensando/ionic.rst
+ create mode 100644 drivers/net/ethernet/pensando/Kconfig
+ create mode 100644 drivers/net/ethernet/pensando/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_if.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_main.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_regs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.h
+
 -- 
-2.22.0.410.gd8fdbe21b5-goog
+2.17.1
 
