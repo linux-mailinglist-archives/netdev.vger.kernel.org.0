@@ -2,149 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A5B462C9B
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 01:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF4862C9C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 01:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727438AbfGHXWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 19:22:39 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:49865 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726046AbfGHXWj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 19:22:39 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45jM1R6c9vz9sML;
-        Tue,  9 Jul 2019 09:22:35 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562628156;
-        bh=Latj9njcdJh3FNw/1kej7sCyOLfShGPGCmLRVURZe4k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HOGXHeREjN+hvQpTZB1aafTKdtsWVjKh36MKyrI5MjelOvIz4uup/WiQlmj/qTPl9
-         2tTIcu5BqbyUs/Il1lZQgq8j/b+O38/myLyHzeN1CH6/ZZgWHIPLwXIUWznxtU8jX5
-         jMM+G6Of4pZjyqOG7o3+XRWy3pJdJrek7EhwkqioQVkMQC6hNdYgTbnHdDZoIM4vcE
-         jMVEM013BAV5ERqo7iNkvQ/s49lFEl1VKTyQEj5J+eomZTQlLcrPdOoUO6ZSaPOCza
-         gHKA7Q7UD7OydnKvlh0VpSaRmCRhy9JCiroM7jnpqX1tRGQ/95cuR879bDB+4Jpi3O
-         0cgqzcn2Jx1cg==
-Date:   Tue, 9 Jul 2019 09:22:35 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the sh tree
-Message-ID: <20190709092235.671e6745@canb.auug.org.au>
-In-Reply-To: <20190617114011.4159295e@canb.auug.org.au>
-References: <20190617114011.4159295e@canb.auug.org.au>
+        id S1727480AbfGHXWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 19:22:49 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:34832 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbfGHXWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 19:22:48 -0400
+Received: by mail-pl1-f196.google.com with SMTP id w24so9043119plp.2
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 16:22:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=mDxId9ZiBuMVLjAv5HztWv16q5h1GghOeYn1JkLmXgQ=;
+        b=AG6BcVZn/yo8vkNdlGtGQiYENuAS9kwqKyuKTFi7aO3UwjLTWsd5HJYI4sT2UV9MUS
+         FXMp8TwW+ksN3fwK89vhEAP5VoScdvF2Xle1JB75zNcMmQ7PwOcaGuxzSW3b6hcAUc8R
+         +vc2R/S8nmn480FqsMsrolxEmIsZM0BZPHF5CeYIpKMM50QkaPP64KOsXeCUc8g8TTxb
+         3NeNjmL6ybEzlmnMkClj8hDcy8081ewbCwtr6vMWvUjrUdi0coSf/S+gzhxtRKx4t+Vm
+         Atw200CuK3wLvCIFhT66q1vnse/tnm0igZhTJiyDBV969Oa41UwVX1K9I00plngsWvDE
+         puAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=mDxId9ZiBuMVLjAv5HztWv16q5h1GghOeYn1JkLmXgQ=;
+        b=c3UNYe9klZlAi+fzZP4h2t06R1yTVQswz+dsa6XpSGQo5gKolkHF94X/fy++i/ugae
+         ENzX8SVTqeK+5GPbs81Z1k5Mr3DWWotRVeu0TkDIi94BCLRR9qv2m2IENGc0nd22e660
+         LjaMKYEmvVOlkt+VEtIp/bwlNZV7gN//McJoOm++7D69IB6MrQNqmLkB+R1zHuUmUYIs
+         XA6rs3Whkx8Hra/xCpqPMpgRYFPgHSkcFZplUX7KKQBCNvbriZQJXju+ZVmn1KVNgBxs
+         Rwa4YQjttEw5/RHFW3iLET/rRZ324k8gniioCWMQ1xnD8c9XpZNmn93oBP8miUeApY8q
+         Xjbg==
+X-Gm-Message-State: APjAAAWUAD/OClBD2N9+hJHp+GP0yZcEcLo39k/3L9LN4iU213/hg0/2
+        nB/KLnfSMFFtzk6wWMFy5Ic=
+X-Google-Smtp-Source: APXvYqxe0EQko9x3WmQctISgx93aEa2CKJzUrE48I6nF3/30CfgJLNk2ogq3CYKNlrlRZ1HontOUTQ==
+X-Received: by 2002:a17:902:8547:: with SMTP id d7mr28622467plo.171.1562628168068;
+        Mon, 08 Jul 2019 16:22:48 -0700 (PDT)
+Received: from [192.168.0.16] ([97.115.142.179])
+        by smtp.gmail.com with ESMTPSA id j6sm586142pjd.19.2019.07.08.16.22.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Jul 2019 16:22:47 -0700 (PDT)
+Subject: Re: [ovs-dev] [PATCH net-next] net: openvswitch: do not update
+ max_headroom if new headroom is equal to old headroom
+From:   Gregory Rose <gvrose8192@gmail.com>
+To:     David Miller <davem@davemloft.net>, ap420073@gmail.com
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        Pravin Shelar <pshelar@ovn.org>
+References: <20190705160809.5202-1-ap420073@gmail.com>
+ <20190708.160804.2026506853635876959.davem@davemloft.net>
+ <87bfb355-9ddf-c27b-c160-b3028a945a22@gmail.com>
+Message-ID: <b40f4a39-8de4-482c-2ee8-66adf5c606be@gmail.com>
+Date:   Mon, 8 Jul 2019 16:22:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/vHXT0b_flgz=HENPSHn1jVH"; protocol="application/pgp-signature"
+In-Reply-To: <87bfb355-9ddf-c27b-c160-b3028a945a22@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/vHXT0b_flgz=HENPSHn1jVH
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-On Mon, 17 Jun 2019 11:40:11 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
+On 7/8/2019 4:18 PM, Gregory Rose wrote:
+> On 7/8/2019 4:08 PM, David Miller wrote:
+>> From: Taehee Yoo <ap420073@gmail.com>
+>> Date: Sat,  6 Jul 2019 01:08:09 +0900
+>>
+>>> When a vport is deleted, the maximum headroom size would be changed.
+>>> If the vport which has the largest headroom is deleted,
+>>> the new max_headroom would be set.
+>>> But, if the new headroom size is equal to the old headroom size,
+>>> updating routine is unnecessary.
+>>>
+>>> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+>> I'm not so sure about the logic here and I'd therefore like an OVS 
+>> expert
+>> to review this.
 >
-> Today's linux-next merge of the net-next tree got conflicts in:
->=20
->   arch/sh/configs/se7712_defconfig
->   arch/sh/configs/se7721_defconfig
->   arch/sh/configs/titan_defconfig
->=20
-> between commit:
->=20
->   7c04efc8d2ef ("sh: configs: Remove useless UEVENT_HELPER_PATH")
->=20
-> from the sh tree and commit:
->=20
->   a51486266c3b ("net: sched: remove NET_CLS_IND config option")
->=20
-> from the net-next tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> --=20
-> Cheers,
-> Stephen Rothwell
->=20
-> diff --cc arch/sh/configs/se7712_defconfig
-> index 6ac7d362e106,1e116529735f..000000000000
-> --- a/arch/sh/configs/se7712_defconfig
-> +++ b/arch/sh/configs/se7712_defconfig
-> @@@ -63,7 -63,7 +63,6 @@@ CONFIG_NET_SCH_NETEM=3D
->   CONFIG_NET_CLS_TCINDEX=3Dy
->   CONFIG_NET_CLS_ROUTE4=3Dy
->   CONFIG_NET_CLS_FW=3Dy
-> - CONFIG_NET_CLS_IND=3Dy
->  -CONFIG_UEVENT_HELPER_PATH=3D"/sbin/hotplug"
->   CONFIG_MTD=3Dy
->   CONFIG_MTD_BLOCK=3Dy
->   CONFIG_MTD_CFI=3Dy
-> diff --cc arch/sh/configs/se7721_defconfig
-> index ffd15acc2a04,c66e512719ab..000000000000
-> --- a/arch/sh/configs/se7721_defconfig
-> +++ b/arch/sh/configs/se7721_defconfig
-> @@@ -62,7 -62,7 +62,6 @@@ CONFIG_NET_SCH_NETEM=3D
->   CONFIG_NET_CLS_TCINDEX=3Dy
->   CONFIG_NET_CLS_ROUTE4=3Dy
->   CONFIG_NET_CLS_FW=3Dy
-> - CONFIG_NET_CLS_IND=3Dy
->  -CONFIG_UEVENT_HELPER_PATH=3D"/sbin/hotplug"
->   CONFIG_MTD=3Dy
->   CONFIG_MTD_BLOCK=3Dy
->   CONFIG_MTD_CFI=3Dy
-> diff --cc arch/sh/configs/titan_defconfig
-> index 1c1c78e74fbb,171ab05ce4fc..000000000000
-> --- a/arch/sh/configs/titan_defconfig
-> +++ b/arch/sh/configs/titan_defconfig
-> @@@ -142,7 -142,7 +142,6 @@@ CONFIG_GACT_PROB=3D
->   CONFIG_NET_ACT_MIRRED=3Dm
->   CONFIG_NET_ACT_IPT=3Dm
->   CONFIG_NET_ACT_PEDIT=3Dm
-> - CONFIG_NET_CLS_IND=3Dy
->  -CONFIG_UEVENT_HELPER_PATH=3D"/sbin/hotplug"
->   CONFIG_FW_LOADER=3Dm
->   CONFIG_CONNECTOR=3Dm
->   CONFIG_MTD=3Dm
+> I'll review and test it and get back.  Pravin may have input as well.
+>
 
-I am still getting this conflict (the commit ids may have changed).
-Just a reminder in case you think Linus may need to know.
+Err, adding Pravin.
 
---=20
-Cheers,
-Stephen Rothwell
+- Greg
 
---Sig_/vHXT0b_flgz=HENPSHn1jVH
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+> Thanks,
+>
+> - Greg
+>
+>> Thanks.
+>> _______________________________________________
+>> dev mailing list
+>> dev@openvswitch.org
+>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+>
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0j0DsACgkQAVBC80lX
-0GzB2Qf/Zem9lhZhLEC3gfRrMyR8748rdZO3VwLXGl9DYxFiaTOfH8lBGUAhObnq
-0IAzqgFAgTve2iALOmmAmkepHAYjn1D+jL1Ng2giJmDclbClKA4Nb8WvVU7KKM6n
-GJY7KzEgYXmgjVxVw04ket39tTXN7eiQAwJFPP4JjhE+USdUa0zm75c1SJtmWY+m
-Ss1K1pK5XjNZTJ6uBS59a2cKswYgXBo3AoFmc9XlF6i/vFQUa6eg1A6e31EFKSck
-AURmrmG3mYvXk+Mfj5SpwI9jKwzIr5bsL3VIxt2+gPbydR0KaNx+Wh/uCCKzUmbl
-9HfEbKSa7q/m6nzc3wDpH5XFzadntA==
-=X7vc
------END PGP SIGNATURE-----
-
---Sig_/vHXT0b_flgz=HENPSHn1jVH--
