@@ -2,75 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3225B620BD
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 16:44:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90A1B620D5
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 16:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731933AbfGHOog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 10:44:36 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51298 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726580AbfGHOog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 10:44:36 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 207so16111011wma.1
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 07:44:35 -0700 (PDT)
+        id S1731994AbfGHOqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 10:46:44 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42515 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731924AbfGHOqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 10:46:43 -0400
+Received: by mail-ed1-f67.google.com with SMTP id v15so8170339eds.9;
+        Mon, 08 Jul 2019 07:46:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=GoufARafJJ5eWxlmMdnB1kEeJwHzx/Dew+UiRosAHn8=;
-        b=CcXON/0mfenBJfYjFz3c+LdqG6Wp58ROXhxuayb2Vu9drc4DF0pfLY1j0QZ0nig0Pt
-         Er3f+gfmze51n+fVCqgIDgZIxM35jBYgzySzLqP579UxWv1ZkhlFN95ddBYeAM3baIxI
-         SepBtNut7+QblNzCWAoGiNX3tHqberKxRj7IigeDS3kokLHbUv0fB6LogbvApR6NB9MU
-         g95oPxJbyxFcgZhYsVEkzH1vAoLXnvJiTYM1HKiHAAMmh57IlY+w8VWnBkfeMS+F7Mbp
-         JAxKuzveR0LutclsGAhR5hhXx+U90t4BdnrDwBJo8Bi/tBViMzOXvFxPGpEmhTSsYfHs
-         /ZvQ==
+        bh=5eQOVvdsTaaanCiXUg5m0ecZfqkTs7/uYhCRVIzkQcY=;
+        b=ho5fb5e98j7lt1EqeRVgFK9P2ThmVuNWY/IsNL32+L6vGvmk6b6O/bdL1Yanif0Ozb
+         C+14ZlVaESAoumg1W88RpiOB+W8BfJ2H/bsHXNRP4oLpbwZzgBdgPq0Bp1hRpJv5YFT4
+         WDHyzTLj8VC4p0fVvhyzGuAsTu+ztmqL3oC2L+mhVQ+lE4l3Y0p4pN9mbV+dBye4sIjb
+         2gpvmBV2IMoHL6cl7qtkVIK/elGiX/5uPqRAU3xMsXVGRY76vEnTcLP2P1DHQ1SD2kFZ
+         ESdKiA0/5bbWCBsdv0374XyjD05TZ6hgkjvFlYOximPS0FPAfpRsfSPK3110UeYli4Vr
+         eBHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GoufARafJJ5eWxlmMdnB1kEeJwHzx/Dew+UiRosAHn8=;
-        b=ZATKMvxIhAl3yl/76HxwG+Hzvggex/ybUzj5hkLsTf89HDMdNfHFtkyyrxRD/L6DsS
-         Tc237dmQoNeFyzMesjWPczi9E8yEp/hGH2ghcVmo1G4CACH5qGzOad8y8mEvTBiEndut
-         rwKBbz8bl0hyQlN5M8iYvw3sWEr4VJQebwE0EnLvLvt876VIdG2CCyjt9s5dQ7bah3ru
-         vdFHwmyYvITU7Q9EmYGrhZPzDkQ5p0D21dsqU57kifLObTAUzs+UM78JEl61BpS4AHv7
-         ELc6/Yh0jSGxL/KINLuXiA92geb/Kf6tvW8rgkb5ornpoHPjp4SdygWJNgaQWHMOhuRw
-         A3eQ==
-X-Gm-Message-State: APjAAAXElNJF0+9HXfgCAMwsQrAjNBGNvZ/lyVtsHTUOStVLyaU4I478
-        /gJGANEJPWwKV9QTquKEc6GGMw==
-X-Google-Smtp-Source: APXvYqwDY3Gj7XMeODr0JzzWpYwHVntV4vbFine9oiM4mKSOwtq4di7St3Bo5MER7Wi1x9Ma7alyZA==
-X-Received: by 2002:a1c:6643:: with SMTP id a64mr17814298wmc.154.1562597074632;
-        Mon, 08 Jul 2019 07:44:34 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id a84sm18397726wmf.29.2019.07.08.07.44.34
+        bh=5eQOVvdsTaaanCiXUg5m0ecZfqkTs7/uYhCRVIzkQcY=;
+        b=ZKH/guiJd0QkgdpSFzp7NfU6qHTEj15DXkCFKzsEJY69BDXJpn4GFPeOOjg7bWucNg
+         eqnwr9/E2hZiexrhDb7aZfGbwn0a2oph/92DXXpEvk5+iKOaw4ITG190VC6JDREUJTGE
+         IPq7AX94y6JCy3NCJ2QpzgbcbXc9pdMC+9iVWpppRmNhOXZWjwh4zn3HCgCJz+HSNyPx
+         xIsgQF+wfLqLTQzKEeyDEpSBnQ0Mra9iegLqdQP8FKOIaClIGxx50NwBnQK3T9aaMSLS
+         EIiMCZVQnQJa6drpaJ1uJ5F+gdQRtqgndlxmkBvUnCfLD6M8G8bzvutx8SB4rmwT1ez2
+         QxIQ==
+X-Gm-Message-State: APjAAAWum3iyNSTW5HMzHGJcm0TvOi/APX4ccfeTX9wxWobGUTDDVMsE
+        Z8+vjHVZN7fK919pQzBNWpPtmhPfLuTZKA==
+X-Google-Smtp-Source: APXvYqzsH/zRjVF76SiNwOOyuGr87Edn3PdTFH2U9QMtHFyQ3k6tAFR2z82Bhu61OHAzBrKaNrhaUA==
+X-Received: by 2002:a17:906:454d:: with SMTP id s13mr17053544ejq.255.1562597201565;
+        Mon, 08 Jul 2019 07:46:41 -0700 (PDT)
+Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
+        by smtp.gmail.com with ESMTPSA id j7sm5767060eda.97.2019.07.08.07.46.40
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 07:44:34 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 16:44:32 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, saeedm@mellanox.com,
-        jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v5 2/5] devlink: Return physical port fields
- only for applicable port flavours
-Message-ID: <20190708144432.GM2201@nanopsycho>
-References: <20190701122734.18770-1-parav@mellanox.com>
- <20190708041549.56601-1-parav@mellanox.com>
- <20190708041549.56601-3-parav@mellanox.com>
+        Mon, 08 Jul 2019 07:46:40 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 07:46:38 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Miaoqing Pan <miaoqing@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rakesh Pillai <pillair@codeaurora.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Balaji Pothunoori <bpothuno@codeaurora.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Pradeep kumar Chitrapu <pradeepc@codeaurora.org>,
+        Sriram R <srirrama@codeaurora.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] ath10k: work around uninitialized vht_pfr variable
+Message-ID: <20190708144638.GA43693@archlinux-epyc>
+References: <20190708125050.3689133-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190708041549.56601-3-parav@mellanox.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190708125050.3689133-1-arnd@arndb.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 08, 2019 at 06:15:46AM CEST, parav@mellanox.com wrote:
->Physical port number and split group fields are applicable only to
->physical port flavours such as PHYSICAL, CPU and DSA.
->Hence limit returning those values in netlink response to such port
->flavours.
->
->Signed-off-by: Parav Pandit <parav@mellanox.com>
+On Mon, Jul 08, 2019 at 02:50:06PM +0200, Arnd Bergmann wrote:
+> As clang points out, the vht_pfr is assigned to a struct member
+> without being initialized in one case:
+> 
+> drivers/net/wireless/ath/ath10k/mac.c:7528:7: error: variable 'vht_pfr' is used uninitialized whenever 'if' condition
+>       is false [-Werror,-Wsometimes-uninitialized]
+>                 if (!ath10k_mac_can_set_bitrate_mask(ar, band, mask,
+>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath10k/mac.c:7551:20: note: uninitialized use occurs here
+>                 arvif->vht_pfr = vht_pfr;
+>                                  ^~~~~~~
+> drivers/net/wireless/ath/ath10k/mac.c:7528:3: note: remove the 'if' if its condition is always true
+>                 if (!ath10k_mac_can_set_bitrate_mask(ar, band, mask,
+>                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath10k/mac.c:7483:12: note: initialize the variable 'vht_pfr' to silence this warning
+>         u8 vht_pfr;
+> 
+> Add an explicit but probably incorrect initialization here.
+> I suspect we want a better fix here, but chose this approach to
+> illustrate the issue.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Yup, I reached out to the maintainers when this issue first cropped up,
+should have taken your approach though.
+
+https://lore.kernel.org/lkml/20190702181837.GA118849@archlinux-epyc/
+
+Initializing to zero is better than uninitialized.
+
+> 
+> Fixes: 8b97b055dc9d ("ath10k: fix failure to set multiple fixed rate")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
