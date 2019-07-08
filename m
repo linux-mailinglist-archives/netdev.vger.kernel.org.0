@@ -2,55 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D22629D1
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:43:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F347C629DC
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 21:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404217AbfGHTna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 15:43:30 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57300 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729234AbfGHTna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 15:43:30 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B05B4133E9BDB;
-        Mon,  8 Jul 2019 12:43:29 -0700 (PDT)
-Date:   Mon, 08 Jul 2019 12:43:29 -0700 (PDT)
-Message-Id: <20190708.124329.1064143533263537490.davem@davemloft.net>
-To:     arnd@arndb.de
-Cc:     nicolas.ferre@microchip.com, palmer@sifive.com,
-        paul.walmsley@sifive.com, yash.shah@sifive.com,
-        harini.katakam@xilinx.com, claudiu.beznea@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH] [net-next] macb: fix build warning for !CONFIG_OF
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190708124840.3616530-1-arnd@arndb.de>
-References: <20190708124840.3616530-1-arnd@arndb.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 08 Jul 2019 12:43:30 -0700 (PDT)
+        id S2404703AbfGHTqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 15:46:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33172 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727899AbfGHTqZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 15:46:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=7uzdZ/IK3FH7mAIp0p/NryfuhGgzACHzKLTL6ohKmwk=; b=ikEvL6YwY3XHO++2Fxo3voV2lk
+        RwN645AfLfAirXvn9mhWF6kSeCbf0lAML7Juf/sQODcI/f12ZY+WbJp5l3/UfAsqtEz5BQnreFkQz
+        BVvlmR2xxcBBg4jBgHUS8CagXtMM2d3XTHLGzwqiOsHXMzn8Sj2BKdhaePd54FV8ETqY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hkZaZ-0004Yg-Tk; Mon, 08 Jul 2019 21:46:15 +0200
+Date:   Mon, 8 Jul 2019 21:46:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v3 1/7] dt-bindings: net: Add bindings for Realtek PHYs
+Message-ID: <20190708194615.GH9027@lunn.ch>
+References: <20190708192459.187984-1-mka@chromium.org>
+ <20190708192459.187984-2-mka@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190708192459.187984-2-mka@chromium.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Mon,  8 Jul 2019 14:48:23 +0200
+On Mon, Jul 08, 2019 at 12:24:53PM -0700, Matthias Kaehlcke wrote:
+> Add the 'realtek,eee-led-mode-disable' property to disable EEE
+> LED mode on Realtek PHYs that support it.
+> 
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+> TODO: adapt PHY core to deal with optional compatible strings
 
-> When CONFIG_OF is disabled, we get a harmless warning about the
-> newly added variable:
-> 
-> drivers/net/ethernet/cadence/macb_main.c:48:39: error: 'mgmt' defined but not used [-Werror=unused-variable]
->  static struct sifive_fu540_macb_mgmt *mgmt;
-> 
-> Move the variable closer to its use inside of the #ifdef.
-> 
-> Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Yes. Does this even work at the moment? I would expect
+of_mdiobus_child_is_phy() to return false, indicating the device is
+not actually a PHY.
 
-Applied, thanks Arnd.
+    Andrew
