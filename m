@@ -2,151 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4EC3627B3
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA24627BB
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731035AbfGHRvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 13:51:38 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42704 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728117AbfGHRvi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 13:51:38 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 70F31E3E08;
-        Mon,  8 Jul 2019 17:51:32 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-14.phx2.redhat.com [10.3.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E42FD608A4;
-        Mon,  8 Jul 2019 17:51:08 +0000 (UTC)
-Date:   Mon, 8 Jul 2019 13:51:05 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Tycho Andersen <tycho@tycho.ws>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-Message-ID: <20190708175105.7zb6mikjw2wmnwln@madcap2.tricolour.ca>
-References: <cover.1554732921.git.rgb@redhat.com>
- <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
- <20190529145742.GA8959@cisco>
- <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+        id S1731133AbfGHRy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 13:54:26 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:41846 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727576AbfGHRy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:54:26 -0400
+Received: by mail-qk1-f193.google.com with SMTP id v22so13986429qkj.8;
+        Mon, 08 Jul 2019 10:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u4F7C/sV/odeCH+W9PMSNpHsM7J09hRexHDNA3lJNWc=;
+        b=XgYD1/u95qUNmWA4XvhmxxBgEdAaBIVnMwRm4+DSEOBZbmdJamzoE+0YkZ4RW20plL
+         l7mPfcanv4k/hXnC06/cfo8GKSsDhVNjdD9fljXFsYvHpI/HHRQVbs6PkHdsF7K4j/x0
+         eVn/7mH0T012NU+0Cb0MBG93yGNWGgZ9kQ18nfmqPjn5krdmEDRaS527yF/TldrWN698
+         FdXOuMY7H32piU8YTMitD+LnlA1CGSvKguzFkJu4Hs3ATX4Oa3IrYOpWe+i1xQz3KWa4
+         CU13m0knRWeDbwy6I1fqYTZh22Lk1K+HoicaItk97fcf3LeERFT/j/W7gHiov2P8zgNt
+         QSmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u4F7C/sV/odeCH+W9PMSNpHsM7J09hRexHDNA3lJNWc=;
+        b=tnUih2wTsCXloQosXGNvLpWNqPtAtItRgiSfuaPJErfzJt0nw5dB3pP35noXxT6NC5
+         tF4qn38LI4dEsbsJnV1g2whES4TTDasGGdPdDpToTQZ1WDDvSk1yjLZ2NaT6gS20iWBC
+         s90fF98MPP3+whlolysTeuN/ehLRCzyxTDcao8ARGgetruXglBKnfq8Zd3TjkVbgBL7r
+         lV90KFH8UEX8XDrYdal2L6XqCqrsHPn91oWlPSON6OSvQc579DS5wjtQrV7S0y7uxMoH
+         9hqlUjkB0XbjFVrZOYKQi+HX/Z0ZlTLKqtUFsSyOWtOKBJ2AanfwPJ/2YDXUFwuoxpma
+         R9eQ==
+X-Gm-Message-State: APjAAAXr4OPT2X3YKjTssMidsyeLhZanWhPc4A9+8qmA70nUGNc9TPbG
+        ++0SyELZ3crioiyvT1u6x09ZYQJfwj5unGWxV6M=
+X-Google-Smtp-Source: APXvYqyQ45p40cTwBps+eik6OzNyUlDBNZXh1tfc4f5IiVk6V7Vmbj9v0jH5hkQF+F9w/LQgGBst9wOgU7+dlp1u0vA=
+X-Received: by 2002:a37:9b48:: with SMTP id d69mr13551030qke.449.1562608464860;
+ Mon, 08 Jul 2019 10:54:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Mon, 08 Jul 2019 17:51:37 +0000 (UTC)
+References: <cover.1562359091.git.a.s.protopopov@gmail.com>
+ <e183c0af99056f8ea4de06acb358ace7f3a3d6ae.1562359091.git.a.s.protopopov@gmail.com>
+ <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net>
+In-Reply-To: <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 8 Jul 2019 10:54:13 -0700
+Message-ID: <CAEf4BzaGGVv2z8jB8MnT7=gnn4nG0cp7DGYxfnnnpohOT=ujCA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf, libbpf: add a new API bpf_object__reuse_maps()
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Anton Protopopov <a.s.protopopov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-29 11:29, Paul Moore wrote:
-> On Wed, May 29, 2019 at 10:57 AM Tycho Andersen <tycho@tycho.ws> wrote:
+On Fri, Jul 5, 2019 at 2:53 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 07/05/2019 10:44 PM, Anton Protopopov wrote:
+> > Add a new API bpf_object__reuse_maps() which can be used to replace all maps in
+> > an object by maps pinned to a directory provided in the path argument.  Namely,
+> > each map M in the object will be replaced by a map pinned to path/M.name.
 > >
-> > On Mon, Apr 08, 2019 at 11:39:09PM -0400, Richard Guy Briggs wrote:
-> > > It is not permitted to unset the audit container identifier.
-> > > A child inherits its parent's audit container identifier.
+> > Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c   | 34 ++++++++++++++++++++++++++++++++++
+> >  tools/lib/bpf/libbpf.h   |  2 ++
+> >  tools/lib/bpf/libbpf.map |  1 +
+> >  3 files changed, 37 insertions(+)
 > >
-> > ...
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 4907997289e9..84c9e8f7bfd3 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -3144,6 +3144,40 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+> >       return 0;
+> >  }
 > >
-> > >  /**
-> > > + * audit_set_contid - set current task's audit contid
-> > > + * @contid: contid value
-> > > + *
-> > > + * Returns 0 on success, -EPERM on permission failure.
-> > > + *
-> > > + * Called (set) from fs/proc/base.c::proc_contid_write().
-> > > + */
-> > > +int audit_set_contid(struct task_struct *task, u64 contid)
-> > > +{
-> > > +     u64 oldcontid;
-> > > +     int rc = 0;
-> > > +     struct audit_buffer *ab;
-> > > +     uid_t uid;
-> > > +     struct tty_struct *tty;
-> > > +     char comm[sizeof(current->comm)];
-> > > +
-> > > +     task_lock(task);
-> > > +     /* Can't set if audit disabled */
-> > > +     if (!task->audit) {
-> > > +             task_unlock(task);
-> > > +             return -ENOPROTOOPT;
-> > > +     }
-> > > +     oldcontid = audit_get_contid(task);
-> > > +     read_lock(&tasklist_lock);
-> > > +     /* Don't allow the audit containerid to be unset */
-> > > +     if (!audit_contid_valid(contid))
-> > > +             rc = -EINVAL;
-> > > +     /* if we don't have caps, reject */
-> > > +     else if (!capable(CAP_AUDIT_CONTROL))
-> > > +             rc = -EPERM;
-> > > +     /* if task has children or is not single-threaded, deny */
-> > > +     else if (!list_empty(&task->children))
-> > > +             rc = -EBUSY;
-> > > +     else if (!(thread_group_leader(task) && thread_group_empty(task)))
-> > > +             rc = -EALREADY;
-> > > +     read_unlock(&tasklist_lock);
-> > > +     if (!rc)
-> > > +             task->audit->contid = contid;
-> > > +     task_unlock(task);
-> > > +
-> > > +     if (!audit_enabled)
-> > > +             return rc;
+> > +int bpf_object__reuse_maps(struct bpf_object *obj, const char *path)
+
+As is, bpf_object__reuse_maps() can be easily implemented by user
+applications, as it's only using public libbpf APIs, so I'm not 100%
+sure we need to add method like that to libbpf.
+
+> > +{
+> > +     struct bpf_map *map;
+> > +
+> > +     if (!obj)
+> > +             return -ENOENT;
+> > +
+> > +     if (!path)
+> > +             return -EINVAL;
+> > +
+> > +     bpf_object__for_each_map(map, obj) {
+> > +             int len, err;
+> > +             int pinned_map_fd;
+> > +             char buf[PATH_MAX];
+>
+> We'd need to skip the case of bpf_map__is_internal(map) since they are always
+> recreated for the given object.
+>
+> > +             len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
+> > +             if (len < 0) {
+> > +                     return -EINVAL;
+> > +             } else if (len >= PATH_MAX) {
+> > +                     return -ENAMETOOLONG;
+> > +             }
+> > +
+> > +             pinned_map_fd = bpf_obj_get(buf);
+> > +             if (pinned_map_fd < 0)
+> > +                     return pinned_map_fd;
+>
+> Should we rather have a new map definition attribute that tells to reuse
+> the map if it's pinned in bpf fs, and if not, we create it and later on
+> pin it? This is what iproute2 is doing and which we're making use of heavily.
+
+I'd like something like that as well. This would play nicely with
+recently added BTF-defined maps as well.
+
+I think it should be not just pin/don't pin flag, but rather pinning
+strategy, to accommodate various typical strategies of handling maps
+that are already pinned. So something like this:
+
+1. BPF_PIN_NOTHING - default, don't pin;
+2. BPF_PIN_EXCLUSIVE - pin, but if map is already pinned - fail;
+3. BPF_PIN_SET - pin; if existing map exists, reset its state to be
+exact state of object's map;
+4. BPF_PIN_MERGE - pin, if map exists, fill in NULL entries only (this
+is how Cilium is pinning PROG_ARRAY maps, if I understand correctly);
+5. BPF_PIN_MERGE_OVERWRITE - pin, if map exists, overwrite non-NULL values.
+
+This list is only for illustrative purposes, ideally people that have
+a lot of experience using pinning for real-world use cases would chime
+in on what strategies are useful and make sense.
+
+> In bpf_object__reuse_maps() bailing out if bpf_obj_get() fails is perhaps
+> too limiting for a generic API as new version of an object file may contain
+> new maps which are not yet present in bpf fs at that point.
+>
+> > +             err = bpf_map__reuse_fd(map, pinned_map_fd);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >  int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
+> >  {
+> >       struct bpf_program *prog;
+> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > index d639f47e3110..7fe465a1be76 100644
+> > --- a/tools/lib/bpf/libbpf.h
+> > +++ b/tools/lib/bpf/libbpf.h
+> > @@ -82,6 +82,8 @@ int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
+> >  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const char *path);
+> >  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
+> >                                     const char *path);
+> > +LIBBPF_API int bpf_object__reuse_maps(struct bpf_object *obj,
+> > +                                   const char *path);
+> >  LIBBPF_API int bpf_object__pin_programs(struct bpf_object *obj,
+> >                                       const char *path);
+> >  LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj,
+> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> > index 2c6d835620d2..66a30be6696c 100644
+> > --- a/tools/lib/bpf/libbpf.map
+> > +++ b/tools/lib/bpf/libbpf.map
+> > @@ -172,5 +172,6 @@ LIBBPF_0.0.4 {
+> >               btf_dump__new;
+> >               btf__parse_elf;
+> >               bpf_object__load_xattr;
+> > +             bpf_object__reuse_maps;
+> >               libbpf_num_possible_cpus;
+> >  } LIBBPF_0.0.3;
 > >
-> > ...but it is allowed to change it (assuming
-> > capable(CAP_AUDIT_CONTROL), of course)? Seems like this might be more
-> > immediately useful since we still live in the world of majority
-> > privileged containers if we didn't allow changing it, in addition to
-> > un-setting it.
-> 
-> The idea is that only container orchestrators should be able to
-> set/modify the audit container ID, and since setting the audit
-> container ID can have a significant effect on the records captured
-> (and their routing to multiple daemons when we get there) modifying
-> the audit container ID is akin to modifying the audit configuration
-> which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
-> is that you would only change the audit container ID from one
-> set/inherited value to another if you were nesting containers, in
-> which case the nested container orchestrator would need to be granted
-> CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
-> compromise).  We did consider allowing for a chain of nested audit
-> container IDs, but the implications of doing so are significant
-> (implementation mess, runtime cost, etc.) so we are leaving that out
-> of this effort.
-
-We had previously discussed the idea of restricting
-orchestrators/engines from only being able to set the audit container
-identifier on their own descendants, but it was discarded.  I've added a
-check to ensure this is now enforced.
-
-I've also added a check to ensure that a process can't set its own audit
-container identifier and that if the identifier is already set, then the
-orchestrator/engine must be in a descendant user namespace from the
-orchestrator that set the previously inherited audit container
-identifier.
-
-> From a practical perspective, un-setting the audit container ID is
-> pretty much the same as changing it from one set value to another so
-> most of the above applies to that case as well.
-> 
-> -- 
-> paul moore
-> www.paul-moore.com
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+>
