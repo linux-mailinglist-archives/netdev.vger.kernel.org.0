@@ -2,136 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9FB362702
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E376270A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 19:26:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388854AbfGHRZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 13:25:02 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:42511 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728744AbfGHRZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:25:01 -0400
-Received: by mail-io1-f65.google.com with SMTP id u19so37010136ior.9
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 10:25:01 -0700 (PDT)
+        id S1732879AbfGHR0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 13:26:18 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35703 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728744AbfGHR0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 13:26:17 -0400
+Received: by mail-wr1-f68.google.com with SMTP id y4so9445423wrm.2
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 10:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=aErlu6fvYbW7WJ9LzWOWg2BZGtOQx1pF2GQfzMk3Y/8=;
-        b=VCBfnJPXV9syPat1kOEmvhib+2y3XP+4I0d7KywQrjJK826YVQSQ0s+LuNsImrvn7b
-         8Kt4ZrBdf9irHKHIhcOfyzDdDPQ9KmQ3syDTUC9m8Hrzag67kXSDFF0OpfH4EzvMmeAi
-         y3l+uz3jPkzLyDlU5qr0SirGbWvNsXDt0vSZ391CMP7xfWbMKNnQMXL2TVU/uPh49965
-         foTtStDx8zVQ5TmsAPLcijGC5lLscwJbLEtQdKqQ5KP9QaMCWJKz8VjDL8PbAOiKqxvu
-         ehOfmz1IG8nw38KZSlcBAoDfwqUXUtBK+ZNlSMRnsaSTT1tCo1WBUYE+KOYBfhW9uKGW
-         elyw==
+        bh=laIe1oO3/TD+SpjZO01kcORWWEtDlsMggr6g/ttesJw=;
+        b=TWyabnrOZMEw0USJiM8upXVFlA94tYNdp4t4iQ8BwPeCWQHkfbbnqqV4UAbTO1l8o9
+         eP2bcd2BNRebTDAk0h0gIbwbi8apTjx6qnoB7JWMExNpnCTq6Hu70XGzyl4PXxCbqKVk
+         0iuWAxe0rAzPacLd7VlrIFxdUVXgcO2YoSdcvi0XY0BG+N4EFkiV53NVpmy2azrH7eGO
+         3Vpmh6arWETyzAileD8oY1t3wgUCjz305nfuPrD7qzpZQlQU/Rsq707dWIkRSj3opeIZ
+         m34x5u/eEOdUC5/q65w9ZVnlWsfPkjgEsPrfKapI/yXjOayUIbwhOlVb984tXagwlE+x
+         ykhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aErlu6fvYbW7WJ9LzWOWg2BZGtOQx1pF2GQfzMk3Y/8=;
-        b=rRIeqrBGPUPkL8aJeTkPetTupysorDrylVvmQtsY0v1ZjlME5I5Rv2BggopFWSM1Xi
-         AjEoJzMZuBzTRijDfwBm6NXmm82kb17ME3Q7CasrHxFwJOQSixAxezhEyxUHKL8jEcx7
-         JqwjgYZt9ZdMKe7kPDSZbPihYemOCrbcubVMtqAQjHgL6CuOeoWRNmvk9e9cwECAUNte
-         F52S0E4qskWy29yl6lgJdgHWPgQmfmdErnshQ7DT5H7uJ5uQtlaz9lSijkPKAzMH1HTl
-         X+5XXg32U4A9fKX88WdSI6cwEOO1M9/D8dYhYV8s9HtdVGsle64sYcNxOc/OZ19b51u+
-         /rQw==
-X-Gm-Message-State: APjAAAX14CKmUVljtoSI+6iRpYRK4hY/gKc77ZLDV9Fu+pC+f4cm2Ef3
-        yMP2c1ku+ON1VL4ulBw45JBHH2ouo3w=
-X-Google-Smtp-Source: APXvYqyMmY7+V0915DbqfY3XR7MKKomjkgbNlHvFF8mGQoP8L00oFD2ZeAVcPparY+bnJBfoSEvlYw==
-X-Received: by 2002:a02:c6b8:: with SMTP id o24mr23731592jan.80.1562606701181;
-        Mon, 08 Jul 2019 10:25:01 -0700 (PDT)
-Received: from x220t ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id e22sm16459241iob.66.2019.07.08.10.25.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 08 Jul 2019 10:25:00 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 13:24:58 -0400
-From:   Alexander Aring <aring@mojatatu.com>
-To:     Lucas Bates <lucasb@mojatatu.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Davide Caratti <dcaratti@redhat.com>, kernel@mojatatu.com
-Subject: Re: [PATCH v2 net-next 1/3] tc-testing: Add JSON verification to tdc
-Message-ID: <20190708172458.syopc3bvvkjb3sxv@x220t>
-References: <1562201102-4332-1-git-send-email-lucasb@mojatatu.com>
- <1562201102-4332-2-git-send-email-lucasb@mojatatu.com>
- <20190704202130.tv2ivy5tjj7pjasj@x220t>
- <CAMDBHY+Mg9W0wJRQWeUBHCk=G0Qp4nij8B4Oz77XA6AK2Dt7Gw@mail.gmail.com>
+        bh=laIe1oO3/TD+SpjZO01kcORWWEtDlsMggr6g/ttesJw=;
+        b=JdEtWOwfSOhFrsUeSLSh53rWXUhFdD98zJZGvmBE/rajgSQroPw/ZFIgpP4V5kYsos
+         zJnT4QckT8RNRh1f1WaeC+HR6ClK6nWb9uhzNDAaG1nk8xIrauvnKvEG3aAbPg4r4FoJ
+         qX5nYptD/DS98aPROVtQJy9uMJINlPQPwWo/JfAhyGD/B5QxrWQAXCISQl0oZy2+8VR3
+         PU2nslp+GTPdb/jPQV8YuXnYSSMzixL9y3FDuvlksPBe9wvoTcw5qSG6ayqOa7BWSflW
+         mMwfI3fzHGjrge1iDg79+05Q3Z/0F9+Paa18qW/YP2pxxV1S+6KQWOrboeqso4lc5rQl
+         IATg==
+X-Gm-Message-State: APjAAAUIZmaV7N1rfewOlQ2OS0LQsdLWMvn+gLPTHeWNx7k4WZL8NJ4r
+        eWprG1jPi9nCct1D429eHvYEwQ==
+X-Google-Smtp-Source: APXvYqzL7etP72TdaZ1/WXt96wqAcjrj3TDD1y4V+6nk9kkw8lyLHOmPxS65F05L1bsz4YOvuwiLCw==
+X-Received: by 2002:a5d:4f01:: with SMTP id c1mr4860990wru.43.1562606774614;
+        Mon, 08 Jul 2019 10:26:14 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id w24sm122566wmc.30.2019.07.08.10.26.14
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 10:26:14 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 19:26:13 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
+        marcelo.leitner@gmail.com, mkubecek@suse.cz,
+        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
+        cphealy@gmail.com, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net-next,v3 05/11] net: flow_offload: add list handling
+ functions
+Message-ID: <20190708172613.GA2282@nanopsycho.orion>
+References: <20190708160614.2226-1-pablo@netfilter.org>
+ <20190708160614.2226-6-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMDBHY+Mg9W0wJRQWeUBHCk=G0Qp4nij8B4Oz77XA6AK2Dt7Gw@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190708160614.2226-6-pablo@netfilter.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Mon, Jul 08, 2019 at 06:06:07PM CEST, pablo@netfilter.org wrote:
+>This patch adds the list handling functions for the flow block API:
+>
+>* flow_block_cb_lookup() allows drivers to look up for existing flow blocks.
+>* flow_block_cb_add() adds a flow block to the list to be registered by the
+>  core.
 
-On Mon, Jul 08, 2019 at 12:48:12PM -0400, Lucas Bates wrote:
-> On Thu, Jul 4, 2019 at 4:21 PM Alexander Aring <aring@mojatatu.com> wrote:
+Per driver? You say "per driver" in the "remove" part.
+
+
+>* flow_block_cb_remove() to remove a flow block from the list of existing
+>  flow blocks per driver and to request the core to unregister this.
+>
+>The flow block API also annotates the netns this flow block belongs to.
+>
+>Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+>---
+>v3: extracted from former patch "net: flow_offload: add flow_block_cb API".
+>
+> include/net/flow_offload.h | 20 ++++++++++++++++++++
+> net/core/flow_offload.c    | 18 ++++++++++++++++++
+> net/sched/cls_api.c        |  3 +++
+> 3 files changed, 41 insertions(+)
+>
+>diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+>index bcc4e2fef6ba..06acde2960fa 100644
+>--- a/include/net/flow_offload.h
+>+++ b/include/net/flow_offload.h
+>@@ -251,12 +251,16 @@ struct flow_block_offload {
+> 	enum flow_block_command command;
+> 	enum flow_block_binder_type binder_type;
+> 	struct tcf_block *block;
+>+	struct net *net;
+>+	struct list_head cb_list;
+> 	struct list_head *driver_block_list;
+> 	struct netlink_ext_ack *extack;
+> };
 > 
-> > why you just use eval() as pattern matching operation and let the user
-> > define how to declare a matching mechanism instead you introduce another
-> > static matching scheme based on a json description?
-> >
-> > Whereas in eval() you could directly use the python bool expression
-> > parser to make whatever you want.
-> >
-> > I don't know, I see at some points you will hit limitations what you can
-> > express with this matchFOO and we need to introduce another matchBAR,
-> > whereas in providing the code it should be no problem expression
-> > anything. If you want smaller shortcuts writing matching patterns you
-> > can implement them and using in your eval() operation.
+> struct flow_block_cb {
+>+	struct list_head	driver_list;
+> 	struct list_head	list;
+>+	struct net		*net;
+> 	tc_setup_cb_t		*cb;
+> 	void			*cb_ident;
+> 	void			*cb_priv;
+>@@ -269,6 +273,22 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
+> 					  void (*release)(void *cb_priv));
+> void flow_block_cb_free(struct flow_block_cb *block_cb);
 > 
-> Regarding hitting limitations: quite possibly, yes.
+>+struct flow_block_cb *flow_block_cb_lookup(struct net *net,
+>+					   struct list_head *driver_flow_block_list,
+>+					   tc_setup_cb_t *cb, void *cb_ident);
+>+
+>+static inline void flow_block_cb_add(struct flow_block_cb *block_cb,
+>+				     struct flow_block_offload *offload)
+>+{
+>+	list_add_tail(&block_cb->driver_list, &offload->cb_list);
+>+}
+>+
+>+static inline void flow_block_cb_remove(struct flow_block_cb *block_cb,
+>+					struct flow_block_offload *offload)
+>+{
+>+	list_move(&block_cb->driver_list, &offload->cb_list);
+>+}
+>+
+> int flow_block_cb_setup_simple(struct flow_block_offload *f,
+> 			       struct list_head *driver_list, tc_setup_cb_t *cb,
+> 			       void *cb_ident, void *cb_priv, bool ingress_only);
+>diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+>index d08148cb6953..85fd5f4a1e0f 100644
+>--- a/net/core/flow_offload.c
+>+++ b/net/core/flow_offload.c
+>@@ -176,6 +176,7 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
+> 	if (!block_cb)
+> 		return ERR_PTR(-ENOMEM);
 > 
-> Using eval() to provide code for matching is going to put more of a
-> dependency on the test writer knowing Python.  I know it's not a
-> terribly difficult language to pick up, but it's still setting a
-> higher barrier to entry.  This is the primary reason I scrapped the
-> work I had presented at Netdev 1.2 in Tokyo, where all the tests were
-> coded using Python's unittest framework - I want to be sure it's as
-> easy as possible for people to use tdc and write tests for it.
+>+	block_cb->net = net;
+> 	block_cb->cb = cb;
+> 	block_cb->cb_ident = cb_ident;
+> 	block_cb->cb_priv = cb_priv;
+>@@ -194,6 +195,23 @@ void flow_block_cb_free(struct flow_block_cb *block_cb)
+> }
+> EXPORT_SYMBOL(flow_block_cb_free);
 > 
-> Unless I'm off-base here?
+>+struct flow_block_cb *flow_block_cb_lookup(struct net *net,
+>+					   struct list_head *driver_block_list,
 
-yes you need to know some python, complex code can be hidden by some
-helper functionality I guess.
+In the header, you call this "driver_flow_block_list".
 
-I have no problem to let this patch in, it will not harm anything...
+Where is this list coming from? In general, I don't think it is good to
+have struct list_head as an arg of exported symbol. Should be contained
+in some struct. Looks like this might be the "struct
+flow_block_offload"?
 
-Maybe I work on a matchEval and show some examples... in a human
-readable way you can even concatenate bool expressions in combinations
-with helpers.
+Does this have anything to do with "struct list_head
+*driver_block_list"? This is very confusing...
 
-I just was curious, so I might add the matchEval or something to show
-this approach.
 
-add the and it shows like:
 
-"x == 5 or x == '5'"
-
-Whereas you could introduce helpers to do:
-
-"str_or_num(x, 5)"
-
-even
-
-"str_or_num_any_base(x, 5)"
-
-to also catch if somebody change the base.
-In this case "or" could be also concatenate with python bool
-expression... depends on how lowlvl your helpers be.
-
-Pretty sure the x as inputstring to match can also be hidden by user or
-transformed with split, regex, etc before. At the end it will work like
-TC with actions just provide the code to run... or is it more like
-"act_bpf"?, where act is the hook and bpf the eval(). :-)
-
-- Alex
+>+					   tc_setup_cb_t *cb, void *cb_ident)
+>+{
+>+	struct flow_block_cb *block_cb;
+>+
+>+	list_for_each_entry(block_cb, driver_block_list, driver_list) {
+>+		if (block_cb->net == net &&
+>+		    block_cb->cb == cb &&
+>+		    block_cb->cb_ident == cb_ident)
+>+			return block_cb;
+>+	}
+>+
+>+	return NULL;
+>+}
+>+EXPORT_SYMBOL(flow_block_cb_lookup);
+>+
+> int flow_block_cb_setup_simple(struct flow_block_offload *f,
+> 			       struct list_head *driver_block_list,
+> 			       tc_setup_cb_t *cb, void *cb_ident, void *cb_priv,
+>diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>index fa0c451aca59..72761b43ae41 100644
+>--- a/net/sched/cls_api.c
+>+++ b/net/sched/cls_api.c
+>@@ -679,6 +679,7 @@ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
+> 	struct tc_block_offload bo = {
+> 		.command	= command,
+> 		.binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
+>+		.net		= dev_net(indr_dev->dev),
+> 		.block		= indr_dev->block,
+> 	};
+> 
+>@@ -767,6 +768,7 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
+> 	struct tc_block_offload bo = {
+> 		.command	= command,
+> 		.binder_type	= ei->binder_type,
+>+		.net		= dev_net(dev),
+> 		.block		= block,
+> 		.extack		= extack,
+> 	};
+>@@ -795,6 +797,7 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
+> {
+> 	struct tc_block_offload bo = {};
+> 
+>+	bo.net = dev_net(dev);
+> 	bo.command = command;
+> 	bo.binder_type = ei->binder_type;
+> 	bo.block = block;
+>-- 
+>2.11.0
+>
