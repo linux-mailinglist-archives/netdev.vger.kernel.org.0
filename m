@@ -2,126 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2106197E
-	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 05:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C6F1619C7
+	for <lists+netdev@lfdr.de>; Mon,  8 Jul 2019 06:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728844AbfGHD2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jul 2019 23:28:42 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:37129 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726105AbfGHD2m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Jul 2019 23:28:42 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45hrWp4BFnz9sNF;
-        Mon,  8 Jul 2019 13:28:38 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562556518;
-        bh=CHCn/D8eAiBLkRYmzJoUB3/S5s/rbxlG1ArTgtS9wLo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hHB5nBuHHIwWKBhncKQi1dONJAcF4zmpOXd9iZ2om6K+JJQZWU9uuTzr3iNGn6Ssk
-         uyRYsWFl7uIAZM+RtX3LnrHhedshBzzdxGvpHcAXRaVC1EHs3olADK6Ixs1mjwQEoZ
-         wK3VatSF73ypVR+sfye5/tk1v9st4o/drsDRZmy/VIDDJac38EI0fSdBsUegdXEq/4
-         ewX88pML+O2Z1ZxgR0rFAiafXujNwh/sTFM9usBE07FTPDOMarylgQQ9qXy++ZD3TG
-         i85AB8b/ud+7J/LEch5R5y1dL4WdKqnNMWMddF4BW5ZkRrhuWrIymcQFmXctDkYCut
-         ldN5mVUjhueqg==
-Date:   Mon, 8 Jul 2019 13:28:37 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the mlx5-next tree with the rdma
- tree
-Message-ID: <20190708132837.5ccb36ed@canb.auug.org.au>
-In-Reply-To: <20190704124738.1e88cb69@canb.auug.org.au>
-References: <20190704124738.1e88cb69@canb.auug.org.au>
+        id S1726222AbfGHEPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 00:15:55 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59628 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725781AbfGHEPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 00:15:55 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 8 Jul 2019 07:15:53 +0300
+Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x684Fol4028463;
+        Mon, 8 Jul 2019 07:15:51 +0300
+From:   Parav Pandit <parav@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jiri@mellanox.com, saeedm@mellanox.com,
+        jakub.kicinski@netronome.com, Parav Pandit <parav@mellanox.com>
+Subject: [PATCH net-next v5 0/5] devlink: Introduce PCI PF, VF ports and attributes
+Date:   Sun,  7 Jul 2019 23:15:44 -0500
+Message-Id: <20190708041549.56601-1-parav@mellanox.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190701122734.18770-1-parav@mellanox.com>
+References: <20190701122734.18770-1-parav@mellanox.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/WFz+iZTScEnSIiQwpXVHD5l"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/WFz+iZTScEnSIiQwpXVHD5l
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This patchset carry forwards the work initiated in [1] and discussion
+futher concluded at [2].
 
-Hi all,
+To improve visibility of representor netdevice, its association with
+PF or VF, physical port, two new devlink port flavours are added as
+PCI PF and PCI VF ports.
 
-On Thu, 4 Jul 2019 12:47:38 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
-> Hi all,
->=20
-> Today's linux-next merge of the mlx5-next tree got a conflict in:
->=20
->   drivers/infiniband/hw/mlx5/cq.c
->=20
-> between commit:
->=20
->   e39afe3d6dbd ("RDMA: Convert CQ allocations to be under core responsibi=
-lity")
->=20
-> from the rdma tree and commit:
->=20
->   38164b771947 ("net/mlx5: mlx5_core_create_cq() enhancements")
->=20
-> from the mlx5-next tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> --=20
-> Cheers,
-> Stephen Rothwell
->=20
-> diff --cc drivers/infiniband/hw/mlx5/cq.c
-> index bfe3efdd77d7,4efbbd2fce0c..000000000000
-> --- a/drivers/infiniband/hw/mlx5/cq.c
-> +++ b/drivers/infiniband/hw/mlx5/cq.c
-> @@@ -891,7 -891,8 +891,8 @@@ int mlx5_ib_create_cq(struct ib_cq *ibc
->   	int entries =3D attr->cqe;
->   	int vector =3D attr->comp_vector;
->   	struct mlx5_ib_dev *dev =3D to_mdev(ibdev);
-> + 	u32 out[MLX5_ST_SZ_DW(create_cq_out)];
->  -	struct mlx5_ib_cq *cq;
->  +	struct mlx5_ib_cq *cq =3D to_mcq(ibcq);
->   	int uninitialized_var(index);
->   	int uninitialized_var(inlen);
->   	u32 *cqb =3D NULL;
+A sample eswitch view can be seen below, which will be futher extended to
+mdev subdevices of a PCI function in future.
 
-This is now a conflict between the net-next tree and the rdma tree.
+Patch-1 moves physical port's attribute to new structure
+Patch-2 enhances netlink response to consider port flavour
+Patch-3,4 extends devlink port attributes and port flavour
+Patch-5 extends mlx5 driver to register devlink ports for PF, VF and
+physical link.
 
---=20
-Cheers,
-Stephen Rothwell
+                                +---+      +---+
+                              vf|   |      |   | pf
+                                +-+-+      +-+-+
+physical link <---------+         |          |
+                        |         |          |
+                        |         |          |
+                      +-+-+     +-+-+      +-+-+
+                      | 1 |     | 2 |      | 3 |
+                   +--+---+-----+---+------+---+--+
+                   |  physical   vf         pf    |
+                   |  port       port       port  |
+                   |                              |
+                   |             eswitch          |
+                   |                              |
+                   +------------------------------+
 
---Sig_/WFz+iZTScEnSIiQwpXVHD5l
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+[1] https://www.spinics.net/lists/netdev/msg555797.html
+[2] https://marc.info/?l=linux-netdev&m=155354609408485&w=2
 
------BEGIN PGP SIGNATURE-----
+---
+Changelog:
+v4->v5:
+ - Split first patch to two patches to handle netlink response in
+   separate patch.
+ - Corrected typo 'otwerwise' to 'otherwise' in patches 3 and 4.
+v3->v4:
+ - Addressed comments from Jiri.
+ - Split first patch to two patches.
+ - Renamed phys_port to physical to be consistent with pci_pf.
+ - Removed port_number from __devlink_port_attrs_set and moved
+   assignment to caller function.
+ - Used capital letter while moving old comment to new structure.
+ - Removed helper function is_devlink_phy_port_num_supported().
+v2->v3:
+ - Made port_number and split_port_number applicable only to
+   physical port flavours.
+v1->v2:
+ - Updated new APIs and mlx5 driver to drop port_number for PF, VF
+   attributes
+ - Updated port_number comment for its usage
+ - Limited putting port_number to physical ports
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0iuGUACgkQAVBC80lX
-0GxbEwf+PlZ2tLyCFf5KdyUPf1/Nk5a8cYCobK1n7AAHZu+hd5HOvOiUI6cx3szE
-9M4TuGve/KZwD3JF4VUtqjyRHfea5C44E7CuCefSlUftak60gusKATGaB+efwbOb
-JOnDG6qHoeom2JhjoUgWilljISukGwP5ARrnleWosnu9BldCuM0EzcRgxd27eTrB
-cigGuxlyPaIfEXQWONOyENjg5wQ3ZRyKe69h7y+4zKfi/lgUgEhXMemdRg7Kjknp
-JyJ21FWMhHvDGpBfU2m1Kr6z9AqeUR9JcUXzg1DDMHosMaJU0XZMlcCJB+ektGqe
-RjpI5MzMURZ2yUCXDMAVPIZXa2lrTA==
-=GGMU
------END PGP SIGNATURE-----
 
---Sig_/WFz+iZTScEnSIiQwpXVHD5l--
+Parav Pandit (5):
+  devlink: Refactor physical port attributes
+  devlink: Return physical port fields only for applicable port flavours
+  devlink: Introduce PCI PF port flavour and port attribute
+  devlink: Introduce PCI VF port flavour and port attribute
+  net/mlx5e: Register devlink ports for physical link, PCI PF, VFs
+
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 108 ++++++++++----
+ .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   1 +
+ include/net/devlink.h                         |  31 +++-
+ include/uapi/linux/devlink.h                  |  11 ++
+ net/core/devlink.c                            | 135 +++++++++++++++---
+ 5 files changed, 233 insertions(+), 53 deletions(-)
+
+-- 
+2.19.2
+
