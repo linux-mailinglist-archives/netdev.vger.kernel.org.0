@@ -2,82 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC3862E72
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 05:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC4762E75
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 05:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726569AbfGIDAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 23:00:35 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:43212 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbfGIDAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 23:00:34 -0400
-Received: by mail-pg1-f196.google.com with SMTP id f25so8655961pgv.10
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 20:00:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=iGQzN4QlOJ4XybB0pOrQ53+JHEG1ubc+xzSVcjFhOBM=;
-        b=I6pdTDGF04iSq7lDmQVjHhEL/Xksy8QSOE0paU9lWRaeVL6hBS283JC5Xkt23jbOqR
-         L81L8D8niCQM9lbo/i/jAG9xKlF/JXsAUoMZKurass3KgvzbdVnhHhGWTTWEHoJX3zuQ
-         E5hEqFu+bg5lMkv40LyluG1m1nj/15thwkMsAuZyXuN6TkxFkxc6cylgF11Al2+kisyW
-         ZG7muZq5A7qr8OamS3dZEx/njysZCmdHt+XJ716/ENTqk74lyHKhg7m6LqQvavbnMzsq
-         wGnXY+kUlH4ghMbnEdKhw7XxwLrnTzRnBUnYbhQ08Gx9TdFq14jEnFw5j0GT48aOQjF5
-         UXHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=iGQzN4QlOJ4XybB0pOrQ53+JHEG1ubc+xzSVcjFhOBM=;
-        b=r/YcWfb84PTvx6anlUOM7+PT9b3hekM1XF8jGmkFm3/x6GsoyE0YlVtLap5fRoKtAX
-         iXLng+CH02JlNfYnAkpQTd9n9Id/ZQlNZEAiffMjg3D0fQU08AWcxtRYFCwFG1BhzIrr
-         xwAOiXbR2csRCu3Mf+R1mHi+jo/z1yN4QnTrD/u57V5YC5rS9CRkh6qEK02qognnFYb7
-         OMoBOHWTTV0E1ydFNfcfu/XDsaDYHLipseGWPzPLa2xReAHOQqs01ax9ZTwd4EgIO7H2
-         jXgxqiIaw7PqpWroRvXy7jIevMRGIq+n/Qr59OJMe6tam9ZADkVH1rsILR4HcHUEREjD
-         5plw==
-X-Gm-Message-State: APjAAAXOviM9zJqa3L7JCUANG9FHKUhD+Z5lOrF/GkC9d9EYZF/4n+r+
-        j+YvMZpZV7/4t7IVvUPaCD64WE/0K50=
-X-Google-Smtp-Source: APXvYqyKD7JGqzKl/KyPa808ImFndwhXvoge4Qdn8ohyUqjG3HVNmUUGmvEfJpEYpqshNCrP+PJDSg==
-X-Received: by 2002:a63:5d45:: with SMTP id o5mr28101354pgm.40.1562641233714;
-        Mon, 08 Jul 2019 20:00:33 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id c9sm18764698pfn.3.2019.07.08.20.00.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 08 Jul 2019 20:00:33 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 00/19] Add ionic driver
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20190708192532.27420-1-snelson@pensando.io>
- <20190708.195806.758232640547515457.davem@davemloft.net>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <e448a023-73a0-33f5-a8ad-2793f79801d1@pensando.io>
-Date:   Mon, 8 Jul 2019 20:01:30 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.1
+        id S1726658AbfGIDEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 23:04:40 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2190 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725886AbfGIDEk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 23:04:40 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id A7D0215961FB8D5B5554;
+        Tue,  9 Jul 2019 11:04:35 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Tue, 9 Jul 2019
+ 11:04:26 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>,
+        <paweldembicki@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: dsa: vsc73xx: Fix Kconfig warning and build errors
+Date:   Tue, 9 Jul 2019 11:02:24 +0800
+Message-ID: <20190709030224.40292-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <20190708172808.GG9027@lunn.ch>
+References: <20190708172808.GG9027@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20190708.195806.758232640547515457.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/8/19 7:58 PM, David Miller wrote:
-> From: Shannon Nelson <snelson@pensando.io>
-> Date: Mon,  8 Jul 2019 12:25:13 -0700
->
->> This is a patch series that adds the ionic driver, supporting the Pensando
->> ethernet device.
-> ...
->
-> I think with the review comments and feedback still coming in you will
-> have to wait until the next merge window, sorry.
-Yep, that's what I was expecting - I'll have another patchset version 
-ready by then.
+Fix Kconfig dependency warning and subsequent build errors
+caused by OF is not set:
 
-Cheers,
-sln
+WARNING: unmet direct dependencies detected for NET_DSA_VITESSE_VSC73XX
+  Depends on [n]: NETDEVICES [=y] && HAVE_NET_DSA [=y] && OF [=n] && NET_DSA [=m]
+  Selected by [m]:
+  - NET_DSA_VITESSE_VSC73XX_PLATFORM [=m] && NETDEVICES [=y] && HAVE_NET_DSA [=y] && HAS_IOMEM [=y]
+
+Make NET_DSA_VITESSE_VSC73XX_SPI and NET_DSA_VITESSE_VSC73XX_PLATFORM
+depends on NET_DSA_VITESSE_VSC73XX to fix this.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: 95711cd5f0b4 ("net: dsa: vsc73xx: Split vsc73xx driver")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: Use "depends on" instead of "select" NET_DSA_VITESSE_VSC73XX
+---
+ drivers/net/dsa/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index cf9dbd1..618853d 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -99,7 +99,7 @@ config NET_DSA_SMSC_LAN9303_MDIO
+ 	  for MDIO managed mode.
+ 
+ config NET_DSA_VITESSE_VSC73XX
+-	tristate
++	tristate "Vitesse VSC7385/7388/7395/7398 support"
+ 	depends on OF
+ 	depends on NET_DSA
+ 	select FIXED_PHY
+@@ -112,7 +112,7 @@ config NET_DSA_VITESSE_VSC73XX
+ config NET_DSA_VITESSE_VSC73XX_SPI
+ 	tristate "Vitesse VSC7385/7388/7395/7398 SPI mode support"
+ 	depends on SPI
+-	select NET_DSA_VITESSE_VSC73XX
++	depends on NET_DSA_VITESSE_VSC73XX
+ 	---help---
+ 	  This enables support for the Vitesse VSC7385, VSC7388, VSC7395
+ 	  and VSC7398 SparX integrated ethernet switches in SPI managed mode.
+@@ -120,7 +120,7 @@ config NET_DSA_VITESSE_VSC73XX_SPI
+ config NET_DSA_VITESSE_VSC73XX_PLATFORM
+ 	tristate "Vitesse VSC7385/7388/7395/7398 Platform mode support"
+ 	depends on HAS_IOMEM
+-	select NET_DSA_VITESSE_VSC73XX
++	depends on NET_DSA_VITESSE_VSC73XX
+ 	---help---
+ 	  This enables support for the Vitesse VSC7385, VSC7388, VSC7395
+ 	  and VSC7398 SparX integrated ethernet switches, connected over
+-- 
+2.7.4
+
 
