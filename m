@@ -2,69 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 560F76316B
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 09:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C15263172
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 09:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726062AbfGIHCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 03:02:38 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:2191 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725818AbfGIHCi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 03:02:38 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 127BF232B05D5409DAFF;
-        Tue,  9 Jul 2019 15:02:34 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Tue, 9 Jul 2019
- 15:02:26 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <pablo@netfilter.org>,
-        <kadlec@netfilter.org>, <fw@strlen.de>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <wenxu@ucloud.cn>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <coreteam@netfilter.org>,
-        <netfilter-devel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] netfilter: nft_meta: Fix build error
-Date:   Tue, 9 Jul 2019 15:01:26 +0800
-Message-ID: <20190709070126.29972-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726211AbfGIHCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 03:02:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55438 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725818AbfGIHCs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 03:02:48 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7CEAA216FD;
+        Tue,  9 Jul 2019 07:02:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562655768;
+        bh=Ug6RXcRHmm9WmNE4ejMdaxf6EbLLOGYlcFlH8vv28zY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oo1Yyn7y5IilfJ4mIGRZPUWCgEYk48/FkqEUKqrEqguTD67Lwp30QGKmxHL+jvgqO
+         qSOb26DEhakEjz7XAE3cc80xCxkDfDfkNQjKcjb+F83CCKND9AIBrMUBbZIamek1mT
+         rQXYr++NcsL2wmOP0uMKjsFTnnTumgPLMdkgtrrk=
+Date:   Tue, 9 Jul 2019 10:02:44 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michal Kalderon <michal.kalderon@marvell.com>
+Cc:     ariel.elior@marvell.com, jgg@ziepe.ca, dledford@redhat.com,
+        galpress@amazon.com, linux-rdma@vger.kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH v5 rdma-next 1/6] RDMA/core: Create mmap database and
+ cookie helper functions
+Message-ID: <20190709070244.GH7034@mtr-leonro.mtl.com>
+References: <20190708091503.14723-1-michal.kalderon@marvell.com>
+ <20190708091503.14723-2-michal.kalderon@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190708091503.14723-2-michal.kalderon@marvell.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If NFT_BRIDGE_META is y and NF_TABLES is m, building fails:
+On Mon, Jul 08, 2019 at 12:14:58PM +0300, Michal Kalderon wrote:
+> Create some common API's for adding entries to a xa_mmap.
+> Searching for an entry and freeing one.
+>
+> The code was copied from the efa driver almost as is, just renamed
+> function to be generic and not efa specific.
+>
+> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+> ---
+>  drivers/infiniband/core/device.c      |   1 +
+>  drivers/infiniband/core/rdma_core.c   |   1 +
+>  drivers/infiniband/core/uverbs_cmd.c  |   1 +
+>  drivers/infiniband/core/uverbs_main.c | 105 ++++++++++++++++++++++++++++++++++
+>  include/rdma/ib_verbs.h               |  32 +++++++++++
+>  5 files changed, 140 insertions(+)
+>
+> diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+> index 8a6ccb936dfe..a830c2c5d691 100644
+> --- a/drivers/infiniband/core/device.c
+> +++ b/drivers/infiniband/core/device.c
+> @@ -2521,6 +2521,7 @@ void ib_set_device_ops(struct ib_device *dev, const struct ib_device_ops *ops)
+>  	SET_DEVICE_OP(dev_ops, map_mr_sg_pi);
+>  	SET_DEVICE_OP(dev_ops, map_phys_fmr);
+>  	SET_DEVICE_OP(dev_ops, mmap);
+> +	SET_DEVICE_OP(dev_ops, mmap_free);
+>  	SET_DEVICE_OP(dev_ops, modify_ah);
+>  	SET_DEVICE_OP(dev_ops, modify_cq);
+>  	SET_DEVICE_OP(dev_ops, modify_device);
+> diff --git a/drivers/infiniband/core/rdma_core.c b/drivers/infiniband/core/rdma_core.c
+> index ccf4d069c25c..7166741834c8 100644
+> --- a/drivers/infiniband/core/rdma_core.c
+> +++ b/drivers/infiniband/core/rdma_core.c
+> @@ -817,6 +817,7 @@ static void ufile_destroy_ucontext(struct ib_uverbs_file *ufile,
+>  	rdma_restrack_del(&ucontext->res);
+>
+>  	ib_dev->ops.dealloc_ucontext(ucontext);
+> +	rdma_user_mmap_entries_remove_free(ucontext);
+>  	kfree(ucontext);
+>
+>  	ufile->ucontext = NULL;
+> diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+> index 7ddd0e5bc6b3..44c0600245e4 100644
+> --- a/drivers/infiniband/core/uverbs_cmd.c
+> +++ b/drivers/infiniband/core/uverbs_cmd.c
+> @@ -254,6 +254,7 @@ static int ib_uverbs_get_context(struct uverbs_attr_bundle *attrs)
+>
+>  	mutex_init(&ucontext->per_mm_list_lock);
+>  	INIT_LIST_HEAD(&ucontext->per_mm_list);
+> +	xa_init(&ucontext->mmap_xa);
+>
+>  	ret = get_unused_fd_flags(O_CLOEXEC);
+>  	if (ret < 0)
+> diff --git a/drivers/infiniband/core/uverbs_main.c b/drivers/infiniband/core/uverbs_main.c
+> index 11c13c1381cf..37507cc27e8c 100644
+> --- a/drivers/infiniband/core/uverbs_main.c
+> +++ b/drivers/infiniband/core/uverbs_main.c
+> @@ -965,6 +965,111 @@ int rdma_user_mmap_io(struct ib_ucontext *ucontext, struct vm_area_struct *vma,
+>  }
+>  EXPORT_SYMBOL(rdma_user_mmap_io);
+>
+> +static inline u64
+> +rdma_user_mmap_get_key(const struct rdma_user_mmap_entry *entry)
+> +{
+> +	return (u64)entry->mmap_page << PAGE_SHIFT;
+> +}
+> +
+> +struct rdma_user_mmap_entry *
+> +rdma_user_mmap_entry_get(struct ib_ucontext *ucontext, u64 key, u64 len)
+> +{
+> +	struct rdma_user_mmap_entry *entry;
+> +	u64 mmap_page;
+> +
+> +	mmap_page = key >> PAGE_SHIFT;
+> +	if (mmap_page > U32_MAX)
+> +		return NULL;
+> +
+> +	entry = xa_load(&ucontext->mmap_xa, mmap_page);
+> +	if (!entry || rdma_user_mmap_get_key(entry) != key ||
+> +	    entry->length != len)
+> +		return NULL;
+> +
+> +	ibdev_dbg(ucontext->device,
+> +		  "mmap: obj[0x%p] key[%#llx] addr[%#llx] len[%#llx] removed\n",
+> +		  entry->obj, key, entry->address, entry->length);
+> +
+> +	return entry;
+> +}
+> +EXPORT_SYMBOL(rdma_user_mmap_entry_get);
 
-net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_init':
-nft_meta_bridge.c:(.text+0xd0): undefined reference to `nft_parse_register'
-nft_meta_bridge.c:(.text+0xec): undefined reference to `nft_validate_register_store'
+Please add function description in kernel doc format for all newly EXPORT_SYMBOL()
+functions you introduced in RDMA/core.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 30e103fe24de ("netfilter: nft_meta: move bridge meta keys into nft_meta_bridge")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/bridge/netfilter/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+> +
+> +/*
+> + * Note this locking scheme cannot support removal of entries, except during
+> + * ucontext destruction when the core code guarentees no concurrency.
+> + */
+> +u64 rdma_user_mmap_entry_insert(struct ib_ucontext *ucontext, void *obj,
+> +				u64 address, u64 length, u8 mmap_flag)
+> +{
+> +	struct rdma_user_mmap_entry *entry;
+> +	u32 next_mmap_page;
+> +	int err;
+> +
+> +	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
 
-diff --git a/net/bridge/netfilter/Kconfig b/net/bridge/netfilter/Kconfig
-index fbc7085..ca3214f 100644
---- a/net/bridge/netfilter/Kconfig
-+++ b/net/bridge/netfilter/Kconfig
-@@ -12,6 +12,7 @@ if NF_TABLES_BRIDGE
- 
- config NFT_BRIDGE_META
- 	tristate "Netfilter nf_table bridge meta support"
-+	depends on NF_TABLES
- 	help
- 	  Add support for bridge dedicated meta key.
- 
--- 
-2.7.4
+It is worth to use kzalloc and not kmalloc.
 
-
+Thanks
