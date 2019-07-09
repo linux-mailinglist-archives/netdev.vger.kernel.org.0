@@ -2,88 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0446F63A4D
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 19:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B21063A51
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 19:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfGIRux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 13:50:53 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43423 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726560AbfGIRux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 13:50:53 -0400
-Received: by mail-qt1-f195.google.com with SMTP id w17so19374788qto.10;
-        Tue, 09 Jul 2019 10:50:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HbR/FwJaNA1U78yvn7Pam7D/QH3xOj8IA+pEkc6eqOM=;
-        b=FOi0rZmFtZ9e5iE7P2cQMmg7hUV9836GTzxy+Zj/wRGTebRGeSsKDik4j/xOWHQeT9
-         nDWAlgcCtfKJkZAvKlnP6EfoPc2ulOrUwFpDUYxCIdplDT8gDsPI0iFI7nROpQSVwhLP
-         iPPIEgf31mEJQSrFbCZsObhB7L6JAGI+8vMD0lHFzTZ2t2rJUWKN38Og/g2O36EAV0+5
-         emDbff2oZaliVxc88whGKSUQOTPDnJQuJq3ihC1L1crKhSJhpyHj354rdJ4RtIqeRrRP
-         sNyFS4n543nO8j0vKyozlbqnfEiajeFIkIX//PZUXVFHv/bzrUr7KIRSFChae1VNEmza
-         n+qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HbR/FwJaNA1U78yvn7Pam7D/QH3xOj8IA+pEkc6eqOM=;
-        b=fUQ8cynu5Imz9m4kZw7Jw5Oy3rQYnWl/O1FYU0wYv0Wqk6+Q3sra4sJ5njFEmFBcm8
-         Fw+K9FweOMGs8RGDC8cB8ZTTwd/GJ5lG+NPrIW/y+vJTy4rSvPyHFt2ueBGvPhLCY9I8
-         AVupBhNVUG5t0CUH2OT58NNOq8C3n5aSlJNjLo3kkQyV120m79Dx6bLL1/a/PVmyN2ku
-         0G5c86xprh6RIivPmkRnwvLpNqREsVA903IDLK+yiec3kYaVQV4M0r21TOi0Cm1Hoxv0
-         zr2NEwikCPtZKc8l4+oukmNC3MdEi8drLFsUHpm/dJ059QppyBjKraz+Dto78O9PD388
-         9UGw==
-X-Gm-Message-State: APjAAAXdVgiI3j6vl0mv4JYW//x3bqpIe/CBmIoAbFyJIX9pmnUffSwU
-        Mp3ETXLS/989Sa3xE5EtEjMTjqA2qYVHkH3RjhU=
-X-Google-Smtp-Source: APXvYqzwChPeVwKY82QRDgOW5y3+jFFTwvWRKIzZgxSJIfltI28uMOIEp7ofm4ZtQJYfwg07vIBCgy3QAs7bjqjZVSo=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr19460735qta.171.1562694652078;
- Tue, 09 Jul 2019 10:50:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190709151809.37539-1-iii@linux.ibm.com>
-In-Reply-To: <20190709151809.37539-1-iii@linux.ibm.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 9 Jul 2019 10:50:41 -0700
-Message-ID: <CAEf4BzaYpYaotOFDQW017jkAdTC6rLvPRJPhHbPRcSWjEQzhmA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 0/4] selftests/bpf: fix compiling
- loop{1,2,3}.c on s390
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Y Song <ys114321@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1726830AbfGIRxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 13:53:42 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33515 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726449AbfGIRxm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 13:53:42 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B046B30BD1A5;
+        Tue,  9 Jul 2019 17:53:41 +0000 (UTC)
+Received: from krava (ovpn-204-17.brq.redhat.com [10.40.204.17])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 4ED1F871C6;
+        Tue,  9 Jul 2019 17:53:34 +0000 (UTC)
+Date:   Tue, 9 Jul 2019 19:53:33 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Olsa <jolsa@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+        Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCHv2] tools bpftool: Fix json dump crash on powerpc
+Message-ID: <20190709175333.GE9579@krava>
+References: <20190704085856.17502-1-jolsa@kernel.org>
+ <20190704134210.17b8407c@cakuba.netronome.com>
+ <20190705121031.GA10777@krava>
+ <20190705102452.0831942a@cakuba.netronome.com>
+ <83d18af0-8efa-c8d5-3d99-01aed29915df@netronome.com>
+ <5168f635-a23c-eac3-479d-747e55adfc4c@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5168f635-a23c-eac3-479d-747e55adfc4c@iogearbox.net>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Tue, 09 Jul 2019 17:53:41 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 9, 2019 at 8:18 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
->
-> This patch series consists of three preparatory commits, which make it
-> possible to use PT_REGS_RC in BPF selftests, followed by the actual fix.
->
-> Since the last time, I've tested it with x86_64-linux-gnu-,
-> aarch64-linux-gnu-, arm-linux-gnueabihf-, mips64el-linux-gnuabi64-,
-> powerpc64le-linux-gnu-, s390x-linux-gnu- and sparc64-linux-gnu-
-> compilers, and found that I also need to add arm64 support.
->
-> Like s390, arm64 exports user_pt_regs instead of struct pt_regs to
-> userspace.
->
-> I've also made fixes for a few unrelated build problems, which I will
-> post separately.
->
-> v1->v2: Split into multiple patches.
-> v2->v3: Added arm64 support.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
->
->
+On Sat, Jul 06, 2019 at 12:00:44AM +0200, Daniel Borkmann wrote:
+> On 07/05/2019 07:26 PM, Quentin Monnet wrote:
+> > 2019-07-05 10:24 UTC-0700 ~ Jakub Kicinski <jakub.kicinski@netronome.com>
+> >> On Fri, 5 Jul 2019 14:10:31 +0200, Jiri Olsa wrote:
+> >>> Michael reported crash with by bpf program in json mode on powerpc:
+> >>>
+> >>>   # bpftool prog -p dump jited id 14
+> >>>   [{
+> >>>         "name": "0xd00000000a9aa760",
+> >>>         "insns": [{
+> >>>                 "pc": "0x0",
+> >>>                 "operation": "nop",
+> >>>                 "operands": [null
+> >>>                 ]
+> >>>             },{
+> >>>                 "pc": "0x4",
+> >>>                 "operation": "nop",
+> >>>                 "operands": [null
+> >>>                 ]
+> >>>             },{
+> >>>                 "pc": "0x8",
+> >>>                 "operation": "mflr",
+> >>>   Segmentation fault (core dumped)
+> >>>
+> >>> The code is assuming char pointers in format, which is not always
+> >>> true at least for powerpc. Fixing this by dumping the whole string
+> >>> into buffer based on its format.
+> >>>
+> >>> Please note that libopcodes code does not check return values from
+> >>> fprintf callback, but as per Jakub suggestion returning -1 on allocation
+> >>> failure so we do the best effort to propagate the error. 
+> >>>
+> >>> Reported-by: Michael Petlan <mpetlan@redhat.com>
+> >>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> >>
+> >> Thanks, let me repost all the tags (Quentin, please shout if you're
+> >> not ok with this :)):
+> > 
+> > I confirm it's all good for me, thanks :)
+> > 
+> >> Fixes: 107f041212c1 ("tools: bpftool: add JSON output for `bpftool prog dump jited *` command")
+> >> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+> >> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> 
+> Given merge window coming up, I've applied this to bpf-next, thanks everyone!
+> 
+> P.s.: Jiri, please repost full/proper patch next time instead of inline reply.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+will do, thanks
+jirka
