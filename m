@@ -2,56 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C7A263697
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:15:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 084B76369C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726679AbfGINP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 09:15:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35108 "EHLO vps0.lunn.ch"
+        id S1726930AbfGINQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 09:16:09 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:50680 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726046AbfGINP4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 09:15:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=K4UCax0/kiN71VxfRMIrE25Yv0RyTL5D3nDe2dnFdGQ=; b=GZNbmBmqFt68izQ5LhY4CRUb9a
-        Ii4MDaNJHjizw4C8WNauzl6yP0AII8ZU1gJsbQPUDj+DXgr7YuJQuI8qkQmkZIvoZUMM1+BIMuqxc
-        ocbodrF3+HYurVmYEe9Zq1ekGF9y1vl+SLxjjNyFAAHPXROgLbPGHZhw+x1khDM9yX80=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hkpyM-0000hK-Cb; Tue, 09 Jul 2019 15:15:54 +0200
-Date:   Tue, 9 Jul 2019 15:15:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     josua@solid-run.com
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 4/4] net: mvmdio: defer probe of orion-mdio if a clock
- is not ready
-Message-ID: <20190709131554.GB1965@lunn.ch>
-References: <20190706151900.14355-1-josua@solid-run.com>
- <20190709130101.5160-1-josua@solid-run.com>
- <20190709130101.5160-5-josua@solid-run.com>
+        id S1726820AbfGINQJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 09:16:09 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 12C768553A;
+        Tue,  9 Jul 2019 13:16:04 +0000 (UTC)
+Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3628B86E17;
+        Tue,  9 Jul 2019 13:16:02 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@kernel.org
+Subject: [PATCH iproute2 0/2] Fix IPv6 tunnel add when dev param is used
+Date:   Tue,  9 Jul 2019 15:16:49 +0200
+Message-Id: <cover.1562667648.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709130101.5160-5-josua@solid-run.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 09 Jul 2019 13:16:09 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 03:01:01PM +0200, josua@solid-run.com wrote:
-> From: Josua Mayer <josua@solid-run.com>
-> 
-> Defer probing of the orion-mdio interface when getting a clock returns
-> EPROBE_DEFER. This avoids locking up the Armada 8k SoC when mdio is used
-> before all clocks have been enabled.
-> 
-> Signed-off-by: Josua Mayer <josua@solid-run.com>
+Commit ba126dcad20e6 ("ip6tunnel: fix 'ip -6 {show|change} dev
+<name>' cmds") breaks IPv6 tunnel creation when dev parameter
+is used.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This series revert the original commit, which mistakenly use
+dev for tunnel name, while addressing a issue on tunnel change
+when no interface name is specified.
 
-    Andrew
+Andrea Claudi (2):
+  Revert "ip6tunnel: fix 'ip -6 {show|change} dev <name>' cmds"
+  ip tunnel: warn when changing IPv6 tunnel without tunnel name
+
+ ip/ip6tunnel.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+-- 
+2.20.1
+
