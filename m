@@ -2,91 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4010263711
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FCE06371B
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:39:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfGINhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 09:37:47 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36353 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbfGINhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 09:37:46 -0400
-Received: by mail-wr1-f67.google.com with SMTP id n4so21113234wrs.3
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 06:37:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GpIh13u/cFzuWBQ8S8qolq1RE/EQMXPMGuUalJBBVIk=;
-        b=M40+oWDy/ZSU6dpfiIv668od3PlBfx9/VeKWAizpcGWWIUAqXQHxiwUm+Dl8Egsmvm
-         OCf3HiwjngS3ZnJje1WdIX6EwJsslPBZoQoCe5qrN2TPaImnfa+tlqVcVubFb8svKnya
-         GM78UYZ4TEMqC33EUatcA2AUPA6l+2LUJSRc7/xgRsudPkWLzpAlARi7NNVPthy2evXt
-         KfxMSpnZiPHXSBxgA81fxvnrfo6ZK96e+pWqZ7utR2wDY6UtDT03G1oD1OLP0D1yHeEH
-         BCURYcE9U8MgIrbOPprJipwb7aDR7DY4xGvsQBiXb8dzfc7bC9S+R+Y36ujFiDqeYILw
-         PWhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GpIh13u/cFzuWBQ8S8qolq1RE/EQMXPMGuUalJBBVIk=;
-        b=ACFk3OaEOeCRK4n4D+vMYHU4XklpPpZ969a6BeVMo+F0pZI7CWyD9Ffl1dMy/9BAFQ
-         KHOi6vM3RTij65vCJ7SNSY9qveOFWS2FsTFTBQmhgDhjOtXk4Gw8h+oA4VAFDg8qws22
-         cfeulgtYLWp8C8L7qM5igv3okIaW+yViMxwBMQyuF3tJ+nzvgbcnfz7K3TbAmp2/8RV2
-         EOhsj92YvrffBZqbXlrso6IjWJ/po6MJKGE4DHPuGsiA6gqpVTjKM/HTLcYJfn/ILG2P
-         w5s9ozW2zLcinqwLoXuHCZiooCKwRk2dLrwb1XWPOXTfbf9CT/OBweQM+0gRXhiYYsbD
-         MM6A==
-X-Gm-Message-State: APjAAAVw/LTu3O7agJXp7kTGtLA7O0i7QiDvFaeaOKzvLEAld/DSr8pi
-        bQg+FNJ2k8ItMlu3bNDTooEPKcl90p0=
-X-Google-Smtp-Source: APXvYqxTySso+z/NW2/OxAmSEdY1JlJNHwMO3hXfa8C0tcUdFvv1s3SMvjEX1ReazY0si2g8tJGOuQ==
-X-Received: by 2002:adf:e8c8:: with SMTP id k8mr25323357wrn.285.1562679464697;
-        Tue, 09 Jul 2019 06:37:44 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id l2sm1987937wmj.4.2019.07.09.06.37.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 06:37:44 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 15:37:43 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
-        marcelo.leitner@gmail.com, mkubecek@suse.cz,
-        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
-        cphealy@gmail.com, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next,v3 04/11] net: flow_offload: add
- flow_block_cb_alloc() and flow_block_cb_free()
-Message-ID: <20190709133743.GB2301@nanopsycho.orion>
-References: <20190708160614.2226-1-pablo@netfilter.org>
- <20190708160614.2226-5-pablo@netfilter.org>
+        id S1727013AbfGINjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 09:39:14 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:61529 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726411AbfGINjN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 09:39:13 -0400
+Received: from [192.168.1.5] (unknown [180.157.105.169])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 42BE241B81;
+        Tue,  9 Jul 2019 21:38:59 +0800 (CST)
+Subject: Re: [PATCH nf-next 1/3] netfilter: nf_nat_proto: add
+ nf_nat_bridge_ops support
+To:     Florian Westphal <fw@strlen.de>
+Cc:     pablo@netfilter.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <1562574567-8293-1-git-send-email-wenxu@ucloud.cn>
+ <20190708141730.ozycgmtrub7ok2qs@breakpoint.cc>
+ <0a4cf910-6c87-34b6-3018-3e25f6fecdce@ucloud.cn>
+ <20190709104206.gy6l52rx2dat3743@breakpoint.cc>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <d70cb6ae-1e90-16b2-083c-8da8112e1f28@ucloud.cn>
+Date:   Tue, 9 Jul 2019 21:38:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190708160614.2226-5-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190709104206.gy6l52rx2dat3743@breakpoint.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSkNMS0tLSk5OT09DQkpZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OBw6Mjo4KTgzTQ0qFy4pFDoq
+        FQ8KCkhVSlVKTk1JTUxCTkhCT0xOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSktOVUpNQllXWQgBWUFPSkxPNwY+
+X-HM-Tid: 0a6bd6f576d22086kuqy42be241b81
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 08, 2019 at 06:06:06PM CEST, pablo@netfilter.org wrote:
 
-[...]
+在 2019/7/9 18:42, Florian Westphal 写道:
+> wenxu <wenxu@ucloud.cn> wrote:
+>>> For NAT on bridge, it should be possible already to push such packets
+>>> up the stack by
+>>>
+>>> bridge input meta iif eth0 ip saddr 192.168.0.0/16 \
+>>>        meta pkttype set unicast ether daddr set 00:11:22:33:44:55
+>> yes, packet can be push up to IP stack to handle the nat through bridge device. 
+>>
+>> In my case dnat 2.2.1.7 to 10.0.0.7, It assume the mac address of the two address
+>> is the same known by outer.
+> I think that in general they will have different MAC addresses, so plain
+> replacement of ip addresses won't work.
+>
+>> But in This case modify the packet dmac to bridge device, the packet push up through bridge device
+>> Then do nat and route send back to bridge device.
+> Are you saying that you can use the send-to-ip-layer approach?
+>
+> We might need/want a more convenient way to do this.
+> There are two ways that I can see:
+>
+> 1. a redirect support for nftables bridge family.
+>    The redirect expression would be same as "ether daddr set
+>    <bridge_mac>", but there is no need to know the bridge mac address.
+>
+> 2. Support ebtables -t broute in nftables.
+>    The route rework for ebtables has been completed already, so
+>    this needs a new expression.  Packet that is brouted behaves
+>    as if the bridge port was not part of the bridge.
+
+This is my senario:
+
+For a virtual machine example with address  10.0.0.7 and internet address 2.2.1.7  default router
+
+10.0.0.1. There are both the east-west and south-north traffic. So the outer vnet0 connect to bridge
+
+br0 which with address 10.0.0.1.   The bridge also add an flow-based/metadata_dst vxlan device vxlan0.
 
 
->+struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
+So there are three kinds traffic to handle:
 
-You don't use net any longer.
+1. 10.0.0.7 <-----> 10.0.0.8: both ingress and egress packet gothrough the bridge with vlanid to vni feature.
+
+2. 10.0.0.7 <-----> 10.0.1.8: The egress packet push up to stack through br0 to do route. And the route send packet through
+
+vxlan0 to peer with static mac(Maybe the route can send through br0); The ingress packet always gothrough the bridge to VM.
+
+3. 10.0.0.7  <----> 1.1.1.7: The egress The egress packet push up to stack through br0 to do route and nat. And the route send
+
+packet through vxlan0 to router. With this patche, The router assume is the same mac address for 10.0.0.7 and 2.2.1.7. so it can do
+
+nat under bridge and send to VM.
 
 
->+					  void *cb_ident, void *cb_priv,
->+					  void (*release)(void *cb_priv))
+I think the most big problem is that the only vxlan0 device is alyways attach on br0. For L3( do route) traffic the egress packet will push
 
-[...]
+up to stack do route through br0.  The ingress I hope only gothrough the bridge to VM for all the three kinds traffic above.
+
