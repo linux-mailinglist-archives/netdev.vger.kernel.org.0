@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A4063999
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 18:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F8E639C1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 19:01:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbfGIQmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 12:42:14 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:55525 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbfGIQmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 12:42:13 -0400
-Received: by mail-io1-f72.google.com with SMTP id f22so23636143ioh.22
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 09:42:13 -0700 (PDT)
+        id S1726435AbfGIRBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 13:01:00 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:46415 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfGIRBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 13:01:00 -0400
+Received: by mail-pl1-f194.google.com with SMTP id c2so8826978plz.13
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 10:01:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=autovalidinfo.com; s=google;
-        h=mime-version:message-id:date:subject:from:to;
-        bh=g2OrUSuLalUu1V80qpq+g8yQEILN9KCqv9ZfJwilvMY=;
-        b=n4weYQT4kF/LUW/hjjmCut4yZwnqSRrC+UQlMZ/78Hkr6qOMwSdH0NM4FoRx+YdaCv
-         sDkidjq+6qBa8u2foyRbyrtp1e2F/UJa/gkr5qZ5CUpFONSuEKhkJ9oe4dHRtlylUheA
-         uZWULydY+fuS+vow0chXtd/XqIEaH1ujvcJ7C5MsWn5O0qxH2ka3EAIYWC2z/1MIy1Nw
-         7x5j4VtflRJJI3J8J3hJwoY8F6TVft//SWEamyBfj+ycOx7ApHoYNoKiJOKXpK5hQAb4
-         2VyjG+YE0Sc82TeTOrkB+nv8pjrZDjxfPSwFGSkqHkph06l4oLra0h/PUjIfQ1Ptf8uB
-         Asgw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PU679FyfhXCaL2ezC5uP2VCWSsT2HL2Gravp5b8FT1o=;
+        b=MTog4N+QkytO1ABiRZYX22BK0htrTtXji+ijrgwKE05Kw0cBkHiMht0hD+o7mrY2Ot
+         xi8KZnsDe3rtS5ilrnjzXPVhH3YbtZIiYYnEQ2tcz2ENxkl2dfGdBNMSHvvDviwOnb5f
+         Gs7uHYYkBERrkyfoLovLfR8FryJjOpHpdsE0g4Lao+gNsEAYUIVWS/pqgZU82izhRFmX
+         ECRiv0lB3b8GtPO6irPKKqIgwnH+BZKwILwAJBDtJkSnQD5Ma+0TiFdfohfvd6+8Tlh/
+         VyN6NudhZVDqbzjIuEzP+VoYjcnIKn1vRF0UDnzlbR2GJpHRj7RC468xbQNkO3Jj5056
+         nvVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:message-id:date:subject:from:to;
-        bh=g2OrUSuLalUu1V80qpq+g8yQEILN9KCqv9ZfJwilvMY=;
-        b=nLHLHJxZhJxl8LKqciBYDGXz/QZC7DCzAzarjJ7QZqIeKSgB5j8eGHX3t12iATf/dS
-         ri6NSq6TRh44/is3tkMFKLNVasTpUdUfDjVSSpPO3kmOZo7LJmLliX22tKdaVWHzLbwL
-         kxniB5ByvPQZVPmhnxwdtSk6kCt49wBP7VUwyZF3HuNp2O5Hu+Jm7kkr3+Ag7QOmImpr
-         CWqu9o6q+1FGPc0kSxUjZkJt0ddyutP67se/zJJBCxxUOcVIvbZgMCG0MNjy9Y0yjkPP
-         vmC8QscKgajPETzdEr4jiW9jU9sMeDFsvzfzXonIeDRiT2ac4zCIsWrY1bd4/SCfUMw+
-         OXiQ==
-X-Gm-Message-State: APjAAAUKLqqKPxq6x6gL6BTO0ISi49oRprWuTx4hwxfn7GfueDQf2S4e
-        B40cSd7pbnWtbkOexPcZNj1bPL3ikWsn
-X-Google-Smtp-Source: APXvYqwFtV1TLZDrZx742nQY3FW3523wcviaTWYpLEOcdVcYT0IIDIKwGN2rq/CaAJw5oIf8bLAz3NcgTw==
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PU679FyfhXCaL2ezC5uP2VCWSsT2HL2Gravp5b8FT1o=;
+        b=ec8muS6DJVnzCXeDB9hBh6jflRnPpRGHKBay64UAmfU+NmHmVVnvKikf1PYOAyQjik
+         xcB3PBXjwK/Nlto/1bS1yRzQnq8VRTK09frdMX2QH+P5FXhDj3681D6Xg1Omtghu+MSd
+         2PgQfDkr40xIfZGJw8WtRqT6/Y3BCjxLamLW1ofAZtIkHkJuzpbk+a8X3LJrR8H2REWl
+         UQIYbhiaBX8JwQ7uUT4lZN0RpkpP/FXwlrIlUDQFwf5kRu5hAEBklIxZtTTcF3cOzvmG
+         RC/ctsTbx01caiKDmPzreDdLngQpt8SmEBsC0kCCmoj/QOm84He9UZUHjzz+r0gplDtn
+         /+Dw==
+X-Gm-Message-State: APjAAAXbukQVfPFiWvV8uYrD9aYHd36cxUdCc1nat3pccwzwVnMKIQSM
+        bDdICRVpgUoQ4HahRrf7t8YMvQ==
+X-Google-Smtp-Source: APXvYqxrVwBWBB5uuJEPZzYSxkW5pV630SNOcb3gmuCkUiUhmgfBO9leMUwg9MM+DupxBu0njcE4yQ==
+X-Received: by 2002:a17:902:145:: with SMTP id 63mr34467496plb.55.1562691659535;
+        Tue, 09 Jul 2019 10:00:59 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t96sm6490920pjb.1.2019.07.09.10.00.58
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 09 Jul 2019 10:00:59 -0700 (PDT)
+Date:   Tue, 9 Jul 2019 10:00:51 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        xiyou.wangcong@gmail.com, dsahern@gmail.com,
+        willemdebruijn.kernel@gmail.com, simon.horman@netronome.com,
+        jakub.kicinski@netronome.com, oss-drivers@netronome.com
+Subject: Re: [PATCH iproute2-next 2/3] tc: add mpls actions
+Message-ID: <20190709100051.65bd159d@hermes.lan>
+In-Reply-To: <1562687972-23549-3-git-send-email-john.hurley@netronome.com>
+References: <1562687972-23549-1-git-send-email-john.hurley@netronome.com>
+        <1562687972-23549-3-git-send-email-john.hurley@netronome.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:f203:: with SMTP id q3mr24878193ioh.208.1562690532818;
- Tue, 09 Jul 2019 09:42:12 -0700 (PDT)
-Message-ID: <0000000000001a4b0b058d423e78@google.com>
-Date:   Tue, 09 Jul 2019 16:42:12 +0000
-Subject:  Cloud Service providers Contact List 
-From:   scarlett.hickman@autovalidinfo.com
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-Would you be interested in Cloud Service providers Contact List? We are  
-happy to provide the database across globe, specifically North America,  
-EMEA, APAC and Latin America.
-We also have other users like: Microsoft Azure, Google Cloud, Alibaba  
-Cloud, IBM, Oracle, Virtustream CenturyLink, Rackspace, Joyent, Skytap,  
-Interoute, Fujitsu,NTT Communications and many more.
-All Fields: Names, Title, Email, Phone, Company Name, Company URL, Company   
-physical address, Industry, website, Company Size (Revenue and Employee)
+On Tue,  9 Jul 2019 16:59:31 +0100
+John Hurley <john.hurley@netronome.com> wrote:
 
-Please let me know your targeted criteria with geography to provide you
-with detailed information for your review Await your response.
-Regards
-Scarlett Hickman
-Marketing Manager
+> 	if (!tb[TCA_MPLS_PARMS]) {
+> +		print_string(PRINT_FP, NULL, "%s", "[NULL mpls parameters]");
 
-To opt-out replay in subject line.
+This is an error message please just use fprintf(stderr instead
