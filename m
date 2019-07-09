@@ -2,130 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF4F63E44
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 01:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9E9B63E4E
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 01:19:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbfGIXKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 19:10:30 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35274 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbfGIXKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 19:10:30 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y4so516023wrm.2;
-        Tue, 09 Jul 2019 16:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=mVzABAaLZPttRpLpfx8AbBdhRdMXPPyOU3lhjijb9ko=;
-        b=NiQcOAkdF16fWhs2ZknhmulLdhJX0NZmCruIwDdoAvC3NBRiVPJTaTh+nOMoWo/isd
-         qwiBFOjDyo09xwrogq8Gs3wt9jdpMn9MkdMxhuy7Z6GQqa4i4B6X3JYSAum2CxE5ttNG
-         DYBQcWNuldMx5dDBVBDk4IEbgZQl5m2D1+doO0h0M6SrxEcnZk2Hs5i+H8/fjNu9Gxez
-         Hu2LC5naSfghB1bT45yOOOjORj28vIQ4nHfxAIF5xfQiU8Uc+LDZacMifcRdjN2307VQ
-         0PSWEFBBbG/MnTqTJM6D/9U4KI+n2VwNmJeVHq7vhQ5ylfE9GagvTHxfxIfwLO3ENd8N
-         R8sg==
+        id S1726623AbfGIXTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 19:19:33 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:44141 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726133AbfGIXTd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 19:19:33 -0400
+Received: by mail-lf1-f68.google.com with SMTP id r15so198422lfm.11
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 16:19:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mVzABAaLZPttRpLpfx8AbBdhRdMXPPyOU3lhjijb9ko=;
-        b=SlPSRZ3fSMfYGPYUeyIBtrSiADIn0MbcX10fqgCmdRXkop3dOT1jEIwdiID8tfm358
-         20ITgZhtSK/mb4mAGsORue9Bh3ef2sVexb7KTukZAQAVpCAtVznqFffJGVH3yaPsBZL/
-         9H+JDktotRqYhjFu4Zd9disdoDfEGrU/ywB776dArYCxyOJ095lrbe7LjiVKSJespY2+
-         iADFOYCWnVJ8T+uwN2DvhLZMHfmLqEEX//c/2BK6R1TSvrwjKesoVXrnIYlv+DnigVgK
-         9Ye6Fgwy7bVIKOCHmmn1Pe5l7uqjN3HR4jV8PEjn63eoSToMb3u41YDh3FGv4xxuIYKz
-         XA4g==
-X-Gm-Message-State: APjAAAUhNnutirr8Jb37e5V64ge1LgQDSJ2bSXd6rznrwt+prVKHAIZx
-        hccYuDHdcJhP5NuebxmOyAw=
-X-Google-Smtp-Source: APXvYqzhURMOcsvp/8T5JJ5w1FsWX+QkKQXLR7zUXXu7AtvU6OJIVLFJDmoNYbWPZDgKxCEeFShKEQ==
-X-Received: by 2002:adf:8bd1:: with SMTP id w17mr6901359wra.50.1562713826986;
-        Tue, 09 Jul 2019 16:10:26 -0700 (PDT)
-Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
-        by smtp.gmail.com with ESMTPSA id w7sm221876wrn.11.2019.07.09.16.10.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 16:10:26 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 16:10:24 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Boris Pismenny <borisp@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH] net/mlx5e: Return in default case statement in
- tx_post_resync_params
-Message-ID: <20190709231024.GA61953@archlinux-threadripper>
-References: <20190708231154.89969-1-natechancellor@gmail.com>
- <CAKwvOdkYdNiKorJAKHZ7LTfk9eOpMqe6F4QSmJWQ=-YNuPAyrw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ft+jHBciVYxDrRFiK8w1c/uzct7JzZrQ0AUuMwhMvn0=;
+        b=Yw7U0pNOvkvPKaHIDnKKScGlB9Dg73GKetwD6Hr7/+UoECwP6eh52dWdAeQayM0Cw5
+         m894mHSur3ZdtwkPVa4Ka5rUptlRBJTXVKd4LGYZMXu5cIwR1l7TP7T4jAjOZNIKf+Eb
+         43ZBFQXG7DavFZv5uSF0a02sctk4Bbo5Y/ayBoIWo84amfSQt38QcDn7YbtsQhxTm0hp
+         MAPlT1dIXXPRAtRPIgQg/GLXshEF4M1YMH0+Dfznqgk0vMikzEJgjTCIisJMviqqmQw3
+         sYOxQkGYPFLuMxsVE/zH1W21/iXtnua4Sc+su1+AJB38T1c4+0c+JkWBN9u5MxhUEv2B
+         gupg==
+X-Gm-Message-State: APjAAAVJdleKlwqDUmZW7UWdTGnIQ3IqiEK/XGDcOUye9TZh+E7+mtvY
+        iliGgBxtG4IeA0u/rxPuSOInlQDKfFh0K4mVmZC1dN51KJ8=
+X-Google-Smtp-Source: APXvYqyvI6O94W1xajnAjogBXqSxS33RrxGFDZMwCs9vWLvTgwrTmbRiUsAoiCjd+loL8qhWm//KlCW8x34M5qsSc0Y=
+X-Received: by 2002:ac2:4466:: with SMTP id y6mr8654254lfl.0.1562714371298;
+ Tue, 09 Jul 2019 16:19:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdkYdNiKorJAKHZ7LTfk9eOpMqe6F4QSmJWQ=-YNuPAyrw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190709204040.17746-1-mcroce@redhat.com> <20190709143758.695a65bc@hermes.lan>
+In-Reply-To: <20190709143758.695a65bc@hermes.lan>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Wed, 10 Jul 2019 01:18:55 +0200
+Message-ID: <CAGnkfhz+p1o_yHxk2jkY9ggNwLSO-Jk4BcxPuWhSHw1YXoJsSw@mail.gmail.com>
+Subject: Re: [PATCH iproute2] utils: don't match empty strings as prefixes
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 03:44:59PM -0700, Nick Desaulniers wrote:
-> On Mon, Jul 8, 2019 at 4:13 PM Nathan Chancellor
-> <natechancellor@gmail.com> wrote:
+On Tue, Jul 9, 2019 at 11:38 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Tue,  9 Jul 2019 22:40:40 +0200
+> Matteo Croce <mcroce@redhat.com> wrote:
+>
+> > iproute has an utility function which checks if a string is a prefix for
+> > another one, to allow use of abbreviated commands, e.g. 'addr' or 'a'
+> > instead of 'address'.
 > >
-> > clang warns:
+> > This routine unfortunately considers an empty string as prefix
+> > of any pattern, leading to undefined behaviour when an empty
+> > argument is passed to ip:
 > >
-> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:251:2:
-> > warning: variable 'rec_seq_sz' is used uninitialized whenever switch
-> > default is taken [-Wsometimes-uninitialized]
-> >         default:
-> >         ^~~~~~~
-> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:255:46: note:
-> > uninitialized use occurs here
-> >         skip_static_post = !memcmp(rec_seq, &rn_be, rec_seq_sz);
-> >                                                     ^~~~~~~~~~
-> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:239:16: note:
-> > initialize the variable 'rec_seq_sz' to silence this warning
-> >         u16 rec_seq_sz;
-> >                       ^
-> >                        = 0
-> > 1 warning generated.
+> >     # ip ''
+> >     1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+> >         link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+> >         inet 127.0.0.1/8 scope host lo
+> >            valid_lft forever preferred_lft forever
+> >         inet6 ::1/128 scope host
+> >            valid_lft forever preferred_lft forever
 > >
-> > This case statement was clearly designed to be one that should not be
-> > hit during runtime because of the WARN_ON statement so just return early
-> > to prevent copying uninitialized memory up into rn_be.
+> >     # tc ''
+> >     qdisc noqueue 0: dev lo root refcnt 2
 > >
-> > Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/590
-> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> >     # ip address add 192.0.2.0/24 '' 198.51.100.1 dev dummy0
+> >     # ip addr show dev dummy0
+> >     6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+> >         link/ether 02:9d:5e:e9:3f:c0 brd ff:ff:ff:ff:ff:ff
+> >         inet 192.0.2.0/24 brd 198.51.100.1 scope global dummy0
+> >            valid_lft forever preferred_lft forever
+> >
+> > Rewrite matches() so it takes care of an empty input, and doesn't
+> > scan the input strings three times: the actual implementation
+> > does 2 strlen and a memcpy to accomplish the same task.
+> >
+> > Signed-off-by: Matteo Croce <mcroce@redhat.com>
 > > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 1 +
-> >  1 file changed, 1 insertion(+)
+> >  include/utils.h |  2 +-
+> >  lib/utils.c     | 14 +++++++++-----
+> >  2 files changed, 10 insertions(+), 6 deletions(-)
 > >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-> > index 3f5f4317a22b..5c08891806f0 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-> > @@ -250,6 +250,7 @@ tx_post_resync_params(struct mlx5e_txqsq *sq,
-> >         }
-> >         default:
-> >                 WARN_ON(1);
-> > +               return;
-> >         }
-> 
-> hmm...a switch statement with a single case is a code smell.  How
-> about a single conditional with early return?  Then the "meat" of the
-> happy path doesn't need an additional level of indentation.
-> -- 
-> Thanks,
-> ~Nick Desaulniers
+> > diff --git a/include/utils.h b/include/utils.h
+> > index 927fdc17..f4d12abb 100644
+> > --- a/include/utils.h
+> > +++ b/include/utils.h
+> > @@ -198,7 +198,7 @@ int nodev(const char *dev);
+> >  int check_ifname(const char *);
+> >  int get_ifname(char *, const char *);
+> >  const char *get_ifname_rta(int ifindex, const struct rtattr *rta);
+> > -int matches(const char *arg, const char *pattern);
+> > +int matches(const char *prefix, const char *string);
+> >  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits);
+> >  int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
+> >
+> > diff --git a/lib/utils.c b/lib/utils.c
+> > index be0f11b0..73ce19bb 100644
+> > --- a/lib/utils.c
+> > +++ b/lib/utils.c
+> > @@ -887,13 +887,17 @@ const char *get_ifname_rta(int ifindex, const struct rtattr *rta)
+> >       return name;
+> >  }
+> >
+> > -int matches(const char *cmd, const char *pattern)
+> > +/* Check if 'prefix' is a non empty prefix of 'string' */
+> > +int matches(const char *prefix, const char *string)
+> >  {
+> > -     int len = strlen(cmd);
+> > +     if (!*prefix)
+> > +             return 1;
+> > +     while(*string && *prefix == *string) {
+> > +             prefix++;
+> > +             string++;
+> > +     }
+> >
+> > -     if (len > strlen(pattern))
+> > -             return -1;
+> > -     return memcmp(pattern, cmd, len);
+> > +     return *prefix;
+> >  }
+> >
+> >  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
+>
+> ERROR: space required before the open parenthesis '('
+> #134: FILE: lib/utils.c:895:
+> +       while(*string && *prefix == *string) {
+>
+> total: 1 errors, 1 warnings, 30 lines checked
+>
+> The empty prefix string is a bug and should not be allowed.
+> Also return value should be same as old code (yours isn't).
+>
+>
+>
 
-I assume that the reason for this is there may be other cipher types
-added in the future? I suppose the maintainers can give more clarity to
-that.
+The old return value was the difference between the first pair of
+bytes, according to the memcmp manpage.
+All calls only checks if the matches() return value is 0 or not 0:
 
-Furthermore, if they want the switch statements to remain, it looks like
-fill_static_params_ctx also returns in the default statement so it seems
-like this is the right fix.
+iproute2$ git grep 'matches(' |grep -v -e '== 0' -e '= 0' -e '!matches('
+include/utils.h:int matches(const char *prefix, const char *string);
+include/xtables.h:extern void xtables_register_matches(struct
+xtables_match *, unsigned int);
+lib/color.c:    if (matches(dup, "-color"))
+lib/utils.c:int matches(const char *prefix, const char *string)
+tc/tc.c:                if (matches(argv[0], iter->c))
 
-Cheers,
-Nathan
+Is it a problem if it returns a non negative value for non matching strings?
+
+Regards,
+
+
+--
+Matteo Croce
+per aspera ad upstream
