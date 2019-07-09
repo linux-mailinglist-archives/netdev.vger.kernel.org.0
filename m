@@ -2,127 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C48663CE5
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE4163CE7
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:56:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729803AbfGIUzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 16:55:05 -0400
-Received: from mail-eopbgr20071.outbound.protection.outlook.com ([40.107.2.71]:58501
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726401AbfGIUzF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 16:55:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TmZF/ZOPFDU8goRcla575jbyli2VJnSGh2mDJ4Q/L50=;
- b=VnNo+yQhxiMPNzh70Xi3g6PI/59fNWscma9lBpihh7GhwmD+qwzvLEp8ezY2d3vcpzL4pLHayCp66RrDy/NVw+Rp1pbB5uRuOojddAxE9mCzECsQO7uC7LGyls0X07azhhEfUhb9BCqrR077bFAeA25Cyc++JsFEAAPqrjdaXMU=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2200.eurprd05.prod.outlook.com (10.168.55.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Tue, 9 Jul 2019 20:54:58 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::649e:902c:98f2:258f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::649e:902c:98f2:258f%5]) with mapi id 15.20.2052.020; Tue, 9 Jul 2019
- 20:54:58 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "saeedm@dev.mellanox.co.il" <saeedm@dev.mellanox.co.il>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     Eran Ben Elisha <eranbe@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Introduce TLS TX offload hardware
- bits and structures
-Thread-Topic: [PATCH mlx5-next 4/5] net/mlx5: Introduce TLS TX offload
- hardware bits and structures
-Thread-Index: AQHVMXJ0R4Qy/8TrKUie2vzu8va3aaa4oDOAgAISrgCAAAJWgIAAAZsAgAAQzoCACAabAA==
-Date:   Tue, 9 Jul 2019 20:54:58 +0000
-Message-ID: <c5cc4604e5759e5b8a056a3baefb8a3d3caf4f74.camel@mellanox.com>
-References: <20190703073909.14965-1-saeedm@mellanox.com>
-         <20190703073909.14965-5-saeedm@mellanox.com>
-         <20190703092735.GZ4727@mtr-leonro.mtl.com>
-         <CALzJLG-em1w+Lgf2UutbG2Lzq8bx3zUqoLGx26H2_EXOuuk+jg@mail.gmail.com>
-         <20190704171519.GE7212@mtr-leonro.mtl.com>
-         <CALzJLG--k3z2HuV09tivJuOtU-BFAyCEV1vJbPqYX+OyskggmQ@mail.gmail.com>
-         <20190704182113.GG7212@mtr-leonro.mtl.com>
-In-Reply-To: <20190704182113.GG7212@mtr-leonro.mtl.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 83cf0981-83f5-409c-1aad-08d704afb439
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2200;
-x-ms-traffictypediagnostic: DB6PR0501MB2200:
-x-microsoft-antispam-prvs: <DB6PR0501MB22002953D88C6DB2C1A176E8BEF10@DB6PR0501MB2200.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1443;
-x-forefront-prvs: 0093C80C01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(396003)(376002)(366004)(199004)(189003)(36756003)(107886003)(6512007)(4326008)(6436002)(6486002)(76116006)(91956017)(256004)(118296001)(8936002)(486006)(66066001)(7736002)(58126008)(25786009)(8676002)(86362001)(66946007)(54906003)(3846002)(66446008)(14454004)(2906002)(446003)(6246003)(6116002)(71200400001)(229853002)(76176011)(5660300002)(11346002)(68736007)(476003)(305945005)(6506007)(478600001)(81166006)(2616005)(53546011)(316002)(110136005)(99286004)(2501003)(66476007)(186003)(66556008)(102836004)(53936002)(26005)(81156014)(71190400001)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2200;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: dTYYACBoenUrNgntjZRnF4vHy1KuDmgen/OO5aBtviLbHJSR8KRzU9x8mG4L3shiTOgIYWdlocNtkQZtt2aYk7YRrdLBt0gkg8v2U+qp9Kr+Uo0HsNA2Skm0aAffOF1xYcU4QhxNvqEIFS+3MWmXr9y7I/d2z08Ql4bU4c1im2tfegdRWlk8wQuUyaymenOB76KxfTwViJbhaTbQHTw+GN4MYztbNa1CMWBAV+Mw7szlClrrK1PWwII4PQc/Y6sX8yAojiUeqbw/ho4JC4fAZrIxQe/jLOpychgrIKnbNBi9Pk9etliMw0rwqHIvqKhPcc3a7tww2l2qh0w/f6G6dfDaq9paR80NKIR7JtSaMQOkyAFmccucXcQfCkDOU52U+yEZz9U2tlNbtNoxKoMpXWvx42gS7AZ1EAehtd+u4/o=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0A75ADA5DF35764190B442EDA6962C7E@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83cf0981-83f5-409c-1aad-08d704afb439
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 20:54:58.3561
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2200
+        id S1729806AbfGIU4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 16:56:05 -0400
+Received: from mail.us.es ([193.147.175.20]:36564 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729805AbfGIU4F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 16:56:05 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 10A60285E386
+        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 22:56:01 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 01EAE1021B2
+        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 22:56:01 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 009691021A8; Tue,  9 Jul 2019 22:56:01 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 18EF8DA704;
+        Tue,  9 Jul 2019 22:55:58 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 09 Jul 2019 22:55:58 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [31.4.194.134])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 069D94265A31;
+        Tue,  9 Jul 2019 22:55:55 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
+        marcelo.leitner@gmail.com, mkubecek@suse.cz,
+        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
+        cphealy@gmail.com, phil@nwl.cc, netfilter-devel@vger.kernel.org
+Subject: [PATCH net-next,v4 00/11] netfilter: add hardware offload infrastructure
+Date:   Tue,  9 Jul 2019 22:55:38 +0200
+Message-Id: <20190709205550.3160-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA3LTA0IGF0IDIxOjIxICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
-DQo+IE9uIFRodSwgSnVsIDA0LCAyMDE5IGF0IDAxOjIxOjA0UE0gLTA0MDAsIFNhZWVkIE1haGFt
-ZWVkIHdyb3RlOg0KPiA+IE9uIFRodSwgSnVsIDQsIDIwMTkgYXQgMToxNSBQTSBMZW9uIFJvbWFu
-b3Zza3kgPGxlb25Aa2VybmVsLm9yZz4NCj4gPiB3cm90ZToNCj4gPiA+IE9uIFRodSwgSnVsIDA0
-LCAyMDE5IGF0IDAxOjA2OjU4UE0gLTA0MDAsIFNhZWVkIE1haGFtZWVkIHdyb3RlOg0KPiA+ID4g
-PiBPbiBXZWQsIEp1bCAzLCAyMDE5IGF0IDU6MjcgQU0gPGxlb25Aa2VybmVsLm9yZz4gd3JvdGU6
-DQo+ID4gPiA+ID4gT24gV2VkLCBKdWwgMDMsIDIwMTkgYXQgMDc6Mzk6MzJBTSArMDAwMCwgU2Fl
-ZWQgTWFoYW1lZWQNCj4gPiA+ID4gPiB3cm90ZToNCj4gPiA+ID4gPiA+IEZyb206IEVyYW4gQmVu
-IEVsaXNoYSA8ZXJhbmJlQG1lbGxhbm94LmNvbT4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
-QWRkIFRMUyBvZmZsb2FkIHJlbGF0ZWQgSUZDIHN0cnVjdHMsIGxheW91dHMgYW5kDQo+ID4gPiA+
-ID4gPiBlbnVtZXJhdGlvbnMuDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYt
-Ynk6IEVyYW4gQmVuIEVsaXNoYSA8ZXJhbmJlQG1lbGxhbm94LmNvbT4NCj4gPiA+ID4gPiA+IFNp
-Z25lZC1vZmYtYnk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gPiA+ID4g
-PiA+IFNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0K
-PiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiAgaW5jbHVkZS9saW51eC9tbHg1L2RldmljZS5o
-ICAgfCAgMTQgKysrKysNCj4gPiA+ID4gPiA+ICBpbmNsdWRlL2xpbnV4L21seDUvbWx4NV9pZmMu
-aCB8IDEwNA0KPiA+ID4gPiA+ID4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLQ0K
-PiA+ID4gPiA+ID4gIDIgZmlsZXMgY2hhbmdlZCwgMTE0IGluc2VydGlvbnMoKyksIDQgZGVsZXRp
-b25zKC0pDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPC4uLj4NCj4gPiA+ID4gPiANCj4gPiA+ID4g
-PiA+IEBAIC0yNzI1LDcgKzI3MzksOCBAQCBzdHJ1Y3QgbWx4NV9pZmNfdHJhZmZpY19jb3VudGVy
-X2JpdHMNCj4gPiA+ID4gPiA+IHsNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gIHN0cnVjdCBt
-bHg1X2lmY190aXNjX2JpdHMgew0KPiA+ID4gPiA+ID4gICAgICAgdTggICAgICAgICBzdHJpY3Rf
-bGFnX3R4X3BvcnRfYWZmaW5pdHlbMHgxXTsNCj4gPiA+ID4gPiA+IC0gICAgIHU4ICAgICAgICAg
-cmVzZXJ2ZWRfYXRfMVsweDNdOw0KPiA+ID4gPiA+ID4gKyAgICAgdTggICAgICAgICB0bHNfZW5b
-MHgxXTsNCj4gPiA+ID4gPiA+ICsgICAgIHU4ICAgICAgICAgcmVzZXJ2ZWRfYXRfMVsweDJdOw0K
-PiA+ID4gPiA+IA0KPiA+ID4gPiA+IEl0IHNob3VsZCBiZSByZXNlcnZlZF9hdF8yLg0KPiA+ID4g
-PiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gaXQgc2hvdWxkIGJlIGF0XzEuDQo+ID4gPiANCj4gPiA+
-IFdoeT8gU2VlIG1seDVfaWZjX2Zsb3dfdGFibGVfcHJvcF9sYXlvdXRfYml0cywNCj4gPiA+IG1s
-eDVfaWZjX3JvY2VfY2FwX2JpdHMsIGUudC5jLg0KPiA+ID4gDQo+ID4gDQo+ID4gdGhleSBhcmUg
-YWxsIGF0XzEgLi4gc28gaSBkb24ndCByZWFsbHkgdW5kZXJzdGFuZCB3aGF0IHlvdSB3YW50DQo+
-ID4gZnJvbSBtZSwNCj4gPiBMZW9uIHRoZSBjb2RlIGlzIGdvb2QsIHBsZWFzZSBkb3VibGUgY2hl
-Y2sgeW91IGNvbW1lbnRzLi4NCj4gDQo+IFNhZWVkLA0KPiANCj4gcmVzZXJ2ZWRfYXRfMSBzaG91
-bGQgYmUgcmVuYW1lZCB0byBiZSByZXNlcnZlZF9hdF8yLg0KPiANCj4gc3RyaWN0X2xhZ190eF9w
-b3J0X2FmZmluaXR5WzB4MV0gKyB0bHNfZW5bMHgxXSA9IDB4Mg0KPiANCg0KT2sgbm93IGl0IGlz
-IGNsZWFyLCBpIHRydXN0ZWQgdGhlIGRldmVsb3BlciBvbiB0aGlzIG9uZSA6KQ0KYW55d2F5IHlv
-dSBoYXZlIHRvIGFkbWl0IHRoYXQgeW91IG1pc2xlYWQgbWUgd2l0aCB5b3VyIGV4YW1wbGVzOg0K
-bXg1X2lmY19mbG93X3RhYmxlX3Byb3BfbGF5b3V0X2JpdHMgYW5kIG1seDVfaWZjX3JvY2VfY2Fw
-X2JpdHMsIHRoZXkNCmJvdGggYXJlIGZpbmUgc28gaSB0aG91Z2ggdGhpcyB3YXMgZmluZSB0b28u
-DQoNCkkgd2lsbCBmaXggaXQgdXAuDQoNClRoYW5rcywNClNhZWVkLg0KDQo+ID4gPiBUaGFua3MN
-Cj4gPiA+IA0KPiA+ID4gPiA+IFRoYW5rcw0K
+Hi,
+
+This patchset adds support for Netfilter hardware offloads.
+
+This patchset reuses the existing block infrastructure, the
+netdev_ops->ndo_setup_tc() interface, TC_SETUP_CLSFLOWER classifier and
+the flow rule API.
+
+Patch #1 adds flow_block_cb_setup_simple(), most drivers do the same thing
+         to set up flow blocks, to reduce the number of changes, consolidate
+         codebase. Use _simple() postfix as requested by Jakub Kicinski.
+         This new function resides in net/core/flow_offload.c
+
+Patch #2 renames TC_BLOCK_{UN}BIND to FLOW_BLOCK_{UN}BIND.
+
+Patch #3 renames TCF_BLOCK_BINDER_TYPE_* to FLOW_BLOCK_BINDER_TYPE_*.
+
+Patch #4 adds flow_block_cb_alloc() and flow_block_cb_free() helper
+         functions, this is the first patch of the flow block API.
+
+Patch #5 adds the helper to deal with list operations in the flow block API.
+         This includes flow_block_cb_lookup(), flow_block_cb_add() and
+	 flow_block_cb_remove().
+
+Patch #6 adds flow_block_cb_priv(), flow_block_cb_incref() and
+         flow_block_cb_decref() which completes the flow block API.
+
+Patch #7 updates the cls_api to use the flow block API from the new
+         tcf_block_setup(). This infrastructure transports these objects
+         via list (through the tc_block_offload object) back to the core
+	 for registration.
+
+            CLS_API                           DRIVER
+        TC_SETUP_BLOCK    ---------->  setup flow_block_cb object &
+                                 it adds object to flow_block_offload->cb_list
+                                                |
+            CLS_API     <-----------------------'
+           registers                     list with flow blocks
+         flow_block_cb &                   travels back to
+       calls ->reoffload               the core for registration
+
+         drivers allocate and sets up (configure the blocks), then
+	 registration happens from the core (cls_api and netfilter).
+
+Patch #8 updates drivers to use the flow block API.
+
+Patch #9 removes the tcf block callback API, which is replaced by the
+         flow block API.
+
+Patch #10 adds the flow_block_cb_is_busy() helper to check if the block
+	  is already used by a subsystem. This helper is invoked from
+	  drivers. Once drivers are updated to support for multiple
+	  subsystems, they can remove this check.
+
+Patch #11 rename tc structure and definitions for the block bind/unbind
+	  path.
+
+Patch #12 introduces basic netfilter hardware offload infrastructure
+          for the ingress chain. This includes 5-tuple exact matching
+          and accept / drop rule actions. Only basechains are supported
+          at this stage, no .reoffload callback is implemented either.
+          Default policy to "accept" is only supported for now.
+
+        table netdev filter {
+                chain ingress {
+                        type filter hook ingress device eth0 priority 0; flags offload;
+
+                        ip daddr 192.168.0.10 tcp dport 22 drop
+                }
+        }
+
+This patchset reuses the existing tcf block callback API and it places it
+in the flow block callback API in net/core/flow_offload.c.
+
+This series aims to address Jakub and Jiri's feedback, please see specific
+patches in this batch for changelog in this v4.
+
+Please, apply. Thank you very much.
+
+P.S: yes, Phil, I still believe there is a chance.
+
+Pablo Neira Ayuso (12):
+  net: flow_offload: add flow_block_cb_setup_simple()
+  net: flow_offload: rename TC_BLOCK_{UN}BIND to FLOW_BLOCK_{UN}BIND
+  net: flow_offload: rename TCF_BLOCK_BINDER_TYPE_* to FLOW_BLOCK_BINDER_TYPE_*
+  net: flow_offload: add flow_block_cb_alloc() and flow_block_cb_free()
+  net: flow_offload: add list handling functions
+  net: flow_offload: add flow_block_cb_{priv,incref,decref}()
+  net: sched: use flow block API
+  drivers: net: use flow block API
+  net: sched: remove tcf block API
+  net: flow_offload: add flow_block_cb_is_busy() and use it
+  net: flow_offload: rename tc_cls_flower_offload to flow_cls_offload
+  netfilter: nf_tables: add hardware offload support
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |  27 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c       |  18 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h       |   4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c      |  29 +--
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c    |  35 +--
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c   |  22 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h   |   6 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  49 ++--
+ drivers/net/ethernet/intel/iavf/iavf_main.c        |  58 ++---
+ drivers/net/ethernet/intel/igb/igb_main.c          |  43 ++--
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  30 +--
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |   6 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.h    |   8 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c |  18 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_gre.c    |   4 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c  |  10 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  38 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  94 ++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  34 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |   6 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c     | 116 +++++----
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h     |  10 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum_flower.c  |  34 +--
+ drivers/net/ethernet/mscc/ocelot_ace.h             |   4 +-
+ drivers/net/ethernet/mscc/ocelot_flower.c          |  70 +++---
+ drivers/net/ethernet/mscc/ocelot_tc.c              |  47 ++--
+ drivers/net/ethernet/netronome/nfp/abm/cls.c       |  22 +-
+ drivers/net/ethernet/netronome/nfp/abm/main.h      |   2 +-
+ drivers/net/ethernet/netronome/nfp/bpf/main.c      |  30 +--
+ drivers/net/ethernet/netronome/nfp/flower/action.c |  14 +-
+ drivers/net/ethernet/netronome/nfp/flower/main.h   |   6 +-
+ drivers/net/ethernet/netronome/nfp/flower/match.c  |  44 ++--
+ .../net/ethernet/netronome/nfp/flower/metadata.c   |   2 +-
+ .../net/ethernet/netronome/nfp/flower/offload.c    | 116 +++++----
+ drivers/net/ethernet/qlogic/qede/qede.h            |   2 +-
+ drivers/net/ethernet/qlogic/qede/qede_filter.c     |   2 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c       |  32 +--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  23 +-
+ drivers/net/netdevsim/netdev.c                     |  29 +--
+ include/net/flow_offload.h                         |  96 ++++++++
+ include/net/netfilter/nf_tables.h                  |  14 ++
+ include/net/netfilter/nf_tables_offload.h          |  76 ++++++
+ include/net/pkt_cls.h                              | 129 +---------
+ include/uapi/linux/netfilter/nf_tables.h           |   2 +
+ net/core/flow_offload.c                            | 118 +++++++++
+ net/dsa/slave.c                                    |  33 ++-
+ net/netfilter/Makefile                             |   2 +-
+ net/netfilter/nf_tables_api.c                      |  39 ++-
+ net/netfilter/nf_tables_offload.c                  | 267 +++++++++++++++++++++
+ net/netfilter/nft_cmp.c                            |  53 ++++
+ net/netfilter/nft_immediate.c                      |  31 +++
+ net/netfilter/nft_meta.c                           |  27 +++
+ net/netfilter/nft_payload.c                        | 187 +++++++++++++++
+ net/sched/cls_api.c                                | 211 ++++++++--------
+ net/sched/cls_flower.c                             |  24 +-
+ net/sched/sch_ingress.c                            |   6 +-
+ 56 files changed, 1579 insertions(+), 880 deletions(-)
+ create mode 100644 include/net/netfilter/nf_tables_offload.h
+ create mode 100644 net/netfilter/nf_tables_offload.c
+
+-- 
+2.11.0
+
+
