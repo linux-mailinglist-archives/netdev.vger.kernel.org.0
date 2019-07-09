@@ -2,128 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB04263CCC
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C48663CE5
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:55:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729759AbfGIUkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 16:40:55 -0400
-Received: from mail-wm1-f52.google.com ([209.85.128.52]:36932 "EHLO
-        mail-wm1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728955AbfGIUkz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 16:40:55 -0400
-Received: by mail-wm1-f52.google.com with SMTP id f17so123286wme.2
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 13:40:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tgYDiYa1iHwsUkx7Cb70V+6OFnAyzBKXGNEbbq+IF0s=;
-        b=VUFip7IDeZgswPuGxKB7SZpEmLjyJi9HxCyGTH2V+R0DGc2t1rrcFrmlhHybXGBJJu
-         j77ooYpv0ePTbHGB6bE/NabSE0LfoKdyJSQdEZnwz3nqzN+cyYY5Rpa9K6XlXl9LU+qs
-         +IOsmZOX3EaFeopoK/jeNaPKSCZVWS+mr5ob1YNs2F1gK7U53hqpC1KhL/MrBU3HjnEc
-         0kFVWVTngutjn/g5qnNhhz7m9uKiKfdduhrF0YCOF04P8AgmrDSm9Xp1x4DDME5bSc+5
-         bdmbyJnbcBbrLHQY1bMeZhGPUk08x1bFt2/9W82JmWhn0ff0UB0SuOhw0URxae3pl/iY
-         H/yg==
-X-Gm-Message-State: APjAAAW+pGUtL5kZBD63tG6p6eOC+a3SJ+uorukLQ8GDOMTymt0snxeR
-        UkdII2a4dYL+BOY8g82thg8wllUWQ7Q=
-X-Google-Smtp-Source: APXvYqz1hfiWWfAOd8XM5hA67Te4pogXX9TKf4A2PFl9BhBC99jbO0klRrFrvWHhJVFmQwEe+w15LA==
-X-Received: by 2002:a7b:c144:: with SMTP id z4mr1452389wmi.50.1562704852819;
-        Tue, 09 Jul 2019 13:40:52 -0700 (PDT)
-Received: from raver.teknoraver.net (net-47-53-105-184.cust.vodafonedsl.it. [47.53.105.184])
-        by smtp.gmail.com with ESMTPSA id l25sm66182wme.13.2019.07.09.13.40.51
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 13:40:52 -0700 (PDT)
-From:   Matteo Croce <mcroce@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH iproute2] utils: don't match empty strings as prefixes
-Date:   Tue,  9 Jul 2019 22:40:40 +0200
-Message-Id: <20190709204040.17746-1-mcroce@redhat.com>
-X-Mailer: git-send-email 2.21.0
+        id S1729803AbfGIUzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 16:55:05 -0400
+Received: from mail-eopbgr20071.outbound.protection.outlook.com ([40.107.2.71]:58501
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726401AbfGIUzF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 16:55:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TmZF/ZOPFDU8goRcla575jbyli2VJnSGh2mDJ4Q/L50=;
+ b=VnNo+yQhxiMPNzh70Xi3g6PI/59fNWscma9lBpihh7GhwmD+qwzvLEp8ezY2d3vcpzL4pLHayCp66RrDy/NVw+Rp1pbB5uRuOojddAxE9mCzECsQO7uC7LGyls0X07azhhEfUhb9BCqrR077bFAeA25Cyc++JsFEAAPqrjdaXMU=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2200.eurprd05.prod.outlook.com (10.168.55.8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Tue, 9 Jul 2019 20:54:58 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::649e:902c:98f2:258f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::649e:902c:98f2:258f%5]) with mapi id 15.20.2052.020; Tue, 9 Jul 2019
+ 20:54:58 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "saeedm@dev.mellanox.co.il" <saeedm@dev.mellanox.co.il>,
+        "leon@kernel.org" <leon@kernel.org>
+CC:     Eran Ben Elisha <eranbe@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Introduce TLS TX offload hardware
+ bits and structures
+Thread-Topic: [PATCH mlx5-next 4/5] net/mlx5: Introduce TLS TX offload
+ hardware bits and structures
+Thread-Index: AQHVMXJ0R4Qy/8TrKUie2vzu8va3aaa4oDOAgAISrgCAAAJWgIAAAZsAgAAQzoCACAabAA==
+Date:   Tue, 9 Jul 2019 20:54:58 +0000
+Message-ID: <c5cc4604e5759e5b8a056a3baefb8a3d3caf4f74.camel@mellanox.com>
+References: <20190703073909.14965-1-saeedm@mellanox.com>
+         <20190703073909.14965-5-saeedm@mellanox.com>
+         <20190703092735.GZ4727@mtr-leonro.mtl.com>
+         <CALzJLG-em1w+Lgf2UutbG2Lzq8bx3zUqoLGx26H2_EXOuuk+jg@mail.gmail.com>
+         <20190704171519.GE7212@mtr-leonro.mtl.com>
+         <CALzJLG--k3z2HuV09tivJuOtU-BFAyCEV1vJbPqYX+OyskggmQ@mail.gmail.com>
+         <20190704182113.GG7212@mtr-leonro.mtl.com>
+In-Reply-To: <20190704182113.GG7212@mtr-leonro.mtl.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 83cf0981-83f5-409c-1aad-08d704afb439
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2200;
+x-ms-traffictypediagnostic: DB6PR0501MB2200:
+x-microsoft-antispam-prvs: <DB6PR0501MB22002953D88C6DB2C1A176E8BEF10@DB6PR0501MB2200.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1443;
+x-forefront-prvs: 0093C80C01
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(396003)(376002)(366004)(199004)(189003)(36756003)(107886003)(6512007)(4326008)(6436002)(6486002)(76116006)(91956017)(256004)(118296001)(8936002)(486006)(66066001)(7736002)(58126008)(25786009)(8676002)(86362001)(66946007)(54906003)(3846002)(66446008)(14454004)(2906002)(446003)(6246003)(6116002)(71200400001)(229853002)(76176011)(5660300002)(11346002)(68736007)(476003)(305945005)(6506007)(478600001)(81166006)(2616005)(53546011)(316002)(110136005)(99286004)(2501003)(66476007)(186003)(66556008)(102836004)(53936002)(26005)(81156014)(71190400001)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2200;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: dTYYACBoenUrNgntjZRnF4vHy1KuDmgen/OO5aBtviLbHJSR8KRzU9x8mG4L3shiTOgIYWdlocNtkQZtt2aYk7YRrdLBt0gkg8v2U+qp9Kr+Uo0HsNA2Skm0aAffOF1xYcU4QhxNvqEIFS+3MWmXr9y7I/d2z08Ql4bU4c1im2tfegdRWlk8wQuUyaymenOB76KxfTwViJbhaTbQHTw+GN4MYztbNa1CMWBAV+Mw7szlClrrK1PWwII4PQc/Y6sX8yAojiUeqbw/ho4JC4fAZrIxQe/jLOpychgrIKnbNBi9Pk9etliMw0rwqHIvqKhPcc3a7tww2l2qh0w/f6G6dfDaq9paR80NKIR7JtSaMQOkyAFmccucXcQfCkDOU52U+yEZz9U2tlNbtNoxKoMpXWvx42gS7AZ1EAehtd+u4/o=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0A75ADA5DF35764190B442EDA6962C7E@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83cf0981-83f5-409c-1aad-08d704afb439
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 20:54:58.3561
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2200
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-iproute has an utility function which checks if a string is a prefix for
-another one, to allow use of abbreviated commands, e.g. 'addr' or 'a'
-instead of 'address'.
-
-This routine unfortunately considers an empty string as prefix
-of any pattern, leading to undefined behaviour when an empty
-argument is passed to ip:
-
-    # ip ''
-    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-        inet 127.0.0.1/8 scope host lo
-           valid_lft forever preferred_lft forever
-        inet6 ::1/128 scope host
-           valid_lft forever preferred_lft forever
-
-    # tc ''
-    qdisc noqueue 0: dev lo root refcnt 2
-
-    # ip address add 192.0.2.0/24 '' 198.51.100.1 dev dummy0
-    # ip addr show dev dummy0
-    6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-        link/ether 02:9d:5e:e9:3f:c0 brd ff:ff:ff:ff:ff:ff
-        inet 192.0.2.0/24 brd 198.51.100.1 scope global dummy0
-           valid_lft forever preferred_lft forever
-
-Rewrite matches() so it takes care of an empty input, and doesn't
-scan the input strings three times: the actual implementation
-does 2 strlen and a memcpy to accomplish the same task.
-
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
----
- include/utils.h |  2 +-
- lib/utils.c     | 14 +++++++++-----
- 2 files changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/include/utils.h b/include/utils.h
-index 927fdc17..f4d12abb 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -198,7 +198,7 @@ int nodev(const char *dev);
- int check_ifname(const char *);
- int get_ifname(char *, const char *);
- const char *get_ifname_rta(int ifindex, const struct rtattr *rta);
--int matches(const char *arg, const char *pattern);
-+int matches(const char *prefix, const char *string);
- int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits);
- int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
- 
-diff --git a/lib/utils.c b/lib/utils.c
-index be0f11b0..73ce19bb 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -887,13 +887,17 @@ const char *get_ifname_rta(int ifindex, const struct rtattr *rta)
- 	return name;
- }
- 
--int matches(const char *cmd, const char *pattern)
-+/* Check if 'prefix' is a non empty prefix of 'string' */
-+int matches(const char *prefix, const char *string)
- {
--	int len = strlen(cmd);
-+	if (!*prefix)
-+		return 1;
-+	while(*string && *prefix == *string) {
-+		prefix++;
-+		string++;
-+	}
- 
--	if (len > strlen(pattern))
--		return -1;
--	return memcmp(pattern, cmd, len);
-+	return *prefix;
- }
- 
- int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
--- 
-2.21.0
-
+T24gVGh1LCAyMDE5LTA3LTA0IGF0IDIxOjIxICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
+DQo+IE9uIFRodSwgSnVsIDA0LCAyMDE5IGF0IDAxOjIxOjA0UE0gLTA0MDAsIFNhZWVkIE1haGFt
+ZWVkIHdyb3RlOg0KPiA+IE9uIFRodSwgSnVsIDQsIDIwMTkgYXQgMToxNSBQTSBMZW9uIFJvbWFu
+b3Zza3kgPGxlb25Aa2VybmVsLm9yZz4NCj4gPiB3cm90ZToNCj4gPiA+IE9uIFRodSwgSnVsIDA0
+LCAyMDE5IGF0IDAxOjA2OjU4UE0gLTA0MDAsIFNhZWVkIE1haGFtZWVkIHdyb3RlOg0KPiA+ID4g
+PiBPbiBXZWQsIEp1bCAzLCAyMDE5IGF0IDU6MjcgQU0gPGxlb25Aa2VybmVsLm9yZz4gd3JvdGU6
+DQo+ID4gPiA+ID4gT24gV2VkLCBKdWwgMDMsIDIwMTkgYXQgMDc6Mzk6MzJBTSArMDAwMCwgU2Fl
+ZWQgTWFoYW1lZWQNCj4gPiA+ID4gPiB3cm90ZToNCj4gPiA+ID4gPiA+IEZyb206IEVyYW4gQmVu
+IEVsaXNoYSA8ZXJhbmJlQG1lbGxhbm94LmNvbT4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
+QWRkIFRMUyBvZmZsb2FkIHJlbGF0ZWQgSUZDIHN0cnVjdHMsIGxheW91dHMgYW5kDQo+ID4gPiA+
+ID4gPiBlbnVtZXJhdGlvbnMuDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYt
+Ynk6IEVyYW4gQmVuIEVsaXNoYSA8ZXJhbmJlQG1lbGxhbm94LmNvbT4NCj4gPiA+ID4gPiA+IFNp
+Z25lZC1vZmYtYnk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gPiA+ID4g
+PiA+IFNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0K
+PiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiAgaW5jbHVkZS9saW51eC9tbHg1L2RldmljZS5o
+ICAgfCAgMTQgKysrKysNCj4gPiA+ID4gPiA+ICBpbmNsdWRlL2xpbnV4L21seDUvbWx4NV9pZmMu
+aCB8IDEwNA0KPiA+ID4gPiA+ID4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLQ0K
+PiA+ID4gPiA+ID4gIDIgZmlsZXMgY2hhbmdlZCwgMTE0IGluc2VydGlvbnMoKyksIDQgZGVsZXRp
+b25zKC0pDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPC4uLj4NCj4gPiA+ID4gPiANCj4gPiA+ID4g
+PiA+IEBAIC0yNzI1LDcgKzI3MzksOCBAQCBzdHJ1Y3QgbWx4NV9pZmNfdHJhZmZpY19jb3VudGVy
+X2JpdHMNCj4gPiA+ID4gPiA+IHsNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gIHN0cnVjdCBt
+bHg1X2lmY190aXNjX2JpdHMgew0KPiA+ID4gPiA+ID4gICAgICAgdTggICAgICAgICBzdHJpY3Rf
+bGFnX3R4X3BvcnRfYWZmaW5pdHlbMHgxXTsNCj4gPiA+ID4gPiA+IC0gICAgIHU4ICAgICAgICAg
+cmVzZXJ2ZWRfYXRfMVsweDNdOw0KPiA+ID4gPiA+ID4gKyAgICAgdTggICAgICAgICB0bHNfZW5b
+MHgxXTsNCj4gPiA+ID4gPiA+ICsgICAgIHU4ICAgICAgICAgcmVzZXJ2ZWRfYXRfMVsweDJdOw0K
+PiA+ID4gPiA+IA0KPiA+ID4gPiA+IEl0IHNob3VsZCBiZSByZXNlcnZlZF9hdF8yLg0KPiA+ID4g
+PiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gaXQgc2hvdWxkIGJlIGF0XzEuDQo+ID4gPiANCj4gPiA+
+IFdoeT8gU2VlIG1seDVfaWZjX2Zsb3dfdGFibGVfcHJvcF9sYXlvdXRfYml0cywNCj4gPiA+IG1s
+eDVfaWZjX3JvY2VfY2FwX2JpdHMsIGUudC5jLg0KPiA+ID4gDQo+ID4gDQo+ID4gdGhleSBhcmUg
+YWxsIGF0XzEgLi4gc28gaSBkb24ndCByZWFsbHkgdW5kZXJzdGFuZCB3aGF0IHlvdSB3YW50DQo+
+ID4gZnJvbSBtZSwNCj4gPiBMZW9uIHRoZSBjb2RlIGlzIGdvb2QsIHBsZWFzZSBkb3VibGUgY2hl
+Y2sgeW91IGNvbW1lbnRzLi4NCj4gDQo+IFNhZWVkLA0KPiANCj4gcmVzZXJ2ZWRfYXRfMSBzaG91
+bGQgYmUgcmVuYW1lZCB0byBiZSByZXNlcnZlZF9hdF8yLg0KPiANCj4gc3RyaWN0X2xhZ190eF9w
+b3J0X2FmZmluaXR5WzB4MV0gKyB0bHNfZW5bMHgxXSA9IDB4Mg0KPiANCg0KT2sgbm93IGl0IGlz
+IGNsZWFyLCBpIHRydXN0ZWQgdGhlIGRldmVsb3BlciBvbiB0aGlzIG9uZSA6KQ0KYW55d2F5IHlv
+dSBoYXZlIHRvIGFkbWl0IHRoYXQgeW91IG1pc2xlYWQgbWUgd2l0aCB5b3VyIGV4YW1wbGVzOg0K
+bXg1X2lmY19mbG93X3RhYmxlX3Byb3BfbGF5b3V0X2JpdHMgYW5kIG1seDVfaWZjX3JvY2VfY2Fw
+X2JpdHMsIHRoZXkNCmJvdGggYXJlIGZpbmUgc28gaSB0aG91Z2ggdGhpcyB3YXMgZmluZSB0b28u
+DQoNCkkgd2lsbCBmaXggaXQgdXAuDQoNClRoYW5rcywNClNhZWVkLg0KDQo+ID4gPiBUaGFua3MN
+Cj4gPiA+IA0KPiA+ID4gPiA+IFRoYW5rcw0K
