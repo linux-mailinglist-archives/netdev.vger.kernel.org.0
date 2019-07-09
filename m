@@ -2,263 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9209662F46
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 06:17:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9696062F80
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 06:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbfGIER5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 00:17:57 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41285 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727366AbfGIERz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 00:17:55 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 9 Jul 2019 07:17:50 +0300
-Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x694Hffl007381;
-        Tue, 9 Jul 2019 07:17:49 +0300
-From:   Parav Pandit <parav@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jiri@mellanox.com, saeedm@mellanox.com,
-        jakub.kicinski@netronome.com, Parav Pandit <parav@mellanox.com>
-Subject: [PATCH net-next v6 5/5] net/mlx5e: Register devlink ports for physical link, PCI PF, VFs
-Date:   Mon,  8 Jul 2019 23:17:39 -0500
-Message-Id: <20190709041739.44292-6-parav@mellanox.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190709041739.44292-1-parav@mellanox.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
- <20190709041739.44292-1-parav@mellanox.com>
+        id S1726680AbfGIEZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 00:25:02 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:55665 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfGIEZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 00:25:01 -0400
+Received: by mail-io1-f70.google.com with SMTP id f22so21601249ioh.22
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 21:25:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ThTKrBZsQ1JlWFlPRVe4RXWJ3j4uyiYja7ipCGiZOCQ=;
+        b=IR7lsHb3oNFuMqHGmuQtNNatAPxhkSNrmBTRUGqA4+r2Kc0ylphT4iAYiQXdvvDF8m
+         kM+hr/Suw1o9f8RS0DZwGg9bEECvn85yxOzB7vn+3BBROQtUL75+ftG/Y6Pjx5OX5B50
+         wSe1IBKBsDNMZarg1pNOPu0oDrU9DTDYG9UqGer2DBbyDgp8dMiyqmYGqwLVXW6YsLah
+         waP7D59vu4pcoTkhkzTqvF9MtcL0NPfI2hOk5WFki5utTBpKA8m44Vu4P1W/X2P0mMcx
+         8bY8kaPQE2tjW3twYwXAhZU/UWYvTUSwFcj4SwrQuE9LS7JJ2uMjFNdNiSLqlYCqtbst
+         6apQ==
+X-Gm-Message-State: APjAAAVSUgQccLrX5D7y5daxohImhgkx1pHOic3SEXE2r5Ihh5WFU7HJ
+        OvW5gCTP/14gbJAbJyfMZ7GHfw5ewm3OeQ8vWFy81E6ZMdEL
+X-Google-Smtp-Source: APXvYqym5DaYVguOnx/vYC+8fr3X5IKtdXXfy6a1e9Ff48wtiCtsWW98PTt6iX6sFsLg9KiiCV1ve2K7VjNJJcGzMyGUA2cQGoZr
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:641a:: with SMTP id t26mr916082iog.3.1562646300671;
+ Mon, 08 Jul 2019 21:25:00 -0700 (PDT)
+Date:   Mon, 08 Jul 2019 21:25:00 -0700
+In-Reply-To: <CAEf4BzaUEWwGL3k0VeiFYFqyJexQU9cDZWN69jSDpBjP1ZEcpw@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a94981058d37f1a4@google.com>
+Subject: Re: WARNING in mark_chain_precision
+From:   syzbot <syzbot+f21251a7468cd46efc60@syzkaller.appspotmail.com>
+To:     aaron.f.brown@intel.com, andrii.nakryiko@gmail.com, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, intel-wired-lan@lists.osuosl.org,
+        jakub.kicinski@netronome.com, jeffrey.t.kirsher@intel.com,
+        john.fastabend@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
+        yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register devlink port of physical port, PCI PF and PCI VF flavour
-for each PF, VF when a given devlink instance is in switchdev mode.
+Hello,
 
-Implement ndo_get_devlink_port callback API to make use of registered
-devlink ports.
-This eliminates ndo_get_phys_port_name() and ndo_get_port_parent_id()
-callbacks. Hence, remove them.
+syzbot has tested the proposed patch but the reproducer still triggered  
+crash:
+WARNING in bpf_jit_free
 
-An example output with 2 VFs, without a PF and single uplink port is
-below.
+WARNING: CPU: 0 PID: 9077 at kernel/bpf/core.c:851 bpf_jit_free+0x157/0x1b0
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 9077 Comm: kworker/0:3 Not tainted 5.2.0-rc6+ #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events bpf_prog_free_deferred
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  panic+0x2cb/0x744 kernel/panic.c:219
+  __warn.cold+0x20/0x4d kernel/panic.c:576
+  report_bug+0x263/0x2b0 lib/bug.c:186
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
+RIP: 0010:bpf_jit_free+0x157/0x1b0
+Code: 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5d 48 b8 00 02 00 00  
+00 00 ad de 48 39 43 70 0f 84 05 ff ff ff e8 09 7f f4 ff <0f> 0b e9 f9 fe  
+ff ff e8 2d 02 2e 00 e9 d9 fe ff ff 48 89 7d e0 e8
+RSP: 0018:ffff888084affcb0 EFLAGS: 00010293
+RAX: ffff88808a622100 RBX: ffff88809639d580 RCX: ffffffff817b0b0d
+RDX: 0000000000000000 RSI: ffffffff817c4557 RDI: ffff88809639d5f0
+RBP: ffff888084affcd0 R08: 1ffffffff150daa8 R09: fffffbfff150daa9
+R10: fffffbfff150daa8 R11: ffffffff8a86d547 R12: ffffc90001921000
+R13: ffff88809639d5e8 R14: ffff8880a0589800 R15: ffff8880ae834d40
+  bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1982
+  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x354/0x420 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-$devlink port show
-pci/0000:06:00.0/65535: type eth netdev ens2f0 flavour physical
-pci/0000:05:00.0/1: type eth netdev eth1 flavour pcivf pfnum 0 vfnum 0
-pci/0000:05:00.0/2: type eth netdev eth2 flavour pcivf pfnum 0 vfnum 1
 
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Parav Pandit <parav@mellanox.com>
----
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 108 +++++++++++++-----
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   1 +
- 2 files changed, 78 insertions(+), 31 deletions(-)
+Tested on:
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 529f8e4b32c6..6810b9fa0705 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -37,6 +37,7 @@
- #include <net/act_api.h>
- #include <net/netevent.h>
- #include <net/arp.h>
-+#include <net/devlink.h>
- 
- #include "eswitch.h"
- #include "en.h"
-@@ -1119,32 +1120,6 @@ static int mlx5e_rep_close(struct net_device *dev)
- 	return ret;
- }
- 
--static int mlx5e_rep_get_phys_port_name(struct net_device *dev,
--					char *buf, size_t len)
--{
--	struct mlx5e_priv *priv = netdev_priv(dev);
--	struct mlx5e_rep_priv *rpriv = priv->ppriv;
--	struct mlx5_eswitch_rep *rep = rpriv->rep;
--	unsigned int fn;
--	int ret;
--
--	fn = PCI_FUNC(priv->mdev->pdev->devfn);
--	if (fn >= MLX5_MAX_PORTS)
--		return -EOPNOTSUPP;
--
--	if (rep->vport == MLX5_VPORT_UPLINK)
--		ret = snprintf(buf, len, "p%d", fn);
--	else if (rep->vport == MLX5_VPORT_PF)
--		ret = snprintf(buf, len, "pf%d", fn);
--	else
--		ret = snprintf(buf, len, "pf%dvf%d", fn, rep->vport - 1);
--
--	if (ret >= len)
--		return -EOPNOTSUPP;
--
--	return 0;
--}
--
- static int
- mlx5e_rep_setup_tc_cls_flower(struct mlx5e_priv *priv,
- 			      struct tc_cls_flower_offload *cls_flower, int flags)
-@@ -1298,17 +1273,24 @@ static int mlx5e_uplink_rep_set_vf_vlan(struct net_device *dev, int vf, u16 vlan
- 	return 0;
- }
- 
-+static struct devlink_port *mlx5e_get_devlink_port(struct net_device *dev)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(dev);
-+	struct mlx5e_rep_priv *rpriv = priv->ppriv;
-+
-+	return &rpriv->dl_port;
-+}
-+
- static const struct net_device_ops mlx5e_netdev_ops_rep = {
- 	.ndo_open                = mlx5e_rep_open,
- 	.ndo_stop                = mlx5e_rep_close,
- 	.ndo_start_xmit          = mlx5e_xmit,
--	.ndo_get_phys_port_name  = mlx5e_rep_get_phys_port_name,
- 	.ndo_setup_tc            = mlx5e_rep_setup_tc,
-+	.ndo_get_devlink_port = mlx5e_get_devlink_port,
- 	.ndo_get_stats64         = mlx5e_rep_get_stats,
- 	.ndo_has_offload_stats	 = mlx5e_rep_has_offload_stats,
- 	.ndo_get_offload_stats	 = mlx5e_rep_get_offload_stats,
- 	.ndo_change_mtu          = mlx5e_rep_change_mtu,
--	.ndo_get_port_parent_id	 = mlx5e_rep_get_port_parent_id,
- };
- 
- static const struct net_device_ops mlx5e_netdev_ops_uplink_rep = {
-@@ -1316,8 +1298,8 @@ static const struct net_device_ops mlx5e_netdev_ops_uplink_rep = {
- 	.ndo_stop                = mlx5e_close,
- 	.ndo_start_xmit          = mlx5e_xmit,
- 	.ndo_set_mac_address     = mlx5e_uplink_rep_set_mac,
--	.ndo_get_phys_port_name  = mlx5e_rep_get_phys_port_name,
- 	.ndo_setup_tc            = mlx5e_rep_setup_tc,
-+	.ndo_get_devlink_port = mlx5e_get_devlink_port,
- 	.ndo_get_stats64         = mlx5e_get_stats,
- 	.ndo_has_offload_stats	 = mlx5e_rep_has_offload_stats,
- 	.ndo_get_offload_stats	 = mlx5e_rep_get_offload_stats,
-@@ -1330,7 +1312,6 @@ static const struct net_device_ops mlx5e_netdev_ops_uplink_rep = {
- 	.ndo_get_vf_config       = mlx5e_get_vf_config,
- 	.ndo_get_vf_stats        = mlx5e_get_vf_stats,
- 	.ndo_set_vf_vlan         = mlx5e_uplink_rep_set_vf_vlan,
--	.ndo_get_port_parent_id	 = mlx5e_rep_get_port_parent_id,
- 	.ndo_set_features        = mlx5e_set_features,
- };
- 
-@@ -1731,6 +1712,55 @@ static const struct mlx5e_profile mlx5e_uplink_rep_profile = {
- 	.max_tc			= MLX5E_MAX_NUM_TC,
- };
- 
-+static bool
-+is_devlink_port_supported(const struct mlx5_core_dev *dev,
-+			  const struct mlx5e_rep_priv *rpriv)
-+{
-+	return rpriv->rep->vport == MLX5_VPORT_UPLINK ||
-+	       rpriv->rep->vport == MLX5_VPORT_PF ||
-+	       mlx5_eswitch_is_vf_vport(dev->priv.eswitch, rpriv->rep->vport);
-+}
-+
-+static int register_devlink_port(struct mlx5_core_dev *dev,
-+				 struct mlx5e_rep_priv *rpriv)
-+{
-+	struct devlink *devlink = priv_to_devlink(dev);
-+	struct mlx5_eswitch_rep *rep = rpriv->rep;
-+	struct netdev_phys_item_id ppid = {};
-+	int ret;
-+
-+	if (!is_devlink_port_supported(dev, rpriv))
-+		return 0;
-+
-+	ret = mlx5e_rep_get_port_parent_id(rpriv->netdev, &ppid);
-+	if (ret)
-+		return ret;
-+
-+	if (rep->vport == MLX5_VPORT_UPLINK)
-+		devlink_port_attrs_set(&rpriv->dl_port,
-+				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
-+				       PCI_FUNC(dev->pdev->devfn), false, 0,
-+				       &ppid.id[0], ppid.id_len);
-+	else if (rep->vport == MLX5_VPORT_PF)
-+		devlink_port_attrs_pci_pf_set(&rpriv->dl_port,
-+					      &ppid.id[0], ppid.id_len,
-+					      dev->pdev->devfn);
-+	else if (mlx5_eswitch_is_vf_vport(dev->priv.eswitch, rpriv->rep->vport))
-+		devlink_port_attrs_pci_vf_set(&rpriv->dl_port,
-+					      &ppid.id[0], ppid.id_len,
-+					      dev->pdev->devfn,
-+					      rep->vport - 1);
-+
-+	return devlink_port_register(devlink, &rpriv->dl_port, rep->vport);
-+}
-+
-+static void unregister_devlink_port(struct mlx5_core_dev *dev,
-+				    struct mlx5e_rep_priv *rpriv)
-+{
-+	if (is_devlink_port_supported(dev, rpriv))
-+		devlink_port_unregister(&rpriv->dl_port);
-+}
-+
- /* e-Switch vport representors */
- static int
- mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
-@@ -1782,15 +1812,27 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- 		goto err_detach_netdev;
- 	}
- 
-+	err = register_devlink_port(dev, rpriv);
-+	if (err) {
-+		esw_warn(dev, "Failed to register devlink port %d\n",
-+			 rep->vport);
-+		goto err_neigh_cleanup;
-+	}
-+
- 	err = register_netdev(netdev);
- 	if (err) {
- 		pr_warn("Failed to register representor netdev for vport %d\n",
- 			rep->vport);
--		goto err_neigh_cleanup;
-+		goto err_devlink_cleanup;
- 	}
- 
-+	if (is_devlink_port_supported(dev, rpriv))
-+		devlink_port_type_eth_set(&rpriv->dl_port, netdev);
- 	return 0;
- 
-+err_devlink_cleanup:
-+	unregister_devlink_port(dev, rpriv);
-+
- err_neigh_cleanup:
- 	mlx5e_rep_neigh_cleanup(rpriv);
- 
-@@ -1813,9 +1855,13 @@ mlx5e_vport_rep_unload(struct mlx5_eswitch_rep *rep)
- 	struct mlx5e_rep_priv *rpriv = mlx5e_rep_to_rep_priv(rep);
- 	struct net_device *netdev = rpriv->netdev;
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5_core_dev *dev = priv->mdev;
- 	void *ppriv = priv->ppriv;
- 
-+	if (is_devlink_port_supported(dev, rpriv))
-+		devlink_port_type_clear(&rpriv->dl_port);
- 	unregister_netdev(netdev);
-+	unregister_devlink_port(dev, rpriv);
- 	mlx5e_rep_neigh_cleanup(rpriv);
- 	mlx5e_detach_netdev(priv);
- 	if (rep->vport == MLX5_VPORT_UPLINK)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-index d4585f3b8cb2..c56e6ee4350c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -86,6 +86,7 @@ struct mlx5e_rep_priv {
- 	struct mlx5_flow_handle *vport_rx_rule;
- 	struct list_head       vport_sqs_list;
- 	struct mlx5_rep_uplink_priv uplink_priv; /* valid for uplink rep */
-+	struct devlink_port dl_port;
- };
- 
- static inline
--- 
-2.19.2
+commit:         b9321614 bpf: fix precision bit propagation for BPF_ST ins..
+git tree:       https://github.com/anakryiko/linux bpf-fix-precise-bpf_st
+console output: https://syzkaller.appspot.com/x/log.txt?x=112f0dfda00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6bb3e6e7997c14f9
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
