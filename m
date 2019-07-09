@@ -2,125 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DBF663BD3
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 21:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D158963BE4
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 21:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727652AbfGITVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 15:21:54 -0400
-Received: from mail-eopbgr80044.outbound.protection.outlook.com ([40.107.8.44]:25473
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726133AbfGITVx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 15:21:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VA2/BF00EFFdgaFChCkXi68lehQILk3dVqNFgCXiTfs=;
- b=Z/jhG6wuzcc9PNUNC8JStSK5tChYwvdQ5eO/I8/ZOxVTbcaUJmP8/g2QonIwF6IZc4vyDmnAPEn7x8Vf3602BYPB/nENejbVLiB95XxB2XBfMfHeYSdrZrbgqyMuJlXLN/+iqN6LpEKXAH5Wio+8my0juDXif5V99Rt9kO0si/8=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6225.eurprd05.prod.outlook.com (20.178.114.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.19; Tue, 9 Jul 2019 19:21:47 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2052.020; Tue, 9 Jul 2019
- 19:21:47 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     David Miller <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-CC:     "jiri@resnulli.us" <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: RE: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
- attributes
-Thread-Topic: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
- attributes
-Thread-Index: AQHVNg1tsiPOY/l61Umq9TRaQKUK/6bBxXIAgAAKVoCAAMo5AIAAC+kAgAADrXA=
-Date:   Tue, 9 Jul 2019 19:21:47 +0000
-Message-ID: <AM0PR05MB4866F357E2116E1073E60BB2D1F10@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190708224012.0280846c@cakuba.netronome.com>
-        <20190709061711.GH2282@nanopsycho.orion>
-        <20190709112058.7ffe61d3@cakuba.netronome.com>
- <20190709.120336.1987683013901804676.davem@davemloft.net>
-In-Reply-To: <20190709.120336.1987683013901804676.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [49.207.52.95]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e4a36b30-2d03-4709-c17d-08d704a2afcc
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6225;
-x-ms-traffictypediagnostic: AM0PR05MB6225:
-x-microsoft-antispam-prvs: <AM0PR05MB6225D891ABFED2312783CEC8D1F10@AM0PR05MB6225.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-forefront-prvs: 0093C80C01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(13464003)(52314003)(189003)(199004)(81156014)(478600001)(66476007)(486006)(2906002)(81166006)(8676002)(76116006)(52536014)(5660300002)(9686003)(305945005)(7736002)(66556008)(14454004)(55016002)(66446008)(25786009)(11346002)(8936002)(446003)(74316002)(476003)(64756008)(73956011)(26005)(107886003)(229853002)(316002)(110136005)(6116002)(71190400001)(53936002)(86362001)(66946007)(3846002)(186003)(102836004)(66066001)(6506007)(99286004)(6436002)(7696005)(71200400001)(4326008)(256004)(68736007)(76176011)(54906003)(6246003)(2501003)(53546011)(33656002)(55236004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6225;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: wv2eLkrio4ngT0sm6YVW4BAdzo5TTiALcHGPUUDBW9LaROfoRbiHxgo+q+CofJ5Y1gbyzwG/nsiHQ2LamObYNqUILHgVLp89qmRMjPVnxWAQNmC6JWzyk5g+gNMRI6EvtmgvIf9ldjYq9SowIvXKY7ZZgxIOr58KJStdd/RTxo7PIEe5g4sd6+QREMw20Pv7u7CEqUkNFK17pSWJFCV6JHy9FL2k7vsv/RGNp2YfRB4PczRJmpsfa7hj2+EXnN4LGIL4KuSPa9k3VhFDRVktBKccY2xw6hyW94SM07yCJrCA1kV+VJMPGbRqfwnYtBdEeajTPrhsNnGSBywmM1T+VY0jmO4toIhoqBkI7iCO49CuUthkFdNWmT158ayyxED+KnFQXfUHbs99WUHlkv68YC9xQemn6H0d8V4FwPBhnNE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728808AbfGIT1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 15:27:20 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:39152 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727787AbfGIT1U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 15:27:20 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 91B0CBC005A;
+        Tue,  9 Jul 2019 19:27:18 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 9 Jul
+ 2019 12:27:14 -0700
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [RFC PATCH net-next 0/3] net: batched receive in GRO path
+To:     David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
+Date:   Tue, 9 Jul 2019 20:27:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4a36b30-2d03-4709-c17d-08d704a2afcc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 19:21:47.5669
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6225
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24748.005
+X-TM-AS-Result: No-6.722000-4.000000-10
+X-TMASE-MatchedRID: 80sgmbgkAKBjJRYrYz9aZmgws6g0ewz2fo0lncdGFFP22R14ijZDjBZe
+        oMn8xA+cxhbqMAz+sH6VijEpnyRMhw82vHIf00E6DOL14/DRHdDpVMb1xnESMlT4wXE1Q3+tKHp
+        SM6RPsvLmHS3ctwnBBnY+rAPR3hdU0nl1nsNjR7hSFqtD2wqeMfngX/aL8PCNmJBe2bRXwlNhn7
+        T+c//Exr47XfUUpkezn6XhnzyfSWTloCs7pAMiM4ph1hAtvKZNoiY7auV7G1IOUs4CTUgKy9ZsI
+        s+VoXI0hUmZaeQpcty9/GoS6fS5VoIP10bKeQJ00Az+qa2CoAqWGk93C/VnSgvrbFcH4G2ryiOy
+        wU4g9ARFf/YQed81Ou/EvlDYfLg2dWceIpiTVHBkQov1aWjE1wD4keG7QhHme+xt+hmLFRO2jjo
+        uEtOSP23tkWYJo9ZLoY/D5DVvh5Bn+YRG/wReVQXGi/7cli9jAQVng8XtStA52X8YwVUEW5HsEP
+        QHz+ssBSVPXlTYuFRtTJUyGYorCkLkU2wqeSg+R/j040fRFpL4h+uI7dxXxEzECFBbaHiH3b+XW
+        gntZKduGrqrISdqmxHLO/iWX+eSUYR3k5IGZuaeAiCmPx4NwFkMvWAuahr8LzP5snaeb1Qqtq5d
+        3cxkNa6KQIvxVddMsr7mnRcLNETleucGbXnQcYYrIzH9m2wKhI6trXakOcVnIxZyJs78kg==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.722000-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24748.005
+X-MDID: 1562700439-b8DE75_J0kOX
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+This series listifies part of GRO processing, in a manner which allows those
+ packets which are not GROed (i.e. for which dev_gro_receive returns
+ GRO_NORMAL) to be passed on to the listified regular receive path.
+dev_gro_receive() itself is not listified, nor the per-protocol GRO
+ callback, since GRO's need to hold packets on lists under napi->gro_hash
+ makes keeping the packets on other lists awkward, and since the GRO control
+ block state of held skbs can refer only to one 'new' skb at a time.
+Instead, when napi_frags_finish() handles a GRO_NORMAL result, stash the skb
+ onto a list in the napi struct, which is received at the end of the napi
+ poll or when its length exceeds the (new) sysctl net.core.gro_normal_batch.
+Unlike my previous design ([1]), this does not require changes in drivers,
+ and also does not prevent the re-use of napi->skb after GRO_MERGED_FREE or
+ GRO_DROP.
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Wednesday, July 10, 2019 12:34 AM
-> To: jakub.kicinski@netronome.com
-> Cc: jiri@resnulli.us; Parav Pandit <parav@mellanox.com>;
-> netdev@vger.kernel.org; Jiri Pirko <jiri@mellanox.com>; Saeed Mahameed
-> <saeedm@mellanox.com>
-> Subject: Re: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports =
-and
-> attributes
->=20
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Date: Tue, 9 Jul 2019 11:20:58 -0700
->=20
-> > On Tue, 9 Jul 2019 08:17:11 +0200, Jiri Pirko wrote:
-> >> >But I'll leave it to Jiri and Dave to decide if its worth a respin
-> >> >:) Functionally I think this is okay.
-> >>
-> >> I'm happy with the set as it is right now.
-> >
-> > To be clear, I am happy enough as well. Hence the review tag.
->=20
-> Series applied, thanks everyone.
->=20
-> >> Anyway, if you want your concerns to be addresses, you should write
-> >> them to the appropriate code. This list is hard to follow.
-> >
-> > Sorry, I was trying to be concise.
->=20
-> Jiri et al., if Jakub put forth the time and effort to make the list and =
-give you
-> feedback you can put forth the effort to go through the list and address =
-his
-> feedback with follow-up patches.  You cannot dictate how people give
-> feedback to your changes, thank you.
+Performance figures with this series, collected on a back-to-back pair of
+ Solarflare sfn8522-r2 NICs with 120-second NetPerf tests.  In the stats,
+ sample size n for old and new code is 6 runs each; p is from a Welch t-test.
+Tests were run both with GRO enabled and disabled, the latter simulating
+ uncoalesceable packets (e.g. due to IP or TCP options).  The receive side
+ (which was the device under test) had the NetPerf process pinned to one CPU,
+ and the device interrupts pinned to a second CPU.  CPU utilisation figures
+ (used in cases of line-rate performance) are summed across all CPUs.
+Where not specified (as batch=), net.core.gro_normal_batch was set to 8.
+The net-next baseline used for these tests was commit 7d30a7f6424e.
+TCP 4 streams, GRO on: all results line rate (9.415Gbps)
+net-next: 210.3% cpu
+after #1: 181.5% cpu (-13.7%, p=0.031 vs net-next)
+after #3: 191.7% cpu (- 8.9%, p=0.102 vs net-next)
+TCP 4 streams, GRO off:
+after #1: 7.785 Gbps
+after #3: 8.387 Gbps (+ 7.7%, p=0.215 vs #1, but note *)
+TCP 1 stream, GRO on: all results line rate & ~200% cpu.
+TCP 1 stream, GRO off:
+after #1: 6.444 Gbps
+after #3: 7.363 Gbps (+14.3%, p=0.003 vs #1)
+batch=16: 7.199 Gbps
+batch= 4: 7.354 Gbps
+batch= 0: 5.899 Gbps
+TCP 100 RR, GRO off:
+net-next: 995.083 us
+after #1: 969.167 us (- 2.6%, p=0.204 vs net-next)
+after #3: 976.433 us (- 1.9%, p=0.254 vs net-next)
 
-I will be happy to write follow up patches.
-mostly in kernel 5.4, I will be adding mdev (mediated device) port flavour =
-as discussed in past.
-I will possibly write up follow up patch or two before posting them or have=
- it in that series, as it will extend this devlink code further.
+(*) These tests produced a mixture of line-rate and below-line-rate results,
+ meaning that statistically speaking the results were 'censored' by the
+ upper bound, and were thus not normally distributed, making a Welch t-test
+ mathematically invalid.  I therefore also calculated estimators according
+ to [2], which gave the following:
+after #1: 8.155 Gbps
+after #3: 8.716 Gbps (+ 6.9%, p=0.291 vs #1)
+(though my procedure for determining ν wasn't mathematically well-founded
+ either, so take that p-value with a grain of salt).
+
+Conclusion:
+* Patch #1 is a fairly unambiguous improvement.
+* Patch #3 has no statistically significant effect when GRO is active.
+* Any effect of patch #3 on latency is within statistical noise.
+* When GRO is inactive, patch #3 improves bandwidth, though for multiple
+  streams the effect is smaller (possibly owing to the line-rate limit).
+* The optimal batch size for this setup appears to be around 8.
+* Setting the batch size to zero gives worse performance than before the
+  patch; perhaps a static key is needed?
+* Drivers which, unlike sfc, pass UDP traffic to GRO would expect to see a
+  benefit from gaining access to batching.
+
+Notes for future thought: in principle if we passed the napi pointer to
+ napi_gro_complete(), it could add its superframe skb to napi->rx_list,
+ rather than immediately netif_receive_skb_internal()ing it.  Without that
+ I'm not sure if there's a possibility of OoO between normal and GROed SKBs
+ on the same flow.
+
+[1]: http://patchwork.ozlabs.org/cover/997844/
+[2]: Cohen 1959, doi: 10.1080/00401706.1959.10489859
+
+Edward Cree (3):
+  sfc: don't score irq moderation points for GRO
+  sfc: falcon: don't score irq moderation points for GRO
+  net: use listified RX for handling GRO_NORMAL skbs
+
+ drivers/net/ethernet/sfc/falcon/rx.c |  5 +----
+ drivers/net/ethernet/sfc/rx.c        |  5 +----
+ include/linux/netdevice.h            |  3 +++
+ net/core/dev.c                       | 32 ++++++++++++++++++++++++++--
+ net/core/sysctl_net_core.c           |  8 +++++++
+ 5 files changed, 43 insertions(+), 10 deletions(-)
+
