@@ -2,81 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F000B6374F
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 614F763789
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 16:12:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726979AbfGINxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 09:53:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35280 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726060AbfGINxA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 09:53:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rF3/udvcyshjB0LDHbNdiIWVvUGN8+ja30wB3HYmmOI=; b=QHrPvcm/DhS/WSrw1tKQvGNQWb
-        4P1U/BC9wf6pUvoC3JiKZiQ/Bz2PcKNWsKGtWSptBzgYyhgBG6MR8EklVe6EMkq082vEskT8Aj+Ws
-        lF5eGiBnZLGKeU1+8VIraTXQ3WyuVcPnctzMq/AhTcAv7511CQmai+vGv4KLtSPN1qqg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hkqYE-0000um-Md; Tue, 09 Jul 2019 15:52:58 +0200
-Date:   Tue, 9 Jul 2019 15:52:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benjamin Beckmeyer <beb@eks-engel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
-Message-ID: <20190709135258.GC1965@lunn.ch>
-References: <20190703155518.GE18473@lunn.ch>
- <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
- <20190704132756.GB13859@lunn.ch>
- <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
- <20190704155347.GJ18473@lunn.ch>
- <ba64f1f9-14c7-2835-f6e7-0dd07039fb18@eks-engel.de>
- <20190705143647.GC4428@lunn.ch>
- <5e35a41c-be0e-efd4-cb69-cf5c860b872e@eks-engel.de>
- <20190708145733.GA9027@lunn.ch>
- <0d595637-0081-662d-2812-0a174ee1a901@eks-engel.de>
+        id S1726435AbfGIOM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 10:12:58 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:44801 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726060AbfGIOM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 10:12:57 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d79so11825413qke.11
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 07:12:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DquXK1SvT7NIHMNlUc9P72aluB3cujt1AVh6/uBVQfQ=;
+        b=go1q0BYOYcnYgWjyAhtyhDpcLL2zjTskXIwPyg418SkuWttZERRFWBv1nhw1OKWIu9
+         eKwGuInd/ipkF9VNhpX+q1cK6weqHxXAL2iqk495YeSjhH2g6EtAKKUz+R0n6D/F25/H
+         yNqD6C9R5orK/QXZrxCRiJJdohTqfWZyJsU7o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DquXK1SvT7NIHMNlUc9P72aluB3cujt1AVh6/uBVQfQ=;
+        b=pewsQsOLm5NYBf555tWnmtUaMKVURPDYrOkyhv4IiRkQ9ddUKVCzP0ViiK6+fpYfOq
+         Ko8IE4aBdJ+C/bZfpoqam4Gd2nW56LhsgAjfq4Xaejr4mgP0DhY1J8wj7IgpkYkph8Cw
+         PVhZXjljlVYNwTc5fXnN6SPZ8VFNu1REy1dTjYrg6zlY4cdlYGGLyXnacpubK1jFqdiu
+         MwCS9tYWvhwj5Y91I8ZJg9SKz7rIJPAHKjfdopg4c1QAg+O8q5uTcNqfHr6WgnppzO4f
+         iwpQd8PbkgtgRrzaUkl5gOzozRsoIWpJdT7jivRBMaFjze4HAI5yui9pMnUVr08im4zY
+         7YPg==
+X-Gm-Message-State: APjAAAWLM5nGxA2AtbmZJfa364ofvL0I9El/kQheJgHTU0+L6ciInXic
+        NtmSQokeULHeVuH9FaTCTBwJ63wNtyu/11TNHnb2hLNzmjg=
+X-Google-Smtp-Source: APXvYqzVN8SdCvtcJZrC8xYjspiOpVAwCMOvA+Q3KG6J5jAQo5EwPrDDCB3SHCwRSMyLKWvTVsQDaEw9hKjYtGdvrvw=
+X-Received: by 2002:a37:ac14:: with SMTP id e20mr18971935qkm.243.1562681576472;
+ Tue, 09 Jul 2019 07:12:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d595637-0081-662d-2812-0a174ee1a901@eks-engel.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <CAJPywT++ibhPSzL8pCS6Jpej9EeR3g9x89xssK8U=vi6FqLUUw@mail.gmail.com>
+ <a854848f-9fb3-47b9-cb18-e76455e5e664@gmail.com> <CAJPywTKXL=_8h3aoC=n-c8o_Uo7P6RnKOgm6CpvrNsPQuw4C9A@mail.gmail.com>
+ <8e2fca44-6fe7-42fc-8684-2cdd52c67103@gmail.com> <1cf380b3-843e-599a-105a-d1879852def1@gmail.com>
+In-Reply-To: <1cf380b3-843e-599a-105a-d1879852def1@gmail.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Tue, 9 Jul 2019 16:12:43 +0200
+Message-ID: <CAJPywTJfmKzzHDs82w+jtqNv1Yv=je+x9oJ8XsnNwos8QsNvpA@mail.gmail.com>
+Subject: Re: IPv6 flow label reflection behave for RST packets
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
-> good news first, it seems to be running ;-).
+I can confirm the patch works for the RST case I checked.
 
-Great.
+Thanks!
 
-> 
-> The interrupt GPIO pin was not correctly configured in the device tree.
-> 
-> For now we have around 68 accesses per second, I think this is okay 
-> because we even have indirect access, so the bus must be more busy.
-
-That sounds reasonable.
-
-> Why we need access to the bus is because we have some software which was 
-> using the DSDT driver and now we want to switch to the UMSD driver.
-> But we hope that we can forget about all the UMSD driver stuff and the 
-> DSDT driver stuff as well and just use the DSA part from the kernel.
-> To be honest, so far I don't know what functions we need from the driver
-> which aren't supported by the DSA.
-
-You should take a close look at what you actually need. Using
-DSDT/UMSD at the same time as mainline DSA does not sound like a good
-idea. One can stomp over the other.
-
-If you do decide to do this, you are going to need to add a new API to
-allow DSDT/UMSD to get reliable access to the registers. You need to
-take the chip->reg_lock to give you exclusive access to the
-indirection registers. That also won't be accepted into mainline. We
-don't want user space drivers...
-
-      Andrew
+On Tue, Jul 9, 2019 at 3:37 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 7/9/19 3:22 PM, Eric Dumazet wrote:
+> >
+> >
+> > On 7/9/19 2:33 PM, Marek Majkowski wrote:
+> >> Ha, thanks. I missed that.
+> >>
+> >> There is a caveat though. I don't think it's working as intended...
+> >
+> >
+> > Note that my commit really took a look at a fraction of the cases ;)
+> >
+> > commit 323a53c41292a0d7efc8748856c623324c8d7c21
+> >
+> >     ipv6: tcp: enable flowlabel reflection in some RST packets
+> >
+> >     When RST packets are sent because no socket could be found,
+> >     it makes sense to use flowlabel_reflect sysctl to decide
+> >     if a reflection of the flowlabel is requested.
+> >
+> >
+> > In your case, a socket is found, most probably, and np->repflow seems to be ignored.
+> >
+> > I'll take a look, thanks.
+>
+> I guess a possible fix would be :
+>
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index d56a9019a0feb5a34312ec353c555f44b8c09b3d..2a298835317c0f6b1d82fb118dc4ba9647a2a110 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -984,8 +984,13 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
+>
+>         if (sk) {
+>                 oif = sk->sk_bound_dev_if;
+> -               if (sk_fullsock(sk))
+> +               if (sk_fullsock(sk)) {
+> +                       struct ipv6_pinfo *np = tcp_inet6_sk(sk);
+> +
+>                         trace_tcp_send_reset(sk, skb);
+> +                       if (np->repflow)
+> +                               label = ip6_flowlabel(ipv6h);
+> +               }
+>                 if (sk->sk_state == TCP_TIME_WAIT)
+>                         label = cpu_to_be32(inet_twsk(sk)->tw_flowlabel);
+>         } else {
+>
+>
+> >
+> >> Running my script:
+> >>
+> >> $ sysctl -w net.ipv6.flowlabel_reflect=3
+> >>
+> >> $ tail reflect.py
+> >> cd2.close()
+> >> cd.send(b"a")
+> >>
+> >> $ python3 reflect.py
+> >> IP6 (flowlabel 0xf2927, hlim 64) ::1.1235 > ::1.60246: Flags [F.]
+> >> IP6 (flowlabel 0xf2927, hlim 64) ::1.60246 > ::1.1235: Flags [P.]
+> >> IP6 (flowlabel 0x58ecd, hlim 64) ::1.1235 > ::1.60246: Flags [R]
+> >>
+> >> Note. The RST is opportunistic, depending on timing I sometimes get a
+> >> proper FIN, without RST.
+> >>
+> >> If I change the script to introduce some delay:
+> >>
+> >> $ tail reflect.py
+> >> cd2.close()
+> >> time.sleep(0.1)
+> >> cd.send(b"a")
+> >>
+> >> $ python3 reflect.py
+> >> IP6 (flowlabel 0x2f60c, hlim 64) ::1.60326 > ::1.1235: Flags [.]
+> >> IP6 (flowlabel 0x2f60c, hlim 64) ::1.60326 > ::1.1235: Flags [P.]
+> >> IP6 (flowlabel 0x2f60c, hlim 64) ::1.1235 > ::1.60326: Flags [R]
+> >>
+> >> Now it seem to work reliably. Tested on net-next under virtme.
+> >>
+> >> Marek
+> >>
+> >> On Tue, Jul 9, 2019 at 1:19 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >>>
+> >>>
+> >>>
+> >>> On 7/9/19 1:10 PM, Marek Majkowski wrote:
+> >>>> Morning,
+> >>>>
+> >>>> I'm experimenting with flow label reflection from a server point of
+> >>>> view. I'm able to get it working in both supported ways:
+> >>>>
+> >>>> (a) per-socket with flow manager IPV6_FL_F_REFLECT and flowlabel_consistency=0
+> >>>>
+> >>>> (b) with global flowlabel_reflect sysctl
+> >>>>
+> >>>> However, I was surprised to see that RST after the connection is torn
+> >>>> down, doesn't have the correct flow label value:
+> >>>>
+> >>>> IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [S]
+> >>>> IP6 (flowlabel 0x3ba3d) ::1.1235 > ::1.59276: Flags [S.]
+> >>>> IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [.]
+> >>>> IP6 (flowlabel 0x3ba3d) ::1.1235 > ::1.59276: Flags [F.]
+> >>>> IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [P.]
+> >>>> IP6 (flowlabel 0xdfc46) ::1.1235 > ::1.59276: Flags [R]
+> >>>>
+> >>>> Notice, the last RST packet has inconsistent flow label. Perhaps we
+> >>>> can argue this behaviour might be acceptable for a per-socket
+> >>>> IPV6_FL_F_REFLECT option, but with global flowlabel_reflect, I would
+> >>>> expect the RST to preserve the reflected flow label value.
+> >>>>
+> >>>> I suspect the same behaviour is true for kernel-generated ICMPv6.
+> >>>>
+> >>>> Prepared test case:
+> >>>> https://gist.github.com/majek/139081b84f9b5b6187c8ccff802e3ab3
+> >>>>
+> >>>> This behaviour is not necessarily a bug, more of a surprise. Flow
+> >>>> label reflection is mostly useful in deployments where Linux servers
+> >>>> stand behind ECMP router, which uses flow-label to compute the hash.
+> >>>> Flow label reflection allows ICMP PTB message to be routed back to
+> >>>> correct server.
+> >>>>
+> >>>> It's hard to imagine a situation where generated RST or ICMP echo
+> >>>> response would trigger a ICMP PTB. Flow label reflection is explained
+> >>>> here:
+> >>>> https://tools.ietf.org/html/draft-wang-6man-flow-label-reflection-01
+> >>>> and:
+> >>>> https://tools.ietf.org/html/rfc7098
+> >>>> https://tools.ietf.org/html/rfc6438
+> >>>>
+> >>>> Cheers,
+> >>>>     Marek
+> >>>>
+> >>>>
+> >>>> (Note: the unrelated "fwmark_reflect" toggle is about something
+> >>>> different - flow marks, but also addresses RST and ICMP generated by
+> >>>> the server)
+> >>>>
+> >>>
+> >>> Please check the recent commits, scheduled for linux-5.3
+> >>>
+> >>> a346abe051bd2bd0d5d0140b2da9ec95639acad7 ipv6: icmp: allow flowlabel reflection in echo replies
+> >>> c67b85558ff20cb1ff20874461d12af456bee5d0 ipv6: tcp: send consistent autoflowlabel in TIME_WAIT state
+> >>> 392096736a06bc9d8f2b42fd4bb1a44b245b9fed ipv6: tcp: fix potential NULL deref in tcp_v6_send_reset()
+> >>> 50a8accf10627b343109a9c9d5c361751bf753b0 ipv6: tcp: send consistent flowlabel in TIME_WAIT state
+> >>> 323a53c41292a0d7efc8748856c623324c8d7c21 ipv6: tcp: enable flowlabel reflection in some RST packets
+> >>>
