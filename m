@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 855C662EDF
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 05:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E033062EEB
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 05:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727076AbfGIDbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 23:31:32 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:51538 "EHLO huawei.com"
+        id S1727520AbfGIDbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 23:31:53 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:51600 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725905AbfGIDbb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 23:31:31 -0400
+        id S1727280AbfGIDbe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jul 2019 23:31:34 -0400
 Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 76BA19E30762DB70EF7A;
+        by Forcepoint Email with ESMTP id A08BE435AFD3A0CF36EA;
         Tue,  9 Jul 2019 11:31:29 +0800 (CST)
 Received: from huawei.com (10.67.189.167) by DGGEMS402-HUB.china.huawei.com
  (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Tue, 9 Jul 2019
@@ -26,9 +26,9 @@ CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <leeyou.li@huawei.com>,
         <nixiaoming@huawei.com>, <jianping.liu@huawei.com>,
         <xiekunxun@huawei.com>
-Subject: [PATCH v2 06/10] net: hisilicon: dt-bindings: Add an field of port-handle
-Date:   Tue, 9 Jul 2019 11:31:07 +0800
-Message-ID: <1562643071-46811-7-git-send-email-xiaojiangfeng@huawei.com>
+Subject: [PATCH v2 07/10] net: hisilicon: Add group field to adapt HI13X1_GMAC
+Date:   Tue, 9 Jul 2019 11:31:08 +0800
+Message-ID: <1562643071-46811-8-git-send-email-xiaojiangfeng@huawei.com>
 X-Mailer: git-send-email 1.8.5.6
 In-Reply-To: <1562643071-46811-1-git-send-email-xiaojiangfeng@huawei.com>
 References: <1562643071-46811-1-git-send-email-xiaojiangfeng@huawei.com>
@@ -47,47 +47,51 @@ balancing of each processing unit.
 
 Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 ---
- Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt b/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt
-index d1df8a0..464c0da 100644
---- a/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt
-+++ b/Documentation/devicetree/bindings/net/hisilicon-hip04-net.txt
-@@ -10,6 +10,7 @@ Required properties:
- 	phandle, specifies a reference to the syscon ppe node
- 	port, port number connected to the controller
- 	channel, recv channel start from channel * number (RX_DESC_NUM)
-+	group, field in the pkg desc, in general, it is the same as the port.
- - phy-mode: see ethernet.txt [1].
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index 19d8cfd..5328219 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -178,6 +178,7 @@ struct hip04_priv {
+ 	int phy_mode;
+ 	int chan;
+ 	unsigned int port;
++	unsigned int group;
+ 	unsigned int speed;
+ 	unsigned int duplex;
+ 	unsigned int reg_inten;
+@@ -278,10 +279,10 @@ static void hip04_config_fifo(struct hip04_priv *priv)
+ 	val |= PPE_CFG_STS_RX_PKT_CNT_RC;
+ 	writel_relaxed(val, priv->base + PPE_CFG_STS_MODE);
  
- Optional properties:
-@@ -66,7 +67,7 @@ Example:
- 		reg = <0x28b0000 0x10000>;
- 		interrupts = <0 413 4>;
- 		phy-mode = "mii";
--		port-handle = <&ppe 31 0>;
-+		port-handle = <&ppe 31 0 31>;
- 	};
+-	val = BIT(priv->port);
++	val = BIT(priv->group);
+ 	regmap_write(priv->map, priv->port * 4 + PPE_CFG_POOL_GRP, val);
  
- 	ge0: ethernet@2800000 {
-@@ -74,7 +75,7 @@ Example:
- 		reg = <0x2800000 0x10000>;
- 		interrupts = <0 402 4>;
- 		phy-mode = "sgmii";
--		port-handle = <&ppe 0 1>;
-+		port-handle = <&ppe 0 1 0>;
- 		phy-handle = <&phy0>;
- 	};
+-	val = priv->port << PPE_CFG_QOS_VMID_GRP_SHIFT;
++	val = priv->group << PPE_CFG_QOS_VMID_GRP_SHIFT;
+ 	val |= PPE_CFG_QOS_VMID_MODE;
+ 	writel_relaxed(val, priv->base + PPE_CFG_QOS_VMID_GEN);
  
-@@ -83,6 +84,6 @@ Example:
- 		reg = <0x2880000 0x10000>;
- 		interrupts = <0 410 4>;
- 		phy-mode = "sgmii";
--		port-handle = <&ppe 8 2>;
-+		port-handle = <&ppe 8 2 8>;
- 		phy-handle = <&phy1>;
- 	};
+@@ -876,7 +877,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
+ 	}
+ #endif
+ 
+-	ret = of_parse_phandle_with_fixed_args(node, "port-handle", 2, 0, &arg);
++	ret = of_parse_phandle_with_fixed_args(node, "port-handle", 3, 0, &arg);
+ 	if (ret < 0) {
+ 		dev_warn(d, "no port-handle\n");
+ 		goto init_fail;
+@@ -884,6 +885,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
+ 
+ 	priv->port = arg.args[0];
+ 	priv->chan = arg.args[1] * RX_DESC_NUM;
++	priv->group = arg.args[2];
+ 
+ 	hrtimer_init(&priv->tx_coalesce_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 
 -- 
 1.8.5.6
 
