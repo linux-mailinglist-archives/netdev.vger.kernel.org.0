@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3DF62E56
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 04:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EB962E57
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 04:54:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727271AbfGICxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 22:53:47 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41125 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727215AbfGICxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 22:53:47 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d17so18785554qtj.8
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 19:53:46 -0700 (PDT)
+        id S1727296AbfGICxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 22:53:48 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38869 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727215AbfGICxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 22:53:48 -0400
+Received: by mail-qk1-f195.google.com with SMTP id a27so14952400qkk.5
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 19:53:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jPOiynAlD6Ifea2jP1tAEOf0lQvNlrt92+9HCD1k8dk=;
-        b=nAaZYwVrS5w+KBDwfh5VzcpXgXD3ERUskRsQVuHBN9bro9af5DMRL57FZEz6TSlMva
-         z6e246bexHqHd/K3z+lDnNspAMxc9fAN8sLZwsFzaIwzDb1dyWgq/3a1BZpmilDVMZF4
-         sVd51jSyiAiAqUBQAMYuCvD3IjgiXjWpzeR04jc/iNuuXiqmTTRCSQ6DQkXFqAzYSNzX
-         uIJjXsTikvKonGIxEYnZAwWZykgF/IAeRzPj2fW8MsTWGu0aRDJgQcFZUQ/Ah6kQd7Gt
-         YOie5I69+L5ZtGKZkGoMyUJJekd87exYv6tBId8r9yiEn9I4f0AlNATc3Rv9PEw9aEjg
-         dSOA==
+        bh=tsxcxDGdL/lA0VexALmxpSgwP+ANvA0KwEWquzB2XEk=;
+        b=u5Sqm50c2AXdNrI2RkHw8DPG+J930Zia6JsxNjipvvIgpkb6jC3uj5ZlI4Mh8TAF2e
+         bs+omCWJu+ISqd7SwWg1WJrujJb/Q32x5+jd0OyJmjmAdNbv3L+wrxYnK8fUHH4dqeO7
+         e9w4GYCfHY0gCEtg/Kr3/bGmpzwsB4Rqnv2S+UgicIf7SHkkp82OfAUgu8P6ZZ8ka9iK
+         NGCSJq8ejTucBSgs6R0kltLVOlbOJw5nktlsTSYMQZWyXEpp0PBU/TnTjVMarjQrIgf6
+         PlRVMiGFbrVcu2KhupuXBbZjCItws2jfnnMgjQSIDU1NyDV9VrwlgkTNTL2LoH7/6rhG
+         5+HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jPOiynAlD6Ifea2jP1tAEOf0lQvNlrt92+9HCD1k8dk=;
-        b=H6gbcR2BgIX4dBjtYiOB52wPwti73lIzh4YqLldmD2/u6B4YSPlSZjmycbJ2NyzF3z
-         wG8yCzS6JbZbEGcDFJNfMOlT1/7Yg8IOjNXGrZ86MMmqZbhjeGQxr9vOUBzrYaQY3usN
-         9yk0NwR5lBxL6x+CDmlZl8ejqmmREuArHwCp30T2xHmGFgjQy73lqwMRcoZzzOa3Lp0I
-         yHAL9Lhz5NoR4W7BKSLZAWJ1kibBephvevalR5lgjWm4XiqLy3dieaE+OpsQiGDCHSgI
-         hHQ+rKCXDURQqPmbVh8PNFgXnfqQNvAPqlr1qKvv3Wsf2PyMq6Ti9+H6zuOyTc3yhbVo
-         9cFQ==
-X-Gm-Message-State: APjAAAWQnXAJbDB0DQQphTI0WV4bdmzZOenImXGFTsjOr0afrcVHhb9s
-        I6Qr38xMM3gPLwBtna8RuS/cdjjDg1w=
-X-Google-Smtp-Source: APXvYqyWC+8dNLfkWS1Iiykq5rlCukPpy1wDjYMx/TGWdZtMtA6fc/Amm2Ii4mhO5d9qNKswN7PAJA==
-X-Received: by 2002:ac8:2af8:: with SMTP id c53mr17046207qta.387.1562640825917;
-        Mon, 08 Jul 2019 19:53:45 -0700 (PDT)
+        bh=tsxcxDGdL/lA0VexALmxpSgwP+ANvA0KwEWquzB2XEk=;
+        b=f1dcvhdvsdZ4Ly6E6g32NlDRd1jOTU8W3L7Z7La16WpFCAUoxiTZ+IrxOWQkbngRq2
+         sjxEd8sqDK/JRLwKjCDss0HzBz6g13hcHqetcNZ61LGmqQo62EMgKczhllR3Ezm6Y/bv
+         wE68PrMansHlgsho042x0QzLuGsSzzP6muiIK6QvxEvKpaOj515A6uYym8EW+vom6iJJ
+         L5F8t/CvVIj9do3vCT24F1ZXgNb5Gl6RaucbcZyVg1OIYczAmoEvZmzSZ03kzKIRAByj
+         VdzAbcaPRIZwelB26k5d44a/RgIdVL/7T+MtToiSWDo8CC66Dv97AUobvAdM7MIWfN54
+         J6rA==
+X-Gm-Message-State: APjAAAV7p1Yi+t6BkRsN3l9hCK3XT9a9z6Gj2T3RAYwlSK2jwTRnyef9
+        OKVMub33QwE+1UJLayS1MtH4ayBmTFg=
+X-Google-Smtp-Source: APXvYqw8w9EhN3xVWBJzuqU5chXKGIrGsRjvAOe5AsAjXQeOen8OzJXRqMEVA92tX8/4qgSzk4tjSw==
+X-Received: by 2002:a37:be86:: with SMTP id o128mr17161091qkf.40.1562640827250;
+        Mon, 08 Jul 2019 19:53:47 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g13sm8148837qkm.17.2019.07.08.19.53.44
+        by smtp.gmail.com with ESMTPSA id g13sm8148837qkm.17.2019.07.08.19.53.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 08 Jul 2019 19:53:45 -0700 (PDT)
+        Mon, 08 Jul 2019 19:53:46 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         alexei.starovoitov@gmail.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net-next 01/11] nfp: tls: ignore queue limits for delete commands
-Date:   Mon,  8 Jul 2019 19:53:08 -0700
-Message-Id: <20190709025318.5534-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 02/11] nfp: tls: move setting ipver_vlan to a helper
+Date:   Mon,  8 Jul 2019 19:53:09 -0700
+Message-Id: <20190709025318.5534-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190709025318.5534-1-jakub.kicinski@netronome.com>
 References: <20190709025318.5534-1-jakub.kicinski@netronome.com>
@@ -63,118 +63,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need to do our best not to drop delete commands, otherwise
-we will have stale entries in the connection table.  Ignore
-the control message queue limits for delete commands.
+Long lines are ugly.  No functional changes.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- drivers/net/ethernet/netronome/nfp/ccm.h      |  4 +++
- drivers/net/ethernet/netronome/nfp/ccm_mbox.c | 25 +++++++++++++------
- .../net/ethernet/netronome/nfp/crypto/tls.c   |  5 ++--
- 3 files changed, 24 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/netronome/nfp/crypto/tls.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/ccm.h b/drivers/net/ethernet/netronome/nfp/ccm.h
-index da1b1e20df51..a460c75522be 100644
---- a/drivers/net/ethernet/netronome/nfp/ccm.h
-+++ b/drivers/net/ethernet/netronome/nfp/ccm.h
-@@ -118,6 +118,10 @@ bool nfp_ccm_mbox_fits(struct nfp_net *nn, unsigned int size);
- struct sk_buff *
- nfp_ccm_mbox_msg_alloc(struct nfp_net *nn, unsigned int req_size,
- 		       unsigned int reply_size, gfp_t flags);
-+int __nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
-+			       enum nfp_ccm_type type,
-+			       unsigned int reply_size,
-+			       unsigned int max_reply_size, bool critical);
- int nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
- 			     enum nfp_ccm_type type,
- 			     unsigned int reply_size,
-diff --git a/drivers/net/ethernet/netronome/nfp/ccm_mbox.c b/drivers/net/ethernet/netronome/nfp/ccm_mbox.c
-index 02fccd90961d..d160ac794d98 100644
---- a/drivers/net/ethernet/netronome/nfp/ccm_mbox.c
-+++ b/drivers/net/ethernet/netronome/nfp/ccm_mbox.c
-@@ -515,13 +515,13 @@ nfp_ccm_mbox_msg_prepare(struct nfp_net *nn, struct sk_buff *skb,
- 
- static int
- nfp_ccm_mbox_msg_enqueue(struct nfp_net *nn, struct sk_buff *skb,
--			 enum nfp_ccm_type type)
-+			 enum nfp_ccm_type type, bool critical)
- {
- 	struct nfp_ccm_hdr *hdr;
- 
- 	assert_spin_locked(&nn->mbox_cmsg.queue.lock);
- 
--	if (nn->mbox_cmsg.queue.qlen >= NFP_CCM_MAX_QLEN) {
-+	if (!critical && nn->mbox_cmsg.queue.qlen >= NFP_CCM_MAX_QLEN) {
- 		nn_dp_warn(&nn->dp, "mailbox request queue too long\n");
- 		return -EBUSY;
- 	}
-@@ -536,10 +536,10 @@ nfp_ccm_mbox_msg_enqueue(struct nfp_net *nn, struct sk_buff *skb,
- 	return 0;
- }
- 
--int nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
--			     enum nfp_ccm_type type,
--			     unsigned int reply_size,
--			     unsigned int max_reply_size)
-+int __nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
-+			       enum nfp_ccm_type type,
-+			       unsigned int reply_size,
-+			       unsigned int max_reply_size, bool critical)
- {
- 	int err;
- 
-@@ -550,7 +550,7 @@ int nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
- 
- 	spin_lock_bh(&nn->mbox_cmsg.queue.lock);
- 
--	err = nfp_ccm_mbox_msg_enqueue(nn, skb, type);
-+	err = nfp_ccm_mbox_msg_enqueue(nn, skb, type, critical);
- 	if (err)
- 		goto err_unlock;
- 
-@@ -594,6 +594,15 @@ int nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
- 	return err;
- }
- 
-+int nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
-+			     enum nfp_ccm_type type,
-+			     unsigned int reply_size,
-+			     unsigned int max_reply_size)
-+{
-+	return __nfp_ccm_mbox_communicate(nn, skb, type, reply_size,
-+					  max_reply_size, false);
-+}
-+
- static void nfp_ccm_mbox_post_runq_work(struct work_struct *work)
- {
- 	struct sk_buff *skb;
-@@ -650,7 +659,7 @@ int nfp_ccm_mbox_post(struct nfp_net *nn, struct sk_buff *skb,
- 
- 	spin_lock_bh(&nn->mbox_cmsg.queue.lock);
- 
--	err = nfp_ccm_mbox_msg_enqueue(nn, skb, type);
-+	err = nfp_ccm_mbox_msg_enqueue(nn, skb, type, false);
- 	if (err)
- 		goto err_unlock;
- 
 diff --git a/drivers/net/ethernet/netronome/nfp/crypto/tls.c b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-index 9f7ccb7da417..086bea0a7f2d 100644
+index 086bea0a7f2d..b13b3dbd4843 100644
 --- a/drivers/net/ethernet/netronome/nfp/crypto/tls.c
 +++ b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-@@ -112,8 +112,9 @@ nfp_net_tls_communicate_simple(struct nfp_net *nn, struct sk_buff *skb,
- 	struct nfp_crypto_reply_simple *reply;
- 	int err;
+@@ -147,6 +147,14 @@ static void nfp_net_tls_del_fw(struct nfp_net *nn, __be32 *fw_handle)
+ 				       NFP_CCM_TYPE_CRYPTO_DEL);
+ }
  
--	err = nfp_ccm_mbox_communicate(nn, skb, type,
--				       sizeof(*reply), sizeof(*reply));
-+	err = __nfp_ccm_mbox_communicate(nn, skb, type,
-+					 sizeof(*reply), sizeof(*reply),
-+					 type == NFP_CCM_TYPE_CRYPTO_DEL);
- 	if (err) {
- 		nn_dp_warn(&nn->dp, "failed to %s TLS: %d\n", name, err);
- 		return err;
++static void
++nfp_net_tls_set_ipver_vlan(struct nfp_crypto_req_add_front *front, u8 ipver)
++{
++	front->ipver_vlan = cpu_to_be16(FIELD_PREP(NFP_NET_TLS_IPVER, ipver) |
++					FIELD_PREP(NFP_NET_TLS_VLAN,
++						   NFP_NET_TLS_VLAN_UNUSED));
++}
++
+ static struct nfp_crypto_req_add_back *
+ nfp_net_tls_set_ipv4(struct nfp_crypto_req_add_v4 *req, struct sock *sk,
+ 		     int direction)
+@@ -154,9 +162,6 @@ nfp_net_tls_set_ipv4(struct nfp_crypto_req_add_v4 *req, struct sock *sk,
+ 	struct inet_sock *inet = inet_sk(sk);
+ 
+ 	req->front.key_len += sizeof(__be32) * 2;
+-	req->front.ipver_vlan = cpu_to_be16(FIELD_PREP(NFP_NET_TLS_IPVER, 4) |
+-					    FIELD_PREP(NFP_NET_TLS_VLAN,
+-						       NFP_NET_TLS_VLAN_UNUSED));
+ 
+ 	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
+ 		req->src_ip = inet->inet_saddr;
+@@ -177,9 +182,6 @@ nfp_net_tls_set_ipv6(struct nfp_crypto_req_add_v6 *req, struct sock *sk,
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 
+ 	req->front.key_len += sizeof(struct in6_addr) * 2;
+-	req->front.ipver_vlan = cpu_to_be16(FIELD_PREP(NFP_NET_TLS_IPVER, 6) |
+-					    FIELD_PREP(NFP_NET_TLS_VLAN,
+-						       NFP_NET_TLS_VLAN_UNUSED));
+ 
+ 	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
+ 		memcpy(req->src_ip, &np->saddr, sizeof(req->src_ip));
+@@ -304,6 +306,8 @@ nfp_net_tls_add(struct net_device *netdev, struct sock *sk,
+ 	front->opcode = nfp_tls_1_2_dir_to_opcode(direction);
+ 	memset(front->resv, 0, sizeof(front->resv));
+ 
++	nfp_net_tls_set_ipver_vlan(front, ipv6 ? 6 : 4);
++
+ 	if (ipv6)
+ 		back = nfp_net_tls_set_ipv6((void *)skb->data, sk, direction);
+ 	else
 -- 
 2.21.0
 
