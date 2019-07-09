@@ -2,81 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C4D63ABD
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 20:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA27563B73
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 20:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726967AbfGISVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 14:21:03 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:36113 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbfGISVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 14:21:03 -0400
-Received: by mail-qk1-f193.google.com with SMTP id g18so16765470qkl.3
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 11:21:03 -0700 (PDT)
+        id S1729253AbfGISzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 14:55:13 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34018 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726491AbfGISzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 14:55:12 -0400
+Received: by mail-wr1-f67.google.com with SMTP id 31so5376380wrm.1
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 11:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=VpSrckJWvnQDSNnTi3MOVatPivFskEFiINg4Bqu5/SY=;
-        b=KMI40B1TtlYViXa10TN9ds+Y56LK+Oh3kI/PsqrC55Etr60/PlOJgyxYP6vBZRwCmr
-         0mQ/qD+gY0jxKz/GL+5/kSLQ0XT4nq5ajlceNrXvy0e+NyEM6DLIwsi9j97mJvz66kUD
-         v3YRIQj4qfaAxA0sxAM8rvbVI3F7CKQ96NHydFTbva4reIG0z9ktXwORjj3FXObxPlnC
-         1vm+UFLclvJ5YX99BCbPMzVvnT5molZLq6ZzyPDMbSJakqxoxkKyv94LCVZ3HftNg4v5
-         /z46HtIzizMH4cMaXlBZuOMQML6RHXX9SBHEsYQbFsEye8FEqSOx+sWkP8wVBiwdmGZ0
-         zFVg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AK8RzN+/2hWv9zer5jXNJ3xygPfLGreFMIhVa+OVVVY=;
+        b=IXNV3ye3K4avp61PReRwp6ySaheBrtze1f8nv58XAn6YodaxJgX3O4z8iXRHTBDAZQ
+         j3Jyd2F2p3M1XtO1Qe7rf/FfFNokPfrJVWA0VDS8ASgN2Wz+eQrJCQK6Fh8NFYGHs/gG
+         nFWbW6i5Yd3q+qwX+/Un4KileyefpLgyRR/73s/LOSK/GI3uiLqD0QRyCrCVFY2EswIV
+         n8jHB16OOGYYYERA206MSJuH1+I8brQAR75TghKM6a7D+097pU5Wur3nW+1iWSdL7ZJ4
+         UjQWueUE1YfikUYs2sw8f65FoOGIjEhFSl9mFWNoKS+rKnupxHCbHdEXToa8EHw1vJFy
+         6Xdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=VpSrckJWvnQDSNnTi3MOVatPivFskEFiINg4Bqu5/SY=;
-        b=KJXHKzdtLlPvCdVEBOvd6VC1cVJkRNf/HmuDPxcz58hKWh/nDJrNSqtg9YTa1bAEdr
-         k7mEOoScxauwjpSeDEDZlvSDge8XnSlgVPsB4AXtGO4sgP+QGfa6NokBgp8mNgv4ESTH
-         Um8rsV+J3FcK+wlUV2C9ug1v0FNAXz+imbxYkdj/AbzBdy7E3mvhoGnBI3KstVmGb7Ij
-         epGgtTNWLnLkxpimkVZujsMlz2iY9jNhImg2r51oK6EgkJTOHMljjpMzttvDug4UpUiH
-         fv5CpGtmQtbJRZYb4FZNUfPgGLKFIV1K5cvJ5Rlv5ZfkW/pLpZIOrekyoGmiIZrSeR6X
-         AJFg==
-X-Gm-Message-State: APjAAAU/BuQ4hUhnyBXX5frjuQfhcVH3snHJo+/TrlI3yhRKhxh8Y+0V
-        bxnbMmtxJ2/yKcUIX/HvBjR4+w==
-X-Google-Smtp-Source: APXvYqxqsAmI5OZJ7zbyDJKyZ7Bi1A0MYQ4pXvQ5RtmCXlYEetIP92VCwnYDiqqaBsfRPi/AP/0CGw==
-X-Received: by 2002:a37:4b58:: with SMTP id y85mr20052505qka.8.1562696462574;
-        Tue, 09 Jul 2019 11:21:02 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c82sm8103923qkb.112.2019.07.09.11.21.01
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 11:21:02 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 11:20:58 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Parav Pandit <parav@mellanox.com>, netdev@vger.kernel.org,
-        jiri@mellanox.com, saeedm@mellanox.com
-Subject: Re: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
- attributes
-Message-ID: <20190709112058.7ffe61d3@cakuba.netronome.com>
-In-Reply-To: <20190709061711.GH2282@nanopsycho.orion>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190709041739.44292-1-parav@mellanox.com>
-        <20190708224012.0280846c@cakuba.netronome.com>
-        <20190709061711.GH2282@nanopsycho.orion>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AK8RzN+/2hWv9zer5jXNJ3xygPfLGreFMIhVa+OVVVY=;
+        b=uLONbvIrXrSK7JTl8FniKQkn0Fw+KO+nseKKPGyRfxozUa/ESKZrwAyHLPRDH3RLur
+         dH1eCBfZ4aW2HWwqmwRGJMAwMKIOrMZJO6K2zFO6H73PuS11v6NY5dcmJtG0bl5CBOcg
+         i8r8QduMA7jE2RSNUTkdpaMzB9wk+m+gfzKpF3Pt9fGW/tP/glf+kX147WX1qXGbaff3
+         j6zw9PtcoNKtXtp8F2Rdap9RAruFG9flAMfPVo/6uSnxP8X0Um3wwUPCHUT6/Oi6JVhg
+         ExVJUYTcNMBEMd0AZzdL61HKTKShHkEelGb1EDbDn0JpTcr2uAz3lRlblBnF5o86n3kK
+         H5hw==
+X-Gm-Message-State: APjAAAVMZhATlfCkLVjX1i5vNxsXAVDO9zqV6xpj520yemjw3KB5lLTh
+        OzXn+Z6Nze5tn4rFMzK1Nd/Ibg==
+X-Google-Smtp-Source: APXvYqzgnJo2/EpAMyUyDQ53B8feVxFBskw6o5D8ZsPmojJMiVhA4R+6TIiDb7yzwaiyAoHaRrexFA==
+X-Received: by 2002:a05:6000:12c8:: with SMTP id l8mr8065473wrx.72.1562698509448;
+        Tue, 09 Jul 2019 11:55:09 -0700 (PDT)
+Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
+        by smtp.gmail.com with ESMTPSA id f70sm4380921wme.22.2019.07.09.11.55.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Jul 2019 11:55:08 -0700 (PDT)
+Date:   Tue, 9 Jul 2019 21:55:06 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] bnxt_en: Add page_pool_destroy() during RX ring
+ cleanup.
+Message-ID: <20190709185506.GA7854@apalos>
+References: <1562658607-30048-1-git-send-email-michael.chan@broadcom.com>
+ <20190709131842.GJ87269@C02RW35GFVH8.dhcp.broadcom.net>
+ <20190709152057.GA4452@apalos>
+ <20190709163154.GO87269@C02RW35GFVH8.dhcp.broadcom.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190709163154.GO87269@C02RW35GFVH8.dhcp.broadcom.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 9 Jul 2019 08:17:11 +0200, Jiri Pirko wrote:
-> >But I'll leave it to Jiri and Dave to decide if its worth a respin :)
-> >Functionally I think this is okay.
+On Tue, Jul 09, 2019 at 12:31:54PM -0400, Andy Gospodarek wrote:
+> On Tue, Jul 09, 2019 at 06:20:57PM +0300, Ilias Apalodimas wrote:
+> > Hi,
+> > 
+> > > > Add page_pool_destroy() in bnxt_free_rx_rings() during normal RX ring
+> > > > cleanup, as Ilias has informed us that the following commit has been
+> > > > merged:
+> > > > 
+> > > > 1da4bbeffe41 ("net: core: page_pool: add user refcnt and reintroduce page_pool_destroy")
+> > > > 
+> > > > The special error handling code to call page_pool_free() can now be
+> > > > removed.  bnxt_free_rx_rings() will always be called during normal
+> > > > shutdown or any error paths.
+> > > > 
+> > > > Fixes: 322b87ca55f2 ("bnxt_en: add page_pool support")
+> > > > Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> > > > Cc: Andy Gospodarek <gospo@broadcom.com>
+> > > > Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+> > > > ---
+> > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++------
+> > > >  1 file changed, 2 insertions(+), 6 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> > > > index e9d3bd8..2b5b0ab 100644
+> > > > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> > > > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> > > > @@ -2500,6 +2500,7 @@ static void bnxt_free_rx_rings(struct bnxt *bp)
+> > > >  		if (xdp_rxq_info_is_reg(&rxr->xdp_rxq))
+> > > >  			xdp_rxq_info_unreg(&rxr->xdp_rxq);
+> > > >  
+> > > > +		page_pool_destroy(rxr->page_pool);
+> > > >  		rxr->page_pool = NULL;
+> > > >  
+> > > >  		kfree(rxr->rx_tpa);
+> > > > @@ -2560,19 +2561,14 @@ static int bnxt_alloc_rx_rings(struct bnxt *bp)
+> > > >  			return rc;
+> > > >  
+> > > >  		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i);
+> > > > -		if (rc < 0) {
+> > > > -			page_pool_free(rxr->page_pool);
+> > > > -			rxr->page_pool = NULL;
+> > > > +		if (rc < 0)
+> > > >  			return rc;
+> > > > -		}
+> > > >  
+> > > >  		rc = xdp_rxq_info_reg_mem_model(&rxr->xdp_rxq,
+> > > >  						MEM_TYPE_PAGE_POOL,
+> > > >  						rxr->page_pool);
+> > > >  		if (rc) {
+> > > >  			xdp_rxq_info_unreg(&rxr->xdp_rxq);
+> > > > -			page_pool_free(rxr->page_pool);
+> > > > -			rxr->page_pool = NULL;
+> > > 
+> > > Rather than deleting these lines it would also be acceptable to do:
+> > > 
+> > >                 if (rc) {
+> > >                         xdp_rxq_info_unreg(&rxr->xdp_rxq);
+> > > -                       page_pool_free(rxr->page_pool);
+> > > +                       page_pool_destroy(rxr->page_pool);
+> > >                         rxr->page_pool = NULL;
+> > >                         return rc;
+> > >                 }
+> > > 
+> > > but anytime there is a failure to bnxt_alloc_rx_rings the driver will
+> > > immediately follow it up with a call to bnxt_free_rx_rings, so
+> > > page_pool_destroy will be called.
+> > > 
+> > > Thanks for pushing this out so quickly!
+> > > 
+> > 
+> > I also can't find page_pool_release_page() or page_pool_put_page() called when
+> > destroying the pool. Can you try to insmod -> do some traffic -> rmmod ?
+> > If there's stale buffers that haven't been unmapped properly you'll get a
+> > WARN_ON for them.
 > 
-> I'm happy with the set as it is right now. 
+> I did that test a few times with a few different bpf progs but I do not
+> see any WARN messages.  Of course this does not mean that the code we
+> have is 100% correct.
+> 
 
-To be clear, I am happy enough as well. Hence the review tag.
+I'll try to have a closer look as well
 
-> Anyway, if you want your concerns to be addresses, you should write
-> them to the appropriate code. This list is hard to follow.
+> Presumably you are talking about one of these messages, right?
+> 
+> 215         /* The distance should not be able to become negative */
+> 216         WARN(inflight < 0, "Negative(%d) inflight packet-pages", inflight);
+> 
+> or
+> 
+> 356         /* Drivers should fix this, but only problematic when DMA is used */
+> 357         WARN(1, "Still in-flight pages:%d hold:%u released:%u",
+> 358              distance, hold_cnt, release_cnt);
+> 
 
-Sorry, I was trying to be concise.
+Yea particularly the second one. There's a counter we increase everytime you
+alloc a fresh page which needs to be decresed before freeing the whole pool.
+page_pool_release_page will do that for example
 
-> >Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>  
+> 
+> > This part was added later on in the API when Jesper fixed in-flight packet
+> > handling
+
+Thanks
+/Ilias
