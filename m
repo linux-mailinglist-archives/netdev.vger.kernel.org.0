@@ -2,70 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68D0763CAE
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:22:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD47663CB7
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729616AbfGIUWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 16:22:01 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:39717 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfGIUWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 16:22:01 -0400
-Received: by mail-io1-f70.google.com with SMTP id y13so179768iol.6
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 13:22:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=gNp6IGzQMQGefwcCXwihte4j+oJMtUnlDKJXuaM+cUk=;
-        b=DOSNm22XkZaOJTELJFbBndwx++L0dsiVM5RfSyfYg0j/3RASfe9fBOl/sZLYTTcO+Z
-         CBBEwy3WBIOh07EiY5t2EZsuic2uhIobzfJxYB4goILOJ6gVahHMKru9014Sj9Z3h7JF
-         RsiOUJ+PRKKz6rlc4VBCf7c7e6JPYhZfQkMl+9zwusdHQQiRxkJILikzYxltZ9bs5OFx
-         fO837Z0Bzwv32/ig3yGhEjBZ5cAJ+QIsZrMoihrf9JSP43jDW8jWaupBf3pU7TMbHZUL
-         L6HYHu4ymOrPamxRAKxHn02W8r21QWBIxYVtzPfe+okhuLPReDEQQCsf8PHqrnJ4WZ0C
-         9lCQ==
-X-Gm-Message-State: APjAAAWeR8gJKhSmvTyB/JcmhPWTi1lO+3tJyPzdho3KqwjlF2KHPHPc
-        xb8uiHIiV6PPAVqnIWlBU8d5szyOWL9xezByAh1ud5UqWI7M
-X-Google-Smtp-Source: APXvYqwFgwJAcUPiL5NbtuCyvSACDdRE25Si64mrNjVzIA9vXUAmOPuBWXTLl+KgXo65r6gDEueAVIzpruHAb52RcugMcVs1Xph6
+        id S1729731AbfGIU1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 16:27:17 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:59796 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729532AbfGIU1R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 16:27:17 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1904428006A;
+        Tue,  9 Jul 2019 20:27:15 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 9 Jul
+ 2019 13:27:11 -0700
+Subject: Re: [PATCH v5 bpf-next 0/4] capture integers in BTF type info for map
+ defs
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>, <ast@fb.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20190705155012.3539722-1-andriin@fb.com>
+ <86f8f511-655c-bf9e-8d78-f2e3f65efdb9@iogearbox.net>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <0366eaff-b617-b88a-ade4-b9ee8c671e18@solarflare.com>
+Date:   Tue, 9 Jul 2019 21:27:10 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6409:: with SMTP id t9mr9378524iog.270.1562703720611;
- Tue, 09 Jul 2019 13:22:00 -0700 (PDT)
-Date:   Tue, 09 Jul 2019 13:22:00 -0700
-In-Reply-To: <0000000000000595ea058d411c35@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000280332058d45509c@google.com>
-Subject: Re: WARNING: refcount bug in nr_insert_socket
-From:   syzbot <syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <86f8f511-655c-bf9e-8d78-f2e3f65efdb9@iogearbox.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24748.005
+X-TM-AS-Result: No-7.363700-4.000000-10
+X-TMASE-MatchedRID: HXSqh3WYKftdXzNMq6eeyfZvT2zYoYOwC/ExpXrHizz5+tteD5Rzhdtu
+        Lnl6rSi7Kem1U0hJhx95jH2IuAdMb0ohWBZ4QV+6HC7hAz/oKnKiIpNv3rjMdbOG3u14VtmeIQw
+        dt8FiOhSM1jiYzFccnt2OAL+ZVmrFg3TczpWnIuf0VCHd+VQiHlsP0tBwe3qDT9xG+Pmy0/rJlk
+        /oeUvTYBeLJo0fZiX0tA0zKb5G1ubFRwb1XqfjK54CIKY/Hg3AnCGS1WQEGtDGr09tQ7Cw/1BIV
+        svVu9ABwrbXMGDYqV+BMV0kqc2hZImLHHJNXBnQvVOAT9iSBnkdS1Ocvif3bKx0TdNEHAFeVlxr
+        1FJij9s=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--7.363700-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24748.005
+X-MDID: 1562704036-W9EV6BCCp0U5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On 05/07/2019 22:15, Daniel Borkmann wrote:
+> On 07/05/2019 05:50 PM, Andrii Nakryiko wrote:
+>> This patch set implements an update to how BTF-defined maps are specified. The
+>> change is in how integer attributes, e.g., type, max_entries, map_flags, are
+>> specified: now they are captured as part of map definition struct's BTF type
+>> information (using array dimension), eliminating the need for compile-time
+>> data initialization and keeping all the metadata in one place.
+>>
+>> All existing selftests that were using BTF-defined maps are updated, along
+>> with some other selftests, that were switched to new syntax.
+BTW is this changing the BTF format spec, and if so why isn't it accompanied by
+ a patch to Documentation/bpf/btf.rst?  It looks like that doc still talks about
+ BPF_ANNOTATE_KV_PAIR, which seems to be long gone.
 
-commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu Jun 27 21:30:58 2019 +0000
-
-     netrom: fix a memory leak in nr_rx_frame()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1677f227a00000
-start commit:   4608a726 Add linux-next specific files for 20190709
-git tree:       linux-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=1577f227a00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1177f227a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7a02e36d356a9a17
-dashboard link: https://syzkaller.appspot.com/bug?extid=ec1fd464d849d91c3665
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16b47be8600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15172e7ba00000
-
-Reported-by: syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com
-Fixes: c8c8218ec5af ("netrom: fix a memory leak in nr_rx_frame()")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-Ed
