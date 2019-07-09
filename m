@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41CE663CF3
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C0763CF5
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729854AbfGIU4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 16:56:20 -0400
+        id S1729860AbfGIU4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 16:56:22 -0400
 Received: from mail.us.es ([193.147.175.20]:37018 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729845AbfGIU4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 16:56:19 -0400
+        id S1729851AbfGIU4V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 16:56:21 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id ED82B28804B1
-        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 22:56:17 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 3B93C28804AB
+        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 22:56:20 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D913D114D70
-        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 22:56:17 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 29E861150DD
+        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 22:56:20 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id D7A12114D6E; Tue,  9 Jul 2019 22:56:17 +0200 (CEST)
+        id 265CE1150D8; Tue,  9 Jul 2019 22:56:20 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B8DEDD190C;
-        Tue,  9 Jul 2019 22:56:14 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5741D10219C;
+        Tue,  9 Jul 2019 22:56:17 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 09 Jul 2019 22:56:14 +0200 (CEST)
+ Tue, 09 Jul 2019 22:56:17 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [31.4.194.134])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id A1FB14265A31;
-        Tue,  9 Jul 2019 22:56:12 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 49AC44265A31;
+        Tue,  9 Jul 2019 22:56:15 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netdev@vger.kernel.org
@@ -50,9 +50,9 @@ Cc:     davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
         marcelo.leitner@gmail.com, mkubecek@suse.cz,
         venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
         cphealy@gmail.com, phil@nwl.cc, netfilter-devel@vger.kernel.org
-Subject: [PATCH net-next,v4 06/12] net: flow_offload: add flow_block_cb_{priv,incref,decref}()
-Date:   Tue,  9 Jul 2019 22:55:44 +0200
-Message-Id: <20190709205550.3160-7-pablo@netfilter.org>
+Subject: [PATCH net-next,v4 07/12] net: sched: use flow block API
+Date:   Tue,  9 Jul 2019 22:55:45 +0200
+Message-Id: <20190709205550.3160-8-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190709205550.3160-1-pablo@netfilter.org>
 References: <20190709205550.3160-1-pablo@netfilter.org>
@@ -62,67 +62,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch completes the flow block API to introduce:
+This patch adds tcf_block_setup() which uses the flow block API.
 
-* flow_block_cb_priv() to access callback private data.
-* flow_block_cb_incref() to bump reference counter on this flow block.
-* flow_block_cb_decref() to decrement the reference counter.
-
-These functions are taken from the existing tcf_block_cb_priv(),
-tcf_block_cb_incref() and tcf_block_cb_decref().
+This infrastructure takes the flow block callbacks coming from the
+driver and register/unregister to/from the cls_api core.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
-v6: fix typo in commit message - Jiri Pirko.
+v4: Remove driver_list handling from the core - Jiri Pirko.
 
- include/net/flow_offload.h |  4 ++++
- net/core/flow_offload.c    | 18 ++++++++++++++++++
- 2 files changed, 22 insertions(+)
+ net/sched/cls_api.c | 88 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 87 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 52901e12c913..79b88c42962d 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -276,6 +276,10 @@ void flow_block_cb_free(struct flow_block_cb *block_cb);
- struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *offload,
- 					   tc_setup_cb_t *cb, void *cb_ident);
- 
-+void *flow_block_cb_priv(struct flow_block_cb *block_cb);
-+void flow_block_cb_incref(struct flow_block_cb *block_cb);
-+unsigned int flow_block_cb_decref(struct flow_block_cb *block_cb);
-+
- static inline void flow_block_cb_add(struct flow_block_cb *block_cb,
- 				     struct flow_block_offload *offload)
- {
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index c81a7e0c5e04..a36a9dc1c6df 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -211,6 +211,24 @@ struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *f,
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 72761b43ae41..db13944cc823 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -672,6 +672,9 @@ static void tc_indr_block_cb_del(struct tc_indr_block_cb *indr_block_cb)
+ 	kfree(indr_block_cb);
  }
- EXPORT_SYMBOL(flow_block_cb_lookup);
  
-+void *flow_block_cb_priv(struct flow_block_cb *block_cb)
-+{
-+	return block_cb->cb_priv;
-+}
-+EXPORT_SYMBOL(flow_block_cb_priv);
++static int tcf_block_setup(struct tcf_block *block,
++			   struct flow_block_offload *bo);
 +
-+void flow_block_cb_incref(struct flow_block_cb *block_cb)
-+{
-+	block_cb->refcnt++;
-+}
-+EXPORT_SYMBOL(flow_block_cb_incref);
+ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
+ 				  struct tc_indr_block_cb *indr_block_cb,
+ 				  enum flow_block_command command)
+@@ -682,12 +685,14 @@ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
+ 		.net		= dev_net(indr_dev->dev),
+ 		.block		= indr_dev->block,
+ 	};
++	INIT_LIST_HEAD(&bo.cb_list);
+ 
+ 	if (!indr_dev->block)
+ 		return;
+ 
+ 	indr_block_cb->cb(indr_dev->dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
+ 			  &bo);
++	tcf_block_setup(indr_dev->block, &bo);
+ }
+ 
+ int __tc_indr_block_cb_register(struct net_device *dev, void *cb_priv,
+@@ -772,6 +777,7 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
+ 		.block		= block,
+ 		.extack		= extack,
+ 	};
++	INIT_LIST_HEAD(&bo.cb_list);
+ 
+ 	indr_dev = tc_indr_block_dev_lookup(dev);
+ 	if (!indr_dev)
+@@ -782,6 +788,8 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
+ 	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
+ 		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
+ 				  &bo);
 +
-+unsigned int flow_block_cb_decref(struct flow_block_cb *block_cb)
-+{
-+	return --block_cb->refcnt;
-+}
-+EXPORT_SYMBOL(flow_block_cb_decref);
++	tcf_block_setup(block, &bo);
+ }
+ 
+ static bool tcf_block_offload_in_use(struct tcf_block *block)
+@@ -796,13 +804,20 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
+ 				 struct netlink_ext_ack *extack)
+ {
+ 	struct tc_block_offload bo = {};
++	int err;
+ 
+ 	bo.net = dev_net(dev);
+ 	bo.command = command;
+ 	bo.binder_type = ei->binder_type;
+ 	bo.block = block;
+ 	bo.extack = extack;
+-	return dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
++	INIT_LIST_HEAD(&bo.cb_list);
 +
- int flow_block_cb_setup_simple(struct flow_block_offload *f,
- 			       struct list_head *driver_block_list,
- 			       tc_setup_cb_t *cb, void *cb_ident, void *cb_priv,
++	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
++	if (err < 0)
++		return err;
++
++	return tcf_block_setup(block, &bo);
+ }
+ 
+ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+@@ -1636,6 +1651,77 @@ void tcf_block_cb_unregister(struct tcf_block *block,
+ }
+ EXPORT_SYMBOL(tcf_block_cb_unregister);
+ 
++static int tcf_block_bind(struct tcf_block *block,
++			  struct flow_block_offload *bo)
++{
++	struct flow_block_cb *block_cb, *next;
++	int err, i = 0;
++
++	list_for_each_entry(block_cb, &bo->cb_list, list) {
++		err = tcf_block_playback_offloads(block, block_cb->cb,
++						  block_cb->cb_priv, true,
++						  tcf_block_offload_in_use(block),
++						  bo->extack);
++		if (err)
++			goto err_unroll;
++
++		i++;
++	}
++	list_splice(&bo->cb_list, &block->cb_list);
++
++	return 0;
++
++err_unroll:
++	list_for_each_entry_safe(block_cb, next, &bo->cb_list, list) {
++		if (i-- > 0) {
++			list_del(&block_cb->list);
++			tcf_block_playback_offloads(block, block_cb->cb,
++						    block_cb->cb_priv, false,
++						    tcf_block_offload_in_use(block),
++						    NULL);
++		}
++		flow_block_cb_free(block_cb);
++	}
++
++	return err;
++}
++
++static void tcf_block_unbind(struct tcf_block *block,
++			     struct flow_block_offload *bo)
++{
++	struct flow_block_cb *block_cb, *next;
++
++	list_for_each_entry_safe(block_cb, next, &bo->cb_list, list) {
++		tcf_block_playback_offloads(block, block_cb->cb,
++					    block_cb->cb_priv, false,
++					    tcf_block_offload_in_use(block),
++					    NULL);
++		list_del(&block_cb->list);
++		flow_block_cb_free(block_cb);
++	}
++}
++
++static int tcf_block_setup(struct tcf_block *block,
++			   struct flow_block_offload *bo)
++{
++	int err;
++
++	switch (bo->command) {
++	case FLOW_BLOCK_BIND:
++		err = tcf_block_bind(block, bo);
++		break;
++	case FLOW_BLOCK_UNBIND:
++		err = 0;
++		tcf_block_unbind(block, bo);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		err = -EOPNOTSUPP;
++	}
++
++	return err;
++}
++
+ /* Main classifier routine: scans classifier chain attached
+  * to this qdisc, (optionally) tests for protocol and asks
+  * specific classifiers.
 -- 
 2.11.0
 
