@@ -2,130 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05AE8636A1
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:18:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C4A6636C7
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726523AbfGINSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 09:18:49 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43553 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfGINSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 09:18:49 -0400
-Received: by mail-pf1-f195.google.com with SMTP id i189so9284226pfg.10
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 06:18:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cs9d0soWGLh6/T7TN+B8LVVSavg4gzWMJtBbuEQeH+w=;
-        b=K8l/Oc/L33Pmxjo4lv7cnkrH3eRj9v/LYaVOVYreaTjpjBOBjA7SgWv6eLLxlzVStu
-         7iqUu1YTEafT4c6BtPqBicYy89qTipvKJ4dE1X69/O+3jhK0Rb/8qXQC27akZodCNgHo
-         WL11oFKGA1P9oiX+1jdp+3KTkGuMjTZcsAnc8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cs9d0soWGLh6/T7TN+B8LVVSavg4gzWMJtBbuEQeH+w=;
-        b=oaVTFxFsK7G+z6RCIqPa/dDNYjJyh8AK5Aek+T/wiBElOy5xdwcDxcRiMNeuzsq7oC
-         hRnI8X2dSh2HohDnMu9bq/coU7ZKgONA3kYGWfzLeD4C6VwN7mnE/9AZorLClhSrjqvF
-         /4yzxyFBdspsxab1QdwkarRo54HkmlRkKEhhiilaAbXeLqZgP3/SipsN2dgguFll9PSd
-         U2fWi71qvZSxZcTlNF7ZhR7qgZ3FKHVe1Gf2eEOXX5LSY1E9KLF0E1+cUL/qFjEejwSN
-         n87lrSAGAKtUGY+J+ZXjDuVY5IEwviD912J9bkfYJPn2B0vqklDrFm5L8sLprNTql4hx
-         Gu9A==
-X-Gm-Message-State: APjAAAXUbPa/rXnkaJ/695+YZc097+w6vhVJPT7yjWsGiUXVIScp27Gs
-        LWib3DxeMqCt2TUnWSFU4SIE0RWeh+w=
-X-Google-Smtp-Source: APXvYqyFbvEsAS1oTe02jXAE+GA8JobJygX26C7vhzoa0ZIsM3ZlL35xuO0Tm8K/f9XoyiST+Aeh+w==
-X-Received: by 2002:a63:455c:: with SMTP id u28mr31483938pgk.416.1562678328090;
-        Tue, 09 Jul 2019 06:18:48 -0700 (PDT)
-Received: from C02RW35GFVH8.dhcp.broadcom.net ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id k22sm23310682pfk.157.2019.07.09.06.18.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Jul 2019 06:18:47 -0700 (PDT)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Tue, 9 Jul 2019 09:18:42 -0400
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: [PATCH net-next] bnxt_en: Add page_pool_destroy() during RX ring
- cleanup.
-Message-ID: <20190709131842.GJ87269@C02RW35GFVH8.dhcp.broadcom.net>
-References: <1562658607-30048-1-git-send-email-michael.chan@broadcom.com>
+        id S1726984AbfGINUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 09:20:44 -0400
+Received: from mx-relay92-hz2.antispameurope.com ([94.100.136.192]:36284 "EHLO
+        mx-relay92-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726375AbfGINUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 09:20:44 -0400
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay92-hz2.antispameurope.com;
+ Tue, 09 Jul 2019 15:20:42 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Tue, 9 Jul
+ 2019 15:20:38 +0200
+Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>
+References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+ <20190703155518.GE18473@lunn.ch>
+ <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
+ <20190704132756.GB13859@lunn.ch>
+ <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
+ <20190704155347.GJ18473@lunn.ch>
+ <ba64f1f9-14c7-2835-f6e7-0dd07039fb18@eks-engel.de>
+ <20190705143647.GC4428@lunn.ch>
+ <5e35a41c-be0e-efd4-cb69-cf5c860b872e@eks-engel.de>
+ <20190708145733.GA9027@lunn.ch>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Message-ID: <0d595637-0081-662d-2812-0a174ee1a901@eks-engel.de>
+Date:   Tue, 9 Jul 2019 15:20:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562658607-30048-1-git-send-email-michael.chan@broadcom.com>
-User-Agent: Mutt/1.8.0 (2017-02-23)
+In-Reply-To: <20190708145733.GA9027@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay92-hz2.antispameurope.com with 44693962156
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:1.305
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 03:50:07AM -0400, Michael Chan wrote:
-> Add page_pool_destroy() in bnxt_free_rx_rings() during normal RX ring
-> cleanup, as Ilias has informed us that the following commit has been
-> merged:
-> 
-> 1da4bbeffe41 ("net: core: page_pool: add user refcnt and reintroduce page_pool_destroy")
-> 
-> The special error handling code to call page_pool_free() can now be
-> removed.  bnxt_free_rx_rings() will always be called during normal
-> shutdown or any error paths.
-> 
-> Fixes: 322b87ca55f2 ("bnxt_en: add page_pool support")
-> Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Cc: Andy Gospodarek <gospo@broadcom.com>
-> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> index e9d3bd8..2b5b0ab 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -2500,6 +2500,7 @@ static void bnxt_free_rx_rings(struct bnxt *bp)
->  		if (xdp_rxq_info_is_reg(&rxr->xdp_rxq))
->  			xdp_rxq_info_unreg(&rxr->xdp_rxq);
+>> Hi Andrew,
+>> I got it working a little bit better. When I'm fast enough I can read
+>> the registers I want but it isn't a solution.
+> Why do you need to read registers?
+>
+> What you actually might be interested in is the debugfs patches in
+> Viviens github tree.
+>
+>> Here is an output of the tracing even with my custom accesses.
+>> mii -i 2 0 0x9b60; mii -i 2 1
+>> phyid:2, reg:0x01 -> 0xc801
+>>
+>> Do you know how to delete EEInt bit? It is always one. And now all 
+>> accesses coming from the kworker thread. Maybe this is your polling 
+>> function?
+> EEInt should clear on read for older chips. For 6390, it might be
+> necessary to read global 2, register 0x13, index 03.
 >  
-> +		page_pool_destroy(rxr->page_pool);
->  		rxr->page_pool = NULL;
->  
->  		kfree(rxr->rx_tpa);
-> @@ -2560,19 +2561,14 @@ static int bnxt_alloc_rx_rings(struct bnxt *bp)
->  			return rc;
->  
->  		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i);
-> -		if (rc < 0) {
-> -			page_pool_free(rxr->page_pool);
-> -			rxr->page_pool = NULL;
-> +		if (rc < 0)
->  			return rc;
-> -		}
->  
->  		rc = xdp_rxq_info_reg_mem_model(&rxr->xdp_rxq,
->  						MEM_TYPE_PAGE_POOL,
->  						rxr->page_pool);
->  		if (rc) {
->  			xdp_rxq_info_unreg(&rxr->xdp_rxq);
-> -			page_pool_free(rxr->page_pool);
-> -			rxr->page_pool = NULL;
+>> I view the INT pin on an oscilloscope but it never changed. So maybe
+>> this is the problem. We just soldered a pull-up to that pin but it 
+>> still never changend. Maybe you have an idea?
+> The EEInt bit is probably masked. So it will not generate in
+> interrupt.
+>
+>> So what I think is, because of the EEInt bit is never set back to one 
+>> i will poll it as fast as possible.
+> Is it forever looping in mv88e6xxx_g1_irq_thread_work? Or is it the
+> polling code, mv88e6xxx_irq_poll() firing every 100ms?
+>
+> 	Andrew
 
-Rather than deleting these lines it would also be acceptable to do:
+Hi Andrew,
+good news first, it seems to be running ;-).
 
-                if (rc) {
-                        xdp_rxq_info_unreg(&rxr->xdp_rxq);
--                       page_pool_free(rxr->page_pool);
-+                       page_pool_destroy(rxr->page_pool);
-                        rxr->page_pool = NULL;
-                        return rc;
-                }
+The interrupt GPIO pin was not correctly configured in the device tree.
 
-but anytime there is a failure to bnxt_alloc_rx_rings the driver will
-immediately follow it up with a call to bnxt_free_rx_rings, so
-page_pool_destroy will be called.
+For now we have around 68 accesses per second, I think this is okay 
+because we even have indirect access, so the bus must be more busy.
 
-Thanks for pushing this out so quickly!
+What do you think about it?
 
-Acked-by: Andy Gospodarek <gospo@broadcom.com> 
+Why we need access to the bus is because we have some software which was 
+using the DSDT driver and now we want to switch to the UMSD driver.
+But we hope that we can forget about all the UMSD driver stuff and the 
+DSDT driver stuff as well and just use the DSA part from the kernel.
+To be honest, so far I don't know what functions we need from the driver
+which aren't supported by the DSA.
+
+Thanks again for your help and patience.
+
+Cheers,
+Benny
 
