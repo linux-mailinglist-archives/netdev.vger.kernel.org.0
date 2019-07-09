@@ -2,278 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF80E62D77
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 03:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D3E62D7B
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 03:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbfGIBfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 21:35:01 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38179 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726945AbfGIBfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 21:35:00 -0400
-Received: by mail-io1-f68.google.com with SMTP id j6so39667484ioa.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 18:34:59 -0700 (PDT)
+        id S1726945AbfGIBfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 21:35:42 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:43358 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbfGIBfm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 21:35:42 -0400
+Received: by mail-qk1-f195.google.com with SMTP id m14so14832706qka.10
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 18:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=k5gtM+GjzBzhf6gLCQ9GHJxOvu7GTieWSMBNA0fvn4s=;
-        b=dFRgsToTLvHs0NoF8fEwsadQbXjSu37v5PnSxA+VzbhY/zrPty5H72qlLwDx6faNP9
-         QTGOpEwdix0Eb5HYls2o7+T3uVcRPpei+lWkXPwYgryIFnC/ir9B+mQ0xIyjb+3dHTKF
-         vsBw6c40QTb4nSeAY8OnwintFTIIc5qPGDErPhWyF/yaKBKajuszdXDCzmktmz3Z4ddc
-         +kTxxgtJBj9ANVd/u6U0KhrfjnKzJRXOCOPnOTj5Z1scrfAM/lBDMU11TQpkEddzAiMC
-         cT/WIWotAhcwdXcOu682Xlh6VbfQo+byFWwLie6VfXNRJGe6Ut3dCh67XT+9bN3EnWhn
-         lYBQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Cb2dddoti7YGRSOZwHdkhuGfGb9RZ6NmxAXuZNqQSLE=;
+        b=m6jgncgukFgZm+xW9SmQ7E0cFhkR9pd4NxXBOMmaMkbcTY3Hb/RleN4/ZMZX0MQrtf
+         i4h3tXVzHeh9yA5abOgX6DwgOizbz0+HBMtE6rFZiyJs12jsKu24MZQGYcHnbV5Ysl/t
+         Q/b2aJMD2gf1tQh5Yj4wDbWt4C8yclC7SmClZOcgFNiXGOv53vKv3sJ13NxzXJJjiJII
+         3Kn7S8qQb4/mHPvls8JFduxQVVi2yRHWCj3WAB9JtyKNoNZtl55JCA1ligIVcO1nh+g1
+         3ZsgnWAwQEDrthu55hkSJKiXXueq2b1xQHPGXz2XTAl9Pr3lLKenfKtvmy9nE6HxIMVj
+         xirw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=k5gtM+GjzBzhf6gLCQ9GHJxOvu7GTieWSMBNA0fvn4s=;
-        b=sHXCTM7rL25phjwsFpTZbKuT1uz8x6s9jd5c1UV+bLYX1sttHZta2Dkm7I0IUovica
-         MBUooZGR8evtaODVNZwmNYy/U8OmE9RfIhTK4bsjAkgjT81To648OHW/y0510FU+PKVt
-         B01VSZ9qkiqID27nwylNrhrr0alAwAcuWHM8QUALXpZf3PcMekMu+j5gqexnuSrJoSa1
-         FsnJwa591eDyauktChU0e/EMIThvtz+puNAZfxysY6/G/PC/CX+8Jr1S4qFh9RArO2fa
-         +DsZ6/7AVbEArOkl0INCaTO092ZL2URJDdLAFPoeTzAU3j/lnSP3oPQW/oKiM+6d+jpi
-         7MOA==
-X-Gm-Message-State: APjAAAVwTrsc8pN44vUHw/fGpWXcRpbsENzLgDP3EDteRhz18VntSaCC
-        GzHsMF4ejbkeh30PF25ZAbqvhw==
-X-Google-Smtp-Source: APXvYqwQLNwZAsH1zJOuclhnwRxTtMldLFrwUYk0SLWKkEbk7kMXZihAKGrWGLDSnb1HLe8EXzERww==
-X-Received: by 2002:a6b:5106:: with SMTP id f6mr20413108iob.15.1562636099210;
-        Mon, 08 Jul 2019 18:34:59 -0700 (PDT)
-Received: from mojatatu.com ([2607:f2c0:e4b2:adf:80be:fc0b:d6c4:7dbc])
-        by smtp.gmail.com with ESMTPSA id n17sm17894248iog.63.2019.07.08.18.34.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 08 Jul 2019 18:34:58 -0700 (PDT)
-From:   Lucas Bates <lucasb@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, mleitner@redhat.com, vladbu@mellanox.com,
-        dcaratti@redhat.com, kernel@mojatatu.com,
-        Lucas Bates <lucasb@mojatatu.com>
-Subject: [PATCH net-next 2/2] tc-testing: introduce scapyPlugin for basic traffic
-Date:   Mon,  8 Jul 2019 21:34:27 -0400
-Message-Id: <1562636067-1338-3-git-send-email-lucasb@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1562636067-1338-1-git-send-email-lucasb@mojatatu.com>
-References: <1562636067-1338-1-git-send-email-lucasb@mojatatu.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Cb2dddoti7YGRSOZwHdkhuGfGb9RZ6NmxAXuZNqQSLE=;
+        b=t8jZx6zg1YyP2FxpDPe0MnkVOp8kXwn57TGgpXBRsoLjhehydC1S6jRlh22vxqKxmG
+         Sdix59KbwWmPfWtROgowj0C9zkv6c7/9Znn++Efglp4XGx1xyX4sUIb3n8mqZ9VI6hov
+         3Du9LduZbL3J3cVpjZ2G2OIJqZuIkWHKlc2Zyuq2POH6T3EGuUwWISwGSYRTNu9GkGSk
+         rhmT/R6eJI4E/dIIif29jKKRwe0J4ny4EQ8z2/ezrcDm73l4Mx3gxHCu74TN38pL8P+w
+         mYEvnv4QLMCX2zx8zlRJvp3vgQ7S+amuB805TXZP67/hZ6N3aXS5x3925pJ3izNGielG
+         nkKQ==
+X-Gm-Message-State: APjAAAU06wzuyELJLlIvNf+sh/O60c4ZSAfgfejrZUKco55UjO62mgd6
+        PC6atlRfxCdX9fYuDffVczygvw==
+X-Google-Smtp-Source: APXvYqzLtP/3KLDMLg1oczan6Qjcn8hU8Nskau519g5Y76r8W0jCjw99dVHSe27WUg0lGj1UXS9q6w==
+X-Received: by 2002:a37:dcc7:: with SMTP id v190mr16922738qki.169.1562636141114;
+        Mon, 08 Jul 2019 18:35:41 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id n184sm8303767qkc.114.2019.07.08.18.35.38
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 18:35:41 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 18:35:34 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, peppe.cavallaro@st.com,
+        grygorii.strashko@ti.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com,
+        linux-net-drivers@solarflare.com, ogerlitz@mellanox.com,
+        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
+        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
+        maxime.chevallier@bootlin.com, cphealy@gmail.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net-next,v3 08/11] drivers: net: use flow block API
+Message-ID: <20190708183534.12ed0acc@cakuba.netronome.com>
+In-Reply-To: <20190708160614.2226-9-pablo@netfilter.org>
+References: <20190708160614.2226-1-pablo@netfilter.org>
+        <20190708160614.2226-9-pablo@netfilter.org>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The scapyPlugin allows for simple traffic generation in tdc to
-test various tc features. It was tested with scapy v2.4.2, but
-should work with any successive version.
+On Mon,  8 Jul 2019 18:06:10 +0200, Pablo Neira Ayuso wrote:
+> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.c b/drivers/net/ethernet/netronome/nfp/bpf/main.c
+> index 0c93c84a188a..7549547c4ef0 100644
+> --- a/drivers/net/ethernet/netronome/nfp/bpf/main.c
+> +++ b/drivers/net/ethernet/netronome/nfp/bpf/main.c
+> @@ -160,6 +160,8 @@ static int nfp_bpf_setup_tc_block_cb(enum tc_setup_type type,
+>  	return 0;
+>  }
+>  
+> +static LIST_HEAD(nfp_bfp_block_cb_list);
 
-In order to use the plugin's functionality, scapy must be
-installed. This can be done with:
-   pip3 install scapy
+This still says bfp.
 
-or to install 2.4.2:
-   pip3 install scapy==2.4.2
-
-If the plugin is unable to import the scapy module, it will
-terminate the tdc run.
-
-The plugin makes use of a new key in the test case data, 'scapy'.
-This block contains three other elements: 'iface', 'count', and
-'packet':
-
-        "scapy": {
-            "iface": "$DEV0",
-            "count": 1,
-            "packet": "Ether(type=0x800)/IP(src='16.61.16.61')/ICMP()"
-        },
-
-* iface is the name of the device on the host machine from which
-  the packet(s) will be sent. Values contained within tdc_config.py's
-  NAMES dict can be used here - this is useful if paired with
-  nsPlugin
-* count is the number of copies of this packet to be sent
-* packet is a string detailing the different layers of the packet
-  to be sent. If a property isn't explicitly set, scapy will set
-  default values for you.
-
-Layers in the packet info are separated by slashes. For info about
-common TCP and IP properties, see:
-https://blogs.sans.org/pen-testing/files/2016/04/ScapyCheatSheet_v0.2.pdf
-
-Caution is advised when running tests using the scapy functionality,
-since the plugin blindly sends the packet as defined in the test case
-data.
-
-See creating-testcases/scapy-example.json for sample test cases;
-the first test is intended to pass while the second is intended to
-fail.
-
-Signed-off-by: Lucas Bates <lucasb@mojatatu.com>
----
- .../creating-testcases/scapy-example.json          | 98 ++++++++++++++++++++++
- .../selftests/tc-testing/plugin-lib/scapyPlugin.py | 51 +++++++++++
- 2 files changed, 149 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/creating-testcases/scapy-example.json
- create mode 100644 tools/testing/selftests/tc-testing/plugin-lib/scapyPlugin.py
-
-diff --git a/tools/testing/selftests/tc-testing/creating-testcases/scapy-example.json b/tools/testing/selftests/tc-testing/creating-testcases/scapy-example.json
-new file mode 100644
-index 0000000..5a9377b
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/creating-testcases/scapy-example.json
-@@ -0,0 +1,98 @@
-+[
-+    {
-+        "id": "b1e9",
-+        "name": "Test matching of source IP",
-+        "category": [
-+            "actions",
-+            "scapy"
-+        ],
-+        "plugins": {
-+            "requires": [
-+                "nsPlugin",
-+                "scapyPlugin"
-+            ]
-+        },
-+        "setup": [
-+            [
-+                "$TC qdisc del dev $DEV1 ingress",
-+                0,
-+                1,
-+                2,
-+                255
-+            ],
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: prio 3 protocol ip flower src_ip 16.61.16.61 flowid 1:1 action ok",
-+        "scapy": {
-+            "iface": "$DEV0",
-+            "count": 1,
-+            "packet": "Ether(type=0x800)/IP(src='16.61.16.61')/ICMP()"
-+        },
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -s -j filter ls dev $DEV1 ingress prio 3",
-+        "matchJSON": [
-+            {
-+                "path": [
-+                    1,
-+                    "options",
-+                    "actions",
-+                    0,
-+                    "stats",
-+                    "packets"
-+                ],
-+                "value": 1
-+            }
-+        ],
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress"
-+        ]
-+    },
-+    {
-+        "id": "e9c4",
-+        "name": "Test matching of source IP with wrong count",
-+        "category": [
-+            "actions",
-+            "scapy"
-+        ],
-+        "plugins": {
-+            "requires": [
-+                "nsPlugin",
-+                "scapyPlugin"
-+            ]
-+        },
-+        "setup": [
-+            [
-+                "$TC qdisc del dev $DEV1 ingress",
-+                0,
-+                1,
-+                2,
-+                255
-+            ],
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: prio 3 protocol ip flower src_ip 16.61.16.61 flowid 1:1 action ok",
-+        "scapy": {
-+            "iface": "$DEV0",
-+            "count": 3,
-+            "packet": "Ether(type=0x800)/IP(src='16.61.16.61')/ICMP()"
-+        },
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -s -j filter ls dev $DEV1 parent ffff:",
-+        "matchJSON": [
-+            {
-+                "path": [
-+                    1,
-+                    "options",
-+                    "actions",
-+                    0,
-+                    "stats",
-+                    "packets"
-+                ],
-+                "value": 1
-+            }
-+        ],
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress"
-+        ]
-+    }
-+]
-diff --git a/tools/testing/selftests/tc-testing/plugin-lib/scapyPlugin.py b/tools/testing/selftests/tc-testing/plugin-lib/scapyPlugin.py
-new file mode 100644
-index 0000000..db57916
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/plugin-lib/scapyPlugin.py
-@@ -0,0 +1,51 @@
-+#!/usr/bin/env python3
-+
-+import os
-+import signal
-+from string import Template
-+import subprocess
-+import time
-+from TdcPlugin import TdcPlugin
-+
-+from tdc_config import *
-+
-+try:
-+    from scapy.all import *
-+except ImportError:
-+    print("Unable to import the scapy python module.")
-+    print("\nIf not already installed, you may do so with:")
-+    print("\t\tpip3 install scapy==2.4.2")
-+    exit(1)
-+
-+class SubPlugin(TdcPlugin):
-+    def __init__(self):
-+        self.sub_class = 'scapy/SubPlugin'
-+        super().__init__()
-+
-+    def post_execute(self):
-+        if 'scapy' not in self.args.caseinfo:
-+            if self.args.verbose:
-+                print('{}.post_execute: no scapy info in test case'.format(self.sub_class))
-+            return
-+
-+        # Check for required fields
-+        scapyinfo = self.args.caseinfo['scapy']
-+        scapy_keys = ['iface', 'count', 'packet']
-+        missing_keys = []
-+        keyfail = False
-+        for k in scapy_keys:
-+            if k not in scapyinfo:
-+                keyfail = True
-+                missing_keys.add(k)
-+        if keyfail:
-+            print('{}: Scapy block present in the test, but is missing info:'
-+                .format(self.sub_class))
-+            print('{}'.format(missing_keys))
-+
-+        pkt = eval(scapyinfo['packet'])
-+        if '$' in scapyinfo['iface']:
-+            tpl = Template(scapyinfo['iface'])
-+            scapyinfo['iface'] = tpl.safe_substitute(NAMES)
-+        for count in range(scapyinfo['count']):
-+            sendp(pkt, iface=scapyinfo['iface'])
-+
---
-2.7.4
+> +
+>  static int nfp_bpf_setup_tc(struct nfp_app *app, struct net_device *netdev,
+>  			    enum tc_setup_type type, void *type_data)
+>  {
+> @@ -167,7 +169,8 @@ static int nfp_bpf_setup_tc(struct nfp_app *app, struct net_device *netdev,
+>  
+>  	switch (type) {
+>  	case TC_SETUP_BLOCK:
+> -		return flow_block_cb_setup_simple(type_data, NULL,
+> +		return flow_block_cb_setup_simple(type_data,
+> +						  &nfp_bfp_block_cb_list,
+>  						  nfp_bpf_setup_tc_block_cb,
+>  						  nn, nn, true);
+>  	default:
 
