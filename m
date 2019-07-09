@@ -2,61 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6029F634A4
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 12:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB69634C3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 13:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfGIK7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 06:59:01 -0400
-Received: from paleale.coelho.fi ([176.9.41.70]:54462 "EHLO
-        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726411AbfGIK7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 06:59:01 -0400
-Received: from 91-156-6-193.elisa-laajakaista.fi ([91.156.6.193] helo=redipa)
-        by farmhouse.coelho.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <luca@coelho.fi>)
-        id 1hknpk-0000pM-7d; Tue, 09 Jul 2019 13:58:53 +0300
-Message-ID: <e6a6d6e6d9d94c317778e534b0fe048b7d0612ef.camel@coelho.fi>
-From:   Luca Coelho <luca@coelho.fi>
-To:     Hariprasad Kelam <hariprasad.kelam@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 09 Jul 2019 13:58:50 +0300
-In-Reply-To: <20190526113815.GA6328@hari-Inspiron-1545>
-References: <20190526113815.GA6328@hari-Inspiron-1545>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5-1.1 
+        id S1726165AbfGILKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 07:10:42 -0400
+Received: from mail-qt1-f174.google.com ([209.85.160.174]:39518 "EHLO
+        mail-qt1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726025AbfGILKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 07:10:42 -0400
+Received: by mail-qt1-f174.google.com with SMTP id l9so12912659qtu.6
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 04:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=84HgpImRu/OCJ0yAA5iny1AR9AgGS+AFfzyo7wsTM1o=;
+        b=Ue/jc/W8XmsgWIYM9Wa0Gc/McjIWPlyh+HXMVayYBT0rvQPg0kt2RTnud/cukpaeox
+         CNqm2JRz1QNp00xikJVA1eRUQJtRV7FrNPHbhtlSekQSmzQiS+u1Vj/j38EECSHKygev
+         9JGEc0Cw0bpAsqqBKU9Yg+kkCot5yQrbTPt4M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=84HgpImRu/OCJ0yAA5iny1AR9AgGS+AFfzyo7wsTM1o=;
+        b=fXvSR/HbOr/livp7RTc3TUQZYBZ+/LRtTC+W4ULltnQ4BUb0ej/2aeqwaG6verQCgx
+         9rTlYQTfHkiaPD9hVi1DWTdtjZJNOzCUoU71fKFuptsduB+ynzNzhD5ViD7kxnw+WYfV
+         lufYHriez+pCOS+qquz77ijgwaaOChOatI3SxFj4fL2Pptx7jGc/jD6Q78AThjdIifCx
+         gdvIis6wGFzBFkfFB1SuiT+eJbeJcQjA98aM714KIlHkiemCw1naTRIGZeKwJtQkIL1u
+         +xPkW22RHvuvlQe6BSWm+aNQTbjqS4VaW4lP5vQdKpIUfFp/522glt9Fagen23Hnz17Y
+         d5sw==
+X-Gm-Message-State: APjAAAU1wZxV3UNUoygI8m825vVukdOwQeI2k5hiE2a15mrSgrDBh31F
+        U6c7eePxHjGa+Bv6U3A20BJ4/Q5sQ/Nm+PkIYTAfZw==
+X-Google-Smtp-Source: APXvYqyeGEIq6rnSS4mkoX5vLmdSYKlDaN8ted5f9Fl5MB4ZWqgdFx+vaNLFjH85PBzNU6RwWtVPYJ8ixKdhbQbO7DQ=
+X-Received: by 2002:aed:3a03:: with SMTP id n3mr17455312qte.85.1562670641344;
+ Tue, 09 Jul 2019 04:10:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on farmhouse.coelho.fi
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        TVD_RCVD_IP autolearn=ham autolearn_force=no version=3.4.2
-Subject: Re: [PATCH] iwlwifi: fix warning iwl-trans.h is included more than
- once
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Tue, 9 Jul 2019 13:10:30 +0200
+Message-ID: <CAJPywT++ibhPSzL8pCS6Jpej9EeR3g9x89xssK8U=vi6FqLUUw@mail.gmail.com>
+Subject: IPv6 flow label reflection behave for RST packets
+To:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2019-05-26 at 17:08 +0530, Hariprasad Kelam wrote:
-> remove duplication include of iwl-trans.h
-> 
-> issue identified by includecheck
-> 
-> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
-> ---
+Morning,
 
-Thanks! I have applied this (with small modifications to the commit
-message) in our internal tree and it will reach the mainline following
-our normal upstreaming process.
+I'm experimenting with flow label reflection from a server point of
+view. I'm able to get it working in both supported ways:
 
---
+(a) per-socket with flow manager IPV6_FL_F_REFLECT and flowlabel_consistency=0
+
+(b) with global flowlabel_reflect sysctl
+
+However, I was surprised to see that RST after the connection is torn
+down, doesn't have the correct flow label value:
+
+IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [S]
+IP6 (flowlabel 0x3ba3d) ::1.1235 > ::1.59276: Flags [S.]
+IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [.]
+IP6 (flowlabel 0x3ba3d) ::1.1235 > ::1.59276: Flags [F.]
+IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [P.]
+IP6 (flowlabel 0xdfc46) ::1.1235 > ::1.59276: Flags [R]
+
+Notice, the last RST packet has inconsistent flow label. Perhaps we
+can argue this behaviour might be acceptable for a per-socket
+IPV6_FL_F_REFLECT option, but with global flowlabel_reflect, I would
+expect the RST to preserve the reflected flow label value.
+
+I suspect the same behaviour is true for kernel-generated ICMPv6.
+
+Prepared test case:
+https://gist.github.com/majek/139081b84f9b5b6187c8ccff802e3ab3
+
+This behaviour is not necessarily a bug, more of a surprise. Flow
+label reflection is mostly useful in deployments where Linux servers
+stand behind ECMP router, which uses flow-label to compute the hash.
+Flow label reflection allows ICMP PTB message to be routed back to
+correct server.
+
+It's hard to imagine a situation where generated RST or ICMP echo
+response would trigger a ICMP PTB. Flow label reflection is explained
+here:
+https://tools.ietf.org/html/draft-wang-6man-flow-label-reflection-01
+and:
+https://tools.ietf.org/html/rfc7098
+https://tools.ietf.org/html/rfc6438
+
 Cheers,
-Luca.
+    Marek
 
+
+(Note: the unrelated "fwmark_reflect" toggle is about something
+different - flow marks, but also addresses RST and ICMP generated by
+the server)
