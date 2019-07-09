@@ -2,131 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A16A63061
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 08:20:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D3363063
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 08:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725961AbfGIGU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 02:20:56 -0400
-Received: from mail-eopbgr130079.outbound.protection.outlook.com ([40.107.13.79]:33978
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725832AbfGIGU4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 02:20:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RQgyGnQ/v7lPepsuj5rFonkTdzzFY+jVi+NXaYtLx9s=;
- b=dE1b+/lJGUhiUqFRZCxKxEzfFg+Y4Fn8qjqAQvWYqSmwqCVixLEiZ2BlNghO7NY3Zwo42zjGdql21yiel14MkrVnYDJ6VJuVSPsnNM+LVjdjughn/LPvWmqwSnq6pngCiCZ9cecqA3cM/jURO2D4YMyipd2GYwoXO2VVHfQ1Uw0=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4516.eurprd05.prod.outlook.com (52.133.57.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.19; Tue, 9 Jul 2019 06:20:52 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2052.020; Tue, 9 Jul 2019
- 06:20:52 +0000
-From:   Parav Pandit <parav@mellanox.com>
+        id S1726034AbfGIGVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 02:21:02 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42074 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbfGIGVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 02:21:01 -0400
+Received: by mail-wr1-f66.google.com with SMTP id a10so18497902wrp.9
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 23:21:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=ii+SXJ6+lfZyOMkcgHiyxZo8EJmBOTy8e2tqhigbHgM=;
+        b=mzoMzL+uHjgHbharxa6BcWOTmRpcvyOhY1DkVle/hIw5aphi/yagKx8zIgSi8AHTGE
+         8VQwdWSyV7AQZ67NzZXEoojinQ7FTenP+7PftdgjHYNiJ6oISdx49oemqROx06TL68Yl
+         hzc5Rdzji2xumhrB3Rml3dtritWa+LvzjpeCa+/W0SsbqAebpNWe0E/lR3kKJuNmWh7j
+         wlePILMgzUS6KTPjb6/gx8I5E9CBOltn5mWPCaRxRpeEb2sWXON+MxmMtYIZ1S1ZCeyR
+         +IdzfKZgetmraUoX4wXKBgPbd2Gy2E3XbySc4jY2cdUNlvmtPqvtaEPQcvm3e9CEe1/q
+         ExFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=ii+SXJ6+lfZyOMkcgHiyxZo8EJmBOTy8e2tqhigbHgM=;
+        b=SXEdK6UccdhoLxhko6REoisSPqHuj45HjHUGU6pd/OWbaH/SZeDv67avmU4IdJP7Zo
+         AM9kXvpOVhZWHC9Qt/3XgJw398VrRVuxRN0GQCQ/5SgGewYbWyDNbjL2fe7vnEUv/kUd
+         vh6yrFykqjblIjVY5XcrkbGkhldH6aLsBg+bM/nJjgR4X7cdHhqpSpCKUPJ3+5dxJinO
+         uT3S+293WfxfvpsIfNO2aLYsthaY21jwjz+YOQpeX+Avt5Z3Z40/Wz6YH75mgLpeGe5Q
+         ECg6F3eIYgwsM5W2FD24BpbuPf93w23CfTCXJLzZ5UnGlE3naxuJlPeunk+VB+UB5Lxd
+         2qrA==
+X-Gm-Message-State: APjAAAXR+oJTguUXCCbrSM1D1P41L5ZIeEUlaQ0mU1kykGGZ1jeT3Ccw
+        VCKCAASotcBwwURd2o9ElQSU/Q==
+X-Google-Smtp-Source: APXvYqwMuAxaX1kwGYFqL8yFCzZQLst+dSPzj80a5gurwUi/qGC6E0PqpmLgwMja9ali6xLiVwN6qA==
+X-Received: by 2002:a5d:6284:: with SMTP id k4mr23350348wru.179.1562653259657;
+        Mon, 08 Jul 2019 23:20:59 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id v15sm17182167wru.61.2019.07.08.23.20.59
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 23:20:59 -0700 (PDT)
+Date:   Tue, 9 Jul 2019 08:20:58 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: RE: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
- attributes
-Thread-Topic: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
- attributes
-Thread-Index: AQHVNg1tsiPOY/l61Umq9TRaQKUK/6bBxXIAgAAKU9A=
-Date:   Tue, 9 Jul 2019 06:20:52 +0000
-Message-ID: <AM0PR05MB48666760758E8CD1656A15E0D1F10@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190709041739.44292-1-parav@mellanox.com>
- <20190708224012.0280846c@cakuba.netronome.com>
-In-Reply-To: <20190708224012.0280846c@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [122.172.186.70]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fa3f9fa7-e4e4-4e24-d69d-08d7043597f7
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4516;
-x-ms-traffictypediagnostic: AM0PR05MB4516:
-x-microsoft-antispam-prvs: <AM0PR05MB45164E4A6E7355DFBEB0E276D1F10@AM0PR05MB4516.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0093C80C01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(39860400002)(376002)(136003)(13464003)(189003)(199004)(478600001)(2906002)(7696005)(68736007)(316002)(6116002)(4326008)(76176011)(3846002)(55016002)(73956011)(52536014)(6246003)(9686003)(66556008)(76116006)(107886003)(66946007)(66476007)(66446008)(6916009)(6436002)(256004)(64756008)(53936002)(229853002)(33656002)(99286004)(102836004)(7736002)(305945005)(11346002)(446003)(486006)(476003)(74316002)(66066001)(71200400001)(5660300002)(26005)(54906003)(186003)(6506007)(53546011)(71190400001)(25786009)(8676002)(86362001)(81166006)(81156014)(8936002)(14454004)(55236004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4516;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 5G6ZaZclcyBXYhzBRz1FH9Z5+aEhd4x0ZCe+stZyUXtWPERJWmzFm/LfGu+l6IpNaFf1DW4mKnRZArWlX8vHo2MNdmtsiRCvG5oFt3FMnnn0la9pzOijRfys2LZpJitdyvBcEJnFlSCCLOf0C2hXOAhGuCLvueUxRyyJlcDQtSwlf9pd/qFmkQDzCbIxpiF7WNYnQube6DTmRi4nmZ8IKWh76jm+UgqXVPT+dirlWlkxTd42QKBgwewk97vz6GijKjvbd5pODXnvDAJQRfjlZBCRPgn2SPu+DbX9g/TsarevFUwKVKR25cO0Lq/6xEU/lWPkFO7KJc9hadckvGdi0GU+cVvRJzoZICBGcQZ7hoeJwAGxGZ6XwbaWeHMUIOLI8G8LfxD3fVyjdSCQuoCm4QBMuS6pS8rmiYt8aQdsmpg=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, peppe.cavallaro@st.com,
+        grygorii.strashko@ti.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com,
+        linux-net-drivers@solarflare.com, ogerlitz@mellanox.com,
+        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
+        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
+        maxime.chevallier@bootlin.com, cphealy@gmail.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net-next,v3 11/11] netfilter: nf_tables: add hardware
+ offload support
+Message-ID: <20190709062058.GI2282@nanopsycho.orion>
+References: <20190708160614.2226-1-pablo@netfilter.org>
+ <20190708160614.2226-12-pablo@netfilter.org>
+ <20190708184437.4d29648a@cakuba.netronome.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa3f9fa7-e4e4-4e24-d69d-08d7043597f7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 06:20:52.4694
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4516
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190708184437.4d29648a@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Tue, Jul 09, 2019 at 03:44:37AM CEST, jakub.kicinski@netronome.com wrote:
+>On Mon,  8 Jul 2019 18:06:13 +0200, Pablo Neira Ayuso wrote:
+>> This patch adds hardware offload support for nftables through the
+>> existing netdev_ops->ndo_setup_tc() interface, the TC_SETUP_CLSFLOWER
+>> classifier and the flow rule API. This hardware offload support is
+>> available for the NFPROTO_NETDEV family and the ingress hook.
+>> 
+>> Each nftables expression has a new ->offload interface, that is used to
+>> populate the flow rule object that is attached to the transaction
+>> object.
+>> 
+>> There is a new per-table NFT_TABLE_F_HW flag, that is set on to offload
+>> an entire table, including all of its chains.
+>> 
+>> This patch supports for basic metadata (layer 3 and 4 protocol numbers),
+>> 5-tuple payload matching and the accept/drop actions; this also includes
+>> basechain hardware offload only.
+>> 
+>> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+>
+>Any particular reason to not fence this off with a device feature
+>(ethtool -k)?  Then you wouldn't need that per-driver list abomination
+>until drivers start advertising it..  IDK if we want the per-device
+>offload enable flags or not in general, it seems like a good idea in
+>general for admin to be able to disable offload per device 🤷
+>
+>> +static int nft_flow_offload_rule(struct nft_trans *trans,
+>> +				 enum tc_fl_command command)
+>> +{
+>> +	struct nft_flow_rule *flow = nft_trans_flow_rule(trans);
+>> +	struct nft_rule *rule = nft_trans_rule(trans);
+>> +	struct tc_cls_flower_offload cls_flower = {};
+>> +	struct nft_base_chain *basechain;
+>> +	struct netlink_ext_ack extack;
+>> +	__be16 proto = ETH_P_ALL;
+>> +
+>> +	if (!nft_is_base_chain(trans->ctx.chain))
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	basechain = nft_base_chain(trans->ctx.chain);
+>> +
+>> +	if (flow)
+>> +		proto = flow->proto;
+>> +
+>> +	nft_flow_offload_common_init(&cls_flower.common, proto, &extack);
+>> +	cls_flower.command = command;
+>> +	cls_flower.cookie = (unsigned long) rule;
+>> +	if (flow)
+>> +		cls_flower.rule = flow->rule;
+>> +
+>> +	return nft_setup_cb_call(basechain, TC_SETUP_CLSFLOWER, &cls_flower);
+>> +}
+>
+>Are we 100% okay with using TC cls_flower structures and defines in nft
+>code?
 
-> -----Original Message-----
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Sent: Tuesday, July 9, 2019 11:10 AM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: netdev@vger.kernel.org; Jiri Pirko <jiri@mellanox.com>; Saeed Mahamee=
-d
-> <saeedm@mellanox.com>
-> Subject: Re: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports =
-and
-> attributes
->=20
-> On Mon,  8 Jul 2019 23:17:34 -0500, Parav Pandit wrote:
-> > This patchset carry forwards the work initiated in [1] and discussion
-> > futher concluded at [2].
-> >
-> > To improve visibility of representor netdevice, its association with
-> > PF or VF, physical port, two new devlink port flavours are added as
-> > PCI PF and PCI VF ports.
-> >
-> > A sample eswitch view can be seen below, which will be futher extended
-> > to mdev subdevices of a PCI function in future.
-> >
-> > Patch-1 moves physical port's attribute to new structure
-> > Patch-2 enhances netlink response to consider port flavour
-> > Patch-3,4 extends devlink port attributes and port flavour
-> > Patch-5 extends mlx5 driver to register devlink ports for PF, VF and
-> > physical link.
->=20
-> The coding leaves something to be desired:
->=20
-> 1) flavour handling in devlink_nl_port_attrs_put() really calls for a
->    switch statement,
-> 2) devlink_port_attrs_.*set() can take a pointer to flavour specific
->    structure instead of attr structure for setting the parameters,
-> 3) the "ret" variable there is unnecessary,
-> 4) there is inconsistency in whether there is an empty line between
->    if (ret) return; after __devlink_port_attrs_set() and attr setting,
-> 5) /* Associated PCI VF for of the PCI PF for this port. */ doesn't
->    read great;
-> 6) mlx5 functions should preferably have an appropriate prefix - f.e.
->    register_devlink_port() or is_devlink_port_supported().
->=20
-Those two static helper functions doesn't need mlx5_ prefix.
-ndo ops are prefixed appropriately.
-
-> But I'll leave it to Jiri and Dave to decide if its worth a respin :) Fun=
-ctionally I
-> think this is okay.
->=20
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Yeah, your right. Should be renamed and moved to "flow offload" as well.
