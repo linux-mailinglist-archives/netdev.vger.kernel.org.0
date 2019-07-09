@@ -2,340 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC3762FE0
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 07:19:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1878E62FE2
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 07:19:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727242AbfGIFMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 01:12:10 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:37912 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbfGIFMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 01:12:10 -0400
-Received: by mail-oi1-f193.google.com with SMTP id v186so14441147oie.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 22:12:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=vRMFcZUxaE5NaysvUG7XXbAGbdtg6RMeYvr75dgW7dg=;
-        b=vbgR7Jh3lG7BTkMNCT79qoJOK3JQdsT9vKQr7udRfu651qt7DA4aKiFPbDhcetLV9d
-         uHRSyAKUzs2qubejCkFlbnm6x2CC0jATYEYGYklOsMzPnzlAAYLFiloNKi3WGnHMuBwX
-         M2Udp1R+UDTsYMOR5m4GCLdXzWaihncp3HCqkmOybMaHX3nWsRK2NhPGJGgCg92VNjFS
-         OfA0WpnLHUy6D2ZsmK9xjU0493yhrx+wHy/WEFvbtKhIW39IBMMGhtCTy6dTeYlQx4SW
-         qqU4lxzBRC0St0wL/zal3z7T6jNvWTAnJbnyikZP4DSmVbrlDcKje1T5xzfbT/s/0CZI
-         FYOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=vRMFcZUxaE5NaysvUG7XXbAGbdtg6RMeYvr75dgW7dg=;
-        b=UPXtcJJLCr46ICWALGTbbPrE5uzrY/WpNoqGwiVFfn82LyXsUsdoXkDMUdZRc0N7jz
-         8l/YrDP11KZjcwyjeklNaApNvuMTLhK2qSK2GzWzCJoUJ07znLJlov9ySSUxxKfZz/NP
-         e2nn/PGDuBAdWkVn9sj0jibKchw/cPtrYPFOs2FIwuAjdryhwW+R7behUB4jMELPeZJA
-         Vnrf96dccW9JcnNWjVNH8MgQovNSiMXpw4lVOlb9woz6ELPgIJlKmHvHQe/v/kOHp2M+
-         CzGS5iz4q+33PzmkRe5TZx0J9qsxgi/w6nqAtZfxnc0rD8dXBnZNGcOR76u9UkPBVICr
-         lnlA==
-X-Gm-Message-State: APjAAAVhKKt8aO9377RxjoRbde2Dk+2NmDRPwQVTjG2f3RcIOs2o8ELn
-        4T+vXN/rFYVnuzvqPZ5Et330mA==
-X-Google-Smtp-Source: APXvYqyje2+6rPLC/CAsU6LJzHhZEAoFO3MhlFmWa7z3kvGDPltUUFdaYOEQ/xd2Eo/a49U8WU4imw==
-X-Received: by 2002:a05:6808:6c5:: with SMTP id m5mr11486922oih.89.1562649129349;
-        Mon, 08 Jul 2019 22:12:09 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li964-79.members.linode.com. [45.33.10.79])
-        by smtp.gmail.com with ESMTPSA id 65sm4220642otw.2.2019.07.08.22.12.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 08 Jul 2019 22:12:08 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 13:11:54 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Coresight ML <coresight@lists.linaro.org>
-Subject: Re: [PATCH v3] perf cs-etm: Improve completeness for kernel address
- space
-Message-ID: <20190709051154.GA11549@leoy-ThinkPad-X240s>
-References: <20190620034446.25561-1-leo.yan@linaro.org>
- <CANLsYkwjJ57RWEqS9suLm1+JKicG1LzcHtP8k5qTK1d7bw=1MA@mail.gmail.com>
+        id S1725951AbfGIFPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 01:15:04 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50090 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725832AbfGIFPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 01:15:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id D12B2ACE1;
+        Tue,  9 Jul 2019 05:15:02 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 3F47AE0E06; Tue,  9 Jul 2019 07:15:01 +0200 (CEST)
+Date:   Tue, 9 Jul 2019 07:15:01 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, Shannon Nelson <snelson@pensando.io>
+Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
+Message-ID: <20190709051501.GA16610@unicorn.suse.cz>
+References: <20190708192532.27420-1-snelson@pensando.io>
+ <20190708192532.27420-14-snelson@pensando.io>
+ <20190708220406.GB17857@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANLsYkwjJ57RWEqS9suLm1+JKicG1LzcHtP8k5qTK1d7bw=1MA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20190708220406.GB17857@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mathieu,
-
-On Mon, Jul 08, 2019 at 11:33:59AM -0600, Mathieu Poirier wrote:
-> On Wed, 19 Jun 2019 at 21:45, Leo Yan <leo.yan@linaro.org> wrote:
-> >
-> > Arm and arm64 architecture reserve some memory regions prior to the
-> > symbol '_stext' and these memory regions later will be used by device
-> > module and BPF jit.  The current code misses to consider these memory
-> > regions thus any address in the regions will be taken as user space
-> > mode, but perf cannot find the corresponding dso with the wrong CPU
-> > mode so we misses to generate samples for device module and BPF
-> > related trace data.
-> >
-> > This patch parse the link scripts to get the memory size prior to start
-> > address and reduce this size from 'etmq->etm->kernel_start', then can
-> > get a fixed up kernel start address which contain memory regions for
-> > device module and BPF.  Finally, cs_etm__cpu_mode() can return right
-> > mode for these memory regions and perf can successfully generate
-> > samples.
-> >
-> > The reason for parsing the link scripts is Arm architecture changes text
-> > offset dependent on different platforms, which define multiple text
-> > offsets in $kernel/arch/arm/Makefile.  This offset is decided when build
-> > kernel and the final value is extended in the link script, so we can
-> > extract the used value from the link script.  We use the same way to
-> > parse arm64 link script as well.  If fail to find the link script, the
-> > pre start memory size is assumed as zero, in this case it has no any
-> > change caused with this patch.
-> >
-> > Below is detailed info for testing this patch:
-> >
-> > - Build LLVM/Clang 8.0 or later version;
-> >
-> > - Configure perf with ~/.perfconfig:
-> >
-> >   root@debian:~# cat ~/.perfconfig
-> >   # this file is auto-generated.
-> >   [llvm]
-> >           clang-path = /mnt/build/llvm-build/build/install/bin/clang
-> >           kbuild-dir = /mnt/linux-kernel/linux-cs-dev/
-> >           clang-opt = "-g"
-> >           dump-obj = true
-> >
-> >   [trace]
-> >           show_zeros = yes
-> >           show_duration = no
-> >           no_inherit = yes
-> >           show_timestamp = no
-> >           show_arg_names = no
-> >           args_alignment = 40
-> >           show_prefix = yes
-> >
-> > - Run 'perf trace' command with eBPF event:
-> >
-> >   root@debian:~# perf trace -e string \
-> >       -e $kernel/tools/perf/examples/bpf/augmented_raw_syscalls.c
-> >
-> > - Read eBPF program memory mapping in kernel:
-> >
-> >   root@debian:~# echo 1 > /proc/sys/net/core/bpf_jit_kallsyms
-> >   root@debian:~# cat /proc/kallsyms | grep -E "bpf_prog_.+_sys_[enter|exit]"
-> >   ffff000000086a84 t bpf_prog_f173133dc38ccf87_sys_enter  [bpf]
-> >   ffff000000088618 t bpf_prog_c1bd85c092d6e4aa_sys_exit   [bpf]
-> >
-> > - Launch any program which accesses file system frequently so can hit
-> >   the system calls trace flow with eBPF event;
-> >
-> > - Capture CoreSight trace data with filtering eBPF program:
-> >
-> >   root@debian:~# perf record -e cs_etm/@20070000.etr/ \
-> >           --filter 'filter 0xffff000000086a84/0x800' -a sleep 5s
-> >
-> > - Annotate for symbol 'bpf_prog_f173133dc38ccf87_sys_enter':
-> >
-> >   root@debian:~# perf report
-> >   Then select 'branches' samples and press 'a' to annotate symbol
-> >   'bpf_prog_f173133dc38ccf87_sys_enter', press 'P' to print to the
-> >   bpf_prog_f173133dc38ccf87_sys_enter.annotation file:
-> >
-> >   root@debian:~# cat bpf_prog_f173133dc38ccf87_sys_enter.annotation
-> >
-> >   bpf_prog_f173133dc38ccf87_sys_enter() bpf_prog_f173133dc38ccf87_sys_enter
-> >   Event: branches
-> >
-> >   Percent      int sys_enter(struct syscall_enter_args *args)
-> >                  stp  x29, x30, [sp, #-16]!
-> >
-> >                 int key = 0;
-> >                  mov  x29, sp
-> >
-> >                        augmented_args = bpf_map_lookup_elem(&augmented_filename_map, &key);
-> >                  stp  x19, x20, [sp, #-16]!
-> >
-> >                        augmented_args = bpf_map_lookup_elem(&augmented_filename_map, &key);
-> >                  stp  x21, x22, [sp, #-16]!
-> >
-> >                  stp  x25, x26, [sp, #-16]!
-> >
-> >                 return bpf_get_current_pid_tgid();
-> >                  mov  x25, sp
-> >
-> >                 return bpf_get_current_pid_tgid();
-> >                  mov  x26, #0x0                         // #0
-> >
-> >                  sub  sp, sp, #0x10
-> >
-> >                 return bpf_map_lookup_elem(pids, &pid) != NULL;
-> >                  add  x19, x0, #0x0
-> >
-> >                  mov  x0, #0x0                          // #0
-> >
-> >                  mov  x10, #0xfffffffffffffff8          // #-8
-> >
-> >                 if (pid_filter__has(&pids_filtered, getpid()))
-> >                  str  w0, [x25, x10]
-> >
-> >                 probe_read(&augmented_args->args, sizeof(augmented_args->args), args);
-> >                  add  x1, x25, #0x0
-> >
-> >                 probe_read(&augmented_args->args, sizeof(augmented_args->args), args);
-> >                  mov  x10, #0xfffffffffffffff8          // #-8
-> >
-> >                 syscall = bpf_map_lookup_elem(&syscalls, &augmented_args->args.syscall_nr);
-> >                  add  x1, x1, x10
-> >
-> >                 syscall = bpf_map_lookup_elem(&syscalls, &augmented_args->args.syscall_nr);
-> >                  mov  x0, #0xffff8009ffffffff           // #-140694538682369
-> >
-> >                  movk x0, #0x6698, lsl #16
-> >
-> >                  movk x0, #0x3e00
-> >
-> >                  mov  x10, #0xffffffffffff1040          // #-61376
-> >
-> >                 if (syscall == NULL || !syscall->enabled)
-> >                  movk x10, #0x1023, lsl #16
-> >
-> >                 if (syscall == NULL || !syscall->enabled)
-> >                  movk x10, #0x0, lsl #32
-> >
-> >                 loop_iter_first()
-> >     3.69       → blr  bpf_prog_f173133dc38ccf87_sys_enter
-> >                 loop_iter_first()
-> >                  add  x7, x0, #0x0
-> >
-> >                 loop_iter_first()
-> >                  add  x20, x7, #0x0
-> >
-> >                 int size = probe_read_str(&augmented_filename->value, filename_len, filename_arg);
-> >                  mov  x0, #0x1                          // #1
-> 
-> I'm not sure all this information about annotation should be in the
-> changelog.  This patch is about being able to decode traces that
-> executed outside the current kernel addresse range and as such simply
-> using "perf report" or "perf script" successfully is enough to test
-> this set.  Any information that goes beyond that muddies the water.
-
-Agree.  Will remove this in the new patch.
-
-> >   [...]
-> >
-> > Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> > Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-> > Cc: Jiri Olsa <jolsa@redhat.com>
-> > Cc: Namhyung Kim <namhyung@kernel.org>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Suzuki Poulouse <suzuki.poulose@arm.com>
-> > Cc: coresight@lists.linaro.org
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> > ---
-> >  tools/perf/Makefile.config | 22 ++++++++++++++++++++++
-> >  tools/perf/util/cs-etm.c   | 19 ++++++++++++++++++-
-> >  2 files changed, 40 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-> > index 51dd00f65709..a58cd5a43a98 100644
-> > --- a/tools/perf/Makefile.config
-> > +++ b/tools/perf/Makefile.config
-> > @@ -418,6 +418,28 @@ ifdef CORESIGHT
-> >      endif
-> >      LDFLAGS += $(LIBOPENCSD_LDFLAGS)
-> >      EXTLIBS += $(OPENCSDLIBS)
-> > +    PRE_START_SIZE := 0
-> > +    ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
-> > +      ifeq ($(SRCARCH),arm64)
-> > +        # Extract info from lds:
-> > +        #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
-> > +        # PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000) = 0x10080000
-> > +        PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
-> > +          $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
-> > +          sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
-> > +          awk -F' ' '{printf "0x%x", $$6+$$7+$$8}' 2>/dev/null)
-> > +      endif
-> > +      ifeq ($(SRCARCH),arm)
-> > +        # Extract info from lds:
-> > +        #   . = ((0xC0000000)) + 0x00208000;
-> > +        # PRE_START_SIZE := 0x00208000
-> > +        PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
-> > +          $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
-> > +          sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
-> > +          awk -F' ' '{printf "0x%x", $$2}' 2>/dev/null)
-> > +      endif
-> > +    endif
-> > +    CFLAGS += -DARM_PRE_START_SIZE=$(PRE_START_SIZE)
-> 
-> It might be useful to do this for arm and arm64 regardless of
-> CoreSight but I'll let Arnaldo decide on this.
-
-Ah, good point!  On Arm/arm64 platforms, if we want to parse kernel
-address space with considering eBPF/module, the kernel start address
-needs to be compensated in the function machine__get_kernel_start(),
-so this can let PMU or other events to work correctly.
-
-Will wait a bit if Arnaldo could give out guidance.
-
-> >      $(call detected,CONFIG_LIBOPENCSD)
-> >      ifdef CSTRACE_RAW
-> >        CFLAGS += -DCS_DEBUG_RAW
-> > diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
-> > index 0c7776b51045..5fa0be3a3904 100644
-> > --- a/tools/perf/util/cs-etm.c
-> > +++ b/tools/perf/util/cs-etm.c
-> > @@ -613,10 +613,27 @@ static void cs_etm__free(struct perf_session *session)
-> >  static u8 cs_etm__cpu_mode(struct cs_etm_queue *etmq, u64 address)
-> >  {
-> >         struct machine *machine;
-> > +       u64 fixup_kernel_start = 0;
-> >
-> >         machine = etmq->etm->machine;
-> >
-> > -       if (address >= etmq->etm->kernel_start) {
-> > +       /*
-> > +        * Since arm and arm64 specify some memory regions prior to
-> > +        * 'kernel_start', kernel addresses can be less than 'kernel_start'.
-> > +        *
-> > +        * For arm architecture, the 16MB virtual memory space prior to
-> > +        * 'kernel_start' is allocated to device modules, a PMD table if
-> > +        * CONFIG_HIGHMEM is enabled and a PGD table.
-> > +        *
-> > +        * For arm64 architecture, the root PGD table, device module memory
-> > +        * region and BPF jit region are prior to 'kernel_start'.
-> > +        *
-> > +        * To reflect the complete kernel address space, compensate these
-> > +        * pre-defined regions for kernel start address.
-> > +        */
-> > +       fixup_kernel_start = etmq->etm->kernel_start - ARM_PRE_START_SIZE;
+On Tue, Jul 09, 2019 at 12:04:06AM +0200, Andrew Lunn wrote:
+> > +static int ionic_get_link_ksettings(struct net_device *netdev,
+> > +				    struct ethtool_link_ksettings *ks)
+> > +{
+> > +	struct lif *lif = netdev_priv(netdev);
+> > +	struct ionic_dev *idev = &lif->ionic->idev;
+> > +	int copper_seen = 0;
 > > +
-> > +       if (address >= fixup_kernel_start) {
-> >                 if (machine__is_host(machine))
-> >                         return PERF_RECORD_MISC_KERNEL;
-> >                 else
+> > +	ethtool_link_ksettings_zero_link_mode(ks, supported);
+> > +	ethtool_link_ksettings_zero_link_mode(ks, advertising);
+> > +
+> > +	switch (le16_to_cpu(idev->port_info->status.xcvr.pid)) {
+> > +		/* Copper */
+> > +	case XCVR_PID_QSFP_100G_CR4:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     100000baseCR4_Full);
+> > +		copper_seen++;
+> > +		break;
+> > +	case XCVR_PID_QSFP_40GBASE_CR4:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     40000baseCR4_Full);
+> > +		copper_seen++;
+> > +		break;
+> > +	case XCVR_PID_SFP_25GBASE_CR_S:
+> > +	case XCVR_PID_SFP_25GBASE_CR_L:
+> > +	case XCVR_PID_SFP_25GBASE_CR_N:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     25000baseCR_Full);
+> > +		copper_seen++;
+> > +		break;
+> > +	case XCVR_PID_SFP_10GBASE_AOC:
+> > +	case XCVR_PID_SFP_10GBASE_CU:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     10000baseCR_Full);
+> > +		copper_seen++;
+> > +		break;
+> > +
+> > +		/* Fibre */
+> > +	case XCVR_PID_QSFP_100G_SR4:
+> > +	case XCVR_PID_QSFP_100G_AOC:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     100000baseSR4_Full);
+> > +		break;
+> > +	case XCVR_PID_QSFP_100G_LR4:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     100000baseLR4_ER4_Full);
+> > +		break;
+> > +	case XCVR_PID_QSFP_100G_ER4:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     100000baseLR4_ER4_Full);
+> > +		break;
+> > +	case XCVR_PID_QSFP_40GBASE_SR4:
+> > +	case XCVR_PID_QSFP_40GBASE_AOC:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     40000baseSR4_Full);
+> > +		break;
+> > +	case XCVR_PID_QSFP_40GBASE_LR4:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     40000baseLR4_Full);
+> > +		break;
+> > +	case XCVR_PID_SFP_25GBASE_SR:
+> > +	case XCVR_PID_SFP_25GBASE_AOC:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     25000baseSR_Full);
+> > +		break;
+> > +	case XCVR_PID_SFP_10GBASE_SR:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     10000baseSR_Full);
+> > +		break;
+> > +	case XCVR_PID_SFP_10GBASE_LR:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     10000baseLR_Full);
+> > +		break;
+> > +	case XCVR_PID_SFP_10GBASE_LRM:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     10000baseLRM_Full);
+> > +		break;
+> > +	case XCVR_PID_SFP_10GBASE_ER:
+> > +		ethtool_link_ksettings_add_link_mode(ks, supported,
+> > +						     10000baseER_Full);
+> > +		break;
 > 
-> Tested-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+> I don't know these link modes too well. But only setting a single bit
+> seems odd. What i do know is that an SFP which supports 2500BaseX
+> should also be able to support 1000BaseX. So should a 100G SFP also
+> support 40G, 25G, 10G etc? The SERDES just runs a slower bitstream
+> over the basic bitpipe?
+> 
+> > +	case XCVR_PID_QSFP_100G_ACC:
+> > +	case XCVR_PID_QSFP_40GBASE_ER4:
+> > +	case XCVR_PID_SFP_25GBASE_LR:
+> > +	case XCVR_PID_SFP_25GBASE_ER:
+> > +		dev_info(lif->ionic->dev, "no decode bits for xcvr type pid=%d / 0x%x\n",
+> > +			 idev->port_info->status.xcvr.pid,
+> > +			 idev->port_info->status.xcvr.pid);
+> > +		break;
+> 
+> Why not add them?
+> 
+> 
+> > +	memcpy(ks->link_modes.advertising, ks->link_modes.supported,
+> > +	       sizeof(ks->link_modes.advertising));
+> 
+> bitmap_copy() would be a better way to do this. You could consider
+> adding a helper to ethtool.h.
 
-Thanks a lot for the reviewing & testing; and very appreciate your much
-consumed time :)
+Also, there is no need to zero initialize ks->link_modes.advertising
+above if it's going to be rewritten here anyway.
 
-Thanks,
-Leo Yan
+Michal
