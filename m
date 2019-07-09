@@ -2,210 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 614F763789
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 16:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8797637AE
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 16:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbfGIOM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 10:12:58 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:44801 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbfGIOM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 10:12:57 -0400
-Received: by mail-qk1-f193.google.com with SMTP id d79so11825413qke.11
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 07:12:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DquXK1SvT7NIHMNlUc9P72aluB3cujt1AVh6/uBVQfQ=;
-        b=go1q0BYOYcnYgWjyAhtyhDpcLL2zjTskXIwPyg418SkuWttZERRFWBv1nhw1OKWIu9
-         eKwGuInd/ipkF9VNhpX+q1cK6weqHxXAL2iqk495YeSjhH2g6EtAKKUz+R0n6D/F25/H
-         yNqD6C9R5orK/QXZrxCRiJJdohTqfWZyJsU7o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DquXK1SvT7NIHMNlUc9P72aluB3cujt1AVh6/uBVQfQ=;
-        b=pewsQsOLm5NYBf555tWnmtUaMKVURPDYrOkyhv4IiRkQ9ddUKVCzP0ViiK6+fpYfOq
-         Ko8IE4aBdJ+C/bZfpoqam4Gd2nW56LhsgAjfq4Xaejr4mgP0DhY1J8wj7IgpkYkph8Cw
-         PVhZXjljlVYNwTc5fXnN6SPZ8VFNu1REy1dTjYrg6zlY4cdlYGGLyXnacpubK1jFqdiu
-         MwCS9tYWvhwj5Y91I8ZJg9SKz7rIJPAHKjfdopg4c1QAg+O8q5uTcNqfHr6WgnppzO4f
-         iwpQd8PbkgtgRrzaUkl5gOzozRsoIWpJdT7jivRBMaFjze4HAI5yui9pMnUVr08im4zY
-         7YPg==
-X-Gm-Message-State: APjAAAWLM5nGxA2AtbmZJfa364ofvL0I9El/kQheJgHTU0+L6ciInXic
-        NtmSQokeULHeVuH9FaTCTBwJ63wNtyu/11TNHnb2hLNzmjg=
-X-Google-Smtp-Source: APXvYqzVN8SdCvtcJZrC8xYjspiOpVAwCMOvA+Q3KG6J5jAQo5EwPrDDCB3SHCwRSMyLKWvTVsQDaEw9hKjYtGdvrvw=
-X-Received: by 2002:a37:ac14:: with SMTP id e20mr18971935qkm.243.1562681576472;
- Tue, 09 Jul 2019 07:12:56 -0700 (PDT)
+        id S1726666AbfGIOTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 10:19:39 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48274 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726602AbfGIOTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 10:19:35 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x69EG7nW017350;
+        Tue, 9 Jul 2019 07:19:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=YXaJd4oWKFdRZvAqEmp7BalYuXi6zbcrAdSM8Y7OgDY=;
+ b=OnhkdiqFLc90bnnXvsRX+p058cU2h6R852vOQm1ErRSaZlBqKvnc1BbhPu2izNgF7veJ
+ ipzYk3u9rtFxXW799zSq8BlIFb4jneM0zBomYNAf05U2Okb26xT9cF2KRwzkFukPwA4k
+ j1yiX3fPL/TamtzRn0yfZqjuIDw+bA0l6JqvGQkoYYVeb3+ONE7fK1IZorRZpV09mVbG
+ kxaWCGW/pk2WM1vtuOh98G+3JquIh+MaO/ZyF5cwoWxYSC/EFuDTgv+9lXdVbcPuikos
+ uAMJrKIPrtnFN5IC+JG5IYPnxw8o+40FNPgpJLwL4aOoaob9fTMYTJ7cYe6M2sR3wRlb Mw== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2tmn10hjxu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 09 Jul 2019 07:19:05 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 9 Jul
+ 2019 07:19:04 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Tue, 9 Jul 2019 07:19:04 -0700
+Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
+        by maili.marvell.com (Postfix) with ESMTP id 028AC3F7045;
+        Tue,  9 Jul 2019 07:19:01 -0700 (PDT)
+From:   Michal Kalderon <michal.kalderon@marvell.com>
+To:     <michal.kalderon@marvell.com>, <ariel.elior@marvell.com>,
+        <jgg@ziepe.ca>, <dledford@redhat.com>, <galpress@amazon.com>
+CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v6 rdma-next 0/6] RDMA/qedr: Use the doorbell overflow recovery mechanism for RDMA
+Date:   Tue, 9 Jul 2019 17:17:29 +0300
+Message-ID: <20190709141735.19193-1-michal.kalderon@marvell.com>
+X-Mailer: git-send-email 2.14.5
 MIME-Version: 1.0
-References: <CAJPywT++ibhPSzL8pCS6Jpej9EeR3g9x89xssK8U=vi6FqLUUw@mail.gmail.com>
- <a854848f-9fb3-47b9-cb18-e76455e5e664@gmail.com> <CAJPywTKXL=_8h3aoC=n-c8o_Uo7P6RnKOgm6CpvrNsPQuw4C9A@mail.gmail.com>
- <8e2fca44-6fe7-42fc-8684-2cdd52c67103@gmail.com> <1cf380b3-843e-599a-105a-d1879852def1@gmail.com>
-In-Reply-To: <1cf380b3-843e-599a-105a-d1879852def1@gmail.com>
-From:   Marek Majkowski <marek@cloudflare.com>
-Date:   Tue, 9 Jul 2019 16:12:43 +0200
-Message-ID: <CAJPywTJfmKzzHDs82w+jtqNv1Yv=je+x9oJ8XsnNwos8QsNvpA@mail.gmail.com>
-Subject: Re: IPv6 flow label reflection behave for RST packets
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-09_05:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I can confirm the patch works for the RST case I checked.
+This patch series uses the doorbell overflow recovery mechanism
+introduced in
+commit 36907cd5cd72 ("qed: Add doorbell overflow recovery mechanism")
+for rdma ( RoCE and iWARP )
 
-Thanks!
+The first three patches modify the core code to contain helper
+functions for managing mmap_xa inserting, getting and freeing
+entries. The code was taken almost as is from the efa driver.
+There is still an open discussion on whether we should take
+this even further and make the entire mmap generic. Until a
+decision is made, I only created the database API and modified
+the efa and qedr driver to use it. The doorbell recovery code will be based
+on the common code.
 
-On Tue, Jul 9, 2019 at 3:37 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 7/9/19 3:22 PM, Eric Dumazet wrote:
-> >
-> >
-> > On 7/9/19 2:33 PM, Marek Majkowski wrote:
-> >> Ha, thanks. I missed that.
-> >>
-> >> There is a caveat though. I don't think it's working as intended...
-> >
-> >
-> > Note that my commit really took a look at a fraction of the cases ;)
-> >
-> > commit 323a53c41292a0d7efc8748856c623324c8d7c21
-> >
-> >     ipv6: tcp: enable flowlabel reflection in some RST packets
-> >
-> >     When RST packets are sent because no socket could be found,
-> >     it makes sense to use flowlabel_reflect sysctl to decide
-> >     if a reflection of the flowlabel is requested.
-> >
-> >
-> > In your case, a socket is found, most probably, and np->repflow seems to be ignored.
-> >
-> > I'll take a look, thanks.
->
-> I guess a possible fix would be :
->
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index d56a9019a0feb5a34312ec353c555f44b8c09b3d..2a298835317c0f6b1d82fb118dc4ba9647a2a110 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -984,8 +984,13 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
->
->         if (sk) {
->                 oif = sk->sk_bound_dev_if;
-> -               if (sk_fullsock(sk))
-> +               if (sk_fullsock(sk)) {
-> +                       struct ipv6_pinfo *np = tcp_inet6_sk(sk);
-> +
->                         trace_tcp_send_reset(sk, skb);
-> +                       if (np->repflow)
-> +                               label = ip6_flowlabel(ipv6h);
-> +               }
->                 if (sk->sk_state == TCP_TIME_WAIT)
->                         label = cpu_to_be32(inet_twsk(sk)->tw_flowlabel);
->         } else {
->
->
-> >
-> >> Running my script:
-> >>
-> >> $ sysctl -w net.ipv6.flowlabel_reflect=3
-> >>
-> >> $ tail reflect.py
-> >> cd2.close()
-> >> cd.send(b"a")
-> >>
-> >> $ python3 reflect.py
-> >> IP6 (flowlabel 0xf2927, hlim 64) ::1.1235 > ::1.60246: Flags [F.]
-> >> IP6 (flowlabel 0xf2927, hlim 64) ::1.60246 > ::1.1235: Flags [P.]
-> >> IP6 (flowlabel 0x58ecd, hlim 64) ::1.1235 > ::1.60246: Flags [R]
-> >>
-> >> Note. The RST is opportunistic, depending on timing I sometimes get a
-> >> proper FIN, without RST.
-> >>
-> >> If I change the script to introduce some delay:
-> >>
-> >> $ tail reflect.py
-> >> cd2.close()
-> >> time.sleep(0.1)
-> >> cd.send(b"a")
-> >>
-> >> $ python3 reflect.py
-> >> IP6 (flowlabel 0x2f60c, hlim 64) ::1.60326 > ::1.1235: Flags [.]
-> >> IP6 (flowlabel 0x2f60c, hlim 64) ::1.60326 > ::1.1235: Flags [P.]
-> >> IP6 (flowlabel 0x2f60c, hlim 64) ::1.1235 > ::1.60326: Flags [R]
-> >>
-> >> Now it seem to work reliably. Tested on net-next under virtme.
-> >>
-> >> Marek
-> >>
-> >> On Tue, Jul 9, 2019 at 1:19 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>>
-> >>>
-> >>>
-> >>> On 7/9/19 1:10 PM, Marek Majkowski wrote:
-> >>>> Morning,
-> >>>>
-> >>>> I'm experimenting with flow label reflection from a server point of
-> >>>> view. I'm able to get it working in both supported ways:
-> >>>>
-> >>>> (a) per-socket with flow manager IPV6_FL_F_REFLECT and flowlabel_consistency=0
-> >>>>
-> >>>> (b) with global flowlabel_reflect sysctl
-> >>>>
-> >>>> However, I was surprised to see that RST after the connection is torn
-> >>>> down, doesn't have the correct flow label value:
-> >>>>
-> >>>> IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [S]
-> >>>> IP6 (flowlabel 0x3ba3d) ::1.1235 > ::1.59276: Flags [S.]
-> >>>> IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [.]
-> >>>> IP6 (flowlabel 0x3ba3d) ::1.1235 > ::1.59276: Flags [F.]
-> >>>> IP6 (flowlabel 0x3ba3d) ::1.59276 > ::1.1235: Flags [P.]
-> >>>> IP6 (flowlabel 0xdfc46) ::1.1235 > ::1.59276: Flags [R]
-> >>>>
-> >>>> Notice, the last RST packet has inconsistent flow label. Perhaps we
-> >>>> can argue this behaviour might be acceptable for a per-socket
-> >>>> IPV6_FL_F_REFLECT option, but with global flowlabel_reflect, I would
-> >>>> expect the RST to preserve the reflected flow label value.
-> >>>>
-> >>>> I suspect the same behaviour is true for kernel-generated ICMPv6.
-> >>>>
-> >>>> Prepared test case:
-> >>>> https://gist.github.com/majek/139081b84f9b5b6187c8ccff802e3ab3
-> >>>>
-> >>>> This behaviour is not necessarily a bug, more of a surprise. Flow
-> >>>> label reflection is mostly useful in deployments where Linux servers
-> >>>> stand behind ECMP router, which uses flow-label to compute the hash.
-> >>>> Flow label reflection allows ICMP PTB message to be routed back to
-> >>>> correct server.
-> >>>>
-> >>>> It's hard to imagine a situation where generated RST or ICMP echo
-> >>>> response would trigger a ICMP PTB. Flow label reflection is explained
-> >>>> here:
-> >>>> https://tools.ietf.org/html/draft-wang-6man-flow-label-reflection-01
-> >>>> and:
-> >>>> https://tools.ietf.org/html/rfc7098
-> >>>> https://tools.ietf.org/html/rfc6438
-> >>>>
-> >>>> Cheers,
-> >>>>     Marek
-> >>>>
-> >>>>
-> >>>> (Note: the unrelated "fwmark_reflect" toggle is about something
-> >>>> different - flow marks, but also addresses RST and ICMP generated by
-> >>>> the server)
-> >>>>
-> >>>
-> >>> Please check the recent commits, scheduled for linux-5.3
-> >>>
-> >>> a346abe051bd2bd0d5d0140b2da9ec95639acad7 ipv6: icmp: allow flowlabel reflection in echo replies
-> >>> c67b85558ff20cb1ff20874461d12af456bee5d0 ipv6: tcp: send consistent autoflowlabel in TIME_WAIT state
-> >>> 392096736a06bc9d8f2b42fd4bb1a44b245b9fed ipv6: tcp: fix potential NULL deref in tcp_v6_send_reset()
-> >>> 50a8accf10627b343109a9c9d5c361751bf753b0 ipv6: tcp: send consistent flowlabel in TIME_WAIT state
-> >>> 323a53c41292a0d7efc8748856c623324c8d7c21 ipv6: tcp: enable flowlabel reflection in some RST packets
-> >>>
+Efa driver was compile tested only.
+
+rdma-core pull request #493
+
+Changes from V5:
+- Switch between driver dealloc_ucontext and mmap_entries_remove.
+- No need to verify the key after using the key to load an entry from
+  the mmap_xa.
+- Change mmap_free api to pass an 'entry' object.
+- Add documentation for mmap_free and for newly exported functions.
+- Fix some extra/missing line breaks.
+
+Changes from V4:
+- Add common mmap database and cookie helper functions.
+
+Changes from V3:
+- Remove casts from void to u8. Pointer arithmetic can be done on void
+- rebase to tip of rdma-next
+
+Changes from V2:
+- Don't use long-lived kmap. Instead use user-trigger mmap for the
+  doorbell recovery entries.
+- Modify dpi_addr to be denoted with __iomem and avoid redundant
+  casts
+
+Changes from V1:
+- call kmap to map virtual address into kernel space
+- modify db_rec_delete to be void
+- remove some cpu_to_le16 that were added to previous patch which are
+  correct but not related to the overflow recovery mechanism. Will be
+  submitted as part of a different patch
+
+
+Michal Kalderon (6):
+  RDMA/core: Create mmap database and cookie helper functions
+  RDMA/efa: Use the common mmap_xa helpers
+  RDMA/qedr: Use the common mmap API
+  qed*: Change dpi_addr to be denoted with __iomem
+  RDMA/qedr: Add doorbell overflow recovery support
+  RDMA/qedr: Add iWARP doorbell recovery support
+
+ drivers/infiniband/core/device.c           |   1 +
+ drivers/infiniband/core/rdma_core.c        |   1 +
+ drivers/infiniband/core/uverbs_cmd.c       |   1 +
+ drivers/infiniband/core/uverbs_main.c      | 135 +++++++++
+ drivers/infiniband/hw/efa/efa.h            |   3 +-
+ drivers/infiniband/hw/efa/efa_main.c       |   1 +
+ drivers/infiniband/hw/efa/efa_verbs.c      | 186 +++---------
+ drivers/infiniband/hw/qedr/main.c          |   3 +-
+ drivers/infiniband/hw/qedr/qedr.h          |  32 +-
+ drivers/infiniband/hw/qedr/verbs.c         | 463 ++++++++++++++++++++---------
+ drivers/infiniband/hw/qedr/verbs.h         |   4 +-
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c |   5 +-
+ include/linux/qed/qed_rdma_if.h            |   2 +-
+ include/rdma/ib_verbs.h                    |  46 +++
+ include/uapi/rdma/qedr-abi.h               |  25 ++
+ 15 files changed, 600 insertions(+), 308 deletions(-)
+
+-- 
+2.14.5
+
