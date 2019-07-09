@@ -2,167 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA0C62FE8
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 07:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC41B6300F
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 07:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbfGIFZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 01:25:43 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51038 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726010AbfGIFZn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 01:25:43 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 75046AD29;
-        Tue,  9 Jul 2019 05:25:41 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 2402BE0E06; Tue,  9 Jul 2019 07:25:41 +0200 (CEST)
-Date:   Tue, 9 Jul 2019 07:25:41 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
-Message-ID: <20190709052541.GB16610@unicorn.suse.cz>
-References: <20190708192532.27420-1-snelson@pensando.io>
- <20190708192532.27420-14-snelson@pensando.io>
+        id S1726309AbfGIFkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 01:40:18 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38620 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725818AbfGIFkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 01:40:17 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y15so8717566pfn.5
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 22:40:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=IQmdRFrEhhSLWwTIYZ9Pn7y/fJjbbazKtcw+0/kPqq8=;
+        b=xWQlK469LrFiOaGb/tLN6seCfU69pqfnFdCuAQdUle39QhBzesz5qln/kL8xSSpi2+
+         BI6m4QPQ+Y+K0AqFvzwzg6Mpg7qXXQYQ3U6BZ6js0nKhndvQRVub5trBd2lXxaTRZ3dX
+         J4cxPUisy0Bvt2qjKDh0/14hIQkMQu/s3ueA9pwj6ipBW+/cAyn0KYLKaSprLyEShmLP
+         RFf1xKxAekwkzWvPiQyNjUV5nY66h2GxbOU0Z8pZZDtLCf6gIlBPeaF7kih4VCA0tpXv
+         vhTvKEYgVGfJxW2EJRXkr/UKGUVn4ZGXhb1CatmfywSVlXjU80c1W51aPRuz6RyWgrXA
+         ebeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=IQmdRFrEhhSLWwTIYZ9Pn7y/fJjbbazKtcw+0/kPqq8=;
+        b=t0fGTe0b9h+gmALt23rbVK9+xHap7EgnDul/LaFg3hSuspcJpQj9uTkYLEPbwzbmTm
+         XS15RJCnRB3Um6u/dkaGgVN9Hm2bMCUyNN4kBDWyeMxYounlhGm+BB+0mExLBJgm+qUT
+         eG3HaHWxzW3ablEmoPglWAwWBzke93nGBswWpKK13WqR4ptTT9t1qtGKJ9ZUuez0sy12
+         qhtEVxmhPCmGqI4pTkOKRPcqJ5WnS84OY6RlXWuNQ5T924b6e3qh06oAkJKrS8c0CIK9
+         tBI2STLkRDsbTRFjW7LFgbIcwL5I053u62mYnAGLDswKDtrdYQ8buYAiFXmwnJZSkxIu
+         LX0g==
+X-Gm-Message-State: APjAAAX6HuVSwtyK/ZHAC3nagWTITHQcpxxxmMy20Iujr2LuQ2Imm6Mt
+        +TnPkT2FmCzUk6vvE42J9JdVUw==
+X-Google-Smtp-Source: APXvYqxg3GjtlvLwKbI9WgwQO4WbYrQVL3xpSv9rbvBO2Vm4aDE9n+x+biqbJAL/g6fXr4ECm+e/Bw==
+X-Received: by 2002:a17:90a:f488:: with SMTP id bx8mr30254996pjb.91.1562650816992;
+        Mon, 08 Jul 2019 22:40:16 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id o14sm1144368pjp.19.2019.07.08.22.40.16
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 08 Jul 2019 22:40:16 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 22:40:12 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, saeedm@mellanox.com
+Subject: Re: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
+ attributes
+Message-ID: <20190708224012.0280846c@cakuba.netronome.com>
+In-Reply-To: <20190709041739.44292-1-parav@mellanox.com>
+References: <20190701122734.18770-1-parav@mellanox.com>
+        <20190709041739.44292-1-parav@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190708192532.27420-14-snelson@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 08, 2019 at 12:25:26PM -0700, Shannon Nelson wrote:
-> Add in the basic ethtool callbacks for device information
-> and control.
+On Mon,  8 Jul 2019 23:17:34 -0500, Parav Pandit wrote:
+> This patchset carry forwards the work initiated in [1] and discussion
+> futher concluded at [2].
 > 
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
-> ---
->  drivers/net/ethernet/pensando/ionic/Makefile  |   2 +-
->  .../net/ethernet/pensando/ionic/ionic_dev.h   |   3 +
->  .../ethernet/pensando/ionic/ionic_ethtool.c   | 509 ++++++++++++++++++
->  .../ethernet/pensando/ionic/ionic_ethtool.h   |   9 +
->  .../net/ethernet/pensando/ionic/ionic_lif.c   |   2 +
->  .../net/ethernet/pensando/ionic/ionic_lif.h   |   8 +
->  6 files changed, 532 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->  create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
-...
-> +static int ionic_set_link_ksettings(struct net_device *netdev,
-> +				    const struct ethtool_link_ksettings *ks)
-> +{
-> +	struct lif *lif = netdev_priv(netdev);
-> +	struct ionic *ionic = lif->ionic;
-> +	struct ionic_dev *idev = &lif->ionic->idev;
-> +	u8 fec_type = PORT_FEC_TYPE_NONE;
-> +	u32 req_rs, req_fc;
-> +	int err = 0;
-> +
-> +	/* set autoneg */
-> +	if (ks->base.autoneg != idev->port_info->config.an_enable) {
-> +		mutex_lock(&ionic->dev_cmd_lock);
-> +		ionic_dev_cmd_port_autoneg(idev, ks->base.autoneg);
-> +		err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
-> +		mutex_unlock(&ionic->dev_cmd_lock);
-> +		if (err)
-> +			return err;
-> +
-> +		idev->port_info->config.an_enable = ks->base.autoneg;
-> +	}
-> +
-> +	/* set speed */
-> +	if (ks->base.speed != le32_to_cpu(idev->port_info->config.speed)) {
-> +		mutex_lock(&ionic->dev_cmd_lock);
-> +		ionic_dev_cmd_port_speed(idev, ks->base.speed);
-> +		err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
-> +		mutex_unlock(&ionic->dev_cmd_lock);
-> +		if (err)
-> +			return err;
-> +
-> +		idev->port_info->config.speed = cpu_to_le32(ks->base.speed);
-> +	}
-> +
-> +	/* set FEC */
-> +	req_rs = ethtool_link_ksettings_test_link_mode(ks, advertising, FEC_RS);
-> +	req_fc = ethtool_link_ksettings_test_link_mode(ks, advertising, FEC_BASER);
-> +	if (req_rs && req_fc) {
-> +		netdev_info(netdev, "Only select one FEC mode at a time\n");
-> +		return -EINVAL;
-> +
-> +	} else if (req_fc &&
-> +		   idev->port_info->config.fec_type != PORT_FEC_TYPE_FC) {
-> +		fec_type = PORT_FEC_TYPE_FC;
-> +	} else if (req_rs &&
-> +		   idev->port_info->config.fec_type != PORT_FEC_TYPE_RS) {
-> +		fec_type = PORT_FEC_TYPE_RS;
-> +	} else if (!(req_rs | req_fc) &&
-> +		 idev->port_info->config.fec_type != PORT_FEC_TYPE_NONE) {
-> +		fec_type = PORT_FEC_TYPE_NONE;
-> +	}
-> +
-> +	if (fec_type != idev->port_info->config.fec_type) {
-> +		mutex_lock(&ionic->dev_cmd_lock);
-> +		ionic_dev_cmd_port_fec(idev, PORT_FEC_TYPE_NONE);
+> To improve visibility of representor netdevice, its association with
+> PF or VF, physical port, two new devlink port flavours are added as
+> PCI PF and PCI VF ports.
+> 
+> A sample eswitch view can be seen below, which will be futher extended to
+> mdev subdevices of a PCI function in future.
+> 
+> Patch-1 moves physical port's attribute to new structure
+> Patch-2 enhances netlink response to consider port flavour
+> Patch-3,4 extends devlink port attributes and port flavour
+> Patch-5 extends mlx5 driver to register devlink ports for PF, VF and
+> physical link.
 
-The second argument should be fec_type, I believe.
+The coding leaves something to be desired:
 
-> +		err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
-> +		mutex_unlock(&ionic->dev_cmd_lock);
-> +		if (err)
-> +			return err;
-> +
-> +		idev->port_info->config.fec_type = fec_type;
-> +	}
-> +
-> +	return 0;
-> +}
-...
-> +static int ionic_set_ringparam(struct net_device *netdev,
-> +			       struct ethtool_ringparam *ring)
-> +{
-> +	struct lif *lif = netdev_priv(netdev);
-> +	bool running;
-> +	int i, j;
-> +
-> +	if (ring->rx_mini_pending || ring->rx_jumbo_pending) {
-> +		netdev_info(netdev, "Changing jumbo or mini descriptors not supported\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	i = ring->tx_pending & (ring->tx_pending - 1);
-> +	j = ring->rx_pending & (ring->rx_pending - 1);
-> +	if (i || j) {
-> +		netdev_info(netdev, "Descriptor count must be a power of 2\n");
-> +		return -EINVAL;
-> +	}
+1) flavour handling in devlink_nl_port_attrs_put() really calls for a
+   switch statement,
+2) devlink_port_attrs_.*set() can take a pointer to flavour specific
+   structure instead of attr structure for setting the parameters,
+3) the "ret" variable there is unnecessary,
+4) there is inconsistency in whether there is an empty line between
+   if (ret) return; after __devlink_port_attrs_set() and attr setting,
+5) /* Associated PCI VF for of the PCI PF for this port. */ doesn't
+   read great;
+6) mlx5 functions should preferably have an appropriate prefix - f.e.
+   register_devlink_port() or is_devlink_port_supported().
 
-You can use is_power_of_2() here (it wouldn't allow 0 but you probably
-don't want to allow that either).
+But I'll leave it to Jiri and Dave to decide if its worth a respin :)
+Functionally I think this is okay.
 
-Michal
-
-> +
-> +	/* if nothing to do return success */
-> +	if (ring->tx_pending == lif->ntxq_descs &&
-> +	    ring->rx_pending == lif->nrxq_descs)
-> +		return 0;
-> +
-> +	while (test_and_set_bit(LIF_QUEUE_RESET, lif->state))
-> +		usleep_range(200, 400);
-> +
-> +	running = test_bit(LIF_UP, lif->state);
-> +	if (running)
-> +		ionic_stop(netdev);
-> +
-> +	lif->ntxq_descs = ring->tx_pending;
-> +	lif->nrxq_descs = ring->rx_pending;
-> +
-> +	if (running)
-> +		ionic_open(netdev);
-> +	clear_bit(LIF_QUEUE_RESET, lif->state);
-> +
-> +	return 0;
-> +}
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
