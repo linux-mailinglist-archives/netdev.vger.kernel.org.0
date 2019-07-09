@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D3E62D7B
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 03:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B903A62D9D
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 03:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbfGIBfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 21:35:42 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43358 "EHLO
+        id S1726792AbfGIBop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 21:44:45 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:46666 "EHLO
         mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfGIBfm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 21:35:42 -0400
-Received: by mail-qk1-f195.google.com with SMTP id m14so14832706qka.10
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 18:35:41 -0700 (PDT)
+        with ESMTP id S1726684AbfGIBoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 21:44:44 -0400
+Received: by mail-qk1-f195.google.com with SMTP id r4so14813931qkm.13
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 18:44:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=Cb2dddoti7YGRSOZwHdkhuGfGb9RZ6NmxAXuZNqQSLE=;
-        b=m6jgncgukFgZm+xW9SmQ7E0cFhkR9pd4NxXBOMmaMkbcTY3Hb/RleN4/ZMZX0MQrtf
-         i4h3tXVzHeh9yA5abOgX6DwgOizbz0+HBMtE6rFZiyJs12jsKu24MZQGYcHnbV5Ysl/t
-         Q/b2aJMD2gf1tQh5Yj4wDbWt4C8yclC7SmClZOcgFNiXGOv53vKv3sJ13NxzXJJjiJII
-         3Kn7S8qQb4/mHPvls8JFduxQVVi2yRHWCj3WAB9JtyKNoNZtl55JCA1ligIVcO1nh+g1
-         3ZsgnWAwQEDrthu55hkSJKiXXueq2b1xQHPGXz2XTAl9Pr3lLKenfKtvmy9nE6HxIMVj
-         xirw==
+        bh=ZvuQo6evsVCUlDEsNzH37NojCewlv73AG70+WQmLr4c=;
+        b=ga/SunY/p1WWr4ZysR/ivY26jKT1KD8q9KDIOCndKrp6hl5oEvpSRtHMD5VoIub6NM
+         YE1JSDCR8o9JpN3Q7XSIR4be/OYAu0U3unv5lwWtSZPaCkUTB/HYCHtAMXT3xFKycopS
+         uwOMNW+T2foduGaSjaxJUhjoB4SaJw6fL2lwz0jyM0gf9jzKwxI3oiip7dN6BVknAe1/
+         8zpf1YCONHDHpgofVHg7Pzpl25GbwpmEb7l+oDC+kNzFsxf8+1S36B9SQXqMKZSzBNO9
+         5HhYz2kYm59sA7dEEjAUuA6kDbd1Dn3eMCkAbLlX8cpm0ZIHEsnOHW+LmJ/KozGiL0xe
+         PrBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=Cb2dddoti7YGRSOZwHdkhuGfGb9RZ6NmxAXuZNqQSLE=;
-        b=t8jZx6zg1YyP2FxpDPe0MnkVOp8kXwn57TGgpXBRsoLjhehydC1S6jRlh22vxqKxmG
-         Sdix59KbwWmPfWtROgowj0C9zkv6c7/9Znn++Efglp4XGx1xyX4sUIb3n8mqZ9VI6hov
-         3Du9LduZbL3J3cVpjZ2G2OIJqZuIkWHKlc2Zyuq2POH6T3EGuUwWISwGSYRTNu9GkGSk
-         rhmT/R6eJI4E/dIIif29jKKRwe0J4ny4EQ8z2/ezrcDm73l4Mx3gxHCu74TN38pL8P+w
-         mYEvnv4QLMCX2zx8zlRJvp3vgQ7S+amuB805TXZP67/hZ6N3aXS5x3925pJ3izNGielG
-         nkKQ==
-X-Gm-Message-State: APjAAAU06wzuyELJLlIvNf+sh/O60c4ZSAfgfejrZUKco55UjO62mgd6
-        PC6atlRfxCdX9fYuDffVczygvw==
-X-Google-Smtp-Source: APXvYqzLtP/3KLDMLg1oczan6Qjcn8hU8Nskau519g5Y76r8W0jCjw99dVHSe27WUg0lGj1UXS9q6w==
-X-Received: by 2002:a37:dcc7:: with SMTP id v190mr16922738qki.169.1562636141114;
-        Mon, 08 Jul 2019 18:35:41 -0700 (PDT)
+        bh=ZvuQo6evsVCUlDEsNzH37NojCewlv73AG70+WQmLr4c=;
+        b=NjnNNcQCyFWvjRZlTwKdepdgMN2jvjk03yOS1K6UFvxMvvjuzrcxlegmwG2HcgtoRC
+         oxZcNTp7u/m+eafo7KHPYnRGul3oglgTdyTr0xKuUvv6HxuhUwUf9eWf8ueldgX369WR
+         5iJfPrgiOVmpKk0edos3RyHvUm6bE/Jmvya5m1b3ObUuXtCtK7Xwry1X8dd0VgIno5WZ
+         xHcL3MxHcUZWMzve2u8FbjAyfFuUqrDmiV41KpGABaW0C/vk+5ZgK0HKRiH80Olw2xCk
+         wyAI5WTH5+FxucGEp20gyVwPFJeP9C9mYj9xxm48nwDMZGYbzuHHLc3lvaGw41mgmmVJ
+         a0cg==
+X-Gm-Message-State: APjAAAWAFMYhpfboospYkgBShYj/9fefLt8tTyopic8Mm/UT2F5qVPXX
+        ToByc/MUtq/RdV5/IPnuokyYqw==
+X-Google-Smtp-Source: APXvYqxsDnt2MdLzJayLyeHUcjX6rwz7H/ShvonENWZNfDkTqiFniQq5aiVptinAv4sFRDV2CsydhQ==
+X-Received: by 2002:a37:e506:: with SMTP id e6mr17619550qkg.229.1562636684065;
+        Mon, 08 Jul 2019 18:44:44 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id n184sm8303767qkc.114.2019.07.08.18.35.38
+        by smtp.gmail.com with ESMTPSA id q56sm9371475qtq.64.2019.07.08.18.44.40
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 18:35:41 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 18:35:34 -0700
+        Mon, 08 Jul 2019 18:44:43 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 18:44:37 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Pablo Neira Ayuso <pablo@netfilter.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net,
@@ -61,45 +61,72 @@ Cc:     netdev@vger.kernel.org, davem@davemloft.net,
         mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
         maxime.chevallier@bootlin.com, cphealy@gmail.com,
         netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next,v3 08/11] drivers: net: use flow block API
-Message-ID: <20190708183534.12ed0acc@cakuba.netronome.com>
-In-Reply-To: <20190708160614.2226-9-pablo@netfilter.org>
+Subject: Re: [PATCH net-next,v3 11/11] netfilter: nf_tables: add hardware
+ offload support
+Message-ID: <20190708184437.4d29648a@cakuba.netronome.com>
+In-Reply-To: <20190708160614.2226-12-pablo@netfilter.org>
 References: <20190708160614.2226-1-pablo@netfilter.org>
-        <20190708160614.2226-9-pablo@netfilter.org>
+        <20190708160614.2226-12-pablo@netfilter.org>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  8 Jul 2019 18:06:10 +0200, Pablo Neira Ayuso wrote:
-> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.c b/drivers/net/ethernet/netronome/nfp/bpf/main.c
-> index 0c93c84a188a..7549547c4ef0 100644
-> --- a/drivers/net/ethernet/netronome/nfp/bpf/main.c
-> +++ b/drivers/net/ethernet/netronome/nfp/bpf/main.c
-> @@ -160,6 +160,8 @@ static int nfp_bpf_setup_tc_block_cb(enum tc_setup_type type,
->  	return 0;
->  }
->  
-> +static LIST_HEAD(nfp_bfp_block_cb_list);
+On Mon,  8 Jul 2019 18:06:13 +0200, Pablo Neira Ayuso wrote:
+> This patch adds hardware offload support for nftables through the
+> existing netdev_ops->ndo_setup_tc() interface, the TC_SETUP_CLSFLOWER
+> classifier and the flow rule API. This hardware offload support is
+> available for the NFPROTO_NETDEV family and the ingress hook.
+>=20
+> Each nftables expression has a new ->offload interface, that is used to
+> populate the flow rule object that is attached to the transaction
+> object.
+>=20
+> There is a new per-table NFT_TABLE_F_HW flag, that is set on to offload
+> an entire table, including all of its chains.
+>=20
+> This patch supports for basic metadata (layer 3 and 4 protocol numbers),
+> 5-tuple payload matching and the accept/drop actions; this also includes
+> basechain hardware offload only.
+>=20
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 
-This still says bfp.
+Any particular reason to not fence this off with a device feature
+(ethtool -k)?  Then you wouldn't need that per-driver list abomination
+until drivers start advertising it..  IDK if we want the per-device
+offload enable flags or not in general, it seems like a good idea in
+general for admin to be able to disable offload per device =F0=9F=A4=B7
 
+> +static int nft_flow_offload_rule(struct nft_trans *trans,
+> +				 enum tc_fl_command command)
+> +{
+> +	struct nft_flow_rule *flow =3D nft_trans_flow_rule(trans);
+> +	struct nft_rule *rule =3D nft_trans_rule(trans);
+> +	struct tc_cls_flower_offload cls_flower =3D {};
+> +	struct nft_base_chain *basechain;
+> +	struct netlink_ext_ack extack;
+> +	__be16 proto =3D ETH_P_ALL;
 > +
->  static int nfp_bpf_setup_tc(struct nfp_app *app, struct net_device *netdev,
->  			    enum tc_setup_type type, void *type_data)
->  {
-> @@ -167,7 +169,8 @@ static int nfp_bpf_setup_tc(struct nfp_app *app, struct net_device *netdev,
->  
->  	switch (type) {
->  	case TC_SETUP_BLOCK:
-> -		return flow_block_cb_setup_simple(type_data, NULL,
-> +		return flow_block_cb_setup_simple(type_data,
-> +						  &nfp_bfp_block_cb_list,
->  						  nfp_bpf_setup_tc_block_cb,
->  						  nn, nn, true);
->  	default:
+> +	if (!nft_is_base_chain(trans->ctx.chain))
+> +		return -EOPNOTSUPP;
+> +
+> +	basechain =3D nft_base_chain(trans->ctx.chain);
+> +
+> +	if (flow)
+> +		proto =3D flow->proto;
+> +
+> +	nft_flow_offload_common_init(&cls_flower.common, proto, &extack);
+> +	cls_flower.command =3D command;
+> +	cls_flower.cookie =3D (unsigned long) rule;
+> +	if (flow)
+> +		cls_flower.rule =3D flow->rule;
+> +
+> +	return nft_setup_cb_call(basechain, TC_SETUP_CLSFLOWER, &cls_flower);
+> +}
 
+Are we 100% okay with using TC cls_flower structures and defines in nft
+code?
