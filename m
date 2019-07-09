@@ -2,197 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE73563E0D
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 00:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF4F63E44
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 01:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfGIW4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 18:56:34 -0400
-Received: from mail-eopbgr770125.outbound.protection.outlook.com ([40.107.77.125]:28663
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726767AbfGIW4e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 18:56:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eSrifKDoZ1xAhFtBskq4YvJutN7/nTmx78hBG7yjk92NoYBDUvM8k+NaNIfuRx6lWKdsrFA79nBCIBKPlzFIWvCdp8dcpiUyKiIPKcPxoIRiS1o46C7JKEMsMls+y2G8ry0y/0G71mqM0MsgDthhvEx7AptPlITRBQIhmHT4Ofo+7oaW+0Vlf52MtH7Z7MQllBJJMD1tG9zQ3gTkCO7Bzf1RV4CpGiI5rxemgug3gLNzEUEPTim1JXxqQXbxXJriv/IHbr2yrsmCBEg3QxVrKZEzbOhGi4X3K/CkZBKsVPVRU9h5VZe8c4PPqheH8bccJcdgDNzZQaLTLVljw5KlxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+y3sFARBVRqa64iU0ZZbgCKfdUGC5upaR9mqlqn1QM4=;
- b=Q21bQd/uWiO4qc5+fHfC6u0d3EqEHPoJP2avlIwTsHJtpOfY6sfiK9UvfPQewHSubhNw+uNw35sQAdcYai4SyMZp5Rw6+hMiYuR4Bsj/NmkyrNsRjvu7mYq9EGukB+s9uRsY2JuxXlg1BLxcdE1Yg2eyYwk5ZNAHKPxMRr7yFAWshEHmAyFTHGiBiIU4UV8zCQWDTHHHqDw1HrD/KCiCnjx1TU1BX7rmG9Q07G0W9rVQvFYNM2I2w8EYqkTKIdfmVdeOeDAq/R026L5ILW8sq1ugOqj7vjwcNsAyLHkk278WhyNWr0HzCVvRNw6605c2CtjD7ILzqPFEBrvr0aXyUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=microsoft.com;dmarc=pass action=none
- header.from=microsoft.com;dkim=pass header.d=microsoft.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+y3sFARBVRqa64iU0ZZbgCKfdUGC5upaR9mqlqn1QM4=;
- b=QbhGEKLLLD1UGIL5Q5HBk4QyPTipfCydD2F1c/bbBEOpCOVVFCnaiLV0wj8poo8Sdk+tno8KfUTA/DKP/Izopgr2xviR0ibq3iwIZS/OxglN/pIWwsMcA3yja669tIDN8rh5B1YrQ1FksTS7wqTB/4QafXqolJuHUfMWv8zS5og=
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
- DM6PR21MB1179.namprd21.prod.outlook.com (20.179.48.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.3; Tue, 9 Jul 2019 22:56:30 +0000
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::6055:de8a:48c1:4271]) by DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::6055:de8a:48c1:4271%5]) with mapi id 15.20.2094.001; Tue, 9 Jul 2019
- 22:56:30 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     "sashal@kernel.org" <sashal@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] Name NICs based on vmbus offer and enable async
- probe by default
-Thread-Topic: [PATCH net-next] Name NICs based on vmbus offer and enable async
- probe by default
-Thread-Index: AQHVNqmLUJAyxztGLUGuWv2QILreQw==
-Date:   Tue, 9 Jul 2019 22:56:30 +0000
-Message-ID: <1562712932-79936-1-git-send-email-haiyangz@microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0097.namprd04.prod.outlook.com
- (2603:10b6:104:6::23) To DM6PR21MB1242.namprd21.prod.outlook.com
- (2603:10b6:5:169::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lkmlhyz@microsoft.com; 
-x-ms-exchange-messagesentrepresentingtype: 2
-x-mailer: git-send-email 1.8.3.1
-x-originating-ip: [13.77.154.182]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7162d005-73f3-4604-cec9-08d704c0ae12
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DM6PR21MB1179;
-x-ms-traffictypediagnostic: DM6PR21MB1179:|DM6PR21MB1179:
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR21MB1179529B0D966AA20BA63DB4ACF10@DM6PR21MB1179.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1728;
-x-forefront-prvs: 0093C80C01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(376002)(346002)(39860400002)(366004)(199004)(189003)(66446008)(102836004)(71200400001)(6506007)(386003)(2501003)(64756008)(66476007)(66556008)(486006)(4720700003)(26005)(2201001)(4326008)(2616005)(99286004)(14444005)(52116002)(476003)(186003)(5660300002)(66946007)(68736007)(256004)(7736002)(2906002)(10290500003)(53936002)(36756003)(6486002)(81156014)(81166006)(8676002)(6436002)(7846003)(66066001)(10090500001)(14454004)(316002)(6392003)(22452003)(110136005)(478600001)(54906003)(3846002)(6116002)(305945005)(6512007)(50226002)(25786009)(71190400001)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1179;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: tTKhi3+lKpUrvNHKycNSMwpE/eI/BS7A7zc60RSTzRKzkYIPcqrn/x+DlPMyQYtjiW6oN53IckOc77saBYft6CZqJBRVFKeUWuC6Tx5HNR6UA69+wEiSYWadZC0LzFRmRbexDSUPnmmgbs1XLkICHRyiKhdTeB21uAj+tMAbOCreDFVTjW3I8P2Fnz95+50u24bqCgy0Tdokdcpj2pYJogunc4pFVNAjLMU6Uqsj+KFZm1lmtdRuuCng0BX1j/1Jz8MvnV6mWI5IsfBlAXzZeZK6KkTS2YefW/3C2LnB9Pes0kLCQp4PBv2IISdYU6NDb9EU43Zl9bACP/tuE/SEGyCSkEuSVrtEjwHqocoLucArnk1cOdsb1IkG5Ne8ZELNrt68ae/k2nM2rm5fl1najicTA9B5KAqQMPmYYekLMy4=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6BD2D204471C4D47A31943C2482035C2@namprd21.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727074AbfGIXKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 19:10:30 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35274 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726218AbfGIXKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 19:10:30 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y4so516023wrm.2;
+        Tue, 09 Jul 2019 16:10:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mVzABAaLZPttRpLpfx8AbBdhRdMXPPyOU3lhjijb9ko=;
+        b=NiQcOAkdF16fWhs2ZknhmulLdhJX0NZmCruIwDdoAvC3NBRiVPJTaTh+nOMoWo/isd
+         qwiBFOjDyo09xwrogq8Gs3wt9jdpMn9MkdMxhuy7Z6GQqa4i4B6X3JYSAum2CxE5ttNG
+         DYBQcWNuldMx5dDBVBDk4IEbgZQl5m2D1+doO0h0M6SrxEcnZk2Hs5i+H8/fjNu9Gxez
+         Hu2LC5naSfghB1bT45yOOOjORj28vIQ4nHfxAIF5xfQiU8Uc+LDZacMifcRdjN2307VQ
+         0PSWEFBBbG/MnTqTJM6D/9U4KI+n2VwNmJeVHq7vhQ5ylfE9GagvTHxfxIfwLO3ENd8N
+         R8sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mVzABAaLZPttRpLpfx8AbBdhRdMXPPyOU3lhjijb9ko=;
+        b=SlPSRZ3fSMfYGPYUeyIBtrSiADIn0MbcX10fqgCmdRXkop3dOT1jEIwdiID8tfm358
+         20ITgZhtSK/mb4mAGsORue9Bh3ef2sVexb7KTukZAQAVpCAtVznqFffJGVH3yaPsBZL/
+         9H+JDktotRqYhjFu4Zd9disdoDfEGrU/ywB776dArYCxyOJ095lrbe7LjiVKSJespY2+
+         iADFOYCWnVJ8T+uwN2DvhLZMHfmLqEEX//c/2BK6R1TSvrwjKesoVXrnIYlv+DnigVgK
+         9Ye6Fgwy7bVIKOCHmmn1Pe5l7uqjN3HR4jV8PEjn63eoSToMb3u41YDh3FGv4xxuIYKz
+         XA4g==
+X-Gm-Message-State: APjAAAUhNnutirr8Jb37e5V64ge1LgQDSJ2bSXd6rznrwt+prVKHAIZx
+        hccYuDHdcJhP5NuebxmOyAw=
+X-Google-Smtp-Source: APXvYqzhURMOcsvp/8T5JJ5w1FsWX+QkKQXLR7zUXXu7AtvU6OJIVLFJDmoNYbWPZDgKxCEeFShKEQ==
+X-Received: by 2002:adf:8bd1:: with SMTP id w17mr6901359wra.50.1562713826986;
+        Tue, 09 Jul 2019 16:10:26 -0700 (PDT)
+Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id w7sm221876wrn.11.2019.07.09.16.10.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 09 Jul 2019 16:10:26 -0700 (PDT)
+Date:   Tue, 9 Jul 2019 16:10:24 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Boris Pismenny <borisp@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH] net/mlx5e: Return in default case statement in
+ tx_post_resync_params
+Message-ID: <20190709231024.GA61953@archlinux-threadripper>
+References: <20190708231154.89969-1-natechancellor@gmail.com>
+ <CAKwvOdkYdNiKorJAKHZ7LTfk9eOpMqe6F4QSmJWQ=-YNuPAyrw@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7162d005-73f3-4604-cec9-08d704c0ae12
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 22:56:30.3880
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lkmlhyz@microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1179
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdkYdNiKorJAKHZ7LTfk9eOpMqe6F4QSmJWQ=-YNuPAyrw@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UHJldmlvdXNseSB0aGUgYXN5bmMgcHJvYmluZyBjYXVzZWQgTklDIG5hbWluZyBpbiByYW5kb20g
-b3JkZXIuDQoNClRoZSBwYXRjaCBhZGRzIGEgZGV2X251bSBmaWVsZCBpbiB2bWJ1cyBjaGFubmVs
-IHN0cnVjdHVyZS4gSXTigJlzIGFzc2lnbmVkDQp0byB0aGUgZmlyc3QgYXZhaWxhYmxlIG51bWJl
-ciB3aGVuIHRoZSBjaGFubmVsIGlzIG9mZmVyZWQuIFNvIG5ldHZzYyBjYW4NCnVzZSBpdCBmb3Ig
-TklDIG5hbWluZyBiYXNlZCBvbiBjaGFubmVsIG9mZmVyIHNlcXVlbmNlLiBOb3cgd2UgcmUtZW5h
-YmxlDQp0aGUgYXN5bmMgcHJvYmluZyBtb2RlIGJ5IGRlZmF1bHQgZm9yIGZhc3RlciBwcm9iaW5n
-Lg0KDQpBbHNvIGFkZGVkIGEgbW9kdWxlcyBwYXJhbWV0ZXIsIHByb2JlX3R5cGUsIHRvIHNldCBz
-eW5jIHByb2JpbmcgbW9kZSBpZg0KYSB1c2VyIHdhbnRzIHRvLg0KDQpGaXhlczogYWYwYTU2NDZj
-YjhkICgidXNlIHRoZSBuZXcgYXN5bmMgcHJvYmluZyBmZWF0dXJlIGZvciB0aGUgaHlwZXJ2IGRy
-aXZlcnMiKQ0KU2lnbmVkLW9mZi1ieTogSGFpeWFuZyBaaGFuZyA8aGFpeWFuZ3pAbWljcm9zb2Z0
-LmNvbT4NCi0tLQ0KIGRyaXZlcnMvaHYvY2hhbm5lbF9tZ210LmMgICAgICAgfCA0NiArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLQ0KIGRyaXZlcnMvbmV0L2h5cGVydi9u
-ZXR2c2NfZHJ2LmMgfCAzMyArKysrKysrKysrKysrKysrKysrKysrKysrKy0tLQ0KIGluY2x1ZGUv
-bGludXgvaHlwZXJ2LmggICAgICAgICAgfCAgNCArKysrDQogMyBmaWxlcyBjaGFuZ2VkLCA3OCBp
-bnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9odi9j
-aGFubmVsX21nbXQuYyBiL2RyaXZlcnMvaHYvY2hhbm5lbF9tZ210LmMNCmluZGV4IGFkZGNlZjUu
-LmFiN2MwNWIgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2h2L2NoYW5uZWxfbWdtdC5jDQorKysgYi9k
-cml2ZXJzL2h2L2NoYW5uZWxfbWdtdC5jDQpAQCAtMzA0LDYgKzMwNCw4IEBAIGJvb2wgdm1idXNf
-cHJlcF9uZWdvdGlhdGVfcmVzcChzdHJ1Y3QgaWNtc2dfaGRyICppY21zZ2hkcnAsDQogDQogRVhQ
-T1JUX1NZTUJPTF9HUEwodm1idXNfcHJlcF9uZWdvdGlhdGVfcmVzcCk7DQogDQorI2RlZmluZSBI
-Vl9ERVZfTlVNX0lOVkFMSUQgKC0xKQ0KKw0KIC8qDQogICogYWxsb2NfY2hhbm5lbCAtIEFsbG9j
-YXRlIGFuZCBpbml0aWFsaXplIGEgdm1idXMgY2hhbm5lbCBvYmplY3QNCiAgKi8NCkBAIC0zMTUs
-NiArMzE3LDggQEAgc3RhdGljIHN0cnVjdCB2bWJ1c19jaGFubmVsICphbGxvY19jaGFubmVsKHZv
-aWQpDQogCWlmICghY2hhbm5lbCkNCiAJCXJldHVybiBOVUxMOw0KIA0KKwljaGFubmVsLT5kZXZf
-bnVtID0gSFZfREVWX05VTV9JTlZBTElEOw0KKw0KIAlzcGluX2xvY2tfaW5pdCgmY2hhbm5lbC0+
-bG9jayk7DQogCWluaXRfY29tcGxldGlvbigmY2hhbm5lbC0+cmVzY2luZF9ldmVudCk7DQogDQpA
-QCAtNTMzLDYgKzUzNyw0MiBAQCBzdGF0aWMgdm9pZCB2bWJ1c19hZGRfY2hhbm5lbF93b3JrKHN0
-cnVjdCB3b3JrX3N0cnVjdCAqd29yaykNCiB9DQogDQogLyoNCisgKiBHZXQgdGhlIGZpcnN0IGF2
-YWlsYWJsZSBkZXZpY2UgbnVtYmVyIG9mIGl0cyB0eXBlLCB0aGVuDQorICogcmVjb3JkIGl0IGlu
-IHRoZSBjaGFubmVsIHN0cnVjdHVyZS4NCisgKi8NCitzdGF0aWMgdm9pZCBodl9zZXRfZGV2bnVt
-KHN0cnVjdCB2bWJ1c19jaGFubmVsICpuZXdjaGFubmVsKQ0KK3sNCisJc3RydWN0IHZtYnVzX2No
-YW5uZWwgKmNoYW5uZWw7DQorCXVuc2lnbmVkIGludCBpID0gMDsNCisJYm9vbCBmb3VuZDsNCisN
-CisJQlVHX09OKCFtdXRleF9pc19sb2NrZWQoJnZtYnVzX2Nvbm5lY3Rpb24uY2hhbm5lbF9tdXRl
-eCkpOw0KKw0KKwkvKiBPbmx5IEhWX05JQyB1c2VzIHRoaXMgbnVtYmVyIGZvciBub3cgKi8NCisJ
-aWYgKGh2X2dldF9kZXZfdHlwZShuZXdjaGFubmVsKSAhPSBIVl9OSUMpDQorCQlyZXR1cm47DQor
-DQorbmV4dDoNCisJZm91bmQgPSBmYWxzZTsNCisNCisJbGlzdF9mb3JfZWFjaF9lbnRyeShjaGFu
-bmVsLCAmdm1idXNfY29ubmVjdGlvbi5jaG5fbGlzdCwgbGlzdGVudHJ5KSB7DQorCQlpZiAoaSA9
-PSBjaGFubmVsLT5kZXZfbnVtICYmDQorCQkgICAgZ3VpZF9lcXVhbCgmY2hhbm5lbC0+b2ZmZXJt
-c2cub2ZmZXIuaWZfdHlwZSwNCisJCQkgICAgICAgJm5ld2NoYW5uZWwtPm9mZmVybXNnLm9mZmVy
-LmlmX3R5cGUpKSB7DQorCQkJZm91bmQgPSB0cnVlOw0KKwkJCWJyZWFrOw0KKwkJfQ0KKwl9DQor
-DQorCWlmIChmb3VuZCkgew0KKwkJaSsrOw0KKwkJZ290byBuZXh0Ow0KKwl9DQorDQorCW5ld2No
-YW5uZWwtPmRldl9udW0gPSBpOw0KK30NCisNCisvKg0KICAqIHZtYnVzX3Byb2Nlc3Nfb2ZmZXIg
-LSBQcm9jZXNzIHRoZSBvZmZlciBieSBjcmVhdGluZyBhIGNoYW5uZWwvZGV2aWNlDQogICogYXNz
-b2NpYXRlZCB3aXRoIHRoaXMgb2ZmZXINCiAgKi8NCkBAIC01NjEsMTAgKzYwMSwxMiBAQCBzdGF0
-aWMgdm9pZCB2bWJ1c19wcm9jZXNzX29mZmVyKHN0cnVjdCB2bWJ1c19jaGFubmVsICpuZXdjaGFu
-bmVsKQ0KIAkJfQ0KIAl9DQogDQotCWlmIChmbmV3KQ0KKwlpZiAoZm5ldykgew0KKwkJaHZfc2V0
-X2Rldm51bShuZXdjaGFubmVsKTsNCisNCiAJCWxpc3RfYWRkX3RhaWwoJm5ld2NoYW5uZWwtPmxp
-c3RlbnRyeSwNCiAJCQkgICAgICAmdm1idXNfY29ubmVjdGlvbi5jaG5fbGlzdCk7DQotCWVsc2Ug
-ew0KKwl9IGVsc2Ugew0KIAkJLyoNCiAJCSAqIENoZWNrIHRvIHNlZSBpZiB0aGlzIGlzIGEgdmFs
-aWQgc3ViLWNoYW5uZWwuDQogCQkgKi8NCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9oeXBlcnYv
-bmV0dnNjX2Rydi5jIGIvZHJpdmVycy9uZXQvaHlwZXJ2L25ldHZzY19kcnYuYw0KaW5kZXggYWZk
-Y2M1Ni4uYWY1MzY5MCAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2h5cGVydi9uZXR2c2NfZHJ2
-LmMNCisrKyBiL2RyaXZlcnMvbmV0L2h5cGVydi9uZXR2c2NfZHJ2LmMNCkBAIC01Nyw2ICs1Nywx
-MCBAQA0KIG1vZHVsZV9wYXJhbShkZWJ1ZywgaW50LCAwNDQ0KTsNCiBNT0RVTEVfUEFSTV9ERVND
-KGRlYnVnLCAiRGVidWcgbGV2ZWwgKDA9bm9uZSwuLi4sMTY9YWxsKSIpOw0KIA0KK3N0YXRpYyB1
-bnNpZ25lZCBpbnQgcHJvYmVfdHlwZSBfX3JvX2FmdGVyX2luaXQgPSBQUk9CRV9QUkVGRVJfQVNZ
-TkNIUk9OT1VTOw0KK21vZHVsZV9wYXJhbShwcm9iZV90eXBlLCB1aW50LCAwNDQ0KTsNCitNT0RV
-TEVfUEFSTV9ERVNDKHByb2JlX3R5cGUsICJQcm9iZSB0eXBlOiAxPWFzeW5jKGRlZmF1bHQpLCAy
-PXN5bmMiKTsNCisNCiBzdGF0aWMgTElTVF9IRUFEKG5ldHZzY19kZXZfbGlzdCk7DQogDQogc3Rh
-dGljIHZvaWQgbmV0dnNjX2NoYW5nZV9yeF9mbGFncyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LCBp
-bnQgY2hhbmdlKQ0KQEAgLTIyMzMsMTAgKzIyMzcsMTkgQEAgc3RhdGljIGludCBuZXR2c2NfcHJv
-YmUoc3RydWN0IGh2X2RldmljZSAqZGV2LA0KIAlzdHJ1Y3QgbmV0X2RldmljZV9jb250ZXh0ICpu
-ZXRfZGV2aWNlX2N0eDsNCiAJc3RydWN0IG5ldHZzY19kZXZpY2VfaW5mbyAqZGV2aWNlX2luZm8g
-PSBOVUxMOw0KIAlzdHJ1Y3QgbmV0dnNjX2RldmljZSAqbnZkZXY7DQorCWNoYXIgbmFtZVtJRk5B
-TVNJWl07DQogCWludCByZXQgPSAtRU5PTUVNOw0KIA0KLQluZXQgPSBhbGxvY19ldGhlcmRldl9t
-cShzaXplb2Yoc3RydWN0IG5ldF9kZXZpY2VfY29udGV4dCksDQotCQkJCVZSU1NfQ0hBTk5FTF9N
-QVgpOw0KKwlpZiAocHJvYmVfdHlwZSA9PSBQUk9CRV9QUkVGRVJfQVNZTkNIUk9OT1VTKSB7DQor
-CQlzbnByaW50ZihuYW1lLCBJRk5BTVNJWiwgImV0aCVkIiwgZGV2LT5jaGFubmVsLT5kZXZfbnVt
-KTsNCisJCW5ldCA9IGFsbG9jX25ldGRldl9tcXMoc2l6ZW9mKHN0cnVjdCBuZXRfZGV2aWNlX2Nv
-bnRleHQpLCBuYW1lLA0KKwkJCQkgICAgICAgTkVUX05BTUVfRU5VTSwgZXRoZXJfc2V0dXAsDQor
-CQkJCSAgICAgICBWUlNTX0NIQU5ORUxfTUFYLCBWUlNTX0NIQU5ORUxfTUFYKTsNCisJfSBlbHNl
-IHsNCisJCW5ldCA9IGFsbG9jX2V0aGVyZGV2X21xKHNpemVvZihzdHJ1Y3QgbmV0X2RldmljZV9j
-b250ZXh0KSwNCisJCQkJCVZSU1NfQ0hBTk5FTF9NQVgpOw0KKwl9DQorDQogCWlmICghbmV0KQ0K
-IAkJZ290byBub19uZXQ7DQogDQpAQCAtMjMyMyw2ICsyMzM2LDE0IEBAIHN0YXRpYyBpbnQgbmV0
-dnNjX3Byb2JlKHN0cnVjdCBodl9kZXZpY2UgKmRldiwNCiAJCW5ldC0+bWF4X210dSA9IEVUSF9E
-QVRBX0xFTjsNCiANCiAJcmV0ID0gcmVnaXN0ZXJfbmV0ZGV2aWNlKG5ldCk7DQorDQorCWlmIChy
-ZXQgPT0gLUVFWElTVCkgew0KKwkJcHJfaW5mbygiTklDIG5hbWUgJXMgZXhpc3RzLCByZXF1ZXN0
-IGFub3RoZXIgbmFtZS5cbiIsDQorCQkJbmV0LT5uYW1lKTsNCisJCXN0cmxjcHkobmV0LT5uYW1l
-LCAiZXRoJWQiLCBJRk5BTVNJWik7DQorCQlyZXQgPSByZWdpc3Rlcl9uZXRkZXZpY2UobmV0KTsN
-CisJfQ0KKw0KIAlpZiAocmV0ICE9IDApIHsNCiAJCXByX2VycigiVW5hYmxlIHRvIHJlZ2lzdGVy
-IG5ldGRldi5cbiIpOw0KIAkJZ290byByZWdpc3Rlcl9mYWlsZWQ7DQpAQCAtMjQwNyw3ICsyNDI4
-LDcgQEAgc3RhdGljIGludCBuZXR2c2NfcmVtb3ZlKHN0cnVjdCBodl9kZXZpY2UgKmRldikNCiAJ
-LnByb2JlID0gbmV0dnNjX3Byb2JlLA0KIAkucmVtb3ZlID0gbmV0dnNjX3JlbW92ZSwNCiAJLmRy
-aXZlciA9IHsNCi0JCS5wcm9iZV90eXBlID0gUFJPQkVfRk9SQ0VfU1lOQ0hST05PVVMsDQorCQku
-cHJvYmVfdHlwZSA9IFBST0JFX1BSRUZFUl9BU1lOQ0hST05PVVMsDQogCX0sDQogfTsNCiANCkBA
-IC0yNDczLDYgKzI0OTQsMTIgQEAgc3RhdGljIGludCBfX2luaXQgbmV0dnNjX2Rydl9pbml0KHZv
-aWQpDQogCX0NCiAJbmV0dnNjX3JpbmdfYnl0ZXMgPSByaW5nX3NpemUgKiBQQUdFX1NJWkU7DQog
-DQorCWlmIChwcm9iZV90eXBlICE9IFBST0JFX1BSRUZFUl9BU1lOQ0hST05PVVMpDQorCQlwcm9i
-ZV90eXBlID0gUFJPQkVfRk9SQ0VfU1lOQ0hST05PVVM7DQorDQorCW5ldHZzY19kcnYuZHJpdmVy
-LnByb2JlX3R5cGUgPSBwcm9iZV90eXBlOw0KKwlwcl9pbmZvKCJwcm9iZV90eXBlOiAldVxuIiwg
-cHJvYmVfdHlwZSk7DQorDQogCXJldCA9IHZtYnVzX2RyaXZlcl9yZWdpc3RlcigmbmV0dnNjX2Ry
-dik7DQogCWlmIChyZXQpDQogCQlyZXR1cm4gcmV0Ow0KZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGlu
-dXgvaHlwZXJ2LmggYi9pbmNsdWRlL2xpbnV4L2h5cGVydi5oDQppbmRleCA2MjU2Y2MzLi4xMmZj
-NWVhIDEwMDY0NA0KLS0tIGEvaW5jbHVkZS9saW51eC9oeXBlcnYuaA0KKysrIGIvaW5jbHVkZS9s
-aW51eC9oeXBlcnYuaA0KQEAgLTg0MSw2ICs4NDEsMTAgQEAgc3RydWN0IHZtYnVzX2NoYW5uZWwg
-ew0KIAkgKi8NCiAJc3RydWN0IHZtYnVzX2NoYW5uZWwgKnByaW1hcnlfY2hhbm5lbDsNCiAJLyoN
-CisJICogVXNlZCBmb3IgZGV2aWNlIG5hbWluZyBiYXNlZCBvbiBjaGFubmVsIG9mZmVyIHNlcXVl
-bmNlLg0KKwkgKi8NCisJaW50IGRldl9udW07DQorCS8qDQogCSAqIFN1cHBvcnQgcGVyLWNoYW5u
-ZWwgc3RhdGUgZm9yIHVzZSBieSB2bWJ1cyBkcml2ZXJzLg0KIAkgKi8NCiAJdm9pZCAqcGVyX2No
-YW5uZWxfc3RhdGU7DQotLSANCjEuOC4zLjENCg0K
+On Tue, Jul 09, 2019 at 03:44:59PM -0700, Nick Desaulniers wrote:
+> On Mon, Jul 8, 2019 at 4:13 PM Nathan Chancellor
+> <natechancellor@gmail.com> wrote:
+> >
+> > clang warns:
+> >
+> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:251:2:
+> > warning: variable 'rec_seq_sz' is used uninitialized whenever switch
+> > default is taken [-Wsometimes-uninitialized]
+> >         default:
+> >         ^~~~~~~
+> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:255:46: note:
+> > uninitialized use occurs here
+> >         skip_static_post = !memcmp(rec_seq, &rn_be, rec_seq_sz);
+> >                                                     ^~~~~~~~~~
+> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:239:16: note:
+> > initialize the variable 'rec_seq_sz' to silence this warning
+> >         u16 rec_seq_sz;
+> >                       ^
+> >                        = 0
+> > 1 warning generated.
+> >
+> > This case statement was clearly designed to be one that should not be
+> > hit during runtime because of the WARN_ON statement so just return early
+> > to prevent copying uninitialized memory up into rn_be.
+> >
+> > Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/590
+> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> > index 3f5f4317a22b..5c08891806f0 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> > @@ -250,6 +250,7 @@ tx_post_resync_params(struct mlx5e_txqsq *sq,
+> >         }
+> >         default:
+> >                 WARN_ON(1);
+> > +               return;
+> >         }
+> 
+> hmm...a switch statement with a single case is a code smell.  How
+> about a single conditional with early return?  Then the "meat" of the
+> happy path doesn't need an additional level of indentation.
+> -- 
+> Thanks,
+> ~Nick Desaulniers
+
+I assume that the reason for this is there may be other cipher types
+added in the future? I suppose the maintainers can give more clarity to
+that.
+
+Furthermore, if they want the switch statements to remain, it looks like
+fill_static_params_ctx also returns in the default statement so it seems
+like this is the right fix.
+
+Cheers,
+Nathan
