@@ -2,89 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0446351A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 13:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E34EF635D0
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 14:27:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726165AbfGILoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 07:44:09 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:40102 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbfGILoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 07:44:08 -0400
-Received: by mail-qk1-f195.google.com with SMTP id s145so12178696qke.7
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 04:44:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fAO/bH4c9RcwOzXZthYlzNcxLECpx5mL+EBp6RN1GMI=;
-        b=vWpinOyOEoxzwSLRgA8CBxbfS0HIZdOHHc/SEo1EAMDukvDMFGYeNaUlSvSnefCrXh
-         N/VgQpmLUxjJ/OWwCFrdsiaGyyedH75JrD88Vr/KlNzJWHOza7jz3VmxbBB9hHbBSzYa
-         3EB6PS07xMwEjizQKQ1Wgl78Xug4kzf2BYng0UTg3ofnYpIFtQFD4BFhFnJViTYUSoo5
-         OwQVSOuNuFKpVplvnhKEc1H7evQ+JtToA1naLzmlU8+0Pya+IBD8M9uWxPqagh9LrNlJ
-         BKun4fGYqs92N2wTOLOuKc91smx9Mq2p+aMExrXY15/n2me5ec9HytcjcxizOPBbOxr2
-         mHJQ==
+        id S1726814AbfGIM1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 08:27:23 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:48907 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726591AbfGIM1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 08:27:09 -0400
+Received: by mail-io1-f69.google.com with SMTP id z19so22918638ioi.15
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 05:27:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fAO/bH4c9RcwOzXZthYlzNcxLECpx5mL+EBp6RN1GMI=;
-        b=ugrYRoEwPT9SBb3udvIy51raDHHBLaFetzWfNonmcsM9cy+vMq8lbYvBYY24j+WA+q
-         MZ0xBxI4mZLudalUmBsqGKXNBP9uaCSlrhTkrZ4O95SC1y6Y9m/joWAb9wifNoPh/Eh4
-         4YSqrPcTPeD1nMX9eR/ZGoeRDHcd+DthvjEb5Cw/09ygOXzus0tLeLP30hTHHEN6UF7X
-         TDv9RWIbuCPoVSku9qdx7n+GAuNQpLoigArIxmInnqA5NhfH9+nRfaGseljHVLHfFhJ+
-         +cIaMyDYFR92LmOF7AJUIK2QHzT/tQFADxbViduHIcS08iJ1b4W2RdcdLPSyTxE19nWM
-         SyJA==
-X-Gm-Message-State: APjAAAXXfT5+2l1djsD5qakoDCBG2wSkiB/53Z5+N2Na2N4k+32YLkpD
-        QImjunCX1+fZJ4O9sZnUz4GbfQ==
-X-Google-Smtp-Source: APXvYqzHQj0YIoDavnm1ag5ufg5Yb4MKQD5i9KE47HYH583Zhihj7Afc2ffEG1rdUUEmYIDjiLfOZg==
-X-Received: by 2002:a37:4d06:: with SMTP id a6mr18529561qkb.298.1562672648081;
-        Tue, 09 Jul 2019 04:44:08 -0700 (PDT)
-Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
-        by smtp.googlemail.com with ESMTPSA id e18sm8646306qkm.49.2019.07.09.04.44.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Jul 2019 04:44:07 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/2] tc-testing: Add plugin for simple traffic
- generation
-To:     Lucas Bates <lucasb@mojatatu.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        mleitner@redhat.com, vladbu@mellanox.com, dcaratti@redhat.com,
-        kernel@mojatatu.com
-References: <1562636067-1338-1-git-send-email-lucasb@mojatatu.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <0b1dad91-2240-c38b-bc5f-f6849496c62e@mojatatu.com>
-Date:   Tue, 9 Jul 2019 07:44:06 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=UZp0N+xOAAczyA3pZl0OsLZcXAkB435anjzhpRD0vtc=;
+        b=iIIAJY75r/iDCeeLBj9sjytS7WHVoaYeIqg4hlm1XKksAeQ842m7AzW94KUTJmBxsq
+         31tqhucY9YhSMhret4DsxER8UK12SPlai1h2dH3K7RSsJJ8FLQj+EFaX9OQALBDlTm3K
+         8K7IS2USzlM23CDnE8dT4bvHdinm3TM8lU2ine2OWlDiy9paTMDs9TR0delnqjMCMTUk
+         7aiww6k5V9WFc9Jr5+gq1wsqbf3SISZudWDdfugpkW/ofwX1Q0rDUnK2Yl20721xjJwi
+         S5RLxtXDts3NrIJFz7bFcZ8vHLsAwy3VypXpnIPXH46Ejatz6ZSKg3BSByuYJ1IA6APw
+         KACQ==
+X-Gm-Message-State: APjAAAWjphOx0d4Gtg5j/N+Su7WMuO6mLYYRp3r3NdDfn5+oVsO4h508
+        qlLIzlEuPQbc7RFecy9k5cbalXuPalzn8XqcLzkaLK4OYt7v
+X-Google-Smtp-Source: APXvYqwErajSFEr7tGtQtEfYiBupcBnj0BvRo16vOfzsOxFx8naQtm9prx+l7V6z9OJaad4fgSlPeKIF91YAWnZwqKoL1zjEypX+
 MIME-Version: 1.0
-In-Reply-To: <1562636067-1338-1-git-send-email-lucasb@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:ab83:: with SMTP id t3mr27669942jan.133.1562675228114;
+ Tue, 09 Jul 2019 05:27:08 -0700 (PDT)
+Date:   Tue, 09 Jul 2019 05:27:08 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000df0913058d3ead47@google.com>
+Subject: KASAN: global-out-of-bounds Read in load_next_firmware_from_table
+From:   syzbot <syzbot+98156c174c5a2cad9f8f@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, davem@davemloft.net,
+        gregkh@linuxfoundation.org, kvalo@codeaurora.org,
+        libertas-dev@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-07-08 9:34 p.m., Lucas Bates wrote:
-> This series supersedes the previous submission that included a patch for test
-> case verification using JSON output.  It adds a new tdc plugin, scapyPlugin, as
-> a way to send traffic to test tc filters and actions.
-> 
-> The first patch makes a change to the TdcPlugin module that will allow tdc
-> plugins to examine the test case currently being executed, so plugins can
-> play a more active role in testing by accepting information or commands from
-> the test case.  This is required for scapyPlugin to work.
-> 
-> The second patch adds scapyPlugin itself, and an example test case file to
-> demonstrate how the scapy block works in the test cases.
-> 
+Hello,
 
-Shouldve said V3 in the subject line - but fwiw,
+syzbot found the following crash on:
 
-ACKed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+HEAD commit:    7829a896 usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=12fd0e9ba00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6d4561982f71f63
+dashboard link: https://syzkaller.appspot.com/bug?extid=98156c174c5a2cad9f8f
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125f669ba00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=146b806ba00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+98156c174c5a2cad9f8f@syzkaller.appspotmail.com
+
+usb 1-1: Direct firmware load for libertas/usb8388_v5.bin failed with error  
+-2
+usb 1-1: Direct firmware load for libertas/usb8388.bin failed with error -2
+usb 1-1: Direct firmware load for usb8388.bin failed with error -2
+==================================================================
+BUG: KASAN: global-out-of-bounds in  
+load_next_firmware_from_table+0x267/0x2d0  
+drivers/net/wireless/marvell/libertas/firmware.c:99
+Read of size 8 at addr ffffffff860942b8 by task kworker/1:1/21
+
+CPU: 1 PID: 21 Comm: kworker/1:1 Not tainted 5.2.0-rc6+ #13
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xca/0x13e lib/dump_stack.c:113
+  print_address_description+0x67/0x231 mm/kasan/report.c:188
+  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
+  kasan_report+0xe/0x20 mm/kasan/common.c:614
+  load_next_firmware_from_table+0x267/0x2d0  
+drivers/net/wireless/marvell/libertas/firmware.c:99
+  helper_firmware_cb+0xdc/0x100  
+drivers/net/wireless/marvell/libertas/firmware.c:70
+  request_firmware_work_func+0x126/0x242  
+drivers/base/firmware_loader/main.c:785
+  process_one_work+0x905/0x1570 kernel/workqueue.c:2269
+  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
+  kthread+0x30b/0x410 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the variable:
+  fw_table+0x98/0x5c0
+
+Memory state around the buggy address:
+  ffffffff86094180: fa fa fa fa 00 04 fa fa fa fa fa fa 00 00 05 fa
+  ffffffff86094200: fa fa fa fa 00 00 00 00 00 00 00 00 00 00 00 00
+> ffffffff86094280: 00 00 00 00 00 00 fa fa fa fa fa fa 00 00 00 00
+                                         ^
+  ffffffff86094300: 00 00 00 01 fa fa fa fa 00 00 00 00 02 fa fa fa
+  ffffffff86094380: fa fa fa fa 00 03 fa fa fa fa fa fa 00 00 00 00
+==================================================================
 
 
-cheers,
-jamal
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
