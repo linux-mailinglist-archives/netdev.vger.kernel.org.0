@@ -2,56 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92BCC63D8A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 23:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DB363DB3
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 00:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729220AbfGIVuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 17:50:14 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:46238 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729019AbfGIVuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 17:50:13 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 14E5914255ECD;
-        Tue,  9 Jul 2019 14:50:13 -0700 (PDT)
-Date:   Tue, 09 Jul 2019 14:50:12 -0700 (PDT)
-Message-Id: <20190709.145012.1314139094883979747.davem@davemloft.net>
-To:     vivien.didelot@gmail.com
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, idosch@mellanox.com, andrew@lunn.ch
-Subject: Re: [PATCH net-next] net: dsa: add support for BRIDGE_MROUTER
- attribute
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190709033113.8837-1-vivien.didelot@gmail.com>
-References: <20190709033113.8837-1-vivien.didelot@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jul 2019 14:50:13 -0700 (PDT)
+        id S1727287AbfGIWDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 18:03:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42144 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726605AbfGIWDm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 18:03:42 -0400
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CD6F620844;
+        Tue,  9 Jul 2019 22:03:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562709820;
+        bh=EOfv0IJBF0t3DLIUgIhhzoRRwSja9eNG9rCjIupc6hc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hnT7DgxaLEp7aHxayOUXmsvnKgo/b7/ncGJoHze2v06LGOfyqY+wlRMPj3QUiFo7l
+         1KDC4Bh4iPFcNIq0Morfms7doWHJbsfZgziSPL2Ed4rL7D2aFuLd5fYg1hU+aXhMR4
+         IVkUvu6VIJZzIYAIq+EJ5crhos377adDwOpi27jg=
+Received: by mail-qk1-f169.google.com with SMTP id g18so360311qkl.3;
+        Tue, 09 Jul 2019 15:03:40 -0700 (PDT)
+X-Gm-Message-State: APjAAAUSvJ6KgT8E48D9v2vMgLWbLD7b+ihhKoHn3SJ5xRqEBbSsZLXX
+        NZel6aI/V8FdyP2A9tksUrOZ581OtgP9TWoWGA==
+X-Google-Smtp-Source: APXvYqy8ReY8DDK/lYnBtZlNqPX5UetguMX6SjWqmS0APLvDW2/mSIY6u/4Asc4OlVXYmBFHCoK3iI+KYQPf8t/AexI=
+X-Received: by 2002:a37:6944:: with SMTP id e65mr18734160qkc.119.1562709820077;
+ Tue, 09 Jul 2019 15:03:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190706151900.14355-1-josua@solid-run.com> <20190706151900.14355-2-josua@solid-run.com>
+ <CAL_JsqJJA6=2b=VzDzS1ipOatpRuVBUmReYoOMf-9p39=jyF8Q@mail.gmail.com> <20190709024143.GD5835@lunn.ch>
+In-Reply-To: <20190709024143.GD5835@lunn.ch>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 9 Jul 2019 16:03:28 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqK=qpCi6whqmjW2L8O=3u4oZemH=czm60q9QnC09Gr_ig@mail.gmail.com>
+Message-ID: <CAL_JsqK=qpCi6whqmjW2L8O=3u4oZemH=czm60q9QnC09Gr_ig@mail.gmail.com>
+Subject: Re: [PATCH 1/4] dt-bindings: allow up to four clocks for orion-mdio
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     josua@solid-run.com, netdev <netdev@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vivien Didelot <vivien.didelot@gmail.com>
-Date: Mon,  8 Jul 2019 23:31:13 -0400
+On Mon, Jul 8, 2019 at 8:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > >  Optional properties:
+> > >  - interrupts: interrupt line number for the SMI error/done interrupt
+> > > -- clocks: phandle for up to three required clocks for the MDIO instance
+> > > +- clocks: phandle for up to four required clocks for the MDIO instance
+> >
+> > This needs to enumerate exactly what the clocks are. Shouldn't there
+> > be an additional clock-names value too?
+>
+> Hi Rob
+>
+> The driver does not care what they are called. It just turns them all
+> on, and turns them off again when removed.
 
-> This patch adds support for enabling or disabling the flooding of
-> unknown multicast traffic on the CPU ports, depending on the value
-> of the switchdev SWITCHDEV_ATTR_ID_BRIDGE_MROUTER attribute.
-> 
-> The current behavior is kept unchanged but a user can now prevent
-> the CPU conduit to be flooded with a lot of unregistered traffic that
-> the network stack needs to filter in software with e.g.:
-> 
->     echo 0 > /sys/class/net/br0/multicast_router
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+That's fine for the driver to do, but this is the hardware description.
 
-Looks very reasonable and straightforward.
+It's not just what they are called, but how many too. Is 1 clock in
+the DT valid? 0? It would be unusual for a given piece of h/w to
+function with a variable number of clocks.
 
-Applied, thanks.
+Rob
