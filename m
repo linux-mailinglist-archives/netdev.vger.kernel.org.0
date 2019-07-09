@@ -2,188 +2,358 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 233AF6333A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 11:00:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0824E6333E
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 11:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbfGIJAw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 9 Jul 2019 05:00:52 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:2902 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726031AbfGIJAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 05:00:52 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x698vONJ103193
-        for <netdev@vger.kernel.org>; Tue, 9 Jul 2019 05:00:51 -0400
-Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [192.155.248.81])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tmptgjt9m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 05:00:51 -0400
-Received: from localhost
-        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
-        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
-        Tue, 9 Jul 2019 09:00:49 -0000
-Received: from us1a3-smtp03.a3.dal06.isc4sb.com (10.106.154.98)
-        by smtp.notes.na.collabserv.com (10.106.227.88) with smtp.notes.na.collabserv.com ESMTP;
-        Tue, 9 Jul 2019 09:00:41 -0000
-Received: from us1a3-mail162.a3.dal06.isc4sb.com ([10.146.71.4])
-          by us1a3-smtp03.a3.dal06.isc4sb.com
-          with ESMTP id 2019070909004074-237333 ;
-          Tue, 9 Jul 2019 09:00:40 +0000 
-In-Reply-To: <20190709064346.GF7034@mtr-leonro.mtl.com>
-From:   "Bernard Metzler" <BMT@zurich.ibm.com>
-To:     "Leon Romanovsky" <leon@kernel.org>
-Cc:     "Stephen Rothwell" <sfr@canb.auug.org.au>,
-        "Doug Ledford" <dledford@redhat.com>,
-        "Jason Gunthorpe" <jgg@mellanox.com>,
-        "David Miller" <davem@davemloft.net>,
-        "Networking" <netdev@vger.kernel.org>,
-        "Linux Next Mailing List" <linux-next@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Date:   Tue, 9 Jul 2019 09:00:40 +0000
+        id S1726045AbfGIJDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 05:03:06 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:2843 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725985AbfGIJDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 05:03:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1562662983; x=1594198983;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=z45SGeJ4QK5ENsEwNAvIn+nkO8FnF/WVnqKYAkzY+hg=;
+  b=tNp16O5OczS/nG9M0lUlBhAmuRd7qWMZT60rdgNFNSEoHxi8DigCHtiQ
+   LN59GNYwuUEZzc9tvmSFlYxMOoZ6nZYGIWUzU8hSoC8NuVDQR7qRnAYaC
+   3GK7MYe95TxFCUz4nRBacmEEy82Yr23o5dNCFP3vtCgW7AdoRweT9ubC9
+   c=;
+X-IronPort-AV: E=Sophos;i="5.62,470,1554768000"; 
+   d="scan'208";a="810130510"
+Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.47.22.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 09 Jul 2019 09:02:57 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 135CAA185E;
+        Tue,  9 Jul 2019 09:02:57 +0000 (UTC)
+Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 9 Jul 2019 09:02:56 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.162.187) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 9 Jul 2019 09:02:51 +0000
+Subject: Re: [PATCH v5 rdma-next 2/6] RDMA/efa: Use the common mmap_xa helpers
+To:     Michal Kalderon <michal.kalderon@marvell.com>,
+        <ariel.elior@marvell.com>, <jgg@ziepe.ca>, <dledford@redhat.com>,
+        <galpress@amazon.com>
+CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <20190708091503.14723-1-michal.kalderon@marvell.com>
+ <20190708091503.14723-3-michal.kalderon@marvell.com>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <0a28f174-1875-452e-ea0a-c8db2d243ce5@amazon.com>
+Date:   Tue, 9 Jul 2019 12:02:46 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-References: <20190709064346.GF7034@mtr-leonro.mtl.com>,<20190709135636.4d36e19f@canb.auug.org.au>
-X-Mailer: IBM iNotes ($HaikuForm 1054) | IBM Domino Build
- SCN1812108_20180501T0841_FP55 May 22, 2019 at 11:09
-X-LLNOutbound: False
-X-Disclaimed: 56111
-X-TNEFEvaluated: 1
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=UTF-8
-x-cbid: 19070909-7093-0000-0000-00000C001049
-X-IBM-SpamModules-Scores: BY=0; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
- SC=0.40962; ST=0; TS=0; UL=0; ISC=; MB=0.009927
-X-IBM-SpamModules-Versions: BY=3.00011400; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01229610; UDB=6.00647592; IPR=6.01010869;
- BA=6.00006352; NDR=6.00000001; ZLA=6.00000005; ZF=6.00000009; ZB=6.00000000;
- ZP=6.00000000; ZH=6.00000000; ZU=6.00000002; MB=3.00027647; XFM=3.00000015;
- UTC=2019-07-09 09:00:47
-X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
-X-IBM-AV-VERSION: SAVI=2019-07-09 02:46:09 - 6.00010142
-x-cbparentid: 19070909-7094-0000-0000-00008DFF1023
-Message-Id: <OF3548A4E6.BB93884C-ON00258432.00308557-00258432.00318024@notes.na.collabserv.com>
-Subject: Re:  Re: linux-next: build failure after merge of the net-next tree
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-09_04:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
+In-Reply-To: <20190708091503.14723-3-michal.kalderon@marvell.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.162.187]
+X-ClientProxiedBy: EX13D02UWC001.ant.amazon.com (10.43.162.243) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------"Leon Romanovsky" <leon@kernel.org> wrote: -----
+On 08/07/2019 12:14, Michal Kalderon wrote:
 
->To: "Stephen Rothwell" <sfr@canb.auug.org.au>
->From: "Leon Romanovsky" <leon@kernel.org>
->Date: 07/09/2019 08:43AM
->Cc: "Doug Ledford" <dledford@redhat.com>, "Jason Gunthorpe"
-><jgg@mellanox.com>, "David Miller" <davem@davemloft.net>,
->"Networking" <netdev@vger.kernel.org>, "Linux Next Mailing List"
-><linux-next@vger.kernel.org>, "Linux Kernel Mailing List"
-><linux-kernel@vger.kernel.org>, "Bernard Metzler"
-><bmt@zurich.ibm.com>
->Subject: [EXTERNAL] Re: linux-next: build failure after merge of the
->net-next tree
->
->On Tue, Jul 09, 2019 at 01:56:36PM +1000, Stephen Rothwell wrote:
->> Hi all,
->>
->> After merging the net-next tree, today's linux-next build (x86_64
->> allmodconfig) failed like this:
->>
->> drivers/infiniband/sw/siw/siw_cm.c: In function
->'siw_create_listen':
->> drivers/infiniband/sw/siw/siw_cm.c:1978:3: error: implicit
->declaration of function 'for_ifa'; did you mean 'fork_idle'?
->[-Werror=implicit-function-declaration]
->>    for_ifa(in_dev)
->>    ^~~~~~~
->>    fork_idle
->> drivers/infiniband/sw/siw/siw_cm.c:1978:18: error: expected ';'
->before '{' token
->>    for_ifa(in_dev)
->>                   ^
->>                   ;
->>    {
->>    ~
->>
->> Caused by commit
->>
->>   6c52fdc244b5 ("rdma/siw: connection management")
->>
->> from the rdma tree.  I don't know why this didn't fail after I
->mereged
->> that tree.
->
->I had the same question, because I have this fix for a couple of days
->already.
->
->From 56c9e15ec670af580daa8c3ffde9503af3042d67 Mon Sep 17 00:00:00
->2001
->From: Leon Romanovsky <leonro@mellanox.com>
->Date: Sun, 7 Jul 2019 10:43:42 +0300
->Subject: [PATCH] Fixup to build SIW issue
->
->Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
->---
-> drivers/infiniband/sw/siw/siw_cm.c | 5 ++---
-> 1 file changed, 2 insertions(+), 3 deletions(-)
->
->diff --git a/drivers/infiniband/sw/siw/siw_cm.c
->b/drivers/infiniband/sw/siw/siw_cm.c
->index 8e618cb7261f..c883bf514341 100644
->--- a/drivers/infiniband/sw/siw/siw_cm.c
->+++ b/drivers/infiniband/sw/siw/siw_cm.c
->@@ -1954,6 +1954,7 @@ static void siw_drop_listeners(struct iw_cm_id
->*id)
-> int siw_create_listen(struct iw_cm_id *id, int backlog)
-> {
-> 	struct net_device *dev = to_siw_dev(id->device)->netdev;
->+	const struct in_ifaddr *ifa;
-> 	int rv = 0, listeners = 0;
->
-> 	siw_dbg(id->device, "id 0x%p: backlog %d\n", id, backlog);
->@@ -1975,8 +1976,7 @@ int siw_create_listen(struct iw_cm_id *id, int
->backlog)
-> 			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
-> 			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
->
->-		for_ifa(in_dev)
->-		{
->+		in_dev_for_each_ifa_rcu(ifa, in_dev) {
-> 			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
-> 			    s_laddr.sin_addr.s_addr == ifa->ifa_address) {
-> 				s_laddr.sin_addr.s_addr = ifa->ifa_address;
->@@ -1988,7 +1988,6 @@ int siw_create_listen(struct iw_cm_id *id, int
->backlog)
-> 					listeners++;
-> 			}
-> 		}
->-		endfor_ifa(in_dev);
-> 		in_dev_put(in_dev);
-> 	} else if (id->local_addr.ss_family == AF_INET6) {
-> 		struct inet6_dev *in6_dev = in6_dev_get(dev);
->--
->2.21.0
->
->
->>
->> I have marked that driver as depending on BROKEN for today.
->>
->> --
->> Cheers,
->> Stephen Rothwell
->
->
->
-I am very sorry for that issues. Things are moving fast, and I
-didn't realize 'for_ifa' recently went away. I agree with Leon,
-his patch fixes the issue. So, please, let's apply that one.
+Hi, a few nits:
 
-Leon, many thanks for providing the fix.
+> Remove the functions related to managing the mmap_xa database.
+> This code was copied to the ib_core. Use the common API's instead.
+> 
+> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+> ---
+>  drivers/infiniband/hw/efa/efa.h       |   3 +-
+>  drivers/infiniband/hw/efa/efa_main.c  |   1 +
+>  drivers/infiniband/hw/efa/efa_verbs.c | 183 ++++++++--------------------------
+>  3 files changed, 42 insertions(+), 145 deletions(-)
+> diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
+> index df77bc312a25..5dff892da161 100644
+> --- a/drivers/infiniband/hw/efa/efa_verbs.c
+> +++ b/drivers/infiniband/hw/efa/efa_verbs.c
+> @@ -13,34 +13,15 @@
+>  
+>  #include "efa.h"
+>  
+> -#define EFA_MMAP_FLAG_SHIFT 56
+> -#define EFA_MMAP_PAGE_MASK GENMASK(EFA_MMAP_FLAG_SHIFT - 1, 0)
+> -#define EFA_MMAP_INVALID U64_MAX
+> -
 
-Thanks very much,
-Bernard.
+Don't delete the blank line please.
 
+>  enum {
+>  	EFA_MMAP_DMA_PAGE = 0,
+>  	EFA_MMAP_IO_WC,
+>  	EFA_MMAP_IO_NC,
+>  };
+> -
+>  #define EFA_AENQ_ENABLED_GROUPS \
+>  	(BIT(EFA_ADMIN_FATAL_ERROR) | BIT(EFA_ADMIN_WARNING) | \
+>  	 BIT(EFA_ADMIN_NOTIFICATION) | BIT(EFA_ADMIN_KEEP_ALIVE))
+>  
+> -struct efa_mmap_entry {
+> -	void  *obj;
+> -	u64 address;
+> -	u64 length;
+> -	u32 mmap_page;
+> -	u8 mmap_flag;
+> -};
+> -
+> -static inline u64 get_mmap_key(const struct efa_mmap_entry *efa)
+> -{
+> -	return ((u64)efa->mmap_flag << EFA_MMAP_FLAG_SHIFT) |
+> -	       ((u64)efa->mmap_page << PAGE_SHIFT);
+> -}
+> -
+>  #define EFA_CHUNK_PAYLOAD_SHIFT       12
+>  #define EFA_CHUNK_PAYLOAD_SIZE        BIT(EFA_CHUNK_PAYLOAD_SHIFT)
+>  #define EFA_CHUNK_PAYLOAD_PTR_SIZE    8
+> @@ -145,105 +126,7 @@ static void *efa_zalloc_mapped(struct efa_dev *dev, dma_addr_t *dma_addr,
+>  	return addr;
+>  }
+>  
+> -/*
+> - * This is only called when the ucontext is destroyed and there can be no
+> - * concurrent query via mmap or allocate on the xarray, thus we can be sure no
+> - * other thread is using the entry pointer. We also know that all the BAR
+> - * pages have either been zap'd or munmaped at this point.  Normal pages are
+> - * refcounted and will be freed at the proper time.
+> - */
+> -static void mmap_entries_remove_free(struct efa_dev *dev,
+> -				     struct efa_ucontext *ucontext)
+> -{
+> -	struct efa_mmap_entry *entry;
+> -	unsigned long mmap_page;
+>  
+> -	xa_for_each(&ucontext->mmap_xa, mmap_page, entry) {
+> -		xa_erase(&ucontext->mmap_xa, mmap_page);
+> -
+> -		ibdev_dbg(
+> -			&dev->ibdev,
+> -			"mmap: obj[0x%p] key[%#llx] addr[%#llx] len[%#llx] removed\n",
+> -			entry->obj, get_mmap_key(entry), entry->address,
+> -			entry->length);
+> -		if (entry->mmap_flag == EFA_MMAP_DMA_PAGE)
+> -			/* DMA mapping is already gone, now free the pages */
+> -			free_pages_exact(phys_to_virt(entry->address),
+> -					 entry->length);
+> -		kfree(entry);
+> -	}
+> -}
+> -
+> -static struct efa_mmap_entry *mmap_entry_get(struct efa_dev *dev,
+> -					     struct efa_ucontext *ucontext,
+> -					     u64 key, u64 len)
+> -{
+> -	struct efa_mmap_entry *entry;
+> -	u64 mmap_page;
+> -
+> -	mmap_page = (key & EFA_MMAP_PAGE_MASK) >> PAGE_SHIFT;
+> -	if (mmap_page > U32_MAX)
+> -		return NULL;
+> -
+> -	entry = xa_load(&ucontext->mmap_xa, mmap_page);
+> -	if (!entry || get_mmap_key(entry) != key || entry->length != len)
+> -		return NULL;
+> -
+> -	ibdev_dbg(&dev->ibdev,
+> -		  "mmap: obj[0x%p] key[%#llx] addr[%#llx] len[%#llx] removed\n",
+> -		  entry->obj, key, entry->address, entry->length);
+> -
+> -	return entry;
+> -}
+> -
+> -/*
+> - * Note this locking scheme cannot support removal of entries, except during
+> - * ucontext destruction when the core code guarentees no concurrency.
+> - */
+> -static u64 mmap_entry_insert(struct efa_dev *dev, struct efa_ucontext *ucontext,
+> -			     void *obj, u64 address, u64 length, u8 mmap_flag)
+> -{
+> -	struct efa_mmap_entry *entry;
+> -	u32 next_mmap_page;
+> -	int err;
+> -
+> -	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
+> -	if (!entry)
+> -		return EFA_MMAP_INVALID;
+> -
+> -	entry->obj = obj;
+> -	entry->address = address;
+> -	entry->length = length;
+> -	entry->mmap_flag = mmap_flag;
+> -
+> -	xa_lock(&ucontext->mmap_xa);
+> -	if (check_add_overflow(ucontext->mmap_xa_page,
+> -			       (u32)(length >> PAGE_SHIFT),
+> -			       &next_mmap_page))
+> -		goto err_unlock;
+> -
+> -	entry->mmap_page = ucontext->mmap_xa_page;
+> -	ucontext->mmap_xa_page = next_mmap_page;
+> -	err = __xa_insert(&ucontext->mmap_xa, entry->mmap_page, entry,
+> -			  GFP_KERNEL);
+> -	if (err)
+> -		goto err_unlock;
+> -
+> -	xa_unlock(&ucontext->mmap_xa);
+> -
+> -	ibdev_dbg(
+> -		&dev->ibdev,
+> -		"mmap: obj[0x%p] addr[%#llx], len[%#llx], key[%#llx] inserted\n",
+> -		entry->obj, entry->address, entry->length, get_mmap_key(entry));
+> -
+> -	return get_mmap_key(entry);
+> -
+> -err_unlock:
+> -	xa_unlock(&ucontext->mmap_xa);
+> -	kfree(entry);
+> -	return EFA_MMAP_INVALID;
+> -
+> -}
+>  
+
+You left two extra blank lines between efa_zalloc_mapped and efa_query_device.
+
+>  int efa_query_device(struct ib_device *ibdev,
+>  		     struct ib_device_attr *props,
+> @@ -488,45 +371,52 @@ static int qp_mmap_entries_setup(struct efa_qp *qp,
+>  				 struct efa_com_create_qp_params *params,
+>  				 struct efa_ibv_create_qp_resp *resp)
+>  {
+> +	u64 address;
+> +	u64 length;
+
+Line break.
+
+>  	/*
+>  	 * Once an entry is inserted it might be mmapped, hence cannot be
+>  	 * cleaned up until dealloc_ucontext.
+>  	 */
+>  	resp->sq_db_mmap_key =
+> -		mmap_entry_insert(dev, ucontext, qp,
+> -				  dev->db_bar_addr + resp->sq_db_offset,
+> -				  PAGE_SIZE, EFA_MMAP_IO_NC);
+> -	if (resp->sq_db_mmap_key == EFA_MMAP_INVALID)
+> +		rdma_user_mmap_entry_insert(&ucontext->ibucontext, qp,
+> +					    dev->db_bar_addr +
+> +					    resp->sq_db_offset,
+> +					    PAGE_SIZE, EFA_MMAP_IO_NC);
+> +	if (resp->sq_db_mmap_key == RDMA_USER_MMAP_INVALID)
+>  		return -ENOMEM;
+>  
+>  	resp->sq_db_offset &= ~PAGE_MASK;
+>  
+> +	address = dev->mem_bar_addr + resp->llq_desc_offset;
+> +	length = PAGE_ALIGN(params->sq_ring_size_in_bytes +
+> +			    (resp->llq_desc_offset & ~PAGE_MASK));
+>  	resp->llq_desc_mmap_key =
+> -		mmap_entry_insert(dev, ucontext, qp,
+> -				  dev->mem_bar_addr + resp->llq_desc_offset,
+> -				  PAGE_ALIGN(params->sq_ring_size_in_bytes +
+> -					     (resp->llq_desc_offset & ~PAGE_MASK)),
+> -				  EFA_MMAP_IO_WC);
+> -	if (resp->llq_desc_mmap_key == EFA_MMAP_INVALID)
+> +		rdma_user_mmap_entry_insert(&ucontext->ibucontext, qp,
+> +					    address,
+> +					    length,
+> +					    EFA_MMAP_IO_WC);
+> +	if (resp->llq_desc_mmap_key == RDMA_USER_MMAP_INVALID)
+>  		return -ENOMEM;
+>  
+>  	resp->llq_desc_offset &= ~PAGE_MASK;
+>  
+>  	if (qp->rq_size) {
+> +		address = dev->db_bar_addr + resp->rq_db_offset;
+>  		resp->rq_db_mmap_key =
+> -			mmap_entry_insert(dev, ucontext, qp,
+> -					  dev->db_bar_addr + resp->rq_db_offset,
+> -					  PAGE_SIZE, EFA_MMAP_IO_NC);
+> -		if (resp->rq_db_mmap_key == EFA_MMAP_INVALID)
+> +			rdma_user_mmap_entry_insert(&ucontext->ibucontext, qp,
+> +						    address, PAGE_SIZE,
+> +						    EFA_MMAP_IO_NC);
+> +		if (resp->rq_db_mmap_key == RDMA_USER_MMAP_INVALID)
+>  			return -ENOMEM;
+>  
+>  		resp->rq_db_offset &= ~PAGE_MASK;
+>  
+> +		address = virt_to_phys(qp->rq_cpu_addr);
+>  		resp->rq_mmap_key =
+> -			mmap_entry_insert(dev, ucontext, qp,
+> -					  virt_to_phys(qp->rq_cpu_addr),
+> -					  qp->rq_size, EFA_MMAP_DMA_PAGE);
+> -		if (resp->rq_mmap_key == EFA_MMAP_INVALID)
+> +			rdma_user_mmap_entry_insert(&ucontext->ibucontext, qp,
+> +						    address, qp->rq_size,
+> +						    EFA_MMAP_DMA_PAGE);
+> +		if (resp->rq_mmap_key == RDMA_USER_MMAP_INVALID)
+>  			return -ENOMEM;
+>  
+>  		resp->rq_mmap_size = qp->rq_size;
+> @@ -875,11 +765,13 @@ void efa_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
+>  static int cq_mmap_entries_setup(struct efa_dev *dev, struct efa_cq *cq,
+>  				 struct efa_ibv_create_cq_resp *resp)
+>  {
+> +	struct efa_ucontext *ucontext = cq->ucontext;
+
+Line break.
+
+>  	resp->q_mmap_size = cq->size;
+> -	resp->q_mmap_key = mmap_entry_insert(dev, cq->ucontext, cq,
+> -					     virt_to_phys(cq->cpu_addr),
+> -					     cq->size, EFA_MMAP_DMA_PAGE);
+> -	if (resp->q_mmap_key == EFA_MMAP_INVALID)
+> +	resp->q_mmap_key =
+> +		rdma_user_mmap_entry_insert(&ucontext->ibucontext, cq,
+> +					    virt_to_phys(cq->cpu_addr),
+> +					    cq->size, EFA_MMAP_DMA_PAGE);
+> +	if (resp->q_mmap_key == RDMA_USER_MMAP_INVALID)
+>  		return -ENOMEM;
+>  
+>  	return 0;
+> @@ -1531,7 +1423,6 @@ int efa_alloc_ucontext(struct ib_ucontext *ibucontext, struct ib_udata *udata)
+>  		goto err_out;
+>  
+>  	ucontext->uarn = result.uarn;
+> -	xa_init(&ucontext->mmap_xa);
+>  
+>  	resp.cmds_supp_udata_mask |= EFA_USER_CMDS_SUPP_UDATA_QUERY_DEVICE;
+>  	resp.cmds_supp_udata_mask |= EFA_USER_CMDS_SUPP_UDATA_CREATE_AH;
+> @@ -1560,19 +1451,25 @@ void efa_dealloc_ucontext(struct ib_ucontext *ibucontext)
+>  	struct efa_ucontext *ucontext = to_eucontext(ibucontext);
+>  	struct efa_dev *dev = to_edev(ibucontext->device);
+>  
+> -	mmap_entries_remove_free(dev, ucontext);
+>  	efa_dealloc_uar(dev, ucontext->uarn);
+>  }
+>  
+> +void efa_mmap_free(u64 address, u64 length, u8 mmap_flag)
+> +{
+> +	/* DMA mapping is already gone, now free the pages */
+> +	if (mmap_flag == EFA_MMAP_DMA_PAGE)
+> +		free_pages_exact(phys_to_virt(address), length);
+> +}
+> +
+>  static int __efa_mmap(struct efa_dev *dev, struct efa_ucontext *ucontext,
+>  		      struct vm_area_struct *vma, u64 key, u64 length)
+>  {
+> -	struct efa_mmap_entry *entry;
+> +	struct rdma_user_mmap_entry *entry;
+>  	unsigned long va;
+>  	u64 pfn;
+>  	int err;
+>  
+> -	entry = mmap_entry_get(dev, ucontext, key, length);
+> +	entry = rdma_user_mmap_entry_get(&ucontext->ibucontext, key, length);
+>  	if (!entry) {
+>  		ibdev_dbg(&dev->ibdev, "key[%#llx] does not have valid entry\n",
+>  			  key);
+> 
