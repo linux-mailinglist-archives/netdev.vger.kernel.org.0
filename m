@@ -2,145 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7486663880
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 17:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CC8563883
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 17:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbfGIPVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 11:21:02 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39002 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726055AbfGIPVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 11:21:02 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x4so21468598wrt.6
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 08:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=B1h/UIqlGi7MfHP7lsCy2BUQyda+jjY8N+4Z9HgKLFg=;
-        b=WGvmYx0VqCpz+uFJoILkyLzf9cpykTFwWJzcDQi8k4P64Vh4tdgJ+KKAF5XCpjA//G
-         0rASJeg8xPjy3ChQzEoEphU7Kq+qpYAeKjYj6c8NhIzea3GnErtENF2veklsw739Ani/
-         d4R7xjtslU5PFshteK7kQ+ZsVrH4e+Pz8l0fugvquBiUnzOTmxIaTfBQBqNDSh3FGvCt
-         CgD2G3/sIBpUDlhlz+IgOdgVp3Jj7aRk9JH9fO87Tqv5i++QPtZKg7IOoERwp2VYYTCi
-         /wM1wj4d8bJW5KxVOgYX7mb2Y+PnteJYA8MbtG9e1zrJoNM/8tTyGJZqlFEbEf4oiBea
-         0bjQ==
+        id S1726462AbfGIPVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 11:21:07 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54499 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726380AbfGIPVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 11:21:07 -0400
+Received: by mail-io1-f72.google.com with SMTP id n8so23339495ioo.21
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 08:21:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=B1h/UIqlGi7MfHP7lsCy2BUQyda+jjY8N+4Z9HgKLFg=;
-        b=n7R2ekNaCCBqNhZkqrGi/QxlJLYZdf3Bc6RTyEXPXxStqN3qnLmrkD/M3b0we1/HCi
-         uMX5j7278ktGQmMGBxL1xL5u2TqJqkkt2pyCPRXJWFxtn6LPQEfBNGTBlZLfmrebzCQY
-         RFYWK59yCUnKOvylhEhbiPlBdd+ElSnzuB8N4N4cHIF6rmTdmRoECTYrJfwyHmP2UOlC
-         7F2VOGygRQgMoVHYMe6vd9i4FxyZ8oKAfBV0HRWxj5vP+nTJz/xl69isg+jReFhcrXYl
-         lkUZ2z1xPsEyXVNYae/apdDRkTI5QFdqAn66o/fEq8eAZFogVC3qN9szNAKXP9Y/dGWl
-         H+Hg==
-X-Gm-Message-State: APjAAAVPRdN07Oa/O7ncNSFNzU4btmHo1gLRVWR2mM1DMaUjCWmVPeR3
-        rvjl/Db5xGQtUQgTo1Wrq6EGvw==
-X-Google-Smtp-Source: APXvYqxsZwdqYcRT50eta2i9zSWPjsk/W03c1ABcf8L2rQEal2wtLEIgvBXYwyYjQ1BAta2a1t5QtQ==
-X-Received: by 2002:a5d:4e02:: with SMTP id p2mr18999265wrt.182.1562685660376;
-        Tue, 09 Jul 2019 08:21:00 -0700 (PDT)
-Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
-        by smtp.gmail.com with ESMTPSA id s10sm17977517wrt.49.2019.07.09.08.20.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Jul 2019 08:20:59 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 18:20:57 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] bnxt_en: Add page_pool_destroy() during RX ring
- cleanup.
-Message-ID: <20190709152057.GA4452@apalos>
-References: <1562658607-30048-1-git-send-email-michael.chan@broadcom.com>
- <20190709131842.GJ87269@C02RW35GFVH8.dhcp.broadcom.net>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=U47SrC59jUZEcT2zXHFHbXhcijZLr+s4w3teAwbwRn0=;
+        b=f36w9NGH+f7b5/8IRHElttRmGqHQoPRJg+qxxDw/f4eDFHOoVwJo/Zo4qQaJHNY7sp
+         /e614UZ84u5fz2t9+QFItWFwLy4S5X1DnCnL0PBCR1544hYSncveXRsSP/vjaNrQeMja
+         gRTXqrqyb6uXfgpz6/aQi1ABbF7L07mGkRTd7HyKD9W8FNK3y6xEtQq+F2qE/Vv7sk33
+         bMmnMRtaHz8NPYOoB45L92k8sQKqBsPBDig3S8VVMbInX6LLVnu58pOcohots8h/kma+
+         FfIvZnrHKOmVqZNJ9kwKdqmmddE2jgVvJaLtIuis9MNj9nfvFoIvBPT0+X9mP+s8fi1b
+         OxyA==
+X-Gm-Message-State: APjAAAU4G0MrQ3VRXH7Djxy2aGKf3yTWTx6wTA1Gg/7wf8s1mx8x93oU
+        DNGBblp448CpIxlPJM6NETccJ8jPOQ/9MgquuWcBqYYjHnqm
+X-Google-Smtp-Source: APXvYqxF/ENmrLuxq5YS3gLbLMNersWqGr+KnIZs99Lb6CcNxLN7PJtaxBANHHoZi1wrO2N/maSErJTHIf9mX2CWNdYiT4nl5Ylt
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709131842.GJ87269@C02RW35GFVH8.dhcp.broadcom.net>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Received: by 2002:a05:6638:303:: with SMTP id w3mr17400786jap.103.1562685666069;
+ Tue, 09 Jul 2019 08:21:06 -0700 (PDT)
+Date:   Tue, 09 Jul 2019 08:21:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000595ea058d411c35@google.com>
+Subject: WARNING: refcount bug in nr_insert_socket
+From:   syzbot <syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello,
 
-> > Add page_pool_destroy() in bnxt_free_rx_rings() during normal RX ring
-> > cleanup, as Ilias has informed us that the following commit has been
-> > merged:
-> > 
-> > 1da4bbeffe41 ("net: core: page_pool: add user refcnt and reintroduce page_pool_destroy")
-> > 
-> > The special error handling code to call page_pool_free() can now be
-> > removed.  bnxt_free_rx_rings() will always be called during normal
-> > shutdown or any error paths.
-> > 
-> > Fixes: 322b87ca55f2 ("bnxt_en: add page_pool support")
-> > Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> > Cc: Andy Gospodarek <gospo@broadcom.com>
-> > Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> > ---
-> >  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++------
-> >  1 file changed, 2 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> > index e9d3bd8..2b5b0ab 100644
-> > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> > @@ -2500,6 +2500,7 @@ static void bnxt_free_rx_rings(struct bnxt *bp)
-> >  		if (xdp_rxq_info_is_reg(&rxr->xdp_rxq))
-> >  			xdp_rxq_info_unreg(&rxr->xdp_rxq);
-> >  
-> > +		page_pool_destroy(rxr->page_pool);
-> >  		rxr->page_pool = NULL;
-> >  
-> >  		kfree(rxr->rx_tpa);
-> > @@ -2560,19 +2561,14 @@ static int bnxt_alloc_rx_rings(struct bnxt *bp)
-> >  			return rc;
-> >  
-> >  		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i);
-> > -		if (rc < 0) {
-> > -			page_pool_free(rxr->page_pool);
-> > -			rxr->page_pool = NULL;
-> > +		if (rc < 0)
-> >  			return rc;
-> > -		}
-> >  
-> >  		rc = xdp_rxq_info_reg_mem_model(&rxr->xdp_rxq,
-> >  						MEM_TYPE_PAGE_POOL,
-> >  						rxr->page_pool);
-> >  		if (rc) {
-> >  			xdp_rxq_info_unreg(&rxr->xdp_rxq);
-> > -			page_pool_free(rxr->page_pool);
-> > -			rxr->page_pool = NULL;
-> 
-> Rather than deleting these lines it would also be acceptable to do:
-> 
->                 if (rc) {
->                         xdp_rxq_info_unreg(&rxr->xdp_rxq);
-> -                       page_pool_free(rxr->page_pool);
-> +                       page_pool_destroy(rxr->page_pool);
->                         rxr->page_pool = NULL;
->                         return rc;
->                 }
-> 
-> but anytime there is a failure to bnxt_alloc_rx_rings the driver will
-> immediately follow it up with a call to bnxt_free_rx_rings, so
-> page_pool_destroy will be called.
-> 
-> Thanks for pushing this out so quickly!
-> 
+syzbot found the following crash on:
 
-I also can't find page_pool_release_page() or page_pool_put_page() called when
-destroying the pool. Can you try to insmod -> do some traffic -> rmmod ?
-If there's stale buffers that haven't been unmapped properly you'll get a
-WARN_ON for them.
-This part was added later on in the API when Jesper fixed in-flight packet
-handling
+HEAD commit:    4608a726 Add linux-next specific files for 20190709
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1387b608600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7a02e36d356a9a17
+dashboard link: https://syzkaller.appspot.com/bug?extid=ec1fd464d849d91c3665
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16b47be8600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15172e7ba00000
 
-> Acked-by: Andy Gospodarek <gospo@broadcom.com> 
-> 
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com
 
-Thanks
-/Ilias
+------------[ cut here ]------------
+refcount_t: increment on 0; use-after-free.
+WARNING: CPU: 0 PID: 14391 at lib/refcount.c:156 refcount_inc_checked  
+lib/refcount.c:156 [inline]
+WARNING: CPU: 0 PID: 14391 at lib/refcount.c:156  
+refcount_inc_checked+0x61/0x70 lib/refcount.c:154
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 14391 Comm: syz-executor638 Not tainted 5.2.0-next-20190709 #34
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  <IRQ>
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  panic+0x2dc/0x755 kernel/panic.c:219
+  __warn.cold+0x20/0x4c kernel/panic.c:576
+  report_bug+0x263/0x2b0 lib/bug.c:186
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:1008
+RIP: 0010:refcount_inc_checked lib/refcount.c:156 [inline]
+RIP: 0010:refcount_inc_checked+0x61/0x70 lib/refcount.c:154
+Code: 1d 83 26 64 06 31 ff 89 de e8 5b 44 35 fe 84 db 75 dd e8 12 43 35 fe  
+48 c7 c7 60 04 c6 87 c6 05 63 26 64 06 01 e8 77 ab 06 fe <0f> 0b eb c1 90  
+90 90 90 90 90 90 90 90 90 90 55 48 89 e5 41 57 41
+RSP: 0018:ffff8880ae809bf0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000100 RSI: ffffffff815bfa86 RDI: ffffed1015d01370
+RBP: ffff8880ae809c00 R08: ffff8880988924c0 R09: fffffbfff14a7757
+R10: fffffbfff14a7756 R11: ffffffff8a53bab7 R12: ffff888097414c80
+R13: ffff888097414c68 R14: ffff888096051348 R15: ffff888096051320
+  sock_hold include/net/sock.h:649 [inline]
+  sk_add_node include/net/sock.h:701 [inline]
+  nr_insert_socket+0x2d/0xe0 net/netrom/af_netrom.c:137
+  nr_rx_frame+0x1605/0x1e73 net/netrom/af_netrom.c:1023
+  nr_loopback_timer+0x7b/0x170 net/netrom/nr_loopback.c:59
+  call_timer_fn+0x1ac/0x780 kernel/time/timer.c:1322
+  expire_timers kernel/time/timer.c:1366 [inline]
+  __run_timers kernel/time/timer.c:1685 [inline]
+  __run_timers kernel/time/timer.c:1653 [inline]
+  run_timer_softirq+0x697/0x17a0 kernel/time/timer.c:1698
+  __do_softirq+0x262/0x98c kernel/softirq.c:292
+  invoke_softirq kernel/softirq.c:373 [inline]
+  irq_exit+0x19b/0x1e0 kernel/softirq.c:413
+  exiting_irq arch/x86/include/asm/apic.h:537 [inline]
+  smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1095
+  apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:828
+  </IRQ>
+RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:767  
+[inline]
+RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160  
+[inline]
+RIP: 0010:_raw_spin_unlock_irqrestore+0x95/0xe0  
+kernel/locking/spinlock.c:191
+Code: 48 c7 c0 d0 e3 d2 88 48 ba 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c  
+10 00 75 39 48 83 3d d2 3e 99 01 00 74 24 48 89 df 57 9d <0f> 1f 44 00 00  
+bf 01 00 00 00 e8 fc c8 14 fa 65 8b 05 6d 58 c8 78
+RSP: 0018:ffff88808720fd10 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
+RAX: 1ffffffff11a5c7a RBX: 0000000000000286 RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: 0000000000000006 RDI: 0000000000000286
+RBP: ffff88808720fd20 R08: ffff8880988924c0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff8aa79aa8
+R13: ffffffff8aa79aa0 R14: ffff88809683add0 R15: ffff88808720fdc0
+  debug_object_free lib/debugobjects.c:823 [inline]
+  debug_object_free+0x1f1/0x390 lib/debugobjects.c:796
+  destroy_hrtimer_on_stack kernel/time/hrtimer.c:432 [inline]
+  hrtimer_nanosleep+0x2d8/0x570 kernel/time/hrtimer.c:1748
+  __do_sys_nanosleep kernel/time/hrtimer.c:1767 [inline]
+  __se_sys_nanosleep kernel/time/hrtimer.c:1754 [inline]
+  __x64_sys_nanosleep+0x1a6/0x220 kernel/time/hrtimer.c:1754
+  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x447811
+Code: 75 14 b8 23 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 b4 1e fc ff c3 48  
+83 ec 08 e8 6a 44 00 00 48 89 04 24 b8 23 00 00 00 0f 05 <48> 8b 3c 24 48  
+89 c2 e8 b3 44 00 00 48 89 d0 48 83 c4 08 48 3d 01
+RSP: 002b:00007ffcca488140 EFLAGS: 00000293 ORIG_RAX: 0000000000000023
+RAX: ffffffffffffffda RBX: 0000000000000048 RCX: 0000000000447811
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00007ffcca488150
+RBP: 00000000006dfc6c R08: 00000000004b1a31 R09: 00000000004b1a31
+R10: 00007ffcca488180 R11: 0000000000000293 R12: 00000000006dfc60
+R13: 0000000000000002 R14: 000000000000002d R15: 20c49ba5e353f7cf
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
