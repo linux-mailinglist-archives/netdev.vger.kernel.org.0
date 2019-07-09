@@ -2,152 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9EFF63D68
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 23:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4977C63D6B
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 23:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729515AbfGIViG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 17:38:06 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34028 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbfGIViF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 17:38:05 -0400
-Received: by mail-pf1-f196.google.com with SMTP id b13so11807pfo.1
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 14:38:05 -0700 (PDT)
+        id S1729019AbfGIVkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 17:40:09 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:35709 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbfGIVkJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 17:40:09 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d23so231307qto.2;
+        Tue, 09 Jul 2019 14:40:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=C5FAI3uOM7Lx28/LeozDIkvJkk2FSYuAG2vHEiv5SWs=;
-        b=A4TMOOTFBdxCNOvd7o4YhULAq6wc4x8qnKYF81+EqEwYlnjXFQ0h79UPIIhL2BOsDs
-         4lGaRGmB5KqJtJlZjqerulkmlwFzKR0P5okWyEy1KoTPg3Ck6PrMfdP1BNNi5RJEolQK
-         HUGQxKpEWcipI5qdheMBKtDpnuNJ98omwzFCGZqnlg0sSZIHR3GYITLZFAKIRA06JhDQ
-         v7KC10x1xzbIig9Yxm/8zkmkMxLy2YDZFzEG0vbyYIPyIl3yLOCR+W2Eg+hqNN3MPYSd
-         JlRJ+mXW3uA4+qrpdzG0SYz4QdrgC/UVeOYMr/e6zUcmfexSgojgVo+wjLbjU2D5+aEt
-         CMWw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lJh45MwiMC9N1tuyLAbuw8kfrp+3H6r/0ozeqeFn+r0=;
+        b=eLrUIheCO4lohY9L+34S3vsuIbyu7P9eyRJYkKfdqg8AMDjPXeKGAEWNcsTJkN1BCk
+         OaigVyjPz2BAnF+cp+sT08/UqJO0sMfqeG/iI4gIuCvjG7ZB3zEQZxmkwohWVW1bCgIK
+         ya1P7MMGbiv2qRe9upjonDLY0Oim1u7A3mNrt1p2G8HJL5V6nLbTwT/pif9RdlrwAH4b
+         PubLOzDVBslnjDOTBBWjRxDo7OD3zkBN8CBoAeIKuGMEGV8oxbLzp1Mq1s8nPsAjSWt0
+         M5TqmYXQ52dFzSk1ZQc5dBxImR2Wlzu/2FgPZPxC0GNPTz1BAd5jsLhX3oAhXtVKPwAs
+         XplA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=C5FAI3uOM7Lx28/LeozDIkvJkk2FSYuAG2vHEiv5SWs=;
-        b=WZhspkjnFwNaTzL38syhweSFmcT3ZddoNfc00XAWRF26O5kh7I5ay2aQwNLNJq9A7C
-         am5Uud0UE7XZ5UKpK0xvIOcT0UTO52bJzwApgi0XoFulIbFdPnDQ/eUqW9z10q2I3qkK
-         1JL/Hke1ct1cPXjO+dH6J7XwLO7MaatIo1uyxvcjrNZeFnhqOeMbPtRrKZiH7A4anqZB
-         s2okwsminalMWcMxZr6/JQZl0Rmqaw0BrfojdwYyGX8PtRSkdcmMKqKGKe/UJtRBItPT
-         YvGH/OHRxc1ZJYq8eS1wFIePwN+6UzGmY11uHUckJjrQXBBXKBj8MKLiPNzAEHpVRhnf
-         KHcA==
-X-Gm-Message-State: APjAAAXwjgNG5qg95akMrk9S32kR/Unlrjtc+AM8w6ouIDY0GGTWg+bs
-        ljFw3AVhohcfZk1MbTkq6TKfOA==
-X-Google-Smtp-Source: APXvYqzkXrG6M031yt9wEPhjs/RVygNeXUXzqJxdvz270JxY3JH+U0Ru4qHAkwc9T8ITDEaVtTvPzg==
-X-Received: by 2002:a63:5045:: with SMTP id q5mr32231977pgl.380.1562708284885;
-        Tue, 09 Jul 2019 14:38:04 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id v22sm31308pgk.69.2019.07.09.14.38.04
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 14:38:04 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 14:37:58 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH iproute2] utils: don't match empty strings as prefixes
-Message-ID: <20190709143758.695a65bc@hermes.lan>
-In-Reply-To: <20190709204040.17746-1-mcroce@redhat.com>
-References: <20190709204040.17746-1-mcroce@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lJh45MwiMC9N1tuyLAbuw8kfrp+3H6r/0ozeqeFn+r0=;
+        b=BVMr4W8nfN6RbfBBmRjy4iWoECCaUdMQzCVE5a+Oc36heCUzENicTFSLCRM69qnhAA
+         AS6EfZom3bBhf1pHdNsDNzl22mYQ3aKV+vSlg55wbEtJdN4GlPfqXXNyWVAs4Y+ex1N6
+         r0vWf5KqDcSeH+tFHPkxnWDz0XFdxv5F6Eww2bN+GSjOewpQ07Gv9lHoGpMQ2EWDhIr8
+         CjfmqMmZDOKi9tosRTJ3CrMyjS+bBzwWC2AMpQCBjgRsFqZLh5JO2g2ZIUWrMn3q6hPy
+         BMz/XumbRa8vmlSW8Uuw9T1EbNkV7RvP7wuIKGYYKpfNfEcphl/pWpesSKMC8hKYMvPD
+         S8Tw==
+X-Gm-Message-State: APjAAAUV+jT7ecyrlD9iavJGSotrgQWSwe8pVUu3d7rGTInPI9EFDa6O
+        a058B8gzlp/GfhMdWZ0ELg/Fr484jv5yC3RNUz4=
+X-Google-Smtp-Source: APXvYqzK0ReF8Oh7k2Vxfx3PDUUQA9iiUosAAplZrJQfekSu7b0xqDERqw3IaxQVZKjPT4SGrsPW3z8DbInOPOpUhuE=
+X-Received: by 2002:a0c:c107:: with SMTP id f7mr21341958qvh.150.1562708408142;
+ Tue, 09 Jul 2019 14:40:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190705155012.3539722-1-andriin@fb.com> <86f8f511-655c-bf9e-8d78-f2e3f65efdb9@iogearbox.net>
+ <0366eaff-b617-b88a-ade4-b9ee8c671e18@solarflare.com>
+In-Reply-To: <0366eaff-b617-b88a-ade4-b9ee8c671e18@solarflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 9 Jul 2019 14:39:57 -0700
+Message-ID: <CAEf4BzY5g-2R4ZYT5veH4TydyB=iMTmqMk2fx3gSS2SOi=QaqA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 0/4] capture integers in BTF type info for map defs
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  9 Jul 2019 22:40:40 +0200
-Matteo Croce <mcroce@redhat.com> wrote:
+On Tue, Jul 9, 2019 at 1:27 PM Edward Cree <ecree@solarflare.com> wrote:
+>
+> On 05/07/2019 22:15, Daniel Borkmann wrote:
+> > On 07/05/2019 05:50 PM, Andrii Nakryiko wrote:
+> >> This patch set implements an update to how BTF-defined maps are specified. The
+> >> change is in how integer attributes, e.g., type, max_entries, map_flags, are
+> >> specified: now they are captured as part of map definition struct's BTF type
+> >> information (using array dimension), eliminating the need for compile-time
+> >> data initialization and keeping all the metadata in one place.
+> >>
+> >> All existing selftests that were using BTF-defined maps are updated, along
+> >> with some other selftests, that were switched to new syntax.
+> BTW is this changing the BTF format spec, and if so why isn't it accompanied by
+>  a patch to Documentation/bpf/btf.rst?  It looks like that doc still talks about
+>  BPF_ANNOTATE_KV_PAIR, which seems to be long gone.
 
-> iproute has an utility function which checks if a string is a prefix for
-> another one, to allow use of abbreviated commands, e.g. 'addr' or 'a'
-> instead of 'address'.
-> 
-> This routine unfortunately considers an empty string as prefix
-> of any pattern, leading to undefined behaviour when an empty
-> argument is passed to ip:
-> 
->     # ip ''
->     1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
->         link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
->         inet 127.0.0.1/8 scope host lo
->            valid_lft forever preferred_lft forever
->         inet6 ::1/128 scope host
->            valid_lft forever preferred_lft forever
-> 
->     # tc ''
->     qdisc noqueue 0: dev lo root refcnt 2
-> 
->     # ip address add 192.0.2.0/24 '' 198.51.100.1 dev dummy0
->     # ip addr show dev dummy0
->     6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
->         link/ether 02:9d:5e:e9:3f:c0 brd ff:ff:ff:ff:ff:ff
->         inet 192.0.2.0/24 brd 198.51.100.1 scope global dummy0
->            valid_lft forever preferred_lft forever
-> 
-> Rewrite matches() so it takes care of an empty input, and doesn't
-> scan the input strings three times: the actual implementation
-> does 2 strlen and a memcpy to accomplish the same task.
-> 
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> ---
->  include/utils.h |  2 +-
->  lib/utils.c     | 14 +++++++++-----
->  2 files changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/utils.h b/include/utils.h
-> index 927fdc17..f4d12abb 100644
-> --- a/include/utils.h
-> +++ b/include/utils.h
-> @@ -198,7 +198,7 @@ int nodev(const char *dev);
->  int check_ifname(const char *);
->  int get_ifname(char *, const char *);
->  const char *get_ifname_rta(int ifindex, const struct rtattr *rta);
-> -int matches(const char *arg, const char *pattern);
-> +int matches(const char *prefix, const char *string);
->  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits);
->  int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
->  
-> diff --git a/lib/utils.c b/lib/utils.c
-> index be0f11b0..73ce19bb 100644
-> --- a/lib/utils.c
-> +++ b/lib/utils.c
-> @@ -887,13 +887,17 @@ const char *get_ifname_rta(int ifindex, const struct rtattr *rta)
->  	return name;
->  }
->  
-> -int matches(const char *cmd, const char *pattern)
-> +/* Check if 'prefix' is a non empty prefix of 'string' */
-> +int matches(const char *prefix, const char *string)
->  {
-> -	int len = strlen(cmd);
-> +	if (!*prefix)
-> +		return 1;
-> +	while(*string && *prefix == *string) {
-> +		prefix++;
-> +		string++;
-> +	}
->  
-> -	if (len > strlen(pattern))
-> -		return -1;
-> -	return memcmp(pattern, cmd, len);
-> +	return *prefix;
->  }
->  
->  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
-
-ERROR: space required before the open parenthesis '('
-#134: FILE: lib/utils.c:895:
-+	while(*string && *prefix == *string) {
-
-total: 1 errors, 1 warnings, 30 lines checked
-
-The empty prefix string is a bug and should not be allowed.
-Also return value should be same as old code (yours isn't).
+It didn't remove BPF_ANNOTATE_KV_PAIR and you can still use it and
+libbpf will continue supporting it for the time being. But I'll update
+the doc with new syntax, thanks for reminding!
 
 
-
+>
+> -Ed
