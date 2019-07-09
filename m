@@ -2,103 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9696062F80
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 06:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F097C62FA3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 06:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbfGIEZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 00:25:02 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:55665 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726030AbfGIEZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 00:25:01 -0400
-Received: by mail-io1-f70.google.com with SMTP id f22so21601249ioh.22
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 21:25:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=ThTKrBZsQ1JlWFlPRVe4RXWJ3j4uyiYja7ipCGiZOCQ=;
-        b=IR7lsHb3oNFuMqHGmuQtNNatAPxhkSNrmBTRUGqA4+r2Kc0ylphT4iAYiQXdvvDF8m
-         kM+hr/Suw1o9f8RS0DZwGg9bEECvn85yxOzB7vn+3BBROQtUL75+ftG/Y6Pjx5OX5B50
-         wSe1IBKBsDNMZarg1pNOPu0oDrU9DTDYG9UqGer2DBbyDgp8dMiyqmYGqwLVXW6YsLah
-         waP7D59vu4pcoTkhkzTqvF9MtcL0NPfI2hOk5WFki5utTBpKA8m44Vu4P1W/X2P0mMcx
-         8bY8kaPQE2tjW3twYwXAhZU/UWYvTUSwFcj4SwrQuE9LS7JJ2uMjFNdNiSLqlYCqtbst
-         6apQ==
-X-Gm-Message-State: APjAAAVSUgQccLrX5D7y5daxohImhgkx1pHOic3SEXE2r5Ihh5WFU7HJ
-        OvW5gCTP/14gbJAbJyfMZ7GHfw5ewm3OeQ8vWFy81E6ZMdEL
-X-Google-Smtp-Source: APXvYqym5DaYVguOnx/vYC+8fr3X5IKtdXXfy6a1e9Ff48wtiCtsWW98PTt6iX6sFsLg9KiiCV1ve2K7VjNJJcGzMyGUA2cQGoZr
+        id S1725985AbfGIEak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 00:30:40 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:34638 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725818AbfGIEaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 00:30:39 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x694U61v026823;
+        Mon, 8 Jul 2019 21:30:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
+ date : message-id : references : in-reply-to : content-type : content-id :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=9SxiEg7OUT+fwjTunUhPh0zZNz/vBuGzbUoAnka1mI8=;
+ b=e0QTIdLJT0sgomkCMqd7hUMh5b4bgtw2UvcGOcJu/bUBsKewf9jF6rZUTlPzbp01T/2X
+ 8/VQEr912iilg3Y467tFnamjdOb7LRstIprcbtoq2ObE8ISAal2dfYiCCBQBH6uG4Vvs
+ 05bAaZKLyOPgsHpQ4LZacXc9xQL/Cax/LV0= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tmebu0wrc-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 08 Jul 2019 21:30:18 -0700
+Received: from prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) by
+ prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 8 Jul 2019 21:30:17 -0700
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 8 Jul 2019 21:30:17 -0700
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 8 Jul 2019 21:30:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9SxiEg7OUT+fwjTunUhPh0zZNz/vBuGzbUoAnka1mI8=;
+ b=nB1gPQ0/YXF/AebYMEHJ6xVW065/DxXM75iNLZ8NxqaFMn98VO7KuatNafVJVk3iMvUOpCfjwYKhlTZiBXWOrDNYDGGh1U4FJ022osxyjNXdti0X7EVneK3NFRGcoDssy53cokSmBA5MCpOp60OkGSJpxxw+lP4nsGrKkHh78hQ=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB2423.namprd15.prod.outlook.com (52.135.198.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.20; Tue, 9 Jul 2019 04:30:15 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::e499:ecba:ec04:abac]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::e499:ecba:ec04:abac%5]) with mapi id 15.20.2052.020; Tue, 9 Jul 2019
+ 04:30:15 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix ptr to u64 conversion warning on
+ 32-bit platforms
+Thread-Topic: [PATCH bpf-next] libbpf: fix ptr to u64 conversion warning on
+ 32-bit platforms
+Thread-Index: AQHVNgric3OeXG06AkuEFVGe9Esrg6bBseYA
+Date:   Tue, 9 Jul 2019 04:30:15 +0000
+Message-ID: <b4b00fad-3f99-c36a-a510-0b281a1f2bd7@fb.com>
+References: <20190709040007.1665882-1-andriin@fb.com>
+In-Reply-To: <20190709040007.1665882-1-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MW2PR16CA0069.namprd16.prod.outlook.com
+ (2603:10b6:907:1::46) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1:a38d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d906593c-fef1-4e4f-d339-08d7042623cc
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2423;
+x-ms-traffictypediagnostic: BYAPR15MB2423:
+x-microsoft-antispam-prvs: <BYAPR15MB24234D3B3B897CB9FBAF806DD3F10@BYAPR15MB2423.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2512;
+x-forefront-prvs: 0093C80C01
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(136003)(396003)(366004)(39860400002)(199004)(189003)(36756003)(478600001)(7736002)(73956011)(6116002)(5024004)(256004)(46003)(5660300002)(14454004)(66556008)(64756008)(71190400001)(6636002)(71200400001)(52116002)(305945005)(66476007)(8676002)(66446008)(66946007)(81156014)(229853002)(86362001)(31696002)(6512007)(6486002)(81166006)(2906002)(53546011)(6506007)(386003)(102836004)(53936002)(186003)(6246003)(2201001)(6436002)(8936002)(99286004)(110136005)(2501003)(31686004)(25786009)(11346002)(446003)(68736007)(76176011)(316002)(486006)(2616005)(476003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2423;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: d/UddKsmdDX3EiqdYX8r/GBntyOF+H5/fy1qlD2qQUVprD0lGyo/JprPP4AdKhPL/st0eAR4zVdQ845Sx31X236SUth1mfxuk4szf4yjEbA8cE9sMFJfe4reSM+/nLmaBrnKS68PgqIt5kQnkj9FIdmon1wJxrf/Wbqi/us8OmK2fwuavxR4deSpEXpANnfip7FycHEeoILPKV1kCjYEsdOVKtaq/+Iza3kFXnm23nwzdltU6VglJrMiGhG7xVNac/TR4cqUuIBuvzuBKpMeMvLV+wgnd69NuV1Xg7Tzi7WcxxF4eF3Z3gtjmbaB8Ztq+Ll46v2pQQnzP6JWx80YYrclyASJo3jQmlRqHS9AJxl/9BshU204bim44E8+zGgU7n+PIy53Ekq7tBXhXPM07NHpAwD4B0zdI6I9REfkzz0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C5C2CB38EAD3B74BA25DEB8491CC34AB@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a6b:641a:: with SMTP id t26mr916082iog.3.1562646300671;
- Mon, 08 Jul 2019 21:25:00 -0700 (PDT)
-Date:   Mon, 08 Jul 2019 21:25:00 -0700
-In-Reply-To: <CAEf4BzaUEWwGL3k0VeiFYFqyJexQU9cDZWN69jSDpBjP1ZEcpw@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a94981058d37f1a4@google.com>
-Subject: Re: WARNING in mark_chain_precision
-From:   syzbot <syzbot+f21251a7468cd46efc60@syzkaller.appspotmail.com>
-To:     aaron.f.brown@intel.com, andrii.nakryiko@gmail.com, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, intel-wired-lan@lists.osuosl.org,
-        jakub.kicinski@netronome.com, jeffrey.t.kirsher@intel.com,
-        john.fastabend@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        sasha.neftin@intel.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-MS-Exchange-CrossTenant-Network-Message-Id: d906593c-fef1-4e4f-d339-08d7042623cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 04:30:15.4297
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2423
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-09_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907090053
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot has tested the proposed patch but the reproducer still triggered  
-crash:
-WARNING in bpf_jit_free
-
-WARNING: CPU: 0 PID: 9077 at kernel/bpf/core.c:851 bpf_jit_free+0x157/0x1b0
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 9077 Comm: kworker/0:3 Not tainted 5.2.0-rc6+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events bpf_prog_free_deferred
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2cb/0x744 kernel/panic.c:219
-  __warn.cold+0x20/0x4d kernel/panic.c:576
-  report_bug+0x263/0x2b0 lib/bug.c:186
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
-RIP: 0010:bpf_jit_free+0x157/0x1b0
-Code: 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5d 48 b8 00 02 00 00  
-00 00 ad de 48 39 43 70 0f 84 05 ff ff ff e8 09 7f f4 ff <0f> 0b e9 f9 fe  
-ff ff e8 2d 02 2e 00 e9 d9 fe ff ff 48 89 7d e0 e8
-RSP: 0018:ffff888084affcb0 EFLAGS: 00010293
-RAX: ffff88808a622100 RBX: ffff88809639d580 RCX: ffffffff817b0b0d
-RDX: 0000000000000000 RSI: ffffffff817c4557 RDI: ffff88809639d5f0
-RBP: ffff888084affcd0 R08: 1ffffffff150daa8 R09: fffffbfff150daa9
-R10: fffffbfff150daa8 R11: ffffffff8a86d547 R12: ffffc90001921000
-R13: ffff88809639d5e8 R14: ffff8880a0589800 R15: ffff8880ae834d40
-  bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1982
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
-Tested on:
-
-commit:         b9321614 bpf: fix precision bit propagation for BPF_ST ins..
-git tree:       https://github.com/anakryiko/linux bpf-fix-precise-bpf_st
-console output: https://syzkaller.appspot.com/x/log.txt?x=112f0dfda00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6bb3e6e7997c14f9
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
+DQoNCk9uIDcvOC8xOSA5OjAwIFBNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IE9uIDMyLWJp
+dCBwbGF0Zm9ybXMgY29tcGlsZXIgY29tcGxhaW5zIGFib3V0IGNvbnZlcnNpb246DQo+IA0KPiBs
+aWJicGYuYzogSW4gZnVuY3Rpb24g4oCYcGVyZl9ldmVudF9vcGVuX3Byb2Jl4oCZOg0KPiBsaWJi
+cGYuYzo0MTEyOjE3OiBlcnJvcjogY2FzdCBmcm9tIHBvaW50ZXIgdG8gaW50ZWdlciBvZiBkaWZm
+ZXJlbnQNCj4gc2l6ZSBbLVdlcnJvcj1wb2ludGVyLXRvLWludC1jYXN0XQ0KPiAgICBhdHRyLmNv
+bmZpZzEgPSAodWludDY0X3QpKHZvaWQgKiluYW1lOyAvKiBrcHJvYmVfZnVuYyBvciB1cHJvYmVf
+cGF0aCAqLw0KPiAgICAgICAgICAgICAgICAgICBeDQo+IA0KPiBSZXBvcnRlZC1ieTogTWF0dCBI
+YXJ0IDxtYXR0aGV3LmhhcnRAbGluYXJvLm9yZz4NCj4gRml4ZXM6IGIyNjUwMDI3NDc2NyAoImxp
+YmJwZjogYWRkIGtwcm9iZS91cHJvYmUgYXR0YWNoIEFQSSIpDQo+IFRlc3RlZC1ieTogTWF0dCBI
+YXJ0IDxtYXR0aGV3LmhhcnRAbGluYXJvLm9yZz4NCj4gU2lnbmVkLW9mZi1ieTogQW5kcmlpIE5h
+a3J5aWtvIDxhbmRyaWluQGZiLmNvbT4NCg0KQWNrZWQtYnk6IFlvbmdob25nIFNvbmcgPHloc0Bm
+Yi5jb20+DQoNCj4gLS0tDQo+ICAgdG9vbHMvbGliL2JwZi9saWJicGYuYyB8IDQgKystLQ0KPiAg
+IDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvdG9vbHMvbGliL2JwZi9saWJicGYuYyBiL3Rvb2xzL2xpYi9icGYvbGliYnBm
+LmMNCj4gaW5kZXggZWQwNzc4OWIzZTYyLi43OTRkZDUwNjRhZTggMTAwNjQ0DQo+IC0tLSBhL3Rv
+b2xzL2xpYi9icGYvbGliYnBmLmMNCj4gKysrIGIvdG9vbHMvbGliL2JwZi9saWJicGYuYw0KPiBA
+QCAtNDEyNiw4ICs0MTI2LDggQEAgc3RhdGljIGludCBwZXJmX2V2ZW50X29wZW5fcHJvYmUoYm9v
+bCB1cHJvYmUsIGJvb2wgcmV0cHJvYmUsIGNvbnN0IGNoYXIgKm5hbWUsDQo+ICAgCX0NCj4gICAJ
+YXR0ci5zaXplID0gc2l6ZW9mKGF0dHIpOw0KPiAgIAlhdHRyLnR5cGUgPSB0eXBlOw0KPiAtCWF0
+dHIuY29uZmlnMSA9ICh1aW50NjRfdCkodm9pZCAqKW5hbWU7IC8qIGtwcm9iZV9mdW5jIG9yIHVw
+cm9iZV9wYXRoICovDQo+IC0JYXR0ci5jb25maWcyID0gb2Zmc2V0OwkJICAgICAgIC8qIGtwcm9i
+ZV9hZGRyIG9yIHByb2JlX29mZnNldCAqLw0KPiArCWF0dHIuY29uZmlnMSA9IHB0cl90b191NjQo
+bmFtZSk7IC8qIGtwcm9iZV9mdW5jIG9yIHVwcm9iZV9wYXRoICovDQo+ICsJYXR0ci5jb25maWcy
+ID0gb2Zmc2V0OwkJIC8qIGtwcm9iZV9hZGRyIG9yIHByb2JlX29mZnNldCAqLw0KPiAgIA0KPiAg
+IAkvKiBwaWQgZmlsdGVyIGlzIG1lYW5pbmdmdWwgb25seSBmb3IgdXByb2JlcyAqLw0KPiAgIAlw
+ZmQgPSBzeXNjYWxsKF9fTlJfcGVyZl9ldmVudF9vcGVuLCAmYXR0ciwNCj4gDQo=
