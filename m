@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC41B6300F
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 07:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8487463055
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 08:13:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726309AbfGIFkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 01:40:18 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38620 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725818AbfGIFkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 01:40:17 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y15so8717566pfn.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 22:40:17 -0700 (PDT)
+        id S1726140AbfGIGNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 02:13:22 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37225 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfGIGNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 02:13:22 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 19so8762880pfa.4
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 23:13:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=IQmdRFrEhhSLWwTIYZ9Pn7y/fJjbbazKtcw+0/kPqq8=;
-        b=xWQlK469LrFiOaGb/tLN6seCfU69pqfnFdCuAQdUle39QhBzesz5qln/kL8xSSpi2+
-         BI6m4QPQ+Y+K0AqFvzwzg6Mpg7qXXQYQ3U6BZ6js0nKhndvQRVub5trBd2lXxaTRZ3dX
-         J4cxPUisy0Bvt2qjKDh0/14hIQkMQu/s3ueA9pwj6ipBW+/cAyn0KYLKaSprLyEShmLP
-         RFf1xKxAekwkzWvPiQyNjUV5nY66h2GxbOU0Z8pZZDtLCf6gIlBPeaF7kih4VCA0tpXv
-         vhTvKEYgVGfJxW2EJRXkr/UKGUVn4ZGXhb1CatmfywSVlXjU80c1W51aPRuz6RyWgrXA
-         ebeQ==
+        bh=Xv+DnWZMWtZr7mzCvLLaBhGR3wtkw21etVzQmoVxT4I=;
+        b=YqLytmd8BU+rpZTayU3iMic5Dosb399kpxoJDpXF+RiVDzQDQiQHkr4x/7jW60fB3E
+         Mar9XqCxlvyRKs0DW/cMdY8CjLPzoTXqMhxyhLnV9P5C2RHgyHfuwrHymNlGlFsL2WSr
+         5PkgT2puWRieAtEccqmqVxOpv178bAM7D07GV0ds0JB9v50u+xMJyYtERvoqgivcax8x
+         5VvplNtmwDoXeYAaRJTtaaPFuDfTPjPDhI8//EVjUcraMFb3TIo8Qh0uW9cUIFkqp6B7
+         rUIpLilZcsnZDRlIOqnWZ6S/Okhoo2MMUzQpThERQqWIvLRhuahm4xbzZaUHMH3BvKoJ
+         +GYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=IQmdRFrEhhSLWwTIYZ9Pn7y/fJjbbazKtcw+0/kPqq8=;
-        b=t0fGTe0b9h+gmALt23rbVK9+xHap7EgnDul/LaFg3hSuspcJpQj9uTkYLEPbwzbmTm
-         XS15RJCnRB3Um6u/dkaGgVN9Hm2bMCUyNN4kBDWyeMxYounlhGm+BB+0mExLBJgm+qUT
-         eG3HaHWxzW3ablEmoPglWAwWBzke93nGBswWpKK13WqR4ptTT9t1qtGKJ9ZUuez0sy12
-         qhtEVxmhPCmGqI4pTkOKRPcqJ5WnS84OY6RlXWuNQ5T924b6e3qh06oAkJKrS8c0CIK9
-         tBI2STLkRDsbTRFjW7LFgbIcwL5I053u62mYnAGLDswKDtrdYQ8buYAiFXmwnJZSkxIu
-         LX0g==
-X-Gm-Message-State: APjAAAX6HuVSwtyK/ZHAC3nagWTITHQcpxxxmMy20Iujr2LuQ2Imm6Mt
-        +TnPkT2FmCzUk6vvE42J9JdVUw==
-X-Google-Smtp-Source: APXvYqxg3GjtlvLwKbI9WgwQO4WbYrQVL3xpSv9rbvBO2Vm4aDE9n+x+biqbJAL/g6fXr4ECm+e/Bw==
-X-Received: by 2002:a17:90a:f488:: with SMTP id bx8mr30254996pjb.91.1562650816992;
-        Mon, 08 Jul 2019 22:40:16 -0700 (PDT)
+        bh=Xv+DnWZMWtZr7mzCvLLaBhGR3wtkw21etVzQmoVxT4I=;
+        b=VnAvcw/3mAzy6so6V5Iaben0gKJMSLriCBNjSpQ5smt6eSyRFhtbS7aY2g+Can3jKT
+         v/9O7LgpzBcBLhzEu/2Xi2g0sxd1nicAKg6GXbF+lJrKnwX96pZOjJRdTqHoEtjCsiV6
+         v2eE8lS753GHU40wLK4vVpkFhO8LYQ82UhOuvRV22ewxBtNvCUg5tOJq/kGy5hkGT3SD
+         2yuTA5c6YO/U763Hou4BVwoFScu/DjhLrzg7MhuQG0/CgcYhDvBzjRWyyQ6K4rhoGiON
+         +54clElkGD4/uXAQ6j2WTckJx/9ZIyPF1NajD5w8zcXAb9Z/67pfOPF998/YQ2M0UPhL
+         R6WQ==
+X-Gm-Message-State: APjAAAUssn5hrDobhqnyRzO65LmRVsfkNA0q07fdOS9QyYOBp6MnW/P+
+        R5MJCGCLPS5Ri8Uwu3ds2v0Js1y0u18=
+X-Google-Smtp-Source: APXvYqzZraf2IrGue//z+udLX3HSg7Otx7AweddVLWjgXHV//+lEXMW0hcqOyt9G5AuNq5rqVbAq8Q==
+X-Received: by 2002:a63:e70f:: with SMTP id b15mr24097863pgi.152.1562652801707;
+        Mon, 08 Jul 2019 23:13:21 -0700 (PDT)
 Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id o14sm1144368pjp.19.2019.07.08.22.40.16
+        by smtp.gmail.com with ESMTPSA id 125sm23841023pfg.23.2019.07.08.23.13.21
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 08 Jul 2019 22:40:16 -0700 (PDT)
-Date:   Mon, 8 Jul 2019 22:40:12 -0700
+        Mon, 08 Jul 2019 23:13:21 -0700 (PDT)
+Date:   Mon, 8 Jul 2019 23:13:18 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, saeedm@mellanox.com
-Subject: Re: [PATCH net-next v6 0/5] devlink: Introduce PCI PF, VF ports and
- attributes
-Message-ID: <20190708224012.0280846c@cakuba.netronome.com>
-In-Reply-To: <20190709041739.44292-1-parav@mellanox.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190709041739.44292-1-parav@mellanox.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        edumazet@google.com, bpf@vger.kernel.org
+Subject: Re: [bpf PATCH v2 0/6] bpf: sockmap/tls fixes
+Message-ID: <20190708231318.1a721ce8@cakuba.netronome.com>
+In-Reply-To: <156261310104.31108.4569969631798277807.stgit@ubuntu3-kvm1>
+References: <156261310104.31108.4569969631798277807.stgit@ubuntu3-kvm1>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,38 +62,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  8 Jul 2019 23:17:34 -0500, Parav Pandit wrote:
-> This patchset carry forwards the work initiated in [1] and discussion
-> futher concluded at [2].
+On Mon, 08 Jul 2019 19:13:29 +0000, John Fastabend wrote:
+> Resolve a series of splats discovered by syzbot and an unhash
+> TLS issue noted by Eric Dumazet.
 > 
-> To improve visibility of representor netdevice, its association with
-> PF or VF, physical port, two new devlink port flavours are added as
-> PCI PF and PCI VF ports.
+> The main issues revolved around interaction between TLS and
+> sockmap tear down. TLS and sockmap could both reset sk->prot
+> ops creating a condition where a close or unhash op could be
+> called forever. A rare race condition resulting from a missing
+> rcu sync operation was causing a use after free. Then on the
+> TLS side dropping the sock lock and re-acquiring it during the
+> close op could hang. Finally, sockmap must be deployed before
+> tls for current stack assumptions to be met. This is enforced
+> now. A feature series can enable it.
 > 
-> A sample eswitch view can be seen below, which will be futher extended to
-> mdev subdevices of a PCI function in future.
-> 
-> Patch-1 moves physical port's attribute to new structure
-> Patch-2 enhances netlink response to consider port flavour
-> Patch-3,4 extends devlink port attributes and port flavour
-> Patch-5 extends mlx5 driver to register devlink ports for PF, VF and
-> physical link.
+> To fix this first refactor TLS code so the lock is held for the
+> entire teardown operation. Then add an unhash callback to ensure
+> TLS can not transition from ESTABLISHED to LISTEN state. This
+> transition is a similar bug to the one found and fixed previously
+> in sockmap. Then apply three fixes to sockmap to fix up races
+> on tear down around map free and close. Finally, if sockmap
+> is destroyed before TLS we add a new ULP op update to inform
+> the TLS stack it should not call sockmap ops. This last one
+> appears to be the most commonly found issue from syzbot.
 
-The coding leaves something to be desired:
+Looks like strparser is not done'd for offload?
 
-1) flavour handling in devlink_nl_port_attrs_put() really calls for a
-   switch statement,
-2) devlink_port_attrs_.*set() can take a pointer to flavour specific
-   structure instead of attr structure for setting the parameters,
-3) the "ret" variable there is unnecessary,
-4) there is inconsistency in whether there is an empty line between
-   if (ret) return; after __devlink_port_attrs_set() and attr setting,
-5) /* Associated PCI VF for of the PCI PF for this port. */ doesn't
-   read great;
-6) mlx5 functions should preferably have an appropriate prefix - f.e.
-   register_devlink_port() or is_devlink_port_supported().
+About patch 6 - I was recently wondering about the "impossible" syzbot
+report where context is not freed and my conclusion was that there
+can be someone sitting at lock_sock() in tcp_close() already by the
+time we start installing the ULP, so TLS's close will never get called.
+The entire replacing of callbacks business is really shaky :(
 
-But I'll leave it to Jiri and Dave to decide if its worth a respin :)
-Functionally I think this is okay.
-
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Perhaps I'm rumbling, I will take a close look after I get some sleep :)
