@@ -2,212 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A00E962E4D
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 04:51:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED3262E55
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 04:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726569AbfGICvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jul 2019 22:51:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36738 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725886AbfGICvE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jul 2019 22:51:04 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 31FF888311;
-        Tue,  9 Jul 2019 02:50:56 +0000 (UTC)
-Received: from [10.72.12.197] (ovpn-12-197.pek2.redhat.com [10.72.12.197])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 18CD4381A9;
-        Tue,  9 Jul 2019 02:50:39 +0000 (UTC)
-Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
-To:     Tiwei Bie <tiwei.bie@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Cc:     mst@redhat.com, maxime.coquelin@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dan.daly@intel.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, idos@mellanox.com,
-        Rob Miller <rob.miller@broadcom.com>,
-        Ariel Adam <aadam@redhat.com>
-References: <20190703091339.1847-1-tiwei.bie@intel.com>
- <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
- <20190703115245.GA22374@___>
- <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com> <20190703130817.GA1978@___>
- <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
- <20190704062134.GA21116@___> <20190705084946.67b8f9f5@x1.home>
- <20190708061625.GA15936@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <deae5ede-57e9-41e6-ea42-d84e07ca480a@redhat.com>
-Date:   Tue, 9 Jul 2019 10:50:38 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727238AbfGICxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jul 2019 22:53:46 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39202 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727215AbfGICxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jul 2019 22:53:45 -0400
+Received: by mail-qk1-f196.google.com with SMTP id w190so2442243qkc.6
+        for <netdev@vger.kernel.org>; Mon, 08 Jul 2019 19:53:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3leJazLQ6xxFSqu+uCajqEHxUXQp0UcYOozbbeB1fI4=;
+        b=yxKCBeuj2n9eqs03sxEDqGnAU82a8lWMmvYBj13daqmlzxppCFqeZK+WAl+SKSBraJ
+         f7OIJ1Y5i1Z7V2EkGVo6+2lC+9hLcwsMNdm8gcn4cWMh4TgD8xE4Xt/VYQYj2bxjraOG
+         mqLy/nL67Z0W0xNUAP5vl0TQQPihog9YHzsksZbywo2gCHBcnU2O6K+a3QY6z4z8pUMw
+         8q5Uoqc4cbZgLj+dYJI1F+gMyhUied4AtrFrRNjvmyCVJErV3GK7SbM3MAwFQEmx+xGH
+         bJyIcW/dFspksfcbLgt228Xx4YUKS+paxA0t2SLfaEVqmSUl0eYmy2/A//tsXguOkLCV
+         sH3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3leJazLQ6xxFSqu+uCajqEHxUXQp0UcYOozbbeB1fI4=;
+        b=OmX3+H+TnA6fTSHq6jwEDSUvpVt8Me4hJzfeZiXJydrjpQftUaUktVTr8H3WaG2jc4
+         1evMP+yRRJBh7XveMvAq1LX17+lrAJR9T7K4OaGsaAvBHsGofwjRiJ8mhX9bRkzHvg/s
+         j+A4D21WXWDfdPWiQyfn5RWzIoao8NWj+P0JFhNyuTr1oJuVdOvx2GLMB0PPhXrOLmN2
+         nUa3LgxtkNSjieEritgqO7ef3Dbw7pDWmCiOMAkHB+5E7xAluvKZAwViesJ1WjLq0mbj
+         NOXLsrJ8e9EcHjSc4N48criOD0eLGB6zSoOUKw/HhZS6rJtW5HcVjBm7AhlrhVD7qfeX
+         mx6Q==
+X-Gm-Message-State: APjAAAXeXKbjvB/w69Sw4DgaeQVDuEyLy/Q9guWScg20i64lwdx6mc0t
+        4ZyDuzALTXw+CEkqnuR3ChCpbA==
+X-Google-Smtp-Source: APXvYqwdMgbU5NRwIEkLJYzaZTKrJaaf6moZy2k2cGiUTD6R6/KR0jer4go2ndGGjOwzF11b0pOUYg==
+X-Received: by 2002:a37:624b:: with SMTP id w72mr17703959qkb.368.1562640824578;
+        Mon, 08 Jul 2019 19:53:44 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id g13sm8148837qkm.17.2019.07.08.19.53.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Jul 2019 19:53:43 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        alexei.starovoitov@gmail.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 00/11] nfp: tls: fixes for initial TLS support
+Date:   Mon,  8 Jul 2019 19:53:07 -0700
+Message-Id: <20190709025318.5534-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190708061625.GA15936@___>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 09 Jul 2019 02:51:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi!
 
-On 2019/7/8 下午2:16, Tiwei Bie wrote:
-> On Fri, Jul 05, 2019 at 08:49:46AM -0600, Alex Williamson wrote:
->> On Thu, 4 Jul 2019 14:21:34 +0800
->> Tiwei Bie <tiwei.bie@intel.com> wrote:
->>> On Thu, Jul 04, 2019 at 12:31:48PM +0800, Jason Wang wrote:
->>>> On 2019/7/3 下午9:08, Tiwei Bie wrote:
->>>>> On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:
->>>>>> On 2019/7/3 下午7:52, Tiwei Bie wrote:
->>>>>>> On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
->>>>>>>> On 2019/7/3 下午5:13, Tiwei Bie wrote:
->>>>>>>>> Details about this can be found here:
->>>>>>>>>
->>>>>>>>> https://lwn.net/Articles/750770/
->>>>>>>>>
->>>>>>>>> What's new in this version
->>>>>>>>> ==========================
->>>>>>>>>
->>>>>>>>> A new VFIO device type is introduced - vfio-vhost. This addressed
->>>>>>>>> some comments from here:https://patchwork.ozlabs.org/cover/984763/
->>>>>>>>>
->>>>>>>>> Below is the updated device interface:
->>>>>>>>>
->>>>>>>>> Currently, there are two regions of this device: 1) CONFIG_REGION
->>>>>>>>> (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
->>>>>>>>> device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
->>>>>>>>> can be used to notify the device.
->>>>>>>>>
->>>>>>>>> 1. CONFIG_REGION
->>>>>>>>>
->>>>>>>>> The region described by CONFIG_REGION is the main control interface.
->>>>>>>>> Messages will be written to or read from this region.
->>>>>>>>>
->>>>>>>>> The message type is determined by the `request` field in message
->>>>>>>>> header. The message size is encoded in the message header too.
->>>>>>>>> The message format looks like this:
->>>>>>>>>
->>>>>>>>> struct vhost_vfio_op {
->>>>>>>>> 	__u64 request;
->>>>>>>>> 	__u32 flags;
->>>>>>>>> 	/* Flag values: */
->>>>>>>>>      #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
->>>>>>>>> 	__u32 size;
->>>>>>>>> 	union {
->>>>>>>>> 		__u64 u64;
->>>>>>>>> 		struct vhost_vring_state state;
->>>>>>>>> 		struct vhost_vring_addr addr;
->>>>>>>>> 	} payload;
->>>>>>>>> };
->>>>>>>>>
->>>>>>>>> The existing vhost-kernel ioctl cmds are reused as the message
->>>>>>>>> requests in above structure.
->>>>>>>> Still a comments like V1. What's the advantage of inventing a new protocol?
->>>>>>> I'm trying to make it work in VFIO's way..
->>>>>>>    
->>>>>>>> I believe either of the following should be better:
->>>>>>>>
->>>>>>>> - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
->>>>>>>> extend it with e.g notify region. The advantages is that all exist userspace
->>>>>>>> program could be reused without modification (or minimal modification). And
->>>>>>>> vhost API hides lots of details that is not necessary to be understood by
->>>>>>>> application (e.g in the case of container).
->>>>>>> Do you mean reusing vhost's ioctl on VFIO device fd directly,
->>>>>>> or introducing another mdev driver (i.e. vhost_mdev instead of
->>>>>>> using the existing vfio_mdev) for mdev device?
->>>>>> Can we simply add them into ioctl of mdev_parent_ops?
->>>>> Right, either way, these ioctls have to be and just need to be
->>>>> added in the ioctl of the mdev_parent_ops. But another thing we
->>>>> also need to consider is that which file descriptor the userspace
->>>>> will do the ioctl() on. So I'm wondering do you mean let the
->>>>> userspace do the ioctl() on the VFIO device fd of the mdev
->>>>> device?
->>>>>    
->>>> Yes.
->>> Got it! I'm not sure what's Alex opinion on this. If we all
->>> agree with this, I can do it in this way.
->>>
->>>> Is there any other way btw?
->>> Just a quick thought.. Maybe totally a bad idea. I was thinking
->>> whether it would be odd to do non-VFIO's ioctls on VFIO's device
->>> fd. So I was wondering whether it's possible to allow binding
->>> another mdev driver (e.g. vhost_mdev) to the supported mdev
->>> devices. The new mdev driver, vhost_mdev, can provide similar
->>> ways to let userspace open the mdev device and do the vhost ioctls
->>> on it. To distinguish with the vfio_mdev compatible mdev devices,
->>> the device API of the new vhost_mdev compatible mdev devices
->>> might be e.g. "vhost-net" for net?
->>>
->>> So in VFIO case, the device will be for passthru directly. And
->>> in VHOST case, the device can be used to accelerate the existing
->>> virtualized devices.
->>>
->>> How do you think?
->> VFIO really can't prevent vendor specific ioctls on the device file
->> descriptor for mdevs, but a) we'd want to be sure the ioctl address
->> space can't collide with ioctls we'd use for vfio defined purposes and
->> b) maybe the VFIO user API isn't what you want in the first place if
->> you intend to mostly/entirely ignore the defined ioctl set and replace
->> them with your own.  In the case of the latter, you're also not getting
->> the advantages of the existing VFIO userspace code, so why expose a
->> VFIO device at all.
-> Yeah, I totally agree.
+This series brings various fixes to nfp tls offload recently added
+to net-next.
 
+First 4 patches revolve around device mailbox communication, trying
+to make it more reliable. Next patch fixes statistical counter.
+Patch 6 improves the TX resync if device communication failed.
+Patch 7 makes sure we remove keys from memory after talking to FW.
+Patch 8 adds missing tls context initialization, we fill in the
+context information from various places based on the configuration
+and looks like we missed the init in the case of where TX is
+offloaded, but RX wasn't initialized yet. Patches 9 and 10 make
+the nfp driver undo TLS state changes if we need to drop the
+frame (e.g. due to DMA mapping error).
 
-I guess the original idea is to reuse the VFIO DMA/IOMMU API for this. 
-Then we have the chance to reuse vfio codes in qemu for dealing with e.g 
-vIOMMU.
+Last but not least TLS fallback should not adjust socket memory
+after skb_orphan_partial(). This code will go away once we forbid
+orphaning of skbs in need of crypto, but that's "real" -next
+material, so lets do a quick fix.
 
+Dirk van der Merwe (2):
+  nfp: ccm: increase message limits
+  net/tls: don't clear TX resync flag on error
 
->
->> The mdev interface does provide a general interface for creating and
->> managing virtual devices, vfio-mdev is just one driver on the mdev
->> bus.  Parav (Mellanox) has been doing work on mdev-core to help clean
->> out vfio-isms from the interface, aiui, with the intent of implementing
->> another mdev bus driver for using the devices within the kernel.
-> Great to know this! I found below series after some searching:
->
-> https://lkml.org/lkml/2019/3/8/821
->
-> In above series, the new mlx5_core mdev driver will do the probe
-> by calling mlx5_get_core_dev() first on the parent device of the
-> mdev device. In vhost_mdev, maybe we can also keep track of all
-> the compatible mdev devices and use this info to do the probe.
+Jakub Kicinski (9):
+  nfp: tls: ignore queue limits for delete commands
+  nfp: tls: move setting ipver_vlan to a helper
+  nfp: tls: use unique connection ids instead of 4-tuple for TX
+  nfp: tls: count TSO segments separately for the TLS offload
+  nfp: tls: don't leave key material in freed FW cmsg skbs
+  net/tls: add missing prot info init
+  nfp: tls: avoid one of the ifdefs for TLS
+  nfp: tls: undo TLS sequence tracking when dropping the frame
+  net/tls: fix socket wmem accounting on fallback with netem
 
+ .../mellanox/mlx5/core/en_accel/tls.c         |  8 +-
+ drivers/net/ethernet/netronome/nfp/ccm.h      |  4 +
+ drivers/net/ethernet/netronome/nfp/ccm_mbox.c | 31 ++++---
+ .../net/ethernet/netronome/nfp/crypto/fw.h    |  2 +
+ .../net/ethernet/netronome/nfp/crypto/tls.c   | 93 +++++++++++++------
+ drivers/net/ethernet/netronome/nfp/nfp_net.h  |  3 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   | 32 ++++++-
+ include/net/tls.h                             |  6 +-
+ net/tls/tls_device.c                          | 10 +-
+ net/tls/tls_device_fallback.c                 |  4 +
+ 10 files changed, 143 insertions(+), 50 deletions(-)
 
-I don't get why this is needed. My understanding is if we want to go 
-this way, there're actually two parts. 1) Vhost mdev that implements the 
-device managements and vhost ioctl. 2) Vhost it self, which can accept 
-mdev fd as it backend through VHOST_NET_SET_BACKEND.
+-- 
+2.21.0
 
-
-> But we also need a way to allow vfio_mdev driver to distinguish
-> and reject the incompatible mdev devices.
-
-
-One issue for this series is that it doesn't consider DMA isolation at all.
-
-
->
->> It
->> seems like this vhost-mdev driver might be similar, using mdev but not
->> necessarily vfio-mdev to expose devices.  Thanks,
-> Yeah, I also think so!
-
-
-I've cced some driver developers for their inputs. I think we need a 
-sample parent drivers in the next version for us to understand the full 
-picture.
-
-
-Thanks
-
-
->
-> Thanks!
-> Tiwei
->
->> Alex
