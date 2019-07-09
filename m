@@ -2,154 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A42F7638B0
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 17:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF73638B3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 17:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726560AbfGIPcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 11:32:19 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55057 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbfGIPcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 11:32:19 -0400
-Received: by mail-wm1-f67.google.com with SMTP id p74so3547150wme.4
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 08:32:18 -0700 (PDT)
+        id S1726284AbfGIPeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 11:34:25 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45239 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726060AbfGIPeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 11:34:24 -0400
+Received: by mail-lf1-f66.google.com with SMTP id u10so13716557lfm.12;
+        Tue, 09 Jul 2019 08:34:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Qcq8rUVZZJFGmSSEKqWesXctYfgnV1qKb9FXHbMcaOk=;
-        b=Zlk4DMdodU5g3j2MOsJ7Rj5q4xTI/QMrcdiJuGb4jIlNt8t5OpICihtRxc90ORDWyJ
-         IcR3a8fEl/OnKwnELLJHCuUcq1ujO4rSzJRZtfO6nM7m75loDMKKrqxdmUVj83yB/DzR
-         cYDOeSw23+eF3UpeiOwwrJUe/COb9NcXuE1OSo+rqxQmEmIFjrXMYz99tKcZdVO9XG4T
-         7zdVGVmPd9Ecm9ix1s32xUFIh1TWxvEdHrnaw26swhLXLrBMeVdT0ti1cnPbOnu+jL6i
-         oRApfCF+d61FsIvLJNA2BccRBsdnvNa946d3LGJ0lQ58exTWK9/3GEgwihTsf7daMo2r
-         GFbA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XldrumkAgmzEzxgr2Bcv/W7MnrtFEO21Trg6QIY5k84=;
+        b=BVh3b0bBJ8vh+cbfAE1PPxlD2zb/+DWuI9G4Wtyh3ITaGL2D9FqMGozHfb1aaI02WV
+         ZTlXfMRbRIaF9f3x4uz3kUZHECth7ftSAK7Jrerx5Psp6tVSStd+0UCW41LnbUREBKxt
+         vAhywaDHaaHaItpu7fXme4HVUKJtcQz2fS0CmcRab8SfYlBpHCejckEK0GeSFZgasyQQ
+         CYyZoLpkS4Fn93kNK4uw7bxmnbbkpLAl99vL2A3vkrh5cQbCjK6iI0RicvAie7ayQJKY
+         EywTtOe5759BFFnumbj2P+z7DQYnU2QfTF/wqyJjbEDl1b0gsje/3phHX/QKj6QugLwA
+         FZ+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Qcq8rUVZZJFGmSSEKqWesXctYfgnV1qKb9FXHbMcaOk=;
-        b=QUPGEjrjd84iT54qntGU1pYFBFFVgy5ZeuPbScuF+yEFKkjGw2qiiozoaGgmzcRm0c
-         +ZQfAe26Cqm9TbrGsWXYJ+AGYFpSLrGVJiUdgIzH8xCIty1oMNyEE8W4vLdK9uIGVVih
-         3z4HbBtMxqSnVz/LmWkBWttVbA3GftPxJOJN+DavfdIv+f6/105LgKQOMxVf3Jss31K/
-         3UwEie7cbNznC9X5R/P1bieiviwop8JDvjAYwcEf3s112obtVMQpoVDLoXqKGD7CIxcX
-         d32+u9Mm2yZDJWajB10b6eoxVkuQfGXxzJ36wh9dE8kQ3D/dp0KNPLCCzb6XLrcfAiY+
-         S9AQ==
-X-Gm-Message-State: APjAAAX4LdBqFC1XTPVYlMIlEg68a4VCrEDR2IRpHXJRKhpaaxdN4DFd
-        rh/aSD7aDmpyMjPZPiEuyjg=
-X-Google-Smtp-Source: APXvYqyMo1N1NqkecjnE5xNLZ+JVKoDOQNshS/QblGaDTac23oxdwBtSNjElwuOONOKBvpYaD4cMRA==
-X-Received: by 2002:a7b:cd8e:: with SMTP id y14mr469995wmj.155.1562686337365;
-        Tue, 09 Jul 2019 08:32:17 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id p14sm2533781wrx.17.2019.07.09.08.32.16
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 08:32:17 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 17:32:16 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Tariq Toukan <tariqt@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@mellanox.com>, ayal@mellanox.com,
-        jiri@mellanox.com, Saeed Mahameed <saeedm@mellanox.com>,
-        moshe@mellanox.com
-Subject: Re: [PATCH net-next 14/16] net/mlx5e: Recover from rx timeout
-Message-ID: <20190709153216.GG2301@nanopsycho.orion>
-References: <1562500388-16847-1-git-send-email-tariqt@mellanox.com>
- <1562500388-16847-15-git-send-email-tariqt@mellanox.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XldrumkAgmzEzxgr2Bcv/W7MnrtFEO21Trg6QIY5k84=;
+        b=cgmvdi0OO7tCcVOHicu0WvZADhDtZ5ld8O8MvoJcxzPTs1u1gm5riYY0S3LjsGk4i4
+         4g0Bo2ILNkN58wZIIydrH1JSBjQ49y7qMUACqmSWk9Qy7kMxN9Cm9GPhuZOVi+3OXUaO
+         Iwu1VP7dz8SoBgGw+J4UjP10mBhAeJ2xBvOZFogsL25SFIg3JU9zTg2fQ0ayFTXYEupz
+         kNgacxO6WrAV28iUg/5xZndlceB3GD436Nw5b3MnkAoFS8Ce7+KrWEM2U8S9Drnh7IZv
+         vnao1ijSOV6UPpI47fxfJa6R4I7E1HY4Df3OGFmJFhLWyHChPQeZQd6OGT/mvFg6DPrZ
+         nu0g==
+X-Gm-Message-State: APjAAAXfaPoXg4S3IuUC/Ieo7nNoHTBZnj6iIugwLHSJJhhBvIJLlQkX
+        /B7wYflJM8l4BJLxPqrnWkGuyc1jHrCxvYr+UrM=
+X-Google-Smtp-Source: APXvYqzRxvwVIQVCdYryBBCbyZSV+GA8BjIWzect/o4kWLCLUJtoHLajB5JkQJAcIVflMA6QTClU8Xt3pMYR+CHnCbo=
+X-Received: by 2002:a19:6b0e:: with SMTP id d14mr11779539lfa.174.1562686462634;
+ Tue, 09 Jul 2019 08:34:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562500388-16847-15-git-send-email-tariqt@mellanox.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <20190703170118.196552-1-brianvv@google.com> <20190703170118.196552-3-brianvv@google.com>
+ <CAH3MdRU505Er44m460c7y5nxtZxmDmVY4jDrWOYt2=OdP2d5Ow@mail.gmail.com>
+In-Reply-To: <CAH3MdRU505Er44m460c7y5nxtZxmDmVY4jDrWOYt2=OdP2d5Ow@mail.gmail.com>
+From:   Brian Vazquez <brianvv.kernel@gmail.com>
+Date:   Tue, 9 Jul 2019 08:34:11 -0700
+Message-ID: <CABCgpaU=H+qOUAx+yRHJjBMqmeAtp5iQL_yv9cXB6HTqB0jXcA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next RFC v3 2/6] bpf: add BPF_MAP_DUMP command to dump
+ more than one entry per call
+To:     Y Song <ys114321@gmail.com>
+Cc:     Brian Vazquez <brianvv@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jul 07, 2019 at 01:53:06PM CEST, tariqt@mellanox.com wrote:
->From: Aya Levin <ayal@mellanox.com>
->
->Add support for recovery from rx timeout. On driver open we post NOP
->work request on the rx channels to trigger napi in order to fillup the
->rx rings. In case napi wasn't scheduled due to a lost interrupt, perform
->EQ recovery.
->
->Signed-off-by: Aya Levin <ayal@mellanox.com>
->Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
->---
-> .../net/ethernet/mellanox/mlx5/core/en/health.h    |  1 +
-> .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   | 30 ++++++++++++++++++++++
-> drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  1 +
-> 3 files changed, 32 insertions(+)
->
->diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.h b/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
->index e8c5d3bd86f1..aa46f7ecae53 100644
->--- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
->+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
->@@ -19,6 +19,7 @@
-> int mlx5e_reporter_rx_create(struct mlx5e_priv *priv);
-> void mlx5e_reporter_rx_destroy(struct mlx5e_priv *priv);
-> void mlx5e_reporter_icosq_cqe_err(struct mlx5e_icosq *icosq);
->+void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq);
-> 
-> #define MLX5E_REPORTER_PER_Q_MAX_LEN 256
-> 
->diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
->index c47e9a53bd53..7e7dba129330 100644
->--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
->+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
->@@ -109,6 +109,36 @@ void mlx5e_reporter_icosq_cqe_err(struct mlx5e_icosq *icosq)
-> 	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
-> }
-> 
->+static int mlx5e_rx_reporter_timeout_recover(void *ctx)
->+{
->+	struct mlx5e_rq *rq = (struct mlx5e_rq *)ctx;
+> Maybe you can swap map_fd and flags?
+> This way, you won't have hole right after map_fd?
 
-No need to cast. Please fix this in the rest of the patchset too.
+Makes sense.
 
+> > +       attr->flags = 0;
+> Why do you want attr->flags? This is to modify anonumous struct used by
+> BPF_MAP_*_ELEM commands.
 
->+	struct mlx5e_icosq *icosq = &rq->channel->icosq;
->+	struct mlx5_eq_comp *eq = rq->cq.mcq.eq;
->+	int err;
->+
->+	err = mlx5e_health_channel_eq_recover(eq, rq->channel);
->+	if (err)
->+		clear_bit(MLX5E_SQ_STATE_ENABLED, &icosq->state);
->+
->+	return err;
->+}
->+
->+void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq)
->+{
->+	struct mlx5e_icosq *icosq = &rq->channel->icosq;
->+	struct mlx5e_priv *priv = rq->channel->priv;
->+	char err_str[MLX5E_REPORTER_PER_Q_MAX_LEN];
->+	struct mlx5e_err_ctx err_ctx = {};
->+
->+	err_ctx.ctx = rq;
->+	err_ctx.recover = mlx5e_rx_reporter_timeout_recover;
->+	sprintf(err_str,
->+		"RX timeout on channel: %d, ICOSQ: 0x%x RQ: 0x%x, CQ: 0x%x\n",
->+		icosq->channel->ix, icosq->sqn, rq->rqn, rq->cq.mcq.cqn);
->+
->+	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
->+}
->+
-> static int mlx5e_rx_reporter_recover_from_ctx(struct mlx5e_err_ctx *err_ctx)
-> {
-> 	return err_ctx->recover(err_ctx->ctx);
->diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
->index 2d57611ac579..1ebdeccf395d 100644
->--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
->+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
->@@ -809,6 +809,7 @@ int mlx5e_wait_for_min_rx_wqes(struct mlx5e_rq *rq, int wait_time)
-> 	netdev_warn(c->netdev, "Failed to get min RX wqes on Channel[%d] RQN[0x%x] wq cur_sz(%d) min_rx_wqes(%d)\n",
-> 		    c->ix, rq->rqn, mlx5e_rqwq_get_cur_sz(rq), min_wqes);
-> 
->+	mlx5e_reporter_rx_timeout(rq);
-> 	return -ETIMEDOUT;
-> }
-> 
->-- 
->1.8.3.1
+Nice catch! This was a mistake I forgot to delete that line.
+
+> In bcc, we have use cases like this. At a certain time interval (e.g.,
+> every 2 seconds),
+> we get all key/value pairs for a map, we format and print out map
+> key/values on the screen,
+> and then delete all key/value pairs we retrieved earlier.
 >
+> Currently, bpf_get_next_key() is used to get all key/value pairs, and
+> deletion also happened
+> at each key level.
+>
+> Your batch dump command should help retrieving map key/value pairs.
+> What do you think deletions of those just retrieved map entries?
+> With an additional flag and fold into BPF_MAP_DUMP?
+> or implement a new BPF_MAP_DUMP_AND_DELETE?
+>
+> I mentioned this so that we can start discussion now.
+> You do not need to implement batch deletion part, but let us
+> have a design extensible for that.
+>
+> Thanks.
+
+With a additional flag, code could be racy where you copy an old value
+and delete the newest one.
+So maybe we could implement BPF_MAP_DUMP_AND_DELETE as a wrapper of
+map_get_next_key + map_lookup_and_delete_elem. Last function already
+exists but it has not been implemented for maps other than stack and
+queue.
+
+Thanks for reviewing it!
