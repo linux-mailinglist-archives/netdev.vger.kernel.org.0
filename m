@@ -2,60 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEAD063CAA
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D0763CAE
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 22:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729695AbfGIUUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 16:20:21 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:44982 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727241AbfGIUUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 16:20:20 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0769E140F881F;
-        Tue,  9 Jul 2019 13:20:19 -0700 (PDT)
-Date:   Tue, 09 Jul 2019 13:20:19 -0700 (PDT)
-Message-Id: <20190709.132019.1388902487563801440.davem@davemloft.net>
-To:     arnd@arndb.de
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        paweldembicki@gmail.com, linus.walleij@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [net-next] net: dsa: vsc73xx: fix NET_DSA and OF
- dependencies
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190709185626.3275510-1-arnd@arndb.de>
-References: <20190709185626.3275510-1-arnd@arndb.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jul 2019 13:20:20 -0700 (PDT)
+        id S1729616AbfGIUWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 16:22:01 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:39717 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfGIUWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 16:22:01 -0400
+Received: by mail-io1-f70.google.com with SMTP id y13so179768iol.6
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 13:22:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=gNp6IGzQMQGefwcCXwihte4j+oJMtUnlDKJXuaM+cUk=;
+        b=DOSNm22XkZaOJTELJFbBndwx++L0dsiVM5RfSyfYg0j/3RASfe9fBOl/sZLYTTcO+Z
+         CBBEwy3WBIOh07EiY5t2EZsuic2uhIobzfJxYB4goILOJ6gVahHMKru9014Sj9Z3h7JF
+         RsiOUJ+PRKKz6rlc4VBCf7c7e6JPYhZfQkMl+9zwusdHQQiRxkJILikzYxltZ9bs5OFx
+         fO837Z0Bzwv32/ig3yGhEjBZ5cAJ+QIsZrMoihrf9JSP43jDW8jWaupBf3pU7TMbHZUL
+         L6HYHu4ymOrPamxRAKxHn02W8r21QWBIxYVtzPfe+okhuLPReDEQQCsf8PHqrnJ4WZ0C
+         9lCQ==
+X-Gm-Message-State: APjAAAWeR8gJKhSmvTyB/JcmhPWTi1lO+3tJyPzdho3KqwjlF2KHPHPc
+        xb8uiHIiV6PPAVqnIWlBU8d5szyOWL9xezByAh1ud5UqWI7M
+X-Google-Smtp-Source: APXvYqwFgwJAcUPiL5NbtuCyvSACDdRE25Si64mrNjVzIA9vXUAmOPuBWXTLl+KgXo65r6gDEueAVIzpruHAb52RcugMcVs1Xph6
+MIME-Version: 1.0
+X-Received: by 2002:a6b:6409:: with SMTP id t9mr9378524iog.270.1562703720611;
+ Tue, 09 Jul 2019 13:22:00 -0700 (PDT)
+Date:   Tue, 09 Jul 2019 13:22:00 -0700
+In-Reply-To: <0000000000000595ea058d411c35@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000280332058d45509c@google.com>
+Subject: Re: WARNING: refcount bug in nr_insert_socket
+From:   syzbot <syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Tue,  9 Jul 2019 20:55:55 +0200
+syzbot has bisected this bug to:
 
-> The restructuring of the driver got the dependencies wrong: without
-> CONFIG_NET_DSA we get this build failure:
-> 
-> WARNING: unmet direct dependencies detected for NET_DSA_VITESSE_VSC73XX
->   Depends on [n]: NETDEVICES [=y] && HAVE_NET_DSA [=y] && OF [=y] && NET_DSA [=n]
->   Selected by [m]:
->   - NET_DSA_VITESSE_VSC73XX_PLATFORM [=m] && NETDEVICES [=y] && HAVE_NET_DSA [=y] && HAS_IOMEM [=y]
-> 
-> ERROR: "dsa_unregister_switch" [drivers/net/dsa/vitesse-vsc73xx-core.ko] undefined!
-> ERROR: "dsa_switch_alloc" [drivers/net/dsa/vitesse-vsc73xx-core.ko] undefined!
-> ERROR: "dsa_register_switch" [drivers/net/dsa/vitesse-vsc73xx-core.ko] undefined!
-> 
-> Add the appropriate dependencies.
-> 
-> Fixes: 95711cd5f0b4 ("net: dsa: vsc73xx: Split vsc73xx driver")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+commit c8c8218ec5af5d2598381883acbefbf604e56b5e
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Jun 27 21:30:58 2019 +0000
 
-Applied, thanks Arnd.
+     netrom: fix a memory leak in nr_rx_frame()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1677f227a00000
+start commit:   4608a726 Add linux-next specific files for 20190709
+git tree:       linux-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1577f227a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1177f227a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7a02e36d356a9a17
+dashboard link: https://syzkaller.appspot.com/bug?extid=ec1fd464d849d91c3665
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16b47be8600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15172e7ba00000
+
+Reported-by: syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com
+Fixes: c8c8218ec5af ("netrom: fix a memory leak in nr_rx_frame()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
