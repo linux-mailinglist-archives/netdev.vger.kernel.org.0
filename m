@@ -2,86 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2212C63892
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 17:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03BC76389D
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 17:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbfGIPYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 11:24:01 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:58101 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbfGIPYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 11:24:01 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-1-2078-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 7F9761BF20E;
-        Tue,  9 Jul 2019 15:23:57 +0000 (UTC)
-Date:   Tue, 9 Jul 2019 17:23:56 +0200
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        richardcochran@gmail.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, ralf@linux-mips.org,
-        paul.burton@mips.com, jhogan@kernel.org, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com
-Subject: Re: [PATCH net-next v2 8/8] net: mscc: PTP Hardware Clock (PHC)
- support
-Message-ID: <20190709152356.GG2932@kwain>
-References: <20190705195213.22041-1-antoine.tenart@bootlin.com>
- <20190705195213.22041-9-antoine.tenart@bootlin.com>
- <20190705151038.0581a052@cakuba.netronome.com>
- <20190708084809.GB2932@kwain>
- <20190708120626.2cecc86b@cakuba.netronome.com>
+        id S1726282AbfGIP2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 11:28:47 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:43005 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726229AbfGIP2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 11:28:47 -0400
+Received: by mail-oi1-f194.google.com with SMTP id s184so15651223oie.9
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 08:28:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k11beIh+mUjVLzYG9THhXh88Pf5mHCqf97+Kp/bxHkE=;
+        b=N/7ZwPCiEJlL+yoo63zqYiU+RpumHUh9bArBI57HqhGYRMJZaXdttI1tJDSSFRoSul
+         y+5CLsGubhJl3f5nR/0dMgiasfPGRz79Py4BRUsGSUUsACwJB3xGbAe3pGDiIyLHee6k
+         FugCCA4edRGkmWnNpWJp1naq0m5tZXPhA4CNpf1Qeh9X1u+lBKNzfzyJlSOP6t63UpZV
+         K1gs2K36FMfK4uNqfzxLruRYRIMY5o2bbrbDoL1ZSbTz5pMGVXKPjeLt8IXUBkeNBebU
+         En6Rqtcx6Qak/LHlMpqS4TrBJ1Kkv2qJ5SYn/QZ2qn1Az+tx+fxvw6aMrOLaMxGy+nrG
+         5rMw==
+X-Gm-Message-State: APjAAAUAZzYoKAFhvheFAezVxFSCpbrHYJ2X6VUo5q1Kgnthfx5FQEkV
+        ujgTkSfYvHPTgpX/+R5ZjjScaKAniODiq1u5+O4SNw==
+X-Google-Smtp-Source: APXvYqwXmYEUATic8aoRa6uuGEzFcLGIMajJ90MRTAqjf1CxVNXS/27MerL9PRMpWx7rulTwbBXomnDo0kW9L3DEY2U=
+X-Received: by 2002:aca:75c2:: with SMTP id q185mr362076oic.103.1562686126177;
+ Tue, 09 Jul 2019 08:28:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190708120626.2cecc86b@cakuba.netronome.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+References: <20190709111124.31127-1-omosnace@redhat.com> <20190709143832.hej23rahmb4basy6@gondor.apana.org.au>
+In-Reply-To: <20190709143832.hej23rahmb4basy6@gondor.apana.org.au>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Tue, 9 Jul 2019 17:28:35 +0200
+Message-ID: <CAFqZXNs2XysEWVzmfXSczH-+oX5iwwRC3+9fL3tWYEfDRbqLig@mail.gmail.com>
+Subject: Re: [PATCH] crypto: user - make NETLINK_CRYPTO work inside netns
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Stephan Mueller <smueller@chronox.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Don Zickus <dzickus@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
+On Tue, Jul 9, 2019 at 4:38 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> On Tue, Jul 09, 2019 at 01:11:24PM +0200, Ondrej Mosnacek wrote:
+> > Currently, NETLINK_CRYPTO works only in the init network namespace. It
+> > doesn't make much sense to cut it out of the other network namespaces,
+> > so do the minor plumbing work necessary to make it work in any network
+> > namespace. Code inspired by net/core/sock_diag.c.
+> >
+> > Tested using kcapi-dgst from libkcapi [1]:
+> > Before:
+> >     # unshare -n kcapi-dgst -c sha256 </dev/null | wc -c
+> >     libkcapi - Error: Netlink error: sendmsg failed
+> >     libkcapi - Error: Netlink error: sendmsg failed
+> >     libkcapi - Error: NETLINK_CRYPTO: cannot obtain cipher information for hmac(sha512) (is required crypto_user.c patch missing? see documentation)
+> >     0
+> >
+> > After:
+> >     # unshare -n kcapi-dgst -c sha256 </dev/null | wc -c
+> >     32
+> >
+> > [1] https://github.com/smuellerDD/libkcapi
+> >
+> > Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+>
+> Should we really let root inside a namespace manipulate crypto
+> algorithms which are global?
 
-On Mon, Jul 08, 2019 at 12:06:26PM -0700, Jakub Kicinski wrote:
-> On Mon, 8 Jul 2019 10:48:09 +0200, Antoine Tenart wrote:
-> > > > +	/* Commit back the result & save it */
-> > > > +	memcpy(&ocelot->hwtstamp_config, &cfg, sizeof(cfg));
-> > > > +	mutex_unlock(&ocelot->ptp_lock);
-> > > > +
-> > > > +	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-> > > > +}
-> > > >  
-> > > > +static int ocelot_get_ts_info(struct net_device *dev,
-> > > > +			      struct ethtool_ts_info *info)
-> > > > +{
-> > > > +	struct ocelot_port *ocelot_port = netdev_priv(dev);
-> > > > +	struct ocelot *ocelot = ocelot_port->ocelot;
-> > > > +	int ret;
-> > > > +
-> > > > +	if (!ocelot->ptp)
-> > > > +		return -EOPNOTSUPP;  
-> > > 
-> > > Hmm.. why does software timestamping depend on PTP?  
-> > 
-> > Because it depends on the "PTP" register bank (and the "PTP" interrupt)
-> > being described and available. This is why I named the flag 'ptp', but
-> > it could be named 'timestamp' or 'ts' as well.
-> 
-> Right, but software timestamps are done by calling skb_tx_timestamp(skb)
-> in the driver, no need for HW support there (software RX timestamp is
-> handled by the stack).
+I admit I'm not an expert on Linux namespaces, but aren't you
+confusing network and user namespaces? Unless I'm mistaken, these
+changes only affect _network_ namespaces (which only isolate the
+network stuff itself) and the semantics of the netlink_capable(skb,
+CAP_NET_ADMIN) calls remain unchanged - they check if the opener of
+the socket has the CAP_NET_ADMIN capability within the global _user_
+namespace.
 
-I see, I should instead filter the flags based on this so that the s/w
-ones still get set.
-
-Thanks!
-Antoine
+>
+> I think we should only allow the query operations without deeper
+> surgery.
+>
+> Cheers,
+> --
+> Email: Herbert Xu <herbert@gondor.apana.org.au>
+> Home Page: http://gondor.apana.org.au/~herbert/
+> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
 -- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Ondrej Mosnacek <omosnace at redhat dot com>
+Software Engineer, Security Technologies
+Red Hat, Inc.
