@@ -2,78 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC8C63B77
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 20:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA10163B7C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 20:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729376AbfGISza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 14:55:30 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:43270 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbfGISza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 14:55:30 -0400
-Received: by mail-qk1-f193.google.com with SMTP id m14so16813029qka.10;
-        Tue, 09 Jul 2019 11:55:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f9RwapZGzyFkNT+dfGo5wVJbdzZuRB3mHC5GSj9LmJ8=;
-        b=BmHqjFAfGGPLYECr2mLWMITHeNaZHCOuICzgPdidHDiuAYl1DuB9BIHuF8L9YXZZBN
-         32fRp3SSz8YfQ9ebbRhi1MUTYnu1W5q4U5padrZzDoWDxjK6w4+GHDvFUEwCbWXuKhqQ
-         V7H7zH65QGE6QRGOlLq4y3gwm6gwv1/GmzVS2ZP7A0B+6NObpJq/lCNkAoMvopXqhkZ4
-         +hUhPTWV+2R/amH37Qw08ey3hykfYDMrk12/z8xg6aea9RvC6oPbm/ESUCy8qmGl44pc
-         DPUY9/SJ4EOJ+RqTBxKQnK7lqFCMmjI8al7q6nuhAW9Tq7Wo/bHQ1F97J72/Ae8WDwOt
-         gDqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f9RwapZGzyFkNT+dfGo5wVJbdzZuRB3mHC5GSj9LmJ8=;
-        b=lqg16nVC/bz+2PTeyO8sWBlLajeDTXNwHulKb9uaxWyriUQHbLGSR6TTMR4xKSFM6N
-         XkYtVmjluqmr4wrAHHMvQt6S31Is9HLKRxe0UbNeO83bc1+EzvqK3weYN7XvCw8FMqgo
-         hNxf50/jAfuNPHS3Tg4QuprTAyA0U9+k6bleFgTB2X24OwxMOx9xoGFHtfC+WLWN5IfS
-         Zo9hy72V3YDX1JJ835wQ4nUMC134i2fBgi1C+4SHMQ5Ip5U0o5iEzT2tsZC2GqrRPQ7w
-         2ZZ0bOC5bfgZRoDK88fy2zHZfXy/mN42FH5aJNTZKY5Fxqlgox/TJ13cikagl5Dy3goO
-         szwQ==
-X-Gm-Message-State: APjAAAV+sMML6jXhbFyoaJr+a2WSwdRI7bgEMrl1uCQycjXDEdh6VT1Z
-        asH9G1kzYcd+xRhPr77hWgiM5T4wWJ0QR0lsCPI=
-X-Google-Smtp-Source: APXvYqy2K48JPuWKCtWjDTYwAWXMIBHAHIA2ef38g1U6AO2efdVySfxR3FLKDJCS+JpAxv2GrF7QjA5Xj7T/w8AyjhQ=
-X-Received: by 2002:a37:660d:: with SMTP id a13mr20589208qkc.36.1562698528762;
- Tue, 09 Jul 2019 11:55:28 -0700 (PDT)
+        id S1728673AbfGIS4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 14:56:41 -0400
+Received: from mout.kundenserver.de ([212.227.126.135]:49835 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726491AbfGIS4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 14:56:40 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MyNoa-1ih2kD1m0a-00yj1f; Tue, 09 Jul 2019 20:56:29 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] [net-next] net: dsa: vsc73xx: fix NET_DSA and OF dependencies
+Date:   Tue,  9 Jul 2019 20:55:55 +0200
+Message-Id: <20190709185626.3275510-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-References: <CAEf4BzaUEWwGL3k0VeiFYFqyJexQU9cDZWN69jSDpBjP1ZEcpw@mail.gmail.com>
- <000000000000a94981058d37f1a4@google.com>
-In-Reply-To: <000000000000a94981058d37f1a4@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 9 Jul 2019 11:55:17 -0700
-Message-ID: <CAEf4BzYTGuXgN+vNJEoMbH_GFAVnSsBvq_YhvoFOeGG5Y+N_ug@mail.gmail.com>
-Subject: Re: WARNING in mark_chain_precision
-To:     syzbot <syzbot+f21251a7468cd46efc60@syzkaller.appspotmail.com>
-Cc:     aaron.f.brown@intel.com, Alexei Starovoitov <ast@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        jeffrey.t.kirsher@intel.com,
-        john fastabend <john.fastabend@gmail.com>,
-        Martin Lau <kafai@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, sasha.neftin@intel.com,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:B23ZNL92t9F/IUnyQGFh8/+hX2SO/gVgPJMR323zJSPmPOxQdzA
+ 6Xuj/fq/GzYC5z5ff2E7aTX/JaXm2JVV2AADZBFm38pUrBOQ3VWAi8pRj9kUOd/OcArxXYc
+ U4K2IqcyxYF1ENBiFTwWvyUwTAPFaOwpeg5JmmQREucjGE8ARGnQ7xM8d94H1w3RMKg1enE
+ /Bqrm1Wrp++RAMpq4RRdQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:cPjMJwBK140=:MJaLkyHabLEIhuoC4AdLJx
+ S3wPkPOnP1UYfmGk7SXx37JiJCTq5LYimH6GIsXICDndTqnhjjbnUEINmsT/X6k5LVYq1uCGK
+ FQQ2jhrem59XqYKc8UZh3KxAJbbBtb4lpW39rTUob1NXWPsJZnspWCpYK6fnhFtGFHohc31XA
+ iLbQpQ587nU7iUGV9nbZhFRzf4J5S+tx9sM9oRsaEJN2BLl3YtZkKDCkj7pkLdFPj8Qzl7dAE
+ pnoi5XURl2+gqzuNjlBMlDDt2FKYcbkhKSHemXtsAn7z0ich5f85Loyynnq2+nlhWZwkzVS4W
+ PalilIND2pWh5ywXrSh/xlSCOot5bSCwIwwdnjDFTVr3c8w4Uzm4zIzOwxuTu+S9fng1DZG9D
+ 4gePICIKJLtREdfLH4XGqTZN7sVUGjhdEG3sOkHwPIE6yPJcA3kC3iPNmUx9fFpW51iMfsjYJ
+ AquRV0ajCteO9PQHhGRD9w9ROz8GM/5kKWaKKew8Ryqa0OTBHH3NuxL+4zhpndeX//zPHibYb
+ YKsTVdSFMIm5BrydYyIvmnisSRVnC+O8D9pARssnAE//gopknmwSaUraq3jrWyU0onW0dfOyo
+ PUkHRK7OLHCkeBK8uoSvkgfoVdShTCEELr3qwI5Il3s5b+6OdtAtLSj5xw23mcAsyN/rBnixr
+ L5w8J5rFpZqYWRzusHXH51r1shK8iJzZHa/1/IyoUGdQXq/BpCugCmxFwzZvzcGxW6jcrPKcR
+ u5iIRQRJPlSWxgIL3re2WSVGEja32HOv5sUNcw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Original reproducer is almost identical to the one that is fixed by
-https://patchwork.ozlabs.org/patch/1129479/.
+The restructuring of the driver got the dependencies wrong: without
+CONFIG_NET_DSA we get this build failure:
 
-bpf_prog_free_deferred bug that's undeterministically exposed after
-this fix seems to be the cause of a bunch of other bug reports and is
-not related to verifier precision tracking.
+WARNING: unmet direct dependencies detected for NET_DSA_VITESSE_VSC73XX
+  Depends on [n]: NETDEVICES [=y] && HAVE_NET_DSA [=y] && OF [=y] && NET_DSA [=n]
+  Selected by [m]:
+  - NET_DSA_VITESSE_VSC73XX_PLATFORM [=m] && NETDEVICES [=y] && HAVE_NET_DSA [=y] && HAS_IOMEM [=y]
 
-#syz dup: WARNING in __mark_chain_precision
+ERROR: "dsa_unregister_switch" [drivers/net/dsa/vitesse-vsc73xx-core.ko] undefined!
+ERROR: "dsa_switch_alloc" [drivers/net/dsa/vitesse-vsc73xx-core.ko] undefined!
+ERROR: "dsa_register_switch" [drivers/net/dsa/vitesse-vsc73xx-core.ko] undefined!
+
+Add the appropriate dependencies.
+
+Fixes: 95711cd5f0b4 ("net: dsa: vsc73xx: Split vsc73xx driver")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/dsa/Kconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index cf9dbd15dd2d..f6232ce8481f 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -111,6 +111,8 @@ config NET_DSA_VITESSE_VSC73XX
+ 
+ config NET_DSA_VITESSE_VSC73XX_SPI
+ 	tristate "Vitesse VSC7385/7388/7395/7398 SPI mode support"
++	depends on OF
++	depends on NET_DSA
+ 	depends on SPI
+ 	select NET_DSA_VITESSE_VSC73XX
+ 	---help---
+@@ -119,6 +121,8 @@ config NET_DSA_VITESSE_VSC73XX_SPI
+ 
+ config NET_DSA_VITESSE_VSC73XX_PLATFORM
+ 	tristate "Vitesse VSC7385/7388/7395/7398 Platform mode support"
++	depends on OF
++	depends on NET_DSA
+ 	depends on HAS_IOMEM
+ 	select NET_DSA_VITESSE_VSC73XX
+ 	---help---
+-- 
+2.20.0
+
