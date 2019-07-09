@@ -2,272 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2134363DFC
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 00:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE73563E0D
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 00:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfGIWs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 18:48:57 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:40991 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbfGIWs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 18:48:57 -0400
-Received: by mail-io1-f68.google.com with SMTP id j5so504091ioj.8;
-        Tue, 09 Jul 2019 15:48:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eyGsWrRed7Jq2fWkYfn59iLgEVDakSTfvuCH22V1pT0=;
-        b=Yf6YEbG07pNKdUv25S9LVWe+AqZqc/E6EArIsHPEjwLkJV31wXpONBztVKeaUqGKas
-         82pR6AymX5IGmFUIihoZvrths2yn0Gado5sEJT8hrLgYJDoYvpsaioFGCYGYnh51xjfJ
-         BTwbKURKcJJs26lDUfdXfK+i/C8bbiPaZHWW+zKAsXhbha7nla6Cvx45ipdf5pqqogVJ
-         VXm+q26YGrnrfgD5ASwHVPCsln88zQC7omIZh+pt916UJ32gNqfoGBriL1X3xXhwj6qV
-         5SpY9YIs2YZdtSq+Px8aTWGji6+CNYaJwHLej9oxIWxw7AzFOmL1KtP4s+lRNa5Q2ipf
-         tVxA==
-X-Gm-Message-State: APjAAAXp+BHwsdn4C6MQ7A2FT8Xev/8XVOxYidcW76lozEswucSCCvdO
-        aW9hpfvEqhLQZT1L0jjOr2Fbin7NZg==
-X-Google-Smtp-Source: APXvYqwzP6rx57Vi77awxmcfPlql9muZaKdh7hCav0/eA+7kxPRhZTDjpr4e1FcFWE5jTSJM89JiQA==
-X-Received: by 2002:a02:bb08:: with SMTP id y8mr30746646jan.51.1562712536023;
-        Tue, 09 Jul 2019 15:48:56 -0700 (PDT)
-Received: from localhost ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id j5sm81947iom.69.2019.07.09.15.48.54
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 15:48:55 -0700 (PDT)
-Date:   Tue, 9 Jul 2019 16:48:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>, devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH v4 net-next 05/11] dt-bindings: net: ti: add new cpsw
- switch driver bindings
-Message-ID: <20190709224853.GA2365@bogus>
-References: <20190621181314.20778-1-grygorii.strashko@ti.com>
- <20190621181314.20778-6-grygorii.strashko@ti.com>
+        id S1726831AbfGIW4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 18:56:34 -0400
+Received: from mail-eopbgr770125.outbound.protection.outlook.com ([40.107.77.125]:28663
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726767AbfGIW4e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 18:56:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eSrifKDoZ1xAhFtBskq4YvJutN7/nTmx78hBG7yjk92NoYBDUvM8k+NaNIfuRx6lWKdsrFA79nBCIBKPlzFIWvCdp8dcpiUyKiIPKcPxoIRiS1o46C7JKEMsMls+y2G8ry0y/0G71mqM0MsgDthhvEx7AptPlITRBQIhmHT4Ofo+7oaW+0Vlf52MtH7Z7MQllBJJMD1tG9zQ3gTkCO7Bzf1RV4CpGiI5rxemgug3gLNzEUEPTim1JXxqQXbxXJriv/IHbr2yrsmCBEg3QxVrKZEzbOhGi4X3K/CkZBKsVPVRU9h5VZe8c4PPqheH8bccJcdgDNzZQaLTLVljw5KlxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+y3sFARBVRqa64iU0ZZbgCKfdUGC5upaR9mqlqn1QM4=;
+ b=Q21bQd/uWiO4qc5+fHfC6u0d3EqEHPoJP2avlIwTsHJtpOfY6sfiK9UvfPQewHSubhNw+uNw35sQAdcYai4SyMZp5Rw6+hMiYuR4Bsj/NmkyrNsRjvu7mYq9EGukB+s9uRsY2JuxXlg1BLxcdE1Yg2eyYwk5ZNAHKPxMRr7yFAWshEHmAyFTHGiBiIU4UV8zCQWDTHHHqDw1HrD/KCiCnjx1TU1BX7rmG9Q07G0W9rVQvFYNM2I2w8EYqkTKIdfmVdeOeDAq/R026L5ILW8sq1ugOqj7vjwcNsAyLHkk278WhyNWr0HzCVvRNw6605c2CtjD7ILzqPFEBrvr0aXyUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=microsoft.com;dmarc=pass action=none
+ header.from=microsoft.com;dkim=pass header.d=microsoft.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+y3sFARBVRqa64iU0ZZbgCKfdUGC5upaR9mqlqn1QM4=;
+ b=QbhGEKLLLD1UGIL5Q5HBk4QyPTipfCydD2F1c/bbBEOpCOVVFCnaiLV0wj8poo8Sdk+tno8KfUTA/DKP/Izopgr2xviR0ibq3iwIZS/OxglN/pIWwsMcA3yja669tIDN8rh5B1YrQ1FksTS7wqTB/4QafXqolJuHUfMWv8zS5og=
+Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
+ DM6PR21MB1179.namprd21.prod.outlook.com (20.179.48.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.3; Tue, 9 Jul 2019 22:56:30 +0000
+Received: from DM6PR21MB1242.namprd21.prod.outlook.com
+ ([fe80::6055:de8a:48c1:4271]) by DM6PR21MB1242.namprd21.prod.outlook.com
+ ([fe80::6055:de8a:48c1:4271%5]) with mapi id 15.20.2094.001; Tue, 9 Jul 2019
+ 22:56:30 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] Name NICs based on vmbus offer and enable async
+ probe by default
+Thread-Topic: [PATCH net-next] Name NICs based on vmbus offer and enable async
+ probe by default
+Thread-Index: AQHVNqmLUJAyxztGLUGuWv2QILreQw==
+Date:   Tue, 9 Jul 2019 22:56:30 +0000
+Message-ID: <1562712932-79936-1-git-send-email-haiyangz@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR04CA0097.namprd04.prod.outlook.com
+ (2603:10b6:104:6::23) To DM6PR21MB1242.namprd21.prod.outlook.com
+ (2603:10b6:5:169::22)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=lkmlhyz@microsoft.com; 
+x-ms-exchange-messagesentrepresentingtype: 2
+x-mailer: git-send-email 1.8.3.1
+x-originating-ip: [13.77.154.182]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7162d005-73f3-4604-cec9-08d704c0ae12
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DM6PR21MB1179;
+x-ms-traffictypediagnostic: DM6PR21MB1179:|DM6PR21MB1179:
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <DM6PR21MB1179529B0D966AA20BA63DB4ACF10@DM6PR21MB1179.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1728;
+x-forefront-prvs: 0093C80C01
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(376002)(346002)(39860400002)(366004)(199004)(189003)(66446008)(102836004)(71200400001)(6506007)(386003)(2501003)(64756008)(66476007)(66556008)(486006)(4720700003)(26005)(2201001)(4326008)(2616005)(99286004)(14444005)(52116002)(476003)(186003)(5660300002)(66946007)(68736007)(256004)(7736002)(2906002)(10290500003)(53936002)(36756003)(6486002)(81156014)(81166006)(8676002)(6436002)(7846003)(66066001)(10090500001)(14454004)(316002)(6392003)(22452003)(110136005)(478600001)(54906003)(3846002)(6116002)(305945005)(6512007)(50226002)(25786009)(71190400001)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1179;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: tTKhi3+lKpUrvNHKycNSMwpE/eI/BS7A7zc60RSTzRKzkYIPcqrn/x+DlPMyQYtjiW6oN53IckOc77saBYft6CZqJBRVFKeUWuC6Tx5HNR6UA69+wEiSYWadZC0LzFRmRbexDSUPnmmgbs1XLkICHRyiKhdTeB21uAj+tMAbOCreDFVTjW3I8P2Fnz95+50u24bqCgy0Tdokdcpj2pYJogunc4pFVNAjLMU6Uqsj+KFZm1lmtdRuuCng0BX1j/1Jz8MvnV6mWI5IsfBlAXzZeZK6KkTS2YefW/3C2LnB9Pes0kLCQp4PBv2IISdYU6NDb9EU43Zl9bACP/tuE/SEGyCSkEuSVrtEjwHqocoLucArnk1cOdsb1IkG5Ne8ZELNrt68ae/k2nM2rm5fl1najicTA9B5KAqQMPmYYekLMy4=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6BD2D204471C4D47A31943C2482035C2@namprd21.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190621181314.20778-6-grygorii.strashko@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7162d005-73f3-4604-cec9-08d704c0ae12
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2019 22:56:30.3880
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lkmlhyz@microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1179
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 09:13:08PM +0300, Grygorii Strashko wrote:
-> Add bindings for the new TI CPSW switch driver. Comparing to the legacy
-> bindings (net/cpsw.txt):
-> - ports definition follows DSA bindings (net/dsa/dsa.txt) and ports can be
-> marked as "disabled" if not physically wired.
-> - ports definition follows DSA bindings (net/dsa/dsa.txt) and ports can be
-> marked as "disabled" if not physically wired.
-> - all deprecated properties dropped;
-> - all legacy propertiies dropped which represents constant HW cpapbilities
-> (cpdma_channels, ale_entries, bd_ram_size, mac_control, slaves,
-> active_slave)
-> - cpts properties grouped in "cpts" sub-node
-> 
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> ---
->  .../bindings/net/ti,cpsw-switch.txt           | 147 ++++++++++++++++++
->  1 file changed, 147 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,cpsw-switch.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ti,cpsw-switch.txt b/Documentation/devicetree/bindings/net/ti,cpsw-switch.txt
-> new file mode 100644
-> index 000000000000..787219cddccd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/ti,cpsw-switch.txt
-> @@ -0,0 +1,147 @@
-> +TI SoC Ethernet Switch Controller Device Tree Bindings (new)
-> +------------------------------------------------------
-> +
-> +The 3-port switch gigabit ethernet subsystem provides ethernet packet
-> +communication and can be configured as an ethernet switch. It provides the
-> +gigabit media independent interface (GMII),reduced gigabit media
-> +independent interface (RGMII), reduced media independent interface (RMII),
-> +the management data input output (MDIO) for physical layer device (PHY)
-> +management.
-> +
-> +Required properties:
-> +- compatible : be one of the below:
-> +	  "ti,cpsw-switch" for backward compatible
-> +	  "ti,am335x-cpsw-switch" for AM335x controllers
-> +	  "ti,am4372-cpsw-switch" for AM437x controllers
-> +	  "ti,dra7-cpsw-switch" for DRA7x controllers
-> +- reg : physical base address and size of the CPSW module IO range
-> +- ranges : shall contain the CPSW module IO range available for child devices
-> +- clocks : should contain the CPSW functional clock
-> +- clock-names : should be "fck"
-> +	See bindings/clock/clock-bindings.txt
-> +- interrupts : should contain CPSW RX, TX, MISC, RX_THRESH interrupts
-> +- interrupt-names : should contain "rx_thresh", "rx", "tx", "misc"
-
-What's the defined order because it's not consistent here.
-
-> +	See bindings/interrupt-controller/interrupts.txt
-> +
-> +Optional properties:
-> +- syscon : phandle to the system control device node which provides access to
-> +	efuse IO range with MAC addresses
-> +
-> +Required Sub-nodes:
-> +- ports	: contains CPSW external ports descriptions
-
-Use ethernet-ports to avoid 'ports' from the graph binding.
-
-> +	Required properties:
-> +	- #address-cells : Must be 1
-> +	- #size-cells : Must be 0
-> +	- reg : CPSW port number. Should be 1 or 2
-> +	- phys : phandle on phy-gmii-sel PHY (see phy/ti-phy-gmii-sel.txt)
-> +	- phy-mode : operation mode of the PHY interface [1]
-> +	- phy-handle : phandle to a PHY on an MDIO bus [1]
-> +
-> +	Optional properties:
-> +	- ti,label : Describes the label associated with this port
-
-What's wrong with standard 'label' property.
-
-> +	- ti,dual_emac_pvid : Specifies default PORT VID to be used to segregate
-
-s/_/-/
-
-> +		ports. Default value - CPSW port number.
-> +	- mac-address : array of 6 bytes, specifies the MAC address. Always
-> +		accounted first if present [1]
-
-No need to re-define this here. 
-
-> +	- local-mac-address : See [1]
-> +
-> +- mdio : CPSW MDIO bus block description
-> +	- bus_freq : MDIO Bus frequency
-> +	See bindings/net/mdio.txt and davinci-mdio.txt
-
-Standard properties clock-frequency or bus-frequency would have been 
-better...
-
-> +
-> +- cpts : The Common Platform Time Sync (CPTS) module description
-> +	- clocks : should contain the CPTS reference clock
-> +	- clock-names : should be "cpts"
-> +	See bindings/clock/clock-bindings.txt
-> +
-> +	Optional properties - all ports:
-> +	- cpts_clock_mult : Numerator to convert input clock ticks into ns
-> +	- cpts_clock_shift : Denominator to convert input clock ticks into ns
-> +			  Mult and shift will be calculated basing on CPTS
-> +			  rftclk frequency if both cpts_clock_shift and
-> +			  cpts_clock_mult properties are not provided.
-
-Should have 'ti' prefix and use '-' rather than '_'. However, these are 
-already defined somewhere else, right? I can't tell that from reading 
-this.
-
-> +
-> +[1] See Documentation/devicetree/bindings/net/ethernet.txt
-> +
-> +Examples - SOC:
-
-Please don't split example into SoC and board. Just show the flat 
-example.
-
-> +mac_sw: ethernet_switch@0 {
-
-switch@0
-
-> +	compatible = "ti,dra7-cpsw-switch","ti,cpsw-switch";
-> +	reg = <0x0 0x4000>;
-> +	ranges = <0 0 0x4000>;
-> +	clocks = <&gmac_main_clk>;
-> +	clock-names = "fck";
-> +	#address-cells = <1>;
-> +	#size-cells = <1>;
-> +	syscon = <&scm_conf>;
-> +	status = "disabled";
-> +
-> +	interrupts = <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
-> +		     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
-> +		     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
-> +		     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;
-> +	interrupt-names = "rx_thresh", "rx", "tx", "misc"
-> +
-> +	ports {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpsw_port1: port@1 {
-> +			reg = <1>;
-> +			ti,label = "port1";
-
-Not really any better than the node name. Do you really even need this 
-property?
-
-> +			/* Filled in by U-Boot */
-> +			mac-address = [ 00 00 00 00 00 00 ];
-> +			phys = <&phy_gmii_sel 1>;
-> +		};
-> +
-> +		cpsw_port2: port@2 {
-> +			reg = <2>;
-> +			ti,label = "port2";
-> +			/* Filled in by U-Boot */
-> +			mac-address = [ 00 00 00 00 00 00 ];
-> +			phys = <&phy_gmii_sel 2>;
-> +		};
-> +	};
-> +
-> +	davinci_mdio_sw: mdio@1000 {
-> +		compatible = "ti,cpsw-mdio","ti,davinci_mdio";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		ti,hwmods = "davinci_mdio";
-> +		bus_freq = <1000000>;
-> +		reg = <0x1000 0x100>;
-> +	};
-> +
-> +	cpts {
-> +		clocks = <&gmac_clkctrl DRA7_GMAC_GMAC_CLKCTRL 25>;
-> +		clock-names = "cpts";
-> +	};
-> +};
-> +
-> +Examples - platform/board:
-> +
-> +&mac_sw {
-> +	pinctrl-names = "default", "sleep";
-> +	status = "okay";
-> +};
-> +
-> +&cpsw_port1 {
-> +	phy-handle = <&ethphy0_sw>;
-> +	phy-mode = "rgmii";
-> +	ti,dual_emac_pvid = <1>;
-> +};
-> +
-> +&cpsw_port2 {
-> +	phy-handle = <&ethphy1_sw>;
-> +	phy-mode = "rgmii";
-> +	ti,dual_emac_pvid = <2>;
-> +};
-> +
-> +&davinci_mdio_sw {
-> +	ethphy0_sw: ethernet-phy@0 {
-> +		reg = <0>;
-> +	};
-> +
-> +	ethphy1_sw: ethernet-phy@1 {
-> +		reg = <1>;
-> +	};
-> +};
-> -- 
-> 2.17.1
-> 
+UHJldmlvdXNseSB0aGUgYXN5bmMgcHJvYmluZyBjYXVzZWQgTklDIG5hbWluZyBpbiByYW5kb20g
+b3JkZXIuDQoNClRoZSBwYXRjaCBhZGRzIGEgZGV2X251bSBmaWVsZCBpbiB2bWJ1cyBjaGFubmVs
+IHN0cnVjdHVyZS4gSXTigJlzIGFzc2lnbmVkDQp0byB0aGUgZmlyc3QgYXZhaWxhYmxlIG51bWJl
+ciB3aGVuIHRoZSBjaGFubmVsIGlzIG9mZmVyZWQuIFNvIG5ldHZzYyBjYW4NCnVzZSBpdCBmb3Ig
+TklDIG5hbWluZyBiYXNlZCBvbiBjaGFubmVsIG9mZmVyIHNlcXVlbmNlLiBOb3cgd2UgcmUtZW5h
+YmxlDQp0aGUgYXN5bmMgcHJvYmluZyBtb2RlIGJ5IGRlZmF1bHQgZm9yIGZhc3RlciBwcm9iaW5n
+Lg0KDQpBbHNvIGFkZGVkIGEgbW9kdWxlcyBwYXJhbWV0ZXIsIHByb2JlX3R5cGUsIHRvIHNldCBz
+eW5jIHByb2JpbmcgbW9kZSBpZg0KYSB1c2VyIHdhbnRzIHRvLg0KDQpGaXhlczogYWYwYTU2NDZj
+YjhkICgidXNlIHRoZSBuZXcgYXN5bmMgcHJvYmluZyBmZWF0dXJlIGZvciB0aGUgaHlwZXJ2IGRy
+aXZlcnMiKQ0KU2lnbmVkLW9mZi1ieTogSGFpeWFuZyBaaGFuZyA8aGFpeWFuZ3pAbWljcm9zb2Z0
+LmNvbT4NCi0tLQ0KIGRyaXZlcnMvaHYvY2hhbm5lbF9tZ210LmMgICAgICAgfCA0NiArKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLQ0KIGRyaXZlcnMvbmV0L2h5cGVydi9u
+ZXR2c2NfZHJ2LmMgfCAzMyArKysrKysrKysrKysrKysrKysrKysrKysrKy0tLQ0KIGluY2x1ZGUv
+bGludXgvaHlwZXJ2LmggICAgICAgICAgfCAgNCArKysrDQogMyBmaWxlcyBjaGFuZ2VkLCA3OCBp
+bnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9odi9j
+aGFubmVsX21nbXQuYyBiL2RyaXZlcnMvaHYvY2hhbm5lbF9tZ210LmMNCmluZGV4IGFkZGNlZjUu
+LmFiN2MwNWIgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2h2L2NoYW5uZWxfbWdtdC5jDQorKysgYi9k
+cml2ZXJzL2h2L2NoYW5uZWxfbWdtdC5jDQpAQCAtMzA0LDYgKzMwNCw4IEBAIGJvb2wgdm1idXNf
+cHJlcF9uZWdvdGlhdGVfcmVzcChzdHJ1Y3QgaWNtc2dfaGRyICppY21zZ2hkcnAsDQogDQogRVhQ
+T1JUX1NZTUJPTF9HUEwodm1idXNfcHJlcF9uZWdvdGlhdGVfcmVzcCk7DQogDQorI2RlZmluZSBI
+Vl9ERVZfTlVNX0lOVkFMSUQgKC0xKQ0KKw0KIC8qDQogICogYWxsb2NfY2hhbm5lbCAtIEFsbG9j
+YXRlIGFuZCBpbml0aWFsaXplIGEgdm1idXMgY2hhbm5lbCBvYmplY3QNCiAgKi8NCkBAIC0zMTUs
+NiArMzE3LDggQEAgc3RhdGljIHN0cnVjdCB2bWJ1c19jaGFubmVsICphbGxvY19jaGFubmVsKHZv
+aWQpDQogCWlmICghY2hhbm5lbCkNCiAJCXJldHVybiBOVUxMOw0KIA0KKwljaGFubmVsLT5kZXZf
+bnVtID0gSFZfREVWX05VTV9JTlZBTElEOw0KKw0KIAlzcGluX2xvY2tfaW5pdCgmY2hhbm5lbC0+
+bG9jayk7DQogCWluaXRfY29tcGxldGlvbigmY2hhbm5lbC0+cmVzY2luZF9ldmVudCk7DQogDQpA
+QCAtNTMzLDYgKzUzNyw0MiBAQCBzdGF0aWMgdm9pZCB2bWJ1c19hZGRfY2hhbm5lbF93b3JrKHN0
+cnVjdCB3b3JrX3N0cnVjdCAqd29yaykNCiB9DQogDQogLyoNCisgKiBHZXQgdGhlIGZpcnN0IGF2
+YWlsYWJsZSBkZXZpY2UgbnVtYmVyIG9mIGl0cyB0eXBlLCB0aGVuDQorICogcmVjb3JkIGl0IGlu
+IHRoZSBjaGFubmVsIHN0cnVjdHVyZS4NCisgKi8NCitzdGF0aWMgdm9pZCBodl9zZXRfZGV2bnVt
+KHN0cnVjdCB2bWJ1c19jaGFubmVsICpuZXdjaGFubmVsKQ0KK3sNCisJc3RydWN0IHZtYnVzX2No
+YW5uZWwgKmNoYW5uZWw7DQorCXVuc2lnbmVkIGludCBpID0gMDsNCisJYm9vbCBmb3VuZDsNCisN
+CisJQlVHX09OKCFtdXRleF9pc19sb2NrZWQoJnZtYnVzX2Nvbm5lY3Rpb24uY2hhbm5lbF9tdXRl
+eCkpOw0KKw0KKwkvKiBPbmx5IEhWX05JQyB1c2VzIHRoaXMgbnVtYmVyIGZvciBub3cgKi8NCisJ
+aWYgKGh2X2dldF9kZXZfdHlwZShuZXdjaGFubmVsKSAhPSBIVl9OSUMpDQorCQlyZXR1cm47DQor
+DQorbmV4dDoNCisJZm91bmQgPSBmYWxzZTsNCisNCisJbGlzdF9mb3JfZWFjaF9lbnRyeShjaGFu
+bmVsLCAmdm1idXNfY29ubmVjdGlvbi5jaG5fbGlzdCwgbGlzdGVudHJ5KSB7DQorCQlpZiAoaSA9
+PSBjaGFubmVsLT5kZXZfbnVtICYmDQorCQkgICAgZ3VpZF9lcXVhbCgmY2hhbm5lbC0+b2ZmZXJt
+c2cub2ZmZXIuaWZfdHlwZSwNCisJCQkgICAgICAgJm5ld2NoYW5uZWwtPm9mZmVybXNnLm9mZmVy
+LmlmX3R5cGUpKSB7DQorCQkJZm91bmQgPSB0cnVlOw0KKwkJCWJyZWFrOw0KKwkJfQ0KKwl9DQor
+DQorCWlmIChmb3VuZCkgew0KKwkJaSsrOw0KKwkJZ290byBuZXh0Ow0KKwl9DQorDQorCW5ld2No
+YW5uZWwtPmRldl9udW0gPSBpOw0KK30NCisNCisvKg0KICAqIHZtYnVzX3Byb2Nlc3Nfb2ZmZXIg
+LSBQcm9jZXNzIHRoZSBvZmZlciBieSBjcmVhdGluZyBhIGNoYW5uZWwvZGV2aWNlDQogICogYXNz
+b2NpYXRlZCB3aXRoIHRoaXMgb2ZmZXINCiAgKi8NCkBAIC01NjEsMTAgKzYwMSwxMiBAQCBzdGF0
+aWMgdm9pZCB2bWJ1c19wcm9jZXNzX29mZmVyKHN0cnVjdCB2bWJ1c19jaGFubmVsICpuZXdjaGFu
+bmVsKQ0KIAkJfQ0KIAl9DQogDQotCWlmIChmbmV3KQ0KKwlpZiAoZm5ldykgew0KKwkJaHZfc2V0
+X2Rldm51bShuZXdjaGFubmVsKTsNCisNCiAJCWxpc3RfYWRkX3RhaWwoJm5ld2NoYW5uZWwtPmxp
+c3RlbnRyeSwNCiAJCQkgICAgICAmdm1idXNfY29ubmVjdGlvbi5jaG5fbGlzdCk7DQotCWVsc2Ug
+ew0KKwl9IGVsc2Ugew0KIAkJLyoNCiAJCSAqIENoZWNrIHRvIHNlZSBpZiB0aGlzIGlzIGEgdmFs
+aWQgc3ViLWNoYW5uZWwuDQogCQkgKi8NCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9oeXBlcnYv
+bmV0dnNjX2Rydi5jIGIvZHJpdmVycy9uZXQvaHlwZXJ2L25ldHZzY19kcnYuYw0KaW5kZXggYWZk
+Y2M1Ni4uYWY1MzY5MCAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2h5cGVydi9uZXR2c2NfZHJ2
+LmMNCisrKyBiL2RyaXZlcnMvbmV0L2h5cGVydi9uZXR2c2NfZHJ2LmMNCkBAIC01Nyw2ICs1Nywx
+MCBAQA0KIG1vZHVsZV9wYXJhbShkZWJ1ZywgaW50LCAwNDQ0KTsNCiBNT0RVTEVfUEFSTV9ERVND
+KGRlYnVnLCAiRGVidWcgbGV2ZWwgKDA9bm9uZSwuLi4sMTY9YWxsKSIpOw0KIA0KK3N0YXRpYyB1
+bnNpZ25lZCBpbnQgcHJvYmVfdHlwZSBfX3JvX2FmdGVyX2luaXQgPSBQUk9CRV9QUkVGRVJfQVNZ
+TkNIUk9OT1VTOw0KK21vZHVsZV9wYXJhbShwcm9iZV90eXBlLCB1aW50LCAwNDQ0KTsNCitNT0RV
+TEVfUEFSTV9ERVNDKHByb2JlX3R5cGUsICJQcm9iZSB0eXBlOiAxPWFzeW5jKGRlZmF1bHQpLCAy
+PXN5bmMiKTsNCisNCiBzdGF0aWMgTElTVF9IRUFEKG5ldHZzY19kZXZfbGlzdCk7DQogDQogc3Rh
+dGljIHZvaWQgbmV0dnNjX2NoYW5nZV9yeF9mbGFncyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LCBp
+bnQgY2hhbmdlKQ0KQEAgLTIyMzMsMTAgKzIyMzcsMTkgQEAgc3RhdGljIGludCBuZXR2c2NfcHJv
+YmUoc3RydWN0IGh2X2RldmljZSAqZGV2LA0KIAlzdHJ1Y3QgbmV0X2RldmljZV9jb250ZXh0ICpu
+ZXRfZGV2aWNlX2N0eDsNCiAJc3RydWN0IG5ldHZzY19kZXZpY2VfaW5mbyAqZGV2aWNlX2luZm8g
+PSBOVUxMOw0KIAlzdHJ1Y3QgbmV0dnNjX2RldmljZSAqbnZkZXY7DQorCWNoYXIgbmFtZVtJRk5B
+TVNJWl07DQogCWludCByZXQgPSAtRU5PTUVNOw0KIA0KLQluZXQgPSBhbGxvY19ldGhlcmRldl9t
+cShzaXplb2Yoc3RydWN0IG5ldF9kZXZpY2VfY29udGV4dCksDQotCQkJCVZSU1NfQ0hBTk5FTF9N
+QVgpOw0KKwlpZiAocHJvYmVfdHlwZSA9PSBQUk9CRV9QUkVGRVJfQVNZTkNIUk9OT1VTKSB7DQor
+CQlzbnByaW50ZihuYW1lLCBJRk5BTVNJWiwgImV0aCVkIiwgZGV2LT5jaGFubmVsLT5kZXZfbnVt
+KTsNCisJCW5ldCA9IGFsbG9jX25ldGRldl9tcXMoc2l6ZW9mKHN0cnVjdCBuZXRfZGV2aWNlX2Nv
+bnRleHQpLCBuYW1lLA0KKwkJCQkgICAgICAgTkVUX05BTUVfRU5VTSwgZXRoZXJfc2V0dXAsDQor
+CQkJCSAgICAgICBWUlNTX0NIQU5ORUxfTUFYLCBWUlNTX0NIQU5ORUxfTUFYKTsNCisJfSBlbHNl
+IHsNCisJCW5ldCA9IGFsbG9jX2V0aGVyZGV2X21xKHNpemVvZihzdHJ1Y3QgbmV0X2RldmljZV9j
+b250ZXh0KSwNCisJCQkJCVZSU1NfQ0hBTk5FTF9NQVgpOw0KKwl9DQorDQogCWlmICghbmV0KQ0K
+IAkJZ290byBub19uZXQ7DQogDQpAQCAtMjMyMyw2ICsyMzM2LDE0IEBAIHN0YXRpYyBpbnQgbmV0
+dnNjX3Byb2JlKHN0cnVjdCBodl9kZXZpY2UgKmRldiwNCiAJCW5ldC0+bWF4X210dSA9IEVUSF9E
+QVRBX0xFTjsNCiANCiAJcmV0ID0gcmVnaXN0ZXJfbmV0ZGV2aWNlKG5ldCk7DQorDQorCWlmIChy
+ZXQgPT0gLUVFWElTVCkgew0KKwkJcHJfaW5mbygiTklDIG5hbWUgJXMgZXhpc3RzLCByZXF1ZXN0
+IGFub3RoZXIgbmFtZS5cbiIsDQorCQkJbmV0LT5uYW1lKTsNCisJCXN0cmxjcHkobmV0LT5uYW1l
+LCAiZXRoJWQiLCBJRk5BTVNJWik7DQorCQlyZXQgPSByZWdpc3Rlcl9uZXRkZXZpY2UobmV0KTsN
+CisJfQ0KKw0KIAlpZiAocmV0ICE9IDApIHsNCiAJCXByX2VycigiVW5hYmxlIHRvIHJlZ2lzdGVy
+IG5ldGRldi5cbiIpOw0KIAkJZ290byByZWdpc3Rlcl9mYWlsZWQ7DQpAQCAtMjQwNyw3ICsyNDI4
+LDcgQEAgc3RhdGljIGludCBuZXR2c2NfcmVtb3ZlKHN0cnVjdCBodl9kZXZpY2UgKmRldikNCiAJ
+LnByb2JlID0gbmV0dnNjX3Byb2JlLA0KIAkucmVtb3ZlID0gbmV0dnNjX3JlbW92ZSwNCiAJLmRy
+aXZlciA9IHsNCi0JCS5wcm9iZV90eXBlID0gUFJPQkVfRk9SQ0VfU1lOQ0hST05PVVMsDQorCQku
+cHJvYmVfdHlwZSA9IFBST0JFX1BSRUZFUl9BU1lOQ0hST05PVVMsDQogCX0sDQogfTsNCiANCkBA
+IC0yNDczLDYgKzI0OTQsMTIgQEAgc3RhdGljIGludCBfX2luaXQgbmV0dnNjX2Rydl9pbml0KHZv
+aWQpDQogCX0NCiAJbmV0dnNjX3JpbmdfYnl0ZXMgPSByaW5nX3NpemUgKiBQQUdFX1NJWkU7DQog
+DQorCWlmIChwcm9iZV90eXBlICE9IFBST0JFX1BSRUZFUl9BU1lOQ0hST05PVVMpDQorCQlwcm9i
+ZV90eXBlID0gUFJPQkVfRk9SQ0VfU1lOQ0hST05PVVM7DQorDQorCW5ldHZzY19kcnYuZHJpdmVy
+LnByb2JlX3R5cGUgPSBwcm9iZV90eXBlOw0KKwlwcl9pbmZvKCJwcm9iZV90eXBlOiAldVxuIiwg
+cHJvYmVfdHlwZSk7DQorDQogCXJldCA9IHZtYnVzX2RyaXZlcl9yZWdpc3RlcigmbmV0dnNjX2Ry
+dik7DQogCWlmIChyZXQpDQogCQlyZXR1cm4gcmV0Ow0KZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGlu
+dXgvaHlwZXJ2LmggYi9pbmNsdWRlL2xpbnV4L2h5cGVydi5oDQppbmRleCA2MjU2Y2MzLi4xMmZj
+NWVhIDEwMDY0NA0KLS0tIGEvaW5jbHVkZS9saW51eC9oeXBlcnYuaA0KKysrIGIvaW5jbHVkZS9s
+aW51eC9oeXBlcnYuaA0KQEAgLTg0MSw2ICs4NDEsMTAgQEAgc3RydWN0IHZtYnVzX2NoYW5uZWwg
+ew0KIAkgKi8NCiAJc3RydWN0IHZtYnVzX2NoYW5uZWwgKnByaW1hcnlfY2hhbm5lbDsNCiAJLyoN
+CisJICogVXNlZCBmb3IgZGV2aWNlIG5hbWluZyBiYXNlZCBvbiBjaGFubmVsIG9mZmVyIHNlcXVl
+bmNlLg0KKwkgKi8NCisJaW50IGRldl9udW07DQorCS8qDQogCSAqIFN1cHBvcnQgcGVyLWNoYW5u
+ZWwgc3RhdGUgZm9yIHVzZSBieSB2bWJ1cyBkcml2ZXJzLg0KIAkgKi8NCiAJdm9pZCAqcGVyX2No
+YW5uZWxfc3RhdGU7DQotLSANCjEuOC4zLjENCg0K
