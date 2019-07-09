@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B086963427
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 12:22:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A506342C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 12:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbfGIKWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 06:22:06 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37613 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726154AbfGIKWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 06:22:05 -0400
-Received: by mail-pg1-f193.google.com with SMTP id g15so9219183pgi.4
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 03:22:05 -0700 (PDT)
+        id S1726580AbfGIKW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 06:22:27 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40274 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726060AbfGIKW1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 06:22:27 -0400
+Received: by mail-pf1-f193.google.com with SMTP id p184so9063568pfp.7
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 03:22:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=endlessm-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LHn7sh6ZYwvh5+D/h2PrSTgVx9fde1Yu4h3Dr05pCsY=;
-        b=S6x8jcHvKJGfpw+Yld/kbXFq1TShqWb7H9Z+ZjTW7WXiQJY0xIFNau7xT+ZDdNqeNe
-         07H063fJx/xr2fqRFg+7gKq6ZfH9r1EzHTVrgJYwTZnQ79yv+mWP9P6vK2Dso8w9j+Fv
-         nP3mNJa/v/zaokDhy4yTfby3sgmKvu0R4hb0tMTPB8iG678pMO1ypho2UPvDZM4aPtac
-         YXZntBd9k5dQwwmnjHbpIFGowGjkhYiS8pzutGE9v6WXFeBwteBRmXrOdJYRQNEEkUl4
-         r73M7fho8QHRPAUrbSuG0UVKeYRPvS6adMCzBnDyqbCDRNdBfNZDeJK2j3LhcxaJmM+m
-         3Biw==
+        bh=Ys5VCG//C+7d/Mv4iPcZy1mrBP7z7sVwq8ShwHAlzGY=;
+        b=EYqSBY5RYT3l0wkuw1OiniPSthEwR1m6QScRVqkNRuncNcPiHi18uDfiPzlQ64tyOT
+         tFnG4+QleLyJ5BINvC4LqWUj6LzpVUIwfmTehOtXgG+QCpSO2kmuYWp4LBvDqw4TAycS
+         rUPJnPjVy196wMzOuZn7AILaZrq5Otwr4AfORpaIWUOi8XFXWgYvtdPXoso5l+txhymh
+         3kr4MOeTNuPTCctGwVMZnXh4EeeJGe2tiGybWZlLLrOrRpCTaKMwQpUdPkM8bettx8Wr
+         fS9nzTh9CWZuuNv6NWzmVBkaHo/g7OgOJFLMdKB7JtjNZvusIkI0fUWh6GaLzdxhiZM+
+         WRLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LHn7sh6ZYwvh5+D/h2PrSTgVx9fde1Yu4h3Dr05pCsY=;
-        b=uIbOOcFOsyeFVsZOrV/A7Vsp+tslVB8mXDC8IU38GKW+TsyzesuvhmwC6jwKaUhpvf
-         bwp/Gk0k0lcdA9wDytGr/0xcEMVvYC3PnYy1rYnBNHO8/Wqrp3amhHatABxkJaE1/S4W
-         niQm6+nHhm/hLbXhZGHYv1Jm6mszi1NFvScJDyuawxdG7lQ4HaVeKGHZ9Gt2oCZBht7C
-         IkaRDPFkJIb8S8Tmzy4zckN0zE9AlYws2elQPHeGz7CJc9TR2iShaHtn4Xpy7axH7Fww
-         VGVN7LSOD2HQw3VE7Dfi/x1T26HSft27kuwt2ojRpBSHG3NUw1ai704UGUtX6sjszwfC
-         EKdA==
-X-Gm-Message-State: APjAAAUgK0kC39IISZszbeQB1wTM7heNCmQ8MjREQ/TunbYi9jI+UzOQ
-        7IEuYPJHhuOzQxgZFVY6UsM2hA==
-X-Google-Smtp-Source: APXvYqz2/A/8B3slXasDnqD46Tev0tlgqKN64vJiTn2jpY0EC4bOeSPI7mVKDxxtvIet/NlRgbVpyQ==
-X-Received: by 2002:a17:90a:2228:: with SMTP id c37mr32162607pje.9.1562667724503;
-        Tue, 09 Jul 2019 03:22:04 -0700 (PDT)
+        bh=Ys5VCG//C+7d/Mv4iPcZy1mrBP7z7sVwq8ShwHAlzGY=;
+        b=j6YSCwIuraEFA0gq8B56jiWAWYa/xA8AqX7e/591j4yqU6deVFFTCh/a3iFmZGRcYE
+         0LoVkqSpwm+LFX832FA2UrRPIYrF1MXbuML3F2virNTHiWKoLdGQd72E6kPWbWGl3dCy
+         kt95cqYqtTLUd5WfFwrIrEXV7/IQQ42WTIXYOtcFj3QPZMV5gvKPH5pM1cVqHu69BZbK
+         46ztmGNU9bTJY+PIljZ8qzpULvaCMQTn87DcZ5R+FOG1xd0lc1GnrdUgAd0V9aCZnN9s
+         NZrccqsq+9S3ttlqm++emTHIknbx7v5DeZvgaqT+AiqHmcpTzUgcvgfNc3eghvycUX0i
+         nLPg==
+X-Gm-Message-State: APjAAAWWodL5eztfjMEU3PqJPIG/NLVR4Z+AefRAVobtkurAhpfmzHLg
+        OooXDE3Rq5Jo2sbjUpsBUioePw==
+X-Google-Smtp-Source: APXvYqy4rOzsSukM8QjFevK1EGTmIXDq4LXaDasAKMlIyOuWJyyfPkpJ2F67P17lv+jigztmLW01bw==
+X-Received: by 2002:a65:56c1:: with SMTP id w1mr25026367pgs.395.1562667746195;
+        Tue, 09 Jul 2019 03:22:26 -0700 (PDT)
 Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
-        by smtp.gmail.com with ESMTPSA id j1sm40161849pgl.12.2019.07.09.03.22.00
+        by smtp.gmail.com with ESMTPSA id j1sm40161849pgl.12.2019.07.09.03.22.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 03:22:03 -0700 (PDT)
+        Tue, 09 Jul 2019 03:22:25 -0700 (PDT)
 From:   Jian-Hong Pan <jian-hong@endlessm.com>
 To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -53,10 +53,10 @@ To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux@endlessm.com,
         Daniel Drake <drake@endlessm.com>,
-        Jian-Hong Pan <jian-hong@endlessm.com>, stable@vger.kernel.org
-Subject: [PATCH v2 1/2] rtw88: pci: Rearrange the memory usage for skb in RX ISR
-Date:   Tue,  9 Jul 2019 18:20:59 +0800
-Message-Id: <20190709102059.7036-1-jian-hong@endlessm.com>
+        Jian-Hong Pan <jian-hong@endlessm.com>
+Subject: [PATCH v2 2/2] rtw88: pci: Use DMA sync instead of remapping in RX ISR
+Date:   Tue,  9 Jul 2019 18:21:01 +0800
+Message-Id: <20190709102059.7036-2-jian-hong@endlessm.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190708063252.4756-1-jian-hong@endlessm.com>
 References: <20190708063252.4756-1-jian-hong@endlessm.com>
@@ -67,117 +67,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Testing with RTL8822BE hardware, when available memory is low, we
-frequently see a kernel panic and system freeze.
+Since each skb in RX ring is reused instead of new allocation, we can
+treat the DMA in a more efficient way by DMA synchronization.
 
-First, rtw_pci_rx_isr encounters a memory allocation failure (trimmed):
-
-rx routine starvation
-WARNING: CPU: 7 PID: 9871 at drivers/net/wireless/realtek/rtw88/pci.c:822 rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
-[ 2356.580313] RIP: 0010:rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
-
-Then we see a variety of different error conditions and kernel panics,
-such as this one (trimmed):
-
-rtw_pci 0000:02:00.0: pci bus timeout, check dma status
-skbuff: skb_over_panic: text:00000000091b6e66 len:415 put:415 head:00000000d2880c6f data:000000007a02b1ea tail:0x1df end:0xc0 dev:<NULL>
-------------[ cut here ]------------
-kernel BUG at net/core/skbuff.c:105!
-invalid opcode: 0000 [#1] SMP NOPTI
-RIP: 0010:skb_panic+0x43/0x45
-
-When skb allocation fails and the "rx routine starvation" is hit, the
-function returns immediately without updating the RX ring. At this
-point, the RX ring may continue referencing an old skb which was already
-handed off to ieee80211_rx_irqsafe(). When it comes to be used again,
-bad things happen.
-
-This patch allocates a new, data-sized skb first in RX ISR. After
-copying the data in, we pass it to the upper layers. However, if skb
-allocation fails, we effectively drop the frame. In both cases, the
-original, full size ring skb is reused.
-
-In addition, to fixing the kernel crash, the RX routine should now
-generally behave better under low memory conditions.
-
-Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=204053
 Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
-Cc: <stable@vger.kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/pci.c | 49 +++++++++++-------------
- 1 file changed, 22 insertions(+), 27 deletions(-)
+ drivers/net/wireless/realtek/rtw88/pci.c | 35 ++++++++++++++++++++++--
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index cfe05ba7280d..e9fe3ad896c8 100644
+index e9fe3ad896c8..28ca76f71dfe 100644
 --- a/drivers/net/wireless/realtek/rtw88/pci.c
 +++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -763,6 +763,7 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
- 	u32 pkt_offset;
- 	u32 pkt_desc_sz = chip->rx_pkt_desc_sz;
- 	u32 buf_desc_sz = chip->rx_buf_desc_sz;
-+	u32 new_len;
- 	u8 *rx_desc;
- 	dma_addr_t dma;
+@@ -206,6 +206,35 @@ static int rtw_pci_reset_rx_desc(struct rtw_dev *rtwdev, struct sk_buff *skb,
+ 	return 0;
+ }
  
-@@ -790,40 +791,34 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
- 		pkt_offset = pkt_desc_sz + pkt_stat.drv_info_sz +
- 			     pkt_stat.shift;
- 
--		if (pkt_stat.is_c2h) {
--			/* keep rx_desc, halmac needs it */
--			skb_put(skb, pkt_stat.pkt_len + pkt_offset);
-+		/* discard current skb if the new skb cannot be allocated as a
-+		 * new one in rx ring later
-+		 */
-+		new_len = pkt_stat.pkt_len + pkt_offset;
-+		new = dev_alloc_skb(new_len);
-+		if (WARN_ONCE(!new, "rx routine starvation\n"))
-+			goto next_rp;
++static int rtw_pci_sync_rx_desc_cpu(struct rtw_dev *rtwdev, dma_addr_t dma)
++{
++	struct device *dev = rtwdev->dev;
++	int buf_sz = RTK_PCI_RX_BUF_SIZE;
 +
-+		/* put the DMA data including rx_desc from phy to new skb */
-+		skb_put_data(new, skb->data, new_len);
- 
--			/* pass offset for further operation */
--			*((u32 *)skb->cb) = pkt_offset;
--			skb_queue_tail(&rtwdev->c2h_queue, skb);
-+		if (pkt_stat.is_c2h) {
-+			 /* pass rx_desc & offset for further operation */
-+			*((u32 *)new->cb) = pkt_offset;
-+			skb_queue_tail(&rtwdev->c2h_queue, new);
- 			ieee80211_queue_work(rtwdev->hw, &rtwdev->c2h_work);
- 		} else {
--			/* remove rx_desc, maybe use skb_pull? */
--			skb_put(skb, pkt_stat.pkt_len);
--			skb_reserve(skb, pkt_offset);
--
--			/* alloc a smaller skb to mac80211 */
--			new = dev_alloc_skb(pkt_stat.pkt_len);
--			if (!new) {
--				new = skb;
--			} else {
--				skb_put_data(new, skb->data, skb->len);
--				dev_kfree_skb_any(skb);
--			}
--			/* TODO: merge into rx.c */
--			rtw_rx_stats(rtwdev, pkt_stat.vif, skb);
-+			/* remove rx_desc */
-+			skb_pull(new, pkt_offset);
++	dma_sync_single_for_cpu(dev, dma, buf_sz, PCI_DMA_FROMDEVICE);
 +
-+			rtw_rx_stats(rtwdev, pkt_stat.vif, new);
- 			memcpy(new->cb, &rx_status, sizeof(rx_status));
- 			ieee80211_rx_irqsafe(rtwdev->hw, new);
- 		}
++	return 0;
++}
++
++static int rtw_pci_sync_rx_desc_device(struct rtw_dev *rtwdev, dma_addr_t dma,
++				       struct rtw_pci_rx_ring *rx_ring,
++				       u32 idx, u32 desc_sz)
++{
++	struct device *dev = rtwdev->dev;
++	struct rtw_pci_rx_buffer_desc *buf_desc;
++	int buf_sz = RTK_PCI_RX_BUF_SIZE;
++
++	dma_sync_single_for_device(dev, dma, buf_sz, PCI_DMA_FROMDEVICE);
++
++	buf_desc = (struct rtw_pci_rx_buffer_desc *)(rx_ring->r.head +
++						     idx * desc_sz);
++	memset(buf_desc, 0, sizeof(*buf_desc));
++	buf_desc->buf_size = cpu_to_le16(RTK_PCI_RX_BUF_SIZE);
++	buf_desc->dma = cpu_to_le32(dma);
++
++	return 0;
++}
++
+ static int rtw_pci_init_rx_ring(struct rtw_dev *rtwdev,
+ 				struct rtw_pci_rx_ring *rx_ring,
+ 				u8 desc_size, u32 len)
+@@ -782,8 +811,7 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
+ 		rtw_pci_dma_check(rtwdev, ring, cur_rp);
+ 		skb = ring->buf[cur_rp];
+ 		dma = *((dma_addr_t *)skb->cb);
+-		pci_unmap_single(rtwpci->pdev, dma, RTK_PCI_RX_BUF_SIZE,
+-				 PCI_DMA_FROMDEVICE);
++		rtw_pci_sync_rx_desc_cpu(rtwdev, dma);
+ 		rx_desc = skb->data;
+ 		chip->ops->query_rx_desc(rtwdev, rx_desc, &pkt_stat, &rx_status);
  
--		/* skb delivered to mac80211, alloc a new one in rx ring */
--		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
--		if (WARN(!new, "rx routine starvation\n"))
--			return;
--
--		ring->buf[cur_rp] = new;
--		rtw_pci_reset_rx_desc(rtwdev, new, ring, cur_rp, buf_desc_sz);
-+next_rp:
-+		/* new skb delivered to mac80211, re-enable original skb DMA */
-+		rtw_pci_reset_rx_desc(rtwdev, skb, ring, cur_rp, buf_desc_sz);
+@@ -818,7 +846,8 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
+ 
+ next_rp:
+ 		/* new skb delivered to mac80211, re-enable original skb DMA */
+-		rtw_pci_reset_rx_desc(rtwdev, skb, ring, cur_rp, buf_desc_sz);
++		rtw_pci_sync_rx_desc_device(rtwdev, dma, ring, cur_rp,
++					    buf_desc_sz);
  
  		/* host read next element in ring */
  		if (++cur_rp >= ring->r.len)
