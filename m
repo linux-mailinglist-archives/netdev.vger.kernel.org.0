@@ -2,71 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 343A5636F4
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:29:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1736370B
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 15:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbfGIN3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 09:29:23 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33860 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfGIN3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 09:29:23 -0400
-Received: by mail-pf1-f194.google.com with SMTP id b13so4704092pfo.1
-        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 06:29:22 -0700 (PDT)
+        id S1726921AbfGINg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 09:36:58 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:34365 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725947AbfGINg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 09:36:58 -0400
+Received: by mail-wr1-f66.google.com with SMTP id 31so4292250wrm.1
+        for <netdev@vger.kernel.org>; Tue, 09 Jul 2019 06:36:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=1y0fLaN1apsJQTWOTXlW35i/vqfKN25gZTy76oTiNA8=;
-        b=JG/DtjNnCkY/GELC7MmV1H00C/PoBRHeX2Kmg3F2Pk7RrFSP/qE7Hs+FFCJitYInuW
-         aPcX0I7WGAC9ZkbSto25nUafoHAsYAz0eKgMgLU4niwhEIomqAL8fcdpe7xCzdnhIiPp
-         UNqP9Mq6r5oy41pJZLwFuZwSjOyaJsZlAXfD4=
+        bh=mapTixTrDXxjke3qFfFxnsQjvfj+IddECOYJD1EKo3I=;
+        b=swVKRig3g+jfOKk8GEplgPnDkbqC8LdaJiZ3JsT8ovr3eV384gH2/Le+Am0PVdDscI
+         WZ1B18bZOPTMey6jYVSb4WsbtcI2mGsHvt+FwPqKr2zfeHHjmdCNDGEnQmk4Z1Bldxl6
+         kze/TSeZX3a65ko5PVqSfM/bjxx6sWf3gbezmntEjRvckgnIPAFW6rK9jaMd4B4PZkxs
+         Nx2259oAD7FahpaacYnRWP3YGNEsR/xgnWGWEtPgI7GpmKydHOvST2kpN5KC4xbj/OBx
+         g7HkFU3SVno1y/HWxgvS62xfEYE8ZYwYkwoNNc7zBsue6xlZ8EQlk3cS8vTPAbQoBDlX
+         EZMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1y0fLaN1apsJQTWOTXlW35i/vqfKN25gZTy76oTiNA8=;
-        b=msRxJ4Tqz+Yw8D4qmJgIYBVAI2IsXIGT3BeEVPEwRV66bJU+Uara7NJScuzFieeP6f
-         TWSdcJaTMu1f6GkZcitBjZxmRJDQwSL9FTGQqRv5oqCWutXaq81yKHdblPCovYntFCT4
-         /x3ywggiB182z+gBj7gBaTbdUz2r2Mu+3ViBwO1QreKTkj3u3/2tbz6Hi1arnmeMp6VN
-         8kDoWANt4ma+7K4qtTVoE4IX8SjnArCjM/FNh77OSqfClHNU3eqZJGD239cokitVNn7b
-         r5auop84Q/JOycUTlhGrszZ9yBcJhmWc7zrbXWWVgFEDxrjYJ5POahafnTDfke9rj0O9
-         jCWw==
-X-Gm-Message-State: APjAAAUKAozutDRQmHyks8FA3WMLlUkyeGMYf7DjgxBbvXD6Lnm1pSIT
-        KTZycDBB+hF2p1RIJguODji+rw==
-X-Google-Smtp-Source: APXvYqz0SN5R6Uz+e59XBsuPsAOkr+etwbTPoBVLPf7sIDuWRJlMhvewyJ3+EH8bBs9BEKzDvpqkSg==
-X-Received: by 2002:a63:4554:: with SMTP id u20mr31418102pgk.406.1562678962280;
-        Tue, 09 Jul 2019 06:29:22 -0700 (PDT)
-Received: from C02RW35GFVH8.dhcp.broadcom.net ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id t96sm6036304pjb.1.2019.07.09.06.29.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Jul 2019 06:29:21 -0700 (PDT)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Tue, 9 Jul 2019 09:29:17 -0400
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, hawk@kernel.org, ast@kernel.org
-Subject: Re: [PATCH net-next v2 4/4] bnxt_en: add page_pool support
-Message-ID: <20190709132917.GL87269@C02RW35GFVH8.dhcp.broadcom.net>
-References: <1562622784-29918-1-git-send-email-michael.chan@broadcom.com>
- <1562622784-29918-5-git-send-email-michael.chan@broadcom.com>
- <20190709062746.GA621@apalos>
+        bh=mapTixTrDXxjke3qFfFxnsQjvfj+IddECOYJD1EKo3I=;
+        b=A4BSgdNTblCaIXTq9t//0w9TdSvS/ss7cdpRceVdbOHBfFO3QNTYyALLLs5uIjne0U
+         ece523k/xDKS0MEXeoul6SvlHaCDIEu4i4vCLldJViqjSUm8DAEA+GwuWq4GYWl6UTE5
+         i2+5ERRqGsLNfwHQvrno0srZdNFvEP630U9+ZgLjcsmsGuZvEqTnKMfZadDWwdfe77S6
+         ctSV1JJ/44mWpJRZvaV9MXqiFM6OL8lHKbLcIikzuX5J3Gw0JXmkzLU7bgtCEx/TVq3C
+         8SUTIIgufUF4NUph/d2Y002Nh7uxdCbhnZrRfKrXh55xrm8zqoe31Ru/xZObpMiQ1eHP
+         9GiQ==
+X-Gm-Message-State: APjAAAULco0QuhO0dEizMg9OCHH/m06s0GUbZj2AsfpSdQS9KoSFJSmz
+        QpzkhLhb9OhSlNlHGeee4sbuFg==
+X-Google-Smtp-Source: APXvYqyS5csTOPqaonVD5h7+CScSvN8r6CUv2JLjRyreI8Bk5Ej/nWRyy6MZ9uRf88oPZGtbslOZ4w==
+X-Received: by 2002:adf:a70b:: with SMTP id c11mr26584919wrd.172.1562679415685;
+        Tue, 09 Jul 2019 06:36:55 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id t15sm20824876wrx.84.2019.07.09.06.36.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 09 Jul 2019 06:36:55 -0700 (PDT)
+Date:   Tue, 9 Jul 2019 15:36:54 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
+        marcelo.leitner@gmail.com, mkubecek@suse.cz,
+        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
+        cphealy@gmail.com, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net-next,v3 10/11] net: flow_offload: add
+ flow_block_cb_is_busy() and use it
+Message-ID: <20190709133654.GA2301@nanopsycho.orion>
+References: <20190708160614.2226-1-pablo@netfilter.org>
+ <20190708160614.2226-11-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190709062746.GA621@apalos>
-User-Agent: Mutt/1.8.0 (2017-02-23)
+In-Reply-To: <20190708160614.2226-11-pablo@netfilter.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 09:27:46AM +0300, Ilias Apalodimas wrote:
+Mon, Jul 08, 2019 at 06:06:12PM CEST, pablo@netfilter.org wrote:
+>This patch adds a function to check if flow block callback is already in
+>use.  Call this new function from flow_block_cb_setup_simple() and from
+>drivers.
+>
+>Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+>---
+>v3: formerly known as "net: flow_offload: don't allow subsystem to reuse blocks"
+>    add flow_block_cb_is_busy() helper. Call it per driver to make it easier
+>    to remove this whenever the first driver client support for multiple
+>    subsystem offloads.
+>
+> drivers/net/ethernet/mellanox/mlx5/core/en_rep.c    |  4 ++++
+> drivers/net/ethernet/mellanox/mlxsw/spectrum.c      |  4 ++++
+> drivers/net/ethernet/mscc/ocelot_tc.c               |  3 +++
+> drivers/net/ethernet/netronome/nfp/flower/offload.c |  4 ++++
+> include/net/flow_offload.h                          |  3 +++
+> net/core/flow_offload.c                             | 18 ++++++++++++++++++
+> net/dsa/slave.c                                     |  3 +++
+> 7 files changed, 39 insertions(+)
+>
+>diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+>index 19133b9e121a..e303149053e4 100644
+>--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+>+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+>@@ -721,6 +721,10 @@ mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
+> 		if (indr_priv)
+> 			return -EEXIST;
 > 
-> Thanks and sorry for the inconvenience :(
-> /Ilias
+>+		if (flow_block_cb_is_busy(mlx5e_rep_indr_setup_block_cb,
+>+					  indr_priv, &mlx5e_block_cb_list))
 
-No worries.  I didn't know Ivan's patch was going to go in so quickly!
+As I already asked for in another patch in this set, it would be really
+much much better to have some wrapping struct instead of plain list
+head here. 
 
-
+[...]
