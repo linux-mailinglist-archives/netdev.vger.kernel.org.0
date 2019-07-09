@@ -2,122 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 520206321A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 09:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 996106321B
+	for <lists+netdev@lfdr.de>; Tue,  9 Jul 2019 09:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbfGIHas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 03:30:48 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:35647 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfGIHar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 03:30:47 -0400
-Received: by mail-wm1-f68.google.com with SMTP id l2so2044742wmg.0;
-        Tue, 09 Jul 2019 00:30:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HtgNUo24y4FqBctjL3218NVQPuN/56YuJChVYp5PRBk=;
-        b=FjE/qYpi6P0oeSfyeaMJV/O9D0GqPxGz8qAHKiQ9fWqa00ETmAIAeEbS8VrhI4e3Yx
-         feU81cOIZqfmkZ8N3m0xUMbb1bCADkU+7t94bc6D1xbj/QWJqqT1ZdmSn9eJoXe2+ZuE
-         mlRflprj6L2Jn1SkjJVd+25I1x1XCtopkbgKLjyVY3oZvlqEcKqiUKWQlKxhVKUnCdhL
-         EW2RWXsnKvOrFPtQf3kBJNT/T8mmyx9wWWLuF5EtoKSLQAWK/1ftf6Rw5aBfoVQThxF5
-         8UsgLJSD2Xbz1ZHw2fJZBe/G7+iw2b0UjFslL5Rwm/UStTvdT16e0RUCmEJTmH2Z8ecw
-         biwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HtgNUo24y4FqBctjL3218NVQPuN/56YuJChVYp5PRBk=;
-        b=av04G7gaiGjySx0omeTU7p3xRQfSMNOvpg4rT2yQAzCkPYz7++MOpZv2t4aXN8P+vj
-         zoEV5tVMqrNTE0S5PVJkz9majo8fzfrM1kIDmgGhhfwwBiUbzanVgxV/N50QMLHaA2l2
-         dEdyrQBXk7f2jzB53tV+Rw7vF2pOV7bfIvYKNCQZd5sy9sf/CmgDWcKUnLYtFPO/IGJ6
-         SVUS9piqqBiygeuLxRT7bkYvEM3x5vsgrNywTrkWg8sD9t04v36NeTPY2TZ9aBPiyR8t
-         Lsb2oo/yrnYTi/e263pzm8tce3PpQ/udim8nuQLYKREpiUSHXelb3IGFkmb9K7UVhrBi
-         sl1g==
-X-Gm-Message-State: APjAAAWtfrfqYY/SYIax00mtCmLUXTPxjgJLOPaMb1wXoaKZFOcjXMq0
-        0XB4mIkYyJpFUBDtROv/UvsJxALk
-X-Google-Smtp-Source: APXvYqy5YzRMOYjaDMUJJzclFCHw2U2Fywzo8XJQ1cFPTZT5NJGKRqxXT4kB2KQbb74YNUMTYIHoVw==
-X-Received: by 2002:a1c:1f41:: with SMTP id f62mr21014804wmf.176.1562657445444;
-        Tue, 09 Jul 2019 00:30:45 -0700 (PDT)
-Received: from [192.168.8.147] (179.162.185.81.rev.sfr.net. [81.185.162.179])
-        by smtp.gmail.com with ESMTPSA id c12sm17647627wrd.21.2019.07.09.00.30.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Jul 2019 00:30:44 -0700 (PDT)
-Subject: Re: [PATCH] tipc: ensure skb->lock is initialised
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "jon.maloy@ericsson.com" <jon.maloy@ericsson.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20190707225328.15852-1-chris.packham@alliedtelesis.co.nz>
- <2298b9eb-100f-6130-60c4-0e5e2c7b84d1@gmail.com>
- <361940337b0d4833a5634ddd1e1896a9@svr-chch-ex1.atlnz.lc>
- <87fd2150548041219fc42bce80b63c9c@svr-chch-ex1.atlnz.lc>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b862a74b-9f1e-fb64-0641-550a83b64664@gmail.com>
-Date:   Tue, 9 Jul 2019 09:30:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <87fd2150548041219fc42bce80b63c9c@svr-chch-ex1.atlnz.lc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726525AbfGIHbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 03:31:00 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:33724 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726391AbfGIHbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 03:31:00 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 9 Jul 2019 10:30:57 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x697UuRE023415;
+        Tue, 9 Jul 2019 10:30:56 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>
+Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: [PATCH net-next v6 0/4] net/sched: Introduce tc connection tracking
+Date:   Tue,  9 Jul 2019 10:30:47 +0300
+Message-Id: <1562657451-20819-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+This patch series add connection tracking capabilities in tc sw datapath.
+It does so via a new tc action, called act_ct, and new tc flower classifier matching
+on conntrack state, mark and label.
 
-On 7/8/19 11:13 PM, Chris Packham wrote:
-> On 9/07/19 8:43 AM, Chris Packham wrote:
->> On 8/07/19 8:18 PM, Eric Dumazet wrote:
->>>
->>>
->>> On 7/8/19 12:53 AM, Chris Packham wrote:
->>>> tipc_named_node_up() creates a skb list. It passes the list to
->>>> tipc_node_xmit() which has some code paths that can call
->>>> skb_queue_purge() which relies on the list->lock being initialised.
->>>> Ensure tipc_named_node_up() uses skb_queue_head_init() so that the lock
->>>> is explicitly initialised.
->>>>
->>>> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
->>>
->>> I would rather change the faulty skb_queue_purge() to __skb_queue_purge()
->>>
->>
->> Makes sense. I'll look at that for v2.
->>
-> 
-> Actually maybe not. tipc_rcast_xmit(), tipc_node_xmit_skb(), 
-> tipc_send_group_msg(), __tipc_sendmsg(), __tipc_sendstream(), and 
-> tipc_sk_timeout() all use skb_queue_head_init(). So my original change 
-> brings tipc_named_node_up() into line with them.
-> 
-> I think it should be safe for tipc_node_xmit() to use 
-> __skb_queue_purge() since all the callers seem to have exclusive access 
-> to the list of skbs. It still seems that the callers should all use 
-> skb_queue_head_init() for consistency.
-> 
+Usage is as follows:
+$ tc qdisc add dev ens1f0_0 ingress
+$ tc qdisc add dev ens1f0_1 ingress
 
-No, tipc does not use the list lock (it relies on the socket lock)
- and therefore should consistently use __skb_queue_head_init()
-instead of skb_queue_head_init()
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 2
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_state +trk+new \
+  action ct zone 2 commit mark 0xbb nat src addr 5.5.5.7 pipe \
+  action mirred egress redirect dev ens1f0_1
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_1
 
-Using a spinlock to protect a local list makes no sense really,
-it spreads false sense of correctness.
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 1
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 1 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_0
 
-tipc_link_xmit() for example never acquires the spinlock,
-yet uses skb_peek() and __skb_dequeue()
+The pattern used in the design here closely resembles OvS, as the plan is to also offload
+OvS conntrack rules to tc. OvS datapath rules uses it's recirculation mechanism to send
+specific packets to conntrack, and return with the new conntrack state (ct_state) on some other recirc_id
+to be matched again (we use goto chain for this).
 
-It is time to clean all this mess.
+This results in the following OvS datapath rules:
 
+recirc_id(0),in_port(ens1f0_0),ct_state(-trk),... actions:ct(zone=2),recirc(2)
+recirc_id(2),in_port(ens1f0_0),ct_state(+new+trk),ct_mark(0xbb),... actions:ct(commit,zone=2,nat(src=5.5.5.7),mark=0xbb),ens1f0_1
+recirc_id(2),in_port(ens1f0_0),ct_state(+est+trk),ct_mark(0xbb),... actions:ct(zone=2,nat),ens1f0_1
 
+recirc_id(1),in_port(ens1f0_1),ct_state(-trk),... actions:ct(zone=2),recirc(1)
+recirc_id(1),in_port(ens1f0_1),ct_state(+est+trk),... actions:ct(zone=2,nat),ens1f0_0
+
+Changelog:
+	See individual patches.
+
+Paul Blakey (4):
+  net/sched: Introduce action ct
+  net/flow_dissector: add connection tracking dissection
+  net/sched: cls_flower: Add matching on conntrack info
+  tc-tests: Add tc action ct tests
+
+ include/linux/skbuff.h                             |  10 +
+ include/net/flow_dissector.h                       |  15 +
+ include/net/flow_offload.h                         |   5 +
+ include/net/tc_act/tc_ct.h                         |  63 ++
+ include/uapi/linux/pkt_cls.h                       |  17 +
+ include/uapi/linux/tc_act/tc_ct.h                  |  41 +
+ net/core/flow_dissector.c                          |  44 +
+ net/sched/Kconfig                                  |  11 +
+ net/sched/Makefile                                 |   1 +
+ net/sched/act_ct.c                                 | 984 +++++++++++++++++++++
+ net/sched/cls_api.c                                |   5 +
+ net/sched/cls_flower.c                             | 127 ++-
+ .../selftests/tc-testing/tc-tests/actions/ct.json  | 314 +++++++
+ 13 files changed, 1632 insertions(+), 5 deletions(-)
+ create mode 100644 include/net/tc_act/tc_ct.h
+ create mode 100644 include/uapi/linux/tc_act/tc_ct.h
+ create mode 100644 net/sched/act_ct.c
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
+
+-- 
+1.8.3.1
 
