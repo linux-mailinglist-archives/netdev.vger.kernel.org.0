@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1114464C1C
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 20:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCAC64C26
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 20:35:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728273AbfGJSav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 14:30:51 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:56015 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728138AbfGJSat (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 14:30:49 -0400
-Received: by mail-wm1-f68.google.com with SMTP id a15so3263199wmj.5
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 11:30:48 -0700 (PDT)
+        id S1727982AbfGJSfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 14:35:33 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:46396 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727641AbfGJSf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 14:35:28 -0400
+Received: by mail-lj1-f195.google.com with SMTP id v24so3072606ljg.13
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 11:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=y+nhRyHtKngoHJN0lKHoiZm2Ls8+pD4TxzdEQq9blk8=;
-        b=lvIQNsqy6J+X2UzbsuCzQW3R2d2AulHrOZ1k11l25Paxn4b6/9HdSTyc+jnbDnDdq0
-         FwIWpXZPTYjKxGdF+2ZJrb2Ss3iRifDmPwop/5yjCDFr66Oj83FVO5GlOkKz252sAmOc
-         pd4cQopiROOakHVPMALx1w/Qpb3tJI9ghJS/pD9AMFUm1HIXzr27DQ04FSaCQZXzr0PL
-         blAZ12c/CZDotb4BhTJ1KN+R7F2u/she+9t7jW60wIIl2A+3u1efqB9QFnEcr34IBngq
-         Bt3LFe9e2Ck1CfIZ47uS/Ihck2+VeR7gZqULJOLN+iiOHba/lxQhYbWYK6a2o2bIZaV3
-         /S+A==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=59LQqbVb+KQ/BMKWYDi9soPsvc3OIaSci70f6vwiQDg=;
+        b=FqoWOUQDI8WMp245xx+rH6pVnDYOUvjDYs15fEQlF6pDz0NP8XsjV31N/mtE4tmezC
+         j2UTUlQ1N7GdmP1kf74xSCxvIJJ+DHBtK3c6eKcgoseA+K8AhvGS/ovhJPv6+HASW4G8
+         XOZuoCQHXi5bTBX95YG3a2jJFHuWkpZNYqeaA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=y+nhRyHtKngoHJN0lKHoiZm2Ls8+pD4TxzdEQq9blk8=;
-        b=Gb/wll323hYGmY1CioPmZ3Aem2L+T2+V5Bwc0iXNnPBZX6sm31VevzesRf0dlCGdWF
-         TEW1EZtvnwG48bq+tD/kWGLXr65echWIEY/HCq1l8p2bzDVUhaG3Z1ggz/ydC+jRpf0o
-         23fswjtKxM8kyp3ofEeXqpSrY16s5YV6Qne6LKUT6MbCKVIWGlWVOvIJsXKRSG+5DG+B
-         lU6W4IAyx8rdZ00lKh7mqmpjlZ5otOiYSAthEjmxP/A6uWbj7w0yD1k6R/GxJzJLjDpb
-         pFFvWUpzeeGapFrL0zilqb5wYDxo0YM6UMGgJeX8UqlI16GaVBcsf8+UYrSUMJ9T5nBE
-         spTA==
-X-Gm-Message-State: APjAAAXykKEdywfaAwpC+pSmIrEqANQFQMN7WB0uvTVqvXOTzPPSC0o6
-        uIBsZNENwzI9JsID2ADKNhLrrJAj8gY=
-X-Google-Smtp-Source: APXvYqw8zZQ0Skl9zlLGWMWyQXdF75MJkUsuqH4ADVTa2kVK4SYNyPEmEsZk9EI7qz0G4CqdGoZSYA==
-X-Received: by 2002:a1c:cfc3:: with SMTP id f186mr6034715wmg.134.1562783447826;
-        Wed, 10 Jul 2019 11:30:47 -0700 (PDT)
-Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id p3sm2747584wmg.15.2019.07.10.11.30.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 10 Jul 2019 11:30:47 -0700 (PDT)
-From:   John Hurley <john.hurley@netronome.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, simon.horman@netronome.com,
-        jakub.kicinski@netronome.com, oss-drivers@netronome.com,
-        John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next 2/2] nfp: flower: ensure ip protocol is specified for L4 matches
-Date:   Wed, 10 Jul 2019 19:30:30 +0100
-Message-Id: <1562783430-7031-3-git-send-email-john.hurley@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1562783430-7031-1-git-send-email-john.hurley@netronome.com>
-References: <1562783430-7031-1-git-send-email-john.hurley@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=59LQqbVb+KQ/BMKWYDi9soPsvc3OIaSci70f6vwiQDg=;
+        b=SMXeb027vRdFETXGsVTOsSqCdOrkN8l0s9JURMsvIaWi/QYzvv1UcbTpOG4nENanRc
+         4jzyzJ+Xjhz90WeAbZPg2qSezO1K/+ekJuY376xRq4+4n5PJoVFi0YMfjP1T+8AznSY1
+         dhSnEYkAgMzYPeO2CnST0MyalXnzNWdiKY+f46UCTorhtil5mPwlh/kNkIijeW/siMUs
+         HCVBDIKMbIqG3AitjX4ZoldCRsRkGZKK+PQVG5RcLxENtX0MKksLJlutYEdR0JYSfTqy
+         wLl7frmWVMfFL7FrSt+sET+XJph4PD2nPrWHgDe0lpsCa75GUMt6GQGWCYLPG7YTjkQY
+         IRHA==
+X-Gm-Message-State: APjAAAVWBfRX26IrkQhXtM3MvTmSPqRGSFZZtJOaZYOVKdeTOem34T+0
+        AbO48vyp8x74zwgqODeYUHaLmxMg0o4=
+X-Google-Smtp-Source: APXvYqzFlHZwjukHyVfOTHvRjWArFE8dC/gdy2lxf8gY7MIGqYpMJtQn9D0wPt3+jqqLM44E7fq4Lw==
+X-Received: by 2002:a2e:5c6:: with SMTP id 189mr18659159ljf.22.1562783725715;
+        Wed, 10 Jul 2019 11:35:25 -0700 (PDT)
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
+        by smtp.gmail.com with ESMTPSA id x67sm590257ljb.13.2019.07.10.11.35.24
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 10 Jul 2019 11:35:24 -0700 (PDT)
+Received: by mail-lf1-f50.google.com with SMTP id u10so2268768lfm.12
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 11:35:24 -0700 (PDT)
+X-Received: by 2002:a19:641a:: with SMTP id y26mr14803967lfb.29.1562783723934;
+ Wed, 10 Jul 2019 11:35:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <28477.1562362239@warthog.procyon.org.uk>
+In-Reply-To: <28477.1562362239@warthog.procyon.org.uk>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 10 Jul 2019 11:35:07 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
+Message-ID: <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
+Subject: Re: [GIT PULL] Keys: Set 4 - Key ACLs for 5.3
+To:     David Howells <dhowells@redhat.com>
+Cc:     James Morris James Morris <jmorris@namei.org>,
+        keyrings@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        linux-nfs@vger.kernel.org, CIFS <linux-cifs@vger.kernel.org>,
+        linux-afs@lists.infradead.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-integrity@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flower rules on the NFP firmware are able to match on an IP protocol
-field. When parsing rules in the driver, unknown IP protocols are only
-rejected when further matches are to be carried out on layer 4 fields, as
-the firmware will not be able to extract such fields from packets.
+On Fri, Jul 5, 2019 at 2:30 PM David Howells <dhowells@redhat.com> wrote:
+>
+> Here's my fourth block of keyrings changes for the next merge window.  They
+> change the permissions model used by keys and keyrings to be based on an
+> internal ACL by the following means:
 
-L4 protocol dissectors such as FLOW_DISSECTOR_KEY_PORTS are only parsed if
-an IP protocol is specified. This leaves a loophole whereby a rule that
-attempts to match on transport layer information such as port numbers but
-does not explicitly give an IP protocol type can be incorrectly offloaded
-(in this case with wildcard port numbers matches).
+It turns out that this is broken, and I'll probably have to revert the
+merge entirely.
 
-Fix this by rejecting the offload of flows that attempt to match on L4
-information, not only when matching on an unknown IP protocol type, but
-also when the protocol is wildcarded.
+With this merge in place, I can't boot any of the machines that have
+an encrypted disk setup. The boot just stops at
 
-Fixes: 2a04784594f6 ("nfp: flower: check L4 matches on unknown IP protocols")
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+  systemd[1]: Started Forward Password Requests to Plymouth Directory Watch.
+  systemd[1]: Reached target Paths.
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 885f968..faa8ba0 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -386,18 +386,15 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 			key_layer |= NFP_FLOWER_LAYER_TP;
- 			key_size += sizeof(struct nfp_flower_tp_ports);
- 			break;
--		default:
--			/* Other ip proto - we need check the masks for the
--			 * remainder of the key to ensure we can offload.
--			 */
--			if (nfp_flower_check_higher_than_l3(flow)) {
--				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unknown IP protocol with L4 matches not supported");
--				return -EOPNOTSUPP;
--			}
--			break;
- 		}
- 	}
- 
-+	if (!(key_layer & NFP_FLOWER_LAYER_TP) &&
-+	    nfp_flower_check_higher_than_l3(flow)) {
-+		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: cannot match on L4 information without specified IP protocol type");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_TCP)) {
- 		struct flow_match_tcp tcp;
- 		u32 tcp_flags;
--- 
-2.7.4
+and never gets any further. I never get the prompt for a passphrase
+for the disk encryption.
 
+Apparently not a lot of developers are using encrypted volumes for
+their development machines.
+
+I'm not sure if the only requirement is an encrypted volume, or if
+this is also particular to a F30 install in case you need to be able
+to reproduce. But considering that you have a redhat email address,
+I'm sure you can find a F30 install somewhere with an encrypted disk.
+
+David, if you can fix this quickly, I'll hold off on the revert of it
+all, but I can wait only so long. I've stopped merging stuff since I
+noticed my machines don't work (this merge window has not been
+pleasant so far - in addition to this issue I had another entirely
+unrelated boot failure which made bisecting this one even more fun).
+
+So if I don't see a quick fix, I'll just revert in order to then
+continue to do pull requests later today. Because I do not want to do
+further pulls with something that I can't boot as a base.
+
+                 Linus
