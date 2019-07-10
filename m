@@ -2,85 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7545064051
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 07:05:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC926403E
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 07:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726135AbfGJFEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 01:04:35 -0400
-Received: from smtprelay0012.hostedemail.com ([216.40.44.12]:43575 "EHLO
+        id S1726436AbfGJFEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 01:04:51 -0400
+Received: from smtprelay0116.hostedemail.com ([216.40.44.116]:43605 "EHLO
         smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725791AbfGJFEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 01:04:35 -0400
+        by vger.kernel.org with ESMTP id S1726317AbfGJFEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 01:04:48 -0400
 Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 2D69B181D3403;
-        Wed, 10 Jul 2019 05:04:33 +0000 (UTC)
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 161B4181D33FB;
+        Wed, 10 Jul 2019 05:04:47 +0000 (UTC)
 X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::::::::::::::::,RULES_HIT:41:355:379:541:973:982:988:989:1260:1345:1437:1534:1541:1711:1730:1747:1777:1792:1801:2198:2199:2393:2559:2562:2731:3138:3139:3140:3141:3142:3352:3865:3866:3867:3868:4250:4605:5007:6261:6737:10004:10848:11026:11658:11914:12043:12048:12297:12679:12895:13069:13161:13229:13311:13357:14096:14181:14384:14394:14581:14721:21080:21220:21451:21627:30054,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:26,LUA_SUMMARY:none
-X-HE-Tag: help91_a3a1c1ec484c
-X-Filterd-Recvd-Size: 2833
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::,RULES_HIT:41:355:379:541:800:960:973:988:989:1260:1345:1359:1437:1534:1541:1711:1730:1747:1777:1792:2198:2199:2393:2559:2562:3138:3139:3140:3141:3142:3352:3867:4321:4605:5007:6261:6642:8784:9121:10004:10848:11026:11233:11473:11657:11658:11914:12043:12048:12296:12297:12438:12555:12895:12986:13069:13311:13357:14181:14384:14394:14721:21080:21451:21627:30054:30080,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: fang39_c6a5a3a50f08
+X-Filterd-Recvd-Size: 2562
 Received: from joe-laptop.perches.com (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
         (Authenticated sender: joe@perches.com)
         by omf06.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 10 Jul 2019 05:04:30 +0000 (UTC)
+        Wed, 10 Jul 2019 05:04:45 +0000 (UTC)
 From:   Joe Perches <joe@perches.com>
 To:     Andrew Morton <akpm@linux-foundation.org>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-wireless@vger.kernel.org, linux-media@vger.kernel.org
-Cc:     dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-mmc@vger.kernel.org, devel@driverdev.osuosl.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 00/12] treewide: Fix GENMASK misuses
-Date:   Tue,  9 Jul 2019 22:04:13 -0700
-Message-Id: <cover.1562734889.git.joe@perches.com>
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 07/12] net: ethernet: mediatek: Fix misuses of GENMASK macro
+Date:   Tue,  9 Jul 2019 22:04:20 -0700
+Message-Id: <1961dd832a1363b6dfdbac6cb0b1c71fa838d258.1562734889.git.joe@perches.com>
 X-Mailer: git-send-email 2.15.0
+In-Reply-To: <cover.1562734889.git.joe@perches.com>
+References: <cover.1562734889.git.joe@perches.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These GENMASK uses are inverted argument order and the
-actual masks produced are incorrect.  Fix them.
+Arguments are supposed to be ordered high then low.
 
-Add checkpatch tests to help avoid more misuses too.
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 +-
+ drivers/net/ethernet/mediatek/mtk_sgmii.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Joe Perches (12):
-  checkpatch: Add GENMASK tests
-  clocksource/drivers/npcm: Fix misuse of GENMASK macro
-  drm: aspeed_gfx: Fix misuse of GENMASK macro
-  iio: adc: max9611: Fix misuse of GENMASK macro
-  irqchip/gic-v3-its: Fix misuse of GENMASK macro
-  mmc: meson-mx-sdio: Fix misuse of GENMASK macro
-  net: ethernet: mediatek: Fix misuses of GENMASK macro
-  net: stmmac: Fix misuses of GENMASK macro
-  rtw88: Fix misuse of GENMASK macro
-  phy: amlogic: G12A: Fix misuse of GENMASK macro
-  staging: media: cedrus: Fix misuse of GENMASK macro
-  ASoC: wcd9335: Fix misuse of GENMASK macro
-
- drivers/clocksource/timer-npcm7xx.c               |  2 +-
- drivers/gpu/drm/aspeed/aspeed_gfx.h               |  2 +-
- drivers/iio/adc/max9611.c                         |  2 +-
- drivers/irqchip/irq-gic-v3-its.c                  |  2 +-
- drivers/mmc/host/meson-mx-sdio.c                  |  2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h       |  2 +-
- drivers/net/ethernet/mediatek/mtk_sgmii.c         |  2 +-
- drivers/net/ethernet/stmicro/stmmac/descs.h       |  2 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |  4 ++--
- drivers/net/wireless/realtek/rtw88/rtw8822b.c     |  2 +-
- drivers/phy/amlogic/phy-meson-g12a-usb2.c         |  2 +-
- drivers/staging/media/sunxi/cedrus/cedrus_regs.h  |  2 +-
- scripts/checkpatch.pl                             | 15 +++++++++++++++
- sound/soc/codecs/wcd-clsh-v2.c                    |  2 +-
- 14 files changed, 29 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 876ce6798709..221012ecb845 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -712,7 +712,7 @@ struct mtk_soc_data {
+ #define MTK_MAX_DEVS			2
+ 
+ #define MTK_SGMII_PHYSPEED_AN          BIT(31)
+-#define MTK_SGMII_PHYSPEED_MASK        GENMASK(0, 2)
++#define MTK_SGMII_PHYSPEED_MASK        GENMASK(2, 0)
+ #define MTK_SGMII_PHYSPEED_1000        BIT(0)
+ #define MTK_SGMII_PHYSPEED_2500        BIT(1)
+ #define MTK_HAS_FLAGS(flags, _x)       (((flags) & (_x)) == (_x))
+diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+index 136f90ce5a65..ff509d42d818 100644
+--- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
++++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+@@ -82,7 +82,7 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id)
+ 		return -EINVAL;
+ 
+ 	regmap_read(ss->regmap[id], ss->ana_rgc3, &val);
+-	val &= ~GENMASK(2, 3);
++	val &= ~GENMASK(3, 2);
+ 	mode = ss->flags[id] & MTK_SGMII_PHYSPEED_MASK;
+ 	val |= (mode == MTK_SGMII_PHYSPEED_1000) ? 0 : BIT(2);
+ 	regmap_write(ss->regmap[id], ss->ana_rgc3, val);
 -- 
 2.15.0
 
