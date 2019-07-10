@@ -2,69 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F2C64607
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5F566460E
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbfGJMKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:10:11 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:31786 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbfGJMKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:10:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1562760610; x=1594296610;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=keN8EFn+IHg5hXYYMmmGsxMpxiPk60sc+gcoGB+dD7M=;
-  b=NW36NFr+XI9CRjcQrsBKodDRWC9uNX8Q+9E0nbrQAP0qm7xot1lCQaBy
-   QcuOXJPsx8zs2FMbH16NPu2J9RabeZFtoxfHrakuVx9BWEoagn7JdwztR
-   nrlQb37ixVHOHxj5M/wEkN0PtFPtFBJmAf29kcqG2EAHyL+V4iaH7FA4N
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.62,474,1554768000"; 
-   d="scan'208";a="815382902"
-Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-2a-53356bf6.us-west-2.amazon.com) ([10.47.22.34])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 10 Jul 2019 12:10:03 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-53356bf6.us-west-2.amazon.com (Postfix) with ESMTPS id C5405A2362;
-        Wed, 10 Jul 2019 12:10:02 +0000 (UTC)
-Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 10 Jul 2019 12:10:02 +0000
-Received: from 8c85908914bf.ant.amazon.com (10.43.161.115) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 10 Jul 2019 12:09:58 +0000
-Subject: Re: [PATCH v6 rdma-next 2/6] RDMA/efa: Use the common mmap_xa helpers
-To:     Michal Kalderon <michal.kalderon@marvell.com>,
-        <ariel.elior@marvell.com>, <jgg@ziepe.ca>, <dledford@redhat.com>
-CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-References: <20190709141735.19193-1-michal.kalderon@marvell.com>
- <20190709141735.19193-3-michal.kalderon@marvell.com>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <ba7809c0-5ab1-ac5e-bcf9-57d2930d21ed@amazon.com>
-Date:   Wed, 10 Jul 2019 15:09:52 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        id S1727248AbfGJMMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:12:39 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36076 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725911AbfGJMMi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 08:12:38 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 9FB0EAC1E;
+        Wed, 10 Jul 2019 12:12:36 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id F3A27E0E06; Wed, 10 Jul 2019 14:12:31 +0200 (CEST)
+Date:   Wed, 10 Jul 2019 14:12:31 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 04/15] ethtool: introduce ethtool netlink
+ interface
+Message-ID: <20190710121231.GA5700@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <e7fa3ad7e9cf4d7a8f9a2085e3166f7260845b0a.1562067622.git.mkubecek@suse.cz>
+ <20190702122521.GN2250@nanopsycho>
+ <20190702145241.GD20101@unicorn.suse.cz>
+ <20190703084151.GR2250@nanopsycho>
+ <20190708172729.GC24474@unicorn.suse.cz>
+ <20190708192629.GD2282@nanopsycho.orion>
+ <20190708202219.GE24474@unicorn.suse.cz>
+ <20190709134212.GD2301@nanopsycho.orion>
 MIME-Version: 1.0
-In-Reply-To: <20190709141735.19193-3-michal.kalderon@marvell.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.161.115]
-X-ClientProxiedBy: EX13D06UWA001.ant.amazon.com (10.43.160.220) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190709134212.GD2301@nanopsycho.orion>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/07/2019 17:17, Michal Kalderon wrote:
-> Remove the functions related to managing the mmap_xa database.
-> This code was copied to the ib_core. Use the common API's instead.
+On Tue, Jul 09, 2019 at 03:42:12PM +0200, Jiri Pirko wrote:
+> Mon, Jul 08, 2019 at 10:22:19PM CEST, mkubecek@suse.cz wrote:
+> >On Mon, Jul 08, 2019 at 09:26:29PM +0200, Jiri Pirko wrote:
+> >> Mon, Jul 08, 2019 at 07:27:29PM CEST, mkubecek@suse.cz wrote:
+> >> >
+> >> >There are two reasons for this design. First is to reduce the number of
+> >> >requests needed to get the information. This is not so much a problem of
+> >> >ethtool itself; the only existing commands that would result in multiple
+> >> >request messages would be "ethtool <dev>" and "ethtool -s <dev>". Maybe
+> >> >also "ethtool -x/-X <dev>" but even if the indirection table and hash
+> >> >key have different bits assigned now, they don't have to be split even
+> >> >if we split other commands. It may be bigger problem for daemons wanting
+> >> >to keep track of system configuration which would have to issue many
+> >> >requests whenever a new device appears.
+> >> >
+> >> >Second reason is that with 8-bit genetlink command/message id, the space
+> >> >is not as infinite as it might seem. I counted quickly, right now the
+> >> >full series uses 14 ids for kernel messages, with split you propose it
+> >> >would most likely grow to 44. For full implementation of all ethtool
+> >> >functionality, we could get to ~60 ids. It's still only 1/4 of the
+> >> >available space but it's not clear what the future development will look
+> >> >like. We would certainly need to be careful not to start allocating new
+> >> >commands for single parameters and try to be foreseeing about what can
+> >> >be grouped together. But we will need to do that in any case.
+> >> >
+> >> >On kernel side, splitting existing messages would make some things a bit
+> >> >easier. It would also reduce the number of scenarios where only part of
+> >> >requested information is available or only part of a SET request fails.
+> >> 
+> >> Okay, I got your point. So why don't we look at if from the other angle.
+> >> Why don't we have only single get/set command that would be in general
+> >> used to get/set ALL info from/to the kernel. Where we can have these
+> >> bits (perhaps rather varlen bitfield) to for user to indicate which data
+> >> is he interested in? This scales. The other commands would be
+> >> just for action.
+> >> 
+> >> Something like RTM_GETLINK/RTM_SETLINK. Makes sense?
+> >
+> >It's certainly an option but at the first glance it seems as just moving
+> >what I tried to avoid one level lower. It would work around the u8 issue
+> >(but as Johannes pointed out, we can handle it with genetlink when/if
+> >the time comes). We would almost certainly have to split the replies
+> >into multiple messages to keep the packet size reasonable. I'll have to
+> >think more about the consequences for both kernel and userspace.
+> >
+> >My gut feeling is that out of the two extreme options (one universal
+> >message type and message types corresponding to current infomask bits),
+> >the latter is more appealing. After all, ethtool has been gathering
+> >features that would need those ~60 message types for 20 years.
 > 
-> Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+> Yeah, but I think that we have to do one or another. Anything in between
+> makes the code complex and uapi confusing. Let's start clean :)
 
-Thanks Michal,
-Acked-by: Gal Pressman <galpress@amazon.com>
+I'll split the messages for v7.
+
+Michal
