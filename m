@@ -2,131 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE9F64C0B
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 20:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0B964C10
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 20:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728045AbfGJS0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 14:26:01 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37479 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727460AbfGJS0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 14:26:01 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 10 Jul 2019 21:25:56 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.213.18.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6AIPurr013352;
-        Wed, 10 Jul 2019 21:25:56 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, pablo@netfilter.org, saeedm@mellanox.com,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting up tc block on rep
-Date:   Wed, 10 Jul 2019 21:25:54 +0300
-Message-Id: <20190710182554.2988-1-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
+        id S1727607AbfGJS2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 14:28:46 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40166 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727242AbfGJS2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 14:28:46 -0400
+Received: by mail-wr1-f65.google.com with SMTP id r1so3492009wrl.7
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 11:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=v33Ah81f8LPy5DE3n1JaAu2WPBHstNxMONaHIkkt6fs=;
+        b=UFHUyLuJnksUaHZcLjS2mFyOHj1YVvCe5mABYLXBjeVBh8k7hs5l9nPxJWQl3feWWY
+         VGQzdTyuNzagbQ+GowLjIKpIb8KyqqFysZz9WT0pyDkFPzKu7/fEiQFJiZKxPR2vzbSg
+         tlo2K4aOQGKom1l4CySrQE4Crssw4Q1rPn4+lOwePx+kQGi//AjgbexMHZ+WS/T/zNu0
+         9pIu/5M+6x3z4cblfVRhlipGY6qGzF0VVxIChxgHkXbErekPUSBgkLhRl7SO14h0YJO2
+         KigEkGIQeS1Pq2C5GbfZMOXQlZQnZ9GQSR34trpY0Rqzqtl+oRxkRjTjtj8DSsztbVxd
+         Ru0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=v33Ah81f8LPy5DE3n1JaAu2WPBHstNxMONaHIkkt6fs=;
+        b=HSb2WVPq2f17KbMQqI+4Nfunz7hPdK2B03KEjtCBQyo5lslzj3C7uleOgkPOcoptrC
+         kSqTy/lU53iD8Ch5S3VFDASa6MmKlL4zezbnEhqqQmF4uWnqfXD5yD1nAb5D/Gybhomq
+         WvuF9wWnGsYv8agOaErVRZlXCPq7sWWJIDyWE0GhA6GG0aOdg4L1cyM7oqsoPgJjSqX4
+         DSTKKt+R+GanuK1xNxoUWvRqtPpp+gNCwj0wpbNaNdzhW4s5RnnChJ9RB/KXBtIsPvDS
+         TXUGF6vlUGbVCTQ3GqVG7xLbzbpQIU2s75cdDA43EX8NTxctBWggH6PZ11J8dD44P3Kr
+         urmQ==
+X-Gm-Message-State: APjAAAU9BY3pOyO3AzDnXO+SBcJb/HSNibjf3mpIBLL1gfSuY8YcDejt
+        8aQvLJ8rYSPCtqlip3CyodwPmzjN
+X-Google-Smtp-Source: APXvYqw3QRFcrSb5B2iy+eKzVKiryjk5ub4uTsMqhoHwtF5VII0fJ1kuDNgcMsfRChD7ncjVWYkwzw==
+X-Received: by 2002:adf:c594:: with SMTP id m20mr6664555wrg.126.1562783324365;
+        Wed, 10 Jul 2019 11:28:44 -0700 (PDT)
+Received: from [192.168.8.147] (31.172.185.81.rev.sfr.net. [81.185.172.31])
+        by smtp.gmail.com with ESMTPSA id h6sm2062966wre.82.2019.07.10.11.28.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 10 Jul 2019 11:28:43 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+To:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
+        Christoph Paasch <christoph.paasch@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+ <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
+Date:   Wed, 10 Jul 2019 20:28:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
+In-Reply-To: <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent refactoring of tc block offloads infrastructure introduced new
-flow_block_cb_setup_simple() method intended to be used as unified way for
-all drivers to register offload callbacks. However, commit that actually
-extended all users (drivers) with block cb list and provided it to
-flow_block infra missed mlx5 en_rep. This leads to following NULL-pointer
-dereference when creating Qdisc:
 
-[  278.385175] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[  278.393233] #PF: supervisor read access in kernel mode
-[  278.399446] #PF: error_code(0x0000) - not-present page
-[  278.405847] PGD 8000000850e73067 P4D 8000000850e73067 PUD 8620cd067 PMD 0
-[  278.414141] Oops: 0000 [#1] SMP PTI
-[  278.419019] CPU: 7 PID: 3369 Comm: tc Not tainted 5.2.0-rc6+ #492
-[  278.426580] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[  278.435853] RIP: 0010:flow_block_cb_setup_simple+0xc4/0x190
-[  278.442953] Code: 10 48 89 42 08 48 89 10 48 b8 00 01 00 00 00 00 ad de 49 89 00 48 05 00 01 00 00 49 89 40 08 31 c0 c3 b8 a1 ff ff ff c3 f3 c3 <48> 8b 06 48 39 c6 75 0a eb 1a 48 8b 00 48 39 c6 74 12
- 48 3b 50 28
-[  278.464829] RSP: 0018:ffffaf07c3f97990 EFLAGS: 00010246
-[  278.471648] RAX: 0000000000000000 RBX: ffff9b43ed4c7680 RCX: ffff9b43d5f80840
-[  278.480408] RDX: ffffffffc0491650 RSI: 0000000000000000 RDI: ffffaf07c3f97998
-[  278.489110] RBP: ffff9b43ddff9000 R08: ffff9b43d5f80840 R09: 0000000000000001
-[  278.497838] R10: 0000000000000009 R11: 00000000000003ad R12: ffffaf07c3f97c08
-[  278.506595] R13: ffff9b43d5f80000 R14: ffff9b43ed4c7680 R15: ffff9b43dfa20b40
-[  278.515374] FS:  00007f796be1b400(0000) GS:ffff9b43ef840000(0000) knlGS:0000000000000000
-[  278.525099] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  278.532453] CR2: 0000000000000000 CR3: 0000000840398002 CR4: 00000000001606e0
-[  278.541197] Call Trace:
-[  278.545252]  tcf_block_offload_cmd.isra.52+0x7e/0xb0
-[  278.551871]  tcf_block_get_ext+0x365/0x3e0
-[  278.557569]  qdisc_create+0x15c/0x4e0
-[  278.562859]  ? kmem_cache_alloc_trace+0x1a2/0x1c0
-[  278.569235]  tc_modify_qdisc+0x1c8/0x780
-[  278.574761]  rtnetlink_rcv_msg+0x291/0x340
-[  278.580518]  ? _cond_resched+0x15/0x40
-[  278.585856]  ? rtnl_calcit.isra.29+0x120/0x120
-[  278.591868]  netlink_rcv_skb+0x4a/0x110
-[  278.597198]  netlink_unicast+0x1a0/0x250
-[  278.602601]  netlink_sendmsg+0x2c1/0x3c0
-[  278.608022]  sock_sendmsg+0x5b/0x60
-[  278.612969]  ___sys_sendmsg+0x289/0x310
-[  278.618231]  ? do_wp_page+0x99/0x730
-[  278.623216]  ? page_add_new_anon_rmap+0xbe/0x140
-[  278.629298]  ? __handle_mm_fault+0xc84/0x1360
-[  278.635113]  ? __sys_sendmsg+0x5e/0xa0
-[  278.640285]  __sys_sendmsg+0x5e/0xa0
-[  278.645239]  do_syscall_64+0x5b/0x1b0
-[  278.650274]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  278.656697] RIP: 0033:0x7f796abdeb87
-[  278.661628] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 80 00 00 00 00 8b 05 6a 2b 2c 00 48 63 d2 48 63 ff 85 c0 75 18 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 59 f3 c3 0f 1f 80 00 00 00 00 53
- 48 89 f3 48
-[  278.683248] RSP: 002b:00007ffde213ba48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[  278.692245] RAX: ffffffffffffffda RBX: 000000005d261e6f RCX: 00007f796abdeb87
-[  278.700862] RDX: 0000000000000000 RSI: 00007ffde213bab0 RDI: 0000000000000003
-[  278.709527] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
-[  278.718167] R10: 000000000000000c R11: 0000000000000246 R12: 0000000000000001
-[  278.726743] R13: 000000000067b580 R14: 0000000000000000 R15: 0000000000000000
-[  278.735302] Modules linked in: dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache bridge stp llc sunrpc mlx5_ib ib_uverbs intel_rapl ib_core sb_edac x86_pkg_temp_
-thermal intel_powerclamp coretemp kvm_intel kvm mlx5_core irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel igb ghash_clmulni_intel ses mei_me enclosure mlxfw ipmi_ssif intel_cstate iTCO_wdt ptp mei
-pps_core iTCO_vendor_support pcspkr joydev intel_uncore i2c_i801 ipmi_si lpc_ich intel_rapl_perf ioatdma wmi dca pcc_cpufreq ipmi_devintf ipmi_msghandler acpi_power_meter acpi_pad ast i2c_algo_bit drm_k
-ms_helper ttm drm mpt3sas raid_class scsi_transport_sas
-[  278.802263] CR2: 0000000000000000
-[  278.807170] ---[ end trace b1f0a442a279e66f ]---
 
-Extend en_rep with new static mlx5e_rep_block_cb_list list and pass it to
-flow_block_cb_setup_simple() function instead of hardcoded NULL pointer.
+On 7/10/19 8:23 PM, Prout, Andrew - LLSC - MITLL wrote:
+> On 6/17/19 8:19 PM, Christoph Paasch wrote:
+>>
+>> Yes, this does the trick for my packetdrill-test.
+>>
+>> I wonder, is there a way we could end up in a situation where we can't
+>> retransmit anymore?
+>> For example, sk_wmem_queued has grown so much that the new test fails.
+>> Then, if we legitimately need to fragment in __tcp_retransmit_skb() we
+>> won't be able to do so. So we will never retransmit. And if no ACK
+>> comes back in to make some room we are stuck, no?
+> 
+> We seem to be having exactly this problem. We’re running on the 4.14 branch. After recently updating our kernel, we’ve been having a problem with TCP connections stalling / dying off without disconnecting. They're stuck and never recover.
+> 
+> I bisected the problem to 4.14.127 commit 9daf226ff92679d09aeca1b5c1240e3607153336 (commit f070ef2ac66716357066b683fb0baf55f8191a2e upstream): tcp: tcp_fragment() should apply sane memory limits. That lead me to this thread.
+> 
+> Our environment is a supercomputing center: lots of servers interconnected with a non-blocking 10Gbit ethernet network. We’ve zeroed in on the problem in two situations: remote users on VPN accessing large files via samba and compute jobs using Intel MPI over TCP/IP/ethernet. It certainly affects other situations, many of our workloads have been unstable since this patch went into production, but those are the two we clearly identified as they fail reliably every time. We had to take the system down for unscheduled maintenance to roll back to an older kernel.
+> 
+> The TCPWqueueTooBig count is incrementing when the problem occurs.
+> 
+> Using ftrace/trace-cmd on an affected process, it appears the call stack is:
+> run_timer_softirq
+> expire_timers
+> call_timer_fn
+> tcp_write_timer
+> tcp_write_timer_handler
+> tcp_retransmit_timer
+> tcp_retransmit_skb
+> __tcp_retransmit_skb
+> tcp_fragment
+> 
+> Andrew Prout
+> MIT Lincoln Laboratory Supercomputing Center
+> 
 
-Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+What was the kernel version you used exactly ?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 10ef90a7bddd..7245d287633d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -1175,6 +1175,8 @@ static int mlx5e_rep_setup_tc_cb(enum tc_setup_type type, void *type_data,
- 	}
- }
- 
-+static LIST_HEAD(mlx5e_rep_block_cb_list);
-+
- static int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			      void *type_data)
- {
-@@ -1182,7 +1184,8 @@ static int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 
- 	switch (type) {
- 	case TC_SETUP_BLOCK:
--		return flow_block_cb_setup_simple(type_data, NULL,
-+		return flow_block_cb_setup_simple(type_data,
-+						  &mlx5e_rep_block_cb_list,
- 						  mlx5e_rep_setup_tc_cb,
- 						  priv, priv, true);
- 	default:
--- 
-2.21.0
+This problem is supposed to be fixed in v4.14.131
 
