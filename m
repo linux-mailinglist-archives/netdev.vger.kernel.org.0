@@ -2,158 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF3464658
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B5964669
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727428AbfGJMiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:38:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43906 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725956AbfGJMiF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 08:38:05 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id BBD4BAEAC;
-        Wed, 10 Jul 2019 12:38:03 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 126CEE0E06; Wed, 10 Jul 2019 14:38:03 +0200 (CEST)
-Date:   Wed, 10 Jul 2019 14:38:03 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
+        id S1727506AbfGJMkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:40:01 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37222 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726458AbfGJMj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:39:59 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 10 Jul 2019 15:39:57 +0300
+Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6ACdtr7020922;
+        Wed, 10 Jul 2019 15:39:55 +0300
+From:   Parav Pandit <parav@mellanox.com>
 To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
-Message-ID: <20190710123803.GB5700@unicorn.suse.cz>
-References: <cover.1562067622.git.mkubecek@suse.cz>
- <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
- <20190703114933.GW2250@nanopsycho>
- <20190703181851.GP20101@unicorn.suse.cz>
- <20190704080435.GF2250@nanopsycho>
- <20190704115236.GR20101@unicorn.suse.cz>
- <20190709141817.GE2301@nanopsycho.orion>
+Cc:     stephen@networkplumber.org, dsahern@kernel.org, jiri@mellanox.com,
+        Parav Pandit <parav@mellanox.com>
+Subject: [PATCH net-next iproute2 v2 1/2] devlink: Update kernel header to commit
+Date:   Wed, 10 Jul 2019 07:39:51 -0500
+Message-Id: <20190710123952.6877-1-parav@mellanox.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190701183017.25407-1-parav@mellanox.com>
+References: <20190701183017.25407-1-parav@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709141817.GE2301@nanopsycho.orion>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 04:18:17PM +0200, Jiri Pirko wrote:
-> 
-> I understand. So how about avoid the bitfield all together and just
-> have array of either bits of strings or combinations?
-> 
-> ETHTOOL_CMD_SETTINGS_SET (U->K)
->     ETHTOOL_A_HEADER
->         ETHTOOL_A_DEV_NAME = "eth3"
->     ETHTOOL_A_SETTINGS_PRIV_FLAGS
->        ETHTOOL_A_SETTINGS_PRIV_FLAG
->            ETHTOOL_A_FLAG_NAME = "legacy-rx"
-> 	   ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
-> 
-> or the same with index instead of string
-> 
-> ETHTOOL_CMD_SETTINGS_SET (U->K)
->     ETHTOOL_A_HEADER
->         ETHTOOL_A_DEV_NAME = "eth3"
->     ETHTOOL_A_SETTINGS_PRIV_FLAGS
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_INDEX = 0
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
-> 
-> 
-> For set you can combine both when you want to set multiple bits:
-> 
-> ETHTOOL_CMD_SETTINGS_SET (U->K)
->     ETHTOOL_A_HEADER
->         ETHTOOL_A_DEV_NAME = "eth3"
->     ETHTOOL_A_SETTINGS_PRIV_FLAGS
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_INDEX = 2
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_INDEX = 8
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_NAME = "legacy-rx"
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
-> 
-> 
-> For get this might be a bit bigger message:
-> 
-> ETHTOOL_CMD_SETTINGS_GET_REPLY (K->U)
->     ETHTOOL_A_HEADER
->         ETHTOOL_A_DEV_NAME = "eth3"
->     ETHTOOL_A_SETTINGS_PRIV_FLAGS
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_INDEX = 0
->             ETHTOOL_A_FLAG_NAME = "legacy-rx"
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_INDEX = 1
->             ETHTOOL_A_FLAG_NAME = "vf-ipsec"
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
->         ETHTOOL_A_SETTINGS_PRIV_FLAG
->             ETHTOOL_A_FLAG_INDEX = 8
->             ETHTOOL_A_FLAG_NAME = "something-else"
->  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+Update kernel header to commit:
+e41b6bf3cdd4 ("devlink: Introduce PCI VF port flavour and port attribute")
 
-This is perfect for "one shot" applications but not so much for long
-running ones, either "ethtool --monitor" or management or monitoring
-daemons. Repeating the names in every notification message would be
-a waste, it's much more convenient to load the strings only once and
-cache them. Even if we omit the names in notifications (and possibly the
-GET replies if client opts for it), this format still takes 12-16 bytes
-per bit.
+Signed-off-by: Parav Pandit <parav@mellanox.com>
+---
+ include/uapi/linux/devlink.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-So the problem I'm trying to address is that there are two types of
-clients with very different mode of work and different preferences.
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 6544824a..fc195cbd 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -169,6 +169,14 @@ enum devlink_port_flavour {
+ 	DEVLINK_PORT_FLAVOUR_DSA, /* Distributed switch architecture
+ 				   * interconnect port.
+ 				   */
++	DEVLINK_PORT_FLAVOUR_PCI_PF, /* Represents eswitch port for
++				      * the PCI PF. It is an internal
++				      * port that faces the PCI PF.
++				      */
++	DEVLINK_PORT_FLAVOUR_PCI_VF, /* Represents eswitch port
++				      * for the PCI VF. It is an internal
++				      * port that faces the PCI VF.
++				      */
+ };
+ 
+ enum devlink_param_cmode {
+@@ -337,6 +345,9 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE,	/* u64 */
+ 	DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL,	/* u64 */
+ 
++	DEVLINK_ATTR_PORT_PCI_PF_NUMBER,	/* u16 */
++	DEVLINK_ATTR_PORT_PCI_VF_NUMBER,	/* u16 */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+-- 
+2.19.2
 
-Looking at the bitset.c, I would rather say that most of the complexity
-and ugliness comes from dealing with both unsigned long based bitmaps
-and u32 based ones. Originally, there were functions working with
-unsigned long based bitmaps and the variants with "32" suffix were
-wrappers around them which converted u32 bitmaps to unsigned long ones
-and back. This became a problem when kernel started issuing warnings
-about variable length arrays as getting rid of them meant two kmalloc()
-and two kfree() for each u32 bitmap operation, even if most of the
-bitmaps are in rather short in practice.
-
-Maybe the wrapper could do something like
-
-int ethnl_put_bitset32(const u32 *value, const u32 *mask,
-		       unsigned int size,  ...)
-{
-	unsigned long fixed_value[2], fixed_mask[2];
-	unsigned long *tmp_value = fixed_value;
-	unsigned long *tmp_mask = fixed_mask;
-
-	if (size > sizeof(fixed_value) * BITS_PER_BYTE) {
-		tmp_value = bitmap_alloc(size);
-		if (!tmp_value)
-			return -ENOMEM;
-		tmp_mask = bitmap_alloc(size);
-		if (!tmp_mask) {
-			kfree(tmp_value);
-			return -ENOMEM;
-		}
-	}
-
-	bitmap_from_arr32(tmp_value, value, size);
-	bitmap_from_arr32(tmp_mask, mask, size);
-	ret = ethnl_put_bitset(tmp_value, tmp_mask, size, ...);
-}
-
-This way we would make bitset.c code cleaner while avoiding allocating
-short bitmaps (which is the most common case). 
-
-Michal
