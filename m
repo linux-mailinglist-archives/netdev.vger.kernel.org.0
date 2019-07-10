@@ -2,253 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B42C663F47
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 04:26:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2247A63F4C
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 04:30:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbfGJC01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 22:26:27 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37406 "EHLO mx1.redhat.com"
+        id S1725889AbfGJCaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jul 2019 22:30:17 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45620 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725871AbfGJC00 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jul 2019 22:26:26 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        id S1725832AbfGJCaR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jul 2019 22:30:17 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0C3EAC049D67;
-        Wed, 10 Jul 2019 02:26:26 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7B87988309;
+        Wed, 10 Jul 2019 02:30:16 +0000 (UTC)
 Received: from [10.72.12.176] (ovpn-12-176.pek2.redhat.com [10.72.12.176])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F7BB5F9C8;
-        Wed, 10 Jul 2019 02:26:12 +0000 (UTC)
-Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com, idos@mellanox.com,
-        Rob Miller <rob.miller@broadcom.com>,
-        Ariel Adam <aadam@redhat.com>
-References: <20190703091339.1847-1-tiwei.bie@intel.com>
- <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
- <20190703115245.GA22374@___>
- <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com> <20190703130817.GA1978@___>
- <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
- <20190704062134.GA21116@___> <20190705084946.67b8f9f5@x1.home>
- <20190708061625.GA15936@___>
- <deae5ede-57e9-41e6-ea42-d84e07ca480a@redhat.com>
- <20190709063317.GA29300@___>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5ABE35FCB1;
+        Wed, 10 Jul 2019 02:30:08 +0000 (UTC)
+Subject: Re: [PATCH bpf-next v3] virtio_net: add XDP meta data support
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Yuya Kusakabe <yuya.kusakabe@gmail.com>
+Cc:     ast@kernel.org, davem@davemloft.net, hawk@kernel.org,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        kafai@fb.com, mst@redhat.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, yhs@fb.com
+References: <32dc2f4e-4f19-4fa5-1d24-17a025a08297@gmail.com>
+ <20190702081646.23230-1-yuya.kusakabe@gmail.com>
+ <ca724dcf-4ffb-ff49-d307-1b45143712b5@redhat.com>
+ <52e3fc0d-bdd7-83ee-58e6-488e2b91cc83@gmail.com>
+ <a5f4601a-db0e-e65b-5b32-cc7e04ba90be@iogearbox.net>
+ <eb955137-11d5-13b2-683a-6a2e8425d792@redhat.com>
+ <116cdb35-57b3-e2fe-ef8a-05cc6a1afbbe@iogearbox.net>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <9aafdc4d-0203-b96e-c205-043db132eb06@redhat.com>
-Date:   Wed, 10 Jul 2019 10:26:10 +0800
+Message-ID: <eaa707f1-9058-97dc-db57-99746f9464fd@redhat.com>
+Date:   Wed, 10 Jul 2019 10:30:07 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190709063317.GA29300@___>
+In-Reply-To: <116cdb35-57b3-e2fe-ef8a-05cc6a1afbbe@iogearbox.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Wed, 10 Jul 2019 02:26:26 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Wed, 10 Jul 2019 02:30:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/7/9 下午2:33, Tiwei Bie wrote:
-> On Tue, Jul 09, 2019 at 10:50:38AM +0800, Jason Wang wrote:
->> On 2019/7/8 下午2:16, Tiwei Bie wrote:
->>> On Fri, Jul 05, 2019 at 08:49:46AM -0600, Alex Williamson wrote:
->>>> On Thu, 4 Jul 2019 14:21:34 +0800
->>>> Tiwei Bie <tiwei.bie@intel.com> wrote:
->>>>> On Thu, Jul 04, 2019 at 12:31:48PM +0800, Jason Wang wrote:
->>>>>> On 2019/7/3 下午9:08, Tiwei Bie wrote:
->>>>>>> On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:
->>>>>>>> On 2019/7/3 下午7:52, Tiwei Bie wrote:
->>>>>>>>> On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
->>>>>>>>>> On 2019/7/3 下午5:13, Tiwei Bie wrote:
->>>>>>>>>>> Details about this can be found here:
->>>>>>>>>>>
->>>>>>>>>>> https://lwn.net/Articles/750770/
->>>>>>>>>>>
->>>>>>>>>>> What's new in this version
->>>>>>>>>>> ==========================
->>>>>>>>>>>
->>>>>>>>>>> A new VFIO device type is introduced - vfio-vhost. This addressed
->>>>>>>>>>> some comments from here:https://patchwork.ozlabs.org/cover/984763/
->>>>>>>>>>>
->>>>>>>>>>> Below is the updated device interface:
->>>>>>>>>>>
->>>>>>>>>>> Currently, there are two regions of this device: 1) CONFIG_REGION
->>>>>>>>>>> (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
->>>>>>>>>>> device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
->>>>>>>>>>> can be used to notify the device.
->>>>>>>>>>>
->>>>>>>>>>> 1. CONFIG_REGION
->>>>>>>>>>>
->>>>>>>>>>> The region described by CONFIG_REGION is the main control interface.
->>>>>>>>>>> Messages will be written to or read from this region.
->>>>>>>>>>>
->>>>>>>>>>> The message type is determined by the `request` field in message
->>>>>>>>>>> header. The message size is encoded in the message header too.
->>>>>>>>>>> The message format looks like this:
->>>>>>>>>>>
->>>>>>>>>>> struct vhost_vfio_op {
->>>>>>>>>>> 	__u64 request;
->>>>>>>>>>> 	__u32 flags;
->>>>>>>>>>> 	/* Flag values: */
->>>>>>>>>>>       #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
->>>>>>>>>>> 	__u32 size;
->>>>>>>>>>> 	union {
->>>>>>>>>>> 		__u64 u64;
->>>>>>>>>>> 		struct vhost_vring_state state;
->>>>>>>>>>> 		struct vhost_vring_addr addr;
->>>>>>>>>>> 	} payload;
->>>>>>>>>>> };
->>>>>>>>>>>
->>>>>>>>>>> The existing vhost-kernel ioctl cmds are reused as the message
->>>>>>>>>>> requests in above structure.
->>>>>>>>>> Still a comments like V1. What's the advantage of inventing a new protocol?
->>>>>>>>> I'm trying to make it work in VFIO's way..
->>>>>>>>>> I believe either of the following should be better:
->>>>>>>>>>
->>>>>>>>>> - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
->>>>>>>>>> extend it with e.g notify region. The advantages is that all exist userspace
->>>>>>>>>> program could be reused without modification (or minimal modification). And
->>>>>>>>>> vhost API hides lots of details that is not necessary to be understood by
->>>>>>>>>> application (e.g in the case of container).
->>>>>>>>> Do you mean reusing vhost's ioctl on VFIO device fd directly,
->>>>>>>>> or introducing another mdev driver (i.e. vhost_mdev instead of
->>>>>>>>> using the existing vfio_mdev) for mdev device?
->>>>>>>> Can we simply add them into ioctl of mdev_parent_ops?
->>>>>>> Right, either way, these ioctls have to be and just need to be
->>>>>>> added in the ioctl of the mdev_parent_ops. But another thing we
->>>>>>> also need to consider is that which file descriptor the userspace
->>>>>>> will do the ioctl() on. So I'm wondering do you mean let the
->>>>>>> userspace do the ioctl() on the VFIO device fd of the mdev
->>>>>>> device?
->>>>>> Yes.
->>>>> Got it! I'm not sure what's Alex opinion on this. If we all
->>>>> agree with this, I can do it in this way.
->>>>>
->>>>>> Is there any other way btw?
->>>>> Just a quick thought.. Maybe totally a bad idea. I was thinking
->>>>> whether it would be odd to do non-VFIO's ioctls on VFIO's device
->>>>> fd. So I was wondering whether it's possible to allow binding
->>>>> another mdev driver (e.g. vhost_mdev) to the supported mdev
->>>>> devices. The new mdev driver, vhost_mdev, can provide similar
->>>>> ways to let userspace open the mdev device and do the vhost ioctls
->>>>> on it. To distinguish with the vfio_mdev compatible mdev devices,
->>>>> the device API of the new vhost_mdev compatible mdev devices
->>>>> might be e.g. "vhost-net" for net?
->>>>>
->>>>> So in VFIO case, the device will be for passthru directly. And
->>>>> in VHOST case, the device can be used to accelerate the existing
->>>>> virtualized devices.
->>>>>
->>>>> How do you think?
->>>> VFIO really can't prevent vendor specific ioctls on the device file
->>>> descriptor for mdevs, but a) we'd want to be sure the ioctl address
->>>> space can't collide with ioctls we'd use for vfio defined purposes and
->>>> b) maybe the VFIO user API isn't what you want in the first place if
->>>> you intend to mostly/entirely ignore the defined ioctl set and replace
->>>> them with your own.  In the case of the latter, you're also not getting
->>>> the advantages of the existing VFIO userspace code, so why expose a
->>>> VFIO device at all.
->>> Yeah, I totally agree.
->>
->> I guess the original idea is to reuse the VFIO DMA/IOMMU API for this. Then
->> we have the chance to reuse vfio codes in qemu for dealing with e.g vIOMMU.
-> Yeah, you are right. We have several choices here:
->
-> #1. We expose a VFIO device, so we can reuse the VFIO container/group
->      based DMA API and potentially reuse a lot of VFIO code in QEMU.
->
->      But in this case, we have two choices for the VFIO device interface
->      (i.e. the interface on top of VFIO device fd):
->
->      A) we may invent a new vhost protocol (as demonstrated by the code
->         in this RFC) on VFIO device fd to make it work in VFIO's way,
->         i.e. regions and irqs.
->
->      B) Or as you proposed, instead of inventing a new vhost protocol,
->         we can reuse most existing vhost ioctls on the VFIO device fd
->         directly. There should be no conflicts between the VFIO ioctls
->         (type is 0x3B) and VHOST ioctls (type is 0xAF) currently.
->
-> #2. Instead of exposing a VFIO device, we may expose a VHOST device.
->      And we will introduce a new mdev driver vhost-mdev to do this.
->      It would be natural to reuse the existing kernel vhost interface
->      (ioctls) on it as much as possible. But we will need to invent
->      some APIs for DMA programming (reusing VHOST_SET_MEM_TABLE is a
->      choice, but it's too heavy and doesn't support vIOMMU by itself).
->
-> I'm not sure which one is the best choice we all want..
-> Which one (#1/A, #1/B, or #2) would you prefer?
+On 2019/7/10 上午4:03, Daniel Borkmann wrote:
+> On 07/09/2019 05:04 AM, Jason Wang wrote:
+>> On 2019/7/9 上午6:38, Daniel Borkmann wrote:
+>>> On 07/02/2019 04:11 PM, Yuya Kusakabe wrote:
+>>>> On 7/2/19 5:33 PM, Jason Wang wrote:
+>>>>> On 2019/7/2 下午4:16, Yuya Kusakabe wrote:
+>>>>>> This adds XDP meta data support to both receive_small() and
+>>>>>> receive_mergeable().
+>>>>>>
+>>>>>> Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
+>>>>>> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
+>>>>>> ---
+>>>>>> v3:
+>>>>>>     - fix preserve the vnet header in receive_small().
+>>>>>> v2:
+>>>>>>     - keep copy untouched in page_to_skb().
+>>>>>>     - preserve the vnet header in receive_small().
+>>>>>>     - fix indentation.
+>>>>>> ---
+>>>>>>     drivers/net/virtio_net.c | 45 +++++++++++++++++++++++++++-------------
+>>>>>>     1 file changed, 31 insertions(+), 14 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>>>> index 4f3de0ac8b0b..03a1ae6fe267 100644
+>>>>>> --- a/drivers/net/virtio_net.c
+>>>>>> +++ b/drivers/net/virtio_net.c
+>>>>>> @@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>>>>>>                        struct receive_queue *rq,
+>>>>>>                        struct page *page, unsigned int offset,
+>>>>>>                        unsigned int len, unsigned int truesize,
+>>>>>> -                   bool hdr_valid)
+>>>>>> +                   bool hdr_valid, unsigned int metasize)
+>>>>>>     {
+>>>>>>         struct sk_buff *skb;
+>>>>>>         struct virtio_net_hdr_mrg_rxbuf *hdr;
+>>>>>> @@ -393,7 +393,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>>>>>>         else
+>>>>>>             hdr_padded_len = sizeof(struct padded_vnet_hdr);
+>>>>>>     -    if (hdr_valid)
+>>>>>> +    if (hdr_valid && !metasize)
+>>>>>>             memcpy(hdr, p, hdr_len);
+>>>>>>           len -= hdr_len;
+>>>>>> @@ -405,6 +405,11 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>>>>>>             copy = skb_tailroom(skb);
+>>>>>>         skb_put_data(skb, p, copy);
+>>>>>>     +    if (metasize) {
+>>>>>> +        __skb_pull(skb, metasize);
+>>>>>> +        skb_metadata_set(skb, metasize);
+>>>>>> +    }
+>>>>>> +
+>>>>>>         len -= copy;
+>>>>>>         offset += copy;
+>>>>>>     @@ -644,6 +649,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>>>>>>         unsigned int delta = 0;
+>>>>>>         struct page *xdp_page;
+>>>>>>         int err;
+>>>>>> +    unsigned int metasize = 0;
+>>>>>>           len -= vi->hdr_len;
+>>>>>>         stats->bytes += len;
+>>>>>> @@ -683,10 +689,13 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>>>>>>               xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
+>>>>>>             xdp.data = xdp.data_hard_start + xdp_headroom;
+>>>>>> -        xdp_set_data_meta_invalid(&xdp);
+>>>>>>             xdp.data_end = xdp.data + len;
+>>>>>> +        xdp.data_meta = xdp.data;
+>>>>>>             xdp.rxq = &rq->xdp_rxq;
+>>>>>>             orig_data = xdp.data;
+>>>>>> +        /* Copy the vnet header to the front of data_hard_start to avoid
+>>>>>> +         * overwriting by XDP meta data */
+>>>>>> +        memcpy(xdp.data_hard_start - vi->hdr_len, xdp.data - vi->hdr_len, vi->hdr_len);
+>>> I'm not fully sure if I'm following this one correctly, probably just missing
+>>> something. Isn't the vnet header based on how we set up xdp.data_hard_start
+>>> earlier already in front of it? Wouldn't we copy invalid data from xdp.data -
+>>> vi->hdr_len into the vnet header at that point (given there can be up to 256
+>>> bytes of headroom between the two)? If it's relative to xdp.data and headroom
+>>> is >0, then BPF prog could otherwise mangle this; something doesn't add up to
+>>> me here. Could you clarify? Thx
+>> Vnet headr sits just in front of xdp.data not xdp.data_hard_start. So it could be overwrote by metadata, that's why we need a copy here.
+> For the current code, you can adjust the xdp.data with a positive/negative offset
+> already via bpf_xdp_adjust_head() helper. If vnet headr sits just in front of
+> xdp.data, couldn't this be overridden today as well then? Anyway, just wondering
+> how this is handled differently?
 
 
-#2 looks better. One concern is that we may end up with similar API as 
-what VFIO does. And I do see some new RFC for VFIO to add more DMA API.
-
-Consider it was still in the stage of RFC, does it make sense if we try 
-this way with some sample parents?
-
-
->
->>
->>>> The mdev interface does provide a general interface for creating and
->>>> managing virtual devices, vfio-mdev is just one driver on the mdev
->>>> bus.  Parav (Mellanox) has been doing work on mdev-core to help clean
->>>> out vfio-isms from the interface, aiui, with the intent of implementing
->>>> another mdev bus driver for using the devices within the kernel.
->>> Great to know this! I found below series after some searching:
->>>
->>> https://lkml.org/lkml/2019/3/8/821
->>>
->>> In above series, the new mlx5_core mdev driver will do the probe
->>> by calling mlx5_get_core_dev() first on the parent device of the
->>> mdev device. In vhost_mdev, maybe we can also keep track of all
->>> the compatible mdev devices and use this info to do the probe.
->>
->> I don't get why this is needed. My understanding is if we want to go this
->> way, there're actually two parts. 1) Vhost mdev that implements the device
->> managements and vhost ioctl. 2) Vhost it self, which can accept mdev fd as
->> it backend through VHOST_NET_SET_BACKEND.
-> I think with vhost-mdev (or with vfio-mdev if we agree to do vhost
-> ioctls on vfio device fd directly), we don't need to open /dev/vhost-net
-> (and there is no VHOST_NET_SET_BACKEND needed) at all. Either way,
-> after getting the fd of the mdev, we just need to do vhost ioctls
-> on it directly.
-
-
-The reason I ask is that vhost-net is designed to not tied to any kind 
-of backend. So it's better to have a single place to deal with ioctl. 
-But it's not must.
+We will invalidate the vnet header in this case. But for the case of 
+metadata adjustment without header adjustment, we want to seek a way to 
+preserve that.
 
 Thanks
 
 
 >
->>
->>> But we also need a way to allow vfio_mdev driver to distinguish
->>> and reject the incompatible mdev devices.
->>
->> One issue for this series is that it doesn't consider DMA isolation at all.
->>
->>
->>>> It
->>>> seems like this vhost-mdev driver might be similar, using mdev but not
->>>> necessarily vfio-mdev to expose devices.  Thanks,
->>> Yeah, I also think so!
->>
->> I've cced some driver developers for their inputs. I think we need a sample
->> parent drivers in the next version for us to understand the full picture.
->>
->>
->> Thanks
->>
->>
->>> Thanks!
->>> Tiwei
->>>
->>>> Alex
+> Thanks,
+> Daniel
