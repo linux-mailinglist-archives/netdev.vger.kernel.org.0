@@ -2,128 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22ED6645AA
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 13:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1EAE645B0
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 13:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbfGJLQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 07:16:50 -0400
-Received: from mail-eopbgr80072.outbound.protection.outlook.com ([40.107.8.72]:42982
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725956AbfGJLQt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 07:16:49 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O1I2q0qwBv7GJneUaj7tOqa+eb+xwH/vUoBfuEOeZP5BRuLYrHvWYPCIPrIMT3/MyWgVMwpeGeFE1zu6oF2zgMRvorKCgL8j5laTGh+IRMQ3uE8ZpgkATR8fHkXse4VUt8dbGXV31kfO6nyg+ki4ceNKSNGfPZFTW4NsSbU4yrbP/GZtZro6EYqcihy9NFB3WPuNDRPzMudZBgNL/AJ2FYj7hHmQobG6++9Fp8gTRDKosH2I+/mLQkpSzc3h5WjL1l3PP7LnTY0CxKB71fnyWOUHBUphwkXvCe/UUpFl9e1XAtntf4pcHPjKNIPGu52KAkp9XNySYOQhDSLXBUwEPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aeOkYuOQlmA38734XJQ0AaCDeDzafnoeXGCw6+HRUdU=;
- b=ihbL6TOGmgQLGJoxeTrdzh4gOVx5ptySxyKW0xR0i03HNWgp6mcfT60LPCOLP9Ifp2wkc9R8Z3HRagyOZiye+kneOE0ycc4vxOZu3Y8x2j5IcifjnXW0J173W6024FCNMqcZUMuq72JxqFcNed3gi8qalr3VC4c+ZgdlPL6zXMJZx5OeM8iN6Pm6JC5NP2ytCKNek7KhUvcGeivegBx3F350fCxl/1N11sOCobNWPzA9mkDFODwEfurfe9cC1+hUk0VYIN+CVMX+FkhnG9ekDeS05ElVc1GypXEckpb2JRvxPayt7lgZaceX/aIuechyzB3hZ54dJ8W+L+TCpCP6Gw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aeOkYuOQlmA38734XJQ0AaCDeDzafnoeXGCw6+HRUdU=;
- b=YZshxCm1gLGsSpngbQSv/vGTiSUvApIQDQOY6vAAcR3QL0U8FX4X0NKlSMKxWp+nwWq6CpnVYPwk8LBcidQDP24XYOCfGrsYT41t12Y206nO/YnAyrWgwW1UfBXgNaRaTyOSOukf/yMlvwu12tXM1BS6TkmwVtIAh7kbE5a1798=
-Received: from AM6PR05MB5879.eurprd05.prod.outlook.com (20.179.0.76) by
- AM6PR05MB5412.eurprd05.prod.outlook.com (20.177.118.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2073.10; Wed, 10 Jul 2019 11:16:05 +0000
-Received: from AM6PR05MB5879.eurprd05.prod.outlook.com
- ([fe80::4923:8635:3371:e4f0]) by AM6PR05MB5879.eurprd05.prod.outlook.com
- ([fe80::4923:8635:3371:e4f0%3]) with mapi id 15.20.2052.020; Wed, 10 Jul 2019
- 11:16:05 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf-next] net: Don't uninstall an XDP program when none is
- installed
-Thread-Topic: [PATCH bpf-next] net: Don't uninstall an XDP program when none
- is installed
-Thread-Index: AQHVITnjNkqLzd5XB0OcDX35ut8GrKbD30KA
-Date:   Wed, 10 Jul 2019 11:16:05 +0000
-Message-ID: <3124b473-1322-e98e-d5ab-60e584e74200@mellanox.com>
-References: <20190612161405.24064-1-maximmi@mellanox.com>
-In-Reply-To: <20190612161405.24064-1-maximmi@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR0502CA0021.eurprd05.prod.outlook.com
- (2603:10a6:3:e3::31) To AM6PR05MB5879.eurprd05.prod.outlook.com
- (2603:10a6:20b:a2::12)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [95.67.35.250]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 99f1e537-1f79-4019-eb23-08d70528000f
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB5412;
-x-ms-traffictypediagnostic: AM6PR05MB5412:
-x-microsoft-antispam-prvs: <AM6PR05MB54121743CAD1C098188B1839D1F00@AM6PR05MB5412.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0094E3478A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(136003)(366004)(376002)(39860400002)(189003)(199004)(25786009)(6436002)(53546011)(26005)(31686004)(386003)(6506007)(102836004)(66946007)(71200400001)(64756008)(186003)(5660300002)(76176011)(68736007)(52116002)(66446008)(2906002)(6246003)(31696002)(99286004)(66556008)(66476007)(71190400001)(14454004)(36756003)(3846002)(6116002)(6512007)(81156014)(4326008)(86362001)(54906003)(53936002)(7736002)(478600001)(486006)(66066001)(7416002)(8936002)(110136005)(305945005)(5024004)(256004)(316002)(229853002)(8676002)(446003)(11346002)(2616005)(476003)(81166006)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5412;H:AM6PR05MB5879.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ZpgLFzmiDXn45506/MLOw6bAXmZtRiCdAgQBQwYyanRwiwED5Dq+Pg6CiXJyOqyezRtcVgfVx419BDda3rYj4S6uE/H5v63ea+/xoFpBd4M8VnOKr8OtjP21AeE6djx+jOW61siOJ49WLKGAAJCaVxD+v8cvnE9pB3bTo3KZNdzT9vmjA6drZv2a0fJZ5WS+pqZ9Css++dxDwxWYk9dUmIKsK0jW4KbX2NMUmyRMtkEcplq2Bv7qmtbN7dwnm4rC2AHFtoO/keIsIM0w/RaY3YmkOnmEGf8YAom+HmGzq35Pc1ZFQJxKpOf+N0kL/hk/ReAy2VOhufGOQkalRcW86DekmTbBot79Ofv40D6PLH27b+jbwHeSyn/cP5zdyP4XHEqYHqd9GpHoqSoxJgOc6ggs5gfI0hfu/M54f421Cgc=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E3347EA0155ACA4C836ED5E0D88537BE@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726264AbfGJLUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 07:20:19 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:37515 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725956AbfGJLUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 07:20:19 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B67835954;
+        Wed, 10 Jul 2019 07:20:17 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 10 Jul 2019 07:20:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=aDqHcZ
+        rqwmp1rXzVV2dVHanpGZR8KAr/1LLpCZHJnm0=; b=JuT/K5vQPyaeAp1dT9C0Zx
+        AYlqTCy6VmbV+hJ5fCO+bOIz5G/VG2VUE/ixaJJX+leMmlb9slzXcnOlsT1bLKAQ
+        KwGGeQ2YyqW7T0glXitk6yAT8QrD7Wk6pnS33M95S7V77jZCIDQAkyOTtfchYts4
+        gZ9gV4ciJv7NFh4lSg7lMGchbhEeaUvvP3iUHdxQ1KffXLIQ3mO20PUGarVtSpaG
+        JtFV5dxXIsxjvL34oVcG/ZqNFNsY/9rPJ90zxsLeHsY9azlDDO0muMJ13G5CYuij
+        9+nHozJaXyzObLpOfkw3Ata9FmiMNWjIklg/mGmTNxpdTLy1V+lGcX/oezOg3K6Q
+        ==
+X-ME-Sender: <xms:7sklXU9giDx49zPjSy7breWCOrsFq5HE2586l5Ux15_4ZBtsKf_exA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrgeeigdegtdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
+    epsghoohhtlhhinhdrtghomhdpghhithhhuhgsrdgtohhmpdhmrghrtgdrihhnfhhopdho
+    iihlrggsshdrohhrghenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgv
+    rhfuihiivgeptd
+X-ME-Proxy: <xmx:7sklXYZJbyw5KQbIv0mr0pEEoH3QsHWyLmQ1RZ6kaFX8jk1mjDfFLg>
+    <xmx:7sklXdpPNJ13rgkQAT46RcVO5cZ8-8huAln-SZd4-rx9156QN7nK2A>
+    <xmx:7sklXUuq_YQsKJ3BdKq2rI6sNecc3ygmzrKNwx0qt02EEaZyMWw9cg>
+    <xmx:8cklXelZPMn2ODENwmBl2hEbtcgS9uNzmKomgy2tlrG8Ax421w1tRw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9FEBE380084;
+        Wed, 10 Jul 2019 07:20:13 -0400 (EDT)
+Date:   Wed, 10 Jul 2019 14:20:11 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        jiri@mellanox.com, mlxsw@mellanox.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andy@greyhouse.net, pablo@netfilter.org,
+        pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        idosch@mellanox.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
+Message-ID: <20190710112011.GA552@splinter>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707.124541.451040901050013496.davem@davemloft.net>
+ <20190708131908.GA13672@splinter>
+ <20190708155158.3f75b57c@cakuba.netronome.com>
+ <20190709123844.GA27309@splinter>
+ <20190709153430.5f0f5295@cakuba.netronome.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99f1e537-1f79-4019-eb23-08d70528000f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2019 11:16:05.5477
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: maximmi@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5412
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190709153430.5f0f5295@cakuba.netronome.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjAxOS0wNi0xMiAxOToxNCwgTWF4aW0gTWlraXR5YW5za2l5IHdyb3RlOg0KPiBkZXZfY2hh
-bmdlX3hkcF9mZCBkb2Vzbid0IHBlcmZvcm0gYW55IGNoZWNrcyBpbiBjYXNlIGl0IHVuaW5zdGFs
-bHMgYW4NCj4gWERQIHByb2dyYW0uIEl0IG1lYW5zIHRoYXQgdGhlIGRyaXZlcidzIG5kb19icGYg
-Y2FuIGJlIGNhbGxlZCB3aXRoDQo+IFhEUF9TRVRVUF9QUk9HIGFza2luZyB0byBzZXQgaXQgdG8g
-TlVMTCBldmVuIGlmIGl0J3MgYWxyZWFkeSBOVUxMLiBUaGlzDQo+IGNhc2UgaGFwcGVucyBpZiB0
-aGUgdXNlciBydW5zIGBpcCBsaW5rIHNldCBldGgwIHhkcCBvZmZgIHdoZW4gdGhlcmUgaXMNCj4g
-bm8gWERQIHByb2dyYW0gYXR0YWNoZWQuDQo+IA0KPiBUaGUgZHJpdmVycyB0eXBpY2FsbHkgcGVy
-Zm9ybSBzb21lIGhlYXZ5IG9wZXJhdGlvbnMgb24gWERQX1NFVFVQX1BST0csDQo+IHNvIHRoZXkg
-YWxsIGhhdmUgdG8gaGFuZGxlIHRoaXMgY2FzZSBpbnRlcm5hbGx5IHRvIHJldHVybiBlYXJseSBp
-ZiBpdA0KPiBoYXBwZW5zLiBUaGlzIHBhdGNoIHB1dHMgdGhpcyBjaGVjayBpbnRvIHRoZSBrZXJu
-ZWwgY29kZSwgc28gdGhhdCBhbGwNCj4gZHJpdmVycyB3aWxsIGJlbmVmaXQgZnJvbSBpdC4NCj4g
-DQo+IFNpZ25lZC1vZmYtYnk6IE1heGltIE1pa2l0eWFuc2tpeSA8bWF4aW1taUBtZWxsYW5veC5j
-b20+DQo+IC0tLQ0KPiBCasO2cm4sIHBsZWFzZSB0YWtlIGEgbG9vayBhdCB0aGlzLCBTYWVlZCB0
-b2xkIG1lIHlvdSB3ZXJlIGRvaW5nDQo+IHNvbWV0aGluZyByZWxhdGVkLCBidXQgSSBjb3VsZG4n
-dCBmaW5kIGl0LiBJZiB0aGlzIGZpeCBpcyBhbHJlYWR5DQo+IGNvdmVyZWQgYnkgeW91ciB3b3Jr
-LCBwbGVhc2UgdGVsbCBhYm91dCB0aGF0Lg0KPiANCj4gICBuZXQvY29yZS9kZXYuYyB8IDMgKysr
-DQo+ICAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBh
-L25ldC9jb3JlL2Rldi5jIGIvbmV0L2NvcmUvZGV2LmMNCj4gaW5kZXggNjZmNzUwODgyNWJkLi42
-OGIzZTMzMjBjZWIgMTAwNjQ0DQo+IC0tLSBhL25ldC9jb3JlL2Rldi5jDQo+ICsrKyBiL25ldC9j
-b3JlL2Rldi5jDQo+IEBAIC04MDg5LDYgKzgwODksOSBAQCBpbnQgZGV2X2NoYW5nZV94ZHBfZmQo
-c3RydWN0IG5ldF9kZXZpY2UgKmRldiwgc3RydWN0IG5ldGxpbmtfZXh0X2FjayAqZXh0YWNrLA0K
-PiAgIAkJCWJwZl9wcm9nX3B1dChwcm9nKTsNCj4gICAJCQlyZXR1cm4gLUVJTlZBTDsNCj4gICAJ
-CX0NCj4gKwl9IGVsc2Ugew0KPiArCQlpZiAoIV9fZGV2X3hkcF9xdWVyeShkZXYsIGJwZl9vcCwg
-cXVlcnkpKQ0KPiArCQkJcmV0dXJuIDA7DQo+ICAgCX0NCj4gICANCj4gICAJZXJyID0gZGV2X3hk
-cF9pbnN0YWxsKGRldiwgYnBmX29wLCBleHRhY2ssIGZsYWdzLCBwcm9nKTsNCj4gDQoNCkFsZXhl
-aSwgc28gd2hhdCBhYm91dCB0aGlzIHBhdGNoPyBJdCdzIG1hcmtlZCBhcyAiQ2hhbmdlZCBSZXF1
-ZXN0ZWQiIGluIA0KcGF0Y2h3b3JrLCBidXQgSmFrdWIncyBwb2ludCBsb29rcyByZXNvbHZlZCAt
-IEkgZG9uJ3Qgc2VlIGFueSBjaGFuZ2VzIA0KcmVxdWlyZWQgZnJvbSBteSBzaWRlLg0K
+On Tue, Jul 09, 2019 at 03:34:30PM -0700, Jakub Kicinski wrote:
+> On Tue, 9 Jul 2019 15:38:44 +0300, Ido Schimmel wrote:
+> > On Mon, Jul 08, 2019 at 03:51:58PM -0700, Jakub Kicinski wrote:
+> > > On Mon, 8 Jul 2019 16:19:08 +0300, Ido Schimmel wrote:  
+> > > > On Sun, Jul 07, 2019 at 12:45:41PM -0700, David Miller wrote:  
+> > > > > From: Ido Schimmel <idosch@idosch.org>
+> > > > > Date: Sun,  7 Jul 2019 10:58:17 +0300
+> > > > >     
+> > > > > > Users have several ways to debug the kernel and understand why a packet
+> > > > > > was dropped. For example, using "drop monitor" and "perf". Both
+> > > > > > utilities trace kfree_skb(), which is the function called when a packet
+> > > > > > is freed as part of a failure. The information provided by these tools
+> > > > > > is invaluable when trying to understand the cause of a packet loss.
+> > > > > > 
+> > > > > > In recent years, large portions of the kernel data path were offloaded
+> > > > > > to capable devices. Today, it is possible to perform L2 and L3
+> > > > > > forwarding in hardware, as well as tunneling (IP-in-IP and VXLAN).
+> > > > > > Different TC classifiers and actions are also offloaded to capable
+> > > > > > devices, at both ingress and egress.
+> > > > > > 
+> > > > > > However, when the data path is offloaded it is not possible to achieve
+> > > > > > the same level of introspection as tools such "perf" and "drop monitor"
+> > > > > > become irrelevant.
+> > > > > > 
+> > > > > > This patchset aims to solve this by allowing users to monitor packets
+> > > > > > that the underlying device decided to drop along with relevant metadata
+> > > > > > such as the drop reason and ingress port.    
+> > > > > 
+> > > > > We are now going to have 5 or so ways to capture packets passing through
+> > > > > the system, this is nonsense.
+> > > > > 
+> > > > > AF_PACKET, kfree_skb drop monitor, perf, XDP perf events, and now this
+> > > > > devlink thing.
+> > > > > 
+> > > > > This is insanity, too many ways to do the same thing and therefore the
+> > > > > worst possible user experience.
+> > > > > 
+> > > > > Pick _ONE_ method to trap packets and forward normal kfree_skb events,
+> > > > > XDP perf events, and these taps there too.
+> > > > > 
+> > > > > I mean really, think about it from the average user's perspective.  To
+> > > > > see all drops/pkts I have to attach a kfree_skb tracepoint, and not just
+> > > > > listen on devlink but configure a special tap thing beforehand and then
+> > > > > if someone is using XDP I gotta setup another perf event buffer capture
+> > > > > thing too.    
+> > > > 
+> > > > Let me try to explain again because I probably wasn't clear enough. The
+> > > > devlink-trap mechanism is not doing the same thing as other solutions.
+> > > > 
+> > > > The packets we are capturing in this patchset are packets that the
+> > > > kernel (the CPU) never saw up until now - they were silently dropped by
+> > > > the underlying device performing the packet forwarding instead of the
+> > > > CPU.  
+> > 
+> > Jakub,
+> > 
+> > It seems to me that most of the criticism is about consolidation of
+> > interfaces because you believe I'm doing something you can already do
+> > today, but this is not the case.
+> 
+> To be clear I'm not opposed to the patches, I'm just trying to
+> facilitate a discussion.
+
+Sure, sorry if it came out the wrong way. I appreciate your feedback and
+the time you have spent on this subject.
+
+> 
+> > Switch ASICs have dedicated traps for specific packets. Usually, these
+> > packets are control packets (e.g., ARP, BGP) which are required for the
+> > correct functioning of the control plane. You can see this in the SAI
+> > interface, which is an abstraction layer over vendors' SDKs:
+> > 
+> > https://github.com/opencomputeproject/SAI/blob/master/inc/saihostif.h#L157
+> > 
+> > We need to be able to configure the hardware policers of these traps and
+> > read their statistics to understand how many packets they dropped. We
+> > currently do not have a way to do any of that and we rely on hardcoded
+> > defaults in the driver which do not fit every use case (from
+> > experience):
+> > 
+> > https://elixir.bootlin.com/linux/v5.2/source/drivers/net/ethernet/mellanox/mlxsw/spectrum.c#L4103
+> > 
+> > We plan to extend devlink-trap mechanism to cover all these use cases. I
+> > hope you agree that this functionality belongs in devlink given it is a
+> > device-specific configuration and not a netdev-specific one.
+> 
+> No disagreement on providing knobs for traps.
+> 
+> > That being said, in its current form, this mechanism is focused on traps
+> > that correlate to packets the device decided to drop as this is very
+> > useful for debugging.
+> 
+> That'd be mixing two things - trap configuration and tracing exceptions
+> in one API. That's a little suboptimal but not too terrible, especially
+> if there is a higher level APIs users can default to.
+
+TBH, initially I was only focused on the drops, but then it occurred to
+me that this is a too narrow scope. These traps are only a subset of the
+complete list of traps we have and we have similar requirements for both
+(statistics, setting policers etc.). Therefore, I decided to design this
+interface in a more generic way, so that it could support the different
+use cases.
+
+> 
+> > Given that the entire configuration is done via devlink and that devlink
+> > stores all the information about these traps, it seems logical to also
+> > report these packets and their metadata to user space as devlink events.
+> > 
+> > If this is not desirable, we can try to call into drop_monitor from
+> > devlink and add a new command (e.g., NET_DM_CMD_HW_ALERT), which will
+> > encode all the information we currently have in DEVLINK_CMD_TRAP_REPORT.
+> > 
+> > IMO, this is less desirable, as instead of having one tool (devlink) to
+> > interact with this mechanism we will need two (devlink & dropwatch).
+> > 
+> > Below I tried to answer all your questions and refer to all the points
+> > you brought up.
+> > 
+> > > When you say silently dropped do you mean that mlxsw as of today
+> > > doesn't have any counters exposed for those events?  
+> > 
+> > Some of these packets are counted, but not all of them.
+> > 
+> > > If we wanted to consolidate this into something existing we can either
+> > >  (a) add similar traps in the kernel data path;
+> > >  (b) make these traps extension of statistics.
+> > > 
+> > > My knee jerk reaction to seeing the patches was that it adds a new
+> > > place where device statistics are reported.  
+> > 
+> > Not at all. This would be a step back. We can already count discards due
+> > to VLAN membership on ingress on a per-port basis. A software maintained
+> > global counter does not buy us anything.
+> > 
+> > By also getting the dropped packet - coupled with the drop reason and
+> > ingress port - you can understand exactly why and on which VLAN the
+> > packet was dropped. I wrote a Wireshark dissector for these netlink
+> > packets to make our life easier. You can see the details in my comment
+> > to the cover letter:
+> > 
+> > https://marc.info/?l=linux-netdev&m=156248736710238&w=2
+> > 
+> > In case you do not care about individual packets, but still want more
+> > fine-grained statistics for your monitoring application, you can use
+> > eBPF. For example, one thing we did is attaching a kprobe to
+> > devlink_trap_report() with an eBPF program that dissects the incoming
+> > skbs and maintains a counter per-{5 tuple, drop reason}. With
+> > ebpf_exporter you can export these statistics to Prometheus on which you
+> > can run queries and visualize the results with Grafana. This is
+> > especially useful for tail and early drops since it allows you to
+> > understand which flows contribute to most of the drops.
+> 
+> No question that the mechanism is useful.
+> 
+> > > Users who want to know why things are dropped will not get detailed
+> > > breakdown from ethtool -S which for better or worse is the one stop
+> > > shop for device stats today.  
+> > 
+> > I hope I managed to explain why counters are not enough, but I also want
+> > to point out that ethtool statistics are not properly documented and
+> > this hinders their effectiveness. I did my best to document the exposed
+> > traps in order to avoid the same fate:
+> > 
+> > https://patchwork.ozlabs.org/patch/1128585/
+> > 
+> > In addition, there are selftests to show how each trap can be triggered
+> > to reduce the ambiguity even further:
+> > 
+> > https://patchwork.ozlabs.org/patch/1128610/
+> > 
+> > And a note in the documentation to make sure future functionality is
+> > tested as well:
+> > 
+> > https://patchwork.ozlabs.org/patch/1128608/
+> > 
+> > > Having thought about it some more, however, I think that having a
+> > > forwarding "exception" object and hanging statistics off of it is a
+> > > better design, even if we need to deal with some duplication to get
+> > > there.
+> > > 
+> > > IOW having an way to "trap all packets which would increment a
+> > > statistic" (option (b) above) is probably a bad design.
+> > > 
+> > > As for (a) I wonder how many of those events have a corresponding event
+> > > in the kernel stack?  
+> > 
+> > Generic packet drops all have a corresponding kfree_skb() calls in the
+> > kernel, but that does not mean that every packet dropped by the hardware
+> > would also be dropped by the kernel if it were to be injected to its Rx
+> > path.
+> 
+> The notion that all SW events get captured by kfree_skb() would not be
+> correct.
+
+I meant that the generic drop reasons I'm exposing with this patchset
+all correspond to reasons for which the kernel would drop packets.
+
+> We have the kfree_skb(), and xdp_exception(), and drivers can
+> drop packets if various allocations fail.. the situation is already not
+> great.
+> 
+> I think that having a single useful place where users can look to see
+> all traffic exception events would go a long way. 
+
+I believe this was Dave's point as well. We have one tool to monitor
+kfree_skb() drops and with this patchset we will have another to monitor
+HW drops. As I mentioned in my previous reply, I will look into sending
+the events via drop_monitor by calling into it from devlink.
+
+I'm not involved with XDP (as you might have noticed), but I assume
+drop_monitor could be extended for this use case as well by doing
+register_trace_xdp_exception(). Then you could monitor SW, HW and XDP
+events using a single netlink channel, potentially split into different
+multicast groups to allow user space programs to receive only the events
+they care about.
+
+> Software side as I mentioned is pretty brutal, IDK how many users are
+> actually willing to decode stack traces to figure out why their system
+> is dropping packets :/
+> 
+> > In my reply to Dave I gave buffer drops as an example.
+> 
+> The example of buffer drops is also probably the case where having the
+> packet is least useful, but yes, I definitely agree devices need a way
+> of reporting events that can't happen in SW.
+> 
+> > There are also situations in which packets can be dropped due to
+> > device-specific exceptions and these do not have a corresponding drop
+> > reason in the kernel. See example here:
+> > 
+> > https://patchwork.ozlabs.org/patch/1128587/
+> > 
+> > > If we could add corresponding trace points and just feed those from
+> > > the device driver, that'd obviously be a holy grail.  
+> > 
+> > Unlike tracepoints, netlink gives you a structured and extensible
+> > interface. For example, in Spectrum-1 we cannot provide the Tx port for
+> > early/tail drops, whereas for Spectrum-2 and later we can. With netlink,
+> > we can just omit the DEVLINK_ATTR_TRAP_OUT_PORT attribute for
+> > Spectrum-1. You also get a programmatic interface that you can query for
+> > this information:
+> > 
+> > # devlink -v trap show netdevsim/netdevsim10 trap ingress_vlan_filter
+> > netdevsim/netdevsim10:
+> >   name ingress_vlan_filter type drop generic true report false action drop group l2_drops
+> >     metadata:
+> >        input_port
+> 
+> Right, you can set or not set skb fields to some extent but its
+> definitely not as flexible as netlink.
