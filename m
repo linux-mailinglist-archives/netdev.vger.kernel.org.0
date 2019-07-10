@@ -2,98 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E736432F
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 10:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D02464331
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 10:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbfGJIAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 04:00:32 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43628 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbfGJIAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 04:00:32 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p13so1331653wru.10;
-        Wed, 10 Jul 2019 01:00:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JRqIl2KAaMQ78hZJopjkx5v558dsW2jWgaNwGOkG2XU=;
-        b=P23TBw34QRXOzC2Juom2uCxE044GBwY41H8Cux1QOKPlVlemX35xfsiQvhYhvbksck
-         RUoz6d6JgsGUF9q/yjqy9KmgAGItQa/VNqTGAQON76GrHbx2pU3r2TJmyvi6VOYyA8OY
-         5G1+arOCEDb5zIaNMPiYTkcN//Npe2ugxm3Z1/tmam++5Q6cTQbwAoE408tdDsFtug2v
-         ntVodpblTbR+3FpnaKo3r1Cuodm4D/yKAYxyv/C06+sxYGdTJoPKmbaAbROpxqFjYzRd
-         mhClyczrep/M0wQwoMnu44NTFMDFJpoY9bWf66iGVTi5I1MIkr8n3Jw2gsi1SB96nytN
-         H62w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JRqIl2KAaMQ78hZJopjkx5v558dsW2jWgaNwGOkG2XU=;
-        b=EIuYob7rXeg5WIkkKqewQpxEvUWxmS5YMSZNjHxuiogCqo6yZvXzhM0N4bH7aGxpRb
-         0rV2tWqcKB9LBvhykIU77MRE1DvOK+yznuEhmTgtitFiI86LSx7trSafhFDek2wLHcyB
-         4UKewrZiOTPiIFGCh8eWd4E4ZKLHtW9W3NHI57ndxuOzGuYVM46fTg5RPiTbQp7YqGlI
-         /UQLX4PridgH8LTG6dCNNLWKkfzYgomcenP7IJMjjhRsLKuBrKNM5Mv3duXwtayG9AvO
-         cG+eCSwk3vTO/JA6ZzgF3rXtPqzRyenYX2X/SE8jlIN1F2SH0CqjE8VLwEinuKA01E+x
-         CbXA==
-X-Gm-Message-State: APjAAAXZAeVsagGGQ0Lyt2LHSonbjG/jw1x9Ta/qwLCB3i1+MXXWcW90
-        3PF87q4owwe4H8oE1ty4yTtCMgXG
-X-Google-Smtp-Source: APXvYqwfImAsFglwbCi1uIEv0XitW0H2KpqE+0pcREkS6a8o1AdDwkhG22M0PTUFR5cD2/rnP3n+xQ==
-X-Received: by 2002:a05:6000:1043:: with SMTP id c3mr19970707wrx.236.1562745629922;
-        Wed, 10 Jul 2019 01:00:29 -0700 (PDT)
-Received: from [192.168.8.147] (31.172.185.81.rev.sfr.net. [81.185.172.31])
-        by smtp.gmail.com with ESMTPSA id q16sm2714542wra.36.2019.07.10.01.00.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 01:00:29 -0700 (PDT)
-Subject: Re: [PATCH] tipc: ensure skb->lock is initialised
-To:     Jon Maloy <jon.maloy@ericsson.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20190707225328.15852-1-chris.packham@alliedtelesis.co.nz>
- <2298b9eb-100f-6130-60c4-0e5e2c7b84d1@gmail.com>
- <361940337b0d4833a5634ddd1e1896a9@svr-chch-ex1.atlnz.lc>
- <87fd2150548041219fc42bce80b63c9c@svr-chch-ex1.atlnz.lc>
- <b862a74b-9f1e-fb64-0641-550a83b64664@gmail.com>
- <MN2PR15MB35811151C4A627C0AF364CAC9AF10@MN2PR15MB3581.namprd15.prod.outlook.com>
- <ef9a2ec1-1413-e8f9-1193-d53cf8ee52ba@gmail.com>
- <MN2PR15MB35813EA3ADE7E5E83A657D3F9AF10@MN2PR15MB3581.namprd15.prod.outlook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e7606e76-8a0a-dab7-4561-f44f98d90164@gmail.com>
-Date:   Wed, 10 Jul 2019 10:00:28 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1727218AbfGJIBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 04:01:20 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:58975 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbfGJIBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 04:01:20 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MEmEf-1hjCXe129D-00GH64; Wed, 10 Jul 2019 10:01:09 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [net-next] davinci_cpdma: don't cast dma_addr_t to pointer
+Date:   Wed, 10 Jul 2019 10:00:33 +0200
+Message-Id: <20190710080106.24237-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-In-Reply-To: <MN2PR15MB35813EA3ADE7E5E83A657D3F9AF10@MN2PR15MB3581.namprd15.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:bVw50YUbhjFNSqvDn/znOtxBYy7U05crbm2ZJFpSW93N8gDGrY2
+ yKhDAkxa6B5UngkG8J++bupdMXKAjnX9PHJwkm+zkAu2qTUmEV5nOY49KM3Nes9yxylLLEV
+ 5iQyfVxZhDiGLMksi129JmvYYelDIcijh561gabfmUVDKi43U8rQuQiXXQ6Xd3/navYEhM8
+ dKhSyeFnqVaIh+8H13JWg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:QjAE6gGIOb0=:GN1HHSywOl6HwnAlqtqh7h
+ i3XIBXMRr+FpyoWZREjuI7rk21TyJYdAJgaNETV8BG+OOQxldQsl/RD8LTtt2rAEvILKiSAlv
+ d5lzmt7BV5+71CASfpdeV+U7mexqSZBAXxIbkqFdkIrGEouKifBUItxtT9zQ5i8BQ9JekTxCv
+ BYgTqnoAhk+f1DuWO/7X3k+QJ/Zpvm8MafBRh3k3XxQwtIAg4hLckpViIzUqKDjzk22EYF0gY
+ j04ObnkBw1PPoIOA311jVL9HuOc9w5e7JZHOH5AdrQw/vZuI2Pnv1S0rLHaxqgwMo13nc8ZXK
+ qeDHbKPBuj643K+D88+77Bq0cCfPSHgyIOZGyBEs+muhhaysFM+LqqYC1lC0hJzF9/d6ZZwUC
+ 5sX53TJkeeG9bIEVWbwerBjvBWsBewrxn3SYelRkQ3N/WWON2w6Ajf6jMF9SXlySmU50ngR5m
+ D7CInxsl+UlCvc13XJ393biG53/lXr5L5joH9pNLkBKn3TS76sYdWnQclni8mlwNSADvBCUfY
+ zf6FVyUgjln/0T+LWqsLI9BFRD+yWLx5h1b+91SxbJJ9sgaUx++D3R8JJBresLxnH6CQ6RgYe
+ Izu/GI+levnfXGCwWB0561pyXasWyPxRU0ecQi3sCpTGTwXh37vrMISoPzt37ad3MG+hEX80m
+ HxISHIrMXPYqf3KQtwCD85ahn5TpVz7LxqJMcDqoLC329rfXAenE6N7E+Izgv+rUaxFYcNZGV
+ 9iKk6fyd2wuBaBEkeaHEBYHVkr1wKjnOTBMspA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+dma_addr_t may be 64-bit wide on 32-bit architectures, so it is not
+valid to cast between it and a pointer:
 
+drivers/net/ethernet/ti/davinci_cpdma.c: In function 'cpdma_chan_submit_si':
+drivers/net/ethernet/ti/davinci_cpdma.c:1047:12: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
+drivers/net/ethernet/ti/davinci_cpdma.c: In function 'cpdma_chan_idle_submit_mapped':
+drivers/net/ethernet/ti/davinci_cpdma.c:1114:12: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+drivers/net/ethernet/ti/davinci_cpdma.c: In function 'cpdma_chan_submit_mapped':
+drivers/net/ethernet/ti/davinci_cpdma.c:1164:12: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
 
-On 7/9/19 10:15 PM, Jon Maloy wrote:
-> 
-> It is not only for lockdep purposes, -it is essential.  But please provide details about where you see that more fixes are needed.
-> 
+Solve this by using two separate members in 'struct submit_info'.
+Since this avoids the use of the 'flag' member, the structure does
+not even grow in typical configurations.
 
-Simple fact that you detect a problem only when skb_queue_purge() is called should talk by itself.
+Fixes: 6670acacd59e ("net: ethernet: ti: davinci_cpdma: add dma mapped submit")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/ti/davinci_cpdma.c | 26 ++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-As I stated, there are many places where the list is manipulated _without_ its spinlock being held.
-
-You want consistency, then 
-
-- grab the spinlock all the time.
-- Or do not ever use it.
-
-Do not initialize the spinlock just in case a path will use skb_queue_purge() (instead of using __skb_queue_purge())
-
+diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
+index 0ca2a1a254de..a65edd2770e6 100644
+--- a/drivers/net/ethernet/ti/davinci_cpdma.c
++++ b/drivers/net/ethernet/ti/davinci_cpdma.c
+@@ -138,8 +138,8 @@ struct submit_info {
+ 	struct cpdma_chan *chan;
+ 	int directed;
+ 	void *token;
+-	void *data;
+-	int flags;
++	void *data_virt;
++	dma_addr_t data_dma;
+ 	int len;
+ };
+ 
+@@ -1043,12 +1043,12 @@ static int cpdma_chan_submit_si(struct submit_info *si)
+ 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
+ 	cpdma_desc_to_port(chan, mode, si->directed);
+ 
+-	if (si->flags & CPDMA_DMA_EXT_MAP) {
+-		buffer = (dma_addr_t)si->data;
++	if (si->data_dma) {
++		buffer = si->data_dma;
+ 		dma_sync_single_for_device(ctlr->dev, buffer, len, chan->dir);
+ 		swlen |= CPDMA_DMA_EXT_MAP;
+ 	} else {
+-		buffer = dma_map_single(ctlr->dev, si->data, len, chan->dir);
++		buffer = dma_map_single(ctlr->dev, si->data_virt, len, chan->dir);
+ 		ret = dma_mapping_error(ctlr->dev, buffer);
+ 		if (ret) {
+ 			cpdma_desc_free(ctlr->pool, desc, 1);
+@@ -1086,10 +1086,10 @@ int cpdma_chan_idle_submit(struct cpdma_chan *chan, void *token, void *data,
+ 
+ 	si.chan = chan;
+ 	si.token = token;
+-	si.data = data;
++	si.data_virt = data;
++	si.data_dma = 0;
+ 	si.len = len;
+ 	si.directed = directed;
+-	si.flags = 0;
+ 
+ 	spin_lock_irqsave(&chan->lock, flags);
+ 	if (chan->state == CPDMA_STATE_TEARDOWN) {
+@@ -1111,10 +1111,10 @@ int cpdma_chan_idle_submit_mapped(struct cpdma_chan *chan, void *token,
+ 
+ 	si.chan = chan;
+ 	si.token = token;
+-	si.data = (void *)data;
++	si.data_virt = NULL;
++	si.data_dma = data;
+ 	si.len = len;
+ 	si.directed = directed;
+-	si.flags = CPDMA_DMA_EXT_MAP;
+ 
+ 	spin_lock_irqsave(&chan->lock, flags);
+ 	if (chan->state == CPDMA_STATE_TEARDOWN) {
+@@ -1136,10 +1136,10 @@ int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
+ 
+ 	si.chan = chan;
+ 	si.token = token;
+-	si.data = data;
++	si.data_virt = data;
++	si.data_dma = 0;
+ 	si.len = len;
+ 	si.directed = directed;
+-	si.flags = 0;
+ 
+ 	spin_lock_irqsave(&chan->lock, flags);
+ 	if (chan->state != CPDMA_STATE_ACTIVE) {
+@@ -1161,10 +1161,10 @@ int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
+ 
+ 	si.chan = chan;
+ 	si.token = token;
+-	si.data = (void *)data;
++	si.data_virt = NULL;
++	si.data_dma = data;
+ 	si.len = len;
+ 	si.directed = directed;
+-	si.flags = CPDMA_DMA_EXT_MAP;
+ 
+ 	spin_lock_irqsave(&chan->lock, flags);
+ 	if (chan->state != CPDMA_STATE_ACTIVE) {
+-- 
+2.20.0
 
