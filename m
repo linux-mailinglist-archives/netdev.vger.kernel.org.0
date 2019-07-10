@@ -2,181 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 168D56435A
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 10:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8BAE64399
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 10:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727489AbfGJIIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 04:08:53 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64794 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726275AbfGJIIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 04:08:53 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6A88Wu3026568
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 01:08:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=PDY+EhkXjha7DMzrL7RSVazSHo0QDYayuvq4vc2hvvM=;
- b=GaChb78XG+JhNSVybUnusvZr5jgnjE4YbnbIlFyULSiWfz1bBUxDZQKocRWS6L2e6dfc
- YYZulKj53qCNePslegMkDRUPKq7qFcqK8wFD7lNcYFilRSsyXVZjejjS3v0Tt5EEwGuG
- Wo/yx0UChkF0GH3tTBr2XUFB8qNcdc8mNIc= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2tn3husdc2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 01:08:51 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 10 Jul 2019 01:08:49 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id E43B88616EE; Wed, 10 Jul 2019 01:08:48 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-team@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>, Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf] bpf: fix BTF verifier size resolution logic
-Date:   Wed, 10 Jul 2019 01:08:40 -0700
-Message-ID: <20190710080840.2613160-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726695AbfGJIcK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Jul 2019 04:32:10 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35988 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726098AbfGJIcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 04:32:10 -0400
+Received: by mail-ed1-f66.google.com with SMTP id k21so1368054edq.3
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 01:32:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=szF7FqwUgzf/Ka1JcPIDgfZlkwR+2rbCwKHlkw7YyPc=;
+        b=hU98XaqtZXNSuHZrnMsAfmVrpCIbxtmFbt5lyZXhlW/z1LqObtcjjv4r18bWmx/eE/
+         oPW6hWqBXMFv33oMfXT56HFpC0eRxh7kXErimmx2dRzXexN5pSX8QQnEZNkUPzF9+GcF
+         AOWTfeReHA3iQ3n30pQ9lRYTU/MtOBlpuBIqZyMSU0cIYynsJaS/GVfQxkG+u6T9B6TL
+         l7e+HCRwyrOl/JPbTsmKIIWt9/XPF7tEpKrIXfOpwnT8T2u/ELtuK/7IUCg9CgOjsvWA
+         F5esC/H6aDXr26V/ItASQoXXLxLQgx07z8kDgOEW+lV19Ptj91au4P1bFL0SbQgthK+K
+         YOAA==
+X-Gm-Message-State: APjAAAV09Qt2e1zpEyZjG8ylr7Kj7p0vdjdSk0HFzxqZtZIfKr03E9PY
+        stj5YQANTL916BOYzHO8xSYb/U55xrYlIpdiPZJeaQ==
+X-Google-Smtp-Source: APXvYqz2hAaQTWTs/cRfW+OJn6TdZSBKxpf5+JaarVKKZyPuHx4aHsAo85nZV/BHVXdYrRzzqoafhTEuFtKm/UGLbmw=
+X-Received: by 2002:a17:906:6bc4:: with SMTP id t4mr25383097ejs.256.1562747527727;
+ Wed, 10 Jul 2019 01:32:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-10_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=680 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907100099
-X-FB-Internal: deliver
+References: <cover.1562667648.git.aclaudi@redhat.com> <dfb76d0e40b0158cf6a87ae9558b256915d73f6f.1562667648.git.aclaudi@redhat.com>
+ <CAF2d9jhiUk0Jpz54EbA+3Fyf-cMniRHZrpktu57yZ+tX+QsuEQ@mail.gmail.com>
+In-Reply-To: <CAF2d9jhiUk0Jpz54EbA+3Fyf-cMniRHZrpktu57yZ+tX+QsuEQ@mail.gmail.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Wed, 10 Jul 2019 10:33:01 +0200
+Message-ID: <CAPpH65yDsY_FpBvXfSiw=HVEvgL6n3a0nqA3JEbgpB=5kKfXeA@mail.gmail.com>
+Subject: Re: [PATCH iproute2 2/2] ip tunnel: warn when changing IPv6 tunnel
+ without tunnel name
+To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BTF verifier has Different logic depending on whether we are following
-a PTR or STRUCT/ARRAY (or something else). This is an optimization to
-stop early in DFS traversal while resolving BTF types. But it also
-results in a size resolution bug, when there is a chain, e.g., of PTR ->
-TYPEDEF -> ARRAY, in which case due to being in pointer context ARRAY
-size won't be resolved, as it is considered to be a sink for pointer,
-leading to TYPEDEF being in RESOLVED state with zero size, which is
-completely wrong.
+On Wed, Jul 10, 2019 at 12:15 AM Mahesh Bandewar (महेश बंडेवार)
+<maheshb@google.com> wrote:
+>
+> On Tue, Jul 9, 2019 at 6:16 AM Andrea Claudi <aclaudi@redhat.com> wrote:
+> >
+> > Tunnel change fails if a tunnel name is not specified while using
+> > 'ip -6 tunnel change'. However, no warning message is printed and
+> > no error code is returned.
+> >
+> > $ ip -6 tunnel add ip6tnl1 mode ip6gre local fd::1 remote fd::2 tos inherit ttl 127 encaplimit none dev dummy0
+> > $ ip -6 tunnel change dev dummy0 local 2001:1234::1 remote 2001:1234::2
+> > $ ip -6 tunnel show ip6tnl1
+> > ip6tnl1: gre/ipv6 remote fd::2 local fd::1 dev dummy0 encaplimit none hoplimit 127 tclass inherit flowlabel 0x00000 (flowinfo 0x00000000)
+> >
+> > This commit checks if tunnel interface name is equal to an empty
+> > string: in this case, it prints a warning message to the user.
+> > It intentionally avoids to return an error to not break existing
+> > script setup.
+> >
+> > This is the output after this commit:
+> > $ ip -6 tunnel add ip6tnl1 mode ip6gre local fd::1 remote fd::2 tos inherit ttl 127 encaplimit none dev dummy0
+> > $ ip -6 tunnel change dev dummy0 local 2001:1234::1 remote 2001:1234::2
+> > Tunnel interface name not specified
+> > $ ip -6 tunnel show ip6tnl1
+> > ip6tnl1: gre/ipv6 remote fd::2 local fd::1 dev dummy0 encaplimit none hoplimit 127 tclass inherit flowlabel 0x00000 (flowinfo 0x00000000)
+> >
+> > Reviewed-by: Matteo Croce <mcroce@redhat.com>
+> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+>
+> I tried your patch and the commands that I posted in my (previous) patch.
+>
 
-Optimization is doubtful, though, as btf_check_all_types() will iterate
-over all BTF types anyways, so the only saving is a potentially slightly
-shorter stack. But correctness is more important that tiny savings.
+Hi Mahesh,
+Thank you for taking the time to review my patch.
 
-This bug manifests itself in rejecting BTF-defined maps that use array
-typedef as a value type:
+> Here is the output after reverting my patch and applying your patch
+>
+> <show command>
+> ------------------------
+> vm0:/tmp# ./ip -6 tunnel add ip6tnl1 mode ip6gre local fd::1 remote
+> fd::2 tos inherit ttl 127 encaplimit none
+> vm0:/tmp# ./ip -6 tunnel show dev ip6tnl1
+> vm0:/tmp# echo $?
+> 0
+>
+> here the output is NULL and return code is 0. This is wrong and I
+> would expect to see the tunnel info (as displayed in 'ip -6 tunnel
+> show ip6tnl1')
 
-typedef int array_t[16];
+It seems to me there is a bit of misunderstanding here. Looking at man
+page for ip tunnel:
 
-struct {
-	__uint(type, BPF_MAP_TYPE_ARRAY);
-	__type(value, array_t); /* i.e., array_t *value; */
-} test_map SEC(".maps");
+dev NAME
+       bind the tunnel to the device NAME so that tunneled packets
+will only be routed via this device and will not be able to escape to
+another device when the route to endpoint changes.
 
-Fixes: eb3f595dab40 ("bpf: btf: Validate type reference")
-Cc: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- kernel/bpf/btf.c | 42 +++---------------------------------------
- 1 file changed, 3 insertions(+), 39 deletions(-)
+From what I read, dev parameter should not be used as an alias to the
+tunnel device, but to indicate the device to which the tunnel should
+be binded.
+As such, ip -6 tunnel show dev <name> is a legitimate query that must
+show the tunnel device(s) binded to <name> interface.
+With the query ip -6 tunnel show <name> you instead obtain the tunnel itself.
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index cad09858a5f2..c68c7e73b0d1 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -231,14 +231,6 @@ enum visit_state {
- 	RESOLVED,
- };
- 
--enum resolve_mode {
--	RESOLVE_TBD,	/* To Be Determined */
--	RESOLVE_PTR,	/* Resolving for Pointer */
--	RESOLVE_STRUCT_OR_ARRAY,	/* Resolving for struct/union
--					 * or array
--					 */
--};
--
- #define MAX_RESOLVE_DEPTH 32
- 
- struct btf_sec_info {
-@@ -254,7 +246,6 @@ struct btf_verifier_env {
- 	u32 log_type_id;
- 	u32 top_stack;
- 	enum verifier_phase phase;
--	enum resolve_mode resolve_mode;
- };
- 
- static const char * const btf_kind_str[NR_BTF_KINDS] = {
-@@ -964,26 +955,7 @@ static void btf_verifier_env_free(struct btf_verifier_env *env)
- static bool env_type_is_resolve_sink(const struct btf_verifier_env *env,
- 				     const struct btf_type *next_type)
- {
--	switch (env->resolve_mode) {
--	case RESOLVE_TBD:
--		/* int, enum or void is a sink */
--		return !btf_type_needs_resolve(next_type);
--	case RESOLVE_PTR:
--		/* int, enum, void, struct, array, func or func_proto is a sink
--		 * for ptr
--		 */
--		return !btf_type_is_modifier(next_type) &&
--			!btf_type_is_ptr(next_type);
--	case RESOLVE_STRUCT_OR_ARRAY:
--		/* int, enum, void, ptr, func or func_proto is a sink
--		 * for struct and array
--		 */
--		return !btf_type_is_modifier(next_type) &&
--			!btf_type_is_array(next_type) &&
--			!btf_type_is_struct(next_type);
--	default:
--		BUG();
--	}
-+	return !btf_type_needs_resolve(next_type);
- }
- 
- static bool env_type_is_resolved(const struct btf_verifier_env *env,
-@@ -1010,13 +982,6 @@ static int env_stack_push(struct btf_verifier_env *env,
- 	v->type_id = type_id;
- 	v->next_member = 0;
- 
--	if (env->resolve_mode == RESOLVE_TBD) {
--		if (btf_type_is_ptr(t))
--			env->resolve_mode = RESOLVE_PTR;
--		else if (btf_type_is_struct(t) || btf_type_is_array(t))
--			env->resolve_mode = RESOLVE_STRUCT_OR_ARRAY;
--	}
--
- 	return 0;
- }
- 
-@@ -1038,7 +1003,7 @@ static void env_stack_pop_resolved(struct btf_verifier_env *env,
- 	env->visit_states[type_id] = RESOLVED;
- }
- 
--static const struct resolve_vertex *env_stack_peak(struct btf_verifier_env *env)
-+static const struct resolve_vertex *env_stack_peek(struct btf_verifier_env *env)
- {
- 	return env->top_stack ? &env->stack[env->top_stack - 1] : NULL;
- }
-@@ -3030,9 +2995,8 @@ static int btf_resolve(struct btf_verifier_env *env,
- 	const struct resolve_vertex *v;
- 	int err = 0;
- 
--	env->resolve_mode = RESOLVE_TBD;
- 	env_stack_push(env, t, type_id);
--	while (!err && (v = env_stack_peak(env))) {
-+	while (!err && (v = env_stack_peek(env))) {
- 		env->log_type_id = v->type_id;
- 		err = btf_type_ops(v->t)->resolve(env, v);
- 	}
--- 
-2.17.1
+By the way, the proper selector for the tunnel device name is the
+default "name" parameter. From the man page:
 
+name NAME (default)
+       select the tunnel device name.
+
+For example:
+$ ip -6 tunnel show name ip6tnl0
+ip6tnl0: ipv6/ipv6 remote :: local :: encaplimit 0 hoplimit inherit
+tclass 0x00 flowlabel 0x00000 (flowinfo 0x00000000)
+
+> <change command>
+> lpaa10:/tmp# ip -6 tunnel change dev ip6tnl1 local 2001:1234::1 remote
+> 2001:1234::2 encaplimit none ttl 127 tos inherit allow-localremote
+> lpaa10:/tmp# echo $?
+> 0
+> lpaa10:/tmp# ip -6 tunnel show dev ip6tnl1
+> lpaa10:/tmp# ip -6 tunnel show ip6tnl1
+> ip6tnl1: gre/ipv6 remote fd::2 local fd::1 encaplimit none hoplimit
+> 127 tclass inherit flowlabel 0x00000 (flowinfo 0x00000000)
+>
+> the change command appeared to be successful but change wasn't applied
+> (expecting the allow-localremote to be present on the tunnel).
+
+As you can read from the commit message, here I am not changing the
+return code intentionally to not break existing script setup.
+However, I can easily change this to return an error code in a v2.
+
+> ---
+> >  ip/ip6tunnel.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/ip/ip6tunnel.c b/ip/ip6tunnel.c
+> > index 999408ed801b1..e3da11eb4518e 100644
+> > --- a/ip/ip6tunnel.c
+> > +++ b/ip/ip6tunnel.c
+> > @@ -386,6 +386,9 @@ static int do_add(int cmd, int argc, char **argv)
+> >         if (parse_args(argc, argv, cmd, &p) < 0)
+> >                 return -1;
+> >
+> > +       if (!*p.name)
+> > +               fprintf(stderr, "Tunnel interface name not specified\n");
+> > +
+> >         if (p.proto == IPPROTO_GRE)
+> >                 basedev = "ip6gre0";
+> >         else if (p.i_flags & VTI_ISVTI)
+> > --
+> > 2.20.1
+> >
+
+Regards,
+Andrea
