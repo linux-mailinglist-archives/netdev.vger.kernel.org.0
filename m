@@ -2,79 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D275642EA
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:32:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B276642F5
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727370AbfGJHc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 03:32:56 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:45793 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727290AbfGJHc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:32:56 -0400
+        id S1726391AbfGJHgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:36:55 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34486 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbfGJHgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:36:55 -0400
+Received: by mail-wm1-f68.google.com with SMTP id w9so3982334wmd.1
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 00:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1562743975; x=1594279975;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=sjG8ku6+W5v5awx8flcDasikc66jlGfghcpLlMkY5xU=;
-  b=iu9bCyfIJEVTU1ETcj0yR+4k0NAm0CO1ba6UCB8GSO1zzDDGYN8kShIi
-   kyUuT3QxeT6pgK82PAs6qgBv3R0wypW+84HTimwfsAt1kusWVqaJhOm7j
-   UYcESwxZcJ4+Vf9KJZDD+iTqaLwrFUyoW8kD9gSxZs3pyGP5+4kIjaEQJ
-   0=;
-X-IronPort-AV: E=Sophos;i="5.62,473,1554768000"; 
-   d="scan'208";a="773977521"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 10 Jul 2019 07:32:54 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com (Postfix) with ESMTPS id 652ECA1FCD;
-        Wed, 10 Jul 2019 07:32:52 +0000 (UTC)
-Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 10 Jul 2019 07:32:51 +0000
-Received: from 8c85908914bf.ant.amazon.com (10.43.160.245) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 10 Jul 2019 07:32:46 +0000
-Subject: Re: [PATCH v6 rdma-next 0/6] RDMA/qedr: Use the doorbell overflow
- recovery mechanism for RDMA
-To:     Michal Kalderon <michal.kalderon@marvell.com>,
-        <ariel.elior@marvell.com>, <jgg@ziepe.ca>, <dledford@redhat.com>
-CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <sleybo@amazon.com>
-References: <20190709141735.19193-1-michal.kalderon@marvell.com>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <7b2f2205-6b5d-c9e7-2d59-296367e517ac@amazon.com>
-Date:   Wed, 10 Jul 2019 10:32:41 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NjpSGEczEId2PQwar/5LWdtOmNofLO7pyo56IkyyIWo=;
+        b=y9Kqc87YgmxNlr6wLj1yxouqe+suFSz4+Od/x/mFLDSuqwPAqd870MNLIiO2//2kNV
+         LfBuOdS2UnTiOCFUzxYX0JEAu0jqbfGWIbTNgsg7Sp+0u/RDAIBBbYexvtzTkl26KVO3
+         KdyZvQrEV+05RvK0gyvd7xVgbU/WDjUzrAzRyB8TJqvRDBPTigvK4Lxahj+heLiBhd3R
+         /AH3B5UgrTLQMsuX+zMgjch2xkH8FBh1tWyt9henefeopQ/nXg/PZwYBpCIoqrVlVKjf
+         gyvzd7rBXjbia2hmnQuktJgnPODqG34IaRTkqE0ZcT0Wo8XW/Co2P2FdwWrA3XVrJtSS
+         0S0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NjpSGEczEId2PQwar/5LWdtOmNofLO7pyo56IkyyIWo=;
+        b=rQAavd4ZJ5yIq4SrwoyQEt1YoscqqnbBW4vGm9+QlNcNZJCMvu65n9fShElOG5ShVe
+         LJDD+p1GD+WVpSdM1y1+0Taaref/TXBENoQPWSEH/3dj6KU4oVsMrvwHs8z/FXCX7kcn
+         JJ7qbCCyPjuenmEcP+x0MChwl5r2c8WBbmmUruISbVfs0vSrqZlLwNMChrQO+a5vxDGN
+         l+lJfo/L55maoKDQrd0Fh/0tgOYRWBxxTdb6gSYDMeB16/hkJZN0XQiYThbIuLvKmYYg
+         97kn6zvbMImZK9cIBY+5eoanlCCuKSBagiINBFfEGKLP0+T0PN2kQxhHhvsEChAbUeD9
+         4trw==
+X-Gm-Message-State: APjAAAUfA8HyVuHV72SdqbiF8rk03YFAGbeO9kSu77Mrlg1mkoO2ieuG
+        262xjM/LUEVS2dOWIgMugt4=
+X-Google-Smtp-Source: APXvYqyTOKVnK8n4aBpvuH7eSxAZE/7FGrSr1W6GM7I1zKit+sD4lhU3GukEFhwZ7aSZodKwIk6L3Q==
+X-Received: by 2002:a7b:c251:: with SMTP id b17mr3704761wmj.143.1562744213519;
+        Wed, 10 Jul 2019 00:36:53 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id w23sm1327674wmi.45.2019.07.10.00.36.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 10 Jul 2019 00:36:53 -0700 (PDT)
+Date:   Wed, 10 Jul 2019 09:36:52 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
+        marcelo.leitner@gmail.com, mkubecek@suse.cz,
+        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
+        cphealy@gmail.com, phil@nwl.cc, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net-next,v4 05/12] net: flow_offload: add list handling
+ functions
+Message-ID: <20190710073652.GD2282@nanopsycho>
+References: <20190709205550.3160-1-pablo@netfilter.org>
+ <20190709205550.3160-6-pablo@netfilter.org>
 MIME-Version: 1.0
-In-Reply-To: <20190709141735.19193-1-michal.kalderon@marvell.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.160.245]
-X-ClientProxiedBy: EX13D25UWB001.ant.amazon.com (10.43.161.245) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190709205550.3160-6-pablo@netfilter.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/07/2019 17:17, Michal Kalderon wrote:
-> This patch series uses the doorbell overflow recovery mechanism
-> introduced in
-> commit 36907cd5cd72 ("qed: Add doorbell overflow recovery mechanism")
-> for rdma ( RoCE and iWARP )
-> 
-> The first three patches modify the core code to contain helper
-> functions for managing mmap_xa inserting, getting and freeing
-> entries. The code was taken almost as is from the efa driver.
-> There is still an open discussion on whether we should take
-> this even further and make the entire mmap generic. Until a
-> decision is made, I only created the database API and modified
-> the efa and qedr driver to use it. The doorbell recovery code will be based
-> on the common code.
-> 
-> Efa driver was compile tested only.
+Tue, Jul 09, 2019 at 10:55:43PM CEST, pablo@netfilter.org wrote:
 
-For the whole series:
-Tested-by: Gal Pressman <galpress@amazon.com>
+[...]
+
+
+>@@ -176,6 +176,7 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
+> 	if (!block_cb)
+> 		return ERR_PTR(-ENOMEM);
+> 
+>+	block_cb->net = net;
+> 	block_cb->cb = cb;
+> 	block_cb->cb_ident = cb_ident;
+> 	block_cb->cb_priv = cb_priv;
+>@@ -194,6 +195,22 @@ void flow_block_cb_free(struct flow_block_cb *block_cb)
+> }
+> EXPORT_SYMBOL(flow_block_cb_free);
+> 
+>+struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *f,
+>+					   tc_setup_cb_t *cb, void *cb_ident)
+>+{
+>+	struct flow_block_cb *block_cb;
+>+
+>+	list_for_each_entry(block_cb, f->driver_block_list, driver_list) {
+>+		if (block_cb->net == f->net &&
+
+I don't understand why you need net for this. You should have a list of
+cbs per subsystem (tc/nft) go over it here.
+
+The clash of 2 suybsytems is prevented later on by
+flow_block_cb_is_busy().
+
+Am I missing something?
+If not, could you please remove use of net from flow_block_cb_alloc()
+and from here and replace it by some shared flow structure holding the
+cb list that would be used by both tc and nft?
+
+
+
+>+		    block_cb->cb == cb &&
+>+		    block_cb->cb_ident == cb_ident)
+>+			return block_cb;
+>+	}
+>+
+>+	return NULL;
+>+}
+>+EXPORT_SYMBOL(flow_block_cb_lookup);
+>+
+
+[...]
