@@ -2,140 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 641D964B2F
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 19:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B39E64B43
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 19:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727514AbfGJRFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 13:05:10 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46442 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727197AbfGJRFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 13:05:10 -0400
-Received: by mail-pg1-f193.google.com with SMTP id i8so1521712pgm.13
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 10:05:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=IOlW9k8T+hVdZ67L3PoEHzl1wq41ih3NFhm2ew0sito=;
-        b=eikFnIe/0OKgesXZTMrCFc8bEWW4CV1Pf/8D50CS5pNN2ntryvKcWg/hgYbQJPNTE7
-         FSX3sz1PNWXHBcKtBJcCUkHhCkjjMH6bDQ2SDjqcUnMwAtx+FhlKZIB2lv9Ho97lZe8a
-         lr8GsaOMlENmqb/oh3qJiqgG603OL6DFW6hvE1TNgdG1E3nTFj9pwPQ67tD1sNjYdumK
-         fP02ZQmToRTUXbBKWv06I45feo243FU1I/3i/+A+eRzxTj+k7rtWti0olks6gM3rY9QV
-         oiIIxNj+sxNTblEx0TO0jYebjPcnPEPcItM2EZDALaVIFdbpo3ZjpvzEzNjQa+GBtZ57
-         /qSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=IOlW9k8T+hVdZ67L3PoEHzl1wq41ih3NFhm2ew0sito=;
-        b=J7e5uVDb73lGi/xS3bkGPgYe3YXrScwu6oJ16Kqq4jhrvjTsJhT535Q2Q3TrR8c6Td
-         VsbkGnF+UhSAK+JT0gtI9sx1Z413FzLmMWEn2vNqUNE8AX+abHbmPSTZ8twX5w7FdkZz
-         Gqnqd0c0R85hk56zHu8x7Y3uCmN63298wU2YZWPFXKCtDq95Uax1KpvQK4rMTMnxSB7o
-         PVWc/JVUeMgp/aqtzo2G2TWq7ADcSUI0e7KxueMMaJJLhBJSRtWH4oTV2N0Kj8IlRrqs
-         kZXwzV2RfnvNWVFRS3UdnS9UiVriCVlm/m8VqpP9kdV3d4SHevXLViRfLvy43YBJUjlN
-         Hz/Q==
-X-Gm-Message-State: APjAAAVxWe2RBDpNwV0PKtXOQx1xeLiCO8xkRspuyhtbTrBskPtZVS0I
-        kkuMqt+Kl1HOVMMi6UQB673/Dvdsb/A=
-X-Google-Smtp-Source: APXvYqxfxfInta/TUbHygKv5bI3IRzqpYsAIXdvYsxjR0eDhf09+TKHxaNDd/fepMmQ9iGbQ+JLVvg==
-X-Received: by 2002:a63:f346:: with SMTP id t6mr39479386pgj.203.1562778309023;
-        Wed, 10 Jul 2019 10:05:09 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id b37sm9446622pjc.15.2019.07.10.10.05.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 10:05:08 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 19/19] ionic: Add basic devlink interface
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org
-References: <20190708192532.27420-1-snelson@pensando.io>
- <20190708192532.27420-20-snelson@pensando.io>
- <20190708193454.GF2282@nanopsycho.orion>
- <af206309-514d-9619-1455-efc93af8431e@pensando.io>
- <20190708200350.GG2282@nanopsycho.orion>
- <6f9ebbca-4f13-b046-477c-678489e6ffbf@pensando.io>
- <20190709065620.GJ2282@nanopsycho.orion>
- <0ae90b8d-5c73-e60d-8e56-5f6f56331e1a@pensando.io>
- <20190710064819.GC2282@nanopsycho>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <dddb1a17-991a-30b6-a1ad-b7c5bc05348a@pensando.io>
-Date:   Wed, 10 Jul 2019 10:06:05 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.1
+        id S1728255AbfGJRMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 13:12:45 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60437 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727920AbfGJRMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 13:12:45 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 10 Jul 2019 20:12:43 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.213.18.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6AHChNF002111;
+        Wed, 10 Jul 2019 20:12:43 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, pablo@netfilter.org, saeedm@mellanox.com,
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next] net: sched: Fix NULL-pointer dereference in tc_indr_block_ing_cmd()
+Date:   Wed, 10 Jul 2019 20:12:29 +0300
+Message-Id: <20190710171229.26900-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190710064819.GC2282@nanopsycho>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/9/19 11:48 PM, Jiri Pirko wrote:
-> Tue, Jul 09, 2019 at 09:13:53PM CEST, snelson@pensando.io wrote:
->> On 7/8/19 11:56 PM, Jiri Pirko wrote:
->>> Tue, Jul 09, 2019 at 12:58:00AM CEST, snelson@pensando.io wrote:
->>>> On 7/8/19 1:03 PM, Jiri Pirko wrote:
->>>>> Mon, Jul 08, 2019 at 09:58:09PM CEST, snelson@pensando.io wrote:
+After recent refactoring of block offlads infrastructure, indr_dev->block
+pointer is dereferenced before it is verified to be non-NULL. Example stack
+trace where this behavior leads to NULL-pointer dereference error when
+creating vxlan dev on system with mlx5 NIC with offloads enabled:
 
->>>>>> If I'm not mistaken, the alloc is only allocating enough for a pointer, not
->>>>>> the whole per device struct, and a few lines down from here the pointer to
->>>>>> the new devlink struct is assigned to ionic->dl.  This was based on what I
->>>>>> found in the qed driver's qed_devlink_register(), and it all seems to work.
->>>>> I'm not saying your code won't work. What I say is that you should have
->>>>> a struct for device that would be allocated by devlink_alloc()
->>>> Is there a particular reason why?  I appreciate that devlink_alloc() can give
->>>> you this device specific space, just as alloc_etherdev_mq() can, but is there
->>> Yes. Devlink manipulates with the whole device. However,
->>> alloc_etherdev_mq() allocates only net_device. These are 2 different
->>> things. devlink port relates 1:1 to net_device. However, devlink
->>> instance can have multiple ports. What I say is do it correctly.
->> So what you are saying is that anyone who wants to add even the smallest
->> devlink feature to their driver needs to rework their basic device memory
->> setup to do it the devlink way.  I can see where some folks may have a
->> problem with this.
-> It's just about having a structure to hold device data. You don't have
-> to rework anything, just add this small one.
+[ 1157.852938] ==================================================================
+[ 1157.866877] BUG: KASAN: null-ptr-deref in tc_indr_block_ing_cmd.isra.41+0x9c/0x160
+[ 1157.880877] Read of size 4 at addr 0000000000000090 by task ip/3829
+[ 1157.901637] CPU: 22 PID: 3829 Comm: ip Not tainted 5.2.0-rc6+ #488
+[ 1157.914438] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+[ 1157.929031] Call Trace:
+[ 1157.938318]  dump_stack+0x9a/0xeb
+[ 1157.948362]  ? tc_indr_block_ing_cmd.isra.41+0x9c/0x160
+[ 1157.960262]  ? tc_indr_block_ing_cmd.isra.41+0x9c/0x160
+[ 1157.972082]  __kasan_report+0x176/0x192
+[ 1157.982513]  ? tc_indr_block_ing_cmd.isra.41+0x9c/0x160
+[ 1157.994348]  kasan_report+0xe/0x20
+[ 1158.004324]  tc_indr_block_ing_cmd.isra.41+0x9c/0x160
+[ 1158.015950]  ? tcf_block_setup+0x430/0x430
+[ 1158.026558]  ? kasan_unpoison_shadow+0x30/0x40
+[ 1158.037464]  __tc_indr_block_cb_register+0x5f5/0xf20
+[ 1158.049288]  ? mlx5e_rep_indr_tc_block_unbind+0xa0/0xa0 [mlx5_core]
+[ 1158.062344]  ? tc_indr_block_dev_put.part.47+0x5c0/0x5c0
+[ 1158.074498]  ? rdma_roce_rescan_device+0x20/0x20 [ib_core]
+[ 1158.086580]  ? br_device_event+0x98/0x480 [bridge]
+[ 1158.097870]  ? strcmp+0x30/0x50
+[ 1158.107578]  mlx5e_nic_rep_netdevice_event+0xdd/0x180 [mlx5_core]
+[ 1158.120212]  notifier_call_chain+0x6d/0xa0
+[ 1158.130753]  register_netdevice+0x6fc/0x7e0
+[ 1158.141322]  ? netdev_change_features+0xa0/0xa0
+[ 1158.152218]  ? vxlan_config_apply+0x210/0x310 [vxlan]
+[ 1158.163593]  __vxlan_dev_create+0x2ad/0x520 [vxlan]
+[ 1158.174770]  ? vxlan_changelink+0x490/0x490 [vxlan]
+[ 1158.185870]  ? rcu_read_unlock+0x60/0x60 [vxlan]
+[ 1158.196798]  vxlan_newlink+0x99/0xf0 [vxlan]
+[ 1158.207303]  ? __vxlan_dev_create+0x520/0x520 [vxlan]
+[ 1158.218601]  ? rtnl_create_link+0x3d0/0x450
+[ 1158.228900]  __rtnl_newlink+0x8a7/0xb00
+[ 1158.238701]  ? stack_access_ok+0x35/0x80
+[ 1158.248450]  ? rtnl_link_unregister+0x1a0/0x1a0
+[ 1158.258735]  ? find_held_lock+0x6d/0xd0
+[ 1158.268379]  ? is_bpf_text_address+0x67/0xf0
+[ 1158.278330]  ? lock_acquire+0xc1/0x1f0
+[ 1158.287686]  ? is_bpf_text_address+0x5/0xf0
+[ 1158.297449]  ? is_bpf_text_address+0x86/0xf0
+[ 1158.307310]  ? kernel_text_address+0xec/0x100
+[ 1158.317155]  ? arch_stack_walk+0x92/0xe0
+[ 1158.326497]  ? __kernel_text_address+0xe/0x30
+[ 1158.336213]  ? unwind_get_return_address+0x2f/0x50
+[ 1158.346267]  ? create_prof_cpu_mask+0x20/0x20
+[ 1158.355936]  ? arch_stack_walk+0x92/0xe0
+[ 1158.365117]  ? stack_trace_save+0x8a/0xb0
+[ 1158.374272]  ? stack_trace_consume_entry+0x80/0x80
+[ 1158.384226]  ? match_held_lock+0x33/0x210
+[ 1158.393216]  ? kasan_unpoison_shadow+0x30/0x40
+[ 1158.402593]  rtnl_newlink+0x53/0x80
+[ 1158.410925]  rtnetlink_rcv_msg+0x3a5/0x600
+[ 1158.419777]  ? validate_linkmsg+0x400/0x400
+[ 1158.428620]  ? find_held_lock+0x6d/0xd0
+[ 1158.437117]  ? match_held_lock+0x1b/0x210
+[ 1158.445760]  ? validate_linkmsg+0x400/0x400
+[ 1158.454642]  netlink_rcv_skb+0xc7/0x1f0
+[ 1158.463150]  ? netlink_ack+0x470/0x470
+[ 1158.471538]  ? netlink_deliver_tap+0x1f3/0x5a0
+[ 1158.480607]  netlink_unicast+0x2ae/0x350
+[ 1158.489099]  ? netlink_attachskb+0x340/0x340
+[ 1158.497935]  ? _copy_from_iter_full+0xde/0x3b0
+[ 1158.506945]  ? __virt_addr_valid+0xb6/0xf0
+[ 1158.515578]  ? __check_object_size+0x159/0x240
+[ 1158.524515]  netlink_sendmsg+0x4d3/0x630
+[ 1158.532879]  ? netlink_unicast+0x350/0x350
+[ 1158.541400]  ? netlink_unicast+0x350/0x350
+[ 1158.549805]  sock_sendmsg+0x94/0xa0
+[ 1158.557561]  ___sys_sendmsg+0x49d/0x570
+[ 1158.565625]  ? copy_msghdr_from_user+0x210/0x210
+[ 1158.574457]  ? __fput+0x1e2/0x330
+[ 1158.581948]  ? __kasan_slab_free+0x130/0x180
+[ 1158.590407]  ? kmem_cache_free+0xb6/0x2d0
+[ 1158.598574]  ? mark_lock+0xc7/0x790
+[ 1158.606177]  ? task_work_run+0xcf/0x100
+[ 1158.614165]  ? exit_to_usermode_loop+0x102/0x110
+[ 1158.622954]  ? __lock_acquire+0x963/0x1ee0
+[ 1158.631199]  ? lockdep_hardirqs_on+0x260/0x260
+[ 1158.639777]  ? match_held_lock+0x1b/0x210
+[ 1158.647918]  ? lockdep_hardirqs_on+0x260/0x260
+[ 1158.656501]  ? match_held_lock+0x1b/0x210
+[ 1158.664643]  ? __fget_light+0xa6/0xe0
+[ 1158.672423]  ? __sys_sendmsg+0xd2/0x150
+[ 1158.680334]  __sys_sendmsg+0xd2/0x150
+[ 1158.688063]  ? __ia32_sys_shutdown+0x30/0x30
+[ 1158.696435]  ? lock_downgrade+0x2e0/0x2e0
+[ 1158.704541]  ? mark_held_locks+0x1a/0x90
+[ 1158.712611]  ? mark_held_locks+0x1a/0x90
+[ 1158.720619]  ? do_syscall_64+0x1e/0x2c0
+[ 1158.728530]  do_syscall_64+0x78/0x2c0
+[ 1158.736254]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[ 1158.745414] RIP: 0033:0x7f62d505cb87
+[ 1158.753070] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 80 00 00 00 00 8b 05 6a 2b 2c 00 48 63 d2 48 63 ff 85 c0 75 18 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 59 f3 c3 0f 1f 80 00 00[87/1817]
+ 48 89 f3 48
+[ 1158.780924] RSP: 002b:00007fffd9832268 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[ 1158.793204] RAX: ffffffffffffffda RBX: 000000005d26048f RCX: 00007f62d505cb87
+[ 1158.805111] RDX: 0000000000000000 RSI: 00007fffd98322d0 RDI: 0000000000000003
+[ 1158.817055] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
+[ 1158.828987] R10: 00007f62d50ce260 R11: 0000000000000246 R12: 0000000000000001
+[ 1158.840909] R13: 000000000067e540 R14: 0000000000000000 R15: 000000000067ed20
+[ 1158.852873] ==================================================================
 
-Well, there's a bit of logic rework to and a little data twiddling - not 
-too bad in our case.  Others may not be thrilled depending on how 
-they've already implemented their drivers.
+Introduce new function tcf_block_non_null_shared() that verifies block
+pointer before dereferencing it to obtain index. Use the function in
+tc_indr_block_ing_cmd() to prevent NULL pointer dereference.
 
->>>>> The ionic struct should be associated with devlink_port. That you are
->>>>> missing too.
->>>> We don't support any of devlink_port features at this point, just the simple
->>>> device information.
->>> No problem, you can still register devlink_port. You don't have to do
->>> much in order to do so.
->> Is there any write-up to help guide developers new to devlink in using the
->> interface correctly?  I haven't found much yet, but perhaps I've missed
->> something.  The manpages are somewhat useful in showing what the user might
->> do, but they really don't help much in guiding the developer through these
->> details.
-> That is not job of a manpage. See the rest of the code to get inspired.
->
+Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+---
+ include/net/pkt_cls.h | 10 ++++++++++
+ net/sched/cls_api.c   |  2 +-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-Sure, we should all be able to poke through the code and figure out the 
-basics - "use the Force, read the source" - but as software engineers we 
-should be including some bits of documentation to help those new to the 
-feature to steer away from pitfalls and use the feature correctly.  
-We're all busy with our own projects and only have limited time to dig 
-into and understand someone else's code; if there's not a guide, we'll 
-do what we can to get it working and then move on, with no guarantee 
-that we followed the original intent.
-
-There's a Documentation page on the devlink-health feature, and a brief 
-bit on devlink-params, but I haven't seen anything yet that spells out 
-the "proper" way to use the devlink framework.  Of course, the 
-open-source spirit is for me to scratch my own itch and take care of the 
-need myself: I'd be happy to get a brief doc started, but if the 
-original developers can take a few minutes to at least sketch some notes 
-down about important bits like "the device struct should be associated 
-with devlink_port" and why it should, then we have a chance at saving a 
-lot of other people's time, and perhaps we can fill out the details 
-correctly and not miss something important.
-
-sln
-
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index b03d466182db..841faadceb6e 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -60,6 +60,11 @@ static inline bool tcf_block_shared(struct tcf_block *block)
+ 	return block->index;
+ }
+ 
++static inline bool tcf_block_non_null_shared(struct tcf_block *block)
++{
++	return block && block->index;
++}
++
+ static inline struct Qdisc *tcf_block_q(struct tcf_block *block)
+ {
+ 	WARN_ON(tcf_block_shared(block));
+@@ -84,6 +89,11 @@ static inline bool tcf_block_shared(struct tcf_block *block)
+ 	return false;
+ }
+ 
++static inline bool tcf_block_non_null_shared(struct tcf_block *block)
++{
++	return false;
++}
++
+ static inline
+ int tcf_block_get(struct tcf_block **p_block,
+ 		  struct tcf_proto __rcu **p_filter_chain, struct Qdisc *q,
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 638c1bc1ea1b..278014e26aec 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -684,7 +684,7 @@ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
+ 		.command	= command,
+ 		.binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
+ 		.net		= dev_net(indr_dev->dev),
+-		.block_shared	= tcf_block_shared(indr_dev->block),
++		.block_shared	= tcf_block_non_null_shared(indr_dev->block),
+ 	};
+ 	INIT_LIST_HEAD(&bo.cb_list);
+ 
+-- 
+2.21.0
 
