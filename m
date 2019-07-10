@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 794C764C1B
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 20:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1114464C1C
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 20:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728136AbfGJSas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 14:30:48 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35522 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727347AbfGJSas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 14:30:48 -0400
-Received: by mail-wm1-f66.google.com with SMTP id l2so3276796wmg.0
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 11:30:47 -0700 (PDT)
+        id S1728273AbfGJSav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 14:30:51 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:56015 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728138AbfGJSat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 14:30:49 -0400
+Received: by mail-wm1-f68.google.com with SMTP id a15so3263199wmj.5
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 11:30:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=J1polEHR6zNsqvd/wi5fYTixTxgtkkeSm5PSntnADOE=;
-        b=X/aYHQBDgrr/WnjYV0qHqUSeKZZRn2FyeJRSjm+BgI0wrGGt1WL/MM71OtZABzZzFC
-         lb3t3I/Zvm4LpY2PXE653+ulclk6ACzaIhCn5dga7r3gq4GOkA0GUZMFWp3i6QrFJwtX
-         xu61EkbaALzOBgz74gPgc2oRrKcRElZ+F9ylZjuePHayCRn73RWm6Gpn7Mo+Z5bOLC4A
-         l6cxCUKZ4AP9HxqYI4HqRMuFIJoSG8kERVrfitGrja6QNrwHM+rvYDs8xuNtoM3Q6Jpw
-         a9jegIik0zeJynZS+dfPY8Tvd2LGeFJxV4Z+uVeXzZRK8Q9VKoxhPv+a+IqWeqR8P1/v
-         QfmQ==
+        bh=y+nhRyHtKngoHJN0lKHoiZm2Ls8+pD4TxzdEQq9blk8=;
+        b=lvIQNsqy6J+X2UzbsuCzQW3R2d2AulHrOZ1k11l25Paxn4b6/9HdSTyc+jnbDnDdq0
+         FwIWpXZPTYjKxGdF+2ZJrb2Ss3iRifDmPwop/5yjCDFr66Oj83FVO5GlOkKz252sAmOc
+         pd4cQopiROOakHVPMALx1w/Qpb3tJI9ghJS/pD9AMFUm1HIXzr27DQ04FSaCQZXzr0PL
+         blAZ12c/CZDotb4BhTJ1KN+R7F2u/she+9t7jW60wIIl2A+3u1efqB9QFnEcr34IBngq
+         Bt3LFe9e2Ck1CfIZ47uS/Ihck2+VeR7gZqULJOLN+iiOHba/lxQhYbWYK6a2o2bIZaV3
+         /S+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=J1polEHR6zNsqvd/wi5fYTixTxgtkkeSm5PSntnADOE=;
-        b=f0W6BA46jFnFGPHDdqSE6s0ejPJSemp3XpuX7YHjdMZCbdM6eA1LdpLG883Fc5jCNS
-         9c/95sHP7Ooy1/8bWZEiXq0VI7+Mp1YGea3dPfNWcM8H4awctM2T484oUOnTdDf9kvzZ
-         dkO+ihzeCkf3VbemR8gLlPl3uZJ/l6KIkF+S03oxtwc1EkCsDou3dXU3GYfRuMS+2JOT
-         JJYixNQOHCW4ezLJr4A3Azv2JCecoLbKbmhK/+/I9SQZ9LRb9mtaAB1yertFu0s4tpgG
-         I8+vbx5koViRWTUVYsD7Oe11T9AqXqQqYbFKQ+Nv22bzaw55AfhEixUPfS18oMXG4Xh/
-         NNyw==
-X-Gm-Message-State: APjAAAUVXFjbHsIZXi9vpT3PSnUMiRk/k62E72XGGLsfPI13hfmMs5r1
-        WSBP01vOdb9nakmb8vEIOnVhqUsDRIU=
-X-Google-Smtp-Source: APXvYqxnSRe7EjqXKDY3PfckBfw92Uxjf2/HB9Xi3AIxX4M/szJWzUEJpqzL0SGiP0tOHCM9lumrPQ==
-X-Received: by 2002:a1c:3c04:: with SMTP id j4mr6055913wma.37.1562783446373;
-        Wed, 10 Jul 2019 11:30:46 -0700 (PDT)
+        bh=y+nhRyHtKngoHJN0lKHoiZm2Ls8+pD4TxzdEQq9blk8=;
+        b=Gb/wll323hYGmY1CioPmZ3Aem2L+T2+V5Bwc0iXNnPBZX6sm31VevzesRf0dlCGdWF
+         TEW1EZtvnwG48bq+tD/kWGLXr65echWIEY/HCq1l8p2bzDVUhaG3Z1ggz/ydC+jRpf0o
+         23fswjtKxM8kyp3ofEeXqpSrY16s5YV6Qne6LKUT6MbCKVIWGlWVOvIJsXKRSG+5DG+B
+         lU6W4IAyx8rdZ00lKh7mqmpjlZ5otOiYSAthEjmxP/A6uWbj7w0yD1k6R/GxJzJLjDpb
+         pFFvWUpzeeGapFrL0zilqb5wYDxo0YM6UMGgJeX8UqlI16GaVBcsf8+UYrSUMJ9T5nBE
+         spTA==
+X-Gm-Message-State: APjAAAXykKEdywfaAwpC+pSmIrEqANQFQMN7WB0uvTVqvXOTzPPSC0o6
+        uIBsZNENwzI9JsID2ADKNhLrrJAj8gY=
+X-Google-Smtp-Source: APXvYqw8zZQ0Skl9zlLGWMWyQXdF75MJkUsuqH4ADVTa2kVK4SYNyPEmEsZk9EI7qz0G4CqdGoZSYA==
+X-Received: by 2002:a1c:cfc3:: with SMTP id f186mr6034715wmg.134.1562783447826;
+        Wed, 10 Jul 2019 11:30:47 -0700 (PDT)
 Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id p3sm2747584wmg.15.2019.07.10.11.30.45
+        by smtp.gmail.com with ESMTPSA id p3sm2747584wmg.15.2019.07.10.11.30.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 10 Jul 2019 11:30:45 -0700 (PDT)
+        Wed, 10 Jul 2019 11:30:47 -0700 (PDT)
 From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, simon.horman@netronome.com,
         jakub.kicinski@netronome.com, oss-drivers@netronome.com,
         John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next 1/2] nfp: flower: fix ethernet check on match fields
-Date:   Wed, 10 Jul 2019 19:30:29 +0100
-Message-Id: <1562783430-7031-2-git-send-email-john.hurley@netronome.com>
+Subject: [PATCH net-next 2/2] nfp: flower: ensure ip protocol is specified for L4 matches
+Date:   Wed, 10 Jul 2019 19:30:30 +0100
+Message-Id: <1562783430-7031-3-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1562783430-7031-1-git-send-email-john.hurley@netronome.com>
 References: <1562783430-7031-1-git-send-email-john.hurley@netronome.com>
@@ -59,62 +59,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NFP firmware does not explicitly match on an ethernet type field. Rather,
-each rule has a bitmask of match fields that can be used to infer the
-ethernet type.
+Flower rules on the NFP firmware are able to match on an IP protocol
+field. When parsing rules in the driver, unknown IP protocols are only
+rejected when further matches are to be carried out on layer 4 fields, as
+the firmware will not be able to extract such fields from packets.
 
-Currently, if a flower rule contains an unknown ethernet type, a check is
-carried out for matches on other fields of the packet. If matches on
-layer 3 or 4 are found, then the offload is rejected as firmware will not
-be able to extract these fields from a packet with an ethernet type it
-does not currently understand.
+L4 protocol dissectors such as FLOW_DISSECTOR_KEY_PORTS are only parsed if
+an IP protocol is specified. This leaves a loophole whereby a rule that
+attempts to match on transport layer information such as port numbers but
+does not explicitly give an IP protocol type can be incorrectly offloaded
+(in this case with wildcard port numbers matches).
 
-However, if a rule contains an unknown ethernet type without any L3 (or
-above) matches then this will effectively be offloaded as a rule with a
-wildcarded ethertype. This can lead to misclassifications on the firmware.
+Fix this by rejecting the offload of flows that attempt to match on L4
+information, not only when matching on an unknown IP protocol type, but
+also when the protocol is wildcarded.
 
-Fix this issue by rejecting all flower rules that specify a match on an
-unknown ethernet type.
-
-Further ensure correct offloads by moving the 'L3 and above' check to any
-rule that does not specify an ethernet type and rejecting rules with
-further matches. This means that we can still offload rules with a
-wildcarded ethertype if they only match on L2 fields but will prevent
-rules which match on further fields that we cannot be sure if the firmware
-will be able to extract.
-
-Fixes: af9d842c1354 ("nfp: extend flower add flow offload")
+Fixes: 2a04784594f6 ("nfp: flower: check L4 matches on unknown IP protocols")
 Signed-off-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/offload.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 7e725fa..885f968 100644
+index 885f968..faa8ba0 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -368,15 +368,12 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
+@@ -386,18 +386,15 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
+ 			key_layer |= NFP_FLOWER_LAYER_TP;
+ 			key_size += sizeof(struct nfp_flower_tp_ports);
  			break;
- 
- 		default:
--			/* Other ethtype - we need check the masks for the
+-		default:
+-			/* Other ip proto - we need check the masks for the
 -			 * remainder of the key to ensure we can offload.
 -			 */
--			if (nfp_flower_check_higher_than_mac(flow)) {
--				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: non IPv4/IPv6 offload with L3/L4 matches not supported");
+-			if (nfp_flower_check_higher_than_l3(flow)) {
+-				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unknown IP protocol with L4 matches not supported");
 -				return -EOPNOTSUPP;
 -			}
 -			break;
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: match on given EtherType is not supported");
-+			return -EOPNOTSUPP;
  		}
-+	} else if (nfp_flower_check_higher_than_mac(flow)) {
-+		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: cannot match above L2 without specified EtherType");
-+		return -EOPNOTSUPP;
  	}
  
- 	if (basic.mask && basic.mask->ip_proto) {
++	if (!(key_layer & NFP_FLOWER_LAYER_TP) &&
++	    nfp_flower_check_higher_than_l3(flow)) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: cannot match on L4 information without specified IP protocol type");
++		return -EOPNOTSUPP;
++	}
++
+ 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_TCP)) {
+ 		struct flow_match_tcp tcp;
+ 		u32 tcp_flags;
 -- 
 2.7.4
 
