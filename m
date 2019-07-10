@@ -2,77 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C00D64DEE
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 23:12:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96AD664DF5
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 23:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727565AbfGJVMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 17:12:30 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:44637 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727463AbfGJVM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 17:12:29 -0400
-Received: by mail-lj1-f195.google.com with SMTP id k18so3501686ljc.11
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 14:12:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gwvajVWMIb62q8wACGYhWs29kEXd/GDO5w+T3eFYJVQ=;
-        b=ix9E8oHqVOHHI7+NbnlUqfsJnN4HBLwyr0Jn9m3Tpk6LEOunHnYze3vGWP8/aAN+JQ
-         o8Xb6a4lS1X88VxaIJw7qDyL2rtrdl8yPiVKxFJVDlBDzUn/5GBcvnogmRiipUUSaZ2A
-         y62oVYOH++N07WuupIrdvk0x7owfObLe29Q5s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gwvajVWMIb62q8wACGYhWs29kEXd/GDO5w+T3eFYJVQ=;
-        b=nyfGYp85TOq1byyDBhATEv1JiyGvmlMxppCksFeuJaB59aS7DlO9dFvurBMhf2AkTX
-         rarZpxGXp84cS7BEOW6075kHNZJrS2KqUVzgNV5Qa0/EaSQsS84GRHMpf0Jkeok0xkRK
-         tN6qCYOKuv29Bhd5WpXh+Ajfok1IWQ2fkSM9urVXowMv51fxlrDre6np+M3XqmJ37CYy
-         4NHoZlTprYtqGwphlbMxflybrL7brTcBOWxjdn1yHTmVTUub491CAesHlAhYyId49Q5H
-         eSd52XDrfb9OIPYDu+ta4PLObjPFC/LsdHkIVSOw7ZwE0u63+hHYBtfreaub3YdJw6PV
-         z3fQ==
-X-Gm-Message-State: APjAAAVdvHnMBhsnQDp+RAj4U6lpSsKJzR6kZRA73lAij1qBtP9sbOR6
-        Ph5bwNMwzNT/zOWIxfzmZlOaXqrfuas=
-X-Google-Smtp-Source: APXvYqz4AKBmoNnzeVYHLjX+vVPNmndNkQqHZF72VOrkTjBVwX9JVQN9sSR2X+Bx3Cw7G6PWXLjdZw==
-X-Received: by 2002:a2e:9610:: with SMTP id v16mr147750ljh.229.1562793147915;
-        Wed, 10 Jul 2019 14:12:27 -0700 (PDT)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id p5sm646246ljb.91.2019.07.10.14.12.25
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 14:12:26 -0700 (PDT)
-Received: by mail-lf1-f43.google.com with SMTP id v85so2563911lfa.6
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 14:12:25 -0700 (PDT)
-X-Received: by 2002:a19:6519:: with SMTP id z25mr6190697lfb.42.1562793144979;
- Wed, 10 Jul 2019 14:12:24 -0700 (PDT)
+        id S1727651AbfGJVTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 17:19:52 -0400
+Received: from www62.your-server.de ([213.133.104.62]:45558 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727220AbfGJVTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 17:19:52 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlK08-0002zM-9q; Wed, 10 Jul 2019 23:19:44 +0200
+Received: from [178.193.45.231] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlK08-00021W-2p; Wed, 10 Jul 2019 23:19:44 +0200
+Subject: Re: [PATCH V2 1/1 (was 0/1 by accident)] tools/dtrace: initial
+ implementation of DTrace
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        mhiramat@kernel.org, acme@kernel.org, ast@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Chris Mason <clm@fb.com>, brendan.d.gregg@gmail.com,
+        davem@davemloft.net
+References: <201907101537.x6AFboMR015946@aserv0122.oracle.com>
+ <201907101542.x6AFgOO9012232@userv0121.oracle.com>
+ <20190710181227.GA9925@oracle.com>
+ <c7f15d1d-1696-4d95-1729-4c4e97bdc43e@iogearbox.net>
+ <20190710143048.3923d1d9@lwn.net>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1de27d29-65bb-89d3-9fca-7c452cd66934@iogearbox.net>
+Date:   Wed, 10 Jul 2019 23:19:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-References: <20190627003616.20767-1-sashal@kernel.org> <20190627003616.20767-14-sashal@kernel.org>
- <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com> <20190710145112.GX10104@sasha-vm>
-In-Reply-To: <20190710145112.GX10104@sasha-vm>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Wed, 10 Jul 2019 14:12:12 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXPseNZkud1vu9zaRH-vA0rJq8D_t6pFG1LTPQtdr8_eVA@mail.gmail.com>
-Message-ID: <CA+ASDXPseNZkud1vu9zaRH-vA0rJq8D_t6pFG1LTPQtdr8_eVA@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 4.19 14/60] mwifiex: Abort at too short BSS
- descriptor element
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190710143048.3923d1d9@lwn.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25506/Wed Jul 10 10:11:44 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 7:51 AM Sasha Levin <sashal@kernel.org> wrote:
-> I see that 63d7ef36103d didn't make it into 5.2, so I'll just drop this
-> for now.
+On 07/10/2019 10:30 PM, Jonathan Corbet wrote:
+> On Wed, 10 Jul 2019 21:32:25 +0200
+> Daniel Borkmann <daniel@iogearbox.net> wrote:
+> 
+>> Looks like you missed Brendan Gregg's prior feedback from v1 [0]. I haven't
+>> seen a strong compelling argument for why this needs to reside in the kernel
+>> tree given we also have all the other tracing tools and many of which also
+>> rely on BPF such as bcc, bpftrace, ply, systemtap, sysdig, lttng to just name
+>> a few.
+> 
+> So I'm just watching from the sidelines here, but I do feel the need to
+> point out that Kris appears to be trying to follow the previous feedback
+> he got from Alexei, where creating tools/dtrace is exactly what he was
+> told to do:
+> 
+>   https://lwn.net/ml/netdev/20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com/
+> 
+> Now he's being told the exact opposite.  Not the best experience for
+> somebody who is trying to make the kernel better.
 
-Yeah, I think it's stuck at net/master. Presumably it'll get into
-5.3-rc somewhere.
+Ugh, agree, sorry for the misleading direction. Alexei is currently offgrid
+this week, he might comment later.
 
-Brian
+It has nothing to do with making the _kernel_ better, it's a /user space/ front
+end for the existing kernel infrastructure like many of the other tracers out
+there. Don't get me wrong, adding the missing /kernel parts/ for it is a totally
+different subject [and _that_ is what is making the kernel better, not the former].
+Hypothetical question: does it make the _kernel_ better if we suddenly add a huge
+and complex project like tools/mysql/ to the kernel tree? Nope.
+
+> There are still people interested in DTrace out there.  How would you
+> recommend that Kris proceed at this point?
+
+My recommendation to proceed is to maintain the dtrace user space tooling in
+its own separate project like the vast majority of all the other tracing projects
+(see also the other advantages that Steven pointed out from his experience), and
+extend the kernel bits whenever needed.
+
+Thanks,
+Daniel
