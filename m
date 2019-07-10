@@ -2,118 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AF263FAB
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 05:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE6864010
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 06:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726273AbfGJDjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jul 2019 23:39:35 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:45697 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbfGJDje (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jul 2019 23:39:34 -0400
-Received: by mail-io1-f67.google.com with SMTP id g20so1571905ioc.12;
-        Tue, 09 Jul 2019 20:39:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=vkNxhhQqx2DW45+FHUIITX7YT1t53rI6RXHcYiqJqUY=;
-        b=Gai7FgBXUObMFo5yxa6ei+wlGGkCup2IlAsRVx2gdETCfRDXr0APA+24yIuewcqbop
-         bTr1mMCVSR85ixRdN8cw+z2BAsjFFyT0/b8kfxD83Klk0lClbPTmrT8cuYtUpqKQacxv
-         XFvuR/m/9sTjiNA/sv8nOJ1CkKOfx4uVfcVmlKVB6aJ6zMxDcmgTYWqE5lrZ9f2D1N/s
-         Tb55zA6rXZKzikPzq04I1YC+juPaq3tV25cHWIqYzQ7/ChHQ71C7q2KM94bMnmpYGJyh
-         HadTVbRuqHkYmv+1aKIbgbX3jIFjYCMcE2sU9H17mGZ0oWLbhVKY+FK5iK6Iy0ajyobE
-         gtTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=vkNxhhQqx2DW45+FHUIITX7YT1t53rI6RXHcYiqJqUY=;
-        b=f2GWS/iBKejF5LON4pfe/dSKsQiGWkn0ebU3+rndkZSmWIJ3BWKRyZH06Zte1BJ41b
-         7Iri6YkHM6Uaq+fSxiutFMQhFIEzIOycE4ByMGUySCVQDXgBYrpvsjhUcyyJGvq236YI
-         8+U599wjsozPm0hd+eXlAFeF77poI1wVLyCd+zwqSoKLDiK1FZb9iUWtbPDOL7eel+J/
-         7oTFD5homI40qd5i90vocODHgWjX+2SQVyCDYIbI098Z0XP0ttHfEFk+Welwgx+NKyh9
-         waiwH7jr/F0DEUdO6cfap3jmY5RJcFgyS88/+yOz3XgTiamZzduXxaw+kl/T3Tfdlb5m
-         Dzww==
-X-Gm-Message-State: APjAAAUrBrIPq1+oumgNP3w8T2olPWJ8Sk+2MdSLLWVzBdzt9Gs1FR+J
-        JIXV4PGthtnRG4nwU6DqfAM=
-X-Google-Smtp-Source: APXvYqxKBBKdf5Rv/MFREUAYs4D56vMeUuLkn1LIREaOMxu0g3X3ef7J+Mulg9G7PYDlh7uZJs6lEA==
-X-Received: by 2002:a5d:9d42:: with SMTP id k2mr10439691iok.45.1562729973786;
-        Tue, 09 Jul 2019 20:39:33 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id m10sm1286950ioj.75.2019.07.09.20.39.30
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Jul 2019 20:39:33 -0700 (PDT)
-Date:   Tue, 09 Jul 2019 20:39:24 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        edumazet@google.com, bpf@vger.kernel.org
-Message-ID: <5d255dececd33_1b7a2aec940d65b45@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190709194525.0d4c15a6@cakuba.netronome.com>
-References: <156261310104.31108.4569969631798277807.stgit@ubuntu3-kvm1>
- <156261324561.31108.14410711674221391677.stgit@ubuntu3-kvm1>
- <20190709194525.0d4c15a6@cakuba.netronome.com>
-Subject: Re: [bpf PATCH v2 2/6] bpf: tls fix transition through disconnect
- with close
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1726125AbfGJEY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 00:24:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36170 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725871AbfGJEY7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 00:24:59 -0400
+Received: from localhost (unknown [37.142.3.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4E40E20838;
+        Wed, 10 Jul 2019 04:24:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562732698;
+        bh=4FdvBTrd6aaIrNkb5WVHmme5xSc6VGxXjEjCFOP6XLY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g5uk2FqiNoyYWFK0+7CgTfGD+95ZstYT7cOUMZ98ezviEt4PmI+nQjvFKhhzZBdQq
+         fIXuoHwz/RcMEzGAoTotMq8ESW/DTaOEaLQCR/AOSG0NekD/dGCBpxHOQPbdDa6Pyn
+         xCQgWfGImwxrhUo/fjBHhSPiFlmOgWKogPELIZjE=
+Date:   Wed, 10 Jul 2019 07:24:53 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Boris Pismenny <borisp@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH] net/mlx5e: Return in default case statement in
+ tx_post_resync_params
+Message-ID: <20190710042453.GZ7034@mtr-leonro.mtl.com>
+References: <20190708231154.89969-1-natechancellor@gmail.com>
+ <CAKwvOdkYdNiKorJAKHZ7LTfk9eOpMqe6F4QSmJWQ=-YNuPAyrw@mail.gmail.com>
+ <20190709231024.GA61953@archlinux-threadripper>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190709231024.GA61953@archlinux-threadripper>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Mon, 08 Jul 2019 19:14:05 +0000, John Fastabend wrote:
-> > @@ -287,6 +313,27 @@ static void tls_sk_proto_cleanup(struct sock *sk,
-> >  #endif
-> >  }
-> >  
-> > +static void tls_sk_proto_unhash(struct sock *sk)
-> > +{
-> > +	struct inet_connection_sock *icsk = inet_csk(sk);
-> > +	long timeo = sock_sndtimeo(sk, 0);
-> > +	struct tls_context *ctx;
-> > +
-> > +	if (unlikely(!icsk->icsk_ulp_data)) {
-> 
-> Is this for when sockmap is stacked on top of TLS and TLS got removed
-> without letting sockmap know?
+On Tue, Jul 09, 2019 at 04:10:24PM -0700, Nathan Chancellor wrote:
+> On Tue, Jul 09, 2019 at 03:44:59PM -0700, Nick Desaulniers wrote:
+> > On Mon, Jul 8, 2019 at 4:13 PM Nathan Chancellor
+> > <natechancellor@gmail.com> wrote:
+> > >
+> > > clang warns:
+> > >
+> > > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:251:2:
+> > > warning: variable 'rec_seq_sz' is used uninitialized whenever switch
+> > > default is taken [-Wsometimes-uninitialized]
+> > >         default:
+> > >         ^~~~~~~
+> > > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:255:46: note:
+> > > uninitialized use occurs here
+> > >         skip_static_post = !memcmp(rec_seq, &rn_be, rec_seq_sz);
+> > >                                                     ^~~~~~~~~~
+> > > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:239:16: note:
+> > > initialize the variable 'rec_seq_sz' to silence this warning
+> > >         u16 rec_seq_sz;
+> > >                       ^
+> > >                        = 0
+> > > 1 warning generated.
+> > >
+> > > This case statement was clearly designed to be one that should not be
+> > > hit during runtime because of the WARN_ON statement so just return early
+> > > to prevent copying uninitialized memory up into rn_be.
+> > >
+> > > Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
+> > > Link: https://github.com/ClangBuiltLinux/linux/issues/590
+> > > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> > > ---
+> > >  drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> > > index 3f5f4317a22b..5c08891806f0 100644
+> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> > > @@ -250,6 +250,7 @@ tx_post_resync_params(struct mlx5e_txqsq *sq,
+> > >         }
+> > >         default:
+> > >                 WARN_ON(1);
+> > > +               return;
+> > >         }
+> >
+> > hmm...a switch statement with a single case is a code smell.  How
+> > about a single conditional with early return?  Then the "meat" of the
+> > happy path doesn't need an additional level of indentation.
+> > --
+> > Thanks,
+> > ~Nick Desaulniers
+>
+> I assume that the reason for this is there may be other cipher types
+> added in the future? I suppose the maintainers can give more clarity to
+> that.
 
-Right its a pattern I used on the sockmap side and put here. But
-I dropped the patch to let sockmap stack on top of TLS because
-it was more than a fix IMO. We could probably drop this check on
-the other hand its harmless.
-> 
-> > +		if (sk->sk_prot->unhash)
-> > +			sk->sk_prot->unhash(sk);
-> > +	}
-> > +
-> > +	ctx = tls_get_ctx(sk);
-> > +	if (ctx->tx_conf == TLS_SW || ctx->rx_conf == TLS_SW)
-> > +		tls_sk_proto_cleanup(sk, ctx, timeo);
-> > +	icsk->icsk_ulp_data = NULL;
-> 
-> I think close only starts checking if ctx is NULL in patch 6.
-> Looks like some chunks of ctx checking/clearing got spread to
-> patch 1 and some to patch 6.
+Our devices supports extra ciphers, for example TLS_CIPHER_AES_GCM_256.
+So I assume this was the reason for switch<->case, but because such
+implementation doesn't exist in any driver, I recommend to rewrite the
+code to have "if" statement and return early.
 
-Yeah, I thought the patches were easier to read this way but
-maybe not. Could add something in the commit log.
-
-> 
-> > +	tls_ctx_free_wq(ctx);
-> > +
-> > +	if (ctx->unhash)
-> > +		ctx->unhash(sk);
-> > +}
-> > +
-> >  static void tls_sk_proto_close(struct sock *sk, long timeout)
-> >  {
-> >  	struct tls_context *ctx = tls_get_ctx(sk);
-> 
-
-
+>
+> Furthermore, if they want the switch statements to remain, it looks like
+> fill_static_params_ctx also returns in the default statement so it seems
+> like this is the right fix.
+>
+> Cheers,
+> Nathan
