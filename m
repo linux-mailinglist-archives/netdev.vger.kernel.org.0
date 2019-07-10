@@ -2,98 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3634764DDC
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 22:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC4864DE2
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 22:58:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbfGJUyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 16:54:21 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:37573 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbfGJUyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 16:54:20 -0400
-Received: by mail-io1-f66.google.com with SMTP id q22so7787147iog.4
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 13:54:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=mF3ZHc55Yh8moYwvYA9inkAQ1iH1qdwKOeQwdO4O3sI=;
-        b=jIpqPOZamJFc5xkbYe1a5QhvVuolUSZAWn+liye4D/ZWTw62G+n4ithO/XiVYe5ufs
-         LpJ9o4Lh0NnHKtv5iljvytGGl/qKhmI1PLmBusBBMKzBZiD5yNgC9F1RdLXecFg+TojB
-         uzoQGvcPtFAbusshTbudLPBj/rY5zPfjoH0Ta/QGa5iYvcT+QIYMqbA3ABzaDgUEtT2R
-         U8Q81RIgc0nbKPajdIAeY3VmxThaLijVMX3/KDIwco0caFgOJmDNqz6AOufNgmKmj5vc
-         6mieb0IgeC0HvdIZqWeVB20QogVvqf+EniXLh9+Z4LQqjw214bUUt0xvCq/8JdpUZpCs
-         KJ+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mF3ZHc55Yh8moYwvYA9inkAQ1iH1qdwKOeQwdO4O3sI=;
-        b=k45M1Qx33iP4XRjjTBHIhFO6qfEz+qnUREGZSDtMBi7tI81vqOKLL10eTKw21Vj9Re
-         IbGFGJ0S0h+8xy5zlwUwF7Pl+iHP4bisLzCDRBoTnvXVJk2/jHOOJYaL1qbAvYCU/bpg
-         k9Y1s1aQ62HtTVJ4W5laewYnJk83+j+MtbOeGR352m/9MBe6RM1Z64sMyrmJhaowl8s3
-         G5moEeA/JB1GSuGkchXV2B9Vjk4jwQSx28Eoo2BkZx97Dn5dIsjfWc6NNtv2Y4RrPGzU
-         5inN+zLlUD7khbzbwyd5I0vIxep0lCTa17uhHhz4SepHrfCwaqmRJQyO8t0WY31/5frg
-         jtlQ==
-X-Gm-Message-State: APjAAAU2ql4pauLRL+d+XSQCmrGZjnyq/G0/uOsw/I/kqa3UHQbhH/gI
-        FU48lmGfNhwqEsvMvZ7Bh+fvo2ag
-X-Google-Smtp-Source: APXvYqzEBKZ4yQ9t36blb689qOG25kqKF7OTH2P8UPvuYiGvBsIPMpnwAJ7zdCoG3jA+iJOZfBjUug==
-X-Received: by 2002:a5d:9282:: with SMTP id s2mr84207iom.36.1562792059538;
-        Wed, 10 Jul 2019 13:54:19 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:3913:d4da:8ed6:bdf3? ([2601:282:800:fd80:3913:d4da:8ed6:bdf3])
-        by smtp.googlemail.com with ESMTPSA id p10sm5964532iob.54.2019.07.10.13.54.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 13:54:18 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] ip: bond: add peer notification delay
- support
-To:     Vincent Bernat <vincent@bernat.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <20190707094141.1b98f3f4@hermes.lan>
- <20190707175115.3704-1-vincent@bernat.ch>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cf1893e1-b0ea-f330-817d-654173793e07@gmail.com>
-Date:   Wed, 10 Jul 2019 14:54:17 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190707175115.3704-1-vincent@bernat.ch>
-Content-Type: text/plain; charset=utf-8
+        id S1727510AbfGJU61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 16:58:27 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:34653 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727222AbfGJU61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 16:58:27 -0400
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id A16C3886BF;
+        Thu, 11 Jul 2019 08:58:22 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1562792302;
+        bh=3IAiydc3dLx1WVJ0C8G3rfahAcrzpy4g3ADOPjxOOzg=;
+        h=From:To:CC:Subject:Date:References;
+        b=USKEKP01eDSQDZoRr3UMjHI0nrWQrykZWS3nn26ftLKlij922hgOjfGDQmS3I8qol
+         a36GeyBAFMH0ede4iSd+E/YhlUYz6Iv2v7S98wHOjbjhRUnKHSAkM/VbCzb5QV43z5
+         Uc7v8RjUi0IH3j7ccV+b79giGE9TDSawX9wrxwe/lFa5vXfv0g35ZK1yw33C5uLXRZ
+         wKWUvTpn80ZC1QtFyCxUAv0amCGGGg0L3kOtcmstWxVGBRiOV/JBavNbiNRliFC6J2
+         QYOLj6wAnPsYoq5MW97Ey5B2dOhBT8z5AagyveLus8iByY+Rq5kC0I+4wSdEq/t3uY
+         EgD7hiYPw56pg==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5d26516e0001>; Thu, 11 Jul 2019 08:58:22 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1156.6; Thu, 11 Jul 2019 08:58:22 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1156.000; Thu, 11 Jul 2019 08:58:22 +1200
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     Jon Maloy <jon.maloy@ericsson.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] tipc: ensure skb->lock is initialised
+Thread-Topic: [PATCH] tipc: ensure skb->lock is initialised
+Thread-Index: AQHVNRbM8H0dBbuBFkyTwxApCbaMkw==
+Date:   Wed, 10 Jul 2019 20:58:21 +0000
+Message-ID: <4d2ac0ce7f974184ac43b71f19aee7a3@svr-chch-ex1.atlnz.lc>
+References: <MN2PR15MB3581E1D6D56D6AA7DE8E357E9AF00@MN2PR15MB3581.namprd15.prod.outlook.com>
+Accept-Language: en-NZ, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [2001:df5:b000:22:3a2c:4aff:fe70:2b02]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/7/19 11:51 AM, Vincent Bernat wrote:
-> Ability to tweak the delay between gratuitous ND/ARP packets has been
-> added in kernel commit 07a4ddec3ce9 ("bonding: add an option to
-> specify a delay between peer notifications"), through
-> IFLA_BOND_PEER_NOTIF_DELAY attribute. Add support to set and show this
-> value.
-> 
-> Example:
-> 
->     $ ip -d link set bond0 type bond peer_notify_delay 1000
->     $ ip -d link l dev bond0
->     2: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue
->     state UP mode DEFAULT group default qlen 1000
->         link/ether 50:54:33:00:00:01 brd ff:ff:ff:ff:ff:ff
->         bond mode active-backup active_slave eth0 miimon 100 updelay 0
->     downdelay 0 peer_notify_delay 1000 use_carrier 1 arp_interval 0
->     arp_validate none arp_all_targets any primary eth0
->     primary_reselect always fail_over_mac active xmit_hash_policy
->     layer2 resend_igmp 1 num_grat_arp 5 all_slaves_active 0 min_links
->     0 lp_interval 1 packets_per_slave 1 lacp_rate slow ad_select
->     stable tlb_dynamic_lb 1 addrgenmode eu
-> 
-> Signed-off-by: Vincent Bernat <vincent@bernat.ch>
-> ---
->  include/uapi/linux/if_link.h |  1 +
->  ip/iplink_bond.c             | 14 +++++++++++++-
->  2 files changed, 14 insertions(+), 1 deletion(-)
-> 
-
-applied to iproute2-next. Thanks
+=0A=
+On 11/07/19 1:10 AM, Jon Maloy wrote:=0A=
+>> -----Original Message-----=0A=
+>> From: Eric Dumazet <eric.dumazet@gmail.com>=0A=
+>> Sent: 10-Jul-19 04:00=0A=
+>> To: Jon Maloy <jon.maloy@ericsson.com>; Eric Dumazet=0A=
+>> <eric.dumazet@gmail.com>; Chris Packham=0A=
+>> <Chris.Packham@alliedtelesis.co.nz>; ying.xue@windriver.com;=0A=
+>> davem@davemloft.net=0A=
+>> Cc: netdev@vger.kernel.org; tipc-discussion@lists.sourceforge.net; linux=
+-=0A=
+>> kernel@vger.kernel.org=0A=
+>> Subject: Re: [PATCH] tipc: ensure skb->lock is initialised=0A=
+>>=0A=
+>>=0A=
+>>=0A=
+>> On 7/9/19 10:15 PM, Jon Maloy wrote:=0A=
+>>>=0A=
+>>> It is not only for lockdep purposes, -it is essential.  But please prov=
+ide details=0A=
+>> about where you see that more fixes are needed.=0A=
+>>>=0A=
+>>=0A=
+>> Simple fact that you detect a problem only when skb_queue_purge() is cal=
+led=0A=
+>> should talk by itself.=0A=
+>>=0A=
+>> As I stated, there are many places where the list is manipulated _withou=
+t_ its=0A=
+>> spinlock being held.=0A=
+> =0A=
+> Yes, and that is the way it should be on the send path.=0A=
+> =0A=
+>>=0A=
+>> You want consistency, then=0A=
+>>=0A=
+>> - grab the spinlock all the time.=0A=
+>> - Or do not ever use it.=0A=
+> =0A=
+> That is exactly what we are doing.=0A=
+> - The send path doesn't need the spinlock, and never grabs it.=0A=
+> - The receive path does need it, and always grabs it.=0A=
+> =0A=
+> However, since we don't know from the beginning which path a created=0A=
+> message will follow, we initialize the queue spinlock "just in case"=0A=
+> when it is created, even though it may never be used later.=0A=
+> You can see this as a violation of the principle you are stating=0A=
+> above, but it is a prize that is worth paying, given savings in code=0A=
+> volume, complexity and performance.=0A=
+> =0A=
+>>=0A=
+>> Do not initialize the spinlock just in case a path will use skb_queue_pu=
+rge()=0A=
+>> (instead of using __skb_queue_purge())=0A=
+> =0A=
+> I am ok with that. I think we can agree that Chris goes for that=0A=
+> solution, so we can get this bug fixed.=0A=
+=0A=
+So would you like a v2 with an improved commit message? I note that I =0A=
+said skb->lock instead of head->lock in the subject line so at least =0A=
+that should be corrected.=0A=
+=0A=
