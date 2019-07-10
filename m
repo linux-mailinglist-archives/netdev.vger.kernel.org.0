@@ -2,195 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B39E64B43
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 19:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD4364B46
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 19:14:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728255AbfGJRMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 13:12:45 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60437 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727920AbfGJRMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 13:12:45 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 10 Jul 2019 20:12:43 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.213.18.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6AHChNF002111;
-        Wed, 10 Jul 2019 20:12:43 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, pablo@netfilter.org, saeedm@mellanox.com,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next] net: sched: Fix NULL-pointer dereference in tc_indr_block_ing_cmd()
-Date:   Wed, 10 Jul 2019 20:12:29 +0300
-Message-Id: <20190710171229.26900-1-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
+        id S1727282AbfGJROR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 13:14:17 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50192 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726111AbfGJROR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 13:14:17 -0400
+Received: by mail-wm1-f68.google.com with SMTP id v15so3089012wml.0;
+        Wed, 10 Jul 2019 10:14:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/REE+n6sa4ljuFXYbZ1ldo6oCamSgjSpDC/XEdgtKL0=;
+        b=ZThtyI8C23gqa+FFWJSWAFiSs3t84AkKmwhInxRS6XnP3MRA6LtdwA1sCJhDFhf8lw
+         7MHHB5C027WnSeubZvQgnP73c44gDIQAMNMfsQVIax2GgwH1gde62/F1O9aeyhBynyDU
+         rGZjDauOKVlzsaJA+kekmN+Fpegbq/OMelBOo3yHxeSo3Xcmg7egnQHn3GHafZ1GfrmO
+         NklZFv+JSqjHtjLUrlgb91sow7uc0TbJw4V6IKyNbv99oglLsRFfLbsomO2xQMIWx5kx
+         RO3B/Tdv35bohJIBXzh/3AKmXYIfbgoYfYtqglxLIjEqJ69gw5kcYxDIWHGYJJxwRxss
+         3qbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/REE+n6sa4ljuFXYbZ1ldo6oCamSgjSpDC/XEdgtKL0=;
+        b=c/f2TrzWkyPnYRLR1xq1+TZh3d9wdfPdQCNcs4ldPb7hVd3WQj3Z3v9BR83TAqjWBy
+         rmN9eYGfJCi33v+zssLblUJsmTL4uO4Iya01UUJiunWR+s9S+1Gcdyy1J6G6K2Eco0Sx
+         dOtAZi6zXhTfJ7fJ5wQY/8yyCmFUKSQBGTnQNBouC+b/AJqk/vh3jeycvX9y5gzz31hr
+         m413ncBC0iCW3b8YAYtg4dHqGNJQlIZGsx2Y+KnVgLCmvps0Jfv5Pcd9ijzg//MQa9t3
+         GF/A173XtXrrWdQhBQ+1yz7+gadBAq200gM5S9+nPU2BuM1W/snLF2VlQ//Oj5pjvRiJ
+         8fEQ==
+X-Gm-Message-State: APjAAAWHRAAmIGLUbJR+/+hUSCiDKKI4vWF5HO6/iUZCseQ3nC+OeUpF
+        3I6bB2YCr83Ff/cVhYBEzHk=
+X-Google-Smtp-Source: APXvYqzMY7xSsdA1gkDvtyp28Ctkl1M8qO9UfJd/E5dxUId8rDi+Y8m97M2ONoiqOAbmrFv9z2ueYw==
+X-Received: by 2002:a1c:9813:: with SMTP id a19mr6097592wme.11.1562778855617;
+        Wed, 10 Jul 2019 10:14:15 -0700 (PDT)
+Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id i18sm2968727wrp.91.2019.07.10.10.14.14
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 10 Jul 2019 10:14:14 -0700 (PDT)
+Date:   Wed, 10 Jul 2019 10:14:13 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] [net-next] net/mlx5e: avoid uninitialized variable use
+Message-ID: <20190710171413.GB80585@archlinux-threadripper>
+References: <20190710130638.1846846-1-arnd@arndb.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190710130638.1846846-1-arnd@arndb.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After recent refactoring of block offlads infrastructure, indr_dev->block
-pointer is dereferenced before it is verified to be non-NULL. Example stack
-trace where this behavior leads to NULL-pointer dereference error when
-creating vxlan dev on system with mlx5 NIC with offloads enabled:
+On Wed, Jul 10, 2019 at 03:06:25PM +0200, Arnd Bergmann wrote:
+> clang points to a variable being used in an unexpected
+> code path:
+> 
+> drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:251:2: warning: variable 'rec_seq_sz' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+>         default:
+>         ^~~~~~~
+> drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c:255:46: note: uninitialized use occurs here
+>         skip_static_post = !memcmp(rec_seq, &rn_be, rec_seq_sz);
+>                                                     ^~~~~~~~~~
+> 
+> From looking at the function logic, it seems that there is no
+> sensible way to continue here, so just return early and hope
+> for the best.
+> 
+> Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> index 3f5f4317a22b..5c08891806f0 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+> @@ -250,6 +250,7 @@ tx_post_resync_params(struct mlx5e_txqsq *sq,
+>  	}
+>  	default:
+>  		WARN_ON(1);
+> +		return;
+>  	}
+>  
+>  	skip_static_post = !memcmp(rec_seq, &rn_be, rec_seq_sz);
+> -- 
+> 2.20.0
+> 
 
-[ 1157.852938] ==================================================================
-[ 1157.866877] BUG: KASAN: null-ptr-deref in tc_indr_block_ing_cmd.isra.41+0x9c/0x160
-[ 1157.880877] Read of size 4 at addr 0000000000000090 by task ip/3829
-[ 1157.901637] CPU: 22 PID: 3829 Comm: ip Not tainted 5.2.0-rc6+ #488
-[ 1157.914438] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[ 1157.929031] Call Trace:
-[ 1157.938318]  dump_stack+0x9a/0xeb
-[ 1157.948362]  ? tc_indr_block_ing_cmd.isra.41+0x9c/0x160
-[ 1157.960262]  ? tc_indr_block_ing_cmd.isra.41+0x9c/0x160
-[ 1157.972082]  __kasan_report+0x176/0x192
-[ 1157.982513]  ? tc_indr_block_ing_cmd.isra.41+0x9c/0x160
-[ 1157.994348]  kasan_report+0xe/0x20
-[ 1158.004324]  tc_indr_block_ing_cmd.isra.41+0x9c/0x160
-[ 1158.015950]  ? tcf_block_setup+0x430/0x430
-[ 1158.026558]  ? kasan_unpoison_shadow+0x30/0x40
-[ 1158.037464]  __tc_indr_block_cb_register+0x5f5/0xf20
-[ 1158.049288]  ? mlx5e_rep_indr_tc_block_unbind+0xa0/0xa0 [mlx5_core]
-[ 1158.062344]  ? tc_indr_block_dev_put.part.47+0x5c0/0x5c0
-[ 1158.074498]  ? rdma_roce_rescan_device+0x20/0x20 [ib_core]
-[ 1158.086580]  ? br_device_event+0x98/0x480 [bridge]
-[ 1158.097870]  ? strcmp+0x30/0x50
-[ 1158.107578]  mlx5e_nic_rep_netdevice_event+0xdd/0x180 [mlx5_core]
-[ 1158.120212]  notifier_call_chain+0x6d/0xa0
-[ 1158.130753]  register_netdevice+0x6fc/0x7e0
-[ 1158.141322]  ? netdev_change_features+0xa0/0xa0
-[ 1158.152218]  ? vxlan_config_apply+0x210/0x310 [vxlan]
-[ 1158.163593]  __vxlan_dev_create+0x2ad/0x520 [vxlan]
-[ 1158.174770]  ? vxlan_changelink+0x490/0x490 [vxlan]
-[ 1158.185870]  ? rcu_read_unlock+0x60/0x60 [vxlan]
-[ 1158.196798]  vxlan_newlink+0x99/0xf0 [vxlan]
-[ 1158.207303]  ? __vxlan_dev_create+0x520/0x520 [vxlan]
-[ 1158.218601]  ? rtnl_create_link+0x3d0/0x450
-[ 1158.228900]  __rtnl_newlink+0x8a7/0xb00
-[ 1158.238701]  ? stack_access_ok+0x35/0x80
-[ 1158.248450]  ? rtnl_link_unregister+0x1a0/0x1a0
-[ 1158.258735]  ? find_held_lock+0x6d/0xd0
-[ 1158.268379]  ? is_bpf_text_address+0x67/0xf0
-[ 1158.278330]  ? lock_acquire+0xc1/0x1f0
-[ 1158.287686]  ? is_bpf_text_address+0x5/0xf0
-[ 1158.297449]  ? is_bpf_text_address+0x86/0xf0
-[ 1158.307310]  ? kernel_text_address+0xec/0x100
-[ 1158.317155]  ? arch_stack_walk+0x92/0xe0
-[ 1158.326497]  ? __kernel_text_address+0xe/0x30
-[ 1158.336213]  ? unwind_get_return_address+0x2f/0x50
-[ 1158.346267]  ? create_prof_cpu_mask+0x20/0x20
-[ 1158.355936]  ? arch_stack_walk+0x92/0xe0
-[ 1158.365117]  ? stack_trace_save+0x8a/0xb0
-[ 1158.374272]  ? stack_trace_consume_entry+0x80/0x80
-[ 1158.384226]  ? match_held_lock+0x33/0x210
-[ 1158.393216]  ? kasan_unpoison_shadow+0x30/0x40
-[ 1158.402593]  rtnl_newlink+0x53/0x80
-[ 1158.410925]  rtnetlink_rcv_msg+0x3a5/0x600
-[ 1158.419777]  ? validate_linkmsg+0x400/0x400
-[ 1158.428620]  ? find_held_lock+0x6d/0xd0
-[ 1158.437117]  ? match_held_lock+0x1b/0x210
-[ 1158.445760]  ? validate_linkmsg+0x400/0x400
-[ 1158.454642]  netlink_rcv_skb+0xc7/0x1f0
-[ 1158.463150]  ? netlink_ack+0x470/0x470
-[ 1158.471538]  ? netlink_deliver_tap+0x1f3/0x5a0
-[ 1158.480607]  netlink_unicast+0x2ae/0x350
-[ 1158.489099]  ? netlink_attachskb+0x340/0x340
-[ 1158.497935]  ? _copy_from_iter_full+0xde/0x3b0
-[ 1158.506945]  ? __virt_addr_valid+0xb6/0xf0
-[ 1158.515578]  ? __check_object_size+0x159/0x240
-[ 1158.524515]  netlink_sendmsg+0x4d3/0x630
-[ 1158.532879]  ? netlink_unicast+0x350/0x350
-[ 1158.541400]  ? netlink_unicast+0x350/0x350
-[ 1158.549805]  sock_sendmsg+0x94/0xa0
-[ 1158.557561]  ___sys_sendmsg+0x49d/0x570
-[ 1158.565625]  ? copy_msghdr_from_user+0x210/0x210
-[ 1158.574457]  ? __fput+0x1e2/0x330
-[ 1158.581948]  ? __kasan_slab_free+0x130/0x180
-[ 1158.590407]  ? kmem_cache_free+0xb6/0x2d0
-[ 1158.598574]  ? mark_lock+0xc7/0x790
-[ 1158.606177]  ? task_work_run+0xcf/0x100
-[ 1158.614165]  ? exit_to_usermode_loop+0x102/0x110
-[ 1158.622954]  ? __lock_acquire+0x963/0x1ee0
-[ 1158.631199]  ? lockdep_hardirqs_on+0x260/0x260
-[ 1158.639777]  ? match_held_lock+0x1b/0x210
-[ 1158.647918]  ? lockdep_hardirqs_on+0x260/0x260
-[ 1158.656501]  ? match_held_lock+0x1b/0x210
-[ 1158.664643]  ? __fget_light+0xa6/0xe0
-[ 1158.672423]  ? __sys_sendmsg+0xd2/0x150
-[ 1158.680334]  __sys_sendmsg+0xd2/0x150
-[ 1158.688063]  ? __ia32_sys_shutdown+0x30/0x30
-[ 1158.696435]  ? lock_downgrade+0x2e0/0x2e0
-[ 1158.704541]  ? mark_held_locks+0x1a/0x90
-[ 1158.712611]  ? mark_held_locks+0x1a/0x90
-[ 1158.720619]  ? do_syscall_64+0x1e/0x2c0
-[ 1158.728530]  do_syscall_64+0x78/0x2c0
-[ 1158.736254]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[ 1158.745414] RIP: 0033:0x7f62d505cb87
-[ 1158.753070] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 80 00 00 00 00 8b 05 6a 2b 2c 00 48 63 d2 48 63 ff 85 c0 75 18 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 59 f3 c3 0f 1f 80 00 00[87/1817]
- 48 89 f3 48
-[ 1158.780924] RSP: 002b:00007fffd9832268 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[ 1158.793204] RAX: ffffffffffffffda RBX: 000000005d26048f RCX: 00007f62d505cb87
-[ 1158.805111] RDX: 0000000000000000 RSI: 00007fffd98322d0 RDI: 0000000000000003
-[ 1158.817055] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
-[ 1158.828987] R10: 00007f62d50ce260 R11: 0000000000000246 R12: 0000000000000001
-[ 1158.840909] R13: 000000000067e540 R14: 0000000000000000 R15: 000000000067ed20
-[ 1158.852873] ==================================================================
+Looks like my identical patch got picked up in net-next:
 
-Introduce new function tcf_block_non_null_shared() that verifies block
-pointer before dereferencing it to obtain index. Use the function in
-tc_indr_block_ing_cmd() to prevent NULL pointer dereference.
+https://git.kernel.org/davem/net-next/c/1ff2f0fa450ea4e4f87793d9ed513098ec6e12be
 
-Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- include/net/pkt_cls.h | 10 ++++++++++
- net/sched/cls_api.c   |  2 +-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+Good to know the fix was the same.
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index b03d466182db..841faadceb6e 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -60,6 +60,11 @@ static inline bool tcf_block_shared(struct tcf_block *block)
- 	return block->index;
- }
- 
-+static inline bool tcf_block_non_null_shared(struct tcf_block *block)
-+{
-+	return block && block->index;
-+}
-+
- static inline struct Qdisc *tcf_block_q(struct tcf_block *block)
- {
- 	WARN_ON(tcf_block_shared(block));
-@@ -84,6 +89,11 @@ static inline bool tcf_block_shared(struct tcf_block *block)
- 	return false;
- }
- 
-+static inline bool tcf_block_non_null_shared(struct tcf_block *block)
-+{
-+	return false;
-+}
-+
- static inline
- int tcf_block_get(struct tcf_block **p_block,
- 		  struct tcf_proto __rcu **p_filter_chain, struct Qdisc *q,
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 638c1bc1ea1b..278014e26aec 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -684,7 +684,7 @@ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
- 		.command	= command,
- 		.binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
- 		.net		= dev_net(indr_dev->dev),
--		.block_shared	= tcf_block_shared(indr_dev->block),
-+		.block_shared	= tcf_block_non_null_shared(indr_dev->block),
- 	};
- 	INIT_LIST_HEAD(&bo.cb_list);
- 
--- 
-2.21.0
-
+Cheers,
+Nathan
