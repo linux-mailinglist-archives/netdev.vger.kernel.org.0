@@ -2,89 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC456401D
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 06:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A519C64021
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 06:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726206AbfGJEcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 00:32:04 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:45537 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725791AbfGJEcD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 00:32:03 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45k5qz4SLTz9sBF;
-        Wed, 10 Jul 2019 14:31:59 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562733121;
-        bh=bzseyMgoaZ4vidImGuUhP5JIIlyDBWoOhwVOpzZZoU0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Walj5XIkM++Z7DJnuQwZaXQkpFAuvumYlMe0h84Jmp9OTN3BkX3O7yb0oe+465aNf
-         m9l0SAp1Dxlwt6uchjkCL3Xnc7CRgSm/CYWiGV/klwlezY1772kuu4ROjkhEWkDeMZ
-         rLjjGkP9Gs1VSEGzlJxKdfJFNjecdA3X5EJF7il1DRhChkpmB3bJ4IIJxa7V8NdCX3
-         5DI0yEEktlJkjyn5VU4AcUrje1IEMABIIllnvJrQL7HZEycBVh9MvwVYcp5OXNS+4x
-         6M/6u1WAMRon1XCzGnqHLhr3ewMGnhWmEqpb4TlkNlrajTvWvgv/FqgFH5R4E8pv16
-         7TmPTJG1nijtg==
-Date:   Wed, 10 Jul 2019 14:31:58 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20190710143158.6e4bf706@canb.auug.org.au>
-In-Reply-To: <20190709064346.GF7034@mtr-leonro.mtl.com>
-References: <20190709135636.4d36e19f@canb.auug.org.au>
-        <20190709064346.GF7034@mtr-leonro.mtl.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/ocRn+VocxcTvAB.GeLmcJzq"; protocol="application/pgp-signature"
+        id S1726118AbfGJEgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 00:36:52 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49910 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725791AbfGJEgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 00:36:52 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E796F13C25048
+        for <netdev@vger.kernel.org>; Tue,  9 Jul 2019 21:36:51 -0700 (PDT)
+Date:   Tue, 09 Jul 2019 21:36:48 -0700 (PDT)
+Message-Id: <20190709.213648.1281084845871590736.davem@davemloft.net>
+To:     netdev@vger.kernel.org
+Subject: [PATCH] mlx5: Return -EINVAL when WARN_ON_ONCE triggers in
+ mlx5e_tls_resync().
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jul 2019 21:36:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/ocRn+VocxcTvAB.GeLmcJzq
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi Leon,
+Return value was changes to 'int' from void but this return statement
+was not updated, or it slipped in via a merge.
 
-On Tue, 9 Jul 2019 09:43:46 +0300 Leon Romanovsky <leon@kernel.org> wrote:
->
-> From 56c9e15ec670af580daa8c3ffde9503af3042d67 Mon Sep 17 00:00:00 2001
-> From: Leon Romanovsky <leonro@mellanox.com>
-> Date: Sun, 7 Jul 2019 10:43:42 +0300
-> Subject: [PATCH] Fixup to build SIW issue
->=20
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Fixes: b5d9a834f4fd ("net/tls: don't clear TX resync flag on error")
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
 
-I applied this to linux-next today and it fixes my build problems.
+Applied to net-next.
 
---=20
-Cheers,
-Stephen Rothwell
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---Sig_/ocRn+VocxcTvAB.GeLmcJzq
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
+index ca07c86427a7..fba561ffe1d4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
+@@ -170,7 +170,7 @@ static int mlx5e_tls_resync(struct net_device *netdev, struct sock *sk,
+ 	u64 rcd_sn = *(u64 *)rcd_sn_data;
+ 
+ 	if (WARN_ON_ONCE(direction != TLS_OFFLOAD_CTX_DIR_RX))
+-		return;
++		return -EINVAL;
+ 	rx_ctx = mlx5e_get_tls_rx_context(tls_ctx);
+ 
+ 	netdev_info(netdev, "resyncing seq %d rcd %lld\n", seq,
+-- 
+2.20.1
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0laj4ACgkQAVBC80lX
-0GxrEAf+ORSfRegucmaBz/RVsWDblLEGRqVelSvcVv5AyLW/y07e9KBYG2EYyP7x
-DR09aj6U+ajMBGfT9S3d/ERn5JjghU6i2zULNKpElVePJciI8hdj0kNk02araQhS
-1IKpEB5JJ/UZZo3WYFC5N2UnvZzePuWdZZYDIWGffoO4jwYEGSwmN0loeUcGRnzF
-ARYoDVdYNVQth9Ehczt86PDotE1fkap9g0fmGUSs3sJYhzPT3L3Nc2myzbMJ92h7
-6UOvsN9JbC4MVL5mfj9JWZPPsVunwh7qtNmdd8iqgqaW4Idk11ciIXBX/DWeeN3f
-sfc0NG9V0yQmUWJnJYr2pdHl339gkQ==
-=/745
------END PGP SIGNATURE-----
-
---Sig_/ocRn+VocxcTvAB.GeLmcJzq--
