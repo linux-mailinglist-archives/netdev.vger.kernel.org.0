@@ -2,108 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F49640CE
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 07:49:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DC6E640D4
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 07:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbfGJFtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 01:49:42 -0400
-Received: from relay.sw.ru ([185.231.240.75]:49196 "EHLO relay.sw.ru"
+        id S1726243AbfGJF4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 01:56:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725844AbfGJFtl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 01:49:41 -0400
-Received: from [172.16.24.21]
-        by relay.sw.ru with esmtp (Exim 4.92)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1hl5Ti-0002oO-18; Wed, 10 Jul 2019 08:49:18 +0300
-Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
-To:     Xiaoming Ni <nixiaoming@huawei.com>, adobriyan@gmail.com,
-        akpm@linux-foundation.org, anna.schumaker@netapp.com,
-        arjan@linux.intel.com, bfields@fieldses.org,
-        chuck.lever@oracle.com, davem@davemloft.net,
-        gregkh@linuxfoundation.org, jlayton@kernel.org, luto@kernel.org,
-        mingo@kernel.org, Nadia.Derbey@bull.net,
-        paulmck@linux.vnet.ibm.com, semen.protsenko@linaro.org,
-        stable@kernel.org, stern@rowland.harvard.edu, tglx@linutronix.de,
+        id S1725791AbfGJF4b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 01:56:31 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B65F720838;
+        Wed, 10 Jul 2019 05:56:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562738191;
+        bh=V9iaENcRfclKrRlxtMr6FYwVEOvk/HuSF0jjt+eARO4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iUi3f2iayn9lfkE/YOYo0Yov3kvzO7+KOEyaS9Fml7JycwWRssHNDg7wVhtU5esPw
+         EoM52iaiWfmiaPubKM1oCY3H+8qeExOy+hWruR3E06hQYBobvtIjycEbSPoCRnbB/Z
+         +wlk3mSulTMRn5+41mKp91hHlSbguwHX7MgqGniE=
+Date:   Wed, 10 Jul 2019 07:56:28 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Xiaoming Ni <nixiaoming@huawei.com>
+Cc:     adobriyan@gmail.com, akpm@linux-foundation.org,
+        anna.schumaker@netapp.com, arjan@linux.intel.com,
+        bfields@fieldses.org, chuck.lever@oracle.com, davem@davemloft.net,
+        jlayton@kernel.org, luto@kernel.org, mingo@kernel.org,
+        Nadia.Derbey@bull.net, paulmck@linux.vnet.ibm.com,
+        semen.protsenko@linaro.org, stable@kernel.org,
+        stern@rowland.harvard.edu, tglx@linutronix.de,
         torvalds@linux-foundation.org, trond.myklebust@hammerspace.com,
-        viresh.kumar@linaro.org
-Cc:     alex.huangjianhui@huawei.com, dylix.dailei@huawei.com,
+        viresh.kumar@linaro.org, vvs@virtuozzo.com,
+        alex.huangjianhui@huawei.com, dylix.dailei@huawei.com,
         linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
+Message-ID: <20190710055628.GB5778@kroah.com>
 References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
-Date:   Wed, 10 Jul 2019 08:49:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/10/19 6:09 AM, Xiaoming Ni wrote:
+On Wed, Jul 10, 2019 at 11:09:07AM +0800, Xiaoming Ni wrote:
 > Registering the same notifier to a hook repeatedly can cause the hook
 > list to form a ring or lose other members of the list.
 
-I think is not enough to _prevent_ 2nd register attempt,
-it's enough to detect just attempt and generate warning to mark host in bad state.
+Then don't do that :)
 
-Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
-and it can lead to host crash in any time: 
-you can unregister notifier on first attempt it can be too early, it can be still in use.
-on the other hand you can never call 2nd unregister at all.
+Is there any in-kernel users that do do this?  If so, please just fix
+them.
 
-Unfortunately I do not see any ways to handle such cases properly,
-and it seems for me your patches does not resolve this problem.
+thanks,
 
-Am I missed something probably?
- 
-> case1: An infinite loop in notifier_chain_register() can cause soft lockup
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test2);
-> 
-> case2: An infinite loop in notifier_chain_register() can cause soft lockup
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_call_chain(&test_notifier_list, 0, NULL);
-> 
-> case3: lose other hook test2
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test2);
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
-> 
-> case4: Unregister returns 0, but the hook is still in the linked list,
->         and it is not really registered. If you call notifier_call_chain
->         after ko is unloaded, it will trigger oops. if the system is
->        	configured with softlockup_panic and the same hook is repeatedly
->        	registered on the panic_notifier_list, it will cause a loop panic.
-> 
-> so. need add a check in in notifier_chain_register() to avoid duplicate
-> registration
-> 
-> v1:
-> * use notifier_chain_cond_register replace notifier_chain_register
-> 
-> v2:
-> * Add a check in notifier_chain_register() to avoid duplicate registration
-> * remove notifier_chain_cond_register() to avoid duplicate code 
-> * remove blocking_notifier_chain_cond_register() to avoid duplicate code
-> 
-> v3:
-> * Add a cover letter.
-> 
-> Xiaoming Ni (3):
->   kernel/notifier.c: avoid duplicate registration
->   kernel/notifier.c: remove notifier_chain_cond_register()
->   kernel/notifier.c: remove blocking_notifier_chain_cond_register()
-> 
->  include/linux/notifier.h |  4 ----
->  kernel/notifier.c        | 41 +++--------------------------------------
->  net/sunrpc/rpc_pipe.c    |  2 +-
->  3 files changed, 4 insertions(+), 43 deletions(-)
-> 
+greg k-h
