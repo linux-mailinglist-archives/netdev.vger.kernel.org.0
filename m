@@ -2,167 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8BAE64399
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 10:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 304C1643A2
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 10:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfGJIcK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Jul 2019 04:32:10 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35988 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726098AbfGJIcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 04:32:10 -0400
-Received: by mail-ed1-f66.google.com with SMTP id k21so1368054edq.3
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 01:32:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=szF7FqwUgzf/Ka1JcPIDgfZlkwR+2rbCwKHlkw7YyPc=;
-        b=hU98XaqtZXNSuHZrnMsAfmVrpCIbxtmFbt5lyZXhlW/z1LqObtcjjv4r18bWmx/eE/
-         oPW6hWqBXMFv33oMfXT56HFpC0eRxh7kXErimmx2dRzXexN5pSX8QQnEZNkUPzF9+GcF
-         AOWTfeReHA3iQ3n30pQ9lRYTU/MtOBlpuBIqZyMSU0cIYynsJaS/GVfQxkG+u6T9B6TL
-         l7e+HCRwyrOl/JPbTsmKIIWt9/XPF7tEpKrIXfOpwnT8T2u/ELtuK/7IUCg9CgOjsvWA
-         F5esC/H6aDXr26V/ItASQoXXLxLQgx07z8kDgOEW+lV19Ptj91au4P1bFL0SbQgthK+K
-         YOAA==
-X-Gm-Message-State: APjAAAV09Qt2e1zpEyZjG8ylr7Kj7p0vdjdSk0HFzxqZtZIfKr03E9PY
-        stj5YQANTL916BOYzHO8xSYb/U55xrYlIpdiPZJeaQ==
-X-Google-Smtp-Source: APXvYqz2hAaQTWTs/cRfW+OJn6TdZSBKxpf5+JaarVKKZyPuHx4aHsAo85nZV/BHVXdYrRzzqoafhTEuFtKm/UGLbmw=
-X-Received: by 2002:a17:906:6bc4:: with SMTP id t4mr25383097ejs.256.1562747527727;
- Wed, 10 Jul 2019 01:32:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1562667648.git.aclaudi@redhat.com> <dfb76d0e40b0158cf6a87ae9558b256915d73f6f.1562667648.git.aclaudi@redhat.com>
- <CAF2d9jhiUk0Jpz54EbA+3Fyf-cMniRHZrpktu57yZ+tX+QsuEQ@mail.gmail.com>
-In-Reply-To: <CAF2d9jhiUk0Jpz54EbA+3Fyf-cMniRHZrpktu57yZ+tX+QsuEQ@mail.gmail.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Wed, 10 Jul 2019 10:33:01 +0200
-Message-ID: <CAPpH65yDsY_FpBvXfSiw=HVEvgL6n3a0nqA3JEbgpB=5kKfXeA@mail.gmail.com>
-Subject: Re: [PATCH iproute2 2/2] ip tunnel: warn when changing IPv6 tunnel
- without tunnel name
-To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727333AbfGJIhf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Jul 2019 04:37:35 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:52820 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727270AbfGJIhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 04:37:35 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x6A8aotx005820, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x6A8aotx005820
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 10 Jul 2019 16:36:50 +0800
+Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
+ RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Wed, 10 Jul
+ 2019 16:36:50 +0800
+From:   Tony Chuang <yhchuang@realtek.com>
+To:     Jian-Hong Pan <jian-hong@endlessm.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        David Laight <David.Laight@aculab.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@endlessm.com" <linux@endlessm.com>,
+        Daniel Drake <drake@endlessm.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH v2 1/2] rtw88: pci: Rearrange the memory usage for skb in RX ISR
+Thread-Topic: [PATCH v2 1/2] rtw88: pci: Rearrange the memory usage for skb
+ in RX ISR
+Thread-Index: AQHVNkAp+Pmh+ukZi0a1oZ+M+t8Cp6bDiFdg
+Date:   Wed, 10 Jul 2019 08:36:49 +0000
+Message-ID: <F7CD281DE3E379468C6D07993EA72F84D1864779@RTITMBSVM04.realtek.com.tw>
+References: <20190708063252.4756-1-jian-hong@endlessm.com>
+ <20190709102059.7036-1-jian-hong@endlessm.com>
+In-Reply-To: <20190709102059.7036-1-jian-hong@endlessm.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.68.183]
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 12:15 AM Mahesh Bandewar (महेश बंडेवार)
-<maheshb@google.com> wrote:
->
-> On Tue, Jul 9, 2019 at 6:16 AM Andrea Claudi <aclaudi@redhat.com> wrote:
-> >
-> > Tunnel change fails if a tunnel name is not specified while using
-> > 'ip -6 tunnel change'. However, no warning message is printed and
-> > no error code is returned.
-> >
-> > $ ip -6 tunnel add ip6tnl1 mode ip6gre local fd::1 remote fd::2 tos inherit ttl 127 encaplimit none dev dummy0
-> > $ ip -6 tunnel change dev dummy0 local 2001:1234::1 remote 2001:1234::2
-> > $ ip -6 tunnel show ip6tnl1
-> > ip6tnl1: gre/ipv6 remote fd::2 local fd::1 dev dummy0 encaplimit none hoplimit 127 tclass inherit flowlabel 0x00000 (flowinfo 0x00000000)
-> >
-> > This commit checks if tunnel interface name is equal to an empty
-> > string: in this case, it prints a warning message to the user.
-> > It intentionally avoids to return an error to not break existing
-> > script setup.
-> >
-> > This is the output after this commit:
-> > $ ip -6 tunnel add ip6tnl1 mode ip6gre local fd::1 remote fd::2 tos inherit ttl 127 encaplimit none dev dummy0
-> > $ ip -6 tunnel change dev dummy0 local 2001:1234::1 remote 2001:1234::2
-> > Tunnel interface name not specified
-> > $ ip -6 tunnel show ip6tnl1
-> > ip6tnl1: gre/ipv6 remote fd::2 local fd::1 dev dummy0 encaplimit none hoplimit 127 tclass inherit flowlabel 0x00000 (flowinfo 0x00000000)
-> >
-> > Reviewed-by: Matteo Croce <mcroce@redhat.com>
-> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
->
-> I tried your patch and the commands that I posted in my (previous) patch.
->
-
-Hi Mahesh,
-Thank you for taking the time to review my patch.
-
-> Here is the output after reverting my patch and applying your patch
->
-> <show command>
-> ------------------------
-> vm0:/tmp# ./ip -6 tunnel add ip6tnl1 mode ip6gre local fd::1 remote
-> fd::2 tos inherit ttl 127 encaplimit none
-> vm0:/tmp# ./ip -6 tunnel show dev ip6tnl1
-> vm0:/tmp# echo $?
-> 0
->
-> here the output is NULL and return code is 0. This is wrong and I
-> would expect to see the tunnel info (as displayed in 'ip -6 tunnel
-> show ip6tnl1')
-
-It seems to me there is a bit of misunderstanding here. Looking at man
-page for ip tunnel:
-
-dev NAME
-       bind the tunnel to the device NAME so that tunneled packets
-will only be routed via this device and will not be able to escape to
-another device when the route to endpoint changes.
-
-From what I read, dev parameter should not be used as an alias to the
-tunnel device, but to indicate the device to which the tunnel should
-be binded.
-As such, ip -6 tunnel show dev <name> is a legitimate query that must
-show the tunnel device(s) binded to <name> interface.
-With the query ip -6 tunnel show <name> you instead obtain the tunnel itself.
-
-By the way, the proper selector for the tunnel device name is the
-default "name" parameter. From the man page:
-
-name NAME (default)
-       select the tunnel device name.
-
-For example:
-$ ip -6 tunnel show name ip6tnl0
-ip6tnl0: ipv6/ipv6 remote :: local :: encaplimit 0 hoplimit inherit
-tclass 0x00 flowlabel 0x00000 (flowinfo 0x00000000)
-
-> <change command>
-> lpaa10:/tmp# ip -6 tunnel change dev ip6tnl1 local 2001:1234::1 remote
-> 2001:1234::2 encaplimit none ttl 127 tos inherit allow-localremote
-> lpaa10:/tmp# echo $?
-> 0
-> lpaa10:/tmp# ip -6 tunnel show dev ip6tnl1
-> lpaa10:/tmp# ip -6 tunnel show ip6tnl1
-> ip6tnl1: gre/ipv6 remote fd::2 local fd::1 encaplimit none hoplimit
-> 127 tclass inherit flowlabel 0x00000 (flowinfo 0x00000000)
->
-> the change command appeared to be successful but change wasn't applied
-> (expecting the allow-localremote to be present on the tunnel).
-
-As you can read from the commit message, here I am not changing the
-return code intentionally to not break existing script setup.
-However, I can easily change this to return an error code in a v2.
-
+> Subject: [PATCH v2 1/2] rtw88: pci: Rearrange the memory usage for skb in
+> RX ISR
+> 
+> Testing with RTL8822BE hardware, when available memory is low, we
+> frequently see a kernel panic and system freeze.
+> 
+> First, rtw_pci_rx_isr encounters a memory allocation failure (trimmed):
+> 
+> rx routine starvation
+> WARNING: CPU: 7 PID: 9871 at drivers/net/wireless/realtek/rtw88/pci.c:822
+> rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
+> [ 2356.580313] RIP: 0010:rtw_pci_rx_isr.constprop.25+0x35a/0x370 [rtwpci]
+> 
+> Then we see a variety of different error conditions and kernel panics,
+> such as this one (trimmed):
+> 
+> rtw_pci 0000:02:00.0: pci bus timeout, check dma status
+> skbuff: skb_over_panic: text:00000000091b6e66 len:415 put:415
+> head:00000000d2880c6f data:000000007a02b1ea tail:0x1df end:0xc0
+> dev:<NULL>
+> ------------[ cut here ]------------
+> kernel BUG at net/core/skbuff.c:105!
+> invalid opcode: 0000 [#1] SMP NOPTI
+> RIP: 0010:skb_panic+0x43/0x45
+> 
+> When skb allocation fails and the "rx routine starvation" is hit, the
+> function returns immediately without updating the RX ring. At this
+> point, the RX ring may continue referencing an old skb which was already
+> handed off to ieee80211_rx_irqsafe(). When it comes to be used again,
+> bad things happen.
+> 
+> This patch allocates a new, data-sized skb first in RX ISR. After
+> copying the data in, we pass it to the upper layers. However, if skb
+> allocation fails, we effectively drop the frame. In both cases, the
+> original, full size ring skb is reused.
+> 
+> In addition, to fixing the kernel crash, the RX routine should now
+> generally behave better under low memory conditions.
+> 
+> Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=204053
+> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+> Cc: <stable@vger.kernel.org>
 > ---
-> >  ip/ip6tunnel.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/ip/ip6tunnel.c b/ip/ip6tunnel.c
-> > index 999408ed801b1..e3da11eb4518e 100644
-> > --- a/ip/ip6tunnel.c
-> > +++ b/ip/ip6tunnel.c
-> > @@ -386,6 +386,9 @@ static int do_add(int cmd, int argc, char **argv)
-> >         if (parse_args(argc, argv, cmd, &p) < 0)
-> >                 return -1;
-> >
-> > +       if (!*p.name)
-> > +               fprintf(stderr, "Tunnel interface name not specified\n");
-> > +
-> >         if (p.proto == IPPROTO_GRE)
-> >                 basedev = "ip6gre0";
-> >         else if (p.i_flags & VTI_ISVTI)
-> > --
-> > 2.20.1
-> >
+>  drivers/net/wireless/realtek/rtw88/pci.c | 49 +++++++++++-------------
+>  1 file changed, 22 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c
+> b/drivers/net/wireless/realtek/rtw88/pci.c
+> index cfe05ba7280d..e9fe3ad896c8 100644
+> --- a/drivers/net/wireless/realtek/rtw88/pci.c
+> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
+> @@ -763,6 +763,7 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev,
+> struct rtw_pci *rtwpci,
+>  	u32 pkt_offset;
+>  	u32 pkt_desc_sz = chip->rx_pkt_desc_sz;
+>  	u32 buf_desc_sz = chip->rx_buf_desc_sz;
+> +	u32 new_len;
+>  	u8 *rx_desc;
+>  	dma_addr_t dma;
+> 
+> @@ -790,40 +791,34 @@ static void rtw_pci_rx_isr(struct rtw_dev *rtwdev,
+> struct rtw_pci *rtwpci,
+>  		pkt_offset = pkt_desc_sz + pkt_stat.drv_info_sz +
+>  			     pkt_stat.shift;
+> 
+> -		if (pkt_stat.is_c2h) {
+> -			/* keep rx_desc, halmac needs it */
+> -			skb_put(skb, pkt_stat.pkt_len + pkt_offset);
+> +		/* discard current skb if the new skb cannot be allocated as a
+> +		 * new one in rx ring later
+> +		 */
+> +		new_len = pkt_stat.pkt_len + pkt_offset;
+> +		new = dev_alloc_skb(new_len);
+> +		if (WARN_ONCE(!new, "rx routine starvation\n"))
+> +			goto next_rp;
+> +
+> +		/* put the DMA data including rx_desc from phy to new skb */
+> +		skb_put_data(new, skb->data, new_len);
+> 
+> -			/* pass offset for further operation */
+> -			*((u32 *)skb->cb) = pkt_offset;
+> -			skb_queue_tail(&rtwdev->c2h_queue, skb);
+> +		if (pkt_stat.is_c2h) {
+> +			 /* pass rx_desc & offset for further operation */
+> +			*((u32 *)new->cb) = pkt_offset;
+> +			skb_queue_tail(&rtwdev->c2h_queue, new);
+>  			ieee80211_queue_work(rtwdev->hw, &rtwdev->c2h_work);
+>  		} else {
+> -			/* remove rx_desc, maybe use skb_pull? */
+> -			skb_put(skb, pkt_stat.pkt_len);
+> -			skb_reserve(skb, pkt_offset);
+> -
+> -			/* alloc a smaller skb to mac80211 */
+> -			new = dev_alloc_skb(pkt_stat.pkt_len);
+> -			if (!new) {
+> -				new = skb;
+> -			} else {
+> -				skb_put_data(new, skb->data, skb->len);
+> -				dev_kfree_skb_any(skb);
+> -			}
+> -			/* TODO: merge into rx.c */
+> -			rtw_rx_stats(rtwdev, pkt_stat.vif, skb);
+> +			/* remove rx_desc */
+> +			skb_pull(new, pkt_offset);
+> +
+> +			rtw_rx_stats(rtwdev, pkt_stat.vif, new);
+>  			memcpy(new->cb, &rx_status, sizeof(rx_status));
+>  			ieee80211_rx_irqsafe(rtwdev->hw, new);
+>  		}
+> 
+> -		/* skb delivered to mac80211, alloc a new one in rx ring */
+> -		new = dev_alloc_skb(RTK_PCI_RX_BUF_SIZE);
+> -		if (WARN(!new, "rx routine starvation\n"))
+> -			return;
+> -
+> -		ring->buf[cur_rp] = new;
+> -		rtw_pci_reset_rx_desc(rtwdev, new, ring, cur_rp, buf_desc_sz);
+> +next_rp:
+> +		/* new skb delivered to mac80211, re-enable original skb DMA */
+> +		rtw_pci_reset_rx_desc(rtwdev, skb, ring, cur_rp, buf_desc_sz);
+> 
+>  		/* host read next element in ring */
+>  		if (++cur_rp >= ring->r.len)
+> --
+> 2.22.0
 
-Regards,
-Andrea
+Now it looks good to me. Thanks.
+
+Acked-by: Yan-Hsuan Chuang <yhchuang@realtek.com>
+
+Yan-Hsuan
