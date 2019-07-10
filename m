@@ -2,138 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0AE264E1D
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 23:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6745564E4D
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 00:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727567AbfGJVuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 17:50:21 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45038 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727188AbfGJVuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 17:50:21 -0400
-Received: by mail-wr1-f65.google.com with SMTP id p17so3988987wrf.11;
-        Wed, 10 Jul 2019 14:50:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bLuzUxUc0zNtNis3h91JRpefJIR6fwf3Ba4xYSd3aA4=;
-        b=OdDgOB6ygEtdXE2MH2aRjxspWRDbEivh8b5kYyeQzmyxmD9ZkRp5GsjSKdHRTAIXyL
-         MXJ2FP1DgGWrDgMhnp+OMdR2JQHqEb1DwcRLj3g6LcP7HU8tc+BUlYZucvKY1hWxZCYS
-         rZNM4godxBlsCJkt3WkothA6bnd/XMC37FawFR1pfPUcW1K5U231WOi9d0Jln1KJlWJX
-         PNPnV43CVp6nOtUzfFDmrrDoJ/udboEeX1cRTEhck8sIll5lNqrJMY8pZeeOmlCJTIfQ
-         +ORBxB6mCqo5vBDR6/d8Ipf18WRarpLOoDOqRRIsgPKUDQsUlSqnytR2c+bPJ+ZvdeDh
-         gO6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bLuzUxUc0zNtNis3h91JRpefJIR6fwf3Ba4xYSd3aA4=;
-        b=Pu7A4QN5J2u+ZQYMKpwhcRnOT4yXUFI3h/CJfjBNSSp8N7Nz/l74QHSq1s4y2fWAA8
-         gZvP5hQja02Ee5Sx2rQCkDIE70/pq7oTx1gvkNNDuAex3Y8hij3d2n4sR6HeOLQdziGt
-         q4R4stwDJuD/DoJeZQPcIRsNRYcf9DnNcMMf70jzP3wx4xpLhxyF3yRhYjZA4x89NI5f
-         A8i8btErXlHPkS89/CulF3JztRamWYCekwayNZlD+nhqSO3NVoNqhxl8AtfhydoTNE1b
-         UKE+eCw4cowyZJ5bwfHIw/wyOvj1cKSS3gN62Q3A2DfayBidg/NrqzdSmqcEXlf19EBE
-         KO2w==
-X-Gm-Message-State: APjAAAV+proYxfAMn7APo3ItElgCIMADtRfYeltQiym5mF8J1W0ZYXqu
-        9BEwkSxxd4zLdbLt4TeXpcftsUYn/6e8i+EOm+I=
-X-Google-Smtp-Source: APXvYqyJcfOKdqnNxQp5JjK89GxcKipPvGPQNaEYDxC+SlkLlaxmwChaULI3VgJahYqzcplyKG9/b4jwcvL3M6rtUpw=
-X-Received: by 2002:adf:e6c5:: with SMTP id y5mr34416075wrm.235.1562795418803;
- Wed, 10 Jul 2019 14:50:18 -0700 (PDT)
+        id S1727758AbfGJWDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 18:03:43 -0400
+Received: from mail.us.es ([193.147.175.20]:42716 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726245AbfGJWDn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 18:03:43 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id AE967819A2
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 00:03:40 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9D4C9DA4D0
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 00:03:40 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 91E87DA704; Thu, 11 Jul 2019 00:03:40 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 87861DA732;
+        Thu, 11 Jul 2019 00:03:38 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 11 Jul 2019 00:03:38 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.194.134])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 603C34265A31;
+        Thu, 11 Jul 2019 00:03:38 +0200 (CEST)
+Date:   Thu, 11 Jul 2019 00:03:37 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu@ucloud.cn
+Cc:     davem@davemloft.net, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net/sched: Fix kernel NULL pointer dereference
+Message-ID: <20190710220337.tbflwdku4332ewo5@salvia>
+References: <1562766304-20272-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-References: <201907101537.x6AFboMR015946@aserv0122.oracle.com>
- <201907101542.x6AFgOO9012232@userv0121.oracle.com> <20190710181227.GA9925@oracle.com>
- <c7f15d1d-1696-4d95-1729-4c4e97bdc43e@iogearbox.net> <20190710143048.3923d1d9@lwn.net>
- <1de27d29-65bb-89d3-9fca-7c452cd66934@iogearbox.net> <20190710213637.GB13962@oracle.com>
-In-Reply-To: <20190710213637.GB13962@oracle.com>
-From:   Brendan Gregg <brendan.d.gregg@gmail.com>
-Date:   Wed, 10 Jul 2019 14:49:52 -0700
-Message-ID: <CAE40pdeSVN+QhhUeQ4sEbsyzJ+NWkQA5XU5X0FrKAbRMHPzBsw@mail.gmail.com>
-Subject: Re: [PATCH V2 1/1 (was 0/1 by accident)] tools/dtrace: initial
- implementation of DTrace
-To:     Kris Van Hees <kris.van.hees@oracle.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Chris Mason <clm@fb.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562766304-20272-1-git-send-email-wenxu@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 2:36 PM Kris Van Hees <kris.van.hees@oracle.com> wrote:
->
-> On Wed, Jul 10, 2019 at 11:19:43PM +0200, Daniel Borkmann wrote:
-> > On 07/10/2019 10:30 PM, Jonathan Corbet wrote:
-> > > On Wed, 10 Jul 2019 21:32:25 +0200
-> > > Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > >
-> > >> Looks like you missed Brendan Gregg's prior feedback from v1 [0]. I haven't
-> > >> seen a strong compelling argument for why this needs to reside in the kernel
-> > >> tree given we also have all the other tracing tools and many of which also
-> > >> rely on BPF such as bcc, bpftrace, ply, systemtap, sysdig, lttng to just name
-> > >> a few.
-> > >
-> > > So I'm just watching from the sidelines here, but I do feel the need to
-> > > point out that Kris appears to be trying to follow the previous feedback
-> > > he got from Alexei, where creating tools/dtrace is exactly what he was
-> > > told to do:
-> > >
-> > >   https://lwn.net/ml/netdev/20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com/
-> > >
-> > > Now he's being told the exact opposite.  Not the best experience for
-> > > somebody who is trying to make the kernel better.
-> >
-> > Ugh, agree, sorry for the misleading direction. Alexei is currently offgrid
-> > this week, he might comment later.
-> >
-> > It has nothing to do with making the _kernel_ better, it's a /user space/ front
-> > end for the existing kernel infrastructure like many of the other tracers out
-> > there. Don't get me wrong, adding the missing /kernel parts/ for it is a totally
-> > different subject [and _that_ is what is making the kernel better, not the former].
->
-> I disagree.  Yes, the current patch obviously isn't making the kernel better
-> because it doesn't touch the kernel.  But DTrace as a whole is not just a
-> /front end/ to the existing kernel infrastructure, and I did make that point
-> at LPC 2018 and in my emails.  Some of its more advanced features will lead
-> to contributions to the kernel that (by virtue of being developed as part of
-> this DTrace re-implementation) will more often than not be able to benefit
-> other tracers as well.  I do think that aspect qualifies as working towards
-> making the kenrel better.
->
-> > Hypothetical question: does it make the _kernel_ better if we suddenly add a huge
-> > and complex project like tools/mysql/ to the kernel tree? Nope.
-> >
-> > > There are still people interested in DTrace out there.  How would you
-> > > recommend that Kris proceed at this point?
-> >
-> > My recommendation to proceed is to maintain the dtrace user space tooling in
-> > its own separate project like the vast majority of all the other tracing projects
-> > (see also the other advantages that Steven pointed out from his experience), and
-> > extend the kernel bits whenever needed.
->
-> I wish that would have been the initial recommendation because it certainly
-> would have avoided me going down a path that was going to lead to rejection.
->
-> Either way, I do hope that as work progresses and contributions to the kernel
-> code are submitted in support of advancing tracing on Linux, those patches
-> will receive a fair review and consideration.  I can appreciate that some
-> people do not like DTrace or feel that it is not necessary, but personal
-> opinions about tools should not be a deciding factor in whether a contribution
-> has merit or not.
+On Wed, Jul 10, 2019 at 09:45:04PM +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> [  697.665184] BUG: kernel NULL pointer dereference, address: 0000000000000030
+> [  697.665550] #PF: supervisor read access in kernel mode
+> [  697.665906] #PF: error_code(0x0000) - not-present page
+> [  697.666297] PGD 800000104e636067 P4D 800000104e636067 PUD ff4b02067 PMD 0
+> [  697.666710] Oops: 0000 [#1] SMP PTI
+> [  697.667115] CPU: 31 PID: 24466 Comm: modprobe Kdump: loaded Tainted: G           O      5.2.0-rc6+ #1
+> [  697.667867] Hardware name: Huawei Technologies Co., Ltd. RH1288 V3/BC11HGSC0, BIOS 3.57 02/26/2017
+> [  697.668620] RIP: 0010:tc_indr_block_ing_cmd.isra.52+0x4c/0xb0
+> [  697.669029] Code: 83 ec 40 65 48 8b 04 25 28 00 00 00 48 89 45 e8 31 c0 f3 48 ab 48 8b 06 49 8b b3 e8 04 00 00 44 89 45 b0 c7 45 b4 01 00 00 00 <8b> 48 30 48 89 75 c0 85 c9 48 8d 4d b0 0f 95 45 b8 48 85 c0 4c 8d
+> [  697.670132] RSP: 0018:ffffc90007bf7958 EFLAGS: 00010246
+> [  697.670537] RAX: 0000000000000000 RBX: ffff88905e2cbae8 RCX: 0000000000000000
+> [  697.670938] RDX: ffff88905e2cbcd8 RSI: ffffffff823a8480 RDI: ffffc90007bf7990
+> [  697.671352] RBP: ffffc90007bf79a8 R08: 0000000000000000 R09: ffff88905e2cbcc0
+> [  697.671761] R10: ffff888107c07780 R11: ffff88902c249000 R12: ffff88905e2cbcd0
+> [  697.672173] R13: ffff88905e2cbac0 R14: ffff88885596bc00 R15: ffff88905e2cbcc0
+> [  697.672582] FS:  00007fe0b4095740(0000) GS:ffff88905fbc0000(0000) knlGS:0000000000000000
+> [  697.673335] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  697.673746] CR2: 0000000000000030 CR3: 0000000ff46b4005 CR4: 00000000001606e0
+> [  697.674156] Call Trace:
+> [  697.674563]  __tc_indr_block_cb_register+0x11e/0x3c0
+> [  697.674998]  mlx5e_nic_rep_netdevice_event+0x9e/0x110 [mlx5_core]
+> [  697.675411]  notifier_call_chain+0x53/0xa0
+> [  697.675812]  raw_notifier_call_chain+0x16/0x20
+> [  697.676223]  call_netdevice_notifiers_info+0x2d/0x60
+> [  697.676633]  register_netdevice+0x3fa/0x500
+> 
+> get indr_dev->block after check it.
+> 
+> Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
 
-Hey Kris -- so you're referring to me, and I've used DTrace more than
-anyone over the past 15 years, and I don't think anyone has used all
-the different Linux tracers more than I have. I think my opinion has a
-lot of value.
-
-
-Brendan
+Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
