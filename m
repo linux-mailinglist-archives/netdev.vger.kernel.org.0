@@ -2,103 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 995BF641A4
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8AC164284
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbfGJHFw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Jul 2019 03:05:52 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43555 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbfGJHFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:05:52 -0400
-Received: from mail-wm1-f69.google.com ([209.85.128.69])
-        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <chia-lin.kao@canonical.com>)
-        id 1hl6fm-0007KM-GA
-        for netdev@vger.kernel.org; Wed, 10 Jul 2019 07:05:50 +0000
-Received: by mail-wm1-f69.google.com with SMTP id d65so367429wmd.3
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 00:05:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dN3J5bKVO8t1U0024RiGjSSKUlILA2QH4v/NEife78A=;
-        b=r7Wijh4ia1suJhTOF+IHx3tRO0YdmkADS4Vmxh87tGyJkyb7sABbM0GzGMX429LAkP
-         VFdm7v7LU4aXmXSvF2zyT8HA2UQDUzO4EGJjZ1/spuygoageSicM4bPn8uxNDXW3CE1V
-         AsBOWVV3vLHUMzEDW/s+R//qb2IholTNBYAZ+YVKcSmp5seb4ybHzGNqoVikyFfe1q22
-         UUC/3I2J1ALPyD1l2MuELzMTAHylGRZz0Nutc+AvnUXw+7P4Nlmtl2VWti+qYb4KdkD3
-         KI7uRy+nvTcIBGonLjsGk+q8uUlOFYQF97gJknxc0RbeSyOXkdybipgFkQ/VsfyLQ043
-         bmvg==
-X-Gm-Message-State: APjAAAWyR4aV5WNhlbHV/t/lFIw9f5bJyTIJONmUIxm+D6RrqsFPf77g
-        NbqCjWl9Qu9/Usb9UseWglV1crizGhdHSYXZmyjhDQ+K7yiRjC9sKESgs1TQvD16Bz5VCstclf0
-        4KJF2YpY25eVf4Z317Cs/wbel7y7VSXYL08hg8T9MrmOFcRSfIw==
-X-Received: by 2002:a1c:6a11:: with SMTP id f17mr3184153wmc.110.1562742349472;
-        Wed, 10 Jul 2019 00:05:49 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzyE97uF612RbHirhkWKN+Vaod1qzbqXurrx8gvlnUkc4j5SZf9eLyoiVDMO5W9ZoO58P0L00rpzXNAO3twkSQ=
-X-Received: by 2002:a1c:6a11:: with SMTP id f17mr3184108wmc.110.1562742349186;
- Wed, 10 Jul 2019 00:05:49 -0700 (PDT)
+        id S1726269AbfGJHWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:22:46 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57942 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726043AbfGJHWp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 03:22:45 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7440430C543C;
+        Wed, 10 Jul 2019 07:22:45 +0000 (UTC)
+Received: from [10.72.12.42] (ovpn-12-42.pek2.redhat.com [10.72.12.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4650916BEA;
+        Wed, 10 Jul 2019 07:22:29 +0000 (UTC)
+Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com, idos@mellanox.com,
+        Rob Miller <rob.miller@broadcom.com>,
+        Ariel Adam <aadam@redhat.com>
+References: <20190703115245.GA22374@___>
+ <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com> <20190703130817.GA1978@___>
+ <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
+ <20190704062134.GA21116@___> <20190705084946.67b8f9f5@x1.home>
+ <20190708061625.GA15936@___>
+ <deae5ede-57e9-41e6-ea42-d84e07ca480a@redhat.com>
+ <20190709063317.GA29300@___>
+ <9aafdc4d-0203-b96e-c205-043db132eb06@redhat.com>
+ <20190710062233.GA16212@___>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <1b49aa84-2c1f-eec2-2809-711e1f2dd7de@redhat.com>
+Date:   Wed, 10 Jul 2019 15:22:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20190708063751.16234-1-acelan.kao@canonical.com>
- <53f82481-ed41-abc5-2e4e-ac1026617219@gmail.com> <CAFv23Q=mA9t0j2F4fKdOkgG6sao0m7rR_9-d9OvAmSerZf_=ew@mail.gmail.com>
-In-Reply-To: <CAFv23Q=mA9t0j2F4fKdOkgG6sao0m7rR_9-d9OvAmSerZf_=ew@mail.gmail.com>
-From:   AceLan Kao <acelan.kao@canonical.com>
-Date:   Wed, 10 Jul 2019 15:05:38 +0800
-Message-ID: <CAFv23QmqjJtUD-iAwzsXg2MCNbe_p1zOcZ7C-ywG5n-iT-N-YA@mail.gmail.com>
-Subject: Re: [PATCH] r8169: add enable_aspm parameter
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20190710062233.GA16212@___>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 10 Jul 2019 07:22:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
 
-I've tried and verified your PCI ASPM patches and it works well.
-I've replied the patch thread and hope this can make it get some progress.
+On 2019/7/10 下午2:22, Tiwei Bie wrote:
+> On Wed, Jul 10, 2019 at 10:26:10AM +0800, Jason Wang wrote:
+>> On 2019/7/9 下午2:33, Tiwei Bie wrote:
+>>> On Tue, Jul 09, 2019 at 10:50:38AM +0800, Jason Wang wrote:
+>>>> On 2019/7/8 下午2:16, Tiwei Bie wrote:
+>>>>> On Fri, Jul 05, 2019 at 08:49:46AM -0600, Alex Williamson wrote:
+>>>>>> On Thu, 4 Jul 2019 14:21:34 +0800
+>>>>>> Tiwei Bie <tiwei.bie@intel.com> wrote:
+>>>>>>> On Thu, Jul 04, 2019 at 12:31:48PM +0800, Jason Wang wrote:
+>>>>>>>> On 2019/7/3 下午9:08, Tiwei Bie wrote:
+>>>>>>>>> On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:
+>>>>>>>>>> On 2019/7/3 下午7:52, Tiwei Bie wrote:
+>>>>>>>>>>> On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
+>>>>>>>>>>>> On 2019/7/3 下午5:13, Tiwei Bie wrote:
+>>>>>>>>>>>>> Details about this can be found here:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> https://lwn.net/Articles/750770/
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> What's new in this version
+>>>>>>>>>>>>> ==========================
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> A new VFIO device type is introduced - vfio-vhost. This addressed
+>>>>>>>>>>>>> some comments from here:https://patchwork.ozlabs.org/cover/984763/
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Below is the updated device interface:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Currently, there are two regions of this device: 1) CONFIG_REGION
+>>>>>>>>>>>>> (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
+>>>>>>>>>>>>> device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
+>>>>>>>>>>>>> can be used to notify the device.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> 1. CONFIG_REGION
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> The region described by CONFIG_REGION is the main control interface.
+>>>>>>>>>>>>> Messages will be written to or read from this region.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> The message type is determined by the `request` field in message
+>>>>>>>>>>>>> header. The message size is encoded in the message header too.
+>>>>>>>>>>>>> The message format looks like this:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> struct vhost_vfio_op {
+>>>>>>>>>>>>> 	__u64 request;
+>>>>>>>>>>>>> 	__u32 flags;
+>>>>>>>>>>>>> 	/* Flag values: */
+>>>>>>>>>>>>>        #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
+>>>>>>>>>>>>> 	__u32 size;
+>>>>>>>>>>>>> 	union {
+>>>>>>>>>>>>> 		__u64 u64;
+>>>>>>>>>>>>> 		struct vhost_vring_state state;
+>>>>>>>>>>>>> 		struct vhost_vring_addr addr;
+>>>>>>>>>>>>> 	} payload;
+>>>>>>>>>>>>> };
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> The existing vhost-kernel ioctl cmds are reused as the message
+>>>>>>>>>>>>> requests in above structure.
+>>>>>>>>>>>> Still a comments like V1. What's the advantage of inventing a new protocol?
+>>>>>>>>>>> I'm trying to make it work in VFIO's way..
+>>>>>>>>>>>> I believe either of the following should be better:
+>>>>>>>>>>>>
+>>>>>>>>>>>> - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
+>>>>>>>>>>>> extend it with e.g notify region. The advantages is that all exist userspace
+>>>>>>>>>>>> program could be reused without modification (or minimal modification). And
+>>>>>>>>>>>> vhost API hides lots of details that is not necessary to be understood by
+>>>>>>>>>>>> application (e.g in the case of container).
+>>>>>>>>>>> Do you mean reusing vhost's ioctl on VFIO device fd directly,
+>>>>>>>>>>> or introducing another mdev driver (i.e. vhost_mdev instead of
+>>>>>>>>>>> using the existing vfio_mdev) for mdev device?
+>>>>>>>>>> Can we simply add them into ioctl of mdev_parent_ops?
+>>>>>>>>> Right, either way, these ioctls have to be and just need to be
+>>>>>>>>> added in the ioctl of the mdev_parent_ops. But another thing we
+>>>>>>>>> also need to consider is that which file descriptor the userspace
+>>>>>>>>> will do the ioctl() on. So I'm wondering do you mean let the
+>>>>>>>>> userspace do the ioctl() on the VFIO device fd of the mdev
+>>>>>>>>> device?
+>>>>>>>> Yes.
+>>>>>>> Got it! I'm not sure what's Alex opinion on this. If we all
+>>>>>>> agree with this, I can do it in this way.
+>>>>>>>
+>>>>>>>> Is there any other way btw?
+>>>>>>> Just a quick thought.. Maybe totally a bad idea. I was thinking
+>>>>>>> whether it would be odd to do non-VFIO's ioctls on VFIO's device
+>>>>>>> fd. So I was wondering whether it's possible to allow binding
+>>>>>>> another mdev driver (e.g. vhost_mdev) to the supported mdev
+>>>>>>> devices. The new mdev driver, vhost_mdev, can provide similar
+>>>>>>> ways to let userspace open the mdev device and do the vhost ioctls
+>>>>>>> on it. To distinguish with the vfio_mdev compatible mdev devices,
+>>>>>>> the device API of the new vhost_mdev compatible mdev devices
+>>>>>>> might be e.g. "vhost-net" for net?
+>>>>>>>
+>>>>>>> So in VFIO case, the device will be for passthru directly. And
+>>>>>>> in VHOST case, the device can be used to accelerate the existing
+>>>>>>> virtualized devices.
+>>>>>>>
+>>>>>>> How do you think?
+>>>>>> VFIO really can't prevent vendor specific ioctls on the device file
+>>>>>> descriptor for mdevs, but a) we'd want to be sure the ioctl address
+>>>>>> space can't collide with ioctls we'd use for vfio defined purposes and
+>>>>>> b) maybe the VFIO user API isn't what you want in the first place if
+>>>>>> you intend to mostly/entirely ignore the defined ioctl set and replace
+>>>>>> them with your own.  In the case of the latter, you're also not getting
+>>>>>> the advantages of the existing VFIO userspace code, so why expose a
+>>>>>> VFIO device at all.
+>>>>> Yeah, I totally agree.
+>>>> I guess the original idea is to reuse the VFIO DMA/IOMMU API for this. Then
+>>>> we have the chance to reuse vfio codes in qemu for dealing with e.g vIOMMU.
+>>> Yeah, you are right. We have several choices here:
+>>>
+>>> #1. We expose a VFIO device, so we can reuse the VFIO container/group
+>>>       based DMA API and potentially reuse a lot of VFIO code in QEMU.
+>>>
+>>>       But in this case, we have two choices for the VFIO device interface
+>>>       (i.e. the interface on top of VFIO device fd):
+>>>
+>>>       A) we may invent a new vhost protocol (as demonstrated by the code
+>>>          in this RFC) on VFIO device fd to make it work in VFIO's way,
+>>>          i.e. regions and irqs.
+>>>
+>>>       B) Or as you proposed, instead of inventing a new vhost protocol,
+>>>          we can reuse most existing vhost ioctls on the VFIO device fd
+>>>          directly. There should be no conflicts between the VFIO ioctls
+>>>          (type is 0x3B) and VHOST ioctls (type is 0xAF) currently.
+>>>
+>>> #2. Instead of exposing a VFIO device, we may expose a VHOST device.
+>>>       And we will introduce a new mdev driver vhost-mdev to do this.
+>>>       It would be natural to reuse the existing kernel vhost interface
+>>>       (ioctls) on it as much as possible. But we will need to invent
+>>>       some APIs for DMA programming (reusing VHOST_SET_MEM_TABLE is a
+>>>       choice, but it's too heavy and doesn't support vIOMMU by itself).
+>>>
+>>> I'm not sure which one is the best choice we all want..
+>>> Which one (#1/A, #1/B, or #2) would you prefer?
+>>
+>> #2 looks better. One concern is that we may end up with similar API as what
+>> VFIO does.
+> Yeah, that's a major concern. If it's true, is it something
+> that's not acceptable?
 
-BTW, do you think we can revert commit b75bb8a5b755 ("r8169: disable
-ASPM again") once the PCI ASPM patches get merged?
 
-Best regards,
-AceLan Kao.
+I think not, but I don't know if any other one that care this.
 
-AceLan Kao <acelan.kao@canonical.com> 於 2019年7月9日 週二 上午11:19寫道：
+
 >
-> Heiner Kallweit <hkallweit1@gmail.com> 於 2019年7月9日 週二 上午2:27寫道：
-> >
-> > On 08.07.2019 08:37, AceLan Kao wrote:
-> > > We have many commits in the driver which enable and then disable ASPM
-> > > function over and over again.
-> > >    commit b75bb8a5b755 ("r8169: disable ASPM again")
-> > >    commit 0866cd15029b ("r8169: enable ASPM on RTL8106E")
-> > >    commit 94235460f9ea ("r8169: Align ASPM/CLKREQ setting function with vendor driver")
-> > >    commit aa1e7d2c31ef ("r8169: enable ASPM on RTL8168E-VL")
-> > >    commit f37658da21aa ("r8169: align ASPM entry latency setting with vendor driver")
-> > >    commit a99790bf5c7f ("r8169: Reinstate ASPM Support")
-> > >    commit 671646c151d4 ("r8169: Don't disable ASPM in the driver")
-> > >    commit 4521e1a94279 ("Revert "r8169: enable internal ASPM and clock request settings".")
-> > >    commit d64ec841517a ("r8169: enable internal ASPM and clock request settings")
-> > >
-> > > This function is very important for production, and if we can't come out
-> > > a solution to make both happy, I'd suggest we add a parameter in the
-> > > driver to toggle it.
-> > >
-> > The usage of a module parameter to control ASPM is discouraged.
-> > There have been more such attempts in the past that have been declined.
-> >
-> > Pending with the PCI maintainers is a series adding ASPM control
-> > via sysfs, see here: https://www.spinics.net/lists/linux-pci/msg83228.html
-> Cool, I'll try your patches and reply on that thread.
+>> And I do see some new RFC for VFIO to add more DMA API.
+> Is there any pointers?
+
+
+I don't remember the details, but it should be something related to SVA 
+support in recent intel IOMMU.
+
+
 >
-> >
-> > Also more details than just stating "it's important for production"
-> > would have been appreciated in the commit message, e.g. which
-> > power-savings you can achieve with ASPM on which systems.
-> I should use more specific wordings rather than "important for
-> production", thanks.
+>> Consider it was still in the stage of RFC, does it make sense if we try this
+>> way with some sample parents?
+> I think it makes sense.
+
+
+Just one more thought, for sample parents, vhost-net should be much more 
+easier in both implementation and testing.
+
+
+>
+>>
+>>>>>> The mdev interface does provide a general interface for creating and
+>>>>>> managing virtual devices, vfio-mdev is just one driver on the mdev
+>>>>>> bus.  Parav (Mellanox) has been doing work on mdev-core to help clean
+>>>>>> out vfio-isms from the interface, aiui, with the intent of implementing
+>>>>>> another mdev bus driver for using the devices within the kernel.
+>>>>> Great to know this! I found below series after some searching:
+>>>>>
+>>>>> https://lkml.org/lkml/2019/3/8/821
+>>>>>
+>>>>> In above series, the new mlx5_core mdev driver will do the probe
+>>>>> by calling mlx5_get_core_dev() first on the parent device of the
+>>>>> mdev device. In vhost_mdev, maybe we can also keep track of all
+>>>>> the compatible mdev devices and use this info to do the probe.
+>>>> I don't get why this is needed. My understanding is if we want to go this
+>>>> way, there're actually two parts. 1) Vhost mdev that implements the device
+>>>> managements and vhost ioctl. 2) Vhost it self, which can accept mdev fd as
+>>>> it backend through VHOST_NET_SET_BACKEND.
+>>> I think with vhost-mdev (or with vfio-mdev if we agree to do vhost
+>>> ioctls on vfio device fd directly), we don't need to open /dev/vhost-net
+>>> (and there is no VHOST_NET_SET_BACKEND needed) at all. Either way,
+>>> after getting the fd of the mdev, we just need to do vhost ioctls
+>>> on it directly.
+>>
+>> The reason I ask is that vhost-net is designed to not tied to any kind of
+>> backend. So it's better to have a single place to deal with ioctl. But it's
+>> not must.
+> I think in vhost-mdev, there is a chance for us to have a
+> unified interface in /dev for all vhost mediated devices
+> (not limited to net) in the system (similar to the case of
+> /dev/vfio/) instead of making it a backend of vhost-net.
+>
+> For the code organization, it's possible for us to refactor
+> drivers/vhost/ and let it provide some APIs for parent devices
+> to handle generic vhost ioctls.
+
+
+Yes, and separate the current kthread based software dataplane out of 
+the core APIs.
+
+Thanks
+
+
+>
+> Thanks,
+> Tiwei
+>
+>> Thanks
+>>
+>>
+>>>>> But we also need a way to allow vfio_mdev driver to distinguish
+>>>>> and reject the incompatible mdev devices.
+>>>> One issue for this series is that it doesn't consider DMA isolation at all.
+>>>>
+>>>>
+>>>>>> It
+>>>>>> seems like this vhost-mdev driver might be similar, using mdev but not
+>>>>>> necessarily vfio-mdev to expose devices.  Thanks,
+>>>>> Yeah, I also think so!
+>>>> I've cced some driver developers for their inputs. I think we need a sample
+>>>> parent drivers in the next version for us to understand the full picture.
+>>>>
+>>>>
+>>>> Thanks
+>>>>
+>>>>
+>>>>> Thanks!
+>>>>> Tiwei
+>>>>>
+>>>>>> Alex
