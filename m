@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE2C64842
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 16:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1E564850
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 16:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbfGJOYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 10:24:44 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:52476 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727562AbfGJOYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 10:24:44 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6AENcsx076102;
-        Wed, 10 Jul 2019 14:24:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=sFSrUubrz7IO1l9677tNCeD1pgIVCMovvEX9FXEYhMk=;
- b=jpsFWmr27mTxZajOcHjuRAc99iZn9oCbA7nwtQWMh9AcaUAdKVDiahbHfnxyUCH+oLGa
- YPwvyQzdTA/xYi6TQ2JfArmzdu/CRBCtpIliE40iFGcJqDCKhw/wFEfwJd/nB0r8uHWu
- 7EU3tIbFZ5W4JFdnb4B8uigjjqZsfd8lJzTNyLLyNo2+nmmUZQ1GKQAZv4knE3dc6wUj
- vLLUBYiMdrv9vzCA4j6Gce7VQkN9UJF8STPU2fE5gcv3o232gINyv3i9PNChRz5Ybvql
- spNNliuhq6EClGIsbYnDGNVvvXUiNcbf5v3kRDmyhCfQnG6i7bjddqBchrNwyWeWFVkB RA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 2tjm9qtenc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Jul 2019 14:24:39 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6AENGAo001898;
-        Wed, 10 Jul 2019 14:24:39 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2tnc8sw1td-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Jul 2019 14:24:39 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x6AEOcTg027194;
-        Wed, 10 Jul 2019 14:24:38 GMT
-Received: from [10.182.69.170] (/10.182.69.170)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 10 Jul 2019 07:24:38 -0700
-Subject: Re: [net][PATCH 5/5] rds: avoid version downgrade to legitimate newer
- peer connections
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        netdev@vger.kernel.org, davem@davemloft.net
-References: <1562736764-31752-1-git-send-email-santosh.shilimkar@oracle.com>
- <1562736764-31752-6-git-send-email-santosh.shilimkar@oracle.com>
-From:   Yanjun Zhu <yanjun.zhu@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <d9f096a8-a5d7-1e91-ea87-ad0593c49f18@oracle.com>
-Date:   Wed, 10 Jul 2019 22:26:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727885AbfGJO0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 10:26:44 -0400
+Received: from mail-lf1-f52.google.com ([209.85.167.52]:43947 "EHLO
+        mail-lf1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727315AbfGJO0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 10:26:43 -0400
+Received: by mail-lf1-f52.google.com with SMTP id c19so1741216lfm.10
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 07:26:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nv9p/G+s9XtbbbTHB54r/CSbDNWoOb77fcrWutVfYq8=;
+        b=eBMeHMKybkIEBqDr6w99KrnEXGyDkPz9sItt1EtsmxnQD7Gnwk4wtQy03KZnCF+86K
+         q9+1vvKZxI6oR64bYdA05nmnBZ9riEKWeLM6dPEP0dzyNPXobbRLxHqxAq18KGQBFY7q
+         HpQs4KXs5sVRXuRO0XnOmYQK8bqn8MR27ymwxrBKRpTxTUlPjcqnpeiMhlc/d+75lYKH
+         7ibShzSop6ZSjxPWxWZH3zkjsH/pr5kFYze0THExtPDeoEnl++fzgOQHMeGIaYwTSPGg
+         NRaF2ROCpDiEqJZtIbCH7PQend6jhJOY5fgAS+XFw52G4OB6MACNOv376QT/lD9zDojV
+         aSZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=nv9p/G+s9XtbbbTHB54r/CSbDNWoOb77fcrWutVfYq8=;
+        b=fz/Mjdnj+VDYwVZ4EpygT41dU7v2kOvVTDaFdZ8Ug4BcSwRdpaDFZzt8jZgtuy2Tcc
+         BVj5skOK3rWUqbcLkRTMoS18Ht0FS8lMhSKVitLaUpZJGkmbl+Gw/cpl3wbrJfN33sc9
+         U52+0vORFT0hfwIfNEhJj8OhbrwpNyMxvxEFDc4oPMBhi/75rMYGqLzFt6E7Bif+VnVW
+         R7bNRZ1+KtLiRT2iFdUUmtzK3YHA4hAV7g2v/qGvHiOOB02gjSLOdven53thU264YCpG
+         41EP8yYdzCHRD8KnK3u9qDUrlGhz1mxlUY5MOxI9q93F/YWKMDjWZfTM89W6gZabZhB7
+         SM3A==
+X-Gm-Message-State: APjAAAVsp81Fnubruktd7izijGx3RasgdFbAfmLSWr/rJ2SolEFk5wE/
+        g/267+hba4FHApthypJFeoJKmg==
+X-Google-Smtp-Source: APXvYqwm5UNfCj55WhIv27Loj6GM6O6ploYa29fsoHfI11MRiIhU8qT1ozyqldFfaWQMFLXIXxwmyg==
+X-Received: by 2002:a19:4f42:: with SMTP id a2mr14942041lfk.23.1562768801531;
+        Wed, 10 Jul 2019 07:26:41 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id n24sm501910ljc.25.2019.07.10.07.26.40
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 10 Jul 2019 07:26:41 -0700 (PDT)
+Date:   Wed, 10 Jul 2019 17:26:39 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [net-next] davinci_cpdma: don't cast dma_addr_t to
+ pointer
+Message-ID: <20190710142637.GA5375@khorivan>
+Mail-Followup-To: Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190710080106.24237-1-arnd@arndb.de>
 MIME-Version: 1.0
-In-Reply-To: <1562736764-31752-6-git-send-email-santosh.shilimkar@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9313 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1907100167
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9313 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1907100167
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20190710080106.24237-1-arnd@arndb.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/7/10 13:32, Santosh Shilimkar wrote:
-> Connections with legitimate tos values can get into usual connection
-> race. It can result in consumer reject. We don't want tos value or
-> protocol version to be demoted for such connections otherwise
-> piers would end up different tos values which can results in
-> no connection. Example a peer initiated connection with say
-> tos 8 while usual connection racing can get downgraded to tos 0
-> which is not desirable.
+On Wed, Jul 10, 2019 at 10:00:33AM +0200, Arnd Bergmann wrote:
+>dma_addr_t may be 64-bit wide on 32-bit architectures, so it is not
+>valid to cast between it and a pointer:
 >
-> Patch fixes above issue introduced by commit
-> commit d021fabf525f ("rds: rdma: add consumer reject")
+>drivers/net/ethernet/ti/davinci_cpdma.c: In function 'cpdma_chan_submit_si':
+>drivers/net/ethernet/ti/davinci_cpdma.c:1047:12: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
+>drivers/net/ethernet/ti/davinci_cpdma.c: In function 'cpdma_chan_idle_submit_mapped':
+>drivers/net/ethernet/ti/davinci_cpdma.c:1114:12: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+>drivers/net/ethernet/ti/davinci_cpdma.c: In function 'cpdma_chan_submit_mapped':
+>drivers/net/ethernet/ti/davinci_cpdma.c:1164:12: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
 >
-> Reported-by: Yanjun Zhu <yanjun.zhu@oracle.com>
-> Tested-by: Yanjun Zhu <yanjun.zhu@oracle.com>
-
-Thanks. I am OK with this.
-
-Zhu Yanjun
-
-> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-> ---
->   net/rds/rdma_transport.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
+>Solve this by using two separate members in 'struct submit_info'.
+>Since this avoids the use of the 'flag' member, the structure does
+>not even grow in typical configurations.
 >
-> diff --git a/net/rds/rdma_transport.c b/net/rds/rdma_transport.c
-> index 9db455d..ff74c4b 100644
-> --- a/net/rds/rdma_transport.c
-> +++ b/net/rds/rdma_transport.c
-> @@ -117,8 +117,10 @@ static int rds_rdma_cm_event_handler_cmn(struct rdma_cm_id *cm_id,
->   		     ((*err) <= RDS_RDMA_REJ_INCOMPAT))) {
->   			pr_warn("RDS/RDMA: conn <%pI6c, %pI6c> rejected, dropping connection\n",
->   				&conn->c_laddr, &conn->c_faddr);
-> -			conn->c_proposed_version = RDS_PROTOCOL_COMPAT_VERSION;
-> -			conn->c_tos = 0;
-> +
-> +			if (!conn->c_tos)
-> +				conn->c_proposed_version = RDS_PROTOCOL_COMPAT_VERSION;
-> +
->   			rds_conn_drop(conn);
->   		}
->   		rdsdebug("Connection rejected: %s\n",
+>Fixes: 6670acacd59e ("net: ethernet: ti: davinci_cpdma: add dma mapped submit")
+>Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Despite "flags" could be used for smth else (who knows), looks ok.
+Reviewed-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+
+-- 
+Regards,
+Ivan Khoronzhuk
