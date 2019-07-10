@@ -2,163 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 669EA6469F
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C246646A1
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727419AbfGJM7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:59:47 -0400
-Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:37601
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727245AbfGJM7p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 08:59:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=glpSn8ARLpykn0SDEqRS+7+G057qkle/xW0XbFgMfaFhgM5KtSWYf+DmFdlREzH9anZjBkWZa4o3J68OndU+J1H7JiNlNxo7VxrvO7FBc1G+BWNRoO09kQpYXezMlc0xfH/Od9PmxWtVJQGt/b8nTdc6f/Tf4p8xuQ4s5n0J98V3XqozYIS5+L3uBJc388hDqW6fE7bYUItk+zrB9oIeHSLpyQn5TC1y8NLxhBKzeUl0foGLFbZADXXUBLW5t1Ty9km2u4w7A8ti9+s/gL1zabXvDThnk0TOOYbGLFtfbjG1mUj4tKKuyJT+mOTUkY4bc61g/y440WeoErnT7fu01w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lm3UplaUFnYKBJsYFVbBmS9Qm+rUO9Ds3PrK+WruQuU=;
- b=XLF+6T9AjQC+7RnNfBZ5tgJEuyxhDO/gDHmLdGwmodYObmtBaxevdo8XuFtPIeDW18slDQZXYW98ErHNWu90wCbLoe0IUKheOR46Fbr2+RfNg9AeOT1Kl27mNU0QkVL1DxLgYRhF44xRlkAHPeMZf7WmnYL0ZywuPItBUEQ8Ekw7jMgESOuucU8yRUxjwxJ2NPXqQp77fHdBNoq42dmBS8YrTFdg0jSMyOFGMOfA6giHPNiyotQ2vQJh8A6/5A04+z7FllnphLqKuySrgx6lTCNTqmqliauwJRj3uP4OTPwp8Dhsms0pe6Y2GlrLV42zGTe4+3NjzayLe80Sg0fnqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=ericsson.com;dmarc=pass action=none
- header.from=ericsson.com;dkim=pass header.d=ericsson.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ericsson.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lm3UplaUFnYKBJsYFVbBmS9Qm+rUO9Ds3PrK+WruQuU=;
- b=e8IZjZitcQPuop0sg8Oflj3tegVd7eFF/JWeLtoLrfm6lS5wI6TOKQIrQS/lMPlJg1l9G7X6Xkc+1fhJXqckgRchbHDYe5fD/E6q3KneHiqXPXbapWhF3URGNA/emVf+X6/kHWh7M0p9H8DdAHLix5j/XwJK/2o+Xpo3p7fPHNQ=
-Received: from AM6PR07MB5639.eurprd07.prod.outlook.com (20.178.91.76) by
- AM6PR07MB5606.eurprd07.prod.outlook.com (20.178.90.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2073.8; Wed, 10 Jul 2019 12:59:41 +0000
-Received: from AM6PR07MB5639.eurprd07.prod.outlook.com
- ([fe80::a530:36cf:3e2a:a12f]) by AM6PR07MB5639.eurprd07.prod.outlook.com
- ([fe80::a530:36cf:3e2a:a12f%6]) with mapi id 15.20.2073.008; Wed, 10 Jul 2019
- 12:59:41 +0000
-From:   Jan Szewczyk <jan.szewczyk@ericsson.com>
-To:     David Ahern <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: Question about linux kernel commit: "net/ipv6: move metrics from
- dst to rt6_info"
-Thread-Topic: Question about linux kernel commit: "net/ipv6: move metrics from
- dst to rt6_info"
-Thread-Index: AdU2+HKrTE257Ye/RNyCdrk4RqkOOgAImVWAAADYahA=
-Date:   Wed, 10 Jul 2019 12:59:41 +0000
-Message-ID: <AM6PR07MB5639E2AEF438DD017246DF13F2F00@AM6PR07MB5639.eurprd07.prod.outlook.com>
-References: <AM6PR07MB56397A8BC53D9A525BC9C489F2F00@AM6PR07MB5639.eurprd07.prod.outlook.com>
- <cb0674df-8593-f14b-f680-ce278042c88c@gmail.com>
-In-Reply-To: <cb0674df-8593-f14b-f680-ce278042c88c@gmail.com>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jan.szewczyk@ericsson.com; 
-x-originating-ip: [193.105.24.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c8bd551f-f74f-4da7-e1d1-08d705367926
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:AM6PR07MB5606;
-x-ms-traffictypediagnostic: AM6PR07MB5606:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <AM6PR07MB560694461880F1BD1AE03FAEF2F00@AM6PR07MB5606.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1923;
-x-forefront-prvs: 0094E3478A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(13464003)(189003)(199004)(51914003)(2501003)(44832011)(6436002)(66946007)(66066001)(229853002)(476003)(76116006)(33656002)(66446008)(4326008)(110136005)(14454004)(64756008)(486006)(6116002)(3846002)(11346002)(68736007)(66556008)(71190400001)(81166006)(256004)(14444005)(305945005)(86362001)(6506007)(8936002)(76176011)(53546011)(7736002)(26005)(102836004)(478600001)(6306002)(53936002)(55016002)(9686003)(186003)(52536014)(81156014)(316002)(446003)(66476007)(8676002)(966005)(2906002)(74316002)(6246003)(99286004)(25786009)(7696005)(71200400001)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR07MB5606;H:AM6PR07MB5639.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: ericsson.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: VP1bsB39/Vt0eRLpxUn1Uh6708HC0E71pymm1+oZbM4GpFT+CYVRKKO/J7NehlSvhCicDbZli3C9WwEriqYdfbmR/cUykbBWBlWoRQiMB6UdIzQTX/F/MSGJc/jVaLpo/26Sob3+hK1XFc6y5q+a5cNp/u+2pdjsc5WkxJkJIPa0/w1T96JBk+8VY/8Z/5Uidsg0AMqajKvI2DoMVqlBrFQOmBq+dUP8LRfvz73qGP693GCNMcUR+Kehc2nA3mwD30XPn6+6ocJLyYbYwLjg7p3rn/Gdih7Ax0oQ50Z/PJ7IdqzvjuCm5eLNnnuFSbWSTMF9AxuYsMlolZ0L5np9+P0UJndtxl+0k+UnH15aFFNS9p8YD+rtLk5JeJ9ejeYQZIV3DjazCcqLPmdtlnqzic/Yv7lYoM7fP/TEhoO6CTY=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727443AbfGJM7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:59:49 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40442 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727411AbfGJM7s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:59:48 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v19so2165483wmj.5
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 05:59:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=orbBb9a1qfFgN+xq6RnxCXAYQ4k3T2hPbN79oSDoD6A=;
+        b=ldA8m8xwwRiTTIS2btCFnRuckdleBnwm0XHxSxB7e6PjcxARxDBKkRu1D4+dNXWC90
+         Xx6zrhRq0ia6YkLp8DSATZ2dXVJZm8SanZSLVSObGjg5xd7IMke97ZvqXQ9XHFT9VSM0
+         aM82zj3EEYaIRxhn9t9VvLWmJtO+xoLgor9HcivfxNEWdM1u+JDvTjxrbrZ4ZuEyHS47
+         tq/Zh+CjCWXwYO084l04fe8Cf3gKWoq85+etFsYHC0ZxheKoF1reM5NpKBdeCXoFQRhN
+         UqEQX79MY2jPlH+qXCfxEoXmFeCsURLx+f2Zoh4t8qUq0t6qshax95odHt/WPSoi+hAG
+         6Yfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=orbBb9a1qfFgN+xq6RnxCXAYQ4k3T2hPbN79oSDoD6A=;
+        b=WmUihkxSXgr4xzo0kACmh9IHtAcoAObzLb+sKgK4PmfU4QF9gARDbnMvssen6anRuy
+         5CTjEW62gYmrLUu9/3sBO49YOwTpLgmXqNXDbOSoLrEN5uuvKUNKcLE+FjtoZ6ZsH0sW
+         UErjHxjCyOSco6CKFuHM4Szx09iDL/VzykqlR0zwPRHthXdE+q15ZI8NGngiuGA+es1r
+         lo0JO7Xz6RiZh0rIOSX4wphGLMImEff/Q7bWVrQEz7eRVnZBpOPX1vR8j/xJhuBJ1r6P
+         xQX7u8N1b6c6Cmv5Jhoq+KoOGhdazToo/vrt7fsIdtzerX/u56ja65u2gJJmVB7BLr6I
+         zkJA==
+X-Gm-Message-State: APjAAAWO7KRneozcBUg9if9abqLWSPZcz5VZ0Y7gIr6ZbykRHFVfi2Yd
+        SYBY8mM8ARx/iLvg7XKvdLdyx5SPEYA=
+X-Google-Smtp-Source: APXvYqxFETRr0/i1rEqU4t0aMzwWbWuCsai3umAiF81aED1Fb7uqJiZsZ9ohbK20Rl73QCO0PePVPA==
+X-Received: by 2002:a1c:6c14:: with SMTP id h20mr5690149wmc.168.1562763585316;
+        Wed, 10 Jul 2019 05:59:45 -0700 (PDT)
+Received: from localhost (ip-89-176-1-116.net.upcbroadband.cz. [89.176.1.116])
+        by smtp.gmail.com with ESMTPSA id i18sm2130111wrp.91.2019.07.10.05.59.44
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 10 Jul 2019 05:59:44 -0700 (PDT)
+Date:   Wed, 10 Jul 2019 14:59:43 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
+Message-ID: <20190710125943.GC2291@nanopsycho>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
+ <20190703114933.GW2250@nanopsycho>
+ <20190703181851.GP20101@unicorn.suse.cz>
+ <20190704080435.GF2250@nanopsycho>
+ <20190704115236.GR20101@unicorn.suse.cz>
+ <20190709141817.GE2301@nanopsycho.orion>
+ <20190710123803.GB5700@unicorn.suse.cz>
 MIME-Version: 1.0
-X-OriginatorOrg: ericsson.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8bd551f-f74f-4da7-e1d1-08d705367926
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2019 12:59:41.4109
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 92e84ceb-fbfd-47ab-be52-080c6b87953f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jan.szewczyk@ericsson.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR07MB5606
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190710123803.GB5700@unicorn.suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-I digged up a little further and maybe it's not a problem with MTU itself. =
-I checked every entry I get from RTM_GETROUTE netlink message and after tri=
-ggering "too big packet" by pinging ipv6address I get exactly the same mess=
-ages on 4.12 and 4.18, except that the one with that pinged ipv6address is =
-missing on 4.18 at all. What is weird - it's visible when running "ip route=
- get to ipv6address". Do you know why there is a mismatch there?
+Wed, Jul 10, 2019 at 02:38:03PM CEST, mkubecek@suse.cz wrote:
+>On Tue, Jul 09, 2019 at 04:18:17PM +0200, Jiri Pirko wrote:
+>> 
+>> I understand. So how about avoid the bitfield all together and just
+>> have array of either bits of strings or combinations?
+>> 
+>> ETHTOOL_CMD_SETTINGS_SET (U->K)
+>>     ETHTOOL_A_HEADER
+>>         ETHTOOL_A_DEV_NAME = "eth3"
+>>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>>        ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>            ETHTOOL_A_FLAG_NAME = "legacy-rx"
+>> 	   ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>> 
+>> or the same with index instead of string
+>> 
+>> ETHTOOL_CMD_SETTINGS_SET (U->K)
+>>     ETHTOOL_A_HEADER
+>>         ETHTOOL_A_DEV_NAME = "eth3"
+>>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_INDEX = 0
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>> 
+>> 
+>> For set you can combine both when you want to set multiple bits:
+>> 
+>> ETHTOOL_CMD_SETTINGS_SET (U->K)
+>>     ETHTOOL_A_HEADER
+>>         ETHTOOL_A_DEV_NAME = "eth3"
+>>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_INDEX = 2
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_INDEX = 8
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_NAME = "legacy-rx"
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>> 
+>> 
+>> For get this might be a bit bigger message:
+>> 
+>> ETHTOOL_CMD_SETTINGS_GET_REPLY (K->U)
+>>     ETHTOOL_A_HEADER
+>>         ETHTOOL_A_DEV_NAME = "eth3"
+>>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_INDEX = 0
+>>             ETHTOOL_A_FLAG_NAME = "legacy-rx"
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_INDEX = 1
+>>             ETHTOOL_A_FLAG_NAME = "vf-ipsec"
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>>             ETHTOOL_A_FLAG_INDEX = 8
+>>             ETHTOOL_A_FLAG_NAME = "something-else"
+>>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>
+>This is perfect for "one shot" applications but not so much for long
+>running ones, either "ethtool --monitor" or management or monitoring
+>daemons. Repeating the names in every notification message would be
+>a waste, it's much more convenient to load the strings only once and
 
-It's not easy for me to check this behavior on 4.19, because we have a pret=
-ty complex system here, but maybe I could try to reproduce it locally on so=
-me virtual box and check if it behaves the same.
-
-Thanks for the tip about the testing tools, I'll try to use them.
-
-BR,
-Jan Szewczyk
-
------Original Message-----
-From: David Ahern <dsahern@gmail.com>=20
-Sent: Wednesday, July 10, 2019 14:28
-To: Jan Szewczyk <jan.szewczyk@ericsson.com>; davem@davemloft.net
-Cc: netdev@vger.kernel.org
-Subject: Re: Question about linux kernel commit: "net/ipv6: move metrics fr=
-om dst to rt6_info"
-
-[ adding netdev so others can chime in ]
-
-On 7/10/19 2:28 AM, Jan Szewczyk wrote:
-> Hi guys!
->=20
-> We can see different behavior of one of our commands that supposed to=20
-> show pmtu information.
->=20
-> It's using netlink message RTM_GETROUTE to get the information and in=20
-> Linux kernel version 4.12 after sending big packet (and triggering=20
-> "packet too big") there is an entry with PMTU and expiration time.
->=20
-> In the version 4.18 unfortunately the entry looks different and there=20
-> is no PMTU information.
-
-Can you try with 4.19.58 (latest stable release for 4.19)? Perhaps there wa=
-s a bugfix that is missing from 4.18.
-
-The kernel has 2 commands under tools/testing/selftests/net -- pmtu.sh and =
-icmp_redirect.sh -- that verify exceptions are created and use 'ip ro get' =
-to verify the mtu.
+Yeah, for those aplications, the ETHTOOL_A_FLAG_NAME could be omitted
 
 
->=20
-> I can see that in your commit
-> https://protect2.fireeye.com/url?k=3D5be21a17-07361dbb-5be25a8c-8667c4af
-> e13e-f99413291ecbed59&q=3D1&u=3Dhttps%3A%2F%2Fgithub.com%2Ftorvalds%2Flin=
-u
-> x%2Fcommit%2Fd4ead6b34b67fd711639324b6465a050bcb197d4,
-> these lines disappeared from route.c:
->=20
-> =A0
->=20
-> =A0=A0=A0=A0 if (rt->rt6i_pmtu)
->=20
-> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 metrics[RTAX_MTU - 1] =3D rt->rt6i_pmtu;
->=20
-> =A0
->=20
-> I'm very beginner in linux kernel code, can you help me and tell me if=20
-> that could cause this different behavior?
->=20
-> =A0
->=20
-> =A0
->=20
-> BR,
->=20
-> Jan Szewczyk
->=20
+>cache them. Even if we omit the names in notifications (and possibly the
+>GET replies if client opts for it), this format still takes 12-16 bytes
+>per bit.
+>
+>So the problem I'm trying to address is that there are two types of
+>clients with very different mode of work and different preferences.
+>
+>Looking at the bitset.c, I would rather say that most of the complexity
+>and ugliness comes from dealing with both unsigned long based bitmaps
+>and u32 based ones. Originally, there were functions working with
+>unsigned long based bitmaps and the variants with "32" suffix were
+>wrappers around them which converted u32 bitmaps to unsigned long ones
+>and back. This became a problem when kernel started issuing warnings
+>about variable length arrays as getting rid of them meant two kmalloc()
+>and two kfree() for each u32 bitmap operation, even if most of the
+>bitmaps are in rather short in practice.
+>
+>Maybe the wrapper could do something like
+>
+>int ethnl_put_bitset32(const u32 *value, const u32 *mask,
+>		       unsigned int size,  ...)
+>{
+>	unsigned long fixed_value[2], fixed_mask[2];
+>	unsigned long *tmp_value = fixed_value;
+>	unsigned long *tmp_mask = fixed_mask;
+>
+>	if (size > sizeof(fixed_value) * BITS_PER_BYTE) {
+>		tmp_value = bitmap_alloc(size);
+>		if (!tmp_value)
+>			return -ENOMEM;
+>		tmp_mask = bitmap_alloc(size);
+>		if (!tmp_mask) {
+>			kfree(tmp_value);
+>			return -ENOMEM;
+>		}
+>	}
+>
+>	bitmap_from_arr32(tmp_value, value, size);
+>	bitmap_from_arr32(tmp_mask, mask, size);
+>	ret = ethnl_put_bitset(tmp_value, tmp_mask, size, ...);
+>}
+>
+>This way we would make bitset.c code cleaner while avoiding allocating
+>short bitmaps (which is the most common case). 
 
+I'm primarily concerned about the uapi. Plus if the uapi approach is united
+for both index and string, we can omit this whole bitset abomination...
+
+
+>
+>Michal
