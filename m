@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F4964304
+	by mail.lfdr.de (Postfix) with ESMTP id 4258564303
 	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727063AbfGJHpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 03:45:43 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:44450 "EHLO
+        id S1726132AbfGJHpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:45:44 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:44452 "EHLO
         proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726391AbfGJHpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:45:42 -0400
+        with ESMTP id S1726251AbfGJHpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:45:43 -0400
 Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id 51D5A2E41CE;
+        by proxy.6wind.com (Postfix) with ESMTPS id 665762E41CF;
         Wed, 10 Jul 2019 09:45:40 +0200 (CEST)
 Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.89)
         (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1hl7IK-0001yS-7D; Wed, 10 Jul 2019 09:45:40 +0200
+        id 1hl7IK-0001yV-A5; Wed, 10 Jul 2019 09:45:40 +0200
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
 To:     steffen.klassert@secunet.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH ipsec 1/2] xfrm interface: avoid corruption on changelink
-Date:   Wed, 10 Jul 2019 09:45:35 +0200
-Message-Id: <20190710074536.7505-2-nicolas.dichtel@6wind.com>
+Subject: [PATCH ipsec 2/2] xfrm interface: ifname may be wrong in logs
+Date:   Wed, 10 Jul 2019 09:45:36 +0200
+Message-Id: <20190710074536.7505-3-nicolas.dichtel@6wind.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190710074536.7505-1-nicolas.dichtel@6wind.com>
 References: <20190710074536.7505-1-nicolas.dichtel@6wind.com>
@@ -33,57 +33,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new parameters must not be stored in the netdev_priv() before
-validation, it may corrupt the interface. Note also that if data is NULL,
-only a memset() is done.
-
-$ ip link add xfrm1 type xfrm dev lo if_id 1
-$ ip link add xfrm2 type xfrm dev lo if_id 2
-$ ip link set xfrm1 type xfrm dev lo if_id 2
-RTNETLINK answers: File exists
-$ ip -d link list dev xfrm1
-5: xfrm1@lo: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/none 00:00:00:00:00:00 brd 00:00:00:00:00:00 promiscuity 0 minmtu 68 maxmtu 1500
-    xfrm if_id 0x2 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
-
-=> "if_id 0x2"
+The ifname is copied when the interface is created, but is never updated
+later. In fact, this property is used only in one error message, where the
+netdevice pointer is available, thus let's use it.
 
 Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
 Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- net/xfrm/xfrm_interface.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/net/xfrm.h        |  1 -
+ net/xfrm/xfrm_interface.c | 10 +---------
+ 2 files changed, 1 insertion(+), 10 deletions(-)
 
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index a2907873ed56..287e39753d94 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -988,7 +988,6 @@ static inline void xfrm_dst_destroy(struct xfrm_dst *xdst)
+ void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev);
+ 
+ struct xfrm_if_parms {
+-	char name[IFNAMSIZ];	/* name of XFRM device */
+ 	int link;		/* ifindex of underlying L2 interface */
+ 	u32 if_id;		/* interface identifyer */
+ };
 diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 7dbe0c608df5..dfa5aebdec57 100644
+index dfa5aebdec57..a60d391f7ebe 100644
 --- a/net/xfrm/xfrm_interface.c
 +++ b/net/xfrm/xfrm_interface.c
-@@ -671,12 +671,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
- 			   struct nlattr *data[],
- 			   struct netlink_ext_ack *extack)
- {
--	struct xfrm_if *xi = netdev_priv(dev);
- 	struct net *net = dev_net(dev);
-+	struct xfrm_if_parms p;
-+	struct xfrm_if *xi;
+@@ -145,8 +145,6 @@ static int xfrmi_create(struct net_device *dev)
+ 	if (err < 0)
+ 		goto out;
  
--	xfrmi_netlink_parms(data, &xi->p);
+-	strcpy(xi->p.name, dev->name);
 -
--	xi = xfrmi_locate(net, &xi->p);
-+	xfrmi_netlink_parms(data, &p);
-+	xi = xfrmi_locate(net, &p);
- 	if (!xi) {
- 		xi = netdev_priv(dev);
- 	} else {
-@@ -684,7 +684,7 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
- 			return -EEXIST;
+ 	dev_hold(dev);
+ 	xfrmi_link(xfrmn, xi);
+ 
+@@ -294,7 +292,7 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+ 	if (tdev == dev) {
+ 		stats->collisions++;
+ 		net_warn_ratelimited("%s: Local routing loop detected!\n",
+-				     xi->p.name);
++				     dev->name);
+ 		goto tx_err_dst_release;
  	}
  
--	return xfrmi_update(xi, &xi->p);
-+	return xfrmi_update(xi, &p);
- }
+@@ -638,12 +636,6 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 	int err;
  
- static size_t xfrmi_get_size(const struct net_device *dev)
+ 	xfrmi_netlink_parms(data, &p);
+-
+-	if (!tb[IFLA_IFNAME])
+-		return -EINVAL;
+-
+-	nla_strlcpy(p.name, tb[IFLA_IFNAME], IFNAMSIZ);
+-
+ 	xi = xfrmi_locate(net, &p);
+ 	if (xi)
+ 		return -EEXIST;
 -- 
 2.21.0
 
