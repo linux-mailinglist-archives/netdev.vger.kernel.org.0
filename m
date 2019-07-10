@@ -2,131 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B9564F24
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 01:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88FF364F3B
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 01:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727687AbfGJXPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 19:15:14 -0400
-Received: from mail.us.es ([193.147.175.20]:55142 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727220AbfGJXPO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 19:15:14 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DA68781402
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 01:15:11 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CA388D190C
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 01:15:11 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BC7ADDA7B6; Thu, 11 Jul 2019 01:15:11 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9D78CDA708;
-        Thu, 11 Jul 2019 01:15:09 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 11 Jul 2019 01:15:09 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [31.4.194.134])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 68FA34265A31;
-        Thu, 11 Jul 2019 01:15:09 +0200 (CEST)
-Date:   Thu, 11 Jul 2019 01:15:07 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, saeedm@mellanox.com
-Subject: Re: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting
- up tc block on rep
-Message-ID: <20190710231507.oimiomtyby275yoz@salvia>
-References: <20190710182554.2988-1-vladbu@mellanox.com>
+        id S1727625AbfGJX3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 19:29:42 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41839 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727188AbfGJX3m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 19:29:42 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d17so4384657qtj.8;
+        Wed, 10 Jul 2019 16:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fk89bVjmURxGvXV7OaZ71cWqbOQvM2q6nM1dAeGQkB8=;
+        b=QxwTMw9QnCZz5nzXj6stf/DipgvoZMFB1gd/wY5O4AbNgO/lrr0Pn8X4wFKthqKu6+
+         tc7FI9wTWPwb16mAd9wdEZ0Jqmy9YwNuiBFMNiYPQXg5BXDoZtzNJexYI4FjXYUS4lEZ
+         IpV1wmYjcXd3hoCJUMG4p4LwAVB8bIcLmha/x542MQZ9nhijiDJ7UZbYlXN9RscQJk3U
+         kyxbIqvBu/4PpwmS2p3y+KJsvlIWrKRqJdkqE20zlfXTopVchRXgT1GtoVXdUfe386j8
+         H85n4x75U9O67+Z32y/Y8CkIH5J+Lz/8F23c5K3Dv2k5HNxLOk8SnLIIe9VNroN5Godm
+         2fbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fk89bVjmURxGvXV7OaZ71cWqbOQvM2q6nM1dAeGQkB8=;
+        b=f03kFZi9FntWzxDS7hLaP7Exg0kM40LxA1x00jRy/npspB3XNA//N2fzHZG7X80ZvF
+         iyHUU8B2PIuX9ymRsepbngU4FDhfcq37vyvLmxi+wXJ4LYx16SwEhGCH64jNT+3ruLvP
+         ELrtaSLabkuM5uyo6rJKt2yEwNLQmXdajrcvoeCPJNGcDkXAjU0ddXSJkBNynEpcALZb
+         M5tHTFAuanPFrgxWi2Xn/BikisUK9HOs+YhuagYZIWC7CTf0Og805N9wAP+u+gh3nJ1G
+         hRZAqCRbOGetaQTUu9l2vohBmw+q0PH2QLAvWk758fqmI+TDs0K1VMWgEg3buwsjczTu
+         Dvog==
+X-Gm-Message-State: APjAAAXPTgL5mjuJVBDUozAc+eM/qWBieq4w5rUMMby8pl143SptDLNa
+        8bsDZAV5P/bpAj6ojUmetwsOd8Kiy3dQUrmKQj0=
+X-Google-Smtp-Source: APXvYqzEr2Ef2KQ3C0RaPc0rVkUuQbb1jwQZrKtZm9qxNqAUATqXkNWXWd2Uk+8y3/dUBbbSkj1UbnZeDYkD/JvYrG0=
+X-Received: by 2002:ac8:21b7:: with SMTP id 52mr488797qty.59.1562801380073;
+ Wed, 10 Jul 2019 16:29:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190710182554.2988-1-vladbu@mellanox.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <CAEf4BzaUEWwGL3k0VeiFYFqyJexQU9cDZWN69jSDpBjP1ZEcpw@mail.gmail.com>
+ <000000000000a94981058d37f1a4@google.com>
+In-Reply-To: <000000000000a94981058d37f1a4@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 10 Jul 2019 16:29:29 -0700
+Message-ID: <CAEf4BzabgRE6qZChfw=7nptxYAyZFcj0+Jk_PMSZQP0ZVagQzg@mail.gmail.com>
+Subject: bpf_prog_free_deferred bug. WAS: Re: WARNING in mark_chain_precision
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+f21251a7468cd46efc60@syzkaller.appspotmail.com>,
+        aaron.f.brown@intel.com, Alexei Starovoitov <ast@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        jeffrey.t.kirsher@intel.com,
+        john fastabend <john.fastabend@gmail.com>,
+        Martin Lau <kafai@fb.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, sasha.neftin@intel.com,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 09:25:54PM +0300, Vlad Buslov wrote:
-> Recent refactoring of tc block offloads infrastructure introduced new
-> flow_block_cb_setup_simple() method intended to be used as unified way for
-> all drivers to register offload callbacks. However, commit that actually
-> extended all users (drivers) with block cb list and provided it to
-> flow_block infra missed mlx5 en_rep. This leads to following NULL-pointer
-> dereference when creating Qdisc:
-> 
-> [  278.385175] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [  278.393233] #PF: supervisor read access in kernel mode
-> [  278.399446] #PF: error_code(0x0000) - not-present page
-> [  278.405847] PGD 8000000850e73067 P4D 8000000850e73067 PUD 8620cd067 PMD 0
-> [  278.414141] Oops: 0000 [#1] SMP PTI
-> [  278.419019] CPU: 7 PID: 3369 Comm: tc Not tainted 5.2.0-rc6+ #492
-> [  278.426580] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-> [  278.435853] RIP: 0010:flow_block_cb_setup_simple+0xc4/0x190
-> [  278.442953] Code: 10 48 89 42 08 48 89 10 48 b8 00 01 00 00 00 00 ad de 49 89 00 48 05 00 01 00 00 49 89 40 08 31 c0 c3 b8 a1 ff ff ff c3 f3 c3 <48> 8b 06 48 39 c6 75 0a eb 1a 48 8b 00 48 39 c6 74 12
->  48 3b 50 28
-> [  278.464829] RSP: 0018:ffffaf07c3f97990 EFLAGS: 00010246
-> [  278.471648] RAX: 0000000000000000 RBX: ffff9b43ed4c7680 RCX: ffff9b43d5f80840
-> [  278.480408] RDX: ffffffffc0491650 RSI: 0000000000000000 RDI: ffffaf07c3f97998
-> [  278.489110] RBP: ffff9b43ddff9000 R08: ffff9b43d5f80840 R09: 0000000000000001
-> [  278.497838] R10: 0000000000000009 R11: 00000000000003ad R12: ffffaf07c3f97c08
-> [  278.506595] R13: ffff9b43d5f80000 R14: ffff9b43ed4c7680 R15: ffff9b43dfa20b40
-> [  278.515374] FS:  00007f796be1b400(0000) GS:ffff9b43ef840000(0000) knlGS:0000000000000000
-> [  278.525099] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  278.532453] CR2: 0000000000000000 CR3: 0000000840398002 CR4: 00000000001606e0
-> [  278.541197] Call Trace:
-> [  278.545252]  tcf_block_offload_cmd.isra.52+0x7e/0xb0
-> [  278.551871]  tcf_block_get_ext+0x365/0x3e0
-> [  278.557569]  qdisc_create+0x15c/0x4e0
-> [  278.562859]  ? kmem_cache_alloc_trace+0x1a2/0x1c0
-> [  278.569235]  tc_modify_qdisc+0x1c8/0x780
-> [  278.574761]  rtnetlink_rcv_msg+0x291/0x340
-> [  278.580518]  ? _cond_resched+0x15/0x40
-> [  278.585856]  ? rtnl_calcit.isra.29+0x120/0x120
-> [  278.591868]  netlink_rcv_skb+0x4a/0x110
-> [  278.597198]  netlink_unicast+0x1a0/0x250
-> [  278.602601]  netlink_sendmsg+0x2c1/0x3c0
-> [  278.608022]  sock_sendmsg+0x5b/0x60
-> [  278.612969]  ___sys_sendmsg+0x289/0x310
-> [  278.618231]  ? do_wp_page+0x99/0x730
-> [  278.623216]  ? page_add_new_anon_rmap+0xbe/0x140
-> [  278.629298]  ? __handle_mm_fault+0xc84/0x1360
-> [  278.635113]  ? __sys_sendmsg+0x5e/0xa0
-> [  278.640285]  __sys_sendmsg+0x5e/0xa0
-> [  278.645239]  do_syscall_64+0x5b/0x1b0
-> [  278.650274]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> [  278.656697] RIP: 0033:0x7f796abdeb87
-> [  278.661628] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 80 00 00 00 00 8b 05 6a 2b 2c 00 48 63 d2 48 63 ff 85 c0 75 18 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 59 f3 c3 0f 1f 80 00 00 00 00 53
->  48 89 f3 48
-> [  278.683248] RSP: 002b:00007ffde213ba48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> [  278.692245] RAX: ffffffffffffffda RBX: 000000005d261e6f RCX: 00007f796abdeb87
-> [  278.700862] RDX: 0000000000000000 RSI: 00007ffde213bab0 RDI: 0000000000000003
-> [  278.709527] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
-> [  278.718167] R10: 000000000000000c R11: 0000000000000246 R12: 0000000000000001
-> [  278.726743] R13: 000000000067b580 R14: 0000000000000000 R15: 0000000000000000
-> [  278.735302] Modules linked in: dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache bridge stp llc sunrpc mlx5_ib ib_uverbs intel_rapl ib_core sb_edac x86_pkg_temp_
-> thermal intel_powerclamp coretemp kvm_intel kvm mlx5_core irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel igb ghash_clmulni_intel ses mei_me enclosure mlxfw ipmi_ssif intel_cstate iTCO_wdt ptp mei
-> pps_core iTCO_vendor_support pcspkr joydev intel_uncore i2c_i801 ipmi_si lpc_ich intel_rapl_perf ioatdma wmi dca pcc_cpufreq ipmi_devintf ipmi_msghandler acpi_power_meter acpi_pad ast i2c_algo_bit drm_k
-> ms_helper ttm drm mpt3sas raid_class scsi_transport_sas
-> [  278.802263] CR2: 0000000000000000
-> [  278.807170] ---[ end trace b1f0a442a279e66f ]---
-> 
-> Extend en_rep with new static mlx5e_rep_block_cb_list list and pass it to
-> flow_block_cb_setup_simple() function instead of hardcoded NULL pointer.
-> 
-> Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
-> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+On Tue, Jul 9, 2019 at 9:08 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+>
+> Mon, 08 Jul 2019 21:25:00 -0700 (PDT)
+> > Hello,
+> >
+> > syzbot has tested the proposed patch but the reproducer still triggered
+> > crash:
+> > WARNING in bpf_jit_free
+> >
+> > WARNING: CPU: 0 PID: 9077 at kernel/bpf/core.c:851 bpf_jit_free+0x157/0x1b0
+> > Kernel panic - not syncing: panic_on_warn set ...
+> > CPU: 0 PID: 9077 Comm: kworker/0:3 Not tainted 5.2.0-rc6+ #1
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > Google 01/01/2011
+> > Workqueue: events bpf_prog_free_deferred
+> > Call Trace:
+> >   __dump_stack lib/dump_stack.c:77 [inline]
+> >   dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+> >   panic+0x2cb/0x744 kernel/panic.c:219
+> >   __warn.cold+0x20/0x4d kernel/panic.c:576
+> >   report_bug+0x263/0x2b0 lib/bug.c:186
+> >   fixup_bug arch/x86/kernel/traps.c:179 [inline]
+> >   fixup_bug arch/x86/kernel/traps.c:174 [inline]
+> >   do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+> >   do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+> >   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
+> > RIP: 0010:bpf_jit_free+0x157/0x1b0
+> > Code: 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5d 48 b8 00 02 00 00
+> > 00 00 ad de 48 39 43 70 0f 84 05 ff ff ff e8 09 7f f4 ff <0f> 0b e9 f9 fe
+> > ff ff e8 2d 02 2e 00 e9 d9 fe ff ff 48 89 7d e0 e8
+> > RSP: 0018:ffff888084affcb0 EFLAGS: 00010293
+> > RAX: ffff88808a622100 RBX: ffff88809639d580 RCX: ffffffff817b0b0d
+> > RDX: 0000000000000000 RSI: ffffffff817c4557 RDI: ffff88809639d5f0
+> > RBP: ffff888084affcd0 R08: 1ffffffff150daa8 R09: fffffbfff150daa9
+> > R10: fffffbfff150daa8 R11: ffffffff8a86d547 R12: ffffc90001921000
+> > R13: ffff88809639d5e8 R14: ffff8880a0589800 R15: ffff8880ae834d40
+> >   bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1982
+> >   process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+> >   worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+> >   kthread+0x354/0x420 kernel/kthread.c:255
+> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> > Kernel Offset: disabled
+> > Rebooting in 86400 seconds..
+> >
+> >
+> > Tested on:
+> >
+> > commit:         b9321614 bpf: fix precision bit propagation for BPF_ST ins..
+> > git tree:       https://github.com/anakryiko/linux bpf-fix-precise-bpf_st
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=112f0dfda00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=6bb3e6e7997c14f9
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> >
+>
+> 1, currently, bpf_prog_put(), the put helper, deletes all kallsyms before
+> invoking the free helper, bpf_prog_free(); the latter complains if kallsyms
+> are detected not all off.
+>
+> 2, before commit 538950a1b752 ("soreuseport: setsockopt
+> SO_ATTACH_REUSEPORT_[CE]BPF"), __bpf_prog_release() already called the put
+> helper or the free one for a given prog depending on its type: put for
+> BPF_PROG_TYPE_SOCKET_FILTER.
+>
+> In the commit we can see bpf_prog_destroy(), __bpf_prog_free(),
+> bpf_prog_put(), here and then; Note in __get_bpf() the put for
+> !BPF_PROG_TYPE_SOCKET_FILTER.
+>
+> 3, in commit 113214be7f6c ("bpf: refactor bpf_prog_get and type check into
+> helper") bpf_prog_get_type() was added and put in __get_bpf().
+>
+> In the commit we can see other types like BPF_PROG_TYPE_SCHED_ACT and
+> BPF_PROG_TYPE_SCHED_CLS.
+>
+> 4, in commit 8217ca653ec6 ("bpf: Enable BPF_PROG_TYPE_SK_REUSEPORT bpf prog
+> in reuseport selection") sk_reuseport_prog_free() was added without a word
+> in the log for it.
+>
+> 5, enrich prog type in __bpf_prog_release().
 
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Thanks for investigation!
 
-There's a similar patch from wenxu BTW.
+I'm curious what makes BPF_PROG_TYPE_SOCKET_FILTER (and
+BPF_PROG_TYPE_SK_REUSEPORT) special, compared to all the other types
+of BPF programs. If it's something to do with sockets specifically,
+there are a bunch of other programs that deal with sockets, so should
+they be handled specially as well (e.g., BPF_PROG_TYPE_CGROUP_SOCK)?
+
+Daniel, do you have any insight here?
+
+>
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -1142,11 +1142,15 @@ static void bpf_release_orig_filter(stru
+>
+>  static void __bpf_prog_release(struct bpf_prog *prog)
+>  {
+> -       if (prog->type == BPF_PROG_TYPE_SOCKET_FILTER) {
+> +       switch (prog->type) {
+> +       case BPF_PROG_TYPE_SOCKET_FILTER:
+> +       case BPF_PROG_TYPE_SK_REUSEPORT:
+>                 bpf_prog_put(prog);
+> -       } else {
+> +               break;
+> +       default:
+>                 bpf_release_orig_filter(prog);
+>                 bpf_prog_free(prog);
+> +               break;
+>         }
+>  }
+>
+> --
+>
