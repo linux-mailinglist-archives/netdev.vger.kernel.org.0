@@ -2,107 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C31AE6466A
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E65A6466B
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:41:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725911AbfGJMkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:40:05 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37238 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726458AbfGJMkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:40:04 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 10 Jul 2019 15:39:58 +0300
-Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6ACdtr8020922;
-        Wed, 10 Jul 2019 15:39:57 +0300
-From:   Parav Pandit <parav@mellanox.com>
+        id S1727348AbfGJMlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:41:07 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33664 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbfGJMlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:41:07 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n9so2342922wru.0
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 05:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=PjY3kbUr6l1lFSqZrTcAErRPwC1ctJRZ894O74IGzQ4=;
+        b=0aLX2Y6TF3P6FrZegXEgF8k1spR9kdBDZ22Pe1Sx91AURIeRldTslGQdSBL0MpCqMo
+         nXi8+gUSVmMwIm88J0t5SEGvqFwsEK6PZZFZSyDGGaHajHwD5tPQdtaQEotmrgTvjdi7
+         MXEtYclfQBRE5PiCBylMlqLRfOfOFRpju8ebwmda+fjteykVZg5mgonuyOG8psUGW/71
+         k1zdNVFxBRXfsL8ByMUlbn4Z3wbdru8zIUh6WpULplegzxb9wwIedY3/Q3bfu/tJuoCV
+         UXCT3moYrpvKS9ZJUr4fsOuoAGg4nt5UYYZjqnGCattFyyy6SqlBxFqFrse9Ler9qEbF
+         XLJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=PjY3kbUr6l1lFSqZrTcAErRPwC1ctJRZ894O74IGzQ4=;
+        b=LrSxiKiRHwGKtWNbSrcgEEJvLYqDC4jBmMVxKCSwdmLo43ILCwnHxUktRZ+ebc2DJx
+         05DJwET4XB35Qti5fjWNpdpJxtgBjy9TXWC0gxPUrzjbzi/VPW0b9TRflULo4xiRfRIo
+         y6rHxUgeVwf8BiK4EzDksCVXVrIsFVJo8+rCywRWaHyqCNbVsu12NxQkx+W5dEUZQn3X
+         STpS6GFlr72q9ZmldrrMp6lX+MwM7QyxooIV8hExEY6OWxPtuPqkqiEJb34lDrpV3ma5
+         ykAsJ9llmzGc30vILg1fUjl1VAYmhhGD4GbeApXj0R2wocmW1pcP9fQA00jQHu27wc59
+         mzoQ==
+X-Gm-Message-State: APjAAAXLIwww/9lMqbDwnNKQsRzzqOuf9pKI0+0EACyQ1lAzTBPzFWsn
+        sUcsNVqfK6g+e/U/VAPV1F6maKUts5k=
+X-Google-Smtp-Source: APXvYqysA6sXCImNmIriL+qeOa21TJ/msRxPrcPvu7Z01+W2HtZz+jlAkd+FTfc0tcvYlA2QgwYWRg==
+X-Received: by 2002:adf:ec0c:: with SMTP id x12mr30996702wrn.342.1562762465060;
+        Wed, 10 Jul 2019 05:41:05 -0700 (PDT)
+Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
+        by smtp.gmail.com with ESMTPSA id z5sm1406759wmf.48.2019.07.10.05.41.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 10 Jul 2019 05:41:04 -0700 (PDT)
+From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org, jiri@mellanox.com,
-        Parav Pandit <parav@mellanox.com>
-Subject: [PATCH net-next iproute2 v2 2/2] devlink: Introduce PCI PF and VF port flavour and attribute
-Date:   Wed, 10 Jul 2019 07:39:52 -0500
-Message-Id: <20190710123952.6877-2-parav@mellanox.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190710123952.6877-1-parav@mellanox.com>
-References: <20190701183017.25407-1-parav@mellanox.com>
- <20190710123952.6877-1-parav@mellanox.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
+        dsahern@gmail.com, willemdebruijn.kernel@gmail.com,
+        stephen@networkplumber.org, simon.horman@netronome.com,
+        jakub.kicinski@netronome.com, oss-drivers@netronome.com,
+        John Hurley <john.hurley@netronome.com>
+Subject: [PATCH iproute2-next v2 0/3] add interface to TC MPLS actions
+Date:   Wed, 10 Jul 2019 13:40:37 +0100
+Message-Id: <1562762440-25656-1-git-send-email-john.hurley@netronome.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce PCI PF and VF port flavour and port attributes such as PF
-number and VF number.
+Recent kernel additions to TC allows the manipulation of MPLS headers as
+filter actions.
 
-$ devlink port show
-pci/0000:05:00.0/0: type eth netdev eth0 flavour pcipf pfnum 0
-pci/0000:05:00.0/1: type eth netdev eth1 flavour pcivf pfnum 0 vfnum 0
-pci/0000:05:00.0/2: type eth netdev eth2 flavour pcivf pfnum 0 vfnum 1
+The following patchset creates an iproute2 interface to the new actions
+and includes documentation on how to use it.
 
-Signed-off-by: Parav Pandit <parav@mellanox.com>
----
-Changelog:
 v1->v2:
- - Instead of if-else using switch-case.
- - Split patch to two patches to have kernel header update in dedicated
-   patch.
----
- devlink/devlink.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+- change error from print_string() to fprintf(strerr,) (Stephen Hemminger)
+- split long line in explain() message (David Ahern)
+- use _SL_ instead of /n in print message (David Ahern)
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index ac8c0fb1..d8197ea3 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -2794,11 +2794,29 @@ static const char *port_flavour_name(uint16_t flavour)
- 		return "cpu";
- 	case DEVLINK_PORT_FLAVOUR_DSA:
- 		return "dsa";
-+	case DEVLINK_PORT_FLAVOUR_PCI_PF:
-+		return "pcipf";
-+	case DEVLINK_PORT_FLAVOUR_PCI_VF:
-+		return "pcivf";
- 	default:
- 		return "<unknown flavour>";
- 	}
- }
- 
-+static void pr_out_port_pfvf_num(struct dl *dl, struct nlattr **tb)
-+{
-+	uint16_t fn_num;
-+
-+	if (tb[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
-+		fn_num = mnl_attr_get_u16(tb[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
-+		pr_out_uint(dl, "pfnum", fn_num);
-+	}
-+	if (tb[DEVLINK_ATTR_PORT_PCI_VF_NUMBER]) {
-+		fn_num = mnl_attr_get_u16(tb[DEVLINK_ATTR_PORT_PCI_VF_NUMBER]);
-+		pr_out_uint(dl, "vfnum", fn_num);
-+	}
-+}
-+
- static void pr_out_port(struct dl *dl, struct nlattr **tb)
- {
- 	struct nlattr *pt_attr = tb[DEVLINK_ATTR_PORT_TYPE];
-@@ -2828,6 +2846,15 @@ static void pr_out_port(struct dl *dl, struct nlattr **tb)
- 				mnl_attr_get_u16(tb[DEVLINK_ATTR_PORT_FLAVOUR]);
- 
- 		pr_out_str(dl, "flavour", port_flavour_name(port_flavour));
-+
-+		switch (port_flavour) {
-+		case DEVLINK_PORT_FLAVOUR_PCI_PF:
-+		case DEVLINK_PORT_FLAVOUR_PCI_VF:
-+			pr_out_port_pfvf_num(dl, tb);
-+			break;
-+		default:
-+			break;
-+		}
- 	}
- 	if (tb[DEVLINK_ATTR_PORT_NUMBER]) {
- 		uint32_t port_number;
+John Hurley (3):
+  lib: add mpls_uc and mpls_mc as link layer protocol names
+  tc: add mpls actions
+  man: update man pages for TC MPLS actions
+
+ lib/ll_proto.c     |   2 +
+ man/man8/tc-mpls.8 | 156 ++++++++++++++++++++++++++++++
+ tc/Makefile        |   1 +
+ tc/m_mpls.c        | 276 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 435 insertions(+)
+ create mode 100644 man/man8/tc-mpls.8
+ create mode 100644 tc/m_mpls.c
+
 -- 
-2.19.2
+2.7.4
 
