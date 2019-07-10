@@ -2,115 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3BD64627
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CF3464658
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:38:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbfGJM1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:27:34 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:40778 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725929AbfGJM1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:27:34 -0400
-Received: by mail-io1-f66.google.com with SMTP id h6so4235210iom.7
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 05:27:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nqi0j2v2A7vNfewZCu5tNIJMwgGMWzIzZ9SqEPE/czA=;
-        b=bpV582WRgPrbdwAt12+AhtDsBIGOaGNEimRK6Asoli0M7ttS6UtANZJIoNwFU8Cqi0
-         DDsHxWQWSP+KCP2tbnOXGncCsWwpmiTgSLbnZWyEYmFwFSHmzuOOtjAXNt9PTgu7YTcG
-         Dm2maIXSy15g0xY89yulki4gTZqhJAEZK6+57FQ34wshnLFvz+OsZBVT4dN6TT1Wy8tI
-         8f1NI81yizXl+6Wd4TSBmZ6mEhkAYNYiI/VAoQUrGXOt71w2D6diOfd4t040ypcSPrTC
-         6CQo1qzXOuviYE36eqkLKJL8GKQ4Vz1dUnK+Zg8cICdaWyWe62bYo7cZvxVodG1GfON0
-         YbtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nqi0j2v2A7vNfewZCu5tNIJMwgGMWzIzZ9SqEPE/czA=;
-        b=apaqk+GHaXeq0mYmdlx+jUHCrPeWjmmeXkPLFAnk21YsNjCvILk2w2KsDKpSyrotiS
-         jQLxUg58rGcSceR1Qk7HRjgq19WxJ9jYm7uzIVi3Y56aREzWyplcmQuBLh7Wdl09VVuE
-         crqssfsjC3XHKjSHH8SK/gyYASzp6w2X6vHcfiPVjFjBNu9+cizptjYdd+56DWE2tLch
-         SGmJMXgxbzbYGOo3nwPWVUZvuUvJISBtvGjTrCYF6WVOfUbZ00lSZWTpfsRG4C9peU9u
-         RFzluODP9uNi3/SIaXh6XHauuuRGlwr3+SN6+Eax4EtPBxf4kiHXKbMYoRaH9rQdXe6e
-         vuHw==
-X-Gm-Message-State: APjAAAU1nByMjCv92VZKgQqwvT+wkqeEifiPB2MHTTb6DIOMBilyzvpA
-        WHxAMkZ/9GFzAwW1mnnWSweGpQCS
-X-Google-Smtp-Source: APXvYqxBFxnoUG74bWZoqRf6ZnbuT2dPxku2fg76U9i2r4jIyMlHHc8fORy9BgSbRB46gpRm8acNwA==
-X-Received: by 2002:a02:b016:: with SMTP id p22mr35701972jah.121.1562761653485;
-        Wed, 10 Jul 2019 05:27:33 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:d059:3694:77c1:5391? ([2601:282:800:fd80:d059:3694:77c1:5391])
-        by smtp.googlemail.com with ESMTPSA id x13sm1458840ioj.18.2019.07.10.05.27.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 05:27:32 -0700 (PDT)
-Subject: Re: Question about linux kernel commit: "net/ipv6: move metrics from
- dst to rt6_info"
-To:     Jan Szewczyk <jan.szewczyk@ericsson.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <AM6PR07MB56397A8BC53D9A525BC9C489F2F00@AM6PR07MB5639.eurprd07.prod.outlook.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cb0674df-8593-f14b-f680-ce278042c88c@gmail.com>
-Date:   Wed, 10 Jul 2019 06:27:31 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1727428AbfGJMiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:38:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43906 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725956AbfGJMiF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 08:38:05 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id BBD4BAEAC;
+        Wed, 10 Jul 2019 12:38:03 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 126CEE0E06; Wed, 10 Jul 2019 14:38:03 +0200 (CEST)
+Date:   Wed, 10 Jul 2019 14:38:03 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
+Message-ID: <20190710123803.GB5700@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
+ <20190703114933.GW2250@nanopsycho>
+ <20190703181851.GP20101@unicorn.suse.cz>
+ <20190704080435.GF2250@nanopsycho>
+ <20190704115236.GR20101@unicorn.suse.cz>
+ <20190709141817.GE2301@nanopsycho.orion>
 MIME-Version: 1.0
-In-Reply-To: <AM6PR07MB56397A8BC53D9A525BC9C489F2F00@AM6PR07MB5639.eurprd07.prod.outlook.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190709141817.GE2301@nanopsycho.orion>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ adding netdev so others can chime in ]
+On Tue, Jul 09, 2019 at 04:18:17PM +0200, Jiri Pirko wrote:
+> 
+> I understand. So how about avoid the bitfield all together and just
+> have array of either bits of strings or combinations?
+> 
+> ETHTOOL_CMD_SETTINGS_SET (U->K)
+>     ETHTOOL_A_HEADER
+>         ETHTOOL_A_DEV_NAME = "eth3"
+>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>        ETHTOOL_A_SETTINGS_PRIV_FLAG
+>            ETHTOOL_A_FLAG_NAME = "legacy-rx"
+> 	   ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+> 
+> or the same with index instead of string
+> 
+> ETHTOOL_CMD_SETTINGS_SET (U->K)
+>     ETHTOOL_A_HEADER
+>         ETHTOOL_A_DEV_NAME = "eth3"
+>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_INDEX = 0
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+> 
+> 
+> For set you can combine both when you want to set multiple bits:
+> 
+> ETHTOOL_CMD_SETTINGS_SET (U->K)
+>     ETHTOOL_A_HEADER
+>         ETHTOOL_A_DEV_NAME = "eth3"
+>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_INDEX = 2
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_INDEX = 8
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_NAME = "legacy-rx"
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+> 
+> 
+> For get this might be a bit bigger message:
+> 
+> ETHTOOL_CMD_SETTINGS_GET_REPLY (K->U)
+>     ETHTOOL_A_HEADER
+>         ETHTOOL_A_DEV_NAME = "eth3"
+>     ETHTOOL_A_SETTINGS_PRIV_FLAGS
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_INDEX = 0
+>             ETHTOOL_A_FLAG_NAME = "legacy-rx"
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_INDEX = 1
+>             ETHTOOL_A_FLAG_NAME = "vf-ipsec"
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
+>         ETHTOOL_A_SETTINGS_PRIV_FLAG
+>             ETHTOOL_A_FLAG_INDEX = 8
+>             ETHTOOL_A_FLAG_NAME = "something-else"
+>  	    ETHTOOL_A_FLAG_VALUE   (NLA_FLAG)
 
-On 7/10/19 2:28 AM, Jan Szewczyk wrote:
-> Hi guys!
-> 
-> We can see different behavior of one of our commands that supposed to
-> show pmtu information.
-> 
-> It’s using netlink message RTM_GETROUTE to get the information and in
-> Linux kernel version 4.12 after sending big packet (and triggering
-> “packet too big”) there is an entry with PMTU and expiration time.
-> 
-> In the version 4.18 unfortunately the entry looks different and there is
-> no PMTU information.
+This is perfect for "one shot" applications but not so much for long
+running ones, either "ethtool --monitor" or management or monitoring
+daemons. Repeating the names in every notification message would be
+a waste, it's much more convenient to load the strings only once and
+cache them. Even if we omit the names in notifications (and possibly the
+GET replies if client opts for it), this format still takes 12-16 bytes
+per bit.
 
-Can you try with 4.19.58 (latest stable release for 4.19)? Perhaps there
-was a bugfix that is missing from 4.18.
+So the problem I'm trying to address is that there are two types of
+clients with very different mode of work and different preferences.
 
-The kernel has 2 commands under tools/testing/selftests/net -- pmtu.sh
-and icmp_redirect.sh -- that verify exceptions are created and use 'ip
-ro get' to verify the mtu.
+Looking at the bitset.c, I would rather say that most of the complexity
+and ugliness comes from dealing with both unsigned long based bitmaps
+and u32 based ones. Originally, there were functions working with
+unsigned long based bitmaps and the variants with "32" suffix were
+wrappers around them which converted u32 bitmaps to unsigned long ones
+and back. This became a problem when kernel started issuing warnings
+about variable length arrays as getting rid of them meant two kmalloc()
+and two kfree() for each u32 bitmap operation, even if most of the
+bitmaps are in rather short in practice.
 
+Maybe the wrapper could do something like
 
-> 
-> I can see that in your commit
-> https://github.com/torvalds/linux/commit/d4ead6b34b67fd711639324b6465a050bcb197d4,
-> these lines disappeared from route.c:
-> 
->  
-> 
->      if (rt->rt6i_pmtu)
-> 
->            metrics[RTAX_MTU - 1] = rt->rt6i_pmtu;
-> 
->  
-> 
-> I’m very beginner in linux kernel code, can you help me and tell me if
-> that could cause this different behavior?
-> 
->  
-> 
->  
-> 
-> BR,
-> 
-> Jan Szewczyk
-> 
+int ethnl_put_bitset32(const u32 *value, const u32 *mask,
+		       unsigned int size,  ...)
+{
+	unsigned long fixed_value[2], fixed_mask[2];
+	unsigned long *tmp_value = fixed_value;
+	unsigned long *tmp_mask = fixed_mask;
 
+	if (size > sizeof(fixed_value) * BITS_PER_BYTE) {
+		tmp_value = bitmap_alloc(size);
+		if (!tmp_value)
+			return -ENOMEM;
+		tmp_mask = bitmap_alloc(size);
+		if (!tmp_mask) {
+			kfree(tmp_value);
+			return -ENOMEM;
+		}
+	}
+
+	bitmap_from_arr32(tmp_value, value, size);
+	bitmap_from_arr32(tmp_mask, mask, size);
+	ret = ethnl_put_bitset(tmp_value, tmp_mask, size, ...);
+}
+
+This way we would make bitset.c code cleaner while avoiding allocating
+short bitmaps (which is the most common case). 
+
+Michal
