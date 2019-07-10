@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE71364322
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB6164326
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbfGJHwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 03:52:30 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38725 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfGJHwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:52:30 -0400
-Received: by mail-wm1-f67.google.com with SMTP id s15so1162532wmj.3
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 00:52:29 -0700 (PDT)
+        id S1727063AbfGJH4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:56:12 -0400
+Received: from mail-vk1-f196.google.com ([209.85.221.196]:36682 "EHLO
+        mail-vk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726132AbfGJH4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:56:11 -0400
+Received: by mail-vk1-f196.google.com with SMTP id b69so293318vkb.3
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 00:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qhTlrZHLNRMRw8CxaRivDcNwdwMdgPSvNlEj+BqbS6g=;
-        b=qzxxD21ZSlj/SnwoplyKvzDxnDoMTqjZ4dzBknodnZD3j/W54/Hgk8A+UJhPCAGmta
-         KeMC7iqea4B5jx6RS5dTpsVrDOi2l9opBGNfkwgZKomnCGHH9URUQ5XZFjfejh3e/vHA
-         QXVEcCpRM7mQabGMhGTS3DCZ/sVCUiqSwcBdUVMmTMVzm4nosN3652eYrl8+gUjm/Jm3
-         Lf61GpKculW4W2/lFpMMotCQuhFuKKnRFeto8Aqp9mWi8uiieItkFZhFdQu4pW+A9wRI
-         9EO9tGzt0GjjtkNPeCJ2/zh1tyPkLgB5pJKQhpHn8z8LjLO6ksKbOducvepOacba7NPZ
-         BvbA==
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=YoC+z2/b09WrXH4lRir7hNFDRJ8+7/oQYY2CuVHQx1Y=;
+        b=AWIpPHkq2+4lk5vaBQjk/aQmSEkXDJ2cFGgttIwHzX0Q+6RJ8CePT30S2PeOlx/mBn
+         Ioa4hiHVpqnIIzVRduL0zggZjzDKLUWGKW+8pi2+scTUbwJ23oB+5/By4fn8/LqrEt4q
+         xhuktd/lz60xlh8muMp/AeYgt46D46vXFRL0eFxZSOTR6hcfeA8UzzWXTYdWqD2Dm3hT
+         JXzD10UTXAmK60AODrEE9NZc6XeMSTcv5JAJ634ZFY5NVcfsvEZDVd/Fhc5hNJXcu++0
+         4SUwrmFD2gFkdjFExAlzXExId+0bbqxietdoUDYNTF/bYnoiqHz95YdkVfcwyd5IIzIN
+         4u2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qhTlrZHLNRMRw8CxaRivDcNwdwMdgPSvNlEj+BqbS6g=;
-        b=VwP9T+OU3NpJm31zaoTGI5cGVEoHG9v3kbR5Go3mUhLKWIEqEHxvfklCTPQNHqL0Yl
-         2yLwiMJYCn/QkMfbNPYf8TBE8XNhI2j1dIslIn5t++g24Uf0rk7LGNnhVIM9xwQcOPgq
-         k9Y5aZipe3yASui1Iu/mihvNOUNPJctVVmW0Rit16nsErhXU4penaUbwdm1cs1U7qAkb
-         BowJtxoIzYB9ckQAqe9R0PeMiVhZUNeiX+WGAg1CFc2GJOS4FfCFggYIToZMZVpXc4WZ
-         n7z4Iyiya7F/x42e4oXA29hA+OnbE6VCwi0Tu2Ch3usbyobyc5ldy75yguReYYho876V
-         X0bg==
-X-Gm-Message-State: APjAAAX7pse/amtUeCSQ49V08W6/IOdBlws2FaGB4m9rco9fllQieDSh
-        m0JZP9emaEvtA9x1jMaPWXN9yg==
-X-Google-Smtp-Source: APXvYqy6DV5QN0XuO9nDO+bPKuNho9zU5hAr8U+yPzsraxkLWo3NR+Ld6rb4oTBpf43bvfDhnU2e4w==
-X-Received: by 2002:a1c:a01a:: with SMTP id j26mr3768636wme.112.1562745148345;
-        Wed, 10 Jul 2019 00:52:28 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id l25sm1125061wme.13.2019.07.10.00.52.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 10 Jul 2019 00:52:28 -0700 (PDT)
-Date:   Wed, 10 Jul 2019 09:52:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
-        marcelo.leitner@gmail.com, mkubecek@suse.cz,
-        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
-        cphealy@gmail.com, phil@nwl.cc, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next,v4 12/12] netfilter: nf_tables: add hardware
- offload support
-Message-ID: <20190710075227.GA4362@nanopsycho>
-References: <20190709205550.3160-1-pablo@netfilter.org>
- <20190709205550.3160-13-pablo@netfilter.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=YoC+z2/b09WrXH4lRir7hNFDRJ8+7/oQYY2CuVHQx1Y=;
+        b=TjNFqJUe38v8HHDU/XLCd3vV7fmUNlbheKdQUSKI45S17HV8HPtx1/Q1iSOWi7dEfs
+         NUtUdOxsOJDjclAn1gpG3VgdO1I0H5X3tMSNQusKfNaSlLbhouz6tqxTUYEIbC/CIsq5
+         akwfW4wbJPmbzED/ErMx/nOFOrpxs9GhmXRqmNxkpsxUa5qKI7o71u17OyS1AyFPuVbT
+         +bkeKEtwQ9Hde2DVxJhanVIblegbcPqsX0KooNDdEW9aftQhg3y/oJPs2FxalZ91z4s2
+         f1zmzaoCce3fT94cft7GuKKyyYTE+qeuXoCXWNjWUO1W16pQjusha2LPDf2HzUFp9kGP
+         yGEw==
+X-Gm-Message-State: APjAAAU30g7gmLMQ7+J8FqeEGIcCrxgJZfc9nghXbhxErO2zT4OHz5Nn
+        ecOeD4BJqRepIJJOtXCswsBPF5X9mDWUyxMCxxIqHQ==
+X-Google-Smtp-Source: APXvYqxPX8Eosf5p0y3g5oPXjM98amD+W/fUs4D8mD81YKm2jN6PRgwNAw7eUdOWD++bHUdDQdykb4w+C0dzlQn+6Gc=
+X-Received: by 2002:a1f:a887:: with SMTP id r129mr1194599vke.75.1562745370744;
+ Wed, 10 Jul 2019 00:56:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709205550.3160-13-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Received: by 2002:ab0:2616:0:0:0:0:0 with HTTP; Wed, 10 Jul 2019 00:56:10
+ -0700 (PDT)
+X-Originating-IP: [5.35.70.113]
+In-Reply-To: <20190709.125850.2133620086434576103.davem@davemloft.net>
+References: <20190709114251.24662-1-dkirjanov@suse.com> <20190709.125850.2133620086434576103.davem@davemloft.net>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Wed, 10 Jul 2019 10:56:10 +0300
+Message-ID: <CAOJe8K2YWrZbHwX4FcKN4j0i=F3Lxmna6wvaZnDyqJe85w0Ykw@mail.gmail.com>
+Subject: Re: [PATCH] vhost: fix null pointer dereference in vhost_del_umem_range
+To:     David Miller <davem@davemloft.net>
+Cc:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 09, 2019 at 10:55:50PM CEST, pablo@netfilter.org wrote:
+On 7/9/19, David Miller <davem@davemloft.net> wrote:
+> From: Denis Kirjanov <kda@linux-powerpc.org>
+> Date: Tue,  9 Jul 2019 13:42:51 +0200
+>
+>> @@ -962,7 +962,8 @@ static void vhost_del_umem_range(struct vhost_umem
+>> *umem,
+>>
+>>  	while ((node = vhost_umem_interval_tree_iter_first(&umem->umem_tree,
+>>  							   start, end)))
+>> -		vhost_umem_free(umem, node);
+>> +		if (node)
+>> +			vhost_umem_free(umem, node);
+>
+> If 'node' is NULL we will not be in the body of the loop as per
+> the while() condition.
 
-[...]
+The patch is incorrect, please ignore
 
->+	if (!dev || !dev->netdev_ops->ndo_setup_tc)
-
-Why didn't you rename ndo_setup_tc? I put a comment about it in the
-previous version thread. I expect that you can at least write why it is
-a wrong idea.
-
-[...]
+>
+> How did you test this?
+>
