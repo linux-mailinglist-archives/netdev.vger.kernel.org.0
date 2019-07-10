@@ -2,137 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 417386489E
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 16:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4E0648A5
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 16:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbfGJOsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 10:48:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:55872 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727294AbfGJOsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 10:48:07 -0400
-Received: by mail-io1-f69.google.com with SMTP id f22so3062931ioh.22
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 07:48:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ZA5aTkxuyJfzj3O1sG30bKBuT59BmRh1ls1Yctu+BdY=;
-        b=idU4s5G7TZzZcR0ua09P5wkR9borpw5+a8h8SBWAQI3Am2qLsYvWIkL96Fl50BxO9/
-         xZc2Lhj5WtcmQXEX0g9GslvS18e7QrgSL0b6F7Lv+8rgS7MZVekfl2oZTUXCLtm1bGZ1
-         0AOZY/+uS56lntj+foBvGiw1P63yHMOedsOPr1gP84rrG+IQAzy3P4I6p6kptXsk/eFz
-         b5O4O1ciECDCeaVBXKDaQFQPys8nIJi9iwvrBDPudT07/OdHi6htFXAAEnT14qPiuWIB
-         4E01ycAUBgyXFEOZAELUAbfIHiKf5Z1VQ2Z2OGeRdpNhlqP6ooyR6Mgd5ymJvtbLXWvY
-         GRXA==
-X-Gm-Message-State: APjAAAWj3WUCbm35rTeJb8Fzkmye67UjM9VmhpgONy+UAztQ/lSTi1vO
-        wXyWT2NfiQPi3MFfxJiFpYzsLMvAgQnA8W7rjBccj49+K37E
-X-Google-Smtp-Source: APXvYqyOk/5D6/KMzRj2m4Cq7PNeRqX7+mwAOKrO+8DHoF4lPTgfFHf2bNjfx7aJ34YANJMszvcc1XjkVgy8wM1Bp7GbIHCV2wS8
+        id S1727444AbfGJOvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 10:51:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56296 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726097AbfGJOvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 10:51:14 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10BFD20645;
+        Wed, 10 Jul 2019 14:51:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562770274;
+        bh=p7Jhjq6FO2XopPND8g78jDlqt/nU529GHfEQLxCVxmA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=y3hfs2UIuCn3gZLUiUGJX2cT6kqSe2EziKkuF3h+9PVpLG6CD11qX3VlJGq0JDFRe
+         kscKHJKoSr6ylpXIcYOFqWUdqsR6uLoFrVJk37NTLJqxeXQBKwmx+fIBFq2bqwV+kV
+         AS1xUwy47BU6795UGfu21t/U9kk9WUEYrsch3MnE=
+Date:   Wed, 10 Jul 2019 10:51:12 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 4.19 14/60] mwifiex: Abort at too short BSS
+ descriptor element
+Message-ID: <20190710145112.GX10104@sasha-vm>
+References: <20190627003616.20767-1-sashal@kernel.org>
+ <20190627003616.20767-14-sashal@kernel.org>
+ <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9747:: with SMTP id h7mr25296075ioq.299.1562770086789;
- Wed, 10 Jul 2019 07:48:06 -0700 (PDT)
-Date:   Wed, 10 Jul 2019 07:48:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e38991058d54c35f@google.com>
-Subject: KMSAN: uninit-value in smsc95xx_read_eeprom (2)
-From:   syzbot <syzbot+0dfe788c0e7be7c95931@syzkaller.appspotmail.com>
-To:     UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        glider@google.com, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        steve.glendinning@shawell.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jun 28, 2019 at 03:58:49PM -0700, Brian Norris wrote:
+>On Wed, Jun 26, 2019 at 5:49 PM Sasha Levin <sashal@kernel.org> wrote:
+>>
+>> From: Takashi Iwai <tiwai@suse.de>
+>>
+>> [ Upstream commit 685c9b7750bfacd6fc1db50d86579980593b7869 ]
+>>
+>> Currently mwifiex_update_bss_desc_with_ie() implicitly assumes that
+>> the source descriptor entries contain the enough size for each type
+>> and performs copying without checking the source size.  This may lead
+>> to read over boundary.
+>>
+>> Fix this by putting the source size check in appropriate places.
+>>
+>> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>
+>For the record, this fixup is still aiming for 5.2, correcting some
+>potential mistakes in this patch:
+>
+>63d7ef36103d mwifiex: Don't abort on small, spec-compliant vendor IEs
+>
+>So you might want to hold off a bit, and grab them both.
 
-syzbot found the following crash on:
+I see that 63d7ef36103d didn't make it into 5.2, so I'll just drop this
+for now.
 
-HEAD commit:    fe36eb20 kmsan: rework SLUB hooks
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=1312be5ba00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=40511ad0c5945201
-dashboard link: https://syzkaller.appspot.com/bug?extid=0dfe788c0e7be7c95931
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143976f7a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1218cfd8600000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+0dfe788c0e7be7c95931@syzkaller.appspotmail.com
-
-usb 1-1: New USB device found, idVendor=0424, idProduct=9908,  
-bcdDevice=6a.5e
-usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-usb 1-1: config 0 descriptor??
-smsc95xx v1.0.6
-==================================================================
-BUG: KMSAN: uninit-value in smsc95xx_eeprom_confirm_not_busy  
-drivers/net/usb/smsc95xx.c:326 [inline]
-BUG: KMSAN: uninit-value in smsc95xx_read_eeprom+0x203/0x920  
-drivers/net/usb/smsc95xx.c:345
-CPU: 1 PID: 695 Comm: kworker/1:2 Not tainted 5.2.0-rc4+ #11
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x162/0x2d0 mm/kmsan/kmsan_report.c:109
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:294
-  smsc95xx_eeprom_confirm_not_busy drivers/net/usb/smsc95xx.c:326 [inline]
-  smsc95xx_read_eeprom+0x203/0x920 drivers/net/usb/smsc95xx.c:345
-  smsc95xx_init_mac_address drivers/net/usb/smsc95xx.c:914 [inline]
-  smsc95xx_bind+0x467/0x1690 drivers/net/usb/smsc95xx.c:1286
-  usbnet_probe+0x10d3/0x3950 drivers/net/usb/usbnet.c:1722
-  usb_probe_interface+0xd19/0x1310 drivers/usb/core/driver.c:361
-  really_probe+0x1344/0x1d90 drivers/base/dd.c:513
-  driver_probe_device+0x1ba/0x510 drivers/base/dd.c:670
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:777
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x489/0x750 drivers/base/dd.c:843
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:890
-  bus_probe_device+0x131/0x390 drivers/base/bus.c:514
-  device_add+0x25b5/0x2df0 drivers/base/core.c:2111
-  usb_set_configuration+0x309f/0x3710 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x146/0x200 drivers/usb/core/driver.c:266
-  really_probe+0x1344/0x1d90 drivers/base/dd.c:513
-  driver_probe_device+0x1ba/0x510 drivers/base/dd.c:670
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:777
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x489/0x750 drivers/base/dd.c:843
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:890
-  bus_probe_device+0x131/0x390 drivers/base/bus.c:514
-  device_add+0x25b5/0x2df0 drivers/base/core.c:2111
-  usb_new_device+0x23e5/0x2fb0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x5853/0x7320 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
-  kthread+0x4b5/0x4f0 kernel/kthread.c:256
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
-
-Local variable description: ----buf.i.i86@smsc95xx_read_eeprom
-Variable was created at:
-  __smsc95xx_read_reg drivers/net/usb/smsc95xx.c:330 [inline]
-  smsc95xx_read_reg drivers/net/usb/smsc95xx.c:144 [inline]
-  smsc95xx_eeprom_confirm_not_busy drivers/net/usb/smsc95xx.c:320 [inline]
-  smsc95xx_read_eeprom+0x109/0x920 drivers/net/usb/smsc95xx.c:345
-  smsc95xx_init_mac_address drivers/net/usb/smsc95xx.c:914 [inline]
-  smsc95xx_bind+0x467/0x1690 drivers/net/usb/smsc95xx.c:1286
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+--
+Thanks,
+Sasha
