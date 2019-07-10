@@ -2,108 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6217C644F2
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 12:10:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0E0D64535
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 12:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbfGJKKz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Jul 2019 06:10:55 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:40239 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbfGJKKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 06:10:55 -0400
-Received: by mail-ed1-f67.google.com with SMTP id k8so1616660eds.7
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 03:10:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9lOC/Yw3CkEcVCwTLFzVkSf4Vv+P39equtPGHjipURw=;
-        b=DnLlIFA7c3Hfnyl1YDQCDfH5wbkNbxKGXSjCsupy72a5g9ggzV5d81guyZe4bKWaD0
-         BDv55hhZ73dgo09413ngH0G/PcnfM1Rs/IP5k1WQB3/1nSw5ZWlwL9dG9E7sV/cLpRtv
-         Pt2czYujuhKPYzYt/9yDf75I/BIOr8SwhSGtdV3v9pDYHK6T4YZra8s+GNM1hUsSoJTo
-         sRkfqta6OtY5y9HugpXeOiaOQmKdUYLP4QyuN52EJnBkjKMQaVG924BLURJvvrdxGEdL
-         lvBOIpbq3WZw6lX8VaVSYnb3Z0zOAxGSqGR6L/EY3xusiFA8MIX8DZv9dgk4yEmyIrkY
-         90lw==
-X-Gm-Message-State: APjAAAUEJ67YCw2Kyu5D2AIyqq782WpmSd7xGLCAjr4npf30jupPnF6K
-        8lN0xmbbXErdPCAgf9MyP94knM+eCh05CneoBpM53h1H
-X-Google-Smtp-Source: APXvYqyMDJb9+WM2IWCjdjhRD7XnCqaCB+oiKf0mBAXYx1Y1yM5X6HYHqVWlAAzKt/1I2IHh9x94KG6BUsvOZ+DsAWU=
-X-Received: by 2002:a17:906:948c:: with SMTP id t12mr25813776ejx.222.1562753453713;
- Wed, 10 Jul 2019 03:10:53 -0700 (PDT)
+        id S1727193AbfGJKd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 06:33:58 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:55968 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726097AbfGJKd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 06:33:57 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost2.synopsys.com [10.12.135.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 98DA0C0167;
+        Wed, 10 Jul 2019 10:33:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1562754837; bh=1hMf7QxxYpiL2DjBcQK0XBZelYzP+0nPC5LuDTJrJsM=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=MBtSsTmarLyCnSAhcVnnAo44H4E9TtWms9RlNeYlpUw+BTRzP7+ZVhgUatE5G0ZfD
+         qr4D57ErTmQz3kqIyB9sm6s0yO4NwlcOpykoDudugFYwS8HO9fkTuY5sUUlW8+2m3O
+         7fnG3IRiNf6AmyQX9tM2KDshyj+lvk3wglaks3zr2ea/+RBlRt1/1+O7JmbpSLkFQB
+         zhs7J899xRlp2Lga3ofSM8Gi3dyr8mX924CIMxhWwD+LzULwLIVYZ0WNbBay8rvtXM
+         XKY5x0zZkhDF0dojisK+CrATY9Yz18DjHScINq6A4u80Qo6S4bwcXxhcnGPPUvrBDS
+         OurZINiWqQ8wA==
+Received: from US01WXQAHTC1.internal.synopsys.com (us01wxqahtc1.internal.synopsys.com [10.12.238.230])
+        (using TLSv1.2 with cipher AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 9E321A009A;
+        Wed, 10 Jul 2019 10:33:48 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WXQAHTC1.internal.synopsys.com (10.12.238.230) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 10 Jul 2019 03:33:48 -0700
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (10.13.134.195)
+ by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Wed, 10 Jul 2019 03:33:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector1-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1hMf7QxxYpiL2DjBcQK0XBZelYzP+0nPC5LuDTJrJsM=;
+ b=kIbkEPjxwLcz+fzaGETFiWeO8YXvSXfB3hfAf+z861d9s7pB+tL3cMaNqIAPw+aeoXKOeU/apC1CpRSs/aJ/pRkUrTP1gPRq6b6R6FPvenY9gl7tv5txG9bey0fehNxiUZ80SBL30WNAdbO/aNn7UyJ+SgNkPiu2xJcAU1jdgb0=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.66.159) by
+ BN8PR12MB3603.namprd12.prod.outlook.com (20.178.212.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.19; Wed, 10 Jul 2019 10:33:46 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::61ef:5598:59e0:fc9d]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::61ef:5598:59e0:fc9d%5]) with mapi id 15.20.2052.020; Wed, 10 Jul 2019
+ 10:33:46 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Joe Perches <joe@perches.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 08/12] net: stmmac: Fix misuses of GENMASK macro
+Thread-Topic: [PATCH 08/12] net: stmmac: Fix misuses of GENMASK macro
+Thread-Index: AQHVNt0RSTk/ZLig7EqtmWvteU3zKqbDp4tA
+Date:   Wed, 10 Jul 2019 10:33:46 +0000
+Message-ID: <BN8PR12MB3266C01DFCB92FF8A9BDBADAD3F00@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <cover.1562734889.git.joe@perches.com>
+ <b38b0b67e724cd026709194b68c2be5ee1058c57.1562734889.git.joe@perches.com>
+In-Reply-To: <b38b0b67e724cd026709194b68c2be5ee1058c57.1562734889.git.joe@perches.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: be8102ad-26b5-4a41-7e7a-08d7052216d6
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR12MB3603;
+x-ms-traffictypediagnostic: BN8PR12MB3603:
+x-microsoft-antispam-prvs: <BN8PR12MB360355AAD18F2FA8D700BE24D3F00@BN8PR12MB3603.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1169;
+x-forefront-prvs: 0094E3478A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(39860400002)(396003)(136003)(366004)(189003)(199004)(229853002)(110136005)(6436002)(9686003)(3846002)(53936002)(25786009)(8936002)(4326008)(33656002)(478600001)(55016002)(6246003)(66066001)(71200400001)(54906003)(4744005)(76176011)(14454004)(7416002)(316002)(99286004)(7696005)(186003)(102836004)(26005)(52536014)(446003)(11346002)(71190400001)(7736002)(486006)(81156014)(5660300002)(8676002)(476003)(81166006)(6506007)(74316002)(68736007)(66946007)(6116002)(66446008)(66476007)(64756008)(2906002)(256004)(86362001)(76116006)(305945005)(66556008);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3603;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: YMAj++/Mek0ZoQXIjqzeYtjoM6G6n3D4oboFPjSo9tk+GKEtusGAFEYPF6LjTMQTxpPNUuAcXn8gzZEBsiydwBDcHwl9UiuSEghpZSIRjVlcG2vmLwhUT3gkkHTxAPA3VMsM7FdiS4SLkV3boO6jaHMRcfAcomZTFSRnnUCUYEvr3ztCMIu+g+NF+1GkPGZ0Jt5LiIHKLfeQsHl89f/31zSmRnEUXqB9o+uPQza3uDsPNII7pBWJgLKyKV8hK7KwGY9KjwEeGQksCvyuENUHNh/NXOH4Qp+sYgeBNKPdMM0Av4UyysW88fLx8pEKRzQ/55rbn1s8ABE3rfPrP/RIn+QPyQ2x1o461IxTkPrTpSWuWyaLu81IbvBQ2xri1We0ucaRJ3FZuw2RDqjbdgU6BJc48SeZ82oMDkNUDI3ibHk=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <cover.1562667648.git.aclaudi@redhat.com> <5caaac096e5bbbf88ad3aedcc50ff2451f94105c.1562667648.git.aclaudi@redhat.com>
- <CAF2d9jiGnR-A-A-mEv-84Mu6xfwFNvWt5jp+iiBhMGNPMkaDZg@mail.gmail.com>
-In-Reply-To: <CAF2d9jiGnR-A-A-mEv-84Mu6xfwFNvWt5jp+iiBhMGNPMkaDZg@mail.gmail.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Wed, 10 Jul 2019 12:11:46 +0200
-Message-ID: <CAPpH65yxRk2A06XCe9KL9W89EsaGj3GTyDi7gxWjt=Z4UUZO5Q@mail.gmail.com>
-Subject: Re: [PATCH iproute2 1/2] Revert "ip6tunnel: fix 'ip -6 {show|change}
- dev <name>' cmds"
-To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+X-MS-Exchange-CrossTenant-Network-Message-Id: be8102ad-26b5-4a41-7e7a-08d7052216d6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2019 10:33:46.5417
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: joabreu@synopsys.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3603
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 9, 2019 at 7:31 PM Mahesh Bandewar (महेश बंडेवार)
-<maheshb@google.com> wrote:
->
-> On Tue, Jul 9, 2019 at 6:16 AM Andrea Claudi <aclaudi@redhat.com> wrote:
-> >
-> > This reverts commit ba126dcad20e6d0e472586541d78bdd1ac4f1123.
-> > It breaks tunnel creation when using 'dev' parameter:
-> >
-> > $ ip link add type dummy
-> > $ ip -6 tunnel add ip6tnl1 mode ip6ip6 remote 2001:db8:ffff:100::2 local 2001:db8:ffff:100::1 hoplimit 1 tclass 0x0 dev dummy0
-> > add tunnel "ip6tnl0" failed: File exists
-> >
-> > dev parameter must be used to specify the device to which
-> > the tunnel is binded, and not the tunnel itself.
-> >
-> > Reported-by: Jianwen Ji <jiji@redhat.com>
-> > Reviewed-by: Matteo Croce <mcroce@redhat.com>
-> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> > ---
-> >  ip/ip6tunnel.c | 2 --
-> >  1 file changed, 2 deletions(-)
-> >
-> > diff --git a/ip/ip6tunnel.c b/ip/ip6tunnel.c
-> > index 56fd3466ed062..999408ed801b1 100644
-> > --- a/ip/ip6tunnel.c
-> > +++ b/ip/ip6tunnel.c
-> > @@ -298,8 +298,6 @@ static int parse_args(int argc, char **argv, int cmd, struct ip6_tnl_parm2 *p)
-> >                 p->link = ll_name_to_index(medium);
-> >                 if (!p->link)
-> >                         return nodev(medium);
-> > -               else
-> > -                       strlcpy(p->name, medium, sizeof(p->name));
-> NACK
->
-> I see that ba126dcad20e6d0e472586541d78bdd1ac4f1123 has broke
-> something but that doesn't mean revert of the original fix is correct
-> way of fixing it. The original fix is fixing the show and change
-> command. Shouldn't you try fixing the add command so that all (show,
-> change, and add) work correctly?
->
+From: Joe Perches <joe@perches.com>
+Date: Jul/10/2019, 06:04:21 (UTC+00:00)
 
-Hi Mahesh,
-Thanks for sharing your opinion. I think I already answered this
-replying to your review of patch 2/2 of this series.
-To summarize that up I think there is a misunderstanding on the
-meaning of "dev" param, and "name" param (which is the default) must
-be used instead in the cases highlighted in your commit.
+> Arguments are supposed to be ordered high then low.
+>=20
+> Signed-off-by: Joe Perches <joe@perches.com>
 
-Regards,
-Andrea
+If you submit another version please add:
 
-> >         }
-> >         return 0;
-> >  }
-> > --
-> > 2.20.1
-> >
+Fixes: 293e4365a1ad ("stmmac: change descriptor layout")
+Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
+
+---
+Thanks,
+Jose Miguel Abreu
