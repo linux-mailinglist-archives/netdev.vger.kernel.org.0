@@ -2,118 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7396264603
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F2C64607
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfGJMJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:09:01 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:48910 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbfGJMJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:09:01 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x6AC8jrT096577;
-        Wed, 10 Jul 2019 07:08:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1562760525;
-        bh=3uaV5/1Xpl1hokqp82127RZGNTU01EDKfs+fFQxZX1A=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=b6QMnsOo0nzCu/sKptwufP1G1LN/K+03mZATvrGL5DJXPpdxebWR71nteMVuiDHBq
-         bx8X5tuoQjaUFiMI7g43jjTXER5WwhHd/9oLNQ4w0df7OaXMQOh9FR2oJGSw0kp0Rg
-         Wyl0SIUNhothMq3HmpKIY+K/wjR2QEAcIiRMcmes=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x6AC8jS8049964
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 10 Jul 2019 07:08:45 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 10
- Jul 2019 07:08:45 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Wed, 10 Jul 2019 07:08:44 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x6AC8ioC115395;
-        Wed, 10 Jul 2019 07:08:44 -0500
-Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190509161109.10499-1-dmurphy@ti.com>
- <dbb7bdef-820d-5dcc-d7b5-a82bc1b076fb@ti.com>
- <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
- <93530d94-ec65-de82-448e-f2460dd39fb9@ti.com>
- <0f6c41c8-0071-ed3a-9e65-caf02a0fbefe@ti.com>
- <6fa79302-ad32-7f43-f9d5-af70aa789284@ti.com>
-Message-ID: <f236a88a-485c-9002-1e4a-9a5ad0e1c81f@ti.com>
-Date:   Wed, 10 Jul 2019 07:08:00 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727152AbfGJMKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:10:11 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:31786 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbfGJMKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:10:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1562760610; x=1594296610;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=keN8EFn+IHg5hXYYMmmGsxMpxiPk60sc+gcoGB+dD7M=;
+  b=NW36NFr+XI9CRjcQrsBKodDRWC9uNX8Q+9E0nbrQAP0qm7xot1lCQaBy
+   QcuOXJPsx8zs2FMbH16NPu2J9RabeZFtoxfHrakuVx9BWEoagn7JdwztR
+   nrlQb37ixVHOHxj5M/wEkN0PtFPtFBJmAf29kcqG2EAHyL+V4iaH7FA4N
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.62,474,1554768000"; 
+   d="scan'208";a="815382902"
+Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-2a-53356bf6.us-west-2.amazon.com) ([10.47.22.34])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 10 Jul 2019 12:10:03 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-53356bf6.us-west-2.amazon.com (Postfix) with ESMTPS id C5405A2362;
+        Wed, 10 Jul 2019 12:10:02 +0000 (UTC)
+Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 10 Jul 2019 12:10:02 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.161.115) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 10 Jul 2019 12:09:58 +0000
+Subject: Re: [PATCH v6 rdma-next 2/6] RDMA/efa: Use the common mmap_xa helpers
+To:     Michal Kalderon <michal.kalderon@marvell.com>,
+        <ariel.elior@marvell.com>, <jgg@ziepe.ca>, <dledford@redhat.com>
+CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <20190709141735.19193-1-michal.kalderon@marvell.com>
+ <20190709141735.19193-3-michal.kalderon@marvell.com>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <ba7809c0-5ab1-ac5e-bcf9-57d2930d21ed@amazon.com>
+Date:   Wed, 10 Jul 2019 15:09:52 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <6fa79302-ad32-7f43-f9d5-af70aa789284@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190709141735.19193-3-michal.kalderon@marvell.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.161.115]
+X-ClientProxiedBy: EX13D06UWA001.ant.amazon.com (10.43.160.220) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+On 09/07/2019 17:17, Michal Kalderon wrote:
+> Remove the functions related to managing the mmap_xa database.
+> This code was copied to the ib_core. Use the common API's instead.
+> 
+> Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
+> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 
-On 6/17/19 10:09 AM, Dan Murphy wrote:
-> Marc
->
-> On 6/10/19 11:35 AM, Dan Murphy wrote:
->> Bump
->>
->> On 6/6/19 8:16 AM, Dan Murphy wrote:
->>> Marc
->>>
->>> Bump
->>>
->>> On 5/31/19 6:51 AM, Dan Murphy wrote:
->>>> Marc
->>>>
->>>> On 5/15/19 3:54 PM, Dan Murphy wrote:
->>>>> Marc
->>>>>
->>>>> On 5/9/19 11:11 AM, Dan Murphy wrote:
->>>>>> Create a m_can platform framework that peripheral
->>>>>> devices can register to and use common code and register sets.
->>>>>> The peripheral devices may provide read/write and configuration
->>>>>> support of the IP.
->>>>>>
->>>>>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
->>>>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->>>>>> ---
->>>>>>
->>>>>> v12 - Update the m_can_read/write functions to create a backtrace 
->>>>>> if the callback
->>>>>> pointer is NULL. - https://lore.kernel.org/patchwork/patch/1052302/
->>>>>>
->>>>> Is this able to be merged now?
->>>>
->>>> ping
->
-> Wondering if there is anything else we need to do?
->
-> The part has officially shipped and we had hoped to have driver 
-> support in Linux as part of the announcement.
->
-Is this being sent in a PR for 5.3?
-
-Dan
-
-
-> Dan
->
->
->>>>
->>>>
->>>>> Dan
->>>>>
->>>>> <snip>
+Thanks Michal,
+Acked-by: Gal Pressman <galpress@amazon.com>
