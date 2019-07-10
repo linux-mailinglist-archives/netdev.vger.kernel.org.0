@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4E0648A5
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 16:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A638D648A8
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 16:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727444AbfGJOvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 10:51:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56296 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbfGJOvO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 10:51:14 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727328AbfGJOwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 10:52:14 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:48416 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726097AbfGJOwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 10:52:13 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 10BFD20645;
-        Wed, 10 Jul 2019 14:51:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562770274;
-        bh=p7Jhjq6FO2XopPND8g78jDlqt/nU529GHfEQLxCVxmA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=y3hfs2UIuCn3gZLUiUGJX2cT6kqSe2EziKkuF3h+9PVpLG6CD11qX3VlJGq0JDFRe
-         kscKHJKoSr6ylpXIcYOFqWUdqsR6uLoFrVJk37NTLJqxeXQBKwmx+fIBFq2bqwV+kV
-         AS1xUwy47BU6795UGfu21t/U9kk9WUEYrsch3MnE=
-Date:   Wed, 10 Jul 2019 10:51:12 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Subject: Re: [PATCH AUTOSEL 4.19 14/60] mwifiex: Abort at too short BSS
- descriptor element
-Message-ID: <20190710145112.GX10104@sasha-vm>
-References: <20190627003616.20767-1-sashal@kernel.org>
- <20190627003616.20767-14-sashal@kernel.org>
- <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com>
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4FFFFA40073;
+        Wed, 10 Jul 2019 14:52:12 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 10 Jul
+ 2019 07:52:08 -0700
+Subject: Re: [RFC PATCH net-next 0/3] net: batched receive in GRO path
+To:     Paolo Abeni <pabeni@redhat.com>, David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
+ <c80a9e7846bf903728327a1ca2c3bdcc078057a2.camel@redhat.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <677040f4-05d1-e664-d24a-5ee2d2edcdbd@solarflare.com>
+Date:   Wed, 10 Jul 2019 15:52:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <c80a9e7846bf903728327a1ca2c3bdcc078057a2.camel@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24750.005
+X-TM-AS-Result: No-4.957400-4.000000-10
+X-TMASE-MatchedRID: X4bcv0S75KnmLzc6AOD8DfHkpkyUphL9+IfriO3cV8T5+tteD5RzhWRW
+        ePusFQaMQP46fVlibR/zCPLlhTGnu63czi5f92v9Knjj4PzuQYcT2wrWDpJvKDnZfxjBVQRbgYq
+        Cs2yuWCZbdScq6YVMbr+l/MvfKaYIX4o9HAogemZTLFbi+a8u3aI0K26z6c862C69GeK9wyi0sx
+        58aisyVazDOPZyHOu1ceEONRK33irCetoOXF2sRVb0VO9AmFFdaKq1Yhw50ju67Q3uPo9KIxOC3
+        iCulpIKdEq4zFoA8pZ68WLQFTm00WDgAHcIsJL2zNIobH2DzGH348e2CE/wYopc3JtqeiRPXa9+
+        3ZJzfMIM4/EABi8Rha4j4Hj3LB/CaBevM/eurMeeAiCmPx4NwHJnzNw42kCxxEHRux+uk8jQ9TR
+        N0mhS11EdxJidWUOjb9C/89aoPjQ7oYwEPB4mL5nFo/AWVHrAS4EMi5G6bY6eVvvvn/KGjmKi9O
+        PpPTo8rzzfBwjd8W+G7c45hdXqQYVyAlz5A0zC7xsmi8libwVi6nHReNJA8sM4VWYqoYnhs+fe0
+        WifpQo=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.957400-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24750.005
+X-MDID: 1562770332-OMrC8JgZktOC
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 03:58:49PM -0700, Brian Norris wrote:
->On Wed, Jun 26, 2019 at 5:49 PM Sasha Levin <sashal@kernel.org> wrote:
->>
->> From: Takashi Iwai <tiwai@suse.de>
->>
->> [ Upstream commit 685c9b7750bfacd6fc1db50d86579980593b7869 ]
->>
->> Currently mwifiex_update_bss_desc_with_ie() implicitly assumes that
->> the source descriptor entries contain the enough size for each type
->> and performs copying without checking the source size.  This may lead
->> to read over boundary.
->>
->> Fix this by putting the source size check in appropriate places.
->>
->> Signed-off-by: Takashi Iwai <tiwai@suse.de>
->> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
+On 10/07/2019 08:27, Paolo Abeni wrote:
+> I'm toying with a patch similar to your 3/3 (most relevant difference
+> being the lack of a limit to the batch size), on top of ixgbe (which
+> sends all the pkts to the GRO engine), and I'm observing more
+> controversial results (UDP only):
 >
->For the record, this fixup is still aiming for 5.2, correcting some
->potential mistakes in this patch:
+> * when a single rx queue is running, I see a just-above-noise
+> peformance delta
+> * when multiple rx queues are running, I observe measurable regressions
+> (note: I use small pkts, still well under line rate even with multiple
+> rx queues)
 >
->63d7ef36103d mwifiex: Don't abort on small, spec-compliant vendor IEs
->
->So you might want to hold off a bit, and grab them both.
+> I'll try to test your patch in the following days.
+I look forward to it.
 
-I see that 63d7ef36103d didn't make it into 5.2, so I'll just drop this
-for now.
+> Side note: I think that in patch 3/3, it's necessary to add a call to
+> gro_normal_list() also inside napi_busy_loop().
+Hmm, I was caught out by the call to napi_poll() actually being a local
+ function pointer, not the static function of the same name.  How did a
+ shadow like that ever get allowed?
+But in that case I _really_ don't understand napi_busy_loop(); nothing
+ in it seems to ever flush GRO, so it's relying on either
+ (1) stuff getting flushed because the bucket runs out of space, or
+ (2) the next napi poll after busy_poll_stop() doing the flush.
+What am I missing, and where exactly in napi_busy_loop() should the
+ gro_normal_list() call go?
 
---
-Thanks,
-Sasha
+-Ed
