@@ -2,98 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E6F642D2
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:27:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 192FB642DA
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726896AbfGJH1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 03:27:04 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39102 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726198AbfGJH1E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 03:27:04 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C8DBA308212A;
-        Wed, 10 Jul 2019 07:27:03 +0000 (UTC)
-Received: from ovpn-116-225.ams2.redhat.com (ovpn-116-225.ams2.redhat.com [10.36.116.225])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 953D818503;
-        Wed, 10 Jul 2019 07:27:02 +0000 (UTC)
-Message-ID: <c80a9e7846bf903728327a1ca2c3bdcc078057a2.camel@redhat.com>
-Subject: Re: [RFC PATCH net-next 0/3] net: batched receive in GRO path
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Edward Cree <ecree@solarflare.com>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Date:   Wed, 10 Jul 2019 09:27:01 +0200
-In-Reply-To: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
-References: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1727351AbfGJH3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:29:52 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:41198 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726979AbfGJH3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:29:52 -0400
+Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id 4429E25B7D5;
+        Wed, 10 Jul 2019 17:29:50 +1000 (AEST)
+Received: by reginn.horms.nl (Postfix, from userid 7100)
+        id 3CF689402F1; Wed, 10 Jul 2019 09:29:48 +0200 (CEST)
+Date:   Wed, 10 Jul 2019 09:29:48 +0200
+From:   Simon Horman <horms@verge.net.au>
+To:     xianfengting221@163.com, Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     wensong@linux-vs.org, ja@ssi.bg, pablo@netfilter.org,
+        kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ipvs: Delete some unused space characters in Kconfig
+Message-ID: <20190710072948.mpg4niors42zrqhc@verge.net.au>
+References: <1562473009-29726-1-git-send-email-xianfengting221@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 10 Jul 2019 07:27:03 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562473009-29726-1-git-send-email-xianfengting221@163.com>
+Organisation: Horms Solutions BV
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Tue, 2019-07-09 at 20:27 +0100, Edward Cree wrote:
-> Where not specified (as batch=), net.core.gro_normal_batch was set to 8.
-> The net-next baseline used for these tests was commit 7d30a7f6424e.
-> TCP 4 streams, GRO on: all results line rate (9.415Gbps)
-> net-next: 210.3% cpu
-> after #1: 181.5% cpu (-13.7%, p=0.031 vs net-next)
-> after #3: 191.7% cpu (- 8.9%, p=0.102 vs net-next)
-> TCP 4 streams, GRO off:
-> after #1: 7.785 Gbps
-> after #3: 8.387 Gbps (+ 7.7%, p=0.215 vs #1, but note *)
-> TCP 1 stream, GRO on: all results line rate & ~200% cpu.
-> TCP 1 stream, GRO off:
-> after #1: 6.444 Gbps
-> after #3: 7.363 Gbps (+14.3%, p=0.003 vs #1)
-> batch=16: 7.199 Gbps
-> batch= 4: 7.354 Gbps
-> batch= 0: 5.899 Gbps
-> TCP 100 RR, GRO off:
-> net-next: 995.083 us
-> after #1: 969.167 us (- 2.6%, p=0.204 vs net-next)
-> after #3: 976.433 us (- 1.9%, p=0.254 vs net-next)
+On Sun, Jul 07, 2019 at 12:16:49PM +0800, xianfengting221@163.com wrote:
+> From: Hu Haowen <xianfengting221@163.com>
 > 
-> (*) These tests produced a mixture of line-rate and below-line-rate results,
->  meaning that statistically speaking the results were 'censored' by the
->  upper bound, and were thus not normally distributed, making a Welch t-test
->  mathematically invalid.  I therefore also calculated estimators according
->  to [2], which gave the following:
-> after #1: 8.155 Gbps
-> after #3: 8.716 Gbps (+ 6.9%, p=0.291 vs #1)
-> (though my procedure for determining ν wasn't mathematically well-founded
->  either, so take that p-value with a grain of salt).
+> The space characters at the end of lines are always unused and
+> not easy to find. This patch deleted some of them I have found
+> in Kconfig.
+> 
+> Signed-off-by: Hu Haowen <xianfengting221@163.com>
+> ---
+> 
+> This is my first patch to the Linux kernel, so please forgive
+> me if anything went wrong.
 
-I'm toying with a patch similar to your 3/3 (most relevant difference
-being the lack of a limit to the batch size), on top of ixgbe (which
-sends all the pkts to the GRO engine), and I'm observing more
-controversial results (UDP only):
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
-* when a single rx queue is running, I see a just-above-noise
-peformance delta
-* when multiple rx queues are running, I observe measurable regressions
-(note: I use small pkts, still well under line rate even with multiple
-rx queues)
+Thanks Hu,
 
-I'll try to test your patch in the following days.
+this looks good to me.
 
-Side note: I think that in patch 3/3, it's necessary to add a call to
-gro_normal_list() also inside napi_busy_loop().
+Pablo, please consider this for inclusion in nf-next.
 
-Cheers,
-
-Paolo
-
-
-
-
+> 
+>  net/netfilter/ipvs/Kconfig | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+> index f6f1a0d..54afad5 100644
+> --- a/net/netfilter/ipvs/Kconfig
+> +++ b/net/netfilter/ipvs/Kconfig
+> @@ -120,7 +120,7 @@ config	IP_VS_RR
+>  
+>  	  If you want to compile it in kernel, say Y. To compile it as a
+>  	  module, choose M here. If unsure, say N.
+> - 
+> +
+>  config	IP_VS_WRR
+>  	tristate "weighted round-robin scheduling"
+>  	---help---
+> @@ -138,7 +138,7 @@ config	IP_VS_LC
+>          tristate "least-connection scheduling"
+>  	---help---
+>  	  The least-connection scheduling algorithm directs network
+> -	  connections to the server with the least number of active 
+> +	  connections to the server with the least number of active
+>  	  connections.
+>  
+>  	  If you want to compile it in kernel, say Y. To compile it as a
+> @@ -193,7 +193,7 @@ config  IP_VS_LBLCR
+>  	tristate "locality-based least-connection with replication scheduling"
+>  	---help---
+>  	  The locality-based least-connection with replication scheduling
+> -	  algorithm is also for destination IP load balancing. It is 
+> +	  algorithm is also for destination IP load balancing. It is
+>  	  usually used in cache cluster. It differs from the LBLC scheduling
+>  	  as follows: the load balancer maintains mappings from a target
+>  	  to a set of server nodes that can serve the target. Requests for
+> @@ -250,8 +250,8 @@ config	IP_VS_SED
+>  	tristate "shortest expected delay scheduling"
+>  	---help---
+>  	  The shortest expected delay scheduling algorithm assigns network
+> -	  connections to the server with the shortest expected delay. The 
+> -	  expected delay that the job will experience is (Ci + 1) / Ui if 
+> +	  connections to the server with the shortest expected delay. The
+> +	  expected delay that the job will experience is (Ci + 1) / Ui if
+>  	  sent to the ith server, in which Ci is the number of connections
+>  	  on the ith server and Ui is the fixed service rate (weight)
+>  	  of the ith server.
+> -- 
+> 2.7.4
+> 
+> 
