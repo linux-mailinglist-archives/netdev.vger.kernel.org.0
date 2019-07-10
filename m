@@ -2,251 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47DB664BAD
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 19:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88EBD64BB3
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 19:52:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727709AbfGJRuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 13:50:44 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:45417 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727102AbfGJRuo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 13:50:44 -0400
-Received: by mail-qt1-f194.google.com with SMTP id j19so3337278qtr.12;
-        Wed, 10 Jul 2019 10:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vpqZMyx9fS91Ki5E5jfyTvPfpgHhsJ3qxO6I+BJgf80=;
-        b=mfBIJYIkHVI8YkE6RHNoVC6VD7G19zYVWJpS3V2xbeyTC5OXTRb/CZWA79sB4zJFUN
-         OQF0NpKE7SwNNdXVe3WP4zm3IBEiDHWQLuO7pQFFfUTfGfDvfyHuM3xT5/b+WFFQXEQn
-         256ThavZN8r6xl0ufjRbJsObYdrzJwleVbGYs2TXMKViwxxpPUP2n0u8+8Imvg3V5+eN
-         M3b/rnPHV8ekOnQkVNTeEDS0//WLs7ne6Ka5IMD+gxLZ9bmH1wZ6jvUrol5OaGxXJTE1
-         3SVxKoyncqPX4wN0lvqW2I4/azO/psL6uCtSl8z7NfrX+oTwMXZ7Jk7eJcAYRqt5sxxq
-         1jQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vpqZMyx9fS91Ki5E5jfyTvPfpgHhsJ3qxO6I+BJgf80=;
-        b=QVqcKXlYc7RZ+2Qh1UqnEXqUAF+PeIfuSpyBhGrm7yC1hZLVWZ+y6fLqFKFhVfB/yL
-         655RjUJjxx2LWUuw+V3SB7zABe9m9Vz7Za6oVMQt1TuzLvzx2qrvKnhmS+OYmGkX0jvz
-         SNvQgDqreRG2iWMqAQhfybfwBavfr1cYJs691LDS5r4lrPUzLFItfBLajIylLdwizzdq
-         OlRf4V1eGmKDcG2Hn4pJjdoQZd+qvEgjJD7xwLhnS3HfnqJQzSNpLeqXqJcn95XqCq+C
-         EEjRngYCe4zV9+YaW7rTkPdSC/ZzUs4What7Q6QE4+ApriitMQSuJQpFswqzqhY9nOjI
-         2wdA==
-X-Gm-Message-State: APjAAAX/lxexVpqoeVHvqyYqH6mZHRQmN4ZxWcI1P7A876DfnvjZu+Tf
-        B/l1K9cOcwGvOae6C83UYXSxtaBu+EDcuWHWR3k=
-X-Google-Smtp-Source: APXvYqzLthSNCQxVPW/dYTge3A/Ck5cahx++JPnW60Xdfi/vuD9iyOecxKOnERekS6adqtlzCJqPGttGVyhnLkgS5Nw=
-X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr26085985qvh.78.1562781042110;
- Wed, 10 Jul 2019 10:50:42 -0700 (PDT)
+        id S1728109AbfGJRwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 13:52:22 -0400
+Received: from mail-eopbgr150044.outbound.protection.outlook.com ([40.107.15.44]:24238
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727408AbfGJRwW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 13:52:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vc7Jp0Wlbf6OzPHbtl28tNHq8sRgqzMBeSHd9wn7pVY=;
+ b=WhjhX2wK5XkML+iWCREX2dtjsTBlXd+aOkYDLwdlz1o9V++RxuBKa2bn+EeWmRmmwLP8pff06WzIyzq2k43JSByCMD5ojZHaCB5s9pOfVoJguDlggLfvTgvnJHegDQ+QA3XamIQuCwo8rwpeYr55hh01+2EIBWCGHu/ZiHB3oFQ=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+ VI1PR05MB5903.eurprd05.prod.outlook.com (20.178.125.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.18; Wed, 10 Jul 2019 17:52:17 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2052.020; Wed, 10 Jul 2019
+ 17:52:17 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>
+CC:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Doug Ledford <dledford@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Thread-Topic: linux-next: build failure after merge of the net-next tree
+Thread-Index: AQHVNgpSNqxsVllq5U23Am+RwOaE5KbB1zsAgAJNFwA=
+Date:   Wed, 10 Jul 2019 17:52:17 +0000
+Message-ID: <20190710175212.GM2887@mellanox.com>
+References: <20190709135636.4d36e19f@canb.auug.org.au>
+ <20190709064346.GF7034@mtr-leonro.mtl.com>
+In-Reply-To: <20190709064346.GF7034@mtr-leonro.mtl.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: QB1PR01CA0010.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c00:2d::23) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [156.34.55.100]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a5bcd310-b785-497e-8ba3-08d7055f5968
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR05MB5903;
+x-ms-traffictypediagnostic: VI1PR05MB5903:
+x-microsoft-antispam-prvs: <VI1PR05MB590395EE512D3F73A096D59CCFF00@VI1PR05MB5903.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2201;
+x-forefront-prvs: 0094E3478A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(396003)(366004)(346002)(39860400002)(53754006)(199004)(189003)(1076003)(5660300002)(14454004)(66446008)(6116002)(76176011)(54906003)(110136005)(26005)(386003)(6506007)(53546011)(3846002)(99286004)(66476007)(52116002)(66556008)(64756008)(86362001)(66946007)(102836004)(478600001)(316002)(6246003)(2906002)(53936002)(486006)(476003)(2616005)(4326008)(68736007)(66066001)(229853002)(186003)(81166006)(81156014)(8936002)(8676002)(7736002)(71190400001)(256004)(6512007)(6486002)(36756003)(14444005)(11346002)(446003)(25786009)(33656002)(71200400001)(6436002)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5903;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 6tB3yH4JflnOpESEmCKv2qAt1HyWxX+XuWUPuw2xg2aCOyJ6qE0RliW1cZCwPhR+i/Uij0zGtXuVGGsa9ou17jNrccDAva3C3lW/RrysAERXYHOVI++MWEETghi+qPC0JG7NZmSeWYHz08gWRCA6jSk+VgNLvWga4Jyj/RVcfuHn+ATzm5LxVqAZgIYOMjYcy+ldtcaJteg/y2DuQlQyKGzkFhXocnsMNQXmfgMClk/Lkk8Wv+TdKR7E7yMk3Ih+3/Gzi+VR5GiQsfmJUx4Hyg0GsizCzNL4UBcnMDY5plAY/Zyct1FxrKeHCRu3nEOH2hqGH4xM8x481kipz9tCZI7iN7+zs0CaBhRLNL8fRZ3NsGXNAdYxVxc+4bJsZXESUdSvjLcq/OVmGpvb8Jb/1HRq064+EK22m4oTiYnzV4U=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0A009C5F7EF45F44B725B00AE5D926EA@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com> <1562275611-31790-3-git-send-email-jiong.wang@netronome.com>
-In-Reply-To: <1562275611-31790-3-git-send-email-jiong.wang@netronome.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Jul 2019 10:50:30 -0700
-Message-ID: <CAEf4BzaF-Bvj9veA1EYu5GWQrWOu=ttX064YTrB4yNQ4neJZOQ@mail.gmail.com>
-Subject: Re: [RFC bpf-next 2/8] bpf: extend list based insn patching infra to
- verification layer
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Edward Cree <ecree@solarflare.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5bcd310-b785-497e-8ba3-08d7055f5968
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2019 17:52:17.8438
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5903
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 4, 2019 at 2:32 PM Jiong Wang <jiong.wang@netronome.com> wrote:
->
-> Verification layer also needs to handle auxiliar info as well as adjusting
-> subprog start.
->
-> At this layer, insns inside patch buffer could be jump, but they should
-> have been resolved, meaning they shouldn't jump to insn outside of the
-> patch buffer. Lineration function for this layer won't touch insns inside
-> patch buffer.
->
-> Adjusting subprog is finished along with adjusting jump target when the
-> input will cover bpf to bpf call insn, re-register subprog start is cheap.
-> But adjustment when there is insn deleteion is not considered yet.
->
-> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
-> ---
->  kernel/bpf/verifier.c | 150 ++++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 150 insertions(+)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index a2e7637..2026d64 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -8350,6 +8350,156 @@ static void opt_hard_wire_dead_code_branches(struct bpf_verifier_env *env)
->         }
->  }
->
-> +/* Linearize bpf list insn to array (verifier layer). */
-> +static struct bpf_verifier_env *
-> +verifier_linearize_list_insn(struct bpf_verifier_env *env,
-> +                            struct bpf_list_insn *list)
-
-It's unclear why this returns env back? It's not allocating a new env,
-so it's weird and unnecessary. Just return error code.
-
-> +{
-> +       u32 *idx_map, idx, orig_cnt, fini_cnt = 0;
-> +       struct bpf_subprog_info *new_subinfo;
-> +       struct bpf_insn_aux_data *new_data;
-> +       struct bpf_prog *prog = env->prog;
-> +       struct bpf_verifier_env *ret_env;
-> +       struct bpf_insn *insns, *insn;
-> +       struct bpf_list_insn *elem;
-> +       int ret;
-> +
-> +       /* Calculate final size. */
-> +       for (elem = list; elem; elem = elem->next)
-> +               if (!(elem->flag & LIST_INSN_FLAG_REMOVED))
-> +                       fini_cnt++;
-> +
-> +       orig_cnt = prog->len;
-> +       insns = prog->insnsi;
-> +       /* If prog length remains same, nothing else to do. */
-> +       if (fini_cnt == orig_cnt) {
-> +               for (insn = insns, elem = list; elem; elem = elem->next, insn++)
-> +                       *insn = elem->insn;
-> +               return env;
-> +       }
-> +       /* Realloc insn buffer when necessary. */
-> +       if (fini_cnt > orig_cnt)
-> +               prog = bpf_prog_realloc(prog, bpf_prog_size(fini_cnt),
-> +                                       GFP_USER);
-> +       if (!prog)
-> +               return ERR_PTR(-ENOMEM);
-> +       insns = prog->insnsi;
-> +       prog->len = fini_cnt;
-> +       ret_env = env;
-> +
-> +       /* idx_map[OLD_IDX] = NEW_IDX */
-> +       idx_map = kvmalloc(orig_cnt * sizeof(u32), GFP_KERNEL);
-> +       if (!idx_map)
-> +               return ERR_PTR(-ENOMEM);
-> +       memset(idx_map, 0xff, orig_cnt * sizeof(u32));
-> +
-> +       /* Use the same alloc method used when allocating env->insn_aux_data. */
-> +       new_data = vzalloc(array_size(sizeof(*new_data), fini_cnt));
-> +       if (!new_data) {
-> +               kvfree(idx_map);
-> +               return ERR_PTR(-ENOMEM);
-> +       }
-> +
-> +       /* Copy over insn + calculate idx_map. */
-> +       for (idx = 0, elem = list; elem; elem = elem->next) {
-> +               int orig_idx = elem->orig_idx - 1;
-> +
-> +               if (orig_idx >= 0) {
-> +                       idx_map[orig_idx] = idx;
-> +
-> +                       if (elem->flag & LIST_INSN_FLAG_REMOVED)
-> +                               continue;
-> +
-> +                       new_data[idx] = env->insn_aux_data[orig_idx];
-> +
-> +                       if (elem->flag & LIST_INSN_FLAG_PATCHED)
-> +                               new_data[idx].zext_dst =
-> +                                       insn_has_def32(env, &elem->insn);
-> +               } else {
-> +                       new_data[idx].seen = true;
-> +                       new_data[idx].zext_dst = insn_has_def32(env,
-> +                                                               &elem->insn);
-> +               }
-> +               insns[idx++] = elem->insn;
-> +       }
-> +
-> +       new_subinfo = kvzalloc(sizeof(env->subprog_info), GFP_KERNEL);
-> +       if (!new_subinfo) {
-> +               kvfree(idx_map);
-> +               vfree(new_data);
-> +               return ERR_PTR(-ENOMEM);
-> +       }
-> +       memcpy(new_subinfo, env->subprog_info, sizeof(env->subprog_info));
-> +       memset(env->subprog_info, 0, sizeof(env->subprog_info));
-> +       env->subprog_cnt = 0;
-> +       env->prog = prog;
-> +       ret = add_subprog(env, 0);
-> +       if (ret < 0) {
-> +               ret_env = ERR_PTR(ret);
-> +               goto free_all_ret;
-> +       }
-> +       /* Relocate jumps using idx_map.
-> +        *   old_dst = jmp_insn.old_target + old_pc + 1;
-> +        *   new_dst = idx_map[old_dst] = jmp_insn.new_target + new_pc + 1;
-> +        *   jmp_insn.new_target = new_dst - new_pc - 1;
-> +        */
-> +       for (idx = 0, elem = list; elem; elem = elem->next) {
-> +               int orig_idx = elem->orig_idx;
-> +
-> +               if (elem->flag & LIST_INSN_FLAG_REMOVED)
-> +                       continue;
-> +               if ((elem->flag & LIST_INSN_FLAG_PATCHED) || !orig_idx) {
-> +                       idx++;
-> +                       continue;
-> +               }
-> +
-> +               ret = bpf_jit_adj_imm_off(&insns[idx], orig_idx - 1, idx,
-> +                                         idx_map);
-> +               if (ret < 0) {
-> +                       ret_env = ERR_PTR(ret);
-> +                       goto free_all_ret;
-> +               }
-> +               /* Recalculate subprog start as we are at bpf2bpf call insn. */
-> +               if (ret > 0) {
-> +                       ret = add_subprog(env, idx + insns[idx].imm + 1);
-> +                       if (ret < 0) {
-> +                               ret_env = ERR_PTR(ret);
-> +                               goto free_all_ret;
-> +                       }
-> +               }
-> +               idx++;
-> +       }
-> +       if (ret < 0) {
-> +               ret_env = ERR_PTR(ret);
-> +               goto free_all_ret;
-> +       }
-> +
-> +       env->subprog_info[env->subprog_cnt].start = fini_cnt;
-> +       for (idx = 0; idx <= env->subprog_cnt; idx++)
-> +               new_subinfo[idx].start = env->subprog_info[idx].start;
-> +       memcpy(env->subprog_info, new_subinfo, sizeof(env->subprog_info));
-> +
-> +       /* Adjust linfo.
-> +        * FIXME: no support for insn removal at the moment.
-> +        */
-> +       if (prog->aux->nr_linfo) {
-> +               struct bpf_line_info *linfo = prog->aux->linfo;
-> +               u32 nr_linfo = prog->aux->nr_linfo;
-> +
-> +               for (idx = 0; idx < nr_linfo; idx++)
-> +                       linfo[idx].insn_off = idx_map[linfo[idx].insn_off];
-> +       }
-> +       vfree(env->insn_aux_data);
-> +       env->insn_aux_data = new_data;
-> +       goto free_mem_list_ret;
-> +free_all_ret:
-> +       vfree(new_data);
-> +free_mem_list_ret:
-> +       kvfree(new_subinfo);
-> +       kvfree(idx_map);
-> +       return ret_env;
-> +}
-> +
->  static int opt_remove_dead_code(struct bpf_verifier_env *env)
+On Tue, Jul 09, 2019 at 09:43:46AM +0300, Leon Romanovsky wrote:
+> On Tue, Jul 09, 2019 at 01:56:36PM +1000, Stephen Rothwell wrote:
+> > Hi all,
+> >
+> > After merging the net-next tree, today's linux-next build (x86_64
+> > allmodconfig) failed like this:
+> >
+> > drivers/infiniband/sw/siw/siw_cm.c: In function 'siw_create_listen':
+> > drivers/infiniband/sw/siw/siw_cm.c:1978:3: error: implicit declaration =
+of function 'for_ifa'; did you mean 'fork_idle'? [-Werror=3Dimplicit-functi=
+on-declaration]
+> >    for_ifa(in_dev)
+> >    ^~~~~~~
+> >    fork_idle
+> > drivers/infiniband/sw/siw/siw_cm.c:1978:18: error: expected ';' before =
+'{' token
+> >    for_ifa(in_dev)
+> >                   ^
+> >                   ;
+> >    {
+> >    ~
+> >
+> > Caused by commit
+> >
+> >   6c52fdc244b5 ("rdma/siw: connection management")
+> >
+> > from the rdma tree.  I don't know why this didn't fail after I mereged
+> > that tree.
+>=20
+> I had the same question, because I have this fix for a couple of days alr=
+eady.
+>=20
+> From 56c9e15ec670af580daa8c3ffde9503af3042d67 Mon Sep 17 00:00:00 2001
+> From: Leon Romanovsky <leonro@mellanox.com>
+> Date: Sun, 7 Jul 2019 10:43:42 +0300
+> Subject: [PATCH] Fixup to build SIW issue
+>=20
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+>  drivers/infiniband/sw/siw/siw_cm.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/s=
+iw/siw_cm.c
+> index 8e618cb7261f..c883bf514341 100644
+> +++ b/drivers/infiniband/sw/siw/siw_cm.c
+> @@ -1954,6 +1954,7 @@ static void siw_drop_listeners(struct iw_cm_id *id)
+>  int siw_create_listen(struct iw_cm_id *id, int backlog)
 >  {
->         struct bpf_insn_aux_data *aux_data = env->insn_aux_data;
-> --
-> 2.7.4
->
+>  	struct net_device *dev =3D to_siw_dev(id->device)->netdev;
+> +	const struct in_ifaddr *ifa;
+>  	int rv =3D 0, listeners =3D 0;
+>=20
+>  	siw_dbg(id->device, "id 0x%p: backlog %d\n", id, backlog);
+> @@ -1975,8 +1976,7 @@ int siw_create_listen(struct iw_cm_id *id, int back=
+log)
+>  			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
+>  			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
+>=20
+> -		for_ifa(in_dev)
+> -		{
+> +		in_dev_for_each_ifa_rcu(ifa, in_dev) {
+>  			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
+
+Hum. There is no rcu lock held here and we can't use RCU anyhow as
+siw_listen_address will sleep.
+
+I think this needs to use rtnl, as below. Bernard, please urgently
+confirm. Thanks
+
+diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/siw=
+/siw_cm.c
+index 8e618cb7261f62..ee98e96a5bfaba 100644
+--- a/drivers/infiniband/sw/siw/siw_cm.c
++++ b/drivers/infiniband/sw/siw/siw_cm.c
+@@ -1965,6 +1965,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
+g)
+ 	 */
+ 	if (id->local_addr.ss_family =3D=3D AF_INET) {
+ 		struct in_device *in_dev =3D in_dev_get(dev);
++		const struct in_ifaddr *ifa;
+ 		struct sockaddr_in s_laddr, *s_raddr;
+=20
+ 		memcpy(&s_laddr, &id->local_addr, sizeof(s_laddr));
+@@ -1975,8 +1976,8 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
+g)
+ 			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
+ 			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
+=20
+-		for_ifa(in_dev)
+-		{
++		rtnl_lock();
++		in_dev_for_each_ifa_rtnl(ifa, in_dev) {
+ 			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
+ 			    s_laddr.sin_addr.s_addr =3D=3D ifa->ifa_address) {
+ 				s_laddr.sin_addr.s_addr =3D ifa->ifa_address;
+@@ -1988,7 +1989,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
+g)
+ 					listeners++;
+ 			}
+ 		}
+-		endfor_ifa(in_dev);
++		rtnl_unlock();
+ 		in_dev_put(in_dev);
+ 	} else if (id->local_addr.ss_family =3D=3D AF_INET6) {
+ 		struct inet6_dev *in6_dev =3D in6_dev_get(dev);
