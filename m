@@ -2,110 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4178C64CBA
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 21:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB8264CD4
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 21:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727581AbfGJT0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 15:26:45 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34359 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727410AbfGJT0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 15:26:45 -0400
-Received: by mail-wr1-f67.google.com with SMTP id 31so3689221wrm.1
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 12:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=egu4M3na24tJeXq4zegAC2KmIwgpLCQBLIdlTINTg5o=;
-        b=glPCl7JNU4VwKzbq/4tmE0gUiHYQ80vqmkL1jiTpjpaFEZb+DAusu7+OSU40FoCCPa
-         6sFXJmkpVxaj6sxG7rJZUB4oAQh1dxt8ya+cH/RHlGq0Iit52+q52NYidShDiizjLvoo
-         WfAOlGs3AMg4Nvw54zexUkL/u3HltbZ6DgJev3PXdBwoxxyY2gcNZE0rSv+IAcP2qvFP
-         xS/dZi8qQcCZvoUw+Yqi0r7wWCiRrvioAk5gMm86nfehc0MRz8nbUtX07/2uDm0j+yC2
-         p1hz5AatCAo4LDfGsa0picAjvWPCTq1jG+NVkf8Fru3hfSHKg5NmMKPEeYu9vaFspxrs
-         gpyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=egu4M3na24tJeXq4zegAC2KmIwgpLCQBLIdlTINTg5o=;
-        b=XK9NOvOBLItAKOnOQWUXMeV6K/QDU0jC/GdR1/bmteO85LJ80eFNgUA3QagMfjCgs2
-         UwwkIahCl+e2XxhCN/T+m0jbkojLsDfaI3Vw/ws/aGnW/LcpaJpry04J6uuobb+CdEM4
-         jCE0KYWV7BZNpXdKtuW9Mu9aCkEzb10/HF/dWZq/Y2dZhaRrHkMUxGEbeTWRObT10iTd
-         Ow9P/sB+0a5CuWQHCWwRsQ9crkKJ5Dbx87yDiedRLQs6P2J/KTRnmGuIpMi0K/h+UHIp
-         duTlEjbmHtuvyKJzeE4WV5zIRL7Iz7H5w+c5TwctF8w6tO/tTLDKBJHG65Gw6uStBvJI
-         4a7A==
-X-Gm-Message-State: APjAAAVa7OwiNfFbNriDiuPaVR9kK9PlxVflIN+BXNNeXWQAqvOHP0jv
-        Hj9LSHdSSHe1jJFYv36Sgim9yZh+
-X-Google-Smtp-Source: APXvYqxQz+DDD7FuuALCd5psEOlQ/Bhfkv4Px/+O6WwV8kZv69Q9kbcu39g92TERg+q7gsBFX1kJow==
-X-Received: by 2002:a5d:6182:: with SMTP id j2mr30804588wru.275.1562786803641;
-        Wed, 10 Jul 2019 12:26:43 -0700 (PDT)
-Received: from [192.168.8.147] (31.172.185.81.rev.sfr.net. [81.185.172.31])
-        by smtp.gmail.com with ESMTPSA id c14sm1810832wrr.56.2019.07.10.12.26.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 12:26:42 -0700 (PDT)
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-To:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dustin Marquess <dmarquess@apple.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
- <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
- <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
-Date:   Wed, 10 Jul 2019 21:26:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1727438AbfGJTcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 15:32:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:54536 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727148AbfGJTcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 15:32:32 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlIKI-0003Sy-QL; Wed, 10 Jul 2019 21:32:26 +0200
+Received: from [178.193.45.231] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlIKI-000Dcz-JO; Wed, 10 Jul 2019 21:32:26 +0200
+Subject: Re: [PATCH V2 1/1 (was 0/1 by accident)] tools/dtrace: initial
+ implementation of DTrace
+To:     Kris Van Hees <kris.van.hees@oracle.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        rostedt@goodmis.org, mhiramat@kernel.org, acme@kernel.org,
+        ast@kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Chris Mason <clm@fb.com>, brendan.d.gregg@gmail.com,
+        davem@davemloft.net
+References: <201907101537.x6AFboMR015946@aserv0122.oracle.com>
+ <201907101542.x6AFgOO9012232@userv0121.oracle.com>
+ <20190710181227.GA9925@oracle.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c7f15d1d-1696-4d95-1729-4c4e97bdc43e@iogearbox.net>
+Date:   Wed, 10 Jul 2019 21:32:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-In-Reply-To: <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
+In-Reply-To: <20190710181227.GA9925@oracle.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25506/Wed Jul 10 10:11:44 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Kris,
 
-
-On 7/10/19 8:53 PM, Prout, Andrew - LLSC - MITLL wrote:
+On 07/10/2019 08:12 PM, Kris Van Hees wrote:
+> This patch's subject should of course be [PATCH V2 1/1] rather than 0/1.
+> Sorry about that.
 > 
-> Our initial rollout was v4.14.130, but I reproduced it with v4.14.132 as well, reliably for the samba test and once (not reliably) with synthetic test I was trying. A patched v4.14.132 with this patch partially reverted (just the four lines from tcp_fragment deleted) passed the samba test.
-> 
-> The synthetic test was a pair of simple send/recv test programs under the following conditions:
-> -The send socket was non-blocking
-> -SO_SNDBUF set to 128KiB
-> -The receiver NIC was being flooded with traffic from multiple hosts (to induce packet loss/retransmits)
-> -Load was on both systems: a while(1) program spinning on each CPU core
-> -The receiver was on an older unaffected kernel
-> 
+> On Wed, Jul 10, 2019 at 08:42:24AM -0700, Kris Van Hees wrote:
+>> This initial implementation of a tiny subset of DTrace functionality
+>> provides the following options:
+>>
+>> 	dtrace [-lvV] [-b bufsz] -s script
+>> 	    -b  set trace buffer size
+>> 	    -l  list probes (only works with '-s script' for now)
+>> 	    -s  enable or list probes for the specified BPF program
+>> 	    -V  report DTrace API version
+>>
+>> The patch comprises quite a bit of code due to DTrace requiring a few
+>> crucial components, even in its most basic form.
+>>
+>> The code is structured around the command line interface implemented in
+>> dtrace.c.  It provides option parsing and drives the three modes of
+>> operation that are currently implemented:
+>>
+>> 1. Report DTrace API version information.
+>> 	Report the version information and terminate.
+>>
+>> 2. List probes in BPF programs.
+>> 	Initialize the list of probes that DTrace recognizes, load BPF
+>> 	programs, parse all BPF ELF section names, resolve them into
+>> 	known probes, and emit the probe names.  Then terminate.
+>>
+>> 3. Load BPF programs and collect tracing data.
+>> 	Initialize the list of probes that DTrace recognizes, load BPF
+>> 	programs and attach them to their corresponding probes, set up
+>> 	perf event output buffers, and start processing tracing data.
+>>
+>> This implementation makes extensive use of BPF (handled by dt_bpf.c) and
+>> the perf event output ring buffer (handled by dt_buffer.c).  DTrace-style
+>> probe handling (dt_probe.c) offers an interface to probes that hides the
+>> implementation details of the individual probe types by provider (dt_fbt.c
+>> and dt_syscall.c).  Probe lookup by name uses a hashtable implementation
+>> (dt_hash.c).  The dt_utils.c code populates a list of online CPU ids, so
+>> we know what CPUs we can obtain tracing data from.
+>>
+>> Building the tool is trivial because its only dependency (libbpf) is in
+>> the kernel tree under tools/lib/bpf.  A simple 'make' in the tools/dtrace
+>> directory suffices.
+>>
+>> The 'dtrace' executable needs to run as root because BPF programs cannot
+>> be loaded by non-root users.
+>>
+>> Signed-off-by: Kris Van Hees <kris.van.hees@oracle.com>
+>> Reviewed-by: David Mc Lean <david.mclean@oracle.com>
+>> Reviewed-by: Eugene Loh <eugene.loh@oracle.com>
+>> ---
+>> Changes in v2:
+>>         - Use ring_buffer_read_head() and ring_buffer_write_tail() to
+>>           avoid use of volatile.
+>>         - Handle perf events that wrap around the ring buffer boundary.
+>>         - Remove unnecessary PERF_EVENT_IOC_ENABLE.
+>>         - Remove -I$(srctree)/tools/perf from KBUILD_HOSTCFLAGS since it
+>>           is not actually used.
+>>         - Use PT_REGS_PARM1(x), etc instead of my own macros.  Adding 
+>>           PT_REGS_PARM6(x) in bpf_sample.c because we need to be able to
+>>           support up to 6 arguments passed by registers.
 
-SO_SNDBUF to 128KB does not permit to recover from heavy losses,
-since skbs needs to be allocated for retransmits.
+Looks like you missed Brendan Gregg's prior feedback from v1 [0]. I haven't
+seen a strong compelling argument for why this needs to reside in the kernel
+tree given we also have all the other tracing tools and many of which also
+rely on BPF such as bcc, bpftrace, ply, systemtap, sysdig, lttng to just name
+a few. Given all the other tracers manage to live outside the kernel tree just
+fine, so can dtrace as well; it's _not_ special in this regard in any way. It
+will be tons of code in long term which is better off in its separate project,
+and if we add tools/dtrace/, other projects will come as well asking for kernel
+tree inclusion 'because tools/dtrace' is now there, too. While it totally makes
+sense to extend the missing kernel bits where needed, it doesn't make sense to
+have another big tracing project similar to perf in the tree. Therefore, I'm
+not applying this patch, sorry.
 
-The bug we fixed allowed remote attackers to crash all linux hosts,
+Thanks,
+Daniel
 
-I am afraid we have to enforce the real SO_SNDBUF limit, finally.
+  [0] https://lore.kernel.org/bpf/CAE40pdeSfJBpbBHTmwz1xZ+MW02=kJ0krq1mN+EkjSLqf2GX_w@mail.gmail.com/
 
-Even a cushion of 128KB per socket is dangerous, for servers with millions of TCP sockets.
-
-You will either have to set SO_SNDBUF to higher values, or let autotuning in place.
-Or revert the patches and allow attackers hit you badly.
-
+>> ---
+>>  MAINTAINERS                |   6 +
+>>  tools/dtrace/Makefile      |  87 ++++++++++
+>>  tools/dtrace/bpf_sample.c  | 146 ++++++++++++++++
+>>  tools/dtrace/dt_bpf.c      | 185 ++++++++++++++++++++
+>>  tools/dtrace/dt_buffer.c   | 338 +++++++++++++++++++++++++++++++++++++
+>>  tools/dtrace/dt_fbt.c      | 201 ++++++++++++++++++++++
+>>  tools/dtrace/dt_hash.c     | 211 +++++++++++++++++++++++
+>>  tools/dtrace/dt_probe.c    | 230 +++++++++++++++++++++++++
+>>  tools/dtrace/dt_syscall.c  | 179 ++++++++++++++++++++
+>>  tools/dtrace/dt_utils.c    | 132 +++++++++++++++
+>>  tools/dtrace/dtrace.c      | 249 +++++++++++++++++++++++++++
+>>  tools/dtrace/dtrace.h      |  13 ++
+>>  tools/dtrace/dtrace_impl.h | 101 +++++++++++
+>>  13 files changed, 2078 insertions(+)
+>>  create mode 100644 tools/dtrace/Makefile
+>>  create mode 100644 tools/dtrace/bpf_sample.c
+>>  create mode 100644 tools/dtrace/dt_bpf.c
+>>  create mode 100644 tools/dtrace/dt_buffer.c
+>>  create mode 100644 tools/dtrace/dt_fbt.c
+>>  create mode 100644 tools/dtrace/dt_hash.c
+>>  create mode 100644 tools/dtrace/dt_probe.c
+>>  create mode 100644 tools/dtrace/dt_syscall.c
+>>  create mode 100644 tools/dtrace/dt_utils.c
+>>  create mode 100644 tools/dtrace/dtrace.c
+>>  create mode 100644 tools/dtrace/dtrace.h
+>>  create mode 100644 tools/dtrace/dtrace_impl.h
