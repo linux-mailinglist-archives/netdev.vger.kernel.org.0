@@ -2,81 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C666419C
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 08:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 995BF641A4
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbfGJGzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 02:55:41 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40289 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbfGJGzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 02:55:41 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v19so988297wmj.5;
-        Tue, 09 Jul 2019 23:55:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YmPlcvb5bObvvDqCeZdD+v5H0phZt2AX9Ycj4zrkFrk=;
-        b=ftOUDOpkpab4eKuULhmrS+FRLyxVGC8+twax0G/we2OtMAwdLncDIdGpusWvby4wXx
-         qaw+gRSt5+Ndd0+73JmbFNQzlTuiSuqpqRy/NLPOucRMiHZGuY1KiXFgCHlKc4jkTmIS
-         mzIpZsj5ZjF35wRnL9wZc3ck5KqcxXUfffThPNv1l2da+xc0IOHRqsO2Nr4/RQBxdSnP
-         +2f+m9SJiaHvwPRBJly9/5dNyl2QqrNiu1NNGojridE4P/SMWCHO11eCumK1+OPbiqFS
-         Uz5YMXYLKjqmZIiNVKgpTtig9JIMuXm9y5LliSjb0v4mJWL14ZwmNy5BY+Dp/74t5BVF
-         cJJg==
+        id S1726338AbfGJHFw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Jul 2019 03:05:52 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:43555 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbfGJHFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:05:52 -0400
+Received: from mail-wm1-f69.google.com ([209.85.128.69])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <chia-lin.kao@canonical.com>)
+        id 1hl6fm-0007KM-GA
+        for netdev@vger.kernel.org; Wed, 10 Jul 2019 07:05:50 +0000
+Received: by mail-wm1-f69.google.com with SMTP id d65so367429wmd.3
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 00:05:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YmPlcvb5bObvvDqCeZdD+v5H0phZt2AX9Ycj4zrkFrk=;
-        b=NVmRtX4yBATxwKOSn6r+tRtzBDX5ESnx/EB8pWXmgSeSuZzqJdRayJGMculvaUzEtG
-         ow+Ns888wbGAF+Xd4qRCxOowwOjSC9768B4Kej3QutneL6vP14TGtBlVpeEv/SmXAndI
-         XOc1iNe5KQ6Obfl/DEOPmmEfvgTTl3B8LFsM8QeWVSKmzhBcl9M9QDESc6+nYR2f+BoM
-         WbCm+Eak4R9aXNj5m9w9f35w5/cg7tBfnZhBEVxgwLefS/z3lCsT6j6OHh/WpmI3p6kr
-         hiO9lOxWKGKitQ34MicTLgTSgmOhRFBoBk/Bw82MzkGwTmgrLedf85/6/CdTFkHdLdnx
-         fZgA==
-X-Gm-Message-State: APjAAAVKgYwAWRuAg11J34TnrJEfjqFYvdXyXmZ+6FOhaTliD2fbWVJS
-        AprYj5ir1IbYsQKzqWypq7B1ARmRrOT9F974mUf4Cw==
-X-Google-Smtp-Source: APXvYqyV2cje4br2rvgWCpo7VzxXeoAlp013bbyW0+MTW7YLqXKiMA05H4WdDY0Cs2F7BdYU2RCmh50AVLQ0O5HeUQ0=
-X-Received: by 2002:a05:600c:c4:: with SMTP id u4mr3399884wmm.96.1562741738878;
- Tue, 09 Jul 2019 23:55:38 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dN3J5bKVO8t1U0024RiGjSSKUlILA2QH4v/NEife78A=;
+        b=r7Wijh4ia1suJhTOF+IHx3tRO0YdmkADS4Vmxh87tGyJkyb7sABbM0GzGMX429LAkP
+         VFdm7v7LU4aXmXSvF2zyT8HA2UQDUzO4EGJjZ1/spuygoageSicM4bPn8uxNDXW3CE1V
+         AsBOWVV3vLHUMzEDW/s+R//qb2IholTNBYAZ+YVKcSmp5seb4ybHzGNqoVikyFfe1q22
+         UUC/3I2J1ALPyD1l2MuELzMTAHylGRZz0Nutc+AvnUXw+7P4Nlmtl2VWti+qYb4KdkD3
+         KI7uRy+nvTcIBGonLjsGk+q8uUlOFYQF97gJknxc0RbeSyOXkdybipgFkQ/VsfyLQ043
+         bmvg==
+X-Gm-Message-State: APjAAAWyR4aV5WNhlbHV/t/lFIw9f5bJyTIJONmUIxm+D6RrqsFPf77g
+        NbqCjWl9Qu9/Usb9UseWglV1crizGhdHSYXZmyjhDQ+K7yiRjC9sKESgs1TQvD16Bz5VCstclf0
+        4KJF2YpY25eVf4Z317Cs/wbel7y7VSXYL08hg8T9MrmOFcRSfIw==
+X-Received: by 2002:a1c:6a11:: with SMTP id f17mr3184153wmc.110.1562742349472;
+        Wed, 10 Jul 2019 00:05:49 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzyE97uF612RbHirhkWKN+Vaod1qzbqXurrx8gvlnUkc4j5SZf9eLyoiVDMO5W9ZoO58P0L00rpzXNAO3twkSQ=
+X-Received: by 2002:a1c:6a11:: with SMTP id f17mr3184108wmc.110.1562742349186;
+ Wed, 10 Jul 2019 00:05:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <CANpxKHHXzrEpJPSj3x83+WE23G1W0KPz9XbG=fCVzS21+-BpfQ@mail.gmail.com>
- <20190626111322.gks5qptax3iqrjao@breakpoint.cc>
-In-Reply-To: <20190626111322.gks5qptax3iqrjao@breakpoint.cc>
-From:   Naruto Nguyen <narutonguyen2018@gmail.com>
-Date:   Wed, 10 Jul 2019 13:55:25 +0700
-Message-ID: <CANpxKHGa6DpV-9n8La7wh6r7MbEZpzGTWOO1AhmhWv072b4LAg@mail.gmail.com>
-Subject: Re: Question about nf_conntrack_proto for IPsec
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter@vger.kernel.org
+References: <20190708063751.16234-1-acelan.kao@canonical.com>
+ <53f82481-ed41-abc5-2e4e-ac1026617219@gmail.com> <CAFv23Q=mA9t0j2F4fKdOkgG6sao0m7rR_9-d9OvAmSerZf_=ew@mail.gmail.com>
+In-Reply-To: <CAFv23Q=mA9t0j2F4fKdOkgG6sao0m7rR_9-d9OvAmSerZf_=ew@mail.gmail.com>
+From:   AceLan Kao <acelan.kao@canonical.com>
+Date:   Wed, 10 Jul 2019 15:05:38 +0800
+Message-ID: <CAFv23QmqjJtUD-iAwzsXg2MCNbe_p1zOcZ7C-ywG5n-iT-N-YA@mail.gmail.com>
+Subject: Re: [PATCH] r8169: add enable_aspm parameter
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+Hi Heiner,
 
-Thanks a lot for your reply.
+I've tried and verified your PCI ASPM patches and it works well.
+I've replied the patch thread and hope this can make it get some progress.
 
-Could you please elaborate more on how generic tracker tracks ESP connection?
+BTW, do you think we can revert commit b75bb8a5b755 ("r8169: disable
+ASPM again") once the PCI ASPM patches get merged?
 
-Brs,
-Bao
+Best regards,
+AceLan Kao.
 
-On Wed, 26 Jun 2019 at 18:13, Florian Westphal <fw@strlen.de> wrote:
+AceLan Kao <acelan.kao@canonical.com> 於 2019年7月9日 週二 上午11:19寫道：
 >
-> Naruto Nguyen <narutonguyen2018@gmail.com> wrote:
-> > In linux/latest/source/net/netfilter/ folder, I only see we have
-> > nf_conntrack_proto_tcp.c, nf_conntrack_proto_udp.c and some other
-> > conntrack implementations for other protocols but I do not see
-> > nf_conntrack_proto for IPsec, so does it mean connection tracking
-> > cannot track ESP or AH protocol as a connection. I mean when I use
-> > "conntrack -L" command, I will not see ESP or AH  connection is saved
-> > in conntrack list. Could you please help me to understand if conntrack
-> > supports that and any reasons if it does not support?
+> Heiner Kallweit <hkallweit1@gmail.com> 於 2019年7月9日 週二 上午2:27寫道：
+> >
+> > On 08.07.2019 08:37, AceLan Kao wrote:
+> > > We have many commits in the driver which enable and then disable ASPM
+> > > function over and over again.
+> > >    commit b75bb8a5b755 ("r8169: disable ASPM again")
+> > >    commit 0866cd15029b ("r8169: enable ASPM on RTL8106E")
+> > >    commit 94235460f9ea ("r8169: Align ASPM/CLKREQ setting function with vendor driver")
+> > >    commit aa1e7d2c31ef ("r8169: enable ASPM on RTL8168E-VL")
+> > >    commit f37658da21aa ("r8169: align ASPM entry latency setting with vendor driver")
+> > >    commit a99790bf5c7f ("r8169: Reinstate ASPM Support")
+> > >    commit 671646c151d4 ("r8169: Don't disable ASPM in the driver")
+> > >    commit 4521e1a94279 ("Revert "r8169: enable internal ASPM and clock request settings".")
+> > >    commit d64ec841517a ("r8169: enable internal ASPM and clock request settings")
+> > >
+> > > This function is very important for production, and if we can't come out
+> > > a solution to make both happy, I'd suggest we add a parameter in the
+> > > driver to toggle it.
+> > >
+> > The usage of a module parameter to control ASPM is discouraged.
+> > There have been more such attempts in the past that have been declined.
+> >
+> > Pending with the PCI maintainers is a series adding ASPM control
+> > via sysfs, see here: https://www.spinics.net/lists/linux-pci/msg83228.html
+> Cool, I'll try your patches and reply on that thread.
 >
-> ESP/AH etc. use the generic tracker, i.e. only one ESP connection
-> is tracked between each endpoint.
+> >
+> > Also more details than just stating "it's important for production"
+> > would have been appreciated in the commit message, e.g. which
+> > power-savings you can achieve with ASPM on which systems.
+> I should use more specific wordings rather than "important for
+> production", thanks.
