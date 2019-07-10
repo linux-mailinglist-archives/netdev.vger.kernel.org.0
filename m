@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC44642A9
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A78E6429F
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbfGJHZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 03:25:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51008 "EHLO mail.kernel.org"
+        id S1727239AbfGJHZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:25:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50818 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727142AbfGJHZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 03:25:32 -0400
+        id S1726043AbfGJHZS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 03:25:18 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E5D420838;
-        Wed, 10 Jul 2019 07:25:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5E5842083D;
+        Wed, 10 Jul 2019 07:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562743531;
-        bh=amLX3eh5KPTW4tcOZzx0sxsoFSHElEgac6P7zZoYSr0=;
+        s=default; t=1562743517;
+        bh=JkZplVn3xt35Y2dfqpZF1VmyrYiv+s/b60YHeHwbZsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xSi3VDsesY5kNYuiJxgbzOuI8T7KVZz+p1yTm2i64bTZobCO7TJ4QSobI2gCDH4S5
-         u2M5moj4RY8v2aSr2B8yUwbGLYcm4TcDRbBFvGvWmNYK+c1otY0Jn3iB+YQUjPOaiR
-         PaNSMb0FbkroT5bz5dfk06dVlcCZmcUJcvVijelA=
+        b=XlCA5NBz+2jAxDn+PiKI1YYSCgYJ8d+FKlCY43hAZpQKu1i/zOKG49nPiqnsUDPEm
+         4w8HeZhG01Acj4NXyXbT0KpnkWQf8maFWpsKE2YRXmU6/pYK9Ohjq0n+JfU9IiK2LE
+         v1Ifi49foPAuMHwvXFMP4qOloVBJE8q/CS+huG0k=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     Leon Romanovsky <leonro@mellanox.com>,
         netdev <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
         Mark Zhang <markz@mellanox.com>,
         RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: [PATCH iproute2-rc 4/8] rdma: Add rdma statistic counter per-port auto mode support
-Date:   Wed, 10 Jul 2019 10:24:51 +0300
-Message-Id: <20190710072455.9125-5-leon@kernel.org>
+Subject: [PATCH iproute2-rc 5/8] rdma: Make get_port_from_argv() returns valid port in strict port mode
+Date:   Wed, 10 Jul 2019 10:24:52 +0300
+Message-Id: <20190710072455.9125-6-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190710072455.9125-1-leon@kernel.org>
 References: <20190710072455.9125-1-leon@kernel.org>
@@ -44,156 +44,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Zhang <markz@mellanox.com>
 
-With per-QP statistic counter support, a user is allowed to monitor
-specific QPs categories, which are bound to/unbound from counters
-dynamically allocated/deallocated.
-
-In per-port "auto" mode, QPs are bound to counters automatically
-according to common criteria. For example a per "type"(qp type)
-scheme, where in each process all QPs have same qp type are bind
-automatically to a single counter.
-Currently only "type" (qp type) is supported. Examples:
-
-$ rdma statistic qp set link mlx5_2/1 auto type on
-$ rdma statistic qp set link mlx5_2/1 auto off
+When strict_port is set, make get_port_from_argv() returns failure if
+no valid port is specified.
 
 Signed-off-by: Mark Zhang <markz@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- rdma/stat.c  | 87 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- rdma/utils.c |  1 +
- 2 files changed, 88 insertions(+)
+ rdma/utils.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/rdma/stat.c b/rdma/stat.c
-index 0c239851..ad1cc063 100644
---- a/rdma/stat.c
-+++ b/rdma/stat.c
-@@ -14,12 +14,17 @@ static int stat_help(struct rd *rd)
- 	pr_out("       %s statistic OBJECT show\n", rd->filename);
- 	pr_out("       %s statistic OBJECT show link [ DEV/PORT_INDEX ] [ FILTER-NAME FILTER-VALUE ]\n", rd->filename);
- 	pr_out("       %s statistic OBJECT mode\n", rd->filename);
-+	pr_out("       %s statistic OBJECT set COUNTER_SCOPE [DEV/PORT_INDEX] auto {CRITERIA | off}\n", rd->filename);
- 	pr_out("where  OBJECT: = { qp }\n");
-+	pr_out("       CRITERIA : = { type }\n");
-+	pr_out("       COUNTER_SCOPE: = { link | dev }\n");
- 	pr_out("Examples:\n");
- 	pr_out("       %s statistic qp show\n", rd->filename);
- 	pr_out("       %s statistic qp show link mlx5_2/1\n", rd->filename);
- 	pr_out("       %s statistic qp mode\n", rd->filename);
- 	pr_out("       %s statistic qp mode link mlx5_0\n", rd->filename);
-+	pr_out("       %s statistic qp set link mlx5_2/1 auto type on\n", rd->filename);
-+	pr_out("       %s statistic qp set link mlx5_2/1 auto off\n", rd->filename);
- 
- 	return 0;
- }
-@@ -381,6 +386,87 @@ static int stat_qp_show(struct rd *rd)
- 	return rd_exec_cmd(rd, cmds, "parameter");
- }
- 
-+static int stat_qp_set_link_auto_sendmsg(struct rd *rd, uint32_t mask)
-+{
-+	uint32_t seq;
-+
-+	rd_prepare_msg(rd, RDMA_NLDEV_CMD_STAT_SET,
-+		       &seq, (NLM_F_REQUEST | NLM_F_ACK));
-+
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_DEV_INDEX, rd->dev_idx);
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_PORT_INDEX, rd->port_idx);
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_STAT_RES, RDMA_NLDEV_ATTR_RES_QP);
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_STAT_MODE,
-+			 RDMA_COUNTER_MODE_AUTO);
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK, mask);
-+
-+	return rd_sendrecv_msg(rd, seq);
-+}
-+
-+static int stat_one_qp_set_link_auto_off(struct rd *rd)
-+{
-+	return stat_qp_set_link_auto_sendmsg(rd, 0);
-+}
-+
-+static int stat_one_qp_set_auto_type_on(struct rd *rd)
-+{
-+	return stat_qp_set_link_auto_sendmsg(rd, RDMA_COUNTER_MASK_QP_TYPE);
-+}
-+
-+static int stat_one_qp_set_link_auto_type(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,		stat_help },
-+		{ "on",		stat_one_qp_set_auto_type_on },
-+		{ 0 }
-+	};
-+
-+	return rd_exec_cmd(rd, cmds, "parameter");
-+}
-+
-+static int stat_one_qp_set_link_auto(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,		stat_one_qp_link_get_mode },
-+		{ "off",	stat_one_qp_set_link_auto_off },
-+		{ "type",	stat_one_qp_set_link_auto_type },
-+		{ 0 }
-+	};
-+
-+	return rd_exec_cmd(rd, cmds, "parameter");
-+}
-+
-+static int stat_one_qp_set_link(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,		stat_one_qp_link_get_mode },
-+		{ "auto",	stat_one_qp_set_link_auto },
-+		{ 0 }
-+	};
-+
-+	if (!rd->port_idx)
-+		return 0;
-+
-+	return rd_exec_cmd(rd, cmds, "parameter");
-+}
-+
-+static int stat_qp_set_link(struct rd *rd)
-+{
-+	return rd_exec_link(rd, stat_one_qp_set_link, false);
-+}
-+
-+static int stat_qp_set(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,		stat_help },
-+		{ "link",	stat_qp_set_link },
-+		{ "help",	stat_help },
-+		{ 0 }
-+	};
-+
-+	return rd_exec_cmd(rd, cmds, "parameter");
-+}
-+
- static int stat_qp(struct rd *rd)
- {
- 	const struct rd_cmd cmds[] =  {
-@@ -388,6 +474,7 @@ static int stat_qp(struct rd *rd)
- 		{ "show",	stat_qp_show },
- 		{ "list",	stat_qp_show },
- 		{ "mode",	stat_qp_get_mode },
-+		{ "set",	stat_qp_set },
- 		{ "help",	stat_help },
- 		{ 0 }
- 	};
 diff --git a/rdma/utils.c b/rdma/utils.c
-index 9c885ad7..aed1a3d0 100644
+index aed1a3d0..95b669f3 100644
 --- a/rdma/utils.c
 +++ b/rdma/utils.c
-@@ -445,6 +445,7 @@ static const enum mnl_attr_data_type nldev_policy[RDMA_NLDEV_ATTR_MAX] = {
- 	[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_VALUE] = MNL_TYPE_U64,
- 	[RDMA_NLDEV_ATTR_STAT_MODE] = MNL_TYPE_U32,
- 	[RDMA_NLDEV_ATTR_STAT_RES] = MNL_TYPE_U32,
-+	[RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK] = MNL_TYPE_U32,
- };
+@@ -56,7 +56,7 @@ bool rd_no_arg(struct rd *rd)
+  * mlx5_1/1    | 1          | false
+  * mlx5_1/-    | 0          | false
+  *
+- * In strict mode, /- will return error.
++ * In strict port mode, a non-0 port must be provided
+  */
+ static int get_port_from_argv(struct rd *rd, uint32_t *port,
+ 			      bool *is_dump_all, bool strict_port)
+@@ -64,7 +64,7 @@ static int get_port_from_argv(struct rd *rd, uint32_t *port,
+ 	char *slash;
  
- int rd_attr_check(const struct nlattr *attr, int *typep)
+ 	*port = 0;
+-	*is_dump_all = true;
++	*is_dump_all = strict_port ? false : true;
+ 
+ 	slash = strchr(rd_argv(rd), '/');
+ 	/* if no port found, return 0 */
+@@ -83,6 +83,9 @@ static int get_port_from_argv(struct rd *rd, uint32_t *port,
+ 		if (!*port && strlen(slash))
+ 			return -EINVAL;
+ 	}
++	if (strict_port && (*port == 0))
++		return -EINVAL;
++
+ 	return 0;
+ }
+ 
 -- 
 2.20.1
 
