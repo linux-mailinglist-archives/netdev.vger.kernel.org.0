@@ -2,98 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5578B645F4
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 13:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7396264603
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727188AbfGJL5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 07:57:05 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:11970 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726617AbfGJL5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 07:57:05 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6ABpqHn149760
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 07:57:04 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tnd5m5dw0-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 07:57:03 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Wed, 10 Jul 2019 12:57:01 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 10 Jul 2019 12:56:59 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6ABuwRF35586294
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Jul 2019 11:56:58 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 08F304C044;
-        Wed, 10 Jul 2019 11:56:58 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C7FDB4C040;
-        Wed, 10 Jul 2019 11:56:57 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 10 Jul 2019 11:56:57 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     andrii.nakryiko@gmail.com, Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH v2 bpf] selftests/bpf: fix bpf_target_sparc check
-Date:   Wed, 10 Jul 2019 13:56:54 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1726957AbfGJMJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:09:01 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:48910 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbfGJMJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:09:01 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x6AC8jrT096577;
+        Wed, 10 Jul 2019 07:08:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1562760525;
+        bh=3uaV5/1Xpl1hokqp82127RZGNTU01EDKfs+fFQxZX1A=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=b6QMnsOo0nzCu/sKptwufP1G1LN/K+03mZATvrGL5DJXPpdxebWR71nteMVuiDHBq
+         bx8X5tuoQjaUFiMI7g43jjTXER5WwhHd/9oLNQ4w0df7OaXMQOh9FR2oJGSw0kp0Rg
+         Wyl0SIUNhothMq3HmpKIY+K/wjR2QEAcIiRMcmes=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x6AC8jS8049964
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 10 Jul 2019 07:08:45 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 10
+ Jul 2019 07:08:45 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Wed, 10 Jul 2019 07:08:44 -0500
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x6AC8ioC115395;
+        Wed, 10 Jul 2019 07:08:44 -0500
+Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20190509161109.10499-1-dmurphy@ti.com>
+ <dbb7bdef-820d-5dcc-d7b5-a82bc1b076fb@ti.com>
+ <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
+ <93530d94-ec65-de82-448e-f2460dd39fb9@ti.com>
+ <0f6c41c8-0071-ed3a-9e65-caf02a0fbefe@ti.com>
+ <6fa79302-ad32-7f43-f9d5-af70aa789284@ti.com>
+Message-ID: <f236a88a-485c-9002-1e4a-9a5ad0e1c81f@ti.com>
+Date:   Wed, 10 Jul 2019 07:08:00 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071011-0012-0000-0000-00000330F614
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071011-0013-0000-0000-0000216A5EE8
-Message-Id: <20190710115654.44841-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-10_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907100143
+In-Reply-To: <6fa79302-ad32-7f43-f9d5-af70aa789284@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_helpers.h fails to compile on sparc: the code should be checking
-for defined(bpf_target_sparc), but checks simply for bpf_target_sparc.
+Hello
 
-Also change #ifdef bpf_target_powerpc to #if defined() for consistency.
+On 6/17/19 10:09 AM, Dan Murphy wrote:
+> Marc
+>
+> On 6/10/19 11:35 AM, Dan Murphy wrote:
+>> Bump
+>>
+>> On 6/6/19 8:16 AM, Dan Murphy wrote:
+>>> Marc
+>>>
+>>> Bump
+>>>
+>>> On 5/31/19 6:51 AM, Dan Murphy wrote:
+>>>> Marc
+>>>>
+>>>> On 5/15/19 3:54 PM, Dan Murphy wrote:
+>>>>> Marc
+>>>>>
+>>>>> On 5/9/19 11:11 AM, Dan Murphy wrote:
+>>>>>> Create a m_can platform framework that peripheral
+>>>>>> devices can register to and use common code and register sets.
+>>>>>> The peripheral devices may provide read/write and configuration
+>>>>>> support of the IP.
+>>>>>>
+>>>>>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+>>>>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>>>>>> ---
+>>>>>>
+>>>>>> v12 - Update the m_can_read/write functions to create a backtrace 
+>>>>>> if the callback
+>>>>>> pointer is NULL. - https://lore.kernel.org/patchwork/patch/1052302/
+>>>>>>
+>>>>> Is this able to be merged now?
+>>>>
+>>>> ping
+>
+> Wondering if there is anything else we need to do?
+>
+> The part has officially shipped and we had hoped to have driver 
+> support in Linux as part of the announcement.
+>
+Is this being sent in a PR for 5.3?
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
+Dan
 
-v1->v2: bpf_target_powerpc change
 
- tools/testing/selftests/bpf/bpf_helpers.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-index 5f6f9e7aba2a..0214797518ce 100644
---- a/tools/testing/selftests/bpf/bpf_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_helpers.h
-@@ -440,10 +440,10 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
- 
- #endif
- 
--#ifdef bpf_target_powerpc
-+#if defined(bpf_target_powerpc)
- #define BPF_KPROBE_READ_RET_IP(ip, ctx)		({ (ip) = (ctx)->link; })
- #define BPF_KRETPROBE_READ_RET_IP		BPF_KPROBE_READ_RET_IP
--#elif bpf_target_sparc
-+#elif defined(bpf_target_sparc)
- #define BPF_KPROBE_READ_RET_IP(ip, ctx)		({ (ip) = PT_REGS_RET(ctx); })
- #define BPF_KRETPROBE_READ_RET_IP		BPF_KPROBE_READ_RET_IP
- #else
--- 
-2.21.0
-
+> Dan
+>
+>
+>>>>
+>>>>
+>>>>> Dan
+>>>>>
+>>>>> <snip>
