@@ -2,123 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A259E64CF0
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 21:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C43264CF8
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 21:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728102AbfGJTqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 15:46:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35106 "EHLO mail.kernel.org"
+        id S1727931AbfGJTr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 15:47:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726080AbfGJTqZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 15:46:25 -0400
-Received: from gmail.com (unknown [104.132.1.77])
+        id S1725911AbfGJTr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 15:47:56 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D847E20645;
-        Wed, 10 Jul 2019 19:46:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562787984;
-        bh=8Wheg7fkojhFCTFeSxARuXmwozeoF6si9Jhn2gqN/jE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U8yQ5jzmPYkedYE9eKLlK6r/w0o6fbkuw6aQbZ32bajHQdbDyDuiA98yJfeBrTJ6G
-         9t9iwMUnGVGtKgkQyIGsGEnGkWyMLrzPLRQ7tkqlMCE404ujVuWcrSKTBrGV8qg0JS
-         ijG3JQaD52WEZZHNznlcoOP7z3WhRvagWtC/zdtE=
-Date:   Wed, 10 Jul 2019 12:46:22 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Howells <dhowells@redhat.com>,
-        James Morris James Morris <jmorris@namei.org>,
-        keyrings@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        linux-nfs@vger.kernel.org, CIFS <linux-cifs@vger.kernel.org>,
-        linux-afs@lists.infradead.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] Keys: Set 4 - Key ACLs for 5.3
-Message-ID: <20190710194620.GA83443@gmail.com>
-Mail-Followup-To: Linus Torvalds <torvalds@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        James Morris James Morris <jmorris@namei.org>,
-        keyrings@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        linux-nfs@vger.kernel.org, CIFS <linux-cifs@vger.kernel.org>,
-        linux-afs@lists.infradead.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-References: <28477.1562362239@warthog.procyon.org.uk>
- <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 5922E2086D;
+        Wed, 10 Jul 2019 19:47:54 +0000 (UTC)
+Date:   Wed, 10 Jul 2019 15:47:52 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
+        ast@kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Chris Mason <clm@fb.com>, brendan.d.gregg@gmail.com,
+        davem@davemloft.net
+Subject: Re: [PATCH V2 1/1 (was 0/1 by accident)] tools/dtrace: initial
+ implementation of DTrace
+Message-ID: <20190710154752.76e36e8a@gandalf.local.home>
+In-Reply-To: <c7f15d1d-1696-4d95-1729-4c4e97bdc43e@iogearbox.net>
+References: <201907101537.x6AFboMR015946@aserv0122.oracle.com>
+        <201907101542.x6AFgOO9012232@userv0121.oracle.com>
+        <20190710181227.GA9925@oracle.com>
+        <c7f15d1d-1696-4d95-1729-4c4e97bdc43e@iogearbox.net>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 11:35:07AM -0700, Linus Torvalds wrote:
-> On Fri, Jul 5, 2019 at 2:30 PM David Howells <dhowells@redhat.com> wrote:
-> >
-> > Here's my fourth block of keyrings changes for the next merge window.  They
-> > change the permissions model used by keys and keyrings to be based on an
-> > internal ACL by the following means:
-> 
-> It turns out that this is broken, and I'll probably have to revert the
-> merge entirely.
-> 
-> With this merge in place, I can't boot any of the machines that have
-> an encrypted disk setup. The boot just stops at
-> 
->   systemd[1]: Started Forward Password Requests to Plymouth Directory Watch.
->   systemd[1]: Reached target Paths.
-> 
-> and never gets any further. I never get the prompt for a passphrase
-> for the disk encryption.
-> 
-> Apparently not a lot of developers are using encrypted volumes for
-> their development machines.
-> 
-> I'm not sure if the only requirement is an encrypted volume, or if
-> this is also particular to a F30 install in case you need to be able
-> to reproduce. But considering that you have a redhat email address,
-> I'm sure you can find a F30 install somewhere with an encrypted disk.
-> 
-> David, if you can fix this quickly, I'll hold off on the revert of it
-> all, but I can wait only so long. I've stopped merging stuff since I
-> noticed my machines don't work (this merge window has not been
-> pleasant so far - in addition to this issue I had another entirely
-> unrelated boot failure which made bisecting this one even more fun).
-> 
-> So if I don't see a quick fix, I'll just revert in order to then
-> continue to do pull requests later today. Because I do not want to do
-> further pulls with something that I can't boot as a base.
-> 
->                  Linus
+On Wed, 10 Jul 2019 21:32:25 +0200
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-This also broke 'keyctl new_session' and hence all the fscrypt tests
-(https://lkml.kernel.org/lkml/20190710011559.GA7973@sol.localdomain/), and it
-also broke loading in-kernel X.509 certificates
-(https://lore.kernel.org/lkml/27671.1562384658@turing-police/T/#u).
 
-I'm *guessing* these are all some underlying issue where keyrings aren't being
-given all the needed permissions anymore.
+> Looks like you missed Brendan Gregg's prior feedback from v1 [0]. I haven't
+> seen a strong compelling argument for why this needs to reside in the kernel
+> tree given we also have all the other tracing tools and many of which also
+> rely on BPF such as bcc, bpftrace, ply, systemtap, sysdig, lttng to just name
+> a few. Given all the other tracers manage to live outside the kernel tree just
+> fine, so can dtrace as well; it's _not_ special in this regard in any way. It
+> will be tons of code in long term which is better off in its separate project,
+> and if we add tools/dtrace/, other projects will come as well asking for kernel
+> tree inclusion 'because tools/dtrace' is now there, too. While it totally makes
+> sense to extend the missing kernel bits where needed, it doesn't make sense to
+> have another big tracing project similar to perf in the tree. Therefore, I'm
+> not applying this patch, sorry.
 
-But just FYI, David had said he's on vacation with no laptop or email access for
-2 weeks starting from Sunday (3 days ago).  So I don't think you can expect a
-quick fix from him.
+I agree with this.
 
-I was planning to look into this to fix the fscrypt tests, but it might be a few
-days before I get to it.  And while I'm *guessing* it will be a simple fix, it
-might not be.  So I can't speak for David, but personally I'm fine with the
-commits being reverted for now.
+Note, trace-cmd is very tied to ftrace just as much as perf is to the
+code in tree. There was a window in time I had a choice to add it to
+tools/ as well, but after careful consideration, I decided it's best
+against it. The only thing being in tree gives you is marketing.
+Otherwise, it makes it too coupled. I keep having to compile perf
+separately, because a lot of perf distro packages appear to think that
+it requires the same kernel version.
 
-I'm also unhappy that the new keyctl KEYCTL_GRANT_PERMISSION doesn't have any
-documentation or tests.  (Which seems to be a common problem with David's
-work...  None of the new mount syscalls in v5.2 have any tests, for example, and
-the man pages are still work-in-progress and last sent out for review a year
-ago, despite API changes that occurred before the syscalls were merged.)
+It also makes it easier to have your own release cycles, otherwise it
+forces you to be on a 2 1/2 month cycle that the kernel is on. And it
+forces you to have a clear separation between kernel and user space.
 
-- Eric
+That said, I'm working to put together libraries that interact with all
+the current tracers (perf, trace-cmd, lttng, bpftrace, etc) and call it
+the "Unified Tracing Platform". The purpose is to allow any tool to be
+able to take advantage of any of the supported tracers within the
+running kernel. This will be one of the topics at the Tracing MC at
+Linux Plumbers in September. I hope to see all of you there ;-)
+
+-- Steve
+
