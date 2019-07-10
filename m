@@ -2,236 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 806BB6466E
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 669EA6469F
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 14:59:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727508AbfGJMlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 08:41:13 -0400
-Received: from mail-wm1-f53.google.com ([209.85.128.53]:36397 "EHLO
-        mail-wm1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbfGJMlL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 08:41:11 -0400
-Received: by mail-wm1-f53.google.com with SMTP id g67so2126775wme.1
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 05:41:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gr9HEsxvkhORqGpDxpOnjSaFaOUXWvJHYXoYUcexVM8=;
-        b=PDLEZKRdFlS0oxZWcZt5HpmMM7U/gp7Mpbe6buV5/fR5q0x1Usoby2+Ymc9PdwEUSI
-         kcbpzQffE7zcmo9ZabroZIzhIeIsc0NkcRMM1sZECkVn2KrKD462ZDJFG/Msea9qoXok
-         6GwJrsPxaQevqsOFBG32d86SjaEg/IdSKxfNqjx6DaP/mTxvFCcWDXZPCDh5UlOb3P13
-         tTJOftTtZiD9xHTpCpytlHcVi3BJBjq9WGEIvMS9tBfEkzr7c76pgBD7ixopW/PUx65u
-         14TaGk50K8XIdQSwffClPA/LJjEY38WxbiLDKeV3HQABgZGGxH7IqKs9Hvmp3YNLAhOs
-         epig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=gr9HEsxvkhORqGpDxpOnjSaFaOUXWvJHYXoYUcexVM8=;
-        b=t4DXJsbdXtOXrQxSrIJEBVI+O+Jve7qS+8tjVw0FycUWJfu3N1DhJj1tE8WuDU0ymI
-         JqF0rzNqcFx8LFuPI3hs4H3FkojS7kKsCFOSk4doO3K2KSWKv0n7+XPdzeV6uWF+WSGd
-         9/uIGslPF2fwfhNe8MghEkJdEwCn7I3N5YCz36YZrJn41En/SqBg/A3ghb/hJYQ6jhgR
-         hTe4uXUex4tCPZ3R7v2nTbrYznJ3TV7SoaoQ2dI6PpWkR8EKSJtmftTJJuH4K7P5STzU
-         X3HnuRsWQDQpyuBK1ls7sgn9UeBclF+usjvYQSibKaP2wU+g2s06ovOi1BXAG5DtBY/N
-         082w==
-X-Gm-Message-State: APjAAAXL3cIOpAaue94tCarudBDzbiW/iptctrZF60mtswUfXGK5/kqN
-        A3mD2n7+S4NGgsvQ2HuV50R4PQnjpcU=
-X-Google-Smtp-Source: APXvYqznQrPVQCyV2ImrTUJvwdAmMqoYeDXw2LkAX/GgKlAZrvdCHTH1yASDVKctaqmRfjdosup8aQ==
-X-Received: by 2002:a1c:dc46:: with SMTP id t67mr4968493wmg.159.1562762468492;
-        Wed, 10 Jul 2019 05:41:08 -0700 (PDT)
-Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id z5sm1406759wmf.48.2019.07.10.05.41.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 10 Jul 2019 05:41:07 -0700 (PDT)
-From:   John Hurley <john.hurley@netronome.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
-        dsahern@gmail.com, willemdebruijn.kernel@gmail.com,
-        stephen@networkplumber.org, simon.horman@netronome.com,
-        jakub.kicinski@netronome.com, oss-drivers@netronome.com,
-        John Hurley <john.hurley@netronome.com>
-Subject: [PATCH iproute2-next v2 3/3] man: update man pages for TC MPLS actions
-Date:   Wed, 10 Jul 2019 13:40:40 +0100
-Message-Id: <1562762440-25656-4-git-send-email-john.hurley@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1562762440-25656-1-git-send-email-john.hurley@netronome.com>
-References: <1562762440-25656-1-git-send-email-john.hurley@netronome.com>
+        id S1727419AbfGJM7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 08:59:47 -0400
+Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:37601
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727245AbfGJM7p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 08:59:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=glpSn8ARLpykn0SDEqRS+7+G057qkle/xW0XbFgMfaFhgM5KtSWYf+DmFdlREzH9anZjBkWZa4o3J68OndU+J1H7JiNlNxo7VxrvO7FBc1G+BWNRoO09kQpYXezMlc0xfH/Od9PmxWtVJQGt/b8nTdc6f/Tf4p8xuQ4s5n0J98V3XqozYIS5+L3uBJc388hDqW6fE7bYUItk+zrB9oIeHSLpyQn5TC1y8NLxhBKzeUl0foGLFbZADXXUBLW5t1Ty9km2u4w7A8ti9+s/gL1zabXvDThnk0TOOYbGLFtfbjG1mUj4tKKuyJT+mOTUkY4bc61g/y440WeoErnT7fu01w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lm3UplaUFnYKBJsYFVbBmS9Qm+rUO9Ds3PrK+WruQuU=;
+ b=XLF+6T9AjQC+7RnNfBZ5tgJEuyxhDO/gDHmLdGwmodYObmtBaxevdo8XuFtPIeDW18slDQZXYW98ErHNWu90wCbLoe0IUKheOR46Fbr2+RfNg9AeOT1Kl27mNU0QkVL1DxLgYRhF44xRlkAHPeMZf7WmnYL0ZywuPItBUEQ8Ekw7jMgESOuucU8yRUxjwxJ2NPXqQp77fHdBNoq42dmBS8YrTFdg0jSMyOFGMOfA6giHPNiyotQ2vQJh8A6/5A04+z7FllnphLqKuySrgx6lTCNTqmqliauwJRj3uP4OTPwp8Dhsms0pe6Y2GlrLV42zGTe4+3NjzayLe80Sg0fnqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=ericsson.com;dmarc=pass action=none
+ header.from=ericsson.com;dkim=pass header.d=ericsson.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ericsson.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lm3UplaUFnYKBJsYFVbBmS9Qm+rUO9Ds3PrK+WruQuU=;
+ b=e8IZjZitcQPuop0sg8Oflj3tegVd7eFF/JWeLtoLrfm6lS5wI6TOKQIrQS/lMPlJg1l9G7X6Xkc+1fhJXqckgRchbHDYe5fD/E6q3KneHiqXPXbapWhF3URGNA/emVf+X6/kHWh7M0p9H8DdAHLix5j/XwJK/2o+Xpo3p7fPHNQ=
+Received: from AM6PR07MB5639.eurprd07.prod.outlook.com (20.178.91.76) by
+ AM6PR07MB5606.eurprd07.prod.outlook.com (20.178.90.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2073.8; Wed, 10 Jul 2019 12:59:41 +0000
+Received: from AM6PR07MB5639.eurprd07.prod.outlook.com
+ ([fe80::a530:36cf:3e2a:a12f]) by AM6PR07MB5639.eurprd07.prod.outlook.com
+ ([fe80::a530:36cf:3e2a:a12f%6]) with mapi id 15.20.2073.008; Wed, 10 Jul 2019
+ 12:59:41 +0000
+From:   Jan Szewczyk <jan.szewczyk@ericsson.com>
+To:     David Ahern <dsahern@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: Question about linux kernel commit: "net/ipv6: move metrics from
+ dst to rt6_info"
+Thread-Topic: Question about linux kernel commit: "net/ipv6: move metrics from
+ dst to rt6_info"
+Thread-Index: AdU2+HKrTE257Ye/RNyCdrk4RqkOOgAImVWAAADYahA=
+Date:   Wed, 10 Jul 2019 12:59:41 +0000
+Message-ID: <AM6PR07MB5639E2AEF438DD017246DF13F2F00@AM6PR07MB5639.eurprd07.prod.outlook.com>
+References: <AM6PR07MB56397A8BC53D9A525BC9C489F2F00@AM6PR07MB5639.eurprd07.prod.outlook.com>
+ <cb0674df-8593-f14b-f680-ce278042c88c@gmail.com>
+In-Reply-To: <cb0674df-8593-f14b-f680-ce278042c88c@gmail.com>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jan.szewczyk@ericsson.com; 
+x-originating-ip: [193.105.24.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c8bd551f-f74f-4da7-e1d1-08d705367926
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:AM6PR07MB5606;
+x-ms-traffictypediagnostic: AM6PR07MB5606:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <AM6PR07MB560694461880F1BD1AE03FAEF2F00@AM6PR07MB5606.eurprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1923;
+x-forefront-prvs: 0094E3478A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(13464003)(189003)(199004)(51914003)(2501003)(44832011)(6436002)(66946007)(66066001)(229853002)(476003)(76116006)(33656002)(66446008)(4326008)(110136005)(14454004)(64756008)(486006)(6116002)(3846002)(11346002)(68736007)(66556008)(71190400001)(81166006)(256004)(14444005)(305945005)(86362001)(6506007)(8936002)(76176011)(53546011)(7736002)(26005)(102836004)(478600001)(6306002)(53936002)(55016002)(9686003)(186003)(52536014)(81156014)(316002)(446003)(66476007)(8676002)(966005)(2906002)(74316002)(6246003)(99286004)(25786009)(7696005)(71200400001)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR07MB5606;H:AM6PR07MB5639.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: ericsson.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: VP1bsB39/Vt0eRLpxUn1Uh6708HC0E71pymm1+oZbM4GpFT+CYVRKKO/J7NehlSvhCicDbZli3C9WwEriqYdfbmR/cUykbBWBlWoRQiMB6UdIzQTX/F/MSGJc/jVaLpo/26Sob3+hK1XFc6y5q+a5cNp/u+2pdjsc5WkxJkJIPa0/w1T96JBk+8VY/8Z/5Uidsg0AMqajKvI2DoMVqlBrFQOmBq+dUP8LRfvz73qGP693GCNMcUR+Kehc2nA3mwD30XPn6+6ocJLyYbYwLjg7p3rn/Gdih7Ax0oQ50Z/PJ7IdqzvjuCm5eLNnnuFSbWSTMF9AxuYsMlolZ0L5np9+P0UJndtxl+0k+UnH15aFFNS9p8YD+rtLk5JeJ9ejeYQZIV3DjazCcqLPmdtlnqzic/Yv7lYoM7fP/TEhoO6CTY=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: ericsson.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8bd551f-f74f-4da7-e1d1-08d705367926
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2019 12:59:41.4109
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 92e84ceb-fbfd-47ab-be52-080c6b87953f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jan.szewczyk@ericsson.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR07MB5606
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a man page describing the newly added TC mpls manipulation actions.
+Hi!
+I digged up a little further and maybe it's not a problem with MTU itself. =
+I checked every entry I get from RTM_GETROUTE netlink message and after tri=
+ggering "too big packet" by pinging ipv6address I get exactly the same mess=
+ages on 4.12 and 4.18, except that the one with that pinged ipv6address is =
+missing on 4.18 at all. What is weird - it's visible when running "ip route=
+ get to ipv6address". Do you know why there is a mismatch there?
 
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- man/man8/tc-mpls.8 | 156 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 156 insertions(+)
- create mode 100644 man/man8/tc-mpls.8
+It's not easy for me to check this behavior on 4.19, because we have a pret=
+ty complex system here, but maybe I could try to reproduce it locally on so=
+me virtual box and check if it behaves the same.
 
-diff --git a/man/man8/tc-mpls.8 b/man/man8/tc-mpls.8
-new file mode 100644
-index 0000000..84ef2ef
---- /dev/null
-+++ b/man/man8/tc-mpls.8
-@@ -0,0 +1,156 @@
-+.TH "MPLS manipulation action in tc" 8 "22 May 2019" "iproute2" "Linux"
-+
-+.SH NAME
-+mpls - mpls manipulation module
-+.SH SYNOPSIS
-+.in +8
-+.ti -8
-+.BR tc " ... " "action mpls" " { "
-+.IR POP " | " PUSH " | " MODIFY " | "
-+.BR dec_ttl " } [ "
-+.IR CONTROL " ]"
-+
-+.ti -8
-+.IR POP " := "
-+.BR pop " " protocol
-+.IR MPLS_PROTO
-+
-+.ti -8
-+.IR PUSH " := "
-+.BR push " [ " protocol
-+.IR MPLS_PROTO " ]"
-+.RB " [ " tc
-+.IR MPLS_TC " ] "
-+.RB " [ " ttl
-+.IR MPLS_TTL " ] "
-+.RB " [ " bos
-+.IR MPLS_BOS " ] "
-+.BI label " MPLS_LABEL"
-+
-+.ti -8
-+.IR MODIFY " := "
-+.BR modify " [ " label
-+.IR MPLS_LABEL " ]"
-+.RB " [ " tc
-+.IR MPLS_TC " ] "
-+.RB " [ " ttl
-+.IR MPLS_TTL " ] "
-+
-+.ti -8
-+.IR CONTROL " := { "
-+.BR reclassify " | " pipe " | " drop " | " continue " | " pass " | " goto " " chain " " CHAIN_INDEX " }"
-+.SH DESCRIPTION
-+The
-+.B mpls
-+action performs mpls encapsulation or decapsulation on a packet, reflected by the
-+operation modes
-+.IR POP ", " PUSH ", " MODIFY " and " DEC_TTL .
-+The
-+.I POP
-+mode requires the ethertype of the header that follows the MPLS header (e.g.
-+IPv4 or another MPLS). It will remove the outer MPLS header and replace the
-+ethertype in the MAC header with that passed. The
-+.IR PUSH " and " MODIFY
-+modes update the current MPLS header information or add a new header.
-+.IR PUSH
-+requires at least an
-+.IR MPLS_LABEL ". "
-+.I DEC_TTL
-+requires no arguments and simply subtracts 1 from the MPLS header TTL field.
-+
-+.SH OPTIONS
-+.TP
-+.B pop
-+Decapsulation mode. Requires the protocol of the next header.
-+.TP
-+.B push
-+Encapsulation mode. Requires at least the
-+.B label
-+option.
-+.TP
-+.B modify
-+Replace mode. Existing MPLS tag is replaced.
-+.BR label ", "
-+.BR tc ", "
-+and
-+.B ttl
-+are all optional.
-+.TP
-+.B dec_ttl
-+Decrement the TTL field on the outer most MPLS header.
-+.TP
-+.BI label " MPLS_LABEL"
-+Specify the MPLS LABEL for the outer MPLS header.
-+.I MPLS_LABEL
-+is an unsigned 20bit integer, the format is detected automatically (e.g. prefix
-+with
-+.RB ' 0x '
-+for hexadecimal interpretation, etc.).
-+.TP
-+.BI protocol " MPLS_PROTO"
-+Choose the protocol to use. For push actions this must be
-+.BR mpls_uc " or " mpls_mc " (" mpls_uc
-+is the default). For pop actions it should be the protocol of the next header.
-+This option cannot be used with modify.
-+.TP
-+.BI tc " MPLS_TC"
-+Choose the TC value for the outer MPLS header. Decimal number in range of 0-7.
-+Defaults to 0.
-+.TP
-+.BI ttl " MPLS_TTL"
-+Choose the TTL value for the outer MPLS header. Number in range of 0-255. A
-+non-zero default value will be selected if this is not explicitly set.
-+.TP
-+.BI bos " MPLS_BOS"
-+Manually configure the bottom of stack bit for an MPLS header push. The default
-+is for TC to automatically set (or unset) the bit based on the next header of
-+the packet.
-+.TP
-+.I CONTROL
-+How to continue after executing this action.
-+.RS
-+.TP
-+.B reclassify
-+Restarts classification by jumping back to the first filter attached to this
-+action's parent.
-+.TP
-+.B pipe
-+Continue with the next action, this is the default.
-+.TP
-+.B drop
-+Packet will be dropped without running further actions.
-+.TP
-+.B continue
-+Continue classification with next filter in line.
-+.TP
-+.B pass
-+Return to calling qdisc for packet processing. This ends the classification
-+process.
-+.RE
-+.SH EXAMPLES
-+The following example encapsulates incoming IP packets on eth0 into MPLS with
-+a label 123 and sends them out eth1:
-+
-+.RS
-+.EX
-+#tc qdisc add dev eth0 handle ffff: ingress
-+#tc filter add dev eth0 protocol ip parent ffff: flower \\
-+	action mpls push protocol mpls_uc label 123  \\
-+	action mirred egress redirect dev eth1
-+.EE
-+.RE
-+
-+In this example, incoming MPLS unicast packets on eth0 are decapsulated and to
-+ip packets and output to eth1:
-+
-+.RS
-+.EX
-+#tc qdisc add dev eth0 handle ffff: ingress
-+#tc filter add dev eth0 protocol mpls_uc parent ffff: flower \\
-+	action mpls pop protocol ipv4  \\
-+	action mirred egress redirect dev eth0
-+.EE
-+.RE
-+
-+.SH SEE ALSO
-+.BR tc (8)
--- 
-2.7.4
+Thanks for the tip about the testing tools, I'll try to use them.
+
+BR,
+Jan Szewczyk
+
+-----Original Message-----
+From: David Ahern <dsahern@gmail.com>=20
+Sent: Wednesday, July 10, 2019 14:28
+To: Jan Szewczyk <jan.szewczyk@ericsson.com>; davem@davemloft.net
+Cc: netdev@vger.kernel.org
+Subject: Re: Question about linux kernel commit: "net/ipv6: move metrics fr=
+om dst to rt6_info"
+
+[ adding netdev so others can chime in ]
+
+On 7/10/19 2:28 AM, Jan Szewczyk wrote:
+> Hi guys!
+>=20
+> We can see different behavior of one of our commands that supposed to=20
+> show pmtu information.
+>=20
+> It's using netlink message RTM_GETROUTE to get the information and in=20
+> Linux kernel version 4.12 after sending big packet (and triggering=20
+> "packet too big") there is an entry with PMTU and expiration time.
+>=20
+> In the version 4.18 unfortunately the entry looks different and there=20
+> is no PMTU information.
+
+Can you try with 4.19.58 (latest stable release for 4.19)? Perhaps there wa=
+s a bugfix that is missing from 4.18.
+
+The kernel has 2 commands under tools/testing/selftests/net -- pmtu.sh and =
+icmp_redirect.sh -- that verify exceptions are created and use 'ip ro get' =
+to verify the mtu.
+
+
+>=20
+> I can see that in your commit
+> https://protect2.fireeye.com/url?k=3D5be21a17-07361dbb-5be25a8c-8667c4af
+> e13e-f99413291ecbed59&q=3D1&u=3Dhttps%3A%2F%2Fgithub.com%2Ftorvalds%2Flin=
+u
+> x%2Fcommit%2Fd4ead6b34b67fd711639324b6465a050bcb197d4,
+> these lines disappeared from route.c:
+>=20
+> =A0
+>=20
+> =A0=A0=A0=A0 if (rt->rt6i_pmtu)
+>=20
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 metrics[RTAX_MTU - 1] =3D rt->rt6i_pmtu;
+>=20
+> =A0
+>=20
+> I'm very beginner in linux kernel code, can you help me and tell me if=20
+> that could cause this different behavior?
+>=20
+> =A0
+>=20
+> =A0
+>=20
+> BR,
+>=20
+> Jan Szewczyk
+>=20
 
