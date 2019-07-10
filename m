@@ -2,98 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5C964F1E
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 01:13:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD8A64F27
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 01:15:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727625AbfGJXNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 19:13:40 -0400
-Received: from mail.us.es ([193.147.175.20]:54868 "EHLO mail.us.es"
+        id S1727653AbfGJXPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 19:15:40 -0400
+Received: from mga18.intel.com ([134.134.136.126]:55802 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726708AbfGJXNk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 19:13:40 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 2683081403
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 01:13:38 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 150E5CE158
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 01:13:38 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 0AC47DA4D1; Thu, 11 Jul 2019 01:13:38 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C83DBDA801;
-        Thu, 11 Jul 2019 01:13:35 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 11 Jul 2019 01:13:35 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [31.4.194.134])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A09574265A31;
-        Thu, 11 Jul 2019 01:13:35 +0200 (CEST)
-Date:   Thu, 11 Jul 2019 01:13:33 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     davem@davemloft.net, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net/sched: Fix kernel NULL pointer dereference
-Message-ID: <20190710231333.lxdsdhvla3otugsr@salvia>
-References: <1562766304-20272-1-git-send-email-wenxu@ucloud.cn>
- <20190710220337.tbflwdku4332ewo5@salvia>
+        id S1727220AbfGJXPk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 19:15:40 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Jul 2019 16:14:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,476,1557212400"; 
+   d="scan'208";a="159900747"
+Received: from tassilo.jf.intel.com (HELO tassilo.localdomain) ([10.7.201.137])
+  by orsmga008.jf.intel.com with ESMTP; 10 Jul 2019 16:14:39 -0700
+Received: by tassilo.localdomain (Postfix, from userid 1000)
+        id 209D23019F7; Wed, 10 Jul 2019 16:14:39 -0700 (PDT)
+Date:   Wed, 10 Jul 2019 16:14:39 -0700
+From:   Andi Kleen <ak@linux.intel.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Paolo Pisati <p.pisati@gmail.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [RESEND] test_verifier #13 fails on arm64: "retval 65507 != -29"
+Message-ID: <20190710231439.GD32439@tassilo.jf.intel.com>
+References: <20190701115414.GA4452@harukaze>
+ <68248069-bcf6-69dd-b0a9-f4ec11e50092@fb.com>
+ <20190710100248.GA32281@harukaze>
+ <CAEf4BzayQ+bEKFHcs8cUDcVnwPpQ2_2gzPaxX-j38r=AWDzVvg@mail.gmail.com>
+ <CAEf4Bzbtpqk-9ELnHFsHo278b5T4Z-2CgNnNbOqbD5Ocbuc-fg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190710220337.tbflwdku4332ewo5@salvia>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <CAEf4Bzbtpqk-9ELnHFsHo278b5T4Z-2CgNnNbOqbD5Ocbuc-fg@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 12:03:37AM +0200, Pablo Neira Ayuso wrote:
-> On Wed, Jul 10, 2019 at 09:45:04PM +0800, wenxu@ucloud.cn wrote:
-> > From: wenxu <wenxu@ucloud.cn>
-> > 
-> > [  697.665184] BUG: kernel NULL pointer dereference, address: 0000000000000030
-> > [  697.665550] #PF: supervisor read access in kernel mode
-> > [  697.665906] #PF: error_code(0x0000) - not-present page
-> > [  697.666297] PGD 800000104e636067 P4D 800000104e636067 PUD ff4b02067 PMD 0
-> > [  697.666710] Oops: 0000 [#1] SMP PTI
-> > [  697.667115] CPU: 31 PID: 24466 Comm: modprobe Kdump: loaded Tainted: G           O      5.2.0-rc6+ #1
-> > [  697.667867] Hardware name: Huawei Technologies Co., Ltd. RH1288 V3/BC11HGSC0, BIOS 3.57 02/26/2017
-> > [  697.668620] RIP: 0010:tc_indr_block_ing_cmd.isra.52+0x4c/0xb0
-> > [  697.669029] Code: 83 ec 40 65 48 8b 04 25 28 00 00 00 48 89 45 e8 31 c0 f3 48 ab 48 8b 06 49 8b b3 e8 04 00 00 44 89 45 b0 c7 45 b4 01 00 00 00 <8b> 48 30 48 89 75 c0 85 c9 48 8d 4d b0 0f 95 45 b8 48 85 c0 4c 8d
-> > [  697.670132] RSP: 0018:ffffc90007bf7958 EFLAGS: 00010246
-> > [  697.670537] RAX: 0000000000000000 RBX: ffff88905e2cbae8 RCX: 0000000000000000
-> > [  697.670938] RDX: ffff88905e2cbcd8 RSI: ffffffff823a8480 RDI: ffffc90007bf7990
-> > [  697.671352] RBP: ffffc90007bf79a8 R08: 0000000000000000 R09: ffff88905e2cbcc0
-> > [  697.671761] R10: ffff888107c07780 R11: ffff88902c249000 R12: ffff88905e2cbcd0
-> > [  697.672173] R13: ffff88905e2cbac0 R14: ffff88885596bc00 R15: ffff88905e2cbcc0
-> > [  697.672582] FS:  00007fe0b4095740(0000) GS:ffff88905fbc0000(0000) knlGS:0000000000000000
-> > [  697.673335] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  697.673746] CR2: 0000000000000030 CR3: 0000000ff46b4005 CR4: 00000000001606e0
-> > [  697.674156] Call Trace:
-> > [  697.674563]  __tc_indr_block_cb_register+0x11e/0x3c0
-> > [  697.674998]  mlx5e_nic_rep_netdevice_event+0x9e/0x110 [mlx5_core]
-> > [  697.675411]  notifier_call_chain+0x53/0xa0
-> > [  697.675812]  raw_notifier_call_chain+0x16/0x20
-> > [  697.676223]  call_netdevice_notifiers_info+0x2d/0x60
-> > [  697.676633]  register_netdevice+0x3fa/0x500
-> > 
-> > get indr_dev->block after check it.
-> > 
-> > Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
-> > Signed-off-by: wenxu <wenxu@ucloud.cn>
-> 
-> Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> > Reading csum_partial/csum_fold, seems like after calculation of
+> > checksum (so-called unfolded checksum), it is supposed to be passed
+> > into csum_fold() to convert it into 16-bit one and invert.
 
-Please, toss this patch.
+Yes, you always need to fold at the end.
 
-Vlad's patch provides a more complete fix.
+The low level code does fold sometimes, but not always.
+
+-Andi
