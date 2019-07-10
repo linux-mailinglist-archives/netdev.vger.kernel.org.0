@@ -2,68 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E7564A50
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 18:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A821564A58
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 18:01:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727874AbfGJQAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 12:00:07 -0400
-Received: from mail-qk1-f171.google.com ([209.85.222.171]:43333 "EHLO
-        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727776AbfGJQAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 12:00:06 -0400
-Received: by mail-qk1-f171.google.com with SMTP id m14so2267925qka.10
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 09:00:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=AC+JysO1v7hiMPuJ82baaEu63vs9RmmoelhSWD247e8=;
-        b=EuhdaalrJj4+L15r6zbN5ZmmZm1w/oL0VIg7kzORIOvW38rAUNY4a0Er4ALc/MR6IJ
-         uPAcIYyUA3Tlnp9P9/6RySrmmuXHQzS0m0F9PwiGc2m19u5Ccdo9xTFdSVwtdT9ekmZ9
-         CR0j6JJTZW4PZsVSnaPqVSCL19pSj3Rjb8UQrGNX1ce54eHPD2u/ScEeOL2PLBMGPv3Q
-         3LLvvbaBYbsLTVnfcykNdssID4ABLl9t04/u9F6vcV3Acl0p2nqgt9pWV7YFMnRX8e0i
-         LTIyDzAjyWHXUThQoMrPXx7zIRSq3UqaLWZE2lYYQzTLYYMkp8nacqcgyWLHMrOH0s5H
-         58bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=AC+JysO1v7hiMPuJ82baaEu63vs9RmmoelhSWD247e8=;
-        b=gVqS0aipcCUIVu3N9W07xpyhOTBJ+FhRUZJ1MFowqmPdAjwtjnUS1a9mmgs8rn/RJM
-         tnCksH2kOGl0UiyopNEdEBxxT7J+W+idGoKPhvhGELt0hxrURrOE3BGMVLU3zZiy2jPr
-         HHfpJ82/vzma+I91wP9bLGAkt8lw+V+i/4Uu9gBQpbm5dR0+2HwTYDy0kULh3F1CMgY7
-         zdDXSAv7S9Csn+5HcwZ3hAvd0xIbI7LpnMauOoPsw2yb5MHhLlfrJtDDKrgL0AsJERd8
-         Ri+FLjnsIQnyRgbvzbmjRD+lZTLYdWSxKz5ubkpnUojjrAQujlavfecvCkplvWnpNCcs
-         duJw==
-X-Gm-Message-State: APjAAAXD1sBQPEFDinPIXJtW40PCDzJwYY+TKK15kuQS+H6vGNfAF6my
-        5mGTskJp47eknswXS8NZ8U2UkbXtIDPudDBl2PQ=
-X-Google-Smtp-Source: APXvYqzVX22CUvwDUOQ34wPArOqdRiUSQ3Ledwf9uTd8b23rBf4jAzEp9pxf6N0XyQUzekNZ5fuYueLh01lyGIlYikk=
-X-Received: by 2002:a37:51d5:: with SMTP id f204mr22295222qkb.221.1562774405678;
- Wed, 10 Jul 2019 09:00:05 -0700 (PDT)
+        id S1728382AbfGJQBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 12:01:34 -0400
+Received: from smtprelay0176.hostedemail.com ([216.40.44.176]:56551 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726333AbfGJQBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 12:01:33 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id A05E28368EF4;
+        Wed, 10 Jul 2019 16:01:31 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 
+X-HE-Tag: balls52_46dfd74d6cd5c
+X-Filterd-Recvd-Size: 2713
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf18.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 10 Jul 2019 16:01:26 +0000 (UTC)
+Message-ID: <c94a0a50c41c7530354b4a662ee945212424c8c7.camel@perches.com>
+Subject: Re: [PATCH 00/12] treewide: Fix GENMASK misuses
+From:   Joe Perches <joe@perches.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-wireless@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Date:   Wed, 10 Jul 2019 09:01:25 -0700
+In-Reply-To: <b9c3b83c9be50286062ae8cefd5d38e2baa0fb22.camel@perches.com>
+References: <cover.1562734889.git.joe@perches.com>
+         <5fa1fa6998332642c49e2d5209193ffe2713f333.camel@sipsolutions.net>
+         <20190710094337.wf2lftxzfjq2etro@shell.armlinux.org.uk>
+         <b9c3b83c9be50286062ae8cefd5d38e2baa0fb22.camel@perches.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Received: by 2002:a0c:d684:0:0:0:0:0 with HTTP; Wed, 10 Jul 2019 09:00:05
- -0700 (PDT)
-Reply-To: eddywilliam0003@gmail.com
-From:   eddy william <kagnalex@gmail.com>
-Date:   Wed, 10 Jul 2019 18:00:05 +0200
-Message-ID: <CACemp=7GRC4GohbgVdjpExiQGk1PugjQTFOoyrAFnsuCPzSrXw@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+On Wed, 2019-07-10 at 08:45 -0700, Joe Perches wrote:
+> On Wed, 2019-07-10 at 10:43 +0100, Russell King - ARM Linux admin wrote:
+> > On Wed, Jul 10, 2019 at 11:17:31AM +0200, Johannes Berg wrote:
+> > > On Tue, 2019-07-09 at 22:04 -0700, Joe Perches wrote:
+> > > > These GENMASK uses are inverted argument order and the
+> > > > actual masks produced are incorrect.  Fix them.
+> > > > 
+> > > > Add checkpatch tests to help avoid more misuses too.
+> > > > 
+> > > > Joe Perches (12):
+> > > >   checkpatch: Add GENMASK tests
+> > > 
+> > > IMHO this doesn't make a lot of sense as a checkpatch test - just throw
+> > > in a BUILD_BUG_ON()?
+> 
+> I tried that.
+> 
+> It'd can't be done as it's used in declarations
+> and included in asm files and it uses the UL()
+> macro.
+> 
+> I also tried just making it do the right thing
+> whatever the argument order.
 
-My name is Eddy William I am a lawyer by profession. I wish to offer you
-the next of kin to my client. You will inherit the sum of ($14.2 Million)
-dollars my client left in the bank before his death.
+I forgot.
 
-My client is a citizen of your country who died in auto crash with his wife
-and only son. I will be entitled with 50% of the total fund while 50% will
-be for you.
-Please contact my private email here for more details:eddywilliam0003gmail.com
+I also made all those arguments when it was
+introduced in 2013.
 
-Many thanks in advance,
-Mr.Eddy William ,
+https://lore.kernel.org/patchwork/patch/414248/
+
+> Oh well.
+
+yeah.
+
+
