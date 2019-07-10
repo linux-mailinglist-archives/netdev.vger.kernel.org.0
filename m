@@ -2,109 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 192FB642DA
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D275642EA
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 09:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727351AbfGJH3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 03:29:52 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:41198 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726979AbfGJH3w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:29:52 -0400
-Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id 4429E25B7D5;
-        Wed, 10 Jul 2019 17:29:50 +1000 (AEST)
-Received: by reginn.horms.nl (Postfix, from userid 7100)
-        id 3CF689402F1; Wed, 10 Jul 2019 09:29:48 +0200 (CEST)
-Date:   Wed, 10 Jul 2019 09:29:48 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     xianfengting221@163.com, Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     wensong@linux-vs.org, ja@ssi.bg, pablo@netfilter.org,
-        kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ipvs: Delete some unused space characters in Kconfig
-Message-ID: <20190710072948.mpg4niors42zrqhc@verge.net.au>
-References: <1562473009-29726-1-git-send-email-xianfengting221@163.com>
+        id S1727370AbfGJHc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 03:32:56 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:45793 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727290AbfGJHc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 03:32:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1562743975; x=1594279975;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=sjG8ku6+W5v5awx8flcDasikc66jlGfghcpLlMkY5xU=;
+  b=iu9bCyfIJEVTU1ETcj0yR+4k0NAm0CO1ba6UCB8GSO1zzDDGYN8kShIi
+   kyUuT3QxeT6pgK82PAs6qgBv3R0wypW+84HTimwfsAt1kusWVqaJhOm7j
+   UYcESwxZcJ4+Vf9KJZDD+iTqaLwrFUyoW8kD9gSxZs3pyGP5+4kIjaEQJ
+   0=;
+X-IronPort-AV: E=Sophos;i="5.62,473,1554768000"; 
+   d="scan'208";a="773977521"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 10 Jul 2019 07:32:54 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com (Postfix) with ESMTPS id 652ECA1FCD;
+        Wed, 10 Jul 2019 07:32:52 +0000 (UTC)
+Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 10 Jul 2019 07:32:51 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.160.245) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 10 Jul 2019 07:32:46 +0000
+Subject: Re: [PATCH v6 rdma-next 0/6] RDMA/qedr: Use the doorbell overflow
+ recovery mechanism for RDMA
+To:     Michal Kalderon <michal.kalderon@marvell.com>,
+        <ariel.elior@marvell.com>, <jgg@ziepe.ca>, <dledford@redhat.com>
+CC:     <linux-rdma@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <sleybo@amazon.com>
+References: <20190709141735.19193-1-michal.kalderon@marvell.com>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <7b2f2205-6b5d-c9e7-2d59-296367e517ac@amazon.com>
+Date:   Wed, 10 Jul 2019 10:32:41 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562473009-29726-1-git-send-email-xianfengting221@163.com>
-Organisation: Horms Solutions BV
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190709141735.19193-1-michal.kalderon@marvell.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.160.245]
+X-ClientProxiedBy: EX13D25UWB001.ant.amazon.com (10.43.161.245) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 07, 2019 at 12:16:49PM +0800, xianfengting221@163.com wrote:
-> From: Hu Haowen <xianfengting221@163.com>
+On 09/07/2019 17:17, Michal Kalderon wrote:
+> This patch series uses the doorbell overflow recovery mechanism
+> introduced in
+> commit 36907cd5cd72 ("qed: Add doorbell overflow recovery mechanism")
+> for rdma ( RoCE and iWARP )
 > 
-> The space characters at the end of lines are always unused and
-> not easy to find. This patch deleted some of them I have found
-> in Kconfig.
+> The first three patches modify the core code to contain helper
+> functions for managing mmap_xa inserting, getting and freeing
+> entries. The code was taken almost as is from the efa driver.
+> There is still an open discussion on whether we should take
+> this even further and make the entire mmap generic. Until a
+> decision is made, I only created the database API and modified
+> the efa and qedr driver to use it. The doorbell recovery code will be based
+> on the common code.
 > 
-> Signed-off-by: Hu Haowen <xianfengting221@163.com>
-> ---
-> 
-> This is my first patch to the Linux kernel, so please forgive
-> me if anything went wrong.
+> Efa driver was compile tested only.
 
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
-
-Thanks Hu,
-
-this looks good to me.
-
-Pablo, please consider this for inclusion in nf-next.
-
-> 
->  net/netfilter/ipvs/Kconfig | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
-> index f6f1a0d..54afad5 100644
-> --- a/net/netfilter/ipvs/Kconfig
-> +++ b/net/netfilter/ipvs/Kconfig
-> @@ -120,7 +120,7 @@ config	IP_VS_RR
->  
->  	  If you want to compile it in kernel, say Y. To compile it as a
->  	  module, choose M here. If unsure, say N.
-> - 
-> +
->  config	IP_VS_WRR
->  	tristate "weighted round-robin scheduling"
->  	---help---
-> @@ -138,7 +138,7 @@ config	IP_VS_LC
->          tristate "least-connection scheduling"
->  	---help---
->  	  The least-connection scheduling algorithm directs network
-> -	  connections to the server with the least number of active 
-> +	  connections to the server with the least number of active
->  	  connections.
->  
->  	  If you want to compile it in kernel, say Y. To compile it as a
-> @@ -193,7 +193,7 @@ config  IP_VS_LBLCR
->  	tristate "locality-based least-connection with replication scheduling"
->  	---help---
->  	  The locality-based least-connection with replication scheduling
-> -	  algorithm is also for destination IP load balancing. It is 
-> +	  algorithm is also for destination IP load balancing. It is
->  	  usually used in cache cluster. It differs from the LBLC scheduling
->  	  as follows: the load balancer maintains mappings from a target
->  	  to a set of server nodes that can serve the target. Requests for
-> @@ -250,8 +250,8 @@ config	IP_VS_SED
->  	tristate "shortest expected delay scheduling"
->  	---help---
->  	  The shortest expected delay scheduling algorithm assigns network
-> -	  connections to the server with the shortest expected delay. The 
-> -	  expected delay that the job will experience is (Ci + 1) / Ui if 
-> +	  connections to the server with the shortest expected delay. The
-> +	  expected delay that the job will experience is (Ci + 1) / Ui if
->  	  sent to the ith server, in which Ci is the number of connections
->  	  on the ith server and Ui is the fixed service rate (weight)
->  	  of the ith server.
-> -- 
-> 2.7.4
-> 
-> 
+For the whole series:
+Tested-by: Gal Pressman <galpress@amazon.com>
