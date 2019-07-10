@@ -2,151 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18CD3649D4
-	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 17:39:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E2C6649DC
+	for <lists+netdev@lfdr.de>; Wed, 10 Jul 2019 17:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727774AbfGJPi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 11:38:59 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:36702 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbfGJPi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 11:38:59 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6AFXpjV140644;
-        Wed, 10 Jul 2019 15:37:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id :
- mime-version : date : from : to : cc : subject : content-type :
- content-transfer-encoding; s=corp-2018-07-02;
- bh=RoOPOjQgj2XYASbiBhpR/1oApLKROklq3dcoMH9Dp4M=;
- b=lsDAwrPmHqsQB+Iaaw5ADhMtvebDrQoFVAS1sBi13MaorrlgkynlYaVcm2iwBodPz3s4
- q2kMQ+Bg6wSRPVnmPEoQL6mbarYBOSptxvQ4ONVAAcHnlhEpCJwbGXWklNeRgByFHDyX
- nN5zW2KhsyRjrWnuqITsJ/3Q9l7MQ173HVfZCli9T8wTj4hL8QNw+xl3h8a595OyYJ57
- K8CEwpP8wjYlxD0Zs9PtZNSMBR23m10B8NQLMlvKvx5bRC8oimxJC2V+YRGIKS9tu2fC
- G5CrVL6oYOWOzdB/OlsgtMC/pAhp+g4z3CMpfvILq4tWtMtMuLxnk+MKisQBAhifkPLc ag== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2tjm9qtwwf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Jul 2019 15:37:58 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6AFWjX3056498;
-        Wed, 10 Jul 2019 15:37:57 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 2tmwgxjj8e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 10 Jul 2019 15:37:57 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6AFbvkv069541;
-        Wed, 10 Jul 2019 15:37:57 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2tmwgxjj88-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Jul 2019 15:37:57 +0000
-Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x6AFboMR015946;
-        Wed, 10 Jul 2019 15:37:50 GMT
-Message-Id: <201907101537.x6AFboMR015946@aserv0122.oracle.com>
-Received: from localhost (/10.159.211.102) by default (Oracle Beehive Gateway
- v4.0) with ESMTP ; Wed, 10 Jul 2019 08:37:49 -0700
+        id S1727586AbfGJPle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 11:41:34 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37673 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727401AbfGJPld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 11:41:33 -0400
+Received: by mail-wm1-f66.google.com with SMTP id f17so2760438wme.2
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 08:41:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=T+2tQIN8GgQEhwrzV9RlnqNsJ9sZaX6RCnruMD/vfzQ=;
+        b=OkDzTJehaqhd1eYBmvwR+2ImL/wB1IzbkCso176viuBzHBjxLynt/A2VBv81uYHMjN
+         hiL975acFJKDhkYb5xnratCOyG7o3EYPtdZHUOmL/1DAbeF+Do66iBGP1HCvR0jowaPp
+         VgZX7JO7Q1nfFqlIibEm1zLRnz2qFgwvSXWglx4cOQZjztu4kHQSChqHXuGFiPyhFVhQ
+         8gNWi79wfAf/EGnjLs2Wkg3RD/PH0MztY3ycbQXtcLz5Mwv6L7J6u0r9h/jy8bQdRRYE
+         /9Rg0t7Pa+9wLg7ZJx4geJifzy6ET72ZBZ1+y451fjv8JyjUhDYK7FI/ZPzJrzX9Duu5
+         NGIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=T+2tQIN8GgQEhwrzV9RlnqNsJ9sZaX6RCnruMD/vfzQ=;
+        b=IyiRxFPLtkzvx8zo2h5EiO2+oAAVkVk7nsOI5LhZoK2McRrfA5xx5/EllpRY3ZPtwZ
+         iA2fUKP0KgurV+4O7umRfNivwIRfzFJ/EH8QNYo7j/XlphsL4HIvGoGmimtDzoUUk0sM
+         o3l7CPUiOMhRdXI7ha0iHQmWV3Ug/M9JZIb6tTkbfdk+TbLsumLtLCw7qsG9UypVMzQx
+         95NiNH0FZzMQFP5EtOiCr7GEGQFtve4+yd7fNEfs+dVMFxzd4up4IpmHLP4W1KIY1I0e
+         WYf6NlvsbK8Za4vtoOSDrTAfddOmMmgzMbGHJx8jLOIOO/EmEd5GxSnnTiMZBgGOnyb2
+         VkJQ==
+X-Gm-Message-State: APjAAAX1fZSzFHQzsmaCzOuOY8Yp5y5FXQxj8RygDO4SJipuCa0JK1/U
+        soEHMPTteAW+vOoKGpuNh1QNIjft
+X-Google-Smtp-Source: APXvYqy5PGX66VT8a/C+1wLK5c89PUq6sMmKBuKqvvG5gffAaTF5D80kFueRXWIEoYFzO1pKAh4SPQ==
+X-Received: by 2002:a1c:f116:: with SMTP id p22mr5882447wmh.70.1562773291658;
+        Wed, 10 Jul 2019 08:41:31 -0700 (PDT)
+Received: from [192.168.8.147] (31.172.185.81.rev.sfr.net. [81.185.172.31])
+        by smtp.gmail.com with ESMTPSA id p4sm2873121wrs.35.2019.07.10.08.41.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 10 Jul 2019 08:41:30 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 0/3] net: batched receive in GRO path
+To:     Edward Cree <ecree@solarflare.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
+ <c80a9e7846bf903728327a1ca2c3bdcc078057a2.camel@redhat.com>
+ <677040f4-05d1-e664-d24a-5ee2d2edcdbd@solarflare.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <1735314f-3c6a-45fc-0270-b90cc4d5d6ba@gmail.com>
+Date:   Wed, 10 Jul 2019 17:41:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Date:   Wed, 10 Jul 2019 08:37:50 -0700 (PDT)
-From:   Kris Van Hees <kris.van.hees@oracle.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Cc:     rostedt@goodmis.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net,
-        Peter Zijlstra <peterz@infradead.org>, Chris Mason <clm@fb.com>
-Subject: [PATCH V2 0/1] tools/dtrace: initial implementation of DTrace
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9314 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1907100176
+In-Reply-To: <677040f4-05d1-e664-d24a-5ee2d2edcdbd@solarflare.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is version 2 of the patch, incorporating feedback from Peter Zijlstra and
-Arnaldo Carvalho de Melo.
 
-Changes in Makefile:
-	- Remove -I$(srctree)/tools/perf from KBUILD_HOSTCFLAGS since it
-	  is not actually used.
 
-Changes in dt_bpf.c:
-	- Remove unnecessary PERF_EVENT_IOC_ENABLE.
+On 7/10/19 4:52 PM, Edward Cree wrote:
 
-Changes in dt_buffer.c:
-	- Use ring_buffer_read_head() and ring_buffer_write_tail() to
-	  avoid use of volatile.
-	- Handle perf events that wrap around the ring buffer boundary.
-	- Remove unnecessary PERF_EVENT_IOC_ENABLE.
+> Hmm, I was caught out by the call to napi_poll() actually being a local
+>  function pointer, not the static function of the same name.  How did a
+>  shadow like that ever get allowed?
+> But in that case I _really_ don't understand napi_busy_loop(); nothing
+>  in it seems to ever flush GRO, so it's relying on either
+>  (1) stuff getting flushed because the bucket runs out of space, or
+>  (2) the next napi poll after busy_poll_stop() doing the flush.
+> What am I missing, and where exactly in napi_busy_loop() should the
+>  gro_normal_list() call go?
 
-Changes in bpf_sample.c:
-	- Use PT_REGS_PARM1(x), etc instead of my own macros.  Adding
-	  PT_REGS_PARM6(x) in bpf_sample.c because we need to be able to
-	  support up to 6 arguments passed by registers.
+Please look at busy_poll_stop()
 
-This patch is also available, applied to bpf-next, at the following URL:
-
-	https://github.com/oracle/dtrace-linux-kernel/tree/dtrace-bpf
-
-As suggested in feedback to my earlier patch submissions, this code takes an
-approach to avoid kernel code changes as much as possible.  The current patch
-does not involve any kernel code changes.  Further development of this code
-will continue with this approach, incrementally adding features to this first
-minimal implementation.  The goal is a fully featured and functional DTrace
-implementation involving kernel changes only when strictly necessary.
-
-The code presented here supports two very basic functions:
-
-1. Listing probes that are used in BPF programs
-
-   # dtrace -l -s bpf_sample.o
-      ID   PROVIDER            MODULE                          FUNCTION NAME
-   18876        fbt           vmlinux                        ksys_write entry
-   70423    syscall           vmlinux                             write entry
-
-2. Loading BPF tracing programs and collecting data that they generate
-
-   # dtrace -s bpf_sample.o
-   CPU     ID
-    15  70423 0xffff8c0968bf8ec0 0x00000000000001 0x0055e019eb3f60 0x0000000000002c
-    15  18876 0xffff8c0968bf8ec0 0x00000000000001 0x0055e019eb3f60 0x0000000000002c
-   ...
-
-Only kprobes and syscall tracepoints are supported since this is an initial
-patch.  It does show the use of a generic BPF function to implement the actual
-probe action, called from two distinct probe types.  Follow-up patches will
-add more probe types, add more tracing features from the D language, add
-support for D script compilation to BPF, etc.
-
-The implementation makes use of libbpf for handling BPF ELF objects, and uses
-the perf event output ring buffer (supported through BPF) to retrieve the
-tracing data.  The next step in development will be adding support to libbpf
-for programs using shared functions from a collection of functions included in
-the BPF ELF object (as suggested by Alexei).  
-
-The code is structured as follows:
- tools/dtrace/dtrace.c      = command line utility
- tools/dtrace/dt_bpf.c      = interface to libbpf
- tools/dtrace/dt_buffer.c   = perf event output buffer handling
- tools/dtrace/dt_fbt.c      = kprobes probe provider
- tools/dtrace/dt_syscall.c  = syscall tracepoint probe provider
- tools/dtrace/dt_probe.c    = generic probe and probe provider handling code
-                              This implements a generic interface to the actual
-                              probe providers (dt_fbt and dt_syscall).
- tools/dtrace/dt_hash.c     = general probe hashing implementation
- tools/dtrace/dt_utils.c    = support code (manage list of online CPUs)
- tools/dtrace/dtrace.h      = API header file (used by BPF program source code)
- tools/dtrace/dtrace_impl.h = implementation header file
- tools/dtrace/bpf_sample.c  = sample BPF program using two probe types
-
-I included an entry for the MAINTAINERS file.  I offer to actively maintain
-this code, and to keep advancing its development.
-
-	Cheers,
-	Kris Van Hees
