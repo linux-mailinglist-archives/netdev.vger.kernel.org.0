@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5005865FCC
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:54:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9988265FCD
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728975AbfGKSyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 14:54:23 -0400
+        id S1728657AbfGKSyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 14:54:38 -0400
 Received: from mail-eopbgr140083.outbound.protection.outlook.com ([40.107.14.83]:22784
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728927AbfGKSyX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 14:54:23 -0400
+        id S1726116AbfGKSyh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 14:54:37 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V9UO1Gfi5XfRZaDrsx9vcty7AKqXdsW/oDmYaMxfEeYERwc4pJXp1X5vdel0nCoxdNBjN9fphyQiWN6qGrSve44fGczEQDEcakLHBODmclrzRE67ySp3PDq5moNaqaJucOau02SxQ9nC6sHEl2vyJ/LlAPuI95liu9ScBjURYMvaoAAvbdttLgA53go0x7mUjKdwe36+Z+TntJMCyeqRHwy5NuQOOK3/rhh04o+zH7OXcJQVgoYf6xqYUOQnXSZn4ApXiRzrtbGEX19p/6t73tuEQYMXvlT7xhTrALt5/R0jN+4rtB37OKEp3/108MVHrY8dkLsL+HIgtVXdeJk5Aw==
+ b=nnL/rFbXyv5Zsk4TgDu0U5ooRY1LcPg0B6FTtNzGhze3kDCTTlF/4lZsSjjJXeFHo7RM8HwXOS4cPZkmxgWT5L0uBwBNp8aydrWdTeqNrbj+sq/eJ/Aq6llsADcflFoMlJJGom8Wy/KqhmHp5kHeE94BdG4wzAY1VXh7vp7n8pW4c7pzkAEH34coZu5R3swUfIfayBvWmTueK/DgxM2m/CneGZnV0IG9CZrZ5QwT1qMl1I0DV1VUPNFd4+7h7l7LiP/EmoxVs8CXPrxZaffNRgAsPIxqLyzIypbeEKxEsWEer49lm1i6hHV4ah9NwWeBU7DOrb9u4CvuvvdEYuLEhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8kTbPgtSgZTG4vtcHIyGLR7wSD2Gk3YCqzXeecvv/bg=;
- b=R1Iig/bOUiviRWQxULMItXjmueL4VuxV9LlCfaICiZ+hlBpBFAXQpKjKOBGCS9OKNf4b2KyYYhZzl3uY3l+8II2RjsPBLPefa48W4kEj9pO+yE5HcoF756Qyjz0OpVVBEsZC9m/VBJ7kQAQNJrRmspjXbz9fvp76QwgICx6Cm35g9l3rg9AOPOWcPHiDD6XXF1dU6G2Vu6P1qhkkK6AryN6B3Kucr/8Mwyj+0lBIqTbapmDhfLaKmjAWHdvQwSn7gpVndK0qPs8ogmK0rJsvZnGXuNKvDedEu6ckgcXZwqkRvdd54bO0fyIh1OGoBEBxDvPKQHcPtazijLg45OcMNw==
+ bh=KqOkdDDokDAKMx//A4JTszqIoE09oIgHQqIu8ojXIxM=;
+ b=dkbeqUhBiYe8xzHGARk71LRwuh0sigvtj4VZyMPOTebDbynWdmu8sX7OxbAxDq0y3mQ/KujLnvZy/ybrVXKnXKv3HdvwXG5W6DPDu115fmvlHlk29HtP6nqEaDhftstQeP6u5ZlXSH/PAyuVU+q2Whp1/NTbFV+W6kT99WfiJxgn20Pj2rP5R4FL4+Im0mnfC+0QTQkGzHm3e9xekCzm9m1Y17WdxDoz1Qb//MLoHcx58R5dwS/ePmdPYO8lOCUJEg2RH1DPrPlH08f99PvgYfjJ4nYLDBFS2181Pb/D47pPCpdd9pF206QvoAuUWRh4ZfEbkaG+2US8CH40XUNUxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
  smtp.mailfrom=mellanox.com;dmarc=pass action=none
  header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8kTbPgtSgZTG4vtcHIyGLR7wSD2Gk3YCqzXeecvv/bg=;
- b=gPCoNrpOpl9sq9tWDDei/1aYuEE1NQf8k2XTSjUZKTjeTLP3HhkA8vvyqwqkDk0bz7d2Kp40T5xUZ+ivMGWzAc3duvW1JKWbERWJG10AApxHIVLF28GCUQLS08fzHEsN2R4NzsHkAXD+IgU3UNjjokaK6ueIwAtRg9IROStSIl0=
+ bh=KqOkdDDokDAKMx//A4JTszqIoE09oIgHQqIu8ojXIxM=;
+ b=fwrZhAsFUB8iLEifuYRs5XAE3FjpqsAapW1E04ka/Q6Z8k9I+WKf+Ws4pUTfOq8v2OXFh9aujnhDTBwoJ2OojqgzS4OPCRAesM92uB96lMQdoJoXjvyDfO7GJJ89Ff0FFx0wu4W7Rhb2A5ZcubLL1GADMfEJzDN85xMGgApBuEg=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
  AM4PR0501MB2770.eurprd05.prod.outlook.com (10.172.218.11) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2073.10; Thu, 11 Jul 2019 18:54:19 +0000
+ 15.20.2073.10; Thu, 11 Jul 2019 18:54:21 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::4828:eda7:c6d:69e1]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::4828:eda7:c6d:69e1%9]) with mapi id 15.20.2052.022; Thu, 11 Jul 2019
- 18:54:19 +0000
+ 18:54:21 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Aya Levin <ayal@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
+        Feras Daoud <ferasda@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 5/6] net/mlx5e: Fix error flow in tx reporter diagnose
-Thread-Topic: [net 5/6] net/mlx5e: Fix error flow in tx reporter diagnose
-Thread-Index: AQHVOBoLfgxrMshtIEON+fwueTo3Qg==
-Date:   Thu, 11 Jul 2019 18:54:18 +0000
-Message-ID: <20190711185353.5715-6-saeedm@mellanox.com>
+Subject: [net 6/6] net/mlx5e: IPoIB, Add error path in mlx5_rdma_setup_rn
+Thread-Topic: [net 6/6] net/mlx5e: IPoIB, Add error path in mlx5_rdma_setup_rn
+Thread-Index: AQHVOBoMYzPywOQ540yOpl2PhdHiKw==
+Date:   Thu, 11 Jul 2019 18:54:21 +0000
+Message-ID: <20190711185353.5715-7-saeedm@mellanox.com>
 References: <20190711185353.5715-1-saeedm@mellanox.com>
 In-Reply-To: <20190711185353.5715-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -62,24 +61,24 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2745bcb3-b800-4cd6-84af-08d706312dae
+x-ms-office365-filtering-correlation-id: 72475c0c-267e-4501-2641-08d706312ee2
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2770;
 x-ms-traffictypediagnostic: AM4PR0501MB2770:
-x-microsoft-antispam-prvs: <AM4PR0501MB27702BB96A91CA4E0F2F78E6BEF30@AM4PR0501MB2770.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:510;
+x-microsoft-antispam-prvs: <AM4PR0501MB2770ED96DCD6A956A6764420BEF30@AM4PR0501MB2770.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:38;
 x-forefront-prvs: 0095BCF226
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(39860400002)(346002)(396003)(366004)(199004)(189003)(68736007)(6116002)(3846002)(1076003)(86362001)(446003)(81166006)(8676002)(486006)(53936002)(71190400001)(25786009)(66476007)(66446008)(64756008)(66556008)(11346002)(66946007)(14454004)(81156014)(6916009)(2616005)(476003)(36756003)(7736002)(99286004)(6506007)(50226002)(66066001)(52116002)(386003)(4326008)(76176011)(478600001)(5660300002)(2906002)(6436002)(6486002)(316002)(305945005)(102836004)(8936002)(26005)(186003)(54906003)(256004)(107886003)(71200400001)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2770;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(39860400002)(346002)(396003)(366004)(199004)(189003)(68736007)(6116002)(3846002)(1076003)(86362001)(446003)(81166006)(8676002)(486006)(53936002)(71190400001)(25786009)(66476007)(66446008)(64756008)(66556008)(11346002)(66946007)(14454004)(81156014)(6916009)(2616005)(476003)(36756003)(5024004)(14444005)(7736002)(99286004)(6506007)(50226002)(66066001)(52116002)(386003)(4326008)(76176011)(478600001)(5660300002)(2906002)(6436002)(6486002)(316002)(305945005)(102836004)(8936002)(26005)(186003)(54906003)(256004)(107886003)(71200400001)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2770;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: bqXjgjMR3hUXeyzU4ObX+SfcTd1maPeQ4S1txAqseXRsLPI3c50m8y+PF3ByD7NZ2n9aKqg8/5CU1toiG+Yj9dKuTtXAxDkPk+LL0ZDq2fbaijxrIU1muLIrzBD2EeZKwH9QG3FGzKq1VWBzzjNm5RJSkINktj+tHwqlaFraHQJaRiU9+jKDVmbHSEwi1cSnIMhYT78o5Irf3geXQphMiRkFLrBYC/oY6PQ7rn2+vU1fMHgQNmxWEddBJh1sfxueTiteqf7osHASlcqUsFBlyyHEB3Is2R7DEIe7gs5IeZ7G1fPtZ1awLexMu6BQnb9nxqhuZn5gYir+HqsCsXsppE8nBMB5MGEBGdNd0lmomdPpDOu9jVKuGT2dG9WzWNSq1gtZcRKezlDZ6ryDIvImNA+XMVqjtFtbYFLGiqNKB+8=
+x-microsoft-antispam-message-info: FSLpiltzRE9FBawalTpEx4UuDgObRQfh7W1daUXZVBm7Ze3VxZaU4trbq/p5TX4CU4UGSVy5YiUrKlTcCaD+oaXXjKvqulVyOuirUOF+D6dGJHRmrGE/MmPyL7F3S5xFxbEIw+CXIr32L3llw2aiUFyAkty4MjsFMobREDgW7RU/oy7ALMcUvunlqqgjJgHvIf8NbGizYw9oFytW5tK1xKLuAn1Vp59L9cSbsUqlYMOiRwZyKkKVRh5LTj1bG3cOoofTQjB3RmKSTh+48QULteEpTtJFv8GB8j55av/IeOz/WEcPFR9cFtHKJV3gXug3KRHswFgx1rn35PRPvFMvopYTTRds21Q86iaD+QucKJ0Uw3M9ebAqUsRTVEn0CXs7VpZZ5TC1T6njKaYJLbwUHloHjReg2WDiAqU95CYG+MY=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2745bcb3-b800-4cd6-84af-08d706312dae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 18:54:18.9578
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72475c0c-267e-4501-2641-08d706312ee2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 18:54:21.3118
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
@@ -93,41 +92,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@mellanox.com>
 
-Fix tx reporter's diagnose callback. Propagate error when failing to
-gather diagnostics information or failing to print diagnostic data per
-queue.
+Check return value from mlx5e_attach_netdev, add error path on failure.
 
-Fixes: de8650a82071 ("net/mlx5e: Add tx reporter support")
+Fixes: 48935bbb7ae8 ("net/mlx5e: IPoIB, Add netdevice profile skeleton")
 Signed-off-by: Aya Levin <ayal@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Feras Daoud <ferasda@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/dri=
-vers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index a778c15e5324..f3d98748b211 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -262,13 +262,13 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_=
-health_reporter *reporter,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c b/driver=
+s/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
+index 9ca492b430d8..603d294757b4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
+@@ -698,7 +698,9 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev, =
+u8 port_num,
 =20
- 		err =3D mlx5_core_query_sq_state(priv->mdev, sq->sqn, &state);
- 		if (err)
--			break;
-+			goto unlock;
+ 	prof->init(mdev, netdev, prof, ipriv);
 =20
- 		err =3D mlx5e_tx_reporter_build_diagnose_output(fmsg, sq->sqn,
- 							      state,
- 							      netif_xmit_stopped(sq->txq));
- 		if (err)
--			break;
-+			goto unlock;
- 	}
- 	err =3D devlink_fmsg_arr_pair_nest_end(fmsg);
- 	if (err)
+-	mlx5e_attach_netdev(epriv);
++	err =3D mlx5e_attach_netdev(epriv);
++	if (err)
++		goto detach;
+ 	netif_carrier_off(netdev);
+=20
+ 	/* set rdma_netdev func pointers */
+@@ -714,6 +716,11 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev,=
+ u8 port_num,
+=20
+ 	return 0;
+=20
++detach:
++	prof->cleanup(epriv);
++	if (ipriv->sub_interface)
++		return err;
++	mlx5e_destroy_mdev_resources(mdev);
+ destroy_ht:
+ 	mlx5i_pkey_qpn_ht_cleanup(netdev);
+ 	return err;
 --=20
 2.21.0
 
