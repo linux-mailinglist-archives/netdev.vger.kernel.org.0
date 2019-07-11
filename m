@@ -2,141 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A765466297
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:54:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF3766299
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728886AbfGKXyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 19:54:43 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:32836 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726865AbfGKXyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:54:43 -0400
-Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hlitK-0002sg-9a; Thu, 11 Jul 2019 19:54:26 -0400
-Date:   Thu, 11 Jul 2019 19:53:54 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        jiri@mellanox.com, mlxsw@mellanox.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        andy@greyhouse.net, pablo@netfilter.org,
-        jakub.kicinski@netronome.com, pieter.jansenvanvuuren@netronome.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        idosch@mellanox.com
-Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
-Message-ID: <20190711235354.GA30396@hmswarspite.think-freely.org>
-References: <20190707075828.3315-1-idosch@idosch.org>
- <20190707.124541.451040901050013496.davem@davemloft.net>
- <20190711123909.GA10978@splinter>
+        id S1729004AbfGKXz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 19:55:26 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44590 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726865AbfGKXz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:55:26 -0400
+Received: by mail-pg1-f194.google.com with SMTP id i18so3661982pgl.11
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 16:55:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=dk3i8CKzR2dm/DpQG7orIk03+IAyFFKutJZInlZ+vKY=;
+        b=gHw8Lc5C0ZigpDMr5eKswMfxT3IoHc3rK8qXJrlBKKz3k2DmZpX9LgQXgNSISc15Ad
+         NzedRVQM8YStJP3RxM5gBLPmJM+TQbnB2i5ugIHr9YB8fBve7odVUswAxXoXpDjfcDMA
+         nZr55gEva1nfVjOG7nMelvQFhtl36KsSyNU/JpKmmTQcj1WJaCv9AkMnJZ5iHiXD+k2I
+         jWz1QhYNV/SoEQkJYqFM4To79T/91K23HtqoElJYlv6/FrivimU4KDXhyftn4x280Vxk
+         skiCdeElOQQSkMPsiIhijtc3EeZ0H4moQweUo566I/dhVHyObE3xHd2P0D8AnJJPp1vO
+         OLzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=dk3i8CKzR2dm/DpQG7orIk03+IAyFFKutJZInlZ+vKY=;
+        b=YLt98tIZqhFzb6jOjSJSoenX+gYwf7kJ2CwGBnMoS7iIdYxN5bSTXcTZG5aXLN7olA
+         ixqUeH9+We2W7nBqTXgNBO66Q2b2ABX1ruVYjO0Amy3MXUSP9PxUt8bWJIWZCYYLxOtK
+         867yI+tXA2RUGQ+fw2S8cEnEJh2n/2Vu6Dzmb5HiI2JbIGOxwIBqtd5TURJzXYwqWrm7
+         lwOtYSj01CcmAfm1ztw7kOZrDDzF2KkmECen9YafW8x0a200FeuaJxkyfkBY4ZRTuBOr
+         0He+p3d25sSdq9cVxie9eWtD1ywZtmQwxoKvzYwLVUlNl3z86kYko9e4iq3KSjMFjJNz
+         OhOQ==
+X-Gm-Message-State: APjAAAUG9K9A2dKii9VZqp7xnJ3XIc/kxMH93TvcPHztfOTbhPsy0WHn
+        nqL5IO003Hq3uRstFXQVw9x3Y3Mf
+X-Google-Smtp-Source: APXvYqzUDfFCwcrx7aMyHfjVlE6G2qZbGPoiXITAy3pqUGRYTv34RiIBhqh3C+k44Ge0Qq9hv6m5dw==
+X-Received: by 2002:a17:90a:17c4:: with SMTP id q62mr8018893pja.104.1562889324866;
+        Thu, 11 Jul 2019 16:55:24 -0700 (PDT)
+Received: from [192.168.0.16] ([97.115.142.179])
+        by smtp.gmail.com with ESMTPSA id o3sm18954299pje.1.2019.07.11.16.55.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jul 2019 16:55:24 -0700 (PDT)
+Subject: Re: [ovs-dev] [PATCH net-next] net: openvswitch: do not update
+ max_headroom if new headroom is equal to old headroom
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     David Miller <davem@davemloft.net>, ap420073@gmail.com,
+        ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20190705160809.5202-1-ap420073@gmail.com>
+ <20190708.160804.2026506853635876959.davem@davemloft.net>
+ <87bfb355-9ddf-c27b-c160-b3028a945a22@gmail.com>
+ <b40f4a39-8de4-482c-2ee8-66adf5c606be@gmail.com>
+ <CAOrHB_CLRYC_AFgDhzPGadXDob4hO1Q7Eorqm4bZjMJLV3cMBQ@mail.gmail.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <715a1bc4-abd4-90bb-2e2f-1a2da8fd861d@gmail.com>
+Date:   Thu, 11 Jul 2019 16:55:22 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190711123909.GA10978@splinter>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <CAOrHB_CLRYC_AFgDhzPGadXDob4hO1Q7Eorqm4bZjMJLV3cMBQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 03:39:09PM +0300, Ido Schimmel wrote:
-> On Sun, Jul 07, 2019 at 12:45:41PM -0700, David Miller wrote:
-> > From: Ido Schimmel <idosch@idosch.org>
-> > Date: Sun,  7 Jul 2019 10:58:17 +0300
-> > 
-> > > Users have several ways to debug the kernel and understand why a packet
-> > > was dropped. For example, using "drop monitor" and "perf". Both
-> > > utilities trace kfree_skb(), which is the function called when a packet
-> > > is freed as part of a failure. The information provided by these tools
-> > > is invaluable when trying to understand the cause of a packet loss.
-> > > 
-> > > In recent years, large portions of the kernel data path were offloaded
-> > > to capable devices. Today, it is possible to perform L2 and L3
-> > > forwarding in hardware, as well as tunneling (IP-in-IP and VXLAN).
-> > > Different TC classifiers and actions are also offloaded to capable
-> > > devices, at both ingress and egress.
-> > > 
-> > > However, when the data path is offloaded it is not possible to achieve
-> > > the same level of introspection as tools such "perf" and "drop monitor"
-> > > become irrelevant.
-> > > 
-> > > This patchset aims to solve this by allowing users to monitor packets
-> > > that the underlying device decided to drop along with relevant metadata
-> > > such as the drop reason and ingress port.
-> > 
-> > We are now going to have 5 or so ways to capture packets passing through
-> > the system, this is nonsense.
-> > 
-> > AF_PACKET, kfree_skb drop monitor, perf, XDP perf events, and now this
-> > devlink thing.
-> > 
-> > This is insanity, too many ways to do the same thing and therefore the
-> > worst possible user experience.
-> > 
-> > Pick _ONE_ method to trap packets and forward normal kfree_skb events,
-> > XDP perf events, and these taps there too.
-> > 
-> > I mean really, think about it from the average user's perspective.  To
-> > see all drops/pkts I have to attach a kfree_skb tracepoint, and not just
-> > listen on devlink but configure a special tap thing beforehand and then
-> > if someone is using XDP I gotta setup another perf event buffer capture
-> > thing too.
-> 
-> Dave,
-> 
-> Before I start working on v2, I would like to get your feedback on the
-> high level plan. Also adding Neil who is the maintainer of drop_monitor
-> (and counterpart DropWatch tool [1]).
-> 
-> IIUC, the problem you point out is that users need to use different
-> tools to monitor packet drops based on where these drops occur
-> (SW/HW/XDP).
-> 
-> Therefore, my plan is to extend the existing drop_monitor netlink
-> channel to also cover HW drops. I will add a new message type and a new
-> multicast group for HW drops and encode in the message what is currently
-> encoded in the devlink events.
-> 
-A few things here:
-IIRC we don't announce individual hardware drops, drivers record them in
-internal structures, and they are retrieved on demand via ethtool calls, so you
-will either need to include some polling (probably not a very performant idea),
-or some sort of flagging mechanism to indicate that on the next message sent to
-user space you should go retrieve hw stats from a given interface.  I certainly
-wouldn't mind seeing this happen, but its more work than just adding a new
-netlink message.
 
-Also, regarding XDP drops, we wont see them if the xdp program is offloaded to
-hardware (you'll need your hw drop gathering mechanism for that), but for xdp
-programs run on the cpu, dropwatch should alrady catch those.  I.e. if the xdp
-program returns a DROP result for a packet being processed, the OS will call
-kfree_skb on its behalf, and dropwatch wil call that.
+On 7/11/2019 2:07 PM, Pravin Shelar wrote:
+> I was bit busy for last couple of days. I will finish review by EOD today.
+>
+> Thanks,
+> Pravin.
 
-> I would like to emphasize that the configuration of whether these
-> dropped packets are even sent to the CPU from the device still needs to
-> reside in devlink given this is the go-to tool for device-specific
-> configuration. In addition, these drop traps are a small subset of the
-> entire packet traps devices support and all have similar needs such as
-> HW policer configuration and statistics.
-> 
-> In the future we might also want to report events that indicate the
-> formation of possible problems. For example, in case packets are queued
-> above a certain threshold or for long periods of time. I hope we could
-> re-use drop_monitor for this as well, thereby making it the go-to
-> channel for diagnosing current and to-be problems in the data path.
-> 
-Thats an interesting idea, but dropwatch certainly isn't currently setup for
-that kind of messaging.  It may be worth creating a v2 of the netlink protocol
-and really thinking out what you want to communicate.
+net-next is closed anyway so no rush, but thanks!
 
-Best
-Neil
+- Greg
 
-> Thanks
-> 
-> [1] https://github.com/nhorman/dropwatch
-> 
+>
+> On Mon, Jul 8, 2019 at 4:22 PM Gregory Rose <gvrose8192@gmail.com> wrote:
+>>
+>>
+>> On 7/8/2019 4:18 PM, Gregory Rose wrote:
+>>> On 7/8/2019 4:08 PM, David Miller wrote:
+>>>> From: Taehee Yoo <ap420073@gmail.com>
+>>>> Date: Sat,  6 Jul 2019 01:08:09 +0900
+>>>>
+>>>>> When a vport is deleted, the maximum headroom size would be changed.
+>>>>> If the vport which has the largest headroom is deleted,
+>>>>> the new max_headroom would be set.
+>>>>> But, if the new headroom size is equal to the old headroom size,
+>>>>> updating routine is unnecessary.
+>>>>>
+>>>>> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+>>>> I'm not so sure about the logic here and I'd therefore like an OVS
+>>>> expert
+>>>> to review this.
+>>> I'll review and test it and get back.  Pravin may have input as well.
+>>>
+>> Err, adding Pravin.
+>>
+>> - Greg
+>>
+>>> Thanks,
+>>>
+>>> - Greg
+>>>
+>>>> Thanks.
+>>>> _______________________________________________
+>>>> dev mailing list
+>>>> dev@openvswitch.org
+>>>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+
