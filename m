@@ -2,87 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 623E3659DD
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 17:00:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7D165AFF
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 17:54:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728887AbfGKPAr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Jul 2019 11:00:47 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33428 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728725AbfGKPAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 11:00:47 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6BExhZE079156
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:00:46 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tp74f8rxh-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:00:45 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Thu, 11 Jul 2019 16:00:42 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 11 Jul 2019 16:00:38 +0100
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6BF0bkp12648538
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 11 Jul 2019 15:00:38 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D23A64204C;
-        Thu, 11 Jul 2019 15:00:37 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B08C44203F;
-        Thu, 11 Jul 2019 15:00:37 +0000 (GMT)
-Received: from dyn-9-152-97-237.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 11 Jul 2019 15:00:37 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH v3 bpf] selftests/bpf: do not ignore clang failures
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-In-Reply-To: <CAEf4Bzb6mY-F-wUNNimS+hMSRbJetTKXNcGDQbsJXhXDywA+tg@mail.gmail.com>
-Date:   Thu, 11 Jul 2019 17:00:37 +0200
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <liu.song.a23@gmail.com>
-Content-Transfer-Encoding: 8BIT
-References: <20190711091249.59865-1-iii@linux.ibm.com>
- <CAEf4Bzb6mY-F-wUNNimS+hMSRbJetTKXNcGDQbsJXhXDywA+tg@mail.gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-X-Mailer: Apple Mail (2.3445.9.1)
-X-TM-AS-GCONF: 00
-x-cbid: 19071115-0016-0000-0000-00000291CE55
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071115-0017-0000-0000-000032EF8E88
-Message-Id: <51821F5F-A70F-485B-B6E7-CAE6D49B6D1D@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=889 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907110170
+        id S1728455AbfGKPyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 11:54:47 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:38147 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726213AbfGKPyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 11:54:47 -0400
+Received: by mail-lf1-f68.google.com with SMTP id h28so4412109lfj.5
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 08:54:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:organization:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VuLRQPIPYru5e49vQnd6z9oqDTPUlyTTwykrBgQw35U=;
+        b=LMXQ+ET9fJBRnE0SBpu+3wlEDYPFp4dm4xJcgzGGfxzILS3Asf0Ae0uXmwP6F1rfZw
+         xZ73jWpn1WK/o1Hr7C5DvdDv/wcABkUmcgf6E2EOcMTgSt9NOb8ZBabRZwA8I0Q05lOd
+         lsYhzLfMdnxFq3R6Oxk+AO8TLo0eaSax+vXtqqmdd6WVxtR4wsBGJAFI6IjO8jubDO/7
+         /hw0i9YnNyTTh+XIwaHDYxV3vkAI8LrYNUhdGiBpMTzotK82Pyl5ssDasFGfOBQ2ANJl
+         +EBT16xu7BG3MO13MUmqJ+j2LDZeXmjsKAkVtPhpkLHYXFnNFdEN1zPQsKiKlXBc1ryR
+         GPuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=VuLRQPIPYru5e49vQnd6z9oqDTPUlyTTwykrBgQw35U=;
+        b=r2y00oZC8KobR/wgEd8XnIYkuumcPCo/7ridsn9/+/2s9TdmCrO9JK1dkENfZEfjpt
+         Krvm/AuDj9DlMaHkaEWvL+LOikgZDm9oVSV8iajtgdUa5775AAeuYl8kuuj05Arwq/0F
+         lzNAXrXyI0TqYCjeBEBrq/xsvebETmUbkLEKJZcj7JvP/9AWPYLt7nhp/a2ISw2Qb5vl
+         GVyAUUdB/KSUQ8dv6JcJDP4jzNs0yD2WhKzKKIy5EPrhprPT+tvE7XlIU4bUVroRTJBV
+         kbtyo0a5gA8WcsaeQoGmHzdCDRFO8G88wWc5G/MYNqcoSulJV1NIu8xuhK2Ti6GydlH6
+         ti/Q==
+X-Gm-Message-State: APjAAAUNtZqrGCeDXFXcIQlJNSP33GrMvvznwfvf7fC1JzHs8Pc9GW+w
+        3/WSvy/WWnZ1uzh8/4jewwryGMcYL7p8AA==
+X-Google-Smtp-Source: APXvYqykapWZFBUmZNV7N8XBwcaQr7fa/08Cu67m42e4o/qXCSDFAslew9WSikjh8DCHDrVT5PNEdQ==
+X-Received: by 2002:a19:c6d4:: with SMTP id w203mr2274734lff.135.1562860484680;
+        Thu, 11 Jul 2019 08:54:44 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:6a9:2c74:93e5:edca:9c98:290d])
+        by smtp.gmail.com with ESMTPSA id m28sm1034469ljb.68.2019.07.11.08.54.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jul 2019 08:54:44 -0700 (PDT)
+Subject: Re: [PATCH] libertas: add terminating entry to fw_table
+To:     Oliver Neukum <oneukum@suse.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+References: <20190711142744.31956-1-oneukum@suse.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <dc2f79c8-a6fa-2d7d-df2d-dbbd5326305e@cogentembedded.com>
+Date:   Thu, 11 Jul 2019 18:54:43 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
+MIME-Version: 1.0
+In-Reply-To: <20190711142744.31956-1-oneukum@suse.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 11.07.2019 um 16:55 schrieb Andrii Nakryiko <andrii.nakryiko@gmail.com>:
-> 
-> On Thu, Jul 11, 2019 at 2:14 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->> 
->> 
->> In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
-> 
-> In your original patch you explicitly declared .DELETE_ON_ERROR, but
-> in this one you just include Kbuild.include.
-> Is it enough to just include that file to get desired behavior or your
-> forgot to add .DELETE_ON_ERROR?
+Hello!
 
-It’s enough to just include Kbuild.include. I grepped the source tree
-and found that no one else declares .DELETE_ON_ERROR explicitly, so I've
-decided to avoid doing this as well.
+On 07/11/2019 05:27 PM, Oliver Neukum wrote:
+
+> In case no firmware was found, the system would happily read
+> and try to load garbage. Terminate the table properly.
+> 
+> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> Fixes: ce84bb69f50e6 ("libertas USB: convert to asynchronous firmware loading")
+
+   The Fixed: tag should precede the sign-offs, according to DaveM...
+
+> Reported-by: syzbot+8a8f48672560c8ca59dd@syzkaller.appspotmail.com
+
+   That should be the 1st tag, I think...
+
+> ---
+>  drivers/net/wireless/marvell/libertas/if_usb.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+> index f1622f0ff8c9..b79c65547f4c 100644
+> --- a/drivers/net/wireless/marvell/libertas/if_usb.c
+> +++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+> @@ -50,7 +50,10 @@ static const struct lbs_fw_table fw_table[] = {
+>  	{ MODEL_8388, "libertas/usb8388_v5.bin", NULL },
+>  	{ MODEL_8388, "libertas/usb8388.bin", NULL },
+>  	{ MODEL_8388, "usb8388.bin", NULL },
+> -	{ MODEL_8682, "libertas/usb8682.bin", NULL }
+> +	{ MODEL_8682, "libertas/usb8682.bin", NULL },
+> +
+> +	/*terminating entry - keep at end */
+
+   Why no space after /* ?
+
+> +	{ MODEL_8388, NULL, NULL }
+>  };
+>  
+>  static const struct usb_device_id if_usb_table[] = {
+
+MBR, Sergei
