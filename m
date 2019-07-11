@@ -2,130 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9356A65842
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 15:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F683658B2
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728698AbfGKN5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 09:57:52 -0400
-Received: from relay.sw.ru ([185.231.240.75]:55748 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728274AbfGKN5v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 09:57:51 -0400
-Received: from [172.16.24.21]
-        by relay.sw.ru with esmtp (Exim 4.92)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1hlZZp-0001WC-QI; Thu, 11 Jul 2019 16:57:37 +0300
-Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
-To:     Nixiaoming <nixiaoming@huawei.com>,
-        "adobriyan@gmail.com" <adobriyan@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "arjan@linux.intel.com" <arjan@linux.intel.com>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
-        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
-        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
-        "stable@kernel.org" <stable@kernel.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
-        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>
-Cc:     "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
-        Dailei <dylix.dailei@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
- <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
- <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
-Date:   Thu, 11 Jul 2019 16:57:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728616AbfGKOWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 10:22:08 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:33030 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728496AbfGKOWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 10:22:07 -0400
+Received: by mail-vs1-f65.google.com with SMTP id m8so4306352vsj.0
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 07:22:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=Cp8ZYynjPP3tS6E6JWS/kCCDcF/PEMlQkrlg3wJqck4=;
+        b=l+dLDqAHp2aNs0SRxZNXCsyvVElYqfb4Kzb3fruGbFjNQZfeufY5DEoFTbth5/j+As
+         /YQ6UnKL5Iv93UmcbvUrnlean5RyqTA8pALJx5PmZO4vlBtWr6ZNGqoDYX/o/1Hh4Kdk
+         E/vmuPNMr3WxHooDzyg6DO5aTREqWhfIyRuWRRBWPQW55EhuV1vTAgecFo4XstaAAEkm
+         kE5L2F4MeZ2KNnb4cDq++PjzUAZo+f0bk2i8f8ZRQ6OxRjLKWkoe24yLL4mzzqdAqoOQ
+         r3aTAQlo7HMcvo3iK0/k8n5IJX52dw48cLPbDAxWykBX+qdBhBoUXdY0ij4EAZbDc4WO
+         hx6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=Cp8ZYynjPP3tS6E6JWS/kCCDcF/PEMlQkrlg3wJqck4=;
+        b=L1LuQJHLeRtq1Wnq4gLv3H39esCyS3pbu4PE8pobQwcGvD1AjV4AegUqEzkZaTT3gc
+         YpkkUA9goSmHTtIq/eeS7pDlwZj6+w0KeeTO1enfHek4zg1A0ALx/Tf7QxHZXZm2NeLV
+         pGJ/N5Lu6tO5Q/+FAN7RTDDHkeIAJmLJ31p+30JXY/7/sJJN3U5ZzEsm5Zm4KAoUdPpO
+         6b2NijEJtDRNO0/5GELAwNpBqBRbFYqcqo5/j3ukf+RHzJBZL74p9foJD1zIoAHIZN9e
+         fKXREQqAGgiPxpIMnd5bC1xWtNquVyxvAi/irUGHPEjBC0DcHVCDdpNCgAPqv1fOZmLz
+         xiTA==
+X-Gm-Message-State: APjAAAWGq0l842eJbc7k445szCa0Wvzjp+Cvjt2SfnmCyhL94mUYi3CN
+        EShVx9AveGHIKYxD11vA6kHT8uZxx19QRgzvTqk=
+X-Google-Smtp-Source: APXvYqwFgAw3GcKuFyjFrQK8yilByCzY22W9W5LNlPKBQd0rq7yI6kwu8t4x9E0lvWC7LzhncXkJ3uoHYlEvSGMJAA0=
+X-Received: by 2002:a67:a209:: with SMTP id l9mr4831466vse.125.1562854926842;
+ Thu, 11 Jul 2019 07:22:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a67:f915:0:0:0:0:0 with HTTP; Thu, 11 Jul 2019 07:22:06
+ -0700 (PDT)
+From:   Mrs Monica <monicagabriele64@gmail.com>
+Date:   Thu, 11 Jul 2019 07:22:06 -0700
+X-Google-Sender-Auth: wLgZOVE8shLK9igh6Xb2eF_x3AU
+Message-ID: <CANjF8-hR8Qv=+vK6yJGH6UYKUDES+u8M1hnfF9caB6QNn+Op8g@mail.gmail.com>
+Subject: Please Let My Situation Touch Your Heart.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/11/19 4:55 AM, Nixiaoming wrote:
-> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
->> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
->>> Registering the same notifier to a hook repeatedly can cause the hook
->>> list to form a ring or lose other members of the list.
->>
->> I think is not enough to _prevent_ 2nd register attempt,
->> it's enough to detect just attempt and generate warning to mark host in bad state.
->>
-> 
-> Duplicate registration is prevented in my patch, not just "mark host in bad state"
-> 
-> Duplicate registration is checked and exited in notifier_chain_cond_register()
-> 
-> Duplicate registration was checked in notifier_chain_register() but only 
-> the alarm was triggered without exiting. added by commit 831246570d34692e 
-> ("kernel/notifier.c: double register detection")
-> 
-> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
->  which triggers an alarm and exits when a duplicate registration is detected.
-> 
->> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
->> and it can lead to host crash in any time: 
->> you can unregister notifier on first attempt it can be too early, it can be still in use.
->> on the other hand you can never call 2nd unregister at all.
-> 
-> Since the member was not added to the linked list at the time of the second registration, 
-> no linked list ring was formed. 
-> The member is released on the first unregistration and -ENOENT on the second unregistration.
-> After patching, the fault has been alleviated
+-- 
+Hello My Dear
 
-You are wrong here.
-2nd notifier's registration is a pure bug, this should never happen.
-If you know the way to reproduce this situation -- you need to fix it. 
+Calvary Greetings in the name of the ALMIGHTY
 
-2nd registration can happen in 2 cases:
-1) missed rollback, when someone forget to call unregister after successfull registration, 
-and then tried to call register again. It can lead to crash for example when according module will be unloaded.
-2) some subsystem is registered twice, for example from  different namespaces.
-in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
-in second namespace, it also can lead to unexpacted behaviour.
+I am Mrs Monica Gabriele from Switzerland I am married to Late
+Mr.Gabriele Joseph who is a wealthy business man here in Burkina Faso
+we were married  for many years without a child before he died after a
+brief illness. Before his sudden death we where devoted Christian When
+my late husband was alive he deposited the sum of Six Million Two
+Hundred United State Dollars ($6.200.000.00) in one of the prime bank
+here in Burkina Faso Presently this money is still with the Bank,
 
-> It may be more helpful to return an error code when someone tries to register the same
-> notification program a second time.
+I am very sick from Kidney cancer that i may not last till the next
+two months according to my doctor so now i decided to donate this
+money to a honest individual who will use it to work for Almighty,
+orphans, widow and maintenance of church to fulfill the vow i and my
+late husband made to Almighty, and i have chosen you after praying.
 
-You are wrong again here, it is senseless.
-If you have detected 2nd register -- your node is already in bad state.
+I want this money to be use as i have said since i do not have any
+child to inherit it and our relatives are all unbelievers and i don't
+want our hard earn money to be used in ungodly way so you will take
+40% of the fund for your effort and use the remaining as i stated, as
+soon as i read from you i will give you more details on how to achieve
+it, I need your urgent reply on my private email address:
+(monicagabriele64@gmail.com) as i don't know what tomorrow will
+result, i wish you the best in life. Please Always remember me in your
+ prayers.
 
-> But I noticed that notifier_chain_cond_register() returns 0 when duplicate registration 
-> is detected. At the same time, in all the existing export function comments of notify,
-> "Currently always returns zero"
-> 
-> I am a bit confused: which is better?
-> 
->>
->> Unfortunately I do not see any ways to handle such cases properly,
->> and it seems for me your patches does not resolve this problem.
->>
->> Am I missed something probably?
->>
->>> case1: An infinite loop in notifier_chain_register() can cause soft lockup
->>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>>         atomic_notifier_chain_register(&test_notifier_list, &test2);
-> 
-> Thanks
-> 
-> Xiaoming Ni
-> 
+Yours Sister,
+Mrs Monica Gabriele.
+Please Let My Situation Touch Your Heart.
