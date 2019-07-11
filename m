@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B3566258
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9CFE6626F
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730488AbfGKXo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 19:44:29 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33376 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730472AbfGKXo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:44:27 -0400
-Received: by mail-pf1-f196.google.com with SMTP id g2so3474269pfq.0
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 16:44:26 -0700 (PDT)
+        id S1730563AbfGKXo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 19:44:57 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:34744 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730493AbfGKXoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:44:30 -0400
+Received: by mail-pl1-f196.google.com with SMTP id i2so3840384plt.1
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 16:44:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DxaBT1tnbAEQu4unrE+ZIdJanB1uVhDn4/7rfKQHrQ8=;
-        b=ZR89dJ0gCvmFd48H56kuCm2XzQpnVhPx64wtgiHyZvxa33ANSu0oXUTttSIxFI0x9Z
-         fHKlA+45Bqn3L3g08DQds8w60ml29tD/QN8R/vX0Ix2Z2Akl/LzUSDrgZDI4Q/+otrRY
-         I+DBueCyfUEugUlr0uSGpkRYwIAjZJZdHOtgc=
+        bh=sb5/sBlO0o0IY+ND5ZXjrKZw9gM/z/BZ2b8OMvqM37o=;
+        b=tCGTNt4ClbRqV/NfTPLBheEFeH7Zn70VzEPVb6u6yQtg9GPOuDTUPJlXw6bBhUJ1CR
+         QpGk/qoWbRMoK0Pts8WznAkBiv/X+3OAFvGO2tXIqriAKW54HJaBcZeAgZjm6E+3gJ7u
+         xfrwf9Vd3o1AR/P1EbjFliZLl/0moKn0MvFEE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DxaBT1tnbAEQu4unrE+ZIdJanB1uVhDn4/7rfKQHrQ8=;
-        b=gDC5FgDM7eNiPlmcDYTzfs8PQ9QLQXjVRhh/Qw5TW4gim8BDLkaqQIDW4AhaWsqoVP
-         mwyHPq/rR1vDbdNW77XyI1Ng+ROpvLC1gvDDkBNHgl1oFoUZrxpPS49cnVSEuK8JYnh9
-         0S0nleqpH/90XdguqndbFilTyfebsaeKEVsysJLWlhxxL2wK8yS0DAk6lfeq+6v5pFnh
-         JgeWA0yZqcxPUZnfbEA1LoFRMsrZkVHJgeMFGyL2+1FYpZxLNOcYmNnwok4uNWEXuBUl
-         sPJ2K5rEAi0TIZsVkBTqsLE45KAAqb7vasOFfuWqyZcgxES1go6G6g8Ry0AKGIaEfZ/8
-         Kkjw==
-X-Gm-Message-State: APjAAAX/5RfF0P89WpXkYgVKJZXYwwYcNB3S22Nu4QkKqZmP/+xC+uJT
-        oeVLs3N1LFK+lXoPcCwPpBU=
-X-Google-Smtp-Source: APXvYqzUKLrrGWpDYD2bC1yFQhR2A3bxbRxsjgXB3UX8GkC2wLperL0TYvgWXgyR72s0kBdwkN7Ihw==
-X-Received: by 2002:a63:5212:: with SMTP id g18mr2790151pgb.387.1562888666095;
-        Thu, 11 Jul 2019 16:44:26 -0700 (PDT)
+        bh=sb5/sBlO0o0IY+ND5ZXjrKZw9gM/z/BZ2b8OMvqM37o=;
+        b=B57bgYzWlmFdjfGeM3ZrDG09BgfwVopbDl5adjEz8+seJTnLcLrdeFkNRFcWMen16p
+         STCblxKylRTr+9jD8thGMkTLtw1IrsivHUs0kb4JSls+uzGEAVT+wsVkVbYuJ96txLhO
+         8NaZqAjLoEf0MtHvdC8Sbz7M6uGrVbUcoqVbBG/jjYcnB0WhldwtgvcUQudSPssbm8Kq
+         mLdp04uSIap5VIx+lgGBxobT0IHJkJgIefcYxVfZ2tLDsEeiXAq6IuxpUE9274hyCtNZ
+         mzki0xJqvoLB63SNLcnOlAxx1/bS/gpvLcLO80gPCMqShlL4Qq781LmBMS/0T1LDIHdU
+         9Wxg==
+X-Gm-Message-State: APjAAAUvL08bqsH0q/AUvUtqHY6ieoxpssAY9j7aFpCRqI5EaOIwkKQ8
+        WN1HZt2bQG18aSE/2E79yaM=
+X-Google-Smtp-Source: APXvYqz7RwC1sXenfqK+KGjrZckG5hTYMGbFgu1GP0DrdQq+/nz6LQrmjYSvr647um8kWQAd2c41tw==
+X-Received: by 2002:a17:902:381:: with SMTP id d1mr7408739pld.331.1562888670006;
+        Thu, 11 Jul 2019 16:44:30 -0700 (PDT)
 Received: from joelaf.cam.corp.google.com ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id t10sm6163450pjr.13.2019.07.11.16.44.22
+        by smtp.gmail.com with ESMTPSA id t10sm6163450pjr.13.2019.07.11.16.44.26
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 11 Jul 2019 16:44:25 -0700 (PDT)
+        Thu, 11 Jul 2019 16:44:29 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
@@ -66,9 +66,9 @@ Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
         Tejun Heo <tj@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
         x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-Subject: [PATCH v1 3/6] driver/core: Convert to use built-in RCU list checking
-Date:   Thu, 11 Jul 2019 19:43:58 -0400
-Message-Id: <20190711234401.220336-4-joel@joelfernandes.org>
+Subject: [PATCH v1 4/6] workqueue: Convert for_each_wq to use built-in list check
+Date:   Thu, 11 Jul 2019 19:43:59 -0400
+Message-Id: <20190711234401.220336-5-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 In-Reply-To: <20190711234401.220336-1-joel@joelfernandes.org>
 References: <20190711234401.220336-1-joel@joelfernandes.org>
@@ -79,110 +79,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-list_for_each_entry_rcu has built-in RCU and lock checking. Make use of
-it in driver core.
+list_for_each_entry_rcu now has support to check for RCU reader sections
+as well as lock. Just use the support in it, instead of explictly
+checking in the caller.
 
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- drivers/base/base.h          |  1 +
- drivers/base/core.c          | 10 ++++++++++
- drivers/base/power/runtime.c | 15 ++++++++++-----
- 3 files changed, 21 insertions(+), 5 deletions(-)
+ kernel/workqueue.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/base.h b/drivers/base/base.h
-index b405436ee28e..0d32544b6f91 100644
---- a/drivers/base/base.h
-+++ b/drivers/base/base.h
-@@ -165,6 +165,7 @@ static inline int devtmpfs_init(void) { return 0; }
- /* Device links support */
- extern int device_links_read_lock(void);
- extern void device_links_read_unlock(int idx);
-+extern int device_links_read_lock_held(void);
- extern int device_links_check_suppliers(struct device *dev);
- extern void device_links_driver_bound(struct device *dev);
- extern void device_links_driver_cleanup(struct device *dev);
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index fd7511e04e62..6c5ca9685647 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -68,6 +68,11 @@ void device_links_read_unlock(int idx)
- {
- 	srcu_read_unlock(&device_links_srcu, idx);
- }
-+
-+int device_links_read_lock_held(void)
-+{
-+	return srcu_read_lock_held(&device_links_srcu);
-+}
- #else /* !CONFIG_SRCU */
- static DECLARE_RWSEM(device_links_lock);
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 9657315405de..91ed7aca16e5 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -424,9 +424,8 @@ static void workqueue_sysfs_unregister(struct workqueue_struct *wq);
+  * ignored.
+  */
+ #define for_each_pwq(pwq, wq)						\
+-	list_for_each_entry_rcu((pwq), &(wq)->pwqs, pwqs_node)		\
+-		if (({ assert_rcu_or_wq_mutex(wq); false; })) { }	\
+-		else
++	list_for_each_entry_rcu((pwq), &(wq)->pwqs, pwqs_node,		\
++				 lock_is_held(&(wq->mutex).dep_map))
  
-@@ -91,6 +96,11 @@ void device_links_read_unlock(int not_used)
- {
- 	up_read(&device_links_lock);
- }
-+
-+int device_links_read_lock_held(void)
-+{
-+	return lock_is_held(&device_links_lock);
-+}
- #endif /* !CONFIG_SRCU */
+ #ifdef CONFIG_DEBUG_OBJECTS_WORK
  
- /**
-diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-index 952a1e7057c7..7a10e8379a70 100644
---- a/drivers/base/power/runtime.c
-+++ b/drivers/base/power/runtime.c
-@@ -287,7 +287,8 @@ static int rpm_get_suppliers(struct device *dev)
- {
- 	struct device_link *link;
- 
--	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node) {
-+	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
-+				device_links_read_lock_held()) {
- 		int retval;
- 
- 		if (!(link->flags & DL_FLAG_PM_RUNTIME) ||
-@@ -309,7 +310,8 @@ static void rpm_put_suppliers(struct device *dev)
- {
- 	struct device_link *link;
- 
--	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node) {
-+	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
-+				device_links_read_lock_held()) {
- 		if (READ_ONCE(link->status) == DL_STATE_SUPPLIER_UNBIND)
- 			continue;
- 
-@@ -1640,7 +1642,8 @@ void pm_runtime_clean_up_links(struct device *dev)
- 
- 	idx = device_links_read_lock();
- 
--	list_for_each_entry_rcu(link, &dev->links.consumers, s_node) {
-+	list_for_each_entry_rcu(link, &dev->links.consumers, s_node,
-+				device_links_read_lock_held()) {
- 		if (link->flags & DL_FLAG_STATELESS)
- 			continue;
- 
-@@ -1662,7 +1665,8 @@ void pm_runtime_get_suppliers(struct device *dev)
- 
- 	idx = device_links_read_lock();
- 
--	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node)
-+	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
-+				device_links_read_lock_held())
- 		if (link->flags & DL_FLAG_PM_RUNTIME) {
- 			link->supplier_preactivated = true;
- 			refcount_inc(&link->rpm_active);
-@@ -1683,7 +1687,8 @@ void pm_runtime_put_suppliers(struct device *dev)
- 
- 	idx = device_links_read_lock();
- 
--	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node)
-+	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
-+				device_links_read_lock_held())
- 		if (link->supplier_preactivated) {
- 			link->supplier_preactivated = false;
- 			if (refcount_dec_not_one(&link->rpm_active))
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
