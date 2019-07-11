@@ -2,107 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C9766017
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 21:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E53326603E
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 21:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbfGKTkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 15:40:05 -0400
-Received: from mail-eopbgr50050.outbound.protection.outlook.com ([40.107.5.50]:33188
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726116AbfGKTkE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 15:40:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GLuYknxvcU134oAdebKI8pGGRNnI0bKGvHU40mDgaMU=;
- b=qFNbwHKHvnl8J0RTXT3O/v5OywVOd9HVye+QaUXtu+LdVnwBX1x4fQdINM+dIiB+3y9IZizS7/nAKxvupHQB4gBuEMAhq00ZI6YoXW2TlKc9QB4wttHzpuUbYsX9hZm/IDKEIB1OG4vdYbJEenlwnypdOaX7MiJTpbX4wcd5y6U=
-Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
- AM4PR0501MB2851.eurprd05.prod.outlook.com (10.172.216.14) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.19; Thu, 11 Jul 2019 19:40:00 +0000
-Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
- ([fe80::4828:eda7:c6d:69e1]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
- ([fe80::4828:eda7:c6d:69e1%9]) with mapi id 15.20.2052.022; Thu, 11 Jul 2019
- 19:39:59 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jianbo Liu <jianbol@mellanox.com>
-Subject: [PATCH net-next 3/3] net/mlx5: E-Switch, Reduce ingress acl modify
- metadata stack usage
-Thread-Topic: [PATCH net-next 3/3] net/mlx5: E-Switch, Reduce ingress acl
- modify metadata stack usage
-Thread-Index: AQHVOCBs9oBduE1wQ0qYLj3SgQj6bw==
-Date:   Thu, 11 Jul 2019 19:39:59 +0000
-Message-ID: <20190711193937.29802-4-saeedm@mellanox.com>
-References: <20190711193937.29802-1-saeedm@mellanox.com>
-In-Reply-To: <20190711193937.29802-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR11CA0070.namprd11.prod.outlook.com
- (2603:10b6:a03:80::47) To AM4PR0501MB2756.eurprd05.prod.outlook.com
- (2603:10a6:200:5c::10)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 27da9b20-4c73-43c8-be1e-08d706378f01
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2851;
-x-ms-traffictypediagnostic: AM4PR0501MB2851:
-x-microsoft-antispam-prvs: <AM4PR0501MB28512DA9E6762337A73C82C2BEF30@AM4PR0501MB2851.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0095BCF226
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(376002)(39860400002)(136003)(346002)(199004)(189003)(66946007)(66066001)(26005)(66446008)(71200400001)(66476007)(71190400001)(186003)(81156014)(8936002)(6506007)(5660300002)(1076003)(305945005)(66556008)(36756003)(99286004)(81166006)(86362001)(25786009)(14444005)(52116002)(102836004)(107886003)(64756008)(53936002)(8676002)(386003)(478600001)(76176011)(446003)(6436002)(476003)(3846002)(11346002)(54906003)(6486002)(6916009)(2906002)(2616005)(6116002)(6512007)(486006)(68736007)(256004)(4326008)(7736002)(316002)(14454004)(50226002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2851;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Wm169SbOO1zLLmtcGIdGDtUboYh033BrsBAuzrAD6OpVhbIgGBTeJKIDZ19YHzs13auedOzTSl0rgEgIsdqdzYup4fsKG1dZqslUpmUo+v2f7K11SNh9fVVnSrdQ7Zm2lFBHQ5gHJVu5zelaJgNovR14HLINeEUzaM5hC8l2VFN06Vz5OZk9zIzQpb6mAO21lsn5zdRVCUxvIoRxsNMpHOBP+VEmq4ajrjSiaINt6PS0hywWvCNC4vA062HMOGFB/tTB7CiGzO0ApQ2qmsEpSGUq8PHlf4lE1ZHmXbEjB8mDrbpbDiOPQhfQO7BqLatkhXgan68jfLV7UxbUMLhXtSdDtizdssCfLPK451VKvmwDLqG600hipvc55ZokTYNmMklZla6XHRDobHkq+Byf+RYv32HhEXIN2eoDXD+1G+k=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3D961162EDE89D40926CFE17120E43B9@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728937AbfGKTw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 15:52:27 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:55912 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728833AbfGKTw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 15:52:27 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A55F730BC56E;
+        Thu, 11 Jul 2019 19:52:26 +0000 (UTC)
+Received: from redhat.com (ovpn-116-67.ams2.redhat.com [10.36.116.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 672961001B10;
+        Thu, 11 Jul 2019 19:52:22 +0000 (UTC)
+Date:   Thu, 11 Jul 2019 15:52:21 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
+ virtio-vsock
+Message-ID: <20190711152855-mutt-send-email-mst@kernel.org>
+References: <20190710153707.twmzgmwqqw3pstos@steredhat>
+ <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
+ <20190711114134.xhmpciyglb2angl6@steredhat>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27da9b20-4c73-43c8-be1e-08d706378f01
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 19:39:59.4605
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2851
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190711114134.xhmpciyglb2angl6@steredhat>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 11 Jul 2019 19:52:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rml4IHRoZSBmb2xsb3dpbmcgY29tcGlsZXIgd2FybmluZzoNCkluIGZ1bmN0aW9uIOKAmGVzd192
-cG9ydF9hZGRfaW5ncmVzc19hY2xfbW9kaWZ5X21ldGFkYXRh4oCZOg0KdGhlIGZyYW1lIHNpemUg
-b2YgMTA4NCBieXRlcyBpcyBsYXJnZXIgdGhhbiAxMDI0IGJ5dGVzIFstV2ZyYW1lLWxhcmdlci10
-aGFuPV0NCg0KU2luY2UgdGhlIHN0cnVjdHVyZSBpcyBuZXZlciB3cml0dGVuIHRvLCB3ZSBjYW4g
-c3RhdGljYWxseSBhbGxvY2F0ZQ0KaXQgdG8gYXZvaWQgdGhlIHN0YWNrIHVzYWdlLg0KDQpGaXhl
-czogNzQ0NWNmYjExNjljICgibmV0L21seDU6IEUtU3dpdGNoLCBUYWcgcGFja2V0IHdpdGggdnBv
-cnQgbnVtYmVyIGluIFZGIHZwb3J0cyBhbmQgdXBsaW5rIGluZ3Jlc3MgQUNMcyIpDQpTaWduZWQt
-b2ZmLWJ5OiBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NClJldmlld2VkLWJ5
-OiBKaWFuYm8gTGl1IDxqaWFuYm9sQG1lbGxhbm94LmNvbT4NCi0tLQ0KIGRyaXZlcnMvbmV0L2V0
-aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMgfCAyICstDQogMSBm
-aWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQg
-YS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fk
-cy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vzd2l0Y2hfb2Zm
-bG9hZHMuYw0KaW5kZXggOGVkNDQ5NzkyOWI5Li41Zjc4ZTc2MDE5YzUgMTAwNjQ0DQotLS0gYS9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5j
-DQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9v
-ZmZsb2Fkcy5jDQpAQCAtMTc4NSw4ICsxNzg1LDggQEAgc3RhdGljIGludCBlc3dfdnBvcnRfYWRk
-X2luZ3Jlc3NfYWNsX21vZGlmeV9tZXRhZGF0YShzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3csDQog
-CQkJCQkJICAgICBzdHJ1Y3QgbWx4NV92cG9ydCAqdnBvcnQpDQogew0KIAl1OCBhY3Rpb25bTUxY
-NV9VTl9TWl9CWVRFUyhzZXRfYWN0aW9uX2luX2FkZF9hY3Rpb25faW5fYXV0byldID0ge307DQor
-CXN0YXRpYyBjb25zdCBzdHJ1Y3QgbWx4NV9mbG93X3NwZWMgc3BlYyA9IHt9Ow0KIAlzdHJ1Y3Qg
-bWx4NV9mbG93X2FjdCBmbG93X2FjdCA9IHt9Ow0KLQlzdHJ1Y3QgbWx4NV9mbG93X3NwZWMgc3Bl
-YyA9IHt9Ow0KIAlpbnQgZXJyID0gMDsNCiANCiAJTUxYNV9TRVQoc2V0X2FjdGlvbl9pbiwgYWN0
-aW9uLCBhY3Rpb25fdHlwZSwgTUxYNV9BQ1RJT05fVFlQRV9TRVQpOw0KLS0gDQoyLjIxLjANCg0K
+On Thu, Jul 11, 2019 at 01:41:34PM +0200, Stefano Garzarella wrote:
+> On Thu, Jul 11, 2019 at 03:37:00PM +0800, Jason Wang wrote:
+> > 
+> > On 2019/7/10 下午11:37, Stefano Garzarella wrote:
+> > > Hi,
+> > > as Jason suggested some months ago, I looked better at the virtio-net driver to
+> > > understand if we can reuse some parts also in the virtio-vsock driver, since we
+> > > have similar challenges (mergeable buffers, page allocation, small
+> > > packets, etc.).
+> > > 
+> > > Initially, I would add the skbuff in the virtio-vsock in order to re-use
+> > > receive_*() functions.
+> > 
+> > 
+> > Yes, that will be a good step.
+> > 
+> 
+> Okay, I'll go on this way.
+> 
+> > 
+> > > Then I would move receive_[small, big, mergeable]() and
+> > > add_recvbuf_[small, big, mergeable]() outside of virtio-net driver, in order to
+> > > call them also from virtio-vsock. I need to do some refactoring (e.g. leave the
+> > > XDP part on the virtio-net driver), but I think it is feasible.
+> > > 
+> > > The idea is to create a virtio-skb.[h,c] where put these functions and a new
+> > > object where stores some attributes needed (e.g. hdr_len ) and status (e.g.
+> > > some fields of struct receive_queue).
+> > 
+> > 
+> > My understanding is we could be more ambitious here. Do you see any blocker
+> > for reusing virtio-net directly? It's better to reuse not only the functions
+> > but also the logic like NAPI to avoid re-inventing something buggy and
+> > duplicated.
+> > 
+> 
+> These are my concerns:
+> - virtio-vsock is not a "net_device", so a lot of code related to
+>   ethtool, net devices (MAC address, MTU, speed, VLAN, XDP, offloading) will be
+>   not used by virtio-vsock.
+> 
+> - virtio-vsock has a different header. We can consider it as part of
+>   virtio_net payload, but it precludes the compatibility with old hosts. This
+>   was one of the major doubts that made me think about using only the
+>   send/recv skbuff functions, that it shouldn't break the compatibility.
+> 
+> > 
+> > > This is an idea of virtio-skb.h that
+> > > I have in mind:
+> > >      struct virtskb;
+> > 
+> > 
+> > What fields do you want to store in virtskb? It looks to be exist sk_buff is
+> > flexible enough to us?
+> 
+> My idea is to store queues information, like struct receive_queue or
+> struct send_queue, and some device attributes (e.g. hdr_len ).
+> 
+> > 
+> > 
+> > > 
+> > >      struct sk_buff *virtskb_receive_small(struct virtskb *vs, ...);
+> > >      struct sk_buff *virtskb_receive_big(struct virtskb *vs, ...);
+> > >      struct sk_buff *virtskb_receive_mergeable(struct virtskb *vs, ...);
+> > > 
+> > >      int virtskb_add_recvbuf_small(struct virtskb*vs, ...);
+> > >      int virtskb_add_recvbuf_big(struct virtskb *vs, ...);
+> > >      int virtskb_add_recvbuf_mergeable(struct virtskb *vs, ...);
+> > > 
+> > > For the Guest->Host path it should be easier, so maybe I can add a
+> > > "virtskb_send(struct virtskb *vs, struct sk_buff *skb)" with a part of the code
+> > > of xmit_skb().
+> > 
+> > 
+> > I may miss something, but I don't see any thing that prevents us from using
+> > xmit_skb() directly.
+> > 
+> 
+> Yes, but my initial idea was to make it more parametric and not related to the
+> virtio_net_hdr, so the 'hdr_len' could be a parameter and the
+> 'num_buffers' should be handled by the caller.
+> 
+> > 
+> > > 
+> > > Let me know if you have in mind better names or if I should put these function
+> > > in another place.
+> > > 
+> > > I would like to leave the control part completely separate, so, for example,
+> > > the two drivers will negotiate the features independently and they will call
+> > > the right virtskb_receive_*() function based on the negotiation.
+> > 
+> > 
+> > If it's one the issue of negotiation, we can simply change the
+> > virtnet_probe() to deal with different devices.
+> > 
+> > 
+> > > 
+> > > I already started to work on it, but before to do more steps and send an RFC
+> > > patch, I would like to hear your opinion.
+> > > Do you think that makes sense?
+> > > Do you see any issue or a better solution?
+> > 
+> > 
+> > I still think we need to seek a way of adding some codes on virtio-net.c
+> > directly if there's no huge different in the processing of TX/RX. That would
+> > save us a lot time.
+> 
+> After the reading of the buffers from the virtqueue I think the process
+> is slightly different, because virtio-net will interface with the network
+> stack, while virtio-vsock will interface with the vsock-core (socket).
+> So the virtio-vsock implements the following:
+> - control flow mechanism to avoid to loose packets, informing the peer
+>   about the amount of memory available in the receive queue using some
+>   fields in the virtio_vsock_hdr
+> - de-multiplexing parsing the virtio_vsock_hdr and choosing the right
+>   socket depending on the port
+> - socket state handling
+> 
+> We can use the virtio-net as transport, but we should add a lot of
+> code to skip "net device" stuff when it is used by the virtio-vsock.
+> This could break something in virtio-net, for this reason, I thought to reuse
+> only the send/recv functions starting from the idea to split the virtio-net
+> driver in two parts:
+> a. one with all stuff related to the network stack
+> b. one with the stuff needed to communicate with the host
+> 
+> And use skbuff to communicate between parts. In this way, virtio-vsock
+> can use only the b part.
+> 
+> Maybe we can do this split in a better way, but I'm not sure it is
+> simple.
+> 
+> Thanks,
+> Stefano
+
+Frankly, skb is a huge structure which adds a lot of
+overhead. I am not sure that using it is such a great idea
+if building a device that does not have to interface
+with the networking stack.
+
+So I agree with Jason in theory. To clarify, he is basically saying
+current implementation is all wrong, it should be a protocol and we
+should teach networking stack that there are reliable net devices that
+handle just this protocol. We could add a flag in virtio net that
+will say it's such a device.
+
+Whether it's doable, I don't know, and it's definitely not simple - in
+particular you will have to also re-implement existing devices in these
+terms, and not just virtio - vmware vsock too.
+
+If you want to do a POC you can add a new address family,
+that's easier.
+
+Just reusing random functions won't help, net stack
+is very heavy, if it manages to outperform vsock it's
+because vsock was not written with performance in mind.
+But the smarts are in the core not virtio driver.
+What makes vsock slow is design decisions like
+using a workqueue to process packets,
+not batching memory management etc etc.
+All things that net core does for virtio net.
+
+-- 
+MST
