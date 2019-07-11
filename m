@@ -2,171 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2572C65ECF
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 19:41:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC4C865F6E
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728546AbfGKRlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 13:41:01 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46073 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727612AbfGKRlB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 13:41:01 -0400
-Received: by mail-qt1-f195.google.com with SMTP id x22so275671qtp.12
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 10:41:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=6pCqVaAQnVTEmOJWGnRveGPNLHhDMYxLq3MEYF24/ck=;
-        b=CH7jSXX+s3VkJy59+NIcuyhkF0is0DrJ+hBfMthrCOFnpE/E4sbNc5RdTjhWHA3Ddo
-         xeRTXMAcfMYngjh1KHvUKixrAJD//r5tEej3d4mGEXWsy6rQa6BwGFL7n2aDkDJBbtVx
-         wXsSWdz0pKh0ZhoIWlCihYsfkiOOtfZwG368v9hnBf3PkE5fO8Z/41cu7m/vVDyTPlWf
-         igooCgtk9C+/UkFIG+bycOgBgVltlkFrLXNIg+j8Kg+OuRkEKYnyGC7hyqEZBT/5zidk
-         KXXSwloy5Rs1bRcLbgndN9eSDIz8MZAFEz0c2sGno4QsBJDvbr2KgLsZEVPYmSLa8AC2
-         rDxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=6pCqVaAQnVTEmOJWGnRveGPNLHhDMYxLq3MEYF24/ck=;
-        b=Qx+TccGXoTtNbglqxwtzgrCEaDEfVBs6pFQqqLVRKeLk/rniCgbWTjJVbt9u8pTUtn
-         NI++yb5pEDAFcHFq9CK7Qeae0p97cIm80dJZrm7BhYzhEnfzJYq083SpTOudCL/ANdFH
-         rPd/8f9nWtEDKc7Pcm4ORSaMh6nfZpK27dYVlJXoN89r+t6OdWhdHnQrNVTeIm34Nbo3
-         8gHorsL5+RIjlrSj3S4PGut3BNnEbwMVBbE+8dVAqfCi0iWIvZ1bcoTDBeAsIAuypqMk
-         5PyOQ9awGoAyLCh7/EMJ8DBaC70CriJxBFkLtZ1GKy7Fryjcb3RSHJ4+Gy5TqtDL8aYn
-         +rDw==
-X-Gm-Message-State: APjAAAV0Ax2ghJUCCOIEV23MAB3znmw7hpiTItmf7BJ9JD8XmCnJ/1mN
-        vw9GAgqMiIZisogDCY8Dgu4=
-X-Google-Smtp-Source: APXvYqx5FOOqpoAktSdIQWd2Gp+bsFscWO8zgzINj5V0Wi/dr0Q8CF7amsMyMManiJb0bNiRE4H2rg==
-X-Received: by 2002:ac8:341d:: with SMTP id u29mr2711939qtb.320.1562866860113;
-        Thu, 11 Jul 2019 10:41:00 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.27])
-        by smtp.gmail.com with ESMTPSA id 5sm2584027qkr.68.2019.07.11.10.40.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 11 Jul 2019 10:40:59 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 9B630C0918; Thu, 11 Jul 2019 14:40:56 -0300 (-03)
-Date:   Thu, 11 Jul 2019 14:40:56 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Roi Dayan <roid@mellanox.com>,
-        John Hurley <john.hurley@netronome.com>, Yossi@redhat.com,
-        Oz Shlomo <ozsh@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Rony Efraim <ronye@mellanox.com>,
-        Justin Pettit <jpettit@ovn.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Zhike Wang <wangzhike@jd.com>,
+        id S1728601AbfGKS07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 14:26:59 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37784 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728451AbfGKS07 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 14:26:59 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id D5EE7AE91;
+        Thu, 11 Jul 2019 18:26:56 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 96CB5E0183; Thu, 11 Jul 2019 20:26:54 +0200 (CEST)
+Date:   Thu, 11 Jul 2019 20:26:54 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
         David Miller <davem@davemloft.net>,
-        Kuperman <yossiku@mellanox.com>
-Subject: Re: [PATCH net-next iproute2 2/3] tc: Introduce tc ct action
-Message-ID: <20190711174056.GW3449@localhost.localdomain>
-References: <1562489628-5925-1-git-send-email-paulb@mellanox.com>
- <1562489628-5925-3-git-send-email-paulb@mellanox.com>
- <20190708175446.GL3449@localhost.localdomain>
- <d4f2f3ce-f14d-6026-a271-d627de6d8cea@mellanox.com>
- <20190709153657.GF3390@localhost.localdomain>
- <5ded2e5b-958e-eca3-76ad-909ebf79234e@mellanox.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+Message-ID: <20190711182654.GG5700@unicorn.suse.cz>
+References: <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+ <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
+ <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
+ <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
+ <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
+ <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
+ <eb6121ea-b02d-672e-25c9-2ad054d49fc7@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5ded2e5b-958e-eca3-76ad-909ebf79234e@mellanox.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <eb6121ea-b02d-672e-25c9-2ad054d49fc7@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 07:21:51AM +0000, Paul Blakey wrote:
+On Thu, Jul 11, 2019 at 11:19:45AM +0200, Eric Dumazet wrote:
 > 
-> On 7/9/2019 6:36 PM, Marcelo Ricardo Leitner wrote:
-> > On Tue, Jul 09, 2019 at 06:58:36AM +0000, Paul Blakey wrote:
-> >> On 7/8/2019 8:54 PM, Marcelo Ricardo Leitner wrote:
-> >>> On Sun, Jul 07, 2019 at 11:53:47AM +0300, Paul Blakey wrote:
-> >>>> New tc action to send packets to conntrack module, commit
-> >>>> them, and set a zone, labels, mark, and nat on the connection.
-> >>>>
-> >>>> It can also clear the packet's conntrack state by using clear.
-> >>>>
-> >>>> Usage:
-> >>>>      ct clear
-> >>>>      ct commit [force] [zone] [mark] [label] [nat]
-> >>> Isn't the 'commit' also optional? More like
-> >>>       ct [commit [force]] [zone] [mark] [label] [nat]
+> 
+> On 7/11/19 9:28 AM, Christoph Paasch wrote:
+> > 
+> > 
+> >> On Jul 10, 2019, at 9:26 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >>
+> >>
+> >>
+> >> On 7/10/19 8:53 PM, Prout, Andrew - LLSC - MITLL wrote:
 > >>>
-> >>>>      ct [nat] [zone]
-> >>>>
-> >>>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> >>>> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> >>>> Signed-off-by: Yossi Kuperman <yossiku@mellanox.com>
-> >>>> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> >>>> Acked-by: Roi Dayan <roid@mellanox.com>
-> >>>> ---
-> >>> ...
-> >>>> +static void
-> >>>> +usage(void)
-> >>>> +{
-> >>>> +	fprintf(stderr,
-> >>>> +		"Usage: ct clear\n"
-> >>>> +		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC]\n"
-> >>> Ditto here then.
-> >>
-> >> In commit msg and here, it means there is multiple modes of operation. I
-> >> think it's easier to split those.
-> > Yep, that is good.
-> > More below.
-> >
-> >> "ct clear" to clear it , not other options can be added here.
-> >>
-> >> "ct commit  [force].... " sends to conntrack and commit a connection,
-> >> and only for commit can you specify force mark  label, and nat with
-> >> nat_spec....
-> >>
-> >> and the last one, "ct [nat] [zone ZONE]" is to just send the packet to
-> >> conntrack on some zone [optional], restore nat [optional].
-> >>
-> >>
-> >>>> +		"	ct [nat] [zone ZONE]\n"
-> >>>> +		"Where: ZONE is the conntrack zone table number\n"
-> >>>> +		"	NAT_SPEC is {src|dst} addr addr1[-addr2] [port port1[-port2]]\n"
-> >>>> +		"\n");
-> >>>> +	exit(-1);
-> >>>> +}
-> >>> ...
+> >>> Our initial rollout was v4.14.130, but I reproduced it with v4.14.132 as well, reliably for the samba test and once (not reliably) with synthetic test I was trying. A patched v4.14.132 with this patch partially reverted (just the four lines from tcp_fragment deleted) passed the samba test.
 > >>>
-> >>> The validation below doesn't enforce that commit must be there for
-> >>> such case.
-> >> which case? commit is optional. the above are the three valid patterns.
-> > That's the point. But the 2nd example is saying 'commit' word is
-> > mandatory in that mode. It is written as it is a command that was
-> > selected.
-> >
-> > One may use just:
-> >      ct [zone]
-> > And not
-> >      ct commit [zone]
-> > Right?
+> >>> The synthetic test was a pair of simple send/recv test programs under the following conditions:
+> >>> -The send socket was non-blocking
+> >>> -SO_SNDBUF set to 128KiB
+> >>> -The receiver NIC was being flooded with traffic from multiple hosts (to induce packet loss/retransmits)
+> >>> -Load was on both systems: a while(1) program spinning on each CPU core
+> >>> -The receiver was on an older unaffected kernel
+> >>>
+> >>
+> >> SO_SNDBUF to 128KB does not permit to recover from heavy losses,
+> >> since skbs needs to be allocated for retransmits.
+> > 
+> > Would it make sense to always allow the alloc in tcp_fragment when coming from __tcp_retransmit_skb() through the retransmit-timer ?
 > 
-> It is optional in the overall syntax.
+> 4.15+ kernels have :
+> 
+> if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
+>     tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
 > 
 > 
-> But I split it into modes:
-> 
-> clear, commit, and "restore" (I unofficial call it like that, because it 
-> usually used to get the +est state on the packet and can restore nat, it 
-> doesn't actually restore anything for the first packet on the -trk rule)
-> 
-> It is mandatory in the second mode (commit), if you don't specify commit 
-> or clear, you can only use the third form - "restore", which is to send 
-> to ct on some optional zone, and optionally and restore nat (so we get 
-> ct [zone] [nat]).
+> Meaning that things like TLP will succeed.
 
-I see. Thanks Paul.
+I get
 
-  Marcelo
+          <idle>-0     [010] ..s. 301696.143296: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301696.143301: r_tcp_fragment_0: (tcp_send_loss_probe+0x13d/0x1f0 <- tcp_fragment) ret=-12
+          <idle>-0     [010] ..s. 301696.267644: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301696.267650: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+          <idle>-0     [010] ..s. 301696.875289: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301696.875293: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+          <idle>-0     [010] ..s. 301698.059267: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301698.059271: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+          <idle>-0     [010] ..s. 301700.427225: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301700.427230: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+          <idle>-0     [010] ..s. 301705.291144: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301705.291151: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+          <idle>-0     [010] ..s. 301714.762961: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
+          <idle>-0     [010] d.s. 301714.762966: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+
+on 5.2 kernel with this packetdrill script:
+
+------------------------------------------------------------------------
+--tolerance_usecs=10000
+
+// flush cached TCP metrics
+0.000  `ip tcp_metrics flush all`
+
+// establish a connection
++0.000 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
++0.000 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0.000 setsockopt(3, SOL_SOCKET, SO_SNDBUF, [15000], 4) = 0
++0.000 bind(3, ..., ...) = 0
++0.000 listen(3, 1) = 0
+
++0.100 < S 0:0(0) win 60000 <mss 1000,nop,nop,sackOK,nop,wscale 7>
++0.000 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK,nop,wscale 7>
++0.100 < . 1:1(0) ack 1 win 2000
++0.000 accept(3, ..., ...) = 4
++0.100 write(4, ..., 30000) = 30000
+
++0.000 > . 1:2001(2000) ack 1
++0.000 > . 2001:4001(2000) ack 1
++0.000 > . 4001:6001(2000) ack 1
++0.000 > . 6001:8001(2000) ack 1
++0.000 > . 8001:10001(2000) ack 1
++0.010 < . 1:1(0) ack 10001 win 2000
++0.000 > . 10001:12001(2000) ack 1
++0.000 > . 12001:14001(2000) ack 1
++0.000 > . 14001:16001(2000) ack 1
++0.000 > . 16001:18001(2000) ack 1
++0.000 > . 18001:20001(2000) ack 1
++0.000 > . 20001:22001(2000) ack 1
++0.000 > . 22001:24001(2000) ack 1
++0.000 > . 24001:26001(2000) ack 1
++0.000 > . 26001:28001(2000) ack 1
++0.000 > P. 28001:30001(2000) ack 1
++0.010 < . 1:1(0) ack 30001 win 2000
++0.000 write(4, ..., 40000) = 40000
++0.000 > . 30001:32001(2000) ack 1
++0.000 > . 32001:34001(2000) ack 1
++0.000 > . 34001:36001(2000) ack 1
++0.000 > . 36001:38001(2000) ack 1
++0.000 > . 38001:40001(2000) ack 1
++0.000 > . 40001:42001(2000) ack 1
++0.000 > . 42001:44001(2000) ack 1
++0.000 > . 44001:46001(2000) ack 1
++0.000 > . 46001:48001(2000) ack 1
++0.000 > . 48001:50001(2000) ack 1
++0.000 > . 50001:52001(2000) ack 1
++0.000 > . 52001:54001(2000) ack 1
++0.000 > . 54001:56001(2000) ack 1
++0.000 > . 56001:58001(2000) ack 1
++0.000 > . 58001:60001(2000) ack 1
++0.000 > . 60001:62001(2000) ack 1
++0.000 > . 62001:64001(2000) ack 1
++0.000 > . 64001:66001(2000) ack 1
++0.000 > . 66001:68001(2000) ack 1
++0.000 > P. 68001:70001(2000) ack 1
+
++0.000 `ss -nteim state established sport == :8080`
+
++0.120~+0.200 > P. 69001:70001(1000) ack 1
+------------------------------------------------------------------------
+
+I'm aware it's not a realistic test. It was written as quick and simple
+check of the pre-4.19 patch, but it shows that even TLP may not get
+through.
+
+Michal
