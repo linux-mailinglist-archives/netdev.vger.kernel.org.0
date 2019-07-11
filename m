@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29E9C65F70
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BDE865F77
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728717AbfGKS3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 14:29:05 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44402 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728689AbfGKS3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 14:29:05 -0400
-Received: by mail-wr1-f68.google.com with SMTP id p17so7314034wrf.11
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:29:03 -0700 (PDT)
+        id S1728792AbfGKScY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 14:32:24 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:35222 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728325AbfGKScX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 14:32:23 -0400
+Received: by mail-qk1-f196.google.com with SMTP id r21so4438513qke.2
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:32:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=h/h6b8oGyNXq3Gke5g9TT3p/XLPsLUUIgpj6GKZbRJw=;
-        b=tz8FeD497u5PEdlWyjGOsT+RNrYPtDZaSkMuLMaE3gkNLVhCwieBHEN21KwVfsMK9i
-         9BnrcDlehoiHUUP84n9+XP5lpSff+Ut5WUenIMDrhhGaoqeHBU4eIv6xgN9vqZqMS1sb
-         JOF8Sk9wdM4piIdDYkqp3Ad7Gm/Cg+V1pWN+PeR5czdZzDCpXcDpt/j0R5Fh97RyZvkW
-         /MpRBa6vsNKfsetOLhy7L/swAzB1+WdhE2AamZfdOVOUbBIK22Y7DkMq5zJQg71pDx/h
-         eo41Y5X1RkScxtifYNGRNhRShhveAEswhxrQAt9ABnsU1yxH/xbdwJAaNHC0NbqNpltV
-         7Tjw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=brXnLlJzUa8KE6aZJSHo3ySoGB6IM5nDo/myyMy+zoc=;
+        b=CWkT3OyyoCKtzXiT6jqNKwmJp0C4SpO906/1bxPEGUVcYmZxAlJXF1zUnzK4BYvoPR
+         HR3WFUmojhAIIytkm4kSLygD9T5q1IdlHOqbaMqffO5w1jDzc6ZacruLNmmBgHPw4ylT
+         8+NNfdxs5h/3aYNkkZT8FQ6wXGMEksnONrEP7/jVkOtcz/fvlX9tCjQnMPkmdypcuLhR
+         DnBE1+46vLz/0iL32aS26lrxkdBKG1CqqZBsSKDpS9BRgyn+puUXVr2tG1A3Gauf0Cob
+         /Dm/oEjfRReg9yAbTvQLuTqk88Qiz47yt6cMjvTrdhv+tT4f2HmI4gSMvVYk/ctjxfmp
+         m2/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=h/h6b8oGyNXq3Gke5g9TT3p/XLPsLUUIgpj6GKZbRJw=;
-        b=pf8CpNylKXwKpUYcj3/FiMzaAIC4VAOulO5a2Yp83UYWozkcx731708OkbHXH39hA9
-         q5L2wAk8Y7GDazbfRBYY8ZR0Bu/wO3NqCSKGZ55zlxOuQYxwrwCgxiMLItOIRdq4LN3J
-         xbXcn148biFU9eoGVm4rQK0Hf6/yurT6GLd2O8wIOodpixy7pI4zuGbNfRB06QC3sNDm
-         51OIgfzD8UAQQlbPautQfF96Mv/GaC+N6U7/Ohn9spcFeIyj88qmgdW2BMwqgxD4xwNb
-         L/fOUYRI6UU0nX2FTRCuc5yhPWT9a9AlMXbgDSzOy6AzIrztEaql1BL18Y5bR528aEnw
-         jI/g==
-X-Gm-Message-State: APjAAAUZTHmONDKN0Ul0kGtvlHwVHis6Q7fBi5R3Aqb8lMPy3rrdzPNf
-        1aVuvKWJb3valNLePpuXLjI=
-X-Google-Smtp-Source: APXvYqyzakva52IvKukBgwa4oNowHM7jENJvh4zUKN6gBmPYEgloy4Zojb1omYSgMHuTtu4vGfS2Gw==
-X-Received: by 2002:a5d:518f:: with SMTP id k15mr6302342wrv.321.1562869742837;
-        Thu, 11 Jul 2019 11:29:02 -0700 (PDT)
-Received: from [192.168.8.147] (143.160.185.81.rev.sfr.net. [81.185.160.143])
-        by smtp.gmail.com with ESMTPSA id c12sm9614606wrd.21.2019.07.11.11.29.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jul 2019 11:29:01 -0700 (PDT)
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-To:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dustin Marquess <dmarquess@apple.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
- <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
- <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
- <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
- <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d4b1ab65-c308-382a-2a0e-9042750335e0@gmail.com>
-Date:   Thu, 11 Jul 2019 20:28:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=brXnLlJzUa8KE6aZJSHo3ySoGB6IM5nDo/myyMy+zoc=;
+        b=PmKgXkvHPDF3hKGnmVOtpmxc4HnHgkbCyuNv+gCPSsNK9geVWDT/z+pSEu7H2wOgD3
+         S1vsslfhInXakVWSMjDXfk06euBRrEO1H0XyWjyt9tOiPhA3kQQjFpFai5fNJDUXU42T
+         x46JVxSAxmxaPaxEGOVrab7isi/m2Wd1nZlLfzZ4zAcNDI7p/7JFEslnlC+t/Bdrx5wb
+         k4Cx1fHvQfM7BaF1lAN/dTC5pTjdJVh7JToJWrSfXKvyySrwKRVRdaQQIQ1jhmvETVxF
+         ZNFz16av8eDHOTMYyQChUOmG+jUGecN/Nb7JDxDpWl3EthKixtQ069vWDKgLq/XTN7g7
+         P1dA==
+X-Gm-Message-State: APjAAAXPlDK3pEfMjqUW6FgWrbOoMG74xGLvUJkgO9Y0pyX8vLj2XP+J
+        N5ZkSyEF9vl40221UQ6yvJUg4A==
+X-Google-Smtp-Source: APXvYqz93+kwEiH1MWilqXEE5vsbkKIjnJK3n105gpVd4Ovu2MgFRwCkRibC2kKO6TbLVUBHuozn/w==
+X-Received: by 2002:a05:620a:4c8:: with SMTP id 8mr2884844qks.366.1562869942821;
+        Thu, 11 Jul 2019 11:32:22 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y42sm3595725qtc.66.2019.07.11.11.32.21
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 11 Jul 2019 11:32:22 -0700 (PDT)
+Date:   Thu, 11 Jul 2019 11:32:18 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        edumazet@google.com, bpf@vger.kernel.org
+Subject: Re: [bpf PATCH v2 2/6] bpf: tls fix transition through disconnect
+ with close
+Message-ID: <20190711113218.2f0b8c1f@cakuba.netronome.com>
+In-Reply-To: <5d276814a76ad_698f2aaeaaf925bc8a@john-XPS-13-9370.notmuch>
+References: <156261310104.31108.4569969631798277807.stgit@ubuntu3-kvm1>
+        <156261324561.31108.14410711674221391677.stgit@ubuntu3-kvm1>
+        <20190709194525.0d4c15a6@cakuba.netronome.com>
+        <5d255dececd33_1b7a2aec940d65b45@john-XPS-13-9370.notmuch>
+        <20190710123417.2157a459@cakuba.netronome.com>
+        <20190710130411.08c54ddd@cakuba.netronome.com>
+        <5d276814a76ad_698f2aaeaaf925bc8a@john-XPS-13-9370.notmuch>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 11 Jul 2019 09:47:16 -0700, John Fastabend wrote:
+> Jakub Kicinski wrote:
+> > On Wed, 10 Jul 2019 12:34:17 -0700, Jakub Kicinski wrote: =20
+> > > > > > +		if (sk->sk_prot->unhash)
+> > > > > > +			sk->sk_prot->unhash(sk);
+> > > > > > +	}
+> > > > > > +
+> > > > > > +	ctx =3D tls_get_ctx(sk);
+> > > > > > +	if (ctx->tx_conf =3D=3D TLS_SW || ctx->rx_conf =3D=3D TLS_SW)
+> > > > > > +		tls_sk_proto_cleanup(sk, ctx, timeo); =20
+> >=20
+> > Do we still need to hook into unhash? With patch 6 in place perhaps we
+> > can just do disconnect =F0=9F=A5=BA =20
+>=20
+> ?? "can just do a disconnect", not sure I folow. We still need unhash
+> in cases where we have a TLS socket transition from ESTABLISHED
+> to LISTEN state without calling close(). This is independent of if
+> sockmap is running or not.
+>=20
+> Originally, I thought this would be extremely rare but I did see it
+> in real applications on the sockmap side so presumably it is possible
+> here as well.
 
+Ugh, sorry, I meant shutdown. Instead of replacing the unhash callback
+replace the shutdown callback. We probably shouldn't release the socket
+lock either there, but we can sleep, so I'll be able to run the device
+connection remove callback (which sleep).
 
-On 7/11/19 7:14 PM, Prout, Andrew - LLSC - MITLL wrote:
-> 
-> In my opinion, if a small SO_SNDBUF below a certain value is no longer supported, then SOCK_MIN_SNDBUF should be adjusted to reflect this. The RCVBUF/SNDBUF sizes are supposed to be hints, no error is returned if they are not honored. The kernel should continue to function regardless of what userspace requests for their values.
-> 
+> > cleanup is going to kick off TX but also:
+> >=20
+> > 	if (unlikely(sk->sk_write_pending) &&
+> > 	    !wait_on_pending_writer(sk, &timeo))
+> > 		tls_handle_open_record(sk, 0);
+> >=20
+> > Are we guaranteed that sk_write_pending is 0?  Otherwise
+> > wait_on_pending_writer is hiding yet another release_sock() :( =20
+>=20
+> Not seeing the path to release_sock() at the moment?
+>=20
+>    tls_handle_open_record
+>      push_pending_record
+>       tls_sw_push_pending_record
+>         bpf_exec_tx_verdict
 
-It is supported to set whatever SO_SNDBUF value and get terrible performance.
+wait_on_pending_writer
+  sk_wait_event
+    release_sock
 
-It always has been.
+> If bpf_exec_tx_verdict does a redirect we could hit a relase but that
+> is another fix I have to get queued up shortly. I think we can fix
+> that in another series.
 
-The only difference is that we no longer allow an attacker to fool TCP stack
-and consume up to 2 GB per socket while SO_SNDBUF was set to 128 KB.
-
-The side effect is that in some cases, the workload can appear to have the signature of the attack.
-
-The solution is to increase your SO_SNDBUF, or even better let TCP stack autotune it.
-nobody forced you to set very small values for it.
-
+Ugh.
