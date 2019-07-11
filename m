@@ -2,135 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7844164F6A
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB5064F71
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:12:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727687AbfGKADi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 20:03:38 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:32801 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbfGKADi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 20:03:38 -0400
-Received: by mail-qk1-f195.google.com with SMTP id r6so3433896qkc.0;
-        Wed, 10 Jul 2019 17:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rcagef65c04aERdHDZCmK5MH6YmpVVzcpkdhaNDNo5o=;
-        b=C1XfdLqd5hKBMQEnUz4tGu4Ywf7IJdfVwTMvq/YrfYcAI75lVOzsVZIDgCEncN6mCU
-         gkJprzkHoq5qTkSNZXVrziOzdxuQEZamT5Ff6EyjTpK2RP+fXwFu/F5mWbUwk1ejicoY
-         GrYNWDyYGyPUVk3fsZkSelgOO8DFMDPgSGmjPdc8NC3uNDfFJGLe7kR4x8U184oU/Xut
-         gBkBfGULn/gx7CHLkn6stkOEQERYv92gVBGnTCp+pW+7aYQcKScoCm1fyvDqxVhIcPxQ
-         wpnTwGcKuFBZq8COA1WVRhh9nV1/Jl1Nc0N7FmZUZVsqS4bL9hf9SxXHmBdOm94znJpo
-         Ed9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rcagef65c04aERdHDZCmK5MH6YmpVVzcpkdhaNDNo5o=;
-        b=G5hLo3ZxQvMPTWl3Tydux5h7HWK/Pi/WLAgMJ/QZpjxOknTI+J3t89aThkq84TyNn3
-         p3tBU3w+TZLJoyVyFYnr2hfNXYYBq/XljQ9k5UEwPl+clurWUU1KowOQDwH37IUtms8L
-         6xfgLSQ5EC/0htm9WdYNS0cYz7kpTJ0YQROuNShXiXcDQQfLUJnqIGM8tmHq1qMFs0O+
-         /pyzIHTUFip2FXOA544WuoM2GMPRLVN39SxC3xW0ZY8ibDAkBfSL/QokrtlI9uzDnXEH
-         9KPgXg//y9+Mq5Xa50EIkXo8dVeUucm/AykJ0ROEXDYfVaYBAH08q7Jr2JhPqlqRmLXz
-         SjfA==
-X-Gm-Message-State: APjAAAVyuqSxpxxL2O0MB+Leh4hwRAFDjIC6XuZmvIxPCP8czCs0nV3v
-        VbqKZiTOA4IsVwJ1T5UewjOpqwrruiGTxgyYyY0d2hWWOZbTQw==
-X-Google-Smtp-Source: APXvYqxaaPVmCJKGYrqtpwvraL1EswjCeJsS/XSCyFmDnYfbnnDLpm+8b9JquD0m7SIWIVbBy4B0yNf0+FZAo6p9xak=
-X-Received: by 2002:a37:660d:: with SMTP id a13mr801660qkc.36.1562803416832;
- Wed, 10 Jul 2019 17:03:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-5-krzesimir@kinvolk.io>
-In-Reply-To: <20190708163121.18477-5-krzesimir@kinvolk.io>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Jul 2019 17:03:25 -0700
-Message-ID: <CAEf4BzZoOw=1B8vV53iAxz8LDULOPVF-he4C_usoUQSdXU+oSg@mail.gmail.com>
-Subject: Re: [bpf-next v3 04/12] selftests/bpf: Use bpf_prog_test_run_xattr
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1727729AbfGKAMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 20:12:53 -0400
+Received: from mail.us.es ([193.147.175.20]:35042 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727546AbfGKAMw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 20:12:52 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3EF2080D0B
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 02:12:49 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2FE0910219C
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 02:12:49 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 25795A6B0; Thu, 11 Jul 2019 02:12:49 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E9028DA7B6;
+        Thu, 11 Jul 2019 02:12:46 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 11 Jul 2019 02:12:46 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [31.4.194.134])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 870EC4265A32;
+        Thu, 11 Jul 2019 02:12:46 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
+        jakub.kicinski@netronome.com
+Subject: [PATCH net-next 1/3] net: flow_offload: remove netns parameter from flow_block_cb_alloc()
+Date:   Thu, 11 Jul 2019 02:12:33 +0200
+Message-Id: <20190711001235.20686-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 8, 2019 at 3:43 PM Krzesimir Nowak <krzesimir@kinvolk.io> wrote:
->
-> The bpf_prog_test_run_xattr function gives more options to set up a
-> test run of a BPF program than the bpf_prog_test_run function.
->
-> We will need this extra flexibility to pass ctx data later.
->
-> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> ---
+No need to annotate the netns on the flow block callback object,
+flow_block_cb_is_busy() already checks for used blocks.
 
-lgtm, with some nits below
+Fixes: d63db30c8537 ("net: flow_offload: add flow_block_cb_alloc() and flow_block_cb_free()")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c    | 3 +--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c      | 5 ++---
+ drivers/net/ethernet/mscc/ocelot_flower.c           | 3 +--
+ drivers/net/ethernet/mscc/ocelot_tc.c               | 2 +-
+ drivers/net/ethernet/netronome/nfp/flower/offload.c | 6 ++----
+ include/net/flow_offload.h                          | 3 +--
+ net/core/flow_offload.c                             | 9 +++------
+ net/dsa/slave.c                                     | 2 +-
+ 8 files changed, 12 insertions(+), 21 deletions(-)
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 7245d287633d..2162412073c5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -735,8 +735,7 @@ mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
+ 		list_add(&indr_priv->list,
+ 			 &rpriv->uplink_priv.tc_indr_block_priv_list);
+ 
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       mlx5e_rep_indr_setup_block_cb,
++		block_cb = flow_block_cb_alloc(mlx5e_rep_indr_setup_block_cb,
+ 					       indr_priv, indr_priv,
+ 					       mlx5e_rep_indr_tc_block_unbind);
+ 		if (IS_ERR(block_cb)) {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 4d34d42b3b0e..a469035400cf 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1610,8 +1610,7 @@ mlxsw_sp_setup_tc_block_flower_bind(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		acl_block = mlxsw_sp_acl_block_create(mlxsw_sp, f->net);
+ 		if (!acl_block)
+ 			return -ENOMEM;
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       mlxsw_sp_setup_tc_block_cb_flower,
++		block_cb = flow_block_cb_alloc(mlxsw_sp_setup_tc_block_cb_flower,
+ 					       mlxsw_sp, acl_block,
+ 					       mlxsw_sp_tc_block_flower_release);
+ 		if (IS_ERR(block_cb)) {
+@@ -1702,7 +1701,7 @@ static int mlxsw_sp_setup_tc_block(struct mlxsw_sp_port *mlxsw_sp_port,
+ 					  &mlxsw_sp_block_cb_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net, cb, mlxsw_sp_port,
++		block_cb = flow_block_cb_alloc(cb, mlxsw_sp_port,
+ 					       mlxsw_sp_port, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 7aaddc09c185..6a11aea8b186 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -323,8 +323,7 @@ int ocelot_setup_tc_block_flower_bind(struct ocelot_port *port,
+ 		if (!port_block)
+ 			return -ENOMEM;
+ 
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       ocelot_setup_tc_block_cb_flower,
++		block_cb = flow_block_cb_alloc(ocelot_setup_tc_block_cb_flower,
+ 					       port, port_block,
+ 					       ocelot_tc_block_unbind);
+ 		if (IS_ERR(block_cb)) {
+diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
+index 9e6464ffae5d..abbcb66bf5ac 100644
+--- a/drivers/net/ethernet/mscc/ocelot_tc.c
++++ b/drivers/net/ethernet/mscc/ocelot_tc.c
+@@ -156,7 +156,7 @@ static int ocelot_setup_tc_block(struct ocelot_port *port,
+ 		if (flow_block_cb_is_busy(cb, port, &ocelot_block_cb_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net, cb, port, port, NULL);
++		block_cb = flow_block_cb_alloc(cb, port, port, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index 7e725fa60347..a0f8892bb4b5 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1324,8 +1324,7 @@ static int nfp_flower_setup_tc_block(struct net_device *netdev,
+ 					  &nfp_block_cb_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       nfp_flower_setup_tc_block_cb,
++		block_cb = flow_block_cb_alloc(nfp_flower_setup_tc_block_cb,
+ 					       repr, repr, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+@@ -1430,8 +1429,7 @@ nfp_flower_setup_indr_tc_block(struct net_device *netdev, struct nfp_app *app,
+ 		cb_priv->app = app;
+ 		list_add(&cb_priv->list, &priv->indr_block_cb_priv);
+ 
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       nfp_flower_setup_indr_block_cb,
++		block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
+ 					       cb_priv, cb_priv,
+ 					       nfp_flower_setup_indr_tc_release);
+ 		if (IS_ERR(block_cb)) {
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index db337299e81e..aa9b5287b231 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -264,7 +264,6 @@ struct flow_block_offload {
+ struct flow_block_cb {
+ 	struct list_head	driver_list;
+ 	struct list_head	list;
+-	struct net		*net;
+ 	tc_setup_cb_t		*cb;
+ 	void			*cb_ident;
+ 	void			*cb_priv;
+@@ -272,7 +271,7 @@ struct flow_block_cb {
+ 	unsigned int		refcnt;
+ };
+ 
+-struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
++struct flow_block_cb *flow_block_cb_alloc(tc_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv));
+ void flow_block_cb_free(struct flow_block_cb *block_cb);
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 76f8db3841d7..507de4b48815 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -165,7 +165,7 @@ void flow_rule_match_enc_opts(const struct flow_rule *rule,
+ }
+ EXPORT_SYMBOL(flow_rule_match_enc_opts);
+ 
+-struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
++struct flow_block_cb *flow_block_cb_alloc(tc_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv))
+ {
+@@ -175,7 +175,6 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
+ 	if (!block_cb)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	block_cb->net = net;
+ 	block_cb->cb = cb;
+ 	block_cb->cb_ident = cb_ident;
+ 	block_cb->cb_priv = cb_priv;
+@@ -200,8 +199,7 @@ struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *f,
+ 	struct flow_block_cb *block_cb;
+ 
+ 	list_for_each_entry(block_cb, f->driver_block_list, driver_list) {
+-		if (block_cb->net == f->net &&
+-		    block_cb->cb == cb &&
++		if (block_cb->cb == cb &&
+ 		    block_cb->cb_ident == cb_ident)
+ 			return block_cb;
+ 	}
+@@ -261,8 +259,7 @@ int flow_block_cb_setup_simple(struct flow_block_offload *f,
+ 		if (flow_block_cb_is_busy(cb, cb_ident, driver_block_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net, cb, cb_ident,
+-					       cb_priv, NULL);
++		block_cb = flow_block_cb_alloc(cb, cb_ident, cb_priv, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 614c38ece104..6ca9ec58f881 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -967,7 +967,7 @@ static int dsa_slave_setup_tc_block(struct net_device *dev,
+ 		if (flow_block_cb_is_busy(cb, dev, &dsa_slave_block_cb_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net, cb, dev, dev, NULL);
++		block_cb = flow_block_cb_alloc(cb, dev, dev, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+ 
+-- 
+2.11.0
 
->  tools/testing/selftests/bpf/test_verifier.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> index c7541f572932..1640ba9f12c1 100644
-> --- a/tools/testing/selftests/bpf/test_verifier.c
-> +++ b/tools/testing/selftests/bpf/test_verifier.c
-> @@ -822,14 +822,20 @@ static int do_prog_test_run(int fd_prog, bool unpriv, uint32_t expected_val,
->  {
->         __u8 tmp[TEST_DATA_LEN << 2];
->         __u32 size_tmp = sizeof(tmp);
 
-nit: this is now is not needed as a separate local variable, inline?
-
-> -       uint32_t retval;
->         int saved_errno;
->         int err;
-> +       struct bpf_prog_test_run_attr attr = {
-> +               .prog_fd = fd_prog,
-> +               .repeat = 1,
-> +               .data_in = data,
-> +               .data_size_in = size_data,
-> +               .data_out = tmp,
-> +               .data_size_out = size_tmp,
-> +       };
->
->         if (unpriv)
->                 set_admin(true);
-> -       err = bpf_prog_test_run(fd_prog, 1, data, size_data,
-> -                               tmp, &size_tmp, &retval, NULL);
-> +       err = bpf_prog_test_run_xattr(&attr);
->         saved_errno = errno;
->         if (unpriv)
->                 set_admin(false);
-> @@ -846,9 +852,9 @@ static int do_prog_test_run(int fd_prog, bool unpriv, uint32_t expected_val,
->                         return err;
->                 }
->         }
-> -       if (retval != expected_val &&
-> +       if (attr.retval != expected_val &&
->             expected_val != POINTER_VALUE) {
-
-this if condition now fits one line, can you please combine? thanks!
-
-> -               printf("FAIL retval %d != %d ", retval, expected_val);
-> +               printf("FAIL retval %d != %d ", attr.retval, expected_val);
->                 return 1;
->         }
->
-> --
-> 2.20.1
->
