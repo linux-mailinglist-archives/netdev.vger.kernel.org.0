@@ -2,28 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4C865F6E
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E9C65F70
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 20:29:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728601AbfGKS07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 14:26:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37784 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728451AbfGKS07 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 14:26:59 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id D5EE7AE91;
-        Thu, 11 Jul 2019 18:26:56 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 96CB5E0183; Thu, 11 Jul 2019 20:26:54 +0200 (CEST)
-Date:   Thu, 11 Jul 2019 20:26:54 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
-        David Miller <davem@davemloft.net>,
+        id S1728717AbfGKS3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 14:29:05 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44402 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728689AbfGKS3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 14:29:05 -0400
+Received: by mail-wr1-f68.google.com with SMTP id p17so7314034wrf.11
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=h/h6b8oGyNXq3Gke5g9TT3p/XLPsLUUIgpj6GKZbRJw=;
+        b=tz8FeD497u5PEdlWyjGOsT+RNrYPtDZaSkMuLMaE3gkNLVhCwieBHEN21KwVfsMK9i
+         9BnrcDlehoiHUUP84n9+XP5lpSff+Ut5WUenIMDrhhGaoqeHBU4eIv6xgN9vqZqMS1sb
+         JOF8Sk9wdM4piIdDYkqp3Ad7Gm/Cg+V1pWN+PeR5czdZzDCpXcDpt/j0R5Fh97RyZvkW
+         /MpRBa6vsNKfsetOLhy7L/swAzB1+WdhE2AamZfdOVOUbBIK22Y7DkMq5zJQg71pDx/h
+         eo41Y5X1RkScxtifYNGRNhRShhveAEswhxrQAt9ABnsU1yxH/xbdwJAaNHC0NbqNpltV
+         7Tjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=h/h6b8oGyNXq3Gke5g9TT3p/XLPsLUUIgpj6GKZbRJw=;
+        b=pf8CpNylKXwKpUYcj3/FiMzaAIC4VAOulO5a2Yp83UYWozkcx731708OkbHXH39hA9
+         q5L2wAk8Y7GDazbfRBYY8ZR0Bu/wO3NqCSKGZ55zlxOuQYxwrwCgxiMLItOIRdq4LN3J
+         xbXcn148biFU9eoGVm4rQK0Hf6/yurT6GLd2O8wIOodpixy7pI4zuGbNfRB06QC3sNDm
+         51OIgfzD8UAQQlbPautQfF96Mv/GaC+N6U7/Ohn9spcFeIyj88qmgdW2BMwqgxD4xwNb
+         L/fOUYRI6UU0nX2FTRCuc5yhPWT9a9AlMXbgDSzOy6AzIrztEaql1BL18Y5bR528aEnw
+         jI/g==
+X-Gm-Message-State: APjAAAUZTHmONDKN0Ul0kGtvlHwVHis6Q7fBi5R3Aqb8lMPy3rrdzPNf
+        1aVuvKWJb3valNLePpuXLjI=
+X-Google-Smtp-Source: APXvYqyzakva52IvKukBgwa4oNowHM7jENJvh4zUKN6gBmPYEgloy4Zojb1omYSgMHuTtu4vGfS2Gw==
+X-Received: by 2002:a5d:518f:: with SMTP id k15mr6302342wrv.321.1562869742837;
+        Thu, 11 Jul 2019 11:29:02 -0700 (PDT)
+Received: from [192.168.8.147] (143.160.185.81.rev.sfr.net. [81.185.160.143])
+        by smtp.gmail.com with ESMTPSA id c12sm9614606wrd.21.2019.07.11.11.29.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jul 2019 11:29:01 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+To:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Looney <jtl@netflix.com>,
         Neal Cardwell <ncardwell@google.com>,
@@ -32,10 +60,8 @@ Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
         Bruce Curtis <brucec@netflix.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Dustin Marquess <dmarquess@apple.com>
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-Message-ID: <20190711182654.GG5700@unicorn.suse.cz>
-References: <20190617170354.37770-3-edumazet@google.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
  <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
  <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
  <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
@@ -43,137 +69,38 @@ References: <20190617170354.37770-3-edumazet@google.com>
  <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
  <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
  <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
- <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
- <eb6121ea-b02d-672e-25c9-2ad054d49fc7@gmail.com>
+ <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d4b1ab65-c308-382a-2a0e-9042750335e0@gmail.com>
+Date:   Thu, 11 Jul 2019 20:28:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb6121ea-b02d-672e-25c9-2ad054d49fc7@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 11:19:45AM +0200, Eric Dumazet wrote:
+
+
+On 7/11/19 7:14 PM, Prout, Andrew - LLSC - MITLL wrote:
 > 
+> In my opinion, if a small SO_SNDBUF below a certain value is no longer supported, then SOCK_MIN_SNDBUF should be adjusted to reflect this. The RCVBUF/SNDBUF sizes are supposed to be hints, no error is returned if they are not honored. The kernel should continue to function regardless of what userspace requests for their values.
 > 
-> On 7/11/19 9:28 AM, Christoph Paasch wrote:
-> > 
-> > 
-> >> On Jul 10, 2019, at 9:26 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 7/10/19 8:53 PM, Prout, Andrew - LLSC - MITLL wrote:
-> >>>
-> >>> Our initial rollout was v4.14.130, but I reproduced it with v4.14.132 as well, reliably for the samba test and once (not reliably) with synthetic test I was trying. A patched v4.14.132 with this patch partially reverted (just the four lines from tcp_fragment deleted) passed the samba test.
-> >>>
-> >>> The synthetic test was a pair of simple send/recv test programs under the following conditions:
-> >>> -The send socket was non-blocking
-> >>> -SO_SNDBUF set to 128KiB
-> >>> -The receiver NIC was being flooded with traffic from multiple hosts (to induce packet loss/retransmits)
-> >>> -Load was on both systems: a while(1) program spinning on each CPU core
-> >>> -The receiver was on an older unaffected kernel
-> >>>
-> >>
-> >> SO_SNDBUF to 128KB does not permit to recover from heavy losses,
-> >> since skbs needs to be allocated for retransmits.
-> > 
-> > Would it make sense to always allow the alloc in tcp_fragment when coming from __tcp_retransmit_skb() through the retransmit-timer ?
-> 
-> 4.15+ kernels have :
-> 
-> if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
->     tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
-> 
-> 
-> Meaning that things like TLP will succeed.
 
-I get
+It is supported to set whatever SO_SNDBUF value and get terrible performance.
 
-          <idle>-0     [010] ..s. 301696.143296: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301696.143301: r_tcp_fragment_0: (tcp_send_loss_probe+0x13d/0x1f0 <- tcp_fragment) ret=-12
-          <idle>-0     [010] ..s. 301696.267644: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301696.267650: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
-          <idle>-0     [010] ..s. 301696.875289: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301696.875293: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
-          <idle>-0     [010] ..s. 301698.059267: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301698.059271: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
-          <idle>-0     [010] ..s. 301700.427225: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301700.427230: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
-          <idle>-0     [010] ..s. 301705.291144: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301705.291151: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
-          <idle>-0     [010] ..s. 301714.762961: p_tcp_fragment_0: (tcp_fragment+0x0/0x310) sndbuf=30000 wmemq=65600
-          <idle>-0     [010] d.s. 301714.762966: r_tcp_fragment_0: (__tcp_retransmit_skb+0xf9/0x800 <- tcp_fragment) ret=-12
+It always has been.
 
-on 5.2 kernel with this packetdrill script:
+The only difference is that we no longer allow an attacker to fool TCP stack
+and consume up to 2 GB per socket while SO_SNDBUF was set to 128 KB.
 
-------------------------------------------------------------------------
---tolerance_usecs=10000
+The side effect is that in some cases, the workload can appear to have the signature of the attack.
 
-// flush cached TCP metrics
-0.000  `ip tcp_metrics flush all`
+The solution is to increase your SO_SNDBUF, or even better let TCP stack autotune it.
+nobody forced you to set very small values for it.
 
-// establish a connection
-+0.000 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-+0.000 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
-+0.000 setsockopt(3, SOL_SOCKET, SO_SNDBUF, [15000], 4) = 0
-+0.000 bind(3, ..., ...) = 0
-+0.000 listen(3, 1) = 0
-
-+0.100 < S 0:0(0) win 60000 <mss 1000,nop,nop,sackOK,nop,wscale 7>
-+0.000 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK,nop,wscale 7>
-+0.100 < . 1:1(0) ack 1 win 2000
-+0.000 accept(3, ..., ...) = 4
-+0.100 write(4, ..., 30000) = 30000
-
-+0.000 > . 1:2001(2000) ack 1
-+0.000 > . 2001:4001(2000) ack 1
-+0.000 > . 4001:6001(2000) ack 1
-+0.000 > . 6001:8001(2000) ack 1
-+0.000 > . 8001:10001(2000) ack 1
-+0.010 < . 1:1(0) ack 10001 win 2000
-+0.000 > . 10001:12001(2000) ack 1
-+0.000 > . 12001:14001(2000) ack 1
-+0.000 > . 14001:16001(2000) ack 1
-+0.000 > . 16001:18001(2000) ack 1
-+0.000 > . 18001:20001(2000) ack 1
-+0.000 > . 20001:22001(2000) ack 1
-+0.000 > . 22001:24001(2000) ack 1
-+0.000 > . 24001:26001(2000) ack 1
-+0.000 > . 26001:28001(2000) ack 1
-+0.000 > P. 28001:30001(2000) ack 1
-+0.010 < . 1:1(0) ack 30001 win 2000
-+0.000 write(4, ..., 40000) = 40000
-+0.000 > . 30001:32001(2000) ack 1
-+0.000 > . 32001:34001(2000) ack 1
-+0.000 > . 34001:36001(2000) ack 1
-+0.000 > . 36001:38001(2000) ack 1
-+0.000 > . 38001:40001(2000) ack 1
-+0.000 > . 40001:42001(2000) ack 1
-+0.000 > . 42001:44001(2000) ack 1
-+0.000 > . 44001:46001(2000) ack 1
-+0.000 > . 46001:48001(2000) ack 1
-+0.000 > . 48001:50001(2000) ack 1
-+0.000 > . 50001:52001(2000) ack 1
-+0.000 > . 52001:54001(2000) ack 1
-+0.000 > . 54001:56001(2000) ack 1
-+0.000 > . 56001:58001(2000) ack 1
-+0.000 > . 58001:60001(2000) ack 1
-+0.000 > . 60001:62001(2000) ack 1
-+0.000 > . 62001:64001(2000) ack 1
-+0.000 > . 64001:66001(2000) ack 1
-+0.000 > . 66001:68001(2000) ack 1
-+0.000 > P. 68001:70001(2000) ack 1
-
-+0.000 `ss -nteim state established sport == :8080`
-
-+0.120~+0.200 > P. 69001:70001(1000) ack 1
-------------------------------------------------------------------------
-
-I'm aware it's not a realistic test. It was written as quick and simple
-check of the pre-4.19 patch, but it shows that even TLP may not get
-through.
-
-Michal
