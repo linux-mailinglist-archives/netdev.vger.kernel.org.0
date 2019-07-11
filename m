@@ -2,239 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D852B64FF6
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 03:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 321E764FFC
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 03:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbfGKBpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 21:45:25 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:43796 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727463AbfGKBpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 21:45:24 -0400
-Received: by mail-qk1-f196.google.com with SMTP id m14so3522814qka.10;
-        Wed, 10 Jul 2019 18:45:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5K81MBLH00J2kPIBYEvDIWJr5eCVy3Vqr9oFm8Prox0=;
-        b=TUaTL55wLcx1xfbTjhZdQfKoHy7pjivxQgi06Pj0HON7KChhTV+IXd14KO8b7UCqGR
-         t00mUCcswM7tRhBV0n/k9yeIhokVVPSK4QzY/EgZCpzECwcSfpM8xDs8wkMXZ2uq9Hl3
-         6JN/VIaA9jE1zLrBTocWAJvr8uHDOYtBVnRjwyvESG33YZ9RNeezb1NGO4c9uMSU/KzF
-         SxvBEBoM2Vll4y8MuKgx8QgE4ysWU2Wd7qVO9nFen1omzKZI18Eji3bLYQrXgNL8GYKJ
-         cOwP8lSzn3om67I1X12sBFOZgA+2Hm4CMOyqa3u8DqOFVMAzgOdjLbX7lWlz+1Z1HJMU
-         zfnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5K81MBLH00J2kPIBYEvDIWJr5eCVy3Vqr9oFm8Prox0=;
-        b=UDXJfJCe5FmLIExJOnwvItzSDjBI4xlIIxetV+1VItIzV44ATgsDsNeduVhPjY+fYY
-         dycc++Aw3OjAIOBsqUsKk7h8qW7dh/UjVn2sBf7cO+uhlAUQNtQ3Xy0grC+DfrsdC53I
-         6AWqkqP3z+KNFM7+DCKFnUDAYGpUbgY2LQlZmkEf7xANoxivymUEZ3QM8UIgLmiKkz2f
-         tK6XI0+tk+UI6/6GzHiiI3QK6M1Q/gwFXDbfLUKA9KtAFFQJpzku2xr/oWvSrH0kOocw
-         27cPZfKyb+A5HGKczBg0icVeFocbZc3odeTE3L5fA5jVxZ5U7k81zwVGI+EOSuj1Tt/R
-         XZJw==
-X-Gm-Message-State: APjAAAXDdS2lXxQcqNihN0kNHLkkL6Y5u/vfEW9XdeCCAR8IHDKPYhen
-        P75N6wxV2SDxI+scTm0f4T0QcozEKbtU1HPHbjs=
-X-Google-Smtp-Source: APXvYqzhu01utxChvReSL5YYaHLLnxISsUDDaAs0enEbEotLAL5LAfr5rOzglI3nvvskRVMb5wS6w6SeMR2qZMImFJE=
-X-Received: by 2002:a37:660d:: with SMTP id a13mr1097416qkc.36.1562809523195;
- Wed, 10 Jul 2019 18:45:23 -0700 (PDT)
+        id S1727827AbfGKBvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 21:51:00 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:38453 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727188AbfGKBvA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 21:51:00 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45kfCg1qglz9sN6;
+        Thu, 11 Jul 2019 11:50:55 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1562809857;
+        bh=mugHbuqWraD1+aK2zG0Zb/wLM2BX5/bKzJm2crG3zls=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OpS1mLndMfZxHZ6BnBNmRFK8Acsn9ngjt5Zgpx2SGh+4lia0OsrmjWS9t3hDqg586
+         4JzgjcjXtQry+vFxjV/35Krv3NCV5VGRAElmpqy2HcRZfCptltq03S/OL0C4dT9tBm
+         ZrbnTJFS61/MvlkDlfIYuhPfyKi+0bw7ryqJzcG/KnxLQc2MM9JIZ85J7dgakIqQhH
+         NexkYLxsuWN7H6lqKXEQkNA2qjLjNqtdAZkHf9zBCmuI1rBGsKuFiCbZWuBy5Sd+Gu
+         uVWNkx7m8mSjY0s9KiYQXCpUzXbZXr8UYFYGoDsnvpAntVvE4wxLa/PJkDbjDU2XGu
+         7RRO3LvcPjuxQ==
+Date:   Thu, 11 Jul 2019 11:50:54 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Doug Ledford <dledford@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20190711115054.7d7f468c@canb.auug.org.au>
+In-Reply-To: <20190710175212.GM2887@mellanox.com>
+References: <20190709135636.4d36e19f@canb.auug.org.au>
+        <20190709064346.GF7034@mtr-leonro.mtl.com>
+        <20190710175212.GM2887@mellanox.com>
 MIME-Version: 1.0
-References: <20190710080840.2613160-1-andriin@fb.com> <f6bc7a95-e8e1-eec4-9728-3b9e36b434fa@fb.com>
- <CAEf4BzaVouFd=3whC1EjhQ9mit62b-C+NhQuW4RiXW02Rq_1Ug@mail.gmail.com> <304d8535-5043-836d-2933-1a5efb7aec72@fb.com>
-In-Reply-To: <304d8535-5043-836d-2933-1a5efb7aec72@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Jul 2019 18:45:12 -0700
-Message-ID: <CAEf4Bza6Y87C2_Fobj9CwU-2YRTU32S61f8_8CQdhMPenJiJZQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: fix BTF verifier size resolution logic
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>, Martin Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/zWqer.ymUPl5GdFzgX0ANsT"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
+--Sig_/zWqer.ymUPl5GdFzgX0ANsT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,
+
+On Wed, 10 Jul 2019 17:52:17 +0000 Jason Gunthorpe <jgg@mellanox.com> wrote:
 >
->
->
-> On 7/10/19 5:29 PM, Andrii Nakryiko wrote:
-> > On Wed, Jul 10, 2019 at 5:16 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >>
-> >>
-> >> On 7/10/19 1:08 AM, Andrii Nakryiko wrote:
-> >>> BTF verifier has Different logic depending on whether we are following
-> >>> a PTR or STRUCT/ARRAY (or something else). This is an optimization to
-> >>> stop early in DFS traversal while resolving BTF types. But it also
-> >>> results in a size resolution bug, when there is a chain, e.g., of PTR ->
-> >>> TYPEDEF -> ARRAY, in which case due to being in pointer context ARRAY
-> >>> size won't be resolved, as it is considered to be a sink for pointer,
-> >>> leading to TYPEDEF being in RESOLVED state with zero size, which is
-> >>> completely wrong.
-> >>>
-> >>> Optimization is doubtful, though, as btf_check_all_types() will iterate
-> >>> over all BTF types anyways, so the only saving is a potentially slightly
-> >>> shorter stack. But correctness is more important that tiny savings.
-> >>>
-> >>> This bug manifests itself in rejecting BTF-defined maps that use array
-> >>> typedef as a value type:
-> >>>
-> >>> typedef int array_t[16];
-> >>>
-> >>> struct {
-> >>>        __uint(type, BPF_MAP_TYPE_ARRAY);
-> >>>        __type(value, array_t); /* i.e., array_t *value; */
-> >>> } test_map SEC(".maps");
-> >>>
-> >>> Fixes: eb3f595dab40 ("bpf: btf: Validate type reference")
-> >>> Cc: Martin KaFai Lau <kafai@fb.com>
-> >>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >>
-> >> The change seems okay to me. Currently, looks like intermediate
-> >> modifier type will carry size = 0 (in the internal data structure).
-> >
-> > Yes, which is totally wrong, especially that we use that size in some
-> > cases to reject map with specified BTF.
-> >
-> >>
-> >> If we remove RESOLVE logic, we probably want to double check
-> >> whether we handle circular types correctly or not. Maybe we will
-> >> be okay if all self tests pass.
-> >
-> > I checked, it does. We'll attempt to add referenced type unless it's a
-> > "resolve sink" (where size is immediately known) or is already
-> > resolved (it's state is RESOLVED). In other cases, we'll attempt to
-> > env_stack_push(), which check that the state of that type is
-> > NOT_VISITED. If it's RESOLVED or VISITED, it returns -EEXISTS. When
-> > type is added into the stack, it's resolve state goes from NOT_VISITED
-> > to VISITED.
-> >
-> > So, if there is a loop, then we'll detect it as soon as we'll attempt
-> > to add the same type onto the stack second time.
-> >
-> >>
-> >> I may still be worthwhile to qualify the RESOLVE optimization benefit
-> >> before removing it.
-> >
-> > I don't think there is any, because every type will be visited exactly
-> > once, due to DFS nature of algorithm. The only difference is that if
-> > we have a long chain of modifiers, we can technically reach the max
-> > limit and fail. But at 32 I think it's pretty unrealistic to have such
-> > a long chain of PTR/TYPEDEF/CONST/VOLATILE/RESTRICTs :)
-> >
-> >>
-> >> Another possible change is, for external usage, removing
-> >> modifiers, before checking the size, something like below.
-> >> Note that I am not strongly advocating my below patch as
-> >> it has the same shortcoming that maintained modifier type
-> >> size may not be correct.
-> >
-> > I don't think your patch helps, it can actually confuse things even
-> > more. It skips modifiers until underlying type is found, but you still
-> > don't guarantee that at that time that underlying type will have its
-> > size resolved.
->
-> It actually does help. It does not change the internal btf type
-> traversal algorithms. It only change the implementation of
-> an external API btf_type_id_size(). Previously, this function
-> is used by externals and internal btf.c. I broke it into two,
-> one internal __btf_type_id_size(), and another external
-> btf_type_id_size(). The external one removes modifier before
-> finding type size. The external one is typically used only
-> after btf is validated.
+> On Tue, Jul 09, 2019 at 09:43:46AM +0300, Leon Romanovsky wrote:
+> > On Tue, Jul 09, 2019 at 01:56:36PM +1000, Stephen Rothwell wrote: =20
+> > > Hi all,
+> > >
+> > > After merging the net-next tree, today's linux-next build (x86_64
+> > > allmodconfig) failed like this:
+> > >
+> > > drivers/infiniband/sw/siw/siw_cm.c: In function 'siw_create_listen':
+> > > drivers/infiniband/sw/siw/siw_cm.c:1978:3: error: implicit declaratio=
+n of function 'for_ifa'; did you mean 'fork_idle'? [-Werror=3Dimplicit-func=
+tion-declaration]
+> > >    for_ifa(in_dev)
+> > >    ^~~~~~~
+> > >    fork_idle
+> > > drivers/infiniband/sw/siw/siw_cm.c:1978:18: error: expected ';' befor=
+e '{' token
+> > >    for_ifa(in_dev)
+> > >                   ^
+> > >                   ;
+> > >    {
+> > >    ~
+> > >
+> > > Caused by commit
+> > >
+> > >   6c52fdc244b5 ("rdma/siw: connection management")
+> > >
+> > > from the rdma tree.  I don't know why this didn't fail after I mereged
+> > > that tree. =20
+> >=20
+> > I had the same question, because I have this fix for a couple of days a=
+lready.
+> >=20
+> > From 56c9e15ec670af580daa8c3ffde9503af3042d67 Mon Sep 17 00:00:00 2001
+> > From: Leon Romanovsky <leonro@mellanox.com>
+> > Date: Sun, 7 Jul 2019 10:43:42 +0300
+> > Subject: [PATCH] Fixup to build SIW issue
+> >=20
+> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> >  drivers/infiniband/sw/siw/siw_cm.c | 5 ++---
+> >  1 file changed, 2 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw=
+/siw/siw_cm.c
+> > index 8e618cb7261f..c883bf514341 100644
+> > +++ b/drivers/infiniband/sw/siw/siw_cm.c
+> > @@ -1954,6 +1954,7 @@ static void siw_drop_listeners(struct iw_cm_id *i=
+d)
+> >  int siw_create_listen(struct iw_cm_id *id, int backlog)
+> >  {
+> >  	struct net_device *dev =3D to_siw_dev(id->device)->netdev;
+> > +	const struct in_ifaddr *ifa;
+> >  	int rv =3D 0, listeners =3D 0;
+> >=20
+> >  	siw_dbg(id->device, "id 0x%p: backlog %d\n", id, backlog);
+> > @@ -1975,8 +1976,7 @@ int siw_create_listen(struct iw_cm_id *id, int ba=
+cklog)
+> >  			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
+> >  			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
+> >=20
+> > -		for_ifa(in_dev)
+> > -		{
+> > +		in_dev_for_each_ifa_rcu(ifa, in_dev) {
+> >  			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) || =20
+>=20
+> Hum. There is no rcu lock held here and we can't use RCU anyhow as
+> siw_listen_address will sleep.
+>=20
+> I think this needs to use rtnl, as below. Bernard, please urgently
+> confirm. Thanks
+>=20
+> diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/s=
+iw/siw_cm.c
+> index 8e618cb7261f62..ee98e96a5bfaba 100644
+> --- a/drivers/infiniband/sw/siw/siw_cm.c
+> +++ b/drivers/infiniband/sw/siw/siw_cm.c
+> @@ -1965,6 +1965,7 @@ int siw_create_listen(struct iw_cm_id *id, int back=
+log)
+>  	 */
+>  	if (id->local_addr.ss_family =3D=3D AF_INET) {
+>  		struct in_device *in_dev =3D in_dev_get(dev);
+> +		const struct in_ifaddr *ifa;
+>  		struct sockaddr_in s_laddr, *s_raddr;
+> =20
+>  		memcpy(&s_laddr, &id->local_addr, sizeof(s_laddr));
+> @@ -1975,8 +1976,8 @@ int siw_create_listen(struct iw_cm_id *id, int back=
+log)
+>  			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
+>  			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
+> =20
+> -		for_ifa(in_dev)
+> -		{
+> +		rtnl_lock();
+> +		in_dev_for_each_ifa_rtnl(ifa, in_dev) {
+>  			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
+>  			    s_laddr.sin_addr.s_addr =3D=3D ifa->ifa_address) {
+>  				s_laddr.sin_addr.s_addr =3D ifa->ifa_address;
+> @@ -1988,7 +1989,7 @@ int siw_create_listen(struct iw_cm_id *id, int back=
+log)
+>  					listeners++;
+>  			}
+>  		}
+> -		endfor_ifa(in_dev);
+> +		rtnl_unlock();
+>  		in_dev_put(in_dev);
+>  	} else if (id->local_addr.ss_family =3D=3D AF_INET6) {
+>  		struct inet6_dev *in6_dev =3D in6_dev_get(dev);
 
-Sure, for external callers yes, it solves the problem. But there is
-deeper problem: we mark modifier types RESOLVED before types they
-ultimately point to are resolved. Then in all those btf_xxx_resolve()
-functions we have check:
+So today this failed to build after I merged the rdma tree (previously
+it didn;t until after the net-next tree was merged (I assume a
+dependency changed).  It failed because in_dev_for_each_ifa_rcu (and
+in_dev_for_each_ifa_rtnl) is only defined in a commit in the net-next
+tree :-(
 
-if (!env_type_is_resolve_sink && !env_type_is_resolved)
-  return env_stack_push();
-else {
+I have disabled the driver again.
 
-  /* here we assume that we can calculate size of the type */
-  /* so even if we traverse through all the modifiers and find
-underlying type */
-  /* that type will have resolved_size = 0, because we haven't
-processed it yet */
-  /* but we will just incorrectly assume that zero is *final* size */
-}
+--=20
+Cheers,
+Stephen Rothwell
 
-So I think that your patch is still just hiding the problem, not solving it.
+--Sig_/zWqer.ymUPl5GdFzgX0ANsT
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-BTW, I've also identified part of btf_ptr_resolve() logic that can be
-now safely removed (it's a special case that "restarts" DFS traversal
-for modifiers, because they could have been prematurely marked
-resolved). This is another sign that there is something wrong in an
-algorithm.
+-----BEGIN PGP SIGNATURE-----
 
-I'd rather remove unnecessary complexity and fix underlying problem,
-especially given that there is no performance or correctness penalty.
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0mlf4ACgkQAVBC80lX
+0Gx1rggAlkl1kFtVwHZG0bs5T+kS+PRHZBvdYHXo44GXD23vLrwu0N9hVZEeHSIu
++g+SiptCEgtRPjFDrHydUZV5LnoHRCfu/SszQZ92RtaWm9fMDB9h8xCK4NQ+JwU4
+nCI1f+tZQ6rsDB8eeFhWNxUrHI8CZVf1oE2Gv2zQ/+USnU0skE7RbOZPN8DAKSDG
+vx1ugSopBzIch80xAHOKniPrAhUVq68jRieaENO0Q6ohbT+t9phkJlQ+a4P6PPH7
+U3UZ6cS9SpdGDpe+DMD4U/7gnwj6FuZ0iRmUz9fb3fSsIK+JfyriXcdKYi189NnJ
+MzGCVqKam30DsIBg15r5moLqrqUAXg==
+=N2Fj
+-----END PGP SIGNATURE-----
 
-I'll post v2 soon.
-
->
-> Will go through your other comments later.
->
-> >
-> >>
-> >> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> >> index 546ebee39e2a..6f927c3e0a89 100644
-> >> --- a/kernel/bpf/btf.c
-> >> +++ b/kernel/bpf/btf.c
-> >> @@ -620,6 +620,54 @@ static bool btf_type_int_is_regular(const struct
-> >> btf_type *t)
-> >>           return true;
-> >>    }
-> >>
-> >> +static const struct btf_type *__btf_type_id_size(const struct btf *btf,
-> >> +                                                u32 *type_id, u32
-> >> *ret_size,
-> >> +                                                bool skip_modifier)
-> >> +{
-> >> +       const struct btf_type *size_type;
-> >> +       u32 size_type_id = *type_id;
-> >> +       u32 size = 0;
-> >> +
-> >> +       size_type = btf_type_by_id(btf, size_type_id);
-> >> +       if (size_type && skip_modifier) {
-> >> +               while (btf_type_is_modifier(size_type))
-> >> +                       size_type = btf_type_by_id(btf, size_type->type);
-> >> +       }
-> >> +
-> >> +       if (btf_type_nosize_or_null(size_type))
-> >> +               return NULL;
-> >> +
-> >> +       if (btf_type_has_size(size_type)) {
-> >> +               size = size_type->size;
-> >> +       } else if (btf_type_is_array(size_type)) {
-> >> +               size = btf->resolved_sizes[size_type_id];
-> >> +       } else if (btf_type_is_ptr(size_type)) {
-> >> +               size = sizeof(void *);
-> >> +       } else {
-> >> +               if (WARN_ON_ONCE(!btf_type_is_modifier(size_type) &&
-> >> +                                !btf_type_is_var(size_type)))
-> >> +                       return NULL;
-> >> +
-> >> +               size = btf->resolved_sizes[size_type_id];
-> >> +               size_type_id = btf->resolved_ids[size_type_id];
-> >> +               size_type = btf_type_by_id(btf, size_type_id);
-> >> +               if (btf_type_nosize_or_null(size_type))
-> >> +                       return NULL;
-> >> +       }
-> >> +
-> >> +       *type_id = size_type_id;
-> >> +       if (ret_size)
-> >> +               *ret_size = size;
-> >> +
-> >> +       return size_type;
-> >> +}
-> >> +
-> [...]
+--Sig_/zWqer.ymUPl5GdFzgX0ANsT--
