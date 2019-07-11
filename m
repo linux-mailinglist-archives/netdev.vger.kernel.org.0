@@ -2,118 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5321650A0
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 05:28:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA010650A9
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 05:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727943AbfGKD2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 23:28:00 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:33101 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726353AbfGKD17 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 23:27:59 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45khMb6z4nz9s4Y;
-        Thu, 11 Jul 2019 13:27:55 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562815676;
-        bh=AF1YyH/59p2PdlXj1kEV8rgQSQxkXM7X3NhUx89uKKY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pvQMD/53hY2AX4+FL71jwT8Uu6vSWUw/M8GGAHSPsV2idIaXU+F3+mo6cqkwdDmnq
-         pz3kAQEqUqo7TKxv57QF6l5fJX7IPbLcdmPmBsRapK0+HqfHVTaw7M+GD5plYC5NEV
-         IvjAuSDwPmdDb1VcKBqmB/FW8GDTkQrGXv3jzGzm9B+Qh6S3bwoAUL6fxbPRT+jEZT
-         38iP1dviDC/A5OWYovbvXwCNGxu3xEmkTMeTPa365Dsxb+rIf8Zs4IKAcZSjcuO+1v
-         Fy8on1JRF4o0axnQZIyIj5XasAn++nWcshew+ogRMk30VHYi7OLwwb8GCFajwKQdMv
-         wixzonvTEPm1Q==
-Date:   Thu, 11 Jul 2019 13:27:55 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Doug Ledford <dledford@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20190711132755.0d4f45c9@canb.auug.org.au>
-In-Reply-To: <20190711131603.6b11b831@canb.auug.org.au>
-References: <20190709135636.4d36e19f@canb.auug.org.au>
-        <20190709064346.GF7034@mtr-leonro.mtl.com>
-        <20190710175212.GM2887@mellanox.com>
-        <20190711115054.7d7f468c@canb.auug.org.au>
-        <20190711015854.GC22409@mellanox.com>
-        <20190711131344.452fc064@canb.auug.org.au>
-        <20190711131603.6b11b831@canb.auug.org.au>
+        id S1727989AbfGKDkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 23:40:19 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:34891 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725977AbfGKDkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 23:40:19 -0400
+Received: by mail-pg1-f193.google.com with SMTP id s27so2226249pgl.2;
+        Wed, 10 Jul 2019 20:40:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M8wX1u1AyY8aIZh85CrgBQrNgkI4YoDiE4Y/ARBtWTI=;
+        b=MQSWRWsAWJYvODOaMa5S5WYGn5WyApLDP13/bq1J3buPbjvqYJk04y5+eL1GBCPaEY
+         VxMNOWWX/W8DqqO0Cycuruwb36aIFFnuV+tscB1DRqRuS9BkZh1rUkwn2yyJgDkC+pDu
+         kx7fMeiWEn4hBGCAR+IMyee/am4cZRsk4uXbhxS7Yj6ONNrCqsd2KD+JtV7wkWRtueJj
+         lwzKDnD6v1FnSawOO7c0h3P3kxy554wDZGoIiFrnWjoayKHK/WHfy5j+97z+IXEwhlO6
+         HsYmw+95wRiHg6gkWWwdZL9X+7cHT6pmJwCjust5djfhvzIufdEyFICSR8cnVqESD0cd
+         NgAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M8wX1u1AyY8aIZh85CrgBQrNgkI4YoDiE4Y/ARBtWTI=;
+        b=S3tfGs3UlbGzzDeXlaVJbweFYPahR6qjEcods5F+0kf9giTjCvCZazVsjKlGUtjaqc
+         PIbPfoWT2Sw6h/6QOmeYUTWXS1IX/Ct2CvgkmW7g36VDoYBpryoU6yhVo3QNHBRM4v/G
+         1N/0htJaWT8/ANLZfvc1x59x3V5pB0tcWop9w4EPIYwFlzYNkbDmZDbSi5FlvWt57O7K
+         7ulFI3pUpl/n9o8kyAW7jtBCOpQZ+GTfe7bXZC5kHVhvJlTopSIB4DEatVOjFvciGJvE
+         bQ55wkfmEAw3+RKMPtELe4zCvh9vr1ZdJCkD9B978z/tGcn5vbbN8C82fpj85CpSYMGq
+         b/5g==
+X-Gm-Message-State: APjAAAXaWvmCPRaklGe7HEUYm6cUDPBTK++kUb8IbJZT54BnPDcfOiWZ
+        OVj4H0vjym0tOSA0XTsaEHA=
+X-Google-Smtp-Source: APXvYqxYR5XW+F/7S+4Zmn+naLYm4I1R/JfSfk5RrKN/ZLUBN1s5HNPr3vy1j6yMf97NWWQce/VQvA==
+X-Received: by 2002:a65:6152:: with SMTP id o18mr1869115pgv.279.1562816418283;
+        Wed, 10 Jul 2019 20:40:18 -0700 (PDT)
+Received: from localhost.localdomain ([116.66.213.65])
+        by smtp.gmail.com with ESMTPSA id c130sm3543777pfc.184.2019.07.10.20.40.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 10 Jul 2019 20:40:17 -0700 (PDT)
+From:   yangxingwu <xingwu.yang@gmail.com>
+To:     wensong@linux-vs.org
+Cc:     horms@verge.net.au, ja@ssi.bg, pablo@netfilter.org,
+        kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel@vger.kernel.org, yangxingwu <xingwu.yang@gmail.com>
+Subject: [PATCH] ipvs: remove unnecessary space
+Date:   Thu, 11 Jul 2019 11:39:59 +0800
+Message-Id: <20190711033959.1593-1-xingwu.yang@gmail.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/lgR/euJAAvPcdiADQ4kmX/m"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/lgR/euJAAvPcdiADQ4kmX/m
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+this patch removes the extra space and use bitmap_zalloc instead
 
-Hi all,
+Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
+---
+ net/netfilter/ipvs/ip_vs_mh.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-On Thu, 11 Jul 2019 13:16:03 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->=20
-> On Thu, 11 Jul 2019 13:13:44 +1000 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
-> >
-> > On Thu, 11 Jul 2019 02:26:27 +0000 Jason Gunthorpe <jgg@mellanox.com> w=
-rote: =20
-> > >
-> > > On Thu, Jul 11, 2019 at 11:50:54AM +1000, Stephen Rothwell wrote:
-> > >    =20
-> > > > So today this failed to build after I merged the rdma tree (previou=
-sly
-> > > > it didn;t until after the net-next tree was merged (I assume a
-> > > > dependency changed).  It failed because in_dev_for_each_ifa_rcu (and
-> > > > in_dev_for_each_ifa_rtnl) is only defined in a commit in the net-ne=
-xt
-> > > > tree :-(     =20
-> > >=20
-> > > ? I'm confused..=20
-> > >=20
-> > > rdma.git builds fine stand alone (I hope!)   =20
-> >=20
-> > I have "Fixup to build SIW issue" from Leon (which switches to using
-> > in_dev_for_each_ifa_rcu) included in the rmda tree merge commit because
-> > without that the rdma tree would not build for me.  Are you saying that
-> > I don't need that at all, now? =20
->=20
-> Actually , I get it now, "Fixup to build SIW issue" is really just a
-> fixup for the net-next and rdma trees merge ... OK, I will fix that up
-> tomorrow.  Sorry for my confusion.
+diff --git a/net/netfilter/ipvs/ip_vs_mh.c b/net/netfilter/ipvs/ip_vs_mh.c
+index 94d9d34..3229867 100644
+--- a/net/netfilter/ipvs/ip_vs_mh.c
++++ b/net/netfilter/ipvs/ip_vs_mh.c
+@@ -174,8 +174,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
+ 		return 0;
+ 	}
+ 
+-	table =  kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
+-			 sizeof(unsigned long), GFP_KERNEL);
++	table = bitmap_zalloc(IP_VS_MH_TAB_SIZE, GFP_KERNEL);
+ 	if (!table)
+ 		return -ENOMEM;
+ 
+-- 
+1.8.3.1
 
-Actually, I have rewound my tree and am starting from the merge of the
-rdma tree again, so hopefully it should all be good today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/lgR/euJAAvPcdiADQ4kmX/m
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0mrLsACgkQAVBC80lX
-0GzMigf+IwlW8eRSZ9yFVzhO+0aH3niLMNP7eUgPB4yVpdDGlbu/l7g3BXSDTSHC
-pYNkeiuycHgr8F5K7xUDwuPtOR/8NL4PxGywtwP56cJxDj0WxIDj4aFbSbdjWK5m
-AlTFbV+C2Pwcr8sSwgx4aX0u+FWSYjjWHtKnqi9MaAvQouAJR2y2+Rb7rwSp9mlw
-2V3SC+hZxjKMeJ8bAwyrgCH5tZxHfTldZ6wMzIWIAJFooP3zJaGp3xY4Trau6Znb
-y+tpS/Cqz/QPEUOzKVBCX/xuDE+BGojRcDFgw72RYMPFtOKCh9buXnw1SgbE7Z1W
-Py2d8jKfKMvG0AYPyk/T2kT3ZQeTDA==
-=gNA9
------END PGP SIGNATURE-----
-
---Sig_/lgR/euJAAvPcdiADQ4kmX/m--
