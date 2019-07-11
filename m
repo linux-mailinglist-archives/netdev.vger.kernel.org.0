@@ -2,153 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A80A65462
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 12:17:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7555665466
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 12:18:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728342AbfGKKRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 06:17:22 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:36068 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728072AbfGKKRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 06:17:22 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6BAGw9V066183
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 06:17:21 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tp2c2jeh5-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 06:17:20 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Thu, 11 Jul 2019 11:17:18 +0100
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 11 Jul 2019 11:17:15 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6BAHEfO48431252
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 11 Jul 2019 10:17:14 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 39D15AE055;
-        Thu, 11 Jul 2019 10:17:14 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F3C38AE057;
-        Thu, 11 Jul 2019 10:17:13 +0000 (GMT)
-Received: from [9.152.222.58] (unknown [9.152.222.58])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 11 Jul 2019 10:17:13 +0000 (GMT)
-Subject: Re: general protection fault in inet_accept
-To:     syzbot <syzbot+2e9616288940d15a6476@syzkaller.appspotmail.com>,
-        davem@davemloft.net, Ursula Braun <ubraun@linux.ibm.com>,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <0000000000006e1bbe0570bea62e@google.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-Date:   Thu, 11 Jul 2019 12:17:16 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728182AbfGKKSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 06:18:51 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39232 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727680AbfGKKSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 06:18:50 -0400
+Received: by mail-wm1-f68.google.com with SMTP id z23so926687wma.4
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 03:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M/uZee31+cHAFk1gSq+aHFn4EaVxUbqEZxjMETaQntY=;
+        b=OlVNs1c7TlGSNJnlZa4d3dZeomiSGBKLz60z+mWL1qIHko4o1Qzd+4wQnYdtLMb2UJ
+         0URhYVfBPJpZyPbRzZD/j1Vbo3hFbvb3aqj0mKo7xKGgjfOXXELK5PWRzhcLBJ4QgjxT
+         zwxMmWGovIjV/89WEUK0NOKY7GDuD/t9+bER/0Jny98WTVpphJ6gLBJSqUsdw2nadsgB
+         Vz5Q1IYLDCL2jUWt0rwaKtNOattkiOJ+StE2w4b7mZDcK+nYJqbxAuop6CYUr2btU3lz
+         jVzHTyJGyy33FEsmfDdpVBsLxFqHHC3YpGERvZympZoDP21y4YhDxFQWPWJI9vOjKanI
+         po0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=M/uZee31+cHAFk1gSq+aHFn4EaVxUbqEZxjMETaQntY=;
+        b=MISYvftxd7tqO1zhsKuZDvmzZ2cYKxT6nTg1xgTYb1ImW/BaMSskiZlfk75XjFBP+v
+         Y/dcC7BB2SpZuafok5ErMJpea9sTcg74i0SfnRUnAPmmFfs2KE/GfJhKUud0Jowo5FCc
+         tLFxkZQSDah5MH9jxXY4vwDIppbDiw37rf9dp/Qy81IgGw8hDCD28DEM3q1mPfobmSIX
+         25PPQZrsZCP6sQAF/peABsArRKq6J00S2T0hCVZTHAQWDVGL4lqh+2lDNe2H9RgaC0u4
+         6H8KKqM55iURZvwKjeobPBtsEpy4jHciIBLyHtFdxywYLKkpvDT+YgACS3YcoAQA3v8u
+         sf8g==
+X-Gm-Message-State: APjAAAWgC8x347M3ls+CBjAJbbdPpWyh755IqRS1ZbvsYQkr8IO3m6Pp
+        juEuI0FX2bxohTnVg6u5ikk=
+X-Google-Smtp-Source: APXvYqw+owaCYNESZBznl8Qv0W52VQIFOaN4rJkDoMbtN4+Ofxw81s8GAPw3j4ge2siMCe0flQizJw==
+X-Received: by 2002:a7b:cf32:: with SMTP id m18mr3519735wmg.27.1562840328610;
+        Thu, 11 Jul 2019 03:18:48 -0700 (PDT)
+Received: from [192.168.8.147] (143.160.185.81.rev.sfr.net. [81.185.160.143])
+        by smtp.gmail.com with ESMTPSA id v15sm5252455wrt.25.2019.07.11.03.18.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jul 2019 03:18:47 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+ <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
+ <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
+ <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
+ <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
+ <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b83b7aa4-9b0d-f9ad-6148-03e9828392c8@gmail.com>
+Date:   Thu, 11 Jul 2019 12:18:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <0000000000006e1bbe0570bea62e@google.com>
+In-Reply-To: <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071110-0016-0000-0000-00000291AE50
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071110-0017-0000-0000-000032EF6CD4
-Message-Id: <2962f9c2-e69d-f2cf-fa34-f68f00abbfd9@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=942 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907110123
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz fix: net/smc: propagate file from SMC to TCP socket
 
-On 11/07/2018 21:57, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    0026129c8629 rhashtable: add restart routine in rhashtable..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10ed430c400000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b88de6eac8694da6
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2e9616288940d15a6476
-> compiler:       gcc (GCC) 8.0.1 20180413 (experimental)
-> 
-> Unfortunately, I don't have any reproducer for this crash yet.
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+2e9616288940d15a6476@syzkaller.appspotmail.com
-> 
-> kasan: CONFIG_KASAN_INLINE enabled
-> kasan: GPF could be caused by NULL-ptr deref or user memory access
-> general protection fault: 0000 [#1] SMP KASAN
-> CPU: 1 PID: 27 Comm: kworker/1:1 Not tainted 4.18.0-rc3+ #5
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events smc_tcp_listen_work
-> RIP: 0010:inet_accept+0xf2/0x9f0 net/ipv4/af_inet.c:734
-> Code: 84 d2 74 09 80 fa 03 0f 8e 93 07 00 00 48 8d 78 28 41 c7 46 80 ea ff ff ff 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 <80> 3c 11 00 0f 85 94 07 00 00 48 b9 00 00 00 00 00 fc ff df 48 8b
-> RSP: 0018:ffff8801d94574b0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000005
-> RDX: dffffc0000000000 RSI: ffffffff86751b46 RDI: 0000000000000028
-> RBP: ffff8801d9457598 R08: ffff8801d9448700 R09: ffffed00367a0f6f
-> R10: ffffed00367a0f6f R11: ffff8801b3d07b7b R12: ffff8801b3d07ac0
-> R13: ffff8801d94574f0 R14: ffff8801d9457570 R15: 0000000000000000
-> FS:  0000000000000000(0000) GS:ffff8801daf00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b30220000 CR3: 00000001d711f000 CR4: 00000000001406e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  kernel_accept+0x136/0x310 net/socket.c:3251
->  smc_clcsock_accept net/smc/af_smc.c:701 [inline]
->  smc_tcp_listen_work+0x222/0xef0 net/smc/af_smc.c:1114
->  process_one_work+0xc73/0x1ba0 kernel/workqueue.c:2153
->  worker_thread+0x189/0x13c0 kernel/workqueue.c:2296
->  kthread+0x345/0x410 kernel/kthread.c:240
->  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:412
-> Modules linked in:
-> Dumping ftrace buffer:
->    (ftrace buffer empty)
-> ---[ end trace 0d34e5471cc130cb ]---
-> RIP: 0010:inet_accept+0xf2/0x9f0 net/ipv4/af_inet.c:734
-> Code: 84 d2 74 09 80 fa 03 0f 8e 93 07 00 00 48 8d 78 28 41 c7 46 80 ea ff ff ff 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 <80> 3c 11 00 0f 85 94 07 00 00 48 b9 00 00 00 00 00 fc ff df 48 8b
-> RSP: 0018:ffff8801d94574b0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000005
-> RDX: dffffc0000000000 RSI: ffffffff86751b46 RDI: 0000000000000028
-> RBP: ffff8801d9457598 R08: ffff8801d9448700 R09: ffffed00367a0f6f
-> R10: ffffed00367a0f6f R11: ffff8801b3d07b7b R12: ffff8801b3d07ac0
-> R13: ffff8801d94574f0 R14: ffff8801d9457570 R15: 0000000000000000
-> FS:  0000000000000000(0000) GS:ffff8801daf00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b30220000 CR3: 0000000008e6a000 CR4: 00000000001406e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> 
-> 
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#bug-status-tracking for how to communicate with syzbot.
-> 
-> 
+
+On 7/11/19 9:28 AM, Christoph Paasch wrote:
 > 
 
--- 
-Karsten
-
-(I'm a dude)
+> Would it make sense to always allow the alloc in tcp_fragment when coming from __tcp_retransmit_skb() through the retransmit-timer ?
+> 
+> AFAICS, the crasher was when an attacker sends "fake" SACK-blocks. Thus, we would still be protected from too much fragmentation, but at least would always allow the retransmission to go out.
+> 
+> 
+I guess this could be done and hopefully something that can be backported without too much pain,
+but I am sure some people will complain because reverting to timeouts might still
+show regressions :/
 
