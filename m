@@ -2,120 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D87565261
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 09:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E5D66527D
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 09:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbfGKHYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 03:24:03 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:47836 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725963AbfGKHYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 03:24:02 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6B7JtMY014057;
-        Thu, 11 Jul 2019 00:23:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=9GEWR3ma0aV5pVcMFTgyBaaPH0yIt33FIg4iWHUlpSw=;
- b=ZYID+SJPmLN5nY1NP4KUDdrygQuX4MsPmXKtNQjk9gseODhYShKfdwE3VqFCIIC5UD/n
- t0zUyDopg7FQQsvpRjwxMURIzwvp0DUxtDnlbDmiNZ4+1fnnFki7/EQSGjNMYbXNuSau
- nk3ABxXIwsOy3UUEbsN3c+Hl06tP3FUav5IHUJ8nvH1IArd7yEXyHgu6bKbOrr3k/6pF
- kPNWUC5bMUeDs2JlRQ4DdunItpRsFdeRkY135oJd1zUU5ve8G3DpP+2CxjOJzcZaUMMs
- 09+wsmPFgEUiGqNACL+spDKTPtc+1wTXsGmj9NhFXcDK2Vr4O/oQsNBdoGHkv50ceX/9 oQ== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tnys9g6ch-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 11 Jul 2019 00:23:56 -0700
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 11 Jul
- 2019 00:23:54 -0700
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com (104.47.40.56) by
- SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 11 Jul 2019 00:23:55 -0700
+        id S1728155AbfGKH2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 03:28:39 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43158 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727973AbfGKH2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 03:28:39 -0400
+Received: by mail-wr1-f67.google.com with SMTP id p13so5035379wru.10
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 00:28:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9GEWR3ma0aV5pVcMFTgyBaaPH0yIt33FIg4iWHUlpSw=;
- b=M8CRHzCys6XI3V8aIB8UxpjNvqyaPvWE2FhqFoHZeDuS3Mv3GvDP2bGPktedPRhvzTUEyYmmVm0804Tx6fi6yioNgxv2DDq6PUC421EyXjbLi2EeNOIu8R+TTCLw8AvQKX2lXpj6mL68GLgM1nYrTJiwnCrmmkNfQiTtaHQy5A4=
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com (10.255.236.143) by
- MN2PR18MB3168.namprd18.prod.outlook.com (10.255.236.89) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.18; Thu, 11 Jul 2019 07:23:45 +0000
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::8cb3:f7d7:8bb2:c36e]) by MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::8cb3:f7d7:8bb2:c36e%6]) with mapi id 15.20.2052.020; Thu, 11 Jul 2019
- 07:23:45 +0000
-From:   Michal Kalderon <mkalderon@marvell.com>
-To:     Gal Pressman <galpress@amazon.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "dledford@redhat.com" <dledford@redhat.com>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sleybo@amazon.com" <sleybo@amazon.com>
-Subject: RE: [PATCH v6 rdma-next 0/6] RDMA/qedr: Use the doorbell overflow
- recovery mechanism for RDMA
-Thread-Topic: [PATCH v6 rdma-next 0/6] RDMA/qedr: Use the doorbell overflow
- recovery mechanism for RDMA
-Thread-Index: AQHVNmFEi5cj5CRQsk6/b2TwF5IUvKbDdo2AgAGPmIA=
-Date:   Thu, 11 Jul 2019 07:23:44 +0000
-Message-ID: <MN2PR18MB3182002AE99C080D95901622A1F30@MN2PR18MB3182.namprd18.prod.outlook.com>
-References: <20190709141735.19193-1-michal.kalderon@marvell.com>
- <7b2f2205-6b5d-c9e7-2d59-296367e517ac@amazon.com>
-In-Reply-To: <7b2f2205-6b5d-c9e7-2d59-296367e517ac@amazon.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [212.199.69.1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6f3bc832-bdd1-434c-1270-08d705d0b568
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB3168;
-x-ms-traffictypediagnostic: MN2PR18MB3168:
-x-microsoft-antispam-prvs: <MN2PR18MB31685750E245BAE43D4BDBBDA1F30@MN2PR18MB3168.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-forefront-prvs: 0095BCF226
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(346002)(376002)(136003)(366004)(189003)(199004)(64756008)(66556008)(66476007)(66446008)(66946007)(5660300002)(2201001)(68736007)(25786009)(76116006)(8676002)(6436002)(478600001)(55016002)(81156014)(316002)(3846002)(71200400001)(71190400001)(81166006)(4744005)(52536014)(4326008)(86362001)(6116002)(256004)(2906002)(446003)(486006)(11346002)(74316002)(33656002)(110136005)(186003)(14454004)(54906003)(476003)(26005)(305945005)(2501003)(6246003)(7736002)(9686003)(6506007)(53546011)(76176011)(53936002)(8936002)(66066001)(229853002)(7696005)(102836004)(99286004);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3168;H:MN2PR18MB3182.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: y+ZyuFT0wVwNqp5akyCfNk72/iAYdqCQ8g6jr2jsDOSfbozeyoh1atAHBf1oKeI/KZ7BU3JMZw3yc0W5mHV/UoxSDyiwutcIhimpQnIdHe4z0J8ezeCmkgsXP4RoX7z/LM/qInrrnwU+DVIhl0NOkYRtmRAvsWhhgG0kdgDKM0w8RX5IOfDhlcDiHku7ccpD3Ctx7fPhYpcRyiv83RAdyJhQxroH7YY0z7FL27XGzFNg0VAZlrap0vdPP72Xnz+5jv0B2FKM1mDnhgt59k+SdJlC/lTL9o9ezYorEFKI2cS/hXIL+OBKzaTgraOpMoguguWMkFD1FykJbb8xgPdGng3swK/CL29gmMLHbtpG3QyKNh0Kg9bWAgH0Bh97B0V91+gSbwsnBFUeViuNB4/NUNkjFZkI7ySqDRgkDLGiaXw=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f3bc832-bdd1-434c-1270-08d705d0b568
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 07:23:44.8458
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mkalderon@marvell.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3168
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_01:,,
- signatures=0
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=VoJJZNl/tbt7W9g/vNLmqj0PskRRbgIQirJss1uLpiM=;
+        b=gKuSg9fIy9gsaA1a4MupWiQYuuwJcG4AtPmr8qQ5vyk8Qq1kuJTFcdn4a+DhGdnH3r
+         kTGGyy8Ql+biWvuReuf79g0tqng5Zs3BJb0l1Svtr7x3M3WAcrk3axtrRcQ8c6Bq27UB
+         meR1faX71iPdueoti1kAykR+/ogqVCrAfrhajavaZVxd1jwOL/55XN7vrIeM54sDu4V5
+         p3nD1mLF9TiXHe9S6YqPI0IHqONxTNGpFtNeXkbKxovxZgNgdkHx/shLFrIVkDHgHydD
+         681inGISpmqsrstTBOYSZdTq2JJoyOlPRCzvlLqjCV/5xUa8RY07zMkccF7XBDmyt0Dz
+         s28Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=VoJJZNl/tbt7W9g/vNLmqj0PskRRbgIQirJss1uLpiM=;
+        b=nB7resKLgitux9bXfN5xTFU8ZiZTng3U6BNcyehyt4KVw1bGWL08wJ1P8FUCT0STnL
+         6gNWTtJpLrrQMBZaKHhQdbI6wjEvi6XIRLT2SUqi8gBElfRFTGjnV+a4a+fUoR6nRKY1
+         HhQumwCe416O9Pjj13FQDyiZz0WFxawHE1IazYssa4gyXlM6AN1DdqKN3pLfHBheNyMP
+         b6j5fco5WSBgojJZ1djedvlS5+LBhd1fkjnGUGKUTbBQn25vTL4h50cwcJa1gRFqZ6aZ
+         MaLoAB6Tc0HyBu7VCWGzGrk76AUslUgMGHHn1F7DratgP+Xjsqbg0jrjPIqwWnsUE7Z5
+         wQYA==
+X-Gm-Message-State: APjAAAWyD39ky0/iNzyoY/C2Q3VvTpo9EtnrMtfSE23sfOta/bLcqtBm
+        5HyaYlPNtTKfQXkzP+K6gmM=
+X-Google-Smtp-Source: APXvYqyxOPwrwxGNpj4Q+6drT+YxT8qQ3Zx2EnRYTWLzRVio4h86FLWxftCaHvurMEPWwMjVaOt/7g==
+X-Received: by 2002:a5d:6583:: with SMTP id q3mr3201488wru.184.1562830117402;
+        Thu, 11 Jul 2019 00:28:37 -0700 (PDT)
+Received: from ?IPv6:2a01:cb18:8368:6800:3855:b39f:bc19:764f? ([2a01:cb18:8368:6800:3855:b39f:bc19:764f])
+        by smtp.gmail.com with ESMTPSA id o7sm4312453wmf.43.2019.07.11.00.28.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jul 2019 00:28:36 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+From:   Christoph Paasch <christoph.paasch@gmail.com>
+In-Reply-To: <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
+Date:   Thu, 11 Jul 2019 09:28:31 +0200
+Cc:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+ <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
+ <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
+ <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
+ <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBsaW51eC1yZG1hLW93bmVyQHZnZXIua2VybmVsLm9yZyA8bGludXgtcmRtYS0NCj4g
-b3duZXJAdmdlci5rZXJuZWwub3JnPiBPbiBCZWhhbGYgT2YgR2FsIFByZXNzbWFuDQo+IA0KPiBP
-biAwOS8wNy8yMDE5IDE3OjE3LCBNaWNoYWwgS2FsZGVyb24gd3JvdGU6DQo+ID4gVGhpcyBwYXRj
-aCBzZXJpZXMgdXNlcyB0aGUgZG9vcmJlbGwgb3ZlcmZsb3cgcmVjb3ZlcnkgbWVjaGFuaXNtDQo+
-ID4gaW50cm9kdWNlZCBpbiBjb21taXQgMzY5MDdjZDVjZDcyICgicWVkOiBBZGQgZG9vcmJlbGwg
-b3ZlcmZsb3cNCj4gPiByZWNvdmVyeSBtZWNoYW5pc20iKSBmb3IgcmRtYSAoIFJvQ0UgYW5kIGlX
-QVJQICkNCj4gPg0KPiA+IFRoZSBmaXJzdCB0aHJlZSBwYXRjaGVzIG1vZGlmeSB0aGUgY29yZSBj
-b2RlIHRvIGNvbnRhaW4gaGVscGVyDQo+ID4gZnVuY3Rpb25zIGZvciBtYW5hZ2luZyBtbWFwX3hh
-IGluc2VydGluZywgZ2V0dGluZyBhbmQgZnJlZWluZyBlbnRyaWVzLg0KPiA+IFRoZSBjb2RlIHdh
-cyB0YWtlbiBhbG1vc3QgYXMgaXMgZnJvbSB0aGUgZWZhIGRyaXZlci4NCj4gPiBUaGVyZSBpcyBz
-dGlsbCBhbiBvcGVuIGRpc2N1c3Npb24gb24gd2hldGhlciB3ZSBzaG91bGQgdGFrZSB0aGlzIGV2
-ZW4NCj4gPiBmdXJ0aGVyIGFuZCBtYWtlIHRoZSBlbnRpcmUgbW1hcCBnZW5lcmljLiBVbnRpbCBh
-IGRlY2lzaW9uIGlzIG1hZGUsIEkNCj4gPiBvbmx5IGNyZWF0ZWQgdGhlIGRhdGFiYXNlIEFQSSBh
-bmQgbW9kaWZpZWQgdGhlIGVmYSBhbmQgcWVkciBkcml2ZXIgdG8NCj4gPiB1c2UgaXQuIFRoZSBk
-b29yYmVsbCByZWNvdmVyeSBjb2RlIHdpbGwgYmUgYmFzZWQgb24gdGhlIGNvbW1vbiBjb2RlLg0K
-PiA+DQo+ID4gRWZhIGRyaXZlciB3YXMgY29tcGlsZSB0ZXN0ZWQgb25seS4NCj4gDQo+IEZvciB0
-aGUgd2hvbGUgc2VyaWVzOg0KPiBUZXN0ZWQtYnk6IEdhbCBQcmVzc21hbiA8Z2FscHJlc3NAYW1h
-em9uLmNvbT4NCg0KVGhhbmtzIEdhbCENCg0K
+
+
+> On Jul 10, 2019, at 9:26 PM, Eric Dumazet <eric.dumazet@gmail.com> =
+wrote:
+>=20
+>=20
+>=20
+> On 7/10/19 8:53 PM, Prout, Andrew - LLSC - MITLL wrote:
+>>=20
+>> Our initial rollout was v4.14.130, but I reproduced it with v4.14.132 =
+as well, reliably for the samba test and once (not reliably) with =
+synthetic test I was trying. A patched v4.14.132 with this patch =
+partially reverted (just the four lines from tcp_fragment deleted) =
+passed the samba test.
+>>=20
+>> The synthetic test was a pair of simple send/recv test programs under =
+the following conditions:
+>> -The send socket was non-blocking
+>> -SO_SNDBUF set to 128KiB
+>> -The receiver NIC was being flooded with traffic from multiple hosts =
+(to induce packet loss/retransmits)
+>> -Load was on both systems: a while(1) program spinning on each CPU =
+core
+>> -The receiver was on an older unaffected kernel
+>>=20
+>=20
+> SO_SNDBUF to 128KB does not permit to recover from heavy losses,
+> since skbs needs to be allocated for retransmits.
+
+Would it make sense to always allow the alloc in tcp_fragment when =
+coming from __tcp_retransmit_skb() through the retransmit-timer ?
+
+AFAICS, the crasher was when an attacker sends "fake" SACK-blocks. Thus, =
+we would still be protected from too much fragmentation, but at least =
+would always allow the retransmission to go out.
+
+
+Christoph
+
+>=20
+> The bug we fixed allowed remote attackers to crash all linux hosts,
+>=20
+> I am afraid we have to enforce the real SO_SNDBUF limit, finally.
+>=20
+> Even a cushion of 128KB per socket is dangerous, for servers with =
+millions of TCP sockets.
+>=20
+> You will either have to set SO_SNDBUF to higher values, or let =
+autotuning in place.
+> Or revert the patches and allow attackers hit you badly.
+>=20
+
