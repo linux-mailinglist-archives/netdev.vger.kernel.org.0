@@ -2,197 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 785A165B8A
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 18:29:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869A165B9A
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 18:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728575AbfGKQ3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 12:29:08 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:39513 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728045AbfGKQ3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 12:29:08 -0400
-Received: by mail-io1-f68.google.com with SMTP id f4so13875194ioh.6
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 09:29:07 -0700 (PDT)
+        id S1728325AbfGKQfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 12:35:44 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:38667 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726213AbfGKQfo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 12:35:44 -0400
+Received: by mail-pl1-f194.google.com with SMTP id az7so3306483plb.5;
+        Thu, 11 Jul 2019 09:35:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=3PGALE1Lj/+P5QEMH+LWiHvgMILXh+vRnx/Jvwzj3v8=;
-        b=WdFFfFC7lK8VEZYeAyJ6nfueWEred8X9HeQi0UJRy9TFQoAa5Gkkj6zriF9cnuGYnT
-         IiWKsGDj9PKbwL72M6PDoH67aezlNCyTEAh/6YpmjKA0Y6IQQvmaEZ+v0doIc9yYgukc
-         Cn65TOho6aAaUQpRzmkArjmqoFh5TohDADkWG7xiXpBH7VBVtzr6czqTmqLLsq2e4SNj
-         9mJAEwwW+eV1GPlrBDcQK4KXn0AVzrAUnVNm+hh8bE3DDqA24PWqlYZUoNk+xVvwzjSc
-         NJVKzv5vm3V59wMEXowu8+qWSLu1OH+vXa/V5/t2B84NEnUFX9KZlcrUuMY5FthbaxTi
-         bekQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=YBqG9gCkqUUFAchyuwWcht3NDQxJF/qNbfrZoS76VLA=;
+        b=KQVPhldPMgmsPjvMN632xtT4H77DmgalQUcQWVxqhEICVRhKWdsxt0GiOFy5FePKAd
+         E8GzJp6j/ek9yugGodI2iKgTlwhRKESwNuWzi0WibzaQuNXhH1c92+jk8hKewz54jFXP
+         Wr7sf6g5ZaEG4qTGtP1uwDoulNBYpfn5uxEQKFNxdkPyqCmYidl/cVjef2GLBE2bL1Ny
+         jetF6smCJm4tY7Cw85i4qvDv/sIvFp8cdQ2FeoAhR0pcqvb0ia57HFMPPq1E8VrlF9pP
+         fYNI8FoP0ZZ3Fqa11DDEjAgTKDxMUEXLbdIaDheiExI3ET3NmVDEZ3g89VOZK0yF66kI
+         pCmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3PGALE1Lj/+P5QEMH+LWiHvgMILXh+vRnx/Jvwzj3v8=;
-        b=IdmnaBdN/+7QpgFk7coVOLYPTX5dVStmeWS0+IlB6QAhL8mLTY3xY69AFJmv3BAMJH
-         qdQMpmvhGEvSIaoNW+EYobDLD/t8MgMVnFuisv/zcnvnuNalOurAUVW6V/Bo/yPCocu9
-         WzLhIgvNX/AEDoYgX3Kxym1/mJZ16hPouowXyZo6BfPvH2xWsO/DwkTve5rse3ycqZcn
-         M/ipgDDP2E7VJ8WVAIRepvuL0wFSpdX2wGfQPZ46O2YByJk9kGtFPxRGCJ239qXCOBlw
-         QQ9SLqAzmosw/pOixQw/ONm8/vAsbcF120onk56D4zrw+qiZusqNXRAPA6zWNW2pfS22
-         /MEA==
-X-Gm-Message-State: APjAAAXhmZmWO/u6a25lMGHbJWs+t6Y32028HiZztRUAME58VrcqcBLd
-        R6Iefk3PF97EgW7s9BdvIC7WOzmr
-X-Google-Smtp-Source: APXvYqxNaubtpaUHIXFd4K+9YsyiR8AiC9go5d8u6e9vwrA776+cZU5dI8M27PGOGtL9cDEDctRquA==
-X-Received: by 2002:a05:6602:219a:: with SMTP id b26mr5379294iob.55.1562862547182;
-        Thu, 11 Jul 2019 09:29:07 -0700 (PDT)
-Received: from mojatatu.com ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id t5sm5173856iol.55.2019.07.11.09.29.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 11 Jul 2019 09:29:06 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next 1/1] tc-tests: updated skbedit tests
-Date:   Thu, 11 Jul 2019 12:29:00 -0400
-Message-Id: <1562862540-16509-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=YBqG9gCkqUUFAchyuwWcht3NDQxJF/qNbfrZoS76VLA=;
+        b=HEBh/utmSMixrTuQHcETeR6cgKsdEzC6GGQK1urUw8gzr9VG26Udr3D+Ibjw69lS66
+         obK1LzCJa5SCldTjalw61XvmsFbX8SSe/Q4hia3wwb5P7FSVoN1GmAH5VzG2U3XzzkK2
+         or4f3veay43PP3qa70OuEA0sPbX06KT6jviMBfttK6Eza+HWRdUvN9K2ZShIFbpktGMb
+         00y9Svnwi53n2ppzipgf+Kbdc+zWYWSMvpb1hUc5Vmyoy4aangCUX88ncPJL92SpHcDG
+         +bMX08Z8mlmLq3SOObPt3vRBwQCwAJpvzk14gXGSvhw/NWkY+jjqfGvQB0561fvN7K43
+         8P/g==
+X-Gm-Message-State: APjAAAW0BERyEPwHDiw83cEVQydTARwScx+uZN+04TbWngBvckybCjTh
+        BhuMkgB4Fu2Thq8noM9ua3c=
+X-Google-Smtp-Source: APXvYqwBiVITXHOJNkNEbl6yFGGnU+hsw+io8o+ksnQqUmRtQQPb629IdKDD6GIF2HrT+D+AdT2FHA==
+X-Received: by 2002:a17:902:7088:: with SMTP id z8mr5732256plk.125.1562862943524;
+        Thu, 11 Jul 2019 09:35:43 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r15sm6998971pfh.121.2019.07.11.09.35.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 11 Jul 2019 09:35:42 -0700 (PDT)
+Date:   Thu, 11 Jul 2019 09:35:36 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        edumazet@google.com, bpf@vger.kernel.org
+Message-ID: <5d2765584f043_698f2aaeaaf925bcb0@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190710123417.2157a459@cakuba.netronome.com>
+References: <156261310104.31108.4569969631798277807.stgit@ubuntu3-kvm1>
+ <156261324561.31108.14410711674221391677.stgit@ubuntu3-kvm1>
+ <20190709194525.0d4c15a6@cakuba.netronome.com>
+ <5d255dececd33_1b7a2aec940d65b45@john-XPS-13-9370.notmuch>
+ <20190710123417.2157a459@cakuba.netronome.com>
+Subject: Re: [bpf PATCH v2 2/6] bpf: tls fix transition through disconnect
+ with close
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Added mask upper bound test case
-- Added mask validation test case
-- Added mask replacement case
+Jakub Kicinski wrote:
+> On Tue, 09 Jul 2019 20:39:24 -0700, John Fastabend wrote:
+> > Jakub Kicinski wrote:
+> > > On Mon, 08 Jul 2019 19:14:05 +0000, John Fastabend wrote:  
+> > > > @@ -287,6 +313,27 @@ static void tls_sk_proto_cleanup(struct sock *sk,
+> > > >  #endif
+> > > >  }
+> > > >  
+> > > > +static void tls_sk_proto_unhash(struct sock *sk)
+> > > > +{
+> > > > +	struct inet_connection_sock *icsk = inet_csk(sk);
+> > > > +	long timeo = sock_sndtimeo(sk, 0);
+> > > > +	struct tls_context *ctx;
+> > > > +
+> > > > +	if (unlikely(!icsk->icsk_ulp_data)) {  
+> > > 
+> > > Is this for when sockmap is stacked on top of TLS and TLS got removed
+> > > without letting sockmap know?  
+> > 
+> > Right its a pattern I used on the sockmap side and put here. But
+> > I dropped the patch to let sockmap stack on top of TLS because
+> > it was more than a fix IMO. We could probably drop this check on
+> > the other hand its harmless.
+> 
+> I feel like this code is pretty complex I struggle to follow all the
+> paths, so perhaps it'd be better to drop stuff that's not necessary 
+> to have a clearer picture.
+> 
 
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- .../tc-testing/tc-tests/actions/skbedit.json       | 117 +++++++++++++++++++++
- 1 file changed, 117 insertions(+)
+Sure I can drop it and add it later when its necessary.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-index 45e7e89928a5..bf5ebf59c2d4 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-@@ -70,6 +70,123 @@
-         "teardown": []
-     },
-     {
-+        "id": "d4cd",
-+        "name": "Add skbedit action with valid mark and mask",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action skbedit mark 1/0xaabb",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xaabb",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action skbedit"
-+        ]
-+    },
-+    {
-+        "id": "baa7",
-+        "name": "Add skbedit action with valid mark and 32-bit maximum mask",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action skbedit mark 1/0xffffffff",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xffffffff",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action skbedit"
-+        ]
-+    },
-+    {
-+        "id": "62a5",
-+        "name": "Add skbedit action with valid mark and mask exceeding 32-bit maximum",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action skbedit mark 1/0xaabbccddeeff112233",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xaabbccddeeff112233",
-+        "matchCount": "0",
-+        "teardown": []
-+    },
-+    {
-+        "id": "bc15",
-+        "name": "Add skbedit action with valid mark and mask with invalid format",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action skbedit mark 1/-1234",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 1/-1234",
-+        "matchCount": "0",
-+        "teardown": []
-+    },
-+    {
-+        "id": "57c2",
-+        "name": "Replace skbedit action with new mask",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ],
-+            "$TC actions add action skbedit mark 1/0x11223344 index 1"
-+        ],
-+        "cmdUnderTest": "$TC actions replace action skbedit mark 1/0xaabb index 1",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xaabb",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action skbedit"
-+        ]
-+    },
-+    {
-         "id": "081d",
-         "name": "Add skbedit action with priority",
-         "category": [
--- 
-2.7.4
-
+> > > > +		if (sk->sk_prot->unhash)
+> > > > +			sk->sk_prot->unhash(sk);
+> > > > +	}
+> > > > +
+> > > > +	ctx = tls_get_ctx(sk);
+> > > > +	if (ctx->tx_conf == TLS_SW || ctx->rx_conf == TLS_SW)
+> > > > +		tls_sk_proto_cleanup(sk, ctx, timeo);
+> > > > +	icsk->icsk_ulp_data = NULL;  
+> > > 
+> > > I think close only starts checking if ctx is NULL in patch 6.
+> > > Looks like some chunks of ctx checking/clearing got spread to
+> > > patch 1 and some to patch 6.  
+> > 
+> > Yeah, I thought the patches were easier to read this way but
+> > maybe not. Could add something in the commit log.
+> 
+> Ack! Let me try to get a full grip of patches 2 and 6 and come back 
+> to this.
+> 
+> > > > +	tls_ctx_free_wq(ctx);
+> > > > +
+> > > > +	if (ctx->unhash)
+> > > > +		ctx->unhash(sk);
+> > > > +}
+> > > > +
+> > > >  static void tls_sk_proto_close(struct sock *sk, long timeout)
+> > > >  {
+> > > >  	struct tls_context *ctx = tls_get_ctx(sk);  
