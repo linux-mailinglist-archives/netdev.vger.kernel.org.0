@@ -2,105 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18BDC65EB4
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 19:34:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2572C65ECF
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 19:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728590AbfGKRey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 13:34:54 -0400
-Received: from LLMX3.LL.MIT.EDU ([129.55.12.49]:52154 "EHLO llmx3.ll.mit.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728268AbfGKRey (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 13:34:54 -0400
-X-Greylist: delayed 1184 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Jul 2019 13:34:53 EDT
-Received: from LLE2K16-MBX02.mitll.ad.local (LLE2K16-MBX02.mitll.ad.local) by llmx3.ll.mit.edu (unknown) with ESMTPS id x6BHExdT002065; Thu, 11 Jul 2019 13:14:59 -0400
-From:   "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "Dustin Marquess" <dmarquess@apple.com>
-Subject: RE: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-Thread-Topic: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-Thread-Index: AQKw2gvaIH+7kp/NrCmbg6L94CyO5gHbs90WAiPXn9kCN14y2gIOoPmspMqxmMCAAEuhgP//vbsQgABSeoCAASdFwA==
-Date:   Thu, 11 Jul 2019 17:14:58 +0000
-Message-ID: <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
- <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
- <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
- <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
-In-Reply-To: <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.25.1.84]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728546AbfGKRlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 13:41:01 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46073 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727612AbfGKRlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 13:41:01 -0400
+Received: by mail-qt1-f195.google.com with SMTP id x22so275671qtp.12
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 10:41:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=6pCqVaAQnVTEmOJWGnRveGPNLHhDMYxLq3MEYF24/ck=;
+        b=CH7jSXX+s3VkJy59+NIcuyhkF0is0DrJ+hBfMthrCOFnpE/E4sbNc5RdTjhWHA3Ddo
+         xeRTXMAcfMYngjh1KHvUKixrAJD//r5tEej3d4mGEXWsy6rQa6BwGFL7n2aDkDJBbtVx
+         wXsSWdz0pKh0ZhoIWlCihYsfkiOOtfZwG368v9hnBf3PkE5fO8Z/41cu7m/vVDyTPlWf
+         igooCgtk9C+/UkFIG+bycOgBgVltlkFrLXNIg+j8Kg+OuRkEKYnyGC7hyqEZBT/5zidk
+         KXXSwloy5Rs1bRcLbgndN9eSDIz8MZAFEz0c2sGno4QsBJDvbr2KgLsZEVPYmSLa8AC2
+         rDxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=6pCqVaAQnVTEmOJWGnRveGPNLHhDMYxLq3MEYF24/ck=;
+        b=Qx+TccGXoTtNbglqxwtzgrCEaDEfVBs6pFQqqLVRKeLk/rniCgbWTjJVbt9u8pTUtn
+         NI++yb5pEDAFcHFq9CK7Qeae0p97cIm80dJZrm7BhYzhEnfzJYq083SpTOudCL/ANdFH
+         rPd/8f9nWtEDKc7Pcm4ORSaMh6nfZpK27dYVlJXoN89r+t6OdWhdHnQrNVTeIm34Nbo3
+         8gHorsL5+RIjlrSj3S4PGut3BNnEbwMVBbE+8dVAqfCi0iWIvZ1bcoTDBeAsIAuypqMk
+         5PyOQ9awGoAyLCh7/EMJ8DBaC70CriJxBFkLtZ1GKy7Fryjcb3RSHJ4+Gy5TqtDL8aYn
+         +rDw==
+X-Gm-Message-State: APjAAAV0Ax2ghJUCCOIEV23MAB3znmw7hpiTItmf7BJ9JD8XmCnJ/1mN
+        vw9GAgqMiIZisogDCY8Dgu4=
+X-Google-Smtp-Source: APXvYqx5FOOqpoAktSdIQWd2Gp+bsFscWO8zgzINj5V0Wi/dr0Q8CF7amsMyMManiJb0bNiRE4H2rg==
+X-Received: by 2002:ac8:341d:: with SMTP id u29mr2711939qtb.320.1562866860113;
+        Thu, 11 Jul 2019 10:41:00 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.49.27])
+        by smtp.gmail.com with ESMTPSA id 5sm2584027qkr.68.2019.07.11.10.40.58
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 11 Jul 2019 10:40:59 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 9B630C0918; Thu, 11 Jul 2019 14:40:56 -0300 (-03)
+Date:   Thu, 11 Jul 2019 14:40:56 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>,
+        John Hurley <john.hurley@netronome.com>, Yossi@redhat.com,
+        Oz Shlomo <ozsh@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Rony Efraim <ronye@mellanox.com>,
+        Justin Pettit <jpettit@ovn.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Zhike Wang <wangzhike@jd.com>,
+        David Miller <davem@davemloft.net>,
+        Kuperman <yossiku@mellanox.com>
+Subject: Re: [PATCH net-next iproute2 2/3] tc: Introduce tc ct action
+Message-ID: <20190711174056.GW3449@localhost.localdomain>
+References: <1562489628-5925-1-git-send-email-paulb@mellanox.com>
+ <1562489628-5925-3-git-send-email-paulb@mellanox.com>
+ <20190708175446.GL3449@localhost.localdomain>
+ <d4f2f3ce-f14d-6026-a271-d627de6d8cea@mellanox.com>
+ <20190709153657.GF3390@localhost.localdomain>
+ <5ded2e5b-958e-eca3-76ad-909ebf79234e@mellanox.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1907110191
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5ded2e5b-958e-eca3-76ad-909ebf79234e@mellanox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNy8xMC8xOSAzOjI3IFBNLCBFcmljIER1bWF6ZXQgPGVyaWMuZHVtYXpldEBnbWFpbC5jb20+
-IHdyb3RlOg0KPiBPbiA3LzEwLzE5IDg6NTMgUE0sIFByb3V0LCBBbmRyZXcgLSBMTFNDIC0gTUlU
-TEwgd3JvdGU6DQo+PiANCj4+IE91ciBpbml0aWFsIHJvbGxvdXQgd2FzIHY0LjE0LjEzMCwgYnV0
-IEkgcmVwcm9kdWNlZCBpdCB3aXRoIHY0LjE0LjEzMiBhcyB3ZWxsLCByZWxpYWJseSBmb3IgdGhl
-IHNhbWJhIHRlc3QgYW5kIG9uY2UgKG5vdCByZWxpYWJseSkgd2l0aCBzeW50aGV0aWMgdGVzdCBJ
-IHdhcyB0cnlpbmcuIEEgcGF0Y2hlZCB2NC4xNC4xMzIgd2l0aCB0aGlzIHBhdGNoIHBhcnRpYWxs
-eSByZXZlcnRlZCAoanVzdCB0aGUgZm91ciBsaW5lcyBmcm9tIHRjcF9mcmFnbWVudCBkZWxldGVk
-KSBwYXNzZWQgdGhlIHNhbWJhIHRlc3QuDQo+PiANCj4+IFRoZSBzeW50aGV0aWMgdGVzdCB3YXMg
-YSBwYWlyIG9mIHNpbXBsZSBzZW5kL3JlY3YgdGVzdCBwcm9ncmFtcyB1bmRlciB0aGUgZm9sbG93
-aW5nIGNvbmRpdGlvbnM6DQo+PiAtVGhlIHNlbmQgc29ja2V0IHdhcyBub24tYmxvY2tpbmcNCj4+
-IC1TT19TTkRCVUYgc2V0IHRvIDEyOEtpQg0KPj4gLVRoZSByZWNlaXZlciBOSUMgd2FzIGJlaW5n
-IGZsb29kZWQgd2l0aCB0cmFmZmljIGZyb20gbXVsdGlwbGUgaG9zdHMgKHRvIGluZHVjZSBwYWNr
-ZXQgbG9zcy9yZXRyYW5zbWl0cykNCj4+IC1Mb2FkIHdhcyBvbiBib3RoIHN5c3RlbXM6IGEgd2hp
-bGUoMSkgcHJvZ3JhbSBzcGlubmluZyBvbiBlYWNoIENQVSBjb3JlDQo+PiAtVGhlIHJlY2VpdmVy
-IHdhcyBvbiBhbiBvbGRlciB1bmFmZmVjdGVkIGtlcm5lbA0KPj4gDQo+DQo+IFNPX1NOREJVRiB0
-byAxMjhLQiBkb2VzIG5vdCBwZXJtaXQgdG8gcmVjb3ZlciBmcm9tIGhlYXZ5IGxvc3NlcywNCj4g
-c2luY2Ugc2ticyBuZWVkcyB0byBiZSBhbGxvY2F0ZWQgZm9yIHJldHJhbnNtaXRzLg0KPg0KPiBU
-aGUgYnVnIHdlIGZpeGVkIGFsbG93ZWQgcmVtb3RlIGF0dGFja2VycyB0byBjcmFzaCBhbGwgbGlu
-dXggaG9zdHMsDQo+DQo+IEkgYW0gYWZyYWlkIHdlIGhhdmUgdG8gZW5mb3JjZSB0aGUgcmVhbCBT
-T19TTkRCVUYgbGltaXQsIGZpbmFsbHkuDQo+DQo+IEV2ZW4gYSBjdXNoaW9uIG9mIDEyOEtCIHBl
-ciBzb2NrZXQgaXMgZGFuZ2Vyb3VzLCBmb3Igc2VydmVycyB3aXRoIG1pbGxpb25zIG9mIFRDUCBz
-b2NrZXRzLg0KPg0KPiBZb3Ugd2lsbCBlaXRoZXIgaGF2ZSB0byBzZXQgU09fU05EQlVGIHRvIGhp
-Z2hlciB2YWx1ZXMsIG9yIGxldCBhdXRvdHVuaW5nIGluIHBsYWNlLg0KPiBPciByZXZlcnQgdGhl
-IHBhdGNoZXMgYW5kIGFsbG93IGF0dGFja2VycyBoaXQgeW91IGJhZGx5Lg0KDQpJIGluIG5vIHdh
-eSBpbnRlbmRlZCB0byBpbXBseSB0aGF0IEkgaGFkIGNvbmZpcm1lZCB0aGUgc21hbGwgU09fU05E
-QlVGIHdhcyBhIHByZXJlcXVpc2l0ZSB0byBvdXIgcHJvYmxlbS4gV2l0aCBteSBzeW50aGV0aWMg
-dGVzdCwgSSB3YXMgbG9va2luZyBmb3IgYSBjb25jaXNlIHJlcHJvZHVjZXIgYW5kIHRyeWluZyB0
-aGluZ3MgdG8gc3RyZXNzIHRoZSBzeXN0ZW0uDQoNClVuZm9ydHVuYXRlbHkgd2UncmUgb2Z0ZW4g
-c3R1Y2sgYmVpbmcgZm9yY2VkIHRvIHN1cHBvcnQgdmVyeSBvbGQgY29kZSwgcmlnaHQgYWxvbmdz
-aWRlIHRoZSBsYXRlc3QgYW5kIGdyZWF0ZXN0LiBXZSBzdGlsbCBydW4gYSBsb3Qgb2YgRk9SVFJB
-Ti4gVGVsbGluZyB1c2VycyBlbi1tYXNzIHRvIHNlYXJjaCBhbmQgcmV2aXNlIHRoZWlyIGNvZGUg
-aXMgbm90IGFuIG9wdGlvbiBmb3IgdXMuDQoNCkluIG15IG9waW5pb24sIGlmIGEgc21hbGwgU09f
-U05EQlVGIGJlbG93IGEgY2VydGFpbiB2YWx1ZSBpcyBubyBsb25nZXIgc3VwcG9ydGVkLCB0aGVu
-IFNPQ0tfTUlOX1NOREJVRiBzaG91bGQgYmUgYWRqdXN0ZWQgdG8gcmVmbGVjdCB0aGlzLiBUaGUg
-UkNWQlVGL1NOREJVRiBzaXplcyBhcmUgc3VwcG9zZWQgdG8gYmUgaGludHMsIG5vIGVycm9yIGlz
-IHJldHVybmVkIGlmIHRoZXkgYXJlIG5vdCBob25vcmVkLiBUaGUga2VybmVsIHNob3VsZCBjb250
-aW51ZSB0byBmdW5jdGlvbiByZWdhcmRsZXNzIG9mIHdoYXQgdXNlcnNwYWNlIHJlcXVlc3RzIGZv
-ciB0aGVpciB2YWx1ZXMuDQoNCkFsdGVybmF0aXZlbHksIGEgY29uZmlnIG9wdGlvbiBjb3VsZCBi
-ZSBhZGRlZC4gSSBhbSBub3QgY29uY2VybmVkIGFib3V0IERvUyBhdHRhY2tzLCBvdXIgc3lzdGVt
-IGlzIG5vdCBjb25uZWN0ZWQgdG8gdGhlIGludGVybmV0LCBhbmQgd2Ugc2hvdWxkbid0IGhhdmUg
-dG8gbWFpbnRhaW4gYW4gb3V0LW9mLXRyZWUgcGF0Y2ggZm9yIGJhc2ljIGZ1bmN0aW9uYWxpdHku
-DQo=
+On Thu, Jul 11, 2019 at 07:21:51AM +0000, Paul Blakey wrote:
+> 
+> On 7/9/2019 6:36 PM, Marcelo Ricardo Leitner wrote:
+> > On Tue, Jul 09, 2019 at 06:58:36AM +0000, Paul Blakey wrote:
+> >> On 7/8/2019 8:54 PM, Marcelo Ricardo Leitner wrote:
+> >>> On Sun, Jul 07, 2019 at 11:53:47AM +0300, Paul Blakey wrote:
+> >>>> New tc action to send packets to conntrack module, commit
+> >>>> them, and set a zone, labels, mark, and nat on the connection.
+> >>>>
+> >>>> It can also clear the packet's conntrack state by using clear.
+> >>>>
+> >>>> Usage:
+> >>>>      ct clear
+> >>>>      ct commit [force] [zone] [mark] [label] [nat]
+> >>> Isn't the 'commit' also optional? More like
+> >>>       ct [commit [force]] [zone] [mark] [label] [nat]
+> >>>
+> >>>>      ct [nat] [zone]
+> >>>>
+> >>>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> >>>> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> >>>> Signed-off-by: Yossi Kuperman <yossiku@mellanox.com>
+> >>>> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> >>>> Acked-by: Roi Dayan <roid@mellanox.com>
+> >>>> ---
+> >>> ...
+> >>>> +static void
+> >>>> +usage(void)
+> >>>> +{
+> >>>> +	fprintf(stderr,
+> >>>> +		"Usage: ct clear\n"
+> >>>> +		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC]\n"
+> >>> Ditto here then.
+> >>
+> >> In commit msg and here, it means there is multiple modes of operation. I
+> >> think it's easier to split those.
+> > Yep, that is good.
+> > More below.
+> >
+> >> "ct clear" to clear it , not other options can be added here.
+> >>
+> >> "ct commit  [force].... " sends to conntrack and commit a connection,
+> >> and only for commit can you specify force mark  label, and nat with
+> >> nat_spec....
+> >>
+> >> and the last one, "ct [nat] [zone ZONE]" is to just send the packet to
+> >> conntrack on some zone [optional], restore nat [optional].
+> >>
+> >>
+> >>>> +		"	ct [nat] [zone ZONE]\n"
+> >>>> +		"Where: ZONE is the conntrack zone table number\n"
+> >>>> +		"	NAT_SPEC is {src|dst} addr addr1[-addr2] [port port1[-port2]]\n"
+> >>>> +		"\n");
+> >>>> +	exit(-1);
+> >>>> +}
+> >>> ...
+> >>>
+> >>> The validation below doesn't enforce that commit must be there for
+> >>> such case.
+> >> which case? commit is optional. the above are the three valid patterns.
+> > That's the point. But the 2nd example is saying 'commit' word is
+> > mandatory in that mode. It is written as it is a command that was
+> > selected.
+> >
+> > One may use just:
+> >      ct [zone]
+> > And not
+> >      ct commit [zone]
+> > Right?
+> 
+> It is optional in the overall syntax.
+> 
+> 
+> But I split it into modes:
+> 
+> clear, commit, and "restore" (I unofficial call it like that, because it 
+> usually used to get the +est state on the packet and can restore nat, it 
+> doesn't actually restore anything for the first packet on the -trk rule)
+> 
+> It is mandatory in the second mode (commit), if you don't specify commit 
+> or clear, you can only use the third form - "restore", which is to send 
+> to ct on some optional zone, and optionally and restore nat (so we get 
+> ct [zone] [nat]).
+
+I see. Thanks Paul.
+
+  Marcelo
