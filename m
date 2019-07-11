@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E3B065657
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 14:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D966565D
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 14:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728535AbfGKMEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 08:04:30 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:37756 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728349AbfGKMEa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 08:04:30 -0400
-Received: by mail-lf1-f66.google.com with SMTP id c9so3888570lfh.4
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:04:29 -0700 (PDT)
+        id S1728563AbfGKMF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 08:05:26 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44892 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728483AbfGKMFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 08:05:25 -0400
+Received: by mail-lj1-f195.google.com with SMTP id k18so5486662ljc.11
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:05:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=fIJT5H6LYisrbd6vwnAbhttHQR+HPbOb2XK62GqS1Hw=;
-        b=MHpOZCKskoCvtbYHgam0V9As0k81++UdVULTKLpyLcH1oU0/shthaJcSS97lvqKcN0
-         TZnB01QXcJlzmc3x0nZeh8A2YzQl6Q2zoct2ZDuOh5d3Waced04J6SZh7moU0lKXgPRj
-         +6l+dCjwuoSz/iS3VYY953WTyZ9VZlCvXCvvY=
+        bh=YFCxGO6KV5W4HnGiTTvC8J1Y11PoOncGzlRaAH+YitY=;
+        b=gqHdZrhydiZVnlVQy4pXamlOAmehSSQyqPVvYp1XIWDNaJIflXL/y4ej78BNjvmDaT
+         wjE4YsuM3hdrMdUB0VaTKvxtXl2poyXQwc/m8RN1z/8tvvHBETHl3ZTSZM6RniSAVqwV
+         pZOz19hsGlInW+f5P9Q5Ejvr2x52m5Xtb4Ick=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fIJT5H6LYisrbd6vwnAbhttHQR+HPbOb2XK62GqS1Hw=;
-        b=YEbJ11XRKBR2wscC/tfJaRCtKAQtiLlofYM2YQdrR5mTNGMH836uz7/w62kN5pKWNs
-         a9+hUZYUMMzQJxP6erMciCkkfrWOm4yD85A8+d20gFt+gMznDi9+Lo4M7EVAMnkcPjI7
-         MYPI/vuXXv9t9aYCeXruZLFt17gDpLpOnMT8cR5B2hFoXd5IfrMH47XsNl/qJfYpcq3a
-         cgf0OGeLkHi6NkI1k49QkkqkAQAhqyFkLqjGqVp5+hm6x/mV1Ezykz4xXQFv86fxs2Da
-         UUJQbZhaLUuJBgelKtMnYl0dL6szCWLi35YHIXn+iTbVq818uucdn9VXJkcpyZjkAm8z
-         OrIg==
-X-Gm-Message-State: APjAAAVxPomuExVCvc8YcdCRLsnU+0XfgDHMQOxS1e83rwsR50b4vPW4
-        t/ki+Npwz63suGHL/nSns+yDzOhncMGJR6JtDna6HQ==
-X-Google-Smtp-Source: APXvYqyp6HAj1kmAl16bL6nUdA74Usn2n5AVINcaqQABnMYNCnKpl0eo7NEGHvenOcxj4U35c+eZBEfsaPQlyc4rVQ4=
-X-Received: by 2002:ac2:47fa:: with SMTP id b26mr1661369lfp.82.1562846668240;
- Thu, 11 Jul 2019 05:04:28 -0700 (PDT)
+        bh=YFCxGO6KV5W4HnGiTTvC8J1Y11PoOncGzlRaAH+YitY=;
+        b=auAfXoaDbnDMn3SPOT43xmVrElI23IuAzytRalPC/8lZrxJGkdlhJPdtINsZzczsNE
+         siSXPwsz+/8UYk13XZpnIaai55/l0yGXwuaEN0egduIynuJpsIhGLMr0MpUDwNAD/il4
+         +GJOwtZTAWIcsklPSF7urtTN8zvBaUl00/S8Z86OjZFGAFQumKIzkiY5R7dEQMceOMHH
+         Q6m/iJfteG70IACbDDNFTING4mRBATIPgajedWooVrh53myfGhdLnDaZhXf9p5S/58dU
+         vMsvoFByzhk981i/t6VsOlJ3/MZNRFekQfN2jTnxTgYULymFtP23FEemVWDsRnYVmQgU
+         5u+g==
+X-Gm-Message-State: APjAAAXROtgCEShJa1E0d+AjRHNtTiNDpp+25wCl7rNSv7/B1G3gqHiz
+        CttELI1iVQ70+7XE3IT77+sxt9cCvixVFiyPEOKd2Q==
+X-Google-Smtp-Source: APXvYqy/Vz9FGOUgNf13SFed5ZNaL8L9LUuJauqPxNNzGUQUaWoOaZowfSiu0Yr4jPIs+S/05vQRVoFtTPtN+Yo+kKc=
+X-Received: by 2002:a2e:9754:: with SMTP id f20mr2286572ljj.151.1562846722686;
+ Thu, 11 Jul 2019 05:05:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-3-krzesimir@kinvolk.io>
- <CAEf4BzYra9njHOB8t6kxRu6n5NJdjjAG541OLt8ci=0zbbcUSg@mail.gmail.com>
-In-Reply-To: <CAEf4BzYra9njHOB8t6kxRu6n5NJdjjAG541OLt8ci=0zbbcUSg@mail.gmail.com>
+References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-4-krzesimir@kinvolk.io>
+ <CAEf4BzbM6EiCkN5mwK1YP-NC2bavkkHV7nFR-PXCWGOvVt7nTg@mail.gmail.com>
+In-Reply-To: <CAEf4BzbM6EiCkN5mwK1YP-NC2bavkkHV7nFR-PXCWGOvVt7nTg@mail.gmail.com>
 From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Thu, 11 Jul 2019 14:04:17 +0200
-Message-ID: <CAGGp+cGnEBFoPAuhTPa_JFCW6Vbjp2NN0ZPqC3qGfWEXwTyVOQ@mail.gmail.com>
-Subject: Re: [bpf-next v3 02/12] selftests/bpf: Avoid a clobbering of errno
+Date:   Thu, 11 Jul 2019 14:05:11 +0200
+Message-ID: <CAGGp+cHi0siwc1+q--JM_+a0QOO6tWgJiOkqsdbjGxjMP3G1Zw@mail.gmail.com>
+Subject: Re: [bpf-next v3 03/12] selftests/bpf: Avoid another case of errno clobbering
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     open list <linux-kernel@vger.kernel.org>,
         Alban Crequy <alban@kinvolk.io>,
@@ -67,79 +67,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 1:52 AM Andrii Nakryiko
+On Thu, Jul 11, 2019 at 1:57 AM Andrii Nakryiko
 <andrii.nakryiko@gmail.com> wrote:
 >
-> On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> wro=
+> On Mon, Jul 8, 2019 at 3:43 PM Krzesimir Nowak <krzesimir@kinvolk.io> wro=
 te:
 > >
-> > Save errno right after bpf_prog_test_run returns, so we later check
-> > the error code actually set by bpf_prog_test_run, not by some libcap
-> > function.
-> >
-> > Changes since v1:
-> > - Fix the "Fixes:" tag to mention actual commit that introduced the
-> >   bug
+> > Commit 8184d44c9a57 ("selftests/bpf: skip verifier tests for
+> > unsupported program types") added a check for an unsupported program
+> > type. The function doing it changes errno, so test_verifier should
+> > save it before calling it if test_verifier wants to print a reason why
+> > verifying a BPF program of a supported type failed.
 > >
 > > Changes since v2:
-> > - Move the declaration so it fits the reverse christmas tree style.
+> > - Move the declaration to fit the reverse christmas tree style.
 > >
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Fixes: 832c6f2c29ec ("bpf: test make sure to run unpriv test cases in t=
-est_verifier")
+> > Fixes: 8184d44c9a57 ("selftests/bpf: skip verifier tests for unsupporte=
+d program types")
+> > Cc: Stanislav Fomichev <sdf@google.com>
 > > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 > > ---
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
 > >  tools/testing/selftests/bpf/test_verifier.c | 4 +++-
 > >  1 file changed, 3 insertions(+), 1 deletion(-)
 > >
 > > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testin=
 g/selftests/bpf/test_verifier.c
-> > index b8d065623ead..3fe126e0083b 100644
+> > index 3fe126e0083b..c7541f572932 100644
 > > --- a/tools/testing/selftests/bpf/test_verifier.c
 > > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -823,16 +823,18 @@ static int do_prog_test_run(int fd_prog, bool unp=
-riv, uint32_t expected_val,
-> >         __u8 tmp[TEST_DATA_LEN << 2];
-> >         __u32 size_tmp =3D sizeof(tmp);
-> >         uint32_t retval;
+> > @@ -864,6 +864,7 @@ static void do_test_single(struct bpf_test *test, b=
+ool unpriv,
+> >         int run_errs, run_successes;
+> >         int map_fds[MAX_NR_MAPS];
+> >         const char *expected_err;
 > > +       int saved_errno;
-> >         int err;
-> >
-> >         if (unpriv)
-> >                 set_admin(true);
-> >         err =3D bpf_prog_test_run(fd_prog, 1, data, size_data,
-> >                                 tmp, &size_tmp, &retval, NULL);
+> >         int fixup_skips;
 >
-> Given err is either 0 or -1, how about instead making err useful right
-> here without extra variable?
->
-> if (bpf_prog_test_run(...))
->         err =3D errno;
+> nit: combine those ints? or even with i and err below as well?
 
-I change it later to bpf_prog_test_run_xattr, which can also return
--EINVAL and then errno is not set. But this one probably should not be
-triggered by the test code. So not sure, probably would be better to
-keep it as is for consistency?
+Will do.
 
 >
+> >         __u32 pflags;
+> >         int i, err;
+> > @@ -894,6 +895,7 @@ static void do_test_single(struct bpf_test *test, b=
+ool unpriv,
+> >                 pflags |=3D BPF_F_ANY_ALIGNMENT;
+> >         fd_prog =3D bpf_verify_program(prog_type, prog, prog_len, pflag=
+s,
+> >                                      "GPL", 0, bpf_vlog, sizeof(bpf_vlo=
+g), 4);
 > > +       saved_errno =3D errno;
-> >         if (unpriv)
-> >                 set_admin(false);
-> >         if (err) {
-> > -               switch (errno) {
-> > +               switch (saved_errno) {
-> >                 case 524/*ENOTSUPP*/:
->
-> ENOTSUPP is defined in include/linux/errno.h, is there any problem
-> with using this in selftests?
-
-I just used whatever there was earlier. Seems like <linux/errno.h> is
-not copied to tools include directory.
-
->
-> >                         printf("Did not run the program (not supported)=
- ");
-> >                         return 0;
+> >         if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
+> >                 printf("SKIP (unsupported program type %d)\n", prog_typ=
+e);
+> >                 skips++;
+> > @@ -910,7 +912,7 @@ static void do_test_single(struct bpf_test *test, b=
+ool unpriv,
+> >         if (expected_ret =3D=3D ACCEPT) {
+> >                 if (fd_prog < 0) {
+> >                         printf("FAIL\nFailed to load prog '%s'!\n",
+> > -                              strerror(errno));
+> > +                              strerror(saved_errno));
+> >                         goto fail_log;
+> >                 }
+> >  #ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
 > > --
 > > 2.20.1
 > >
