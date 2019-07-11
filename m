@@ -2,169 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61AF465917
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:33:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D61B6593C
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:43:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728704AbfGKOdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 10:33:12 -0400
-Received: from mail-eopbgr40082.outbound.protection.outlook.com ([40.107.4.82]:52558
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728045AbfGKOdL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 10:33:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gm1xvGHGPQXf3bW42cYmdss81vA1tpBiHczDa8ON4z8=;
- b=bCJNb2zoJtoJtdq/baH3tbi8IOD1rlXpQMUsJetiHYUdGXD6HVCuOq230a5k8lmPnmbvkEaIVx7CbnsQ4LCbCuPgKLWBDrGEUNHkJMRLWLBqizccEAsrrIz+JqGGBgDMbu9a78vJ27DuF3smUi9mcgIbJt2nHKZpsKaPplCLSzI=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
- VI1PR05MB6253.eurprd05.prod.outlook.com (20.178.205.91) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.18; Thu, 11 Jul 2019 14:33:07 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2052.020; Thu, 11 Jul 2019
- 14:33:07 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Bernard Metzler <BMT@zurich.ibm.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Doug Ledford <dledford@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Re: Re: linux-next: build failure after merge of the net-next
- tree
-Thread-Topic: Re: Re: linux-next: build failure after merge of the net-next
- tree
-Thread-Index: AQHVNgpSNqxsVllq5U23Am+RwOaE5KbB1zsAgAJNFwCAAO0agIAAQMGAgAAKRoCAACKOAA==
-Date:   Thu, 11 Jul 2019 14:33:07 +0000
-Message-ID: <20190711143302.GH25821@mellanox.com>
-References: <20190711115235.GA25821@mellanox.com>
- <20190710175212.GM2887@mellanox.com>
- <20190709135636.4d36e19f@canb.auug.org.au>
- <20190709064346.GF7034@mtr-leonro.mtl.com>
- <OF360C0EBE.4A489B94-ON00258434.002B10B7-00258434.002C0536@notes.na.collabserv.com>
- <OF9A485648.9C7A28A3-ON00258434.00449B07-00258434.00449B14@notes.na.collabserv.com>
-In-Reply-To: <OF9A485648.9C7A28A3-ON00258434.00449B07-00258434.00449B14@notes.na.collabserv.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: YQBPR0101CA0014.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c00::27) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:4d::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [156.34.55.100]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 00d11ba8-26b1-4bb0-5991-08d7060cb114
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6253;
-x-ms-traffictypediagnostic: VI1PR05MB6253:
-x-microsoft-antispam-prvs: <VI1PR05MB62539C759DB76022927B5D93CFF30@VI1PR05MB6253.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:619;
-x-forefront-prvs: 0095BCF226
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(199004)(189003)(53936002)(54906003)(4326008)(6436002)(71190400001)(2906002)(6512007)(316002)(6246003)(1076003)(33656002)(71200400001)(5660300002)(305945005)(7736002)(66066001)(26005)(76176011)(11346002)(2616005)(14454004)(476003)(66446008)(66476007)(66556008)(102836004)(64756008)(486006)(66946007)(53546011)(6506007)(386003)(446003)(8676002)(186003)(81156014)(81166006)(229853002)(86362001)(6916009)(99286004)(6486002)(8936002)(68736007)(14444005)(52116002)(256004)(3846002)(6116002)(478600001)(36756003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6253;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 5nM8VoiyWTk55I8j5yTFXp+xjbqAbHGoZ7e21JnM3rYv70vK5tJLDjmE83HZS/530x54JQRq+QeANr/80r1f9gUBRQZHCh3545VEZHkAzanFyR0CsR43FyvzCaP/TPzef9XBFQG2k69d4SAeFYGeudtmZlIPumZ/2kn7jiRkM0X6fSppgZ08vqcTE6fYRd69LJSLJyyhR51B4pz99/0bM6AMLOyyxyzSpqTC2AhfQPE2EdB+hJM8slmHfvO03r+MZcsSDJCmOov50+iF5em7ZGZZYomXbeRNhYurlYj1sLdYlFK8blvACYaAzCMjvEuqn8xXjwYewQm6k2lPed1Gk3kybNs3fjfEinfVnvOVrYjnC8/NmmiJBL2M1bpfTWjy2fYen1MM9kCLTyDXoIm10On5TI3akXiLwsBGpw8LJGE=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2679AEEF5EBE8449A29BAF6FB02687C7@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728749AbfGKOnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 10:43:41 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:39403 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728471AbfGKOnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 10:43:41 -0400
+Received: by mail-yw1-f68.google.com with SMTP id x74so3898434ywx.6;
+        Thu, 11 Jul 2019 07:43:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vmOGsoHiM6XG/FkzWHR9Ptf7rpGEwowGLGGHPi+MFsE=;
+        b=RvsrKGQe/7jfHw8K7xiEdsTUT8bBicNHtbkmlf24QpA/mMlhxLyhxQzmcXwOUdkaC5
+         6MaTcaVvSzZuVeiSxQKlfZp7haBTum0QA2r7Lmry4iQzs3e7D1qEeMSx5P4M03ATijW4
+         PkJhsxICIVvyxfqkj8FJOXJQ0RhRpPmHwAUrfOigfd0qcBu4eafWOmXeEj7dyGsmbaIJ
+         9x595aooLQoSF0KpWc4nfbABIJhCkzsvDld2BrIZcINq3PkmYA7hTd9FlYsho49BO+4k
+         so/vqc0BmjIwVWb6ZAJTNu1ZMHpXD3m2I2a09WvdQDgIQbP+szMKJ4xX062d8EEB+E2q
+         JmQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vmOGsoHiM6XG/FkzWHR9Ptf7rpGEwowGLGGHPi+MFsE=;
+        b=mE8X9KwyLRDxL4YbzwA4UCUSuVx/UK+AZChmF3Y3tHh+NpYRJ0jK+XD5rpuwPkMXyd
+         r+o6/+kDwp4g/ycMrS/Heg1B51vPqwG6ncY/8wH35SkxcLZfgP5dUvPmZrsaWlCUkUMx
+         mkpLTX8uaZXzlRFApJfq2Uj9p2Arx6ay3hUnGHmY5SZviTa/YChtKQ+PJATM6gcSP8vN
+         /lKMr87yIlx9iISFtdXVFP/cXq5XL72o432kpMP/UFfp50g/m5V9vDdj5P3SxyQPGcgJ
+         DAggjBtnaZTpulqSAX/8fso9WR54b89DaO3QhxjNc4KVPSGNh/RCEBUIPc03+uhWyFh4
+         O4Lg==
+X-Gm-Message-State: APjAAAVbDVb243wGhYpHRXIxHOfe5EoMCARxLYEOnGF8puFkueSwnuJm
+        cMrFvImEyvA50Bb7wTxKgHJvRei26PbOoO++yGA=
+X-Google-Smtp-Source: APXvYqxYeX4hW5tYT/9KOKvI3xx9itOx+7MawBSLTgvaZ6T8c+c/LfMSHizMD8KUu6fS3zd1zVuVcLLamIkyb5uRe5Q=
+X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr2321074qkj.39.1562856219891;
+ Thu, 11 Jul 2019 07:43:39 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 00d11ba8-26b1-4bb0-5991-08d7060cb114
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 14:33:07.8068
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6253
+References: <20190711010844.1285018-1-andriin@fb.com> <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
+In-Reply-To: <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 11 Jul 2019 07:43:28 -0700
+Message-ID: <CAEf4Bzb1kE_jCbyye07-pVMT=914_Nrdh+R=QXA2qMssYP5brA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: remove logic duplication in test_verifier.c
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 12:29:21PM +0000, Bernard Metzler wrote:
->=20
-> >To: "Bernard Metzler" <BMT@zurich.ibm.com>
-> >From: "Jason Gunthorpe" <jgg@mellanox.com>
-> >Date: 07/11/2019 01:53PM
-> >Cc: "Leon Romanovsky" <leon@kernel.org>, "Stephen Rothwell"
-> ><sfr@canb.auug.org.au>, "Doug Ledford" <dledford@redhat.com>, "David
-> >Miller" <davem@davemloft.net>, "Networking" <netdev@vger.kernel.org>,
-> >"Linux Next Mailing List" <linux-next@vger.kernel.org>, "Linux Kernel
-> >Mailing List" <linux-kernel@vger.kernel.org>
-> >Subject: [EXTERNAL] Re: Re: linux-next: build failure after merge of
-> >the net-next tree
+On Thu, Jul 11, 2019 at 5:13 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrot=
+e:
+>
+> On Thu, Jul 11, 2019 at 3:08 AM Andrii Nakryiko <andriin@fb.com> wrote:
 > >
-> >On Thu, Jul 11, 2019 at 08:00:49AM +0000, Bernard Metzler wrote:
+> > test_verifier tests can specify single- and multi-runs tests. Internall=
+y
+> > logic of handling them is duplicated. Get rid of it by making single ru=
+n
+> > retval specification to be a first retvals spec.
 > >
-> >> That listen will not sleep. The socket is just marked
-> >> listening.=20
+> > Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Looks good, one nit below.
+>
+> Acked-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+>
+> > ---
+> >  tools/testing/selftests/bpf/test_verifier.c | 37 ++++++++++-----------
+> >  1 file changed, 18 insertions(+), 19 deletions(-)
 > >
-> >Eh? siw_listen_address() calls siw_cep_alloc() which does:
+> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testin=
+g/selftests/bpf/test_verifier.c
+> > index b0773291012a..120ecdf4a7db 100644
+> > --- a/tools/testing/selftests/bpf/test_verifier.c
+> > +++ b/tools/testing/selftests/bpf/test_verifier.c
+> > @@ -86,7 +86,7 @@ struct bpf_test {
+> >         int fixup_sk_storage_map[MAX_FIXUPS];
+> >         const char *errstr;
+> >         const char *errstr_unpriv;
+> > -       uint32_t retval, retval_unpriv, insn_processed;
+> > +       uint32_t insn_processed;
+> >         int prog_len;
+> >         enum {
+> >                 UNDEF,
+> > @@ -95,16 +95,24 @@ struct bpf_test {
+> >         } result, result_unpriv;
+> >         enum bpf_prog_type prog_type;
+> >         uint8_t flags;
+> > -       __u8 data[TEST_DATA_LEN];
+> >         void (*fill_helper)(struct bpf_test *self);
+> >         uint8_t runs;
+> > -       struct {
+> > -               uint32_t retval, retval_unpriv;
+> > -               union {
+> > -                       __u8 data[TEST_DATA_LEN];
+> > -                       __u64 data64[TEST_DATA_LEN / 8];
+> > +       union {
+> > +               struct {
+>
+> Maybe consider moving the struct definition outside to further the
+> removal of the duplication?
+
+Can't do that because then retval/retval_unpriv/data won't be
+accessible as a normal field of struct bpf_test. It has to be in
+anonymous structs/unions, unfortunately.
+
+I tried the following, but that also didn't work:
+
+union {
+    struct bpf_test_retval {
+        uint32_t retval, retval_unpriv;
+        union {
+            __u8 data[TEST_DATA_LEN];
+            __u64 data64[TEST_DATA_LEN / 8];
+        };
+    };
+    struct bpf_test_retval retvals[MAX_TEST_RUNS];
+};
+
+This also made retval/retval_unpriv to not behave as normal fields of
+struct bpf_test.
+
+
+>
+> > +                       uint32_t retval, retval_unpriv;
+> > +                       union {
+> > +                               __u8 data[TEST_DATA_LEN];
+> > +                               __u64 data64[TEST_DATA_LEN / 8];
+> > +                       };
+> >                 };
+> > -       } retvals[MAX_TEST_RUNS];
+> > +               struct {
+> > +                       uint32_t retval, retval_unpriv;
+> > +                       union {
+> > +                               __u8 data[TEST_DATA_LEN];
+> > +                               __u64 data64[TEST_DATA_LEN / 8];
+> > +                       };
+> > +               } retvals[MAX_TEST_RUNS];
+> > +       };
+> >         enum bpf_attach_type expected_attach_type;
+> >  };
 > >
-> >	struct siw_cep *cep =3D kzalloc(sizeof(*cep), GFP_KERNEL);
+> > @@ -949,17 +957,8 @@ static void do_test_single(struct bpf_test *test, =
+bool unpriv,
+> >                 uint32_t expected_val;
+> >                 int i;
 > >
-> >Which is sleeping. Many other cases too.
+> > -               if (!test->runs) {
+> > -                       expected_val =3D unpriv && test->retval_unpriv =
+?
+> > -                               test->retval_unpriv : test->retval;
+> > -
+> > -                       err =3D do_prog_test_run(fd_prog, unpriv, expec=
+ted_val,
+> > -                                              test->data, sizeof(test-=
+>data));
+> > -                       if (err)
+> > -                               run_errs++;
+> > -                       else
+> > -                               run_successes++;
+> > -               }
+> > +               if (!test->runs)
+> > +                       test->runs =3D 1;
 > >
-> >Jason
+> >                 for (i =3D 0; i < test->runs; i++) {
+> >                         if (unpriv && test->retvals[i].retval_unpriv)
+> > --
+> > 2.17.1
 > >
-> >
-> Ah, true! I was after really deep sleeps like user level
-> socket accept() calls ;) So you are correct of course.
-
-I've added this patch to the rdma tree to fix the missing locking.
-
-The merge resolution will be simply swapping
-for_ifa to in_dev_for_each_ifa_rtnl.
-
-Jason
-
-From c421651fa2295d1219c36674c7eb8c574542ceea Mon Sep 17 00:00:00 2001
-From: Jason Gunthorpe <jgg@mellanox.com>
-Date: Thu, 11 Jul 2019 11:29:42 -0300
-Subject: [PATCH] RDMA/siw: Add missing rtnl_lock around access to ifa
-
-ifa is protected by rcu or rtnl, add the missing locking. In this case we
-have to use rtnl since siw_listen_address() is sleeping.
-
-Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
-Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
-Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
----
- drivers/infiniband/sw/siw/siw_cm.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/siw=
-/siw_cm.c
-index 8e618cb7261f62..c25be723c15b64 100644
---- a/drivers/infiniband/sw/siw/siw_cm.c
-+++ b/drivers/infiniband/sw/siw/siw_cm.c
-@@ -1975,6 +1975,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
-g)
- 			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
- 			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
-=20
-+		rtnl_lock();
- 		for_ifa(in_dev)
- 		{
- 			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
-@@ -1989,6 +1990,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
-g)
- 			}
- 		}
- 		endfor_ifa(in_dev);
-+		rtnl_unlock();
- 		in_dev_put(in_dev);
- 	} else if (id->local_addr.ss_family =3D=3D AF_INET6) {
- 		struct inet6_dev *in6_dev =3D in6_dev_get(dev);
---=20
-2.21.0
-
+>
+>
+> --
+> Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
+> Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago =
+L=C3=B3pez Galeiras
+> Registergericht/Court of registration: Amtsgericht Charlottenburg
+> Registernummer/Registration number: HRB 171414 B
+> Ust-ID-Nummer/VAT ID number: DE302207000
