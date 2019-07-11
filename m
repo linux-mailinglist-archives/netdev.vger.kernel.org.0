@@ -2,72 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D8F652D4
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 10:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF7AA652ED
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 10:14:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728170AbfGKIIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 04:08:30 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55763 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728022AbfGKII3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 04:08:29 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a15so4675281wmj.5
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 01:08:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FjI8zT9BaBhenvixFKkuibZ0s0HWhdFYdb6AGhH4zHQ=;
-        b=TGPYsk/RMY0LJIGAG95XOlfHDTwUcZ4vj/muqYNitv6gRNGbDMU49279Psune3J7Lu
-         5Db0pVbsXcBLQU5KZvBjhqoksZKkQZW/5HcCUjE6iARrO4ajth4YcjaeyK81Snw0qAg6
-         LEKmwH0OaVqGx3qSUvWBFWvcb8lEFUU7krs7SDwqy6V29al0rQraZm0FofkUCKAYedLH
-         x2TZLNZL3AOrGICYIsmn/SrpmNlUp+BPyKfxLinoJN/Q7Evtz46+u2gkjxmfMMWH/2bs
-         trnjM9oXbXhEGUPqHEk+DIPaFhxwWeYnaGqQ10HEoNg4/Mv0w518gj6iy/JFs5H+OXug
-         wW5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FjI8zT9BaBhenvixFKkuibZ0s0HWhdFYdb6AGhH4zHQ=;
-        b=YqjnyuSv5ZoRA/rNv9U31fNcyAh70WFTvV2DcdWk7Vr2iKGGzm3rbIse4OYZ1NSCVY
-         i8vVSI9hfD4EDhBpoZmBib8CH9EAvzmkI2h/ZqkUSJ+OCePWByStwsvovjPYb+E9DVIg
-         D+ppJR68WpA3zZdEPy9kSY0WWOHjD9b6m/jV1SweBr9QKfOVLcHzh1IUi/8GAjElIT8m
-         JE45+az1wxZFQFbIxeGy/dhpfdM5UG7DqKvr4/sUv4rimhwr7malzjc3thFiUWZvAR8E
-         T2w7x4OCVAE1Efu2GNR44tSOHrS2g3vA6uWnkia4jW9K5IXjcCz64GHNw74ezHqbBjug
-         /sNQ==
-X-Gm-Message-State: APjAAAV9G+2YmK3I97dhkLk83Hy58sVGlOHNWFSdncpfj40gGIm12XCi
-        6dH12qcl1EaYnkjFIasSE/E=
-X-Google-Smtp-Source: APXvYqx0j0ILJ/qZZ8/PzjikPH4K+IX3CWl3P0keVoaHEz/oMM+Is4QJBZY4agD2TINyBYxr/u9AUQ==
-X-Received: by 2002:a1c:f418:: with SMTP id z24mr2648264wma.80.1562832507573;
-        Thu, 11 Jul 2019 01:08:27 -0700 (PDT)
-Received: from localhost (ip-89-176-1-116.net.upcbroadband.cz. [89.176.1.116])
-        by smtp.gmail.com with ESMTPSA id v15sm4767154wrt.25.2019.07.11.01.08.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 11 Jul 2019 01:08:27 -0700 (PDT)
-Date:   Thu, 11 Jul 2019 10:08:26 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next 1/3] net: flow_offload: remove netns parameter
- from flow_block_cb_alloc()
-Message-ID: <20190711080826.GH2291@nanopsycho>
-References: <20190711001235.20686-1-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190711001235.20686-1-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        id S1728199AbfGKIOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 04:14:35 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37061 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728090AbfGKIOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 04:14:34 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 11 Jul 2019 11:14:31 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6B8EVkU026708;
+        Thu, 11 Jul 2019 11:14:31 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>
+Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: [PATCH net-next iproute2 v2 0/3] net/sched: Introduce tc connection tracking
+Date:   Thu, 11 Jul 2019 11:14:24 +0300
+Message-Id: <1562832867-32347-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 11, 2019 at 02:12:33AM CEST, pablo@netfilter.org wrote:
->No need to annotate the netns on the flow block callback object,
->flow_block_cb_is_busy() already checks for used blocks.
->
->Fixes: d63db30c8537 ("net: flow_offload: add flow_block_cb_alloc() and flow_block_cb_free()")
->Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Hi,
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+This patch series add connection tracking capabilities in tc.
+It does so via a new tc action, called act_ct, and new tc flower classifier matching.
+Act ct and relevant flower matches, are still under review in net-next mailing list.
+
+Usage is as follows:
+$ tc qdisc add dev ens1f0_0 ingress
+$ tc qdisc add dev ens1f0_1 ingress
+
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 2
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_state +trk+new \
+  action ct zone 2 commit mark 0xbb nat src addr 5.5.5.7 pipe \
+  action mirred egress redirect dev ens1f0_1
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_1
+
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 1
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 1 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_0
+
+Changelog:
+V1->V2:
+	Removed pkt_cls changes (as it was merged already)
+
+Paul Blakey (3):
+  tc: add NLA_F_NESTED flag to all actions options nested block
+  tc: Introduce tc ct action
+  tc: flower: Add matching on conntrack info
+
+ include/uapi/linux/tc_act/tc_ct.h |  41 ++++
+ man/man8/tc-flower.8              |  35 +++
+ tc/Makefile                       |   1 +
+ tc/f_flower.c                     | 276 ++++++++++++++++++++-
+ tc/m_action.c                     |   3 +-
+ tc/m_ct.c                         | 497 ++++++++++++++++++++++++++++++++++++++
+ tc/tc_util.c                      |  44 ++++
+ tc/tc_util.h                      |   4 +
+ 8 files changed, 899 insertions(+), 2 deletions(-)
+ create mode 100644 include/uapi/linux/tc_act/tc_ct.h
+ create mode 100644 tc/m_ct.c
+
+-- 
+1.8.3.1
+
