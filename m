@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11CBC652EE
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 10:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50665652F0
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 10:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbfGKIOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 04:14:37 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37060 "EHLO
+        id S1728261AbfGKIOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 04:14:39 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37063 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728136AbfGKIOg (ORCPT
+        with ESMTP id S1728049AbfGKIOg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 04:14:36 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 11 Jul 2019 11:14:31 +0300
 Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6B8EVkW026708;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6B8EVkX026708;
         Thu, 11 Jul 2019 11:14:31 +0300
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
@@ -29,9 +29,9 @@ Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
         John Hurley <john.hurley@netronome.com>,
         Simon Horman <simon.horman@netronome.com>,
         Justin Pettit <jpettit@ovn.org>
-Subject: [PATCH net-next iproute2 v2 2/3] tc: Introduce tc ct action
-Date:   Thu, 11 Jul 2019 11:14:26 +0300
-Message-Id: <1562832867-32347-3-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next iproute2 v2 3/3] tc: flower: Add matching on conntrack info
+Date:   Thu, 11 Jul 2019 11:14:27 +0300
+Message-Id: <1562832867-32347-4-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1562832867-32347-1-git-send-email-paulb@mellanox.com>
 References: <1562832867-32347-1-git-send-email-paulb@mellanox.com>
@@ -40,15 +40,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New tc action to send packets to conntrack module, commit
-them, and set a zone, labels, mark, and nat on the connection.
-
-It can also clear the packet's conntrack state by using clear.
-
-Usage:
-   ct clear
-   ct commit [force] [zone] [mark] [label] [nat]
-   ct [nat] [zone]
+Matches on conntrack state, zone, mark, and label.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
 Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
@@ -56,189 +48,89 @@ Signed-off-by: Yossi Kuperman <yossiku@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Acked-by: Roi Dayan <roid@mellanox.com>
 ---
- include/uapi/linux/tc_act/tc_ct.h |  41 ++++
- tc/Makefile                       |   1 +
- tc/m_ct.c                         | 497 ++++++++++++++++++++++++++++++++++++++
- tc/tc_util.c                      |  44 ++++
- tc/tc_util.h                      |   4 +
- 5 files changed, 587 insertions(+)
- create mode 100644 include/uapi/linux/tc_act/tc_ct.h
- create mode 100644 tc/m_ct.c
+ man/man8/tc-flower.8 |  35 +++++++
+ tc/f_flower.c        | 276 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 310 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
-new file mode 100644
-index 0000000..5fb1d7a
---- /dev/null
-+++ b/include/uapi/linux/tc_act/tc_ct.h
-@@ -0,0 +1,41 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef __UAPI_TC_CT_H
-+#define __UAPI_TC_CT_H
-+
-+#include <linux/types.h>
-+#include <linux/pkt_cls.h>
-+
-+enum {
-+	TCA_CT_UNSPEC,
-+	TCA_CT_PARMS,
-+	TCA_CT_TM,
-+	TCA_CT_ACTION,		/* u16 */
-+	TCA_CT_ZONE,		/* u16 */
-+	TCA_CT_MARK,		/* u32 */
-+	TCA_CT_MARK_MASK,	/* u32 */
-+	TCA_CT_LABELS,		/* u128 */
-+	TCA_CT_LABELS_MASK,	/* u128 */
-+	TCA_CT_NAT_IPV4_MIN,	/* be32 */
-+	TCA_CT_NAT_IPV4_MAX,	/* be32 */
-+	TCA_CT_NAT_IPV6_MIN,	/* struct in6_addr */
-+	TCA_CT_NAT_IPV6_MAX,	/* struct in6_addr */
-+	TCA_CT_NAT_PORT_MIN,	/* be16 */
-+	TCA_CT_NAT_PORT_MAX,	/* be16 */
-+	TCA_CT_PAD,
-+	__TCA_CT_MAX
-+};
-+
-+#define TCA_CT_MAX (__TCA_CT_MAX - 1)
-+
-+#define TCA_CT_ACT_COMMIT	(1 << 0)
-+#define TCA_CT_ACT_FORCE	(1 << 1)
-+#define TCA_CT_ACT_CLEAR	(1 << 2)
-+#define TCA_CT_ACT_NAT		(1 << 3)
-+#define TCA_CT_ACT_NAT_SRC	(1 << 4)
-+#define TCA_CT_ACT_NAT_DST	(1 << 5)
-+
-+struct tc_ct {
-+	tc_gen;
-+};
-+
-+#endif /* __UAPI_TC_CT_H */
-diff --git a/tc/Makefile b/tc/Makefile
-index 09ff369..14171a2 100644
---- a/tc/Makefile
-+++ b/tc/Makefile
-@@ -53,6 +53,7 @@ TCMODULES += m_ctinfo.o
- TCMODULES += m_bpf.o
- TCMODULES += m_tunnel_key.o
- TCMODULES += m_sample.o
-+TCMODULES += m_ct.o
- TCMODULES += p_ip.o
- TCMODULES += p_ip6.o
- TCMODULES += p_icmp.o
-diff --git a/tc/m_ct.c b/tc/m_ct.c
-new file mode 100644
-index 0000000..8589cb9
---- /dev/null
-+++ b/tc/m_ct.c
-@@ -0,0 +1,497 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* -
-+ * m_ct.c     Connection tracking action
-+ *
-+ * Authors:   Paul Blakey <paulb@mellanox.com>
-+ *            Yossi Kuperman <yossiku@mellanox.com>
-+ *            Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <string.h>
-+#include "utils.h"
-+#include "tc_util.h"
-+#include <linux/tc_act/tc_ct.h>
-+
-+static void
-+usage(void)
-+{
-+	fprintf(stderr,
-+		"Usage: ct clear\n"
-+		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC]\n"
-+		"	ct [nat] [zone ZONE]\n"
-+		"Where: ZONE is the conntrack zone table number\n"
-+		"	NAT_SPEC is {src|dst} addr addr1[-addr2] [port port1[-port2]]\n"
-+		"\n");
-+	exit(-1);
-+}
-+
-+static int ct_parse_nat_addr_range(const char *str, struct nlmsghdr *n)
-+{
-+	inet_prefix addr = { .family = AF_UNSPEC, };
-+	char *addr1, *addr2 = 0;
-+	SPRINT_BUF(buffer);
-+	int attr;
-+	int ret;
-+
-+	strncpy(buffer, str, sizeof(buffer) - 1);
-+
-+	addr1 = buffer;
-+	addr2 = strchr(addr1, '-');
-+	if (addr2) {
-+		*addr2 = '\0';
-+		addr2++;
-+	}
-+
-+	ret = get_addr(&addr, addr1, AF_UNSPEC);
-+	if (ret)
-+		return ret;
-+	attr = addr.family == AF_INET ? TCA_CT_NAT_IPV4_MIN :
-+					TCA_CT_NAT_IPV6_MIN;
-+	addattr_l(n, MAX_MSG, attr, addr.data, addr.bytelen);
-+
-+	if (addr2) {
-+		ret = get_addr(&addr, addr2, addr.family);
-+		if (ret)
-+			return ret;
-+	}
-+	attr = addr.family == AF_INET ? TCA_CT_NAT_IPV4_MAX :
-+					TCA_CT_NAT_IPV6_MAX;
-+	addattr_l(n, MAX_MSG, attr, addr.data, addr.bytelen);
-+
-+	return 0;
-+}
-+
-+static int ct_parse_nat_port_range(const char *str, struct nlmsghdr *n)
-+{
-+	char *port1, *port2 = 0;
-+	SPRINT_BUF(buffer);
-+	__be16 port;
-+	int ret;
-+
-+	strncpy(buffer, str, sizeof(buffer) - 1);
-+
-+	port1 = buffer;
-+	port2 = strchr(port1, '-');
-+	if (port2) {
-+		*port2 = '\0';
-+		port2++;
-+	}
-+
-+	ret = get_be16(&port, port1, 10);
-+	if (ret)
-+		return -1;
-+	addattr16(n, MAX_MSG, TCA_CT_NAT_PORT_MIN, port);
-+
-+	if (port2) {
-+		ret = get_be16(&port, port2, 10);
-+		if (ret)
-+			return -1;
-+	}
-+	addattr16(n, MAX_MSG, TCA_CT_NAT_PORT_MAX, port);
-+
-+	return 0;
-+}
-+
-+
-+static int ct_parse_u16(char *str, int value_type, int mask_type,
-+			struct nlmsghdr *n)
+diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
+index adff41e..04ee194 100644
+--- a/man/man8/tc-flower.8
++++ b/man/man8/tc-flower.8
+@@ -289,6 +289,41 @@ bits is assumed.
+ .TQ
+ .BI enc_ttl " NUMBER"
+ .TQ
++.BR
++.TP
++.BI ct_state " CT_STATE"
++.TQ
++.BI ct_zone " CT_MASKED_ZONE"
++.TQ
++.BI ct_mark " CT_MASKED_MARK"
++.TQ
++.BI ct_label " CT_MASKED_LABEL"
++Matches on connection tracking info
++.RS
++.TP
++.I CT_STATE
++Match the connection state, and can ne combination of [{+|-}flag] flags, where flag can be one of
++.RS
++.TP
++trk - Tracked connection.
++.TP
++new - New connection.
++.TP
++est - Established connection.
++.TP
++Example: +trk+est
++.RE
++.TP
++.I CT_MASKED_ZONE
++Match the connection zone, and can be masked.
++.TP
++.I CT_MASKED_MARK
++32bit match on the connection mark, and can be masked.
++.TP
++.I CT_MASKED_LABEL
++128bit match on the connection label, and can be masked.
++.RE
++.TP
+ .BI geneve_opts " OPTIONS"
+ Match on IP tunnel metadata. Key id
+ .I NUMBER
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 70d40d3..a2a2301 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -82,9 +82,14 @@ static void explain(void)
+ 		"			enc_ttl MASKED-IP_TTL |\n"
+ 		"			geneve_opts MASKED-OPTIONS |\n"
+ 		"			ip_flags IP-FLAGS | \n"
+-		"			enc_dst_port [ port_number ] }\n"
++		"			enc_dst_port [ port_number ] |\n"
++		"			ct_state MASKED_CT_STATE |\n"
++		"			ct_label MASKED_CT_LABEL |\n"
++		"			ct_mark MASKED_CT_MARK |\n"
++		"			ct_zone MASKED_CT_ZONE }\n"
+ 		"	FILTERID := X:Y:Z\n"
+ 		"	MASKED_LLADDR := { LLADDR | LLADDR/MASK | LLADDR/BITS }\n"
++		"	MASKED_CT_STATE := combination of {+|-} and flags trk,est,new\n"
+ 		"	ACTION-SPEC := ... look at individual actions\n"
+ 		"\n"
+ 		"NOTE:	CLASSID, IP-PROTO are parsed as hexadecimal input.\n"
+@@ -214,6 +219,159 @@ static int flower_parse_matching_flags(char *str,
+ 	return 0;
+ }
+ 
++static int flower_parse_u16(char *str, int value_type, int mask_type,
++			    struct nlmsghdr *n)
 +{
 +	__u16 value, mask;
-+	char *slash = 0;
++	char *slash;
 +
-+	if (mask_type != TCA_CT_UNSPEC) {
-+		slash = strchr(str, '/');
-+		if (slash)
-+			*slash = '\0';
-+	}
++	slash = strchr(str, '/');
++	if (slash)
++		*slash = '\0';
 +
 +	if (get_u16(&value, str, 0))
 +		return -1;
@@ -251,14 +143,13 @@ index 0000000..8589cb9
 +	}
 +
 +	addattr16(n, MAX_MSG, value_type, value);
-+	if (mask_type != TCA_CT_UNSPEC)
-+		addattr16(n, MAX_MSG, mask_type, mask);
++	addattr16(n, MAX_MSG, mask_type, mask);
 +
 +	return 0;
 +}
 +
-+static int ct_parse_u32(char *str, int value_type, int mask_type,
-+			struct nlmsghdr *n)
++static int flower_parse_u32(char *str, int value_type, int mask_type,
++			    struct nlmsghdr *n)
 +{
 +	__u32 value, mask;
 +	char *slash;
@@ -283,12 +174,23 @@ index 0000000..8589cb9
 +	return 0;
 +}
 +
-+static int ct_parse_mark(char *str, struct nlmsghdr *n)
++static int flower_parse_ct_mark(char *str, struct nlmsghdr *n)
 +{
-+	return ct_parse_u32(str, TCA_CT_MARK, TCA_CT_MARK_MASK, n);
++	return flower_parse_u32(str,
++				TCA_FLOWER_KEY_CT_MARK,
++				TCA_FLOWER_KEY_CT_MARK_MASK,
++				n);
 +}
 +
-+static int ct_parse_labels(char *str, struct nlmsghdr *n)
++static int flower_parse_ct_zone(char *str, struct nlmsghdr *n)
++{
++	return flower_parse_u16(str,
++				TCA_FLOWER_KEY_CT_ZONE,
++				TCA_FLOWER_KEY_CT_ZONE_MASK,
++				n);
++}
++
++static int flower_parse_ct_labels(char *str, struct nlmsghdr *n)
 +{
 +#define LABELS_SIZE	16
 +	uint8_t labels[LABELS_SIZE], lmask[LABELS_SIZE];
@@ -298,12 +200,12 @@ index 0000000..8589cb9
 +	slash = index(str, '/');
 +	if (slash) {
 +		*slash = 0;
-+		mask = slash+1;
++		mask = slash + 1;
 +		slen_mask = strlen(mask);
 +	}
 +
 +	slen = strlen(str);
-+	if (slen > LABELS_SIZE*2 || slen_mask > LABELS_SIZE*2) {
++	if (slen > LABELS_SIZE * 2 || slen_mask > LABELS_SIZE * 2) {
 +		char errmsg[128];
 +
 +		snprintf(errmsg, sizeof(errmsg),
@@ -312,236 +214,150 @@ index 0000000..8589cb9
 +		invarg(errmsg, str);
 +	}
 +
-+	if (hex2mem(str, labels, slen/2) < 0)
-+		invarg("ct: labels must be a hex string\n", str);
-+	addattr_l(n, MAX_MSG, TCA_CT_LABELS, labels, slen/2);
++	if (hex2mem(str, labels, slen / 2) < 0)
++		invarg("labels must be a hex string\n", str);
++	addattr_l(n, MAX_MSG, TCA_FLOWER_KEY_CT_LABELS, labels, slen / 2);
 +
 +	if (mask) {
-+		if (hex2mem(mask, lmask, slen_mask/2) < 0)
-+			invarg("ct: labels mask must be a hex string\n", mask);
++		if (hex2mem(mask, lmask, slen_mask / 2) < 0)
++			invarg("labels mask must be a hex string\n", mask);
 +	} else {
 +		memset(lmask, 0xff, sizeof(lmask));
-+		slen_mask = sizeof(lmask)*2;
++		slen_mask = sizeof(lmask) * 2;
 +	}
-+	addattr_l(n, MAX_MSG, TCA_CT_LABELS_MASK, lmask, slen_mask/2);
++	addattr_l(n, MAX_MSG, TCA_FLOWER_KEY_CT_LABELS_MASK, lmask,
++		  slen_mask / 2);
 +
 +	return 0;
 +}
 +
-+static int
-+parse_ct(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
-+		struct nlmsghdr *n)
++static struct flower_ct_states {
++	char *str;
++	int flag;
++} flower_ct_states[] = {
++	{ "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
++	{ "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
++	{ "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
++};
++
++static int flower_parse_ct_state(char *str, struct nlmsghdr *n)
 +{
-+	struct tc_ct sel = {};
-+	char **argv = *argv_p;
-+	struct rtattr *tail;
-+	int argc = *argc_p;
-+	int ct_action = 0;
-+	int ret;
++	int flags = 0, mask = 0,  len, i;
++	bool p;
 +
-+	tail = addattr_nest(n, MAX_MSG, tca_id);
++	while (*str != '\0') {
++		if (*str == '+')
++			p = true;
++		else if (*str == '-')
++			p = false;
++		else
++			return -1;
 +
-+	if (argc && matches(*argv, "ct") == 0)
-+		NEXT_ARG_FWD();
-+
-+	while (argc > 0) {
-+		if (matches(*argv, "zone") == 0) {
-+			NEXT_ARG();
-+
-+			if (ct_parse_u16(*argv,
-+					 TCA_CT_ZONE, TCA_CT_UNSPEC, n)) {
-+				fprintf(stderr, "ct: Illegal \"zone\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "nat") == 0) {
-+			ct_action |= TCA_CT_ACT_NAT;
-+
-+			NEXT_ARG();
-+			if (matches(*argv, "src") == 0)
-+				ct_action |= TCA_CT_ACT_NAT_SRC;
-+			else if (matches(*argv, "dst") == 0)
-+				ct_action |= TCA_CT_ACT_NAT_DST;
-+			else
++		for (i = 0; i < ARRAY_SIZE(flower_ct_states); i++) {
++			len = strlen(flower_ct_states[i].str);
++			if (strncmp(str + 1, flower_ct_states[i].str, len))
 +				continue;
 +
-+			NEXT_ARG();
-+			if (matches(*argv, "addr") != 0)
-+				usage();
-+
-+			NEXT_ARG();
-+			ret = ct_parse_nat_addr_range(*argv, n);
-+			if (ret) {
-+				fprintf(stderr, "ct: Illegal nat address range\n");
-+				return -1;
-+			}
-+
-+			NEXT_ARG_FWD();
-+			if (matches(*argv, "port") != 0)
-+				continue;
-+
-+			NEXT_ARG();
-+			ret = ct_parse_nat_port_range(*argv, n);
-+			if (ret) {
-+				fprintf(stderr, "ct: Illegal nat port range\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "clear") == 0) {
-+			ct_action |= TCA_CT_ACT_CLEAR;
-+		} else if (matches(*argv, "commit") == 0) {
-+			ct_action |= TCA_CT_ACT_COMMIT;
-+		} else if (matches(*argv, "force") == 0) {
-+			ct_action |= TCA_CT_ACT_FORCE;
-+		} else if (matches(*argv, "index") == 0) {
-+			NEXT_ARG();
-+			if (get_u32(&sel.index, *argv, 10)) {
-+				fprintf(stderr, "ct: Illegal \"index\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "mark") == 0) {
-+			NEXT_ARG();
-+
-+			ret = ct_parse_mark(*argv, n);
-+			if (ret) {
-+				fprintf(stderr, "ct: Illegal \"mark\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "label") == 0) {
-+			NEXT_ARG();
-+
-+			ret = ct_parse_labels(*argv, n);
-+			if (ret) {
-+				fprintf(stderr, "ct: Illegal \"label\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "help") == 0) {
-+			usage();
-+		} else {
++			if (p)
++				flags |= flower_ct_states[i].flag;
++			mask |= flower_ct_states[i].flag;
 +			break;
 +		}
-+		NEXT_ARG_FWD();
++
++		if (i == ARRAY_SIZE(flower_ct_states))
++			return -1;
++
++		str += len + 1;
 +	}
 +
-+	if (ct_action & TCA_CT_ACT_CLEAR &&
-+	    ct_action & ~TCA_CT_ACT_CLEAR) {
-+		fprintf(stderr, "ct: clear can only be used alone\n");
-+		return -1;
-+	}
-+
-+	if (ct_action & TCA_CT_ACT_NAT_SRC &&
-+	    ct_action & TCA_CT_ACT_NAT_DST) {
-+		fprintf(stderr, "ct: src and dst nat can't be used together\n");
-+		return -1;
-+	}
-+
-+	if ((ct_action & TCA_CT_ACT_COMMIT) &&
-+	    (ct_action & TCA_CT_ACT_NAT) &&
-+	    !(ct_action & (TCA_CT_ACT_NAT_SRC | TCA_CT_ACT_NAT_DST))) {
-+		fprintf(stderr, "ct: commit and nat must set src or dst\n");
-+		return -1;
-+	}
-+
-+	if (!(ct_action & TCA_CT_ACT_COMMIT) &&
-+	    (ct_action & (TCA_CT_ACT_NAT_SRC | TCA_CT_ACT_NAT_DST))) {
-+		fprintf(stderr, "ct: src or dst is only valid if commit is set\n");
-+		return -1;
-+	}
-+
-+	parse_action_control_dflt(&argc, &argv, &sel.action, false,
-+				  TC_ACT_PIPE);
-+	NEXT_ARG_FWD();
-+
-+	addattr16(n, MAX_MSG, TCA_CT_ACTION, ct_action);
-+	addattr_l(n, MAX_MSG, TCA_CT_PARMS, &sel, sizeof(sel));
-+	addattr_nest_end(n, tail);
-+
-+	*argc_p = argc;
-+	*argv_p = argv;
++	addattr16(n, MAX_MSG, TCA_FLOWER_KEY_CT_STATE, flags);
++	addattr16(n, MAX_MSG, TCA_FLOWER_KEY_CT_STATE_MASK, mask);
 +	return 0;
 +}
 +
-+static int ct_sprint_port(char *buf, const char *prefix, struct rtattr *attr)
+ static int flower_parse_ip_proto(char *str, __be16 eth_type, int type,
+ 				 __u8 *p_ip_proto, struct nlmsghdr *n)
+ {
+@@ -898,6 +1056,34 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 			flags |= TCA_CLS_FLAGS_SKIP_HW;
+ 		} else if (matches(*argv, "skip_sw") == 0) {
+ 			flags |= TCA_CLS_FLAGS_SKIP_SW;
++		} else if (matches(*argv, "ct_state") == 0) {
++			NEXT_ARG();
++			ret = flower_parse_ct_state(*argv, n);
++			if (ret < 0) {
++				fprintf(stderr, "Illegal \"ct_state\"\n");
++				return -1;
++			}
++		} else if (matches(*argv, "ct_zone") == 0) {
++			NEXT_ARG();
++			ret = flower_parse_ct_zone(*argv, n);
++			if (ret < 0) {
++				fprintf(stderr, "Illegal \"ct_zone\"\n");
++				return -1;
++			}
++		} else if (matches(*argv, "ct_mark") == 0) {
++			NEXT_ARG();
++			ret = flower_parse_ct_mark(*argv, n);
++			if (ret < 0) {
++				fprintf(stderr, "Illegal \"ct_mark\"\n");
++				return -1;
++			}
++		} else if (matches(*argv, "ct_label") == 0) {
++			NEXT_ARG();
++			ret = flower_parse_ct_labels(*argv, n);
++			if (ret < 0) {
++				fprintf(stderr, "Illegal \"ct_label\"\n");
++				return -1;
++			}
+ 		} else if (matches(*argv, "indev") == 0) {
+ 			NEXT_ARG();
+ 			if (check_ifname(*argv))
+@@ -1590,6 +1776,85 @@ static void flower_print_tcp_flags(const char *name, struct rtattr *flags_attr,
+ 	print_string(PRINT_ANY, name, namefrm, out);
+ }
+ 
++static void flower_print_ct_state(struct rtattr *flags_attr,
++				  struct rtattr *mask_attr)
 +{
-+	if (!attr)
-+		return 0;
-+
-+	return sprintf(buf, "%s%d", prefix, rta_getattr_be16(attr));
-+}
-+
-+static int ct_sprint_ip_addr(char *buf, const char *prefix,
-+			     struct rtattr *attr)
-+{
-+	int family;
-+	size_t len;
-+
-+	if (!attr)
-+		return 0;
-+
-+	len = RTA_PAYLOAD(attr);
-+
-+	if (len == 4)
-+		family = AF_INET;
-+	else if (len == 16)
-+		family = AF_INET6;
-+	else
-+		return 0;
-+
-+	return sprintf(buf, "%s%s", prefix, rt_addr_n2a_rta(family, attr));
-+}
-+
-+static void ct_print_nat(int ct_action, struct rtattr **tb)
-+{
++	SPRINT_BUF(out);
++	uint16_t state;
++	uint16_t state_mask;
 +	size_t done = 0;
-+	char out[256] = "";
-+	bool nat;
++	int i;
 +
-+	if (!(ct_action & TCA_CT_ACT_NAT))
++	if (!flags_attr)
 +		return;
 +
-+	if (ct_action & TCA_CT_ACT_NAT_SRC) {
-+		nat = true;
-+		done += sprintf(out + done, "src");
-+	} else if (ct_action & TCA_CT_ACT_NAT_DST) {
-+		nat = true;
-+		done += sprintf(out + done, "dst");
-+	}
-+
-+	if (nat) {
-+		done += ct_sprint_ip_addr(out + done, " addr ",
-+					  tb[TCA_CT_NAT_IPV4_MIN]);
-+		done += ct_sprint_ip_addr(out + done, " addr ",
-+					  tb[TCA_CT_NAT_IPV6_MIN]);
-+		if (tb[TCA_CT_NAT_IPV4_MAX] &&
-+		    memcmp(RTA_DATA(tb[TCA_CT_NAT_IPV4_MIN]),
-+			   RTA_DATA(tb[TCA_CT_NAT_IPV4_MAX]), 4))
-+			done += ct_sprint_ip_addr(out + done, "-",
-+						  tb[TCA_CT_NAT_IPV4_MAX]);
-+		else if (tb[TCA_CT_NAT_IPV6_MAX] &&
-+			    memcmp(RTA_DATA(tb[TCA_CT_NAT_IPV6_MIN]),
-+				   RTA_DATA(tb[TCA_CT_NAT_IPV6_MAX]), 16))
-+			done += ct_sprint_ip_addr(out + done, "-",
-+						  tb[TCA_CT_NAT_IPV6_MAX]);
-+		done += ct_sprint_port(out + done, " port ",
-+				       tb[TCA_CT_NAT_PORT_MIN]);
-+		if (tb[TCA_CT_NAT_PORT_MAX] &&
-+		    memcmp(RTA_DATA(tb[TCA_CT_NAT_PORT_MIN]),
-+			   RTA_DATA(tb[TCA_CT_NAT_PORT_MAX]), 2))
-+			done += ct_sprint_port(out + done, "-",
-+					       tb[TCA_CT_NAT_PORT_MAX]);
-+	}
-+
-+	if (done)
-+		print_string(PRINT_ANY, "nat", " nat %s", out);
++	state = rta_getattr_u16(flags_attr);
++	if (mask_attr)
++		state_mask = rta_getattr_u16(mask_attr);
 +	else
-+		print_string(PRINT_ANY, "nat", " nat", "");
++		state_mask = UINT16_MAX;
++
++	for (i = 0; i < ARRAY_SIZE(flower_ct_states); i++) {
++		if (!(state_mask & flower_ct_states[i].flag))
++			continue;
++
++		if (state & flower_ct_states[i].flag)
++			done += sprintf(out + done, "+%s",
++					flower_ct_states[i].str);
++		else
++			done += sprintf(out + done, "-%s",
++					flower_ct_states[i].str);
++	}
++
++	print_string(PRINT_ANY, "ct_state", "\n  ct_state %s", out);
 +}
 +
-+static void ct_print_labels(struct rtattr *attr,
-+			    struct rtattr *mask_attr)
++static void flower_print_ct_label(struct rtattr *attr,
++				  struct rtattr *mask_attr)
 +{
 +	const unsigned char *str;
 +	bool print_mask = false;
-+	char out[256], *p;
 +	int data_len, i;
++	SPRINT_BUF(out);
++	char *p;
 +
 +	if (!attr)
 +		return;
@@ -566,132 +382,39 @@ index 0000000..8589cb9
 +	}
 +	*p = '\0';
 +
-+	print_string(PRINT_ANY, "label", " label %s", out);
++	print_string(PRINT_ANY, "ct_label", "\n  ct_label %s", out);
 +}
 +
-+static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
++static void flower_print_ct_zone(struct rtattr *attr,
++				 struct rtattr *mask_attr)
 +{
-+	struct rtattr *tb[TCA_CT_MAX + 1];
-+	const char *commit;
-+	struct tc_ct *p;
-+	int ct_action = 0;
-+
-+	if (arg == NULL)
-+		return -1;
-+
-+	parse_rtattr_nested(tb, TCA_CT_MAX, arg);
-+	if (tb[TCA_CT_PARMS] == NULL) {
-+		print_string(PRINT_FP, NULL, "%s", "[NULL ct parameters]");
-+		return -1;
-+	}
-+
-+	p = RTA_DATA(tb[TCA_CT_PARMS]);
-+
-+	print_string(PRINT_ANY, "kind", "%s", "ct");
-+
-+	if (tb[TCA_CT_ACTION])
-+		ct_action = rta_getattr_u16(tb[TCA_CT_ACTION]);
-+	if (ct_action & TCA_CT_ACT_COMMIT) {
-+		commit = ct_action & TCA_CT_ACT_FORCE ?
-+			 "commit force" : "commit";
-+		print_string(PRINT_ANY, "action", " %s", commit);
-+	} else if (ct_action & TCA_CT_ACT_CLEAR) {
-+		print_string(PRINT_ANY, "action", " %s", "clear");
-+	}
-+
-+	print_masked_u32("mark", tb[TCA_CT_MARK], tb[TCA_CT_MARK_MASK]);
-+	print_masked_u16("zone", tb[TCA_CT_ZONE], NULL);
-+	ct_print_labels(tb[TCA_CT_LABELS], tb[TCA_CT_LABELS_MASK]);
-+	ct_print_nat(ct_action, tb);
-+
-+	print_action_control(f, " ", p->action, "");
-+
-+	print_uint(PRINT_ANY, "index", "\n\t index %u", p->index);
-+	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
-+	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
-+
-+	if (show_stats) {
-+		if (tb[TCA_CT_TM]) {
-+			struct tcf_t *tm = RTA_DATA(tb[TCA_CT_TM]);
-+
-+			print_tm(f, tm);
-+		}
-+	}
-+	print_string(PRINT_FP, NULL, "%s", "\n ");
-+
-+	return 0;
++	print_masked_u16("ct_zone", attr, mask_attr);
 +}
 +
-+struct action_util ct_action_util = {
-+	.id = "ct",
-+	.parse_aopt = parse_ct,
-+	.print_aopt = print_ct,
-+};
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 53d15e0..8e461ba 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -913,3 +913,47 @@ compat_xstats:
- 	if (tb[TCA_XSTATS] && xstats)
- 		*xstats = tb[TCA_XSTATS];
- }
-+
-+void print_masked_u32(const char *name, struct rtattr *attr,
-+		      struct rtattr *mask_attr)
++static void flower_print_ct_mark(struct rtattr *attr,
++				 struct rtattr *mask_attr)
 +{
-+	__u32 value, mask;
-+	SPRINT_BUF(namefrm);
-+	SPRINT_BUF(out);
-+	size_t done;
-+
-+	if (!attr)
-+		return;
-+
-+	value = rta_getattr_u32(attr);
-+	mask = mask_attr ? rta_getattr_u32(mask_attr) : UINT32_MAX;
-+
-+	done = sprintf(out, "%u", value);
-+	if (mask != UINT32_MAX)
-+		sprintf(out + done, "/0x%x", mask);
-+
-+	sprintf(namefrm, " %s %%s", name);
-+	print_string(PRINT_ANY, name, namefrm, out);
++	print_masked_u32("ct_mark", attr, mask_attr);
 +}
-+
-+void print_masked_u16(const char *name, struct rtattr *attr,
-+		      struct rtattr *mask_attr)
-+{
-+	__u16 value, mask;
-+	SPRINT_BUF(namefrm);
-+	SPRINT_BUF(out);
-+	size_t done;
-+
-+	if (!attr)
-+		return;
-+
-+	value = rta_getattr_u16(attr);
-+	mask = mask_attr ? rta_getattr_u16(mask_attr) : UINT16_MAX;
-+
-+	done = sprintf(out, "%u", value);
-+	if (mask != UINT16_MAX)
-+		sprintf(out + done, "/0x%x", mask);
-+
-+	sprintf(namefrm, " %s %%s", name);
-+	print_string(PRINT_ANY, name, namefrm, out);
-+}
-diff --git a/tc/tc_util.h b/tc/tc_util.h
-index eb4b60d..0c3425a 100644
---- a/tc/tc_util.h
-+++ b/tc/tc_util.h
-@@ -127,4 +127,8 @@ int action_a2n(char *arg, int *result, bool allow_num);
  
- bool tc_qdisc_block_exists(__u32 block_index);
+ static void flower_print_key_id(const char *name, struct rtattr *attr)
+ {
+@@ -1949,6 +2214,15 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
+ 				    tb[TCA_FLOWER_KEY_FLAGS],
+ 				    tb[TCA_FLOWER_KEY_FLAGS_MASK]);
  
-+void print_masked_u32(const char *name, struct rtattr *attr,
-+		      struct rtattr *mask_attr);
-+void print_masked_u16(const char *name, struct rtattr *attr,
-+		      struct rtattr *mask_attr);
- #endif
++	flower_print_ct_state(tb[TCA_FLOWER_KEY_CT_STATE],
++			      tb[TCA_FLOWER_KEY_CT_STATE_MASK]);
++	flower_print_ct_zone(tb[TCA_FLOWER_KEY_CT_ZONE],
++			     tb[TCA_FLOWER_KEY_CT_ZONE_MASK]);
++	flower_print_ct_mark(tb[TCA_FLOWER_KEY_CT_MARK],
++			     tb[TCA_FLOWER_KEY_CT_MARK_MASK]);
++	flower_print_ct_label(tb[TCA_FLOWER_KEY_CT_LABELS],
++			      tb[TCA_FLOWER_KEY_CT_LABELS_MASK]);
++
+ 	close_json_object();
+ 
+ 	if (tb[TCA_FLOWER_FLAGS]) {
 -- 
 1.8.3.1
 
