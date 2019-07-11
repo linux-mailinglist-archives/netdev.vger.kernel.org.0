@@ -2,136 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 748C465973
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 623E3659DD
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 17:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728976AbfGKOzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 10:55:46 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:33918 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727612AbfGKOzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 10:55:46 -0400
-Received: by mail-yw1-f67.google.com with SMTP id q128so3974418ywc.1;
-        Thu, 11 Jul 2019 07:55:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/wTXznAXHacr2M4atjecgDzbn+nKVODcA5FmD6XMAP4=;
-        b=WciZEy8lVwgZgT81ldMSzos6w+/KauLpkuWCbCsr5gtYSxsz71RpGpGD7j9m33q/gA
-         Bmn2GbySZPrVBqQaMbC2t9N57lyG3mi/6owjxj7KubI4jgP4kT8T96S/N+tbKOYHQBS2
-         ySLANuFHD+rKPY9CYCra46D6BdrDRxBdD7MDX1/tAVXuN3C3c26radxb9d0yOgQzS46a
-         9QHtnWHDuhplHEXtUgWRCT1q+W6ZZjcDcgKWEPd2M7uXZFEcyk9iVn+A5IlSCexEWlLj
-         b1UZtr3UOgtBz1g5LnJ/FyM0v3op3WSPyaHDvSmBQAk5CgD+roB8dmonDtfH7QYJn3M9
-         Gkvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/wTXznAXHacr2M4atjecgDzbn+nKVODcA5FmD6XMAP4=;
-        b=Q41WBwDzl2Ez1dV28w2Pywafaf+cTZEg4+wS+6nwcNcmt+VysG1fgeyZVd19PhMHXx
-         M3kFcAm8Nwbyu4dhkFJKKhuOIcWGWSbbqkuMkkXq+md7uXCWlyHh8+2xndjOwoiX+x7X
-         7z3vf78+xMh11ss5pPLw6IF4KKRxMHxFWCBuWY8K2FZMr8zTwwbaONkO6LsknJkdA3l2
-         EsGlR/cc/cBold4s7rddcOivM2A4WY1NxMr8lv1fTlsoSP+PRN1PqvX4Ar0NLtqKF/0/
-         2XEtytRMA5/PcYgexUhuAwnHcHdxN2KZRc4w+HedaGAzkLKLbaI3xzEJ/EXFioln5Lnt
-         M2MQ==
-X-Gm-Message-State: APjAAAW0QqHcmFF1wbjq15QiwhD4roLTlD5oW99GIgKuNx0+yYvmyArI
-        lxL/4m/0dPSwBwKAg94SS7XeY4fVdVWYS10UDVY=
-X-Google-Smtp-Source: APXvYqw3mO52fkFWWzI3KkCRsehb0j11TNLr1L8ahhW7JM5kXaaMQRxbk9qBDYiYJAmnkj4EvfA14m0VXltgasFgdLE=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr2245359qta.171.1562856945396;
- Thu, 11 Jul 2019 07:55:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190711091249.59865-1-iii@linux.ibm.com>
-In-Reply-To: <20190711091249.59865-1-iii@linux.ibm.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 07:55:34 -0700
-Message-ID: <CAEf4Bzb6mY-F-wUNNimS+hMSRbJetTKXNcGDQbsJXhXDywA+tg@mail.gmail.com>
+        id S1728887AbfGKPAr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Jul 2019 11:00:47 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33428 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728725AbfGKPAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 11:00:47 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6BExhZE079156
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:00:46 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2tp74f8rxh-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:00:45 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Thu, 11 Jul 2019 16:00:42 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 11 Jul 2019 16:00:38 +0100
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6BF0bkp12648538
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Jul 2019 15:00:38 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D23A64204C;
+        Thu, 11 Jul 2019 15:00:37 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B08C44203F;
+        Thu, 11 Jul 2019 15:00:37 +0000 (GMT)
+Received: from dyn-9-152-97-237.boeblingen.de.ibm.com (unknown [9.152.97.237])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 11 Jul 2019 15:00:37 +0000 (GMT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
 Subject: Re: [PATCH v3 bpf] selftests/bpf: do not ignore clang failures
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+In-Reply-To: <CAEf4Bzb6mY-F-wUNNimS+hMSRbJetTKXNcGDQbsJXhXDywA+tg@mail.gmail.com>
+Date:   Thu, 11 Jul 2019 17:00:37 +0200
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Song Liu <liu.song.a23@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+References: <20190711091249.59865-1-iii@linux.ibm.com>
+ <CAEf4Bzb6mY-F-wUNNimS+hMSRbJetTKXNcGDQbsJXhXDywA+tg@mail.gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+X-Mailer: Apple Mail (2.3445.9.1)
+X-TM-AS-GCONF: 00
+x-cbid: 19071115-0016-0000-0000-00000291CE55
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071115-0017-0000-0000-000032EF8E88
+Message-Id: <51821F5F-A70F-485B-B6E7-CAE6D49B6D1D@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=889 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907110170
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 2:14 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> When compiling an eBPF prog fails, make still returns 0, because
-> failing clang command's output is piped to llc and therefore its
-> exit status is ignored.
->
-> When clang fails, pipe the string "clang failed" to llc. This will make
-> llc fail with an informative error message. This solution was chosen
-> over using pipefail, having separate targets or getting rid of llc
-> invocation due to its simplicity.
->
-> In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
+> Am 11.07.2019 um 16:55 schrieb Andrii Nakryiko <andrii.nakryiko@gmail.com>:
+> 
+> On Thu, Jul 11, 2019 at 2:14 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+>> 
+>> 
+>> In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
+> 
+> In your original patch you explicitly declared .DELETE_ON_ERROR, but
+> in this one you just include Kbuild.include.
+> Is it enough to just include that file to get desired behavior or your
+> forgot to add .DELETE_ON_ERROR?
 
-In your original patch you explicitly declared .DELETE_ON_ERROR, but
-in this one you just include Kbuild.include.
-Is it enough to just include that file to get desired behavior or your
-forgot to add .DELETE_ON_ERROR?
-
-> which would cause partial .o files to be removed.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> ---
-
-Thanks!
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
-> v1->v2: use intermediate targets instead of pipefail
-> v2->v3: pipe "clang failed" instead of using intermediate targets
->
-> tools/testing/selftests/bpf/Makefile | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index e36356e2377e..e375f399b7a6 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -1,4 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
-> +include ../../../../scripts/Kbuild.include
->
->  LIBDIR := ../../../lib
->  BPFDIR := $(LIBDIR)/bpf
-> @@ -185,8 +186,8 @@ $(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
->
->  $(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR) \
->                                         $(ALU32_BUILD_DIR)/test_progs_32
-> -       $(CLANG) $(CLANG_FLAGS) \
-> -                -O2 -target bpf -emit-llvm -c $< -o - |      \
-> +       ($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
-> +               echo "clang failed") | \
->         $(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
->                 -filetype=obj -o $@
->  ifeq ($(DWARF2BTF),y)
-> @@ -197,16 +198,16 @@ endif
->  # Have one program compiled without "-target bpf" to test whether libbpf loads
->  # it successfully
->  $(OUTPUT)/test_xdp.o: progs/test_xdp.c
-> -       $(CLANG) $(CLANG_FLAGS) \
-> -               -O2 -emit-llvm -c $< -o - | \
-> +       ($(CLANG) $(CLANG_FLAGS) -O2 -emit-llvm -c $< -o - || \
-> +               echo "clang failed") | \
->         $(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
->  ifeq ($(DWARF2BTF),y)
->         $(BTF_PAHOLE) -J $@
->  endif
->
->  $(OUTPUT)/%.o: progs/%.c
-> -       $(CLANG) $(CLANG_FLAGS) \
-> -                -O2 -target bpf -emit-llvm -c $< -o - |      \
-> +       ($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
-> +               echo "clang failed") | \
->         $(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
->  ifeq ($(DWARF2BTF),y)
->         $(BTF_PAHOLE) -J $@
-> --
-> 2.21.0
->
+It’s enough to just include Kbuild.include. I grepped the source tree
+and found that no one else declares .DELETE_ON_ERROR explicitly, so I've
+decided to avoid doing this as well.
