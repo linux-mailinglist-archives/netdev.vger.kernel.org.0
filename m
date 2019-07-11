@@ -2,191 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D465D653AB
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13E6D653CF
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728027AbfGKJTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 05:19:51 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:53208 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727595AbfGKJTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:19:50 -0400
-Received: by mail-wm1-f68.google.com with SMTP id s3so4913670wms.2
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 02:19:48 -0700 (PDT)
+        id S1728254AbfGKJb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 05:31:58 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41026 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726088AbfGKJb6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:31:58 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c2so2289640wrm.8;
+        Thu, 11 Jul 2019 02:31:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=emLFRRzBmB+DAVqphji8EOQ+lQatStBjMQ50i0gBRak=;
-        b=JaYX/ggMuMN2bOGKgEmtRvgU87Ha8SbRgJ35WNI5zgUMDP+gBrr2sT3sNxtWbkXLc1
-         PE+lVRsX7obar6X8+3Oz/64l2A+x+3VeI2BAFhjQD3M/Z087eKpolbYnz55uJZd1szbN
-         0zb0n7ngq/hlVgnfHLALW0IOhlDp9+4OXDRQumSEw80jYGzet5skkiIb3JRlnjgHvjLl
-         2twCCpyiFymX1KdmCrvCtOppL8bz+E1Gi/ANQla+BCtXiP8NMr7pVN0PGNszBD4/8AnR
-         OIHEqjYKgxPGfGlG9YBUzLhBex0hVyxBG7IbGtS2Xee4ujsUC1oW+3xFURNr61qOwuJD
-         Y1+w==
+        h=from:to:cc:subject:date:message-id;
+        bh=l4bEEAxzGIGnFBD/3jElNFp34ehWwPy0iGMb60Ja/qM=;
+        b=LGEXirOw0aMcPgnorDYhAX95/V+nn+qMQkpvwFvcG/FKF+nsqfqBtq+YBr9sTW7cs+
+         bicPHQ2DJeSeAt6FDWRizzeeEA0VSBSdFMdFN+GDwcL1yoln61rRciCl6pqBOlYWjOGD
+         x1jm8zjeksPQFNvU0SzDa78BuYHqjMKZ8FUaj+IzVIWNN76JyIgFR/cAf4m7KpdCD2HX
+         aeFCy8aUdVcvd/S+QZURH1POYFXsDHEF+8cxBT0ZBUZJXNNCJvDh5Q06q7cMUrKeRkyX
+         0eVVCePqlrXqanKMOhDOuQf4ZQ5tRCUBsavFILtljXTueQGq3oA+0TsS2UkuXe4e7bVg
+         oTEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=emLFRRzBmB+DAVqphji8EOQ+lQatStBjMQ50i0gBRak=;
-        b=OFX1j84c1D4HuIJBKfyu9QnOIqo+LUduOjO2ogQpb2aR2KxY6KZNXOQe7gyvObrENu
-         AdC1u1bZJpLZjRSrjNt6zNLcqBALGOJfYicdzZL0IJE8/dgafft2Ixx2KHxqGN6tir37
-         QxN13zufJu/buy9zHHqrpR1bWGr2mQLjtU8tiJdoK7PBtg3M/OcRXaQP3+C1AUiV0El/
-         /lOg7skRMZdfqKN6NgHdfpayd1pOeBgIcu5iF+68JL9j511bGez+18N/1m9Y40RB8IdJ
-         hgmsSq8sgzYWrMk+tTVVCw2SWyzezt5VbdU9LrKB1Ahg4eTcMfnRzZ+p5kcXkJ27BioB
-         yTpA==
-X-Gm-Message-State: APjAAAVAqAh0iSKDYWq5r6wuO7mi5Gn28aDiD+8TEfeWRlyrA373/yUY
-        Cpu6X+p0gp0k43Ko3z4e0RPOlV7t
-X-Google-Smtp-Source: APXvYqzSqZARNy/7SemmdjGwhdCmPGMFtqOo4Z7dPBufx1YqSvY7t38c3V1fWoOGZStMvM6VK0N9mA==
-X-Received: by 2002:a05:600c:212:: with SMTP id 18mr3058921wmi.88.1562836787719;
-        Thu, 11 Jul 2019 02:19:47 -0700 (PDT)
-Received: from [192.168.8.147] (143.160.185.81.rev.sfr.net. [81.185.160.143])
-        by smtp.gmail.com with ESMTPSA id l8sm8476677wrg.40.2019.07.11.02.19.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=l4bEEAxzGIGnFBD/3jElNFp34ehWwPy0iGMb60Ja/qM=;
+        b=F3H350j8dZdyREHovHQ6zb4iU67gsi2H8IqmhouhtajueAP+dTlPQJu9ZnyYMETNEb
+         spoqk0zacQdqRGockF8NNTCWhyUQ3FrKajML0CcIdPUlt9reqU956Qa9/BOdlGmCCb+9
+         BL+GpYvxQG83ZIyaVW+Uq7029xMDIosx9uDSQ8ln5ttPBJZA6WFnu4Dmu6ciiTM0vPPY
+         zEwTc+bzIOVY4unw+IV0EZYKuMn58pB+cxuW0K4fPWsfUpux8hWcx6sqv1u6cpairX6C
+         gngge1arf++FjFjGOZ1HFQPNpzYVKWec1FrAthFFvg4bKNPJTQey6pHuhM4rOAI5brIB
+         4cOQ==
+X-Gm-Message-State: APjAAAVKSSWjpGF5WKBuBRwW/UKLUrPUiJRde9nGQ/Ia9SVLZRuPqyDX
+        eNnFWISnomEbU82isgJuiavQ+X44b6I=
+X-Google-Smtp-Source: APXvYqz0OXD69emcOGH46hrtIm+cwY/xRJ7bJg/E0Xtb/ywPVDEIQWoLL7zGB5vyW+suzm7/ZgNwZw==
+X-Received: by 2002:adf:db0b:: with SMTP id s11mr3967901wri.7.1562837515183;
+        Thu, 11 Jul 2019 02:31:55 -0700 (PDT)
+Received: from gmail.com (net-5-95-187-49.cust.vodafonedsl.it. [5.95.187.49])
+        by smtp.gmail.com with ESMTPSA id r123sm5074455wme.7.2019.07.11.02.31.54
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jul 2019 02:19:46 -0700 (PDT)
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-To:     Christoph Paasch <christoph.paasch@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dustin Marquess <dmarquess@apple.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
- <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
- <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
- <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
- <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <eb6121ea-b02d-672e-25c9-2ad054d49fc7@gmail.com>
-Date:   Thu, 11 Jul 2019 11:19:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Thu, 11 Jul 2019 02:31:54 -0700 (PDT)
+From:   Paolo Pisati <p.pisati@gmail.com>
+To:     --in-reply-to= <20190710231439.GD32439@tassilo.jf.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiong Wang <jiong.wang@netronome.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Fold checksum at the end of bpf_csum_diff and fix
+Date:   Thu, 11 Jul 2019 11:31:51 +0200
+Message-Id: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Paolo Pisati <paolo.pisati@canonical.com>
 
+After applying patch 0001, all checksum implementations i could test (x86-64, arm64 and
+arm), now agree on the return value.
 
-On 7/11/19 9:28 AM, Christoph Paasch wrote:
-> 
-> 
->> On Jul 10, 2019, at 9:26 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->>
->> On 7/10/19 8:53 PM, Prout, Andrew - LLSC - MITLL wrote:
->>>
->>> Our initial rollout was v4.14.130, but I reproduced it with v4.14.132 as well, reliably for the samba test and once (not reliably) with synthetic test I was trying. A patched v4.14.132 with this patch partially reverted (just the four lines from tcp_fragment deleted) passed the samba test.
->>>
->>> The synthetic test was a pair of simple send/recv test programs under the following conditions:
->>> -The send socket was non-blocking
->>> -SO_SNDBUF set to 128KiB
->>> -The receiver NIC was being flooded with traffic from multiple hosts (to induce packet loss/retransmits)
->>> -Load was on both systems: a while(1) program spinning on each CPU core
->>> -The receiver was on an older unaffected kernel
->>>
->>
->> SO_SNDBUF to 128KB does not permit to recover from heavy losses,
->> since skbs needs to be allocated for retransmits.
-> 
-> Would it make sense to always allow the alloc in tcp_fragment when coming from __tcp_retransmit_skb() through the retransmit-timer ?
+Patch 0002 fix the expected return value for test #13: i did the calculation manually,
+and it correspond.
 
-4.15+ kernels have :
+Unfortunately, after applying patch 0001, other test cases now fail in
+test_verifier:
 
-if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
-    tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
+$ sudo ./tools/testing/selftests/bpf/test_verifier
+...
+#417/p helper access to variable memory: size = 0 allowed on NULL (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0 
+#419/p helper access to variable memory: size = 0 allowed on != NULL stack pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0 
+#423/p helper access to variable memory: size possible = 0 allowed on != NULL packet pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0 
+...
+Summary: 1500 PASSED, 0 SKIPPED, 3 FAILED
 
+And there are probably other fallouts in other selftests - someone familiar
+should take a look before applying these patches.
 
-Meaning that things like TLP will succeed.
+Paolo Pisati (2):
+  bpf: bpf_csum_diff: fold the checksum before returning the
+    value
+  bpf, selftest: fix checksum value for test #13
 
-Anything we add in TCP stack to overcome the SO_SNDBUF by twice the limit _will_ be exploited at scale.
+ net/core/filter.c                                   | 2 +-
+ tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-I am not sure we want to continue to support small SO_SNDBUF values, as this makes no sense today.
+-- 
+2.17.1
 
-We use 64 MB auto tuning limit, and /proc/sys/net/ipv4/tcp_notsent_lowat to 1 MB.
-
-I would rather work (when net-next reopens) on better collapsing at rtx to allow reduction of the overhead.
-
-
-Something like :
-
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index f6a9c95a48edb234e4d4e21bf585744fbaf9a0a7..d5c85986209cd162cf39edb787b1385cb2c8b630 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2860,7 +2860,7 @@ static int __net_init tcp_sk_init(struct net *net)
-        net->ipv4.sysctl_tcp_early_retrans = 3;
-        net->ipv4.sysctl_tcp_recovery = TCP_RACK_LOSS_DETECTION;
-        net->ipv4.sysctl_tcp_slow_start_after_idle = 1; /* By default, RFC2861 behavior.  */
--       net->ipv4.sysctl_tcp_retrans_collapse = 1;
-+       net->ipv4.sysctl_tcp_retrans_collapse = 3;
-        net->ipv4.sysctl_tcp_max_reordering = 300;
-        net->ipv4.sysctl_tcp_dsack = 1;
-        net->ipv4.sysctl_tcp_app_win = 31;
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index d61264cf89ef66b229ecf797c1abfb7fcdab009f..05cd264f98b084f62eaf2ef9d6e14a392670d02c 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3015,8 +3015,6 @@ static bool tcp_collapse_retrans(struct sock *sk, struct sk_buff *skb)
- 
-        next_skb_size = next_skb->len;
- 
--       BUG_ON(tcp_skb_pcount(skb) != 1 || tcp_skb_pcount(next_skb) != 1);
--
-        if (next_skb_size) {
-                if (next_skb_size <= skb_availroom(skb))
-                        skb_copy_bits(next_skb, 0, skb_put(skb, next_skb_size),
-@@ -3054,8 +3052,6 @@ static bool tcp_collapse_retrans(struct sock *sk, struct sk_buff *skb)
- /* Check if coalescing SKBs is legal. */
- static bool tcp_can_collapse(const struct sock *sk, const struct sk_buff *skb)
- {
--       if (tcp_skb_pcount(skb) > 1)
--               return false;
-        if (skb_cloned(skb))
-                return false;
-        /* Some heuristics for collapsing over SACK'd could be invented */
-@@ -3114,7 +3110,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
-        struct inet_connection_sock *icsk = inet_csk(sk);
-        struct tcp_sock *tp = tcp_sk(sk);
-        unsigned int cur_mss;
--       int diff, len, err;
-+       int diff, len, maxlen, err;
- 
- 
-        /* Inconclusive MTU probe */
-@@ -3165,12 +3161,13 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
-                        return -ENOMEM;
- 
-                diff = tcp_skb_pcount(skb);
-+               maxlen = (sock_net(sk)->ipv4.sysctl_tcp_retrans_collapse & 2) ? len : cur_mss;
-+               if (skb->len < maxlen)
-+                       tcp_retrans_try_collapse(sk, skb, maxlen);
-                tcp_set_skb_tso_segs(skb, cur_mss);
-                diff -= tcp_skb_pcount(skb);
-                if (diff)
-                        tcp_adjust_pcount(sk, skb, diff);
--               if (skb->len < cur_mss)
--                       tcp_retrans_try_collapse(sk, skb, cur_mss);
-        }
- 
-        /* RFC3168, section 6.1.1.1. ECN fallback */
