@@ -2,110 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF72B656E2
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 14:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4563365719
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 14:39:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728529AbfGKM3x convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Jul 2019 08:29:53 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8942 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726069AbfGKM3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 08:29:53 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6BCTj9d145865
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 08:29:51 -0400
-Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [192.155.248.67])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tp54c81v4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 08:29:47 -0400
-Received: from localhost
-        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
-        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
-        Thu, 11 Jul 2019 12:29:29 -0000
-Received: from us1a3-smtp07.a3.dal06.isc4sb.com (10.146.103.14)
-        by smtp.notes.na.collabserv.com (10.106.227.16) with smtp.notes.na.collabserv.com ESMTP;
-        Thu, 11 Jul 2019 12:29:22 -0000
-Received: from us1a3-mail162.a3.dal06.isc4sb.com ([10.146.71.4])
-          by us1a3-smtp07.a3.dal06.isc4sb.com
-          with ESMTP id 2019071112292189-411667 ;
-          Thu, 11 Jul 2019 12:29:21 +0000 
-In-Reply-To: <20190711115235.GA25821@mellanox.com>
-From:   "Bernard Metzler" <BMT@zurich.ibm.com>
-To:     "Jason Gunthorpe" <jgg@mellanox.com>
-Cc:     "Leon Romanovsky" <leon@kernel.org>,
-        "Stephen Rothwell" <sfr@canb.auug.org.au>,
-        "Doug Ledford" <dledford@redhat.com>,
-        "David Miller" <davem@davemloft.net>,
-        "Networking" <netdev@vger.kernel.org>,
-        "Linux Next Mailing List" <linux-next@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Date:   Thu, 11 Jul 2019 12:29:21 +0000
+        id S1728231AbfGKMjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 08:39:15 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:49851 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726016AbfGKMjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 08:39:15 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C16B83580;
+        Thu, 11 Jul 2019 08:39:13 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 11 Jul 2019 08:39:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Yx8SKZ
+        3tf3DhsyBMrrvEo1eA953BtoM4IqdhkJbacsI=; b=VGTV6PM7KT88OVKLsD4wcS
+        auIy8IxIiCrXNsfc98EhgzpMYcU+S08pTw0P4dACBFqQzgVJDBy6+i6/b4Q0Y/Q4
+        57mKmP2B1QWqz7aj29HxUyFvIaXUN/fRbAWo25QfQoI4eiL1LaEw1DYypG2kwr5N
+        Qwnb5J1qbROrP63X7mXQVuyuUx4jPc+b2TPqXwPhGPjEpNQeXFL4D1/UTcrLh3Jv
+        WcIy8ruqCC99ApOLe7mpKB3L3PDsOdWc8LXRWeQe3xcu0QxgK04e1yON0/simOOp
+        TjTmzj6uLn9Efzr1Om3aaWykCW/5NVCX5dTUzXWVJve/yC2KcWsFO6LUym0DTwpg
+        ==
+X-ME-Sender: <xms:7y0nXffjkecMIVE9vcnnqK5PshGjHaNCFXAAeQUSThWK3sOfHONmMQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrgeekgdehiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
+    epghhithhhuhgsrdgtohhmnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghr
+    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhush
+    htvghrufhiiigvpedt
+X-ME-Proxy: <xmx:7y0nXQCM2tTDOTMIXcViS4uDhixGS9BovPMSUQ2NXzunUi4fiab0wQ>
+    <xmx:7y0nXWxo_dzvZtWHZJt1sZxp29PLs9rtDhovwV0_jqgCcAV0W_SvkQ>
+    <xmx:7y0nXQg2LrlIbyCEwdn0BRtBEu8hx8ptUoEVtXL-x25qZiMMZMygDQ>
+    <xmx:8S0nXR0dZiPe5y5hARfhzeXyNpQC0YHG961Xh9GorOM2Jw67G4qHaA>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 53A218005C;
+        Thu, 11 Jul 2019 08:39:11 -0400 (EDT)
+Date:   Thu, 11 Jul 2019 15:39:09 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Miller <davem@davemloft.net>, nhorman@tuxdriver.com
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, andy@greyhouse.net,
+        pablo@netfilter.org, jakub.kicinski@netronome.com,
+        pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
+Message-ID: <20190711123909.GA10978@splinter>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707.124541.451040901050013496.davem@davemloft.net>
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-References: <20190711115235.GA25821@mellanox.com>,<20190710175212.GM2887@mellanox.com>
- <20190709135636.4d36e19f@canb.auug.org.au>
- <20190709064346.GF7034@mtr-leonro.mtl.com>
- <OF360C0EBE.4A489B94-ON00258434.002B10B7-00258434.002C0536@notes.na.collabserv.com>
-X-Mailer: IBM iNotes ($HaikuForm 1054) | IBM Domino Build
- SCN1812108_20180501T0841_FP55 May 22, 2019 at 11:09
-X-LLNOutbound: False
-X-Disclaimed: 20971
-X-TNEFEvaluated: 1
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=UTF-8
-x-cbid: 19071112-0327-0000-0000-00000BE240E3
-X-IBM-SpamModules-Scores: BY=0; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
- SC=0.40962; ST=0; TS=0; UL=0; ISC=; MB=0.000001
-X-IBM-SpamModules-Versions: BY=3.00011408; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01230620; UDB=6.00648208; IPR=6.01011897;
- BA=6.00006355; NDR=6.00000001; ZLA=6.00000005; ZF=6.00000009; ZB=6.00000000;
- ZP=6.00000000; ZH=6.00000000; ZU=6.00000002; MB=3.00027678; XFM=3.00000015;
- UTC=2019-07-11 12:29:27
-X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
-X-IBM-AV-VERSION: SAVI=2019-07-11 09:18:22 - 6.00010151
-x-cbparentid: 19071112-0328-0000-0000-00001750473C
-Message-Id: <OF9A485648.9C7A28A3-ON00258434.00449B07-00258434.00449B14@notes.na.collabserv.com>
-Subject: Re:  Re: Re: linux-next: build failure after merge of the net-next tree
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_02:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190707.124541.451040901050013496.davem@davemloft.net>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------"Jason Gunthorpe" <jgg@mellanox.com> wrote: -----
+On Sun, Jul 07, 2019 at 12:45:41PM -0700, David Miller wrote:
+> From: Ido Schimmel <idosch@idosch.org>
+> Date: Sun,  7 Jul 2019 10:58:17 +0300
+> 
+> > Users have several ways to debug the kernel and understand why a packet
+> > was dropped. For example, using "drop monitor" and "perf". Both
+> > utilities trace kfree_skb(), which is the function called when a packet
+> > is freed as part of a failure. The information provided by these tools
+> > is invaluable when trying to understand the cause of a packet loss.
+> > 
+> > In recent years, large portions of the kernel data path were offloaded
+> > to capable devices. Today, it is possible to perform L2 and L3
+> > forwarding in hardware, as well as tunneling (IP-in-IP and VXLAN).
+> > Different TC classifiers and actions are also offloaded to capable
+> > devices, at both ingress and egress.
+> > 
+> > However, when the data path is offloaded it is not possible to achieve
+> > the same level of introspection as tools such "perf" and "drop monitor"
+> > become irrelevant.
+> > 
+> > This patchset aims to solve this by allowing users to monitor packets
+> > that the underlying device decided to drop along with relevant metadata
+> > such as the drop reason and ingress port.
+> 
+> We are now going to have 5 or so ways to capture packets passing through
+> the system, this is nonsense.
+> 
+> AF_PACKET, kfree_skb drop monitor, perf, XDP perf events, and now this
+> devlink thing.
+> 
+> This is insanity, too many ways to do the same thing and therefore the
+> worst possible user experience.
+> 
+> Pick _ONE_ method to trap packets and forward normal kfree_skb events,
+> XDP perf events, and these taps there too.
+> 
+> I mean really, think about it from the average user's perspective.  To
+> see all drops/pkts I have to attach a kfree_skb tracepoint, and not just
+> listen on devlink but configure a special tap thing beforehand and then
+> if someone is using XDP I gotta setup another perf event buffer capture
+> thing too.
 
->To: "Bernard Metzler" <BMT@zurich.ibm.com>
->From: "Jason Gunthorpe" <jgg@mellanox.com>
->Date: 07/11/2019 01:53PM
->Cc: "Leon Romanovsky" <leon@kernel.org>, "Stephen Rothwell"
-><sfr@canb.auug.org.au>, "Doug Ledford" <dledford@redhat.com>, "David
->Miller" <davem@davemloft.net>, "Networking" <netdev@vger.kernel.org>,
->"Linux Next Mailing List" <linux-next@vger.kernel.org>, "Linux Kernel
->Mailing List" <linux-kernel@vger.kernel.org>
->Subject: [EXTERNAL] Re: Re: linux-next: build failure after merge of
->the net-next tree
->
->On Thu, Jul 11, 2019 at 08:00:49AM +0000, Bernard Metzler wrote:
->
->> That listen will not sleep. The socket is just marked
->> listening. 
->
->Eh? siw_listen_address() calls siw_cep_alloc() which does:
->
->	struct siw_cep *cep = kzalloc(sizeof(*cep), GFP_KERNEL);
->
->Which is sleeping. Many other cases too.
->
->Jason
->
->
-Ah, true! I was after really deep sleeps like user level
-socket accept() calls ;) So you are correct of course.
+Dave,
 
-Thanks!
-Bernard
+Before I start working on v2, I would like to get your feedback on the
+high level plan. Also adding Neil who is the maintainer of drop_monitor
+(and counterpart DropWatch tool [1]).
 
+IIUC, the problem you point out is that users need to use different
+tools to monitor packet drops based on where these drops occur
+(SW/HW/XDP).
+
+Therefore, my plan is to extend the existing drop_monitor netlink
+channel to also cover HW drops. I will add a new message type and a new
+multicast group for HW drops and encode in the message what is currently
+encoded in the devlink events.
+
+I would like to emphasize that the configuration of whether these
+dropped packets are even sent to the CPU from the device still needs to
+reside in devlink given this is the go-to tool for device-specific
+configuration. In addition, these drop traps are a small subset of the
+entire packet traps devices support and all have similar needs such as
+HW policer configuration and statistics.
+
+In the future we might also want to report events that indicate the
+formation of possible problems. For example, in case packets are queued
+above a certain threshold or for long periods of time. I hope we could
+re-use drop_monitor for this as well, thereby making it the go-to
+channel for diagnosing current and to-be problems in the data path.
+
+Thanks
+
+[1] https://github.com/nhorman/dropwatch
