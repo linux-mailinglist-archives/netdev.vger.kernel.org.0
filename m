@@ -2,120 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD9EA6590F
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61AF465917
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728754AbfGKObD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 10:31:03 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17484 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728654AbfGKObC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 10:31:02 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6BESuS3056889
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 10:31:01 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tp5y5b3u6-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 10:31:00 -0400
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Thu, 11 Jul 2019 15:30:59 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 11 Jul 2019 15:30:56 +0100
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6BEUtrj50331696
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 11 Jul 2019 14:30:55 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 132EF42056;
-        Thu, 11 Jul 2019 14:30:55 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C6FD042047;
-        Thu, 11 Jul 2019 14:30:54 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 11 Jul 2019 14:30:54 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     ys114321@gmail.com, daniel@iogearbox.net, sdf@fomichev.me,
-        davem@davemloft.net, ast@kernel.org,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH v4 bpf-next 4/4] selftests/bpf: fix compiling loop{1,2,3}.c on s390
-Date:   Thu, 11 Jul 2019 16:29:30 +0200
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190711142930.68809-1-iii@linux.ibm.com>
-References: <20190711142930.68809-1-iii@linux.ibm.com>
+        id S1728704AbfGKOdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 10:33:12 -0400
+Received: from mail-eopbgr40082.outbound.protection.outlook.com ([40.107.4.82]:52558
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728045AbfGKOdL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 10:33:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gm1xvGHGPQXf3bW42cYmdss81vA1tpBiHczDa8ON4z8=;
+ b=bCJNb2zoJtoJtdq/baH3tbi8IOD1rlXpQMUsJetiHYUdGXD6HVCuOq230a5k8lmPnmbvkEaIVx7CbnsQ4LCbCuPgKLWBDrGEUNHkJMRLWLBqizccEAsrrIz+JqGGBgDMbu9a78vJ27DuF3smUi9mcgIbJt2nHKZpsKaPplCLSzI=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+ VI1PR05MB6253.eurprd05.prod.outlook.com (20.178.205.91) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.18; Thu, 11 Jul 2019 14:33:07 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2052.020; Thu, 11 Jul 2019
+ 14:33:07 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Bernard Metzler <BMT@zurich.ibm.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Doug Ledford <dledford@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Re: Re: linux-next: build failure after merge of the net-next
+ tree
+Thread-Topic: Re: Re: linux-next: build failure after merge of the net-next
+ tree
+Thread-Index: AQHVNgpSNqxsVllq5U23Am+RwOaE5KbB1zsAgAJNFwCAAO0agIAAQMGAgAAKRoCAACKOAA==
+Date:   Thu, 11 Jul 2019 14:33:07 +0000
+Message-ID: <20190711143302.GH25821@mellanox.com>
+References: <20190711115235.GA25821@mellanox.com>
+ <20190710175212.GM2887@mellanox.com>
+ <20190709135636.4d36e19f@canb.auug.org.au>
+ <20190709064346.GF7034@mtr-leonro.mtl.com>
+ <OF360C0EBE.4A489B94-ON00258434.002B10B7-00258434.002C0536@notes.na.collabserv.com>
+ <OF9A485648.9C7A28A3-ON00258434.00449B07-00258434.00449B14@notes.na.collabserv.com>
+In-Reply-To: <OF9A485648.9C7A28A3-ON00258434.00449B07-00258434.00449B14@notes.na.collabserv.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: YQBPR0101CA0014.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c00::27) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [156.34.55.100]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 00d11ba8-26b1-4bb0-5991-08d7060cb114
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6253;
+x-ms-traffictypediagnostic: VI1PR05MB6253:
+x-microsoft-antispam-prvs: <VI1PR05MB62539C759DB76022927B5D93CFF30@VI1PR05MB6253.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:619;
+x-forefront-prvs: 0095BCF226
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(199004)(189003)(53936002)(54906003)(4326008)(6436002)(71190400001)(2906002)(6512007)(316002)(6246003)(1076003)(33656002)(71200400001)(5660300002)(305945005)(7736002)(66066001)(26005)(76176011)(11346002)(2616005)(14454004)(476003)(66446008)(66476007)(66556008)(102836004)(64756008)(486006)(66946007)(53546011)(6506007)(386003)(446003)(8676002)(186003)(81156014)(81166006)(229853002)(86362001)(6916009)(99286004)(6486002)(8936002)(68736007)(14444005)(52116002)(256004)(3846002)(6116002)(478600001)(36756003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6253;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 5nM8VoiyWTk55I8j5yTFXp+xjbqAbHGoZ7e21JnM3rYv70vK5tJLDjmE83HZS/530x54JQRq+QeANr/80r1f9gUBRQZHCh3545VEZHkAzanFyR0CsR43FyvzCaP/TPzef9XBFQG2k69d4SAeFYGeudtmZlIPumZ/2kn7jiRkM0X6fSppgZ08vqcTE6fYRd69LJSLJyyhR51B4pz99/0bM6AMLOyyxyzSpqTC2AhfQPE2EdB+hJM8slmHfvO03r+MZcsSDJCmOov50+iF5em7ZGZZYomXbeRNhYurlYj1sLdYlFK8blvACYaAzCMjvEuqn8xXjwYewQm6k2lPed1Gk3kybNs3fjfEinfVnvOVrYjnC8/NmmiJBL2M1bpfTWjy2fYen1MM9kCLTyDXoIm10On5TI3akXiLwsBGpw8LJGE=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2679AEEF5EBE8449A29BAF6FB02687C7@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071114-4275-0000-0000-0000034C3824
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071114-4276-0000-0000-0000385C3F8D
-Message-Id: <20190711142930.68809-5-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=591 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907110163
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00d11ba8-26b1-4bb0-5991-08d7060cb114
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 14:33:07.8068
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6253
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
+On Thu, Jul 11, 2019 at 12:29:21PM +0000, Bernard Metzler wrote:
+>=20
+> >To: "Bernard Metzler" <BMT@zurich.ibm.com>
+> >From: "Jason Gunthorpe" <jgg@mellanox.com>
+> >Date: 07/11/2019 01:53PM
+> >Cc: "Leon Romanovsky" <leon@kernel.org>, "Stephen Rothwell"
+> ><sfr@canb.auug.org.au>, "Doug Ledford" <dledford@redhat.com>, "David
+> >Miller" <davem@davemloft.net>, "Networking" <netdev@vger.kernel.org>,
+> >"Linux Next Mailing List" <linux-next@vger.kernel.org>, "Linux Kernel
+> >Mailing List" <linux-kernel@vger.kernel.org>
+> >Subject: [EXTERNAL] Re: Re: linux-next: build failure after merge of
+> >the net-next tree
+> >
+> >On Thu, Jul 11, 2019 at 08:00:49AM +0000, Bernard Metzler wrote:
+> >
+> >> That listen will not sleep. The socket is just marked
+> >> listening.=20
+> >
+> >Eh? siw_listen_address() calls siw_cep_alloc() which does:
+> >
+> >	struct siw_cep *cep =3D kzalloc(sizeof(*cep), GFP_KERNEL);
+> >
+> >Which is sleeping. Many other cases too.
+> >
+> >Jason
+> >
+> >
+> Ah, true! I was after really deep sleeps like user level
+> socket accept() calls ;) So you are correct of course.
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+I've added this patch to the rdma tree to fix the missing locking.
+
+The merge resolution will be simply swapping
+for_ifa to in_dev_for_each_ifa_rtnl.
+
+Jason
+
+From c421651fa2295d1219c36674c7eb8c574542ceea Mon Sep 17 00:00:00 2001
+From: Jason Gunthorpe <jgg@mellanox.com>
+Date: Thu, 11 Jul 2019 11:29:42 -0300
+Subject: [PATCH] RDMA/siw: Add missing rtnl_lock around access to ifa
+
+ifa is protected by rcu or rtnl, add the missing locking. In this case we
+have to use rtnl since siw_listen_address() is sleeping.
+
+Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
+Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
+Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
 ---
- tools/testing/selftests/bpf/progs/loop1.c | 2 +-
- tools/testing/selftests/bpf/progs/loop2.c | 2 +-
- tools/testing/selftests/bpf/progs/loop3.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/infiniband/sw/siw/siw_cm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
-index dea395af9ea9..7cdb7f878310 100644
---- a/tools/testing/selftests/bpf/progs/loop1.c
-+++ b/tools/testing/selftests/bpf/progs/loop1.c
-@@ -18,7 +18,7 @@ int nested_loops(volatile struct pt_regs* ctx)
- 	for (j = 0; j < 300; j++)
- 		for (i = 0; i < j; i++) {
- 			if (j & 1)
--				m = ctx->rax;
-+				m = PT_REGS_RC(ctx);
- 			else
- 				m = j;
- 			sum += i * m;
-diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
-index 0637bd8e8bcf..9b2f808a2863 100644
---- a/tools/testing/selftests/bpf/progs/loop2.c
-+++ b/tools/testing/selftests/bpf/progs/loop2.c
-@@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
- 	int i = 0;
- 
- 	while (true) {
--		if (ctx->rax & 1)
-+		if (PT_REGS_RC(ctx) & 1)
- 			i += 3;
- 		else
- 			i += 7;
-diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
-index 30a0f6cba080..d727657d51e2 100644
---- a/tools/testing/selftests/bpf/progs/loop3.c
-+++ b/tools/testing/selftests/bpf/progs/loop3.c
-@@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
- 	__u64 i = 0, sum = 0;
- 	do {
- 		i++;
--		sum += ctx->rax;
-+		sum += PT_REGS_RC(ctx);
- 	} while (i < 0x100000000ULL);
- 	return sum;
- }
--- 
+diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/siw=
+/siw_cm.c
+index 8e618cb7261f62..c25be723c15b64 100644
+--- a/drivers/infiniband/sw/siw/siw_cm.c
++++ b/drivers/infiniband/sw/siw/siw_cm.c
+@@ -1975,6 +1975,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
+g)
+ 			id, &s_laddr.sin_addr, ntohs(s_laddr.sin_port),
+ 			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
+=20
++		rtnl_lock();
+ 		for_ifa(in_dev)
+ 		{
+ 			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
+@@ -1989,6 +1990,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
+g)
+ 			}
+ 		}
+ 		endfor_ifa(in_dev);
++		rtnl_unlock();
+ 		in_dev_put(in_dev);
+ 	} else if (id->local_addr.ss_family =3D=3D AF_INET6) {
+ 		struct inet6_dev *in6_dev =3D in6_dev_get(dev);
+--=20
 2.21.0
 
