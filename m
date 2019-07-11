@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE4B65149
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 06:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB206514B
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 06:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726409AbfGKEyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 00:54:54 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:36727 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725963AbfGKEyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 00:54:54 -0400
-Received: by mail-yw1-f65.google.com with SMTP id x67so353207ywd.3;
-        Wed, 10 Jul 2019 21:54:53 -0700 (PDT)
+        id S1727774AbfGKE4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 00:56:39 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:45527 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725963AbfGKE4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 00:56:39 -0400
+Received: by mail-yw1-f68.google.com with SMTP id m16so1683935ywh.12;
+        Wed, 10 Jul 2019 21:56:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3RAfycwc3H5/rkj4Z3uAczEQJ2M9Xq0YrQzaSv1BIxg=;
-        b=TCkTPpaA3NW0YZc/Mz6YDSqWo8KzYTByQWNFFs467najWY44bWKcuBi5s++xAdeEqz
-         TGaEZ24o8zc73lvpM6TPW5lBfTHuQxKUPVsmureIhyj6k9uh/IwOO0XsBHe7Yg7DpiWT
-         0X5lnPdo77RWbRiV79zTULLR3+EIfMK8kVYw17v2gvKlCWhcjQK7QROwCLqg5WkJbmfS
-         TzvbQRiERyqEX3W03a2uJ3PzDi3AmejwAm3j0AvENwHLUoib5WBH0d2p28KWQ1Nrvz8U
-         XmOA9sHHsx5Q778D8PWCKQhw9jOhiXiIlVIPWz17XGd2BdHcXLnuZ4E3Pn4E4/gql3Bm
-         Emqw==
+        bh=8kernPxKqBCueXBoaza253A523H7ruFc7m+roLUJLMY=;
+        b=oohuWeaSLtrIy6Eyz9zUPxnfuzsrp9JGGhvhbWwi7dP7nU4WV6MnCNJJr///jtQVq1
+         g6fG2S6UMm3x21XT568HnEc4ljEcElzQWaXx7oWn8D0/9tpb6j0+nUZeIyuKGvgFNSzH
+         mCciZ1S/R9JJhon0Y4zxgz5DjjmTOs8HbywtdonBqAwIGW7Iw+sfflWjnUdk5LRxcBrc
+         OYq1PEvH6g111XCeOtnBdUBwfp70pt7C6OZTPdMGUorCTf5m6nyVEHOs3Mx0WzZAoB9/
+         HyaHlsaM7EeJs4+USZxkjT0/xbIocU7LjUXd10T4ogy2+oazoCWGqvEujYQzbZ5sqq+9
+         Z6Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3RAfycwc3H5/rkj4Z3uAczEQJ2M9Xq0YrQzaSv1BIxg=;
-        b=N0Rc/5/7AvoMs/EDLF5Ata4JosxUwjomKDoCRgY9ZubQU3Gd1o7exdzXTGx2Vurj6u
-         LJFH9s9YBuGgOuu37hZyDo67DQHFx8/dKo/CryKX17ZlXQywUB+zZ3OS7Dg+9TjqBvAI
-         m2HiP53b5nkM10orBhIzs1HiC8LeKJg2N/nw873xC9rWLKXhkUsL9oD7LnqsQak41g9D
-         DLS3M/CUColf567xSoubAJXuHPec4o9I5Wiam4N/qWBX06ZDusteQjqrrkDzLhHjLzm8
-         PzrcMwgKGMQ/kgUBA/s+a3/EGXN/xdzknB2UGg2twyxG69ysiAvAbyGMNiELL74G/RtU
-         eRdw==
-X-Gm-Message-State: APjAAAU4fKlE0ScC8fN8tjk5A8hmiBGx+TUKGPaocceEfkdVsaYk9uS/
-        KBEdbE3xVRBD7W76Uu0CI5IGDU85hspEyBYSx0bxRgTgg5L8lA==
-X-Google-Smtp-Source: APXvYqzu4k0sSSA6EOAfAWOpNuMRPeq+oPI3C4nvlrZxUjHhLWtS9EJCdX0052PD4CI127RJgtM/pR1TA73yo1qOwl8=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr1297399qta.171.1562820893099;
- Wed, 10 Jul 2019 21:54:53 -0700 (PDT)
+        bh=8kernPxKqBCueXBoaza253A523H7ruFc7m+roLUJLMY=;
+        b=UUJy//snEYI3dwBRlyZ7dsATmqzAicpzrpoDZDwu0fgiXuLUVlY5PV3OlvP9OJZrS0
+         zLe0jWXI5i7p55pcPGPsW6Bj/yTcWbJN1E2J2iSGABaJNo0XMhkqHiMoZqNnUrd2uo4p
+         TW5qQENxcXQ9RQEv5BDswMjCxDXIVPjhMJjhSJnh2122vaKGUqdrCZwZy7NwPzDoYR3r
+         0Ck8mVIx/bGZHEnaXsGBvrdhLfTB8OIxBT/aC7MIoLCUreVHUMob4FwK8P42kOGxGiPb
+         WP9icCrYEDgRT4RBUgxPex1mh2BmNtZQcP5yNVhqcHolLLJRZ8VjvgbULSMjm8KWhRUO
+         uWJA==
+X-Gm-Message-State: APjAAAU7SBjISaUX/AvFwExItUTm0SFToX2OR5ZQaY5SJlBPyDnckSLw
+        r2Q+kt0DRbQzi3lVJeoFzlVPozLlr076E0o2PhdaIYHHvd11sA==
+X-Google-Smtp-Source: APXvYqwerfLx/7FOYPnh+1IMgBvekfr4vyapSajMcXgDsLNC//JurqTQfwcn6WzTdILCdXZKS0bT2sYbGORvirEgb34=
+X-Received: by 2002:ac8:6601:: with SMTP id c1mr1239041qtp.93.1562820997809;
+ Wed, 10 Jul 2019 21:56:37 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190710080840.2613160-1-andriin@fb.com> <f6bc7a95-e8e1-eec4-9728-3b9e36b434fa@fb.com>
  <CAEf4BzaVouFd=3whC1EjhQ9mit62b-C+NhQuW4RiXW02Rq_1Ug@mail.gmail.com>
  <304d8535-5043-836d-2933-1a5efb7aec72@fb.com> <CAEf4Bza6Y87C2_Fobj9CwU-2YRTU32S61f8_8CQdhMPenJiJZQ@mail.gmail.com>
- <eebd6ac9-d968-9efb-db07-e5d877f7ae4c@fb.com>
-In-Reply-To: <eebd6ac9-d968-9efb-db07-e5d877f7ae4c@fb.com>
+ <05db3afa-b94e-d0ba-7d61-ec1bf9a82777@fb.com>
+In-Reply-To: <05db3afa-b94e-d0ba-7d61-ec1bf9a82777@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Jul 2019 21:54:41 -0700
-Message-ID: <CAEf4BzZ1XMuhAfVq=2q4xqwuFMqH8WOVU5LbtWPODtNsXK2Lug@mail.gmail.com>
+Date:   Wed, 10 Jul 2019 21:56:26 -0700
+Message-ID: <CAEf4BzYoPUa2DOH-neH70wj4NjZK89UbX3igYk2H84ryx4=a4A@mail.gmail.com>
 Subject: Re: [PATCH bpf] bpf: fix BTF verifier size resolution logic
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
@@ -62,7 +62,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 6:53 PM Yonghong Song <yhs@fb.com> wrote:
+On Wed, Jul 10, 2019 at 9:14 PM Yonghong Song <yhs@fb.com> wrote:
 >
 >
 >
@@ -175,25 +175,6 @@ On Wed, Jul 10, 2019 at 6:53 PM Yonghong Song <yhs@fb.com> wrote:
 > > }
 > >
 > > So I think that your patch is still just hiding the problem, not solving it.
->
-> That is why I am not advocating it.
->
-> The really long modifier chain (const volatile restrict ...) is rare.
-> So I agree removing this RESOLVE logic is okay.
-
-So :) thinking about this a bit more. Stack size is proportional not
-to a longest chain of pointers and modifiers, but actually could be as
-long as entire type graph (O(N)). So for this approach we'll need to
-dynamically resize stack. This is easy to do, but I'm not sure how
-much push back I'll get for such change.
-
-But I'll think about doing it differently. The problem is with
-resolved_sizes array, we assume it's filled for some types too early.
-I'll see if I can get rid of it completely and instead just calculate
-that on the fly by relying on resolved_ids. Will post v2 with one of
-those approaches.
-
->
 > >
 > > BTW, I've also identified part of btf_ptr_resolve() logic that can be
 > > now safely removed (it's a special case that "restarts" DFS traversal
@@ -203,11 +184,29 @@ those approaches.
 > >
 > > I'd rather remove unnecessary complexity and fix underlying problem,
 > > especially given that there is no performance or correctness penalty.
+>
+> Could you create a special btf with type like
+> typedef int a1;
+> typedef a1 a2;
+> ...
+> typedef a65533 a65532;
+> (maximum kernel allowed number of types is 64KB)
+>
+> In the BTF, the typedef order is reverse
+> 1: typedef a65533 to 2
+> 2: typedef ... to 3
+> 3 ...
+>
+> So kernel won't run into deep recursion or panic?
+
+Yeah I was just thinking about the need to generate artificially
+constructed BTFs to stress-test BTF verification. Will add something.
+
+>
+> Thanks.
+>
 > >
 > > I'll post v2 soon.
->
-> Sounds good.
->
 > >
 > >>
 > >> Will go through your other comments later.
@@ -267,3 +266,4 @@ those approaches.
 > >>>> +}
 > >>>> +
 > >> [...]
+> >
