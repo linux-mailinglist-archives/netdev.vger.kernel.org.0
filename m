@@ -2,202 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EF765390
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D465D653AB
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728041AbfGKJNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 05:13:38 -0400
-Received: from mail-eopbgr60052.outbound.protection.outlook.com ([40.107.6.52]:5901
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728024AbfGKJNi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 05:13:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oOsG6UekG4MrTq9pbzxgzXiaAbNBgq4QRWU7SztOzl4=;
- b=WYFjjvAtoNB3VLM7nMxmmfZkAA1/BCZUvhU86mI2bujEgV+UGIROoZYVxnQ2m4ySI6ZJbjyE+FDgY0/mDWDO89vnmRxEl0slNMX1I5obYJgJrtHgNepZg5lacJin4QmAn6cv8ato72h+L4q39Hol0ZcA0LVpJdLgbVMxN0YFmBI=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB4189.eurprd05.prod.outlook.com (10.171.183.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2052.19; Thu, 11 Jul 2019 09:13:28 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::a083:d09c:aeff:c7ed]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::a083:d09c:aeff:c7ed%5]) with mapi id 15.20.2032.024; Thu, 11 Jul 2019
- 09:13:28 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     wenxu <wenxu@ucloud.cn>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting
- up tc block on rep
-Thread-Topic: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting
- up tc block on rep
-Thread-Index: AQHVN0zyJ3Fz2Ue6k0iOd3fM6RlGaKbEkl2AgACQyYA=
-Date:   Thu, 11 Jul 2019 09:13:28 +0000
-Message-ID: <vbf8st5orwy.fsf@mellanox.com>
-References: <20190710182554.2988-1-vladbu@mellanox.com>
- <6465040c-d22f-f4b6-0232-11ff4af81753@ucloud.cn>
-In-Reply-To: <6465040c-d22f-f4b6-0232-11ff4af81753@ucloud.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0315.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a4::15) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bc67f27d-ae2c-4a1d-4f53-08d705e008fd
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4189;
-x-ms-traffictypediagnostic: VI1PR05MB4189:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <VI1PR05MB4189C23EEA0EF1EE626E667BADF30@VI1PR05MB4189.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0095BCF226
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(366004)(346002)(396003)(189003)(199004)(36756003)(6306002)(66446008)(99286004)(4326008)(6116002)(3846002)(45080400002)(7736002)(305945005)(53936002)(11346002)(446003)(6436002)(486006)(6916009)(476003)(2616005)(66066001)(6512007)(6486002)(66476007)(66946007)(52116002)(8936002)(64756008)(76176011)(2906002)(26005)(54906003)(102836004)(66556008)(6246003)(316002)(6506007)(386003)(186003)(107886003)(81166006)(966005)(8676002)(81156014)(14454004)(71190400001)(71200400001)(478600001)(256004)(14444005)(86362001)(5660300002)(229853002)(25786009)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4189;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: vy/Stfs3Vm2eWqxAvkGbqJtFzmE//bjkfrFZEL6xP1+odXQ2ZVNaL7E1xM5OFOL2KCz5iyNEqM/nPBuvQMrmj2GiqlaivALNhNtkhKfULotSeKvcyLJVcU/RG0Bw2aobGiMys2Qs6pVYJHYYSIQH8Alk9kFGvwl9Viv8IWifn1Ca8X/F7Vg0O64hHe/SxPVSTSKzpXEF4E6NdvHvR8SzSBh80uH8K4KuaokzsO/B+t1mmv5CcN/Yi3DYz+9mm40i9csoioy1XBmHOtkexzsTkNbZhXYSXhN3pfMxyyJuARIcWIeDjZAeUCQGLnEyQWRHOKUqOmm2HqA9aGfUULV4lIrSZDbOmeWBJdsclYytHGk7lmM+si7f0M74pXTOx1vRbdaEA4skD5/XBQa20Zw9cimtNVvR7sibraL2JTskWe0=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DDA1BEB05D7C7D4C9BC33AF15F0077E5@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728027AbfGKJTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 05:19:51 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53208 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727595AbfGKJTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:19:50 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s3so4913670wms.2
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 02:19:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=emLFRRzBmB+DAVqphji8EOQ+lQatStBjMQ50i0gBRak=;
+        b=JaYX/ggMuMN2bOGKgEmtRvgU87Ha8SbRgJ35WNI5zgUMDP+gBrr2sT3sNxtWbkXLc1
+         PE+lVRsX7obar6X8+3Oz/64l2A+x+3VeI2BAFhjQD3M/Z087eKpolbYnz55uJZd1szbN
+         0zb0n7ngq/hlVgnfHLALW0IOhlDp9+4OXDRQumSEw80jYGzet5skkiIb3JRlnjgHvjLl
+         2twCCpyiFymX1KdmCrvCtOppL8bz+E1Gi/ANQla+BCtXiP8NMr7pVN0PGNszBD4/8AnR
+         OIHEqjYKgxPGfGlG9YBUzLhBex0hVyxBG7IbGtS2Xee4ujsUC1oW+3xFURNr61qOwuJD
+         Y1+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=emLFRRzBmB+DAVqphji8EOQ+lQatStBjMQ50i0gBRak=;
+        b=OFX1j84c1D4HuIJBKfyu9QnOIqo+LUduOjO2ogQpb2aR2KxY6KZNXOQe7gyvObrENu
+         AdC1u1bZJpLZjRSrjNt6zNLcqBALGOJfYicdzZL0IJE8/dgafft2Ixx2KHxqGN6tir37
+         QxN13zufJu/buy9zHHqrpR1bWGr2mQLjtU8tiJdoK7PBtg3M/OcRXaQP3+C1AUiV0El/
+         /lOg7skRMZdfqKN6NgHdfpayd1pOeBgIcu5iF+68JL9j511bGez+18N/1m9Y40RB8IdJ
+         hgmsSq8sgzYWrMk+tTVVCw2SWyzezt5VbdU9LrKB1Ahg4eTcMfnRzZ+p5kcXkJ27BioB
+         yTpA==
+X-Gm-Message-State: APjAAAVAqAh0iSKDYWq5r6wuO7mi5Gn28aDiD+8TEfeWRlyrA373/yUY
+        Cpu6X+p0gp0k43Ko3z4e0RPOlV7t
+X-Google-Smtp-Source: APXvYqzSqZARNy/7SemmdjGwhdCmPGMFtqOo4Z7dPBufx1YqSvY7t38c3V1fWoOGZStMvM6VK0N9mA==
+X-Received: by 2002:a05:600c:212:: with SMTP id 18mr3058921wmi.88.1562836787719;
+        Thu, 11 Jul 2019 02:19:47 -0700 (PDT)
+Received: from [192.168.8.147] (143.160.185.81.rev.sfr.net. [81.185.160.143])
+        by smtp.gmail.com with ESMTPSA id l8sm8476677wrg.40.2019.07.11.02.19.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jul 2019 02:19:46 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+ <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
+ <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
+ <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
+ <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
+ <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <eb6121ea-b02d-672e-25c9-2ad054d49fc7@gmail.com>
+Date:   Thu, 11 Jul 2019 11:19:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc67f27d-ae2c-4a1d-4f53-08d705e008fd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 09:13:28.3022
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4189
+In-Reply-To: <B600B3AB-559E-44C1-869C-7309DB28850E@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiBUaHUgMTEgSnVsIDIwMTkgYXQgMDM6MzUsIHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+IHdy
-b3RlOg0KPiDlnKggMjAxOS83LzExIDI6MjUsIFZsYWQgQnVzbG92IOWGmemBkzoNCj4+IFJlY2Vu
-dCByZWZhY3RvcmluZyBvZiB0YyBibG9jayBvZmZsb2FkcyBpbmZyYXN0cnVjdHVyZSBpbnRyb2R1
-Y2VkIG5ldw0KPj4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUoKSBtZXRob2QgaW50ZW5kZWQg
-dG8gYmUgdXNlZCBhcyB1bmlmaWVkIHdheSBmb3INCj4+IGFsbCBkcml2ZXJzIHRvIHJlZ2lzdGVy
-IG9mZmxvYWQgY2FsbGJhY2tzLiBIb3dldmVyLCBjb21taXQgdGhhdCBhY3R1YWxseQ0KPj4gZXh0
-ZW5kZWQgYWxsIHVzZXJzIChkcml2ZXJzKSB3aXRoIGJsb2NrIGNiIGxpc3QgYW5kIHByb3ZpZGVk
-IGl0IHRvDQo+PiBmbG93X2Jsb2NrIGluZnJhIG1pc3NlZCBtbHg1IGVuX3JlcC4gVGhpcyBsZWFk
-cyB0byBmb2xsb3dpbmcgTlVMTC1wb2ludGVyDQo+PiBkZXJlZmVyZW5jZSB3aGVuIGNyZWF0aW5n
-IFFkaXNjOg0KPj4NCj4+IFsgIDI3OC4zODUxNzVdIEJVRzoga2VybmVsIE5VTEwgcG9pbnRlciBk
-ZXJlZmVyZW5jZSwgYWRkcmVzczogMDAwMDAwMDAwMDAwMDAwMA0KPj4gWyAgMjc4LjM5MzIzM10g
-I1BGOiBzdXBlcnZpc29yIHJlYWQgYWNjZXNzIGluIGtlcm5lbCBtb2RlDQo+PiBbICAyNzguMzk5
-NDQ2XSAjUEY6IGVycm9yX2NvZGUoMHgwMDAwKSAtIG5vdC1wcmVzZW50IHBhZ2UNCj4+IFsgIDI3
-OC40MDU4NDddIFBHRCA4MDAwMDAwODUwZTczMDY3IFA0RCA4MDAwMDAwODUwZTczMDY3IFBVRCA4
-NjIwY2QwNjcgUE1EIDANCj4+IFsgIDI3OC40MTQxNDFdIE9vcHM6IDAwMDAgWyMxXSBTTVAgUFRJ
-DQo+PiBbICAyNzguNDE5MDE5XSBDUFU6IDcgUElEOiAzMzY5IENvbW06IHRjIE5vdCB0YWludGVk
-IDUuMi4wLXJjNisgIzQ5Mg0KPj4gWyAgMjc4LjQyNjU4MF0gSGFyZHdhcmUgbmFtZTogU3VwZXJt
-aWNybyBTWVMtMjAyOFRQLURFQ1IvWDEwRFJULVAsIEJJT1MgMi4wYiAwMy8zMC8yMDE3DQo+PiBb
-ICAyNzguNDM1ODUzXSBSSVA6IDAwMTA6Zmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUrMHhjNC8w
-eDE5MA0KPj4gWyAgMjc4LjQ0Mjk1M10gQ29kZTogMTAgNDggODkgNDIgMDggNDggODkgMTAgNDgg
-YjggMDAgMDEgMDAgMDAgMDAgMDAgYWQgZGUgNDkgODkgMDAgNDggMDUgMDAgMDEgMDAgMDAgNDkg
-ODkgNDAgMDggMzEgYzAgYzMgYjggYTEgZmYgZmYgZmYgYzMgZjMgYzMgPDQ4PiA4YiAwNiA0OCAz
-OSBjNiA3NSAwYSBlYiAxYSA0OCA4YiAwMCA0OCAzOSBjNiA3NCAxMg0KPj4gIDQ4IDNiIDUwIDI4
-DQo+PiBbICAyNzguNDY0ODI5XSBSU1A6IDAwMTg6ZmZmZmFmMDdjM2Y5Nzk5MCBFRkxBR1M6IDAw
-MDEwMjQ2DQo+PiBbICAyNzguNDcxNjQ4XSBSQVg6IDAwMDAwMDAwMDAwMDAwMDAgUkJYOiBmZmZm
-OWI0M2VkNGM3NjgwIFJDWDogZmZmZjliNDNkNWY4MDg0MA0KPj4gWyAgMjc4LjQ4MDQwOF0gUkRY
-OiBmZmZmZmZmZmMwNDkxNjUwIFJTSTogMDAwMDAwMDAwMDAwMDAwMCBSREk6IGZmZmZhZjA3YzNm
-OTc5OTgNCj4+IFsgIDI3OC40ODkxMTBdIFJCUDogZmZmZjliNDNkZGZmOTAwMCBSMDg6IGZmZmY5
-YjQzZDVmODA4NDAgUjA5OiAwMDAwMDAwMDAwMDAwMDAxDQo+PiBbICAyNzguNDk3ODM4XSBSMTA6
-IDAwMDAwMDAwMDAwMDAwMDkgUjExOiAwMDAwMDAwMDAwMDAwM2FkIFIxMjogZmZmZmFmMDdjM2Y5
-N2MwOA0KPj4gWyAgMjc4LjUwNjU5NV0gUjEzOiBmZmZmOWI0M2Q1ZjgwMDAwIFIxNDogZmZmZjli
-NDNlZDRjNzY4MCBSMTU6IGZmZmY5YjQzZGZhMjBiNDANCj4+IFsgIDI3OC41MTUzNzRdIEZTOiAg
-MDAwMDdmNzk2YmUxYjQwMCgwMDAwKSBHUzpmZmZmOWI0M2VmODQwMDAwKDAwMDApIGtubEdTOjAw
-MDAwMDAwMDAwMDAwMDANCj4+IFsgIDI3OC41MjUwOTldIENTOiAgMDAxMCBEUzogMDAwMCBFUzog
-MDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCj4+IFsgIDI3OC41MzI0NTNdIENSMjogMDAwMDAw
-MDAwMDAwMDAwMCBDUjM6IDAwMDAwMDA4NDAzOTgwMDIgQ1I0OiAwMDAwMDAwMDAwMTYwNmUwDQo+
-PiBbICAyNzguNTQxMTk3XSBDYWxsIFRyYWNlOg0KPj4gWyAgMjc4LjU0NTI1Ml0gIHRjZl9ibG9j
-a19vZmZsb2FkX2NtZC5pc3JhLjUyKzB4N2UvMHhiMA0KPj4gWyAgMjc4LjU1MTg3MV0gIHRjZl9i
-bG9ja19nZXRfZXh0KzB4MzY1LzB4M2UwDQo+PiBbICAyNzguNTU3NTY5XSAgcWRpc2NfY3JlYXRl
-KzB4MTVjLzB4NGUwDQo+PiBbICAyNzguNTYyODU5XSAgPyBrbWVtX2NhY2hlX2FsbG9jX3RyYWNl
-KzB4MWEyLzB4MWMwDQo+PiBbICAyNzguNTY5MjM1XSAgdGNfbW9kaWZ5X3FkaXNjKzB4MWM4LzB4
-NzgwDQo+PiBbICAyNzguNTc0NzYxXSAgcnRuZXRsaW5rX3Jjdl9tc2crMHgyOTEvMHgzNDANCj4+
-IFsgIDI3OC41ODA1MThdICA/IF9jb25kX3Jlc2NoZWQrMHgxNS8weDQwDQo+PiBbICAyNzguNTg1
-ODU2XSAgPyBydG5sX2NhbGNpdC5pc3JhLjI5KzB4MTIwLzB4MTIwDQo+PiBbICAyNzguNTkxODY4
-XSAgbmV0bGlua19yY3Zfc2tiKzB4NGEvMHgxMTANCj4+IFsgIDI3OC41OTcxOThdICBuZXRsaW5r
-X3VuaWNhc3QrMHgxYTAvMHgyNTANCj4+IFsgIDI3OC42MDI2MDFdICBuZXRsaW5rX3NlbmRtc2cr
-MHgyYzEvMHgzYzANCj4+IFsgIDI3OC42MDgwMjJdICBzb2NrX3NlbmRtc2crMHg1Yi8weDYwDQo+
-PiBbICAyNzguNjEyOTY5XSAgX19fc3lzX3NlbmRtc2crMHgyODkvMHgzMTANCj4+IFsgIDI3OC42
-MTgyMzFdICA/IGRvX3dwX3BhZ2UrMHg5OS8weDczMA0KPj4gWyAgMjc4LjYyMzIxNl0gID8gcGFn
-ZV9hZGRfbmV3X2Fub25fcm1hcCsweGJlLzB4MTQwDQo+PiBbICAyNzguNjI5Mjk4XSAgPyBfX2hh
-bmRsZV9tbV9mYXVsdCsweGM4NC8weDEzNjANCj4+IFsgIDI3OC42MzUxMTNdICA/IF9fc3lzX3Nl
-bmRtc2crMHg1ZS8weGEwDQo+PiBbICAyNzguNjQwMjg1XSAgX19zeXNfc2VuZG1zZysweDVlLzB4
-YTANCj4+IFsgIDI3OC42NDUyMzldICBkb19zeXNjYWxsXzY0KzB4NWIvMHgxYjANCj4+IFsgIDI3
-OC42NTAyNzRdICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0NC8weGE5DQo+PiBb
-ICAyNzguNjU2Njk3XSBSSVA6IDAwMzM6MHg3Zjc5NmFiZGViODcNCj4+IFsgIDI3OC42NjE2Mjhd
-IENvZGU6IDY0IDg5IDAyIDQ4IGM3IGMwIGZmIGZmIGZmIGZmIGViIGI5IDBmIDFmIDgwIDAwIDAw
-IDAwIDAwIDhiIDA1IDZhIDJiIDJjIDAwIDQ4IDYzIGQyIDQ4IDYzIGZmIDg1IGMwIDc1IDE4IGI4
-IDJlIDAwIDAwIDAwIDBmIDA1IDw0OD4gM2QgMDAgZjAgZmYgZmYgNzcgNTkgZjMgYzMgMGYgMWYg
-ODAgMDAgMDAgMDAgMDAgNTMNCj4+ICA0OCA4OSBmMyA0OA0KPj4gWyAgMjc4LjY4MzI0OF0gUlNQ
-OiAwMDJiOjAwMDA3ZmZkZTIxM2JhNDggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAwMDAw
-MDAwMDAwMDAyZQ0KPj4gWyAgMjc4LjY5MjI0NV0gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDog
-MDAwMDAwMDA1ZDI2MWU2ZiBSQ1g6IDAwMDA3Zjc5NmFiZGViODcNCj4+IFsgIDI3OC43MDA4NjJd
-IFJEWDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IDAwMDA3ZmZkZTIxM2JhYjAgUkRJOiAwMDAwMDAw
-MDAwMDAwMDAzDQo+PiBbICAyNzguNzA5NTI3XSBSQlA6IDAwMDAwMDAwMDAwMDAwMDAgUjA4OiAw
-MDAwMDAwMDAwMDAwMDAxIFIwOTogMDAwMDAwMDAwMDAwMDAwNg0KPj4gWyAgMjc4LjcxODE2N10g
-UjEwOiAwMDAwMDAwMDAwMDAwMDBjIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDAwMDAw
-MDAwMDAwMDENCj4+IFsgIDI3OC43MjY3NDNdIFIxMzogMDAwMDAwMDAwMDY3YjU4MCBSMTQ6IDAw
-MDAwMDAwMDAwMDAwMDAgUjE1OiAwMDAwMDAwMDAwMDAwMDAwDQo+PiBbICAyNzguNzM1MzAyXSBN
-b2R1bGVzIGxpbmtlZCBpbjogZHVtbXkgdnhsYW4gaXA2X3VkcF90dW5uZWwgdWRwX3R1bm5lbCBz
-Y2hfaW5ncmVzcyBuZnN2MyBuZnNfYWNsIG5mcyBsb2NrZCBncmFjZSBmc2NhY2hlIGJyaWRnZSBz
-dHAgbGxjIHN1bnJwYyBtbHg1X2liIGliX3V2ZXJicyBpbnRlbF9yYXBsIGliX2NvcmUgc2JfZWRh
-YyB4ODZfcGtnX3RlbXBfDQo+PiB0aGVybWFsIGludGVsX3Bvd2VyY2xhbXAgY29yZXRlbXAga3Zt
-X2ludGVsIGt2bSBtbHg1X2NvcmUgaXJxYnlwYXNzIGNyY3QxMGRpZl9wY2xtdWwgY3JjMzJfcGNs
-bXVsIGNyYzMyY19pbnRlbCBpZ2IgZ2hhc2hfY2xtdWxuaV9pbnRlbCBzZXMgbWVpX21lIGVuY2xv
-c3VyZSBtbHhmdyBpcG1pX3NzaWYgaW50ZWxfY3N0YXRlIGlUQ09fd2R0IHB0cCBtZWkNCj4+IHBw
-c19jb3JlIGlUQ09fdmVuZG9yX3N1cHBvcnQgcGNzcGtyIGpveWRldiBpbnRlbF91bmNvcmUgaTJj
-X2k4MDEgaXBtaV9zaSBscGNfaWNoIGludGVsX3JhcGxfcGVyZiBpb2F0ZG1hIHdtaSBkY2EgcGNj
-X2NwdWZyZXEgaXBtaV9kZXZpbnRmIGlwbWlfbXNnaGFuZGxlciBhY3BpX3Bvd2VyX21ldGVyIGFj
-cGlfcGFkIGFzdCBpMmNfYWxnb19iaXQgZHJtX2sNCj4+IG1zX2hlbHBlciB0dG0gZHJtIG1wdDNz
-YXMgcmFpZF9jbGFzcyBzY3NpX3RyYW5zcG9ydF9zYXMNCj4+IFsgIDI3OC44MDIyNjNdIENSMjog
-MDAwMDAwMDAwMDAwMDAwMA0KPj4gWyAgMjc4LjgwNzE3MF0gLS0tWyBlbmQgdHJhY2UgYjFmMGE0
-NDJhMjc5ZTY2ZiBdLS0tDQo+Pg0KPj4gRXh0ZW5kIGVuX3JlcCB3aXRoIG5ldyBzdGF0aWMgbWx4
-NWVfcmVwX2Jsb2NrX2NiX2xpc3QgbGlzdCBhbmQgcGFzcyBpdCB0bw0KPj4gZmxvd19ibG9ja19j
-Yl9zZXR1cF9zaW1wbGUoKSBmdW5jdGlvbiBpbnN0ZWFkIG9mIGhhcmRjb2RlZCBOVUxMIHBvaW50
-ZXIuDQo+Pg0KPj4gRml4ZXM6IDk1NWJjYjZlYTBkZiAoImRyaXZlcnM6IG5ldDogdXNlIGZsb3cg
-YmxvY2sgQVBJIikNCj4+IFNpZ25lZC1vZmYtYnk6IFZsYWQgQnVzbG92IDx2bGFkYnVAbWVsbGFu
-b3guY29tPg0KPj4gLS0tDQo+PiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
-b3JlL2VuX3JlcC5jIHwgNSArKysrLQ0KPj4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMo
-KyksIDEgZGVsZXRpb24oLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
-bGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+PiBpbmRleCAxMGVmOTBhN2JkZGQuLjcyNDVkMjg3
-NjMzZCAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUv
-Y29yZS9lbl9yZXAuYw0KPj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
-NS9jb3JlL2VuX3JlcC5jDQo+PiBAQCAtMTE3NSw2ICsxMTc1LDggQEAgc3RhdGljIGludCBtbHg1
-ZV9yZXBfc2V0dXBfdGNfY2IoZW51bSB0Y19zZXR1cF90eXBlIHR5cGUsIHZvaWQgKnR5cGVfZGF0
-YSwNCj4+ICAJfQ0KPj4gIH0NCj4+ICANCj4+ICtzdGF0aWMgTElTVF9IRUFEKG1seDVlX3JlcF9i
-bG9ja19jYl9saXN0KTsNCj4+ICsNCj4NCj4gSSB0aGluayBpdCBpcyBub3QgbmVjZXNzYXJ5IG5l
-ZWRzIGEgZXh0cmEgTElTVF9IRUFELCB0aGUgZWFybHkgbWx4NWVfYmxvY2tfY2JfbGlzdCBpcyBv
-aw0KPg0KPiBUaGUgZWFybHkgcGF0Y2ggaHR0cDovL3BhdGNod29yay5vemxhYnMub3JnL3BhdGNo
-LzExMzA0MzkvIGlzIGVub3VnaC4NCg0KWWVzLCBidXQgaW4gdGhhdCBjYXNlIHdlIHdpbGwgbWl4
-IG1seDVlX3JlcF9zZXR1cF90Y19jYiByZXAgY2FsbGJhY2sgYW5kDQptbHg1ZV9yZXBfaW5kcl9z
-ZXR1cF9ibG9ja19jYiBpbmRpcmVjdCBjYWxsYmFjayBpbiBzaW5nbGUgbGlzdC4gSSBtaWdodA0K
-YmUgbWlzc2luZyBzb21ldGhpbmcsIGJ1dCBJIGRvbid0IHNlZSB3aHkgd2Ugd291bGQgd2FudCB0
-aGF0Lg0KDQo+DQo+PiAgc3RhdGljIGludCBtbHg1ZV9yZXBfc2V0dXBfdGMoc3RydWN0IG5ldF9k
-ZXZpY2UgKmRldiwgZW51bSB0Y19zZXR1cF90eXBlIHR5cGUsDQo+PiAgCQkJICAgICAgdm9pZCAq
-dHlwZV9kYXRhKQ0KPj4gIHsNCj4+IEBAIC0xMTgyLDcgKzExODQsOCBAQCBzdGF0aWMgaW50IG1s
-eDVlX3JlcF9zZXR1cF90YyhzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBlbnVtIHRjX3NldHVwX3R5
-cGUgdHlwZSwNCj4+ICANCj4+ICAJc3dpdGNoICh0eXBlKSB7DQo+PiAgCWNhc2UgVENfU0VUVVBf
-QkxPQ0s6DQo+PiAtCQlyZXR1cm4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUodHlwZV9kYXRh
-LCBOVUxMLA0KPj4gKwkJcmV0dXJuIGZsb3dfYmxvY2tfY2Jfc2V0dXBfc2ltcGxlKHR5cGVfZGF0
-YSwNCj4+ICsJCQkJCQkgICZtbHg1ZV9yZXBfYmxvY2tfY2JfbGlzdCwNCj4+ICAJCQkJCQkgIG1s
-eDVlX3JlcF9zZXR1cF90Y19jYiwNCj4+ICAJCQkJCQkgIHByaXYsIHByaXYsIHRydWUpOw0KPj4g
-IAlkZWZhdWx0Og0KDQo=
+
+
+On 7/11/19 9:28 AM, Christoph Paasch wrote:
+> 
+> 
+>> On Jul 10, 2019, at 9:26 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>>
+>> On 7/10/19 8:53 PM, Prout, Andrew - LLSC - MITLL wrote:
+>>>
+>>> Our initial rollout was v4.14.130, but I reproduced it with v4.14.132 as well, reliably for the samba test and once (not reliably) with synthetic test I was trying. A patched v4.14.132 with this patch partially reverted (just the four lines from tcp_fragment deleted) passed the samba test.
+>>>
+>>> The synthetic test was a pair of simple send/recv test programs under the following conditions:
+>>> -The send socket was non-blocking
+>>> -SO_SNDBUF set to 128KiB
+>>> -The receiver NIC was being flooded with traffic from multiple hosts (to induce packet loss/retransmits)
+>>> -Load was on both systems: a while(1) program spinning on each CPU core
+>>> -The receiver was on an older unaffected kernel
+>>>
+>>
+>> SO_SNDBUF to 128KB does not permit to recover from heavy losses,
+>> since skbs needs to be allocated for retransmits.
+> 
+> Would it make sense to always allow the alloc in tcp_fragment when coming from __tcp_retransmit_skb() through the retransmit-timer ?
+
+4.15+ kernels have :
+
+if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
+    tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
+
+
+Meaning that things like TLP will succeed.
+
+Anything we add in TCP stack to overcome the SO_SNDBUF by twice the limit _will_ be exploited at scale.
+
+I am not sure we want to continue to support small SO_SNDBUF values, as this makes no sense today.
+
+We use 64 MB auto tuning limit, and /proc/sys/net/ipv4/tcp_notsent_lowat to 1 MB.
+
+I would rather work (when net-next reopens) on better collapsing at rtx to allow reduction of the overhead.
+
+
+Something like :
+
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index f6a9c95a48edb234e4d4e21bf585744fbaf9a0a7..d5c85986209cd162cf39edb787b1385cb2c8b630 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2860,7 +2860,7 @@ static int __net_init tcp_sk_init(struct net *net)
+        net->ipv4.sysctl_tcp_early_retrans = 3;
+        net->ipv4.sysctl_tcp_recovery = TCP_RACK_LOSS_DETECTION;
+        net->ipv4.sysctl_tcp_slow_start_after_idle = 1; /* By default, RFC2861 behavior.  */
+-       net->ipv4.sysctl_tcp_retrans_collapse = 1;
++       net->ipv4.sysctl_tcp_retrans_collapse = 3;
+        net->ipv4.sysctl_tcp_max_reordering = 300;
+        net->ipv4.sysctl_tcp_dsack = 1;
+        net->ipv4.sysctl_tcp_app_win = 31;
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index d61264cf89ef66b229ecf797c1abfb7fcdab009f..05cd264f98b084f62eaf2ef9d6e14a392670d02c 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3015,8 +3015,6 @@ static bool tcp_collapse_retrans(struct sock *sk, struct sk_buff *skb)
+ 
+        next_skb_size = next_skb->len;
+ 
+-       BUG_ON(tcp_skb_pcount(skb) != 1 || tcp_skb_pcount(next_skb) != 1);
+-
+        if (next_skb_size) {
+                if (next_skb_size <= skb_availroom(skb))
+                        skb_copy_bits(next_skb, 0, skb_put(skb, next_skb_size),
+@@ -3054,8 +3052,6 @@ static bool tcp_collapse_retrans(struct sock *sk, struct sk_buff *skb)
+ /* Check if coalescing SKBs is legal. */
+ static bool tcp_can_collapse(const struct sock *sk, const struct sk_buff *skb)
+ {
+-       if (tcp_skb_pcount(skb) > 1)
+-               return false;
+        if (skb_cloned(skb))
+                return false;
+        /* Some heuristics for collapsing over SACK'd could be invented */
+@@ -3114,7 +3110,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+        struct inet_connection_sock *icsk = inet_csk(sk);
+        struct tcp_sock *tp = tcp_sk(sk);
+        unsigned int cur_mss;
+-       int diff, len, err;
++       int diff, len, maxlen, err;
+ 
+ 
+        /* Inconclusive MTU probe */
+@@ -3165,12 +3161,13 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+                        return -ENOMEM;
+ 
+                diff = tcp_skb_pcount(skb);
++               maxlen = (sock_net(sk)->ipv4.sysctl_tcp_retrans_collapse & 2) ? len : cur_mss;
++               if (skb->len < maxlen)
++                       tcp_retrans_try_collapse(sk, skb, maxlen);
+                tcp_set_skb_tso_segs(skb, cur_mss);
+                diff -= tcp_skb_pcount(skb);
+                if (diff)
+                        tcp_adjust_pcount(sk, skb, diff);
+-               if (skb->len < cur_mss)
+-                       tcp_retrans_try_collapse(sk, skb, cur_mss);
+        }
+ 
+        /* RFC3168, section 6.1.1.1. ECN fallback */
