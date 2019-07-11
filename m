@@ -2,128 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29A2E6538E
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:13:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67EF765390
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727946AbfGKJM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 05:12:58 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42440 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726997AbfGKJM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:12:58 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6B9CTjd043043
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:12:57 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tp23armsj-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:12:56 -0400
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Thu, 11 Jul 2019 10:12:54 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 11 Jul 2019 10:12:51 +0100
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6B9Cof951707962
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 11 Jul 2019 09:12:50 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CF94C52052;
-        Thu, 11 Jul 2019 09:12:50 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9864052050;
-        Thu, 11 Jul 2019 09:12:50 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     andrii.nakryiko@gmail.com, daniel@iogearbox.net,
-        liu.song.a23@gmail.com, Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH v3 bpf] selftests/bpf: do not ignore clang failures
-Date:   Thu, 11 Jul 2019 11:12:49 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1728041AbfGKJNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 05:13:38 -0400
+Received: from mail-eopbgr60052.outbound.protection.outlook.com ([40.107.6.52]:5901
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728024AbfGKJNi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 05:13:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oOsG6UekG4MrTq9pbzxgzXiaAbNBgq4QRWU7SztOzl4=;
+ b=WYFjjvAtoNB3VLM7nMxmmfZkAA1/BCZUvhU86mI2bujEgV+UGIROoZYVxnQ2m4ySI6ZJbjyE+FDgY0/mDWDO89vnmRxEl0slNMX1I5obYJgJrtHgNepZg5lacJin4QmAn6cv8ato72h+L4q39Hol0ZcA0LVpJdLgbVMxN0YFmBI=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB4189.eurprd05.prod.outlook.com (10.171.183.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.19; Thu, 11 Jul 2019 09:13:28 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::a083:d09c:aeff:c7ed]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::a083:d09c:aeff:c7ed%5]) with mapi id 15.20.2032.024; Thu, 11 Jul 2019
+ 09:13:28 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     wenxu <wenxu@ucloud.cn>
+CC:     Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting
+ up tc block on rep
+Thread-Topic: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting
+ up tc block on rep
+Thread-Index: AQHVN0zyJ3Fz2Ue6k0iOd3fM6RlGaKbEkl2AgACQyYA=
+Date:   Thu, 11 Jul 2019 09:13:28 +0000
+Message-ID: <vbf8st5orwy.fsf@mellanox.com>
+References: <20190710182554.2988-1-vladbu@mellanox.com>
+ <6465040c-d22f-f4b6-0232-11ff4af81753@ucloud.cn>
+In-Reply-To: <6465040c-d22f-f4b6-0232-11ff4af81753@ucloud.cn>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0315.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a4::15) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bc67f27d-ae2c-4a1d-4f53-08d705e008fd
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4189;
+x-ms-traffictypediagnostic: VI1PR05MB4189:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <VI1PR05MB4189C23EEA0EF1EE626E667BADF30@VI1PR05MB4189.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0095BCF226
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(366004)(346002)(396003)(189003)(199004)(36756003)(6306002)(66446008)(99286004)(4326008)(6116002)(3846002)(45080400002)(7736002)(305945005)(53936002)(11346002)(446003)(6436002)(486006)(6916009)(476003)(2616005)(66066001)(6512007)(6486002)(66476007)(66946007)(52116002)(8936002)(64756008)(76176011)(2906002)(26005)(54906003)(102836004)(66556008)(6246003)(316002)(6506007)(386003)(186003)(107886003)(81166006)(966005)(8676002)(81156014)(14454004)(71190400001)(71200400001)(478600001)(256004)(14444005)(86362001)(5660300002)(229853002)(25786009)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4189;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: vy/Stfs3Vm2eWqxAvkGbqJtFzmE//bjkfrFZEL6xP1+odXQ2ZVNaL7E1xM5OFOL2KCz5iyNEqM/nPBuvQMrmj2GiqlaivALNhNtkhKfULotSeKvcyLJVcU/RG0Bw2aobGiMys2Qs6pVYJHYYSIQH8Alk9kFGvwl9Viv8IWifn1Ca8X/F7Vg0O64hHe/SxPVSTSKzpXEF4E6NdvHvR8SzSBh80uH8K4KuaokzsO/B+t1mmv5CcN/Yi3DYz+9mm40i9csoioy1XBmHOtkexzsTkNbZhXYSXhN3pfMxyyJuARIcWIeDjZAeUCQGLnEyQWRHOKUqOmm2HqA9aGfUULV4lIrSZDbOmeWBJdsclYytHGk7lmM+si7f0M74pXTOx1vRbdaEA4skD5/XBQa20Zw9cimtNVvR7sibraL2JTskWe0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DDA1BEB05D7C7D4C9BC33AF15F0077E5@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071109-0020-0000-0000-00000352A5E6
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071109-0021-0000-0000-000021A65E50
-Message-Id: <20190711091249.59865-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907110109
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc67f27d-ae2c-4a1d-4f53-08d705e008fd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 09:13:28.3022
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4189
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When compiling an eBPF prog fails, make still returns 0, because
-failing clang command's output is piped to llc and therefore its
-exit status is ignored.
-
-When clang fails, pipe the string "clang failed" to llc. This will make
-llc fail with an informative error message. This solution was chosen
-over using pipefail, having separate targets or getting rid of llc
-invocation due to its simplicity.
-
-In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
-which would cause partial .o files to be removed.
-
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
-v1->v2: use intermediate targets instead of pipefail
-v2->v3: pipe "clang failed" instead of using intermediate targets
-
-tools/testing/selftests/bpf/Makefile | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index e36356e2377e..e375f399b7a6 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
-+include ../../../../scripts/Kbuild.include
- 
- LIBDIR := ../../../lib
- BPFDIR := $(LIBDIR)/bpf
-@@ -185,8 +186,8 @@ $(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
- 
- $(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR) \
- 					$(ALU32_BUILD_DIR)/test_progs_32
--	$(CLANG) $(CLANG_FLAGS) \
--		 -O2 -target bpf -emit-llvm -c $< -o - |      \
-+	($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
-+		echo "clang failed") | \
- 	$(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
- 		-filetype=obj -o $@
- ifeq ($(DWARF2BTF),y)
-@@ -197,16 +198,16 @@ endif
- # Have one program compiled without "-target bpf" to test whether libbpf loads
- # it successfully
- $(OUTPUT)/test_xdp.o: progs/test_xdp.c
--	$(CLANG) $(CLANG_FLAGS) \
--		-O2 -emit-llvm -c $< -o - | \
-+	($(CLANG) $(CLANG_FLAGS) -O2 -emit-llvm -c $< -o - || \
-+		echo "clang failed") | \
- 	$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
- ifeq ($(DWARF2BTF),y)
- 	$(BTF_PAHOLE) -J $@
- endif
- 
- $(OUTPUT)/%.o: progs/%.c
--	$(CLANG) $(CLANG_FLAGS) \
--		 -O2 -target bpf -emit-llvm -c $< -o - |      \
-+	($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
-+		echo "clang failed") | \
- 	$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
- ifeq ($(DWARF2BTF),y)
- 	$(BTF_PAHOLE) -J $@
--- 
-2.21.0
-
+DQpPbiBUaHUgMTEgSnVsIDIwMTkgYXQgMDM6MzUsIHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+IHdy
+b3RlOg0KPiDlnKggMjAxOS83LzExIDI6MjUsIFZsYWQgQnVzbG92IOWGmemBkzoNCj4+IFJlY2Vu
+dCByZWZhY3RvcmluZyBvZiB0YyBibG9jayBvZmZsb2FkcyBpbmZyYXN0cnVjdHVyZSBpbnRyb2R1
+Y2VkIG5ldw0KPj4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUoKSBtZXRob2QgaW50ZW5kZWQg
+dG8gYmUgdXNlZCBhcyB1bmlmaWVkIHdheSBmb3INCj4+IGFsbCBkcml2ZXJzIHRvIHJlZ2lzdGVy
+IG9mZmxvYWQgY2FsbGJhY2tzLiBIb3dldmVyLCBjb21taXQgdGhhdCBhY3R1YWxseQ0KPj4gZXh0
+ZW5kZWQgYWxsIHVzZXJzIChkcml2ZXJzKSB3aXRoIGJsb2NrIGNiIGxpc3QgYW5kIHByb3ZpZGVk
+IGl0IHRvDQo+PiBmbG93X2Jsb2NrIGluZnJhIG1pc3NlZCBtbHg1IGVuX3JlcC4gVGhpcyBsZWFk
+cyB0byBmb2xsb3dpbmcgTlVMTC1wb2ludGVyDQo+PiBkZXJlZmVyZW5jZSB3aGVuIGNyZWF0aW5n
+IFFkaXNjOg0KPj4NCj4+IFsgIDI3OC4zODUxNzVdIEJVRzoga2VybmVsIE5VTEwgcG9pbnRlciBk
+ZXJlZmVyZW5jZSwgYWRkcmVzczogMDAwMDAwMDAwMDAwMDAwMA0KPj4gWyAgMjc4LjM5MzIzM10g
+I1BGOiBzdXBlcnZpc29yIHJlYWQgYWNjZXNzIGluIGtlcm5lbCBtb2RlDQo+PiBbICAyNzguMzk5
+NDQ2XSAjUEY6IGVycm9yX2NvZGUoMHgwMDAwKSAtIG5vdC1wcmVzZW50IHBhZ2UNCj4+IFsgIDI3
+OC40MDU4NDddIFBHRCA4MDAwMDAwODUwZTczMDY3IFA0RCA4MDAwMDAwODUwZTczMDY3IFBVRCA4
+NjIwY2QwNjcgUE1EIDANCj4+IFsgIDI3OC40MTQxNDFdIE9vcHM6IDAwMDAgWyMxXSBTTVAgUFRJ
+DQo+PiBbICAyNzguNDE5MDE5XSBDUFU6IDcgUElEOiAzMzY5IENvbW06IHRjIE5vdCB0YWludGVk
+IDUuMi4wLXJjNisgIzQ5Mg0KPj4gWyAgMjc4LjQyNjU4MF0gSGFyZHdhcmUgbmFtZTogU3VwZXJt
+aWNybyBTWVMtMjAyOFRQLURFQ1IvWDEwRFJULVAsIEJJT1MgMi4wYiAwMy8zMC8yMDE3DQo+PiBb
+ICAyNzguNDM1ODUzXSBSSVA6IDAwMTA6Zmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUrMHhjNC8w
+eDE5MA0KPj4gWyAgMjc4LjQ0Mjk1M10gQ29kZTogMTAgNDggODkgNDIgMDggNDggODkgMTAgNDgg
+YjggMDAgMDEgMDAgMDAgMDAgMDAgYWQgZGUgNDkgODkgMDAgNDggMDUgMDAgMDEgMDAgMDAgNDkg
+ODkgNDAgMDggMzEgYzAgYzMgYjggYTEgZmYgZmYgZmYgYzMgZjMgYzMgPDQ4PiA4YiAwNiA0OCAz
+OSBjNiA3NSAwYSBlYiAxYSA0OCA4YiAwMCA0OCAzOSBjNiA3NCAxMg0KPj4gIDQ4IDNiIDUwIDI4
+DQo+PiBbICAyNzguNDY0ODI5XSBSU1A6IDAwMTg6ZmZmZmFmMDdjM2Y5Nzk5MCBFRkxBR1M6IDAw
+MDEwMjQ2DQo+PiBbICAyNzguNDcxNjQ4XSBSQVg6IDAwMDAwMDAwMDAwMDAwMDAgUkJYOiBmZmZm
+OWI0M2VkNGM3NjgwIFJDWDogZmZmZjliNDNkNWY4MDg0MA0KPj4gWyAgMjc4LjQ4MDQwOF0gUkRY
+OiBmZmZmZmZmZmMwNDkxNjUwIFJTSTogMDAwMDAwMDAwMDAwMDAwMCBSREk6IGZmZmZhZjA3YzNm
+OTc5OTgNCj4+IFsgIDI3OC40ODkxMTBdIFJCUDogZmZmZjliNDNkZGZmOTAwMCBSMDg6IGZmZmY5
+YjQzZDVmODA4NDAgUjA5OiAwMDAwMDAwMDAwMDAwMDAxDQo+PiBbICAyNzguNDk3ODM4XSBSMTA6
+IDAwMDAwMDAwMDAwMDAwMDkgUjExOiAwMDAwMDAwMDAwMDAwM2FkIFIxMjogZmZmZmFmMDdjM2Y5
+N2MwOA0KPj4gWyAgMjc4LjUwNjU5NV0gUjEzOiBmZmZmOWI0M2Q1ZjgwMDAwIFIxNDogZmZmZjli
+NDNlZDRjNzY4MCBSMTU6IGZmZmY5YjQzZGZhMjBiNDANCj4+IFsgIDI3OC41MTUzNzRdIEZTOiAg
+MDAwMDdmNzk2YmUxYjQwMCgwMDAwKSBHUzpmZmZmOWI0M2VmODQwMDAwKDAwMDApIGtubEdTOjAw
+MDAwMDAwMDAwMDAwMDANCj4+IFsgIDI3OC41MjUwOTldIENTOiAgMDAxMCBEUzogMDAwMCBFUzog
+MDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCj4+IFsgIDI3OC41MzI0NTNdIENSMjogMDAwMDAw
+MDAwMDAwMDAwMCBDUjM6IDAwMDAwMDA4NDAzOTgwMDIgQ1I0OiAwMDAwMDAwMDAwMTYwNmUwDQo+
+PiBbICAyNzguNTQxMTk3XSBDYWxsIFRyYWNlOg0KPj4gWyAgMjc4LjU0NTI1Ml0gIHRjZl9ibG9j
+a19vZmZsb2FkX2NtZC5pc3JhLjUyKzB4N2UvMHhiMA0KPj4gWyAgMjc4LjU1MTg3MV0gIHRjZl9i
+bG9ja19nZXRfZXh0KzB4MzY1LzB4M2UwDQo+PiBbICAyNzguNTU3NTY5XSAgcWRpc2NfY3JlYXRl
+KzB4MTVjLzB4NGUwDQo+PiBbICAyNzguNTYyODU5XSAgPyBrbWVtX2NhY2hlX2FsbG9jX3RyYWNl
+KzB4MWEyLzB4MWMwDQo+PiBbICAyNzguNTY5MjM1XSAgdGNfbW9kaWZ5X3FkaXNjKzB4MWM4LzB4
+NzgwDQo+PiBbICAyNzguNTc0NzYxXSAgcnRuZXRsaW5rX3Jjdl9tc2crMHgyOTEvMHgzNDANCj4+
+IFsgIDI3OC41ODA1MThdICA/IF9jb25kX3Jlc2NoZWQrMHgxNS8weDQwDQo+PiBbICAyNzguNTg1
+ODU2XSAgPyBydG5sX2NhbGNpdC5pc3JhLjI5KzB4MTIwLzB4MTIwDQo+PiBbICAyNzguNTkxODY4
+XSAgbmV0bGlua19yY3Zfc2tiKzB4NGEvMHgxMTANCj4+IFsgIDI3OC41OTcxOThdICBuZXRsaW5r
+X3VuaWNhc3QrMHgxYTAvMHgyNTANCj4+IFsgIDI3OC42MDI2MDFdICBuZXRsaW5rX3NlbmRtc2cr
+MHgyYzEvMHgzYzANCj4+IFsgIDI3OC42MDgwMjJdICBzb2NrX3NlbmRtc2crMHg1Yi8weDYwDQo+
+PiBbICAyNzguNjEyOTY5XSAgX19fc3lzX3NlbmRtc2crMHgyODkvMHgzMTANCj4+IFsgIDI3OC42
+MTgyMzFdICA/IGRvX3dwX3BhZ2UrMHg5OS8weDczMA0KPj4gWyAgMjc4LjYyMzIxNl0gID8gcGFn
+ZV9hZGRfbmV3X2Fub25fcm1hcCsweGJlLzB4MTQwDQo+PiBbICAyNzguNjI5Mjk4XSAgPyBfX2hh
+bmRsZV9tbV9mYXVsdCsweGM4NC8weDEzNjANCj4+IFsgIDI3OC42MzUxMTNdICA/IF9fc3lzX3Nl
+bmRtc2crMHg1ZS8weGEwDQo+PiBbICAyNzguNjQwMjg1XSAgX19zeXNfc2VuZG1zZysweDVlLzB4
+YTANCj4+IFsgIDI3OC42NDUyMzldICBkb19zeXNjYWxsXzY0KzB4NWIvMHgxYjANCj4+IFsgIDI3
+OC42NTAyNzRdICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0NC8weGE5DQo+PiBb
+ICAyNzguNjU2Njk3XSBSSVA6IDAwMzM6MHg3Zjc5NmFiZGViODcNCj4+IFsgIDI3OC42NjE2Mjhd
+IENvZGU6IDY0IDg5IDAyIDQ4IGM3IGMwIGZmIGZmIGZmIGZmIGViIGI5IDBmIDFmIDgwIDAwIDAw
+IDAwIDAwIDhiIDA1IDZhIDJiIDJjIDAwIDQ4IDYzIGQyIDQ4IDYzIGZmIDg1IGMwIDc1IDE4IGI4
+IDJlIDAwIDAwIDAwIDBmIDA1IDw0OD4gM2QgMDAgZjAgZmYgZmYgNzcgNTkgZjMgYzMgMGYgMWYg
+ODAgMDAgMDAgMDAgMDAgNTMNCj4+ICA0OCA4OSBmMyA0OA0KPj4gWyAgMjc4LjY4MzI0OF0gUlNQ
+OiAwMDJiOjAwMDA3ZmZkZTIxM2JhNDggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAwMDAw
+MDAwMDAwMDAyZQ0KPj4gWyAgMjc4LjY5MjI0NV0gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDog
+MDAwMDAwMDA1ZDI2MWU2ZiBSQ1g6IDAwMDA3Zjc5NmFiZGViODcNCj4+IFsgIDI3OC43MDA4NjJd
+IFJEWDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IDAwMDA3ZmZkZTIxM2JhYjAgUkRJOiAwMDAwMDAw
+MDAwMDAwMDAzDQo+PiBbICAyNzguNzA5NTI3XSBSQlA6IDAwMDAwMDAwMDAwMDAwMDAgUjA4OiAw
+MDAwMDAwMDAwMDAwMDAxIFIwOTogMDAwMDAwMDAwMDAwMDAwNg0KPj4gWyAgMjc4LjcxODE2N10g
+UjEwOiAwMDAwMDAwMDAwMDAwMDBjIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDAwMDAw
+MDAwMDAwMDENCj4+IFsgIDI3OC43MjY3NDNdIFIxMzogMDAwMDAwMDAwMDY3YjU4MCBSMTQ6IDAw
+MDAwMDAwMDAwMDAwMDAgUjE1OiAwMDAwMDAwMDAwMDAwMDAwDQo+PiBbICAyNzguNzM1MzAyXSBN
+b2R1bGVzIGxpbmtlZCBpbjogZHVtbXkgdnhsYW4gaXA2X3VkcF90dW5uZWwgdWRwX3R1bm5lbCBz
+Y2hfaW5ncmVzcyBuZnN2MyBuZnNfYWNsIG5mcyBsb2NrZCBncmFjZSBmc2NhY2hlIGJyaWRnZSBz
+dHAgbGxjIHN1bnJwYyBtbHg1X2liIGliX3V2ZXJicyBpbnRlbF9yYXBsIGliX2NvcmUgc2JfZWRh
+YyB4ODZfcGtnX3RlbXBfDQo+PiB0aGVybWFsIGludGVsX3Bvd2VyY2xhbXAgY29yZXRlbXAga3Zt
+X2ludGVsIGt2bSBtbHg1X2NvcmUgaXJxYnlwYXNzIGNyY3QxMGRpZl9wY2xtdWwgY3JjMzJfcGNs
+bXVsIGNyYzMyY19pbnRlbCBpZ2IgZ2hhc2hfY2xtdWxuaV9pbnRlbCBzZXMgbWVpX21lIGVuY2xv
+c3VyZSBtbHhmdyBpcG1pX3NzaWYgaW50ZWxfY3N0YXRlIGlUQ09fd2R0IHB0cCBtZWkNCj4+IHBw
+c19jb3JlIGlUQ09fdmVuZG9yX3N1cHBvcnQgcGNzcGtyIGpveWRldiBpbnRlbF91bmNvcmUgaTJj
+X2k4MDEgaXBtaV9zaSBscGNfaWNoIGludGVsX3JhcGxfcGVyZiBpb2F0ZG1hIHdtaSBkY2EgcGNj
+X2NwdWZyZXEgaXBtaV9kZXZpbnRmIGlwbWlfbXNnaGFuZGxlciBhY3BpX3Bvd2VyX21ldGVyIGFj
+cGlfcGFkIGFzdCBpMmNfYWxnb19iaXQgZHJtX2sNCj4+IG1zX2hlbHBlciB0dG0gZHJtIG1wdDNz
+YXMgcmFpZF9jbGFzcyBzY3NpX3RyYW5zcG9ydF9zYXMNCj4+IFsgIDI3OC44MDIyNjNdIENSMjog
+MDAwMDAwMDAwMDAwMDAwMA0KPj4gWyAgMjc4LjgwNzE3MF0gLS0tWyBlbmQgdHJhY2UgYjFmMGE0
+NDJhMjc5ZTY2ZiBdLS0tDQo+Pg0KPj4gRXh0ZW5kIGVuX3JlcCB3aXRoIG5ldyBzdGF0aWMgbWx4
+NWVfcmVwX2Jsb2NrX2NiX2xpc3QgbGlzdCBhbmQgcGFzcyBpdCB0bw0KPj4gZmxvd19ibG9ja19j
+Yl9zZXR1cF9zaW1wbGUoKSBmdW5jdGlvbiBpbnN0ZWFkIG9mIGhhcmRjb2RlZCBOVUxMIHBvaW50
+ZXIuDQo+Pg0KPj4gRml4ZXM6IDk1NWJjYjZlYTBkZiAoImRyaXZlcnM6IG5ldDogdXNlIGZsb3cg
+YmxvY2sgQVBJIikNCj4+IFNpZ25lZC1vZmYtYnk6IFZsYWQgQnVzbG92IDx2bGFkYnVAbWVsbGFu
+b3guY29tPg0KPj4gLS0tDQo+PiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
+b3JlL2VuX3JlcC5jIHwgNSArKysrLQ0KPj4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMo
+KyksIDEgZGVsZXRpb24oLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
+bGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+PiBpbmRleCAxMGVmOTBhN2JkZGQuLjcyNDVkMjg3
+NjMzZCAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUv
+Y29yZS9lbl9yZXAuYw0KPj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
+NS9jb3JlL2VuX3JlcC5jDQo+PiBAQCAtMTE3NSw2ICsxMTc1LDggQEAgc3RhdGljIGludCBtbHg1
+ZV9yZXBfc2V0dXBfdGNfY2IoZW51bSB0Y19zZXR1cF90eXBlIHR5cGUsIHZvaWQgKnR5cGVfZGF0
+YSwNCj4+ICAJfQ0KPj4gIH0NCj4+ICANCj4+ICtzdGF0aWMgTElTVF9IRUFEKG1seDVlX3JlcF9i
+bG9ja19jYl9saXN0KTsNCj4+ICsNCj4NCj4gSSB0aGluayBpdCBpcyBub3QgbmVjZXNzYXJ5IG5l
+ZWRzIGEgZXh0cmEgTElTVF9IRUFELCB0aGUgZWFybHkgbWx4NWVfYmxvY2tfY2JfbGlzdCBpcyBv
+aw0KPg0KPiBUaGUgZWFybHkgcGF0Y2ggaHR0cDovL3BhdGNod29yay5vemxhYnMub3JnL3BhdGNo
+LzExMzA0MzkvIGlzIGVub3VnaC4NCg0KWWVzLCBidXQgaW4gdGhhdCBjYXNlIHdlIHdpbGwgbWl4
+IG1seDVlX3JlcF9zZXR1cF90Y19jYiByZXAgY2FsbGJhY2sgYW5kDQptbHg1ZV9yZXBfaW5kcl9z
+ZXR1cF9ibG9ja19jYiBpbmRpcmVjdCBjYWxsYmFjayBpbiBzaW5nbGUgbGlzdC4gSSBtaWdodA0K
+YmUgbWlzc2luZyBzb21ldGhpbmcsIGJ1dCBJIGRvbid0IHNlZSB3aHkgd2Ugd291bGQgd2FudCB0
+aGF0Lg0KDQo+DQo+PiAgc3RhdGljIGludCBtbHg1ZV9yZXBfc2V0dXBfdGMoc3RydWN0IG5ldF9k
+ZXZpY2UgKmRldiwgZW51bSB0Y19zZXR1cF90eXBlIHR5cGUsDQo+PiAgCQkJICAgICAgdm9pZCAq
+dHlwZV9kYXRhKQ0KPj4gIHsNCj4+IEBAIC0xMTgyLDcgKzExODQsOCBAQCBzdGF0aWMgaW50IG1s
+eDVlX3JlcF9zZXR1cF90YyhzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBlbnVtIHRjX3NldHVwX3R5
+cGUgdHlwZSwNCj4+ICANCj4+ICAJc3dpdGNoICh0eXBlKSB7DQo+PiAgCWNhc2UgVENfU0VUVVBf
+QkxPQ0s6DQo+PiAtCQlyZXR1cm4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUodHlwZV9kYXRh
+LCBOVUxMLA0KPj4gKwkJcmV0dXJuIGZsb3dfYmxvY2tfY2Jfc2V0dXBfc2ltcGxlKHR5cGVfZGF0
+YSwNCj4+ICsJCQkJCQkgICZtbHg1ZV9yZXBfYmxvY2tfY2JfbGlzdCwNCj4+ICAJCQkJCQkgIG1s
+eDVlX3JlcF9zZXR1cF90Y19jYiwNCj4+ICAJCQkJCQkgIHByaXYsIHByaXYsIHRydWUpOw0KPj4g
+IAlkZWZhdWx0Og0KDQo=
