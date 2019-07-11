@@ -2,129 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADF366267
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2E166627A
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730545AbfGKXoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 19:44:46 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38778 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730522AbfGKXoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:44:38 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y15so3466832pfn.5
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 16:44:37 -0700 (PDT)
+        id S1728827AbfGKXrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 19:47:22 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40059 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728532AbfGKXrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:47:22 -0400
+Received: by mail-qt1-f194.google.com with SMTP id a15so6294417qtn.7;
+        Thu, 11 Jul 2019 16:47:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9hScIZHsJmciYgxW3aaEACdipTjQ9ZhOMfEnTUSyg1Q=;
-        b=kUZQBreXwSQ3LNMpnqWvxcf4z6FWwsyIribYH6vlDIlwsM/srzaOqB8hIC628Mxbpi
-         sTEAQ/xS3ImmQx1BNXkDBgZwF5VYl6hRzaTcO42erW/MK6aBa4x3s17KPW5cbQUHnjAY
-         AwCUMvXSnmIzqwu3/UeH7anXY4KB+DD3eYa0o=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9mOzCmWu7iP2cO6YA87BG1jCD7rtcJcCtL3+itxwnEQ=;
+        b=DUKjSbuz4ZX9Efg/TfgRHhsM/7Mh1MYSAsvORQnwkxK5y/Muv4jwNrXTdin2IrZQ3k
+         wutgC/VJ+vDaojIy5zRaWnFwDMv4BJqsb2qKOjg5sSC7MaYFLpC5F6VEn7aOFH+U4UQJ
+         CWHeVauQaueQjDyqtWKhixGMTO/fWkv71C6C5aXW2VvcYVyscv0/a22XGdqj0wY5jdh8
+         Zo6ruAIrntyA6cPjSnl3WrnCqVCNg0BQY4zAqzQwaMhrcXMglj0RIGoWHZN9PFWBK0WI
+         CIVQGcAidUYQxEVByoarA09NA3yMnNPYInFPpMex4h8WWHgGCXHjsg2AaqKS9ao90cXn
+         jEHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9hScIZHsJmciYgxW3aaEACdipTjQ9ZhOMfEnTUSyg1Q=;
-        b=U0qtPspPvURCmNWohQgmvYGesJ65EbaFzHuIHY1LOSrjO7QyUfEMOz6JSZd03FRYoP
-         j/8eFdSRFh/tBDpGsjD2FCD7jm2q9/cEbphAQK4UaQ/1DrPFxVHK9566bJ45hcE9vcvO
-         kL7bTM1yF4UrognDKD9n0rVgU0jw/0N0klKMEyNYCnNdbcpVYB/jTdPLsnFNWbuWgvmO
-         98QEuFkDg1vUy85ZK8gZg1STJiLb3Uq3ILHZbhbeQCJ0q2H7QAxegJafrM4RBaYAmt1O
-         0yvvRcSl3umGpmBtf3+fs+IHdcr/TfM57OPNZp9gIAJYWvtQuXCScTijA+DqpgehCsp1
-         1Xmw==
-X-Gm-Message-State: APjAAAUC/lC4/+pRtuUnN4AeyEpf8pTD8GnqYM0V2YtK9UxpFgSe9XaN
-        g1nj86maCrguhq+1EgjH6Co=
-X-Google-Smtp-Source: APXvYqxSDqyaeYYrrky8TWDPKqAGIx032RS1Jxow1lqnbITQYU3SZG4CMrefnUWSiviXF9o7KBA/IQ==
-X-Received: by 2002:a17:90a:8a15:: with SMTP id w21mr7864165pjn.134.1562888677430;
-        Thu, 11 Jul 2019 16:44:37 -0700 (PDT)
-Received: from joelaf.cam.corp.google.com ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id t10sm6163450pjr.13.2019.07.11.16.44.33
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 11 Jul 2019 16:44:36 -0700 (PDT)
-From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-Subject: [PATCH v1 6/6] acpi: Use built-in RCU list checking for acpi_ioremaps list
-Date:   Thu, 11 Jul 2019 19:44:01 -0400
-Message-Id: <20190711234401.220336-7-joel@joelfernandes.org>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-In-Reply-To: <20190711234401.220336-1-joel@joelfernandes.org>
-References: <20190711234401.220336-1-joel@joelfernandes.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9mOzCmWu7iP2cO6YA87BG1jCD7rtcJcCtL3+itxwnEQ=;
+        b=tHOZrykSrJrUzLdC8wXmDy2IjzjyGNCphImLDFwle2dJ1JIxVibVdlWOeZXW3r40NB
+         0IzkUSXEWrFIbjwAooc/XTGzw3MpJzcSXnMChl2z+jkS1F+QmXqqYpNOkd610f96UA8g
+         MQjNw6qJHgXB4Tn/goqrI8GFsVCxYiS4Cfe9NlJdzbpH6bWYrjaDjHpHI8FrlHcVP0kJ
+         7mVad/KO6X+uD8EOEHSYIxZDQ8MCPheRKpgy9Sc0huli7wfHkMRXfUvAS1H1Tk8QqtxR
+         quCRsTGEkjLoPj+3bN3Odh1XKD9cHQLiE2YSYSGzvq2YNBptxfI3lMx6TAU67HSM5A4X
+         QwSg==
+X-Gm-Message-State: APjAAAW1dN4QsJab81zR5BFLhXc5zvdYw4nZR0bhYp9vKFibHWTDYdsV
+        2hS14N5UBfSGnogne1ydbYT2DJ68emWw24ZzH3E=
+X-Google-Smtp-Source: APXvYqwKrsSTIoIu312DM1OogO+Nt/7ng/6mozD5/JRx0tp1Wn7qacQRTEQMza7ICvZz3sOS3tE77a3A+izfO/l5gnI=
+X-Received: by 2002:ac8:32a1:: with SMTP id z30mr4043423qta.117.1562888841104;
+ Thu, 11 Jul 2019 16:47:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190710231439.GD32439@tassilo.jf.intel.com> <1562838037-1884-1-git-send-email-p.pisati@gmail.com>
+ <1562838037-1884-3-git-send-email-p.pisati@gmail.com>
+In-Reply-To: <1562838037-1884-3-git-send-email-p.pisati@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 11 Jul 2019 16:47:10 -0700
+Message-ID: <CAEf4BzZ13GoSgSrLc3KBhcUO4Aa0V+6kHZMhVgGqr2Mz0iVsyA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] bpf, selftest: fix checksum value for test #13
+To:     Paolo Pisati <p.pisati@gmail.com>
+Cc:     "--to=Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiong Wang <jiong.wang@netronome.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-list_for_each_entry_rcu has built-in RCU and lock checking. Make use of
-it for acpi_ioremaps list traversal.
+On Thu, Jul 11, 2019 at 2:41 AM Paolo Pisati <p.pisati@gmail.com> wrote:
+>
+> From: Paolo Pisati <paolo.pisati@canonical.com>
+>
 
-Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
----
- drivers/acpi/osl.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Please include description, in addition to subject.
 
-diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-index f29e427d0d1d..c8b5d712c7ae 100644
---- a/drivers/acpi/osl.c
-+++ b/drivers/acpi/osl.c
-@@ -28,6 +28,7 @@
- #include <linux/slab.h>
- #include <linux/mm.h>
- #include <linux/highmem.h>
-+#include <linux/lockdep.h>
- #include <linux/pci.h>
- #include <linux/interrupt.h>
- #include <linux/kmod.h>
-@@ -94,6 +95,7 @@ struct acpi_ioremap {
- 
- static LIST_HEAD(acpi_ioremaps);
- static DEFINE_MUTEX(acpi_ioremap_lock);
-+#define acpi_ioremap_lock_held() lock_is_held(&acpi_ioremap_lock.dep_map)
- 
- static void __init acpi_request_region (struct acpi_generic_address *gas,
- 	unsigned int length, char *desc)
-@@ -220,7 +222,7 @@ acpi_map_lookup(acpi_physical_address phys, acpi_size size)
- {
- 	struct acpi_ioremap *map;
- 
--	list_for_each_entry_rcu(map, &acpi_ioremaps, list)
-+	list_for_each_entry_rcu(map, &acpi_ioremaps, list, acpi_ioremap_lock_held())
- 		if (map->phys <= phys &&
- 		    phys + size <= map->phys + map->size)
- 			return map;
-@@ -263,7 +265,7 @@ acpi_map_lookup_virt(void __iomem *virt, acpi_size size)
- {
- 	struct acpi_ioremap *map;
- 
--	list_for_each_entry_rcu(map, &acpi_ioremaps, list)
-+	list_for_each_entry_rcu(map, &acpi_ioremaps, list, acpi_ioremap_lock_held())
- 		if (map->virt <= virt &&
- 		    virt + size <= map->virt + map->size)
- 			return map;
--- 
-2.22.0.410.gd8fdbe21b5-goog
+Also, when submitting patches, please add bpf or bpf-next (e.g.,
+[PATCH bpf 2/2] to indicate which tree it's supposed to go into). For
+this one it's probably bpf.
 
+
+> Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+> ---
+>  tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/verifier/array_access.c b/tools/testing/selftests/bpf/verifier/array_access.c
+> index bcb83196e459..4698f560d756 100644
+> --- a/tools/testing/selftests/bpf/verifier/array_access.c
+> +++ b/tools/testing/selftests/bpf/verifier/array_access.c
+> @@ -255,7 +255,7 @@
+>         .prog_type = BPF_PROG_TYPE_SCHED_CLS,
+>         .fixup_map_array_ro = { 3 },
+>         .result = ACCEPT,
+> -       .retval = -29,
+> +       .retval = 28,
+>  },
+>  {
+>         "invalid write map access into a read-only array 1",
+> --
+> 2.17.1
+>
