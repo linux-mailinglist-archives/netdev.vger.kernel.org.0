@@ -2,419 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50665652F0
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 10:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A2E6538E
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:13:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728261AbfGKIOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 04:14:39 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37063 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728049AbfGKIOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 04:14:36 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 11 Jul 2019 11:14:31 +0300
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6B8EVkX026708;
-        Thu, 11 Jul 2019 11:14:31 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>
-Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-Subject: [PATCH net-next iproute2 v2 3/3] tc: flower: Add matching on conntrack info
-Date:   Thu, 11 Jul 2019 11:14:27 +0300
-Message-Id: <1562832867-32347-4-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1562832867-32347-1-git-send-email-paulb@mellanox.com>
-References: <1562832867-32347-1-git-send-email-paulb@mellanox.com>
+        id S1727946AbfGKJM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 05:12:58 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42440 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726997AbfGKJM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:12:58 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6B9CTjd043043
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:12:57 -0400
+Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tp23armsj-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:12:56 -0400
+Received: from localhost
+        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Thu, 11 Jul 2019 10:12:54 +0100
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 11 Jul 2019 10:12:51 +0100
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6B9Cof951707962
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Jul 2019 09:12:50 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CF94C52052;
+        Thu, 11 Jul 2019 09:12:50 +0000 (GMT)
+Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9864052050;
+        Thu, 11 Jul 2019 09:12:50 +0000 (GMT)
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     andrii.nakryiko@gmail.com, daniel@iogearbox.net,
+        liu.song.a23@gmail.com, Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH v3 bpf] selftests/bpf: do not ignore clang failures
+Date:   Thu, 11 Jul 2019 11:12:49 +0200
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071109-0020-0000-0000-00000352A5E6
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071109-0021-0000-0000-000021A65E50
+Message-Id: <20190711091249.59865-1-iii@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907110109
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matches on conntrack state, zone, mark, and label.
+When compiling an eBPF prog fails, make still returns 0, because
+failing clang command's output is piped to llc and therefore its
+exit status is ignored.
 
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Yossi Kuperman <yossiku@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Acked-by: Roi Dayan <roid@mellanox.com>
+When clang fails, pipe the string "clang failed" to llc. This will make
+llc fail with an informative error message. This solution was chosen
+over using pipefail, having separate targets or getting rid of llc
+invocation due to its simplicity.
+
+In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
+which would cause partial .o files to be removed.
+
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
 ---
- man/man8/tc-flower.8 |  35 +++++++
- tc/f_flower.c        | 276 ++++++++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 310 insertions(+), 1 deletion(-)
+v1->v2: use intermediate targets instead of pipefail
+v2->v3: pipe "clang failed" instead of using intermediate targets
 
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index adff41e..04ee194 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -289,6 +289,41 @@ bits is assumed.
- .TQ
- .BI enc_ttl " NUMBER"
- .TQ
-+.BR
-+.TP
-+.BI ct_state " CT_STATE"
-+.TQ
-+.BI ct_zone " CT_MASKED_ZONE"
-+.TQ
-+.BI ct_mark " CT_MASKED_MARK"
-+.TQ
-+.BI ct_label " CT_MASKED_LABEL"
-+Matches on connection tracking info
-+.RS
-+.TP
-+.I CT_STATE
-+Match the connection state, and can ne combination of [{+|-}flag] flags, where flag can be one of
-+.RS
-+.TP
-+trk - Tracked connection.
-+.TP
-+new - New connection.
-+.TP
-+est - Established connection.
-+.TP
-+Example: +trk+est
-+.RE
-+.TP
-+.I CT_MASKED_ZONE
-+Match the connection zone, and can be masked.
-+.TP
-+.I CT_MASKED_MARK
-+32bit match on the connection mark, and can be masked.
-+.TP
-+.I CT_MASKED_LABEL
-+128bit match on the connection label, and can be masked.
-+.RE
-+.TP
- .BI geneve_opts " OPTIONS"
- Match on IP tunnel metadata. Key id
- .I NUMBER
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 70d40d3..a2a2301 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -82,9 +82,14 @@ static void explain(void)
- 		"			enc_ttl MASKED-IP_TTL |\n"
- 		"			geneve_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS | \n"
--		"			enc_dst_port [ port_number ] }\n"
-+		"			enc_dst_port [ port_number ] |\n"
-+		"			ct_state MASKED_CT_STATE |\n"
-+		"			ct_label MASKED_CT_LABEL |\n"
-+		"			ct_mark MASKED_CT_MARK |\n"
-+		"			ct_zone MASKED_CT_ZONE }\n"
- 		"	FILTERID := X:Y:Z\n"
- 		"	MASKED_LLADDR := { LLADDR | LLADDR/MASK | LLADDR/BITS }\n"
-+		"	MASKED_CT_STATE := combination of {+|-} and flags trk,est,new\n"
- 		"	ACTION-SPEC := ... look at individual actions\n"
- 		"\n"
- 		"NOTE:	CLASSID, IP-PROTO are parsed as hexadecimal input.\n"
-@@ -214,6 +219,159 @@ static int flower_parse_matching_flags(char *str,
- 	return 0;
- }
+tools/testing/selftests/bpf/Makefile | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index e36356e2377e..e375f399b7a6 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
++include ../../../../scripts/Kbuild.include
  
-+static int flower_parse_u16(char *str, int value_type, int mask_type,
-+			    struct nlmsghdr *n)
-+{
-+	__u16 value, mask;
-+	char *slash;
-+
-+	slash = strchr(str, '/');
-+	if (slash)
-+		*slash = '\0';
-+
-+	if (get_u16(&value, str, 0))
-+		return -1;
-+
-+	if (slash) {
-+		if (get_u16(&mask, slash + 1, 0))
-+			return -1;
-+	} else {
-+		mask = UINT16_MAX;
-+	}
-+
-+	addattr16(n, MAX_MSG, value_type, value);
-+	addattr16(n, MAX_MSG, mask_type, mask);
-+
-+	return 0;
-+}
-+
-+static int flower_parse_u32(char *str, int value_type, int mask_type,
-+			    struct nlmsghdr *n)
-+{
-+	__u32 value, mask;
-+	char *slash;
-+
-+	slash = strchr(str, '/');
-+	if (slash)
-+		*slash = '\0';
-+
-+	if (get_u32(&value, str, 0))
-+		return -1;
-+
-+	if (slash) {
-+		if (get_u32(&mask, slash + 1, 0))
-+			return -1;
-+	} else {
-+		mask = UINT32_MAX;
-+	}
-+
-+	addattr32(n, MAX_MSG, value_type, value);
-+	addattr32(n, MAX_MSG, mask_type, mask);
-+
-+	return 0;
-+}
-+
-+static int flower_parse_ct_mark(char *str, struct nlmsghdr *n)
-+{
-+	return flower_parse_u32(str,
-+				TCA_FLOWER_KEY_CT_MARK,
-+				TCA_FLOWER_KEY_CT_MARK_MASK,
-+				n);
-+}
-+
-+static int flower_parse_ct_zone(char *str, struct nlmsghdr *n)
-+{
-+	return flower_parse_u16(str,
-+				TCA_FLOWER_KEY_CT_ZONE,
-+				TCA_FLOWER_KEY_CT_ZONE_MASK,
-+				n);
-+}
-+
-+static int flower_parse_ct_labels(char *str, struct nlmsghdr *n)
-+{
-+#define LABELS_SIZE	16
-+	uint8_t labels[LABELS_SIZE], lmask[LABELS_SIZE];
-+	char *slash, *mask = NULL;
-+	size_t slen, slen_mask = 0;
-+
-+	slash = index(str, '/');
-+	if (slash) {
-+		*slash = 0;
-+		mask = slash + 1;
-+		slen_mask = strlen(mask);
-+	}
-+
-+	slen = strlen(str);
-+	if (slen > LABELS_SIZE * 2 || slen_mask > LABELS_SIZE * 2) {
-+		char errmsg[128];
-+
-+		snprintf(errmsg, sizeof(errmsg),
-+				"%zd Max allowed size %d",
-+				slen, LABELS_SIZE*2);
-+		invarg(errmsg, str);
-+	}
-+
-+	if (hex2mem(str, labels, slen / 2) < 0)
-+		invarg("labels must be a hex string\n", str);
-+	addattr_l(n, MAX_MSG, TCA_FLOWER_KEY_CT_LABELS, labels, slen / 2);
-+
-+	if (mask) {
-+		if (hex2mem(mask, lmask, slen_mask / 2) < 0)
-+			invarg("labels mask must be a hex string\n", mask);
-+	} else {
-+		memset(lmask, 0xff, sizeof(lmask));
-+		slen_mask = sizeof(lmask) * 2;
-+	}
-+	addattr_l(n, MAX_MSG, TCA_FLOWER_KEY_CT_LABELS_MASK, lmask,
-+		  slen_mask / 2);
-+
-+	return 0;
-+}
-+
-+static struct flower_ct_states {
-+	char *str;
-+	int flag;
-+} flower_ct_states[] = {
-+	{ "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
-+	{ "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
-+	{ "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
-+};
-+
-+static int flower_parse_ct_state(char *str, struct nlmsghdr *n)
-+{
-+	int flags = 0, mask = 0,  len, i;
-+	bool p;
-+
-+	while (*str != '\0') {
-+		if (*str == '+')
-+			p = true;
-+		else if (*str == '-')
-+			p = false;
-+		else
-+			return -1;
-+
-+		for (i = 0; i < ARRAY_SIZE(flower_ct_states); i++) {
-+			len = strlen(flower_ct_states[i].str);
-+			if (strncmp(str + 1, flower_ct_states[i].str, len))
-+				continue;
-+
-+			if (p)
-+				flags |= flower_ct_states[i].flag;
-+			mask |= flower_ct_states[i].flag;
-+			break;
-+		}
-+
-+		if (i == ARRAY_SIZE(flower_ct_states))
-+			return -1;
-+
-+		str += len + 1;
-+	}
-+
-+	addattr16(n, MAX_MSG, TCA_FLOWER_KEY_CT_STATE, flags);
-+	addattr16(n, MAX_MSG, TCA_FLOWER_KEY_CT_STATE_MASK, mask);
-+	return 0;
-+}
-+
- static int flower_parse_ip_proto(char *str, __be16 eth_type, int type,
- 				 __u8 *p_ip_proto, struct nlmsghdr *n)
- {
-@@ -898,6 +1056,34 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 			flags |= TCA_CLS_FLAGS_SKIP_HW;
- 		} else if (matches(*argv, "skip_sw") == 0) {
- 			flags |= TCA_CLS_FLAGS_SKIP_SW;
-+		} else if (matches(*argv, "ct_state") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_state(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_state\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "ct_zone") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_zone(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_zone\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "ct_mark") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_mark(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_mark\"\n");
-+				return -1;
-+			}
-+		} else if (matches(*argv, "ct_label") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_ct_labels(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"ct_label\"\n");
-+				return -1;
-+			}
- 		} else if (matches(*argv, "indev") == 0) {
- 			NEXT_ARG();
- 			if (check_ifname(*argv))
-@@ -1590,6 +1776,85 @@ static void flower_print_tcp_flags(const char *name, struct rtattr *flags_attr,
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
+ LIBDIR := ../../../lib
+ BPFDIR := $(LIBDIR)/bpf
+@@ -185,8 +186,8 @@ $(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
  
-+static void flower_print_ct_state(struct rtattr *flags_attr,
-+				  struct rtattr *mask_attr)
-+{
-+	SPRINT_BUF(out);
-+	uint16_t state;
-+	uint16_t state_mask;
-+	size_t done = 0;
-+	int i;
-+
-+	if (!flags_attr)
-+		return;
-+
-+	state = rta_getattr_u16(flags_attr);
-+	if (mask_attr)
-+		state_mask = rta_getattr_u16(mask_attr);
-+	else
-+		state_mask = UINT16_MAX;
-+
-+	for (i = 0; i < ARRAY_SIZE(flower_ct_states); i++) {
-+		if (!(state_mask & flower_ct_states[i].flag))
-+			continue;
-+
-+		if (state & flower_ct_states[i].flag)
-+			done += sprintf(out + done, "+%s",
-+					flower_ct_states[i].str);
-+		else
-+			done += sprintf(out + done, "-%s",
-+					flower_ct_states[i].str);
-+	}
-+
-+	print_string(PRINT_ANY, "ct_state", "\n  ct_state %s", out);
-+}
-+
-+static void flower_print_ct_label(struct rtattr *attr,
-+				  struct rtattr *mask_attr)
-+{
-+	const unsigned char *str;
-+	bool print_mask = false;
-+	int data_len, i;
-+	SPRINT_BUF(out);
-+	char *p;
-+
-+	if (!attr)
-+		return;
-+
-+	data_len = RTA_PAYLOAD(attr);
-+	hexstring_n2a(RTA_DATA(attr), data_len, out, sizeof(out));
-+	p = out + data_len*2;
-+
-+	data_len = RTA_PAYLOAD(attr);
-+	str = RTA_DATA(mask_attr);
-+	if (data_len != 16)
-+		print_mask = true;
-+	for (i = 0; !print_mask && i < data_len; i++) {
-+		if (str[i] != 0xff)
-+			print_mask = true;
-+	}
-+	if (print_mask) {
-+		*p++ = '/';
-+		hexstring_n2a(RTA_DATA(mask_attr), data_len, p,
-+			      sizeof(out)-(p-out));
-+		p += data_len*2;
-+	}
-+	*p = '\0';
-+
-+	print_string(PRINT_ANY, "ct_label", "\n  ct_label %s", out);
-+}
-+
-+static void flower_print_ct_zone(struct rtattr *attr,
-+				 struct rtattr *mask_attr)
-+{
-+	print_masked_u16("ct_zone", attr, mask_attr);
-+}
-+
-+static void flower_print_ct_mark(struct rtattr *attr,
-+				 struct rtattr *mask_attr)
-+{
-+	print_masked_u32("ct_mark", attr, mask_attr);
-+}
+ $(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR) \
+ 					$(ALU32_BUILD_DIR)/test_progs_32
+-	$(CLANG) $(CLANG_FLAGS) \
+-		 -O2 -target bpf -emit-llvm -c $< -o - |      \
++	($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
++		echo "clang failed") | \
+ 	$(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
+ 		-filetype=obj -o $@
+ ifeq ($(DWARF2BTF),y)
+@@ -197,16 +198,16 @@ endif
+ # Have one program compiled without "-target bpf" to test whether libbpf loads
+ # it successfully
+ $(OUTPUT)/test_xdp.o: progs/test_xdp.c
+-	$(CLANG) $(CLANG_FLAGS) \
+-		-O2 -emit-llvm -c $< -o - | \
++	($(CLANG) $(CLANG_FLAGS) -O2 -emit-llvm -c $< -o - || \
++		echo "clang failed") | \
+ 	$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
+ ifeq ($(DWARF2BTF),y)
+ 	$(BTF_PAHOLE) -J $@
+ endif
  
- static void flower_print_key_id(const char *name, struct rtattr *attr)
- {
-@@ -1949,6 +2214,15 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 				    tb[TCA_FLOWER_KEY_FLAGS],
- 				    tb[TCA_FLOWER_KEY_FLAGS_MASK]);
- 
-+	flower_print_ct_state(tb[TCA_FLOWER_KEY_CT_STATE],
-+			      tb[TCA_FLOWER_KEY_CT_STATE_MASK]);
-+	flower_print_ct_zone(tb[TCA_FLOWER_KEY_CT_ZONE],
-+			     tb[TCA_FLOWER_KEY_CT_ZONE_MASK]);
-+	flower_print_ct_mark(tb[TCA_FLOWER_KEY_CT_MARK],
-+			     tb[TCA_FLOWER_KEY_CT_MARK_MASK]);
-+	flower_print_ct_label(tb[TCA_FLOWER_KEY_CT_LABELS],
-+			      tb[TCA_FLOWER_KEY_CT_LABELS_MASK]);
-+
- 	close_json_object();
- 
- 	if (tb[TCA_FLOWER_FLAGS]) {
+ $(OUTPUT)/%.o: progs/%.c
+-	$(CLANG) $(CLANG_FLAGS) \
+-		 -O2 -target bpf -emit-llvm -c $< -o - |      \
++	($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
++		echo "clang failed") | \
+ 	$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
+ ifeq ($(DWARF2BTF),y)
+ 	$(BTF_PAHOLE) -J $@
 -- 
-1.8.3.1
+2.21.0
 
