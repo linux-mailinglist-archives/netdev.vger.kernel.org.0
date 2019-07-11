@@ -2,116 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE78065DB9
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 18:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 785A165B8A
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 18:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728612AbfGKQnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 12:43:17 -0400
-Received: from gateway32.websitewelcome.com ([192.185.145.122]:30960 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728405AbfGKQnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 12:43:16 -0400
-X-Greylist: delayed 1241 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Jul 2019 12:43:16 EDT
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id 39A352C9D5
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 11:22:35 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id lbq7h3O2TdnCelbq7ha7qS; Thu, 11 Jul 2019 11:22:35 -0500
-X-Authority-Reason: nr=8
-Received: from cablelink-187-160-61-213.pcs.intercable.net ([187.160.61.213]:24662 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hlbq6-002Yit-1g; Thu, 11 Jul 2019 11:22:34 -0500
-Date:   Thu, 11 Jul 2019 11:22:33 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lawrence Brakmo <brakmo@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH][bpf-next] bpf: verifier: avoid fall-through warnings
-Message-ID: <20190711162233.GA6977@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.160.61.213
-X-Source-L: No
-X-Exim-ID: 1hlbq6-002Yit-1g
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: cablelink-187-160-61-213.pcs.intercable.net (embeddedor) [187.160.61.213]:24662
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 13
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        id S1728575AbfGKQ3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 12:29:08 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:39513 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728045AbfGKQ3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 12:29:08 -0400
+Received: by mail-io1-f68.google.com with SMTP id f4so13875194ioh.6
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 09:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=3PGALE1Lj/+P5QEMH+LWiHvgMILXh+vRnx/Jvwzj3v8=;
+        b=WdFFfFC7lK8VEZYeAyJ6nfueWEred8X9HeQi0UJRy9TFQoAa5Gkkj6zriF9cnuGYnT
+         IiWKsGDj9PKbwL72M6PDoH67aezlNCyTEAh/6YpmjKA0Y6IQQvmaEZ+v0doIc9yYgukc
+         Cn65TOho6aAaUQpRzmkArjmqoFh5TohDADkWG7xiXpBH7VBVtzr6czqTmqLLsq2e4SNj
+         9mJAEwwW+eV1GPlrBDcQK4KXn0AVzrAUnVNm+hh8bE3DDqA24PWqlYZUoNk+xVvwzjSc
+         NJVKzv5vm3V59wMEXowu8+qWSLu1OH+vXa/V5/t2B84NEnUFX9KZlcrUuMY5FthbaxTi
+         bekQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3PGALE1Lj/+P5QEMH+LWiHvgMILXh+vRnx/Jvwzj3v8=;
+        b=IdmnaBdN/+7QpgFk7coVOLYPTX5dVStmeWS0+IlB6QAhL8mLTY3xY69AFJmv3BAMJH
+         qdQMpmvhGEvSIaoNW+EYobDLD/t8MgMVnFuisv/zcnvnuNalOurAUVW6V/Bo/yPCocu9
+         WzLhIgvNX/AEDoYgX3Kxym1/mJZ16hPouowXyZo6BfPvH2xWsO/DwkTve5rse3ycqZcn
+         M/ipgDDP2E7VJ8WVAIRepvuL0wFSpdX2wGfQPZ46O2YByJk9kGtFPxRGCJ239qXCOBlw
+         QQ9SLqAzmosw/pOixQw/ONm8/vAsbcF120onk56D4zrw+qiZusqNXRAPA6zWNW2pfS22
+         /MEA==
+X-Gm-Message-State: APjAAAXhmZmWO/u6a25lMGHbJWs+t6Y32028HiZztRUAME58VrcqcBLd
+        R6Iefk3PF97EgW7s9BdvIC7WOzmr
+X-Google-Smtp-Source: APXvYqxNaubtpaUHIXFd4K+9YsyiR8AiC9go5d8u6e9vwrA776+cZU5dI8M27PGOGtL9cDEDctRquA==
+X-Received: by 2002:a05:6602:219a:: with SMTP id b26mr5379294iob.55.1562862547182;
+        Thu, 11 Jul 2019 09:29:07 -0700 (PDT)
+Received: from mojatatu.com ([64.26.149.125])
+        by smtp.gmail.com with ESMTPSA id t5sm5173856iol.55.2019.07.11.09.29.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 11 Jul 2019 09:29:06 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net-next 1/1] tc-tests: updated skbedit tests
+Date:   Thu, 11 Jul 2019 12:29:00 -0400
+Message-Id: <1562862540-16509-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation to enabling -Wimplicit-fallthrough, this patch silences
-the following warning:
+- Added mask upper bound test case
+- Added mask validation test case
+- Added mask replacement case
 
-kernel/bpf/verifier.c: In function ‘check_return_code’:
-kernel/bpf/verifier.c:6106:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
-   if (env->prog->expected_attach_type == BPF_CGROUP_UDP4_RECVMSG ||
-      ^
-kernel/bpf/verifier.c:6109:2: note: here
-  case BPF_PROG_TYPE_CGROUP_SKB:
-  ^~~~
-
-Warning level 3 was used: -Wimplicit-fallthrough=3
-
-Notice that is much clearer to explicitly add breaks in each case
-statement (that actually contains some code), rather than letting
-the code to fall through.
-
-This patch is part of the ongoing efforts to enable
--Wimplicit-fallthrough.
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
 ---
+ .../tc-testing/tc-tests/actions/skbedit.json       | 117 +++++++++++++++++++++
+ 1 file changed, 117 insertions(+)
 
-NOTE: -Wimplicit-fallthrough will be enabled globally in v5.3. So, I
-      suggest you to take this patch for 5.3-rc1.
-
- kernel/bpf/verifier.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index a2e763703c30..44c3b947400e 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6106,11 +6106,13 @@ static int check_return_code(struct bpf_verifier_env *env)
- 		if (env->prog->expected_attach_type == BPF_CGROUP_UDP4_RECVMSG ||
- 		    env->prog->expected_attach_type == BPF_CGROUP_UDP6_RECVMSG)
- 			range = tnum_range(1, 1);
-+		break;
- 	case BPF_PROG_TYPE_CGROUP_SKB:
- 		if (env->prog->expected_attach_type == BPF_CGROUP_INET_EGRESS) {
- 			range = tnum_range(0, 3);
- 			enforce_attach_type_range = tnum_range(2, 3);
- 		}
-+		break;
- 	case BPF_PROG_TYPE_CGROUP_SOCK:
- 	case BPF_PROG_TYPE_SOCK_OPS:
- 	case BPF_PROG_TYPE_CGROUP_DEVICE:
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
+index 45e7e89928a5..bf5ebf59c2d4 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
+@@ -70,6 +70,123 @@
+         "teardown": []
+     },
+     {
++        "id": "d4cd",
++        "name": "Add skbedit action with valid mark and mask",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action skbedit mark 1/0xaabb",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xaabb",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action skbedit"
++        ]
++    },
++    {
++        "id": "baa7",
++        "name": "Add skbedit action with valid mark and 32-bit maximum mask",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action skbedit mark 1/0xffffffff",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xffffffff",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action skbedit"
++        ]
++    },
++    {
++        "id": "62a5",
++        "name": "Add skbedit action with valid mark and mask exceeding 32-bit maximum",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action skbedit mark 1/0xaabbccddeeff112233",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xaabbccddeeff112233",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "bc15",
++        "name": "Add skbedit action with valid mark and mask with invalid format",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action skbedit mark 1/-1234",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "action order [0-9]*: skbedit  mark 1/-1234",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "57c2",
++        "name": "Replace skbedit action with new mask",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ],
++            "$TC actions add action skbedit mark 1/0x11223344 index 1"
++        ],
++        "cmdUnderTest": "$TC actions replace action skbedit mark 1/0xaabb index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "action order [0-9]*: skbedit  mark 1/0xaabb",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action skbedit"
++        ]
++    },
++    {
+         "id": "081d",
+         "name": "Add skbedit action with priority",
+         "category": [
 -- 
-2.21.0
+2.7.4
 
