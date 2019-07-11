@@ -2,64 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7E865662
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 14:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 663306566F
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 14:13:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728590AbfGKMHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 08:07:37 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:41680 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728287AbfGKMHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 08:07:37 -0400
-Received: by mail-lj1-f195.google.com with SMTP id d24so5507091ljg.8
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:07:36 -0700 (PDT)
+        id S1728623AbfGKMNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 08:13:20 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:45419 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728578AbfGKMNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 08:13:20 -0400
+Received: by mail-lj1-f196.google.com with SMTP id m23so5498091lje.12
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 05:13:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=/GkyJO/XzCdLnefrckS27eNcOWh/ymnRvDaUSAxjqU8=;
-        b=ektyVvNoHno+vGzdhSyNvexrE2XG1HdIQjty5SZHH7PS1BFMLEd9bZ81vw7XjKeA4d
-         UapLshT+pX16Xoyw5FdEWffeXedaspH6Q5KXdfoJfSBzRQQbVXsHKOs/NrzEDeCvzSIy
-         YQdagHOcmHKLQ2NAJx6GwCW8s9RwY9K0qshog=
+        bh=NdSqQEh9i1abPENwKI9FaEBEnAJ5ZXPu8KdECYjTgVk=;
+        b=LcJGmPqCejgM8URsZbFWXfbaohRReQVYBgQBKtB6QzCtutLZ/gVRgtYGG1kDfWfMr4
+         QIqkwdridt2COlsIp+z5imKvjIl/p+01Yb2MUy/xuY9hmn2yJoJo0UxTfWoPB8fFkJ2I
+         QANZ0E7W3B8HolifQqClrjpMkOyLUvUwDcTb4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/GkyJO/XzCdLnefrckS27eNcOWh/ymnRvDaUSAxjqU8=;
-        b=nXDTZmMpXVPYjWymz5o9ZkyCPPYzMXYR711Ay3uI/TkLUfvb8DnFf22p+pM3vPZoXy
-         50/9/VzUJbkl8tKLX0hKnSZquKIrTS1klWDbK/I1Nj8ACu3CtC+zDXmQwjhNsWyjApH3
-         WBCgEoN/ZMutWOOOxEaYBIS9tMSSKhESS32cPtFhcltfjUjaKtya66j/hHH/kCMnDxNu
-         cfO5C26YZ4A8R7WMKG4ajdjoXWDAbrIp0DkyzZ0sxCBe+u+tFhc8tfHETc/9GiS+bppS
-         0acwd5sZ++pV5gR0jIhet/lYLKR8kWGJ3Yo0hVDfjlUg6LqvmM3NBvbNLxCIPWospz1I
-         ST+g==
-X-Gm-Message-State: APjAAAXYD3mSIE7v5t+MlDFEtRsd4CHdCRQd38L4oQr0og4Jmz5yEl7l
-        RANZZ66uqEKAFmQAry2kLIj4jJsM2yXb/2u4aW7+Rg==
-X-Google-Smtp-Source: APXvYqzP22RRcZcUhDujyqUU5IP2zXoX9fJ3k2M6/GT1tQ3bZzzFR2TqUW6TndXcmnVlqSvHUPDoPdHjVwPeutIGhko=
-X-Received: by 2002:a2e:9754:: with SMTP id f20mr2293534ljj.151.1562846855331;
- Thu, 11 Jul 2019 05:07:35 -0700 (PDT)
+        bh=NdSqQEh9i1abPENwKI9FaEBEnAJ5ZXPu8KdECYjTgVk=;
+        b=PxJn2Yi3lfp01AQwuugJ34tD18b3Eq0dW4k5CLQ91D4hPxBaVGQkJV+l51aSNvLECJ
+         Upz6fymEuJKUyg/sAjxkgqwvfEZOuCyS6MCCF6sSgYmSEhGIO85E6iRTb3HRJ5c7brXk
+         NR2Vi++jwCSmKLad/LP1VE9uZBTWOYOO0Y1pYIhWnlM53CSpicGYuChcO2wwHE88HUb/
+         7oEcS5dlhAtGUe7Vp/ChgY0znnbH+CgQ4bUPoup3P9vZW2LE+o9KKCtyc693LNAQ3DSA
+         o3aSFVSqhIOmB5CGf5lSosBW0jxd6m80vb1vTS1qf4oErT6KyvUYKEzzVvjRNL6CM776
+         /zFg==
+X-Gm-Message-State: APjAAAVQ9roM7UEQKWxfFPXtIDJJPrR13gD9pXH2InCKtVnXLOvKftx2
+        J2j+gU8eKpdSRwCWfugp1zyhVm3bWZlVHpQ+JnfaFg==
+X-Google-Smtp-Source: APXvYqzyoqAzbcKOvQtGos6Y/jjCQ6acXo52XUaFrMmDrO2B6aDsqxq3l9ZGTPHmOHFG2WrvOGr51RmaaTjxTK5XVvo=
+X-Received: by 2002:a2e:9754:: with SMTP id f20mr2310921ljj.151.1562847198097;
+ Thu, 11 Jul 2019 05:13:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-5-krzesimir@kinvolk.io>
- <CAEf4BzZoOw=1B8vV53iAxz8LDULOPVF-he4C_usoUQSdXU+oSg@mail.gmail.com>
-In-Reply-To: <CAEf4BzZoOw=1B8vV53iAxz8LDULOPVF-he4C_usoUQSdXU+oSg@mail.gmail.com>
+References: <20190711010844.1285018-1-andriin@fb.com>
+In-Reply-To: <20190711010844.1285018-1-andriin@fb.com>
 From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Thu, 11 Jul 2019 14:07:24 +0200
-Message-ID: <CAGGp+cGUYbdEeHJxVCk0VZvOMSoR6Fz5aUJD0Ye71w5dxETXMA@mail.gmail.com>
-Subject: Re: [bpf-next v3 04/12] selftests/bpf: Use bpf_prog_test_run_xattr
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
+Date:   Thu, 11 Jul 2019 14:13:07 +0200
+Message-ID: <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: remove logic duplication in test_verifier.c
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>, kernel-team@fb.com,
+        ast@fb.com, Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -67,89 +55,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 2:03 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Thu, Jul 11, 2019 at 3:08 AM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> On Mon, Jul 8, 2019 at 3:43 PM Krzesimir Nowak <krzesimir@kinvolk.io> wro=
-te:
-> >
-> > The bpf_prog_test_run_xattr function gives more options to set up a
-> > test run of a BPF program than the bpf_prog_test_run function.
-> >
-> > We will need this extra flexibility to pass ctx data later.
-> >
-> > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > ---
+> test_verifier tests can specify single- and multi-runs tests. Internally
+> logic of handling them is duplicated. Get rid of it by making single run
+> retval specification to be a first retvals spec.
 >
-> lgtm, with some nits below
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
->
-> >  tools/testing/selftests/bpf/test_verifier.c | 16 +++++++++++-----
-> >  1 file changed, 11 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testin=
-g/selftests/bpf/test_verifier.c
-> > index c7541f572932..1640ba9f12c1 100644
-> > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -822,14 +822,20 @@ static int do_prog_test_run(int fd_prog, bool unp=
-riv, uint32_t expected_val,
-> >  {
-> >         __u8 tmp[TEST_DATA_LEN << 2];
-> >         __u32 size_tmp =3D sizeof(tmp);
->
-> nit: this is now is not needed as a separate local variable, inline?
+> Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-I think I'm using this variable in a followup commit, but I'll look closely=
-.
+Looks good, one nit below.
 
+Acked-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+
+> ---
+>  tools/testing/selftests/bpf/test_verifier.c | 37 ++++++++++-----------
+>  1 file changed, 18 insertions(+), 19 deletions(-)
 >
-> > -       uint32_t retval;
-> >         int saved_errno;
-> >         int err;
-> > +       struct bpf_prog_test_run_attr attr =3D {
-> > +               .prog_fd =3D fd_prog,
-> > +               .repeat =3D 1,
-> > +               .data_in =3D data,
-> > +               .data_size_in =3D size_data,
-> > +               .data_out =3D tmp,
-> > +               .data_size_out =3D size_tmp,
-> > +       };
-> >
-> >         if (unpriv)
-> >                 set_admin(true);
-> > -       err =3D bpf_prog_test_run(fd_prog, 1, data, size_data,
-> > -                               tmp, &size_tmp, &retval, NULL);
-> > +       err =3D bpf_prog_test_run_xattr(&attr);
-> >         saved_errno =3D errno;
-> >         if (unpriv)
-> >                 set_admin(false);
-> > @@ -846,9 +852,9 @@ static int do_prog_test_run(int fd_prog, bool unpri=
-v, uint32_t expected_val,
-> >                         return err;
-> >                 }
-> >         }
-> > -       if (retval !=3D expected_val &&
-> > +       if (attr.retval !=3D expected_val &&
-> >             expected_val !=3D POINTER_VALUE) {
+> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/=
+selftests/bpf/test_verifier.c
+> index b0773291012a..120ecdf4a7db 100644
+> --- a/tools/testing/selftests/bpf/test_verifier.c
+> +++ b/tools/testing/selftests/bpf/test_verifier.c
+> @@ -86,7 +86,7 @@ struct bpf_test {
+>         int fixup_sk_storage_map[MAX_FIXUPS];
+>         const char *errstr;
+>         const char *errstr_unpriv;
+> -       uint32_t retval, retval_unpriv, insn_processed;
+> +       uint32_t insn_processed;
+>         int prog_len;
+>         enum {
+>                 UNDEF,
+> @@ -95,16 +95,24 @@ struct bpf_test {
+>         } result, result_unpriv;
+>         enum bpf_prog_type prog_type;
+>         uint8_t flags;
+> -       __u8 data[TEST_DATA_LEN];
+>         void (*fill_helper)(struct bpf_test *self);
+>         uint8_t runs;
+> -       struct {
+> -               uint32_t retval, retval_unpriv;
+> -               union {
+> -                       __u8 data[TEST_DATA_LEN];
+> -                       __u64 data64[TEST_DATA_LEN / 8];
+> +       union {
+> +               struct {
+
+Maybe consider moving the struct definition outside to further the
+removal of the duplication?
+
+> +                       uint32_t retval, retval_unpriv;
+> +                       union {
+> +                               __u8 data[TEST_DATA_LEN];
+> +                               __u64 data64[TEST_DATA_LEN / 8];
+> +                       };
+>                 };
+> -       } retvals[MAX_TEST_RUNS];
+> +               struct {
+> +                       uint32_t retval, retval_unpriv;
+> +                       union {
+> +                               __u8 data[TEST_DATA_LEN];
+> +                               __u64 data64[TEST_DATA_LEN / 8];
+> +                       };
+> +               } retvals[MAX_TEST_RUNS];
+> +       };
+>         enum bpf_attach_type expected_attach_type;
+>  };
 >
-> this if condition now fits one line, can you please combine? thanks!
-
-Sure.
-
+> @@ -949,17 +957,8 @@ static void do_test_single(struct bpf_test *test, bo=
+ol unpriv,
+>                 uint32_t expected_val;
+>                 int i;
 >
-> > -               printf("FAIL retval %d !=3D %d ", retval, expected_val)=
-;
-> > +               printf("FAIL retval %d !=3D %d ", attr.retval, expected=
-_val);
-> >                 return 1;
-> >         }
-> >
-> > --
-> > 2.20.1
-> >
-
+> -               if (!test->runs) {
+> -                       expected_val =3D unpriv && test->retval_unpriv ?
+> -                               test->retval_unpriv : test->retval;
+> -
+> -                       err =3D do_prog_test_run(fd_prog, unpriv, expecte=
+d_val,
+> -                                              test->data, sizeof(test->d=
+ata));
+> -                       if (err)
+> -                               run_errs++;
+> -                       else
+> -                               run_successes++;
+> -               }
+> +               if (!test->runs)
+> +                       test->runs =3D 1;
+>
+>                 for (i =3D 0; i < test->runs; i++) {
+>                         if (unpriv && test->retvals[i].retval_unpriv)
+> --
+> 2.17.1
+>
 
 
 --=20
