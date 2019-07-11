@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A62F6500E
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 03:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF1B965022
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 04:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbfGKB72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 21:59:28 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:33879 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727622AbfGKB71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 21:59:27 -0400
-Received: by mail-lj1-f193.google.com with SMTP id p17so4076671ljg.1
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 18:59:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=NiaFfYJ216nYjgBrBY5JKQAHNiRjdATog8sl2JxZW+g=;
-        b=MQOzZI79mvoiVs1sgBWHfqE+YJM9b7M05jQpHMpAAyRFe0Cs7GZ1SKjYmbrPj6ztHM
-         B7Jmo2E1tOKxmtYLHAeJfiv0Yw5iWNpJ6su3Aywbxq++FWe46hRTt1FaTYFdrs51gDai
-         Fc+1NUhQh/izklmNT0WE5mkHqoWlVg+hybjs0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=NiaFfYJ216nYjgBrBY5JKQAHNiRjdATog8sl2JxZW+g=;
-        b=GtwsMpVW+aUeyOaEgmnMyd+TqTpKrFUIT9I93P1CTPmGNxwjKSD5DcpQjJx+l9OZEG
-         yZOga32po89NOjG9Pz2dfVFugj12Mpj4aIVHVPCo0YO/PJtFvk3FVy/PxAnP7iGpol2L
-         Um1fHQmYA1B7094qYrU1/eYM40D44t5NCEsqfGk86gp/LqyMaRnQty4ogOjqwAVt0Zf1
-         kB8lZ+xy8WWsYZ0hMFNmJuoB+LpPq8+301PhwGv8AEJ+mb56I9/wSQ+roPl0Ju1TfB6h
-         hkdJkODoMPW0W4wCUbaQP3knHYmojMGjJYu9HRaBtmbBhmAYF+o8oF1aByx3nAFEK8Pa
-         3Uog==
-X-Gm-Message-State: APjAAAWYuzkEFSnCxFunQy6Yf6GhT+YN1CsvCzNb37uznI61yF8JEXZD
-        g1RkgRTEaEQesICglt+hOOPTrMhyBLM=
-X-Google-Smtp-Source: APXvYqwm5l9iV0KXTez0tgfzE+AY4GUPqIxgFXkMBNc35ZYIDLFEfR/dNFWA18E7S31aGSSeyklINw==
-X-Received: by 2002:a2e:b0f0:: with SMTP id h16mr737610ljl.21.1562810365282;
-        Wed, 10 Jul 2019 18:59:25 -0700 (PDT)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
-        by smtp.gmail.com with ESMTPSA id f1sm734890ljf.53.2019.07.10.18.59.21
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jul 2019 18:59:23 -0700 (PDT)
-Received: by mail-lf1-f42.google.com with SMTP id c9so2916923lfh.4
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 18:59:21 -0700 (PDT)
-X-Received: by 2002:ac2:4839:: with SMTP id 25mr355474lft.79.1562810361547;
- Wed, 10 Jul 2019 18:59:21 -0700 (PDT)
+        id S1727789AbfGKC0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 22:26:34 -0400
+Received: from mail-eopbgr40053.outbound.protection.outlook.com ([40.107.4.53]:47683
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727463AbfGKC0d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jul 2019 22:26:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7cHZ/Mps1zGGP9xyKCK8tVrmFAOOIRvyJHupP4h9TpA=;
+ b=RjuMwksX9sQRs8XWAaMe8kemSsHFIUWUdruL8ZGwS1/Lunvv9N1TEUMrY/tfgcOhvXQep6B7vhPLCQ5r+xinq/0URMr2VBfDzbzW9yzWVfbMi5hFWQwgPZXWVrMLgaU+XhVs/iUDksrLW39QVkuNBxvEhZg8TTmAwdymN/G6NE4=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+ VI1PR05MB4143.eurprd05.prod.outlook.com (10.171.182.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.19; Thu, 11 Jul 2019 02:26:27 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2052.020; Thu, 11 Jul 2019
+ 02:26:27 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Doug Ledford <dledford@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Thread-Topic: linux-next: build failure after merge of the net-next tree
+Thread-Index: AQHVNgpSNqxsVllq5U23Am+RwOaE5KbB1zsAgAJNFwCAAIW/AIAAAj0A
+Date:   Thu, 11 Jul 2019 02:26:27 +0000
+Message-ID: <20190711015854.GC22409@mellanox.com>
+References: <20190709135636.4d36e19f@canb.auug.org.au>
+ <20190709064346.GF7034@mtr-leonro.mtl.com>
+ <20190710175212.GM2887@mellanox.com>
+ <20190711115054.7d7f468c@canb.auug.org.au>
+In-Reply-To: <20190711115054.7d7f468c@canb.auug.org.au>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: YTBPR01CA0026.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:14::39) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [156.34.55.100]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0833b2fe-25a9-4878-caa2-08d705a72d5d
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4143;
+x-ms-traffictypediagnostic: VI1PR05MB4143:
+x-microsoft-antispam-prvs: <VI1PR05MB4143DC4685EE9625AD8C1890CFF30@VI1PR05MB4143.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:626;
+x-forefront-prvs: 0095BCF226
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(376002)(136003)(396003)(346002)(189003)(199004)(316002)(6246003)(99286004)(6916009)(386003)(7736002)(52116002)(305945005)(33656002)(26005)(66066001)(6512007)(8936002)(102836004)(6116002)(186003)(53936002)(6506007)(76176011)(8676002)(3846002)(486006)(36756003)(476003)(2616005)(25786009)(4326008)(5660300002)(68736007)(4744005)(11346002)(66946007)(54906003)(478600001)(81156014)(81166006)(66446008)(64756008)(66556008)(66476007)(71190400001)(71200400001)(2906002)(6436002)(229853002)(1076003)(446003)(86362001)(6486002)(14454004)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4143;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: LsXKwomZ/109ut7p8RyH71RqfhZB8ZJ01V6oo8nQ4S7Emw1fiNyymzElHzJGMlphr5K7aIBxIdbHYaH3LMG1Gg/Ks1EoQR08X1vH8UhN113YXB/eV+J0ueE2Zw0WREZ+ZWD1LAGugCbWOkZrKxmp55fdEfJ132ApemNGjNah92Mvjax3v6bZTmc3J3yhI5JJWbE3P8Z8PYyB64zifYxSvdvMigv2XKhJj5Xjns2eweDrVjccpTYVK+zTODzYcGZQJxbVdPGgQLLuNPpY614M/eUNAsvQ+kDk0hPo8PVhtsrE3oQn3MCjDqKbUlTQvV4i91Q8B0wO1z1RB8jt7JVIwwKGoc9Dx+I9lyJfsQ+/CLCGP+IA8x0jZ1rdcV8EtWn56Zzvnf981bqb7JD1afwHtpsVr55WTpgYIJqwTL1BbLw=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3D8D34EB44B9AF4C89FE0F2F428FB111@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <28477.1562362239@warthog.procyon.org.uk> <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
- <20190710194620.GA83443@gmail.com> <20190710201552.GB83443@gmail.com>
-In-Reply-To: <20190710201552.GB83443@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 10 Jul 2019 18:59:05 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiFti6=K2fyAYhx-PSX9ovQPJUNp0FMdV0pDaO_pSx9MQ@mail.gmail.com>
-Message-ID: <CAHk-=wiFti6=K2fyAYhx-PSX9ovQPJUNp0FMdV0pDaO_pSx9MQ@mail.gmail.com>
-Subject: Re: [GIT PULL] Keys: Set 4 - Key ACLs for 5.3
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>, keyrings@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, linux-nfs@vger.kernel.org,
-        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0833b2fe-25a9-4878-caa2-08d705a72d5d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 02:26:27.7122
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4143
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 1:15 PM Eric Biggers <ebiggers@kernel.org> wrote:
->
-> Also worth noting that the key ACL patches were only in linux-next for 9 days
-> before the pull request was sent.
+On Thu, Jul 11, 2019 at 11:50:54AM +1000, Stephen Rothwell wrote:
 
-Yes. I was not entirely happy with the whole key subsystem situation.
-See my concerns in
+> So today this failed to build after I merged the rdma tree (previously
+> it didn;t until after the net-next tree was merged (I assume a
+> dependency changed).  It failed because in_dev_for_each_ifa_rcu (and
+> in_dev_for_each_ifa_rtnl) is only defined in a commit in the net-next
+> tree :-(
 
-  https://lore.kernel.org/lkml/CAHk-=wjEowdfG7v_4ttu3xhf9gqopj1+q1nGG86+mGfGDTEBBg@mail.gmail.com/
+? I'm confused..=20
 
-for more. That was before I realized it was buggy.
+rdma.git builds fine stand alone (I hope!)
 
-So it really would be good to have more people involved, and more
-structure to the keys development (and, I suspect, much else under
-security/)
+If you merge it with netdev then the above patch is needed afer the
+merge as netdev changed to ifa_rcu
 
-Anyway, since it does seem like David is offline, I've just reverted
-this from my tree, and will be continuing my normal merge window pull
-requests (the other issues I have seen have fixes in their respective
-trees).
+I just did this a few hours ago to make and test the patch I sent
+above..
 
-                 Linus
+Jason
