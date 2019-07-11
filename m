@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E6D653CF
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD152653D2
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728254AbfGKJb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 05:31:58 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41026 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726088AbfGKJb6 (ORCPT
+        id S1728319AbfGKJb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 05:31:59 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37801 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727595AbfGKJb6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:31:58 -0400
-Received: by mail-wr1-f67.google.com with SMTP id c2so2289640wrm.8;
-        Thu, 11 Jul 2019 02:31:56 -0700 (PDT)
+Received: by mail-wm1-f66.google.com with SMTP id f17so4975587wme.2;
+        Thu, 11 Jul 2019 02:31:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=l4bEEAxzGIGnFBD/3jElNFp34ehWwPy0iGMb60Ja/qM=;
-        b=LGEXirOw0aMcPgnorDYhAX95/V+nn+qMQkpvwFvcG/FKF+nsqfqBtq+YBr9sTW7cs+
-         bicPHQ2DJeSeAt6FDWRizzeeEA0VSBSdFMdFN+GDwcL1yoln61rRciCl6pqBOlYWjOGD
-         x1jm8zjeksPQFNvU0SzDa78BuYHqjMKZ8FUaj+IzVIWNN76JyIgFR/cAf4m7KpdCD2HX
-         aeFCy8aUdVcvd/S+QZURH1POYFXsDHEF+8cxBT0ZBUZJXNNCJvDh5Q06q7cMUrKeRkyX
-         0eVVCePqlrXqanKMOhDOuQf4ZQ5tRCUBsavFILtljXTueQGq3oA+0TsS2UkuXe4e7bVg
-         oTEQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=1LhwbybOGre7jhb9MoBzIWHJmyAAMUo2nsbdJ6LEPDI=;
+        b=jsS6iEzOtytBoOqSAZ5cOraY7/ePo0CkCqLcB/EWr/cfw1pzSS+7ubDAGGZ/xbdxWf
+         XYVAKpylTAqSDxl7yOA+TVAwOh2HawvpiJ9MlPmJuQbpCj4GLR5dt4Azjiro58A91oGF
+         lfUXEGJA51Gx0dGK7TG7sbo4VAr2hq+CrIOmA8Ps4JlWrBY6sike0VZ1oNGWtfl1Qi1E
+         hcl4D0gmfLQO7PxOW72X1JmaF4IAIM3KSTGQ/rjUy7Eyh6w7yDv//RyWLjtVcrh5DC2R
+         hQQ5NMJI8KeDogbPLXGqJC2WK+mvLt20F6k1nVGfVhwK+JTYUhFJkLPdkBp55f1XK1x9
+         41jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=l4bEEAxzGIGnFBD/3jElNFp34ehWwPy0iGMb60Ja/qM=;
-        b=F3H350j8dZdyREHovHQ6zb4iU67gsi2H8IqmhouhtajueAP+dTlPQJu9ZnyYMETNEb
-         spoqk0zacQdqRGockF8NNTCWhyUQ3FrKajML0CcIdPUlt9reqU956Qa9/BOdlGmCCb+9
-         BL+GpYvxQG83ZIyaVW+Uq7029xMDIosx9uDSQ8ln5ttPBJZA6WFnu4Dmu6ciiTM0vPPY
-         zEwTc+bzIOVY4unw+IV0EZYKuMn58pB+cxuW0K4fPWsfUpux8hWcx6sqv1u6cpairX6C
-         gngge1arf++FjFjGOZ1HFQPNpzYVKWec1FrAthFFvg4bKNPJTQey6pHuhM4rOAI5brIB
-         4cOQ==
-X-Gm-Message-State: APjAAAVKSSWjpGF5WKBuBRwW/UKLUrPUiJRde9nGQ/Ia9SVLZRuPqyDX
-        eNnFWISnomEbU82isgJuiavQ+X44b6I=
-X-Google-Smtp-Source: APXvYqz0OXD69emcOGH46hrtIm+cwY/xRJ7bJg/E0Xtb/ywPVDEIQWoLL7zGB5vyW+suzm7/ZgNwZw==
-X-Received: by 2002:adf:db0b:: with SMTP id s11mr3967901wri.7.1562837515183;
-        Thu, 11 Jul 2019 02:31:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=1LhwbybOGre7jhb9MoBzIWHJmyAAMUo2nsbdJ6LEPDI=;
+        b=hRzAp6cTwLSxLQWzLsJunKKEwpzi7yIODrTR5gLEsj7SXpQcdsfV5RWWYyNPkyTtks
+         OiM19R2TtjGqCRmyo1qNKuuJUe8otq30YDn3qBP8c6OU6vtUWlNiayMNr3sWOCjC0OLE
+         ph/WnL/JyKn0G8m+mLHYhfsoWsviK2gaoHcszBXDaz+H9tf2RlD3HT2LgO37XkcA3Dpg
+         LhZmb0Ju45yI71lgnok1JcHiYqZJwaH1C/4g2Ch6UvMpF9RYEoAtsFLD2akr3kVJEge8
+         q90DlUA27rcipR6eTWo53Ljv5L6SzigHGOqf37VkHnJEOJ5v/tW9n3K1PlLc/OHTfTEy
+         udaw==
+X-Gm-Message-State: APjAAAWWe7ccSIXQDRW8TRCv2Ew3hayEZNGIqgUMLKW58f8eQaYBZvl8
+        GKw8OJgrrf0t+sLDmpvXHk0=
+X-Google-Smtp-Source: APXvYqyf1KBCXWmcs4e9KK6grFxCC8E+4DCtk19VvviFmeqXyjCavihr8fWs6O3L/pEGYK8ii+HVZw==
+X-Received: by 2002:a1c:305:: with SMTP id 5mr3306664wmd.101.1562837516292;
+        Thu, 11 Jul 2019 02:31:56 -0700 (PDT)
 Received: from gmail.com (net-5-95-187-49.cust.vodafonedsl.it. [5.95.187.49])
-        by smtp.gmail.com with ESMTPSA id r123sm5074455wme.7.2019.07.11.02.31.54
+        by smtp.gmail.com with ESMTPSA id y6sm4997438wmd.16.2019.07.11.02.31.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jul 2019 02:31:54 -0700 (PDT)
+        Thu, 11 Jul 2019 02:31:55 -0700 (PDT)
 From:   Paolo Pisati <p.pisati@gmail.com>
 To:     --in-reply-to= <20190710231439.GD32439@tassilo.jf.intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -54,10 +55,12 @@ To:     --in-reply-to= <20190710231439.GD32439@tassilo.jf.intel.com>,
         Jiong Wang <jiong.wang@netronome.com>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] Fold checksum at the end of bpf_csum_diff and fix
-Date:   Thu, 11 Jul 2019 11:31:51 +0200
-Message-Id: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
+Subject: [PATCH 1/2] bpf: bpf_csum_diff: fold the checksum before returning the value
+Date:   Thu, 11 Jul 2019 11:31:52 +0200
+Message-Id: <1562837513-745-2-git-send-email-p.pisati@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
+References: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -65,35 +68,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Pisati <paolo.pisati@canonical.com>
 
-After applying patch 0001, all checksum implementations i could test (x86-64, arm64 and
-arm), now agree on the return value.
+With this change, bpf_csum_diff behave homogeneously among different
+checksum calculation code / csum_partial() (tested on x86-64, arm64 and
+arm).
 
-Patch 0002 fix the expected return value for test #13: i did the calculation manually,
-and it correspond.
+Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+---
+ net/core/filter.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Unfortunately, after applying patch 0001, other test cases now fail in
-test_verifier:
-
-$ sudo ./tools/testing/selftests/bpf/test_verifier
-...
-#417/p helper access to variable memory: size = 0 allowed on NULL (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0 
-#419/p helper access to variable memory: size = 0 allowed on != NULL stack pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0 
-#423/p helper access to variable memory: size possible = 0 allowed on != NULL packet pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0 
-...
-Summary: 1500 PASSED, 0 SKIPPED, 3 FAILED
-
-And there are probably other fallouts in other selftests - someone familiar
-should take a look before applying these patches.
-
-Paolo Pisati (2):
-  bpf: bpf_csum_diff: fold the checksum before returning the
-    value
-  bpf, selftest: fix checksum value for test #13
-
- net/core/filter.c                                   | 2 +-
- tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f615e42cf4ef..8db7f58f1ea1 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1990,7 +1990,7 @@ BPF_CALL_5(bpf_csum_diff, __be32 *, from, u32, from_size,
+ 	for (i = 0; i <   to_size / sizeof(__be32); i++, j++)
+ 		sp->diff[j] = to[i];
+ 
+-	return csum_partial(sp->diff, diff_size, seed);
++	return csum_fold(csum_partial(sp->diff, diff_size, seed));
+ }
+ 
+ static const struct bpf_func_proto bpf_csum_diff_proto = {
 -- 
 2.17.1
 
