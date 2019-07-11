@@ -2,190 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D61B6593C
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:43:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 748C465973
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 16:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728749AbfGKOnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 10:43:41 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:39403 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728471AbfGKOnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 10:43:41 -0400
-Received: by mail-yw1-f68.google.com with SMTP id x74so3898434ywx.6;
-        Thu, 11 Jul 2019 07:43:40 -0700 (PDT)
+        id S1728976AbfGKOzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 10:55:46 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:33918 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727612AbfGKOzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 10:55:46 -0400
+Received: by mail-yw1-f67.google.com with SMTP id q128so3974418ywc.1;
+        Thu, 11 Jul 2019 07:55:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vmOGsoHiM6XG/FkzWHR9Ptf7rpGEwowGLGGHPi+MFsE=;
-        b=RvsrKGQe/7jfHw8K7xiEdsTUT8bBicNHtbkmlf24QpA/mMlhxLyhxQzmcXwOUdkaC5
-         6MaTcaVvSzZuVeiSxQKlfZp7haBTum0QA2r7Lmry4iQzs3e7D1qEeMSx5P4M03ATijW4
-         PkJhsxICIVvyxfqkj8FJOXJQ0RhRpPmHwAUrfOigfd0qcBu4eafWOmXeEj7dyGsmbaIJ
-         9x595aooLQoSF0KpWc4nfbABIJhCkzsvDld2BrIZcINq3PkmYA7hTd9FlYsho49BO+4k
-         so/vqc0BmjIwVWb6ZAJTNu1ZMHpXD3m2I2a09WvdQDgIQbP+szMKJ4xX062d8EEB+E2q
-         JmQg==
+         :cc;
+        bh=/wTXznAXHacr2M4atjecgDzbn+nKVODcA5FmD6XMAP4=;
+        b=WciZEy8lVwgZgT81ldMSzos6w+/KauLpkuWCbCsr5gtYSxsz71RpGpGD7j9m33q/gA
+         Bmn2GbySZPrVBqQaMbC2t9N57lyG3mi/6owjxj7KubI4jgP4kT8T96S/N+tbKOYHQBS2
+         ySLANuFHD+rKPY9CYCra46D6BdrDRxBdD7MDX1/tAVXuN3C3c26radxb9d0yOgQzS46a
+         9QHtnWHDuhplHEXtUgWRCT1q+W6ZZjcDcgKWEPd2M7uXZFEcyk9iVn+A5IlSCexEWlLj
+         b1UZtr3UOgtBz1g5LnJ/FyM0v3op3WSPyaHDvSmBQAk5CgD+roB8dmonDtfH7QYJn3M9
+         Gkvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vmOGsoHiM6XG/FkzWHR9Ptf7rpGEwowGLGGHPi+MFsE=;
-        b=mE8X9KwyLRDxL4YbzwA4UCUSuVx/UK+AZChmF3Y3tHh+NpYRJ0jK+XD5rpuwPkMXyd
-         r+o6/+kDwp4g/ycMrS/Heg1B51vPqwG6ncY/8wH35SkxcLZfgP5dUvPmZrsaWlCUkUMx
-         mkpLTX8uaZXzlRFApJfq2Uj9p2Arx6ay3hUnGHmY5SZviTa/YChtKQ+PJATM6gcSP8vN
-         /lKMr87yIlx9iISFtdXVFP/cXq5XL72o432kpMP/UFfp50g/m5V9vDdj5P3SxyQPGcgJ
-         DAggjBtnaZTpulqSAX/8fso9WR54b89DaO3QhxjNc4KVPSGNh/RCEBUIPc03+uhWyFh4
-         O4Lg==
-X-Gm-Message-State: APjAAAVbDVb243wGhYpHRXIxHOfe5EoMCARxLYEOnGF8puFkueSwnuJm
-        cMrFvImEyvA50Bb7wTxKgHJvRei26PbOoO++yGA=
-X-Google-Smtp-Source: APXvYqxYeX4hW5tYT/9KOKvI3xx9itOx+7MawBSLTgvaZ6T8c+c/LfMSHizMD8KUu6fS3zd1zVuVcLLamIkyb5uRe5Q=
-X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr2321074qkj.39.1562856219891;
- Thu, 11 Jul 2019 07:43:39 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=/wTXznAXHacr2M4atjecgDzbn+nKVODcA5FmD6XMAP4=;
+        b=Q41WBwDzl2Ez1dV28w2Pywafaf+cTZEg4+wS+6nwcNcmt+VysG1fgeyZVd19PhMHXx
+         M3kFcAm8Nwbyu4dhkFJKKhuOIcWGWSbbqkuMkkXq+md7uXCWlyHh8+2xndjOwoiX+x7X
+         7z3vf78+xMh11ss5pPLw6IF4KKRxMHxFWCBuWY8K2FZMr8zTwwbaONkO6LsknJkdA3l2
+         EsGlR/cc/cBold4s7rddcOivM2A4WY1NxMr8lv1fTlsoSP+PRN1PqvX4Ar0NLtqKF/0/
+         2XEtytRMA5/PcYgexUhuAwnHcHdxN2KZRc4w+HedaGAzkLKLbaI3xzEJ/EXFioln5Lnt
+         M2MQ==
+X-Gm-Message-State: APjAAAW0QqHcmFF1wbjq15QiwhD4roLTlD5oW99GIgKuNx0+yYvmyArI
+        lxL/4m/0dPSwBwKAg94SS7XeY4fVdVWYS10UDVY=
+X-Google-Smtp-Source: APXvYqw3mO52fkFWWzI3KkCRsehb0j11TNLr1L8ahhW7JM5kXaaMQRxbk9qBDYiYJAmnkj4EvfA14m0VXltgasFgdLE=
+X-Received: by 2002:ac8:2d56:: with SMTP id o22mr2245359qta.171.1562856945396;
+ Thu, 11 Jul 2019 07:55:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190711010844.1285018-1-andriin@fb.com> <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
-In-Reply-To: <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
+References: <20190711091249.59865-1-iii@linux.ibm.com>
+In-Reply-To: <20190711091249.59865-1-iii@linux.ibm.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 07:43:28 -0700
-Message-ID: <CAEf4Bzb1kE_jCbyye07-pVMT=914_Nrdh+R=QXA2qMssYP5brA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: remove logic duplication in test_verifier.c
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@fb.com>,
+Date:   Thu, 11 Jul 2019 07:55:34 -0700
+Message-ID: <CAEf4Bzb6mY-F-wUNNimS+hMSRbJetTKXNcGDQbsJXhXDywA+tg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf] selftests/bpf: do not ignore clang failures
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+        Song Liu <liu.song.a23@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 5:13 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrot=
-e:
+On Thu, Jul 11, 2019 at 2:14 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
 >
-> On Thu, Jul 11, 2019 at 3:08 AM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > test_verifier tests can specify single- and multi-runs tests. Internall=
-y
-> > logic of handling them is duplicated. Get rid of it by making single ru=
-n
-> > retval specification to be a first retvals spec.
-> >
-> > Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> When compiling an eBPF prog fails, make still returns 0, because
+> failing clang command's output is piped to llc and therefore its
+> exit status is ignored.
 >
-> Looks good, one nit below.
+> When clang fails, pipe the string "clang failed" to llc. This will make
+> llc fail with an informative error message. This solution was chosen
+> over using pipefail, having separate targets or getting rid of llc
+> invocation due to its simplicity.
 >
-> Acked-by: Krzesimir Nowak <krzesimir@kinvolk.io>
->
-> > ---
-> >  tools/testing/selftests/bpf/test_verifier.c | 37 ++++++++++-----------
-> >  1 file changed, 18 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testin=
-g/selftests/bpf/test_verifier.c
-> > index b0773291012a..120ecdf4a7db 100644
-> > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -86,7 +86,7 @@ struct bpf_test {
-> >         int fixup_sk_storage_map[MAX_FIXUPS];
-> >         const char *errstr;
-> >         const char *errstr_unpriv;
-> > -       uint32_t retval, retval_unpriv, insn_processed;
-> > +       uint32_t insn_processed;
-> >         int prog_len;
-> >         enum {
-> >                 UNDEF,
-> > @@ -95,16 +95,24 @@ struct bpf_test {
-> >         } result, result_unpriv;
-> >         enum bpf_prog_type prog_type;
-> >         uint8_t flags;
-> > -       __u8 data[TEST_DATA_LEN];
-> >         void (*fill_helper)(struct bpf_test *self);
-> >         uint8_t runs;
-> > -       struct {
-> > -               uint32_t retval, retval_unpriv;
-> > -               union {
-> > -                       __u8 data[TEST_DATA_LEN];
-> > -                       __u64 data64[TEST_DATA_LEN / 8];
-> > +       union {
-> > +               struct {
->
-> Maybe consider moving the struct definition outside to further the
-> removal of the duplication?
+> In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
 
-Can't do that because then retval/retval_unpriv/data won't be
-accessible as a normal field of struct bpf_test. It has to be in
-anonymous structs/unions, unfortunately.
+In your original patch you explicitly declared .DELETE_ON_ERROR, but
+in this one you just include Kbuild.include.
+Is it enough to just include that file to get desired behavior or your
+forgot to add .DELETE_ON_ERROR?
 
-I tried the following, but that also didn't work:
-
-union {
-    struct bpf_test_retval {
-        uint32_t retval, retval_unpriv;
-        union {
-            __u8 data[TEST_DATA_LEN];
-            __u64 data64[TEST_DATA_LEN / 8];
-        };
-    };
-    struct bpf_test_retval retvals[MAX_TEST_RUNS];
-};
-
-This also made retval/retval_unpriv to not behave as normal fields of
-struct bpf_test.
-
-
+> which would cause partial .o files to be removed.
 >
-> > +                       uint32_t retval, retval_unpriv;
-> > +                       union {
-> > +                               __u8 data[TEST_DATA_LEN];
-> > +                               __u64 data64[TEST_DATA_LEN / 8];
-> > +                       };
-> >                 };
-> > -       } retvals[MAX_TEST_RUNS];
-> > +               struct {
-> > +                       uint32_t retval, retval_unpriv;
-> > +                       union {
-> > +                               __u8 data[TEST_DATA_LEN];
-> > +                               __u64 data64[TEST_DATA_LEN / 8];
-> > +                       };
-> > +               } retvals[MAX_TEST_RUNS];
-> > +       };
-> >         enum bpf_attach_type expected_attach_type;
-> >  };
-> >
-> > @@ -949,17 +957,8 @@ static void do_test_single(struct bpf_test *test, =
-bool unpriv,
-> >                 uint32_t expected_val;
-> >                 int i;
-> >
-> > -               if (!test->runs) {
-> > -                       expected_val =3D unpriv && test->retval_unpriv =
-?
-> > -                               test->retval_unpriv : test->retval;
-> > -
-> > -                       err =3D do_prog_test_run(fd_prog, unpriv, expec=
-ted_val,
-> > -                                              test->data, sizeof(test-=
->data));
-> > -                       if (err)
-> > -                               run_errs++;
-> > -                       else
-> > -                               run_successes++;
-> > -               }
-> > +               if (!test->runs)
-> > +                       test->runs =3D 1;
-> >
-> >                 for (i =3D 0; i < test->runs; i++) {
-> >                         if (unpriv && test->retvals[i].retval_unpriv)
-> > --
-> > 2.17.1
-> >
+> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> ---
+
+Thanks!
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+> v1->v2: use intermediate targets instead of pipefail
+> v2->v3: pipe "clang failed" instead of using intermediate targets
 >
+> tools/testing/selftests/bpf/Makefile | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
 >
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index e36356e2377e..e375f399b7a6 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -1,4 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> +include ../../../../scripts/Kbuild.include
+>
+>  LIBDIR := ../../../lib
+>  BPFDIR := $(LIBDIR)/bpf
+> @@ -185,8 +186,8 @@ $(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
+>
+>  $(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR) \
+>                                         $(ALU32_BUILD_DIR)/test_progs_32
+> -       $(CLANG) $(CLANG_FLAGS) \
+> -                -O2 -target bpf -emit-llvm -c $< -o - |      \
+> +       ($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
+> +               echo "clang failed") | \
+>         $(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
+>                 -filetype=obj -o $@
+>  ifeq ($(DWARF2BTF),y)
+> @@ -197,16 +198,16 @@ endif
+>  # Have one program compiled without "-target bpf" to test whether libbpf loads
+>  # it successfully
+>  $(OUTPUT)/test_xdp.o: progs/test_xdp.c
+> -       $(CLANG) $(CLANG_FLAGS) \
+> -               -O2 -emit-llvm -c $< -o - | \
+> +       ($(CLANG) $(CLANG_FLAGS) -O2 -emit-llvm -c $< -o - || \
+> +               echo "clang failed") | \
+>         $(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
+>  ifeq ($(DWARF2BTF),y)
+>         $(BTF_PAHOLE) -J $@
+>  endif
+>
+>  $(OUTPUT)/%.o: progs/%.c
+> -       $(CLANG) $(CLANG_FLAGS) \
+> -                -O2 -target bpf -emit-llvm -c $< -o - |      \
+> +       ($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
+> +               echo "clang failed") | \
+>         $(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
+>  ifeq ($(DWARF2BTF),y)
+>         $(BTF_PAHOLE) -J $@
 > --
-> Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-> Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago =
-L=C3=B3pez Galeiras
-> Registergericht/Court of registration: Amtsgericht Charlottenburg
-> Registernummer/Registration number: HRB 171414 B
-> Ust-ID-Nummer/VAT ID number: DE302207000
+> 2.21.0
+>
