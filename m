@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD25C65FD7
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 21:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A659265FE3
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 21:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728978AbfGKTEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 15:04:50 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46238 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728555AbfGKTEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 15:04:50 -0400
-Received: by mail-pg1-f193.google.com with SMTP id i8so3361136pgm.13
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 12:04:50 -0700 (PDT)
+        id S1728681AbfGKTJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 15:09:36 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:41570 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728394AbfGKTJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 15:09:36 -0400
+Received: by mail-pl1-f196.google.com with SMTP id m9so3491169pls.8
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 12:09:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=2O1dm9K6cIdVi874eo27CBgXviHY88BWqwd4kcEJgfA=;
-        b=nTCWvmvdWiLqiAWFCfniq2l8HKH7IE8r1kOcfyTqQqDWyWlJ8MNFz/fhRvbvbQsWu0
-         +mwgQCT5Ot90rCUeS96a+8eVVGmO7mX57Yt51jY9VD4VIfbl6FXvkqcsXfYQbvzonD/j
-         LqzydhGbh14MuTTeKoV6EJL7CA++aPC9qyzEoa+zknUrcbyZXxlp1F/fR7sx3M4eECDF
-         Rt0r40cVbMclizKMEY3E6hqtl0Vodjq9lPfIWAR1WYUhznNxOuj95C7fUAQJ1n3Di4qx
-         AZHQD55mF8Vn3ehwJQ1IkCNBL/uuMsyAS7d9Tj1begQFVK3fD71xixE2U2MUwzCU7Y8u
-         HCtA==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=M4WeZcWrGd18YeXjzMUXq9YEJOlHeqxtQB8+6/gTd3s=;
+        b=bef+xSvFmTUnEIzeZ36IHCRoL6XCUCNflOIQxs+rUuZ04HcQuOvIb0ydjSjbVCgLYm
+         UG3/+XUu1xWVm9+7PUBHK9bmDFm7vdr9OZkLWMilxvkqRhVSC1+P10BEAKuqy+YdMm5A
+         e6wo5cK+Ip1jW5VgBGsbScH4niAMV/rlKZNQ8tKlCdxwvNOc9Oky8HGnHJFa63vnfKWU
+         UAKgttk/dzTqNR6egglCZobN9SkYuf/S+8/e/1coPvXwmShAp5CaW/2SQQTkk7/Wd9tc
+         A0bySatQa4Rzqfz6SM+mTl/dq2RI3oXCBQCvhe9nd0WBwjluK7I3RjDmqgDYT8o7cyXv
+         jThw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=2O1dm9K6cIdVi874eo27CBgXviHY88BWqwd4kcEJgfA=;
-        b=sWTCkZ0nMfETzD4SiOeyGG6zuFKeNH8pJqM78xEoKCEzAX7xLNW/VxDpcLcrJiG3Ct
-         OAUMW2hRklRAwLqQBokwSiGoYMZ+FRKiK+yt5NwEuQEY5nPKseblPqGnqK+Rl69AHptJ
-         wshcMwT7kuBCBIWoKA/gZJ08Xs/Y3syf2x3D7HPQdlKjh0rrpTGN+Q1vFBKKMJKVUkQd
-         muZzmJ/eIHINzjAmD8awKcMi8sYvz9demm4UHKuLPulORVAfsJABBJ9rr5J2243IQCgS
-         sjKwF9kmMGBQ/oJxAFWPSvyE0uoIPvbYfBdyyH/thNqx19UdA1qTxm4yude8OTZ1Xxj3
-         Q4pQ==
-X-Gm-Message-State: APjAAAVmbC7Cn9arL8lIhIv9DscIqIXxmPMICRHabndSDp+TM/2Y0eyg
-        LcQ9u9MUceWq/snPoD1fV2M=
-X-Google-Smtp-Source: APXvYqxotWwHNAxE5uCsH9KPocVRBli2liiTV5cXNWNDYL26NqUsvm85Xe1oIjvLCLNwpqG1+Cdv1g==
-X-Received: by 2002:a63:374a:: with SMTP id g10mr5943347pgn.31.1562871889875;
-        Thu, 11 Jul 2019 12:04:49 -0700 (PDT)
-Received: from [172.20.53.108] ([2620:10d:c090:200::1b4d])
-        by smtp.gmail.com with ESMTPSA id k70sm11303088pje.14.2019.07.11.12.04.48
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=M4WeZcWrGd18YeXjzMUXq9YEJOlHeqxtQB8+6/gTd3s=;
+        b=XTmLudnY+jYaj7NyMmYQ0YutNPFdRfDDwPHrQxViV5wq0yIbvV/EYWQQNJQ7AeplgN
+         0GX0rj/NgzNAGOODGlSZAgbExybWyfjnslmV+fU5tcZzhC7g4PTWVR4KNDIhUBbqhX2b
+         5JA/R7m5Pt9RykjJ1HfO7X/Nd1hKaGHYafq8bgybXajZgXjkZ93BOdfNSCT90J3U+hem
+         6XKfNdhEFme1oct/DOYZxfZ2B8jhxh9OhACBr0s3kCvxZ8se+8wuBnCQRRXTM6yj5fAN
+         aeuDJdQeGmZz/dul+6sCkOkSrupRD1Su5P8ZzwUlGJdGpYCY47oUnxH5ed4xL95Q6iF7
+         D7Vw==
+X-Gm-Message-State: APjAAAW+14kuduimAb+kbS8FnSEtC4LYl3XIybq3lLFnvyy0KftMdOwH
+        QloXTmiyUnR1SZKKBABdhBmCydfRC30=
+X-Google-Smtp-Source: APXvYqzzFrQQjv3Gr2VwW6cXI9Da6kjQWabirJSV4MFgqcSvaicBFnCfAhubiVMI5EWpJFcxVTu7KA==
+X-Received: by 2002:a17:902:9a82:: with SMTP id w2mr6319109plp.291.1562872175609;
+        Thu, 11 Jul 2019 12:09:35 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id c69sm8330896pje.6.2019.07.11.12.09.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jul 2019 12:04:49 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Eric Dumazet" <eric.dumazet@gmail.com>
-Cc:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
-        "Christoph Paasch" <christoph.paasch@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jonathan Looney" <jtl@netflix.com>,
-        "Neal Cardwell" <ncardwell@google.com>,
-        "Tyler Hicks" <tyhicks@canonical.com>,
-        "Yuchung Cheng" <ycheng@google.com>,
-        "Bruce Curtis" <brucec@netflix.com>,
-        "Dustin Marquess" <dmarquess@apple.com>
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-Date:   Thu, 11 Jul 2019 12:04:48 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <4B9799E0-A736-4944-9BF3-FBACCFBDCCC5@gmail.com>
-In-Reply-To: <d4b1ab65-c308-382a-2a0e-9042750335e0@gmail.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
- <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
- <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
- <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
- <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
- <d4b1ab65-c308-382a-2a0e-9042750335e0@gmail.com>
+        Thu, 11 Jul 2019 12:09:35 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <20190708192532.27420-1-snelson@pensando.io>
+ <20190708192532.27420-14-snelson@pensando.io>
+ <20190708220406.GB17857@lunn.ch>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <d81a0f1d-1051-3160-a9bc-dbbc645be857@pensando.io>
+Date:   Thu, 11 Jul 2019 12:10:32 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; markup=markdown
+In-Reply-To: <20190708220406.GB17857@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 7/8/19 3:04 PM, Andrew Lunn wrote:
+
+>> +	case XCVR_PID_SFP_10GBASE_ER:
+>> +		ethtool_link_ksettings_add_link_mode(ks, supported,
+>> +						     10000baseER_Full);
+>> +		break;
+> I don't know these link modes too well. But only setting a single bit
+> seems odd. What i do know is that an SFP which supports 2500BaseX
+> should also be able to support 1000BaseX. So should a 100G SFP also
+> support 40G, 25G, 10G etc? The SERDES just runs a slower bitstream
+> over the basic bitpipe?
+
+Yes, but in this initial release we're not supporting changes to the 
+modes yet.  That flexibility will come later.
+
+>
+>> +	case XCVR_PID_QSFP_100G_ACC:
+>> +	case XCVR_PID_QSFP_40GBASE_ER4:
+>> +	case XCVR_PID_SFP_25GBASE_LR:
+>> +	case XCVR_PID_SFP_25GBASE_ER:
+>> +		dev_info(lif->ionic->dev, "no decode bits for xcvr type pid=%d / 0x%x\n",
+>> +			 idev->port_info->status.xcvr.pid,
+>> +			 idev->port_info->status.xcvr.pid);
+>> +		break;
+> Why not add them?
+
+Yes, this has been mentioned before.  I might in the future, but I have 
+my hands full at the moment.
+
+>
+>
+>> +	memcpy(ks->link_modes.advertising, ks->link_modes.supported,
+>> +	       sizeof(ks->link_modes.advertising));
+> bitmap_copy() would be a better way to do this. You could consider
+> adding a helper to ethtool.h.
+
+Sure.
+
+Thanks for your comments, and sorry I haven't responded as quickly as 
+I'd like... I'll be going through these and your other comments over the 
+next few days.
+
+sln
 
 
-On 11 Jul 2019, at 11:28, Eric Dumazet wrote:
-
-> On 7/11/19 7:14 PM, Prout, Andrew - LLSC - MITLL wrote:
->>
->> In my opinion, if a small SO_SNDBUF below a certain value is no 
->> longer supported, then SOCK_MIN_SNDBUF should be adjusted to reflect 
->> this. The RCVBUF/SNDBUF sizes are supposed to be hints, no error is 
->> returned if they are not honored. The kernel should continue to 
->> function regardless of what userspace requests for their values.
->>
->
-> It is supported to set whatever SO_SNDBUF value and get terrible 
-> performance.
->
-> It always has been.
->
-> The only difference is that we no longer allow an attacker to fool TCP 
-> stack
-> and consume up to 2 GB per socket while SO_SNDBUF was set to 128 KB.
->
-> The side effect is that in some cases, the workload can appear to have 
-> the signature of the attack.
->
-> The solution is to increase your SO_SNDBUF, or even better let TCP 
-> stack autotune it.
-> nobody forced you to set very small values for it.
-
-I discovered we have some production services that set SO_SNDBUF to
-very small values (~4k), as they are essentially doing interactive
-communications, not bulk transfers.  But there's a difference between
-"terrible performance" and "TCP stops working".
--- 
-Jonathan
