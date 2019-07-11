@@ -2,190 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D50655DC
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 13:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F58F65629
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 13:53:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728215AbfGKLll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 07:41:41 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40856 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728107AbfGKLlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 07:41:40 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v19so5373293wmj.5
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 04:41:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=ymUIehAhvLYWh4tBvZT988gIZp7NQryn4z3+jx6j/kU=;
-        b=si0ooBSxEAYQm7mLbGC+r5c9CiSfnZvdJK2sN2Nv3mQHC1OPciIQSZuJ/UVRZwjtNt
-         3oOgjjrqwJvBvQfzlR036p38AYwQr/HtsUcRM/NPc+ZHeN//VKcA2s6RkEGFdMzpGO8i
-         Xmn3+ZkiSONf/IRA7RrXCD50teS59zvb+iTpktq0wx4Yi3YUolh3EKqQeGtW/cvx52QG
-         EGSiVsKYNm26/aZkNP6s6vXRUR4g7va0SWgTaBqCSDRlZ9pD7ruTqgn1HGWI1bEvx10B
-         ZT+A/UwMEVP8c9gN3sppnGOX6o+MVmGZ+mSzg6DFRqCSB2THBWEoRxvPfrnWxThaIS1g
-         iQwQ==
-X-Gm-Message-State: APjAAAUCZVe8TwNUTlyqpR6ajzAaVJfubUserptnE/mDpPoFlPc3/0JB
-        K7cnIOwabkBpIb0jN+MTPmsDZQO507g=
-X-Google-Smtp-Source: APXvYqwRR0/7VKLUCV5HmnQ3oF3/2TnLVMCDW4FVoJ7/5sx7SY7FwnHRjcfV5YmEH/+ltoXXWjAEVQ==
-X-Received: by 2002:a1c:7e90:: with SMTP id z138mr3880334wmc.128.1562845297577;
-        Thu, 11 Jul 2019 04:41:37 -0700 (PDT)
-Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
-        by smtp.gmail.com with ESMTPSA id h8sm5005660wmf.12.2019.07.11.04.41.36
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 11 Jul 2019 04:41:37 -0700 (PDT)
-Date:   Thu, 11 Jul 2019 13:41:34 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
- virtio-vsock
-Message-ID: <20190711114134.xhmpciyglb2angl6@steredhat>
-References: <20190710153707.twmzgmwqqw3pstos@steredhat>
- <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
+        id S1728704AbfGKLwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 07:52:45 -0400
+Received: from mail-eopbgr20055.outbound.protection.outlook.com ([40.107.2.55]:23104
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728502AbfGKLwp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 07:52:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rpC0IO2IjILIEotGbBTV3O8QSHvTjnjgYGJzm/ZD6RM=;
+ b=WeW9sPUD7astuSQ1f67hJSHUdXADJR/XxcA97ql0ZtUsm5FVRIOKpwL1/U1WqYODlyYt62Br8qo+1zV9gl9OTbAYSrJadAxpNKG461r0EhyL/7fTUQlrCmiW2PyAviRNu1EgE/pEopLpnYM9yRBFgccZAszZSCT6TdWJT+yL8VU=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+ VI1PR05MB5965.eurprd05.prod.outlook.com (20.178.126.221) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.18; Thu, 11 Jul 2019 11:52:42 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2052.020; Thu, 11 Jul 2019
+ 11:52:42 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Bernard Metzler <BMT@zurich.ibm.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Doug Ledford <dledford@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Re: linux-next: build failure after merge of the net-next tree
+Thread-Topic: Re: linux-next: build failure after merge of the net-next tree
+Thread-Index: AQHVNgpSNqxsVllq5U23Am+RwOaE5KbB1zsAgAJNFwCAAO0agIAAQMGA
+Date:   Thu, 11 Jul 2019 11:52:42 +0000
+Message-ID: <20190711115235.GA25821@mellanox.com>
+References: <20190710175212.GM2887@mellanox.com>
+ <20190709135636.4d36e19f@canb.auug.org.au>
+ <20190709064346.GF7034@mtr-leonro.mtl.com>
+ <OF360C0EBE.4A489B94-ON00258434.002B10B7-00258434.002C0536@notes.na.collabserv.com>
+In-Reply-To: <OF360C0EBE.4A489B94-ON00258434.002B10B7-00258434.002C0536@notes.na.collabserv.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MN2PR13CA0003.namprd13.prod.outlook.com
+ (2603:10b6:208:160::16) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [156.34.55.100]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 227fc414-6726-497b-2d4c-08d705f647a3
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB5965;
+x-ms-traffictypediagnostic: VI1PR05MB5965:
+x-microsoft-antispam-prvs: <VI1PR05MB5965593772E62C372F6A9B6ACFF30@VI1PR05MB5965.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1388;
+x-forefront-prvs: 0095BCF226
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(376002)(366004)(136003)(346002)(189003)(199004)(14454004)(26005)(6486002)(229853002)(81156014)(486006)(8676002)(81166006)(558084003)(386003)(76176011)(2906002)(186003)(52116002)(478600001)(11346002)(6506007)(476003)(7736002)(2616005)(316002)(66446008)(66476007)(66556008)(64756008)(305945005)(446003)(4326008)(25786009)(99286004)(5660300002)(66946007)(66066001)(36756003)(6246003)(71200400001)(71190400001)(33656002)(6116002)(3846002)(53936002)(6436002)(1076003)(54906003)(6916009)(68736007)(86362001)(256004)(102836004)(8936002)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5965;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: TFN8juN7yh+3BWV48h4dA8V2zI4SmHEpBTest1oInspj+F+dbq4opGjVfDQ644qQTsHmJ8vDCK4dTp5N8YF8WMwuHKxP91TA3cDSwaHRH8dhGmtUvF+cHobeHY59v5NmUs6QknnU1wZgcHKWgKkBfBo27/DH9z/w45AI5SkPhmBipilfqLetLaQnnOcgAktxl5PcbYzAm6xID4xanDzcyWArZNKRvtZbTHZkIemzZz43X3vZVwlXSPegpUbNKP9klqzh7sLiYRP2lZL/GgTv00FUMgKqargTqhZWaPgKLX+Vkkn8BjVxYmOJ9zDsOHl3Ingh7p4BwejytioKclAa1dDKZHXi/H/G4PJA1io6pqA5SQ0ML/sU0DraEDTw61zfAFnRrAd//Bx+rqb54UxKr6G8FAJ8etF4kjeNbiKfKow=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <41E70F810226F94886FF11857E428ADB@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
-User-Agent: NeoMutt/20180716
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 227fc414-6726-497b-2d4c-08d705f647a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 11:52:42.2691
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5965
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 03:37:00PM +0800, Jason Wang wrote:
-> 
-> On 2019/7/10 下午11:37, Stefano Garzarella wrote:
-> > Hi,
-> > as Jason suggested some months ago, I looked better at the virtio-net driver to
-> > understand if we can reuse some parts also in the virtio-vsock driver, since we
-> > have similar challenges (mergeable buffers, page allocation, small
-> > packets, etc.).
-> > 
-> > Initially, I would add the skbuff in the virtio-vsock in order to re-use
-> > receive_*() functions.
-> 
-> 
-> Yes, that will be a good step.
-> 
+On Thu, Jul 11, 2019 at 08:00:49AM +0000, Bernard Metzler wrote:
 
-Okay, I'll go on this way.
+> That listen will not sleep. The socket is just marked
+> listening.=20
 
-> 
-> > Then I would move receive_[small, big, mergeable]() and
-> > add_recvbuf_[small, big, mergeable]() outside of virtio-net driver, in order to
-> > call them also from virtio-vsock. I need to do some refactoring (e.g. leave the
-> > XDP part on the virtio-net driver), but I think it is feasible.
-> > 
-> > The idea is to create a virtio-skb.[h,c] where put these functions and a new
-> > object where stores some attributes needed (e.g. hdr_len ) and status (e.g.
-> > some fields of struct receive_queue).
-> 
-> 
-> My understanding is we could be more ambitious here. Do you see any blocker
-> for reusing virtio-net directly? It's better to reuse not only the functions
-> but also the logic like NAPI to avoid re-inventing something buggy and
-> duplicated.
-> 
+Eh? siw_listen_address() calls siw_cep_alloc() which does:
 
-These are my concerns:
-- virtio-vsock is not a "net_device", so a lot of code related to
-  ethtool, net devices (MAC address, MTU, speed, VLAN, XDP, offloading) will be
-  not used by virtio-vsock.
+	struct siw_cep *cep =3D kzalloc(sizeof(*cep), GFP_KERNEL);
 
-- virtio-vsock has a different header. We can consider it as part of
-  virtio_net payload, but it precludes the compatibility with old hosts. This
-  was one of the major doubts that made me think about using only the
-  send/recv skbuff functions, that it shouldn't break the compatibility.
+Which is sleeping. Many other cases too.
 
-> 
-> > This is an idea of virtio-skb.h that
-> > I have in mind:
-> >      struct virtskb;
-> 
-> 
-> What fields do you want to store in virtskb? It looks to be exist sk_buff is
-> flexible enough to us?
-
-My idea is to store queues information, like struct receive_queue or
-struct send_queue, and some device attributes (e.g. hdr_len ).
-
-> 
-> 
-> > 
-> >      struct sk_buff *virtskb_receive_small(struct virtskb *vs, ...);
-> >      struct sk_buff *virtskb_receive_big(struct virtskb *vs, ...);
-> >      struct sk_buff *virtskb_receive_mergeable(struct virtskb *vs, ...);
-> > 
-> >      int virtskb_add_recvbuf_small(struct virtskb*vs, ...);
-> >      int virtskb_add_recvbuf_big(struct virtskb *vs, ...);
-> >      int virtskb_add_recvbuf_mergeable(struct virtskb *vs, ...);
-> > 
-> > For the Guest->Host path it should be easier, so maybe I can add a
-> > "virtskb_send(struct virtskb *vs, struct sk_buff *skb)" with a part of the code
-> > of xmit_skb().
-> 
-> 
-> I may miss something, but I don't see any thing that prevents us from using
-> xmit_skb() directly.
-> 
-
-Yes, but my initial idea was to make it more parametric and not related to the
-virtio_net_hdr, so the 'hdr_len' could be a parameter and the
-'num_buffers' should be handled by the caller.
-
-> 
-> > 
-> > Let me know if you have in mind better names or if I should put these function
-> > in another place.
-> > 
-> > I would like to leave the control part completely separate, so, for example,
-> > the two drivers will negotiate the features independently and they will call
-> > the right virtskb_receive_*() function based on the negotiation.
-> 
-> 
-> If it's one the issue of negotiation, we can simply change the
-> virtnet_probe() to deal with different devices.
-> 
-> 
-> > 
-> > I already started to work on it, but before to do more steps and send an RFC
-> > patch, I would like to hear your opinion.
-> > Do you think that makes sense?
-> > Do you see any issue or a better solution?
-> 
-> 
-> I still think we need to seek a way of adding some codes on virtio-net.c
-> directly if there's no huge different in the processing of TX/RX. That would
-> save us a lot time.
-
-After the reading of the buffers from the virtqueue I think the process
-is slightly different, because virtio-net will interface with the network
-stack, while virtio-vsock will interface with the vsock-core (socket).
-So the virtio-vsock implements the following:
-- control flow mechanism to avoid to loose packets, informing the peer
-  about the amount of memory available in the receive queue using some
-  fields in the virtio_vsock_hdr
-- de-multiplexing parsing the virtio_vsock_hdr and choosing the right
-  socket depending on the port
-- socket state handling
-
-We can use the virtio-net as transport, but we should add a lot of
-code to skip "net device" stuff when it is used by the virtio-vsock.
-This could break something in virtio-net, for this reason, I thought to reuse
-only the send/recv functions starting from the idea to split the virtio-net
-driver in two parts:
-a. one with all stuff related to the network stack
-b. one with the stuff needed to communicate with the host
-
-And use skbuff to communicate between parts. In this way, virtio-vsock
-can use only the b part.
-
-Maybe we can do this split in a better way, but I'm not sure it is
-simple.
-
-Thanks,
-Stefano
+Jason
