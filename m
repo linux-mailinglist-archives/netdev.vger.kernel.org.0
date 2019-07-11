@@ -2,88 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2499064F81
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F9B664F87
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbfGKATE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 20:19:04 -0400
-Received: from mail.us.es ([193.147.175.20]:35664 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727325AbfGKATE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jul 2019 20:19:04 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 30EB580D04
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 02:19:02 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 21472CE158
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 02:19:02 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 164E4DA4CA; Thu, 11 Jul 2019 02:19:02 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0FE7BDA708;
-        Thu, 11 Jul 2019 02:18:57 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 11 Jul 2019 02:18:57 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [31.4.194.134])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A4A804265A32;
-        Thu, 11 Jul 2019 02:18:56 +0200 (CEST)
-Date:   Thu, 11 Jul 2019 02:18:55 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
-        marcelo.leitner@gmail.com, mkubecek@suse.cz,
-        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
-        cphealy@gmail.com, phil@nwl.cc, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next,v4 12/12] netfilter: nf_tables: add hardware
- offload support
-Message-ID: <20190711001855.clnckjanuouik7aw@salvia>
-References: <20190709205550.3160-1-pablo@netfilter.org>
- <20190709205550.3160-13-pablo@netfilter.org>
- <20190710075227.GA4362@nanopsycho>
+        id S1727943AbfGKAWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 20:22:22 -0400
+Received: from smtprelay0207.hostedemail.com ([216.40.44.207]:53637 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727325AbfGKAWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 20:22:22 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id F2F3B4833;
+        Thu, 11 Jul 2019 00:22:20 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3870:4321:5007:7514:10004:10400:10848:11026:11232:11473:11658:11914:12043:12297:12555:12740:12760:12895:13069:13311:13357:13439:14096:14097:14181:14659:14721:21080:21451:21627:30054:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: need74_4e415a63a7511
+X-Filterd-Recvd-Size: 2210
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf15.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 11 Jul 2019 00:22:17 +0000 (UTC)
+Message-ID: <80a4e132f3be48899904eccdc023f5c53229840b.camel@perches.com>
+Subject: Re: [PATCH] ipvs: remove unnecessary space
+From:   Joe Perches <joe@perches.com>
+To:     Simon Horman <horms@verge.net.au>,
+        yangxingwu <xingwu.yang@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     wensong@linux-vs.org, ja@ssi.bg, kadlec@blackhole.kfki.hu,
+        fw@strlen.de, davem@davemloft.net, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org
+Date:   Wed, 10 Jul 2019 17:22:16 -0700
+In-Reply-To: <20190710080609.smxjqe2d5jyro4hv@verge.net.au>
+References: <20190710074552.74394-1-xingwu.yang@gmail.com>
+         <20190710080609.smxjqe2d5jyro4hv@verge.net.au>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190710075227.GA4362@nanopsycho>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 09:52:27AM +0200, Jiri Pirko wrote:
-> Tue, Jul 09, 2019 at 10:55:50PM CEST, pablo@netfilter.org wrote:
+On Wed, 2019-07-10 at 10:06 +0200, Simon Horman wrote:
+> On Wed, Jul 10, 2019 at 03:45:52PM +0800, yangxingwu wrote:
+> > this patch removes the extra space.
+> > 
+> > Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
 > 
-> [...]
+> Thanks, this looks good to me.
 > 
-> >+	if (!dev || !dev->netdev_ops->ndo_setup_tc)
+> Acked-by: Simon Horman <horms@verge.net.au>
 > 
-> Why didn't you rename ndo_setup_tc? I put a comment about it in the
-> previous version thread. I expect that you can at least write why it is
-> a wrong idea.
+> Pablo, please consider including this in nf-next.
+> 
+> 
+> > ---
+> >  net/netfilter/ipvs/ip_vs_mh.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/net/netfilter/ipvs/ip_vs_mh.c b/net/netfilter/ipvs/ip_vs_mh.c
+> > index 94d9d34..98e358e 100644
+> > --- a/net/netfilter/ipvs/ip_vs_mh.c
+> > +++ b/net/netfilter/ipvs/ip_vs_mh.c
+> > @@ -174,8 +174,8 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
+> >  		return 0;
+> >  	}
+> >  
+> > -	table =  kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
+> > -			 sizeof(unsigned long), GFP_KERNEL);
+> > +	table =	kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
+> > +			sizeof(unsigned long), GFP_KERNEL);
 
-This is a good idea. It happened that I read this email by when my new
-patch series was ready. I will follow up with a patch to address this
-rename as soon as the bug fixes are sorted out.
+bitmap_alloc?
 
-Thanks.
+> >  	if (!table)
+> >  		return -ENOMEM;
+> >  
+> > -- 
+> > 1.8.3.1
+> > 
+
