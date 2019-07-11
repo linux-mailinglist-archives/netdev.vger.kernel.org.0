@@ -2,112 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A659265FE3
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 21:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6D166014
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 21:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728681AbfGKTJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 15:09:36 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41570 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728394AbfGKTJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 15:09:36 -0400
-Received: by mail-pl1-f196.google.com with SMTP id m9so3491169pls.8
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 12:09:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=M4WeZcWrGd18YeXjzMUXq9YEJOlHeqxtQB8+6/gTd3s=;
-        b=bef+xSvFmTUnEIzeZ36IHCRoL6XCUCNflOIQxs+rUuZ04HcQuOvIb0ydjSjbVCgLYm
-         UG3/+XUu1xWVm9+7PUBHK9bmDFm7vdr9OZkLWMilxvkqRhVSC1+P10BEAKuqy+YdMm5A
-         e6wo5cK+Ip1jW5VgBGsbScH4niAMV/rlKZNQ8tKlCdxwvNOc9Oky8HGnHJFa63vnfKWU
-         UAKgttk/dzTqNR6egglCZobN9SkYuf/S+8/e/1coPvXwmShAp5CaW/2SQQTkk7/Wd9tc
-         A0bySatQa4Rzqfz6SM+mTl/dq2RI3oXCBQCvhe9nd0WBwjluK7I3RjDmqgDYT8o7cyXv
-         jThw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=M4WeZcWrGd18YeXjzMUXq9YEJOlHeqxtQB8+6/gTd3s=;
-        b=XTmLudnY+jYaj7NyMmYQ0YutNPFdRfDDwPHrQxViV5wq0yIbvV/EYWQQNJQ7AeplgN
-         0GX0rj/NgzNAGOODGlSZAgbExybWyfjnslmV+fU5tcZzhC7g4PTWVR4KNDIhUBbqhX2b
-         5JA/R7m5Pt9RykjJ1HfO7X/Nd1hKaGHYafq8bgybXajZgXjkZ93BOdfNSCT90J3U+hem
-         6XKfNdhEFme1oct/DOYZxfZ2B8jhxh9OhACBr0s3kCvxZ8se+8wuBnCQRRXTM6yj5fAN
-         aeuDJdQeGmZz/dul+6sCkOkSrupRD1Su5P8ZzwUlGJdGpYCY47oUnxH5ed4xL95Q6iF7
-         D7Vw==
-X-Gm-Message-State: APjAAAW+14kuduimAb+kbS8FnSEtC4LYl3XIybq3lLFnvyy0KftMdOwH
-        QloXTmiyUnR1SZKKBABdhBmCydfRC30=
-X-Google-Smtp-Source: APXvYqzzFrQQjv3Gr2VwW6cXI9Da6kjQWabirJSV4MFgqcSvaicBFnCfAhubiVMI5EWpJFcxVTu7KA==
-X-Received: by 2002:a17:902:9a82:: with SMTP id w2mr6319109plp.291.1562872175609;
-        Thu, 11 Jul 2019 12:09:35 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id c69sm8330896pje.6.2019.07.11.12.09.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jul 2019 12:09:35 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-References: <20190708192532.27420-1-snelson@pensando.io>
- <20190708192532.27420-14-snelson@pensando.io>
- <20190708220406.GB17857@lunn.ch>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <d81a0f1d-1051-3160-a9bc-dbbc645be857@pensando.io>
-Date:   Thu, 11 Jul 2019 12:10:32 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190708220406.GB17857@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        id S1728714AbfGKTj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 15:39:58 -0400
+Received: from mail-eopbgr50050.outbound.protection.outlook.com ([40.107.5.50]:33188
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726116AbfGKTj6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 15:39:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FViZ5ThM9YkJbBixAk2BcaRqMAeW1D9T6MtlFsAvzrE=;
+ b=TaVjC9wd5IhxOfrbf7TXjX82A6ogqyVxT1aPCrQlGdhwjbs7fzlLeMkQlsi00dBPLmKZ3b2X/6SlgF9ZwxY4ghNNtajkwcq2gBuK7RGNiuGS6xCPpLQBXA7cp9zYMVnIG6nsOMogvgg6PXzxxB9Fe4UYPp+FxYDX3/yV67AfL+U=
+Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
+ AM4PR0501MB2851.eurprd05.prod.outlook.com (10.172.216.14) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2052.19; Thu, 11 Jul 2019 19:39:53 +0000
+Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
+ ([fe80::4828:eda7:c6d:69e1]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
+ ([fe80::4828:eda7:c6d:69e1%9]) with mapi id 15.20.2052.022; Thu, 11 Jul 2019
+ 19:39:53 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [PATCH net-next 0/3] Mellanox, mlx5 build fixes
+Thread-Topic: [PATCH net-next 0/3] Mellanox, mlx5 build fixes
+Thread-Index: AQHVOCBpjHGYf2xirEyTWUz0mKnmPw==
+Date:   Thu, 11 Jul 2019 19:39:53 +0000
+Message-ID: <20190711193937.29802-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR11CA0070.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::47) To AM4PR0501MB2756.eurprd05.prod.outlook.com
+ (2603:10a6:200:5c::10)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9c46f2e5-6e53-4d82-9dfe-08d706378b5e
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2851;
+x-ms-traffictypediagnostic: AM4PR0501MB2851:
+x-microsoft-antispam-prvs: <AM4PR0501MB2851EFEA1787748F5ED6B902BEF30@AM4PR0501MB2851.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0095BCF226
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(376002)(39860400002)(136003)(346002)(199004)(189003)(66946007)(66066001)(4744005)(26005)(66446008)(71200400001)(66476007)(71190400001)(186003)(81156014)(8936002)(6506007)(5660300002)(1076003)(305945005)(66556008)(36756003)(99286004)(81166006)(86362001)(25786009)(14444005)(52116002)(102836004)(107886003)(64756008)(53936002)(8676002)(386003)(478600001)(6436002)(476003)(3846002)(54906003)(6486002)(6916009)(2906002)(2616005)(6116002)(6512007)(486006)(68736007)(256004)(4326008)(7736002)(316002)(14454004)(50226002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2851;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Fu9SIwvxgBxXwIK/9vrFHQFdv7ekWaB0uJqdfjmfeYaKKkbIChIgaKztDyR8dXcngvmrijIHoArwAj3dlHJnTrgZiJVSnXCCzd0kE+fFz7MbI5N3QoMMuWjGv6pOLrSBmUroO7bCvGF8beWWV1WqvP4aFi6/N/483Kxmz/n+SfUxWOsG3zIgCOUeR0e9mMgw5B+tSzmSa3HCcTqOggYN3D9huy2vNlO78HcqCf6yOWAZe93WJ9ZPCNFq5NdHRx90+Uju0DjZPrUJbAUS3Xujoz6T/2DUJQ2x6qHgv+rhhdl/sh8ftedG6PmEeE1gLQxAlfF9JN5vxqj5Zz6r0IMy0YWnQ6UxYtH7ML1qjhOClCNpXRADQclHa9BWxIO7nwuorkyFaX0T+uPXLFW6sWUsEiO2OLVtQ4VzedifWa7UaHg=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CA2D2970BD77F143AD566DE887BB0D36@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c46f2e5-6e53-4d82-9dfe-08d706378b5e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2019 19:39:53.4093
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2851
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/8/19 3:04 PM, Andrew Lunn wrote:
-
->> +	case XCVR_PID_SFP_10GBASE_ER:
->> +		ethtool_link_ksettings_add_link_mode(ks, supported,
->> +						     10000baseER_Full);
->> +		break;
-> I don't know these link modes too well. But only setting a single bit
-> seems odd. What i do know is that an SFP which supports 2500BaseX
-> should also be able to support 1000BaseX. So should a 100G SFP also
-> support 40G, 25G, 10G etc? The SERDES just runs a slower bitstream
-> over the basic bitpipe?
-
-Yes, but in this initial release we're not supporting changes to the 
-modes yet.  That flexibility will come later.
-
->
->> +	case XCVR_PID_QSFP_100G_ACC:
->> +	case XCVR_PID_QSFP_40GBASE_ER4:
->> +	case XCVR_PID_SFP_25GBASE_LR:
->> +	case XCVR_PID_SFP_25GBASE_ER:
->> +		dev_info(lif->ionic->dev, "no decode bits for xcvr type pid=%d / 0x%x\n",
->> +			 idev->port_info->status.xcvr.pid,
->> +			 idev->port_info->status.xcvr.pid);
->> +		break;
-> Why not add them?
-
-Yes, this has been mentioned before.  I might in the future, but I have 
-my hands full at the moment.
-
->
->
->> +	memcpy(ks->link_modes.advertising, ks->link_modes.supported,
->> +	       sizeof(ks->link_modes.advertising));
-> bitmap_copy() would be a better way to do this. You could consider
-> adding a helper to ethtool.h.
-
-Sure.
-
-Thanks for your comments, and sorry I haven't responded as quickly as 
-I'd like... I'll be going through these and your other comments over the 
-next few days.
-
-sln
-
-
+SGkgRGF2ZSwNCg0KSSBrbm93IG5ldC1uZXh0IGlzIGNsb3NlZCBidXQgdGhlc2UgcGF0Y2hlcyBh
+cmUgZml4aW5nIHNvbWUgY29tcGlsZXINCmJ1aWxkIGFuZCB3YXJuaW5ncyBpc3N1ZXMgcGVvcGxl
+IGhhdmUgYmVlbiBjb21wbGFpbmluZyBhYm91dC4NCg0KSSBob3BlIGl0IGlzIG5vdCB0b28gbGF0
+ZSwgYnV0IGluIGNhc2UgaXQgaXMgYSBsb3Qgb2YgdHJvdWJsZSBmb3IgeW91LCBJDQpndWVzcyB0
+aGV5IGNhbiB3YWl0Lg0KDQpUaGFua3MsDQpTYWVlZC4NCg0KLS0tDQoNClNhZWVkIE1haGFtZWVk
+ICgyKToNCiAgbmV0L21seDVlOiBGaXggdW51c2VkIHZhcmlhYmxlIHdhcm5pbmcgd2hlbiBDT05G
+SUdfTUxYNV9FU1dJVENIIGlzIG9mZg0KICBuZXQvbWx4NTogRS1Td2l0Y2gsIFJlZHVjZSBpbmdy
+ZXNzIGFjbCBtb2RpZnkgbWV0YWRhdGEgc3RhY2sgdXNhZ2UNCg0KVGFyaXEgVG91a2FuICgxKToN
+CiAgbmV0L21seDVlOiBGaXggY29tcGlsYXRpb24gZXJyb3IgaW4gVExTIGNvZGUNCg0KIGRyaXZl
+cnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9hY2NlbC90bHMuaCAgICAgICAgfCAy
+ICstDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX21haW4uYyAg
+ICAgICAgICB8IDUgKystLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2Nv
+cmUvZXN3aXRjaF9vZmZsb2Fkcy5jIHwgMiArLQ0KIDMgZmlsZXMgY2hhbmdlZCwgNCBpbnNlcnRp
+b25zKCspLCA1IGRlbGV0aW9ucygtKQ0KDQotLSANCjIuMjEuMA0KDQo=
