@@ -2,148 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39F33655D6
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 13:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D50655DC
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 13:41:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbfGKLgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 07:36:20 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:39805 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728423AbfGKLgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 07:36:20 -0400
-Received: by mail-lj1-f194.google.com with SMTP id v18so5413430ljh.6
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 04:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=gowXtkeVITMmhGMj1myvSJOoQpKoOyUOuod6NvEyUrE=;
-        b=Hi3T9qq9ZX2sD6OlJP2ck97V/bj59SRLuwSyxxvXrRXXQ7MdIFdmokLyXz1I3YuyMI
-         OjeEYxUSQP/RtaA9jySG2RYRwt5j0L9EebWyTCfzAaXTdb0N0G4UlYRz3gun5bdokWfp
-         xfRZrdk7ROnWHkyDLzvFZItkw9P76vDvWIOIQ=
+        id S1728215AbfGKLll (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 07:41:41 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40856 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728107AbfGKLlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 07:41:40 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v19so5373293wmj.5
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 04:41:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gowXtkeVITMmhGMj1myvSJOoQpKoOyUOuod6NvEyUrE=;
-        b=BXK15ZoL+MT+L1SH4N6L4/kfkdU78HGA+CG7mIjkPreDMxFXGt4uOPHpFF7RFiPUUH
-         C8NAhTx4bsbjL7cTJ1jWxtnX4WEYdwXRLnbtFUJ25cec207Sj/bcCjyEi10i62qE+Kd9
-         KQOjnJhkBZF8WO3MqKf+xwC8sb1Lqaf5xKTiO6QItYWT1/FAND8Z3BIp2NCO1E2ANN2N
-         mhDj9Az/hdZhf9DKefOxo9PmtO34V0Uea260CG+Q7h79+HCrxbf5SPCRZ8Z/T5OJWHMJ
-         ysu6+HLqqoWoOZqa7YOtlOZCkEFJdwwYrfOX8PEmItnWtDy5EfnLAfjhgPNKbE8NtMqT
-         b8hA==
-X-Gm-Message-State: APjAAAX+vTx2pf9qSc8PJVAtps8IzOww0rg7x4dEsgO9WYc9Ig62Id3H
-        OZXGqS6veAnJcnW4dho+UsbTOowwQ+jCfjfCEKOw2A==
-X-Google-Smtp-Source: APXvYqw5kNwuodXhvfXQH8fkFgdYYPfLmFnNga2XZAN6tMleSYRmWD7F5IxzAkKPtB74MWYBqSNrYa4ydBrrUmyskFE=
-X-Received: by 2002:a2e:9188:: with SMTP id f8mr2224230ljg.33.1562844977640;
- Thu, 11 Jul 2019 04:36:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=ymUIehAhvLYWh4tBvZT988gIZp7NQryn4z3+jx6j/kU=;
+        b=si0ooBSxEAYQm7mLbGC+r5c9CiSfnZvdJK2sN2Nv3mQHC1OPciIQSZuJ/UVRZwjtNt
+         3oOgjjrqwJvBvQfzlR036p38AYwQr/HtsUcRM/NPc+ZHeN//VKcA2s6RkEGFdMzpGO8i
+         Xmn3+ZkiSONf/IRA7RrXCD50teS59zvb+iTpktq0wx4Yi3YUolh3EKqQeGtW/cvx52QG
+         EGSiVsKYNm26/aZkNP6s6vXRUR4g7va0SWgTaBqCSDRlZ9pD7ruTqgn1HGWI1bEvx10B
+         ZT+A/UwMEVP8c9gN3sppnGOX6o+MVmGZ+mSzg6DFRqCSB2THBWEoRxvPfrnWxThaIS1g
+         iQwQ==
+X-Gm-Message-State: APjAAAUCZVe8TwNUTlyqpR6ajzAaVJfubUserptnE/mDpPoFlPc3/0JB
+        K7cnIOwabkBpIb0jN+MTPmsDZQO507g=
+X-Google-Smtp-Source: APXvYqwRR0/7VKLUCV5HmnQ3oF3/2TnLVMCDW4FVoJ7/5sx7SY7FwnHRjcfV5YmEH/+ltoXXWjAEVQ==
+X-Received: by 2002:a1c:7e90:: with SMTP id z138mr3880334wmc.128.1562845297577;
+        Thu, 11 Jul 2019 04:41:37 -0700 (PDT)
+Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
+        by smtp.gmail.com with ESMTPSA id h8sm5005660wmf.12.2019.07.11.04.41.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 11 Jul 2019 04:41:37 -0700 (PDT)
+Date:   Thu, 11 Jul 2019 13:41:34 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
+ virtio-vsock
+Message-ID: <20190711114134.xhmpciyglb2angl6@steredhat>
+References: <20190710153707.twmzgmwqqw3pstos@steredhat>
+ <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
 MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-2-krzesimir@kinvolk.io>
- <CAEf4BzYDOyU52wdCinm9cxxvNijpTJgQbCg9UxcO1QKk6vWhNA@mail.gmail.com>
-In-Reply-To: <CAEf4BzYDOyU52wdCinm9cxxvNijpTJgQbCg9UxcO1QKk6vWhNA@mail.gmail.com>
-From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Thu, 11 Jul 2019 13:36:06 +0200
-Message-ID: <CAGGp+cEaGphDCuZL+sbo2aCVumk2jrq9_Lshifg-Ewphfm40Wg@mail.gmail.com>
-Subject: Re: [bpf-next v3 01/12] selftests/bpf: Print a message when tester
- could not run a program
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 1:45 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> wro=
-te:
-> >
-> > This prints a message when the error is about program type being not
-> > supported by the test runner or because of permissions problem. This
-> > is to see if the program we expected to run was actually executed.
-> >
-> > The messages are open-coded because strerror(ENOTSUPP) returns
-> > "Unknown error 524".
-> >
-> > Changes since v2:
-> > - Also print "FAIL" on an unexpected bpf_prog_test_run error, so there
-> >   is a corresponding "FAIL" message for each failed test.
-> >
-> > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > ---
-> >  tools/testing/selftests/bpf/test_verifier.c | 17 +++++++++++++----
-> >  1 file changed, 13 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testin=
-g/selftests/bpf/test_verifier.c
-> > index c5514daf8865..b8d065623ead 100644
-> > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -831,11 +831,20 @@ static int do_prog_test_run(int fd_prog, bool unp=
-riv, uint32_t expected_val,
-> >                                 tmp, &size_tmp, &retval, NULL);
-> >         if (unpriv)
-> >                 set_admin(false);
-> > -       if (err && errno !=3D 524/*ENOTSUPP*/ && errno !=3D EPERM) {
-> > -               printf("Unexpected bpf_prog_test_run error ");
-> > -               return err;
-> > +       if (err) {
-> > +               switch (errno) {
-> > +               case 524/*ENOTSUPP*/:
-> > +                       printf("Did not run the program (not supported)=
- ");
-> > +                       return 0;
-> > +               case EPERM:
-> > +                       printf("Did not run the program (no permission)=
- ");
->
-> Let's add "SKIP: " prefix to these?
+On Thu, Jul 11, 2019 at 03:37:00PM +0800, Jason Wang wrote:
+> 
+> On 2019/7/10 下午11:37, Stefano Garzarella wrote:
+> > Hi,
+> > as Jason suggested some months ago, I looked better at the virtio-net driver to
+> > understand if we can reuse some parts also in the virtio-vsock driver, since we
+> > have similar challenges (mergeable buffers, page allocation, small
+> > packets, etc.).
+> > 
+> > Initially, I would add the skbuff in the virtio-vsock in order to re-use
+> > receive_*() functions.
+> 
+> 
+> Yes, that will be a good step.
+> 
 
-Not sure about it. The important part of the test (the program being
-verified by the kernel's verifier) was still executed, so the test is
-not really skipped.
+Okay, I'll go on this way.
 
+> 
+> > Then I would move receive_[small, big, mergeable]() and
+> > add_recvbuf_[small, big, mergeable]() outside of virtio-net driver, in order to
+> > call them also from virtio-vsock. I need to do some refactoring (e.g. leave the
+> > XDP part on the virtio-net driver), but I think it is feasible.
+> > 
+> > The idea is to create a virtio-skb.[h,c] where put these functions and a new
+> > object where stores some attributes needed (e.g. hdr_len ) and status (e.g.
+> > some fields of struct receive_queue).
+> 
+> 
+> My understanding is we could be more ambitious here. Do you see any blocker
+> for reusing virtio-net directly? It's better to reuse not only the functions
+> but also the logic like NAPI to avoid re-inventing something buggy and
+> duplicated.
+> 
 
->
-> > +                       return 0;
-> > +               default:
-> > +                       printf("FAIL: Unexpected bpf_prog_test_run erro=
-r (%s) ", strerror(saved_errno));
-> > +                       return err;
-> > +               }
-> >         }
-> > -       if (!err && retval !=3D expected_val &&
-> > +       if (retval !=3D expected_val &&
-> >             expected_val !=3D POINTER_VALUE) {
-> >                 printf("FAIL retval %d !=3D %d ", retval, expected_val)=
-;
-> >                 return 1;
-> > --
-> > 2.20.1
-> >
+These are my concerns:
+- virtio-vsock is not a "net_device", so a lot of code related to
+  ethtool, net devices (MAC address, MTU, speed, VLAN, XDP, offloading) will be
+  not used by virtio-vsock.
 
+- virtio-vsock has a different header. We can consider it as part of
+  virtio_net payload, but it precludes the compatibility with old hosts. This
+  was one of the major doubts that made me think about using only the
+  send/recv skbuff functions, that it shouldn't break the compatibility.
 
+> 
+> > This is an idea of virtio-skb.h that
+> > I have in mind:
+> >      struct virtskb;
+> 
+> 
+> What fields do you want to store in virtskb? It looks to be exist sk_buff is
+> flexible enough to us?
 
---
-Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
-=C3=B3pez Galeiras
-Registergericht/Court of registration: Amtsgericht Charlottenburg
-Registernummer/Registration number: HRB 171414 B
-Ust-ID-Nummer/VAT ID number: DE302207000
+My idea is to store queues information, like struct receive_queue or
+struct send_queue, and some device attributes (e.g. hdr_len ).
+
+> 
+> 
+> > 
+> >      struct sk_buff *virtskb_receive_small(struct virtskb *vs, ...);
+> >      struct sk_buff *virtskb_receive_big(struct virtskb *vs, ...);
+> >      struct sk_buff *virtskb_receive_mergeable(struct virtskb *vs, ...);
+> > 
+> >      int virtskb_add_recvbuf_small(struct virtskb*vs, ...);
+> >      int virtskb_add_recvbuf_big(struct virtskb *vs, ...);
+> >      int virtskb_add_recvbuf_mergeable(struct virtskb *vs, ...);
+> > 
+> > For the Guest->Host path it should be easier, so maybe I can add a
+> > "virtskb_send(struct virtskb *vs, struct sk_buff *skb)" with a part of the code
+> > of xmit_skb().
+> 
+> 
+> I may miss something, but I don't see any thing that prevents us from using
+> xmit_skb() directly.
+> 
+
+Yes, but my initial idea was to make it more parametric and not related to the
+virtio_net_hdr, so the 'hdr_len' could be a parameter and the
+'num_buffers' should be handled by the caller.
+
+> 
+> > 
+> > Let me know if you have in mind better names or if I should put these function
+> > in another place.
+> > 
+> > I would like to leave the control part completely separate, so, for example,
+> > the two drivers will negotiate the features independently and they will call
+> > the right virtskb_receive_*() function based on the negotiation.
+> 
+> 
+> If it's one the issue of negotiation, we can simply change the
+> virtnet_probe() to deal with different devices.
+> 
+> 
+> > 
+> > I already started to work on it, but before to do more steps and send an RFC
+> > patch, I would like to hear your opinion.
+> > Do you think that makes sense?
+> > Do you see any issue or a better solution?
+> 
+> 
+> I still think we need to seek a way of adding some codes on virtio-net.c
+> directly if there's no huge different in the processing of TX/RX. That would
+> save us a lot time.
+
+After the reading of the buffers from the virtqueue I think the process
+is slightly different, because virtio-net will interface with the network
+stack, while virtio-vsock will interface with the vsock-core (socket).
+So the virtio-vsock implements the following:
+- control flow mechanism to avoid to loose packets, informing the peer
+  about the amount of memory available in the receive queue using some
+  fields in the virtio_vsock_hdr
+- de-multiplexing parsing the virtio_vsock_hdr and choosing the right
+  socket depending on the port
+- socket state handling
+
+We can use the virtio-net as transport, but we should add a lot of
+code to skip "net device" stuff when it is used by the virtio-vsock.
+This could break something in virtio-net, for this reason, I thought to reuse
+only the send/recv functions starting from the idea to split the virtio-net
+driver in two parts:
+a. one with all stuff related to the network stack
+b. one with the stuff needed to communicate with the host
+
+And use skbuff to communicate between parts. In this way, virtio-vsock
+can use only the b part.
+
+Maybe we can do this split in a better way, but I'm not sure it is
+simple.
+
+Thanks,
+Stefano
