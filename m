@@ -2,134 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A48657DA
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 15:23:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9356A65842
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 15:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728303AbfGKNXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 09:23:38 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:35418 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728192AbfGKNXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 09:23:38 -0400
-Received: by mail-wm1-f68.google.com with SMTP id l2so5707100wmg.0
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 06:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tU6jXndUgskegjYLfj+99Z6a7a9Nh+gO67K7C1rHa5E=;
-        b=rg94vvNbMugWLQ59CZ5EqE6whR658vUJTeBK4gEP/9jd8VqKXFkrf73ysktkZUuUYI
-         sY1l26I9LDIj/tWl8A07AXKwVCOKGC+ZH02tu4WQ8PhjEermvB/ErlyS4jUwR/gq9nSp
-         Kc8F391ozUfFafHeo8By4MY5H8Xkb2CODjd+6D9O0tKhxSePejNAqDLkXOQ0DdHxijeG
-         73P92PbMVNXVIua3pEEGHVQ797lXRL63h2r2f62M+zNED8I77BeTzd2UeS0gomlH/2WX
-         PFxlsaD92vzo4WSaA77Hg0QqCUN7rZR9KtVjdnQpizMXju3eOtc5DZJh5T3k8oJtcWEy
-         T1Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tU6jXndUgskegjYLfj+99Z6a7a9Nh+gO67K7C1rHa5E=;
-        b=kTzJ9wjJ4/KXJ1ddj7V54ZzylSwfouzysUtNb7ydGA5m1GtPv1Vw7zCzSXQzb+c0WY
-         TLBj8SzNbIYY1g0zXaCH0JRpJffIb8QMLqP9G8HwweHN29rjIBHHFYpvxoXEv/tJXVMh
-         p2wuv4zNG7m/mRA+xRfexZnMOmSm3xZ1qtc7C5LbZkW4jtI3vPDncttcL/25ZFsXK2dD
-         wV1hXnYqD+85XK6m1AdqX/HYHP4ioo9a4va2Z28BJAkD43hUYK0rLVReJMbDMDEgj/D7
-         RgQuCZXwFUJVszQcge56nIpEeYpPgPoNtL77mdAD6iFnxP8huUZniwsTTgepZaXgZ2p7
-         HYxw==
-X-Gm-Message-State: APjAAAWM0PSFHWMmxbXAQjgdf6W1jsq4CQRf4Ivfnsr2ijj0E6RHKiy1
-        SEUFv/6k0UJFUdWo8S99UBPkoVyl
-X-Google-Smtp-Source: APXvYqyOZOjC18zEQbNxNlIeuZ/7FkYtPBhxjCdenHmcRzJujWs3oLOFKCFwzWdhggjpFBkzr8VHbQ==
-X-Received: by 2002:a1c:cb43:: with SMTP id b64mr4289611wmg.135.1562851415991;
-        Thu, 11 Jul 2019 06:23:35 -0700 (PDT)
-Received: from localhost (ip-89-176-1-116.net.upcbroadband.cz. [89.176.1.116])
-        by smtp.gmail.com with ESMTPSA id x16sm3542032wmj.4.2019.07.11.06.23.35
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 11 Jul 2019 06:23:35 -0700 (PDT)
-Date:   Thu, 11 Jul 2019 15:23:34 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next,v2 3/3] net: flow_offload: add flow_block
- structure and use it
-Message-ID: <20190711132334.GM2291@nanopsycho>
-References: <20190711130923.2483-1-pablo@netfilter.org>
- <20190711130923.2483-3-pablo@netfilter.org>
+        id S1728698AbfGKN5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 09:57:52 -0400
+Received: from relay.sw.ru ([185.231.240.75]:55748 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728274AbfGKN5v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jul 2019 09:57:51 -0400
+Received: from [172.16.24.21]
+        by relay.sw.ru with esmtp (Exim 4.92)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1hlZZp-0001WC-QI; Thu, 11 Jul 2019 16:57:37 +0300
+Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
+To:     Nixiaoming <nixiaoming@huawei.com>,
+        "adobriyan@gmail.com" <adobriyan@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "arjan@linux.intel.com" <arjan@linux.intel.com>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jlayton@kernel.org" <jlayton@kernel.org>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
+        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
+        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
+        "stable@kernel.org" <stable@kernel.org>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
+        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
+        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>
+Cc:     "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
+        Dailei <dylix.dailei@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
+ <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
+ <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
+From:   Vasily Averin <vvs@virtuozzo.com>
+Message-ID: <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
+Date:   Thu, 11 Jul 2019 16:57:27 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190711130923.2483-3-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 11, 2019 at 03:09:23PM CEST, pablo@netfilter.org wrote:
->This object stores the flow block callbacks that are attached to this
->block. This patch restores block sharing.
->
->Fixes: da3eeb904ff4 ("net: flow_offload: add list handling functions")
->Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
->---
->v3: add flow_block_init() - Jiri Pirko.
-
-and rename flow/flow_block/
-
-[...]
-
-
->@@ -951,7 +952,7 @@ struct nft_stats {
->  *	@stats: per-cpu chain stats
->  *	@chain: the chain
->  *	@dev_name: device name that this base chain is attached to (if any)
->- *	@cb_list: list of flow block callbacks (for hardware offload)
->+ *	@flow: flow block (for hardware offload)
-
-You missed rename here: s/flow:/flow_block:/
-
-
->  */
-> struct nft_base_chain {
-> 	struct nf_hook_ops		ops;
->@@ -961,7 +962,7 @@ struct nft_base_chain {
-> 	struct nft_stats __percpu	*stats;
-> 	struct nft_chain		chain;
-> 	char 				dev_name[IFNAMSIZ];
->-	struct list_head		cb_list;
->+	struct flow_block		flow_block;
-> };
+On 7/11/19 4:55 AM, Nixiaoming wrote:
+> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
+>> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
+>>> Registering the same notifier to a hook repeatedly can cause the hook
+>>> list to form a ring or lose other members of the list.
+>>
+>> I think is not enough to _prevent_ 2nd register attempt,
+>> it's enough to detect just attempt and generate warning to mark host in bad state.
+>>
 > 
-> static inline struct nft_base_chain *nft_base_chain(const struct nft_chain *chain)
->diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
->index 9482e060483b..6b6b01234dd9 100644
->--- a/include/net/sch_generic.h
->+++ b/include/net/sch_generic.h
->@@ -399,7 +399,7 @@ struct tcf_block {
-> 	refcount_t refcnt;
-> 	struct net *net;
-> 	struct Qdisc *q;
->-	struct list_head cb_list;
->+	struct flow_block flow_block;
-> 	struct list_head owner_list;
-> 	bool keep_dst;
-> 	unsigned int offloadcnt; /* Number of oddloaded filters */
->diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
->index a800fa78d96c..935c7f81a9ef 100644
->--- a/net/core/flow_offload.c
->+++ b/net/core/flow_offload.c
->@@ -198,7 +198,7 @@ struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *f,
-
-Reminding the block arg here.
-
-
-> {
-> 	struct flow_block_cb *block_cb;
+> Duplicate registration is prevented in my patch, not just "mark host in bad state"
 > 
->-	list_for_each_entry(block_cb, f->driver_block_list, driver_list) {
->+	list_for_each_entry(block_cb, &f->block->cb_list, list) {
-> 		if (block_cb->cb == cb &&
-> 		    block_cb->cb_ident == cb_ident)
-> 			return block_cb;
+> Duplicate registration is checked and exited in notifier_chain_cond_register()
+> 
+> Duplicate registration was checked in notifier_chain_register() but only 
+> the alarm was triggered without exiting. added by commit 831246570d34692e 
+> ("kernel/notifier.c: double register detection")
+> 
+> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
+>  which triggers an alarm and exits when a duplicate registration is detected.
+> 
+>> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
+>> and it can lead to host crash in any time: 
+>> you can unregister notifier on first attempt it can be too early, it can be still in use.
+>> on the other hand you can never call 2nd unregister at all.
+> 
+> Since the member was not added to the linked list at the time of the second registration, 
+> no linked list ring was formed. 
+> The member is released on the first unregistration and -ENOENT on the second unregistration.
+> After patching, the fault has been alleviated
 
-[...]
+You are wrong here.
+2nd notifier's registration is a pure bug, this should never happen.
+If you know the way to reproduce this situation -- you need to fix it. 
 
+2nd registration can happen in 2 cases:
+1) missed rollback, when someone forget to call unregister after successfull registration, 
+and then tried to call register again. It can lead to crash for example when according module will be unloaded.
+2) some subsystem is registered twice, for example from  different namespaces.
+in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
+in second namespace, it also can lead to unexpacted behaviour.
+
+> It may be more helpful to return an error code when someone tries to register the same
+> notification program a second time.
+
+You are wrong again here, it is senseless.
+If you have detected 2nd register -- your node is already in bad state.
+
+> But I noticed that notifier_chain_cond_register() returns 0 when duplicate registration 
+> is detected. At the same time, in all the existing export function comments of notify,
+> "Currently always returns zero"
+> 
+> I am a bit confused: which is better?
+> 
+>>
+>> Unfortunately I do not see any ways to handle such cases properly,
+>> and it seems for me your patches does not resolve this problem.
+>>
+>> Am I missed something probably?
+>>
+>>> case1: An infinite loop in notifier_chain_register() can cause soft lockup
+>>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>>         atomic_notifier_chain_register(&test_notifier_list, &test2);
+> 
+> Thanks
+> 
+> Xiaoming Ni
+> 
