@@ -2,101 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75FED65050
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 04:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CD165072
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 05:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbfGKCzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 22:55:07 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:39229 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbfGKCzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 22:55:06 -0400
-Received: by mail-ot1-f66.google.com with SMTP id r21so4336973otq.6
-        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 19:55:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=CfvOfiESINP7ju1BblcUwd3Yug/loS6veXP6hNNGKZE=;
-        b=J06u7ei7AuoHVFK+WE60U4RY+Rfrl3VDIrssqxMizDmyRvXS/YM3DwfC0OrtNpI7tG
-         f9HwH6ZmuLzSXb6BCbJYaeKz3xD9SCl85FqwnEWVit4/+exJ1UK5pr7RXwljkBHOPqRW
-         hb6HzUtrIDq5DQa2RJpv4+z/LZ8WOyCM3w7iRJRMhKdS23n36T0Uhc6F32cKnB21gzIi
-         YrJgBYZrntE6SYdJkWDBTcz/xNftcn1h/lhblMjsaCF2XUM7QMzv7mkS9dDj9QqQBn6p
-         kPnXAQrRWS3u+W8z4f/ka+4WL1/g6fAqXLrgAMNenCkVvyDiBJW1DgeWmM3npeWpp5fm
-         rAeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=CfvOfiESINP7ju1BblcUwd3Yug/loS6veXP6hNNGKZE=;
-        b=FFQS66Kg+B+s+mV46YU7ml2e9kXkxK7qbbPTo9SKSR1aSn/nPP2Dfaq2hk1a2+lgge
-         rHmKHjxt+sSDDjBS1NA6ebaQdfXWiECVyKBdGkfdQf4hhGuYHl8dp+/Y/wfBTo6miS4S
-         xL8Xi4kJ7bvV/fg1abB/F1P4DVCHVjrIwWjS2R7OThTgWW655ualFqKxren5tXVLo1kk
-         L8vN/OmWmFPHshdr+F+KpWPqgxpo4O/liqbDR1mNumMp47xmSPC0Y3pgm95k4wlss97t
-         BbYYknFfuOVTn6lw2fEQeHYR8yhFQKB4zh63f/rMS1f0PjfkE1+TWzWCd/P2bwkssQxM
-         +lLA==
-X-Gm-Message-State: APjAAAXWrktWmvu3hOrQMlw1WvbDA15lJ0Of9R4KfLuW1WxgAVoC+lvl
-        KZsVrr0OYO3l8HkMA5MvkDdOIOPjYEPjiz/H8UA=
-X-Google-Smtp-Source: APXvYqzskAy//Ooq3AKc2VXTrcTZp6/Nnr63IaWEX1QBCgTU+19OrB3rWdjQTOcgm1NDovOoRshSWgyOJV7koxrgMLs=
-X-Received: by 2002:a9d:4d81:: with SMTP id u1mr1331387otk.221.1562813705717;
- Wed, 10 Jul 2019 19:55:05 -0700 (PDT)
-MIME-Version: 1.0
-Reply-To: ibrahimrahman3048@gmail.com
-Received: by 2002:a8a:125e:0:0:0:0:0 with HTTP; Wed, 10 Jul 2019 19:55:05
- -0700 (PDT)
-From:   MRIbrahimRahman <ibrahimrahman084@gmail.com>
-Date:   Wed, 10 Jul 2019 19:55:05 -0700
-X-Google-Sender-Auth: nWMTnjM5_xRhum5J6NHq45URrfs
-Message-ID: <CAP7ewY=GvM_n3eY5Bhh+FGC1N-YhxvaK580VOjLeuTNqKVLizw@mail.gmail.com>
-Subject: Dear Sir/Madam!
-To:     undisclosed-recipients:;
+        id S1727620AbfGKDMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 23:12:03 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:25080 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726353AbfGKDMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 23:12:03 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6B3BtMi102532
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 23:12:02 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tnvf3grrx-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 10 Jul 2019 23:11:56 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <zohar@linux.ibm.com>;
+        Thu, 11 Jul 2019 04:07:31 +0100
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 11 Jul 2019 04:07:28 +0100
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6B37F0p35652076
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Jul 2019 03:07:15 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E5429A405B;
+        Thu, 11 Jul 2019 03:07:27 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 735A7A4054;
+        Thu, 11 Jul 2019 03:07:26 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.80.110.74])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 11 Jul 2019 03:07:26 +0000 (GMT)
+Subject: Re: [GIT PULL] Keys: Set 4 - Key ACLs for 5.3
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>, keyrings@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>, linux-nfs@vger.kernel.org,
+        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-integrity@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Date:   Wed, 10 Jul 2019 23:07:15 -0400
+In-Reply-To: <CAHk-=wiFti6=K2fyAYhx-PSX9ovQPJUNp0FMdV0pDaO_pSx9MQ@mail.gmail.com>
+References: <28477.1562362239@warthog.procyon.org.uk>
+         <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
+         <20190710194620.GA83443@gmail.com> <20190710201552.GB83443@gmail.com>
+         <CAHk-=wiFti6=K2fyAYhx-PSX9ovQPJUNp0FMdV0pDaO_pSx9MQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.20.5 (3.20.5-1.fc24) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071103-4275-0000-0000-0000034BBC6E
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071103-4276-0000-0000-0000385BC1F1
+Message-Id: <1562814435.4014.11.camel@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-10_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907110035
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-                     Dear how are you,
+Hi Linus,
 
+On Wed, 2019-07-10 at 18:59 -0700, Linus Torvalds wrote:
+> Anyway, since it does seem like David is offline, I've just reverted
+> this from my tree, and will be continuing my normal merge window pull
+> requests (the other issues I have seen have fixes in their respective
+> trees).
 
+Sorry for the delay.  An exception is needed for loading builtin keys
+"KEY_ALLOC_BUILT_IN" onto a keyring that is not writable by userspace.
+ The following works, but probably is not how David would handle the
+exception.
 
+diff --git a/security/keys/key.c b/security/keys/key.c
+index 519211a996e7..a99332c1e014 100644
+--- a/security/keys/key.c
++++ b/security/keys/key.c
+@@ -896,7 +896,7 @@ key_ref_t key_create_or_update(key_ref_t keyring_ref,
+        /* if we're going to allocate a new key, we're going to have
+         * to modify the keyring */
+        ret = key_permission(keyring_ref, KEY_NEED_WRITE);
+-       if (ret < 0) {
++       if (ret < 0 && !(flags & KEY_ALLOC_BUILT_IN)) {
+                key_ref = ERR_PTR(ret);
+                goto error_link_end;
+        }
 
- How Are You? I Know That This Mail May Come To You Almost A Surprise
- As We Never Met Before And Please Before You Proceed Reading This
- mail,This Is True and not An Well I Saw Your Contact Email From Yahoo
- Search when I Was Looking For a Foreign Partner, please I don=E2=80=99t no=
-w if
- you can keep secret? A word of your own as a human-being? As I have
- gone through your profile.Well I have a deal worth 15.5m$ from the
- dormant account in the bank where I am working.so Please if you can
- keep secret, I will give you more details and the nest thing to do,
+Mimi
 
- Also all the documents that will back you up must send to you.
- Meanwhile before I contact you I have done every underground work
- through the documents of the deceases person, I have put or attachment
- his file to our favor. Also with my position every thing works
- successfully.
-
- Your Full Name,
- Phone No=E2=80=A6.,
- Receiver Country..,
- Occupation..,
-
- thanks for your understandplease contact me base if you can control
- this fund once it transferinto your account before my family and I
- will arriver in your country for the sharing, 40% for you. 10% for the
- poorest, rest is for me.
- Give me your Phone number Let me call you so that we can talk one and one=
-=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6
-
- You should contact me immediately as soon as you receive this
- letter,if only you are interested and ready to help On this Contact
- me. through my private email
- address(ibrahimrahman3048@gmail.com)Trusting to hear from you
- immediately. Do keep this a top secret for
- security reasons.
-
- Yours faithfully,
-
- From Mr.Ibrahim Rahman.
