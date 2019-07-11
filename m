@@ -2,491 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C65464F8E
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:29:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 363EA64F93
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:35:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727805AbfGKA3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 20:29:37 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43226 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726627AbfGKA3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 20:29:37 -0400
-Received: by mail-qt1-f195.google.com with SMTP id w17so4510935qto.10;
-        Wed, 10 Jul 2019 17:29:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pdFy1oYuF+2988TflbgaAqBXBgAWd2V809ovyhykIzE=;
-        b=pFYq36uZcLxE6ARZQu9x86GdDJYBKtiaWXG93LxhzSlTkQFsunZDUAF7oHDvRYEHbK
-         XQ2GBlLrObWtPjV+fjYfaK4PhICZoO85fOrMMq2DCpkCIwZ2xUmXlDeGxD00lPJ54KNY
-         B/KnmSAQp+hFzCW44S0bbRmHP4/hS+U2x0R33J4as2xUsmldRIGkJJzT+qL4iUFw5v9U
-         9j4j0VZHthdlBi/lmkH/BDagQtTPDrTSDd0deCAys4uVO+2X1c8r2v9lhpZucLCwORo6
-         OjPNdwGNe5usntXPuemGHQraw3bLpcP0dsMc3dVQ3KXv+W74i3o6sq92Qk2xAqjFBUZ3
-         rFbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pdFy1oYuF+2988TflbgaAqBXBgAWd2V809ovyhykIzE=;
-        b=SycUW6xYX+tNXecscg6WsV/Vtg5h5L/9Qr4mL/7WYxbnvtZ8LXdNPIfNqzUmKjTP2Q
-         1Mdm6P5rE20TqP0JUvrdwg3hwmZUR8/qSY8VBduuCBv17lW2MtQHVHDm/oXXbBetQgQh
-         Mo5hGHAU2XRsKkFwTn4IK7ZDS3xwnzBFgQQfIlT3+oUQcg4jIRagkfdqQ6BxOgy2ggfo
-         moWAKsRwi1km08CIvY5NI76JfrWI/jEmR4NyG61txuvk6Z3Ezf/vP4TOadv+HHqO7g/M
-         XefZjt3AZIpsJ3CyYJ9xjnsgdS8biVdgmh3DvD3pM8JIqSOM8xwXb7RSWkw5o4w7uaWw
-         1nqg==
-X-Gm-Message-State: APjAAAWKvOjYuqEtr/EiZ25aJ1gGS2ncjSKBNBhJrSTNEOYYo2WQG2gU
-        eWJuj7kG9kclt/YaXBy57LAOb9D0djR6ywagU7s=
-X-Google-Smtp-Source: APXvYqxuk7skt4KIjrDXOLI4T1Lcl7pJBdTa7ad746v+GO2dJ4+htkboTME3vmTKOPsQWfH21zttkyOPuO/XtXSGkWA=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr668035qty.141.1562804975058;
- Wed, 10 Jul 2019 17:29:35 -0700 (PDT)
+        id S1727859AbfGKAfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 20:35:23 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:47427 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726627AbfGKAfX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 20:35:23 -0400
+Received: from [192.168.1.3] (unknown [58.38.0.20])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id D048E415FD;
+        Thu, 11 Jul 2019 08:35:16 +0800 (CST)
+Subject: Re: [PATCH net-next] net/mlx5e: Provide cb_list pointer when setting
+ up tc block on rep
+To:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, pablo@netfilter.org, saeedm@mellanox.com
+References: <20190710182554.2988-1-vladbu@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <6465040c-d22f-f4b6-0232-11ff4af81753@ucloud.cn>
+Date:   Thu, 11 Jul 2019 08:35:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-References: <20190710080840.2613160-1-andriin@fb.com> <f6bc7a95-e8e1-eec4-9728-3b9e36b434fa@fb.com>
-In-Reply-To: <f6bc7a95-e8e1-eec4-9728-3b9e36b434fa@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Jul 2019 17:29:24 -0700
-Message-ID: <CAEf4BzaVouFd=3whC1EjhQ9mit62b-C+NhQuW4RiXW02Rq_1Ug@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: fix BTF verifier size resolution logic
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>, Martin Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190710182554.2988-1-vladbu@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSElPS0tLSUhCSExJSU5ZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MjY6Lhw6NTg9FA0DHhEXFxI4
+        LEIaCSxVSlVKTk1JQ0tOSEpDS09DVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWU5DVUhD
+        VUtVSUtZV1kIAVlBTEhKTzcG
+X-HM-Tid: 0a6bde74adfc2086kuqyd048e415fd
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 5:16 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/10/19 1:08 AM, Andrii Nakryiko wrote:
-> > BTF verifier has Different logic depending on whether we are following
-> > a PTR or STRUCT/ARRAY (or something else). This is an optimization to
-> > stop early in DFS traversal while resolving BTF types. But it also
-> > results in a size resolution bug, when there is a chain, e.g., of PTR ->
-> > TYPEDEF -> ARRAY, in which case due to being in pointer context ARRAY
-> > size won't be resolved, as it is considered to be a sink for pointer,
-> > leading to TYPEDEF being in RESOLVED state with zero size, which is
-> > completely wrong.
-> >
-> > Optimization is doubtful, though, as btf_check_all_types() will iterate
-> > over all BTF types anyways, so the only saving is a potentially slightly
-> > shorter stack. But correctness is more important that tiny savings.
-> >
-> > This bug manifests itself in rejecting BTF-defined maps that use array
-> > typedef as a value type:
-> >
-> > typedef int array_t[16];
-> >
-> > struct {
-> >       __uint(type, BPF_MAP_TYPE_ARRAY);
-> >       __type(value, array_t); /* i.e., array_t *value; */
-> > } test_map SEC(".maps");
-> >
-> > Fixes: eb3f595dab40 ("bpf: btf: Validate type reference")
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> The change seems okay to me. Currently, looks like intermediate
-> modifier type will carry size = 0 (in the internal data structure).
 
-Yes, which is totally wrong, especially that we use that size in some
-cases to reject map with specified BTF.
-
+在 2019/7/11 2:25, Vlad Buslov 写道:
+> Recent refactoring of tc block offloads infrastructure introduced new
+> flow_block_cb_setup_simple() method intended to be used as unified way for
+> all drivers to register offload callbacks. However, commit that actually
+> extended all users (drivers) with block cb list and provided it to
+> flow_block infra missed mlx5 en_rep. This leads to following NULL-pointer
+> dereference when creating Qdisc:
 >
-> If we remove RESOLVE logic, we probably want to double check
-> whether we handle circular types correctly or not. Maybe we will
-> be okay if all self tests pass.
-
-I checked, it does. We'll attempt to add referenced type unless it's a
-"resolve sink" (where size is immediately known) or is already
-resolved (it's state is RESOLVED). In other cases, we'll attempt to
-env_stack_push(), which check that the state of that type is
-NOT_VISITED. If it's RESOLVED or VISITED, it returns -EEXISTS. When
-type is added into the stack, it's resolve state goes from NOT_VISITED
-to VISITED.
-
-So, if there is a loop, then we'll detect it as soon as we'll attempt
-to add the same type onto the stack second time.
-
+> [  278.385175] BUG: kernel NULL pointer dereference, address: 0000000000000000
+> [  278.393233] #PF: supervisor read access in kernel mode
+> [  278.399446] #PF: error_code(0x0000) - not-present page
+> [  278.405847] PGD 8000000850e73067 P4D 8000000850e73067 PUD 8620cd067 PMD 0
+> [  278.414141] Oops: 0000 [#1] SMP PTI
+> [  278.419019] CPU: 7 PID: 3369 Comm: tc Not tainted 5.2.0-rc6+ #492
+> [  278.426580] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+> [  278.435853] RIP: 0010:flow_block_cb_setup_simple+0xc4/0x190
+> [  278.442953] Code: 10 48 89 42 08 48 89 10 48 b8 00 01 00 00 00 00 ad de 49 89 00 48 05 00 01 00 00 49 89 40 08 31 c0 c3 b8 a1 ff ff ff c3 f3 c3 <48> 8b 06 48 39 c6 75 0a eb 1a 48 8b 00 48 39 c6 74 12
+>  48 3b 50 28
+> [  278.464829] RSP: 0018:ffffaf07c3f97990 EFLAGS: 00010246
+> [  278.471648] RAX: 0000000000000000 RBX: ffff9b43ed4c7680 RCX: ffff9b43d5f80840
+> [  278.480408] RDX: ffffffffc0491650 RSI: 0000000000000000 RDI: ffffaf07c3f97998
+> [  278.489110] RBP: ffff9b43ddff9000 R08: ffff9b43d5f80840 R09: 0000000000000001
+> [  278.497838] R10: 0000000000000009 R11: 00000000000003ad R12: ffffaf07c3f97c08
+> [  278.506595] R13: ffff9b43d5f80000 R14: ffff9b43ed4c7680 R15: ffff9b43dfa20b40
+> [  278.515374] FS:  00007f796be1b400(0000) GS:ffff9b43ef840000(0000) knlGS:0000000000000000
+> [  278.525099] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  278.532453] CR2: 0000000000000000 CR3: 0000000840398002 CR4: 00000000001606e0
+> [  278.541197] Call Trace:
+> [  278.545252]  tcf_block_offload_cmd.isra.52+0x7e/0xb0
+> [  278.551871]  tcf_block_get_ext+0x365/0x3e0
+> [  278.557569]  qdisc_create+0x15c/0x4e0
+> [  278.562859]  ? kmem_cache_alloc_trace+0x1a2/0x1c0
+> [  278.569235]  tc_modify_qdisc+0x1c8/0x780
+> [  278.574761]  rtnetlink_rcv_msg+0x291/0x340
+> [  278.580518]  ? _cond_resched+0x15/0x40
+> [  278.585856]  ? rtnl_calcit.isra.29+0x120/0x120
+> [  278.591868]  netlink_rcv_skb+0x4a/0x110
+> [  278.597198]  netlink_unicast+0x1a0/0x250
+> [  278.602601]  netlink_sendmsg+0x2c1/0x3c0
+> [  278.608022]  sock_sendmsg+0x5b/0x60
+> [  278.612969]  ___sys_sendmsg+0x289/0x310
+> [  278.618231]  ? do_wp_page+0x99/0x730
+> [  278.623216]  ? page_add_new_anon_rmap+0xbe/0x140
+> [  278.629298]  ? __handle_mm_fault+0xc84/0x1360
+> [  278.635113]  ? __sys_sendmsg+0x5e/0xa0
+> [  278.640285]  __sys_sendmsg+0x5e/0xa0
+> [  278.645239]  do_syscall_64+0x5b/0x1b0
+> [  278.650274]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [  278.656697] RIP: 0033:0x7f796abdeb87
+> [  278.661628] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 80 00 00 00 00 8b 05 6a 2b 2c 00 48 63 d2 48 63 ff 85 c0 75 18 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 59 f3 c3 0f 1f 80 00 00 00 00 53
+>  48 89 f3 48
+> [  278.683248] RSP: 002b:00007ffde213ba48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> [  278.692245] RAX: ffffffffffffffda RBX: 000000005d261e6f RCX: 00007f796abdeb87
+> [  278.700862] RDX: 0000000000000000 RSI: 00007ffde213bab0 RDI: 0000000000000003
+> [  278.709527] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
+> [  278.718167] R10: 000000000000000c R11: 0000000000000246 R12: 0000000000000001
+> [  278.726743] R13: 000000000067b580 R14: 0000000000000000 R15: 0000000000000000
+> [  278.735302] Modules linked in: dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache bridge stp llc sunrpc mlx5_ib ib_uverbs intel_rapl ib_core sb_edac x86_pkg_temp_
+> thermal intel_powerclamp coretemp kvm_intel kvm mlx5_core irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel igb ghash_clmulni_intel ses mei_me enclosure mlxfw ipmi_ssif intel_cstate iTCO_wdt ptp mei
+> pps_core iTCO_vendor_support pcspkr joydev intel_uncore i2c_i801 ipmi_si lpc_ich intel_rapl_perf ioatdma wmi dca pcc_cpufreq ipmi_devintf ipmi_msghandler acpi_power_meter acpi_pad ast i2c_algo_bit drm_k
+> ms_helper ttm drm mpt3sas raid_class scsi_transport_sas
+> [  278.802263] CR2: 0000000000000000
+> [  278.807170] ---[ end trace b1f0a442a279e66f ]---
 >
-> I may still be worthwhile to qualify the RESOLVE optimization benefit
-> before removing it.
-
-I don't think there is any, because every type will be visited exactly
-once, due to DFS nature of algorithm. The only difference is that if
-we have a long chain of modifiers, we can technically reach the max
-limit and fail. But at 32 I think it's pretty unrealistic to have such
-a long chain of PTR/TYPEDEF/CONST/VOLATILE/RESTRICTs :)
-
+> Extend en_rep with new static mlx5e_rep_block_cb_list list and pass it to
+> flow_block_cb_setup_simple() function instead of hardcoded NULL pointer.
 >
-> Another possible change is, for external usage, removing
-> modifiers, before checking the size, something like below.
-> Note that I am not strongly advocating my below patch as
-> it has the same shortcoming that maintained modifier type
-> size may not be correct.
-
-I don't think your patch helps, it can actually confuse things even
-more. It skips modifiers until underlying type is found, but you still
-don't guarantee that at that time that underlying type will have its
-size resolved.
-
+> Fixes: 955bcb6ea0df ("drivers: net: use flow block API")
+> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 >
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 546ebee39e2a..6f927c3e0a89 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -620,6 +620,54 @@ static bool btf_type_int_is_regular(const struct
-> btf_type *t)
->          return true;
->   }
->
-> +static const struct btf_type *__btf_type_id_size(const struct btf *btf,
-> +                                                u32 *type_id, u32
-> *ret_size,
-> +                                                bool skip_modifier)
-> +{
-> +       const struct btf_type *size_type;
-> +       u32 size_type_id = *type_id;
-> +       u32 size = 0;
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> index 10ef90a7bddd..7245d287633d 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> @@ -1175,6 +1175,8 @@ static int mlx5e_rep_setup_tc_cb(enum tc_setup_type type, void *type_data,
+>  	}
+>  }
+>  
+> +static LIST_HEAD(mlx5e_rep_block_cb_list);
 > +
-> +       size_type = btf_type_by_id(btf, size_type_id);
-> +       if (size_type && skip_modifier) {
-> +               while (btf_type_is_modifier(size_type))
-> +                       size_type = btf_type_by_id(btf, size_type->type);
-> +       }
-> +
-> +       if (btf_type_nosize_or_null(size_type))
-> +               return NULL;
-> +
-> +       if (btf_type_has_size(size_type)) {
-> +               size = size_type->size;
-> +       } else if (btf_type_is_array(size_type)) {
-> +               size = btf->resolved_sizes[size_type_id];
-> +       } else if (btf_type_is_ptr(size_type)) {
-> +               size = sizeof(void *);
-> +       } else {
-> +               if (WARN_ON_ONCE(!btf_type_is_modifier(size_type) &&
-> +                                !btf_type_is_var(size_type)))
-> +                       return NULL;
-> +
-> +               size = btf->resolved_sizes[size_type_id];
-> +               size_type_id = btf->resolved_ids[size_type_id];
-> +               size_type = btf_type_by_id(btf, size_type_id);
-> +               if (btf_type_nosize_or_null(size_type))
-> +                       return NULL;
-> +       }
-> +
-> +       *type_id = size_type_id;
-> +       if (ret_size)
-> +               *ret_size = size;
-> +
-> +       return size_type;
-> +}
-> +
-> +const struct btf_type *btf_type_id_size(const struct btf *btf,
-> +                                       u32 *type_id, u32 *ret_size)
-> +{
-> +       return __btf_type_id_size(btf, type_id, ret_size, true);
-> +}
-> +
->   /*
->    * Check that given struct member is a regular int with expected
->    * offset and size.
-> @@ -633,7 +681,7 @@ bool btf_member_is_reg_int(const struct btf *btf,
-> const struct btf_type *s,
->          u8 nr_bits;
->
->          id = m->type;
-> -       t = btf_type_id_size(btf, &id, NULL);
-> +       t = __btf_type_id_size(btf, &id, NULL, false);
->          if (!t || !btf_type_is_int(t))
->                  return false;
->
-> @@ -1051,42 +1099,6 @@ static const struct btf_type
-> *btf_type_id_resolve(const struct btf *btf,
->          return btf_type_by_id(btf, *type_id);
->   }
->
-> -const struct btf_type *btf_type_id_size(const struct btf *btf,
-> -                                       u32 *type_id, u32 *ret_size)
-> -{
-> -       const struct btf_type *size_type;
-> -       u32 size_type_id = *type_id;
-> -       u32 size = 0;
-> -
-> -       size_type = btf_type_by_id(btf, size_type_id);
-> -       if (btf_type_nosize_or_null(size_type))
-> -               return NULL;
-> -
-> -       if (btf_type_has_size(size_type)) {
-> -               size = size_type->size;
-> -       } else if (btf_type_is_array(size_type)) {
-> -               size = btf->resolved_sizes[size_type_id];
-> -       } else if (btf_type_is_ptr(size_type)) {
-> -               size = sizeof(void *);
-> -       } else {
-> -               if (WARN_ON_ONCE(!btf_type_is_modifier(size_type) &&
-> -                                !btf_type_is_var(size_type)))
-> -                       return NULL;
-> -
-> -               size = btf->resolved_sizes[size_type_id];
-> -               size_type_id = btf->resolved_ids[size_type_id];
-> -               size_type = btf_type_by_id(btf, size_type_id);
-> -               if (btf_type_nosize_or_null(size_type))
-> -                       return NULL;
-> -       }
-> -
-> -       *type_id = size_type_id;
-> -       if (ret_size)
-> -               *ret_size = size;
-> -
-> -       return size_type;
-> -}
-> -
->   static int btf_df_check_member(struct btf_verifier_env *env,
->                                 const struct btf_type *struct_type,
->                                 const struct btf_member *member,
-> @@ -1489,7 +1501,7 @@ static int btf_modifier_check_member(struct
-> btf_verifier_env *env,
->          struct btf_member resolved_member;
->          struct btf *btf = env->btf;
->
-> -       resolved_type = btf_type_id_size(btf, &resolved_type_id, NULL);
-> +       resolved_type = __btf_type_id_size(btf, &resolved_type_id, NULL,
-> false);
->          if (!resolved_type) {
->                  btf_verifier_log_member(env, struct_type, member,
->                                          "Invalid member");
-> @@ -1514,7 +1526,7 @@ static int btf_modifier_check_kflag_member(struct
-> btf_verifier_env *env,
->          struct btf_member resolved_member;
->          struct btf *btf = env->btf;
->
-> -       resolved_type = btf_type_id_size(btf, &resolved_type_id, NULL);
-> +       resolved_type = __btf_type_id_size(btf, &resolved_type_id, NULL,
-> false);
->          if (!resolved_type) {
->                  btf_verifier_log_member(env, struct_type, member,
->                                          "Invalid member");
-> @@ -1620,7 +1632,7 @@ static int btf_modifier_resolve(struct
-> btf_verifier_env *env,
->           * save us a few type-following when we use it later (e.g. in
->           * pretty print).
->           */
-> -       if (!btf_type_id_size(btf, &next_type_id, &next_type_size)) {
-> +       if (!__btf_type_id_size(btf, &next_type_id, &next_type_size,
-> false)) {
->                  if (env_type_is_resolved(env, next_type_id))
->                          next_type = btf_type_id_resolve(btf,
-> &next_type_id);
->
-> @@ -1675,7 +1687,7 @@ static int btf_var_resolve(struct btf_verifier_env
-> *env,
->           * forward types or similar that would resolve to size of
->           * zero is allowed.
->           */
-> -       if (!btf_type_id_size(btf, &next_type_id, &next_type_size)) {
-> +       if (!__btf_type_id_size(btf, &next_type_id, &next_type_size,
-> false)) {
->                  btf_verifier_log_type(env, v->t, "Invalid type_id");
->                  return -EINVAL;
->          }
-> @@ -1725,7 +1737,7 @@ static int btf_ptr_resolve(struct btf_verifier_env
-> *env,
->                                                resolved_type_id);
->          }
->
-> -       if (!btf_type_id_size(btf, &next_type_id, NULL)) {
-> +       if (!__btf_type_id_size(btf, &next_type_id, NULL, false)) {
->                  if (env_type_is_resolved(env, next_type_id))
->                          next_type = btf_type_id_resolve(btf,
-> &next_type_id);
->
-> @@ -1851,7 +1863,7 @@ static int btf_array_check_member(struct
-> btf_verifier_env *env,
->          }
->
->          array_type_id = member->type;
-> -       btf_type_id_size(btf, &array_type_id, &array_size);
-> +       __btf_type_id_size(btf, &array_type_id, &array_size, false);
->          struct_size = struct_type->size;
->          bytes_offset = BITS_ROUNDDOWN_BYTES(struct_bits_off);
->          if (struct_size - bytes_offset < array_size) {
-> @@ -1938,7 +1950,7 @@ static int btf_array_resolve(struct
-> btf_verifier_env *env,
->              !env_type_is_resolved(env, index_type_id))
->                  return env_stack_push(env, index_type, index_type_id);
->
-> -       index_type = btf_type_id_size(btf, &index_type_id, NULL);
-> +       index_type = __btf_type_id_size(btf, &index_type_id, NULL, false);
->          if (!index_type || !btf_type_is_int(index_type) ||
->              !btf_type_int_is_regular(index_type)) {
->                  btf_verifier_log_type(env, v->t, "Invalid index");
-> @@ -1959,7 +1971,7 @@ static int btf_array_resolve(struct
-> btf_verifier_env *env,
->              !env_type_is_resolved(env, elem_type_id))
->                  return env_stack_push(env, elem_type, elem_type_id);
->
-> -       elem_type = btf_type_id_size(btf, &elem_type_id, &elem_size);
-> +       elem_type = __btf_type_id_size(btf, &elem_type_id, &elem_size,
-> false);
->          if (!elem_type) {
->                  btf_verifier_log_type(env, v->t, "Invalid elem");
->                  return -EINVAL;
-> @@ -2000,7 +2012,7 @@ static void btf_array_seq_show(const struct btf
-> *btf, const struct btf_type *t,
->          u32 i, elem_size, elem_type_id;
->
->          elem_type_id = array->type;
-> -       elem_type = btf_type_id_size(btf, &elem_type_id, &elem_size);
-> +       elem_type = __btf_type_id_size(btf, &elem_type_id, &elem_size,
-> false);
->          elem_ops = btf_type_ops(elem_type);
->          seq_puts(m, "[");
->          for (i = 0; i < array->nelems; i++) {
-> @@ -2732,7 +2744,7 @@ static int btf_datasec_resolve(struct
-> btf_verifier_env *env,
->                  }
->
->                  type_id = var_type->type;
-> -               if (!btf_type_id_size(btf, &type_id, &type_size)) {
-> +               if (!__btf_type_id_size(btf, &type_id, &type_size, false)) {
->                          btf_verifier_log_vsi(env, v->t, vsi, "Invalid
-> type");
->                          return -EINVAL;
->                  }
-> @@ -2813,7 +2825,7 @@ static int btf_func_proto_check(struct
-> btf_verifier_env *env,
->                  }
->
->                  /* Ensure the return type is a type that has a size */
-> -               if (!btf_type_id_size(btf, &ret_type_id, NULL)) {
-> +               if (!__btf_type_id_size(btf, &ret_type_id, NULL, false)) {
->                          btf_verifier_log_type(env, t, "Invalid return
-> type");
->                          return -EINVAL;
->                  }
-> @@ -2861,7 +2873,7 @@ static int btf_func_proto_check(struct
-> btf_verifier_env *env,
->                                  break;
->                  }
->
-> -               if (!btf_type_id_size(btf, &arg_type_id, NULL)) {
-> +               if (!__btf_type_id_size(btf, &arg_type_id, NULL, false)) {
->                          btf_verifier_log_type(env, t, "Invalid arg#%u",
-> i + 1);
->                          err = -EINVAL;
->                          break;
-> @@ -3014,7 +3026,7 @@ static bool btf_resolve_valid(struct
-> btf_verifier_env *env,
->                  u32 elem_type_id = array->type;
->                  u32 elem_size;
->
-> -               elem_type = btf_type_id_size(btf, &elem_type_id,
-> &elem_size);
-> +               elem_type = __btf_type_id_size(btf, &elem_type_id,
-> &elem_size, false);
->                  return elem_type && !btf_type_is_modifier(elem_type) &&
->                          (array->nelems * elem_size ==
->                           btf->resolved_sizes[type_id]);
->
->
-> > ---
-> >   kernel/bpf/btf.c | 42 +++---------------------------------------
-> >   1 file changed, 3 insertions(+), 39 deletions(-)
-> >
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index cad09858a5f2..c68c7e73b0d1 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -231,14 +231,6 @@ enum visit_state {
-> >       RESOLVED,
-> >   };
-> >
-> > -enum resolve_mode {
-> > -     RESOLVE_TBD,    /* To Be Determined */
-> > -     RESOLVE_PTR,    /* Resolving for Pointer */
-> > -     RESOLVE_STRUCT_OR_ARRAY,        /* Resolving for struct/union
-> > -                                      * or array
-> > -                                      */
-> > -};
-> > -
-> >   #define MAX_RESOLVE_DEPTH 32
-> >
-> >   struct btf_sec_info {
-> > @@ -254,7 +246,6 @@ struct btf_verifier_env {
-> >       u32 log_type_id;
-> >       u32 top_stack;
-> >       enum verifier_phase phase;
-> > -     enum resolve_mode resolve_mode;
-> >   };
-> >
-> >   static const char * const btf_kind_str[NR_BTF_KINDS] = {
-> > @@ -964,26 +955,7 @@ static void btf_verifier_env_free(struct btf_verifier_env *env)
-> >   static bool env_type_is_resolve_sink(const struct btf_verifier_env *env,
-> >                                    const struct btf_type *next_type)
-> >   {
-> > -     switch (env->resolve_mode) {
-> > -     case RESOLVE_TBD:
-> > -             /* int, enum or void is a sink */
-> > -             return !btf_type_needs_resolve(next_type);
-> > -     case RESOLVE_PTR:
-> > -             /* int, enum, void, struct, array, func or func_proto is a sink
-> > -              * for ptr
-> > -              */
-> > -             return !btf_type_is_modifier(next_type) &&
-> > -                     !btf_type_is_ptr(next_type);
-> > -     case RESOLVE_STRUCT_OR_ARRAY:
-> > -             /* int, enum, void, ptr, func or func_proto is a sink
-> > -              * for struct and array
-> > -              */
-> > -             return !btf_type_is_modifier(next_type) &&
-> > -                     !btf_type_is_array(next_type) &&
-> > -                     !btf_type_is_struct(next_type);
-> > -     default:
-> > -             BUG();
-> > -     }
-> > +     return !btf_type_needs_resolve(next_type);
-> >   }
-> >
-> >   static bool env_type_is_resolved(const struct btf_verifier_env *env,
-> > @@ -1010,13 +982,6 @@ static int env_stack_push(struct btf_verifier_env *env,
-> >       v->type_id = type_id;
-> >       v->next_member = 0;
-> >
-> > -     if (env->resolve_mode == RESOLVE_TBD) {
-> > -             if (btf_type_is_ptr(t))
-> > -                     env->resolve_mode = RESOLVE_PTR;
-> > -             else if (btf_type_is_struct(t) || btf_type_is_array(t))
-> > -                     env->resolve_mode = RESOLVE_STRUCT_OR_ARRAY;
-> > -     }
-> > -
-> >       return 0;
-> >   }
-> >
-> > @@ -1038,7 +1003,7 @@ static void env_stack_pop_resolved(struct btf_verifier_env *env,
-> >       env->visit_states[type_id] = RESOLVED;
-> >   }
-> >
-> > -static const struct resolve_vertex *env_stack_peak(struct btf_verifier_env *env)
-> > +static const struct resolve_vertex *env_stack_peek(struct btf_verifier_env *env)
-> >   {
-> >       return env->top_stack ? &env->stack[env->top_stack - 1] : NULL;
-> >   }
-> > @@ -3030,9 +2995,8 @@ static int btf_resolve(struct btf_verifier_env *env,
-> >       const struct resolve_vertex *v;
-> >       int err = 0;
-> >
-> > -     env->resolve_mode = RESOLVE_TBD;
-> >       env_stack_push(env, t, type_id);
-> > -     while (!err && (v = env_stack_peak(env))) {
-> > +     while (!err && (v = env_stack_peek(env))) {
-> >               env->log_type_id = v->type_id;
-> >               err = btf_type_ops(v->t)->resolve(env, v);
-> >       }
-> >
+
+I think it is not necessary needs a extra LIST_HEAD, the early mlx5e_block_cb_list is ok
+
+The early patch  http://patchwork.ozlabs.org/patch/1130439/ is enough.
+
+>  static int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
+>  			      void *type_data)
+>  {
+> @@ -1182,7 +1184,8 @@ static int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
+>  
+>  	switch (type) {
+>  	case TC_SETUP_BLOCK:
+> -		return flow_block_cb_setup_simple(type_data, NULL,
+> +		return flow_block_cb_setup_simple(type_data,
+> +						  &mlx5e_rep_block_cb_list,
+>  						  mlx5e_rep_setup_tc_cb,
+>  						  priv, priv, true);
+>  	default:
