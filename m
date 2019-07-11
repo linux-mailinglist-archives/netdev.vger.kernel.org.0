@@ -2,116 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DEAD6542A
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 11:52:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A80A65462
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 12:17:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728352AbfGKJwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 05:52:17 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:35585 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728282AbfGKJwR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 05:52:17 -0400
-Received: by mail-ot1-f67.google.com with SMTP id j19so5242731otq.2;
-        Thu, 11 Jul 2019 02:52:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YnmEAV+3bK+9TtrRTMyEvlRiK/7mNez6zYs1L+5G8+0=;
-        b=Ra4Wy3hTusHOAjr04l35ZvJXya4HnK7nQ5e4Jvo5LF3TA5nq3bs6H9Eyu6HPS1TJeg
-         GXQYR5SD3WnkxJvko36jjnB26p914drlGBPcHi4JGPVxCG5ZcGSfSX5UcLa/kYdzf4S/
-         ZNfZIRFXdDaDKoBQnnVCAgziNawjwpp7EDBe6+gs1z3UNmmp5BaVv+CpnNCrHmDTefkh
-         uZsfZ1ty6wBU64Bv8mKyMWc5jC1CnMeBsWXOxVl207a++ptzpr9BXBEpEfjXlYLtQh3p
-         lZjiQoUla86U/r58WFqaxtov+TAIOzTNyvytgrCKS63ROis1OG7uugX//qQ/xNshcV6+
-         mmvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YnmEAV+3bK+9TtrRTMyEvlRiK/7mNez6zYs1L+5G8+0=;
-        b=JjHkNckSCyNYDi1dmp5gTGBlKBtrom9gwNyN+teuXFrteaXT1m7IsXxCqZ/5mYfMRY
-         osxhLyt21A/AgKYFLJ7EloyADqp165t2kvdeOIHz+LQybr/rHV0ITQifuTaAEgnevnPz
-         RtnhX2tt0l5giYb8VoGPVw3DZAWMrtq6XwoLDa9V29ZbzPayeMxHbh1vBchMrGU7Fri1
-         9wFPEoNmJoWhKNVH2+QgFF2XkZky+a5E3LYKTsX/fr1zt7Q5rix17F+yKUtFpuTddeoL
-         qpS2AhTUqZFecGzMjrcZq4L3qPx85im8/HewhxN7RawIK6TTuPgZEp0QRgVHPxBOVFVT
-         GqHg==
-X-Gm-Message-State: APjAAAUFAx3ZtFeVVzGJAoTOtu0M8hBig4LWuFr5f37LEwLSEKinEYnY
-        4gMgRbX5dlKR0LCoyZa4a/HokzSbtJ2AiTRYu4Y=
-X-Google-Smtp-Source: APXvYqzfX3btBwyMNi/rv82bOVDD7JrGZA9S9HoK/qCYuNHXakkbUso0xterRPhCcI7xVPINhJM/QoABkOcGNjsoNyI=
-X-Received: by 2002:a9d:7259:: with SMTP id a25mr591774otk.30.1562838736311;
- Thu, 11 Jul 2019 02:52:16 -0700 (PDT)
+        id S1728342AbfGKKRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 06:17:22 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:36068 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728072AbfGKKRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 06:17:22 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6BAGw9V066183
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 06:17:21 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tp2c2jeh5-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 06:17:20 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Thu, 11 Jul 2019 11:17:18 +0100
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 11 Jul 2019 11:17:15 +0100
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6BAHEfO48431252
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Jul 2019 10:17:14 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 39D15AE055;
+        Thu, 11 Jul 2019 10:17:14 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F3C38AE057;
+        Thu, 11 Jul 2019 10:17:13 +0000 (GMT)
+Received: from [9.152.222.58] (unknown [9.152.222.58])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 11 Jul 2019 10:17:13 +0000 (GMT)
+Subject: Re: general protection fault in inet_accept
+To:     syzbot <syzbot+2e9616288940d15a6476@syzkaller.appspotmail.com>,
+        davem@davemloft.net, Ursula Braun <ubraun@linux.ibm.com>,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <0000000000006e1bbe0570bea62e@google.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Date:   Thu, 11 Jul 2019 12:17:16 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <1562244134-19069-1-git-send-email-magnus.karlsson@intel.com>
- <1562244134-19069-2-git-send-email-magnus.karlsson@intel.com> <57e022b7-ac0e-6a9c-5078-c44988fd9fe6@iogearbox.net>
-In-Reply-To: <57e022b7-ac0e-6a9c-5078-c44988fd9fe6@iogearbox.net>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 11 Jul 2019 11:52:05 +0200
-Message-ID: <CAJ8uoz1D7Pfvxw+5jSyCrL8p02_UVkVkQ=AQH6L9WFsq-D3Ybg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/6] xsk: replace ndo_xsk_async_xmit with ndo_xsk_wakeup
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, bruce.richardson@intel.com,
-        ciara.loftus@intel.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Ye Xiaolong <xiaolong.ye@intel.com>,
-        "Zhang, Qi Z" <qi.z.zhang@intel.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        kevin.laatz@intel.com, ilias.apalodimas@linaro.org,
-        Kiran <kiran.patil@intel.com>, axboe@kernel.dk,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <0000000000006e1bbe0570bea62e@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071110-0016-0000-0000-00000291AE50
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071110-0017-0000-0000-000032EF6CD4
+Message-Id: <2962f9c2-e69d-f2cf-fa34-f68f00abbfd9@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-11_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=942 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907110123
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 9, 2019 at 1:50 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 07/04/2019 02:42 PM, Magnus Karlsson wrote:
-> > This commit replaces ndo_xsk_async_xmit with ndo_xsk_wakeup. This new
-> > ndo provides the same functionality as before but with the addition of
-> > a new flags field that is used to specifiy if Rx, Tx or both should be
-> > woken up. The previous ndo only woke up Tx, as implied by the
-> > name. The i40e and ixgbe drivers (which are all the supported ones)
-> > are updated with this new interface.
-> >
-> > This new ndo will be used by the new need_wakeup functionality of XDP
-> > sockets that need to be able to wake up both Rx and Tx driver
-> > processing.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/i40e/i40e_main.c          |  5 +++--
-> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c           |  7 ++++---
-> >  drivers/net/ethernet/intel/i40e/i40e_xsk.h           |  2 +-
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c        |  5 +++--
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h |  2 +-
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c         |  4 ++--
-> >  drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c  |  2 +-
-> >  drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h  |  2 +-
-> >  drivers/net/ethernet/mellanox/mlx5/core/en_main.c    |  2 +-
-> >  include/linux/netdevice.h                            | 14 ++++++++++++--
-> >  net/xdp/xdp_umem.c                                   |  3 +--
-> >  net/xdp/xsk.c                                        |  3 ++-
-> >  12 files changed, 32 insertions(+), 19 deletions(-)
->
-> Looks good, but given driver changes to support the AF_XDP need_wakeup
-> feature are quite trivial, is there a reason that you updated mlx5 here
-> but not for the actual support such that all three in-tree drivers are
-> supported?
+#syz fix: net/smc: propagate file from SMC to TCP socket
 
-It should be easy to add it mlx5 for someone familiar with the driver.
-I will send Maxim a mail and see if he can contribute a small patch
-adding the support.
+On 11/07/2018 21:57, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    0026129c8629 rhashtable: add restart routine in rhashtable..
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10ed430c400000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=b88de6eac8694da6
+> dashboard link: https://syzkaller.appspot.com/bug?extid=2e9616288940d15a6476
+> compiler:       gcc (GCC) 8.0.1 20180413 (experimental)
+> 
+> Unfortunately, I don't have any reproducer for this crash yet.
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+2e9616288940d15a6476@syzkaller.appspotmail.com
+> 
+> kasan: CONFIG_KASAN_INLINE enabled
+> kasan: GPF could be caused by NULL-ptr deref or user memory access
+> general protection fault: 0000 [#1] SMP KASAN
+> CPU: 1 PID: 27 Comm: kworker/1:1 Not tainted 4.18.0-rc3+ #5
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Workqueue: events smc_tcp_listen_work
+> RIP: 0010:inet_accept+0xf2/0x9f0 net/ipv4/af_inet.c:734
+> Code: 84 d2 74 09 80 fa 03 0f 8e 93 07 00 00 48 8d 78 28 41 c7 46 80 ea ff ff ff 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 <80> 3c 11 00 0f 85 94 07 00 00 48 b9 00 00 00 00 00 fc ff df 48 8b
+> RSP: 0018:ffff8801d94574b0 EFLAGS: 00010206
+> RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000005
+> RDX: dffffc0000000000 RSI: ffffffff86751b46 RDI: 0000000000000028
+> RBP: ffff8801d9457598 R08: ffff8801d9448700 R09: ffffed00367a0f6f
+> R10: ffffed00367a0f6f R11: ffff8801b3d07b7b R12: ffff8801b3d07ac0
+> R13: ffff8801d94574f0 R14: ffff8801d9457570 R15: 0000000000000000
+> FS:  0000000000000000(0000) GS:ffff8801daf00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b30220000 CR3: 00000001d711f000 CR4: 00000000001406e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  kernel_accept+0x136/0x310 net/socket.c:3251
+>  smc_clcsock_accept net/smc/af_smc.c:701 [inline]
+>  smc_tcp_listen_work+0x222/0xef0 net/smc/af_smc.c:1114
+>  process_one_work+0xc73/0x1ba0 kernel/workqueue.c:2153
+>  worker_thread+0x189/0x13c0 kernel/workqueue.c:2296
+>  kthread+0x345/0x410 kernel/kthread.c:240
+>  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:412
+> Modules linked in:
+> Dumping ftrace buffer:
+>    (ftrace buffer empty)
+> ---[ end trace 0d34e5471cc130cb ]---
+> RIP: 0010:inet_accept+0xf2/0x9f0 net/ipv4/af_inet.c:734
+> Code: 84 d2 74 09 80 fa 03 0f 8e 93 07 00 00 48 8d 78 28 41 c7 46 80 ea ff ff ff 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 <80> 3c 11 00 0f 85 94 07 00 00 48 b9 00 00 00 00 00 fc ff df 48 8b
+> RSP: 0018:ffff8801d94574b0 EFLAGS: 00010206
+> RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000005
+> RDX: dffffc0000000000 RSI: ffffffff86751b46 RDI: 0000000000000028
+> RBP: ffff8801d9457598 R08: ffff8801d9448700 R09: ffffed00367a0f6f
+> R10: ffffed00367a0f6f R11: ffff8801b3d07b7b R12: ffff8801b3d07ac0
+> R13: ffff8801d94574f0 R14: ffff8801d9457570 R15: 0000000000000000
+> FS:  0000000000000000(0000) GS:ffff8801daf00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b30220000 CR3: 0000000008e6a000 CR4: 00000000001406e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> 
+> 
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#bug-status-tracking for how to communicate with syzbot.
+> 
+> 
+> 
 
-Thanks: Magnus
+-- 
+Karsten
 
-> Thanks,
-> Daniel
+(I'm a dude)
+
