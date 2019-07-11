@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E6D64F66
-	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 01:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7844164F6A
+	for <lists+netdev@lfdr.de>; Thu, 11 Jul 2019 02:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbfGJX52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jul 2019 19:57:28 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33974 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727386AbfGJX52 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 19:57:28 -0400
-Received: by mail-qt1-f196.google.com with SMTP id k10so4503038qtq.1;
-        Wed, 10 Jul 2019 16:57:27 -0700 (PDT)
+        id S1727687AbfGKADi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jul 2019 20:03:38 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:32801 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727520AbfGKADi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jul 2019 20:03:38 -0400
+Received: by mail-qk1-f195.google.com with SMTP id r6so3433896qkc.0;
+        Wed, 10 Jul 2019 17:03:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=vm1tVbhQpvHWsXffjaSnaFHT1SscgoMTOQl51QNkYuU=;
-        b=DgXDeg3++iIAfEw1RQwcNOG++6kooAArYaBKpFUvjeIaYRYMhRYLnAYO+2BWUkjrr3
-         Ol2U3efQjm4vXiXLeVEcpUS1iWHZyBkiSVzOpna598WbkzkFynFbs6R1S0Xp7TZd7uUH
-         jwDV33Y9ispkmz0/k4d67eyDpPVzqJQ6usCxXYSVr4IIh69RhbJ/hBYa4gJb+T5D/QgP
-         hDBxRiRMlBGWwd4F9FejS6fllbQPI2dumDFOCkmsnm64kQUBHbwSVmOUgwm3KxPKVLny
-         zFOTtOgD6k+uaA92D1aP2YlRmq2maT1P+63NwBX8btPOe/Z4ntZfynXX6CAUhrJ+9Qx1
-         Auag==
+        bh=rcagef65c04aERdHDZCmK5MH6YmpVVzcpkdhaNDNo5o=;
+        b=C1XfdLqd5hKBMQEnUz4tGu4Ywf7IJdfVwTMvq/YrfYcAI75lVOzsVZIDgCEncN6mCU
+         gkJprzkHoq5qTkSNZXVrziOzdxuQEZamT5Ff6EyjTpK2RP+fXwFu/F5mWbUwk1ejicoY
+         GrYNWDyYGyPUVk3fsZkSelgOO8DFMDPgSGmjPdc8NC3uNDfFJGLe7kR4x8U184oU/Xut
+         gBkBfGULn/gx7CHLkn6stkOEQERYv92gVBGnTCp+pW+7aYQcKScoCm1fyvDqxVhIcPxQ
+         wpnTwGcKuFBZq8COA1WVRhh9nV1/Jl1Nc0N7FmZUZVsqS4bL9hf9SxXHmBdOm94znJpo
+         Ed9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=vm1tVbhQpvHWsXffjaSnaFHT1SscgoMTOQl51QNkYuU=;
-        b=ijI399gqpsgx5Ng3SPti7SZqpvOOq1BlI9x/PONIHQoCQ43t3ZUB2EBAHaauT4EQlB
-         Lx1KAr2OH5hhSMlY3jXHMu+TrS/4vUVdcEiv/MQSZiJdqwdbuwMmSZ+VA7uzKxchhG7x
-         ZqcnN+sm88Ywk4X2jTeMFsZy16jj2QDBqIys0j1ua8R6yoqi6RkpcL8hJkTTcO0Mjjxt
-         gsIoWg8BhchkF+GM1DXZGDhWrIqm8+dQGRahRYtAJ85WDwCe5YOvN07J2ATf5K91zlFK
-         t0AQhzpbcwdMGmufoy/Mm8QSW70fPrPJ2Xpn7eJ0jrvKCs0kQ97vGUNkvqC4gz9bEhtq
-         GCyw==
-X-Gm-Message-State: APjAAAXg8ufAwbZTd/BdG3IFHXEBZYjBXRZFbJIA/RROvdynJ5W9vjc3
-        G3eDEdSNETE4Z52xn6JKGNUIdi/80gNnDrtVY/o=
-X-Google-Smtp-Source: APXvYqwbvo6jaHPWWRaf/CoYsZbw4JKCj+tSd90LAsafEHlIYQ614EMOSE4fuSEeR2x2X16oRfsJJMadselw5eeyYn4=
-X-Received: by 2002:a0c:818f:: with SMTP id 15mr418329qvd.162.1562803046595;
- Wed, 10 Jul 2019 16:57:26 -0700 (PDT)
+        bh=rcagef65c04aERdHDZCmK5MH6YmpVVzcpkdhaNDNo5o=;
+        b=G5hLo3ZxQvMPTWl3Tydux5h7HWK/Pi/WLAgMJ/QZpjxOknTI+J3t89aThkq84TyNn3
+         p3tBU3w+TZLJoyVyFYnr2hfNXYYBq/XljQ9k5UEwPl+clurWUU1KowOQDwH37IUtms8L
+         6xfgLSQ5EC/0htm9WdYNS0cYz7kpTJ0YQROuNShXiXcDQQfLUJnqIGM8tmHq1qMFs0O+
+         /pyzIHTUFip2FXOA544WuoM2GMPRLVN39SxC3xW0ZY8ibDAkBfSL/QokrtlI9uzDnXEH
+         9KPgXg//y9+Mq5Xa50EIkXo8dVeUucm/AykJ0ROEXDYfVaYBAH08q7Jr2JhPqlqRmLXz
+         SjfA==
+X-Gm-Message-State: APjAAAVyuqSxpxxL2O0MB+Leh4hwRAFDjIC6XuZmvIxPCP8czCs0nV3v
+        VbqKZiTOA4IsVwJ1T5UewjOpqwrruiGTxgyYyY0d2hWWOZbTQw==
+X-Google-Smtp-Source: APXvYqxaaPVmCJKGYrqtpwvraL1EswjCeJsS/XSCyFmDnYfbnnDLpm+8b9JquD0m7SIWIVbBy4B0yNf0+FZAo6p9xak=
+X-Received: by 2002:a37:660d:: with SMTP id a13mr801660qkc.36.1562803416832;
+ Wed, 10 Jul 2019 17:03:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-4-krzesimir@kinvolk.io>
-In-Reply-To: <20190708163121.18477-4-krzesimir@kinvolk.io>
+References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-5-krzesimir@kinvolk.io>
+In-Reply-To: <20190708163121.18477-5-krzesimir@kinvolk.io>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Jul 2019 16:57:15 -0700
-Message-ID: <CAEf4BzbM6EiCkN5mwK1YP-NC2bavkkHV7nFR-PXCWGOvVt7nTg@mail.gmail.com>
-Subject: Re: [bpf-next v3 03/12] selftests/bpf: Avoid another case of errno clobbering
+Date:   Wed, 10 Jul 2019 17:03:25 -0700
+Message-ID: <CAEf4BzZoOw=1B8vV53iAxz8LDULOPVF-he4C_usoUQSdXU+oSg@mail.gmail.com>
+Subject: Re: [bpf-next v3 04/12] selftests/bpf: Use bpf_prog_test_run_xattr
 To:     Krzesimir Nowak <krzesimir@kinvolk.io>
 Cc:     open list <linux-kernel@vger.kernel.org>,
         Alban Crequy <alban@kinvolk.io>,
@@ -70,57 +70,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jul 8, 2019 at 3:43 PM Krzesimir Nowak <krzesimir@kinvolk.io> wrote:
 >
-> Commit 8184d44c9a57 ("selftests/bpf: skip verifier tests for
-> unsupported program types") added a check for an unsupported program
-> type. The function doing it changes errno, so test_verifier should
-> save it before calling it if test_verifier wants to print a reason why
-> verifying a BPF program of a supported type failed.
+> The bpf_prog_test_run_xattr function gives more options to set up a
+> test run of a BPF program than the bpf_prog_test_run function.
 >
-> Changes since v2:
-> - Move the declaration to fit the reverse christmas tree style.
+> We will need this extra flexibility to pass ctx data later.
 >
-> Fixes: 8184d44c9a57 ("selftests/bpf: skip verifier tests for unsupported program types")
-> Cc: Stanislav Fomichev <sdf@google.com>
 > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 > ---
 
+lgtm, with some nits below
+
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  tools/testing/selftests/bpf/test_verifier.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  tools/testing/selftests/bpf/test_verifier.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
 >
 > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> index 3fe126e0083b..c7541f572932 100644
+> index c7541f572932..1640ba9f12c1 100644
 > --- a/tools/testing/selftests/bpf/test_verifier.c
 > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> @@ -864,6 +864,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
->         int run_errs, run_successes;
->         int map_fds[MAX_NR_MAPS];
->         const char *expected_err;
-> +       int saved_errno;
->         int fixup_skips;
+> @@ -822,14 +822,20 @@ static int do_prog_test_run(int fd_prog, bool unpriv, uint32_t expected_val,
+>  {
+>         __u8 tmp[TEST_DATA_LEN << 2];
+>         __u32 size_tmp = sizeof(tmp);
 
-nit: combine those ints? or even with i and err below as well?
+nit: this is now is not needed as a separate local variable, inline?
 
->         __u32 pflags;
->         int i, err;
-> @@ -894,6 +895,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
->                 pflags |= BPF_F_ANY_ALIGNMENT;
->         fd_prog = bpf_verify_program(prog_type, prog, prog_len, pflags,
->                                      "GPL", 0, bpf_vlog, sizeof(bpf_vlog), 4);
-> +       saved_errno = errno;
->         if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
->                 printf("SKIP (unsupported program type %d)\n", prog_type);
->                 skips++;
-> @@ -910,7 +912,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
->         if (expected_ret == ACCEPT) {
->                 if (fd_prog < 0) {
->                         printf("FAIL\nFailed to load prog '%s'!\n",
-> -                              strerror(errno));
-> +                              strerror(saved_errno));
->                         goto fail_log;
+> -       uint32_t retval;
+>         int saved_errno;
+>         int err;
+> +       struct bpf_prog_test_run_attr attr = {
+> +               .prog_fd = fd_prog,
+> +               .repeat = 1,
+> +               .data_in = data,
+> +               .data_size_in = size_data,
+> +               .data_out = tmp,
+> +               .data_size_out = size_tmp,
+> +       };
+>
+>         if (unpriv)
+>                 set_admin(true);
+> -       err = bpf_prog_test_run(fd_prog, 1, data, size_data,
+> -                               tmp, &size_tmp, &retval, NULL);
+> +       err = bpf_prog_test_run_xattr(&attr);
+>         saved_errno = errno;
+>         if (unpriv)
+>                 set_admin(false);
+> @@ -846,9 +852,9 @@ static int do_prog_test_run(int fd_prog, bool unpriv, uint32_t expected_val,
+>                         return err;
 >                 }
->  #ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+>         }
+> -       if (retval != expected_val &&
+> +       if (attr.retval != expected_val &&
+>             expected_val != POINTER_VALUE) {
+
+this if condition now fits one line, can you please combine? thanks!
+
+> -               printf("FAIL retval %d != %d ", retval, expected_val);
+> +               printf("FAIL retval %d != %d ", attr.retval, expected_val);
+>                 return 1;
+>         }
+>
 > --
 > 2.20.1
 >
