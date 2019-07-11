@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E166627A
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8142466288
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728827AbfGKXrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 19:47:22 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40059 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728532AbfGKXrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:47:22 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a15so6294417qtn.7;
-        Thu, 11 Jul 2019 16:47:21 -0700 (PDT)
+        id S1729151AbfGKXup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 19:50:45 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45757 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728532AbfGKXuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:50:44 -0400
+Received: by mail-qt1-f196.google.com with SMTP id x22so1415314qtp.12;
+        Thu, 11 Jul 2019 16:50:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9mOzCmWu7iP2cO6YA87BG1jCD7rtcJcCtL3+itxwnEQ=;
-        b=DUKjSbuz4ZX9Efg/TfgRHhsM/7Mh1MYSAsvORQnwkxK5y/Muv4jwNrXTdin2IrZQ3k
-         wutgC/VJ+vDaojIy5zRaWnFwDMv4BJqsb2qKOjg5sSC7MaYFLpC5F6VEn7aOFH+U4UQJ
-         CWHeVauQaueQjDyqtWKhixGMTO/fWkv71C6C5aXW2VvcYVyscv0/a22XGdqj0wY5jdh8
-         Zo6ruAIrntyA6cPjSnl3WrnCqVCNg0BQY4zAqzQwaMhrcXMglj0RIGoWHZN9PFWBK0WI
-         CIVQGcAidUYQxEVByoarA09NA3yMnNPYInFPpMex4h8WWHgGCXHjsg2AaqKS9ao90cXn
-         jEHQ==
+        bh=wuTNjs1AJzVSPfomxhglY+rjhXorfZWV3dSJ2jI2rn8=;
+        b=lHNjCuU//O0PYvZcPHyNlgDrIP/JmdlwJkCURyOzv2OTxDzyJ5F9OV+LxvO1YgNcTd
+         3badbLyWNUwSh/hhUC12gInEmr9Az7jKuOSEhOn7IqECEFnfXc4JM1WfAwQnLh8MJL4n
+         SZ8QQ09G4hEI0DmHcXjFAfQEiMpEDmBsXcbjb/bzM7JLVxFD1FmR2pV27sIT58nkpW5H
+         Fi6oSphodQTJK/sJ7oFnFp5HSsLlYI5cdGw9pIbmqzR5qBEtbohHoq8IlYgpfK8LnO/8
+         ZFU8DUicggdmlWtcF3oCOz4Ebjv/m9NBB8Aysg0kOsLkr1L8QVUcrrmqY18WY/2JDdvl
+         PVNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9mOzCmWu7iP2cO6YA87BG1jCD7rtcJcCtL3+itxwnEQ=;
-        b=tHOZrykSrJrUzLdC8wXmDy2IjzjyGNCphImLDFwle2dJ1JIxVibVdlWOeZXW3r40NB
-         0IzkUSXEWrFIbjwAooc/XTGzw3MpJzcSXnMChl2z+jkS1F+QmXqqYpNOkd610f96UA8g
-         MQjNw6qJHgXB4Tn/goqrI8GFsVCxYiS4Cfe9NlJdzbpH6bWYrjaDjHpHI8FrlHcVP0kJ
-         7mVad/KO6X+uD8EOEHSYIxZDQ8MCPheRKpgy9Sc0huli7wfHkMRXfUvAS1H1Tk8QqtxR
-         quCRsTGEkjLoPj+3bN3Odh1XKD9cHQLiE2YSYSGzvq2YNBptxfI3lMx6TAU67HSM5A4X
-         QwSg==
-X-Gm-Message-State: APjAAAW1dN4QsJab81zR5BFLhXc5zvdYw4nZR0bhYp9vKFibHWTDYdsV
-        2hS14N5UBfSGnogne1ydbYT2DJ68emWw24ZzH3E=
-X-Google-Smtp-Source: APXvYqwKrsSTIoIu312DM1OogO+Nt/7ng/6mozD5/JRx0tp1Wn7qacQRTEQMza7ICvZz3sOS3tE77a3A+izfO/l5gnI=
-X-Received: by 2002:ac8:32a1:: with SMTP id z30mr4043423qta.117.1562888841104;
- Thu, 11 Jul 2019 16:47:21 -0700 (PDT)
+        bh=wuTNjs1AJzVSPfomxhglY+rjhXorfZWV3dSJ2jI2rn8=;
+        b=V8q53Yql8cOg+8gk5+ppmG343Ns3oZh/U5EIQq5pk2oDf+lSWZkXP0eUmj189wWhma
+         8B5em/ROhji2htFbel4DFxIROS1WqEoPT0zy4A6HNDHKgEY4hfAI2XWTtRgIoE8WrU9p
+         /svIKoPoPej2Fwkzl1o9DNrS+uVvfOmWH3231pcCHzSb3cXTNyMOdFpJO0nT6VEm+xvB
+         f7R76R7r8ZBkn9ze62OgCN6J9mMAlXQ/jBu9pdvjdaRVWRMr1ZfVu3zU9lPpXTGNwMYF
+         H0Se9JmFfgcelT2+nGQ8azAvUvFd1I6Q7OwDJP+jhWiGdREj22gUnCUfwbFtHDHtqNKb
+         Jk6g==
+X-Gm-Message-State: APjAAAX0S4327S9hOdPhemzDVyTeTYS/7a2SMGqD7x3ctXtXTmbiQq0h
+        nQw+hkhRL9PToC4GPDyvMot/9mTMtcB+F8XcydM=
+X-Google-Smtp-Source: APXvYqxi5uC3T9mdtDBKrfzoMfUO2bPhfXojvxDD1+S09q+TEBQcHeoRdC3Rji4gs+Y+3hL1bahWQt+YEvRtNbQD8Y0=
+X-Received: by 2002:ac8:2d56:: with SMTP id o22mr3917172qta.171.1562889043498;
+ Thu, 11 Jul 2019 16:50:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190710231439.GD32439@tassilo.jf.intel.com> <1562838037-1884-1-git-send-email-p.pisati@gmail.com>
- <1562838037-1884-3-git-send-email-p.pisati@gmail.com>
-In-Reply-To: <1562838037-1884-3-git-send-email-p.pisati@gmail.com>
+References: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
+In-Reply-To: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 16:47:10 -0700
-Message-ID: <CAEf4BzZ13GoSgSrLc3KBhcUO4Aa0V+6kHZMhVgGqr2Mz0iVsyA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] bpf, selftest: fix checksum value for test #13
+Date:   Thu, 11 Jul 2019 16:50:32 -0700
+Message-ID: <CAEf4BzbGLmuZ48vFUCrDW6VC7_YrkW_0NpgpgXNQEzF_dEqgnA@mail.gmail.com>
+Subject: Re: [PATCH 0/2] Fold checksum at the end of bpf_csum_diff and fix
 To:     Paolo Pisati <p.pisati@gmail.com>
-Cc:     "--to=Alexei Starovoitov" <ast@kernel.org>,
+Cc:     "--in-reply-to=" <20190710231439.GD32439@tassilo.jf.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
@@ -67,36 +67,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 2:41 AM Paolo Pisati <p.pisati@gmail.com> wrote:
+On Thu, Jul 11, 2019 at 2:32 AM Paolo Pisati <p.pisati@gmail.com> wrote:
 >
 > From: Paolo Pisati <paolo.pisati@canonical.com>
 >
-
-Please include description, in addition to subject.
-
-Also, when submitting patches, please add bpf or bpf-next (e.g.,
-[PATCH bpf 2/2] to indicate which tree it's supposed to go into). For
-this one it's probably bpf.
-
-
-> Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
-> ---
->  tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> After applying patch 0001, all checksum implementations i could test (x86-64, arm64 and
+> arm), now agree on the return value.
 >
-> diff --git a/tools/testing/selftests/bpf/verifier/array_access.c b/tools/testing/selftests/bpf/verifier/array_access.c
-> index bcb83196e459..4698f560d756 100644
-> --- a/tools/testing/selftests/bpf/verifier/array_access.c
-> +++ b/tools/testing/selftests/bpf/verifier/array_access.c
-> @@ -255,7 +255,7 @@
->         .prog_type = BPF_PROG_TYPE_SCHED_CLS,
->         .fixup_map_array_ro = { 3 },
->         .result = ACCEPT,
-> -       .retval = -29,
-> +       .retval = 28,
->  },
->  {
->         "invalid write map access into a read-only array 1",
+> Patch 0002 fix the expected return value for test #13: i did the calculation manually,
+> and it correspond.
+>
+> Unfortunately, after applying patch 0001, other test cases now fail in
+> test_verifier:
+>
+> $ sudo ./tools/testing/selftests/bpf/test_verifier
+> ...
+> #417/p helper access to variable memory: size = 0 allowed on NULL (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0
+> #419/p helper access to variable memory: size = 0 allowed on != NULL stack pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0
+> #423/p helper access to variable memory: size possible = 0 allowed on != NULL packet pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0
+
+I'm not entirely sure this fix is correct, given these failures, to be honest.
+
+Let's wait for someone who understands intended semantics for
+bpf_csum_diff, before changing returned value so drastically.
+
+But in any case, fixes for these test failures should be in your patch
+series as well.
+
+
+> ...
+> Summary: 1500 PASSED, 0 SKIPPED, 3 FAILED
+>
+> And there are probably other fallouts in other selftests - someone familiar
+> should take a look before applying these patches.
+>
+> Paolo Pisati (2):
+>   bpf: bpf_csum_diff: fold the checksum before returning the
+>     value
+>   bpf, selftest: fix checksum value for test #13
+>
+>  net/core/filter.c                                   | 2 +-
+>  tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+>
 > --
 > 2.17.1
 >
