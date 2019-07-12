@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4076676A
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 09:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7A9667BD
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 09:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbfGLHFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 03:05:08 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52279 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725840AbfGLHFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 03:05:08 -0400
-Received: by mail-wm1-f67.google.com with SMTP id s3so7831148wms.2
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 00:05:06 -0700 (PDT)
+        id S1726073AbfGLH0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 03:26:05 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:33963 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfGLH0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 03:26:04 -0400
+Received: by mail-qk1-f194.google.com with SMTP id t8so5730015qkt.1
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 00:26:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4WVzx7NfYyKZfRHivTOMoWMwW7LfE1/XJK47R8mLMc8=;
-        b=h+yoBxXMRuTmzR5u0kXhblKrczuUGvtKB8+2YDlvQo7121nvUvf8NNvg4aXHpay25M
-         FKOOCQKc+MtQoeMm3mTyo36WfVYBg5S6Clp8718Gb5BRpT3W0w1If9g54kfZJTD1PyTG
-         kH/qVmLU+/daPOoNixwFW7a88d3fKsXgEttgkgkufz7Ckb+fxBPY8OAJFwo27tlWxDw6
-         Z3VcUH6EVkogewGMhU+2G7kRulV9zC6DkNOeNdt8noIv5bDpdIdf26b+K+HZR0HzdzHS
-         wbWddWgm8iJ4WMgEukZVpsGuSO1g2c9PR27o8pZjmj5tGy9RRfTM9cS2NVd91cyhNeTa
-         qw2A==
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tX+z3FWO8ez0pwI+shF6DuNfmbSDPIMsw6ukNdtKjIY=;
+        b=B1TBh6lQ8lJkZoPDu7qlKlHP93dzT2+gh7hAgAhd/UsfQKX68NCmLaYELZwamg6c2H
+         I42nMWiepK94uoiPqaR1V1aHcqsTFF9SFuuzpCOxJQlCdCJCSGBUUq1QBGH1z1ofVQYE
+         crao2BfDzcji5MitcsjQLOm9FGcbgnspowLDHM69zH2zUt/ElaR4EDvK2Ls4qhX3XxHY
+         V5MhQeJ7ziDoekLRTZzdhE3xSBWR8EIJbYgn0+bJLRIr8lvOWtRo6oKZK0zbKg4VfC/O
+         IHqUPhxghsZtxDQVq+EJ0Csb7hhQA7EpRSpU11lg9b0WBIXrG/za6qg3pJyfNRonu5SE
+         X64w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4WVzx7NfYyKZfRHivTOMoWMwW7LfE1/XJK47R8mLMc8=;
-        b=KGD7RDRKdcSKmBLFRn9qvwtTOeaDiSqIXJ+icfJyq2xCpZAgmyKG+twgZ4iIGmQK+G
-         AAyXHE3ZO2lzguqvwaRueC3Cj0mS2xIKOvEi3umZ32j5Mv3OpxWHm6Mg/Sxsjo4CiE/A
-         J0nXAgkaVQnVGHEhBf4npgyR6ulWMyp15X1ARCys/vIFFz1KJDBIqEB+wmxNKKx42N+W
-         UWBlEM2FPbN92j1HdxQygYKLmAc9bBBHWQLPa+j9gLv9RNCakdQbMJfUpN+vqwO6Ok6Z
-         kUmTYtURYsUBA+MHn0Q/DIde8vZmihRqyGqwHgxG5YIoxsJfdXnNvlEgYzXlyVweLwlM
-         Adog==
-X-Gm-Message-State: APjAAAV2rGhvqieHeTaFxcPkakhtdyRRXGo1Y8eArCXZcSx8AjX+0li+
-        08gJbIU+hmpoRsdWBFy2O74=
-X-Google-Smtp-Source: APXvYqzzNRBTFe/6QHlQEt60AsVg5m+NItvoGu7ALu9okOoaccGLeMEO+mQ3uZ1h/AAKScXlZbhm+g==
-X-Received: by 2002:a1c:720e:: with SMTP id n14mr7977685wmc.53.1562915106248;
-        Fri, 12 Jul 2019 00:05:06 -0700 (PDT)
-Received: from [192.168.8.147] (106.174.185.81.rev.sfr.net. [81.185.174.106])
-        by smtp.gmail.com with ESMTPSA id k124sm11158933wmk.47.2019.07.12.00.05.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 12 Jul 2019 00:05:05 -0700 (PDT)
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "Prout, Andrew - LLSC - MITLL" <aprout@ll.mit.edu>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Dustin Marquess <dmarquess@apple.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <63cd99ed3d0c440185ebec3ad12327fc@ll.mit.edu>
- <96791fd5-8d36-2e00-3fef-60b23bea05e5@gmail.com>
- <e471350b70e244daa10043f06fbb3ebe@ll.mit.edu>
- <b1dfd327-a784-6609-3c83-dab42c3c7eda@gmail.com>
- <adec774ed16540c6b627c2f607f3e216@ll.mit.edu>
- <d4b1ab65-c308-382a-2a0e-9042750335e0@gmail.com>
- <4B9799E0-A736-4944-9BF3-FBACCFBDCCC5@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d045271a-7380-17c8-06a2-608ff65f52ee@gmail.com>
-Date:   Fri, 12 Jul 2019 09:05:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tX+z3FWO8ez0pwI+shF6DuNfmbSDPIMsw6ukNdtKjIY=;
+        b=foDo+MP15MZvrD/qCtxMPqagF1J1DTmLz3qlPhy5X6d/CV0Q4zgV/kbEyQ6aCPJYjJ
+         0SEmeruYVvgVIMSHpptirr8owXQ63aFjykWbnohQJ3JMpBc+8OuONTGTT8IFPqmueW1S
+         EJgEJjkTaCbu3izlwXJI0lea1mT5PlpMMNd1ZRuUss8AC6Ahk/zDAf51gcpZzquo0+Uq
+         Eafcio+qVwRdZaLIY3IFBA07CQKY+nMnPEZcHgjH0vSGs7vQKgA3xW4wAaX8do8XZaIF
+         +mzBxhBdGCF4J0FW1xaBe1XSfhwKqCx6ZIZLEMOR4mAxucsywbOgTT8/Zw+++M2NjOI5
+         KJ/A==
+X-Gm-Message-State: APjAAAWBgYwANQyatJJiBPZzyMb2SckTkm0pZRLf8I+7DaoJSVV2J8fg
+        ElumCBoz8VNSb0lQKnydhzrGQE4crpKR7dyYoPm91g==
+X-Google-Smtp-Source: APXvYqwfZlT5gIR7C9KlVHynWkh81mOHdBr1VYyfvqhJ5xBafZ5mhfzv2ZrdNBgKteu9MNrfrGL9m4WEbOvxuI/NVvY=
+X-Received: by 2002:ae9:e306:: with SMTP id v6mr5008989qkf.145.1562916364014;
+ Fri, 12 Jul 2019 00:26:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <4B9799E0-A736-4944-9BF3-FBACCFBDCCC5@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20190704105528.74028-1-chiu@endlessm.com> <8f1454ca-4610-03d0-82c4-06174083d463@gmail.com>
+ <CAB4CAwc8jJQ2f8vpoB0Y6sc0fJmmrq+5rRuJ+TqGMMgCczRi+A@mail.gmail.com>
+In-Reply-To: <CAB4CAwc8jJQ2f8vpoB0Y6sc0fJmmrq+5rRuJ+TqGMMgCczRi+A@mail.gmail.com>
+From:   Daniel Drake <drake@endlessm.com>
+Date:   Fri, 12 Jul 2019 15:25:52 +0800
+Message-ID: <CAD8Lp45Qe-GKrtCR=d4GCx+PPAtmMQfHK2VpmA_yHMNFJ3ijww@mail.gmail.com>
+Subject: Re: [PATCH v2] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes Sorensen <jes.sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jul 5, 2019 at 10:27 AM Chris Chiu <chiu@endlessm.com> wrote:
+> Per the code before REG_S0S1_PATH_SWITCH setting, the driver has told
+> the co-processor the antenna is inverse.
+>         memset(&h2c, 0, sizeof(struct h2c_cmd));
+>         h2c.ant_sel_rsv.cmd = H2C_8723B_ANT_SEL_RSV;
+>         h2c.ant_sel_rsv.ant_inverse = 1;
+>         h2c.ant_sel_rsv.int_switch_type = 0;
+>         rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
+>
+> At least the current modification is consistent with the antenna
+> inverse setting.
+> I'll verify on vendor driver about when/how the inverse be determined.
 
+I checked this out. The codepath hit hardcodes it to the AUX port,
+i.e. "inverted" setup:
 
-On 7/11/19 9:04 PM, Jonathan Lemon wrote:
- 
-> I discovered we have some production services that set SO_SNDBUF to
-> very small values (~4k), as they are essentially doing interactive
-> communications, not bulk transfers.  But there's a difference between
-> "terrible performance" and "TCP stops working".
+EXhalbtc8723b1ant_PowerOnSetting():
+    if(pBtCoexist->chipInterface == BTC_INTF_USB)
+    {
+        // fixed at S0 for USB interface
+        pBtCoexist->fBtcWrite4Byte(pBtCoexist, 0x948, 0x0);
 
-You had a copy of these patches month ago, yet you discovered this issue today ?
+        u1Tmp |= 0x1;    // antenna inverse
+        pBtCoexist->fBtcWriteLocalReg1Byte(pBtCoexist, 0xfe08, u1Tmp);
 
-I already said I was going to work on the issue,
-no need to add pressure on me, I had enough of it already.
+        pBoardInfo->btdmAntPos = BTC_ANTENNA_AT_AUX_PORT;
+  }
+
+So I'm further convinced that these performance-enhancing changes are
+increasing consistency with the vendor driver.
+
+Daniel
