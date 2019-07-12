@@ -2,94 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F239670A9
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28407670AD
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:56:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727852AbfGLN4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 09:56:33 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42622 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727060AbfGLN4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:56:32 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t132so4574861pgb.9
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 06:56:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WDiv0t+R3uRl5W7qmXtAoSiEHEHdxKx4ml5mjXWh+Pg=;
-        b=QYqkLEGFA1/hJ7msrSJEUejaFTfoP3QzQQ0XbAHmT9Csl4VlQGRIXmlO2ywQXQvND+
-         Hrz0eSA/du87KWMiWhvfsSxGBDZW8Y6Afvn5Q1TceLQvp9r9CvlEbDnZIeTmNrviry7U
-         wYHovwF3+TslYJyFDr+Shjrc4RZtnIq4XuqVI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WDiv0t+R3uRl5W7qmXtAoSiEHEHdxKx4ml5mjXWh+Pg=;
-        b=ar5AHuDndbskcnp1T+fU5lK0+rPQCOsd58o35NEkScMStRf36OxG/wnv56tmMoWop0
-         oTYAsF4nORVuIhnxRRv4OFQFViO7VrDTDwC0JIH/LghENGKhhroQAnfwEK1Wa83/Cpj2
-         FGgTD64lJfO3Ltief6zSFa7qoBwPIOoPPHHKI1Q1D7+r0pkZI6sJNnDmeHLHqTeb1ngK
-         WPbr0XcGsSRzKclOp79a0VRvUDz/YFHxIq8c9PpoJwbCT5oqmAy5V6brl4PtGyTSbJ3P
-         OjWyKPPkfbfvW/GEf4mNCEyYg2XTlL+nS3+QDw0zz7z5xN4hNFqJ/NGzrQx/ILyoVRIV
-         zmsQ==
-X-Gm-Message-State: APjAAAUAxgRgfP12t4wkkXgP7aiFnzwoc0yasoM45sSyELHNMn21c1cB
-        Ad3pKyQ2eKSy0XqN2oBjJ5Q=
-X-Google-Smtp-Source: APXvYqzJEhVDBzSiRVeb97C/BOIrGCC92lhrBy1TO8FxsLTYA0YSdLtl7eAeD1UPch8SID4lyw/Qag==
-X-Received: by 2002:a63:b1d:: with SMTP id 29mr11024618pgl.103.1562939792240;
-        Fri, 12 Jul 2019 06:56:32 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id h16sm9673070pfo.34.2019.07.12.06.56.30
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 12 Jul 2019 06:56:31 -0700 (PDT)
-Date:   Fri, 12 Jul 2019 09:56:29 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [PATCH v1 1/6] rcu: Add support for consolidated-RCU reader
- checking
-Message-ID: <20190712135629.GH92297@google.com>
-References: <20190711234401.220336-1-joel@joelfernandes.org>
- <20190711234401.220336-2-joel@joelfernandes.org>
- <20190712121200.GC21989@redhat.com>
+        id S1727465AbfGLN4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 09:56:46 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:32604 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726945AbfGLN4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:56:45 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6CDpVmd130769
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 09:56:44 -0400
+Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tpu7w0vvf-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 09:56:43 -0400
+Received: from localhost
+        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Fri, 12 Jul 2019 14:56:41 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 12 Jul 2019 14:56:39 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6CDubMJ47710400
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 12 Jul 2019 13:56:37 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A1D314C04E;
+        Fri, 12 Jul 2019 13:56:37 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 70D8B4C044;
+        Fri, 12 Jul 2019 13:56:37 +0000 (GMT)
+Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 12 Jul 2019 13:56:37 +0000 (GMT)
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH bpf] selftests/bpf: make directory prerequisites order-only
+Date:   Fri, 12 Jul 2019 15:56:31 +0200
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190712121200.GC21989@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071213-0028-0000-0000-00000383C033
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071213-0029-0000-0000-00002443D86B
+Message-Id: <20190712135631.91398-1-iii@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-12_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907120150
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 12, 2019 at 02:12:00PM +0200, Oleg Nesterov wrote:
-> On 07/11, Joel Fernandes (Google) wrote:
-> >
-> > +int rcu_read_lock_any_held(void)
-> 
-> rcu_sync_is_idle() wants it. You have my ack in advance ;)
+When directories are used as prerequisites in Makefiles, they can cause
+a lot of unnecessary rebuilds, because a directory is considered changed
+whenever a file in this directory is added, removed or modified.
 
-Cool, thanks ;)
+If the only thing a target is interested in is the existence of the
+directory it depends on, which is the case for selftests/bpf, this
+directory should be specified as an order-only prerequisite: it would
+still be created in case it does not exist, but it would not trigger a
+rebuild of a target in case it's considered changed.
 
-- Joel
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+---
+ tools/testing/selftests/bpf/Makefile | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 277d8605e340..0e003fb6641b 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -183,12 +183,12 @@ TEST_CUSTOM_PROGS += $(ALU32_BUILD_DIR)/test_progs_32
+ $(ALU32_BUILD_DIR):
+ 	mkdir -p $@
+ 
+-$(ALU32_BUILD_DIR)/urandom_read: $(OUTPUT)/urandom_read
++$(ALU32_BUILD_DIR)/urandom_read: $(OUTPUT)/urandom_read | $(ALU32_BUILD_DIR)
+ 	cp $< $@
+ 
+ $(ALU32_BUILD_DIR)/test_progs_32: test_progs.c $(OUTPUT)/libbpf.a\
+-						$(ALU32_BUILD_DIR) \
+-						$(ALU32_BUILD_DIR)/urandom_read
++						$(ALU32_BUILD_DIR)/urandom_read \
++						| $(ALU32_BUILD_DIR)
+ 	$(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) \
+ 		-o $(ALU32_BUILD_DIR)/test_progs_32 \
+ 		test_progs.c test_stub.c trace_helpers.c prog_tests/*.c \
+@@ -197,8 +197,8 @@ $(ALU32_BUILD_DIR)/test_progs_32: test_progs.c $(OUTPUT)/libbpf.a\
+ $(ALU32_BUILD_DIR)/test_progs_32: $(PROG_TESTS_H)
+ $(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
+ 
+-$(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR) \
+-					$(ALU32_BUILD_DIR)/test_progs_32
++$(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR)/test_progs_32 \
++					| $(ALU32_BUILD_DIR)
+ 	($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
+ 		echo "clang failed") | \
+ 	$(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
+@@ -236,7 +236,7 @@ $(PROG_TESTS_DIR):
+ 	mkdir -p $@
+ 
+ PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
+-$(PROG_TESTS_H): $(PROG_TESTS_DIR) $(PROG_TESTS_FILES)
++$(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
+ 	$(shell ( cd prog_tests/; \
+ 		  echo '/* Generated header, do not edit */'; \
+ 		  echo '#ifdef DECLARE'; \
+@@ -257,7 +257,7 @@ MAP_TESTS_H := $(MAP_TESTS_DIR)/tests.h
+ test_maps.c: $(MAP_TESTS_H)
+ $(OUTPUT)/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+ MAP_TESTS_FILES := $(wildcard map_tests/*.c)
+-$(MAP_TESTS_H): $(MAP_TESTS_DIR) $(MAP_TESTS_FILES)
++$(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
+ 	$(shell ( cd map_tests/; \
+ 		  echo '/* Generated header, do not edit */'; \
+ 		  echo '#ifdef DECLARE'; \
+@@ -279,7 +279,7 @@ $(VERIFIER_TESTS_DIR):
+ 	mkdir -p $@
+ 
+ VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
+-$(OUTPUT)/verifier/tests.h: $(VERIFIER_TESTS_DIR) $(VERIFIER_TEST_FILES)
++$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
+ 	$(shell ( cd verifier/; \
+ 		  echo '/* Generated header, do not edit */'; \
+ 		  echo '#ifdef FILL_ARRAY'; \
+-- 
+2.21.0
+
