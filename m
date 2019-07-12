@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 072E66630D
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E1166312
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728887AbfGLAth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 20:49:37 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:34789 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728102AbfGLAth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:49:37 -0400
-Received: by mail-qt1-f195.google.com with SMTP id k10so6482578qtq.1;
-        Thu, 11 Jul 2019 17:49:36 -0700 (PDT)
+        id S1728932AbfGLAue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 20:50:34 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35623 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728102AbfGLAue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:50:34 -0400
+Received: by mail-qk1-f194.google.com with SMTP id r21so5225618qke.2;
+        Thu, 11 Jul 2019 17:50:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FFEMusMstvLu6dKMmbZCyJ/qK2tJZq6EONZVRYJnMc4=;
-        b=UhfrT8zHIgRU5BPbRcM1kGlFdP5C2Wekj9514obINpSE8bhh/qU7YjXB8c9XsBcVbH
-         NqQWQ6e47Hin/hhHtpyDsXEwCYDhQGvpzdnMbvMEke7RbOnJQHwY1fnfyV+6ytjGTdSV
-         V1TOvWl24eAGQH3J/gJLZNKWT0yQOQv2fg/JBeo3aY6H9ys/kwOKPLcm/89Z8WTrmbaj
-         FJqUxiQJsIV0q1p+Mb9yQKYPGC2z73cb/GSpoNzUWstoQiGcuvNQxDnUOnM6RG6OvRxJ
-         B0a474MHREw8Xw7V9Rsoge7nhMXExBre6/gg5MLZKcXVA45BJuLRFPES7EJlbhrynspE
-         /3dg==
+        bh=tURlN5ZKmeKKHilH+hdBJmpFEbLfg/7gatKX2lCmdHw=;
+        b=hZzi1FuDdGuYZJGTEaQOBxp+xqZ4x/tH1lBmc6RrpRj1oPnhqJ7m5+mNnjuHoM8vaM
+         nLUd71Xv65Afy4ym7NLLH0ccSRfE8hKUN9QIuYfxc1C7tqZcnjW++D09dmGmlA1d7Zls
+         KhxsaxWtlJGJTyegmtxZ1fO+lNOV6dJQimewSAZkW3DnW66ojvtFL1Ri2YbSHIWrYAuE
+         b43RJK1S0wPhgRefnAHai7OBs4qbxHIOymlwMsBlIyeM9FTsPS2uMiNMYDkvWWJp15fU
+         AVgWR15rNcWtACrjf31FoVq3Q3k7Kx5ndUi6SHY3t5LFwkOGEfDB+WXXUXCIU36OEy4b
+         vDwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FFEMusMstvLu6dKMmbZCyJ/qK2tJZq6EONZVRYJnMc4=;
-        b=e0MhImXbgiai2TVO/LQJn5pEzmbzXl8AsuoKrObvaQGQhH6VCF8LkrYL6eOMg/UcJI
-         RI1+C+RgIa0mLD8EKcE0I1hgGZ4GK9HFM1V5DXhSzA1ynwvwxq5HKIwhXeJFoOcxSPI1
-         45dV+AJsZYvSKkniYwgsaZ+tKvnUAz9Jc7FqbgqT05CsSl1cLnq3UHj5TUnW6ZkncbfL
-         5KI2/LOAkf0jixfUkHpqx3Yx2Yzbx4qzJMssF2YZ4wpH9i92ZBOQTEaQbU9xl98XEO4n
-         6EUfvWewCGgWrCigexr2nJzYCrv0bOqDMb3qu5kTGVVx6yd9fY6YtYJCCyk9moEWdK5/
-         zW0w==
-X-Gm-Message-State: APjAAAVeQWYdiS/qSt0yI7JfHTKS5sX+xnfX1/SR9SVSM2qcDtBpGoJ7
-        boXnhsP+f1fjxQlP4KmfbwoS+QaYHKxWVU62oiI=
-X-Google-Smtp-Source: APXvYqzK+ZzUDTUqm3mEmbdD1PMl9RW3qFBN7x/hLeRFWmSxg6RDU2kLGdzOkIgZ/xT2PQqi1ZGrFRooi/SeXrNsjmM=
-X-Received: by 2002:a0c:818f:: with SMTP id 15mr4018751qvd.162.1562892572581;
- Thu, 11 Jul 2019 17:49:32 -0700 (PDT)
+        bh=tURlN5ZKmeKKHilH+hdBJmpFEbLfg/7gatKX2lCmdHw=;
+        b=PEOe4DU4w/IMP6UwQN3vtWfjYSJXLoN/ZLMYUYIZrh9M9/iTcrEo6hjrh0E5SzkhLU
+         53oe2F39AbNwfwg1KTPw/EbQHrGDpP9jY9GQwNcNhGqIImALeBzkWVy3t7EV3Y48wGqG
+         pef+4v6e2+0z7cNfh/JGcPJWdIETQTZTL8X+qU9m2ONJvSmrNeIyFXxzfLiPoTsLJ9Vt
+         8PY8qrpw/6vMhlPnSxjvA+IAap4dAP2Kj6Sypyt4GjlKl9UhdPTYT/GmdfbMZn+ZWYx1
+         bQptEtSSXiAKTz9bTW3BdLi/K99ZwLEGP2A+4HcN/EB5n7+gYhN0jNozPdMubNX7LAKo
+         bGDg==
+X-Gm-Message-State: APjAAAXBFNQyFve+ljIQb+akiAChL49IiW3ZKU3FWhFJ/zk3S0ZI7uSY
+        qi4LnQFQl59nBXSiabwrkghGEL/0jMQ8iM1j2nUFXmAOfkK/PQ==
+X-Google-Smtp-Source: APXvYqyRHs8YP1IyeOa2+am7u3tGa6mq2Np6BBp2omZVlxwYYBzmPK1HV7iO8x83mSkgRZdehLtL7vl6uZ3A4zWcdL4=
+X-Received: by 2002:a37:9b48:: with SMTP id d69mr4330761qke.449.1562892633146;
+ Thu, 11 Jul 2019 17:50:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190711142930.68809-1-iii@linux.ibm.com> <20190711142930.68809-4-iii@linux.ibm.com>
-In-Reply-To: <20190711142930.68809-4-iii@linux.ibm.com>
+References: <20190711142930.68809-1-iii@linux.ibm.com> <20190711142930.68809-3-iii@linux.ibm.com>
+In-Reply-To: <20190711142930.68809-3-iii@linux.ibm.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 17:49:21 -0700
-Message-ID: <CAEf4BzZ3-oA_h2YbpgUXnLoCL_6dj881rryizcUP=Kxf512-9A@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 3/4] selftests/bpf: make PT_REGS_* work in userspace
+Date:   Thu, 11 Jul 2019 17:50:22 -0700
+Message-ID: <CAEf4BzY4HG3TTTS=qNHLcr5oCT7uy4T_nb+h8RrcG-AMwD-RjA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 2/4] selftests/bpf: fix s930 -> s390 typo
 To:     Ilya Leoshkevich <iii@linux.ibm.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Y Song <ys114321@gmail.com>,
@@ -62,38 +62,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Jul 11, 2019 at 7:31 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
 >
-> Right now, on certain architectures, these macros are usable only with
-> kernel headers. This patch makes it possible to use them with userspace
-> headers and, as a consequence, not only in BPF samples, but also in BPF
-> selftests.
->
-> On s390, provide the forward declaration of struct pt_regs and cast it
-> to user_pt_regs in PT_REGS_* macros. This is necessary, because instead
-> of the full struct pt_regs, s390 exposes only its first member
-> user_pt_regs to userspace, and bpf_helpers.h is used with both userspace
-> (in selftests) and kernel (in samples) headers. It was added in commit
-> 466698e654e8 ("s390/bpf: correct broken uapi for
-> BPF_PROG_TYPE_PERF_EVENT program type").
->
-> Ditto on arm64.
->
-> On x86, provide userspace versions of PT_REGS_* macros. Unlike s390 and
-> arm64, x86 provides struct pt_regs to both userspace and kernel, however,
-> with different member names.
+> Also check for __s390__ instead of __s390x__, just in case bpf_helpers.h
+> is ever used by 32-bit userspace.
 >
 > Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
 > ---
 
-This is great, thanks!
-
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-
-
->  tools/testing/selftests/bpf/bpf_helpers.h | 75 +++++++++++++++++------
->  1 file changed, 55 insertions(+), 20 deletions(-)
+>  tools/testing/selftests/bpf/bpf_helpers.h | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 >
 > diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-> index 73071a94769a..27090d94afb6 100644
-
-[...]
+> index 5a3d92c8bec8..73071a94769a 100644
+> --- a/tools/testing/selftests/bpf/bpf_helpers.h
+> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
+> @@ -315,8 +315,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>  #if defined(__TARGET_ARCH_x86)
+>         #define bpf_target_x86
+>         #define bpf_target_defined
+> -#elif defined(__TARGET_ARCH_s930x)
+> -       #define bpf_target_s930x
+> +#elif defined(__TARGET_ARCH_s390)
+> +       #define bpf_target_s390
+>         #define bpf_target_defined
+>  #elif defined(__TARGET_ARCH_arm)
+>         #define bpf_target_arm
+> @@ -341,8 +341,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>  #ifndef bpf_target_defined
+>  #if defined(__x86_64__)
+>         #define bpf_target_x86
+> -#elif defined(__s390x__)
+> -       #define bpf_target_s930x
+> +#elif defined(__s390__)
+> +       #define bpf_target_s390
+>  #elif defined(__arm__)
+>         #define bpf_target_arm
+>  #elif defined(__aarch64__)
+> @@ -369,7 +369,7 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>  #define PT_REGS_SP(x) ((x)->sp)
+>  #define PT_REGS_IP(x) ((x)->ip)
+>
+> -#elif defined(bpf_target_s390x)
+> +#elif defined(bpf_target_s390)
+>
+>  #define PT_REGS_PARM1(x) ((x)->gprs[2])
+>  #define PT_REGS_PARM2(x) ((x)->gprs[3])
+> --
+> 2.21.0
+>
