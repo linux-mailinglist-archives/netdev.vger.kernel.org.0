@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A321673C2
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 19:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D05A673C7
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 19:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727633AbfGLRBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 13:01:09 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:36286 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727613AbfGLRBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 13:01:08 -0400
-Received: by mail-pg1-f195.google.com with SMTP id l21so4799998pgm.3
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 10:01:07 -0700 (PDT)
+        id S1727660AbfGLRBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 13:01:14 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33310 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727644AbfGLRBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 13:01:12 -0400
+Received: by mail-pg1-f196.google.com with SMTP id m4so4806346pgk.0
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 10:01:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6RmNbUV7T0k7oTgTgqPSb316w9vmnfcC0D62WW7RJx8=;
-        b=eYXrM2WLV58NP1KCONebjPFiinEkCr1PbfKqKosZ55g7UxqG77r9zIodU73tp0Qth+
-         IFhRfs5YGzzzu/R0J0skbnp9mq5m9zRDKJdbmZdoCIWguTdAS0yXjSU62Vg6aDYQ7P+s
-         azz8V1gMNfUhQsOnaJFdrIUfDYyIaqTbweOzQ=
+        bh=/5hJQY7vBLoyimOM3U70MNxFgsc86oXhHYtdVzU5ujQ=;
+        b=UAjbMqka7p1GCxFlNusyg29g1RCPFz9WIMtWvkN7qrcNF+ATnO9YKmLvPnuqPRJWG8
+         01CXWPFPyGYm3lOSoebpREdMbvmnc55dMqjKROvd/t5QxrZ6o7iZwPGUGOYk4Ll55hdr
+         IVAnsP7Rq6Ff+RAPzreODHBCQNzqAghR4nuBM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6RmNbUV7T0k7oTgTgqPSb316w9vmnfcC0D62WW7RJx8=;
-        b=lnX39b1Svk/a37dQ9g7p//SzfsyvT7fbT9O2A10C7+hkRzwDt/XjqecJBQ+jr+TGFV
-         lJMD6b8veGILrUWEJK+Y76XVSLkmIf0qkBaagIkRr7Y4cFKVYzcX2RXpj7VwHvbsYM9V
-         YIjobSGAPtesSSms5CfRjbNnlG2q7qu7Ni5unazMOSI2s8Mn53zi5lBzF8w1Jb0R4k0r
-         O7ZjsHBGr6tgfAOj/apB9D0HZnOA57LgDh6GZnY3hnr7jRwRzS3ns8+2svSI+MbnogSb
-         mMC6t+4lxEFu1ltq7QJySdA0Mh/txXqum+mZskcq9ETm2o3+vMCaGTx5bKHU6hUvGzf+
-         pSYQ==
-X-Gm-Message-State: APjAAAXBdwpSvttUGyLvlJilvtLlpOcxe/ovkoRNgVL3Sr26A42lgh9v
-        a5KutR6KHkXx9zoEPSJtklI=
-X-Google-Smtp-Source: APXvYqxKxYQtb3kCi5Es2va1si+e4rA1c+EDf95PgVgddPYvjU993xnsOY781zySY6KXMLZ7Ba/CQg==
-X-Received: by 2002:a63:1d2:: with SMTP id 201mr11952298pgb.232.1562950867353;
-        Fri, 12 Jul 2019 10:01:07 -0700 (PDT)
+        bh=/5hJQY7vBLoyimOM3U70MNxFgsc86oXhHYtdVzU5ujQ=;
+        b=VhIURVi8dhFXyv8rMF7WcExNfuyRdZjGGbV5E4u5CPsRSYwHg+g5PAKjN+TqmstzjT
+         k9TkpFnsAn1XBNQGM3aqGPisVbDBgv3eGxgcY6mDURC8Tr+bxwbqi24Otik4Lp+o8gvh
+         mGA74AuLvVGbxcrVI/ueXFTbUdStMz+9GyGR1lhxi+JtoMi9s1EXDnazvBZMsk4msNcZ
+         4NW8KMI2NyJE8JWOkpE50FzY/TMZjFsxhhG0NX8tjR5O4hhXmSlp1cF3kRXDWPhwMaly
+         K1D2Yllvck7fNtnMmVoDNCexXWNqTwkJ+Xfm6kCCpbqUCM94fDbgQ0D9xXXdoGwxOGcR
+         kHLQ==
+X-Gm-Message-State: APjAAAX0qGZuMHmwWIgRCh5jh2I8xtl0494jzCoE9+5T60/xTOvXhn+B
+        EAysaouJ0+Cr6an4PRPO0Lk=
+X-Google-Smtp-Source: APXvYqysKQjlbPJnzD1SgXu0qrPOgUWrpmjWhJmLr3dLME/oF4p6YcJaiWDgGdC5pNxKNHie+MpwEA==
+X-Received: by 2002:a63:dc56:: with SMTP id f22mr12036675pgj.305.1562950871565;
+        Fri, 12 Jul 2019 10:01:11 -0700 (PDT)
 Received: from joelaf.cam.corp.google.com ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id a15sm7127385pgw.3.2019.07.12.10.01.03
+        by smtp.gmail.com with ESMTPSA id a15sm7127385pgw.3.2019.07.12.10.01.07
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 12 Jul 2019 10:01:06 -0700 (PDT)
+        Fri, 12 Jul 2019 10:01:10 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
@@ -69,9 +69,9 @@ Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
         Tejun Heo <tj@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
         x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-Subject: [PATCH v2 8/9] acpi: Use built-in RCU list checking for acpi_ioremaps list
-Date:   Fri, 12 Jul 2019 13:00:23 -0400
-Message-Id: <20190712170024.111093-9-joel@joelfernandes.org>
+Subject: [PATCH v2 9/9] doc: Update documentation about list_for_each_entry_rcu
+Date:   Fri, 12 Jul 2019 13:00:24 -0400
+Message-Id: <20190712170024.111093-10-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.22.0.510.g264f2c817a-goog
 In-Reply-To: <20190712170024.111093-1-joel@joelfernandes.org>
 References: <20190712170024.111093-1-joel@joelfernandes.org>
@@ -82,52 +82,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-list_for_each_entry_rcu has built-in RCU and lock checking. Make use of
-it for acpi_ioremaps list traversal.
+This patch updates the documentation with information about
+usage of lockdep with list_for_each_entry_rcu().
 
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- drivers/acpi/osl.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/RCU/lockdep.txt   | 15 +++++++++++----
+ Documentation/RCU/whatisRCU.txt |  9 ++++++++-
+ 2 files changed, 19 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-index f29e427d0d1d..c8b5d712c7ae 100644
---- a/drivers/acpi/osl.c
-+++ b/drivers/acpi/osl.c
-@@ -28,6 +28,7 @@
- #include <linux/slab.h>
- #include <linux/mm.h>
- #include <linux/highmem.h>
-+#include <linux/lockdep.h>
- #include <linux/pci.h>
- #include <linux/interrupt.h>
- #include <linux/kmod.h>
-@@ -94,6 +95,7 @@ struct acpi_ioremap {
+diff --git a/Documentation/RCU/lockdep.txt b/Documentation/RCU/lockdep.txt
+index da51d3068850..3d967df3a801 100644
+--- a/Documentation/RCU/lockdep.txt
++++ b/Documentation/RCU/lockdep.txt
+@@ -96,7 +96,14 @@ other flavors of rcu_dereference().  On the other hand, it is illegal
+ to use rcu_dereference_protected() if either the RCU-protected pointer
+ or the RCU-protected data that it points to can change concurrently.
  
- static LIST_HEAD(acpi_ioremaps);
- static DEFINE_MUTEX(acpi_ioremap_lock);
-+#define acpi_ioremap_lock_held() lock_is_held(&acpi_ioremap_lock.dep_map)
+-There are currently only "universal" versions of the rcu_assign_pointer()
+-and RCU list-/tree-traversal primitives, which do not (yet) check for
+-being in an RCU read-side critical section.  In the future, separate
+-versions of these primitives might be created.
++Similar to rcu_dereference_protected, The RCU list and hlist traversal
++primitives also check for whether there are called from within a reader
++section. However, an optional lockdep expression can be passed to them as
++the last argument in case they are called under other non-RCU protection.
++
++For example, the workqueue for_each_pwq() macro is implemented as follows.
++It is safe to call for_each_pwq() outside a reader section but under protection
++of wq->mutex:
++#define for_each_pwq(pwq, wq)
++	list_for_each_entry_rcu((pwq), &(wq)->pwqs, pwqs_node,
++				lock_is_held(&(wq->mutex).dep_map))
+diff --git a/Documentation/RCU/whatisRCU.txt b/Documentation/RCU/whatisRCU.txt
+index 981651a8b65d..a08c03735963 100644
+--- a/Documentation/RCU/whatisRCU.txt
++++ b/Documentation/RCU/whatisRCU.txt
+@@ -290,7 +290,7 @@ rcu_dereference()
+ 	at any time, including immediately after the rcu_dereference().
+ 	And, again like rcu_assign_pointer(), rcu_dereference() is
+ 	typically used indirectly, via the _rcu list-manipulation
+-	primitives, such as list_for_each_entry_rcu().
++	primitives, such as list_for_each_entry_rcu() [2].
  
- static void __init acpi_request_region (struct acpi_generic_address *gas,
- 	unsigned int length, char *desc)
-@@ -220,7 +222,7 @@ acpi_map_lookup(acpi_physical_address phys, acpi_size size)
- {
- 	struct acpi_ioremap *map;
+ 	[1] The variant rcu_dereference_protected() can be used outside
+ 	of an RCU read-side critical section as long as the usage is
+@@ -305,6 +305,13 @@ rcu_dereference()
+ 	a lockdep splat is emitted.  See RCU/Design/Requirements/Requirements.html
+ 	and the API's code comments for more details and example usage.
  
--	list_for_each_entry_rcu(map, &acpi_ioremaps, list)
-+	list_for_each_entry_rcu(map, &acpi_ioremaps, list, acpi_ioremap_lock_held())
- 		if (map->phys <= phys &&
- 		    phys + size <= map->phys + map->size)
- 			return map;
-@@ -263,7 +265,7 @@ acpi_map_lookup_virt(void __iomem *virt, acpi_size size)
- {
- 	struct acpi_ioremap *map;
++	[2] In case the list_for_each_entry_rcu() primitive is intended
++	to be used outside of an RCU reader section such as when
++	protected by a lock, then an additional lockdep expression can be
++	passed as the last argument to it so that RCU lockdep checking code
++	knows that the dereference of the list pointers are safe. If the
++	indicated protection is not provided, a lockdep splat is emitted.
++
+ The following diagram shows how each API communicates among the
+ reader, updater, and reclaimer.
  
--	list_for_each_entry_rcu(map, &acpi_ioremaps, list)
-+	list_for_each_entry_rcu(map, &acpi_ioremaps, list, acpi_ioremap_lock_held())
- 		if (map->virt <= virt &&
- 		    virt + size <= map->virt + map->size)
- 			return map;
 -- 
 2.22.0.510.g264f2c817a-goog
 
