@@ -2,91 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9B56696B
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 10:56:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 625566697D
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 10:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbfGLI4D convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 12 Jul 2019 04:56:03 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14574 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725877AbfGLI4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 04:56:03 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6C8rIoR113258
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 04:56:02 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tpm4tfdng-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 04:56:01 -0400
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Fri, 12 Jul 2019 09:55:58 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 12 Jul 2019 09:55:54 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6C8trdj49741978
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Jul 2019 08:55:53 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C97BAE059;
-        Fri, 12 Jul 2019 08:55:53 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 344EDAE055;
-        Fri, 12 Jul 2019 08:55:53 +0000 (GMT)
-Received: from dyn-9-152-97-237.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 12 Jul 2019 08:55:53 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH v4 bpf-next 0/4] selftests/bpf: fix compiling
- loop{1,2,3}.c on s390
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-In-Reply-To: <20190711203508.GC16709@mini-arch>
-Date:   Fri, 12 Jul 2019 10:55:52 +0200
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Y Song <ys114321@gmail.com>, daniel@iogearbox.net,
-        davem@davemloft.net, ast@kernel.org
-Content-Transfer-Encoding: 8BIT
-References: <20190711142930.68809-1-iii@linux.ibm.com>
- <20190711203508.GC16709@mini-arch>
-To:     Stanislav Fomichev <sdf@fomichev.me>
-X-Mailer: Apple Mail (2.3445.9.1)
-X-TM-AS-GCONF: 00
-x-cbid: 19071208-0020-0000-0000-0000035307CD
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071208-0021-0000-0000-000021A6C586
-Message-Id: <994CF53F-3E84-4CE8-92C5-B2983AD50EB8@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-12_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=663 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907120094
+        id S1726196AbfGLI6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 04:58:38 -0400
+Received: from mout.kundenserver.de ([212.227.126.187]:57965 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726083AbfGLI6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 04:58:37 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1N0qmr-1iiWJC3sCj-00wj0T; Fri, 12 Jul 2019 10:58:28 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] [net-next, netfilter] mlx5: avoid unused variable warning
+Date:   Fri, 12 Jul 2019 10:57:11 +0200
+Message-Id: <20190712085823.4111911-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:KbtTIUVijtjWb2BGudzBahmvRgrYsk9J81pM88PMcX4hIYF1S8L
+ gwuD9vu1/nn6juu36bk9dM41BjnCzdAVdK1XblUpEIspkI+qFHDNupUopxdq+3WLf1KVgv4
+ +eqnbxE9wGcbCeUugh7J1Lja5qJJ+Fz8cN/Elk8vdykzSlN6SdCcq+TxeKYaPEj2Qur3Auq
+ BDDOpD5PUD3weUNF7oVgw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FvCGFSTd6E0=:asyyPiZ2WEID0yTUfqlLkO
+ yDK9Trl6uOm5d4YOn38xx94BXBWk0eyHyhwG71UAts4NggelRuwSXc0MfaGT5jqdP9CkeuEwN
+ wt9V90ChT8C+pLT+3PGVkWwcmmBBTDdHohOGOvIRVoPjMkj9sIHd6zK4pMlh4E9C6C+9D91Cv
+ yP3Ky9REc91p0PoVMUib72W9zesKLaQHN+CB7AkG6Yd60RAF6g0XdCEW09LsN4tpvP0Yrsdcj
+ oQBwED5oIRUaPH91IPJMaHYGUiBZYdeuAJhXPeqZfHHGeQ3LOnEkK901r3pvLkEclXfIIAXqg
+ gRVoZQHm8g3XI6Uwl+yTo5jinQfenLrHn3clvliWJhwSOB3VJrgp1k9VRuX4T/vkCZH4pu4LB
+ q0a8HgxA+CiEGuW9srVOozgJMuWwhYo5bSQiNceysbAHwVqfTnCIjAGGB6gYNH/yCnkM2h3hL
+ S7bOf1/vTswustC+kCwhLhK0wmZZ8XYdLeUyG4upeGBZCfoh2MKQDkQV6QJZGgeLF78s9S16n
+ ESm5pZt93aF60xeNyYLSvbVj6FePTfWI5P3YXy4GW34D6WrqI4dpj3YZzj/LESubYXw4JjvEi
+ If4AhulwrRCJtCi/31aPfsyUYJS5HuBRU8nG6IcY15NRLSI4UXFkZlXrF/rqZGvrJpG6srDlO
+ +A45Y/isoJWIsK93EgPxm+Iex5Qdj4gnHfT47T4Zj344PWeqeNsSeBiVPq3MrtxMfwKgjVL13
+ FxXXpAQVrySO3Ci8uABOfS8yEwOFgfxsFk/S+w==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 11.07.2019 um 22:35 schrieb Stanislav Fomichev <sdf@fomichev.me>:
-> 
-> On 07/11, Ilya Leoshkevich wrote:
->> Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
->> 
->> This patch series consists of three preparatory commits, which make it
->> possible to use PT_REGS_RC in BPF selftests, followed by the actual fix.
->> 
-> Still looks good to me, thanks!
-> 
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
-> 
-> Again, should probably go via bpf to fix the existing tests, not bpf-next
-> (but I see bpf tree is not synced with net tree yet).
+Without CONFIG_MLX5_ESWITCH we get a harmless warning:
 
-Sorry, I missed your comment the last time. You are right - that’s the
-reason I’ve been sending this to bpf-next so far — loop*.c don’t even
-exist in the bpf tree.
+drivers/net/ethernet/mellanox/mlx5/core/en_main.c:3467:21: error: unused variable 'priv' [-Werror,-Wunused-variable]
+        struct mlx5e_priv *priv = netdev_priv(dev);
+
+Hide the declaration in the same #ifdef as its usage.
+
+Fixes: 4e95bc268b91 ("net: flow_offload: add flow_block_cb_setup_simple()")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 6d0ae87c8ded..b562ba904ea1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3464,7 +3464,9 @@ static LIST_HEAD(mlx5e_block_cb_list);
+ static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 			  void *type_data)
+ {
++#ifdef CONFIG_MLX5_ESWITCH
+ 	struct mlx5e_priv *priv = netdev_priv(dev);
++#endif
+ 
+ 	switch (type) {
+ #ifdef CONFIG_MLX5_ESWITCH
+-- 
+2.20.0
+
