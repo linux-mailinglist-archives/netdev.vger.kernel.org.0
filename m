@@ -2,98 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4106759C
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 21:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9494E6759E
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 21:57:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727506AbfGLT4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 15:56:08 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33073 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727261AbfGLT4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 15:56:08 -0400
-Received: by mail-qk1-f195.google.com with SMTP id r6so7367301qkc.0;
-        Fri, 12 Jul 2019 12:56:07 -0700 (PDT)
+        id S1727451AbfGLT54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 15:57:56 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:43207 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727125AbfGLT54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 15:57:56 -0400
+Received: by mail-qk1-f194.google.com with SMTP id m14so7306354qka.10;
+        Fri, 12 Jul 2019 12:57:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BiVOpMp9PmQRZZxt9vvKVwu3GHw4fqIIIVHz7shKlKU=;
-        b=rN4bIeBdWam08fPCsLy9tDhZ6kV9nPTjUIV51bVFnygYpPNXEfODoDTyo+fCCjLJaR
-         V4PEFIQWnYdNbmIASjAodVu0O/qqviUXZJWNezVBjVUMplqPdHnxmMTZ4njboLVXIdu2
-         9rdCJB2uW/bM2Qb5/5GyTtnelhFh3VKMEmsn7TTwl0DjCGTtJg69j2YnYp0q8f/aMBwq
-         YLLgJSJtMOAzsIR0e5+UdaFP6+sN/W7iIl6MA5IZFDCRu+9luz6QQbhJuPC3dQ2ndbOW
-         C/8JkKfkxQGKzRrosfXfTwEXuf7kfqPhGRoaCJexocow5q1oaOk3RrmjJ4KPkh9fOi6D
-         72pw==
+        bh=vTxCVF6DmY6rGlw3tqGw/t6mFmScKqRdjhV2uzssuhU=;
+        b=atBIARnohXm4rO4NXWD0zCARvjEnNcs+GxMxZQNjRbX/cPGkjipBfMiEQQ3ph3/XkU
+         8QC7GWx3nMN2D+N5XiN41Xsqg0uCbdYjVXwyB7VO8+UC2znj2oHp7edr69fR3aJqAANm
+         80Hsi5nKdp7b4tKOI72IM0W6UcBn57GHn17U4CmV+zTWznadeR2IdHyjg5wHGOMikKfS
+         Y+giifRZnPrDop5DjOIwwk+16mSqmm9xxEzxyaGJNdPR2q15jYv20793uREnuHTinndU
+         B8NSOI5YbZXPa6jAnYm0uVg0W4hdgFsDjrDzcmK/PgTvE/OnasfIqGV2JB6pWtAOrGYm
+         8DRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BiVOpMp9PmQRZZxt9vvKVwu3GHw4fqIIIVHz7shKlKU=;
-        b=jwjuhy5MtDtKZjf7ZhBymeDk4zEnBXkzw6u+zgSi81elhZ2Yq7QKwhK+Ahj+5/IppB
-         g7e5qrOeF1fVwwyyRxq+egTDIuSzN5LfejS2HLWX8LUG6QbaSxLEnwn3W5RvlwyuYAl5
-         bZ6oSCROWFUzv72tfybRID7Rw4ZsbTlJv7P5gCfgBFBFQXlURM6gmh0F7mXwc4gU/I4U
-         B6k6zqkylIMitZVgSnFPEkyPApQOxt42GpHrn+GAS1jMOHL2E3hxX/wUb55v4qm5EPct
-         qVg32dLW6XhZP4UspFLeukJs44Fq5UO/aYtAHv0kM+TdntxURSLBjjRH6a9VR0bOEWvR
-         k/ug==
-X-Gm-Message-State: APjAAAVorzij4H3X9zYNDy7S7YXB0MsDpjL4LDVSbPspIe1rNEHiZ5Cy
-        Jf0TCJ4Tzm+AwQ7z/9isTjtQWtJLetVoMHBrHHE=
-X-Google-Smtp-Source: APXvYqwH/1SnGn64dtLmZ1/7EegVqIYpUDGdsTu3Nqa/n0jG2F/AUg6MVyJtxB5mZ691kT2q6fajpU9MMijlo7SwlHA=
-X-Received: by 2002:a37:bf42:: with SMTP id p63mr7940943qkf.437.1562961367447;
- Fri, 12 Jul 2019 12:56:07 -0700 (PDT)
+        bh=vTxCVF6DmY6rGlw3tqGw/t6mFmScKqRdjhV2uzssuhU=;
+        b=qsFBom4GGcRMBxlGnCMN5LHJSbOre5ntDb9LJy2X9Evq8Q0+XF0mja4RDFAeeG6nMl
+         LKz1p0S206ZXHsgdnz9ymHTY8uENcwOoEJbXHTClFrT9XqQPyKM31mvOzIp6ecRfn/iQ
+         ED/TmuwB6xydsa6Smtgz3AbXT/pQGrVO7tykUWsPSBiaBDu3pYcFnWhTBh0FGIHPP74U
+         m1u6eYSUPYmJMk1ttt7Kh1cnTYWiHEB5MxqLN1BhVQeLzkonKQJqMJtbBtdGg+2OSfSE
+         9itNA6kvl2UCvrioAMQ0SWd4wuBgEsuJWDN4HLzXxsisOc1QPYqpwT7qENrjzL/+qKAO
+         JaSA==
+X-Gm-Message-State: APjAAAXkGXF24JTz0iyyAeIe6wXkc0KDpaRvVdEbi/hWQRUFiolYlJ1/
+        gLqDOlh+mayW+tRIaO0aW6h05nKlQDnCaYkT5xU=
+X-Google-Smtp-Source: APXvYqwfDIGoayx+Ya6dhtrJkiqTLPfA3xU22tc4uwhQOdlUL6FZKkNwW4/viYIf5l5oULjNskgccwavQWIiXWm3t+A=
+X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr7724269qkj.39.1562961475643;
+ Fri, 12 Jul 2019 12:57:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190712134142.90668-1-iii@linux.ibm.com>
-In-Reply-To: <20190712134142.90668-1-iii@linux.ibm.com>
+References: <20190712135631.91398-1-iii@linux.ibm.com>
+In-Reply-To: <20190712135631.91398-1-iii@linux.ibm.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 12 Jul 2019 12:55:56 -0700
-Message-ID: <CAEf4BzbQRNo5-=VK1odKSaKp9avumpz06xr4zBNzhkE+KPpd2w@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: fix attach_probe on s390
+Date:   Fri, 12 Jul 2019 12:57:44 -0700
+Message-ID: <CAEf4BzbgFzb5z-Ozmq2eYprzv-e_wvzhrDZVSb3XuiLFWY9cQw@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: make directory prerequisites order-only
 To:     Ilya Leoshkevich <iii@linux.ibm.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>
+        gor@linux.ibm.com, heiko.carstens@de.ibm.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 12, 2019 at 6:42 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+On Fri, Jul 12, 2019 at 6:57 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
 >
-> attach_probe test fails, because it cannot install a kprobe on a
-> non-existent sys_nanosleep symbol.
+> When directories are used as prerequisites in Makefiles, they can cause
+> a lot of unnecessary rebuilds, because a directory is considered changed
+> whenever a file in this directory is added, removed or modified.
 >
-> Use the correct symbol name for the nanosleep syscall on 64-bit s390.
-> Don't bother adding one for 31-bit mode, since tests are compiled only
-> in 64-bit mode.
+> If the only thing a target is interested in is the existence of the
+> directory it depends on, which is the case for selftests/bpf, this
+> directory should be specified as an order-only prerequisite: it would
+> still be created in case it does not exist, but it would not trigger a
+> rebuild of a target in case it's considered changed.
 >
-> Fixes: 1e8611bbdfc9 ("selftests/bpf: add kprobe/uprobe selftests")
 > Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> Acked-by: Vasily Gorbik <gor@linux.ibm.com>
 > ---
+
+Thanks!
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-This arch-specific naming is very unfortunate. I'm thinking of doing
-this automatically in libbpf to help usability.
 
+>  tools/testing/selftests/bpf/Makefile | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+>
 
->  tools/testing/selftests/bpf/prog_tests/attach_probe.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-> index a4686395522c..47af4afc5013 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-> @@ -23,6 +23,8 @@ ssize_t get_base_addr() {
->
->  #ifdef __x86_64__
->  #define SYS_KPROBE_NAME "__x64_sys_nanosleep"
-> +#elif defined(__s390x__)
-> +#define SYS_KPROBE_NAME "__s390x_sys_nanosleep"
->  #else
->  #define SYS_KPROBE_NAME "sys_nanosleep"
->  #endif
-> --
-> 2.21.0
->
+[...]
