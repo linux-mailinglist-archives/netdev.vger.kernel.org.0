@@ -2,228 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9CCC667FF
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 09:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D6266815
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 10:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726192AbfGLHx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 03:53:26 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:36025 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbfGLHxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 03:53:25 -0400
-Received: by mail-lj1-f196.google.com with SMTP id i21so8410808ljj.3
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 00:53:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=N14VhMtw4nxYPnjI4trplrlqCxWIy2L/etQTQPyfrho=;
-        b=FxhdyRHbpu8lEDRGri3kEp9qecmd7WXeACmTGRQMjU0g0DqvZPnxyZfXWRacYiex4Q
-         zmxrgxHb3kXb6UBF/7oOMk438KVsnW/DeUTWBUilhWsuD8PEYpqXfKVo0nBFFOeYQNK8
-         ZZm9CdMSRPomyrb+LFAGxthlf56iy8Rw5Wsp4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=N14VhMtw4nxYPnjI4trplrlqCxWIy2L/etQTQPyfrho=;
-        b=B56NsLqAS5H4imvtr2KvGVyHFv9kQ95/IQ/nPPR2B4c+CEOgo0ZxNSCspR5AQZYfzK
-         PqxDolrqkstFvcgj836IDi4hBr3p9f6GKSPmtFlDvZnHpCIsgeynC5EFhCHzzpsUw68m
-         GhV29MHWvHcvox6qymgvQfXhDobFw66MlqX89PK4wpubxQRHUJvf2rY43MenQn6YHCAP
-         qV+hI5cLQOKo7OyIC2jUGo4GRK0Ffno9ozaAsXi0Fl258jdFbUc9QibaHJHcD8Iq4KWB
-         8Eg3cZHO5YrcxYQT8rgNNLCsJi9WihhOTx7eGEB3Dd1iEdNw8Ia1DyTE1E6dAjn3yehi
-         oPjQ==
-X-Gm-Message-State: APjAAAVvLreuIA+wEWCoPIqiiRiB1f7+JDY93K48D7Rtnhfz28zhO70E
-        +UH1hW6GFIiuKYnQ+02U6q+cR4tYdOtZ2232TzGOpg==
-X-Google-Smtp-Source: APXvYqyVArAnXPKGWQj2yioNmerFWk7zPojj8A/RcIlFiFYo6P6hMnP+MpksjmjX0hn0HTU8pt79mncpTJcBlrqp2U4=
-X-Received: by 2002:a2e:89c8:: with SMTP id c8mr5174637ljk.70.1562918002887;
- Fri, 12 Jul 2019 00:53:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190711010844.1285018-1-andriin@fb.com> <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
- <CAEf4Bzb1kE_jCbyye07-pVMT=914_Nrdh+R=QXA2qMssYP5brA@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb1kE_jCbyye07-pVMT=914_Nrdh+R=QXA2qMssYP5brA@mail.gmail.com>
-From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Fri, 12 Jul 2019 09:53:12 +0200
-Message-ID: <CAGGp+cHaV1EMXqeQvKN-p5gEZWcSgGfcbKimcS+C8u=dfeU=1Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: remove logic duplication in test_verifier.c
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726192AbfGLICk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 04:02:40 -0400
+Received: from mail-eopbgr40078.outbound.protection.outlook.com ([40.107.4.78]:39331
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726047AbfGLICk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jul 2019 04:02:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZgRnM+J1eDw8S2/zzFmWwYux60+LqbPWSPUYt3s76BeZE+s5NNiySEwB8i7XPsUpguOb9tPvMGihK3KK546NYJUwxSXkhBBOrF80nsFr5jsl7/EEMkkwlKaQJ/kg6fXcVjt2tB5W40LWmQKJgEbFE4mS4dmJKUG1HHYJB9hg7b/QVON39qq0e4EcWqXE1OOG4ZJ4oAOz/y2+mINJDRUckkVDl8bw9UIxSme+ZS8SXCgRr2YtVycMPaHYleLwiUI+AXu6QdxiUbsy7snBNXn48yIXzinLIFqjjvvSj8nmQsnzmGqoUvfE5CiKdCMOyuNjNb7GS8uq+O/4VqFo8Dz67A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=697k/cUOJCUOmYjU5aDdBHCnJjoUoJ0T2UgjlD2RmoI=;
+ b=dh2p0bFV2OIdoHnCm2om+BiGeJBw1jGu9ed2fG/9L/AoEIyZyjyZCqdnP2yZzuX5DUvsUrY/W0uCj/PrjFLClbfTvy6Zh9fW2D/YWCjkMn3C9sjZ3io8unGNK0k/7w2HbhYoayQek+Xk1g0Lo0DY6TkwQMXu9nuqYQwpZsxQP96SKBLof3HptRb1sJPE8UHg1ZfVFn9vSwe4m2S+nSynRQjBi+zfIJj7OjZBaiaGJIqMnGv61JrHqI8vUx/ChzgJ6QwTrBlWJoMcjbsMRpMZm17LB2tKAN8c/9PTan9ZuMkfpmzMZCvkGkrklxx3uQDzZ89UxvYmF0G3bNM1evkB5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=nxp.com;dmarc=pass action=none header.from=nxp.com;dkim=pass
+ header.d=nxp.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=697k/cUOJCUOmYjU5aDdBHCnJjoUoJ0T2UgjlD2RmoI=;
+ b=nAC/bgRiqWqRaI1R+xiaBzwDBrmYA2TrbocOx6yAS8fhjmQEJ99Wau4jqRMO3oq/QDqylJCgEZAf0Uj+2zmE7AUvFT27Nhfnv1t3yIoh/NbveHgJVg25H4Hpp54zzfU2/C0waUBQZx+kzNlSWbloRjaTZS60QiwUi0/HwV00AHw=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4889.eurprd04.prod.outlook.com (20.176.234.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2073.10; Fri, 12 Jul 2019 08:02:35 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::6553:8d04:295c:774b]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::6553:8d04:295c:774b%5]) with mapi id 15.20.2073.008; Fri, 12 Jul 2019
+ 08:02:35 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     "wg@grandegger.com" <wg@grandegger.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH 0/8] can: flexcan: add CAN FD support for NXP Flexcan
+Thread-Topic: [PATCH 0/8] can: flexcan: add CAN FD support for NXP Flexcan
+Thread-Index: AQHVOIgqonFULiHPO0eSKFSJ3ULGeg==
+Date:   Fri, 12 Jul 2019 08:02:35 +0000
+Message-ID: <20190712075926.7357-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR02CA0061.apcprd02.prod.outlook.com
+ (2603:1096:4:54::25) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9a23544b-24a9-4b15-6043-08d7069f4c89
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB7PR04MB4889;
+x-ms-traffictypediagnostic: DB7PR04MB4889:
+x-microsoft-antispam-prvs: <DB7PR04MB4889490763C653FD74F4AB09E6F20@DB7PR04MB4889.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 00963989E5
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(376002)(366004)(396003)(199004)(189003)(50226002)(66066001)(2906002)(71190400001)(2616005)(476003)(71200400001)(8936002)(25786009)(1076003)(478600001)(53936002)(305945005)(2501003)(14454004)(486006)(7736002)(6512007)(4744005)(36756003)(52116002)(8676002)(99286004)(102836004)(86362001)(256004)(5660300002)(14444005)(81156014)(81166006)(26005)(64756008)(66556008)(66446008)(66476007)(386003)(6506007)(66946007)(3846002)(110136005)(4326008)(6116002)(54906003)(186003)(316002)(6486002)(68736007)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4889;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 2pbYbHBEKW9KIhl+C88TeUoagM9LU52GtSWKjKWu4B0JAwpMLM7qA0See+TievsU5FUGIwHeE3wxWVR2ySC+RA4teCMXHCJYboVEXvUk+YOM9S9Rhp6drY5tmB2i0/GFlyrw6UZx4lBcEz1vu59xj56PX6COfSUDJ2kggWUad1ivrdXG9fjaxVRJ4/AX/xJoul/r6xz/SHXxaxrCJkhAHQnwmqCCcnTtUDDKesJX33w034ElqvgUzuAX0NvioxBsDsTxorRYQUgbuRvWOHZmp+dKCCbkXmLDuKUdRKLsOCuwF1ZBohRyqLDWkoIoxh7qXhmKyrkYrQ7BNY/z9zHHc/SX94LA7bD8f5w7VGCsHeBvpD28eDcJzrKOkWWmTvwCVI9PbgkcsHIgLNUcvLuwEs3NW5ioFwGHm+MIV12u8zo=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a23544b-24a9-4b15-6043-08d7069f4c89
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jul 2019 08:02:35.4330
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qiangqing.zhang@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4889
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 4:43 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Jul 11, 2019 at 5:13 AM Krzesimir Nowak <krzesimir@kinvolk.io> wr=
-ote:
-> >
-> > On Thu, Jul 11, 2019 at 3:08 AM Andrii Nakryiko <andriin@fb.com> wrote:
-> > >
-> > > test_verifier tests can specify single- and multi-runs tests. Interna=
-lly
-> > > logic of handling them is duplicated. Get rid of it by making single =
-run
-> > > retval specification to be a first retvals spec.
-> > >
-> > > Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >
-> > Looks good, one nit below.
-> >
-> > Acked-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> >
-> > > ---
-> > >  tools/testing/selftests/bpf/test_verifier.c | 37 ++++++++++---------=
---
-> > >  1 file changed, 18 insertions(+), 19 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/test=
-ing/selftests/bpf/test_verifier.c
-> > > index b0773291012a..120ecdf4a7db 100644
-> > > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > > @@ -86,7 +86,7 @@ struct bpf_test {
-> > >         int fixup_sk_storage_map[MAX_FIXUPS];
-> > >         const char *errstr;
-> > >         const char *errstr_unpriv;
-> > > -       uint32_t retval, retval_unpriv, insn_processed;
-> > > +       uint32_t insn_processed;
-> > >         int prog_len;
-> > >         enum {
-> > >                 UNDEF,
-> > > @@ -95,16 +95,24 @@ struct bpf_test {
-> > >         } result, result_unpriv;
-> > >         enum bpf_prog_type prog_type;
-> > >         uint8_t flags;
-> > > -       __u8 data[TEST_DATA_LEN];
-> > >         void (*fill_helper)(struct bpf_test *self);
-> > >         uint8_t runs;
-> > > -       struct {
-> > > -               uint32_t retval, retval_unpriv;
-> > > -               union {
-> > > -                       __u8 data[TEST_DATA_LEN];
-> > > -                       __u64 data64[TEST_DATA_LEN / 8];
-> > > +       union {
-> > > +               struct {
-> >
-> > Maybe consider moving the struct definition outside to further the
-> > removal of the duplication?
->
-> Can't do that because then retval/retval_unpriv/data won't be
-> accessible as a normal field of struct bpf_test. It has to be in
-> anonymous structs/unions, unfortunately.
->
+Hi Marc,
 
-Ah, right.
+This patch set intends to add support for NXP Flexcan CAN FD, it has
+been validated on three NXP platform(i.MX8QM/QXP, S32V234, LX2160AR1).
+After discussed with another two Fexcan owner, we sorted out this
+version.
 
-Meh.
+I hope you can pick up the patch set as it can fully meet requirement of
+above three platform. And after that, we can start to do upstream about
+CAN FD.
 
-I tried something like this:
+Thanks a lot!
 
-#define BPF_DATA_STRUCT \
-    struct { \
-        uint32_t retval, retval_unpriv; \
-        union { \
-            __u8 data[TEST_DATA_LEN]; \
-            __u64 data64[TEST_DATA_LEN / 8]; \
-        }; \
-    }
+BRs,
+Joakim Zhang
 
-and then:
+Joakim Zhang (8):
+  can: flexcan: allocate skb in flexcan_mailbox_read
+  can: flexcan: use struct canfd_frame for CAN classic frame
+  can: flexcan: add CAN FD mode support
+  can: flexcan: add CANFD BRS support
+  can: flexcan: add ISO CAN FD feature support
+  can: flexcan: add Transceiver Delay Compensation suopport
+  can: flexcan: add imx8qm support
+  can: flexcan: add lx2160ar1 support
 
-    union {
-        BPF_DATA_STRUCT;
-        BPF_DATA_STRUCT retvals[MAX_TEST_RUNS];
-    };
-
-And that seems to compile at least. But question is: is this
-acceptably ugly or unacceptably ugly? :)
-
-> I tried the following, but that also didn't work:
->
-> union {
->     struct bpf_test_retval {
->         uint32_t retval, retval_unpriv;
->         union {
->             __u8 data[TEST_DATA_LEN];
->             __u64 data64[TEST_DATA_LEN / 8];
->         };
->     };
->     struct bpf_test_retval retvals[MAX_TEST_RUNS];
-> };
->
-> This also made retval/retval_unpriv to not behave as normal fields of
-> struct bpf_test.
->
->
-> >
-> > > +                       uint32_t retval, retval_unpriv;
-> > > +                       union {
-> > > +                               __u8 data[TEST_DATA_LEN];
-> > > +                               __u64 data64[TEST_DATA_LEN / 8];
-> > > +                       };
-> > >                 };
-> > > -       } retvals[MAX_TEST_RUNS];
-> > > +               struct {
-> > > +                       uint32_t retval, retval_unpriv;
-> > > +                       union {
-> > > +                               __u8 data[TEST_DATA_LEN];
-> > > +                               __u64 data64[TEST_DATA_LEN / 8];
-> > > +                       };
-> > > +               } retvals[MAX_TEST_RUNS];
-> > > +       };
-> > >         enum bpf_attach_type expected_attach_type;
-> > >  };
-> > >
-> > > @@ -949,17 +957,8 @@ static void do_test_single(struct bpf_test *test=
-, bool unpriv,
-> > >                 uint32_t expected_val;
-> > >                 int i;
-> > >
-> > > -               if (!test->runs) {
-> > > -                       expected_val =3D unpriv && test->retval_unpri=
-v ?
-> > > -                               test->retval_unpriv : test->retval;
-> > > -
-> > > -                       err =3D do_prog_test_run(fd_prog, unpriv, exp=
-ected_val,
-> > > -                                              test->data, sizeof(tes=
-t->data));
-> > > -                       if (err)
-> > > -                               run_errs++;
-> > > -                       else
-> > > -                               run_successes++;
-> > > -               }
-> > > +               if (!test->runs)
-> > > +                       test->runs =3D 1;
-> > >
-> > >                 for (i =3D 0; i < test->runs; i++) {
-> > >                         if (unpriv && test->retvals[i].retval_unpriv)
-> > > --
-> > > 2.17.1
-> > >
-> >
-> >
-> > --
-> > Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-> > Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iag=
-o L=C3=B3pez Galeiras
-> > Registergericht/Court of registration: Amtsgericht Charlottenburg
-> > Registernummer/Registration number: HRB 171414 B
-> > Ust-ID-Nummer/VAT ID number: DE302207000
-
-
+ drivers/net/can/flexcan.c      | 340 ++++++++++++++++++++++++++++-----
+ drivers/net/can/rx-offload.c   |  33 +---
+ include/linux/can/rx-offload.h |   5 +-
+ 3 files changed, 305 insertions(+), 73 deletions(-)
 
 --=20
-Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
-=C3=B3pez Galeiras
-Registergericht/Court of registration: Amtsgericht Charlottenburg
-Registernummer/Registration number: HRB 171414 B
-Ust-ID-Nummer/VAT ID number: DE302207000
+2.17.1
+
