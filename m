@@ -2,99 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACC6B675BF
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 22:15:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15C7B675CB
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 22:18:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727555AbfGLUPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 16:15:12 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:40345 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727125AbfGLUPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 16:15:12 -0400
-Received: by mail-qt1-f196.google.com with SMTP id a15so9423361qtn.7;
-        Fri, 12 Jul 2019 13:15:12 -0700 (PDT)
+        id S1727563AbfGLUSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 16:18:15 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33632 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727125AbfGLUSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 16:18:15 -0400
+Received: by mail-pl1-f195.google.com with SMTP id c14so5268231plo.0
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 13:18:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LAHnrDdMVUv7xAGW5DfLj/F+sQF4Cb8/6ATsTX4w9vM=;
-        b=XrEMFti//4a7M9eVgNrgrwFdUY989LAmaCgcbmXfob+udrhnwwoOet5n7W6jz5tL+T
-         +XvOZ3esRo+b2s2YrdFXhFrFaWWR/pwSBnlfc4v5EK/hcJywnfFV8QNh1iaw30JMCjkW
-         u5yDCQNQAi4OSZPqE6dFN3gmNfuxw/zSU5GOnQYTEd5iViewcpEoQT5ZABAfeI3E3jlb
-         mGzo90Up3FNWb5vC3dgxkQFh+730UVL4ZWA9700GLaD7k9aHi84O3Tg7o42kC0XB2Mbn
-         X7R7jh6zDsrUgNUtl8u/oJ1f3L8WKzhK0OvU8UxJJcm2wvSq/sC7jIltfZK94/b3/8fb
-         ycHg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IuNqHHnUM0Aq+LVX3PCo7e2eIot410B/0PhTcXMZg6E=;
+        b=G5OFTETG06n5GR5BAlKqGEGQwIXSzDzYkIDg6u71xDoeBYuI1rEtHqz039IhEULSBX
+         oRNq47RhcrVtaHh76kod6C2VbTt0xjtt7a3fR0wgIJExBu1loj+dKt2OkQHsJBgTiNpW
+         ksEPx+anqbFkxgus15+fcGGQBWCgs2Z5ipfu2z8c9PlMCmgnVcjuSN4vQM5xOw8aOI75
+         nBkqwuX+2zVazRfzlAvyCjPYNQuSaYJo9NXXcLWj5XnOFW9hhPuKNu31XBaXJvE4fv4Z
+         PvKTXj82zXz7mjhP9L9CNsI4/Ecz05edXyWiJzVtbJDx2ex5LxKK8hpPzBdmbYPEwHIA
+         fpjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LAHnrDdMVUv7xAGW5DfLj/F+sQF4Cb8/6ATsTX4w9vM=;
-        b=gO1YSzaqUDi9NgMJPfhKkt+CvQoEFgt1TJ4wFpxuQE8SkjXL1gY4Zn5UqLTA9Ebpi3
-         yWucA8EHinrjIWx2oFmqdelrSRFUMHflCp3g/KCOYkc2zWuNryMshblF6sJz0EavRpne
-         T0LuvRgL70S10xHqLr5lzYFnIVOYyai25QQV7OA46rIQh9SDf7HHxXrtR7uhJCEB4Fvx
-         5fQUrB98xwC+2NhcL2DPsiaR/9MU/VUuRMj+da7wKMDpF2/HXDeMIWPsz5afAHfXjXuo
-         C3h4gfQczVEJR6M639uczHE2pgpWkMyaYrahoxVM4neRmH9yMf8xnNxNWbVPw7Ycqyg/
-         qIWA==
-X-Gm-Message-State: APjAAAUrxpWMmlTPS33mbt1E+1Wi2us5rp/duEe75ShsrzPpBezCmO4p
-        /BSTnt0D47f9jSkxhxP3BGKMaMBF0WTyyT0wz+bVyQEyQnx/Wg==
-X-Google-Smtp-Source: APXvYqwX1EtXQsTBQey3KX6PZON6bGB486pJRkwh8yCAqbS2eUN4ZJtbdxtRVMIs3bbld1EPWOtc1OvqceP0Il9SMd4=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr7833379qta.171.1562962511516;
- Fri, 12 Jul 2019 13:15:11 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IuNqHHnUM0Aq+LVX3PCo7e2eIot410B/0PhTcXMZg6E=;
+        b=h2O8OrSleuWsJRTYvqxrMQ5gvJt9wQ8/t76GPq75ocl3M4YqycSs+pKeiFn2S2oqxX
+         wilV6sUMeMWHp7evCHlIN0tZ3cT58WkWNHc43kZ1x5M94nHB1emyVQJE53OVUERSRyct
+         aD3R/Ho4K6dASFK6kjvWqZXbw/hGXyZv+IfFJAkJ0AwGrCnRwm4/PoE+H2NaAutaI2gg
+         6TceGaIq9Ujlq6726d7KkTm+FBEL+1HJaIcZMAIQpj1B0yVrJ9bbPlteHWRTH7yTjREW
+         4WdJsDJCpqZrftDRt51uSKaU9Ard7xonHs4xmlCwvJN/fKGez6UCx+0RfOkBqI4KLahF
+         ISZw==
+X-Gm-Message-State: APjAAAXFh3n5QJetl3waXm8FsZYmq5UxIO2KPN6km8h09z6PAJcvP5De
+        K6TtXlNMiAMfxVeIEuC+M+WdNKEceY4=
+X-Google-Smtp-Source: APXvYqy3Azovn1gk3X/afB/+FsqBnKQrh56ZwKzRfmti9FZ0qAh4H5230zl8l76nShQtiknmQ88kAA==
+X-Received: by 2002:a17:902:d892:: with SMTP id b18mr12917960plz.165.1562962694439;
+        Fri, 12 Jul 2019 13:18:14 -0700 (PDT)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id q4sm8883630pjq.27.2019.07.12.13.18.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 12 Jul 2019 13:18:13 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [Patch net] net_sched: unset TCQ_F_CAN_BYPASS when adding filters
+Date:   Fri, 12 Jul 2019 13:17:48 -0700
+Message-Id: <20190712201749.28421-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190712135950.91600-1-iii@linux.ibm.com>
-In-Reply-To: <20190712135950.91600-1-iii@linux.ibm.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 12 Jul 2019 13:15:00 -0700
-Message-ID: <CAEf4Bza3fDw+M-S-1G1D+hsoCEum=WEoycbFgi2c-cdfG8=Ckw@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: put test_stub.o into $(OUTPUT)
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 12, 2019 at 7:00 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> Add a rule to put test_stub.o in $(OUTPUT) and change the references to
-> it accordingly. This prevents test_stub.o from being created in the
-> source directory.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> ---
+For qdisc's that support TC filters and set TCQ_F_CAN_BYPASS,
+notably fq_codel, it makes no sense to let packets bypass the TC
+filters we setup in any scenario, otherwise our packets steering
+policy could not be enforced.
 
-Makes sense.
+This can be easily reproduced with the following script:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+ ip li add dev dummy0 type dummy
+ ifconfig dummy0 up
+ tc qd add dev dummy0 root fq_codel
+ tc filter add dev dummy0 parent 8001: protocol arp basic action mirred egress redirect dev lo
+ tc filter add dev dummy0 parent 8001: protocol ip basic action mirred egress redirect dev lo
+ ping -I dummy0 192.168.112.1
 
->  tools/testing/selftests/bpf/Makefile | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 277d8605e340..66b6f7fb683c 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -83,13 +83,16 @@ all: $(TEST_CUSTOM_PROGS)
->  $(OUTPUT)/urandom_read: $(OUTPUT)/%: %.c
->         $(CC) -o $@ $< -Wl,--build-id
->
-> +$(OUTPUT)/test_stub.o: test_stub.c
-> +       $(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) -c -o $@ $<
-> +
->  $(OUTPUT)/test_maps: map_tests/*.c
->
->  BPFOBJ := $(OUTPUT)/libbpf.a
->
-> -$(TEST_GEN_PROGS): test_stub.o $(BPFOBJ)
-> +$(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
->
-> -$(TEST_GEN_PROGS_EXTENDED): test_stub.o $(OUTPUT)/libbpf.a
-> +$(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(OUTPUT)/libbpf.a
->
->  $(OUTPUT)/test_dev_cgroup: cgroup_helpers.c
->  $(OUTPUT)/test_skb_cgroup_id_user: cgroup_helpers.c
-> --
-> 2.21.0
->
+Without this patch, packets are sent directly to dummy0 without
+hitting any of the filters. With this patch, packets are redirected
+to loopback as expected.
+
+This fix is not perfect, it only unsets the flag but does not set it back
+because we have to save the information somewhere in the qdisc if we
+really want that.
+
+Fixes: 4b549a2ef4be ("fq_codel: Fair Queue Codel AQM")
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/sched/cls_api.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 638c1bc1ea1b..5c800b0c810b 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -2152,6 +2152,7 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
+ 			       RTM_NEWTFILTER, false, rtnl_held);
+ 		tfilter_put(tp, fh);
++		q->flags &= ~TCQ_F_CAN_BYPASS;
+ 	}
+ 
+ errout:
+-- 
+2.21.0
+
