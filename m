@@ -2,79 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E2B67153
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 16:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 397D9671A3
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 16:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727282AbfGLO0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 10:26:18 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36994 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbfGLO0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 10:26:18 -0400
-Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hlwV6-0004XN-5C; Fri, 12 Jul 2019 16:26:16 +0200
-Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hlwV5-00074v-Rb; Fri, 12 Jul 2019 16:26:15 +0200
-Subject: Linux Plumbers BPF micro-conference CFP (reminder)
-References: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, iovisor-dev@lists.iovisor.org,
-        lpc-bpf@vger.kernel.org, alexei.starovoitov@gmail.com
-From:   Daniel Borkmann <daniel@iogearbox.net>
-X-Forwarded-Message-Id: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
-Message-ID: <5f1e881b-7094-a6d9-5d7c-f391d128780d@iogearbox.net>
-Date:   Fri, 12 Jul 2019 16:26:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726896AbfGLOt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 10:49:27 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37308 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726976AbfGLOt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 10:49:27 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 19so4416079pfa.4
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 07:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jBnw+bj5T3Oj46YKg63m75/M9E4pXCF4gtk0jQxRSXU=;
+        b=KOp/FTLlbPVrmtrESx26ciK+CMNvbkeSL4QP0Lj6JLKzSMGH7LcPtUDIBGFMz4xNBR
+         HjyGCYh4oX95P+F+GW4vHbwJmHhtIANe/76JHUmqTCLEJnEQqDVcsDR2QKmjjip7dp/y
+         Fs5wmHPUnwEv4E5Xcjpll4PYPsaq5Jw19jQ5s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jBnw+bj5T3Oj46YKg63m75/M9E4pXCF4gtk0jQxRSXU=;
+        b=kc3peN6rv7/2lQjt87sFRXXrIygzBqSymzMtNpOSGBCNAfsxWxPA1QojwIy2pYJn30
+         4i/ISh742qWp78spFprfFBt7XlTGAF34IcoT2hfGUQnIliHznPFuNm77jIN4FToPER0e
+         BEyaDew3Pf6NLfGUovmB1GseCXZCCSj/03Ochrs774efmHi+p0IMQBRvv+jam7PUcApH
+         gkl8ywt/rCU9Cle8sUVvQjB3HXAy7mUWSZtWcpWerBmnGkTxopsfJAyMI46Kb6DeiJtU
+         VaOXHhY6AkSvIebUPr9a9WCiTLTNWNACPJTy+uI2ICONFM/m+A23WAhaRcsF9BTrRuVE
+         5pXw==
+X-Gm-Message-State: APjAAAXA0r/HUvLNSp23OO7yfHsjSINc/irv5/9I7lwNazIjJ8ABfqb4
+        bz5Ks4V6JhXAKvhxP6wFB6s=
+X-Google-Smtp-Source: APXvYqy6jBLSnDZta2GtS/zN+m3PUtaVacX1IRd1BaAhWjyV06geRNBslZ66J2GoeWCO1s2L6yvsyA==
+X-Received: by 2002:a17:90a:1904:: with SMTP id 4mr12585583pjg.116.1562942966736;
+        Fri, 12 Jul 2019 07:49:26 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id r1sm7928157pgv.70.2019.07.12.07.49.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 12 Jul 2019 07:49:25 -0700 (PDT)
+Date:   Fri, 12 Jul 2019 10:49:24 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [PATCH v1 1/6] rcu: Add support for consolidated-RCU reader
+ checking
+Message-ID: <20190712144924.GA235410@google.com>
+References: <20190711234401.220336-1-joel@joelfernandes.org>
+ <20190711234401.220336-2-joel@joelfernandes.org>
+ <20190712110142.GS3402@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-In-Reply-To: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190712110142.GS3402@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a call for proposals for the BPF micro-conference at this
-years' Linux Plumbers Conference (LPC) 2019 which will be held in
-Lisbon, Portugal for September 9-11.
+On Fri, Jul 12, 2019 at 01:01:42PM +0200, Peter Zijlstra wrote:
+> On Thu, Jul 11, 2019 at 07:43:56PM -0400, Joel Fernandes (Google) wrote:
+> > This patch adds support for checking RCU reader sections in list
+> > traversal macros. Optionally, if the list macro is called under SRCU or
+> > other lock/mutex protection, then appropriate lockdep expressions can be
+> > passed to make the checks pass.
+> > 
+> > Existing list_for_each_entry_rcu() invocations don't need to pass the
+> > optional fourth argument (cond) unless they are under some non-RCU
+> > protection and needs to make lockdep check pass.
+> > 
+> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > ---
+> >  include/linux/rculist.h  | 29 ++++++++++++++++++++++++-----
+> >  include/linux/rcupdate.h |  7 +++++++
+> >  kernel/rcu/Kconfig.debug | 11 +++++++++++
+> >  kernel/rcu/update.c      | 26 ++++++++++++++++++++++++++
+> >  4 files changed, 68 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/include/linux/rculist.h b/include/linux/rculist.h
+> > index e91ec9ddcd30..78c15ec6b2c9 100644
+> > --- a/include/linux/rculist.h
+> > +++ b/include/linux/rculist.h
+> > @@ -40,6 +40,23 @@ static inline void INIT_LIST_HEAD_RCU(struct list_head *list)
+> >   */
+> >  #define list_next_rcu(list)	(*((struct list_head __rcu **)(&(list)->next)))
+> >  
+> > +/*
+> > + * Check during list traversal that we are within an RCU reader
+> > + */
+> > +
+> > +#define SIXTH_ARG(a1, a2, a3, a4, a5, a6, ...) a6
+> > +#define COUNT_VARGS(...) SIXTH_ARG(dummy, ## __VA_ARGS__, 4, 3, 2, 1, 0)
+> 
+> You don't seem to actually use it in this patch; also linux/kernel.h has
+> COUNT_ARGS().
 
-The goal of the BPF micro-conference is to bring BPF developers
-together to discuss topics around Linux kernel work related to
-the BPF core infrastructure as well as its many subsystems under
-tracing, networking, security, and BPF user space tooling (LLVM,
-libbpf, bpftool and many others).
+Yes, I replied after sending patches that I fixed this. I will remove them.
 
-The format of the micro-conference has a main focus on discussion,
-therefore each accepted topic will provide a short 1-2 slide
-introduction with subsequent discussion for the rest of the given
-time slot.
 
-The BPF micro-conference is a community-driven event and open to
-all LPC attendees, there is no additional registration required.
+thanks,
 
-Please submit your discussion proposals to the LPC BPF micro-conference
-organizers at:
+ - Joel
 
-        lpc-bpf@vger.kernel.org
 
-Proposals must be submitted until August 2nd, and submitters will
-be notified of acceptance at latest by August 9. (Please note that
-proposals must not be sent as html mail as they are otherwise dropped
-by vger.)
 
-The format of the submission and many other details can be found at:
-
-        http://vger.kernel.org/lpc-bpf.html
-
-Looking forward to seeing you all in Lisbon in September!
