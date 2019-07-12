@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B407467258
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 17:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A996727A
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 17:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbfGLP34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 11:29:56 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:57008 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726602AbfGLP3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 11:29:55 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D528E8007F;
-        Fri, 12 Jul 2019 15:29:53 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 12 Jul
- 2019 08:29:50 -0700
-Subject: Re: [PATCH net] net: fix use-after-free in __netif_receive_skb_core
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>, Andreas Steinmetz <ast@domdv.de>
-References: <e909b8fe24b9eac71de52c4f80f7f3f6e5770199.1562766613.git.sd@queasysnail.net>
- <62ad16f6-c33a-407e-2f55-9be382b7ec52@solarflare.com>
- <20190710224724.GA28254@bistromath.localdomain>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <8166b82f-8430-1441-32e7-540c1829754e@solarflare.com>
-Date:   Fri, 12 Jul 2019 16:29:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727278AbfGLPdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 11:33:40 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40804 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726930AbfGLPdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 11:33:40 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r1so10399301wrl.7
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 08:33:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+zCxSS7+ishHnJZhTwY1CRrkcoUTE8dRuvy1RT3gCHY=;
+        b=riejbCdzIhhZlev/Vy1pqoeaAG1/fA7vzNjq3HkXCTkzy1buQpVv3xSMIoi9sE7zuy
+         E+C1rqkJ5GWo6Ue9zRzIAHUOEHistSs8G5eeg+QrkOFIuH90+xfgeFc/hVedvsKov/7v
+         0/6zAYZlZ9tD7b1nuf6tx0AR4mVygd8hlBE/uIJwvHX+A3q0LElu6AgGJShXW3W0QxQo
+         JDUfUiB+0FTC6yLMM7sfad2W/mjR/B5vDcWRUUuBsmvZl9+T7mgiSUsHQTSGamw97WtB
+         nsOSPt3d7ZqlvXTkSOht9t10JQd8w5Mp2IPGqRkdXfqF/WZIEITGxxZgVAH3k65dAmww
+         ygcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+zCxSS7+ishHnJZhTwY1CRrkcoUTE8dRuvy1RT3gCHY=;
+        b=iUoXnwVxeJ/htfDEXOLy/WqsIFIjp+6s2IPiX5GYCRQ6QbnS/L3OLhwTnrE5ywkcrY
+         6iXBR2fVNMLvKR68qQkTRwUBkdLFnziZSFMauDrbiBlkZI2bBxZIcNSAQeLC+UWco28N
+         vVymyx01vpLsRFwiBZlQxpxqHcAz2lLiZlukfrGmH3P2spvYSwdmhgq4n5bcggcKw9uV
+         McjqTL8e8zN4K+zOX6TQdCYSprD3xdqKwDF13nQh0tDR1h9Jr7IPJ5+PEoJ/jcoFD1To
+         zo0bhI8GEVf4WpKo+32ETGA6r8W0YoFo4G3kVhqnJGNBtZA6aFA3Efl/O4Aq7IgIPeqK
+         pOxg==
+X-Gm-Message-State: APjAAAWy3MgCBHimietC1Le5IwGmqd6t8P/1zVYv+7DHeOvJ9kYVlYEq
+        PGdUTLiVnayKe0ckz5aQGnqSen7N
+X-Google-Smtp-Source: APXvYqzOqRd7HtNcVjwNYvDeR8RO/P7a4qE82iTlNu/R4wIu6dBs9Gu6JLy3q5GM/2CYDlp/0URaBA==
+X-Received: by 2002:a5d:528d:: with SMTP id c13mr12167291wrv.247.1562945618187;
+        Fri, 12 Jul 2019 08:33:38 -0700 (PDT)
+Received: from debian64.daheim (p5B0D7F9B.dip0.t-ipconnect.de. [91.13.127.155])
+        by smtp.gmail.com with ESMTPSA id c78sm11098825wmd.16.2019.07.12.08.33.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 12 Jul 2019 08:33:37 -0700 (PDT)
+Received: from chuck by debian64.daheim with local (Exim 4.92)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1hlxYG-0001KA-0t; Fri, 12 Jul 2019 17:33:36 +0200
+From:   Christian Lamparter <chunkeey@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, kbuild test robot <lkp@intel.com>
+Subject: [PATCH] net: dsa: qca8k: replace legacy gpio include
+Date:   Fri, 12 Jul 2019 17:33:36 +0200
+Message-Id: <20190712153336.5018-1-chunkeey@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190710224724.GA28254@bistromath.localdomain>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24752.005
-X-TM-AS-Result: No-1.938900-4.000000-10
-X-TMASE-MatchedRID: oTBA/+sdKaZq0U6EhO9EE/ZvT2zYoYOwC/ExpXrHizwjE50lK5mkcr5B
-        EqXwSs2U/SwzVfmaVyi3UjDQwv33/51hFxH/AojTiJwEp8weVXwA+JHhu0IR5lB3AZ+9IiUHB8b
-        SKPQiB8D4DNV0STkz8jEtvhjEb953oayr11+eKrmt0sUUpHt26QstW3p1HyQN31GU/N5W5BBjCg
-        n4e64coos5xsJNI/ndm2lhSbqhqibwWrPthczFTczSKGx9g8xhfS0Ip2eEHnzWRN8STJpl3PoLR
-        4+zsDTt+GYUedkXNWrsobwFcvEgluSAYS9sRv/BmkffCWyYNOS2OL0ktwPTmFEACJ4CqAAp/6Um
-        1O6eCIXWsezgxn1i9oL+6MVA+fBiRIDtcsZe84GHzGTHoCwyHhlNKSp2rPkW5wiX7RWZGYs2CWD
-        RVNNHuzflzkGcoK72
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.938900-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24752.005
-X-MDID: 1562945394-5jCPy2r2QDg0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/07/2019 23:47, Sabrina Dubroca wrote:
-> 2019-07-10, 16:07:43 +0100, Edward Cree wrote:
->> On 10/07/2019 14:52, Sabrina Dubroca wrote:
->>> -static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
->>> +static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
->>>  				    struct packet_type **ppt_prev)
->>>  {
->>>  	struct packet_type *ptype, *pt_prev;
->>>  	rx_handler_func_t *rx_handler;
->>> +	struct sk_buff *skb = *pskb;
->> Would it not be simpler just to change all users of skb to *pskb?
->> Then you avoid having to keep doing "*pskb = skb;" whenever skb changes
->>  (with concomitant risk of bugs if one gets missed).
-> Yes, that would be less risky. I wrote a version of the patch that did
-> exactly that, but found it really too ugly (both the patch and the
-> resulting code).
-If you've still got that version (or can dig it out of your reflog), can
- you post it so we can see just how ugly it turns out?
+This patch replaces the legacy bulk gpio.h include
+with the proper gpio/consumer.h variant. This was
+caught by the kbuild test robot that was running
+into an error because of this.
 
->  We have more than 50 occurences of skb, including
-> things like:
->
->     atomic_long_inc(&skb->dev->rx_dropped);
-Ooh, yes, I can see why that ends up looking funny...
+For more information why linux/gpio.h is bad can be found in:
+commit 56a46b6144e7 ("gpio: Clarify that <linux/gpio.h> is legacy")
 
-Here's a thought, how about switching round the return-vs-pass-by-pointer
- and writing:
+Reported-by: kbuild test robot <lkp@intel.com>
+Link: https://www.spinics.net/lists/netdev/msg584447.html
+Fixes: a653f2f538f9 ("net: dsa: qca8k: introduce reset via gpio feature")
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+---
+ drivers/net/dsa/qca8k.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-static struct sk_buff *__netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
-                                                struct packet_type **ppt_prev, int *ret)
-?
-(Although, you might want to rename 'ret' in that case.)
-
-Does that make things any less ugly?
--Ed
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 27709f866c23..232e8cc96f6d 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -14,7 +14,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/if_bridge.h>
+ #include <linux/mdio.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/etherdevice.h>
+ 
+ #include "qca8k.h"
+-- 
+2.20.1
 
