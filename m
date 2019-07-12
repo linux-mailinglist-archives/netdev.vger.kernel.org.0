@@ -2,100 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 334E36705B
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3318B67063
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727949AbfGLNnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 09:43:49 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:50684 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727470AbfGLNnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:43:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-        :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SlB6oagSf+EHNNhYMcvoRwKHpGUn+VlNx7tHqLEQaso=; b=ghiRSUZ03AV+Ju6RUoUG9eQp4d
-        OZUtfXZ1S/6BfvXgbrgwLNXUkEoRO0Xad4hlVqC/q19j2v2IG4ib7Y/U3vu0oO4+GPqjj0UzhpDsx
-        nn31uq20yfG9i1HiIAHquiivd6LLSEmZCCByGIgbHWfZE7H60pEp99kqjTLM5ygp+ehpTYcaWCkxu
-        UVR5jZyXdJE5+nSB5UmGQzx9PNP7KaJ7UGdgBJqdAfxHrUYh0AerWY7+yAWU0psldQOi0dLGtRKqT
-        +AmDIx1bixIoWPvJLTH8xNgAyIXZD/u1Wz9N4oEkQ7qM/EfGT1M43qdnSFJMFLGNLXfYZ0g/Nnu1G
-        8o7m2oPw==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hlvpz-0005AC-NV; Fri, 12 Jul 2019 13:43:47 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     davem@davemloft.net
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>, hch@lst.de,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 7/7] net: Convert skb_frag_t to bio_vec
-Date:   Fri, 12 Jul 2019 06:43:45 -0700
-Message-Id: <20190712134345.19767-8-willy@infradead.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190712134345.19767-1-willy@infradead.org>
-References: <20190712134345.19767-1-willy@infradead.org>
+        id S1727995AbfGLNoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 09:44:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57056 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727271AbfGLNoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:44:12 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlvqJ-00011k-76; Fri, 12 Jul 2019 15:44:07 +0200
+Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlvqJ-000Ia2-0Z; Fri, 12 Jul 2019 15:44:07 +0200
+Subject: Re: [PATCH v4 bpf-next 0/4] selftests/bpf: fix compiling
+ loop{1,2,3}.c on s390
+To:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Stanislav Fomichev <sdf@fomichev.me>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Y Song <ys114321@gmail.com>, davem@davemloft.net,
+        ast@kernel.org
+References: <20190711142930.68809-1-iii@linux.ibm.com>
+ <20190711203508.GC16709@mini-arch>
+ <994CF53F-3E84-4CE8-92C5-B2983AD50EB8@linux.ibm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2e6eabde-b584-5241-5368-d2ba58cb482f@iogearbox.net>
+Date:   Fri, 12 Jul 2019 15:44:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
+In-Reply-To: <994CF53F-3E84-4CE8-92C5-B2983AD50EB8@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+On 07/12/2019 10:55 AM, Ilya Leoshkevich wrote:
+>> Am 11.07.2019 um 22:35 schrieb Stanislav Fomichev <sdf@fomichev.me>:
+>>
+>> On 07/11, Ilya Leoshkevich wrote:
+>>> Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
+>>>
+>>> This patch series consists of three preparatory commits, which make it
+>>> possible to use PT_REGS_RC in BPF selftests, followed by the actual fix.
+>>>
+>> Still looks good to me, thanks!
+>>
+>> Reviewed-by: Stanislav Fomichev <sdf@google.com>
+>>
+>> Again, should probably go via bpf to fix the existing tests, not bpf-next
+>> (but I see bpf tree is not synced with net tree yet).
+> 
+> Sorry, I missed your comment the last time. You are right - that’s the
+> reason I’ve been sending this to bpf-next so far — loop*.c don’t even
+> exist in the bpf tree.
 
-There are a lot of users of frag->page_offset, so use a union
-to avoid converting those users today.
-
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
----
- include/linux/bvec.h   | 5 ++++-
- include/linux/skbuff.h | 9 ++-------
- 2 files changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/bvec.h b/include/linux/bvec.h
-index a032f01e928c..7f2b2ea9399c 100644
---- a/include/linux/bvec.h
-+++ b/include/linux/bvec.h
-@@ -18,7 +18,10 @@
- struct bio_vec {
- 	struct page	*bv_page;
- 	unsigned int	bv_len;
--	unsigned int	bv_offset;
-+	union {
-+		__u32		page_offset;
-+		unsigned int	bv_offset;
-+	};
- };
- 
- struct bvec_iter {
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index e849e411d1f3..718742b1c505 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -14,6 +14,7 @@
- #include <linux/compiler.h>
- #include <linux/time.h>
- #include <linux/bug.h>
-+#include <linux/bvec.h>
- #include <linux/cache.h>
- #include <linux/rbtree.h>
- #include <linux/socket.h>
-@@ -308,13 +309,7 @@ extern int sysctl_max_skb_frags;
-  */
- #define GSO_BY_FRAGS	0xFFFF
- 
--typedef struct skb_frag_struct skb_frag_t;
--
--struct skb_frag_struct {
--	struct page *bv_page;
--	unsigned int bv_len;
--	__u32 page_offset;
--};
-+typedef struct bio_vec skb_frag_t;
- 
- /**
-  * skb_frag_size - Returns the size of a skb fragment
--- 
-2.20.1
-
+Applied to bpf tree (and also added Stanislav's Tested-by to the last
+one), thanks!
