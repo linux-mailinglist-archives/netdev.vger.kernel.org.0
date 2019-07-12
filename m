@@ -2,101 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2494670D5
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 16:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B72670FD
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 16:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727147AbfGLOAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 10:00:03 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60092 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727064AbfGLOAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 10:00:03 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6CDw1Jm082142
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 10:00:02 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tpswbve5g-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 10:00:02 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Fri, 12 Jul 2019 15:00:00 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 12 Jul 2019 14:59:56 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6CDxtSJ38207496
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Jul 2019 13:59:55 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5A4614C046;
-        Fri, 12 Jul 2019 13:59:55 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2007A4C040;
-        Fri, 12 Jul 2019 13:59:55 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 12 Jul 2019 13:59:55 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH bpf] selftests/bpf: put test_stub.o into $(OUTPUT)
-Date:   Fri, 12 Jul 2019 15:59:50 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1727212AbfGLOHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 10:07:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48538 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726466AbfGLOHd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jul 2019 10:07:33 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 13EEB206B8;
+        Fri, 12 Jul 2019 14:07:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562940452;
+        bh=l2jxhcxb3H5zHl1HLHLMhC6OaCKayvurXGn4TEVXXoE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A/oAdNTdeI+UFzMuaoy4DvzeHOzCWLaMqM4Z0jDa0fCTZdnnVMmVzbxFV54ca2D35
+         keNuDhJQelKhNkBrLYHxdMcUwGrOPDYBJxPTDuvPjVhJfRHoIeifkRu+IK8/R2Lkff
+         ht6sVwffhqeUmPUg9qiRYQW91VgWhz3KGlahak+0=
+Date:   Fri, 12 Jul 2019 16:07:29 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Xiaoming Ni <nixiaoming@huawei.com>
+Cc:     Vasily Averin <vvs@virtuozzo.com>,
+        "adobriyan@gmail.com" <adobriyan@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "arjan@linux.intel.com" <arjan@linux.intel.com>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jlayton@kernel.org" <jlayton@kernel.org>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
+        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
+        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
+        "stable@kernel.org" <stable@kernel.org>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
+        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
+        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
+        "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
+        Dailei <dylix.dailei@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
+Message-ID: <20190712140729.GA11583@kroah.com>
+References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
+ <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
+ <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
+ <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
+ <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071213-0012-0000-0000-000003321DCD
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071213-0013-0000-0000-0000216B8E68
-Message-Id: <20190712135950.91600-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-12_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907120151
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a rule to put test_stub.o in $(OUTPUT) and change the references to
-it accordingly. This prevents test_stub.o from being created in the
-source directory.
+On Fri, Jul 12, 2019 at 09:11:57PM +0800, Xiaoming Ni wrote:
+> On 2019/7/11 21:57, Vasily Averin wrote:
+> > On 7/11/19 4:55 AM, Nixiaoming wrote:
+> >> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
+> >>> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
+> >>>> Registering the same notifier to a hook repeatedly can cause the hook
+> >>>> list to form a ring or lose other members of the list.
+> >>>
+> >>> I think is not enough to _prevent_ 2nd register attempt,
+> >>> it's enough to detect just attempt and generate warning to mark host in bad state.
+> >>>
+> >>
+> >> Duplicate registration is prevented in my patch, not just "mark host in bad state"
+> >>
+> >> Duplicate registration is checked and exited in notifier_chain_cond_register()
+> >>
+> >> Duplicate registration was checked in notifier_chain_register() but only 
+> >> the alarm was triggered without exiting. added by commit 831246570d34692e 
+> >> ("kernel/notifier.c: double register detection")
+> >>
+> >> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
+> >>  which triggers an alarm and exits when a duplicate registration is detected.
+> >>
+> >>> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
+> >>> and it can lead to host crash in any time: 
+> >>> you can unregister notifier on first attempt it can be too early, it can be still in use.
+> >>> on the other hand you can never call 2nd unregister at all.
+> >>
+> >> Since the member was not added to the linked list at the time of the second registration, 
+> >> no linked list ring was formed. 
+> >> The member is released on the first unregistration and -ENOENT on the second unregistration.
+> >> After patching, the fault has been alleviated
+> > 
+> > You are wrong here.
+> > 2nd notifier's registration is a pure bug, this should never happen.
+> > If you know the way to reproduce this situation -- you need to fix it. 
+> > 
+> > 2nd registration can happen in 2 cases:
+> > 1) missed rollback, when someone forget to call unregister after successfull registration, 
+> > and then tried to call register again. It can lead to crash for example when according module will be unloaded.
+> > 2) some subsystem is registered twice, for example from  different namespaces.
+> > in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
+> > in second namespace, it also can lead to unexpacted behaviour.
+> > 
+> So in these two cases, is it more reasonable to trigger BUG() directly when checking for duplicate registration ?
+> But why does current notifier_chain_register() just trigger WARN() without exiting ?
+> notifier_chain_cond_register() direct exit without triggering WARN() ?
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
- tools/testing/selftests/bpf/Makefile | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+It should recover from this, if it can be detected.  The main point is
+that not all apis have to be this "robust" when used within the kernel
+as we do allow for the callers to know what they are doing :)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 277d8605e340..66b6f7fb683c 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -83,13 +83,16 @@ all: $(TEST_CUSTOM_PROGS)
- $(OUTPUT)/urandom_read: $(OUTPUT)/%: %.c
- 	$(CC) -o $@ $< -Wl,--build-id
- 
-+$(OUTPUT)/test_stub.o: test_stub.c
-+	$(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) -c -o $@ $<
-+
- $(OUTPUT)/test_maps: map_tests/*.c
- 
- BPFOBJ := $(OUTPUT)/libbpf.a
- 
--$(TEST_GEN_PROGS): test_stub.o $(BPFOBJ)
-+$(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
- 
--$(TEST_GEN_PROGS_EXTENDED): test_stub.o $(OUTPUT)/libbpf.a
-+$(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(OUTPUT)/libbpf.a
- 
- $(OUTPUT)/test_dev_cgroup: cgroup_helpers.c
- $(OUTPUT)/test_skb_cgroup_id_user: cgroup_helpers.c
--- 
-2.21.0
+If this does not cause any additional problems or slow downs, it's
+probably fine to add.
 
+thanks,
+
+greg k-h
