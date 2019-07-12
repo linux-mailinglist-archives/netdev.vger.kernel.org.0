@@ -2,112 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CED67559
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 21:24:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7166267574
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 21:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727431AbfGLTXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 15:23:53 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:40707 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727226AbfGLTXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 15:23:51 -0400
-Received: by mail-qk1-f196.google.com with SMTP id s145so7257620qke.7
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 12:23:50 -0700 (PDT)
+        id S1727370AbfGLTkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 15:40:45 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38703 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727362AbfGLTko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 15:40:44 -0400
+Received: by mail-pf1-f193.google.com with SMTP id y15so4738057pfn.5
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 12:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=nTx5Q1t5rZtAKWvNKqv4EB9nf5UeJFN+8yFT1L6eySw=;
-        b=fDcMVGES6+Tam4qkQH1rbV5vSngkrm4Gfv6CSMXyXvOZbujsJS6uf/LdoRmtRqCuKO
-         VkAmPvLFIpcjeN89SqK/8+8wZrls3RovYxZbRn2iCT/V+ZdCoQLoA8ySXtWQMxW+ndR0
-         6Gblv8mS3osSLqglsrrm5QPPbm80CkqphcATpprJaZbO9aQ95sOGkhB6Wq4RbXcUVwtA
-         EuJUgk63IQN8+V67/ceHDhPxQuUR1uZ9NP8pKSXZ8BD3cn3CM1BP4Pk7b8iWsBoKXtaJ
-         uaFKEtJnxDUTtHk8ebCIOl7uGx/Rd5FJiLCr3BeECuoL+PBAAS/IA4LxRlqgF/J0LEq4
-         VNvA==
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nAJsR7QXwSJc647spM+sQunAoBzpCrSmQsX27huBu+o=;
+        b=bmxPnZXFh5gOCfuOus2gHM6f6oGNgMKP/ji63JlI+bwUXl3Gpe3vjP96TTAKXaJCZC
+         zj7Y8eFA2XvcXUe8SUv1NKdUvs12xq4vmo946+SPEoJfJYl3KKJWKjnEQtWp8b/06x77
+         32gH3YSvwVXKePdbdirKmPWfh8K3q8ksM+3uI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=nTx5Q1t5rZtAKWvNKqv4EB9nf5UeJFN+8yFT1L6eySw=;
-        b=fcXos+RgML4KD/q1arPOu75lcA+SVMP5AG1aoU0l58m9GenCojksIjSJ2/OeFwG2bE
-         UgJhTk4gUIdGXAy8PzWct62LlfR78d3S/FIixQrFnivgYobAzgxwvy/1RcgujCAUuYVK
-         GrbLx/ymlhc4FrgqMpQ7LS4nloCl2D21aFJ2M7MH9CvqkcQwWjYe+R9BAq91JHClcDU8
-         W1xxeyIUcxzut1DwAUSbF1xJrXznV08djTecnNQ63KtaUNiZ8Cei8eUthuXs3SzrM4UD
-         wCpEvhJT0gWcyWZNnccUrPeMZeoWg4E64CiIVORPZOp+FS66yFgXULReMY/V13VmGdVe
-         QvVA==
-X-Gm-Message-State: APjAAAV4IMwDhMAO+AToJiP267C+jrE6VG1rpn6uqK4Jn7Gc7TLN9QNL
-        KiCApjYYgwrcffL6hukL/CNYBA==
-X-Google-Smtp-Source: APXvYqxEArSBk4tR0zWDSzipAUCLfBRT1wLTWFgthk8YozROg1saOVewdsZdhpftywRfgMu/S7X0tA==
-X-Received: by 2002:ae9:e217:: with SMTP id c23mr7455726qkc.227.1562959430223;
-        Fri, 12 Jul 2019 12:23:50 -0700 (PDT)
-Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id b4sm3589339qtp.77.2019.07.12.12.23.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 12 Jul 2019 12:23:49 -0700 (PDT)
-From:   Qian Cai <cai@lca.pw>
-To:     davem@davemloft.net
-Cc:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        arnd@arndb.de, dhowells@redhat.com, hpa@zytor.com,
-        netdev@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
-Subject: [PATCH] be2net: fix adapter->big_page_size miscaculation
-Date:   Fri, 12 Jul 2019 15:23:21 -0400
-Message-Id: <1562959401-19815-1-git-send-email-cai@lca.pw>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nAJsR7QXwSJc647spM+sQunAoBzpCrSmQsX27huBu+o=;
+        b=cU66jDhoGvLuEXR5NrSD2xQV1o3FiZ65sq6bnNCjdJj8Koa9q0RFHEYrsuHJO0pXKP
+         KrVW28t6PsDkeR03JX8IZGpLgD2pCX56kZ68kFATQZ6IBoGGqWEReOofP5FTOhbtB1ez
+         HkPlPizPyAbzdbgj7UyJumMcBfS94lU8+rMj/b27oA/QSj54wPbkW3tlewFmmWbwQvHg
+         RA4dimWf3mVTpWKDpqP8kT7gy7eh0zrQzXGJ6mpwM9kL6qkPkBjDpatNzbNR6PXNFQiV
+         efCDTmgbXaOdYHvsWnNX7TsRuvFbLJNKfCtvucXf7WyZn8ydaAdGrlMeJJVpOF532ypb
+         UqyA==
+X-Gm-Message-State: APjAAAWZWj6gAnWyTyvfiAdOstjYkIagQUXQEFA5RgdzRuz+nWi+I7TM
+        V7FAaSGopgvLA0h5lnCp+/k=
+X-Google-Smtp-Source: APXvYqxvgkL0vpDAZ6Hy5r4mm056ssuxGSXpd+iPIILPiTDSys89aOnq2iGFem/k4lcJZbyW+r6SIQ==
+X-Received: by 2002:a63:2246:: with SMTP id t6mr12863936pgm.209.1562960443485;
+        Fri, 12 Jul 2019 12:40:43 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id bo20sm7308552pjb.23.2019.07.12.12.40.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 12 Jul 2019 12:40:42 -0700 (PDT)
+Date:   Fri, 12 Jul 2019 15:40:40 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
+        Pavel Machek <pavel@ucw.cz>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [PATCH v1 1/6] rcu: Add support for consolidated-RCU reader
+ checking
+Message-ID: <20190712194040.GA150253@google.com>
+References: <20190711234401.220336-1-joel@joelfernandes.org>
+ <20190711234401.220336-2-joel@joelfernandes.org>
+ <20190712111125.GT3402@hirez.programming.kicks-ass.net>
+ <20190712151051.GB235410@google.com>
+ <20190712164531.GW26519@linux.ibm.com>
+ <20190712170631.GA111598@google.com>
+ <20190712174630.GX26519@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190712174630.GX26519@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit d66acc39c7ce ("bitops: Optimise get_order()") introduced a
-problem for the be2net driver as "rx_frag_size" could be a module
-parameter that can be changed while loading the module. That commit
-checks __builtin_constant_p() first in get_order() which cause
-"adapter->big_page_size" to be assigned a value based on the
-the default "rx_frag_size" value at the compilation time. It also
-generate a compilation warning,
+On Fri, Jul 12, 2019 at 10:46:30AM -0700, Paul E. McKenney wrote:
+> On Fri, Jul 12, 2019 at 01:06:31PM -0400, Joel Fernandes wrote:
+> > On Fri, Jul 12, 2019 at 09:45:31AM -0700, Paul E. McKenney wrote:
+> > > On Fri, Jul 12, 2019 at 11:10:51AM -0400, Joel Fernandes wrote:
+> > > > On Fri, Jul 12, 2019 at 01:11:25PM +0200, Peter Zijlstra wrote:
+> > > > > On Thu, Jul 11, 2019 at 07:43:56PM -0400, Joel Fernandes (Google) wrote:
+> > > > > > +int rcu_read_lock_any_held(void)
+> > > > > > +{
+> > > > > > +	int lockdep_opinion = 0;
+> > > > > > +
+> > > > > > +	if (!debug_lockdep_rcu_enabled())
+> > > > > > +		return 1;
+> > > > > > +	if (!rcu_is_watching())
+> > > > > > +		return 0;
+> > > > > > +	if (!rcu_lockdep_current_cpu_online())
+> > > > > > +		return 0;
+> > > > > > +
+> > > > > > +	/* Preemptible RCU flavor */
+> > > > > > +	if (lock_is_held(&rcu_lock_map))
+> > > > > 
+> > > > > you forgot debug_locks here.
+> > > > 
+> > > > Actually, it turns out debug_locks checking is not even needed. If
+> > > > debug_locks == 0, then debug_lockdep_rcu_enabled() returns 0 and we would not
+> > > > get to this point.
+> > > > 
+> > > > > > +		return 1;
+> > > > > > +
+> > > > > > +	/* BH flavor */
+> > > > > > +	if (in_softirq() || irqs_disabled())
+> > > > > 
+> > > > > I'm not sure I'd put irqs_disabled() under BH, also this entire
+> > > > > condition is superfluous, see below.
+> > > > > 
+> > > > > > +		return 1;
+> > > > > > +
+> > > > > > +	/* Sched flavor */
+> > > > > > +	if (debug_locks)
+> > > > > > +		lockdep_opinion = lock_is_held(&rcu_sched_lock_map);
+> > > > > > +	return lockdep_opinion || !preemptible();
+> > > > > 
+> > > > > that !preemptible() turns into:
+> > > > > 
+> > > > >   !(preempt_count()==0 && !irqs_disabled())
+> > > > > 
+> > > > > which is:
+> > > > > 
+> > > > >   preempt_count() != 0 || irqs_disabled()
+> > > > > 
+> > > > > and already includes irqs_disabled() and in_softirq().
+> > > > > 
+> > > > > > +}
+> > > > > 
+> > > > > So maybe something lke:
+> > > > > 
+> > > > > 	if (debug_locks && (lock_is_held(&rcu_lock_map) ||
+> > > > > 			    lock_is_held(&rcu_sched_lock_map)))
+> > > > > 		return true;
+> > > > 
+> > > > Agreed, I will do it this way (without the debug_locks) like:
+> > > > 
+> > > > ---8<-----------------------
+> > > > 
+> > > > diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
+> > > > index ba861d1716d3..339aebc330db 100644
+> > > > --- a/kernel/rcu/update.c
+> > > > +++ b/kernel/rcu/update.c
+> > > > @@ -296,27 +296,15 @@ EXPORT_SYMBOL_GPL(rcu_read_lock_bh_held);
+> > > >  
+> > > >  int rcu_read_lock_any_held(void)
+> > > >  {
+> > > > -	int lockdep_opinion = 0;
+> > > > -
+> > > >  	if (!debug_lockdep_rcu_enabled())
+> > > >  		return 1;
+> > > >  	if (!rcu_is_watching())
+> > > >  		return 0;
+> > > >  	if (!rcu_lockdep_current_cpu_online())
+> > > >  		return 0;
+> > > > -
+> > > > -	/* Preemptible RCU flavor */
+> > > > -	if (lock_is_held(&rcu_lock_map))
+> > > > -		return 1;
+> > > > -
+> > > > -	/* BH flavor */
+> > > > -	if (in_softirq() || irqs_disabled())
+> > > > -		return 1;
+> > > > -
+> > > > -	/* Sched flavor */
+> > > > -	if (debug_locks)
+> > > > -		lockdep_opinion = lock_is_held(&rcu_sched_lock_map);
+> > > > -	return lockdep_opinion || !preemptible();
+> > > > +	if (lock_is_held(&rcu_lock_map) || lock_is_held(&rcu_sched_lock_map))
+> > > 
+> > > OK, I will bite...  Why not also lock_is_held(&rcu_bh_lock_map)?
+> > 
+> > Hmm, I was borrowing the strategy from rcu_read_lock_bh_held() which does not
+> > check for a lock held in this map.
+> > 
+> > Honestly, even  lock_is_held(&rcu_sched_lock_map) seems unnecessary per-se
+> > since !preemptible() will catch that? rcu_read_lock_sched() disables
+> > preemption already, so lockdep's opinion of the matter seems redundant there.
+> 
+> Good point!  At least as long as the lockdep splats list RCU-bh among
+> the locks held, which they did last I checked.
+> 
+> Of course, you could make the same argument for getting rid of
+> rcu_sched_lock_map.  Does it make sense to have the one without
+> the other?
 
-In file included from ./arch/powerpc/include/asm/page_64.h:107,
-                 from ./arch/powerpc/include/asm/page.h:242,
-                 from ./arch/powerpc/include/asm/mmu.h:132,
-                 from ./arch/powerpc/include/asm/lppaca.h:47,
-                 from ./arch/powerpc/include/asm/paca.h:17,
-                 from ./arch/powerpc/include/asm/current.h:13,
-                 from ./include/linux/thread_info.h:21,
-                 from ./arch/powerpc/include/asm/processor.h:39,
-                 from ./include/linux/prefetch.h:15,
-                 from drivers/net/ethernet/emulex/benet/be_main.c:14:
-drivers/net/ethernet/emulex/benet/be_main.c: In function
-'be_rx_cqs_create':
-./include/asm-generic/getorder.h:54:9: warning: comparison is always
-true due to limited range of data type [-Wtype-limits]
-   (((n) < (1UL << PAGE_SHIFT)) ? 0 :  \
-         ^
-drivers/net/ethernet/emulex/benet/be_main.c:3138:33: note: in expansion
-of macro 'get_order'
-  adapter->big_page_size = (1 << get_order(rx_frag_size)) * PAGE_SIZE;
-                                 ^~~~~~~~~
+It probably makes it inconsistent in the least. I will add the check for
+the rcu_bh_lock_map in a separate patch, if that's Ok with you - since I also
+want to update the rcu_read_lock_bh_held() logic in the same patch.
 
-Fix it by using __get_order() instead which will calculate in runtime.
+That rcu_read_lock_bh_held() could also just return !preemptible as Peter
+suggested for the bh case.
 
-Fixes: d66acc39c7ce ("bitops: Optimise get_order()")
-Signed-off-by: Qian Cai <cai@lca.pw>
----
- drivers/net/ethernet/emulex/benet/be_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > Sorry I already sent out patches again before seeing your comment but I can
+> > rework and resend them based on any other suggestions.
+> 
+> Not a problem!
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 82015c8a5ed7..db13e714df7c 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -3135,7 +3135,7 @@ static int be_rx_cqs_create(struct be_adapter *adapter)
- 	if (adapter->num_rx_qs == 0)
- 		adapter->num_rx_qs = 1;
- 
--	adapter->big_page_size = (1 << get_order(rx_frag_size)) * PAGE_SIZE;
-+	adapter->big_page_size = (1 << __get_order(rx_frag_size)) * PAGE_SIZE;
- 	for_all_rx_queues(adapter, rxo, i) {
- 		rxo->adapter = adapter;
- 		cq = &rxo->cq;
--- 
-1.8.3.1
+Thanks. Depending on whether there is any other feedback, I will work on the
+bh_ stuff as a separate patch on top of this series, or work it into the next
+series revision if I'm reposting. Hopefully that sounds Ok to you.
+
+thanks,
+
+ - Joel
+
 
