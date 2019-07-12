@@ -2,103 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F7AE672A8
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 17:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 942CA672B2
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 17:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbfGLPpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 11:45:05 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52524 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726867AbfGLPpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 11:45:05 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hlxjG-0001zc-Uu; Fri, 12 Jul 2019 17:44:58 +0200
-Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hlxjG-000QQa-OT; Fri, 12 Jul 2019 17:44:58 +0200
-Subject: Re: [PATCH bpf-next] net: Don't uninstall an XDP program when none is
- installed
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-References: <20190612161405.24064-1-maximmi@mellanox.com>
- <3124b473-1322-e98e-d5ab-60e584e74200@mellanox.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5b123e9a-095f-1db4-da6e-5af6552430e1@iogearbox.net>
-Date:   Fri, 12 Jul 2019 17:44:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1727229AbfGLPp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 11:45:56 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37314 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726867AbfGLPpz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 11:45:55 -0400
+Received: by mail-qt1-f193.google.com with SMTP id y26so8543182qto.4;
+        Fri, 12 Jul 2019 08:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=253jIi4xOnzjlXg+NSu0GwC/ONvEx2hif4TU2AxVCkk=;
+        b=AUkPAPFalZ+5FD7voy4yN/Pw1QeUPyRAq1oKkMLcY6b69p7dcoiI5V1w560l7wXOzW
+         j6zf72ggQPvFJdYwGtp7G/gLOcCuMKcraLa2ibKfGWm+NMgIgVlawFqkpglf3/vh56hc
+         OkwLiSeaB7eYh80gDAOQSieGTCJozLcCyMtS7nihOk7SBrVnB9D7S1n+PAX2ZlXFu8gC
+         +k+Ogl/r7wXbR3mQEokwVpXC8Ejhyo/honZ2oQkdNnPfoy7YjhqdHJLV4ec4+vhyIgYZ
+         f/ykzmuYjjQ+1BtYSgcbDUF7+75ixYOHzgYXS9ML+KjAKNivLU0GTrHDV0czk2los1ne
+         cueQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=253jIi4xOnzjlXg+NSu0GwC/ONvEx2hif4TU2AxVCkk=;
+        b=aBc8LctFoGxQiSXkzeLjHE/Zb4Ua/AjygDgzA34NPZv9zgCm+ApB4a/XjottOWYEhP
+         Iqq5DQiuQaEcb4Fj5vHrRHtNqSdG8c352uGf4UgSsrk/+nbCuMwODdB0cs6T0EDWvaUp
+         zEybP6au1lVcHY/nHj8ZRwhPQJsLKS/aK4umknPz/uUXC8zmb02cu7rI7l3BAMVZJ0py
+         By/PEPLIyWnpLEXdT3DIIyE3UKRm3mY6KExDIJ631CQfaDvFCrNH/szNDvFH9wFOTcQJ
+         tzQ4ELzsti6nw5KnotlBwr6L7Q/yT7wys4WRHC7T1JctIia4aFepvh2Oe+/qRk93HvyR
+         NUbQ==
+X-Gm-Message-State: APjAAAXswXtWn/JIYakcyCcnDbmiTE/advUy9p91HVB/X8qSfn+4cF+p
+        3IG5ESrJB+0ke0udQ6SHIOzlD2eAymt2bJDSA6I=
+X-Google-Smtp-Source: APXvYqxwcqr95f+DpEerccyPYK416a7NLAn9w42IJLY6k6Gs26oxjN42o5ha9HN+aCi1d2+xL4EvfEkLSQNnrc2qshk=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr6719872qty.141.1562946354278;
+ Fri, 12 Jul 2019 08:45:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <3124b473-1322-e98e-d5ab-60e584e74200@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
+References: <20190711010844.1285018-1-andriin@fb.com> <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
+ <CAEf4Bzb1kE_jCbyye07-pVMT=914_Nrdh+R=QXA2qMssYP5brA@mail.gmail.com>
+ <CAGGp+cHaV1EMXqeQvKN-p5gEZWcSgGfcbKimcS+C8u=dfeU=1Q@mail.gmail.com> <d6ff6022-56f7-de63-d3e1-8949360296ca@iogearbox.net>
+In-Reply-To: <d6ff6022-56f7-de63-d3e1-8949360296ca@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 12 Jul 2019 08:45:43 -0700
+Message-ID: <CAEf4BzacDoKwSbBQxMK9eP8ETyD-RWnYYZtucozoVQsJ75Ymjg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: remove logic duplication in test_verifier.c
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Krzesimir Nowak <krzesimir@kinvolk.io>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/10/2019 01:16 PM, Maxim Mikityanskiy wrote:
-> On 2019-06-12 19:14, Maxim Mikityanskiy wrote:
->> dev_change_xdp_fd doesn't perform any checks in case it uninstalls an
->> XDP program. It means that the driver's ndo_bpf can be called with
->> XDP_SETUP_PROG asking to set it to NULL even if it's already NULL. This
->> case happens if the user runs `ip link set eth0 xdp off` when there is
->> no XDP program attached.
->>
->> The drivers typically perform some heavy operations on XDP_SETUP_PROG,
->> so they all have to handle this case internally to return early if it
->> happens. This patch puts this check into the kernel code, so that all
->> drivers will benefit from it.
->>
->> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
->> ---
->> Björn, please take a look at this, Saeed told me you were doing
->> something related, but I couldn't find it. If this fix is already
->> covered by your work, please tell about that.
->>
->>   net/core/dev.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/net/core/dev.c b/net/core/dev.c
->> index 66f7508825bd..68b3e3320ceb 100644
->> --- a/net/core/dev.c
->> +++ b/net/core/dev.c
->> @@ -8089,6 +8089,9 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
->>   			bpf_prog_put(prog);
->>   			return -EINVAL;
->>   		}
->> +	} else {
->> +		if (!__dev_xdp_query(dev, bpf_op, query))
->> +			return 0;
->>   	}
->>   
->>   	err = dev_xdp_install(dev, bpf_op, extack, flags, prog);
->>
-> 
-> Alexei, so what about this patch? It's marked as "Changed Requested" in 
-> patchwork, but Jakub's point looks resolved - I don't see any changes 
-> required from my side.
+On Fri, Jul 12, 2019 at 6:57 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 07/12/2019 09:53 AM, Krzesimir Nowak wrote:
+> > On Thu, Jul 11, 2019 at 4:43 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> >>
+> >> On Thu, Jul 11, 2019 at 5:13 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrote:
+> >>>
+> >>> On Thu, Jul 11, 2019 at 3:08 AM Andrii Nakryiko <andriin@fb.com> wrote:
+> >>>>
+> >>>> test_verifier tests can specify single- and multi-runs tests. Internally
+> >>>> logic of handling them is duplicated. Get rid of it by making single run
+> >>>> retval specification to be a first retvals spec.
+> >>>>
+> >>>> Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
+> >>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> >>>
+> >>> Looks good, one nit below.
+> >>>
+> >>> Acked-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> >>>
+> >>>> ---
+> >>>>  tools/testing/selftests/bpf/test_verifier.c | 37 ++++++++++-----------
+> >>>>  1 file changed, 18 insertions(+), 19 deletions(-)
+> >>>>
+> >>>> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> >>>> index b0773291012a..120ecdf4a7db 100644
+> >>>> --- a/tools/testing/selftests/bpf/test_verifier.c
+> >>>> +++ b/tools/testing/selftests/bpf/test_verifier.c
+> >>>> @@ -86,7 +86,7 @@ struct bpf_test {
+> >>>>         int fixup_sk_storage_map[MAX_FIXUPS];
+> >>>>         const char *errstr;
+> >>>>         const char *errstr_unpriv;
+> >>>> -       uint32_t retval, retval_unpriv, insn_processed;
+> >>>> +       uint32_t insn_processed;
+> >>>>         int prog_len;
+> >>>>         enum {
+> >>>>                 UNDEF,
+> >>>> @@ -95,16 +95,24 @@ struct bpf_test {
+> >>>>         } result, result_unpriv;
+> >>>>         enum bpf_prog_type prog_type;
+> >>>>         uint8_t flags;
+> >>>> -       __u8 data[TEST_DATA_LEN];
+> >>>>         void (*fill_helper)(struct bpf_test *self);
+> >>>>         uint8_t runs;
+> >>>> -       struct {
+> >>>> -               uint32_t retval, retval_unpriv;
+> >>>> -               union {
+> >>>> -                       __u8 data[TEST_DATA_LEN];
+> >>>> -                       __u64 data64[TEST_DATA_LEN / 8];
+> >>>> +       union {
+> >>>> +               struct {
+> >>>
+> >>> Maybe consider moving the struct definition outside to further the
+> >>> removal of the duplication?
+> >>
+> >> Can't do that because then retval/retval_unpriv/data won't be
+> >> accessible as a normal field of struct bpf_test. It has to be in
+> >> anonymous structs/unions, unfortunately.
+> >>
+> >
+> > Ah, right.
+> >
+> > Meh.
+> >
+> > I tried something like this:
+> >
+> > #define BPF_DATA_STRUCT \
+> >     struct { \
+> >         uint32_t retval, retval_unpriv; \
+> >         union { \
+> >             __u8 data[TEST_DATA_LEN]; \
+> >             __u64 data64[TEST_DATA_LEN / 8]; \
+> >         }; \
+> >     }
+> >
+> > and then:
+> >
+> >     union {
+> >         BPF_DATA_STRUCT;
+> >         BPF_DATA_STRUCT retvals[MAX_TEST_RUNS];
+> >     };
+> >
+> > And that seems to compile at least. But question is: is this
+> > acceptably ugly or unacceptably ugly? :)
+>
+> Both a bit ugly, but I'd have a slight preference towards the above,
+> perhaps a bit more readable like:
 
-I believe part of Jakub's feedback was that if we make this generic that this
-does not generally address the case where both prog pointers are equal (whether
-NULL or non-NULL).
+Heh, I had slight preference the other way :) I'll update diff with
+macro, though.
 
-Thanks,
-Daniel
+>
+> #define bpf_testdata_struct_t                                   \
+>         struct {                                                \
+>                 uint32_t retval, retval_unpriv;                 \
+>                 union {                                         \
+>                         __u8 data[TEST_DATA_LEN];               \
+>                         __u64 data64[TEST_DATA_LEN / 8];        \
+>                 };                                              \
+>         }
+>         union {
+>                 bpf_testdata_struct_t;
+>                 bpf_testdata_struct_t retvals[MAX_TEST_RUNS];
+>         };
+>
+> Thanks,
+> Daniel
