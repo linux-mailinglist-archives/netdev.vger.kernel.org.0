@@ -2,60 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF8B76704D
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:42:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A172E6705E
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727383AbfGLNm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 09:42:27 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56794 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726982AbfGLNm0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:42:26 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hlvoe-0000w6-R2; Fri, 12 Jul 2019 15:42:25 +0200
-Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hlvoe-0001T1-KU; Fri, 12 Jul 2019 15:42:24 +0200
-Subject: Re: [PATCH v3 bpf] selftests/bpf: do not ignore clang failures
-To:     Ilya Leoshkevich <iii@linux.ibm.com>, bpf@vger.kernel.org,
+        id S1727975AbfGLNny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 09:43:54 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:50714 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727966AbfGLNny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:43:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=sg3Plg5zJYWjcazlM4XTvUKaAwuBuwVRKYnN70fapAw=; b=t0aXPu/bk1iopcYYgllPcYfjE
+        0+3XRYEEHfPnQrpLcw7t8UJGg9MdX/NI9Y6OQpTmF/vJEk5JgclmJmIasB7S0NzB3LzsN1SwXXY39
+        hh2KUilkHQARD7xZHTI9b69Xaq2cfxRoItyJRKSCyBc3sEttXa1EaJ0TJSHgLmjag9tIYyGaUUrxu
+        /R0WZYfGxXFG3cBxETUwUJrzMXJTETmND5Z+eLVHzwOOT9HyNczL/GXuA2M7KymxMls/HEKwGMQmh
+        qaDFiqGCeC8s34n0qJOcW5ZhCVdOKac5I+1O8L94OxQALZWTMoCoDdKwBZBebGCfPHsuuZ7KUNpoh
+        l43UeuGzQ==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1hlvpz-00059l-DA; Fri, 12 Jul 2019 13:43:47 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     davem@davemloft.net
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>, hch@lst.de,
         netdev@vger.kernel.org
-Cc:     andrii.nakryiko@gmail.com, liu.song.a23@gmail.com
-References: <20190711091249.59865-1-iii@linux.ibm.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6c029e6b-7b3c-4007-8f65-db6798a5a3cb@iogearbox.net>
-Date:   Fri, 12 Jul 2019 15:42:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+Subject: [PATCH v3 0/7] Convert skb_frag_t to bio_vec
+Date:   Fri, 12 Jul 2019 06:43:38 -0700
+Message-Id: <20190712134345.19767-1-willy@infradead.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190711091249.59865-1-iii@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/11/2019 11:12 AM, Ilya Leoshkevich wrote:
-> When compiling an eBPF prog fails, make still returns 0, because
-> failing clang command's output is piped to llc and therefore its
-> exit status is ignored.
-> 
-> When clang fails, pipe the string "clang failed" to llc. This will make
-> llc fail with an informative error message. This solution was chosen
-> over using pipefail, having separate targets or getting rid of llc
-> invocation due to its simplicity.
-> 
-> In addition, pull Kbuild.include in order to get .DELETE_ON_ERROR target,
-> which would cause partial .o files to be removed.
-> 
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Applied, thanks!
+The skb_frag_t and bio_vec are fundamentally the same (page, offset,
+length) tuple.  This patch series unifies the two, leaving the
+skb_frag_t typedef in place.  This has the immediate advantage that
+we already have iov_iter support for bvecs and don't need to add
+support for iterating skbuffs.  It enables a long-term plan to use
+bvecs more broadly within the kernel and should make network-storage
+drivers able to do less work converting between skbuffs and biovecs.
+
+It will consume more memory on 32-bit kernels.  If that proves
+problematic, we can look at ways of addressing it.
+
+v3: Rebase on latest Linus with net-next merged.
+  - Reorder the uncontroversial 'Use skb accessors' patches first so you
+    can apply just those two if you want to hold off on the full
+    conversion.
+  - Convert all the users of 'struct skb_frag_struct' to skb_frag_t.
+
+Matthew Wilcox (Oracle) (7):
+  net: Use skb accessors in network drivers
+  net: Use skb accessors in network core
+  net: Increase the size of skb_frag_t
+  net: Reorder the contents of skb_frag_t
+  net: Rename skb_frag page to bv_page
+  net: Rename skb_frag_t size to bv_len
+  net: Convert skb_frag_t to bio_vec
+
+ drivers/crypto/chelsio/chtls/chtls_io.c       |  6 ++--
+ drivers/hsi/clients/ssi_protocol.c            |  3 +-
+ drivers/infiniband/hw/hfi1/vnic_sdma.c        |  2 +-
+ drivers/net/ethernet/3com/3c59x.c             |  2 +-
+ drivers/net/ethernet/agere/et131x.c           |  6 ++--
+ drivers/net/ethernet/amd/xgbe/xgbe-desc.c     |  2 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c      |  2 +-
+ .../net/ethernet/apm/xgene/xgene_enet_main.c  |  3 +-
+ drivers/net/ethernet/atheros/alx/main.c       |  4 +--
+ .../net/ethernet/atheros/atl1c/atl1c_main.c   |  4 +--
+ .../net/ethernet/atheros/atl1e/atl1e_main.c   |  3 +-
+ drivers/net/ethernet/atheros/atlx/atl1.c      |  3 +-
+ drivers/net/ethernet/broadcom/bgmac.c         |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 +-
+ drivers/net/ethernet/brocade/bna/bnad.c       |  2 +-
+ drivers/net/ethernet/calxeda/xgmac.c          |  2 +-
+ .../net/ethernet/cavium/liquidio/lio_main.c   | 23 ++++++-------
+ .../ethernet/cavium/liquidio/lio_vf_main.c    | 23 ++++++-------
+ .../ethernet/cavium/thunder/nicvf_queues.c    |  4 +--
+ drivers/net/ethernet/chelsio/cxgb3/sge.c      |  2 +-
+ drivers/net/ethernet/cortina/gemini.c         |  5 ++-
+ drivers/net/ethernet/emulex/benet/be_main.c   |  2 +-
+ drivers/net/ethernet/freescale/enetc/enetc.c  |  2 +-
+ drivers/net/ethernet/freescale/fec_main.c     |  4 +--
+ drivers/net/ethernet/hisilicon/hix5hd2_gmac.c |  2 +-
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c |  4 +--
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  8 ++---
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  2 +-
+ drivers/net/ethernet/ibm/emac/core.c          |  2 +-
+ drivers/net/ethernet/intel/e1000/e1000_main.c |  3 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c    |  3 +-
+ drivers/net/ethernet/intel/fm10k/fm10k_main.c |  5 +--
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  4 +--
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h   |  2 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |  4 +--
+ drivers/net/ethernet/intel/iavf/iavf_txrx.h   |  2 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  6 ++--
+ drivers/net/ethernet/intel/igb/igb_main.c     |  5 +--
+ drivers/net/ethernet/intel/igbvf/netdev.c     |  2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |  5 +--
+ drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  4 +--
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  9 ++---
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  2 +-
+ drivers/net/ethernet/jme.c                    |  5 ++-
+ drivers/net/ethernet/marvell/mvneta.c         |  4 +--
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  7 ++--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  4 +--
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c    |  4 +--
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  2 +-
+ drivers/net/ethernet/microchip/lan743x_main.c |  5 ++-
+ .../net/ethernet/myricom/myri10ge/myri10ge.c  | 10 +++---
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  6 ++--
+ .../ethernet/qlogic/netxen/netxen_nic_main.c  |  4 +--
+ .../net/ethernet/qlogic/qlcnic/qlcnic_io.c    |  2 +-
+ drivers/net/ethernet/qualcomm/emac/emac-mac.c | 12 +++----
+ .../net/ethernet/synopsys/dwc-xlgmac-desc.c   |  2 +-
+ .../net/ethernet/synopsys/dwc-xlgmac-net.c    |  2 +-
+ drivers/net/ethernet/tehuti/tehuti.c          |  2 +-
+ drivers/net/usb/usbnet.c                      |  4 +--
+ drivers/net/vmxnet3/vmxnet3_drv.c             |  7 ++--
+ drivers/net/wireless/ath/wil6210/debugfs.c    |  3 +-
+ drivers/net/wireless/ath/wil6210/txrx.c       |  9 +++--
+ drivers/net/wireless/ath/wil6210/txrx_edma.c  |  2 +-
+ drivers/net/xen-netback/netback.c             |  4 +--
+ drivers/s390/net/qeth_core_main.c             |  2 +-
+ drivers/scsi/fcoe/fcoe_transport.c            |  2 +-
+ drivers/staging/octeon/ethernet-tx.c          |  5 ++-
+ .../staging/unisys/visornic/visornic_main.c   |  4 +--
+ drivers/target/iscsi/cxgbit/cxgbit_target.c   | 13 +++----
+ include/linux/bvec.h                          |  5 ++-
+ include/linux/skbuff.h                        | 34 ++++++-------------
+ net/core/skbuff.c                             | 26 ++++++++------
+ net/core/tso.c                                |  8 ++---
+ net/ipv4/tcp.c                                | 14 ++++----
+ net/kcm/kcmsock.c                             |  8 ++---
+ net/tls/tls_device.c                          | 14 ++++----
+ 76 files changed, 202 insertions(+), 220 deletions(-)
+
+-- 
+2.20.1
+
