@@ -2,161 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E94A3662AB
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EBF662B1
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730475AbfGLAK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 20:10:29 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:45122 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728582AbfGLAK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:10:29 -0400
-Received: by mail-qt1-f196.google.com with SMTP id x22so1456503qtp.12;
-        Thu, 11 Jul 2019 17:10:28 -0700 (PDT)
+        id S1729549AbfGLARS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 20:17:18 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:51983 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728574AbfGLARS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:17:18 -0400
+Received: by mail-pg1-f201.google.com with SMTP id o16so4582255pgk.18
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 17:17:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WzVqjz+ovYVJRN1UL9XOiaqyrDBmch5lCBZzUwHfOaY=;
-        b=uXGCVxnBJH+IrTUQWBZvqNDA8TsqpMaP2yszpAVamWVilZL18N18DcsOAbwo/fDSq8
-         668wNSevaj6G+5reko3+9dXNspY6ji0n4wgsyXk/tWCgzWSGH8u59bStJr2imP0XlgIk
-         Krcnp+3YHvYdG88eAdcEs0wxIwBCnC7rvUwVhKjYbvRXxqBYVYYbYeKWjrouvpO9DGb3
-         zXQiyAV07LL/OJMLs80rctj8ApHvW5XsodGmBl6vZlA1W5XmjXeRxS+BplegUHl7bzey
-         4vOTWQoIxYQvWJEbw4iEgA/6fdlt8rDdjTTB0FiqFH4E8hPfjEDubUGS0aV2FEWNArUH
-         0XrA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=w66HmPq4DsASMlERtyuZxwvEbhjRa6bY9sh7WF19zZA=;
+        b=Grb/FtAmD7S6qiP7UTPMcpxLI/FOc3jeld4A1buTh8PFgn8eanDSppYavnoTdkPcNA
+         awQdxO7iZWj39P8Ru6CmtLAFWfptS3/9OWcnJNtXpUgM1c++KhG6ecw2SXZuH3TMS/xB
+         c+YY3/eIquAWrnMIZcuNbSAkkg88tL5NsML5EKS8QE5FymmDdztWt5kRKDoFXCiPY8tS
+         3Vf9C4KrUkmCkBWfktU6lRDdG2utkiJ3uUMn0I7D1KiygiqgU11hJdSkXXzL6w7OaauV
+         5ZrwkWKXnBpos/ipY2Y4Uy+DuaNvQxZiKQ3MAPGZ/fomO85VLCAcW4HyahNdSRIJDQI6
+         +cmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WzVqjz+ovYVJRN1UL9XOiaqyrDBmch5lCBZzUwHfOaY=;
-        b=TpETizw8vMuX45v2nH1FpLjEAvq2Ou1kf7m2BsQEQLX1V+osM/Xmst9hgQpiMDjaJJ
-         XrhJHiHf+EJ4U4V1CGpu9SD+7wFgQlXLCTRhayRZgSSfl1/2JORIK0xkB/PJJeV2i04+
-         vIwsdyj2sxJi0zc26t3W7fwNqqeyoo9x0D3yIOfRnfc8iwHsaTaau3iAk2hvnDVOfZ8F
-         xGleSZKsy3gRdGmGVIfQ477YemngclIfqAEprUAHh3WQ1+lcQ/u02772/zP8CQGNEcNF
-         2nNQ7/NdArWRPpET09vt2evXeandcXcEtHNGoIz/Yc89DyUawCXTSt0y/RXgEqurreoB
-         4K7w==
-X-Gm-Message-State: APjAAAWDJYg8nOslMq02nJMF1R0wjPuDqjW7cB95ml1IdauO5AXI6VgE
-        rwc6Vyxke18A3miylgFowH7kZW9K+zeDRWeXvaE=
-X-Google-Smtp-Source: APXvYqzIg0sY6zjxpBd9of08XzWu259C1MQr+I7Q2VLBe3mYWznBjpvBpc3EEJAwziLsMwYtKdePvkRWzPSihHrP7y8=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr3876880qty.141.1562890227759;
- Thu, 11 Jul 2019 17:10:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-2-krzesimir@kinvolk.io>
- <CAEf4BzYDOyU52wdCinm9cxxvNijpTJgQbCg9UxcO1QKk6vWhNA@mail.gmail.com> <CAGGp+cEaGphDCuZL+sbo2aCVumk2jrq9_Lshifg-Ewphfm40Wg@mail.gmail.com>
-In-Reply-To: <CAGGp+cEaGphDCuZL+sbo2aCVumk2jrq9_Lshifg-Ewphfm40Wg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 17:10:16 -0700
-Message-ID: <CAEf4BzZBzreJOvEzm-OzVPNfwHOhuQ4nh4P04Nh5-u24sjFEcA@mail.gmail.com>
-Subject: Re: [bpf-next v3 01/12] selftests/bpf: Print a message when tester
- could not run a program
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=w66HmPq4DsASMlERtyuZxwvEbhjRa6bY9sh7WF19zZA=;
+        b=KjTPx/NdlnPFU6SSP4IVkRJZKjqcOkutPSRevr+9fiMVytwXwAyEnVwRzZrSNrrJoh
+         R97BVbrKx0+3blTouhb9z5OIB/c8O5QQnq52V6qMspWDNGJZAcUF5vFQRkktVRX1IPGe
+         rvNJAGzmsBsdNaub1vBN6/GSDb0LPZ/T6WkgkqgMunqAd2+m60kFzatUyTB+vbm/QxAl
+         kZlZP0fiKNcrkfu9C0zs2/Jj/jVy5WG7Oz8me9SMiPYYgyg5vAVrBg/K/KSHhU5d5qtq
+         1WMTjGepgF8OfcHGmnRHqn6Ssupy51oxX7vfhAldHoluMyX5HrQj4kw6b8QamW4A4atd
+         ZhQg==
+X-Gm-Message-State: APjAAAW0z/h+aSCRxuLtLM5Kz++FQ59IcoqGNqFqssfwbPAFT6jUZDYv
+        uIOlDr7GkM1xuw73bk2SB5yo6Bq0tSyg3Qg+gwY=
+X-Google-Smtp-Source: APXvYqwZkJvWCP2kEkaaTJ/i9YjTiw1o2lW3XwT/9mh0N24TJP7NfY4x0EnHqdaqplthq1yPxJ+0pf17FvIKfYsQEhM=
+X-Received: by 2002:a65:44ca:: with SMTP id g10mr7094676pgs.435.1562890637164;
+ Thu, 11 Jul 2019 17:17:17 -0700 (PDT)
+Date:   Thu, 11 Jul 2019 17:17:06 -0700
+Message-Id: <20190712001708.170259-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH -next] iwlwifi: dbg: work around clang bug by marking debug
+ strings static
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     kvalo@codeaurora.org
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 4:36 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrot=
-e:
->
-> On Thu, Jul 11, 2019 at 1:45 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> w=
-rote:
-> > >
-> > > This prints a message when the error is about program type being not
-> > > supported by the test runner or because of permissions problem. This
-> > > is to see if the program we expected to run was actually executed.
-> > >
-> > > The messages are open-coded because strerror(ENOTSUPP) returns
-> > > "Unknown error 524".
-> > >
-> > > Changes since v2:
-> > > - Also print "FAIL" on an unexpected bpf_prog_test_run error, so ther=
-e
-> > >   is a corresponding "FAIL" message for each failed test.
-> > >
-> > > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > > ---
-> > >  tools/testing/selftests/bpf/test_verifier.c | 17 +++++++++++++----
-> > >  1 file changed, 13 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/test=
-ing/selftests/bpf/test_verifier.c
-> > > index c5514daf8865..b8d065623ead 100644
-> > > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > > @@ -831,11 +831,20 @@ static int do_prog_test_run(int fd_prog, bool u=
-npriv, uint32_t expected_val,
-> > >                                 tmp, &size_tmp, &retval, NULL);
-> > >         if (unpriv)
-> > >                 set_admin(false);
-> > > -       if (err && errno !=3D 524/*ENOTSUPP*/ && errno !=3D EPERM) {
-> > > -               printf("Unexpected bpf_prog_test_run error ");
-> > > -               return err;
-> > > +       if (err) {
-> > > +               switch (errno) {
-> > > +               case 524/*ENOTSUPP*/:
-> > > +                       printf("Did not run the program (not supporte=
-d) ");
-> > > +                       return 0;
-> > > +               case EPERM:
-> > > +                       printf("Did not run the program (no permissio=
-n) ");
-> >
-> > Let's add "SKIP: " prefix to these?
->
-> Not sure about it. The important part of the test (the program being
-> verified by the kernel's verifier) was still executed, so the test is
-> not really skipped.
+Commit r353569 in prerelease Clang-9 is producing a linkage failure:
 
+ld: drivers/net/wireless/intel/iwlwifi/fw/dbg.o:
+in function `_iwl_fw_dbg_apply_point':
+dbg.c:(.text+0x827a): undefined reference to `__compiletime_assert_2387'
 
-Ah, I see. So the program was loaded/verifierd, but wasn't test-run.
+when the following configs are enabled:
+- CONFIG_IWLWIFI
+- CONFIG_IWLMVM
+- CONFIG_KASAN
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Work around the issue for now by marking the debug strings as `static`,
+which they probably should be any ways.
 
->
->
-> >
-> > > +                       return 0;
-> > > +               default:
-> > > +                       printf("FAIL: Unexpected bpf_prog_test_run er=
-ror (%s) ", strerror(saved_errno));
-> > > +                       return err;
-> > > +               }
-> > >         }
-> > > -       if (!err && retval !=3D expected_val &&
-> > > +       if (retval !=3D expected_val &&
-> > >             expected_val !=3D POINTER_VALUE) {
-> > >                 printf("FAIL retval %d !=3D %d ", retval, expected_va=
-l);
-> > >                 return 1;
-> > > --
-> > > 2.20.1
-> > >
->
->
->
-> --
-> Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-> Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago =
-L=C3=B3pez Galeiras
-> Registergericht/Court of registration: Amtsgericht Charlottenburg
-> Registernummer/Registration number: HRB 171414 B
-> Ust-ID-Nummer/VAT ID number: DE302207000
+Link: https://bugs.llvm.org/show_bug.cgi?id=42580
+Link: https://github.com/ClangBuiltLinux/linux/issues/580
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+---
+ drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+index e411ac98290d..f8c90ea4e9b4 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+@@ -2438,7 +2438,7 @@ static void iwl_fw_dbg_info_apply(struct iwl_fw_runtime *fwrt,
+ {
+ 	u32 img_name_len = le32_to_cpu(dbg_info->img_name_len);
+ 	u32 dbg_cfg_name_len = le32_to_cpu(dbg_info->dbg_cfg_name_len);
+-	const char err_str[] =
++	static const char err_str[] =
+ 		"WRT: ext=%d. Invalid %s name length %d, expected %d\n";
+ 
+ 	if (img_name_len != IWL_FW_INI_MAX_IMG_NAME_LEN) {
+@@ -2775,7 +2775,7 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
+ 		struct iwl_ucode_tlv *tlv = iter;
+ 		void *ini_tlv = (void *)tlv->data;
+ 		u32 type = le32_to_cpu(tlv->type);
+-		const char invalid_ap_str[] =
++		static const char invalid_ap_str[] =
+ 			"WRT: ext=%d. Invalid apply point %d for %s\n";
+ 
+ 		switch (type) {
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
