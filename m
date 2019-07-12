@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CE45662BA
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDC5C662C3
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730541AbfGLAUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 20:20:02 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:33883 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728582AbfGLAUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:20:02 -0400
-Received: by mail-qk1-f194.google.com with SMTP id t8so5181227qkt.1;
-        Thu, 11 Jul 2019 17:20:01 -0700 (PDT)
+        id S1730596AbfGLAWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 20:22:09 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:35061 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728102AbfGLAWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:22:08 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d23so6407979qto.2;
+        Thu, 11 Jul 2019 17:22:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dwDUYBtNlHf7CSZi5qWRT+gVqqsYoNg6nfx/dJsJ9/o=;
-        b=XitFzXSZX2DTaxQD1YJNlo2w7NRkGMcnxFYZvvfkCFyblntGFKd5uRM/lTcZrxg+XC
-         ndS8mSgrUVtD+EhPWA1pcSbxCSSm+Q1cDLYvwii3WYI4kJzGzSOScVVhykwzwM9iyL7f
-         /wKlVfEJFdZLlRv2pJMBAnPjh+An46HAwS/1UjN7tEdMCJSacbwQ6LB2DEVTe0VVq9Wj
-         P2V5fNSVbCcE9MrVvH4ZU+dAIynuqk8ugma+6TKN5Lw7qVYHja5di948iSIh3mf/AbIb
-         DI4TFo0Q/AH+ATT0R/0LF0d9ev9jpJnyoRyamF7hjgPWUMUQfbM0OKWhxtY8VLdaYjOO
-         8soA==
+        bh=/4+k8OBkWPl2wP9Mpj886E0SFBIDse14POqVOVVgzkg=;
+        b=tN59z30f+lg/v89y4PZ/8rnECfXHofqbiSuoJxqTCXj4tF1s4jMkyscCyYzegIEa4/
+         r1+0RZnxuXiif2blTLuplY2vy/82FJbOS80Foee/TlcOaPffxDRVUuOsmHxZpc1fblGd
+         DuyeN/aXH8NAjJSF1vVNjKxyZHvj9LHrhuOrVTChmvTcrOFZ80uT5p5x8SB7tk/V5ePN
+         Vp/RpFYIS4me8u4WUNWijXORxDKZLEkDorasmEg+KoFbAcNEtNT4P8327oYUitpOsqps
+         7yy7VBTIyfI8GLNNaD5qXdwtn5jE1NV3XlgL6fWrw1T0Pe5DrGZ6HtcOZTIhA/W8ZdyD
+         u/Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dwDUYBtNlHf7CSZi5qWRT+gVqqsYoNg6nfx/dJsJ9/o=;
-        b=BSPExkWaHDMuaBhidRMEVhG5vI+puLzF+b3O8kmFTxaa+P9ry1L1FXevmsMqgn8+JF
-         ncI9/dq9pbouG+KxeEEDtYrAkWobt3HS2bBU5jjecxqBVh7jFxQpJ6+i5BVPlgv0FS1a
-         xF/eMGHAfzGFoGQExH2TKp1Hw8u9gPD1dwA3yGwzRof4D/UoeZTcHPyDhMSHt3V/kmiF
-         jXMTnkeLGIcg/1r1S0lobVah5cjUW8VxAup94MIIvP4SI9f/1bZ1yBAaQ89e43R2hFxR
-         DT1mqoKEZEhEExpnjYgk689BUfNIBCcA8BwGavqCJ+uzyi03mUS2dyDstAfuHFHXQ7R+
-         mRbw==
-X-Gm-Message-State: APjAAAWKxLVsMeYN5N+uoCR0dnZ55XczTzCpGKnNehU4qJrpGHYk0gMq
-        XIi0hppnPKBJYDrzhMLh2OOvrqTTqMY1zclDmkc=
-X-Google-Smtp-Source: APXvYqwqXkIpnxrcFBI4+O94Wj6JMHWybc5SRzKyyiFggxyCAeuI2MsA2M2xV73fOfuIXcSIH717fUZx4AeQ0QqP0Vs=
-X-Received: by 2002:a37:b646:: with SMTP id g67mr4009950qkf.92.1562890800939;
- Thu, 11 Jul 2019 17:20:00 -0700 (PDT)
+        bh=/4+k8OBkWPl2wP9Mpj886E0SFBIDse14POqVOVVgzkg=;
+        b=Xc8/PZHG++N8NqZGjhOcu903Ce3YpbEkQ3u6ZXU1tSG5W3/go2ZEZTGEOtz9f3M3ib
+         9p5B0KGoA06vJPEqtkHjFK1mdyzv6/YsPMcgicB/Y5lF4v5U++b4c7boIpVW7ZwrRqLc
+         1SllfAiL38uhRvaPk4seYSbG5EAn6P6TnoT+i/yr2xqAqg9SQ10DCYrjSRurU90Fp0VO
+         amhghvnziWII2VrSfUnZSl12/g3aw1A1tAeWxhkPrxXOh5fF/N/eKArOQJ7DfClS5Rd9
+         QnwWMnMdjJTRSCcsN3qgcMtCdgRKCUuRs47ArLqtKHD7Rk+AKtWIERhi9T8PP2dj77jo
+         5KEw==
+X-Gm-Message-State: APjAAAUMx63EHnFIaR45hFTMFBKrRU9njf5jaNMZf2dIpn9fMJ8MsX8b
+        wbGndyupqePFNva704yhV+eQZ9Uhabapl7vEvxI=
+X-Google-Smtp-Source: APXvYqxRcNPW7o70Lv/0ta0iz/AgsAPC23tElXsi8v0Rjw3QFg66LYJNUS+dkJrYikGIOp6Tbd9q6mZyOtzcmRnLt9k=
+X-Received: by 2002:a05:6214:1306:: with SMTP id a6mr4329977qvv.38.1562890927633;
+ Thu, 11 Jul 2019 17:22:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-8-krzesimir@kinvolk.io>
-In-Reply-To: <20190708163121.18477-8-krzesimir@kinvolk.io>
+References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-9-krzesimir@kinvolk.io>
+In-Reply-To: <20190708163121.18477-9-krzesimir@kinvolk.io>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 17:19:50 -0700
-Message-ID: <CAEf4BzZSApnfQ7Z527WqM3ejz5C3BQS9eWdrgJ=k=hqhWADynw@mail.gmail.com>
-Subject: Re: [bpf-next v3 07/12] tools headers: Adopt compiletime_assert from
- kernel sources
+Date:   Thu, 11 Jul 2019 17:21:56 -0700
+Message-ID: <CAEf4BzZ23_m-L6vob6BKn24yphRQUBMceAHqkSU+8C8EovmVFA@mail.gmail.com>
+Subject: Re: [bpf-next v3 08/12] tools headers: Sync struct bpf_perf_event_data
 To:     Krzesimir Nowak <krzesimir@kinvolk.io>
 Cc:     open list <linux-kernel@vger.kernel.org>,
         Alban Crequy <alban@kinvolk.io>,
@@ -71,21 +70,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> wrote:
 >
-> This will come in handy to verify that the hardcoded size of the
-> context data in bpf_test struct is high enough to hold some struct.
+> struct bpf_perf_event_data in kernel headers has the addr field, which
+> is missing in the tools version of the struct. This will be important
+> for the bpf prog test run implementation for perf events as it will
+> expect data to be an instance of struct bpf_perf_event_data, so the
+> size of the data needs to match sizeof(bpf_perf_event_data).
 >
 > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 > ---
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-
->  tools/include/linux/compiler.h | 28 ++++++++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
+>  tools/include/uapi/linux/bpf_perf_event.h | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/tools/include/linux/compiler.h b/tools/include/linux/compiler.h
-> index 1827c2f973f9..b4e97751000a 100644
-> --- a/tools/include/linux/compiler.h
-> +++ b/tools/include/linux/compiler.h
-
-[...]
+> diff --git a/tools/include/uapi/linux/bpf_perf_event.h b/tools/include/uapi/linux/bpf_perf_event.h
+> index 8f95303f9d80..eb1b9d21250c 100644
+> --- a/tools/include/uapi/linux/bpf_perf_event.h
+> +++ b/tools/include/uapi/linux/bpf_perf_event.h
+> @@ -13,6 +13,7 @@
+>  struct bpf_perf_event_data {
+>         bpf_user_pt_regs_t regs;
+>         __u64 sample_period;
+> +       __u64 addr;
+>  };
+>
+>  #endif /* _UAPI__LINUX_BPF_PERF_EVENT_H__ */
+> --
+> 2.20.1
+>
