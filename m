@@ -2,178 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4093671FA
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 17:10:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A17A267220
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 17:15:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbfGLPKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 11:10:54 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41353 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727019AbfGLPKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 11:10:54 -0400
-Received: by mail-pl1-f196.google.com with SMTP id m9so4888377pls.8
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 08:10:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bpkdGumnCxVJ5QkvopMAKHuDk2Cmi1QHk5zgDoY3xmE=;
-        b=xyHw0p49aGG+bHJkAwOFsAyVLIy6ynGQUOVqJSZW2rdYBcMge9BS0dv8b3pXcc+QsB
-         52ZjWyLo4eCKwwXkK1MywW+/ICPskgQBpOWaqdYt311VFlay/UvS+NI+iDdRBDC8nfQH
-         7iG2DsYxsndMDH8pWwOufpGY4o74/6StEFO8o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bpkdGumnCxVJ5QkvopMAKHuDk2Cmi1QHk5zgDoY3xmE=;
-        b=UuOS/I9Rcv1ODZyEU1TVo0g1dhXtpiiIArfhAUIUy6wfzrgqS0KTkgHwGF5TYumWJe
-         ilD65cyV3rjSFzRU4FpDQ28A3wCY56Gao2l6J863aFUiTk7UI2BDeu1DRYDbrskglk68
-         wC/8PxOOETPavJHBr3Uny3lLzh9JW5BgRiIYqVJaU/02nEwk+g28S0Hn5S/u/AEVtbuO
-         L8Ydo03ladpOnuRaR+dcY+WXR9HEegOllta7Hc4+UDyQBCogaWtQyYd8czqKOH+0reBV
-         vwyZ+z52O1jj5XzVb+pI/YDULou+z8tLm9HqlGU8uDV62U+8HQiHsCUV1hXwCYOrkW0h
-         twoA==
-X-Gm-Message-State: APjAAAVoIRHKC8dNstOGiQRhINcqpY0B04rFuPipU93tbLM7JkneU11Y
-        FT41tEaeea6TFJc1ocDIT+M=
-X-Google-Smtp-Source: APXvYqxJ7Kem+nQt02Z16GBq/vs2O/YsBJDeceBJIv6amPGaj5XayXNv7u5mL3pmC3eI8AkB/Vv2gw==
-X-Received: by 2002:a17:902:6a88:: with SMTP id n8mr12077228plk.70.1562944253560;
-        Fri, 12 Jul 2019 08:10:53 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id l124sm8863171pgl.54.2019.07.12.08.10.52
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 12 Jul 2019 08:10:52 -0700 (PDT)
-Date:   Fri, 12 Jul 2019 11:10:51 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [PATCH v1 1/6] rcu: Add support for consolidated-RCU reader
- checking
-Message-ID: <20190712151051.GB235410@google.com>
-References: <20190711234401.220336-1-joel@joelfernandes.org>
- <20190711234401.220336-2-joel@joelfernandes.org>
- <20190712111125.GT3402@hirez.programming.kicks-ass.net>
+        id S1727144AbfGLPPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 11:15:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:45880 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726266AbfGLPPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 11:15:12 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlxGJ-0007bi-K7; Fri, 12 Jul 2019 17:15:03 +0200
+Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlxGJ-000X25-CS; Fri, 12 Jul 2019 17:15:03 +0200
+Subject: Re: [PATCH 0/2] Fold checksum at the end of bpf_csum_diff and fix
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Paolo Pisati <p.pisati@gmail.com>
+Cc:     20190710231439.GD32439@tassilo.jf.intel.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiong Wang <jiong.wang@netronome.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1562837513-745-1-git-send-email-p.pisati@gmail.com>
+ <CAEf4BzbGLmuZ48vFUCrDW6VC7_YrkW_0NpgpgXNQEzF_dEqgnA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <8bd99845-4d59-f0a4-3b50-ab6d539b36bc@iogearbox.net>
+Date:   Fri, 12 Jul 2019 17:15:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190712111125.GT3402@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAEf4BzbGLmuZ48vFUCrDW6VC7_YrkW_0NpgpgXNQEzF_dEqgnA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 12, 2019 at 01:11:25PM +0200, Peter Zijlstra wrote:
-> On Thu, Jul 11, 2019 at 07:43:56PM -0400, Joel Fernandes (Google) wrote:
-> > +int rcu_read_lock_any_held(void)
-> > +{
-> > +	int lockdep_opinion = 0;
-> > +
-> > +	if (!debug_lockdep_rcu_enabled())
-> > +		return 1;
-> > +	if (!rcu_is_watching())
-> > +		return 0;
-> > +	if (!rcu_lockdep_current_cpu_online())
-> > +		return 0;
-> > +
-> > +	/* Preemptible RCU flavor */
-> > +	if (lock_is_held(&rcu_lock_map))
-> 
-> you forgot debug_locks here.
+On 07/12/2019 01:50 AM, Andrii Nakryiko wrote:
+> On Thu, Jul 11, 2019 at 2:32 AM Paolo Pisati <p.pisati@gmail.com> wrote:
+>> From: Paolo Pisati <paolo.pisati@canonical.com>
+>>
+>> After applying patch 0001, all checksum implementations i could test (x86-64, arm64 and
+>> arm), now agree on the return value.
+>>
+>> Patch 0002 fix the expected return value for test #13: i did the calculation manually,
+>> and it correspond.
+>>
+>> Unfortunately, after applying patch 0001, other test cases now fail in
+>> test_verifier:
 
-Actually, it turns out debug_locks checking is not even needed. If
-debug_locks == 0, then debug_lockdep_rcu_enabled() returns 0 and we would not
-get to this point.
+Thanks for catching, sigh. :/
 
-> > +		return 1;
-> > +
-> > +	/* BH flavor */
-> > +	if (in_softirq() || irqs_disabled())
+>> $ sudo ./tools/testing/selftests/bpf/test_verifier
+>> ...
+>> #417/p helper access to variable memory: size = 0 allowed on NULL (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0
+>> #419/p helper access to variable memory: size = 0 allowed on != NULL stack pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0
+>> #423/p helper access to variable memory: size possible = 0 allowed on != NULL packet pointer (ARG_PTR_TO_MEM_OR_NULL) FAIL retval 65535 != 0
 > 
-> I'm not sure I'd put irqs_disabled() under BH, also this entire
-> condition is superfluous, see below.
+> I'm not entirely sure this fix is correct, given these failures, to be honest.
 > 
-> > +		return 1;
-> > +
-> > +	/* Sched flavor */
-> > +	if (debug_locks)
-> > +		lockdep_opinion = lock_is_held(&rcu_sched_lock_map);
-> > +	return lockdep_opinion || !preemptible();
+> Let's wait for someone who understands intended semantics for
+> bpf_csum_diff, before changing returned value so drastically.
 > 
-> that !preemptible() turns into:
-> 
->   !(preempt_count()==0 && !irqs_disabled())
-> 
-> which is:
-> 
->   preempt_count() != 0 || irqs_disabled()
-> 
-> and already includes irqs_disabled() and in_softirq().
-> 
-> > +}
-> 
-> So maybe something lke:
-> 
-> 	if (debug_locks && (lock_is_held(&rcu_lock_map) ||
-> 			    lock_is_held(&rcu_sched_lock_map)))
-> 		return true;
+> But in any case, fixes for these test failures should be in your patch
+> series as well.
 
-Agreed, I will do it this way (without the debug_locks) like:
+Your change would actually break applications. The bpf_csum_diff() helper is
+heavily used with cascading so one result can be fed into another bpf_csum_diff()
+call as seed. Quick test on x86-64:
 
----8<-----------------------
+static int __init foo(void)
+{
+        u8 data[32 * sizeof(u32)];
+        u32 res1, res2, res3;
+        int i;
 
-diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
-index ba861d1716d3..339aebc330db 100644
---- a/kernel/rcu/update.c
-+++ b/kernel/rcu/update.c
-@@ -296,27 +296,15 @@ EXPORT_SYMBOL_GPL(rcu_read_lock_bh_held);
- 
- int rcu_read_lock_any_held(void)
- {
--	int lockdep_opinion = 0;
--
- 	if (!debug_lockdep_rcu_enabled())
- 		return 1;
- 	if (!rcu_is_watching())
- 		return 0;
- 	if (!rcu_lockdep_current_cpu_online())
- 		return 0;
--
--	/* Preemptible RCU flavor */
--	if (lock_is_held(&rcu_lock_map))
--		return 1;
--
--	/* BH flavor */
--	if (in_softirq() || irqs_disabled())
--		return 1;
--
--	/* Sched flavor */
--	if (debug_locks)
--		lockdep_opinion = lock_is_held(&rcu_sched_lock_map);
--	return lockdep_opinion || !preemptible();
-+	if (lock_is_held(&rcu_lock_map) || lock_is_held(&rcu_sched_lock_map))
-+		return 1;
-+	return !preemptible();
- }
- EXPORT_SYMBOL_GPL(rcu_read_lock_any_held);
- 
+        prandom_bytes(data, sizeof(data));
+        res1 = csum_fold(csum_partial(data, sizeof(data), 0));
+        for (i = sizeof(u32); i < sizeof(data); i += sizeof(u32)) {
+                res2 = csum_fold(csum_partial(data, i, 0));
+                res2 = csum_fold(csum_partial(data+i, sizeof(data)-i, res2));
+                res3 = csum_partial(data, i, 0);
+                res3 = csum_fold(csum_partial(data+i, sizeof(data)-i, res3));
+                printk("%8d: [%4x (reference), %4x (unfolded), %4x (folded)]\n", i, res1, res3, res2);
+        }
+        return -1;
+}
+
+Gives for all three:
+
+[19113.233942]        4: [6b70 (reference), 6b70 (unfolded), 223d (folded)]
+[19113.233943]        8: [6b70 (reference), 6b70 (unfolded), a812 (folded)]
+[19113.233943]       12: [6b70 (reference), 6b70 (unfolded), 1c26 (folded)]
+[19113.233944]       16: [6b70 (reference), 6b70 (unfolded), 4f76 (folded)]
+[19113.233944]       20: [6b70 (reference), 6b70 (unfolded), 2801 (folded)]
+[19113.233945]       24: [6b70 (reference), 6b70 (unfolded),  b63 (folded)]
+[19113.233945]       28: [6b70 (reference), 6b70 (unfolded), 2fe0 (folded)]
+[19113.233946]       32: [6b70 (reference), 6b70 (unfolded), 18a2 (folded)]
+[19113.233946]       36: [6b70 (reference), 6b70 (unfolded), 2597 (folded)]
+[19113.233947]       40: [6b70 (reference), 6b70 (unfolded), 2f8e (folded)]
+[19113.233947]       44: [6b70 (reference), 6b70 (unfolded), b8af (folded)]
+[19113.233948]       48: [6b70 (reference), 6b70 (unfolded), fb8b (folded)]
+[19113.233948]       52: [6b70 (reference), 6b70 (unfolded), e9c0 (folded)]
+[19113.233949]       56: [6b70 (reference), 6b70 (unfolded), 6af1 (folded)]
+[19113.233949]       60: [6b70 (reference), 6b70 (unfolded), d7f4 (folded)]
+[19113.233949]       64: [6b70 (reference), 6b70 (unfolded), 8bc6 (folded)]
+[19113.233950]       68: [6b70 (reference), 6b70 (unfolded), 8718 (folded)]
+[19113.233950]       72: [6b70 (reference), 6b70 (unfolded), 27d8 (folded)]
+[19113.233951]       76: [6b70 (reference), 6b70 (unfolded), a2db (folded)]
+[19113.233952]       80: [6b70 (reference), 6b70 (unfolded),  3fd (folded)]
+[19113.233952]       84: [6b70 (reference), 6b70 (unfolded), 4be5 (folded)]
+[19113.233952]       88: [6b70 (reference), 6b70 (unfolded), 41ad (folded)]
+[19113.233953]       92: [6b70 (reference), 6b70 (unfolded), ca9b (folded)]
+[19113.233953]       96: [6b70 (reference), 6b70 (unfolded), f8ec (folded)]
+[19113.233954]      100: [6b70 (reference), 6b70 (unfolded), 5451 (folded)]
+[19113.233954]      104: [6b70 (reference), 6b70 (unfolded),  763 (folded)]
+[19113.233955]      108: [6b70 (reference), 6b70 (unfolded), e37c (folded)]
+[19113.233955]      112: [6b70 (reference), 6b70 (unfolded), 4ee6 (folded)]
+[19113.233956]      116: [6b70 (reference), 6b70 (unfolded), 4f73 (folded)]
+[19113.233956]      120: [6b70 (reference), 6b70 (unfolded), 1cfd (folded)]
+[19113.233957]      124: [6b70 (reference), 6b70 (unfolded), 7d1a (folded)]
+
+I'll take a look next week wrt fixing this uniformly for all archs.
+
+Thanks,
+Daniel
