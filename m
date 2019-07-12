@@ -2,170 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC34E66332
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 03:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8553566361
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 03:35:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729049AbfGLA76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 20:59:58 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33953 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbfGLA76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:59:58 -0400
-Received: by mail-qt1-f194.google.com with SMTP id k10so6501567qtq.1;
-        Thu, 11 Jul 2019 17:59:57 -0700 (PDT)
+        id S1728886AbfGLBfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 21:35:50 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43957 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbfGLBfu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 21:35:50 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f25so3755447pgv.10
+        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 18:35:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vyRvdglp9w3WMAVwpZ8V5acwRWpsWl+iTtdEW4rvar4=;
-        b=txxE7X8WbuCKhCRBQru177MjuZze+pZCDz3RdJ4rEwr3Eb96rvgOhODAT0S/Xjmp9e
-         Gni8eX3BUNl8IyyKLVNknIJmMObUbzLUuNH/mDHhD6JyPrICshHweZEWKFuAaN4pXJqu
-         dKSFAFdAYFPnXuC05uU0QeDj2E2cDBR920oDu4WAC2m0w63JVhMS6umkNXSJoKcIvO7E
-         GtDhanc7eUXsVAQN8rpwJALT0FWxmqPXAmW7RpsJ9suJEVumWCIqt8BIIrVLFyRHY3Ax
-         nsj1kcysn/Rrm7zxT6MKFnlsKE+P7PXWYbTFGdeuXzwp1L7E1R9ryUtnWXFEsMXxuoE3
-         8IeQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=TKZ1LuXHr1JpoBiDvXz797CS79UfB8U18zpY2ba3tso=;
+        b=c5r0+emfqfgNC+E6k4qVRW2Wm4QmMFBG1Gm2ADs2dxWnxPSwDdBgbYXVyveOjH0/w4
+         PzW3FormD3+X8r13dc635ikpgCplMvuL61UtRFvLNbN8zpuSnR5Ln+/phTX+lbkvUA9w
+         Qk5JG6zZq0c9GaPFbO8eMp5a0fNSVCpJxkcAu5YqYfnHGoONMCABljbsQ4DJDMR5pXPL
+         GCtinv4MMwzOylgnTvPbhty0wfylWSwpEQ1jJ/xF9Mn9CjVJhFDRso6HVYT8vby0EGjs
+         S5LATriL/MS9HG3TaLjsq84Ad/1UsQYRC47KeYtLQpiYXxUiayzg28wF4Qw2fVCYABD+
+         kS0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vyRvdglp9w3WMAVwpZ8V5acwRWpsWl+iTtdEW4rvar4=;
-        b=SssxtIbtCDllkKez6ptjmVSp0H372ZQvY+Z63xCNV/UIF9B90kt31nH9MrcslffUPE
-         S0X4ZpXwuERvmnBJl8j0lX653ByYS7JRylfffgxsh79Mmm85TunNOESS1DOpAsUnxgJG
-         Gxh5mWfnRWqk3rbRAkBfSRI7dx1ezsJ3vv2i0Vtzp/5EhuXwze0yOR2u8WlfiRIwShX7
-         2olgKjo4eO+RHnc878J6YSYKeV88/uoB2RA+j0d6L7hod8sIYLvRo3yrxQpOg/hdzOnl
-         uaoEX20k9WCk4xyY35t/qsPOtK+OdWzXtD/NNoPinLm7KgFaEHDEGC6z2zPzWYRLP0zL
-         OVrw==
-X-Gm-Message-State: APjAAAWob6Jad1/6pK5Gy4+3rWWG/vdkYx04FOhr3JLkcrwfZfSsVfyD
-        gAVYQEtR477eLf7Nf6VT8rUukmAg9Nfme3XjKKM=
-X-Google-Smtp-Source: APXvYqx/nmtN0ibOY1gKjWppu+MVnXd5hpjXGLRUTESB0ttPXoJNPVWlFkEp6N20LfxCuAlfqEqOIkKtHWjb2rkA+5M=
-X-Received: by 2002:ac8:6601:: with SMTP id c1mr3869170qtp.93.1562893196956;
- Thu, 11 Jul 2019 17:59:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-3-krzesimir@kinvolk.io>
- <CAEf4BzYra9njHOB8t6kxRu6n5NJdjjAG541OLt8ci=0zbbcUSg@mail.gmail.com> <CAGGp+cGnEBFoPAuhTPa_JFCW6Vbjp2NN0ZPqC3qGfWEXwTyVOQ@mail.gmail.com>
-In-Reply-To: <CAGGp+cGnEBFoPAuhTPa_JFCW6Vbjp2NN0ZPqC3qGfWEXwTyVOQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 17:59:46 -0700
-Message-ID: <CAEf4Bzb-KW+p1zFcz39OSUuH0=DLFRNLa3NYT4V_-zz0Q_TJ5g@mail.gmail.com>
-Subject: Re: [bpf-next v3 02/12] selftests/bpf: Avoid a clobbering of errno
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=TKZ1LuXHr1JpoBiDvXz797CS79UfB8U18zpY2ba3tso=;
+        b=ckKmHwFTiIkP3qTt5oa+G8Nyfvl6tt3TaLRx1Z+mkAyCrI0KvPwr7qseS6xEv1E9LR
+         RrfGEyv1+Z2HfV4p2XXYnM28D/S7WM2+qfo1NREvgvLb43Au8AhQXkRNWDjzCurecs+E
+         1sU276lWWPTe31GFbtvVgz+Nob7D+LVmeRffZ/9NOi+R3PE/HP8z1qNBJ5Rky1gwitti
+         MrWIxA3HhPjKYQVin4PD/EKDjbdjoiA0PadzIHbQYE9B9oWlbwBA7xQGJRJSMfYAOkwO
+         uOkS+I2ovd/2AdZ70/2kE6Mbsc94ln1GnecH6RbTr2xx53iaE4jXXFgFTi4cXTFrrp9f
+         BiNg==
+X-Gm-Message-State: APjAAAUMunl4wgpnyjCOVtWU+avhlrkI6q6PAJanz8jERmZcedpOW8BA
+        94kPO63i/PBJRXQldgRhnWVrfDiuv98M
+X-Google-Smtp-Source: APXvYqxXD5DoqO88cU1uQDeL3kZc7l7eFHtHCe5soDJQoyTJjoU1mUrvSQGAdz1SfY0TAEhF41eYyw==
+X-Received: by 2002:a63:fb4b:: with SMTP id w11mr7568398pgj.415.1562895349536;
+        Thu, 11 Jul 2019 18:35:49 -0700 (PDT)
+Received: from localhost.localdomain ([58.76.163.19])
+        by smtp.gmail.com with ESMTPSA id o32sm6331260pje.9.2019.07.11.18.35.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 11 Jul 2019 18:35:48 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] tools: bpftool: add raw_tracepoint_writable prog type to header
+Date:   Fri, 12 Jul 2019 10:35:39 +0900
+Message-Id: <20190712013539.17407-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 5:04 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrot=
-e:
->
-> On Thu, Jul 11, 2019 at 1:52 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> w=
-rote:
-> > >
-> > > Save errno right after bpf_prog_test_run returns, so we later check
-> > > the error code actually set by bpf_prog_test_run, not by some libcap
-> > > function.
-> > >
-> > > Changes since v1:
-> > > - Fix the "Fixes:" tag to mention actual commit that introduced the
-> > >   bug
-> > >
-> > > Changes since v2:
-> > > - Move the declaration so it fits the reverse christmas tree style.
-> > >
-> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > Fixes: 832c6f2c29ec ("bpf: test make sure to run unpriv test cases in=
- test_verifier")
-> > > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > > ---
-> > >  tools/testing/selftests/bpf/test_verifier.c | 4 +++-
-> > >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/test=
-ing/selftests/bpf/test_verifier.c
-> > > index b8d065623ead..3fe126e0083b 100644
-> > > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > > @@ -823,16 +823,18 @@ static int do_prog_test_run(int fd_prog, bool u=
-npriv, uint32_t expected_val,
-> > >         __u8 tmp[TEST_DATA_LEN << 2];
-> > >         __u32 size_tmp =3D sizeof(tmp);
-> > >         uint32_t retval;
-> > > +       int saved_errno;
-> > >         int err;
-> > >
-> > >         if (unpriv)
-> > >                 set_admin(true);
-> > >         err =3D bpf_prog_test_run(fd_prog, 1, data, size_data,
-> > >                                 tmp, &size_tmp, &retval, NULL);
-> >
-> > Given err is either 0 or -1, how about instead making err useful right
-> > here without extra variable?
-> >
-> > if (bpf_prog_test_run(...))
-> >         err =3D errno;
->
-> I change it later to bpf_prog_test_run_xattr, which can also return
-> -EINVAL and then errno is not set. But this one probably should not be
+From commit 9df1c28bb752 ("bpf: add writable context for raw tracepoints"),
+a new type of BPF_PROG, RAW_TRACEPOINT_WRITABLE has been added.
 
-This is wrong. bpf_prog_test_run/bpf_prog_test_run_xattr should either
-always return -1 and set errno to actual error (like syscalls do), or
-always use return code with proper error. Give they are pretending to
-be just pure syscall, it's probably better to set errno to EINVAL and
-return -1 on invalid input args?
+Since this BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE is not listed at
+bpftool's header, it causes a segfault when executing 'bpftool feature'.
 
-> triggered by the test code. So not sure, probably would be better to
-> keep it as is for consistency?
->
-> >
-> > > +       saved_errno =3D errno;
-> > >         if (unpriv)
-> > >                 set_admin(false);
-> > >         if (err) {
-> > > -               switch (errno) {
-> > > +               switch (saved_errno) {
-> > >                 case 524/*ENOTSUPP*/:
-> >
-> > ENOTSUPP is defined in include/linux/errno.h, is there any problem
-> > with using this in selftests?
->
-> I just used whatever there was earlier. Seems like <linux/errno.h> is
-> not copied to tools include directory.
+This commit adds BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE entry to
+prog_type_name enum, and will eventually fixes the segfault issue.
 
-Ok, let's leave it as is, thanks!
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ tools/bpf/bpftool/main.h | 1 +
+ 1 file changed, 1 insertion(+)
 
->
-> >
-> > >                         printf("Did not run the program (not supporte=
-d) ");
-> > >                         return 0;
-> > > --
-> > > 2.20.1
-> > >
->
->
->
-> --
-> Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-> Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago =
-L=C3=B3pez Galeiras
-> Registergericht/Court of registration: Amtsgericht Charlottenburg
-> Registernummer/Registration number: HRB 171414 B
-> Ust-ID-Nummer/VAT ID number: DE302207000
+diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
+index 3ef0d9051e10..7031a4bf87a0 100644
+--- a/tools/bpf/bpftool/main.h
++++ b/tools/bpf/bpftool/main.h
+@@ -74,6 +74,7 @@ static const char * const prog_type_name[] = {
+ 	[BPF_PROG_TYPE_SK_REUSEPORT]		= "sk_reuseport",
+ 	[BPF_PROG_TYPE_FLOW_DISSECTOR]		= "flow_dissector",
+ 	[BPF_PROG_TYPE_CGROUP_SYSCTL]		= "cgroup_sysctl",
++	[BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE]	= "raw_tracepoint_writable",
+ 	[BPF_PROG_TYPE_CGROUP_SOCKOPT]		= "cgroup_sockopt",
+ };
+ 
+-- 
+2.17.1
+
