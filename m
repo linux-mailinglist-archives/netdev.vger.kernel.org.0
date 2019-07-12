@@ -2,118 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCF3766299
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 01:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E94A3662AB
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:10:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729004AbfGKXz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 19:55:26 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44590 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726865AbfGKXz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 19:55:26 -0400
-Received: by mail-pg1-f194.google.com with SMTP id i18so3661982pgl.11
-        for <netdev@vger.kernel.org>; Thu, 11 Jul 2019 16:55:25 -0700 (PDT)
+        id S1730475AbfGLAK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 20:10:29 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45122 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728582AbfGLAK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:10:29 -0400
+Received: by mail-qt1-f196.google.com with SMTP id x22so1456503qtp.12;
+        Thu, 11 Jul 2019 17:10:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=dk3i8CKzR2dm/DpQG7orIk03+IAyFFKutJZInlZ+vKY=;
-        b=gHw8Lc5C0ZigpDMr5eKswMfxT3IoHc3rK8qXJrlBKKz3k2DmZpX9LgQXgNSISc15Ad
-         NzedRVQM8YStJP3RxM5gBLPmJM+TQbnB2i5ugIHr9YB8fBve7odVUswAxXoXpDjfcDMA
-         nZr55gEva1nfVjOG7nMelvQFhtl36KsSyNU/JpKmmTQcj1WJaCv9AkMnJZ5iHiXD+k2I
-         jWz1QhYNV/SoEQkJYqFM4To79T/91K23HtqoElJYlv6/FrivimU4KDXhyftn4x280Vxk
-         skiCdeElOQQSkMPsiIhijtc3EeZ0H4moQweUo566I/dhVHyObE3xHd2P0D8AnJJPp1vO
-         OLzw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=WzVqjz+ovYVJRN1UL9XOiaqyrDBmch5lCBZzUwHfOaY=;
+        b=uXGCVxnBJH+IrTUQWBZvqNDA8TsqpMaP2yszpAVamWVilZL18N18DcsOAbwo/fDSq8
+         668wNSevaj6G+5reko3+9dXNspY6ji0n4wgsyXk/tWCgzWSGH8u59bStJr2imP0XlgIk
+         Krcnp+3YHvYdG88eAdcEs0wxIwBCnC7rvUwVhKjYbvRXxqBYVYYbYeKWjrouvpO9DGb3
+         zXQiyAV07LL/OJMLs80rctj8ApHvW5XsodGmBl6vZlA1W5XmjXeRxS+BplegUHl7bzey
+         4vOTWQoIxYQvWJEbw4iEgA/6fdlt8rDdjTTB0FiqFH4E8hPfjEDubUGS0aV2FEWNArUH
+         0XrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=dk3i8CKzR2dm/DpQG7orIk03+IAyFFKutJZInlZ+vKY=;
-        b=YLt98tIZqhFzb6jOjSJSoenX+gYwf7kJ2CwGBnMoS7iIdYxN5bSTXcTZG5aXLN7olA
-         ixqUeH9+We2W7nBqTXgNBO66Q2b2ABX1ruVYjO0Amy3MXUSP9PxUt8bWJIWZCYYLxOtK
-         867yI+tXA2RUGQ+fw2S8cEnEJh2n/2Vu6Dzmb5HiI2JbIGOxwIBqtd5TURJzXYwqWrm7
-         lwOtYSj01CcmAfm1ztw7kOZrDDzF2KkmECen9YafW8x0a200FeuaJxkyfkBY4ZRTuBOr
-         0He+p3d25sSdq9cVxie9eWtD1ywZtmQwxoKvzYwLVUlNl3z86kYko9e4iq3KSjMFjJNz
-         OhOQ==
-X-Gm-Message-State: APjAAAUG9K9A2dKii9VZqp7xnJ3XIc/kxMH93TvcPHztfOTbhPsy0WHn
-        nqL5IO003Hq3uRstFXQVw9x3Y3Mf
-X-Google-Smtp-Source: APXvYqzUDfFCwcrx7aMyHfjVlE6G2qZbGPoiXITAy3pqUGRYTv34RiIBhqh3C+k44Ge0Qq9hv6m5dw==
-X-Received: by 2002:a17:90a:17c4:: with SMTP id q62mr8018893pja.104.1562889324866;
-        Thu, 11 Jul 2019 16:55:24 -0700 (PDT)
-Received: from [192.168.0.16] ([97.115.142.179])
-        by smtp.gmail.com with ESMTPSA id o3sm18954299pje.1.2019.07.11.16.55.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jul 2019 16:55:24 -0700 (PDT)
-Subject: Re: [ovs-dev] [PATCH net-next] net: openvswitch: do not update
- max_headroom if new headroom is equal to old headroom
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     David Miller <davem@davemloft.net>, ap420073@gmail.com,
-        ovs dev <dev@openvswitch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <20190705160809.5202-1-ap420073@gmail.com>
- <20190708.160804.2026506853635876959.davem@davemloft.net>
- <87bfb355-9ddf-c27b-c160-b3028a945a22@gmail.com>
- <b40f4a39-8de4-482c-2ee8-66adf5c606be@gmail.com>
- <CAOrHB_CLRYC_AFgDhzPGadXDob4hO1Q7Eorqm4bZjMJLV3cMBQ@mail.gmail.com>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Message-ID: <715a1bc4-abd4-90bb-2e2f-1a2da8fd861d@gmail.com>
-Date:   Thu, 11 Jul 2019 16:55:22 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WzVqjz+ovYVJRN1UL9XOiaqyrDBmch5lCBZzUwHfOaY=;
+        b=TpETizw8vMuX45v2nH1FpLjEAvq2Ou1kf7m2BsQEQLX1V+osM/Xmst9hgQpiMDjaJJ
+         XrhJHiHf+EJ4U4V1CGpu9SD+7wFgQlXLCTRhayRZgSSfl1/2JORIK0xkB/PJJeV2i04+
+         vIwsdyj2sxJi0zc26t3W7fwNqqeyoo9x0D3yIOfRnfc8iwHsaTaau3iAk2hvnDVOfZ8F
+         xGleSZKsy3gRdGmGVIfQ477YemngclIfqAEprUAHh3WQ1+lcQ/u02772/zP8CQGNEcNF
+         2nNQ7/NdArWRPpET09vt2evXeandcXcEtHNGoIz/Yc89DyUawCXTSt0y/RXgEqurreoB
+         4K7w==
+X-Gm-Message-State: APjAAAWDJYg8nOslMq02nJMF1R0wjPuDqjW7cB95ml1IdauO5AXI6VgE
+        rwc6Vyxke18A3miylgFowH7kZW9K+zeDRWeXvaE=
+X-Google-Smtp-Source: APXvYqzIg0sY6zjxpBd9of08XzWu259C1MQr+I7Q2VLBe3mYWznBjpvBpc3EEJAwziLsMwYtKdePvkRWzPSihHrP7y8=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr3876880qty.141.1562890227759;
+ Thu, 11 Jul 2019 17:10:27 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAOrHB_CLRYC_AFgDhzPGadXDob4hO1Q7Eorqm4bZjMJLV3cMBQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-2-krzesimir@kinvolk.io>
+ <CAEf4BzYDOyU52wdCinm9cxxvNijpTJgQbCg9UxcO1QKk6vWhNA@mail.gmail.com> <CAGGp+cEaGphDCuZL+sbo2aCVumk2jrq9_Lshifg-Ewphfm40Wg@mail.gmail.com>
+In-Reply-To: <CAGGp+cEaGphDCuZL+sbo2aCVumk2jrq9_Lshifg-Ewphfm40Wg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 11 Jul 2019 17:10:16 -0700
+Message-ID: <CAEf4BzZBzreJOvEzm-OzVPNfwHOhuQ4nh4P04Nh5-u24sjFEcA@mail.gmail.com>
+Subject: Re: [bpf-next v3 01/12] selftests/bpf: Print a message when tester
+ could not run a program
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Alban Crequy <alban@kinvolk.io>,
+        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        xdp-newbies@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 7/11/2019 2:07 PM, Pravin Shelar wrote:
-> I was bit busy for last couple of days. I will finish review by EOD today.
+On Thu, Jul 11, 2019 at 4:36 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrot=
+e:
 >
-> Thanks,
-> Pravin.
+> On Thu, Jul 11, 2019 at 1:45 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> w=
+rote:
+> > >
+> > > This prints a message when the error is about program type being not
+> > > supported by the test runner or because of permissions problem. This
+> > > is to see if the program we expected to run was actually executed.
+> > >
+> > > The messages are open-coded because strerror(ENOTSUPP) returns
+> > > "Unknown error 524".
+> > >
+> > > Changes since v2:
+> > > - Also print "FAIL" on an unexpected bpf_prog_test_run error, so ther=
+e
+> > >   is a corresponding "FAIL" message for each failed test.
+> > >
+> > > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> > > ---
+> > >  tools/testing/selftests/bpf/test_verifier.c | 17 +++++++++++++----
+> > >  1 file changed, 13 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/test=
+ing/selftests/bpf/test_verifier.c
+> > > index c5514daf8865..b8d065623ead 100644
+> > > --- a/tools/testing/selftests/bpf/test_verifier.c
+> > > +++ b/tools/testing/selftests/bpf/test_verifier.c
+> > > @@ -831,11 +831,20 @@ static int do_prog_test_run(int fd_prog, bool u=
+npriv, uint32_t expected_val,
+> > >                                 tmp, &size_tmp, &retval, NULL);
+> > >         if (unpriv)
+> > >                 set_admin(false);
+> > > -       if (err && errno !=3D 524/*ENOTSUPP*/ && errno !=3D EPERM) {
+> > > -               printf("Unexpected bpf_prog_test_run error ");
+> > > -               return err;
+> > > +       if (err) {
+> > > +               switch (errno) {
+> > > +               case 524/*ENOTSUPP*/:
+> > > +                       printf("Did not run the program (not supporte=
+d) ");
+> > > +                       return 0;
+> > > +               case EPERM:
+> > > +                       printf("Did not run the program (no permissio=
+n) ");
+> >
+> > Let's add "SKIP: " prefix to these?
+>
+> Not sure about it. The important part of the test (the program being
+> verified by the kernel's verifier) was still executed, so the test is
+> not really skipped.
 
-net-next is closed anyway so no rush, but thanks!
 
-- Greg
+Ah, I see. So the program was loaded/verifierd, but wasn't test-run.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
 >
-> On Mon, Jul 8, 2019 at 4:22 PM Gregory Rose <gvrose8192@gmail.com> wrote:
->>
->>
->> On 7/8/2019 4:18 PM, Gregory Rose wrote:
->>> On 7/8/2019 4:08 PM, David Miller wrote:
->>>> From: Taehee Yoo <ap420073@gmail.com>
->>>> Date: Sat,  6 Jul 2019 01:08:09 +0900
->>>>
->>>>> When a vport is deleted, the maximum headroom size would be changed.
->>>>> If the vport which has the largest headroom is deleted,
->>>>> the new max_headroom would be set.
->>>>> But, if the new headroom size is equal to the old headroom size,
->>>>> updating routine is unnecessary.
->>>>>
->>>>> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
->>>> I'm not so sure about the logic here and I'd therefore like an OVS
->>>> expert
->>>> to review this.
->>> I'll review and test it and get back.  Pravin may have input as well.
->>>
->> Err, adding Pravin.
->>
->> - Greg
->>
->>> Thanks,
->>>
->>> - Greg
->>>
->>>> Thanks.
->>>> _______________________________________________
->>>> dev mailing list
->>>> dev@openvswitch.org
->>>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
-
+>
+> >
+> > > +                       return 0;
+> > > +               default:
+> > > +                       printf("FAIL: Unexpected bpf_prog_test_run er=
+ror (%s) ", strerror(saved_errno));
+> > > +                       return err;
+> > > +               }
+> > >         }
+> > > -       if (!err && retval !=3D expected_val &&
+> > > +       if (retval !=3D expected_val &&
+> > >             expected_val !=3D POINTER_VALUE) {
+> > >                 printf("FAIL retval %d !=3D %d ", retval, expected_va=
+l);
+> > >                 return 1;
+> > > --
+> > > 2.20.1
+> > >
+>
+>
+>
+> --
+> Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
+> Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago =
+L=C3=B3pez Galeiras
+> Registergericht/Court of registration: Amtsgericht Charlottenburg
+> Registernummer/Registration number: HRB 171414 B
+> Ust-ID-Nummer/VAT ID number: DE302207000
