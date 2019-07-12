@@ -2,98 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 430FA66A87
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 11:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 313C166A84
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 11:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbfGLJ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 05:57:59 -0400
-Received: from ivanoab6.miniserver.com ([5.153.251.140]:38034 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725294AbfGLJ57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 05:57:59 -0400
-Received: from [192.168.17.6] (helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1hlrlL-0007qc-UO; Fri, 12 Jul 2019 09:22:44 +0000
-Received: from [192.168.4.1]
-        by jain.kot-begemot.co.uk with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1hlrlJ-0002Q0-N2; Fri, 12 Jul 2019 10:22:43 +0100
-Subject: Re: [PATCH] User mode linux bump maximum MTU tuntap interface
- [RESAND]
-To:     Richard Weinberger <richard.weinberger@gmail.com>,
-        =?UTF-8?B?0JDQu9C10LrRgdC10Lk=?= <ne-vlezay80@yandex.ru>
-Cc:     netdev@vger.kernel.org, linux-um@lists.infradead.org
-References: <54cee375-f1c3-a2b3-ea89-919b0af60433@yandex.ru>
- <fc526c78-2d3f-90ca-8317-a89eb653cbf9@yandex.ru>
- <CAFLxGvytDC1TFdT0m9vvijz_93B8TziWURcR-3mskWB-7TzFag@mail.gmail.com>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Organization: Cambridge Greys
-Message-ID: <1fb36224-81c0-0c4c-72c4-5a60dfe207ef@cambridgegreys.com>
-Date:   Fri, 12 Jul 2019 10:22:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726140AbfGLJ5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 05:57:13 -0400
+Received: from mga17.intel.com ([192.55.52.151]:23447 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725294AbfGLJ5N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jul 2019 05:57:13 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jul 2019 02:57:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,482,1557212400"; 
+   d="scan'208";a="189792493"
+Received: from epronina-mobl.ccr.corp.intel.com ([10.252.5.80])
+  by fmsmga004.fm.intel.com with ESMTP; 12 Jul 2019 02:57:11 -0700
+Message-ID: <ea73cd31cc634a1aec9fce8c5629c609f30d7d26.camel@intel.com>
+Subject: Re: iwl_mvm_add_new_dqa_stream_wk BUG in lib/list_debug.c:56
+From:   Luciano Coelho <luciano.coelho@intel.com>
+To:     Marc Haber <mh+netdev@zugschlus.de>, Yussuf Khalil <dev@pp3345.net>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>
+Date:   Fri, 12 Jul 2019 12:57:10 +0300
+In-Reply-To: <20190607204421.GK31088@torres.zugschlus.de>
+References: <20190530081257.GA26133@torres.zugschlus.de>
+         <20190602134842.GC3249@torres.zugschlus.de>
+         <29401822-d7e9-430b-d284-706bf68acb8a@pp3345.net>
+         <20190607204421.GK31088@torres.zugschlus.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-In-Reply-To: <CAFLxGvytDC1TFdT0m9vvijz_93B8TziWURcR-3mskWB-7TzFag@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -1.0
-X-Spam-Score: -1.0
-X-Clacks-Overhead: GNU Terry Pratchett
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/07/2019 15:40, Richard Weinberger wrote:
-> CC'ing um folks.
+On Fri, 2019-06-07 at 22:44 +0200, Marc Haber wrote:
+> On Fri, Jun 07, 2019 at 10:20:56PM +0200, Yussuf Khalil wrote:
+> > CC'ing iwlwifi maintainers to get some attention for this issue.
+> > 
+> > I am experiencing the very same bug on a ThinkPad T480s running 5.1.6 with
+> > Fedora 30. A friend is seeing it on his X1 Carbon 6th Gen, too. Both have an
+> > "Intel Corporation Wireless 8265 / 8275" card according to lspci.
 > 
-> On Tue, Jul 2, 2019 at 3:01 PM Алексей <ne-vlezay80@yandex.ru> wrote:
->>
->> Hello, the parameter  ETH_MAX_PACKET limited to 1500 bytes is the not
->> support jumbo frames.
->>
->> This patch change ETH_MAX_PACKET the 65535 bytes to jumbo frame support
->> with user mode linux tuntap driver.
->>
->>
->> PATCH:
->>
->> -------------------
->>
->>
->> diff -ruNP ../linux_orig/linux-5.1/arch/um/include/shared/net_user.h
->> ./arch/um/include/shared/net_user.h
->> --- a/arch/um/include/shared/net_user.h    2019-05-06 00:42:58.000000000
->> +0000
->> +++ b/arch/um/include/shared/net_user.h    2019-07-02 07:14:13.593333356
->> +0000
->> @@ -9,7 +9,7 @@
->>   #define ETH_ADDR_LEN (6)
->>   #define ETH_HEADER_ETHERTAP (16)
->>   #define ETH_HEADER_OTHER (26) /* 14 for ethernet + VLAN + MPLS for
->> crazy people */
->> -#define ETH_MAX_PACKET (1500)
->> +#define ETH_MAX_PACKET (65535)
->>
->>   #define UML_NET_VERSION (4)
->>
->> -------------------
->>
->>
+> I have an older 04:00.0 Network controller [0280]: Intel Corporation
+> Wireless 8260 [8086:24f3] (rev 3a) on a Thinkpad X260.
 > 
+> > Notably, in all cases I've observed it occurred right after roaming from one
+> > AP to another (though I can't guarantee this isn't a coincidence).
 > 
+> I also have multiple Access Points broadcasting the same SSID in my
+> house, and yes, I experience those issues often when I move from one
+> part of the hose to another. I have, however, also experienced it in a
+> hotel when I was using the mobile hotspot offered by my mobile, so that
+> was clearly not a roaming situation.
 
-This does not quite work because in some of the drivers you get extra 
-added on top of this constant.
+Hi,
 
-I am going to see what can be done to fix the old net* drivers, imho we 
-should start phasing them out in favor of the vector ones.
+Sorry this got under the radar for a while.  Yesterday someone created
+a bugzilla entry with the same error:
 
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+https://bugzilla.kernel.org/show_bug.cgi?id=204141
+
+I'm going to file an internal bug report and then have someone look
+further into it.
+
+Any additional comments/reproductions/etc. please use that bugzilla
+entry.
+
+Thanks for reporting!
+
+--
+Cheers,
+Luca.
+
