@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C837F66C06
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC9A66C38
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:12:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbfGLMGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 08:06:20 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:36393 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727052AbfGLMGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 08:06:20 -0400
-Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hluJJ-0008WG-BO; Fri, 12 Jul 2019 08:06:01 -0400
-Date:   Fri, 12 Jul 2019 08:05:29 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        jiri@mellanox.com, mlxsw@mellanox.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        andy@greyhouse.net, pablo@netfilter.org,
-        jakub.kicinski@netronome.com, pieter.jansenvanvuuren@netronome.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, idosch@mellanox.com
-Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
-Message-ID: <20190712120529.GA13696@hmswarspite.think-freely.org>
-References: <20190707075828.3315-1-idosch@idosch.org>
- <20190707.124541.451040901050013496.davem@davemloft.net>
- <20190711123909.GA10978@splinter>
- <20190711235354.GA30396@hmswarspite.think-freely.org>
- <69d0917f-895f-6239-4044-76944432e8ca@gmail.com>
+        id S1727017AbfGLMML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 08:12:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34386 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726449AbfGLMML (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jul 2019 08:12:11 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 54B4230C2534;
+        Fri, 12 Jul 2019 12:12:09 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.43.17.136])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 9F9E3600CD;
+        Fri, 12 Jul 2019 12:12:01 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Fri, 12 Jul 2019 14:12:09 +0200 (CEST)
+Date:   Fri, 12 Jul 2019 14:12:00 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [PATCH v1 1/6] rcu: Add support for consolidated-RCU reader
+ checking
+Message-ID: <20190712121200.GC21989@redhat.com>
+References: <20190711234401.220336-1-joel@joelfernandes.org>
+ <20190711234401.220336-2-joel@joelfernandes.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <69d0917f-895f-6239-4044-76944432e8ca@gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <20190711234401.220336-2-joel@joelfernandes.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 12 Jul 2019 12:12:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 08:40:34PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 7/11/2019 4:53 PM, Neil Horman wrote:
-> >> I would like to emphasize that the configuration of whether these
-> >> dropped packets are even sent to the CPU from the device still needs to
-> >> reside in devlink given this is the go-to tool for device-specific
-> >> configuration. In addition, these drop traps are a small subset of the
-> >> entire packet traps devices support and all have similar needs such as
-> >> HW policer configuration and statistics.
-> >>
-> >> In the future we might also want to report events that indicate the
-> >> formation of possible problems. For example, in case packets are queued
-> >> above a certain threshold or for long periods of time. I hope we could
-> >> re-use drop_monitor for this as well, thereby making it the go-to
-> >> channel for diagnosing current and to-be problems in the data path.
-> >>
-> > Thats an interesting idea, but dropwatch certainly isn't currently setup for
-> > that kind of messaging.  It may be worth creating a v2 of the netlink protocol
-> > and really thinking out what you want to communicate.
-> 
-> Is not what you describe more or less what Ido has been doing here with
-> this patch series?
-possibly, I was only CCed on this thread halfway throught the conversation, and
-only on the cover letter, I've not had a chance to look at the entire series
+On 07/11, Joel Fernandes (Google) wrote:
+>
+> +int rcu_read_lock_any_held(void)
 
-Neil
+rcu_sync_is_idle() wants it. You have my ack in advance ;)
 
-> -- 
-> Florian
-> 
+Oleg.
+
