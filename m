@@ -2,114 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B0666F55
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2AEC66F64
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbfGLM4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 08:56:17 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:41678 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727052AbfGLM4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 08:56:16 -0400
-Received: by mail-lf1-f68.google.com with SMTP id 62so1542456lfa.8
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 05:56:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=U8JelDTPii7RGHoiquSk+sGR/pDg+4xXvLkAF8ahtZQ=;
-        b=fUDrB8kE/v6rR4yK6uhfirbeXC0QgR/e4Qn7VKWDnDmoLIgARPcO6Yk7mSoja0IY7M
-         oFmlnk8fcuuAcdymYl2MLqHImYntORMmfudAdzSZZ9zjrbsoHKpNGDgGEj3z/Hbc5MuL
-         MGYVBHdbVZVPXzwUfBTSwimpycfWgGG+uPoLuyAQcoUZjNLPkQ2ZEDkYOGWftOTzQr5x
-         WmMhU7R9NzZ4pBHW2AfKChkhlBaEzgvRsd1PTjo4xZKzYOdxBCCgVvdoXaqaoqJaKhQo
-         4BWWxr6hENhq99VO7An0RkIEQQZ6FKq5cYu/+EuNSUyhoKTBzFfte/sxpoftIazguxnb
-         Zj8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=U8JelDTPii7RGHoiquSk+sGR/pDg+4xXvLkAF8ahtZQ=;
-        b=EiITuJqfjaO5HS7nj3Z3xJT0UWQV/myBWkKWq99rHrowQv30W5pVFnnCGowPVH0aFU
-         q3JvzYk07S+a37uXeyVLNUjChsxt+QrnwC2NSyXINFwh8r0urWhgm7t7qnByFFCaGc2v
-         HMmFrcY2p1kLc1YBLS0wN7/MrVy8RS45scOgenFgfvyvS44nzfdRCC8vKjAIc0tc6LHr
-         kACz2PV/rO2UWTCjehNHqpr6Jo7YzoI5n3dt4qAEFvEL+gctqcmFbyb7v9ugTY9Pgz9h
-         sJbkbtk3b2t1yjw8sgvaZ6ZarYVDuJioEe+iTBlqoaTy+wlgkru22upfPOG6iGQo/wQB
-         Pq0g==
-X-Gm-Message-State: APjAAAXYPYDD+nRmJYJ95ysYOLyi8lWAz6ZPHQayza5WdlYh88lS1sXZ
-        4qH5V9eyk2J+61BEN9s18MwZhNvaBgElcTuk5yKrsA==
-X-Google-Smtp-Source: APXvYqw97l1oeAA2+th/9cKGGPMGUMu4Ml9+uL71lRvQVwbk2RAIAa9B6Jp9obemUhw5bFYiue963wi+HIWBf7wLYYo=
-X-Received: by 2002:a05:6512:29a:: with SMTP id j26mr771352lfp.44.1562936174798;
- Fri, 12 Jul 2019 05:56:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190709040007.1665882-1-andriin@fb.com> <b4b00fad-3f99-c36a-a510-0b281a1f2bd7@fb.com>
-In-Reply-To: <b4b00fad-3f99-c36a-a510-0b281a1f2bd7@fb.com>
-From:   Matt Hart <matthew.hart@linaro.org>
-Date:   Fri, 12 Jul 2019 13:56:03 +0100
-Message-ID: <CAH+k93ExQpYy+g+WUNvv+bDDzDcJR-2WYongJqv4WbMcPV=sRA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix ptr to u64 conversion warning on
- 32-bit platforms
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        id S1727166AbfGLM74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 08:59:56 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49224 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727027AbfGLM74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 08:59:56 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlv9W-00058W-7D; Fri, 12 Jul 2019 14:59:54 +0200
+Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlv9V-000STs-V7; Fri, 12 Jul 2019 14:59:53 +0200
+Subject: Re: [PATCH v2 bpf-next 0/3] fix BTF verification size resolution
+To:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>
+Cc:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
         Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+References: <20190711065307.2425636-1-andriin@fb.com>
+ <0143c2e9-ac0d-33de-3019-85016d771c76@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <bf74b176-9321-c175-359d-4c5cf58a72b4@iogearbox.net>
+Date:   Fri, 12 Jul 2019 14:59:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <0143c2e9-ac0d-33de-3019-85016d771c76@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 9 Jul 2019 at 05:30, Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/8/19 9:00 PM, Andrii Nakryiko wrote:
-> > On 32-bit platforms compiler complains about conversion:
-> >
-> > libbpf.c: In function =E2=80=98perf_event_open_probe=E2=80=99:
-> > libbpf.c:4112:17: error: cast from pointer to integer of different
-> > size [-Werror=3Dpointer-to-int-cast]
-> >    attr.config1 =3D (uint64_t)(void *)name; /* kprobe_func or uprobe_pa=
-th */
-> >                   ^
-> >
-> > Reported-by: Matt Hart <matthew.hart@linaro.org>
-> > Fixes: b26500274767 ("libbpf: add kprobe/uprobe attach API")
-> > Tested-by: Matt Hart <matthew.hart@linaro.org>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
+On 07/12/2019 08:03 AM, Yonghong Song wrote:
+> On 7/10/19 11:53 PM, Andrii Nakryiko wrote:
+>> BTF size resolution logic isn't always resolving type size correctly, leading
+>> to erroneous map creation failures due to value size mismatch.
+>>
+>> This patch set:
+>> 1. fixes the issue (patch #1);
+>> 2. adds tests for trickier cases (patch #2);
+>> 3. and converts few test cases utilizing BTF-defined maps, that previously
+>>     couldn't use typedef'ed arrays due to kernel bug (patch #3).
+>>
+>> Patch #1 can be applied against bpf tree, but selftest ones (#2 and #3) have
+>> to go against bpf-next for now.
+> 
+> Why #2 and #3 have to go to bpf-next? bpf tree also accepts tests, 
+> AFAIK. Maybe leave for Daniel and Alexei to decide in this particular case.
+
+Yes, corresponding test cases for fixes are also accepted for bpf tree, thanks.
+
+>> Andrii Nakryiko (3):
+>>    bpf: fix BTF verifier size resolution logic
+>>    selftests/bpf: add trickier size resolution tests
+>>    selftests/bpf: use typedef'ed arrays as map values
+> 
+> Looks good to me. Except minor comments in patch 1/3, Ack the series.
 > Acked-by: Yonghong Song <yhs@fb.com>
->
+> 
+>>
+>>   kernel/bpf/btf.c                              | 14 ++-
+>>   .../bpf/progs/test_get_stack_rawtp.c          |  3 +-
+>>   .../bpf/progs/test_stacktrace_build_id.c      |  3 +-
+>>   .../selftests/bpf/progs/test_stacktrace_map.c |  2 +-
+>>   tools/testing/selftests/bpf/test_btf.c        | 88 +++++++++++++++++++
+>>   5 files changed, 102 insertions(+), 8 deletions(-)
+>>
 
-How do we get this merged? I see the build failure has now propagated
-up to mainline :(
-
-> > ---
-> >   tools/lib/bpf/libbpf.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index ed07789b3e62..794dd5064ae8 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -4126,8 +4126,8 @@ static int perf_event_open_probe(bool uprobe, boo=
-l retprobe, const char *name,
-> >       }
-> >       attr.size =3D sizeof(attr);
-> >       attr.type =3D type;
-> > -     attr.config1 =3D (uint64_t)(void *)name; /* kprobe_func or uprobe=
-_path */
-> > -     attr.config2 =3D offset;                 /* kprobe_addr or probe_=
-offset */
-> > +     attr.config1 =3D ptr_to_u64(name); /* kprobe_func or uprobe_path =
-*/
-> > +     attr.config2 =3D offset;           /* kprobe_addr or probe_offset=
- */
-> >
-> >       /* pid filter is meaningful only for uprobes */
-> >       pfd =3D syscall(__NR_perf_event_open, &attr,
-> >
