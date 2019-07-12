@@ -2,261 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A85D662F7
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A11F66307
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 02:48:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728569AbfGLAiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 20:38:01 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:34465 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbfGLAiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:38:01 -0400
-Received: by mail-qt1-f193.google.com with SMTP id k10so6460948qtq.1;
-        Thu, 11 Jul 2019 17:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JiiqO1dfDLJMFX5mT4ARY95upHgUOuM58KSmu+2M/SY=;
-        b=n7LTvSQS1fMV7dWf9+u/0C88tFTMzIQMtsGYU2EuhIKgxU6+0c6Usl0FKAFt1eRi8S
-         XvdLQXjp2KkFkCAzpS5N6Fu15aYhZ53RrsYFuQCv4kra/GDLh9y66C4pyXB3xabjS/0C
-         AMKN3MkAmXlU1uqcRQDoKIDjaygRo9t+vj7Pq7psUys3EfWXpVgcBdFaQKB5A2iRSgOo
-         K5vG30hhe/tFnrp2/us+usWB9w9nEQTVqxof/LevAaY4eldnSs2PkF7YyXI1D+uxDKVN
-         88zr5w3PY3/k7a2eT6iOGIWnTYmSm4ZkOFnRmuMiRqtXpcRMHKvyjJWaD5E4Mr46g4Oe
-         tHKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JiiqO1dfDLJMFX5mT4ARY95upHgUOuM58KSmu+2M/SY=;
-        b=HsX0jyG15PdUTvEUqmKJZ+s+Fe3Fzp2HpWEZA6rtKJBKVCMam+JAoFas0lzCu6eXGu
-         kR0ifXnCWRuxHHP15po/D4jWXOHI/21NmxXMCC8SnN8vnrbUsawDB668w0aEysMnnRDs
-         Ilr+C9et58F8999qIpxlAFWuq56AXsMxCs8oQW62Rh6S2OoiFCrXlg4bMqkYbCONI60Y
-         phRhrpDlfSTgzSYHC0feOTTOGaXEbUgwbEcvoJe+2Iy9qZ8QwzyBByiOGE3Ub2tVYyk2
-         ggu1h/r4wqXQ59dyweA1E7/8cUkA3I05ltwmbjJ8PVycRj8rLGbgGEtQ71xUWtp5Qr14
-         6pKA==
-X-Gm-Message-State: APjAAAWoAlnrKqDvMS7S+dWZnA6EZ3iy1y+MsOdq3mxajPJTBmTty45k
-        OIR1clQ0HIi/RAgo3Ejt2x8LJ10MYxfieeaR8D4=
-X-Google-Smtp-Source: APXvYqyvkoVSNCBEUI9LpZDxTY7742Me/clugQM9b/g/NyhJlnzIG18C8jCOCLEKzoyKFXrknhiwNnrhifcZcHDDH7w=
-X-Received: by 2002:a0c:ae50:: with SMTP id z16mr4163447qvc.60.1562891879478;
- Thu, 11 Jul 2019 17:37:59 -0700 (PDT)
+        id S1728862AbfGLAsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 20:48:40 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:57558 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726199AbfGLAsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 20:48:40 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6C0hjBs185711;
+        Fri, 12 Jul 2019 00:47:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=corp-2018-07-02;
+ bh=bswtM7KXfcTUrZa5tnJd6JLuh5yaxIc3HYQdk3Zuwr4=;
+ b=QkEPqMp3mKHL42qF1Uaya2p5wJUkj3FO2QR4290uZjskPuH+45kpwJstRfLq2CQZsHXI
+ bGvmrTEyFoUgSvLt9UqzWx7zuKq7gXPjoHJOqOB0OAWocwzVyE1jI5VIB2qLUVXOLTb1
+ 4MoD99TdxTY0/Md8hMz/ROHW3oDkPYr5AA+HrV0/VUqyykGXJH0uy+ZwC0SE6Oyxg0CI
+ k6XtjbOE5Z3qGpSgkbdih4M3+q5Dl7s00OOj1iOH7Vyd09uDepWKW+k/jFw9uxUfLhJQ
+ J1oZl4Ro0Zzn3tcGseuiYkmMIrHIitgN27aZoCxwFCHhGWunD9ZG7RQtqLkGTv4rsDw4 AQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2tjkkq2vb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 12 Jul 2019 00:47:25 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6C0gtFo163677;
+        Fri, 12 Jul 2019 00:47:25 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3030.oracle.com with ESMTP id 2tmwgyfrj1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 12 Jul 2019 00:47:25 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6C0l81a008418;
+        Fri, 12 Jul 2019 00:47:10 GMT
+Received: from ca-mkp.ca.oracle.com (/10.159.214.123)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 11 Jul 2019 17:47:08 -0700
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kees Cook <keescook@chromium.org>,
+        James Smart <james.smart@broadcom.com>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        James Morris <jmorris@namei.org>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Hannes Reinecke <hare@suse.com>, Willy Tarreau <w@1wt.eu>,
+        Silvio Cesare <silvio.cesare@gmail.com>
+Subject: Re: [PATCH 2/4] lpfc: reduce stack size with CONFIG_GCC_PLUGIN_STRUCTLEAK_VERBOSE
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+References: <20190628123819.2785504-1-arnd@arndb.de>
+        <20190628123819.2785504-2-arnd@arndb.de>
+Date:   Thu, 11 Jul 2019 20:47:03 -0400
+In-Reply-To: <20190628123819.2785504-2-arnd@arndb.de> (Arnd Bergmann's message
+        of "Fri, 28 Jun 2019 14:37:47 +0200")
+Message-ID: <yq1y3146pvc.fsf@oracle.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1.92 (gnu/linux)
 MIME-Version: 1.0
-References: <20190708163121.18477-1-krzesimir@kinvolk.io> <20190708163121.18477-12-krzesimir@kinvolk.io>
-In-Reply-To: <20190708163121.18477-12-krzesimir@kinvolk.io>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Jul 2019 17:37:48 -0700
-Message-ID: <CAEf4BzYaV=AxYZna225qKzyWPteU4YFPiBRE4cO30tYmyN_pJQ@mail.gmail.com>
-Subject: Re: [bpf-next v3 11/12] selftests/bpf: Add tests for
- bpf_prog_test_run for perf events progs
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9315 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1907120007
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9315 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907120008
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 8, 2019 at 3:42 PM Krzesimir Nowak <krzesimir@kinvolk.io> wrote:
->
-> The tests check if ctx and data are correctly prepared from ctx_in and
-> data_in, so accessing the ctx and using the bpf_perf_prog_read_value
-> work as expected.
->
 
-These are x86_64-specific tests, aren't they? Should probably guard
-them behind #ifdef's.
+Arnd,
 
-> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> ---
->  tools/testing/selftests/bpf/test_verifier.c   | 48 ++++++++++
->  .../selftests/bpf/verifier/perf_event_run.c   | 96 +++++++++++++++++++
->  2 files changed, 144 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/verifier/perf_event_run.c
->
-> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> index 6f124cc4ee34..484ea8842b06 100644
-> --- a/tools/testing/selftests/bpf/test_verifier.c
-> +++ b/tools/testing/selftests/bpf/test_verifier.c
-> @@ -295,6 +295,54 @@ static void bpf_fill_scale(struct bpf_test *self)
->         }
->  }
->
-> +static void bpf_fill_perf_event_test_run_check(struct bpf_test *self)
-> +{
-> +       compiletime_assert(
-> +               sizeof(struct bpf_perf_event_data) <= TEST_CTX_LEN,
-> +               "buffer for ctx is too short to fit struct bpf_perf_event_data");
-> +       compiletime_assert(
-> +               sizeof(struct bpf_perf_event_value) <= TEST_DATA_LEN,
-> +               "buffer for data is too short to fit struct bpf_perf_event_value");
-> +
-> +       struct bpf_perf_event_data ctx = {
-> +               .regs = (bpf_user_pt_regs_t) {
-> +                       .r15 = 1,
-> +                       .r14 = 2,
-> +                       .r13 = 3,
-> +                       .r12 = 4,
-> +                       .rbp = 5,
-> +                       .rbx = 6,
-> +                       .r11 = 7,
-> +                       .r10 = 8,
-> +                       .r9 = 9,
-> +                       .r8 = 10,
-> +                       .rax = 11,
-> +                       .rcx = 12,
-> +                       .rdx = 13,
-> +                       .rsi = 14,
-> +                       .rdi = 15,
-> +                       .orig_rax = 16,
-> +                       .rip = 17,
-> +                       .cs = 18,
-> +                       .eflags = 19,
-> +                       .rsp = 20,
-> +                       .ss = 21,
-> +               },
-> +               .sample_period = 1,
-> +               .addr = 2,
-> +       };
-> +       struct bpf_perf_event_value data = {
-> +               .counter = 1,
-> +               .enabled = 2,
-> +               .running = 3,
-> +       };
-> +
-> +       memcpy(self->ctx, &ctx, sizeof(ctx));
-> +       memcpy(self->data, &data, sizeof(data));
+> The lpfc_debug_dump_all_queues() function repeatedly calls into
+> lpfc_debug_dump_qe(), which has a temporary 128 byte buffer.  This was
+> fine before the introduction of CONFIG_GCC_PLUGIN_STRUCTLEAK_VERBOSE
+> because each instance could occupy the same stack slot. However, now
+> they each get their own copy, which leads to a huge increase in stack
+> usage as seen from the compiler warning:
 
-Just curious, just assignment didn't work?
+Applied to 5.3/scsi-fixes. Thank you!
 
-> +       free(self->fill_insns);
-> +       self->fill_insns = NULL;
-> +}
-> +
->  /* BPF_SK_LOOKUP contains 13 instructions, if you need to fix up maps */
->  #define BPF_SK_LOOKUP(func)                                            \
->         /* struct bpf_sock_tuple tuple = {} */                          \
-> diff --git a/tools/testing/selftests/bpf/verifier/perf_event_run.c b/tools/testing/selftests/bpf/verifier/perf_event_run.c
-> new file mode 100644
-> index 000000000000..3f877458a7f8
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/verifier/perf_event_run.c
-> @@ -0,0 +1,96 @@
-> +#define PER_LOAD_AND_CHECK_PTREG(PT_REG_FIELD, VALUE)                  \
-> +       PER_LOAD_AND_CHECK_CTX(offsetof(bpf_user_pt_regs_t, PT_REG_FIELD), VALUE)
-> +#define PER_LOAD_AND_CHECK_EVENT(PED_FIELD, VALUE)                     \
-> +       PER_LOAD_AND_CHECK_CTX(offsetof(struct bpf_perf_event_data, PED_FIELD), VALUE)
-> +#define PER_LOAD_AND_CHECK_CTX(OFFSET, VALUE)                          \
-> +       PER_LOAD_AND_CHECK_64(BPF_REG_4, BPF_REG_1, OFFSET, VALUE)
-> +#define PER_LOAD_AND_CHECK_VALUE(PEV_FIELD, VALUE)                     \
-> +       PER_LOAD_AND_CHECK_64(BPF_REG_7, BPF_REG_6, offsetof(struct bpf_perf_event_value, PEV_FIELD), VALUE)
-
-Wrap long lines? Try also running scripts/checkpatch.pl again these
-files you are modifying.
-
-> +#define PER_LOAD_AND_CHECK_64(DST, SRC, OFFSET, VALUE)                 \
-> +       BPF_LDX_MEM(BPF_DW, DST, SRC, OFFSET),                          \
-> +       BPF_JMP_IMM(BPF_JEQ, DST, VALUE, 2),                            \
-> +       BPF_MOV64_IMM(BPF_REG_0, VALUE),                                \
-> +       BPF_EXIT_INSN()
-> +
-> +{
-> +       "check if regs contain expected values",
-> +       .insns = {
-> +       PER_LOAD_AND_CHECK_PTREG(r15, 1),
-> +       PER_LOAD_AND_CHECK_PTREG(r14, 2),
-> +       PER_LOAD_AND_CHECK_PTREG(r13, 3),
-> +       PER_LOAD_AND_CHECK_PTREG(r12, 4),
-> +       PER_LOAD_AND_CHECK_PTREG(rbp, 5),
-> +       PER_LOAD_AND_CHECK_PTREG(rbx, 6),
-> +       PER_LOAD_AND_CHECK_PTREG(r11, 7),
-> +       PER_LOAD_AND_CHECK_PTREG(r10, 8),
-> +       PER_LOAD_AND_CHECK_PTREG(r9, 9),
-> +       PER_LOAD_AND_CHECK_PTREG(r8, 10),
-> +       PER_LOAD_AND_CHECK_PTREG(rax, 11),
-> +       PER_LOAD_AND_CHECK_PTREG(rcx, 12),
-> +       PER_LOAD_AND_CHECK_PTREG(rdx, 13),
-> +       PER_LOAD_AND_CHECK_PTREG(rsi, 14),
-> +       PER_LOAD_AND_CHECK_PTREG(rdi, 15),
-> +       PER_LOAD_AND_CHECK_PTREG(orig_rax, 16),
-> +       PER_LOAD_AND_CHECK_PTREG(rip, 17),
-> +       PER_LOAD_AND_CHECK_PTREG(cs, 18),
-> +       PER_LOAD_AND_CHECK_PTREG(eflags, 19),
-> +       PER_LOAD_AND_CHECK_PTREG(rsp, 20),
-> +       PER_LOAD_AND_CHECK_PTREG(ss, 21),
-> +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .result = ACCEPT,
-> +       .prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +       .ctx_len = sizeof(struct bpf_perf_event_data),
-> +       .data_len = sizeof(struct bpf_perf_event_value),
-> +       .fill_helper = bpf_fill_perf_event_test_run_check,
-> +       .override_data_out_len = true,
-> +},
-> +{
-> +       "check if sample period and addr contain expected values",
-> +       .insns = {
-> +       PER_LOAD_AND_CHECK_EVENT(sample_period, 1),
-> +       PER_LOAD_AND_CHECK_EVENT(addr, 2),
-> +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .result = ACCEPT,
-> +       .prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +       .ctx_len = sizeof(struct bpf_perf_event_data),
-> +       .data_len = sizeof(struct bpf_perf_event_value),
-> +       .fill_helper = bpf_fill_perf_event_test_run_check,
-> +       .override_data_out_len = true,
-> +},
-> +{
-> +       "check if bpf_perf_prog_read_value returns expected data",
-> +       .insns = {
-> +       // allocate space for a struct bpf_perf_event_value
-> +       BPF_MOV64_REG(BPF_REG_6, BPF_REG_10),
-> +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -(int)sizeof(struct bpf_perf_event_value)),
-> +       // prepare parameters for bpf_perf_prog_read_value(ctx, struct bpf_perf_event_value*, u32)
-> +       // BPF_REG_1 already contains the context
-> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
-> +       BPF_MOV64_IMM(BPF_REG_3, sizeof(struct bpf_perf_event_value)),
-> +       BPF_EMIT_CALL(BPF_FUNC_perf_prog_read_value),
-> +       // check the return value
-> +       BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 1),
-> +       BPF_EXIT_INSN(),
-> +       // check if the fields match the expected values
-
-Use /* */ comments.
-
-> +       PER_LOAD_AND_CHECK_VALUE(counter, 1),
-> +       PER_LOAD_AND_CHECK_VALUE(enabled, 2),
-> +       PER_LOAD_AND_CHECK_VALUE(running, 3),
-> +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .result = ACCEPT,
-> +       .prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +       .ctx_len = sizeof(struct bpf_perf_event_data),
-> +       .data_len = sizeof(struct bpf_perf_event_value),
-> +       .fill_helper = bpf_fill_perf_event_test_run_check,
-> +       .override_data_out_len = true,
-> +},
-> +#undef PER_LOAD_AND_CHECK_64
-> +#undef PER_LOAD_AND_CHECK_VALUE
-> +#undef PER_LOAD_AND_CHECK_CTX
-> +#undef PER_LOAD_AND_CHECK_EVENT
-> +#undef PER_LOAD_AND_CHECK_PTREG
-> --
-> 2.20.1
->
+-- 
+Martin K. Petersen	Oracle Linux Engineering
