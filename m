@@ -2,127 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B72670FD
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 16:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E2B67153
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 16:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727212AbfGLOHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 10:07:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48538 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726466AbfGLOHd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jul 2019 10:07:33 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 13EEB206B8;
-        Fri, 12 Jul 2019 14:07:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562940452;
-        bh=l2jxhcxb3H5zHl1HLHLMhC6OaCKayvurXGn4TEVXXoE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A/oAdNTdeI+UFzMuaoy4DvzeHOzCWLaMqM4Z0jDa0fCTZdnnVMmVzbxFV54ca2D35
-         keNuDhJQelKhNkBrLYHxdMcUwGrOPDYBJxPTDuvPjVhJfRHoIeifkRu+IK8/R2Lkff
-         ht6sVwffhqeUmPUg9qiRYQW91VgWhz3KGlahak+0=
-Date:   Fri, 12 Jul 2019 16:07:29 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Xiaoming Ni <nixiaoming@huawei.com>
-Cc:     Vasily Averin <vvs@virtuozzo.com>,
-        "adobriyan@gmail.com" <adobriyan@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "arjan@linux.intel.com" <arjan@linux.intel.com>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
-        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
-        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
-        "stable@kernel.org" <stable@kernel.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
-        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
-        "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
-        Dailei <dylix.dailei@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
-Message-ID: <20190712140729.GA11583@kroah.com>
-References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
- <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
- <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
- <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
- <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
+        id S1727282AbfGLO0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 10:26:18 -0400
+Received: from www62.your-server.de ([213.133.104.62]:36994 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726939AbfGLO0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 10:26:18 -0400
+Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlwV6-0004XN-5C; Fri, 12 Jul 2019 16:26:16 +0200
+Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlwV5-00074v-Rb; Fri, 12 Jul 2019 16:26:15 +0200
+Subject: Linux Plumbers BPF micro-conference CFP (reminder)
+References: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, iovisor-dev@lists.iovisor.org,
+        lpc-bpf@vger.kernel.org, alexei.starovoitov@gmail.com
+From:   Daniel Borkmann <daniel@iogearbox.net>
+X-Forwarded-Message-Id: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
+Message-ID: <5f1e881b-7094-a6d9-5d7c-f391d128780d@iogearbox.net>
+Date:   Fri, 12 Jul 2019 16:26:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 12, 2019 at 09:11:57PM +0800, Xiaoming Ni wrote:
-> On 2019/7/11 21:57, Vasily Averin wrote:
-> > On 7/11/19 4:55 AM, Nixiaoming wrote:
-> >> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
-> >>> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
-> >>>> Registering the same notifier to a hook repeatedly can cause the hook
-> >>>> list to form a ring or lose other members of the list.
-> >>>
-> >>> I think is not enough to _prevent_ 2nd register attempt,
-> >>> it's enough to detect just attempt and generate warning to mark host in bad state.
-> >>>
-> >>
-> >> Duplicate registration is prevented in my patch, not just "mark host in bad state"
-> >>
-> >> Duplicate registration is checked and exited in notifier_chain_cond_register()
-> >>
-> >> Duplicate registration was checked in notifier_chain_register() but only 
-> >> the alarm was triggered without exiting. added by commit 831246570d34692e 
-> >> ("kernel/notifier.c: double register detection")
-> >>
-> >> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
-> >>  which triggers an alarm and exits when a duplicate registration is detected.
-> >>
-> >>> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
-> >>> and it can lead to host crash in any time: 
-> >>> you can unregister notifier on first attempt it can be too early, it can be still in use.
-> >>> on the other hand you can never call 2nd unregister at all.
-> >>
-> >> Since the member was not added to the linked list at the time of the second registration, 
-> >> no linked list ring was formed. 
-> >> The member is released on the first unregistration and -ENOENT on the second unregistration.
-> >> After patching, the fault has been alleviated
-> > 
-> > You are wrong here.
-> > 2nd notifier's registration is a pure bug, this should never happen.
-> > If you know the way to reproduce this situation -- you need to fix it. 
-> > 
-> > 2nd registration can happen in 2 cases:
-> > 1) missed rollback, when someone forget to call unregister after successfull registration, 
-> > and then tried to call register again. It can lead to crash for example when according module will be unloaded.
-> > 2) some subsystem is registered twice, for example from  different namespaces.
-> > in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
-> > in second namespace, it also can lead to unexpacted behaviour.
-> > 
-> So in these two cases, is it more reasonable to trigger BUG() directly when checking for duplicate registration ?
-> But why does current notifier_chain_register() just trigger WARN() without exiting ?
-> notifier_chain_cond_register() direct exit without triggering WARN() ?
+This is a call for proposals for the BPF micro-conference at this
+years' Linux Plumbers Conference (LPC) 2019 which will be held in
+Lisbon, Portugal for September 9-11.
 
-It should recover from this, if it can be detected.  The main point is
-that not all apis have to be this "robust" when used within the kernel
-as we do allow for the callers to know what they are doing :)
+The goal of the BPF micro-conference is to bring BPF developers
+together to discuss topics around Linux kernel work related to
+the BPF core infrastructure as well as its many subsystems under
+tracing, networking, security, and BPF user space tooling (LLVM,
+libbpf, bpftool and many others).
 
-If this does not cause any additional problems or slow downs, it's
-probably fine to add.
+The format of the micro-conference has a main focus on discussion,
+therefore each accepted topic will provide a short 1-2 slide
+introduction with subsequent discussion for the rest of the given
+time slot.
 
-thanks,
+The BPF micro-conference is a community-driven event and open to
+all LPC attendees, there is no additional registration required.
 
-greg k-h
+Please submit your discussion proposals to the LPC BPF micro-conference
+organizers at:
+
+        lpc-bpf@vger.kernel.org
+
+Proposals must be submitted until August 2nd, and submitters will
+be notified of acceptance at latest by August 9. (Please note that
+proposals must not be sent as html mail as they are otherwise dropped
+by vger.)
+
+The format of the submission and many other details can be found at:
+
+        http://vger.kernel.org/lpc-bpf.html
+
+Looking forward to seeing you all in Lisbon in September!
