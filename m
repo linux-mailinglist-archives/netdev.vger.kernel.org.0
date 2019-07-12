@@ -2,49 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 112A066BE6
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 13:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C837F66C06
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbfGLLyj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 12 Jul 2019 07:54:39 -0400
-Received: from mailhost.ccc.org.co ([200.29.116.231]:21632 "EHLO
-        mailhost.ccc.org.co" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726254AbfGLLyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 07:54:39 -0400
-X-Greylist: delayed 3797 seconds by postgrey-1.27 at vger.kernel.org; Fri, 12 Jul 2019 07:54:38 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mailhost.ccc.org.co (Postfix) with ESMTP id 8CCF61FBA;
-        Fri, 12 Jul 2019 04:52:58 -0500 (COT)
-X-Virus-Scanned: amavisd-new at ccc.org.co
-Received: from mailhost.ccc.org.co ([127.0.0.1])
-        by localhost (mailhost.ccc.org.co [127.0.0.1]) (amavisd-new, port 10024)
-        with SMTP id WGcjh2Xj-Ghc; Fri, 12 Jul 2019 04:52:58 -0500 (COT)
-Received: from [172.20.10.10] (8ta-246-252-104.telkomadsl.co.za [41.246.252.104])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailhost.ccc.org.co (Postfix) with ESMTPSA id 779F41F86;
-        Fri, 12 Jul 2019 04:52:50 -0500 (COT)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1727059AbfGLMGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 08:06:20 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:36393 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727052AbfGLMGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 08:06:20 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hluJJ-0008WG-BO; Fri, 12 Jul 2019 08:06:01 -0400
+Date:   Fri, 12 Jul 2019 08:05:29 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        jiri@mellanox.com, mlxsw@mellanox.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andy@greyhouse.net, pablo@netfilter.org,
+        jakub.kicinski@netronome.com, pieter.jansenvanvuuren@netronome.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
+Message-ID: <20190712120529.GA13696@hmswarspite.think-freely.org>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707.124541.451040901050013496.davem@davemloft.net>
+ <20190711123909.GA10978@splinter>
+ <20190711235354.GA30396@hmswarspite.think-freely.org>
+ <69d0917f-895f-6239-4044-76944432e8ca@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Loan of any kind without collateral
-To:     Recipients <info@loanpayment.org>
-From:   info@loanpayment.org
-Date:   Fri, 12 Jul 2019 11:54:35 +0200
-Reply-To: giovannipietrobon2@aol.com
-X-Antivirus: AVG (VPS 190712-0, 2019/07/12), Outbound message
-X-Antivirus-Status: Clean
-Message-Id: <20190712095250.779F41F86@mailhost.ccc.org.co>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <69d0917f-895f-6239-4044-76944432e8ca@gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We Raymond Bryan Investment Firm is giving out loan on at 3% interest rate.. Contact our finacial accountant Now for loan of any kind without collateral: giovannipietrobon2@gmail.com
-Contact Number: +1 909 283 3102
+On Thu, Jul 11, 2019 at 08:40:34PM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 7/11/2019 4:53 PM, Neil Horman wrote:
+> >> I would like to emphasize that the configuration of whether these
+> >> dropped packets are even sent to the CPU from the device still needs to
+> >> reside in devlink given this is the go-to tool for device-specific
+> >> configuration. In addition, these drop traps are a small subset of the
+> >> entire packet traps devices support and all have similar needs such as
+> >> HW policer configuration and statistics.
+> >>
+> >> In the future we might also want to report events that indicate the
+> >> formation of possible problems. For example, in case packets are queued
+> >> above a certain threshold or for long periods of time. I hope we could
+> >> re-use drop_monitor for this as well, thereby making it the go-to
+> >> channel for diagnosing current and to-be problems in the data path.
+> >>
+> > Thats an interesting idea, but dropwatch certainly isn't currently setup for
+> > that kind of messaging.  It may be worth creating a v2 of the netlink protocol
+> > and really thinking out what you want to communicate.
+> 
+> Is not what you describe more or less what Ido has been doing here with
+> this patch series?
+possibly, I was only CCed on this thread halfway throught the conversation, and
+only on the cover letter, I've not had a chance to look at the entire series
 
----
-This email has been checked for viruses by AVG.
-https://www.avg.com
+Neil
 
+> -- 
+> Florian
+> 
