@@ -2,98 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 784D26767B
-	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 00:22:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2ED6767C
+	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 00:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbfGLWWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 18:22:10 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:44368 "EHLO
+        id S1728081AbfGLWWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 18:22:14 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:33683 "EHLO
         mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727245AbfGLWWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 18:22:10 -0400
-Received: by mail-io1-f67.google.com with SMTP id s7so23660586iob.11
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 15:22:10 -0700 (PDT)
+        with ESMTP id S1727245AbfGLWWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 18:22:13 -0400
+Received: by mail-io1-f67.google.com with SMTP id z3so23797736iog.0
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 15:22:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=FJBphtJzxfv/bW1v6btlQGrLVG76gEXfXb89lUeYsAI=;
-        b=vVe/Gp9Tf0zN+cOsrI00upKIR5YAADZWQVZoR+dlXLbRsasEapQaKCW7VY5/osw8ii
-         FOl74FSZz6yAtfz7OniXrRBZvUmOhU6A2Bgw94b91BG/Kezig0ptMOhPTKZgSox37d/S
-         FgZTXPvwnDWmZ3HRSOikjaY2oQKSxz45bPXyYrKyIbXWw1AxmHzdhVxVa6JycfA7KddH
-         yopwUmGUJtF5yHr/DdC1HWVkjAIuSrycHbTq4wTmo6yo7edTCEL3BoeUll/DebocS9Vj
-         wWjpDBnB9g6fwckgoKcx827HpsnahsgQU1EgzOmtY43YahJScIIPqGJ7rwdJ61GZ1d/Q
-         TGTQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=u9AqsqcwVjiGnUltUMHsiFqjDMQznLomqEsk8nrIAks=;
+        b=kCTWWsUXnDICQBiRe2C4b7b/1LKOdrJjy1K+WEXgNxx/DcGpfs5h0hI9nZvRtSG8oO
+         8QYCFpFp4xIOa4VYTyM+w0eVmmy39ZgmxMBbmV/YQT71c18TfztLBxH/lUloAShSOwnp
+         C9bumCVw8311APTivQsgaj5WoQ2bRsLfxo54gRhkqgvBXAvaXP7/pkINjtQivl4IU/p6
+         oq2VGNy8FpMTmhlAqZsf4V9aGyR9y0qBdLiEW3HwnkGQPghGRJ5TXfiRKI+F233gexJ8
+         XoseLgpwvpGkztVfAzHQvQeQwuPgjYKJUzzNlp88VZaFLc1dB/xl3MjeZjyh4Q7w+jEe
+         5oyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FJBphtJzxfv/bW1v6btlQGrLVG76gEXfXb89lUeYsAI=;
-        b=olHAhxhqmiMwqzhw8/dEBM6cL2qeGFOYi8ZTlc5zYj0iiss6A4r3e/JB4kzMESreMV
-         hiykYwPhDlTgj/JriGgFjn35eqy2DnOwCefcU+i1Q/fA067yCbaLKeDDBVUt6YysVkqa
-         v0XoBZkj0hdkPLNWO6f49HoaEzr5u+YRv6/irXQzyYWafrFWogi2pIzpZEQ0te3bicXt
-         Hszrmt7gqFmIOeoHWhkqi+tYZMHe5Qsd94UYu27hETBKo9uA+TzZ36A/l+Q2px9skp5x
-         mQQLtM+o6EyNjGuxwr5C2fyTduL6+KK4nFBAxy6xpnMeQCdMe7i5J3osWPschlLmeXGs
-         /fkg==
-X-Gm-Message-State: APjAAAUbp2kyLclZTe+VVh1Z7FrwEGuHXv0pvQ89vw3lchVOr7ndBYVp
-        lIu0ymaChcoGcjfvMiI0NeRtKlNQ
-X-Google-Smtp-Source: APXvYqxYrkwTT1nJ3A1Q/s+fKXCGaqr3xbgMC1KIleV31rFz9yqmHnrVYe7rL1qEYofrJK18wJRvlA==
-X-Received: by 2002:a5d:9416:: with SMTP id v22mr13808971ion.4.1562970129742;
-        Fri, 12 Jul 2019 15:22:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=u9AqsqcwVjiGnUltUMHsiFqjDMQznLomqEsk8nrIAks=;
+        b=sdBPZ51yNUdBVSogNtSJREDR3jIFz1RIdXit3LiBCtlWmIpDONPp1fxF8bFB9TfZFM
+         em8Sb56M6oKGJKF3Jf0uDdp3M6NZdKZ1ZFlSS6B12F+lFDBSx40XeyOIkJzAg4muqgBB
+         No4sXCwqCqYnTyILu4GIpIXpnAPsoUXoI5BY3Fmy6eRwtx35yAbE4d6xjnTZEBxv+cSO
+         RgMwwpdqNljNWL16vm3e6w2CxYLUsGcPhB9HIf6lQv1/TtjVXaOG0skWs5CvNUX6wZmG
+         vmDfCwRmquOjDJEp4NseVPEz/79VdoJhI29PNjZVzc4BrTKJYH/omZnIW/MmPluzkUzQ
+         PDxQ==
+X-Gm-Message-State: APjAAAVGET7Fo5Zw2HLOdJaknDCHkMNOniL98nqqvApxdG/C4L8nbYwv
+        LDA2LKSJyoO0wuo9yKkbeiM=
+X-Google-Smtp-Source: APXvYqyP+RyPF35GdIgcSYoNqPLdbX7eJi1P+4a/+nhH43TBQxyXFJwDoUvRUivP7c3iT5iC++cPEQ==
+X-Received: by 2002:a5d:9acf:: with SMTP id x15mr12275210ion.190.1562970132947;
+        Fri, 12 Jul 2019 15:22:12 -0700 (PDT)
 Received: from mojatatu.com ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id q22sm8074594ioj.56.2019.07.12.15.22.08
+        by smtp.gmail.com with ESMTPSA id q22sm8074594ioj.56.2019.07.12.15.22.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 12 Jul 2019 15:22:09 -0700 (PDT)
+        Fri, 12 Jul 2019 15:22:12 -0700 (PDT)
 From:   Roman Mashak <mrv@mojatatu.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us,
         Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next 1/2] net sched: update skbedit action for batched events operations
-Date:   Fri, 12 Jul 2019 18:21:59 -0400
-Message-Id: <1562970120-29517-1-git-send-email-mrv@mojatatu.com>
+Subject: [PATCH net-next 2/2] tc-testing: updated skbedit action tests with batch create/delete
+Date:   Fri, 12 Jul 2019 18:22:00 -0400
+Message-Id: <1562970120-29517-2-git-send-email-mrv@mojatatu.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1562970120-29517-1-git-send-email-mrv@mojatatu.com>
+References: <1562970120-29517-1-git-send-email-mrv@mojatatu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add get_fill_size() routine used to calculate the action size
-when building a batch of events.
-
 Signed-off-by: Roman Mashak <mrv@mojatatu.com>
 ---
- net/sched/act_skbedit.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../tc-testing/tc-tests/actions/skbedit.json       | 47 ++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
 
-diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index 215a06705cef..dc3c653ec45e 100644
---- a/net/sched/act_skbedit.c
-+++ b/net/sched/act_skbedit.c
-@@ -306,6 +306,17 @@ static int tcf_skbedit_search(struct net *net, struct tc_action **a, u32 index)
- 	return tcf_idr_search(tn, a, index);
- }
- 
-+static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
-+{
-+	return nla_total_size(sizeof(struct tc_skbedit))
-+		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
-+		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
-+		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
-+		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
-+		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
-+		+ nla_total_size_64bit(sizeof(u64)); /* TCA_SKBEDIT_FLAGS */
-+}
-+
- static struct tc_action_ops act_skbedit_ops = {
- 	.kind		=	"skbedit",
- 	.id		=	TCA_ID_SKBEDIT,
-@@ -315,6 +326,7 @@ static struct tc_action_ops act_skbedit_ops = {
- 	.init		=	tcf_skbedit_init,
- 	.cleanup	=	tcf_skbedit_cleanup,
- 	.walk		=	tcf_skbedit_walker,
-+	.get_fill_size	=	tcf_skbedit_get_fill_size,
- 	.lookup		=	tcf_skbedit_search,
- 	.size		=	sizeof(struct tcf_skbedit),
- };
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
+index 45e7e89928a5..797477c1208f 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
+@@ -553,5 +553,52 @@
+         "teardown": [
+             "$TC actions flush action skbedit"
+         ]
++    },
++    {
++        "id": "630c",
++        "name": "Add batch of 32 skbedit actions with all parameters and cookie",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "bash -c \"for i in \\`seq 1 32\\`; do cmd=\\\"action skbedit queue_mapping 2 priority 10 mark 7/0xaabbccdd ptype host inheritdsfield index \\$i cookie aabbccddeeff112233445566778800a1 \\\"; args=\"\\$args\\$cmd\"; done && $TC actions add \\$args\"",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "^[ \t]+index [0-9]+ ref",
++        "matchCount": "32",
++        "teardown": [
++            "$TC actions flush action skbedit"
++        ]
++    },
++    {
++        "id": "706d",
++        "name": "Delete batch of 32 skbedit actions with all parameters",
++        "category": [
++            "actions",
++            "skbedit"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action skbedit",
++                0,
++                1,
++                255
++            ],
++            "bash -c \"for i in \\`seq 1 32\\`; do cmd=\\\"action skbedit queue_mapping 2 priority 10 mark 7/0xaabbccdd ptype host inheritdsfield index \\$i \\\"; args=\\\"\\$args\\$cmd\\\"; done && $TC actions add \\$args\""
++        ],
++        "cmdUnderTest": "bash -c \"for i in \\`seq 1 32\\`; do cmd=\\\"action skbedit index \\$i \\\"; args=\"\\$args\\$cmd\"; done && $TC actions del \\$args\"",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action skbedit",
++        "matchPattern": "^[ \t]+index [0-9]+ ref",
++        "matchCount": "0",
++        "teardown": []
+     }
+ ]
 -- 
 2.7.4
 
