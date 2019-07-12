@@ -2,138 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D6F66370
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 03:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01521663B2
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 04:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729015AbfGLBqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jul 2019 21:46:03 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:59161 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728497AbfGLBqC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jul 2019 21:46:02 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45lG3V60j1z9sMQ;
-        Fri, 12 Jul 2019 11:45:58 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562895960;
-        bh=0W6npV2Kiu65/8q7sGtd68JHyVYyZcWbnkUBWyhmDYc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WgShdzxOGy68a+Sd5OYoYK9XIP/UJqNVvkTNyYsa4rXN5RgjYJ2Ca8MngqgjbdMD3
-         B6CsRfum5jqJhhIjjqGmpQChcrSSjqOiLyIllb3dmWXUJhxxoinRrregBrw0DuNZgU
-         Phps/E2cAgW0sXaHM3PakgpuiGDt2Qucn7cUthohTP8YzLDIKwSd+rLHYFMXba7Vnv
-         DKPx6Sp3l51lbHJ4xpgQHjNsYd9PNDonLb4Wc7ob3pzkdgrQ1mTD9+afCiw4G/RMOh
-         uvTt9FqEaVQKMkUwbpyui15vUFsOVc9gPY8zPTymnLmNzH+HT4oIYEIBAITRNE4GJc
-         ne7AzAI+Q3UTw==
-Date:   Fri, 12 Jul 2019 11:45:57 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Bernard Metzler <BMT@zurich.ibm.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20190712114557.2b094876@canb.auug.org.au>
-In-Reply-To: <20190711143302.GH25821@mellanox.com>
-References: <20190711115235.GA25821@mellanox.com>
- <20190710175212.GM2887@mellanox.com>
- <20190709135636.4d36e19f@canb.auug.org.au>
- <20190709064346.GF7034@mtr-leonro.mtl.com>
- <OF360C0EBE.4A489B94-ON00258434.002B10B7-00258434.002C0536@notes.na.collabserv.com>
- <OF9A485648.9C7A28A3-ON00258434.00449B07-00258434.00449B14@notes.na.collabserv.com>
- <20190711143302.GH25821@mellanox.com>
+        id S1728956AbfGLCPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jul 2019 22:15:48 -0400
+Received: from smtprelay0216.hostedemail.com ([216.40.44.216]:41189 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726505AbfGLCPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jul 2019 22:15:48 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 8CD04181D33FB;
+        Fri, 12 Jul 2019 02:15:46 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2393:2525:2559:2564:2682:2685:2692:2828:2859:2899:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:5007:6119:6742:7514:7807:7875:7901:7903:8957:9025:9707:10004:10848:11026:11232:11473:11657:11658:11914:12043:12297:12438:12555:12698:12737:12740:12760:12895:13132:13231:13255:13439:14181:14659:14721:21080:21325:21433:21451:21627:21740:30012:30029:30054:30055:30069:30091,0,RBL:error,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:28,LUA_SUMMARY:none
+X-HE-Tag: list61_6c0723a6be725
+X-Filterd-Recvd-Size: 5469
+Received: from XPS-9350 (unknown [172.58.27.57])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 12 Jul 2019 02:15:42 +0000 (UTC)
+Message-ID: <b219cf41933b2f965572af515cf9d3119293bfba.camel@perches.com>
+Subject: Re: [PATCH -next] iwlwifi: dbg: work around clang bug by marking
+ debug strings static
+From:   Joe Perches <joe@perches.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>, kvalo@codeaurora.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+In-Reply-To: <20190712001708.170259-1-ndesaulniers@google.com>
+References: <20190712001708.170259-1-ndesaulniers@google.com>
+Content-Type: text/plain; charset="ISO-8859-1"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/IUmAit71Bk+sk6PU6OW4=UR"; protocol="application/pgp-signature"
+Date:   Thu, 11 Jul 2019 19:01:14 -0700
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/IUmAit71Bk+sk6PU6OW4=UR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, 2019-07-11 at 17:17 -0700, Nick Desaulniers wrote:
+> Commit r353569 in prerelease Clang-9 is producing a linkage failure:
+> 
+> ld: drivers/net/wireless/intel/iwlwifi/fw/dbg.o:
+> in function `_iwl_fw_dbg_apply_point':
+> dbg.c:(.text+0x827a): undefined reference to `__compiletime_assert_2387'
+> 
+> when the following configs are enabled:
+> - CONFIG_IWLWIFI
+> - CONFIG_IWLMVM
+> - CONFIG_KASAN
+> 
+> Work around the issue for now by marking the debug strings as `static`,
+> which they probably should be any ways.
+> 
+> Link: https://bugs.llvm.org/show_bug.cgi?id=42580
+> Link: https://github.com/ClangBuiltLinux/linux/issues/580
+> Reported-by: Arnd Bergmann <arnd@arndb.de>
+> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> index e411ac98290d..f8c90ea4e9b4 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> @@ -2438,7 +2438,7 @@ static void iwl_fw_dbg_info_apply(struct iwl_fw_runtime *fwrt,
+>  {
+>  	u32 img_name_len = le32_to_cpu(dbg_info->img_name_len);
+>  	u32 dbg_cfg_name_len = le32_to_cpu(dbg_info->dbg_cfg_name_len);
+> -	const char err_str[] =
+> +	static const char err_str[] =
+>  		"WRT: ext=%d. Invalid %s name length %d, expected %d\n";
 
-Hi Jason,
+Better still would be to use the format string directly
+in both locations instead of trying to deduplicate it
+via storing it into a separate pointer.
 
-On Thu, 11 Jul 2019 14:33:07 +0000 Jason Gunthorpe <jgg@mellanox.com> wrote:
->
-> I've added this patch to the rdma tree to fix the missing locking.
->=20
-> The merge resolution will be simply swapping
-> for_ifa to in_dev_for_each_ifa_rtnl.
+Let the compiler/linker consolidate the format.
+It's smaller object code, allows format/argument verification,
+and is simpler for humans to understand.
 
-OK, I added the below merge resolution patch to the merge of the rdma
-tree today (since Linus' has merged the net-next tree now).
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Fri, 12 Jul 2019 11:28:30 +1000
-Subject: [PATCH] RDMA: fix for removal of for_ifa()
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- drivers/infiniband/sw/siw/siw_cm.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/siw=
-/siw_cm.c
-index 43f7f12e5f7f..cbea46ff6dd1 100644
---- a/drivers/infiniband/sw/siw/siw_cm.c
-+++ b/drivers/infiniband/sw/siw/siw_cm.c
-@@ -1951,6 +1951,7 @@ static void siw_drop_listeners(struct iw_cm_id *id)
- int siw_create_listen(struct iw_cm_id *id, int backlog)
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+index e411ac98290d..25e6712932b8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+@@ -2438,17 +2438,17 @@ static void iwl_fw_dbg_info_apply(struct iwl_fw_runtime *fwrt,
  {
- 	struct net_device *dev =3D to_siw_dev(id->device)->netdev;
-+	const struct in_ifaddr *ifa;
- 	int rv =3D 0, listeners =3D 0;
-=20
- 	siw_dbg(id->device, "id 0x%p: backlog %d\n", id, backlog);
-@@ -1973,8 +1974,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
-g)
- 			&s_raddr->sin_addr, ntohs(s_raddr->sin_port));
-=20
- 		rtnl_lock();
--		for_ifa(in_dev)
--		{
-+		in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 			if (ipv4_is_zeronet(s_laddr.sin_addr.s_addr) ||
- 			    s_laddr.sin_addr.s_addr =3D=3D ifa->ifa_address) {
- 				s_laddr.sin_addr.s_addr =3D ifa->ifa_address;
-@@ -1986,7 +1986,6 @@ int siw_create_listen(struct iw_cm_id *id, int backlo=
-g)
- 					listeners++;
+ 	u32 img_name_len = le32_to_cpu(dbg_info->img_name_len);
+ 	u32 dbg_cfg_name_len = le32_to_cpu(dbg_info->dbg_cfg_name_len);
+-	const char err_str[] =
+-		"WRT: ext=%d. Invalid %s name length %d, expected %d\n";
+ 
+ 	if (img_name_len != IWL_FW_INI_MAX_IMG_NAME_LEN) {
+-		IWL_WARN(fwrt, err_str, ext, "image", img_name_len,
++		IWL_WARN(fwrt, "WRT: ext=%d. Invalid %s name length %d, expected %d\n",
++			 ext, "image", img_name_len,
+ 			 IWL_FW_INI_MAX_IMG_NAME_LEN);
+ 		return;
+ 	}
+ 
+ 	if (dbg_cfg_name_len != IWL_FW_INI_MAX_DBG_CFG_NAME_LEN) {
+-		IWL_WARN(fwrt, err_str, ext, "debug cfg", dbg_cfg_name_len,
++		IWL_WARN(fwrt, "WRT: ext=%d. Invalid %s name length %d, expected %d\n",
++			 ext, "debug cfg", dbg_cfg_name_len,
+ 			 IWL_FW_INI_MAX_DBG_CFG_NAME_LEN);
+ 		return;
+ 	}
+@@ -2775,8 +2775,6 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
+ 		struct iwl_ucode_tlv *tlv = iter;
+ 		void *ini_tlv = (void *)tlv->data;
+ 		u32 type = le32_to_cpu(tlv->type);
+-		const char invalid_ap_str[] =
+-			"WRT: ext=%d. Invalid apply point %d for %s\n";
+ 
+ 		switch (type) {
+ 		case IWL_UCODE_TLV_TYPE_DEBUG_INFO:
+@@ -2786,8 +2784,8 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
+ 			struct iwl_fw_ini_allocation_data *buf_alloc = ini_tlv;
+ 
+ 			if (pnt != IWL_FW_INI_APPLY_EARLY) {
+-				IWL_ERR(fwrt, invalid_ap_str, ext, pnt,
+-					"buffer allocation");
++				IWL_ERR(fwrt, "WRT: ext=%d. Invalid apply point %d for %s\n",
++					ext, pnt, "buffer allocation");
+ 				goto next;
  			}
+ 
+@@ -2797,8 +2795,8 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
  		}
--		endfor_ifa(in_dev);
- 		rtnl_unlock();
- 		in_dev_put(in_dev);
- 	} else if (id->local_addr.ss_family =3D=3D AF_INET6) {
---=20
-2.20.1
+ 		case IWL_UCODE_TLV_TYPE_HCMD:
+ 			if (pnt < IWL_FW_INI_APPLY_AFTER_ALIVE) {
+-				IWL_ERR(fwrt, invalid_ap_str, ext, pnt,
+-					"host command");
++				IWL_ERR(fwrt, "WRT: ext=%d. Invalid apply point %d for %s\n",
++					ext, pnt, "host command");
+ 				goto next;
+ 			}
+ 			iwl_fw_dbg_send_hcmd(fwrt, tlv, ext);
 
---=20
-Cheers,
-Stephen Rothwell
 
---Sig_/IUmAit71Bk+sk6PU6OW4=UR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0n5lUACgkQAVBC80lX
-0GzltQf/bL3tGcP1XbyYwX3AxXlwt2ZXDwgJZYBwSuZXTdaUOqA2zCcdiBUAurlt
-sW+IecoiTghsCXQEidmQ0UbdgpW3vTOJ79tVHMGqgKKvullNW1IbcDIfDwnrOe1b
-Tz5euSKYy+KchcCvZl7XpQfksI9seKhqon1PC0qXT6WmpaTRXQKNcPUuPTnyxfvh
-9IO6CJyXWcscwc41KNYbbXrQYQbsaaJ88INcw2L9EZ77sFhHcqWJID8y0XFcIqVm
-sfRWuWfJ7Jfuh5mFFtc3PPtQxoKhaTg9YrORNgLv06O+a6sQ+w4FDsYaZEFbINyu
-4qsIzrZRU/ud4AI+bj/0UcK/7UoMZA==
-=aAIK
------END PGP SIGNATURE-----
-
---Sig_/IUmAit71Bk+sk6PU6OW4=UR--
