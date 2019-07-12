@@ -2,142 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28407670AD
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABBDB670B0
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 15:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727465AbfGLN4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 09:56:46 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:32604 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726945AbfGLN4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:56:45 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6CDpVmd130769
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 09:56:44 -0400
-Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tpu7w0vvf-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 09:56:43 -0400
-Received: from localhost
-        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Fri, 12 Jul 2019 14:56:41 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 12 Jul 2019 14:56:39 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6CDubMJ47710400
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Jul 2019 13:56:37 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A1D314C04E;
-        Fri, 12 Jul 2019 13:56:37 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 70D8B4C044;
-        Fri, 12 Jul 2019 13:56:37 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 12 Jul 2019 13:56:37 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH bpf] selftests/bpf: make directory prerequisites order-only
-Date:   Fri, 12 Jul 2019 15:56:31 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1727284AbfGLN5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 09:57:09 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59714 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726254AbfGLN5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 09:57:08 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlw2p-0001y6-61; Fri, 12 Jul 2019 15:57:03 +0200
+Received: from [2a02:1205:5069:fce0:c5f9:cd68:79d4:446d] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hlw2o-000Qyn-UD; Fri, 12 Jul 2019 15:57:02 +0200
+Subject: Re: [PATCH bpf-next] selftests/bpf: remove logic duplication in
+ test_verifier.c
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+References: <20190711010844.1285018-1-andriin@fb.com>
+ <CAGGp+cETuvWUwET=6Mq5sWTJhi5+Rs2bw8xNP2NYZXAAuc6-Og@mail.gmail.com>
+ <CAEf4Bzb1kE_jCbyye07-pVMT=914_Nrdh+R=QXA2qMssYP5brA@mail.gmail.com>
+ <CAGGp+cHaV1EMXqeQvKN-p5gEZWcSgGfcbKimcS+C8u=dfeU=1Q@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d6ff6022-56f7-de63-d3e1-8949360296ca@iogearbox.net>
+Date:   Fri, 12 Jul 2019 15:57:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071213-0028-0000-0000-00000383C033
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071213-0029-0000-0000-00002443D86B
-Message-Id: <20190712135631.91398-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-12_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907120150
+In-Reply-To: <CAGGp+cHaV1EMXqeQvKN-p5gEZWcSgGfcbKimcS+C8u=dfeU=1Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25508/Fri Jul 12 10:10:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When directories are used as prerequisites in Makefiles, they can cause
-a lot of unnecessary rebuilds, because a directory is considered changed
-whenever a file in this directory is added, removed or modified.
+On 07/12/2019 09:53 AM, Krzesimir Nowak wrote:
+> On Thu, Jul 11, 2019 at 4:43 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+>>
+>> On Thu, Jul 11, 2019 at 5:13 AM Krzesimir Nowak <krzesimir@kinvolk.io> wrote:
+>>>
+>>> On Thu, Jul 11, 2019 at 3:08 AM Andrii Nakryiko <andriin@fb.com> wrote:
+>>>>
+>>>> test_verifier tests can specify single- and multi-runs tests. Internally
+>>>> logic of handling them is duplicated. Get rid of it by making single run
+>>>> retval specification to be a first retvals spec.
+>>>>
+>>>> Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
+>>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>>>
+>>> Looks good, one nit below.
+>>>
+>>> Acked-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+>>>
+>>>> ---
+>>>>  tools/testing/selftests/bpf/test_verifier.c | 37 ++++++++++-----------
+>>>>  1 file changed, 18 insertions(+), 19 deletions(-)
+>>>>
+>>>> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+>>>> index b0773291012a..120ecdf4a7db 100644
+>>>> --- a/tools/testing/selftests/bpf/test_verifier.c
+>>>> +++ b/tools/testing/selftests/bpf/test_verifier.c
+>>>> @@ -86,7 +86,7 @@ struct bpf_test {
+>>>>         int fixup_sk_storage_map[MAX_FIXUPS];
+>>>>         const char *errstr;
+>>>>         const char *errstr_unpriv;
+>>>> -       uint32_t retval, retval_unpriv, insn_processed;
+>>>> +       uint32_t insn_processed;
+>>>>         int prog_len;
+>>>>         enum {
+>>>>                 UNDEF,
+>>>> @@ -95,16 +95,24 @@ struct bpf_test {
+>>>>         } result, result_unpriv;
+>>>>         enum bpf_prog_type prog_type;
+>>>>         uint8_t flags;
+>>>> -       __u8 data[TEST_DATA_LEN];
+>>>>         void (*fill_helper)(struct bpf_test *self);
+>>>>         uint8_t runs;
+>>>> -       struct {
+>>>> -               uint32_t retval, retval_unpriv;
+>>>> -               union {
+>>>> -                       __u8 data[TEST_DATA_LEN];
+>>>> -                       __u64 data64[TEST_DATA_LEN / 8];
+>>>> +       union {
+>>>> +               struct {
+>>>
+>>> Maybe consider moving the struct definition outside to further the
+>>> removal of the duplication?
+>>
+>> Can't do that because then retval/retval_unpriv/data won't be
+>> accessible as a normal field of struct bpf_test. It has to be in
+>> anonymous structs/unions, unfortunately.
+>>
+> 
+> Ah, right.
+> 
+> Meh.
+> 
+> I tried something like this:
+> 
+> #define BPF_DATA_STRUCT \
+>     struct { \
+>         uint32_t retval, retval_unpriv; \
+>         union { \
+>             __u8 data[TEST_DATA_LEN]; \
+>             __u64 data64[TEST_DATA_LEN / 8]; \
+>         }; \
+>     }
+> 
+> and then:
+> 
+>     union {
+>         BPF_DATA_STRUCT;
+>         BPF_DATA_STRUCT retvals[MAX_TEST_RUNS];
+>     };
+> 
+> And that seems to compile at least. But question is: is this
+> acceptably ugly or unacceptably ugly? :)
 
-If the only thing a target is interested in is the existence of the
-directory it depends on, which is the case for selftests/bpf, this
-directory should be specified as an order-only prerequisite: it would
-still be created in case it does not exist, but it would not trigger a
-rebuild of a target in case it's considered changed.
+Both a bit ugly, but I'd have a slight preference towards the above,
+perhaps a bit more readable like:
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
- tools/testing/selftests/bpf/Makefile | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+#define bpf_testdata_struct_t                                   \
+        struct {                                                \
+                uint32_t retval, retval_unpriv;                 \
+                union {                                         \
+                        __u8 data[TEST_DATA_LEN];               \
+                        __u64 data64[TEST_DATA_LEN / 8];        \
+                };                                              \
+        }
+        union {
+                bpf_testdata_struct_t;
+                bpf_testdata_struct_t retvals[MAX_TEST_RUNS];
+        };
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 277d8605e340..0e003fb6641b 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -183,12 +183,12 @@ TEST_CUSTOM_PROGS += $(ALU32_BUILD_DIR)/test_progs_32
- $(ALU32_BUILD_DIR):
- 	mkdir -p $@
- 
--$(ALU32_BUILD_DIR)/urandom_read: $(OUTPUT)/urandom_read
-+$(ALU32_BUILD_DIR)/urandom_read: $(OUTPUT)/urandom_read | $(ALU32_BUILD_DIR)
- 	cp $< $@
- 
- $(ALU32_BUILD_DIR)/test_progs_32: test_progs.c $(OUTPUT)/libbpf.a\
--						$(ALU32_BUILD_DIR) \
--						$(ALU32_BUILD_DIR)/urandom_read
-+						$(ALU32_BUILD_DIR)/urandom_read \
-+						| $(ALU32_BUILD_DIR)
- 	$(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) \
- 		-o $(ALU32_BUILD_DIR)/test_progs_32 \
- 		test_progs.c test_stub.c trace_helpers.c prog_tests/*.c \
-@@ -197,8 +197,8 @@ $(ALU32_BUILD_DIR)/test_progs_32: test_progs.c $(OUTPUT)/libbpf.a\
- $(ALU32_BUILD_DIR)/test_progs_32: $(PROG_TESTS_H)
- $(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
- 
--$(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR) \
--					$(ALU32_BUILD_DIR)/test_progs_32
-+$(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR)/test_progs_32 \
-+					| $(ALU32_BUILD_DIR)
- 	($(CLANG) $(CLANG_FLAGS) -O2 -target bpf -emit-llvm -c $< -o - || \
- 		echo "clang failed") | \
- 	$(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
-@@ -236,7 +236,7 @@ $(PROG_TESTS_DIR):
- 	mkdir -p $@
- 
- PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
--$(PROG_TESTS_H): $(PROG_TESTS_DIR) $(PROG_TESTS_FILES)
-+$(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
- 	$(shell ( cd prog_tests/; \
- 		  echo '/* Generated header, do not edit */'; \
- 		  echo '#ifdef DECLARE'; \
-@@ -257,7 +257,7 @@ MAP_TESTS_H := $(MAP_TESTS_DIR)/tests.h
- test_maps.c: $(MAP_TESTS_H)
- $(OUTPUT)/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
- MAP_TESTS_FILES := $(wildcard map_tests/*.c)
--$(MAP_TESTS_H): $(MAP_TESTS_DIR) $(MAP_TESTS_FILES)
-+$(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
- 	$(shell ( cd map_tests/; \
- 		  echo '/* Generated header, do not edit */'; \
- 		  echo '#ifdef DECLARE'; \
-@@ -279,7 +279,7 @@ $(VERIFIER_TESTS_DIR):
- 	mkdir -p $@
- 
- VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
--$(OUTPUT)/verifier/tests.h: $(VERIFIER_TESTS_DIR) $(VERIFIER_TEST_FILES)
-+$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
- 	$(shell ( cd verifier/; \
- 		  echo '/* Generated header, do not edit */'; \
- 		  echo '#ifdef FILL_ARRAY'; \
--- 
-2.21.0
-
+Thanks,
+Daniel
