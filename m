@@ -2,76 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2255F66617
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 07:19:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F50666AC
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 07:55:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726063AbfGLFTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 01:19:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725791AbfGLFTl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jul 2019 01:19:41 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC9E020863;
-        Fri, 12 Jul 2019 05:19:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562908780;
-        bh=yE7S5fzJoVQNuX0LT96I6+TD22L2qYACRj+IFS/83eU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kNq5Dy+my5tAbdckuPkkqqy713gpH02voNBbWAc0YMm+F2x/aSJj+DmEypI2Tl56C
-         5N+Lrf92INs2kOIY1DJsNeTGh9AYPWqkDAm+/AjWkoIHhCmmq0tGj/bw9QuQlpr+MG
-         JTIHGaL/pzpQCDvHKHjaVVofZsfkYdXSV8e3jimc=
-Date:   Fri, 12 Jul 2019 07:19:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [PATCH v1 3/6] driver/core: Convert to use built-in RCU list
- checking
-Message-ID: <20190712051937.GA4682@kroah.com>
-References: <20190711234401.220336-1-joel@joelfernandes.org>
- <20190711234401.220336-4-joel@joelfernandes.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190711234401.220336-4-joel@joelfernandes.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        id S1725941AbfGLFzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 01:55:43 -0400
+Received: from mail01.asahi-net.or.jp ([202.224.55.13]:39381 "EHLO
+        mail01.asahi-net.or.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbfGLFzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 01:55:42 -0400
+X-Greylist: delayed 397 seconds by postgrey-1.27 at vger.kernel.org; Fri, 12 Jul 2019 01:55:40 EDT
+Received: from h61-195-96-97.vps.ablenet.jp (h61-195-96-97.ablenetvps.ne.jp [61.195.96.97])
+        (Authenticated sender: PQ4Y-STU)
+        by mail01.asahi-net.or.jp (Postfix) with ESMTPA id 5D2CA12B1F6;
+        Fri, 12 Jul 2019 14:49:01 +0900 (JST)
+Received: from yo-satoh-debian.ysato.ml (ZM005235.ppp.dion.ne.jp [222.8.5.235])
+        by h61-195-96-97.vps.ablenet.jp (Postfix) with ESMTPSA id A168F240085;
+        Fri, 12 Jul 2019 14:49:00 +0900 (JST)
+Date:   Fri, 12 Jul 2019 14:49:00 +0900
+Message-ID: <87y313950z.wl-ysato@users.sourceforge.jp>
+From:   Yoshinori Sato <ysato@users.sourceforge.jp>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the sh tree
+In-Reply-To: <20190712105928.2846f8d0@canb.auug.org.au>
+References: <20190617114011.4159295e@canb.auug.org.au>
+        <20190712105928.2846f8d0@canb.auug.org.au>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM/1.14.9 (=?ISO-8859-4?Q?Goj=F2?=) APEL/10.8 EasyPG/1.0.0 Emacs/25.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 07:43:58PM -0400, Joel Fernandes (Google) wrote:
-> list_for_each_entry_rcu has built-in RCU and lock checking. Make use of
-> it in driver core.
+On Fri, 12 Jul 2019 09:59:28 +0900,
+Stephen Rothwell wrote:
 > 
-> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> ---
->  drivers/base/base.h          |  1 +
->  drivers/base/core.c          | 10 ++++++++++
->  drivers/base/power/runtime.c | 15 ++++++++++-----
->  3 files changed, 21 insertions(+), 5 deletions(-)
+> [1  <text/plain; US-ASCII (quoted-printable)>]
+> Hi all,
+> 
+> On Mon, 17 Jun 2019 11:40:11 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > Today's linux-next merge of the net-next tree got conflicts in:
+> > 
+> >   arch/sh/configs/se7712_defconfig
+> >   arch/sh/configs/se7721_defconfig
+> >   arch/sh/configs/titan_defconfig
+> > 
+> > between commit:
+> > 
+> >   7c04efc8d2ef ("sh: configs: Remove useless UEVENT_HELPER_PATH")
+> > 
+> > from the sh tree and commit:
+> > 
+> >   a51486266c3b ("net: sched: remove NET_CLS_IND config option")
+> > 
+> > from the net-next tree.
+> > 
+> > I fixed it up (see below) and can carry the fix as necessary. This
+> > is now fixed as far as linux-next is concerned, but any non trivial
+> > conflicts should be mentioned to your upstream maintainer when your tree
+> > is submitted for merging.  You may also want to consider cooperating
+> > with the maintainer of the conflicting tree to minimise any particularly
+> > complex conflicts.
+> > 
+> > -- 
+> > Cheers,
+> > Stephen Rothwell
+> > 
+> > diff --cc arch/sh/configs/se7712_defconfig
+> > index 6ac7d362e106,1e116529735f..000000000000
+> > --- a/arch/sh/configs/se7712_defconfig
+> > +++ b/arch/sh/configs/se7712_defconfig
+> > @@@ -63,7 -63,7 +63,6 @@@ CONFIG_NET_SCH_NETEM=
+> >   CONFIG_NET_CLS_TCINDEX=y
+> >   CONFIG_NET_CLS_ROUTE4=y
+> >   CONFIG_NET_CLS_FW=y
+> > - CONFIG_NET_CLS_IND=y
+> >  -CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+> >   CONFIG_MTD=y
+> >   CONFIG_MTD_BLOCK=y
+> >   CONFIG_MTD_CFI=y
+> > diff --cc arch/sh/configs/se7721_defconfig
+> > index ffd15acc2a04,c66e512719ab..000000000000
+> > --- a/arch/sh/configs/se7721_defconfig
+> > +++ b/arch/sh/configs/se7721_defconfig
+> > @@@ -62,7 -62,7 +62,6 @@@ CONFIG_NET_SCH_NETEM=
+> >   CONFIG_NET_CLS_TCINDEX=y
+> >   CONFIG_NET_CLS_ROUTE4=y
+> >   CONFIG_NET_CLS_FW=y
+> > - CONFIG_NET_CLS_IND=y
+> >  -CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+> >   CONFIG_MTD=y
+> >   CONFIG_MTD_BLOCK=y
+> >   CONFIG_MTD_CFI=y
+> > diff --cc arch/sh/configs/titan_defconfig
+> > index 1c1c78e74fbb,171ab05ce4fc..000000000000
+> > --- a/arch/sh/configs/titan_defconfig
+> > +++ b/arch/sh/configs/titan_defconfig
+> > @@@ -142,7 -142,7 +142,6 @@@ CONFIG_GACT_PROB=
+> >   CONFIG_NET_ACT_MIRRED=m
+> >   CONFIG_NET_ACT_IPT=m
+> >   CONFIG_NET_ACT_PEDIT=m
+> > - CONFIG_NET_CLS_IND=y
+> >  -CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+> >   CONFIG_FW_LOADER=m
+> >   CONFIG_CONNECTOR=m
+> >   CONFIG_MTD=m
+> 
+> This is now a conflict between the sh tree and Linus' tree.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+OK.
+I can not update sh-next now, so I will fix it tomorrow.
+
+> -- 
+> Cheers,
+> Stephen Rothwell
+> [2 OpenPGP digital signature <application/pgp-signature (7bit)>]
+> No public key for 015042F34957D06C created at 2019-07-12T09:59:28+0900 using RSA
+
+-- 
+Yosinori Sato
