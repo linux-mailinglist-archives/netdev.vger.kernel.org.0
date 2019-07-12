@@ -2,102 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05BAF675CC
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 22:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346626763D
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 23:36:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727584AbfGLUSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 16:18:17 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36938 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727125AbfGLUSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 16:18:17 -0400
-Received: by mail-pl1-f195.google.com with SMTP id b3so5284304plr.4
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 13:18:16 -0700 (PDT)
+        id S1728080AbfGLVgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 17:36:04 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40866 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728068AbfGLVgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 17:36:03 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w10so5085937pgj.7
+        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 14:36:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R4zB8vgMBUTW2ln8XvPODiDL/1gjRsfa5CzHgNFgLLc=;
-        b=hc/fMojfL485UP5oK6ZmEcgy5DDOTx2OITY2WtFRdfSx4QkpPkrf2h0FxSskIcBLXt
-         RH2kvqlIL3b88ddq5XcdEoNVoDAfhw0OY+XwZ+TPi2v53OYz1TPsA+4Z3utc5x/K+/sA
-         4wkXYi0dMpxRa6ug7d7SZXKVfdirxrdMST50eP0KY7smPlqylMBIV+FiLJh8AfdzyOrO
-         1+/+eS0BVKnfFecneNWcekVKjOEeL1i+D0gYRtJWiSKQSCipio3iflm9ifLUsmB8PIBu
-         ka1WOXu8AHCPAs5089/2X0xpTQGI+lCEARRbO6YTs4Two7TAL6xw+eRNoElpGpSdssEF
-         Te7g==
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=f1OhDpjzDD7S0+COFpFd965N8mxlYpQZP4b4JR0VTV8=;
+        b=lZCvyn5n8owKQ3JyeYzt9+z6iXWkLSpYG3eAl8ccauBAjpAsmohxfuQbcSnqrAuKVo
+         EhJuv2vWWbTPd0eO0fNUhuM6JbViOUOUf/4BwXkUGXtZsJcQX4/U66ACGCFiWUk//WdV
+         Q8H3IUlKRvwTyqp0yyd7gnCEfVZU4qo6+E1Lc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R4zB8vgMBUTW2ln8XvPODiDL/1gjRsfa5CzHgNFgLLc=;
-        b=o9rLPdHxf5NqIYk/nmzbbjMSFRPt0vSDkZn1tyhYbIUCzmubXzsRqmAj2de0mnL6Do
-         lhyXmhp4m826dPT8anvI7+UHCQz3EG7W8frJAi1d/+Ju53dCuSEizYpmt523p/pYZZCX
-         T/0KZXCwGJouOiq8N6bfRJQOV2jT3xpVh0GfgBjUWly4g5IZrCyo2n8+jAm+Lu2zK1p1
-         ppJM4TTsl2suxn/sQJa0zJdTQ/T4wTsAgu9oykZvtK0j6CIxD/5IhCDw+kcZkfGtIc0f
-         7Ks+zyPkUxNne0Y5PIyzOkPuWmIb3i9ZUUCMkmE5nNx9oWBu5OK2hKSHYJWsbEMEtO/W
-         1URQ==
-X-Gm-Message-State: APjAAAV+2OTJ/JcOriyalFTIEjU5+FU/ELFfA56wx4vzmLtDJstQN6PM
-        OOVp5dtYzbEOizOCJwmysJIMoHf/xQk=
-X-Google-Smtp-Source: APXvYqxXLSSRnMmlqj0C7em4BEfe/ZBYDXB7pQ51riWMfFS0Q/G8F+xAvW8VYYgCHjB7fc+x7l2SBA==
-X-Received: by 2002:a17:902:3181:: with SMTP id x1mr13561367plb.135.1562962696138;
-        Fri, 12 Jul 2019 13:18:16 -0700 (PDT)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id q4sm8883630pjq.27.2019.07.12.13.18.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=f1OhDpjzDD7S0+COFpFd965N8mxlYpQZP4b4JR0VTV8=;
+        b=j67cJmuTEyePRDr5AYM2/3JlDjV3hSO9NFySkEr7dbCFgpkB2QluLJU11aOUEy7ENC
+         IDEQiQf255axWpWkn8H54+F9GuOqYK/OuK3eRtnSYIAhxQH5x/jd9d0zc5OXJ40fB3ea
+         uVcYKSu4fajeO8gzxcNRI7O92zbUBYyhDQCj1hylhybdMI44BUTQOqiLqBTUiLvGzdcH
+         x2xhowqSlN+eNpl0+gEiZmWod/QLPjJALWxapk3YTBAcmyJdb7mcihT2usN6Ss2uAF8c
+         np29kDyYBg75BSLGo4XSWPWyCoQttzOGogMsyzEjSz4FxXgUS7sBs7xqDmzP9Qb+pKwu
+         lxrw==
+X-Gm-Message-State: APjAAAWEeneCoIgYVlw3OsUHwodk72O6NxinCqqKxlgUcUBzFSnr8vGw
+        dUIh8ao77LULhyrGRz09vBI=
+X-Google-Smtp-Source: APXvYqx3LWL3QaQQ5ksHJJX+2CaAAhVLBJ5JupxNkJ3WyB6ER0uWKW+WGxkHpK2VFCITfOz69qvV7g==
+X-Received: by 2002:a63:fb4b:: with SMTP id w11mr13352876pgj.415.1562967362076;
+        Fri, 12 Jul 2019 14:36:02 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id o32sm9047532pje.9.2019.07.12.14.36.00
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 12 Jul 2019 13:18:14 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, Julian Anastasov <ja@ssi.bg>,
-        David Ahern <dsahern@gmail.com>
-Subject: [Patch net] fib: relax source validation check for loopback packets
-Date:   Fri, 12 Jul 2019 13:17:49 -0700
-Message-Id: <20190712201749.28421-2-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        Fri, 12 Jul 2019 14:36:01 -0700 (PDT)
+Date:   Fri, 12 Jul 2019 17:35:59 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Oleg Nesterov <oleg@redhat.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com, kernel-team@android.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [PATCH v2 3/9] rcu/sync: Remove custom check for reader-section
+Message-ID: <20190712213559.GA175138@google.com>
+References: <20190712170024.111093-1-joel@joelfernandes.org>
+ <20190712170024.111093-4-joel@joelfernandes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190712170024.111093-4-joel@joelfernandes.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a rare case where we redirect local packets from veth to lo,
-these packets fail to pass the source validation when rp_filter
-is turned on, as the tracing shows:
+On Fri, Jul 12, 2019 at 01:00:18PM -0400, Joel Fernandes (Google) wrote:
+> The rcu/sync code was doing its own check whether we are in a reader
+> section. With RCU consolidating flavors and the generic helper added in
+> this series, this is no longer need. We can just use the generic helper
+> and it results in a nice cleanup.
+> 
+> Cc: Oleg Nesterov <oleg@redhat.com>
+> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 
-  <...>-311708 [040] ..s1 7951180.957825: fib_table_lookup: table 254 oif 0 iif 1 src 10.53.180.130 dst 10.53.180.130 tos 0 scope 0 flags 0
-  <...>-311708 [040] ..s1 7951180.957826: fib_table_lookup_nh: nexthop dev eth0 oif 4 src 10.53.180.130
+Hi Oleg,
+Slightly unrelated to the patch,
+I tried hard to understand this comment below in percpu_down_read() but no dice.
 
-So, the fib table lookup returns eth0 as the nexthop even though
-the packets are local and should be routed to loopback nonetheless,
-but they can't pass the dev match check in fib_info_nh_uses_dev().
+I do understand how rcu sync and percpu rwsem works, however the comment
+below didn't make much sense to me. For one, there's no readers_fast anymore
+so I did not follow what readers_fast means. Could the comment be updated to
+reflect latest changes?
+Also could you help understand how is a writer not able to change
+sem->state and count the per-cpu read counters at the same time as the
+comment tries to say?
 
-It should be safe to relax this check for this special case, as
-normally packets coming out of loopback device still have skb_dst
-so they won't even hit this slow path.
+	/*
+	 * We are in an RCU-sched read-side critical section, so the writer
+	 * cannot both change sem->state from readers_fast and start checking
+	 * counters while we are here. So if we see !sem->state, we know that
+	 * the writer won't be checking until we're past the preempt_enable()
+	 * and that once the synchronize_rcu() is done, the writer will see
+	 * anything we did within this RCU-sched read-size critical section.
+	 */
 
-Cc: Julian Anastasov <ja@ssi.bg>
-Cc: David Ahern <dsahern@gmail.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/ipv4/fib_frontend.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Also,
+I guess we could get rid of all of the gp_ops struct stuff now that since all
+the callbacks are the same now. I will post that as a follow-up patch to this
+series.
 
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 317339cd7f03..8662a44a28f9 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -388,6 +388,12 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
- 	fib_combine_itag(itag, &res);
- 
- 	dev_match = fib_info_nh_uses_dev(res.fi, dev);
-+	/* This is rare, loopback packets retain skb_dst so normally they
-+	 * would not even hit this slow path.
-+	 */
-+	dev_match = dev_match || (res.type == RTN_LOCAL &&
-+				  dev == net->loopback_dev &&
-+				  IN_DEV_ACCEPT_LOCAL(idev));
- 	if (dev_match) {
- 		ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_HOST;
- 		return ret;
--- 
-2.21.0
+thanks!
 
+ - Joel
+
+
+> ---
+> Please note: Only build and boot tested this particular patch so far.
+> 
+>  include/linux/rcu_sync.h |  5 ++---
+>  kernel/rcu/sync.c        | 22 ----------------------
+>  2 files changed, 2 insertions(+), 25 deletions(-)
+> 
+> diff --git a/include/linux/rcu_sync.h b/include/linux/rcu_sync.h
+> index 6fc53a1345b3..c954f1efc919 100644
+> --- a/include/linux/rcu_sync.h
+> +++ b/include/linux/rcu_sync.h
+> @@ -39,9 +39,8 @@ extern void rcu_sync_lockdep_assert(struct rcu_sync *);
+>   */
+>  static inline bool rcu_sync_is_idle(struct rcu_sync *rsp)
+>  {
+> -#ifdef CONFIG_PROVE_RCU
+> -	rcu_sync_lockdep_assert(rsp);
+> -#endif
+> +	RCU_LOCKDEP_WARN(!rcu_read_lock_any_held(),
+> +			 "suspicious rcu_sync_is_idle() usage");
+>  	return !rsp->gp_state; /* GP_IDLE */
+>  }
+>  
+> diff --git a/kernel/rcu/sync.c b/kernel/rcu/sync.c
+> index a8304d90573f..535e02601f56 100644
+> --- a/kernel/rcu/sync.c
+> +++ b/kernel/rcu/sync.c
+> @@ -10,37 +10,25 @@
+>  #include <linux/rcu_sync.h>
+>  #include <linux/sched.h>
+>  
+> -#ifdef CONFIG_PROVE_RCU
+> -#define __INIT_HELD(func)	.held = func,
+> -#else
+> -#define __INIT_HELD(func)
+> -#endif
+> -
+>  static const struct {
+>  	void (*sync)(void);
+>  	void (*call)(struct rcu_head *, void (*)(struct rcu_head *));
+>  	void (*wait)(void);
+> -#ifdef CONFIG_PROVE_RCU
+> -	int  (*held)(void);
+> -#endif
+>  } gp_ops[] = {
+>  	[RCU_SYNC] = {
+>  		.sync = synchronize_rcu,
+>  		.call = call_rcu,
+>  		.wait = rcu_barrier,
+> -		__INIT_HELD(rcu_read_lock_held)
+>  	},
+>  	[RCU_SCHED_SYNC] = {
+>  		.sync = synchronize_rcu,
+>  		.call = call_rcu,
+>  		.wait = rcu_barrier,
+> -		__INIT_HELD(rcu_read_lock_sched_held)
+>  	},
+>  	[RCU_BH_SYNC] = {
+>  		.sync = synchronize_rcu,
+>  		.call = call_rcu,
+>  		.wait = rcu_barrier,
+> -		__INIT_HELD(rcu_read_lock_bh_held)
+>  	},
+>  };
+>  
+> @@ -49,16 +37,6 @@ enum { CB_IDLE = 0, CB_PENDING, CB_REPLAY };
+>  
+>  #define	rss_lock	gp_wait.lock
+>  
+> -#ifdef CONFIG_PROVE_RCU
+> -void rcu_sync_lockdep_assert(struct rcu_sync *rsp)
+> -{
+> -	RCU_LOCKDEP_WARN(!gp_ops[rsp->gp_type].held(),
+> -			 "suspicious rcu_sync_is_idle() usage");
+> -}
+> -
+> -EXPORT_SYMBOL_GPL(rcu_sync_lockdep_assert);
+> -#endif
+> -
+>  /**
+>   * rcu_sync_init() - Initialize an rcu_sync structure
+>   * @rsp: Pointer to rcu_sync structure to be initialized
+> -- 
+> 2.22.0.510.g264f2c817a-goog
+> 
