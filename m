@@ -2,73 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC9A66C38
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 141A866C62
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 14:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727017AbfGLMML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 08:12:11 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34386 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726449AbfGLMML (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jul 2019 08:12:11 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 54B4230C2534;
-        Fri, 12 Jul 2019 12:12:09 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.43.17.136])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 9F9E3600CD;
-        Fri, 12 Jul 2019 12:12:01 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Fri, 12 Jul 2019 14:12:09 +0200 (CEST)
-Date:   Fri, 12 Jul 2019 14:12:00 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [PATCH v1 1/6] rcu: Add support for consolidated-RCU reader
- checking
-Message-ID: <20190712121200.GC21989@redhat.com>
-References: <20190711234401.220336-1-joel@joelfernandes.org>
- <20190711234401.220336-2-joel@joelfernandes.org>
+        id S1726930AbfGLMTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 08:19:46 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:36547 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726254AbfGLMTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 08:19:46 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hluWN-0000Cf-Nc; Fri, 12 Jul 2019 08:19:30 -0400
+Date:   Fri, 12 Jul 2019 08:18:59 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        jiri@mellanox.com, mlxsw@mellanox.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andy@greyhouse.net, pablo@netfilter.org,
+        jakub.kicinski@netronome.com, pieter.jansenvanvuuren@netronome.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
+Message-ID: <20190712121859.GB13696@hmswarspite.think-freely.org>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707.124541.451040901050013496.davem@davemloft.net>
+ <20190711123909.GA10978@splinter>
+ <20190711235354.GA30396@hmswarspite.think-freely.org>
+ <87r26vvbz8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190711234401.220336-2-joel@joelfernandes.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 12 Jul 2019 12:12:11 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87r26vvbz8.fsf@toke.dk>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/11, Joel Fernandes (Google) wrote:
->
-> +int rcu_read_lock_any_held(void)
+On Fri, Jul 12, 2019 at 11:27:55AM +0200, Toke Høiland-Jørgensen wrote:
+> Neil Horman <nhorman@tuxdriver.com> writes:
+> 
+> > On Thu, Jul 11, 2019 at 03:39:09PM +0300, Ido Schimmel wrote:
+> >> On Sun, Jul 07, 2019 at 12:45:41PM -0700, David Miller wrote:
+> >> > From: Ido Schimmel <idosch@idosch.org>
+> >> > Date: Sun,  7 Jul 2019 10:58:17 +0300
+> >> > 
+> >> > > Users have several ways to debug the kernel and understand why a packet
+> >> > > was dropped. For example, using "drop monitor" and "perf". Both
+> >> > > utilities trace kfree_skb(), which is the function called when a packet
+> >> > > is freed as part of a failure. The information provided by these tools
+> >> > > is invaluable when trying to understand the cause of a packet loss.
+> >> > > 
+> >> > > In recent years, large portions of the kernel data path were offloaded
+> >> > > to capable devices. Today, it is possible to perform L2 and L3
+> >> > > forwarding in hardware, as well as tunneling (IP-in-IP and VXLAN).
+> >> > > Different TC classifiers and actions are also offloaded to capable
+> >> > > devices, at both ingress and egress.
+> >> > > 
+> >> > > However, when the data path is offloaded it is not possible to achieve
+> >> > > the same level of introspection as tools such "perf" and "drop monitor"
+> >> > > become irrelevant.
+> >> > > 
+> >> > > This patchset aims to solve this by allowing users to monitor packets
+> >> > > that the underlying device decided to drop along with relevant metadata
+> >> > > such as the drop reason and ingress port.
+> >> > 
+> >> > We are now going to have 5 or so ways to capture packets passing through
+> >> > the system, this is nonsense.
+> >> > 
+> >> > AF_PACKET, kfree_skb drop monitor, perf, XDP perf events, and now this
+> >> > devlink thing.
+> >> > 
+> >> > This is insanity, too many ways to do the same thing and therefore the
+> >> > worst possible user experience.
+> >> > 
+> >> > Pick _ONE_ method to trap packets and forward normal kfree_skb events,
+> >> > XDP perf events, and these taps there too.
+> >> > 
+> >> > I mean really, think about it from the average user's perspective.  To
+> >> > see all drops/pkts I have to attach a kfree_skb tracepoint, and not just
+> >> > listen on devlink but configure a special tap thing beforehand and then
+> >> > if someone is using XDP I gotta setup another perf event buffer capture
+> >> > thing too.
+> >> 
+> >> Dave,
+> >> 
+> >> Before I start working on v2, I would like to get your feedback on the
+> >> high level plan. Also adding Neil who is the maintainer of drop_monitor
+> >> (and counterpart DropWatch tool [1]).
+> >> 
+> >> IIUC, the problem you point out is that users need to use different
+> >> tools to monitor packet drops based on where these drops occur
+> >> (SW/HW/XDP).
+> >> 
+> >> Therefore, my plan is to extend the existing drop_monitor netlink
+> >> channel to also cover HW drops. I will add a new message type and a new
+> >> multicast group for HW drops and encode in the message what is currently
+> >> encoded in the devlink events.
+> >> 
+> > A few things here:
+> > IIRC we don't announce individual hardware drops, drivers record them in
+> > internal structures, and they are retrieved on demand via ethtool calls, so you
+> > will either need to include some polling (probably not a very performant idea),
+> > or some sort of flagging mechanism to indicate that on the next message sent to
+> > user space you should go retrieve hw stats from a given interface.  I certainly
+> > wouldn't mind seeing this happen, but its more work than just adding a new
+> > netlink message.
+> >
+> > Also, regarding XDP drops, we wont see them if the xdp program is offloaded to
+> > hardware (you'll need your hw drop gathering mechanism for that), but for xdp
+> > programs run on the cpu, dropwatch should alrady catch those.  I.e. if the xdp
+> > program returns a DROP result for a packet being processed, the OS will call
+> > kfree_skb on its behalf, and dropwatch wil call that.
+> 
+> There is no skb by the time an XDP program runs, so this is not true. As
+> I mentioned upthread, there's a tracepoint that will get called if an
+> error occurs (or the program returns XDP_ABORTED), but in most cases,
+> XDP_DROP just means that the packet silently disappears...
+> 
+As I noted, thats only true for xdp programs that are offloaded to hardware, I
+was only speaking for XDP programs that run on the cpu.  For the former case, we
+obviously need some other mechanism to detect drops, but for cpu executed xdp
+programs, the OS is responsible for freeing skbs associated with programs the
+return XDP_DROP.
 
-rcu_sync_is_idle() wants it. You have my ack in advance ;)
+Neil
 
-Oleg.
-
+> -Toke
+> 
