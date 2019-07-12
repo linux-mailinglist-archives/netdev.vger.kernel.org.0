@@ -2,115 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E08CA66986
-	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 11:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5B36699D
+	for <lists+netdev@lfdr.de>; Fri, 12 Jul 2019 11:07:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726286AbfGLJAG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 12 Jul 2019 05:00:06 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:47476 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726057AbfGLJAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 05:00:03 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6C8vGMl078536
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 05:00:02 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tpmcgpx7r-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 05:00:02 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Fri, 12 Jul 2019 09:59:59 +0100
-Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 12 Jul 2019 09:59:57 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6C8xheg40763698
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Jul 2019 08:59:43 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 15329AE053;
-        Fri, 12 Jul 2019 08:59:56 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CDD8EAE045;
-        Fri, 12 Jul 2019 08:59:55 +0000 (GMT)
-Received: from dyn-9-152-97-237.boeblingen.de.ibm.com (unknown [9.152.97.237])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 12 Jul 2019 08:59:55 +0000 (GMT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH v4 bpf-next 1/4] selftests/bpf: compile progs with
- -D__TARGET_ARCH_$(SRCARCH)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-In-Reply-To: <CAEf4BzYwwqn9ATwPyVcJ8nBQM+rvaFp7KBFjqbYY4GKda3G8jA@mail.gmail.com>
-Date:   Fri, 12 Jul 2019 10:59:55 +0200
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Y Song <ys114321@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Transfer-Encoding: 8BIT
-References: <20190711142930.68809-1-iii@linux.ibm.com>
- <20190711142930.68809-2-iii@linux.ibm.com>
- <CAEf4BzYwwqn9ATwPyVcJ8nBQM+rvaFp7KBFjqbYY4GKda3G8jA@mail.gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-X-Mailer: Apple Mail (2.3445.9.1)
-X-TM-AS-GCONF: 00
-x-cbid: 19071208-0016-0000-0000-000002920156
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071208-0017-0000-0000-000032EFC4B9
-Message-Id: <6E5C9DDE-FF1D-4BFA-813E-7A0C3232B5F0@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-12_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=840 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907120095
+        id S1726254AbfGLJHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 05:07:19 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:56347 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726169AbfGLJHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 05:07:18 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue106 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MeC5x-1iN7Ph3SwZ-00bI7H; Fri, 12 Jul 2019 11:07:06 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Vishal Kulkarni <vishal@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Ganesh Goudar <ganeshgr@chelsio.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Arjun Vynipadath <arjun@chelsio.com>,
+        Surendra Mobiya <surendra@chelsio.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH] [net-next] cxgb4: reduce kernel stack usage in cudbg_collect_mem_region()
+Date:   Fri, 12 Jul 2019 11:06:33 +0200
+Message-Id: <20190712090700.317887-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:rxFNf2Aki8qaWD5BAHF9dJ6RZq9YGgkpHy8CO9HIEVlm7go4NVx
+ kHFABxf69KKsV1nhzdGT3E9nhL8b1dNpvlMeZZl2UMJi8iAayuR+sj7oa0MEnBelfmAdzn5
+ GmHu8AwVCwbo0qLCZAdAoclelQrmU9yj0DnBAzqUoCo/zn600t8P2zAcHHKnKHoneepLFiT
+ ZS5YgzKSe3u0GNUA3I0FA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:O+AX6q867+c=:MXtjbU0XZTwkG7PWMjzQ0V
+ v5o84QhB/JLoRjYCRSyrVPpQt+fH7M0kpZkVaBCVVUDGAjEiOpR7zF32Qu8hpWd9fjVvUf+3U
+ KM3P5kDvJKPYVl3RNOaGzcaB+KUav3WF3hQGBcRQ5oavMoyr1ROzkS4UD91aZIX2VOC3hywPN
+ LYXBXODKbJrhtm+gVfyHZhr/oM6QSpKV/T5aq/hwkkYKNdUKbAZJjTKKOFSMqbZU3W5wl4l5K
+ ZJxws379F6lkAaRSSwgkC5q6yPaDxukpzkb9aX+7ySDAfmcwkFaSsdzP1N5SybF+TievuvcO/
+ xAc46xFlboH0LUsMWBjvT+8Tz1tvqK6rWkdCl5ZyP2V1wbYA449wJ76Y3yBQ0oGcl8oHUNR0D
+ Kop6dogBbjIbIZi5nMcsuNvvy7tMBy+Netj1OMEEVl6wb4nBNmFVdgApLQJTZvL46Zz8H0xof
+ qE1VEvSdhbZrWfi05TsMs99NoV7+Qy+L6/1lNyUu76iUnhD5uIwFA7A+n+Xhek2p5XjU0BGkI
+ tF4JPjQp/fIRI8zPkQVqPvfyzoJEDDwO9YAjwz3be7/QnXITG8dOE0e4oVwWEoMqAT8kgruzR
+ MSEhW1VvhgmwaDaQTK+1rSNFglRTIvh2/oPX9zMp5nrcR5Cy0QuxN6c5EYSv314nMM002t7JP
+ 6gxHomwy6vEHdQnQ/6HHOVawvNPEXHrEQQhC7lP46W6BLahCkwhrAMjYv+Qknyg2uvGCER0Qw
+ vIforeros4ovfVwG0LyxQ5Y7toEmy3zMX/nf4g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 12.07.2019 um 02:53 schrieb Andrii Nakryiko <andrii.nakryiko@gmail.com>:
-> 
-> On Thu, Jul 11, 2019 at 7:32 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->> 
->> This opens up the possibility of accessing registers in an
->> arch-independent way.
->> 
->> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
->> ---
->> tools/testing/selftests/bpf/Makefile | 4 +++-
->> 1 file changed, 3 insertions(+), 1 deletion(-)
->> 
->> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
->> index 2620406a53ec..ad84450e4ab8 100644
->> --- a/tools/testing/selftests/bpf/Makefile
->> +++ b/tools/testing/selftests/bpf/Makefile
->> @@ -1,4 +1,5 @@
->> # SPDX-License-Identifier: GPL-2.0
->> +include ../../../scripts/Makefile.arch
->> 
->> LIBDIR := ../../../lib
->> BPFDIR := $(LIBDIR)/bpf
->> @@ -138,7 +139,8 @@ CLANG_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 \
->> 
->> CLANG_FLAGS = -I. -I./include/uapi -I../../../include/uapi \
->>              $(CLANG_SYS_INCLUDES) \
->> -             -Wno-compare-distinct-pointer-types
->> +             -Wno-compare-distinct-pointer-types \
->> +             -D__TARGET_ARCH_$(SRCARCH)
-> 
-> samples/bpf/Makefile uses $(ARCH), why does it work for samples?
-> Should we update samples/bpf/Makefile as well?
+The cudbg_collect_mem_region() and cudbg_read_fw_mem() both use several
+hundred kilobytes of kernel stack space. One gets inlined into the other,
+which causes the stack usage to be combined beyond the warning limit
+when building with clang:
 
-I believe that in common cases both are okay, but judging by
-linux:Makefile and linux:tools/scripts/Makefile.arch, one could use e.g.
-ARCH=i686, and that would be converted to SRCARCH=x86. So IMHO SRCARCH
-is safer, and we should change bpf/samples/Makefile. I could send a
-patch separately.
+drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:1057:12: error: stack frame size of 1244 bytes in function 'cudbg_collect_mem_region' [-Werror,-Wframe-larger-than=]
+
+Restructuring cudbg_collect_mem_region() lets clang do the same
+optimization that gcc does and reuse the stack slots as it can
+see that the large variables are never used together.
+
+A better fix might be to avoid using cudbg_meminfo on the stack
+altogether, but that requires a larger rewrite.
+
+Fixes: a1c69520f785 ("cxgb4: collect MC memory dump")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+index a76529a7662d..c2e92786608b 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+@@ -1054,14 +1054,12 @@ static void cudbg_t4_fwcache(struct cudbg_init *pdbg_init,
+ 	}
+ }
+ 
+-static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
+-				    struct cudbg_buffer *dbg_buff,
+-				    struct cudbg_error *cudbg_err,
+-				    u8 mem_type)
++static unsigned long cudbg_mem_region_size(struct cudbg_init *pdbg_init,
++					   struct cudbg_error *cudbg_err,
++					   u8 mem_type)
+ {
+ 	struct adapter *padap = pdbg_init->adap;
+ 	struct cudbg_meminfo mem_info;
+-	unsigned long size;
+ 	u8 mc_idx;
+ 	int rc;
+ 
+@@ -1075,7 +1073,16 @@ static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
+ 	if (rc)
+ 		return rc;
+ 
+-	size = mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
++	return mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
++}
++
++static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
++				    struct cudbg_buffer *dbg_buff,
++				    struct cudbg_error *cudbg_err,
++				    u8 mem_type)
++{
++	unsigned long size = cudbg_mem_region_size(pdbg_init, cudbg_err, mem_type);
++
+ 	return cudbg_read_fw_mem(pdbg_init, dbg_buff, mem_type, size,
+ 				 cudbg_err);
+ }
+-- 
+2.20.0
+
