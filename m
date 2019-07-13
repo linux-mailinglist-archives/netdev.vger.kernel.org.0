@@ -2,53 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99AB86774C
-	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 02:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A29567757
+	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 02:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727776AbfGMAkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 20:40:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43232 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727577AbfGMAkO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jul 2019 20:40:14 -0400
-Subject: Re: [GIT PULL] 9p updates for 5.3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562978413;
-        bh=N1eN8QH+7+JfYNNJ4yh+cOKi0l7F+Trf3hII8g1oIBg=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=DEyjTsKroaYPyBZpS5gupT9I0yQTFF2uDYIuKMAkT2Go+oJn4f6oH+lqgo8SqhowS
-         YGzL0MJrcPOAfiOf4JeiEqsuvb8H9Djp7DUiSDsuhnDvcLDDOpq9Mzzqw+j6YTl+oD
-         /4T3w8QDFtM1DBCbTPn5XdaFUJB4HzTGaLxwqOb0=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20190712080446.GA19400@nautica>
-References: <20190712080446.GA19400@nautica>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20190712080446.GA19400@nautica>
-X-PR-Tracked-Remote: git://github.com/martinetd/linux tags/9p-for-5.3
-X-PR-Tracked-Commit-Id: 80a316ff16276b36d0392a8f8b2f63259857ae98
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 23bbbf5c1fb3ddf104c2ddbda4cc24ebe53a3453
-Message-Id: <156297841376.30815.4748359987826787756.pr-tracker-bot@kernel.org>
-Date:   Sat, 13 Jul 2019 00:40:13 +0000
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
+        id S1727776AbfGMAum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jul 2019 20:50:42 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:35388 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727236AbfGMAum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 20:50:42 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 67C7214E32590;
+        Fri, 12 Jul 2019 17:50:41 -0700 (PDT)
+Date:   Fri, 12 Jul 2019 17:50:38 -0700 (PDT)
+Message-Id: <20190712.175038.755685144649934618.davem@davemloft.net>
+To:     cai@lca.pw
+Cc:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        arnd@arndb.de, dhowells@redhat.com, hpa@zytor.com,
+        netdev@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] be2net: fix adapter->big_page_size miscaculation
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <EFD25845-097A-46B1-9C1A-02458883E4DA@lca.pw>
+References: <1562959401-19815-1-git-send-email-cai@lca.pw>
+        <20190712.154606.493382088615011132.davem@davemloft.net>
+        <EFD25845-097A-46B1-9C1A-02458883E4DA@lca.pw>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 12 Jul 2019 17:50:41 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Fri, 12 Jul 2019 10:04:46 +0200:
+From: Qian Cai <cai@lca.pw>
+Date: Fri, 12 Jul 2019 20:27:09 -0400
 
-> git://github.com/martinetd/linux tags/9p-for-5.3
+> Actually, GCC would consider it a const with -O2 optimized level because it found that it was never modified and it does not understand it is a module parameter. Considering the following code.
+> 
+> # cat const.c 
+> #include <stdio.h>
+> 
+> static int a = 1;
+> 
+> int main(void)
+> {
+> 	if (__builtin_constant_p(a))
+> 		printf("a is a const.\n");
+> 
+> 	return 0;
+> }
+> 
+> # gcc -O2 const.c -o const
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/23bbbf5c1fb3ddf104c2ddbda4cc24ebe53a3453
+That's not a complete test case, and with a proper test case that
+shows the externalization of the address of &a done by the module
+parameter macros, gcc should not make this optimization or we should
+define the module parameter macros in a way that makes this properly
+clear to the compiler.
 
-Thank you!
+It makes no sense to hack around this locally in drivers and other
+modules.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+Thank you.
