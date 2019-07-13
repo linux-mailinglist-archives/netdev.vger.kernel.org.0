@@ -2,124 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F07E67C0F
-	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 23:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C576967C1D
+	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 23:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728009AbfGMVPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jul 2019 17:15:54 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:46938 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727961AbfGMVPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jul 2019 17:15:54 -0400
-Received: by mail-oi1-f194.google.com with SMTP id 65so9882611oid.13;
-        Sat, 13 Jul 2019 14:15:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eD485LN6XByAHt5KmjLCQInLrbXWW1Y7wTAhLWUZutA=;
-        b=d3dHpLK9vHt3LiLTj9Vt9HWU4SNLt4Yor5/8ShJkSXiTTCVm3e/R701G8DPQgOTGES
-         fw6tU0vXqJp3ML3PatDvFLaAAuEGkKSGJetcHXpAfP/7yr3s0GL5ote1WO1auwn/2odO
-         ZymDIsCXUJdaoEVnaw3KN9BRXgYyfv2ezI02rlgeVm66zNlZY/Jzcx/qlGB4Rh8zcZy5
-         1bsTEAzENjxXb3tVAyGUHoKhGZ77bLX7dfUePsYVaASIYWBuD9nBSonYQqMKfwSx7SMP
-         PVEIEDCFsOeruOFZWzmirjvjuDZD70MgpU/7y3g7ITXObIckSF8ciPWaCNCAY2QErnI1
-         otYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eD485LN6XByAHt5KmjLCQInLrbXWW1Y7wTAhLWUZutA=;
-        b=mAvyVhKTr04f2f+9ggGYIMNZkTFIszlpgjTmZKil7/82NkKy9+8aETwd5bT91pq65Z
-         86Pq0J2Ny5fNLJMHTpuR4ZVB6ROrpqOfXZzqfNDFmd8n25vanFr9myITvNgIckCuc8l9
-         WYXlSIbz8szLBLute11ahRV69BPMbqfpPCAKephmirnqxd5DPggl47rRhm709dkx8Bdt
-         QLUJshHLb8ewIyzY01QShrYf+CY60iaKIFKyi+VIFeLEFZccuZNLFGsSuuchSzzCHbBA
-         61QCDJm7nmpUgK/bgws4qCH1rhNOG+ZyrcPIxj1appsyQg4XOwWoYn0U4Zvs/OgNWMte
-         fSyA==
-X-Gm-Message-State: APjAAAV+bckBDhqh6MWTQt9LhU6daNQgVeIgsdp6YK0NtOGI1TVdJQIa
-        olGue2aGe9OYHE2PxR7HVHCQzGYsmrBq1ihTMV2Ysw==
-X-Google-Smtp-Source: APXvYqwn5IGIihDZF9udiN6+gZTLwstT0fIpI9751klIARpXJ9Rt0LYnmO9ejtl/2Vj844ohnnQcvT1Ipk/maqWxws8=
-X-Received: by 2002:aca:b808:: with SMTP id i8mr9211752oif.163.1563052552937;
- Sat, 13 Jul 2019 14:15:52 -0700 (PDT)
+        id S1728117AbfGMVbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jul 2019 17:31:06 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:43806 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727961AbfGMVbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jul 2019 17:31:05 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6DLRVZI033516;
+        Sat, 13 Jul 2019 17:28:15 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tqbt5g22v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 13 Jul 2019 17:28:15 -0400
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6DLSEBQ042352;
+        Sat, 13 Jul 2019 17:28:14 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tqbt5g229-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 13 Jul 2019 17:28:14 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x6DLPAkf022684;
+        Sat, 13 Jul 2019 21:28:13 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma01wdc.us.ibm.com with ESMTP id 2tq6x5cqsh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 13 Jul 2019 21:28:13 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6DLSC2I38404564
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 13 Jul 2019 21:28:12 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9E37CB205F;
+        Sat, 13 Jul 2019 21:28:12 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 46C96B2065;
+        Sat, 13 Jul 2019 21:28:12 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.85.158.189])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Sat, 13 Jul 2019 21:28:12 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id 4AEB516C39C0; Sat, 13 Jul 2019 14:28:12 -0700 (PDT)
+Date:   Sat, 13 Jul 2019 14:28:12 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com, kernel-team@android.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [PATCH v2 3/9] rcu/sync: Remove custom check for reader-section
+Message-ID: <20190713212812.GH26519@linux.ibm.com>
+Reply-To: paulmck@linux.ibm.com
+References: <20190712213559.GA175138@google.com>
+ <20190712233206.GZ26519@linux.ibm.com>
+ <20190713030150.GA246587@google.com>
+ <20190713031008.GA248225@google.com>
+ <20190713082114.GA26519@linux.ibm.com>
+ <20190713133049.GA133650@google.com>
+ <20190713144108.GD26519@linux.ibm.com>
+ <20190713153606.GD133650@google.com>
+ <20190713155010.GF26519@linux.ibm.com>
+ <20190713161316.GA39321@google.com>
 MIME-Version: 1.0
-References: <20190713210306.30815-1-michael-dev@fami-braun.de>
-In-Reply-To: <20190713210306.30815-1-michael-dev@fami-braun.de>
-From:   Laura Garcia <nevola@gmail.com>
-Date:   Sat, 13 Jul 2019 23:15:41 +0200
-Message-ID: <CAF90-Wh9QZbzo64UKLAN98iWGJt3hZH37a+_8_rgyYBGydz-ew@mail.gmail.com>
-Subject: Re: [PATCH] Fix dumping vlan rules
-To:     michael-dev@fami-braun.de
-Cc:     netdev@vger.kernel.org,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190713161316.GA39321@google.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-13_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907130264
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC'ing netfilter.
+On Sat, Jul 13, 2019 at 12:13:16PM -0400, Joel Fernandes wrote:
+> On Sat, Jul 13, 2019 at 08:50:10AM -0700, Paul E. McKenney wrote:
+> > On Sat, Jul 13, 2019 at 11:36:06AM -0400, Joel Fernandes wrote:
+> > > On Sat, Jul 13, 2019 at 07:41:08AM -0700, Paul E. McKenney wrote:
+> > > > On Sat, Jul 13, 2019 at 09:30:49AM -0400, Joel Fernandes wrote:
+> > > > > On Sat, Jul 13, 2019 at 01:21:14AM -0700, Paul E. McKenney wrote:
+> > > > > > On Fri, Jul 12, 2019 at 11:10:08PM -0400, Joel Fernandes wrote:
+> > > > > > > On Fri, Jul 12, 2019 at 11:01:50PM -0400, Joel Fernandes wrote:
+> > > > > > > > On Fri, Jul 12, 2019 at 04:32:06PM -0700, Paul E. McKenney wrote:
+> > > > > > > > > On Fri, Jul 12, 2019 at 05:35:59PM -0400, Joel Fernandes wrote:
+> > > > > > > > > > On Fri, Jul 12, 2019 at 01:00:18PM -0400, Joel Fernandes (Google) wrote:
+> > > > > > > > > > > The rcu/sync code was doing its own check whether we are in a reader
+> > > > > > > > > > > section. With RCU consolidating flavors and the generic helper added in
+> > > > > > > > > > > this series, this is no longer need. We can just use the generic helper
+> > > > > > > > > > > and it results in a nice cleanup.
+> > > > > > > > > > > 
+> > > > > > > > > > > Cc: Oleg Nesterov <oleg@redhat.com>
+> > > > > > > > > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > > > > > > > > > 
+> > > > > > > > > > Hi Oleg,
+> > > > > > > > > > Slightly unrelated to the patch,
+> > > > > > > > > > I tried hard to understand this comment below in percpu_down_read() but no dice.
+> > > > > > > > > > 
+> > > > > > > > > > I do understand how rcu sync and percpu rwsem works, however the comment
+> > > > > > > > > > below didn't make much sense to me. For one, there's no readers_fast anymore
+> > > > > > > > > > so I did not follow what readers_fast means. Could the comment be updated to
+> > > > > > > > > > reflect latest changes?
+> > > > > > > > > > Also could you help understand how is a writer not able to change
+> > > > > > > > > > sem->state and count the per-cpu read counters at the same time as the
+> > > > > > > > > > comment tries to say?
+> > > > > > > > > > 
+> > > > > > > > > > 	/*
+> > > > > > > > > > 	 * We are in an RCU-sched read-side critical section, so the writer
+> > > > > > > > > > 	 * cannot both change sem->state from readers_fast and start checking
+> > > > > > > > > > 	 * counters while we are here. So if we see !sem->state, we know that
+> > > > > > > > > > 	 * the writer won't be checking until we're past the preempt_enable()
+> > > > > > > > > > 	 * and that once the synchronize_rcu() is done, the writer will see
+> > > > > > > > > > 	 * anything we did within this RCU-sched read-size critical section.
+> > > > > > > > > > 	 */
+> > > > > > > > > > 
+> > > > > > > > > > Also,
+> > > > > > > > > > I guess we could get rid of all of the gp_ops struct stuff now that since all
+> > > > > > > > > > the callbacks are the same now. I will post that as a follow-up patch to this
+> > > > > > > > > > series.
+> > > > > > > > > 
+> > > > > > > > > Hello, Joel,
+> > > > > > > > > 
+> > > > > > > > > Oleg has a set of patches updating this code that just hit mainline
+> > > > > > > > > this week.  These patches get rid of the code that previously handled
+> > > > > > > > > RCU's multiple flavors.  Or are you looking at current mainline and
+> > > > > > > > > me just missing your point?
+> > > > > > > > > 
+> > > > > > > > 
+> > > > > > > > Hi Paul,
+> > > > > > > > You are right on point. I have a bad habit of not rebasing my trees. In this
+> > > > > > > > case the feature branch of mine in concern was based on v5.1. Needless to
+> > > > > > > > say, I need to rebase my tree.
+> > > > > > > > 
+> > > > > > > > Yes, this sync clean up patch does conflict when I rebase, but other patches
+> > > > > > > > rebase just fine.
+> > > > > > > > 
+> > > > > > > > The 2 options I see are:
+> > > > > > > > 1. Let us drop this patch for now and I resend it later.
+> > > > > > > > 2. I resend all patches based on Linus's master branch.
+> > > > > > > 
+> > > > > > > Below is the updated patch based on Linus master branch:
+> > > > > > > 
+> > > > > > > ---8<-----------------------
+> > > > > > > 
+> > > > > > > >From 5f40c9a07fcf3d6dafc2189599d0ba9443097d0f Mon Sep 17 00:00:00 2001
+> > > > > > > From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+> > > > > > > Date: Fri, 12 Jul 2019 12:13:27 -0400
+> > > > > > > Subject: [PATCH v2.1 3/9] rcu/sync: Remove custom check for reader-section
+> > > > > > > 
+> > > > > > > The rcu/sync code was doing its own check whether we are in a reader
+> > > > > > > section. With RCU consolidating flavors and the generic helper added in
+> > > > > > > this series, this is no longer need. We can just use the generic helper
+> > > > > > > and it results in a nice cleanup.
+> > > > > > > 
+> > > > > > > Cc: Oleg Nesterov <oleg@redhat.com>
+> > > > > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > > > > > > ---
+> > > > > > >  include/linux/rcu_sync.h | 4 +---
+> > > > > > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > > > > > > 
+> > > > > > > diff --git a/include/linux/rcu_sync.h b/include/linux/rcu_sync.h
+> > > > > > > index 9b83865d24f9..0027d4c8087c 100644
+> > > > > > > --- a/include/linux/rcu_sync.h
+> > > > > > > +++ b/include/linux/rcu_sync.h
+> > > > > > > @@ -31,9 +31,7 @@ struct rcu_sync {
+> > > > > > >   */
+> > > > > > >  static inline bool rcu_sync_is_idle(struct rcu_sync *rsp)
+> > > > > > >  {
+> > > > > > > -	RCU_LOCKDEP_WARN(!rcu_read_lock_held() &&
+> > > > > > > -			 !rcu_read_lock_bh_held() &&
+> > > > > > > -			 !rcu_read_lock_sched_held(),
+> > > > > > > +	RCU_LOCKDEP_WARN(!rcu_read_lock_any_held(),
+> > > > > > 
+> > > > > > I believe that replacing rcu_read_lock_sched_held() with preemptible()
+> > > > > > in a CONFIG_PREEMPT=n kernel will give you false-positive splats here.
+> > > > > > If you have not already done so, could you please give it a try?
+> > > > > 
+> > > > > Hi Paul,
+> > > > > I don't think it will cause splats for !CONFIG_PREEMPT.
+> > > > > 
+> > > > > Currently, rcu_read_lock_any_held() introduced in this patch returns true if
+> > > > > !preemptible(). This means that:
+> > > > > 
+> > > > > The following expression above:
+> > > > > RCU_LOCKDEP_WARN(!rcu_read_lock_any_held(),...)
+> > > > > 
+> > > > > Becomes:
+> > > > > RCU_LOCKDEP_WARN(preemptible(), ...)
+> > > > > 
+> > > > > For, CONFIG_PREEMPT=n kernels, this means:
+> > > > > RCU_LOCKDEP_WARN(0, ...)
+> > > > > 
+> > > > > Which would mean no splats. Or, did I miss the point?
+> > > > 
+> > > > I suggest trying it out on a CONFIG_PREEMPT=n kernel.
+> > > 
+> > > Sure, will do, sorry did not try it out yet because was busy with weekend
+> > > chores but will do soon, thanks!
+> > 
+> > I am not faulting you for taking the weekend off, actually.  ;-)
+> 
+> ;-) 
+> 
+> I tried doing RCU_LOCKDEP_WARN(preemptible(), ...) in this code path and I
+> don't get any splats. I also disassembled the code and it seems to me
+> RCU_LOCKDEP_WARN() becomes a NOOP which also the above reasoning confirms.
 
-On Sat, Jul 13, 2019 at 11:10 PM <michael-dev@fami-braun.de> wrote:
->
-> From: "M. Braun" <michael-dev@fami-braun.de>
->
-> Given the following bridge rules:
-> 1. ip protocol icmp accept
-> 2. ether type vlan vlan type ip ip protocol icmp accept
->
-> The are currently both dumped by "nft list ruleset" as
-> 1. ip protocol icmp accept
-> 2. ip protocol icmp accept
->
-> Though, the netlink code actually is different
->
-> bridge filter FORWARD 4
->   [ payload load 2b @ link header + 12 => reg 1 ]
->   [ cmp eq reg 1 0x00000008 ]
->   [ payload load 1b @ network header + 9 => reg 1 ]
->   [ cmp eq reg 1 0x00000001 ]
->   [ immediate reg 0 accept ]
->
-> bridge filter FORWARD 5 4
->   [ payload load 2b @ link header + 12 => reg 1 ]
->   [ cmp eq reg 1 0x00000081 ]
->   [ payload load 2b @ link header + 16 => reg 1 ]
->   [ cmp eq reg 1 0x00000008 ]
->   [ payload load 1b @ network header + 9 => reg 1 ]
->   [ cmp eq reg 1 0x00000001 ]
->   [ immediate reg 0 accept ]
->
-> Fix this by avoiding the removal of all vlan statements
-> in the given example.
->
-> Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
-> ---
->  src/payload.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->
-> diff --git a/src/payload.c b/src/payload.c
-> index 3bf1ecc..905422a 100644
-> --- a/src/payload.c
-> +++ b/src/payload.c
-> @@ -506,6 +506,18 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
->                      dep->left->payload.desc == &proto_ip6) &&
->                     expr->payload.base == PROTO_BASE_TRANSPORT_HDR)
->                         return false;
-> +               /* Do not kill
-> +                *  ether type vlan and vlan type ip and ip protocol icmp
-> +                * into
-> +                *  ip protocol icmp
-> +                * as this lacks ether type vlan.
-> +                * More generally speaking, do not kill protocol type
-> +                * for stacked protocols if we only have protcol type matches.
-> +                */
-> +               if (dep->left->etype == EXPR_PAYLOAD && dep->op == OP_EQ &&
-> +                   expr->flags & EXPR_F_PROTOCOL &&
-> +                   expr->payload.base == dep->left->payload.base)
-> +                       return false;
->                 break;
->         }
->
-> --
-> 2.20.1
->
+OK, very good.  Could you do the same thing for the RCU_LOCKDEP_WARN()
+in synchronize_rcu()?  Why or why not?
+
+(No need to work this on your Sunday.)
+
+							Thanx, Paul
