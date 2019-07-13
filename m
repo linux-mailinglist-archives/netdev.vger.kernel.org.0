@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A227467A05
-	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 13:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 224E867A09
+	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 13:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727553AbfGMLp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jul 2019 07:45:59 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:34833 "EHLO
+        id S1727706AbfGMLz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jul 2019 07:55:57 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38443 "EHLO
         mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726474AbfGMLp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jul 2019 07:45:59 -0400
-Received: by mail-wm1-f68.google.com with SMTP id l2so11091071wmg.0
-        for <netdev@vger.kernel.org>; Sat, 13 Jul 2019 04:45:57 -0700 (PDT)
+        with ESMTP id S1727489AbfGMLz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jul 2019 07:55:57 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s15so11094997wmj.3
+        for <netdev@vger.kernel.org>; Sat, 13 Jul 2019 04:55:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:from:cc:subject:message-id:date:user-agent:mime-version
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
          :content-language:content-transfer-encoding;
-        bh=Z8uZ4cLJqomiQXsoOd+BHplK7K2RrueSp7Y4Ud5bLbY=;
-        b=mQlyg0ImJ4Nr3gfEvxRWD1Ejm4P7WSbx5S8QiW6dAQC1PYeJtnWPEFLXB5FDNbNwP2
-         AkUmXWLthEpf/UBrhSoL+e4ktD5vJPyjs3ilmFARwnRBMnxLtpTveaVa0Asgdv00wPCs
-         EH9+6HONrb6Q+25bU+PCxfcXlApoydQQXI1WtZOZvYNq7aiyq819BvCCR7R2iuSz6liL
-         BSjcaIL06reurydY9mVWKhlTJBy1TeDQO6lbR03RhCTqcvrraeHeT+3+dyvuCkzrdz0r
-         yIPq1EAww0T11UiFaOwzACsIShC9TOvNpLQ8Zu34Cnp0t8D6sBAtfXW6TGEnVpMupVH5
-         0XxQ==
+        bh=mSeAEbFGFSOPZHITLmB52DlOfoii3Iy6uukfzBlTHrU=;
+        b=ksN43EaKGTnoMlO/bocV2GeiKWJQZ9H1RVSE7O0QW7kW3bWS5lilCiN3yqXLQcA757
+         lyDdJ6xkS0tEE0Ote89mMH+nT03Gy3hcT9MBv1oAy5D00fLK2WDu3DFuzRmnA46Od+8R
+         3Oi0JULdGE+9KmMfzWmzuhKPcjxujDrYa655UrowYiYwhEdXMQnzlt5bsOBfGwYCS5On
+         3j8F45/hfQexPl6MCZTT/5o2kNPQ6zPW+10oxT5GlQ57CVKo2WYMylXjRfjlptclTyy6
+         Zc13a5JvXzV2gX+4Adn+8e6ZNNW60bq+MCxYPsW0MFPJ7MES0P7t443xBYyCYksrnXxv
+         mryg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:cc:subject:message-id:date:user-agent
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
          :mime-version:content-language:content-transfer-encoding;
-        bh=Z8uZ4cLJqomiQXsoOd+BHplK7K2RrueSp7Y4Ud5bLbY=;
-        b=Vu6XZraCzzUKraHNm/NojQKe/XttFPpmHA4o2D28xsYgyer0DPMDQ3sqfguWvsTCjQ
-         6ENvRLQCPSNcGfMAt8n6po8wBwQ69A9Sfg1euHcELXAHYFx+KqIMMLiYrnR7o1mi0glm
-         jzU7D4oAJNzq/tu/o/AlhzrE6wpD3t+2/4u9Yf7yF9EC0TPSykxd9EsSAw77ImIXa73b
-         IRwlZ8JdclkBRr0J8il5YnDl+vewcudxVvyARtXZHNMWvkljFFY3KeBUNTE9ydtKLtnR
-         qZsDt1FpVo3C+PV5GtHvQdd6xVkM3ORu22v3O00HI0f842MUlZ3MSCt06UDlsKD5xf8G
-         MtJw==
-X-Gm-Message-State: APjAAAXiGBQs6Z+6Rs7nCChnp20645hwuiQdlBjiRB3oZoZZ/lNpBk6h
-        aGsPIvfrYACaSydnwHF1Byw=
-X-Google-Smtp-Source: APXvYqyNwoI5EP7w128idU06p9osqD/XByqt0Syv48pCiEqI+tTH2Gy5PMtDMyxQcObUX0Nx5EwDTw==
-X-Received: by 2002:a05:600c:1150:: with SMTP id z16mr14229487wmz.168.1563018356458;
-        Sat, 13 Jul 2019 04:45:56 -0700 (PDT)
+        bh=mSeAEbFGFSOPZHITLmB52DlOfoii3Iy6uukfzBlTHrU=;
+        b=owJkVfxO4LOm1ZVBABCKGPbjWy8CbGnzxy5zUaFotpYunb0u4S8Hx+ZswsUrDOCum6
+         QIiYB5of8CAXWPB8j+L3a/CNgCXz1ARLwGsfowFilwRDaSMeDghjPliqUhKozD7MWzs4
+         hXamaagoPY7Nz8ilAHG4KnM3+15whfGdsyCIFK5glqtFJuqXsGiCW1R70URUVAk7sMEX
+         5A6l7UvtIG28XTNXbjJ9yLHMRK9IYF3vnUjcFCcqf9pB7npzuQvyQO21nK8eoo4OhqRW
+         xXDxTZ2V3A8LCmfeAdxeoDhjKat4PuTo9w1kWpQQjw77+H1nxXz2ktBAMYc0rWkczqC6
+         9anA==
+X-Gm-Message-State: APjAAAXjS8DyiWyl/vBa6dCleWyWHCnrBnJAeDUD/D29JNUyDeBjz5xm
+        XAEZvnJvX8RGu3DnzWXeJRQ=
+X-Google-Smtp-Source: APXvYqzPwyR5v3vDGIfylQ1MYzA/y6yIlYCY8Gti1t5GdJ03oVHfl/C5J9svl4nzttqgyZvlP1ThQA==
+X-Received: by 2002:a7b:c4c1:: with SMTP id g1mr15153575wmk.14.1563018954149;
+        Sat, 13 Jul 2019 04:55:54 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd6:c00:9c47:80d8:6d49:f2a9? (p200300EA8BD60C009C4780D86D49F2A9.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:9c47:80d8:6d49:f2a9])
-        by smtp.googlemail.com with ESMTPSA id q1sm9379232wmq.25.2019.07.13.04.45.55
+        by smtp.googlemail.com with ESMTPSA id l9sm10374904wmh.36.2019.07.13.04.55.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 13 Jul 2019 04:45:55 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
+        Sat, 13 Jul 2019 04:55:53 -0700 (PDT)
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ionut Radu <ionut.radu@gmail.com>
 Subject: [PATCH net] r8169: fix issue with confused RX unit after PHY
  power-down on RTL8411b
-Message-ID: <dfc533d0-a90e-37fe-2338-483abc9c1177@gmail.com>
-Date:   Sat, 13 Jul 2019 13:45:47 +0200
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ionut Radu <ionut.radu@gmail.com>
+Message-ID: <58682c9d-3253-ca24-d91e-ca47b7ca0d93@gmail.com>
+Date:   Sat, 13 Jul 2019 13:55:45 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
@@ -77,18 +77,18 @@ Fixes: a99790bf5c7f ("r8169: Reinstate ASPM Support")
 Tested-by: Ionut Radu <ionut.radu@gmail.com>
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
-This patch doesn't apply on versions up to 5.2 due to the renaming
-of r8169.c to r8169_main.c. I will provide a separate patch for these
-versions.
+This patch is for versions up to 5.2. On versions before 5.2 there
+may be little fuzz when applying because rtl_ephy_init used to have
+one parameter more.
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 137 ++++++++++++++++++++++
+ drivers/net/ethernet/realtek/r8169.c | 137 +++++++++++++++++++++++++++
  1 file changed, 137 insertions(+)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index efef5453b..0637c6752 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4667,6 +4667,143 @@ static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
+diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
+index d06a61f00..96637fcbe 100644
+--- a/drivers/net/ethernet/realtek/r8169.c
++++ b/drivers/net/ethernet/realtek/r8169.c
+@@ -5157,6 +5157,143 @@ static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
  	/* disable aspm and clock request before access ephy */
  	rtl_hw_aspm_clkreq_enable(tp, false);
  	rtl_ephy_init(tp, e_info_8411_2);
