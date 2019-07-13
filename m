@@ -2,182 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E954677C2
-	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 05:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593D06787E
+	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 06:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727592AbfGMDKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jul 2019 23:10:12 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:42005 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727504AbfGMDKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jul 2019 23:10:11 -0400
-Received: by mail-pl1-f194.google.com with SMTP id ay6so5666027plb.9
-        for <netdev@vger.kernel.org>; Fri, 12 Jul 2019 20:10:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Yj0KzWPPj2wTNOobGgks3QqTli1sq+vFUwn/IZyvMdc=;
-        b=lOqMuQRexi/hVxa/4p77SbaQvlMGoDh5aaBC9i1MTtOwCN7njvsbB5lQDbBmriZ1WA
-         FWWHLnYwSi1u/Badms6e151ITEB+l7THYTAcQrSxD3Gt/lUVga9IZ5YlpJa+tNPnpYnH
-         zxZrbWgIwEXHbV94dqGpKtSAH3ynqx9mn/E50=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Yj0KzWPPj2wTNOobGgks3QqTli1sq+vFUwn/IZyvMdc=;
-        b=F7Iwk3qyBaI6Ib7Us+odEPHWguJH7Yai7Iu/pfjG5X6x2S+HfGYiKnYqZDnrDTzyW1
-         s6WY8XGmuaj1tzZleUg2uDwoujFo3+MQZG6Ts+lVSUq9Uwl4xWbQoLrYOyP10Bc/DFuU
-         c3OUqjlrVD+PwvorqERvs0Y9r8N7hURgeBWZVsURzqctEK8pkD1dcTZMnFvQK9fZARRy
-         30bp18A4pgJrnYrKx3uuNmq3OBSWxupgE6c9Z437HwSgS7FrBBbegvMoxkEspRsrPQYI
-         1DKPy3ULfTYxxWJLOIF8j8+A6cEKZeGacsSaPX+Qdxc230zMCR/6VgmyZXdt4p7IJJHY
-         NLWA==
-X-Gm-Message-State: APjAAAVX2S3OVaAfZ05DaoWP939GMOGPzRySv+rWKrHktUCovx9Nfchf
-        VjFz85kDxSz/wU1d+nbczzk=
-X-Google-Smtp-Source: APXvYqzYmXDx79APPhOf6U2U81XcESDp7O9GeiDZBYQYdv6r3PCBBKB8Rg1+OBGlaGf1FYhUnpz+lQ==
-X-Received: by 2002:a17:902:704a:: with SMTP id h10mr15163948plt.337.1562987410632;
-        Fri, 12 Jul 2019 20:10:10 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id m31sm10466015pjb.6.2019.07.12.20.10.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 12 Jul 2019 20:10:09 -0700 (PDT)
-Date:   Fri, 12 Jul 2019 23:10:08 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com, kernel-team@android.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [PATCH v2 3/9] rcu/sync: Remove custom check for reader-section
-Message-ID: <20190713031008.GA248225@google.com>
-References: <20190712170024.111093-1-joel@joelfernandes.org>
- <20190712170024.111093-4-joel@joelfernandes.org>
- <20190712213559.GA175138@google.com>
- <20190712233206.GZ26519@linux.ibm.com>
- <20190713030150.GA246587@google.com>
+        id S1726274AbfGMEyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jul 2019 00:54:40 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:43304 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725916AbfGMEyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jul 2019 00:54:39 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6D4qVJU005175;
+        Fri, 12 Jul 2019 21:54:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=Kt8M0xg3DjW9p8Wd5cKcZhvee9qfCoSjapUQP9xBfXE=;
+ b=EVz/HXWE6fxSsFXeTDfEuijttzv1hXQF9WZ8OgMeRi7Nr0kV2GOxX9nR2+uWkJs92tZe
+ M78cVkz73w10ksG1xJ9VHB2B2b6uUZFSmxwTpYDrJsEyJUS6T7//69wgB5mHxGYOsLmv
+ kagWEvJyBIPy7Hxthn4l5TZbO+Z5KZiJqqE= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0b-00082601.pphosted.com with ESMTP id 2tpu9taj31-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 12 Jul 2019 21:54:18 -0700
+Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
+ prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Fri, 12 Jul 2019 21:54:16 -0700
+Received: from NAM05-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Fri, 12 Jul 2019 21:54:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Kt8M0xg3DjW9p8Wd5cKcZhvee9qfCoSjapUQP9xBfXE=;
+ b=IxWXoNDsHbV+7UqBH0XvPM4whzJIo6jqaIGsicxqCgoyS7Hhx8+EaWPoE/GhsF7gWaw6aZ+MGQjESXb2rLbPR5rf/Ghh9Y+njyhp3IspQcGFNZ+8QIrBcbYzauldkNab2DUqYJTnC0bxBwJ8N6/OC3mPZOIxbUX2Yq3qnCbWR4Y=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
+ MWHPR15MB1358.namprd15.prod.outlook.com (10.173.232.150) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Sat, 13 Jul 2019 04:54:14 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::d9b8:60e6:ba58:dc76]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::d9b8:60e6:ba58:dc76%8]) with mapi id 15.20.2052.022; Sat, 13 Jul 2019
+ 04:54:14 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v3 bpf 1/3] bpf: fix BTF verifier size resolution logic
+Thread-Topic: [PATCH v3 bpf 1/3] bpf: fix BTF verifier size resolution logic
+Thread-Index: AQHVONbyBEuzXvOGV06rV3/a/IuM/6bH/FCA
+Date:   Sat, 13 Jul 2019 04:54:14 +0000
+Message-ID: <20190713045405.oyqddjksn535ddzb@kafai-mbp>
+References: <20190712172557.4039121-1-andriin@fb.com>
+ <20190712172557.4039121-2-andriin@fb.com>
+In-Reply-To: <20190712172557.4039121-2-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR12CA0065.namprd12.prod.outlook.com
+ (2603:10b6:300:103::27) To MWHPR15MB1790.namprd15.prod.outlook.com
+ (2603:10b6:301:53::10)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1:6a94]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d1f45c61-9ce7-4474-80cf-08d7074e26e1
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1358;
+x-ms-traffictypediagnostic: MWHPR15MB1358:
+x-microsoft-antispam-prvs: <MWHPR15MB1358FED9033343FA3BAF1B9AD5CD0@MWHPR15MB1358.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 00979FCB3A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(39860400002)(376002)(346002)(396003)(136003)(366004)(51914003)(199004)(189003)(2906002)(5660300002)(6486002)(71200400001)(9686003)(71190400001)(6636002)(4326008)(6436002)(4744005)(8936002)(25786009)(53936002)(6512007)(6862004)(478600001)(66446008)(66476007)(66946007)(316002)(66556008)(64756008)(54906003)(229853002)(33716001)(256004)(52116002)(68736007)(305945005)(14444005)(14454004)(6116002)(81166006)(8676002)(81156014)(7736002)(46003)(86362001)(11346002)(186003)(102836004)(446003)(386003)(6506007)(6246003)(486006)(76176011)(99286004)(1076003)(476003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1358;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: DOXeh4sOWGfpzjF3EXpqvSg9XWvferICZmfHBTlcMgfDFMCjGS20xiMB74WkdP8BQkYI+nVHE7zDs8nzDWK4/RpIjxbvK79f6y2LJZLoxNdvi5T5KmMxltt7GD3m3/KkgJHNGZy0NjO9/hydREMT0rvPYRAf+jwIhmiIwyyas/l/4BgNMsmfncmTAgtmBxZ9MmcHPS+OOZkS2vbiMGuDpUBV2YsR4OZxg4Law2G+eQbo5GY3UOQv/jm9+HLmzhLw7vIhb9sK+cItVh4RBdxiycBzmlEEtUAzIL4nJjk+gobu3RkbgSADu8GC+RdHZaY0pmPPKDwSdIwAta0cqb6iCNoWekinfgUPmxsX4VrBR2jzUCVXyCNt721PMzrqO5MRyCHJEcbWLMOP2EeYxofls0klEyC/OfJ0Wx+ot273xuw=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <655AFA424E7EF04490D801336202A67B@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190713030150.GA246587@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1f45c61-9ce7-4474-80cf-08d7074e26e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2019 04:54:14.1113
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1358
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-13_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=455 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907130057
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 12, 2019 at 11:01:50PM -0400, Joel Fernandes wrote:
-> On Fri, Jul 12, 2019 at 04:32:06PM -0700, Paul E. McKenney wrote:
-> > On Fri, Jul 12, 2019 at 05:35:59PM -0400, Joel Fernandes wrote:
-> > > On Fri, Jul 12, 2019 at 01:00:18PM -0400, Joel Fernandes (Google) wrote:
-> > > > The rcu/sync code was doing its own check whether we are in a reader
-> > > > section. With RCU consolidating flavors and the generic helper added in
-> > > > this series, this is no longer need. We can just use the generic helper
-> > > > and it results in a nice cleanup.
-> > > > 
-> > > > Cc: Oleg Nesterov <oleg@redhat.com>
-> > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> > > 
-> > > Hi Oleg,
-> > > Slightly unrelated to the patch,
-> > > I tried hard to understand this comment below in percpu_down_read() but no dice.
-> > > 
-> > > I do understand how rcu sync and percpu rwsem works, however the comment
-> > > below didn't make much sense to me. For one, there's no readers_fast anymore
-> > > so I did not follow what readers_fast means. Could the comment be updated to
-> > > reflect latest changes?
-> > > Also could you help understand how is a writer not able to change
-> > > sem->state and count the per-cpu read counters at the same time as the
-> > > comment tries to say?
-> > > 
-> > > 	/*
-> > > 	 * We are in an RCU-sched read-side critical section, so the writer
-> > > 	 * cannot both change sem->state from readers_fast and start checking
-> > > 	 * counters while we are here. So if we see !sem->state, we know that
-> > > 	 * the writer won't be checking until we're past the preempt_enable()
-> > > 	 * and that once the synchronize_rcu() is done, the writer will see
-> > > 	 * anything we did within this RCU-sched read-size critical section.
-> > > 	 */
-> > > 
-> > > Also,
-> > > I guess we could get rid of all of the gp_ops struct stuff now that since all
-> > > the callbacks are the same now. I will post that as a follow-up patch to this
-> > > series.
-> > 
-> > Hello, Joel,
-> > 
-> > Oleg has a set of patches updating this code that just hit mainline
-> > this week.  These patches get rid of the code that previously handled
-> > RCU's multiple flavors.  Or are you looking at current mainline and
-> > me just missing your point?
-> > 
-> 
-> Hi Paul,
-> You are right on point. I have a bad habit of not rebasing my trees. In this
-> case the feature branch of mine in concern was based on v5.1. Needless to
-> say, I need to rebase my tree.
-> 
-> Yes, this sync clean up patch does conflict when I rebase, but other patches
-> rebase just fine.
-> 
-> The 2 options I see are:
-> 1. Let us drop this patch for now and I resend it later.
-> 2. I resend all patches based on Linus's master branch.
+On Fri, Jul 12, 2019 at 10:25:55AM -0700, Andrii Nakryiko wrote:
+> BTF verifier has a size resolution bug which in some circumstances leads =
+to
+> invalid size resolution for, e.g., TYPEDEF modifier.  This happens if we =
+have
+> [1] PTR -> [2] TYPEDEF -> [3] ARRAY, in which case due to being in pointe=
+r
+> context ARRAY size won't be resolved (because for pointer it doesn't matt=
+er, so
+> it's a sink in pointer context), but it will be permanently remembered as=
+ zero
+> for TYPEDEF and TYPEDEF will be marked as RESOLVED. Eventually ARRAY size=
+ will
+> be resolved correctly, but TYPEDEF resolved_size won't be updated anymore=
+.
+> This, subsequently, will lead to erroneous map creation failure, if that
+> TYPEDEF is specified as either key or value, as key_size/value_size won't
+> correspond to resolved size of TYPEDEF (kernel will believe it's zero).
+Thanks for the fix.
 
-Below is the updated patch based on Linus master branch:
-
----8<-----------------------
-
-From 5f40c9a07fcf3d6dafc2189599d0ba9443097d0f Mon Sep 17 00:00:00 2001
-From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Date: Fri, 12 Jul 2019 12:13:27 -0400
-Subject: [PATCH v2.1 3/9] rcu/sync: Remove custom check for reader-section
-
-The rcu/sync code was doing its own check whether we are in a reader
-section. With RCU consolidating flavors and the generic helper added in
-this series, this is no longer need. We can just use the generic helper
-and it results in a nice cleanup.
-
-Cc: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
----
- include/linux/rcu_sync.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/include/linux/rcu_sync.h b/include/linux/rcu_sync.h
-index 9b83865d24f9..0027d4c8087c 100644
---- a/include/linux/rcu_sync.h
-+++ b/include/linux/rcu_sync.h
-@@ -31,9 +31,7 @@ struct rcu_sync {
-  */
- static inline bool rcu_sync_is_idle(struct rcu_sync *rsp)
- {
--	RCU_LOCKDEP_WARN(!rcu_read_lock_held() &&
--			 !rcu_read_lock_bh_held() &&
--			 !rcu_read_lock_sched_held(),
-+	RCU_LOCKDEP_WARN(!rcu_read_lock_any_held(),
- 			 "suspicious rcu_sync_is_idle() usage");
- 	return !READ_ONCE(rsp->gp_state); /* GP_IDLE */
- }
--- 
-2.22.0.510.g264f2c817a-goog
-
+Acked-by: Martin KaFai Lau <kafai@fb.com>
