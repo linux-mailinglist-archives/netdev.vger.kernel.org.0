@@ -2,124 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82FCA67984
-	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 11:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A227467A05
+	for <lists+netdev@lfdr.de>; Sat, 13 Jul 2019 13:46:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727489AbfGMJnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jul 2019 05:43:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36386 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726626AbfGMJnd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Jul 2019 05:43:33 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9B60C88313;
-        Sat, 13 Jul 2019 09:43:33 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (ovpn-116-49.ams2.redhat.com [10.36.116.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7636E60C4D;
-        Sat, 13 Jul 2019 09:43:32 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org
-Subject: [PATCH iproute2] tc: util: constrain percentage in 0-100 interval
-Date:   Sat, 13 Jul 2019 11:44:07 +0200
-Message-Id: <c0a9b4ce15d5389ac59fbf572f5f1b3030ec4c90.1563011008.git.aclaudi@redhat.com>
+        id S1727553AbfGMLp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jul 2019 07:45:59 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34833 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726474AbfGMLp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jul 2019 07:45:59 -0400
+Received: by mail-wm1-f68.google.com with SMTP id l2so11091071wmg.0
+        for <netdev@vger.kernel.org>; Sat, 13 Jul 2019 04:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:from:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=Z8uZ4cLJqomiQXsoOd+BHplK7K2RrueSp7Y4Ud5bLbY=;
+        b=mQlyg0ImJ4Nr3gfEvxRWD1Ejm4P7WSbx5S8QiW6dAQC1PYeJtnWPEFLXB5FDNbNwP2
+         AkUmXWLthEpf/UBrhSoL+e4ktD5vJPyjs3ilmFARwnRBMnxLtpTveaVa0Asgdv00wPCs
+         EH9+6HONrb6Q+25bU+PCxfcXlApoydQQXI1WtZOZvYNq7aiyq819BvCCR7R2iuSz6liL
+         BSjcaIL06reurydY9mVWKhlTJBy1TeDQO6lbR03RhCTqcvrraeHeT+3+dyvuCkzrdz0r
+         yIPq1EAww0T11UiFaOwzACsIShC9TOvNpLQ8Zu34Cnp0t8D6sBAtfXW6TGEnVpMupVH5
+         0XxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=Z8uZ4cLJqomiQXsoOd+BHplK7K2RrueSp7Y4Ud5bLbY=;
+        b=Vu6XZraCzzUKraHNm/NojQKe/XttFPpmHA4o2D28xsYgyer0DPMDQ3sqfguWvsTCjQ
+         6ENvRLQCPSNcGfMAt8n6po8wBwQ69A9Sfg1euHcELXAHYFx+KqIMMLiYrnR7o1mi0glm
+         jzU7D4oAJNzq/tu/o/AlhzrE6wpD3t+2/4u9Yf7yF9EC0TPSykxd9EsSAw77ImIXa73b
+         IRwlZ8JdclkBRr0J8il5YnDl+vewcudxVvyARtXZHNMWvkljFFY3KeBUNTE9ydtKLtnR
+         qZsDt1FpVo3C+PV5GtHvQdd6xVkM3ORu22v3O00HI0f842MUlZ3MSCt06UDlsKD5xf8G
+         MtJw==
+X-Gm-Message-State: APjAAAXiGBQs6Z+6Rs7nCChnp20645hwuiQdlBjiRB3oZoZZ/lNpBk6h
+        aGsPIvfrYACaSydnwHF1Byw=
+X-Google-Smtp-Source: APXvYqyNwoI5EP7w128idU06p9osqD/XByqt0Syv48pCiEqI+tTH2Gy5PMtDMyxQcObUX0Nx5EwDTw==
+X-Received: by 2002:a05:600c:1150:: with SMTP id z16mr14229487wmz.168.1563018356458;
+        Sat, 13 Jul 2019 04:45:56 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd6:c00:9c47:80d8:6d49:f2a9? (p200300EA8BD60C009C4780D86D49F2A9.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:9c47:80d8:6d49:f2a9])
+        by smtp.googlemail.com with ESMTPSA id q1sm9379232wmq.25.2019.07.13.04.45.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 13 Jul 2019 04:45:55 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ionut Radu <ionut.radu@gmail.com>
+Subject: [PATCH net] r8169: fix issue with confused RX unit after PHY
+ power-down on RTL8411b
+Message-ID: <dfc533d0-a90e-37fe-2338-483abc9c1177@gmail.com>
+Date:   Sat, 13 Jul 2019 13:45:47 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Sat, 13 Jul 2019 09:43:33 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-parse_percent() currently allows to specify negative percentages
-or value above 100%. However this does not seems to make sense,
-as the function is used for probabilities or bandiwidth rates.
+On RTL8411b the RX unit gets confused if the PHY is powered-down.
+This was reported in [0] and confirmed by Realtek. Realtek provided
+a sequence to fix the RX unit after PHY wakeup.
 
-Moreover, using negative values leads to erroneous results
-(using Bernoulli loss model as example):
+The issue itself seems to have been there longer, the Fixes tag
+refers to where the fix applies properly.
 
-$ ip link add test type dummy
-$ ip link set test up
-$ tc qdisc add dev test root netem loss gemodel -10% limit 10
-$ tc qdisc show dev test
-qdisc netem 800c: root refcnt 2 limit 10 loss gemodel p 90% r 10% 1-h 100% 1-k 0%
+[0] https://bugzilla.redhat.com/show_bug.cgi?id=1692075
 
-Using values above 100% we have instead:
-
-$ ip link add test type dummy
-$ ip link set test up
-$ tc qdisc add dev test root netem loss gemodel 140% limit 10
-$ tc qdisc show dev test
-qdisc netem 800f: root refcnt 2 limit 10 loss gemodel p 40% r 60% 1-h 100% 1-k 0%
-
-This commit changes parse_percent() with a check to ensure
-percentage values stay between 1.0 and 0.0.
-parse_percent_rate() function, which already employs a similar
-check, is adjusted accordingly.
-
-With this check in place, we have:
-
-$ ip link add test type dummy
-$ ip link set test up
-$ tc qdisc add dev test root netem loss gemodel -10% limit 10
-Illegal "loss gemodel p"
-
-Fixes: 927e3cfb52b58 ("tc: B.W limits can now be specified in %.")
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+Fixes: a99790bf5c7f ("r8169: Reinstate ASPM Support")
+Tested-by: Ionut Radu <ionut.radu@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- tc/tc_util.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+This patch doesn't apply on versions up to 5.2 due to the renaming
+of r8169.c to r8169_main.c. I will provide a separate patch for these
+versions.
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 137 ++++++++++++++++++++++
+ 1 file changed, 137 insertions(+)
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 53d15e08e9734..b90d256c33a4a 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -198,7 +198,7 @@ int parse_percent(double *val, const char *str)
- 	char *p;
- 
- 	*val = strtod(str, &p) / 100.;
--	if (*val == HUGE_VALF || *val == HUGE_VALL)
-+	if (*val > 1.0 || *val < 0.0)
- 		return 1;
- 	if (*p && strcmp(p, "%"))
- 		return -1;
-@@ -226,16 +226,16 @@ static int parse_percent_rate(char *rate, size_t len,
- 	if (ret != 1)
- 		goto malf;
- 
--	if (parse_percent(&perc, str_perc))
-+	ret = parse_percent(&perc, str_perc);
-+	if (ret == 1) {
-+		fprintf(stderr, "Invalid rate specified; should be between [0,100]%% but is %s\n", str);
-+		goto err;
-+	} else if (ret == -1) {
- 		goto malf;
-+	}
- 
- 	free(str_perc);
- 
--	if (perc > 1.0 || perc < 0.0) {
--		fprintf(stderr, "Invalid rate specified; should be between [0,100]%% but is %s\n", str);
--		return -1;
--	}
--
- 	rate_bit = perc * dev_mbit * 1000 * 1000;
- 
- 	ret = snprintf(rate, len, "%lf", rate_bit);
-@@ -247,8 +247,9 @@ static int parse_percent_rate(char *rate, size_t len,
- 	return 0;
- 
- malf:
--	free(str_perc);
- 	fprintf(stderr, "Specified rate value could not be read or is malformed\n");
-+err:
-+	free(str_perc);
- 	return -1;
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index efef5453b..0637c6752 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4667,6 +4667,143 @@ static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
+ 	/* disable aspm and clock request before access ephy */
+ 	rtl_hw_aspm_clkreq_enable(tp, false);
+ 	rtl_ephy_init(tp, e_info_8411_2);
++
++	/* The following Realtek-provided magic fixes an issue with the RX unit
++	 * getting confused after the PHY having been powered-down.
++	 */
++	r8168_mac_ocp_write(tp, 0xFC28, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC2A, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC2C, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC2E, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC30, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC32, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC34, 0x0000);
++	r8168_mac_ocp_write(tp, 0xFC36, 0x0000);
++	mdelay(3);
++	r8168_mac_ocp_write(tp, 0xFC26, 0x0000);
++
++	r8168_mac_ocp_write(tp, 0xF800, 0xE008);
++	r8168_mac_ocp_write(tp, 0xF802, 0xE00A);
++	r8168_mac_ocp_write(tp, 0xF804, 0xE00C);
++	r8168_mac_ocp_write(tp, 0xF806, 0xE00E);
++	r8168_mac_ocp_write(tp, 0xF808, 0xE027);
++	r8168_mac_ocp_write(tp, 0xF80A, 0xE04F);
++	r8168_mac_ocp_write(tp, 0xF80C, 0xE05E);
++	r8168_mac_ocp_write(tp, 0xF80E, 0xE065);
++	r8168_mac_ocp_write(tp, 0xF810, 0xC602);
++	r8168_mac_ocp_write(tp, 0xF812, 0xBE00);
++	r8168_mac_ocp_write(tp, 0xF814, 0x0000);
++	r8168_mac_ocp_write(tp, 0xF816, 0xC502);
++	r8168_mac_ocp_write(tp, 0xF818, 0xBD00);
++	r8168_mac_ocp_write(tp, 0xF81A, 0x074C);
++	r8168_mac_ocp_write(tp, 0xF81C, 0xC302);
++	r8168_mac_ocp_write(tp, 0xF81E, 0xBB00);
++	r8168_mac_ocp_write(tp, 0xF820, 0x080A);
++	r8168_mac_ocp_write(tp, 0xF822, 0x6420);
++	r8168_mac_ocp_write(tp, 0xF824, 0x48C2);
++	r8168_mac_ocp_write(tp, 0xF826, 0x8C20);
++	r8168_mac_ocp_write(tp, 0xF828, 0xC516);
++	r8168_mac_ocp_write(tp, 0xF82A, 0x64A4);
++	r8168_mac_ocp_write(tp, 0xF82C, 0x49C0);
++	r8168_mac_ocp_write(tp, 0xF82E, 0xF009);
++	r8168_mac_ocp_write(tp, 0xF830, 0x74A2);
++	r8168_mac_ocp_write(tp, 0xF832, 0x8CA5);
++	r8168_mac_ocp_write(tp, 0xF834, 0x74A0);
++	r8168_mac_ocp_write(tp, 0xF836, 0xC50E);
++	r8168_mac_ocp_write(tp, 0xF838, 0x9CA2);
++	r8168_mac_ocp_write(tp, 0xF83A, 0x1C11);
++	r8168_mac_ocp_write(tp, 0xF83C, 0x9CA0);
++	r8168_mac_ocp_write(tp, 0xF83E, 0xE006);
++	r8168_mac_ocp_write(tp, 0xF840, 0x74F8);
++	r8168_mac_ocp_write(tp, 0xF842, 0x48C4);
++	r8168_mac_ocp_write(tp, 0xF844, 0x8CF8);
++	r8168_mac_ocp_write(tp, 0xF846, 0xC404);
++	r8168_mac_ocp_write(tp, 0xF848, 0xBC00);
++	r8168_mac_ocp_write(tp, 0xF84A, 0xC403);
++	r8168_mac_ocp_write(tp, 0xF84C, 0xBC00);
++	r8168_mac_ocp_write(tp, 0xF84E, 0x0BF2);
++	r8168_mac_ocp_write(tp, 0xF850, 0x0C0A);
++	r8168_mac_ocp_write(tp, 0xF852, 0xE434);
++	r8168_mac_ocp_write(tp, 0xF854, 0xD3C0);
++	r8168_mac_ocp_write(tp, 0xF856, 0x49D9);
++	r8168_mac_ocp_write(tp, 0xF858, 0xF01F);
++	r8168_mac_ocp_write(tp, 0xF85A, 0xC526);
++	r8168_mac_ocp_write(tp, 0xF85C, 0x64A5);
++	r8168_mac_ocp_write(tp, 0xF85E, 0x1400);
++	r8168_mac_ocp_write(tp, 0xF860, 0xF007);
++	r8168_mac_ocp_write(tp, 0xF862, 0x0C01);
++	r8168_mac_ocp_write(tp, 0xF864, 0x8CA5);
++	r8168_mac_ocp_write(tp, 0xF866, 0x1C15);
++	r8168_mac_ocp_write(tp, 0xF868, 0xC51B);
++	r8168_mac_ocp_write(tp, 0xF86A, 0x9CA0);
++	r8168_mac_ocp_write(tp, 0xF86C, 0xE013);
++	r8168_mac_ocp_write(tp, 0xF86E, 0xC519);
++	r8168_mac_ocp_write(tp, 0xF870, 0x74A0);
++	r8168_mac_ocp_write(tp, 0xF872, 0x48C4);
++	r8168_mac_ocp_write(tp, 0xF874, 0x8CA0);
++	r8168_mac_ocp_write(tp, 0xF876, 0xC516);
++	r8168_mac_ocp_write(tp, 0xF878, 0x74A4);
++	r8168_mac_ocp_write(tp, 0xF87A, 0x48C8);
++	r8168_mac_ocp_write(tp, 0xF87C, 0x48CA);
++	r8168_mac_ocp_write(tp, 0xF87E, 0x9CA4);
++	r8168_mac_ocp_write(tp, 0xF880, 0xC512);
++	r8168_mac_ocp_write(tp, 0xF882, 0x1B00);
++	r8168_mac_ocp_write(tp, 0xF884, 0x9BA0);
++	r8168_mac_ocp_write(tp, 0xF886, 0x1B1C);
++	r8168_mac_ocp_write(tp, 0xF888, 0x483F);
++	r8168_mac_ocp_write(tp, 0xF88A, 0x9BA2);
++	r8168_mac_ocp_write(tp, 0xF88C, 0x1B04);
++	r8168_mac_ocp_write(tp, 0xF88E, 0xC508);
++	r8168_mac_ocp_write(tp, 0xF890, 0x9BA0);
++	r8168_mac_ocp_write(tp, 0xF892, 0xC505);
++	r8168_mac_ocp_write(tp, 0xF894, 0xBD00);
++	r8168_mac_ocp_write(tp, 0xF896, 0xC502);
++	r8168_mac_ocp_write(tp, 0xF898, 0xBD00);
++	r8168_mac_ocp_write(tp, 0xF89A, 0x0300);
++	r8168_mac_ocp_write(tp, 0xF89C, 0x051E);
++	r8168_mac_ocp_write(tp, 0xF89E, 0xE434);
++	r8168_mac_ocp_write(tp, 0xF8A0, 0xE018);
++	r8168_mac_ocp_write(tp, 0xF8A2, 0xE092);
++	r8168_mac_ocp_write(tp, 0xF8A4, 0xDE20);
++	r8168_mac_ocp_write(tp, 0xF8A6, 0xD3C0);
++	r8168_mac_ocp_write(tp, 0xF8A8, 0xC50F);
++	r8168_mac_ocp_write(tp, 0xF8AA, 0x76A4);
++	r8168_mac_ocp_write(tp, 0xF8AC, 0x49E3);
++	r8168_mac_ocp_write(tp, 0xF8AE, 0xF007);
++	r8168_mac_ocp_write(tp, 0xF8B0, 0x49C0);
++	r8168_mac_ocp_write(tp, 0xF8B2, 0xF103);
++	r8168_mac_ocp_write(tp, 0xF8B4, 0xC607);
++	r8168_mac_ocp_write(tp, 0xF8B6, 0xBE00);
++	r8168_mac_ocp_write(tp, 0xF8B8, 0xC606);
++	r8168_mac_ocp_write(tp, 0xF8BA, 0xBE00);
++	r8168_mac_ocp_write(tp, 0xF8BC, 0xC602);
++	r8168_mac_ocp_write(tp, 0xF8BE, 0xBE00);
++	r8168_mac_ocp_write(tp, 0xF8C0, 0x0C4C);
++	r8168_mac_ocp_write(tp, 0xF8C2, 0x0C28);
++	r8168_mac_ocp_write(tp, 0xF8C4, 0x0C2C);
++	r8168_mac_ocp_write(tp, 0xF8C6, 0xDC00);
++	r8168_mac_ocp_write(tp, 0xF8C8, 0xC707);
++	r8168_mac_ocp_write(tp, 0xF8CA, 0x1D00);
++	r8168_mac_ocp_write(tp, 0xF8CC, 0x8DE2);
++	r8168_mac_ocp_write(tp, 0xF8CE, 0x48C1);
++	r8168_mac_ocp_write(tp, 0xF8D0, 0xC502);
++	r8168_mac_ocp_write(tp, 0xF8D2, 0xBD00);
++	r8168_mac_ocp_write(tp, 0xF8D4, 0x00AA);
++	r8168_mac_ocp_write(tp, 0xF8D6, 0xE0C0);
++	r8168_mac_ocp_write(tp, 0xF8D8, 0xC502);
++	r8168_mac_ocp_write(tp, 0xF8DA, 0xBD00);
++	r8168_mac_ocp_write(tp, 0xF8DC, 0x0132);
++
++	r8168_mac_ocp_write(tp, 0xFC26, 0x8000);
++
++	r8168_mac_ocp_write(tp, 0xFC2A, 0x0743);
++	r8168_mac_ocp_write(tp, 0xFC2C, 0x0801);
++	r8168_mac_ocp_write(tp, 0xFC2E, 0x0BE9);
++	r8168_mac_ocp_write(tp, 0xFC30, 0x02FD);
++	r8168_mac_ocp_write(tp, 0xFC32, 0x0C25);
++	r8168_mac_ocp_write(tp, 0xFC34, 0x00A9);
++	r8168_mac_ocp_write(tp, 0xFC36, 0x012D);
++
+ 	rtl_hw_aspm_clkreq_enable(tp, true);
  }
  
 -- 
-2.20.1
+2.22.0
 
