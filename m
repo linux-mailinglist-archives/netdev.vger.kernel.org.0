@@ -2,210 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 187CA67F6C
-	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 16:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F19E667F7E
+	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 16:58:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728476AbfGNOsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jul 2019 10:48:15 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:41768 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728346AbfGNOsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 10:48:15 -0400
-Received: by mail-ed1-f67.google.com with SMTP id p15so13063350eds.8
-        for <netdev@vger.kernel.org>; Sun, 14 Jul 2019 07:48:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hy169g8Lox0WjwNa4b+zp9/64BOx2Hykf6MoysyzbyM=;
-        b=qDfJqkhv+PeM8i4Vhi7D1ipptr7S663xKsAmSBA2CKg+Umsac68Z3LKvOc1LthziJt
-         uac1l65OCcZ/uWWwlX9T1JniSL3EiC06GffOb+e3uoOYGnBoxgoiFzRCeUWwSAv2Yvnf
-         SYQEmCuGl2CenAC532BSRLxUEFwpatlHTBg59D9oAeN/Xm5pAwlimQ4/7kZ2qxBEhBLZ
-         nW8poMpnV5QeFH4z5bPprqef+T4CBVanBUrmXIT2Od34P3knxOpdjOQwHBoXvicz1rLu
-         oSgQoEaKpLEyD6k0b2iLzQSpUlgto57fqDJ/BmOOq89dWz1swDNTFhlzqr1XI/SNso42
-         A/Xg==
+        id S1728398AbfGNO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 10:58:33 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:43265 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728146AbfGNO6d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 10:58:33 -0400
+Received: by mail-lj1-f195.google.com with SMTP id 16so13648712ljv.10
+        for <netdev@vger.kernel.org>; Sun, 14 Jul 2019 07:58:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hy169g8Lox0WjwNa4b+zp9/64BOx2Hykf6MoysyzbyM=;
-        b=PmCWnUbkdpBCvRqZFG9T/rf4PwJXM+WLcoUJRfMOdBJPqRDrrE1tl3pioxhaTOVUu4
-         rqXWBdOsH7iFLQNuGbXN5x0hfLMXt6wYJDWMsXCqlLNoM/k19pbO3F9YgHSJF1Kwhnz7
-         PN28lxwC7ZMn9fCq3/KE5CPrbg/LOrQ0y5M1av98C8hKdk69jyKJtFS8lmn2UcH+GynM
-         yQikyF8qU7IrQcbTIyMmjNRDVJXs4UtfufwsgM53XkbatHJwoL6sMmY6L66zInyL/lsR
-         2rGcwPPySbT/pdR84AQRDsnLXCsqKE8KXftADeSJtMvrFvIEXCr9qV39n/9LBeARI3Oo
-         kaNQ==
-X-Gm-Message-State: APjAAAWFCpzdhKhSaQ6QOE7A9Prr3RXZdlaq1qcCHXTzKotsonGGSAkr
-        9lDIqTy5+/4BQKW9ayVCcszoXnskJfQb2Q8nkmO2BA==
-X-Google-Smtp-Source: APXvYqwu8FY6LIl+s3s47q2KUxAhOGJHQqSYTQTDa938MOOpf93YR+WR/jyjgM1fffyG1L7qU0vEITvwu0QhD5js5qc=
-X-Received: by 2002:a17:906:644c:: with SMTP id l12mr15866907ejn.142.1563115692435;
- Sun, 14 Jul 2019 07:48:12 -0700 (PDT)
+        bh=S8BpHvv1vIpr8Yfic66erizLIYwp5jRBT9lXbnlXoDg=;
+        b=sA0l6OeC2+YLuJzKy/dgqt8+65OWenNTvD6VWlrmqYpj6BB8Tlo8+4se7FbA/L3qEd
+         +KVviGowXapsB6tPN5c5yVHmNjVUMLUEIwgAXSrXnRinaj7Mk7MlUOL+qlntSlE4CMWU
+         i7j6T7PltEpPzpDeQcd0kEJrDvAXoWuZTcBSrDpFbAuJl9HxeIAT99fp2t0gNqiz5KbM
+         eFMoR61pfnSgsgOZBGhdYtbzmNKk1nZXaqcrWc3QXNP0jTaVrBkU0TLn9jxWHm9Vjj0s
+         V+JWRTagzcpcrswzJ6PzvMN7p7U8v2ERm1FiChrpUZh3lUjMbwjPg94OvmgTSBbhirxs
+         qevw==
+X-Gm-Message-State: APjAAAW+duWij1AEcFcW3UeqQYJ3lvnPyZtNn8aFecOICns80TL2jWWN
+        bvHTnykiqxrUYn8dWWltSNijJoAyPyP0xPi4P7FCtOyPKnc=
+X-Google-Smtp-Source: APXvYqzo0PqxzRiquhbTt6ZS1fenW+YS0aA+0ZLt7Z81V+xJYPAd1Zgl2Af1hO01RYqNnbYqDZOkGXXcTqd9XrkK5ys=
+X-Received: by 2002:a2e:89ca:: with SMTP id c10mr11249917ljk.106.1563116310482;
+ Sun, 14 Jul 2019 07:58:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190626210351.GF3116@mit.edu> <20190626224709.GH3116@mit.edu>
- <CACT4Y+YTpUErjEmjrqki-tJ0Lyx0c53MQDGVS4CixfmcAnuY=A@mail.gmail.com>
- <20190705151658.GP26519@linux.ibm.com> <CACT4Y+aNLHrYj1pYbkXO7CKESLeB-5enkSDK7ksgkMA3KtwJ+w@mail.gmail.com>
- <20190705191055.GT26519@linux.ibm.com> <20190706042801.GD11665@mit.edu>
- <20190706061631.GV26519@linux.ibm.com> <20190706150226.GG11665@mit.edu>
- <20190706180311.GW26519@linux.ibm.com> <20190707011655.GA22081@linux.ibm.com>
-In-Reply-To: <20190707011655.GA22081@linux.ibm.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Sun, 14 Jul 2019 17:48:00 +0300
-Message-ID: <CACT4Y+asYe-uH9OV5R0Nkb-JKP4erYUZ68S9gYNnGg6v+fD20w@mail.gmail.com>
-Subject: Re: INFO: rcu detected stall in ext4_write_checks
-To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        David Miller <davem@davemloft.net>, eladr@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
+References: <20190709204040.17746-1-mcroce@redhat.com> <20190709143758.695a65bc@hermes.lan>
+ <CAGnkfhz+p1o_yHxk2jkY9ggNwLSO-Jk4BcxPuWhSHw1YXoJsSw@mail.gmail.com>
+In-Reply-To: <CAGnkfhz+p1o_yHxk2jkY9ggNwLSO-Jk4BcxPuWhSHw1YXoJsSw@mail.gmail.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Sun, 14 Jul 2019 16:57:54 +0200
+Message-ID: <CAGnkfhyyJJR0frmO7Z+bviu6xYnJVitw-G0Nzgv9UQ2PYO1goA@mail.gmail.com>
+Subject: Re: [PATCH iproute2] utils: don't match empty strings as prefixes
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 7, 2019 at 4:17 AM Paul E. McKenney <paulmck@linux.ibm.com> wrote:
-> > > > I suppose RCU could take the dueling-banjos approach and use increasingly
-> > > > aggressive scheduler policies itself, up to and including SCHED_DEADLINE,
-> > > > until it started getting decent forward progress.  However, that
-> > > > sounds like the something that just might have unintended consequences,
-> > > > particularly if other kernel subsystems were to also play similar
-> > > > games of dueling banjos.
-> > >
-> > > So long as the RCU threads are well-behaved, using SCHED_DEADLINE
-> > > shouldn't have much of an impact on the system --- and the scheduling
-> > > parameters that you can specify on SCHED_DEADLINE allows you to
-> > > specify the worst-case impact on the system while also guaranteeing
-> > > that the SCHED_DEADLINE tasks will urn in the first place.  After all,
-> > > that's the whole point of SCHED_DEADLINE.
-> > >
-> > > So I wonder if the right approach is during the the first userspace
-> > > system call to shced_setattr to enable a (any) real-time priority
-> > > scheduler (SCHED_DEADLINE, SCHED_FIFO or SCHED_RR) on a userspace
-> > > thread, before that's allowed to proceed, the RCU kernel threads are
-> > > promoted to be SCHED_DEADLINE with appropriately set deadline
-> > > parameters.  That way, a root user won't be able to shoot the system
-> > > in the foot, and since the vast majority of the time, there shouldn't
-> > > be any processes running with real-time priorities, we won't be
-> > > changing the behavior of a normal server system.
-> >
-> > It might well be.  However, running the RCU kthreads at real-time
-> > priority does not come for free.  For example, it tends to crank up the
-> > context-switch rate.
-> >
-> > Plus I have taken several runs at computing SCHED_DEADLINE parameters,
-> > but things like the rcuo callback-offload threads have computational
-> > requirements that are controlled not by RCU, and not just by the rest of
-> > the kernel, but also by userspace (keeping in mind the example of opening
-> > and closing a file in a tight loop, each pass of which queues a callback).
-> > I suspect that RCU is not the only kernel subsystem whose computational
-> > requirements are set not by the subsystem, but rather by external code.
-> >
-> > OK, OK, I suppose I could just set insanely large SCHED_DEADLINE
-> > parameters, following syzkaller's example, and then trust my ability to
-> > keep the RCU code from abusing the resulting awesome power.  But wouldn't
-> > a much nicer approach be to put SCHED_DEADLINE between SCHED_RR/SCHED_FIFO
-> > priorities 98 and 99 or some such?  Then the same (admittedly somewhat
-> > scary) result could be obtained much more simply via SCHED_FIFO or
-> > SCHED_RR priority 99.
-> >
-> > Some might argue that this is one of those situations where simplicity
-> > is not necessarily an advantage, but then again, you can find someone
-> > who will complain about almost anything.  ;-)
-> >
-> > > (I suspect there might be some audio applications that might try to
-> > > set real-time priorities, but for desktop systems, it's probably more
-> > > important that the system not tie its self into knots since the
-> > > average desktop user isn't going to be well equipped to debug the
-> > > problem.)
-> >
-> > Not only that, but if core counts continue to increase, and if reliance
-> > on cloud computing continues to grow, there are going to be an increasing
-> > variety of mixed workloads in increasingly less-controlled environments.
-> >
-> > So, yes, it would be good to solve this problem in some reasonable way.
-> >
-> > I don't see this as urgent just yet, but I am sure you all will let
-> > me know if I am mistaken on that point.
-> >
-> > > > Alternatively, is it possible to provide stricter admission control?
-> > >
-> > > I think that's an orthogonal issue; better admission control would be
-> > > nice, but it looks to me that it's going to be fundamentally an issue
-> > > of tweaking hueristics, and a fool-proof solution that will protect
-> > > against all malicious userspace applications (including syzkaller) is
-> > > going to require solving the halting problem.  So while it would be
-> > > nice to improve the admission control, I don't think that's a going to
-> > > be a general solution.
-> >
-> > Agreed, and my earlier point about the need to trust the coding abilities
-> > of those writing ultimate-priority code is all too consistent with your
-> > point about needing to solve the halting problem.  Nevertheless,  I believe
-> > that we could make something that worked reasonably well in practice.
-> >
-> > Here are a few components of a possible solution, in practice, but
-> > of course not in theory:
-> >
-> > 1.    We set limits to SCHED_DEADLINE parameters, perhaps novel ones.
-> >       For one example, insist on (say) 10 milliseconds of idle time
-> >       every second on each CPU.  Yes, you can configure beyond that
-> >       given sufficient permissions, but if you do so, you just voided
-> >       your warranty.
-> >
-> > 2.    Only allow SCHED_DEADLINE on nohz_full CPUs.  (Partial solution,
-> >       given that such a CPU might be running in the kernel or have
-> >       more than one runnable task.  Just for fun, I will suggest the
-> >       option of disabling SCHED_DEADLINE during such times.)
-> >
-> > 3.    RCU detects slowdowns, and does something TBD to increase its
-> >       priority, but only while the slowdown persists.  This likely
-> >       relies on scheduling-clock interrupts to detect the slowdowns,
-> >       so there might be additional challenges on a fully nohz_full
-> >       system.
+On Wed, Jul 10, 2019 at 1:18 AM Matteo Croce <mcroce@redhat.com> wrote:
 >
-> 4.      SCHED_DEADLINE treats the other three scheduling classes as each
->         having a period, deadline, and a modest CPU consumption budget
->         for the members of the class in aggregate.  But this has to have
->         been discussed before.  How did that go?
+> On Tue, Jul 9, 2019 at 11:38 PM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
+> >
+> > On Tue,  9 Jul 2019 22:40:40 +0200
+> > Matteo Croce <mcroce@redhat.com> wrote:
+> >
+> > > iproute has an utility function which checks if a string is a prefix for
+> > > another one, to allow use of abbreviated commands, e.g. 'addr' or 'a'
+> > > instead of 'address'.
+> > >
+> > > This routine unfortunately considers an empty string as prefix
+> > > of any pattern, leading to undefined behaviour when an empty
+> > > argument is passed to ip:
+> > >
+> > >     # ip ''
+> > >     1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+> > >         link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+> > >         inet 127.0.0.1/8 scope host lo
+> > >            valid_lft forever preferred_lft forever
+> > >         inet6 ::1/128 scope host
+> > >            valid_lft forever preferred_lft forever
+> > >
+> > >     # tc ''
+> > >     qdisc noqueue 0: dev lo root refcnt 2
+> > >
+> > >     # ip address add 192.0.2.0/24 '' 198.51.100.1 dev dummy0
+> > >     # ip addr show dev dummy0
+> > >     6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+> > >         link/ether 02:9d:5e:e9:3f:c0 brd ff:ff:ff:ff:ff:ff
+> > >         inet 192.0.2.0/24 brd 198.51.100.1 scope global dummy0
+> > >            valid_lft forever preferred_lft forever
+> > >
+> > > Rewrite matches() so it takes care of an empty input, and doesn't
+> > > scan the input strings three times: the actual implementation
+> > > does 2 strlen and a memcpy to accomplish the same task.
+> > >
+> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> > > ---
+> > >  include/utils.h |  2 +-
+> > >  lib/utils.c     | 14 +++++++++-----
+> > >  2 files changed, 10 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/include/utils.h b/include/utils.h
+> > > index 927fdc17..f4d12abb 100644
+> > > --- a/include/utils.h
+> > > +++ b/include/utils.h
+> > > @@ -198,7 +198,7 @@ int nodev(const char *dev);
+> > >  int check_ifname(const char *);
+> > >  int get_ifname(char *, const char *);
+> > >  const char *get_ifname_rta(int ifindex, const struct rtattr *rta);
+> > > -int matches(const char *arg, const char *pattern);
+> > > +int matches(const char *prefix, const char *string);
+> > >  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits);
+> > >  int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
+> > >
+> > > diff --git a/lib/utils.c b/lib/utils.c
+> > > index be0f11b0..73ce19bb 100644
+> > > --- a/lib/utils.c
+> > > +++ b/lib/utils.c
+> > > @@ -887,13 +887,17 @@ const char *get_ifname_rta(int ifindex, const struct rtattr *rta)
+> > >       return name;
+> > >  }
+> > >
+> > > -int matches(const char *cmd, const char *pattern)
+> > > +/* Check if 'prefix' is a non empty prefix of 'string' */
+> > > +int matches(const char *prefix, const char *string)
+> > >  {
+> > > -     int len = strlen(cmd);
+> > > +     if (!*prefix)
+> > > +             return 1;
+> > > +     while(*string && *prefix == *string) {
+> > > +             prefix++;
+> > > +             string++;
+> > > +     }
+> > >
+> > > -     if (len > strlen(pattern))
+> > > -             return -1;
+> > > -     return memcmp(pattern, cmd, len);
+> > > +     return *prefix;
+> > >  }
+> > >
+> > >  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
+> >
+> > ERROR: space required before the open parenthesis '('
+> > #134: FILE: lib/utils.c:895:
+> > +       while(*string && *prefix == *string) {
+> >
+> > total: 1 errors, 1 warnings, 30 lines checked
+> >
+> > The empty prefix string is a bug and should not be allowed.
+> > Also return value should be same as old code (yours isn't).
+> >
+> >
+> >
 >
-> > 5.    Your idea here.
+> The old return value was the difference between the first pair of
+> bytes, according to the memcmp manpage.
+> All calls only checks if the matches() return value is 0 or not 0:
+>
+> iproute2$ git grep 'matches(' |grep -v -e '== 0' -e '= 0' -e '!matches('
+> include/utils.h:int matches(const char *prefix, const char *string);
+> include/xtables.h:extern void xtables_register_matches(struct
+> xtables_match *, unsigned int);
+> lib/color.c:    if (matches(dup, "-color"))
+> lib/utils.c:int matches(const char *prefix, const char *string)
+> tc/tc.c:                if (matches(argv[0], iter->c))
+>
+> Is it a problem if it returns a non negative value for non matching strings?
+>
+> Regards,
+>
+>
+> --
+> Matteo Croce
+> per aspera ad upstream
 
-Trying to digest this thread.
+Hi Stephen,
 
-Do I understand correctly that setting rcutree.kthread_prio=99 won't
-help because the deadline priority is higher?
-And there are no other existing mechanisms to either fix the stalls
-nor make kernel reject the non well-behaving parameters? Kernel tries
-to filter out non well-behaving parameters, but the check detects only
-obvious misconfigurations, right?
-This reminds of priority inversion/inheritance problem. I wonder if
-there are other kernel subsystems that suffer from the same problem.
-E.g. the background kernel thread that destroys net namespaces and any
-other type of async work. A high prio user process can overload the
-queue and make kernel eat all memory. May be relatively easy to do
-even unintentionally. I suspect the problem is not specific to rcu and
-plumbing just rcu may just make the next problem pop up.
-Should user be able to starve basic kernel services? User should be
-able to prioritize across user processes (potentially in radical
-ways), but perhaps it should not be able to badly starve kernel
-functions that just happened to be asynchronous? I guess it's not as
-simple as setting the highest prio for all kernel threads because in
-normal case we want to reduce latency of user work by making the work
-async. But user must not be able to starve kernel threads
-infinitely... sounds like something similar to the deadline scheduling
--- kernel threads need to get at least some time slice per unit of
-time.
+should I send a v2 which keeps the old behaviour, even if noone checks
+for all the values?
+Just to clarify, the old behaviour of matches(cmd, pattern) was:
 
-But short term I don't see any other solution than stop testing
-sched_setattr because it does not check arguments enough to prevent
-system misbehavior. Which is a pity because syzkaller has found some
-bad misconfigurations that were oversight on checking side.
-Any other suggestions?
+-1 if len(cmd) > len(pattern)
+0 if pattern is equal to cmd
+0 if pattern starts with cmd
+< 0 if pattern is alphabetically lower than cmd
+> 0 if pattern is alphabetically higher than cmd
+
+Regards,
+-- 
+Matteo Croce
+per aspera ad upstream
