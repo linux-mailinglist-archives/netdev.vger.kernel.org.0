@@ -2,113 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C993567EF3
-	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 14:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E38C967F00
+	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 14:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728389AbfGNMRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jul 2019 08:17:14 -0400
-Received: from mail-eopbgr140051.outbound.protection.outlook.com ([40.107.14.51]:31126
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728302AbfGNMRO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Jul 2019 08:17:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=idB3MM29pFZmSjYH2feGqXGKLgHx6yf9ojbHz7+tmvL5gNa/+owLPwsWdDZ9c1+0HLu6IsJYfJmAqhVDTfTs4mbfZLk5E5bW3OA5SLN1x4tqoqtQRG79Q33uh6KT1d1/aFDXciwdBSUJpFVak+s2W4GhDWSKI5TiACLYh2FeQcWbt6Y7kbuRSEDhcV+i+NDTuav2ygGXZ1w5HGlQvJY8o0K5oHXFbOB0MyaysVPBJ5Llo6MYhBqTmDlH8EGQwsgRHMCiw2XIeYfpZUJl+nrHk/DT5NyJlUM+56L3vTAhR938IuaynBBBOv2QSHS408UAohJAzW7/z6HdIYULhXi8vw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1KAAXBbowXa6Gsnw4nWI4tDVixjGa9RAfzF4PsWX7ig=;
- b=MEHZIMpkyw6ypQAkjJzRxfbRL7dbsNvdn8InNyNqEnKkYnwMq5asoBF7wCB3yZMolWduo01hXzzLdxlYovnP4pLW13P0E7fWxuAImvrt98XE90NWL/FkLL/Hmuk+EQfohTpf0RGs0P+bP/ahpGXnGS07oNXJtPuzxvS6YZz33Ztr1sMbv5vBWhNK6on81tNnHJ6sJEzaef6TOuqUkTdmr0EOoE1QkKYgIdsAwO5uR3PCeLwYkmLaC0R08xItpypFx6P8CInktJu7jXhiXP6UdVH8HtBI/UxGDwpK/JqEIOxwuorZbfTDhcdypXEffVbTjJm49x613hOuO6do2Dt25A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1KAAXBbowXa6Gsnw4nWI4tDVixjGa9RAfzF4PsWX7ig=;
- b=DmFyg/lgF8NBaS06znIKRSYxALBZ/NcHdFKzhIkzh/y5okeyi712Pa7lx3PdrbZc7ESEtLsipzq0+EIAXBKmHmmjt28By7AA5WMJTR3zLz3MX1jUzMB76HItpGKFnJqwWTKmYLqoKFy3UsnRbdhAWCuqp+FCnN7T/GSBOIxhBpQ=
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.40.84) by
- DBBPR05MB6315.eurprd05.prod.outlook.com (20.179.40.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2073.14; Sun, 14 Jul 2019 12:17:08 +0000
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::2833:939d:2b5c:4a2d]) by DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::2833:939d:2b5c:4a2d%6]) with mapi id 15.20.2073.012; Sun, 14 Jul 2019
- 12:17:08 +0000
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-CC:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: linux-next: Fixes tag needs some work in the net tree
-Thread-Topic: linux-next: Fixes tag needs some work in the net tree
-Thread-Index: AQHVOH4jqpLwEYqGE0Kxlz4/p/63C6bJ9GOAgAAWMYCAAACIgA==
-Date:   Sun, 14 Jul 2019 12:17:08 +0000
-Message-ID: <a03dd9fc-1574-3721-d007-7981bf522908@mellanox.com>
-References: <20190712165042.01745c65@canb.auug.org.au>
- <4f524361-9ea3-7c04-736d-d14fcb498178@mellanox.com>
- <20190714221511.7717d6de@canb.auug.org.au>
-In-Reply-To: <20190714221511.7717d6de@canb.auug.org.au>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0170.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1c::14) To DBBPR05MB6283.eurprd05.prod.outlook.com
- (2603:10a6:10:c1::20)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=tariqt@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9b4f7d67-aace-43d3-5eef-08d708553136
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6315;
-x-ms-traffictypediagnostic: DBBPR05MB6315:
-x-microsoft-antispam-prvs: <DBBPR05MB631560236246F3C29AE211E0AECC0@DBBPR05MB6315.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0098BA6C6C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(136003)(376002)(39860400002)(396003)(199004)(189003)(316002)(2616005)(3846002)(6116002)(186003)(229853002)(446003)(11346002)(54906003)(102836004)(26005)(5660300002)(486006)(256004)(36756003)(53546011)(66446008)(66476007)(66556008)(64756008)(66946007)(4744005)(6916009)(2906002)(31686004)(8936002)(66066001)(478600001)(31696002)(476003)(6486002)(68736007)(6512007)(6436002)(8676002)(81166006)(14454004)(6246003)(107886003)(81156014)(386003)(6506007)(52116002)(99286004)(76176011)(86362001)(7736002)(4326008)(305945005)(71200400001)(71190400001)(25786009)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6315;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: auW5iu+RNamk5NPkgIgn+nOiJxzs8hvqxR2rUp4RAFKauY2x2JlnOto4jimSZ/rBQ99anapXWMgr18zQf4st6YO07/GuaS7M5yttXCqhrZ+Uut34mQVQF2K0oeFIMjkxzlnY6o6xtVZQ/NvY7SWyK3VyuDwAZz9uCQymBzKRruy2nmJRP/jUVjEJg+W+I5WhLEsJDK/6xjDxx4SAK1kDpaqdTR5UtrpxtnWSG0hheIjB+CUMoS1itcIn23hpB9RKhh6GAJyyofG0WRMUk30BeN5W7WRtAnHecv/fjSqYchbfBcUzhLsPk/E1lgVS8cavWZUvHhb7X+TS0EOJtOz89U5W1GNg6Mos150GEnuAQSPe5XGcZlqNmDAMOAPTUCr6w6KzK7YcmB6MxSxUzPGLPNJh/eoEUxGSqbENdev7uOI=
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <A09042D929AB694990C8B662665F00FC@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728345AbfGNMoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 08:44:06 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:60199 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728296AbfGNMoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 08:44:06 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A0F3128E1;
+        Sun, 14 Jul 2019 08:44:02 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 14 Jul 2019 08:44:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=EX0vaP
+        MOuxsTm4zA5CjdHNtYEm7D/Gxl9z0nJcph+Eg=; b=jV4Dli1hHk1nJjAwSDYXGP
+        MiqOKMY2paBeE8cMbB7LgSJr+WqvsCGDHdhDhxTHgfkmCrTw3uzeCzgMCLtG5hU1
+        NoqTtlIkq4ArH7dCxv5uiAYajyQ1EmQtkADufCozrrcwHnLw6ZLn5Ql1H+12gyhf
+        J6zW0Oin96yhiTrJ554cTpPJo+BLbhlHrX//g15PIN2g/9LOGzI4RNa63V4dzfAW
+        YDo9uuIAN59CTGSS/2rUhX8poiamMk07E0/10d0x3FcL8D7aW8BY7mdPwSa8sgXx
+        y67zhMa9uqNpFWgoBrSgPBo60keK+Q1i/eJfi4IUrdacDQzE6hu5BsL5dRrDh8Yg
+        ==
+X-ME-Sender: <xms:jyMrXfrH-FM80JrewEumvUjZwN6OPL4vgsz-mCmSOcQ2RwygXRWFsQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrheehgdehiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
+    epmhgrrhgtrdhinhhfohenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsth
+    gvrhfuihiivgeptd
+X-ME-Proxy: <xmx:jyMrXUTxj-w3IECaWpRv3Y8DvTx5b7lQIERwZyPfeBv4IDjtCk54TA>
+    <xmx:jyMrXSOIXoDMT2EUowKc5BkwJ9phl3dLiIoI3aCGnnQT7Bu48aTUhw>
+    <xmx:jyMrXShl2jlVZHD_LZ4QxmiNZ_aCUE9MHZ2w4cgEd_hN5f3zkTPVow>
+    <xmx:kiMrXW-aMjw2fXlqbvZPPTeWeFjiXjZHGm4wYBJi8n_DmPmNkM3Tjg>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3CCF580059;
+        Sun, 14 Jul 2019 08:43:59 -0400 (EDT)
+Date:   Sun, 14 Jul 2019 15:43:57 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        jiri@mellanox.com, mlxsw@mellanox.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andy@greyhouse.net, pablo@netfilter.org,
+        jakub.kicinski@netronome.com, pieter.jansenvanvuuren@netronome.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net-next 00/11] Add drop monitor for offloaded data paths
+Message-ID: <20190714124357.GA21070@splinter>
+References: <20190707075828.3315-1-idosch@idosch.org>
+ <20190707.124541.451040901050013496.davem@davemloft.net>
+ <20190711123909.GA10978@splinter>
+ <20190711235354.GA30396@hmswarspite.think-freely.org>
+ <20190712135230.GA13108@splinter>
+ <20190714112904.GA5082@hmswarspite.think-freely.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b4f7d67-aace-43d3-5eef-08d708553136
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2019 12:17:08.8642
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tariqt@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6315
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190714112904.GA5082@hmswarspite.think-freely.org>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Jul 14, 2019 at 07:29:04AM -0400, Neil Horman wrote:
+> On Fri, Jul 12, 2019 at 04:52:30PM +0300, Ido Schimmel wrote:
+> > On Thu, Jul 11, 2019 at 07:53:54PM -0400, Neil Horman wrote:
+> > > A few things here:
+> > > IIRC we don't announce individual hardware drops, drivers record them in
+> > > internal structures, and they are retrieved on demand via ethtool calls, so you
+> > > will either need to include some polling (probably not a very performant idea),
+> > > or some sort of flagging mechanism to indicate that on the next message sent to
+> > > user space you should go retrieve hw stats from a given interface.  I certainly
+> > > wouldn't mind seeing this happen, but its more work than just adding a new
+> > > netlink message.
+> > 
+> > Neil,
+> > 
+> > The idea of this series is to pass the dropped packets themselves to
+> > user space along with metadata, such as the drop reason and the ingress
+> > port. In the future more metadata could be added thanks to the
+> > extensible nature of netlink.
+> > 
+> I had experimented with this idea previously.  Specifically I had investigated
+> the possibility of creating a dummy net_device that received only dropped
+> packets so that utilities like tcpdump could monitor the interface for said
+> packets along with the metadata that described where they dropped.
+> 
+> The concern I had was, as Dave mentioned, that you would wind up with either a
+> head of line blocking issue, or simply lots of lost "dropped" packets due to
+> queue overflow on receive, which kind of defeated the purpose of drop monitor.
+> 
+> That said, I like the idea, and if we can find a way around the fact that we
+> could potentially receive way more dropped packets than we could bounce back to
+> userspace, it would be a major improvement.
 
+We don't necessarily need the entire packet, so we could add an option
+to truncate them and get only the headers. tc-sample does this (see man
+tc-sample).
 
-On 7/14/2019 3:15 PM, Stephen Rothwell wrote:
-> Hi Tariq,
->=20
-> On Sun, 14 Jul 2019 07:55:48 +0000 Tariq Toukan <tariqt@mellanox.com> wro=
-te:
->>
->> How do you think we should handle this?
->=20
-> Dave doesn't rebase his trees, so all you can really do is learn from
-> it and not do it again :-)
->=20
+Also, packets that are dropped for the same reason and belong to the
+same flow are not necessarily interesting. We could add an eBPF filter
+on the netlink socket which will only allow "unique" packets to be
+enqueued. Where "unique" is defined as {drop reason, 5-tuple}. In the
+case of SW drops "drop reason" is instruction pointer (call site of
+kfree_skb()) and in the case of HW drops it's the drop reason provided
+by the device. The duplicate copies will be counted in the eBPF map.
 
-Sure.
-My bad, used the SHA1 I had on my internal branch.
+> 
+> > In v1 these packets were notified to user space as devlink events
+> > and my plan for v2 is to send them as drop_monitor events, given it's an
+> > existing generic netlink channel used to monitor SW drops. This will
+> > allow users to listen on one netlink channel to diagnose potential
+> > problems in either SW or HW (and hopefully XDP in the future).
+> > 
+> Yeah, I'm supportive of that.
+> 
+> > Please note that the packets I'm talking about are packets users
+> > currently do not see. They are dropped - potentially silently - by the
+> > underlying device, thereby making it hard to debug whatever issues you
+> > might be experiencing in your network.
+> > 
+> Right I get that, you want the ability to register a listener of sorts to
+> monitor drops in hardware and report that back to user space as an drop even
+> with a location that (instead of being a kernel address, is a 'special location'
+> representing a hardware instance.  Makes sense.  Having that be a location +
+> counter tuple would make sense, but I don't think we can pass the skb itself (as
+> you mention above), without seeing significant loss.
 
-Thanks,
-Tariq
+Getting the skb itself will be an option users will need to enable in
+drop_monitor. If it is not enabled, then default behavior is maintained
+and you only get notifications that contain the location + counter tuple
+you mentioned.
+
+> 
+> > The control path that determines if these packets are even sent to the
+> > CPU from the HW needs to remain in devlink for the reasons I outlined in
+> > my previous reply. However, the monitoring of these drops will be over
+> > drop_monitor. This is similar to what we are currently doing with
+> > tc-sample, where the control path that triggers the sampling and
+> > determines the sampling rate and truncation is done over rtnetlink (tc),
+> > but the sampled packets are notified over the generic netlink psample
+> > channel.
+> > 
+> > To make it more real, you can check the example of the dissected devlink
+> > message that notifies the drop of a packet due to a multicast source
+> > MAC: https://marc.info/?l=linux-netdev&m=156248736710238&w=2
+> > 
+> > I will obviously have to create another Wireshark dissector for
+> > drop_monitor in order to get the same information.
+> > 
+> yes, Of course.
+> > > Thats an interesting idea, but dropwatch certainly isn't currently setup for
+> > > that kind of messaging.  It may be worth creating a v2 of the netlink protocol
+> > > and really thinking out what you want to communicate.
+> > 
+> > I don't think we need a v2 of the netlink protocol. My current plan is
+> > to extend the existing protocol with: New message type (e.g.,
+> > NET_DM_CMD_HW_ALERT), new multicast group and a set of attributes to
+> > encode the information that is currently encoded in the example message
+> > I pasted above.
+> > 
+> Ok, that makes sense.  I think we already do some very rudimentary version of
+> that (see trace_napi_poll_hit).  Here we check the device we receive frames on
+> to see if its rx_dropped count has increased, and if it has, store that as a
+> drop count in the NULL location.  Thats obviously insufficient, but I wonder if
+> its worth looking at using the dm_hw_stat_delta to encode and record those event
+> for sending with your new message type.
+
+Will check.
+
+Thanks, Neil.
