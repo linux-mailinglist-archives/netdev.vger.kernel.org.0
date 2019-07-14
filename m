@@ -2,138 +2,328 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1461D68149
-	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 23:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD1086819C
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 01:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728741AbfGNVge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jul 2019 17:36:34 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40851 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728701AbfGNVge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 17:36:34 -0400
-Received: by mail-wr1-f66.google.com with SMTP id r1so14980587wrl.7
-        for <netdev@vger.kernel.org>; Sun, 14 Jul 2019 14:36:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nmzYQ9U4qXrlYHSsWUIeMzHiKKllKOGE08cfskD+dSs=;
-        b=d5ncMZmnks9hdyCpLJr8OfHBTS+jli6A189bxGvDj/WSNCsvXp5GRuRN4BMCqLSt+i
-         f6ep8j0qCzVw447a3G2Mhy+hG8r7Azs715tlJIbKwyCBnEMhLZmu+9QNzdXSVfIuZUAI
-         7b0T1nmT3iInZwuUkEKpKZiOb30+5AaDyOrkQ+v9KEhS4mM8c0Sy5SVg4HmK69FlRPB3
-         QZAy+Pd6ff8J2AI2WnQGVZ2cKxWJlwNCBCOx+cbECJ5bt+5rt3aZ3O3YJgu/fyN9IqQm
-         jgQ+/+4cfiPSPH2EK3vg9keNYmDgIKH0cq/6iBsKoVEzLkdgxW9MXL23gHzzV4ae7JPg
-         MR5A==
-X-Gm-Message-State: APjAAAXncHa3cUtMrmJAESy6njhLlWAoNMT8eZl07tR19vRg1dDT1q5M
-        Dp4uFVMm5Q32pWdGVKAVcCmRKA==
-X-Google-Smtp-Source: APXvYqwbDZcXPqmJE5RLCZ84AveXmN+ipar+4NtRSSQFM11GvFQacebAi3a4aCmJz+iwcm6jZk9WbA==
-X-Received: by 2002:a5d:4b50:: with SMTP id w16mr17516690wrs.132.1563140192133;
-        Sun, 14 Jul 2019 14:36:32 -0700 (PDT)
-Received: from localhost.localdomain.com ([151.66.36.246])
-        by smtp.gmail.com with ESMTPSA id p18sm14094677wrm.16.2019.07.14.14.36.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 14 Jul 2019 14:36:31 -0700 (PDT)
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, marek@cloudflare.com
-Subject: [PATCH net v3] net: neigh: fix multiple neigh timer scheduling
-Date:   Sun, 14 Jul 2019 23:36:11 +0200
-Message-Id: <552d7c8de6a07e12f7b76791da953e81478138cd.1563134704.git.lorenzo.bianconi@redhat.com>
-X-Mailer: git-send-email 2.21.0
+        id S1728933AbfGNXdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 19:33:50 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:11460 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728851AbfGNXdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 19:33:50 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d2bbbde0000>; Sun, 14 Jul 2019 16:33:50 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Sun, 14 Jul 2019 16:33:44 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Sun, 14 Jul 2019 16:33:44 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 14 Jul
+ 2019 23:33:43 +0000
+Subject: Re: [PATCH] mm/gup: Use put_user_page*() instead of put_page*()
+To:     Bharath Vedartham <linux.bhar@gmail.com>,
+        <akpm@linux-foundation.org>, <ira.weiny@intel.com>
+CC:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Dimitri Sivanich <sivanich@sgi.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Enrico Weigelt <info@metux.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Matt Sickler <Matt.Sickler@daktronics.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Keith Busch <keith.busch@intel.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-mm@kvack.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <xdp-newbies@vger.kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>
+References: <1563131456-11488-1-git-send-email-linux.bhar@gmail.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <deea584f-2da2-8e1f-5a07-e97bf32c63bb@nvidia.com>
+Date:   Sun, 14 Jul 2019 16:33:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1563131456-11488-1-git-send-email-linux.bhar@gmail.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL108.nvidia.com (172.18.146.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563147230; bh=sUtQbAVHKMUq6RFPtKou/JVDvKaLNXmga3Yy3wKxfoA=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=r1gPsCog8Wy8uxXR6oPi9CZ88dx7g7L7elOSl44oNIP1rI4/lkKGF9dnlvvfdYA/b
+         O8GUFPF84ojdVeX8QMV3hJ8+zgk4tR88myJZyetUbYd9bq60hfbfXeF0iJlYAVkubx
+         JOoXVe/7uD2/55/W/MIxdUvILTPB1/5/S5oSyd5brPO5Z4/Keu0Xvr8jrmH/IiEYoP
+         +AIIsSoV1pBraQcZgi5+ULXONecHESIQmh/9tZbs/C10RJWwUL5/YKXsdU8Sk8oBdA
+         NOeOi2iHzHVNK0AKkN3agfSzKCXeIFIHG7vkyBUlPLmDEWfEvazCokcgH4rg3HIpDk
+         byWb1Hr99HYHA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Neigh timer can be scheduled multiple times from userspace adding
-multiple neigh entries and forcing the neigh timer scheduling passing
-NTF_USE in the netlink requests.
-This will result in a refcount leak and in the following dump stack:
+On 7/14/19 12:08 PM, Bharath Vedartham wrote:
+> This patch converts all call sites of get_user_pages
+> to use put_user_page*() instead of put_page*() functions to
+> release reference to gup pinned pages.
 
-[   32.465295] NEIGH: BUG, double timer add, state is 8
-[   32.465308] CPU: 0 PID: 416 Comm: double_timer_ad Not tainted 5.2.0+ #65
-[   32.465311] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.12.0-2.fc30 04/01/2014
-[   32.465313] Call Trace:
-[   32.465318]  dump_stack+0x7c/0xc0
-[   32.465323]  __neigh_event_send+0x20c/0x880
-[   32.465326]  ? ___neigh_create+0x846/0xfb0
-[   32.465329]  ? neigh_lookup+0x2a9/0x410
-[   32.465332]  ? neightbl_fill_info.constprop.0+0x800/0x800
-[   32.465334]  neigh_add+0x4f8/0x5e0
-[   32.465337]  ? neigh_xmit+0x620/0x620
-[   32.465341]  ? find_held_lock+0x85/0xa0
-[   32.465345]  rtnetlink_rcv_msg+0x204/0x570
-[   32.465348]  ? rtnl_dellink+0x450/0x450
-[   32.465351]  ? mark_held_locks+0x90/0x90
-[   32.465354]  ? match_held_lock+0x1b/0x230
-[   32.465357]  netlink_rcv_skb+0xc4/0x1d0
-[   32.465360]  ? rtnl_dellink+0x450/0x450
-[   32.465363]  ? netlink_ack+0x420/0x420
-[   32.465366]  ? netlink_deliver_tap+0x115/0x560
-[   32.465369]  ? __alloc_skb+0xc9/0x2f0
-[   32.465372]  netlink_unicast+0x270/0x330
-[   32.465375]  ? netlink_attachskb+0x2f0/0x2f0
-[   32.465378]  netlink_sendmsg+0x34f/0x5a0
-[   32.465381]  ? netlink_unicast+0x330/0x330
-[   32.465385]  ? move_addr_to_kernel.part.0+0x20/0x20
-[   32.465388]  ? netlink_unicast+0x330/0x330
-[   32.465391]  sock_sendmsg+0x91/0xa0
-[   32.465394]  ___sys_sendmsg+0x407/0x480
-[   32.465397]  ? copy_msghdr_from_user+0x200/0x200
-[   32.465401]  ? _raw_spin_unlock_irqrestore+0x37/0x40
-[   32.465404]  ? lockdep_hardirqs_on+0x17d/0x250
-[   32.465407]  ? __wake_up_common_lock+0xcb/0x110
-[   32.465410]  ? __wake_up_common+0x230/0x230
-[   32.465413]  ? netlink_bind+0x3e1/0x490
-[   32.465416]  ? netlink_setsockopt+0x540/0x540
-[   32.465420]  ? __fget_light+0x9c/0xf0
-[   32.465423]  ? sockfd_lookup_light+0x8c/0xb0
-[   32.465426]  __sys_sendmsg+0xa5/0x110
-[   32.465429]  ? __ia32_sys_shutdown+0x30/0x30
-[   32.465432]  ? __fd_install+0xe1/0x2c0
-[   32.465435]  ? lockdep_hardirqs_off+0xb5/0x100
-[   32.465438]  ? mark_held_locks+0x24/0x90
-[   32.465441]  ? do_syscall_64+0xf/0x270
-[   32.465444]  do_syscall_64+0x63/0x270
-[   32.465448]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Hi Bharath,
 
-Fix the issue unscheduling neigh_timer if selected entry is in 'IN_TIMER'
-receiving a netlink request with NTF_USE flag set
+Thanks for jumping in to help, and welcome to the party!
 
-Reported-by: Marek Majkowski <marek@cloudflare.com>
-Fixes: 0c5c2d308906 ("neigh: Allow for user space users of the neighbour table")
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
----
-Changes since v2:
-- remove check_timer flag and run neigh_del_timer directly
-Changes since v1:
-- fix compilation errors defining neigh_event_send_check_timer routine
----
- net/core/neighbour.c | 2 ++
- 1 file changed, 2 insertions(+)
+You've caught everyone in the middle of a merge window, btw.  As a
+result, I'm busy rebasing and reworking the get_user_pages call sites, 
+and gup tracking, in the wake of some semi-traumatic changes to bio 
+and gup and such. I plan to re-post right after 5.3-rc1 shows up, from 
+here:
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 742cea4ce72e..0dfc97bc8760 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1124,6 +1124,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
- 
- 			atomic_set(&neigh->probes,
- 				   NEIGH_VAR(neigh->parms, UCAST_PROBES));
-+			neigh_del_timer(neigh);
- 			neigh->nud_state     = NUD_INCOMPLETE;
- 			neigh->updated = now;
- 			next = now + max(NEIGH_VAR(neigh->parms, RETRANS_TIME),
-@@ -1140,6 +1141,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
- 		}
- 	} else if (neigh->nud_state & NUD_STALE) {
- 		neigh_dbg(2, "neigh %p is delayed\n", neigh);
-+		neigh_del_timer(neigh);
- 		neigh->nud_state = NUD_DELAY;
- 		neigh->updated = jiffies;
- 		neigh_add_timer(neigh, jiffies +
+    https://github.com/johnhubbard/linux/commits/gup_dma_core
+
+...which you'll find already covers the changes you've posted, except for:
+
+    drivers/misc/sgi-gru/grufault.c
+    drivers/staging/kpc2000/kpc_dma/fileops.c
+
+...and this one, which is undergoing to larger local changes, due to
+bvec, so let's leave it out of the choices:
+
+    fs/io_uring.c
+
+Therefore, until -rc1, if you'd like to help, I'd recommend one or more
+of the following ideas:
+
+1. Pull down https://github.com/johnhubbard/linux/commits/gup_dma_core
+and find missing conversions: look for any additional missing 
+get_user_pages/put_page conversions. You've already found a couple missing 
+ones. I haven't re-run a search in a long time, so there's probably even more.
+
+	a) And find more, after I rebase to 5.3-rc1: people probably are adding
+	get_user_pages() calls as we speak. :)
+
+2. Patches: Focus on just one subsystem at a time, and perfect the patch for
+it. For example, I think this the staging driver would be perfect to start with:
+
+    drivers/staging/kpc2000/kpc_dma/fileops.c
+
+	a) verify that you've really, corrected converted the whole
+	driver. (Hint: I think you might be overlooking a put_page call.)
+
+	b) Attempt to test it if you can (I'm being hypocritical in
+	the extreme here, but one of my problems is that testing
+	has been light, so any help is very valuable). qemu...?
+	OTOH, maybe even qemu cannot easily test a kpc2000, but
+	perhaps `git blame` and talking to the authors would help
+	figure out a way to validate the changes.
+
+	Thinking about whether you can run a test that would prove or
+	disprove my claim in (a), above, could be useful in coming up
+	with tests to run.
+
+In other words, a few very high quality conversions (even just one) that
+we can really put our faith in, is what I value most here. Tested patches
+are awesome.
+
+3. Once I re-post, turn on the new CONFIG_DEBUG_GET_USER_PAGES_REFERENCES
+and run things such as xfstest/fstest. (Again, doing so would be going
+further than I have yet--very helpful). Help clarify what conversions have
+actually been tested and work, and which ones remain unvalidated.
+
+Other: Please note that this:
+
+    https://github.com/johnhubbard/linux/commits/gup_dma_core
+
+    a) gets rebased often, and
+
+    b) has a bunch of commits (iov_iter and related) that conflict
+       with the latest linux.git,
+
+    c) has some bugs in the bio area, that I'm fixing, so I don't trust
+       that's it's safely runnable, for a few more days.
+
+One note below, for the future:
+
+> 
+> This is a bunch of trivial conversions which is a part of an effort
+> by John Hubbard to solve issues with gup pinned pages and 
+> filesystem writeback.
+> 
+> The issue is more clearly described in John Hubbard's patch[1] where
+> put_user_page*() functions are introduced.
+> 
+> Currently put_user_page*() simply does put_page but future implementations
+> look to change that once treewide change of put_page callsites to 
+> put_user_page*() is finished.
+> 
+> The lwn article describing the issue with gup pinned pages and filesystem 
+> writeback [2].
+> 
+> This patch has been tested by building and booting the kernel as I don't
+> have the required hardware to test the device drivers.
+> 
+> I did not modify gpu/drm drivers which use release_pages instead of
+> put_page() to release reference of gup pinned pages as I am not clear
+> whether release_pages and put_page are interchangable. 
+> 
+> [1] https://lkml.org/lkml/2019/3/26/1396
+
+When referring to patches in a commit description, please use the 
+commit hash, not an external link. See Submitting Patches [1] for details.
+
+Also, once you figure out the right maintainers and other involved people,
+putting Cc: in the commit description is common practice, too.
+
+[1] https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+
+thanks,
 -- 
-2.21.0
+John Hubbard
+NVIDIA
 
+> 
+> [2] https://lwn.net/Articles/784574/
+> 
+> Signed-off-by: Bharath Vedartham <linux.bhar@gmail.com>
+> ---
+>  drivers/media/v4l2-core/videobuf-dma-sg.c | 3 +--
+>  drivers/misc/sgi-gru/grufault.c           | 2 +-
+>  drivers/staging/kpc2000/kpc_dma/fileops.c | 4 +---
+>  drivers/vfio/vfio_iommu_type1.c           | 2 +-
+>  fs/io_uring.c                             | 7 +++----
+>  mm/gup_benchmark.c                        | 6 +-----
+>  net/xdp/xdp_umem.c                        | 7 +------
+>  7 files changed, 9 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2-core/videobuf-dma-sg.c
+> index 66a6c6c..d6eeb43 100644
+> --- a/drivers/media/v4l2-core/videobuf-dma-sg.c
+> +++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
+> @@ -349,8 +349,7 @@ int videobuf_dma_free(struct videobuf_dmabuf *dma)
+>  	BUG_ON(dma->sglen);
+>  
+>  	if (dma->pages) {
+> -		for (i = 0; i < dma->nr_pages; i++)
+> -			put_page(dma->pages[i]);
+> +		put_user_pages(dma->pages, dma->nr_pages);
+>  		kfree(dma->pages);
+>  		dma->pages = NULL;
+>  	}
+> diff --git a/drivers/misc/sgi-gru/grufault.c b/drivers/misc/sgi-gru/grufault.c
+> index 4b713a8..61b3447 100644
+> --- a/drivers/misc/sgi-gru/grufault.c
+> +++ b/drivers/misc/sgi-gru/grufault.c
+> @@ -188,7 +188,7 @@ static int non_atomic_pte_lookup(struct vm_area_struct *vma,
+>  	if (get_user_pages(vaddr, 1, write ? FOLL_WRITE : 0, &page, NULL) <= 0)
+>  		return -EFAULT;
+>  	*paddr = page_to_phys(page);
+> -	put_page(page);
+> +	put_user_page(page);
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/staging/kpc2000/kpc_dma/fileops.c b/drivers/staging/kpc2000/kpc_dma/fileops.c
+> index 6166587..26dceed 100644
+> --- a/drivers/staging/kpc2000/kpc_dma/fileops.c
+> +++ b/drivers/staging/kpc2000/kpc_dma/fileops.c
+> @@ -198,9 +198,7 @@ int  kpc_dma_transfer(struct dev_private_data *priv, struct kiocb *kcb, unsigned
+>  	sg_free_table(&acd->sgt);
+>   err_dma_map_sg:
+>   err_alloc_sg_table:
+> -	for (i = 0 ; i < acd->page_count ; i++){
+> -		put_page(acd->user_pages[i]);
+> -	}
+> +	put_user_pages(acd->user_pages, acd->page_count);
+>   err_get_user_pages:
+>  	kfree(acd->user_pages);
+>   err_alloc_userpages:
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index add34ad..c491524 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -369,7 +369,7 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  		 */
+>  		if (ret > 0 && vma_is_fsdax(vmas[0])) {
+>  			ret = -EOPNOTSUPP;
+> -			put_page(page[0]);
+> +			put_user_page(page[0]);
+>  		}
+>  	}
+>  	up_read(&mm->mmap_sem);
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index 4ef62a4..b4a4549 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -2694,10 +2694,9 @@ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, void __user *arg,
+>  			 * if we did partial map, or found file backed vmas,
+>  			 * release any pages we did get
+>  			 */
+> -			if (pret > 0) {
+> -				for (j = 0; j < pret; j++)
+> -					put_page(pages[j]);
+> -			}
+> +			if (pret > 0)
+> +				put_user_pages(pages, pret);
+> +
+>  			if (ctx->account_mem)
+>  				io_unaccount_mem(ctx->user, nr_pages);
+>  			kvfree(imu->bvec);
+> diff --git a/mm/gup_benchmark.c b/mm/gup_benchmark.c
+> index 7dd602d..15fc7a2 100644
+> --- a/mm/gup_benchmark.c
+> +++ b/mm/gup_benchmark.c
+> @@ -76,11 +76,7 @@ static int __gup_benchmark_ioctl(unsigned int cmd,
+>  	gup->size = addr - gup->addr;
+>  
+>  	start_time = ktime_get();
+> -	for (i = 0; i < nr_pages; i++) {
+> -		if (!pages[i])
+> -			break;
+> -		put_page(pages[i]);
+> -	}
+> +	put_user_pages(pages, nr_pages);
+>  	end_time = ktime_get();
+>  	gup->put_delta_usec = ktime_us_delta(end_time, start_time);
+>  
+> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> index 9c6de4f..6103e19 100644
+> --- a/net/xdp/xdp_umem.c
+> +++ b/net/xdp/xdp_umem.c
+> @@ -173,12 +173,7 @@ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+>  {
+>  	unsigned int i;
+>  
+> -	for (i = 0; i < umem->npgs; i++) {
+> -		struct page *page = umem->pgs[i];
+> -
+> -		set_page_dirty_lock(page);
+> -		put_page(page);
+> -	}
+> +	put_user_pages_dirty_lock(umem->pgs, umem->npgs);
+>  
+>  	kfree(umem->pgs);
+>  	umem->pgs = NULL;
+> 
