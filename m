@@ -2,180 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F19E667F7E
-	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 16:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E888867FAA
+	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 17:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728398AbfGNO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jul 2019 10:58:33 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:43265 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728146AbfGNO6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 10:58:33 -0400
-Received: by mail-lj1-f195.google.com with SMTP id 16so13648712ljv.10
-        for <netdev@vger.kernel.org>; Sun, 14 Jul 2019 07:58:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S8BpHvv1vIpr8Yfic66erizLIYwp5jRBT9lXbnlXoDg=;
-        b=sA0l6OeC2+YLuJzKy/dgqt8+65OWenNTvD6VWlrmqYpj6BB8Tlo8+4se7FbA/L3qEd
-         +KVviGowXapsB6tPN5c5yVHmNjVUMLUEIwgAXSrXnRinaj7Mk7MlUOL+qlntSlE4CMWU
-         i7j6T7PltEpPzpDeQcd0kEJrDvAXoWuZTcBSrDpFbAuJl9HxeIAT99fp2t0gNqiz5KbM
-         eFMoR61pfnSgsgOZBGhdYtbzmNKk1nZXaqcrWc3QXNP0jTaVrBkU0TLn9jxWHm9Vjj0s
-         V+JWRTagzcpcrswzJ6PzvMN7p7U8v2ERm1FiChrpUZh3lUjMbwjPg94OvmgTSBbhirxs
-         qevw==
-X-Gm-Message-State: APjAAAW+duWij1AEcFcW3UeqQYJ3lvnPyZtNn8aFecOICns80TL2jWWN
-        bvHTnykiqxrUYn8dWWltSNijJoAyPyP0xPi4P7FCtOyPKnc=
-X-Google-Smtp-Source: APXvYqzo0PqxzRiquhbTt6ZS1fenW+YS0aA+0ZLt7Z81V+xJYPAd1Zgl2Af1hO01RYqNnbYqDZOkGXXcTqd9XrkK5ys=
-X-Received: by 2002:a2e:89ca:: with SMTP id c10mr11249917ljk.106.1563116310482;
- Sun, 14 Jul 2019 07:58:30 -0700 (PDT)
+        id S1728712AbfGNPKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 11:10:25 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:45578 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728440AbfGNPKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 11:10:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=kfltrTJrE3zX7/0aquoXG3ZtLDR7tIyzP8CHDmkORWM=; b=K/3ZWln8pQ5/S/82QEvh320MR
+        GxKvRhj461S8yl1Idc2bdc8An7e4c8StSBzkldlTd0Jg0UewJ2RRGg5JjSPC6p8D4/rfG424xXb4U
+        fvHK7PmBG+fj2NSqxj4by5+/XjAK+t/iamqHYHAxknHlnxl5eQIazfo7z3/I2C37imCjIXBE18Xn5
+        KzQumgLiSPamzlQ9ozcJhla9x0d2DKP8qzihqZzFU3+nlfjgUkK66opfrmZTJHMDmZ1PKWhT5n+CC
+        xmEu0Im/DDzQ40V7LRXAUKmFbrpHZORGGnVVQrHoKaAAOKjukrUWAnW9HISaCoF/jsasJMem48pjA
+        MeE48xLZA==;
+Received: from 201.86.163.160.dynamic.adsl.gvt.net.br ([201.86.163.160] helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hmg8o-0004f9-E5; Sun, 14 Jul 2019 15:10:18 +0000
+Received: from mchehab by bombadil.infradead.org with local (Exim 4.92)
+        (envelope-from <mchehab@bombadil.infradead.org>)
+        id 1hmg8k-0007Sw-U6; Sun, 14 Jul 2019 12:10:14 -0300
+From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Sean Paul <sean@poorly.run>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rich Felker <dalias@libc.org>, Takashi Iwai <tiwai@suse.com>,
+        Daniel Vetter <daniel@ffwll.ch>, x86@kernel.org,
+        alsa-devel@alsa-project.org,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        linux-sh@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        linux-crypto@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        dri-devel@lists.freedesktop.org,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-input@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 0/8] docs: some improvements when producing PDF files
+Date:   Sun, 14 Jul 2019 12:10:05 -0300
+Message-Id: <cover.1563115732.git.mchehab+samsung@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190709204040.17746-1-mcroce@redhat.com> <20190709143758.695a65bc@hermes.lan>
- <CAGnkfhz+p1o_yHxk2jkY9ggNwLSO-Jk4BcxPuWhSHw1YXoJsSw@mail.gmail.com>
-In-Reply-To: <CAGnkfhz+p1o_yHxk2jkY9ggNwLSO-Jk4BcxPuWhSHw1YXoJsSw@mail.gmail.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Sun, 14 Jul 2019 16:57:54 +0200
-Message-ID: <CAGnkfhyyJJR0frmO7Z+bviu6xYnJVitw-G0Nzgv9UQ2PYO1goA@mail.gmail.com>
-Subject: Re: [PATCH iproute2] utils: don't match empty strings as prefixes
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 1:18 AM Matteo Croce <mcroce@redhat.com> wrote:
->
-> On Tue, Jul 9, 2019 at 11:38 PM Stephen Hemminger
-> <stephen@networkplumber.org> wrote:
-> >
-> > On Tue,  9 Jul 2019 22:40:40 +0200
-> > Matteo Croce <mcroce@redhat.com> wrote:
-> >
-> > > iproute has an utility function which checks if a string is a prefix for
-> > > another one, to allow use of abbreviated commands, e.g. 'addr' or 'a'
-> > > instead of 'address'.
-> > >
-> > > This routine unfortunately considers an empty string as prefix
-> > > of any pattern, leading to undefined behaviour when an empty
-> > > argument is passed to ip:
-> > >
-> > >     # ip ''
-> > >     1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-> > >         link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> > >         inet 127.0.0.1/8 scope host lo
-> > >            valid_lft forever preferred_lft forever
-> > >         inet6 ::1/128 scope host
-> > >            valid_lft forever preferred_lft forever
-> > >
-> > >     # tc ''
-> > >     qdisc noqueue 0: dev lo root refcnt 2
-> > >
-> > >     # ip address add 192.0.2.0/24 '' 198.51.100.1 dev dummy0
-> > >     # ip addr show dev dummy0
-> > >     6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-> > >         link/ether 02:9d:5e:e9:3f:c0 brd ff:ff:ff:ff:ff:ff
-> > >         inet 192.0.2.0/24 brd 198.51.100.1 scope global dummy0
-> > >            valid_lft forever preferred_lft forever
-> > >
-> > > Rewrite matches() so it takes care of an empty input, and doesn't
-> > > scan the input strings three times: the actual implementation
-> > > does 2 strlen and a memcpy to accomplish the same task.
-> > >
-> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> > > ---
-> > >  include/utils.h |  2 +-
-> > >  lib/utils.c     | 14 +++++++++-----
-> > >  2 files changed, 10 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/include/utils.h b/include/utils.h
-> > > index 927fdc17..f4d12abb 100644
-> > > --- a/include/utils.h
-> > > +++ b/include/utils.h
-> > > @@ -198,7 +198,7 @@ int nodev(const char *dev);
-> > >  int check_ifname(const char *);
-> > >  int get_ifname(char *, const char *);
-> > >  const char *get_ifname_rta(int ifindex, const struct rtattr *rta);
-> > > -int matches(const char *arg, const char *pattern);
-> > > +int matches(const char *prefix, const char *string);
-> > >  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits);
-> > >  int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
-> > >
-> > > diff --git a/lib/utils.c b/lib/utils.c
-> > > index be0f11b0..73ce19bb 100644
-> > > --- a/lib/utils.c
-> > > +++ b/lib/utils.c
-> > > @@ -887,13 +887,17 @@ const char *get_ifname_rta(int ifindex, const struct rtattr *rta)
-> > >       return name;
-> > >  }
-> > >
-> > > -int matches(const char *cmd, const char *pattern)
-> > > +/* Check if 'prefix' is a non empty prefix of 'string' */
-> > > +int matches(const char *prefix, const char *string)
-> > >  {
-> > > -     int len = strlen(cmd);
-> > > +     if (!*prefix)
-> > > +             return 1;
-> > > +     while(*string && *prefix == *string) {
-> > > +             prefix++;
-> > > +             string++;
-> > > +     }
-> > >
-> > > -     if (len > strlen(pattern))
-> > > -             return -1;
-> > > -     return memcmp(pattern, cmd, len);
-> > > +     return *prefix;
-> > >  }
-> > >
-> > >  int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
-> >
-> > ERROR: space required before the open parenthesis '('
-> > #134: FILE: lib/utils.c:895:
-> > +       while(*string && *prefix == *string) {
-> >
-> > total: 1 errors, 1 warnings, 30 lines checked
-> >
-> > The empty prefix string is a bug and should not be allowed.
-> > Also return value should be same as old code (yours isn't).
-> >
-> >
-> >
->
-> The old return value was the difference between the first pair of
-> bytes, according to the memcmp manpage.
-> All calls only checks if the matches() return value is 0 or not 0:
->
-> iproute2$ git grep 'matches(' |grep -v -e '== 0' -e '= 0' -e '!matches('
-> include/utils.h:int matches(const char *prefix, const char *string);
-> include/xtables.h:extern void xtables_register_matches(struct
-> xtables_match *, unsigned int);
-> lib/color.c:    if (matches(dup, "-color"))
-> lib/utils.c:int matches(const char *prefix, const char *string)
-> tc/tc.c:                if (matches(argv[0], iter->c))
->
-> Is it a problem if it returns a non negative value for non matching strings?
->
-> Regards,
->
->
-> --
-> Matteo Croce
-> per aspera ad upstream
+Hi Jon,
 
-Hi Stephen,
+This series addresses your concerns related to CJK fonts that are
+needed for translations.pdf.
 
-should I send a v2 which keeps the old behaviour, even if noone checks
-for all the values?
-Just to clarify, the old behaviour of matches(cmd, pattern) was:
+It touches only the documentation build system, not the docs
+themselves.
 
--1 if len(cmd) > len(pattern)
-0 if pattern is equal to cmd
-0 if pattern starts with cmd
-< 0 if pattern is alphabetically lower than cmd
-> 0 if pattern is alphabetically higher than cmd
+It ended to be bigger than I originally foreseen, as I found several issues
+when running "make pdfdocs" for the distros that are recognized by
+the  scripts/sphinx-pre-install script.
+
+It also took a lot of time, as I tested it with several VMs (each
+one updated to latest packages):
+
+- Fedora 30, CentOS 7, Mageia 7, ArchLinux, Ubuntu 18.04, Gentoo, 
+  OpenSuse Tumbleweed.
+
+Patch 1 addresses an issue that could be related to the fact that I
+don't use openSUSE. Basically, I was unable to find the right package
+for texlive to use CJK fonts on openSUSE. [1]. So, the first patch on this
+series adds a workaround: if the needed CJK font is not found on a
+system, conf.py won't use xeCjk extension. That sounds a good
+thing to have, as other distros may not package it, or maybe the
+one building the doc is not that interested on translations.pdf file;
+
+[1] I actually found some, but they are not recognized with the
+    font name conf.py is expecting ("Noto Sans CJK SC"). Perhaps
+    SUSE uses a different name for those fonts?
+
+Patch 2 fixes the logic with recognizes CentOS/RHEL;
+
+Patch 3 is another workaround: CentOS 7 (and similar distros) don't
+package all texlive packages we need. So, it just ignores PDF when
+recommending packages on such distros, and point to a URL with
+explains how to install TexLive outside distro-specific package
+management (for the brave enough people);
+
+Patch 4 fixes latexmk dependency on a few distros;
+
+Patch 5 suppreses a Gentoo specific instruction if the user already
+followed in the past;
+
+Patch 6 is the one that actually does what you requested.
+
+Patch 7 solves an issue when SPHINXDIRS is used with make pdfdocs:
+right now, using it will produce a lot of warnings and won't do anything,
+if a dir-specific conf.py file is not found. With the patch, latex_documents
+are now properly updated when SPHINXDIRS is used.
+
+Patch 8 is a cleanup: with patch 7 applied, we don't need to have anymore
+any conf.py file due to pdfdocs. 
+
+With regard to the load_config.py extension, It keeps accepting custom
+configuration. That's helpful if someone wants, for example, to have
+something like:
+
+	Documentation/media/conf_nitpick.py
+
+with would enable extra nitpick options if one wants that.
+
+-
+
+Jon,
+
+Please let me know if you prefer if I submit those together with the big
+pile of doc files I have, or if you prefer adding (some of?) them on your
+tree after the merge window.
 
 Regards,
+Mauro
+
+Mauro Carvalho Chehab (8):
+  docs: conf.py: only use CJK if the font is available
+  scripts/sphinx-pre-install: fix script for RHEL/CentOS
+  scripts/sphinx-pre-install: don't use LaTeX with CentOS 7
+  scripts/sphinx-pre-install: fix latexmk dependencies
+  scripts/sphinx-pre-install: cleanup Gentoo checks
+  scripts/sphinx-pre-install: seek for Noto CJK fonts for pdf output
+  docs: load_config.py: avoid needing a conf.py just due to LaTeX docs
+  docs: remove extra conf.py files
+
+ Documentation/admin-guide/conf.py      |  10 ---
+ Documentation/conf.py                  |  13 ++-
+ Documentation/core-api/conf.py         |  10 ---
+ Documentation/crypto/conf.py           |  10 ---
+ Documentation/dev-tools/conf.py        |  10 ---
+ Documentation/doc-guide/conf.py        |  10 ---
+ Documentation/driver-api/80211/conf.py |  10 ---
+ Documentation/driver-api/conf.py       |  10 ---
+ Documentation/driver-api/pm/conf.py    |  10 ---
+ Documentation/filesystems/conf.py      |  10 ---
+ Documentation/gpu/conf.py              |  10 ---
+ Documentation/input/conf.py            |  10 ---
+ Documentation/kernel-hacking/conf.py   |  10 ---
+ Documentation/maintainer/conf.py       |  10 ---
+ Documentation/media/conf.py            |  12 ---
+ Documentation/networking/conf.py       |  10 ---
+ Documentation/process/conf.py          |  10 ---
+ Documentation/sh/conf.py               |  10 ---
+ Documentation/sound/conf.py            |  10 ---
+ Documentation/sphinx/load_config.py    |  25 +++++-
+ Documentation/userspace-api/conf.py    |  10 ---
+ Documentation/vm/conf.py               |  10 ---
+ Documentation/x86/conf.py              |  10 ---
+ scripts/sphinx-pre-install             | 118 ++++++++++++++++++++-----
+ 24 files changed, 131 insertions(+), 237 deletions(-)
+ delete mode 100644 Documentation/admin-guide/conf.py
+ delete mode 100644 Documentation/core-api/conf.py
+ delete mode 100644 Documentation/crypto/conf.py
+ delete mode 100644 Documentation/dev-tools/conf.py
+ delete mode 100644 Documentation/doc-guide/conf.py
+ delete mode 100644 Documentation/driver-api/80211/conf.py
+ delete mode 100644 Documentation/driver-api/conf.py
+ delete mode 100644 Documentation/driver-api/pm/conf.py
+ delete mode 100644 Documentation/filesystems/conf.py
+ delete mode 100644 Documentation/gpu/conf.py
+ delete mode 100644 Documentation/input/conf.py
+ delete mode 100644 Documentation/kernel-hacking/conf.py
+ delete mode 100644 Documentation/maintainer/conf.py
+ delete mode 100644 Documentation/media/conf.py
+ delete mode 100644 Documentation/networking/conf.py
+ delete mode 100644 Documentation/process/conf.py
+ delete mode 100644 Documentation/sh/conf.py
+ delete mode 100644 Documentation/sound/conf.py
+ delete mode 100644 Documentation/userspace-api/conf.py
+ delete mode 100644 Documentation/vm/conf.py
+ delete mode 100644 Documentation/x86/conf.py
+
 -- 
-Matteo Croce
-per aspera ad upstream
+2.21.0
+
+
