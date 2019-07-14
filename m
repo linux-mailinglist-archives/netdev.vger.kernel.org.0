@@ -2,53 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A4E67DCF
-	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 08:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48C4467DCE
+	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 08:31:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbfGNGcP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 14 Jul 2019 02:32:15 -0400
-Received: from mail.reincar.com.co ([190.0.12.190]:53034 "EHLO
-        emailgateway.skillnet.com.co" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726017AbfGNGcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 02:32:14 -0400
-X-Greylist: delayed 50491 seconds by postgrey-1.27 at vger.kernel.org; Sun, 14 Jul 2019 02:32:13 EDT
-Received: from emailgateway.skillnet.com.co (localhost.localdomain [127.0.0.1])
-        by localhost (Email Security Appliance) with SMTP id C163F208C5D_D29C63FB;
-        Sat, 13 Jul 2019 11:53:35 +0000 (GMT)
-Received: from mail.projectbpo.co (mail.projectbpo.co [192.175.105.61])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by emailgateway.skillnet.com.co (Sophos Email Appliance) with ESMTPS id 0C34F1FDA49_D29C63FF;
-        Sat, 13 Jul 2019 11:53:35 +0000 (GMT)
-Received: from mail.projectbpo.co (localhost [127.0.0.1])
-        by mail.projectbpo.co (Postfix) with ESMTPS id 5F6576EF8E8B7;
-        Sat, 13 Jul 2019 07:01:02 -0500 (-05)
-Received: from mail.projectbpo.co (localhost [127.0.0.1])
-        by mail.projectbpo.co (Postfix) with ESMTPS id 2D9376EECBF92;
-        Sat, 13 Jul 2019 07:01:02 -0500 (-05)
-Received: from [192.168.43.155] (ip168.ip-91-134-219.eu [91.134.219.168])
-        by mail.projectbpo.co (Postfix) with ESMTPSA id 640A464BD2B66;
-        Sat, 13 Jul 2019 07:00:36 -0500 (-05)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1728176AbfGNGbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 02:31:08 -0400
+Received: from mail-pl1-f180.google.com ([209.85.214.180]:37791 "EHLO
+        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726017AbfGNGbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 02:31:08 -0400
+Received: by mail-pl1-f180.google.com with SMTP id b3so6740607plr.4
+        for <netdev@vger.kernel.org>; Sat, 13 Jul 2019 23:31:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7M6rhSUF/YdfBSS2QEYDsRYhsp031bK7Twdq9oZAWtQ=;
+        b=fjMokYOUSzYOfRs5UBl429nqmkLabFUplNqwFhIbTmt4P+6JTp6gm4HeO54qqD/Tar
+         qwBoqIkCoXEmUKOTCHyt0ihRnIkkt+TIBioKJ9+LTAbtqZXL7ldTm6EomwJbq2GXCSQ+
+         REwBcaXSsfckLsdnciS5MoL3X3WIHfdpqIqV5bcyInsQjdzMlHu/7aKNe+h+9qlW9NbL
+         ThJ8DPyC1OtKl/lngy9K6Y2EcLvnjjwc4wdeXP6FX8cfTOXJV7kTto2nTJp5SFoay8fx
+         SMOPvgbBNVHPbZOPqpxvcPblVx1gBOdMaoBi1b5Ib9gY1GwcElGdoeSLQA+ZlQrCRK0t
+         trNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7M6rhSUF/YdfBSS2QEYDsRYhsp031bK7Twdq9oZAWtQ=;
+        b=tr18Oxy8PW2aLQ2n1UIp0pCkP1FDalFoH8LLnf6/2/BjDFbYPh4Xcf88J9sqqhwzEq
+         kcwCaIP+TX9mzgc9+oho34n6j+BnSQ4rS8P79/YFZV3OSKUkmccGi99hQ5dB03svzgN9
+         oQO/D1bXpC1dPvVtXkoTOxZnUJvTVKr3etvUNcFE2U9pd++f7Nj/lrAsBDAOr52Y57+x
+         iPH8O4HRhCu/zqGupSZ1/io8UTqAQrBsyoXsmQcfj2Fsqu2BAzUyBGpWtxL1lcxFbaoP
+         CXudFRCCL6rmgrQy7xsyyL3EjdLKFyqwmRbXEqYL9QlxpqC5jVCfgg0Ar69CZppiGRQZ
+         5k+w==
+X-Gm-Message-State: APjAAAVthLa1/pKatlRsU8s94S1xEvrvaObq+bri3MRkKeFFuuneAWqu
+        R+zIZjwlsMLiK9RTkx7/1RR9hOX380zJy+Pq2I8=
+X-Google-Smtp-Source: APXvYqxv2ph+1btNQgwjwlk/efIimXNXJkCMfOELaWqiXW+r50UtIvssiV9yx+1RgwGQKjiWI8LR1A/9RtdaXTEYKiI=
+X-Received: by 2002:a17:902:a50d:: with SMTP id s13mr21543709plq.12.1563085867012;
+ Sat, 13 Jul 2019 23:31:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: REPLY
-To:     Recipients <avargasm.andina@gempresarial.co>
-From:   "Ms.Ella Gola" <avargasm.andina@gempresarial.co>
-Date:   Sat, 13 Jul 2019 12:52:38 +0100
-Reply-To: msgolaan615@gmail.com
-Message-Id: <20190713120037.640A464BD2B66@mail.projectbpo.co>
-X-SASI-RCODE: 200
-X-SEA-Spam: Gauge=XXXXXXXXXX, Probability=100%, Report='
- SXL_IP_PROXY 8, SXL_PARA_SIG 8, FRAUD_LITTLE_BODY 2, FRAUD_X3_WEB_REPLYTO 1, WEBMAIL_REPLYTO_NOT_FROM 0.5, FRAUD_WEBMAIL_R_NOT_F 0.1, FROM_CO_TLD 0.1, REPLYTO_FROM_DIFF_ADDY 0.1, SUBJ_1WORD 0.1, FROM_SAME_AS_TO 0.05, HTML_00_01 0.05, HTML_00_10 0.05, SUPERLONG_LINE 0.05, BODYTEXTP_SIZE_3000_LESS 0, BODYTEXTP_SIZE_400_LESS 0, BODY_SIZE_1000_LESS 0, BODY_SIZE_2000_LESS 0, BODY_SIZE_300_399 0, BODY_SIZE_5000_LESS 0, BODY_SIZE_7000_LESS 0, FRAUD_HIGH_X3 0, FROM_SAME_AS_TO_DOMAIN 0, NO_CTA_URI_FOUND 0, NO_URI_FOUND 0, NO_URI_HTTPS 0, SPF_SOFTFAIL 0, __BODY_NO_MAILTO 0, __CT 0, __CTE 0, __CT_TEXT_PLAIN 0, __FRAUD_COMMON 0, __FRAUD_DPTCOMPNY 0, __FRAUD_SUBJ_ALLCAPS 0, __FRAUD_WEBMAIL 0, __FRAUD_WEBMAIL_REPLYTO 0, __HAS_FROM 0, __HAS_MSGID 0, __HAS_REPLYTO 0, __INT_PROD_LOC 0, __MIME_TEXT_ONLY 0, __MIME_TEXT_P 0, __MIME_TEXT_P1 0, __MIME_VERSION 0, __NO_HTML_TAG_RAW 0,
- __PHISH_SPEAR_STRUCTURE_1 0, __PHISH_SPEAR_STRUCTURE_2 0, __REPLYTO_GMAIL 0, __SANE_MSGID 0, __SUBJECT_ALLCAPS 0, __SUBJECT_NOLC 0, __TO_MALFORMED_2 0, __TO_NAME 0, __TO_NAME_DIFF_FROM_ACC 0, __TO_REAL_NAMES 0'
+References: <20190712201749.28421-2-xiyou.wangcong@gmail.com> <8355af23-100f-a3bb-0759-fca8b0aa583b@gmail.com>
+In-Reply-To: <8355af23-100f-a3bb-0759-fca8b0aa583b@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 13 Jul 2019 23:30:56 -0700
+Message-ID: <CAM_iQpUd44ctMmtGrr4x_uA9UUxUdTzS-3tuySt2-jhM0y950A@mail.gmail.com>
+Subject: Re: [Patch net] fib: relax source validation check for loopback packets
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Julian Anastasov <ja@ssi.bg>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am Ms.Ella Golan, I am the Executive Vice President Banking Division with FIRST INTERNATIONAL BANK OF ISRAEL LTD (FIBI). I am getting in touch with you regarding an extremely important and urgent matter. If you would oblige me the opportunity, I shall provide you with details upon your response.
+On Sat, Jul 13, 2019 at 3:42 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 7/12/19 2:17 PM, Cong Wang wrote:
+> > diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+> > index 317339cd7f03..8662a44a28f9 100644
+> > --- a/net/ipv4/fib_frontend.c
+> > +++ b/net/ipv4/fib_frontend.c
+> > @@ -388,6 +388,12 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+> >       fib_combine_itag(itag, &res);
+> >
+> >       dev_match = fib_info_nh_uses_dev(res.fi, dev);
+> > +     /* This is rare, loopback packets retain skb_dst so normally they
+> > +      * would not even hit this slow path.
+> > +      */
+> > +     dev_match = dev_match || (res.type == RTN_LOCAL &&
+> > +                               dev == net->loopback_dev &&
+>
+> The dev should not be needed. res.type == RTN_LOCAL should be enough, no?
+>
+> > +                               IN_DEV_ACCEPT_LOCAL(idev));
+>
+> Why is this check needed? Can you give an example use that is fixed -
 
-Faithfully,
-Ms.Ella Gola
+I am not sure if I should have this check either, my initial version didn't
+have it either, later I add it because I find out it is checked for rp_filter=0
+case too.
+
+On the other hand, loopback always accepts local traffic, so it may be
+redundant to check it. So, I am not sure.
+
+What do you think?
+
+> and add one to selftests/net/fib_tests.sh?
+
+It's complicated, Mesos network isolation uses this case:
+https://cgit.twitter.biz/mesos/tree/src/slave/containerizer/mesos/isolators/network/port_mapping.cpp
+
+Even if I use a simplified case, it still has to use TC filters and mirred
+action to redirect the packet, which I am not sure they fit in fib_tests.sh.
+
+Thanks.
