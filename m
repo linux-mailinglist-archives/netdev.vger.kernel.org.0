@@ -2,76 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C0267EEB
-	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 14:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75B2D67EEF
+	for <lists+netdev@lfdr.de>; Sun, 14 Jul 2019 14:15:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728380AbfGNMCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jul 2019 08:02:44 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44260 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728259AbfGNMCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 08:02:44 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t14so6905464plr.11;
-        Sun, 14 Jul 2019 05:02:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=limhfPU+A9atVqhjrXoRTHVUj/ZAq4Mas0vu8xdEgl4=;
-        b=SCdbBghuO3rnNCJDYqnbUb1chWn44CxNhJ/cv2ErFKU6SZD/JoLaOp/PLJlNdZ1DHI
-         E+zPGX+rVn8tLeFHsYDP/hFkA0dVNdR/fMph5TyljbymnHSrMvyDparCy2NbjaaEqpLy
-         bfxEQXw5yqmEm4M5CRPEq5xVTY8o+cBm8Y4cN9x49yeTSAZ2ynABTwWOOig8Gtc02g0U
-         oz4wavmctMGTk/tuTdxvJbVCyU9iQ1885LJ59My0M4tkGuYCStFygODz9+qm57L9sJbU
-         GLPu3AWs7i1mJZaHDoxzh9J22zlLRRQLHFS7C+r9S2V5gETCwqKiOqcGQBP7nwWkwO8B
-         codA==
-X-Gm-Message-State: APjAAAVc5PopNABS3bzTXrcqelvZPhU9YFpwdgoz6dyWfp7fkkX2KBSd
-        alyfJ6fRSvbiZmRFA6FVGww=
-X-Google-Smtp-Source: APXvYqzSLlOEwTVdKntftT7j7TPUdQorCgYrKIXpC5tQxhdh+4AM/Zj7xGtG6xJfZEqbpNfKeEJ8Xw==
-X-Received: by 2002:a17:902:d81:: with SMTP id 1mr23356458plv.323.1563105763620;
-        Sun, 14 Jul 2019 05:02:43 -0700 (PDT)
-Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
-        by smtp.googlemail.com with ESMTPSA id o3sm32215200pje.1.2019.07.14.05.02.36
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 14 Jul 2019 05:02:42 -0700 (PDT)
-From:   Denis Efremov <efremov@linux.com>
-To:     Catherine Sullivan <csully@google.com>
-Cc:     Denis Efremov <efremov@linux.com>, Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] gve: Remove the exporting of gve_probe
-Date:   Sun, 14 Jul 2019 15:02:25 +0300
-Message-Id: <20190714120225.15279-1-efremov@linux.com>
-X-Mailer: git-send-email 2.21.0
+        id S1728352AbfGNMPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 08:15:30 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:40955 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728302AbfGNMPa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Jul 2019 08:15:30 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45mlws5CXkz9sBt;
+        Sun, 14 Jul 2019 22:15:25 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1563106527;
+        bh=zCtnZaNPQCWLcBCQ4GnLDTPHFxRXQKg3Uco8fUMs/U8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jTRXk0IqFLeHoB8sGWzc2i22FhF6SW/SCFSUW/u07ueo3s10Jeif0IMxnB0oCl5m3
+         AMOl6TXpvUDkOVmKa3woAO3MsRh0MvvJQmoCb+sgNw5zH7SghS6sAchSZ4roNxk9lF
+         LEXQL+KrjSMUp8jP6f2oqbGzHKQfRUq4C5sMjQo7UMscoKxWq5gJASd1VThFTyrCD3
+         H/mqvKvihbZq7aNRjOSTg0fc3CzZedbZrHRRyz7vwbx/DJl+B4Jout2o6afRutxRWm
+         EN55QGbp316iJc6d80KW1uaCFEM8cCqF/dxP6bRIPHDvCoevUcEOoamg+GhOtzfhy3
+         B7HHUSEav77Nw==
+Date:   Sun, 14 Jul 2019 22:15:11 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Tariq Toukan <tariqt@mellanox.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20190714221511.7717d6de@canb.auug.org.au>
+In-Reply-To: <4f524361-9ea3-7c04-736d-d14fcb498178@mellanox.com>
+References: <20190712165042.01745c65@canb.auug.org.au>
+        <4f524361-9ea3-7c04-736d-d14fcb498178@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/HR3_qu0kY4vLk3q+cvEgK6A"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function gve_probe is declared static and marked EXPORT_SYMBOL, which
-is at best an odd combination. Because the function is not used outside of
-the drivers/net/ethernet/google/gve/gve_main.c file it is defined in, this
-commit removes the EXPORT_SYMBOL() marking.
+--Sig_/HR3_qu0kY4vLk3q+cvEgK6A
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
----
- drivers/net/ethernet/google/gve/gve_main.c | 1 -
- 1 file changed, 1 deletion(-)
+Hi Tariq,
 
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 24f16e3368cd..e8ee8cac2bbf 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -1192,7 +1192,6 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	pci_disable_device(pdev);
- 	return -ENXIO;
- }
--EXPORT_SYMBOL(gve_probe);
- 
- static void gve_remove(struct pci_dev *pdev)
- {
--- 
-2.21.0
+On Sun, 14 Jul 2019 07:55:48 +0000 Tariq Toukan <tariqt@mellanox.com> wrote:
+>
+> How do you think we should handle this?
 
+Dave doesn't rebase his trees, so all you can really do is learn from
+it and not do it again :-)
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/HR3_qu0kY4vLk3q+cvEgK6A
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0rHM8ACgkQAVBC80lX
+0GwXrQf9H3vPyShbxrWd+9Vw75CQ+e1v8Qe34v6K9YkmD6yt/KWC9vXzjXMdV33b
+Remz+W/t1DdbhDcJ2/i1fJo5kwvmhY9hfKwN+rHXpWoDnmopGBQJItC1dqybGQq7
+TxIVmJKEIFFIRDDRNYyCbuRS+3oyW8fwxTeXsVaRqYyxoKnUOkoTqbwE2xxtMnWN
+bBwNrJwL6WHyJCAEJgusV38lBbQAhRQ06vsS4m7feWqv1hPxTWdo2TYcrQJ74YhA
+Qc+AcfWCRk9t4W7ip2qU3bgP9Q7LE8c3DMdD6E5fjjfb+3uHz3MxKTdrypUAACxB
+BUWpzU7CPpv8TLe0UuPkIWQhHq4ULw==
+=bBcO
+-----END PGP SIGNATURE-----
+
+--Sig_/HR3_qu0kY4vLk3q+cvEgK6A--
