@@ -2,104 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7364C685FF
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 11:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 103FD6860D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 11:11:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729625AbfGOJIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 05:08:05 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:60972 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729245AbfGOJIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 05:08:04 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id F35D561637; Mon, 15 Jul 2019 09:08:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563181684;
-        bh=XXEx2SGPd/y29oJqiw72fYVS8bt6+WZwLgNdQS4oaJc=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=ERzgIDqxXRNtiVZsLTwfK5oRrCoBlXrBPfxQQzeBCZc3ZWYu6LA4B6ZDS35k6ZfrW
-         6m6IaTaj/DZoBzwQIcIlmYjV3e6D+ZC0UKK0jEFb2WrBw3+LHv+1wamo8mlVbcWUoy
-         fls3VOEXCtlz4ivvVwCM6uPidA6YzUFc5A/Cnv5c=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C79D060FEA;
-        Mon, 15 Jul 2019 09:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563181682;
-        bh=XXEx2SGPd/y29oJqiw72fYVS8bt6+WZwLgNdQS4oaJc=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=ZrbtEsoelGyAUKYhXwV8pbR1UMZr9f+YcSRzYhDpG5I6nZsksMURJhJcApQf+EXy8
-         taakRvgWkUNijeUlUFyDsqOIqVTI0S+iXaIzOX7N1pbT1TqRFjCrtFi0HaG4dIqMd3
-         VPMkMWJmLysJHP6KIAEic89GMjQImtFRMeI8hj9I=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C79D060FEA
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Fuqian Huang <huangfq.daxian@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Avinash Patil <avinashp@quantenna.com>,
-        Sergey Matyukevich <smatyukevich@quantenna.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com, brcm80211-dev-list@cypress.com
-Subject: Re: [PATCH v3 20/24] wireless: Remove call to memset after dma_alloc_coherent
-References: <20190715031941.7120-1-huangfq.daxian@gmail.com>
-Date:   Mon, 15 Jul 2019 12:07:56 +0300
-In-Reply-To: <20190715031941.7120-1-huangfq.daxian@gmail.com> (Fuqian Huang's
-        message of "Mon, 15 Jul 2019 11:19:41 +0800")
-Message-ID: <87v9w38y37.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729503AbfGOJLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 05:11:12 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8460 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729442AbfGOJLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 05:11:12 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6F96pPj088417
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 05:11:10 -0400
+Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2trnamkpxt-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 05:11:10 -0400
+Received: from localhost
+        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Mon, 15 Jul 2019 10:11:09 +0100
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 15 Jul 2019 10:11:07 +0100
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6F9B6tw48562244
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Jul 2019 09:11:06 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0D19BA4054;
+        Mon, 15 Jul 2019 09:11:06 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C52FBA405C;
+        Mon, 15 Jul 2019 09:11:05 +0000 (GMT)
+Received: from white.boeblingen.de.ibm.com (unknown [9.152.96.205])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 15 Jul 2019 09:11:05 +0000 (GMT)
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH bpf] samples/bpf: build with -D__TARGET_ARCH_$(SRCARCH)
+Date:   Mon, 15 Jul 2019 11:11:03 +0200
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071509-0020-0000-0000-00000353ADFC
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071509-0021-0000-0000-000021A7732A
+Message-Id: <20190715091103.4030-1-iii@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-15_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=949 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907150108
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fuqian Huang <huangfq.daxian@gmail.com> writes:
+While $ARCH can be relatively flexible (see Makefile and
+tools/scripts/Makefile.arch), $SRCARCH always corresponds to a directory
+name under arch/.
 
-> In commit 518a2f1925c3
-> ("dma-mapping: zero memory returned from dma_alloc_*"),
-> dma_alloc_coherent has already zeroed the memory.
-> So memset is not needed.
->
-> Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
-> ---
-> Changes in v3:
->   - Use actual commit rather than the merge commit in the commit message
->
->  drivers/net/wireless/ath/ath10k/ce.c                     | 5 -----
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c  | 2 --
->  drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c | 2 --
->  drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c | 2 --
->  4 files changed, 11 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
-> index eca87f7c5b6c..294fbc1e89ab 100644
-> --- a/drivers/net/wireless/ath/ath10k/ce.c
-> +++ b/drivers/net/wireless/ath/ath10k/ce.c
-> @@ -1704,9 +1704,6 @@ ath10k_ce_alloc_dest_ring_64(struct ath10k *ar, unsigned int ce_id,
->  	/* Correctly initialize memory to 0 to prevent garbage
->  	 * data crashing system when download firmware
->  	 */
-> -	memset(dest_ring->base_addr_owner_space_unaligned, 0,
-> -	       nentries * sizeof(struct ce_desc_64) + CE_DESC_RING_ALIGN);
+Therefore, build samples with -D__TARGET_ARCH_$(SRCARCH), since that
+matches the expectations of bpf_helpers.h.
 
-Shouldn't you also remove the comment?
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Acked-by: Vasily Gorbik <gor@linux.ibm.com>
+---
+ samples/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index f90daadfbc89..1d9be26b4edd 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -284,7 +284,7 @@ $(obj)/%.o: $(src)/%.c
+ 	$(Q)$(CLANG) $(NOSTDINC_FLAGS) $(LINUXINCLUDE) $(EXTRA_CFLAGS) -I$(obj) \
+ 		-I$(srctree)/tools/testing/selftests/bpf/ \
+ 		-D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
+-		-D__TARGET_ARCH_$(ARCH) -Wno-compare-distinct-pointer-types \
++		-D__TARGET_ARCH_$(SRCARCH) -Wno-compare-distinct-pointer-types \
+ 		-Wno-gnu-variable-sized-type-not-at-end \
+ 		-Wno-address-of-packed-member -Wno-tautological-compare \
+ 		-Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
 -- 
-Kalle Valo
+2.21.0
+
