@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F3268FE8
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:17:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2029268FEA
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389528AbfGOORk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:17:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37086 "EHLO mail.kernel.org"
+        id S2389622AbfGOORo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:17:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37144 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389291AbfGOORj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:17:39 -0400
+        id S2389465AbfGOORl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:17:41 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4BA38206B8;
-        Mon, 15 Jul 2019 14:17:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CCDB20651;
+        Mon, 15 Jul 2019 14:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200258;
-        bh=Ew34IS4c/YSyOPNEahM7m8KTTx0XZaWp+16rB2LbThU=;
+        s=default; t=1563200260;
+        bh=WIbGzk0uMuOWAkqbo0bj7IPXAiqdH4aRIU55PMwZsr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rBOzOacrg5n7nmwKCCAMi4rBmEoCUk5DNz9ot0YfYDuKzeqvZ9UgO3gbBPw6wmXDj
-         TbJDYR0s4hne6429oq/muTtxOmoWTzOMkdv9GtkTov/ZwsNSvomcjtdn4oTdykgECX
-         QkwKfXKgoiP2jBM/FjWI3a5+TDP7aTEHI+Rvq/8w=
+        b=Hh/5tfel3uFqY8iTSJ9SCXaCBGZVsPXzu4tR7PRjxE4JtIeL0xxEGXCZMV0EASy9P
+         AHUV+iWDiUJFJhtVczheAMqRaSYXUUmIQe4T2ffML2SCdTwBkonSV1etHZHL0TPP0Q
+         Fj+sOlXkCdX95hnohd4o2Jqe+ilZ6SYeSFzED7Kw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Taehee Yoo <ap420073@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
         osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 215/219] gtp: fix Illegal context switch in RCU read-side critical section.
-Date:   Mon, 15 Jul 2019 10:03:36 -0400
-Message-Id: <20190715140341.6443-215-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 216/219] gtp: fix use-after-free in gtp_encap_destroy()
+Date:   Mon, 15 Jul 2019 10:03:37 -0400
+Message-Id: <20190715140341.6443-216-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -46,68 +46,128 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 3f167e1921865b379a9becf03828e7202c7b4917 ]
+[ Upstream commit 1788b8569f5de27da09087fa3f6580d2aa04cc75 ]
 
-ipv4_pdp_add() is called in RCU read-side critical section.
-So GFP_KERNEL should not be used in the function.
-This patch make ipv4_pdp_add() to use GFP_ATOMIC instead of GFP_KERNEL.
+gtp_encap_destroy() is called twice.
+1. When interface is deleted.
+2. When udp socket is destroyed.
+either gtp->sk0 or gtp->sk1u could be freed by sock_put() in
+gtp_encap_destroy(). so, when gtp_encap_destroy() is called again,
+it would uses freed sk pointer.
 
-Test commands:
-gtp-link add gtp1 &
-gtp-tunnel add gtp1 v1 100 200 1.1.1.1 2.2.2.2
+patch makes gtp_encap_destroy() to set either gtp->sk0 or gtp->sk1u to
+null. in addition, both gtp->sk0 and gtp->sk1u pointer are protected
+by rtnl_lock. so, rtnl_lock() is added.
+
+Test command:
+   gtp-link add gtp1 &
+   killall gtp-link
+   ip link del gtp1
 
 Splat looks like:
-[  130.618881] =============================
-[  130.626382] WARNING: suspicious RCU usage
-[  130.626994] 5.2.0-rc6+ #50 Not tainted
-[  130.627622] -----------------------------
-[  130.628223] ./include/linux/rcupdate.h:266 Illegal context switch in RCU read-side critical section!
-[  130.629684]
-[  130.629684] other info that might help us debug this:
-[  130.629684]
-[  130.631022]
-[  130.631022] rcu_scheduler_active = 2, debug_locks = 1
-[  130.632136] 4 locks held by gtp-tunnel/1025:
-[  130.632925]  #0: 000000002b93c8b7 (cb_lock){++++}, at: genl_rcv+0x15/0x40
-[  130.634159]  #1: 00000000f17bc999 (genl_mutex){+.+.}, at: genl_rcv_msg+0xfb/0x130
-[  130.635487]  #2: 00000000c644ed8e (rtnl_mutex){+.+.}, at: gtp_genl_new_pdp+0x18c/0x1150 [gtp]
-[  130.636936]  #3: 0000000007a1cde7 (rcu_read_lock){....}, at: gtp_genl_new_pdp+0x187/0x1150 [gtp]
-[  130.638348]
-[  130.638348] stack backtrace:
-[  130.639062] CPU: 1 PID: 1025 Comm: gtp-tunnel Not tainted 5.2.0-rc6+ #50
-[  130.641318] Call Trace:
-[  130.641707]  dump_stack+0x7c/0xbb
-[  130.642252]  ___might_sleep+0x2c0/0x3b0
-[  130.642862]  kmem_cache_alloc_trace+0x1cd/0x2b0
-[  130.643591]  gtp_genl_new_pdp+0x6c5/0x1150 [gtp]
-[  130.644371]  genl_family_rcv_msg+0x63a/0x1030
-[  130.645074]  ? mutex_lock_io_nested+0x1090/0x1090
-[  130.645845]  ? genl_unregister_family+0x630/0x630
-[  130.646592]  ? debug_show_all_locks+0x2d0/0x2d0
-[  130.647293]  ? check_flags.part.40+0x440/0x440
-[  130.648099]  genl_rcv_msg+0xa3/0x130
+[   83.182767] BUG: KASAN: use-after-free in __lock_acquire+0x3a20/0x46a0
+[   83.184128] Read of size 8 at addr ffff8880cc7d5360 by task ip/1008
+[   83.185567] CPU: 1 PID: 1008 Comm: ip Not tainted 5.2.0-rc6+ #50
+[   83.188469] Call Trace:
 [ ... ]
+[   83.200126]  lock_acquire+0x141/0x380
+[   83.200575]  ? lock_sock_nested+0x3a/0xf0
+[   83.201069]  _raw_spin_lock_bh+0x38/0x70
+[   83.201551]  ? lock_sock_nested+0x3a/0xf0
+[   83.202044]  lock_sock_nested+0x3a/0xf0
+[   83.202520]  gtp_encap_destroy+0x18/0xe0 [gtp]
+[   83.203065]  gtp_encap_disable.isra.14+0x13/0x50 [gtp]
+[   83.203687]  gtp_dellink+0x56/0x170 [gtp]
+[   83.204190]  rtnl_delete_link+0xb4/0x100
+[ ... ]
+[   83.236513] Allocated by task 976:
+[   83.236925]  save_stack+0x19/0x80
+[   83.237332]  __kasan_kmalloc.constprop.3+0xa0/0xd0
+[   83.237894]  kmem_cache_alloc+0xd8/0x280
+[   83.238360]  sk_prot_alloc.isra.42+0x50/0x200
+[   83.238874]  sk_alloc+0x32/0x940
+[   83.239264]  inet_create+0x283/0xc20
+[   83.239684]  __sock_create+0x2dd/0x540
+[   83.240136]  __sys_socket+0xca/0x1a0
+[   83.240550]  __x64_sys_socket+0x6f/0xb0
+[   83.240998]  do_syscall_64+0x9c/0x450
+[   83.241466]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[   83.242061]
+[   83.242249] Freed by task 0:
+[   83.242616]  save_stack+0x19/0x80
+[   83.243013]  __kasan_slab_free+0x111/0x150
+[   83.243498]  kmem_cache_free+0x89/0x250
+[   83.244444]  __sk_destruct+0x38f/0x5a0
+[   83.245366]  rcu_core+0x7e9/0x1c20
+[   83.245766]  __do_softirq+0x213/0x8fa
 
-Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
+Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/gtp.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index f45a806b6c06..6f1ad7ccaea6 100644
+index 6f1ad7ccaea6..61e9b288d2dc 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -958,7 +958,7 @@ static int ipv4_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+@@ -289,13 +289,17 @@ static int gtp1u_udp_encap_recv(struct gtp_dev *gtp, struct sk_buff *skb)
+ 	return gtp_rx(pctx, skb, hdrlen, gtp->role);
+ }
  
+-static void gtp_encap_destroy(struct sock *sk)
++static void __gtp_encap_destroy(struct sock *sk)
+ {
+ 	struct gtp_dev *gtp;
+ 
+ 	lock_sock(sk);
+ 	gtp = sk->sk_user_data;
+ 	if (gtp) {
++		if (gtp->sk0 == sk)
++			gtp->sk0 = NULL;
++		else
++			gtp->sk1u = NULL;
+ 		udp_sk(sk)->encap_type = 0;
+ 		rcu_assign_sk_user_data(sk, NULL);
+ 		sock_put(sk);
+@@ -303,12 +307,19 @@ static void gtp_encap_destroy(struct sock *sk)
+ 	release_sock(sk);
+ }
+ 
++static void gtp_encap_destroy(struct sock *sk)
++{
++	rtnl_lock();
++	__gtp_encap_destroy(sk);
++	rtnl_unlock();
++}
++
+ static void gtp_encap_disable_sock(struct sock *sk)
+ {
+ 	if (!sk)
+ 		return;
+ 
+-	gtp_encap_destroy(sk);
++	__gtp_encap_destroy(sk);
+ }
+ 
+ static void gtp_encap_disable(struct gtp_dev *gtp)
+@@ -1047,6 +1058,7 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
+ 		return -EINVAL;
  	}
  
--	pctx = kmalloc(sizeof(struct pdp_ctx), GFP_KERNEL);
-+	pctx = kmalloc(sizeof(*pctx), GFP_ATOMIC);
- 	if (pctx == NULL)
- 		return -ENOMEM;
++	rtnl_lock();
+ 	rcu_read_lock();
+ 
+ 	gtp = gtp_find_dev(sock_net(skb->sk), info->attrs);
+@@ -1071,6 +1083,7 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
+ 
+ out_unlock:
+ 	rcu_read_unlock();
++	rtnl_unlock();
+ 	return err;
+ }
  
 -- 
 2.20.1
