@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E8F697CA
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:13:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F3C697B6
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732540AbfGOPMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 11:12:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41524 "EHLO mail.kernel.org"
+        id S1732104AbfGOPMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 11:12:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732038AbfGONu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:50:57 -0400
+        id S1732067AbfGONvC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:51:02 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE3F9216C4;
-        Mon, 15 Jul 2019 13:50:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6A79D2083D;
+        Mon, 15 Jul 2019 13:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198655;
-        bh=HPKAxa+ogAdv4Fdus1QyLtjfbr+BZUadXGnCKAhszeg=;
+        s=default; t=1563198661;
+        bh=nV7a/q+JWMg1LqiuVoIahWI1MEL1jbXvZwtSwZ/GD14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZAGU9Cx+km6dpyAKR4qbNgyjVrhb1IZjhp0tNIZfLO66vR70JUNoi/8dMFbitFGp
-         PU4943j38JRsQJ164vTJfTTG4sC83E82QlpaKr6llisHCUxG8U4w4scNXV61thQfHV
-         p+IlEp4PdIIpxRYzFO1HQ+rUaf5hUXh2WqyOqHW8=
+        b=HUE4eYVMmrnkEwU9dAeFwMrMrOmlfGZrPs9BXiABZfLad/vTFqLgCh3uAXIKxsY/s
+         UFG+TwWzqVnc70gizh87P7alzuxIB5hdIjvNR+QEyWg/F6VzwaIt7rn87tnpEZSi7S
+         ifPwkkqtIIdTcb4Jm8Lf5G0Q6mj7DJxagIC4ZmIE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biao Huang <biao.huang@mediatek.com>,
+Cc:     Robert Hancock <hancock@sedsystems.ca>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 073/249] net: stmmac: modify default value of tx-frames
-Date:   Mon, 15 Jul 2019 09:43:58 -0400
-Message-Id: <20190715134655.4076-73-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 076/249] net: axienet: Fix race condition causing TX hang
+Date:   Mon, 15 Jul 2019 09:44:01 -0400
+Message-Id: <20190715134655.4076-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -43,49 +43,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Biao Huang <biao.huang@mediatek.com>
+From: Robert Hancock <hancock@sedsystems.ca>
 
-[ Upstream commit d2facb4b3983425f6776c24dd678a82dbe673773 ]
+[ Upstream commit 7de44285c1f69ccfbe8be1d6a16fcd956681fee6 ]
 
-the default value of tx-frames is 25, it's too late when
-passing tstamp to stack, then the ptp4l will fail:
+It is possible that the interrupt handler fires and frees up space in
+the TX ring in between checking for sufficient TX ring space and
+stopping the TX queue in axienet_start_xmit. If this happens, the
+queue wake from the interrupt handler will occur before the queue is
+stopped, causing a lost wakeup and the adapter's transmit hanging.
 
-ptp4l -i eth0 -f gPTP.cfg -m
-ptp4l: selected /dev/ptp0 as PTP clock
-ptp4l: port 1: INITIALIZING to LISTENING on INITIALIZE
-ptp4l: port 0: INITIALIZING to LISTENING on INITIALIZE
-ptp4l: port 1: link up
-ptp4l: timed out while polling for tx timestamp
-ptp4l: increasing tx_timestamp_timeout may correct this issue,
-       but it is likely caused by a driver bug
-ptp4l: port 1: send peer delay response failed
-ptp4l: port 1: LISTENING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
+To avoid this, after stopping the queue, check again whether there is
+sufficient space in the TX ring. If so, wake up the queue again.
 
-ptp4l tests pass when changing the tx-frames from 25 to 1 with
-ethtool -C option.
-It should be fine to set tx-frames default value to 1, so ptp4l will pass
-by default.
-
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 20 ++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index ceb0d23f5041..c265cc5770e8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -251,7 +251,7 @@ struct stmmac_safety_stats {
- #define STMMAC_COAL_TX_TIMER	1000
- #define STMMAC_MAX_COAL_TX_TICK	100000
- #define STMMAC_TX_MAX_FRAMES	256
--#define STMMAC_TX_FRAMES	25
-+#define STMMAC_TX_FRAMES	1
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 831967f6eff8..65c16772e589 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -615,6 +615,10 @@ static void axienet_start_xmit_done(struct net_device *ndev)
  
- /* Packets types */
- enum packets_types {
+ 	ndev->stats.tx_packets += packets;
+ 	ndev->stats.tx_bytes += size;
++
++	/* Matches barrier in axienet_start_xmit */
++	smp_mb();
++
+ 	netif_wake_queue(ndev);
+ }
+ 
+@@ -670,9 +674,19 @@ axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ 
+ 	if (axienet_check_tx_bd_space(lp, num_frag)) {
+-		if (!netif_queue_stopped(ndev))
+-			netif_stop_queue(ndev);
+-		return NETDEV_TX_BUSY;
++		if (netif_queue_stopped(ndev))
++			return NETDEV_TX_BUSY;
++
++		netif_stop_queue(ndev);
++
++		/* Matches barrier in axienet_start_xmit_done */
++		smp_mb();
++
++		/* Space might have just been freed - check again */
++		if (axienet_check_tx_bd_space(lp, num_frag))
++			return NETDEV_TX_BUSY;
++
++		netif_wake_queue(ndev);
+ 	}
+ 
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 -- 
 2.20.1
 
