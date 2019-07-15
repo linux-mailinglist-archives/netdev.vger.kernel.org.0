@@ -2,102 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A055169717
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:08:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C304B6982C
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:15:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388087AbfGOPIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 11:08:32 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34044 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733203AbfGOPIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 11:08:31 -0400
-Received: by mail-pf1-f193.google.com with SMTP id b13so7559529pfo.1;
-        Mon, 15 Jul 2019 08:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HvGFiXKIMoJHRgRPv+CNGx82/V4N9NKuA2a2k2xvyEI=;
-        b=SNM/YzFIofldJvXGWAsN2gKzBBedbJuHXOK2bg8FuKyDmVMINV9tWuGaOU6IWVavL2
-         1UVVsFWjaS+FxTXEI/r2C81HaGqZApODK2QkrBTs2GFeADPqMO6XVJ390ilEF9fX9OwR
-         g0x6GT4nvvt5AQiiaFvEBDFSYIPQi2VWOVILJ6Irpc1NnuADpqMyO3tnYBIDwd4FIYon
-         WCE9046IBxjH3Uj+vy3olu6Zn66GP6E7Q26p1i7shDmBhnh9MoVoCcoXZgTVhqdgwcG5
-         fjqviZbtLeGPaQ/XbWVLvnQKR2S3qdg+Z2/X87fhnwaua/2+6k2ATsW09NjIV7guMQxh
-         GtGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=HvGFiXKIMoJHRgRPv+CNGx82/V4N9NKuA2a2k2xvyEI=;
-        b=FDemJw+be0Kg65wU67pPs0ql0DbU44QqbGwJA+Zd5dMgMsSdvLMfEM2dCU8gmjo6dj
-         Y7oFyb4jxdNIyRZZJZLqFbdNtJWpmr29zBptDxwQ6dyb+xEegUOSYUkLMc1jSU3I8HVx
-         91LAg0+fJwI8ML5L8j/D2xxrzLKccfklqLIh/1HhrzNKA7+PiafJ1jP+AxvI+pD+Ad6c
-         0yby2OCKiGWNpxclOmGMh51EXzl1mV40x4tIZChnXljUTtCzQZusDggO6otOERIosASj
-         w/jfA73k1ae0CpKWKk7WznONN0TrRy3Q4+xZ8uO5npqZhp9TyErNaVcC8HILtnDL8d7E
-         Va0w==
-X-Gm-Message-State: APjAAAVwvc/LFbSbeH4gijGEeMah6EB0tnzP8Pb19fyJ1jXd9dg46w3E
-        wx9PFEaQMVs+YeUlYE9SN/c=
-X-Google-Smtp-Source: APXvYqwhh1jY/TQpZyLTr7OKyrCoZOc6rJCUkSPPoEOkGW73rwzgzUaZc6OeiL+iMEX9bVsQi8AIeA==
-X-Received: by 2002:a63:10a:: with SMTP id 10mr27855904pgb.281.1563203310244;
-        Mon, 15 Jul 2019 08:08:30 -0700 (PDT)
-Received: from debian.net.fpt ([2405:4800:58c7:392e:98e4:a492:ad40:d86e])
-        by smtp.gmail.com with ESMTPSA id b37sm33284969pjc.15.2019.07.15.08.08.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Jul 2019 08:08:29 -0700 (PDT)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     syzbot+8750abbc3a46ef47d509@syzkaller.appspotmail.com
-Cc:     isdn@linux-pingi.de, davem@davemloft.net,
-        gregkh@linuxfoundation.org, andreyknvl@google.com,
-        bigeasy@linutronix.de, gustavo@embeddedor.com, pakki001@umn.edu,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org, Phong Tran <tranmanphong@gmail.com>
-Subject: [PATCH] ISDN: hfcsusb: checking idx of ep configuration
-Date:   Mon, 15 Jul 2019 22:08:14 +0700
-Message-Id: <20190715150814.20022-1-tranmanphong@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <000000000000f2b23d05868310f9@google.com>
-References: <000000000000f2b23d05868310f9@google.com>
+        id S1730554AbfGONrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:47:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55128 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730012AbfGONrH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:47:07 -0400
+Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6E8E72080A;
+        Mon, 15 Jul 2019 13:47:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563198426;
+        bh=jtIGX7QQt3juwRiIEJhbVV6v+rMt/kTvO0hy90dvnaE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=c6w0AgC71knJGZcFOZD/VXQtBYuOAECSjfw7SM7XFudazasMFTBqw18jycl2rrp+8
+         HDuygwjMbq9sRwN5JhmXOHM/fOC62JoDsAek8+AfU1MHdNERk0Gp1hCayqig76EnWM
+         sSTov3eAACHnF6/DOUKcIDPiwssjAHggTmxCnqms=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Alagu Sankar <alagusankar@silex-india.com>,
+        Wen Gong <wgong@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 002/249] ath10k: htt: don't use txdone_fifo with SDIO
+Date:   Mon, 15 Jul 2019 09:42:47 -0400
+Message-Id: <20190715134655.4076-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
+References: <20190715134655.4076-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The syzbot test with random endpoint address which made the idx is
-overflow in the table of endpoint configuations.
+From: Alagu Sankar <alagusankar@silex-india.com>
 
-this adds the checking for fixing the error report from
-syzbot
+[ Upstream commit e2a6b711282a371c5153239e0468a48254f17ca6 ]
 
-KASAN: stack-out-of-bounds Read in hfcsusb_probe [1]
-The patch tested by syzbot [2]
+HTT High Latency (ATH10K_DEV_TYPE_HL) does not use txdone_fifo at all, we don't
+even initialise it by skipping ath10k_htt_tx_alloc_buf() in
+ath10k_htt_tx_start(). Because of this using QCA6174 SDIO
+ath10k_htt_rx_tx_compl_ind() will crash when it accesses unitialised
+txdone_fifo. So skip txdone_fifo when using High Latency mode.
 
-Reported-by: syzbot+8750abbc3a46ef47d509@syzkaller.appspotmail.com
+Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00007-QCARMSWP-1.
 
-[1]:
-https://syzkaller.appspot.com/bug?id=30a04378dac680c5d521304a00a86156bb913522
-[2]:
-https://groups.google.com/d/msg/syzkaller-bugs/_6HBdge8F3E/OJn7wVNpBAAJ
-
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+Co-developed-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Alagu Sankar <alagusankar@silex-india.com>
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/hfcsusb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index 4c99739b937e..0e224232f746 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -1955,6 +1955,9 @@ hfcsusb_probe(struct usb_interface *intf, const struct usb_device_id *id)
- 
- 				/* get endpoint base */
- 				idx = ((ep_addr & 0x7f) - 1) * 2;
-+				if (idx > 15)
-+					return -EIO;
-+
- 				if (ep_addr & 0x80)
- 					idx++;
- 				attr = ep->desc.bmAttributes;
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index 1acc622d2183..f22840bbc389 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -2277,7 +2277,9 @@ static void ath10k_htt_rx_tx_compl_ind(struct ath10k *ar,
+ 		 *  Note that with only one concurrent reader and one concurrent
+ 		 *  writer, you don't need extra locking to use these macro.
+ 		 */
+-		if (!kfifo_put(&htt->txdone_fifo, tx_done)) {
++		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
++			ath10k_txrx_tx_unref(htt, &tx_done);
++		} else if (!kfifo_put(&htt->txdone_fifo, tx_done)) {
+ 			ath10k_warn(ar, "txdone fifo overrun, msdu_id %d status %d\n",
+ 				    tx_done.msdu_id, tx_done.status);
+ 			ath10k_txrx_tx_unref(htt, &tx_done);
 -- 
-2.11.0
+2.20.1
 
