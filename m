@@ -2,86 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4882968C90
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0DC68C9E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731744AbfGONwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:52:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43642 "EHLO mail.kernel.org"
+        id S1732233AbfGONwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:52:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732095AbfGONvh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:51:37 -0400
+        id S1731951AbfGONwf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:52:35 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED1B72067C;
-        Mon, 15 Jul 2019 13:51:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 46A842081C;
+        Mon, 15 Jul 2019 13:52:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198696;
-        bh=72ZPFHwqWAaNWIcd3wYc2xkP5JFEXff9X1ORAOpl6Mc=;
+        s=default; t=1563198754;
+        bh=ZdbnfVsO+QWddwSs2T2SECs1mmxbuL1FjvRE+RRAlxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2PrnYkeqrOYqTbUkj3b9rbISMCGMEQvkS8DiWmkTjTPtwf+MWfW8ETxHw9o7X7FMb
-         5NTc5BTNowyMBiQMiakqNmVc1P0BzVIM9bNaBcodEeIiS39o7sx0gKlahZ0U8z+sNV
-         S3KryQ76vUe09er+zEmZcFy85SN8HXimVO9dgfGU=
+        b=HkeO3f5CgJaD/PyFC/wZXLRtT4MEHgyrdvCGR97cAK89DL0pKwQi/b/+S68Ty4OCc
+         t0NFHZRHQfvdfkvgXVFnjbtSsXXmhpNrQGqhbFL9NSOMeyINJVgBknADdObhiHKr5p
+         gBJyK3mAVheFQYtwCvI5gdvDkqo5thsIhBrF6pL4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hechao Li <hechaol@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+Cc:     =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Andrii Nakryiko <andriin@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 085/249] selftests/bpf : clean up feature/ when make clean
-Date:   Mon, 15 Jul 2019 09:44:10 -0400
-Message-Id: <20190715134655.4076-85-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 095/249] bpf: silence warning messages in core
+Date:   Mon, 15 Jul 2019 09:44:20 -0400
+Message-Id: <20190715134655.4076-95-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hechao Li <hechaol@fb.com>
+From: Valdis Klētnieks <valdis.kletnieks@vt.edu>
 
-[ Upstream commit 89cceaa939171fafa153d4bf637b39e396bbd785 ]
+[ Upstream commit aee450cbe482a8c2f6fa5b05b178ef8b8ff107ca ]
 
-An error "implicit declaration of function 'reallocarray'" can be thrown
-with the following steps:
+Compiling kernel/bpf/core.c with W=1 causes a flood of warnings:
 
-$ cd tools/testing/selftests/bpf
-$ make clean && make CC=<Path to GCC 4.8.5>
-$ make clean && make CC=<Path to GCC 7.x>
+kernel/bpf/core.c:1198:65: warning: initialized field overwritten [-Woverride-init]
+ 1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
+      |                                                                 ^~~~
+kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
+ 1087 |  INSN_3(ALU, ADD,  X),   \
+      |  ^~~~~~
+kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
+ 1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
+      |   ^~~~~~~~~~~~
+kernel/bpf/core.c:1198:65: note: (near initialization for 'public_insntable[12]')
+ 1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
+      |                                                                 ^~~~
+kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
+ 1087 |  INSN_3(ALU, ADD,  X),   \
+      |  ^~~~~~
+kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
+ 1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
+      |   ^~~~~~~~~~~~
 
-The cause is that the feature folder generated by GCC 4.8.5 is not
-removed, leaving feature-reallocarray being 1, which causes reallocarray
-not defined when re-compliing with GCC 7.x. This diff adds feature
-folder to EXTRA_CLEAN to avoid this problem.
+98 copies of the above.
 
-v2: Rephrase the commit message.
+The attached patch silences the warnings, because we *know* we're overwriting
+the default initializer. That leaves bpf/core.c with only 6 other warnings,
+which become more visible in comparison.
 
-Signed-off-by: Hechao Li <hechaol@fb.com>
+Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/bpf/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index e36356e2377e..1c9511262947 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -275,4 +275,5 @@ $(OUTPUT)/verifier/tests.h: $(VERIFIER_TESTS_DIR) $(VERIFIER_TEST_FILES)
- 		 ) > $(VERIFIER_TESTS_H))
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 4c2fa3ac56f6..29d781061cd5 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-y := core.o
++CFLAGS_core.o += $(call cc-disable-warning, override-init)
  
- EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(ALU32_BUILD_DIR) \
--	$(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H)
-+	$(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H) \
-+	feature
+ obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o
+ obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
 -- 
 2.20.1
 
