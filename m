@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DD4869789
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:11:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DC669756
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732366AbfGONxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:53:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51354 "EHLO mail.kernel.org"
+        id S1732496AbfGON4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:56:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60776 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732355AbfGONxW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:53:22 -0400
+        id S1732313AbfGON4N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:56:13 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 470EF2081C;
-        Mon, 15 Jul 2019 13:53:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3D16420C01;
+        Mon, 15 Jul 2019 13:56:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198801;
-        bh=2ptnSZEzqcxgEzPkv3LIHR5g4hcTzweuTSPoTUNENZM=;
+        s=default; t=1563198972;
+        bh=A/XpATUw5mCYjSAZ+Cg8opTeNa6c0gK1Fk1eGEFeR5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hUXDYyYdUJvg00RD9o7w9LganHyW0lUDUGe7PSHnDrc6tYbYT78JH2OjxoOygAKs0
-         5Ed4DhZpZmDtB5iN4aLTw85MmbU8AK7Ogi/M3sc/HQFiECanraE9y4qQ84iSHsJwDI
-         7dViUaWLli74lbeq2ff0L8QYjhYaqsR3h61SACGc=
+        b=Z5fqqcP1VnSYsLMhTp393nIH9CPipiQTOHP7PjW4uNMorrqIvj69kbhhoQjKgCsuL
+         bnZqT08sSNwhBfOqBxXkRIGHraLVraJauOLW1PudkTNoNTPUC7Ee8Euw/aws6j5aaS
+         W2m4jXmwWAyiLgtGK5WU2xLi0MBAbcPIjDhiG5mw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 107/249] net: hns3: delay ring buffer clearing during reset
-Date:   Mon, 15 Jul 2019 09:44:32 -0400
-Message-Id: <20190715134655.4076-107-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        syzbot+1fcc5ef45175fc774231@syzkaller.appspotmail.com,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 157/249] rtlwifi: rtl8192cu: fix error handle when usb probe failed
+Date:   Mon, 15 Jul 2019 09:45:22 -0400
+Message-Id: <20190715134655.4076-157-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -45,93 +46,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 3a30964a2eef6aabd3ab18b979ea0eacf1147731 ]
+[ Upstream commit 6c0ed66f1a5b84e2a812c7c2d6571a5621bf3396 ]
 
-The driver may not be able to disable the ring through firmware
-when downing the netdev during reset process, which may cause
-hardware accessing freed buffer problem.
+rtl_usb_probe() must do error handle rtl_deinit_core() only if
+rtl_init_core() is done, otherwise goto error_out2.
 
-This patch delays the ring buffer clearing to reset uninit
-process because hardware will not access the ring buffer after
-hardware reset is completed.
+| usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+| rtl_usb: reg 0xf0, usbctrl_vendorreq TimeOut! status:0xffffffb9 value=0x0
+| rtl8192cu: Chip version 0x10
+| rtl_usb: reg 0xa, usbctrl_vendorreq TimeOut! status:0xffffffb9 value=0x0
+| rtl_usb: Too few input end points found
+| INFO: trying to register non-static key.
+| the code is fine but needs lockdep annotation.
+| turning off the locking correctness validator.
+| CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.1.0-rc4-319354-g9a33b36 #3
+| Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+| Google 01/01/2011
+| Workqueue: usb_hub_wq hub_event
+| Call Trace:
+|   __dump_stack lib/dump_stack.c:77 [inline]
+|   dump_stack+0xe8/0x16e lib/dump_stack.c:113
+|   assign_lock_key kernel/locking/lockdep.c:786 [inline]
+|   register_lock_class+0x11b8/0x1250 kernel/locking/lockdep.c:1095
+|   __lock_acquire+0xfb/0x37c0 kernel/locking/lockdep.c:3582
+|   lock_acquire+0x10d/0x2f0 kernel/locking/lockdep.c:4211
+|   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+|   _raw_spin_lock_irqsave+0x44/0x60 kernel/locking/spinlock.c:152
+|   rtl_c2hcmd_launcher+0xd1/0x390
+| drivers/net/wireless/realtek/rtlwifi/base.c:2344
+|   rtl_deinit_core+0x25/0x2d0 drivers/net/wireless/realtek/rtlwifi/base.c:574
+|   rtl_usb_probe.cold+0x861/0xa70
+| drivers/net/wireless/realtek/rtlwifi/usb.c:1093
+|   usb_probe_interface+0x31d/0x820 drivers/usb/core/driver.c:361
+|   really_probe+0x2da/0xb10 drivers/base/dd.c:509
+|   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
+|   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
+|   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
+|   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
+|   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
+|   device_add+0xad2/0x16e0 drivers/base/core.c:2106
+|   usb_set_configuration+0xdf7/0x1740 drivers/usb/core/message.c:2021
+|   generic_probe+0xa2/0xda drivers/usb/core/generic.c:210
+|   usb_probe_device+0xc0/0x150 drivers/usb/core/driver.c:266
+|   really_probe+0x2da/0xb10 drivers/base/dd.c:509
+|   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
+|   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
+|   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
+|   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
+|   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
+|   device_add+0xad2/0x16e0 drivers/base/core.c:2106
+|   usb_new_device.cold+0x537/0xccf drivers/usb/core/hub.c:2534
+|   hub_port_connect drivers/usb/core/hub.c:5089 [inline]
+|   hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+|   port_event drivers/usb/core/hub.c:5350 [inline]
+|   hub_event+0x138e/0x3b00 drivers/usb/core/hub.c:5432
+|   process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+|   worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+|   kthread+0x313/0x420 kernel/kthread.c:253
+|   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
 
-Fixes: bb6b94a896d4 ("net: hns3: Add reset interface implementation in client")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: syzbot+1fcc5ef45175fc774231@syzkaller.appspotmail.com
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/usb.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index d18ad7b48a31..e0d3e2f9801d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -28,7 +28,7 @@
- #define hns3_tx_bd_count(S)	DIV_ROUND_UP(S, HNS3_MAX_BD_SIZE)
- 
- static void hns3_clear_all_ring(struct hnae3_handle *h);
--static void hns3_force_clear_all_rx_ring(struct hnae3_handle *h);
-+static void hns3_force_clear_all_ring(struct hnae3_handle *h);
- static void hns3_remove_hw_addr(struct net_device *netdev);
- 
- static const char hns3_driver_name[] = "hns3";
-@@ -491,7 +491,12 @@ static void hns3_nic_net_down(struct net_device *netdev)
- 	/* free irq resources */
- 	hns3_nic_uninit_irq(priv);
- 
--	hns3_clear_all_ring(priv->ae_handle);
-+	/* delay ring buffer clearing to hns3_reset_notify_uninit_enet
-+	 * during reset process, because driver may not be able
-+	 * to disable the ring through firmware when downing the netdev.
-+	 */
-+	if (!hns3_nic_resetting(netdev))
-+		hns3_clear_all_ring(priv->ae_handle);
- }
- 
- static int hns3_nic_net_stop(struct net_device *netdev)
-@@ -3883,7 +3888,7 @@ static void hns3_client_uninit(struct hnae3_handle *handle, bool reset)
- 
- 	hns3_del_all_fd_rules(netdev, true);
- 
--	hns3_force_clear_all_rx_ring(handle);
-+	hns3_force_clear_all_ring(handle);
- 
- 	hns3_uninit_phy(netdev);
- 
-@@ -4055,7 +4060,7 @@ static void hns3_force_clear_rx_ring(struct hns3_enet_ring *ring)
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index e24fda5e9087..34d68dbf4b4c 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -1064,13 +1064,13 @@ int rtl_usb_probe(struct usb_interface *intf,
+ 	rtlpriv->cfg->ops->read_eeprom_info(hw);
+ 	err = _rtl_usb_init(hw);
+ 	if (err)
+-		goto error_out;
++		goto error_out2;
+ 	rtl_usb_init_sw(hw);
+ 	/* Init mac80211 sw */
+ 	err = rtl_init_core(hw);
+ 	if (err) {
+ 		pr_err("Can't allocate sw for mac80211\n");
+-		goto error_out;
++		goto error_out2;
  	}
- }
+ 	if (rtlpriv->cfg->ops->init_sw_vars(hw)) {
+ 		pr_err("Can't init_sw_vars\n");
+@@ -1091,6 +1091,7 @@ int rtl_usb_probe(struct usb_interface *intf,
  
--static void hns3_force_clear_all_rx_ring(struct hnae3_handle *h)
-+static void hns3_force_clear_all_ring(struct hnae3_handle *h)
- {
- 	struct net_device *ndev = h->kinfo.netdev;
- 	struct hns3_nic_priv *priv = netdev_priv(ndev);
-@@ -4063,6 +4068,9 @@ static void hns3_force_clear_all_rx_ring(struct hnae3_handle *h)
- 	u32 i;
- 
- 	for (i = 0; i < h->kinfo.num_tqps; i++) {
-+		ring = priv->ring_data[i].ring;
-+		hns3_clear_tx_ring(ring);
-+
- 		ring = priv->ring_data[i + h->kinfo.num_tqps].ring;
- 		hns3_force_clear_rx_ring(ring);
- 	}
-@@ -4297,7 +4305,8 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
- 		return 0;
- 	}
- 
--	hns3_force_clear_all_rx_ring(handle);
-+	hns3_clear_all_ring(handle);
-+	hns3_force_clear_all_ring(handle);
- 
- 	hns3_nic_uninit_vector_data(priv);
- 
+ error_out:
+ 	rtl_deinit_core(hw);
++error_out2:
+ 	_rtl_usb_io_handler_release(hw);
+ 	usb_put_dev(udev);
+ 	complete(&rtlpriv->firmware_loading_complete);
 -- 
 2.20.1
 
