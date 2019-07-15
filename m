@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 199F069136
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B10FF69144
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391024AbfGOO10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:27:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36672 "EHLO mail.kernel.org"
+        id S2391197AbfGOO1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:27:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389203AbfGOO10 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:27:26 -0400
+        id S2390332AbfGOO1p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:27:45 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DD4A21850;
-        Mon, 15 Jul 2019 14:27:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2A90821842;
+        Mon, 15 Jul 2019 14:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200845;
-        bh=ZrU0QluTc3U+7nMkklJOhFFAOwwl42KlOSzZBaNtEE0=;
+        s=default; t=1563200864;
+        bh=akGUhKVSHFGT8s4X5fyVfQB6wkOhTdhGrZbORvz2OMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CBV2G5iCDOjZC67BeSG68h1Xo2I6iXNGy7GwcNZhgLCRUdcIz57rZbgo5+BPBjQ7R
-         JUO/Nozsd5Q2wKUz0oDWYaFYHcdlJ5JU6W7VzlkxzHjvYFG3qfVgZh2GeTaSrev6m5
-         IsUHT1JV+pIyqqDLUt2JRalfGyPBNrsyNqL8khHU=
+        b=UVUZJT+99YFeDQVFOu4LFP+JWcECDl6OREs0MfnNJnKGvle4ULUFQ5nz2pwwCkf3o
+         ZS3fLzE9QXyDlXGTIfr7m5weiFOcVpI6gw8zkMIbrXXrXy0AF/cVou069E6uq6Hm+B
+         7NJsPwGrbVBPtVtGymxuQm3eGcuR2yIKwwf8Nxvs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+e5be16aa39ad6e755391@syzkaller.appspotmail.com,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 143/158] bonding: validate ip header before check IPPROTO_IGMP
-Date:   Mon, 15 Jul 2019 10:17:54 -0400
-Message-Id: <20190715141809.8445-143-sashal@kernel.org>
+Cc:     Josua Mayer <josua.mayer@jm0.eu>,
+        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
+        Michael Scott <mike@foundries.io>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 149/158] Bluetooth: 6lowpan: search for destination address in all peers
+Date:   Mon, 15 Jul 2019 10:18:00 -0400
+Message-Id: <20190715141809.8445-149-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -47,87 +46,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
+From: Josua Mayer <josua.mayer@jm0.eu>
 
-[ Upstream commit 9d1bc24b52fb8c5d859f9a47084bf1179470e04c ]
+[ Upstream commit b188b03270b7f8568fc714101ce82fbf5e811c5a ]
 
-bond_xmit_roundrobin() checks for IGMP packets but it parses
-the IP header even before checking skb->protocol.
+Handle overlooked case where the target address is assigned to a peer
+and neither route nor gateway exist.
 
-We should validate the IP header with pskb_may_pull() before
-using iph->protocol.
+For one peer, no checks are performed to see if it is meant to receive
+packets for a given address.
 
-Reported-and-tested-by: syzbot+e5be16aa39ad6e755391@syzkaller.appspotmail.com
-Fixes: a2fd940f4cff ("bonding: fix broken multicast with round-robin mode")
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+As soon as there is a second peer however, checks are performed
+to deal with routes and gateways for handling complex setups with
+multiple hops to a target address.
+This logic assumed that no route and no gateway imply that the
+destination address can not be reached, which is false in case of a
+direct peer.
+
+Acked-by: Jukka Rissanen <jukka.rissanen@linux.intel.com>
+Tested-by: Michael Scott <mike@foundries.io>
+Signed-off-by: Josua Mayer <josua.mayer@jm0.eu>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 37 ++++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 14 deletions(-)
+ net/bluetooth/6lowpan.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 7e162fff01ab..be0b785becd0 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3852,8 +3852,8 @@ static netdev_tx_t bond_xmit_roundrobin(struct sk_buff *skb,
- 					struct net_device *bond_dev)
- {
- 	struct bonding *bond = netdev_priv(bond_dev);
--	struct iphdr *iph = ip_hdr(skb);
- 	struct slave *slave;
-+	int slave_cnt;
- 	u32 slave_id;
- 
- 	/* Start with the curr_active_slave that joined the bond as the
-@@ -3862,23 +3862,32 @@ static netdev_tx_t bond_xmit_roundrobin(struct sk_buff *skb,
- 	 * send the join/membership reports.  The curr_active_slave found
- 	 * will send all of this type of traffic.
- 	 */
--	if (iph->protocol == IPPROTO_IGMP && skb->protocol == htons(ETH_P_IP)) {
--		slave = rcu_dereference(bond->curr_active_slave);
--		if (slave)
--			bond_dev_queue_xmit(bond, skb, slave->dev);
--		else
--			bond_xmit_slave_id(bond, skb, 0);
--	} else {
--		int slave_cnt = READ_ONCE(bond->slave_cnt);
-+	if (skb->protocol == htons(ETH_P_IP)) {
-+		int noff = skb_network_offset(skb);
-+		struct iphdr *iph;
- 
--		if (likely(slave_cnt)) {
--			slave_id = bond_rr_gen_slave_id(bond);
--			bond_xmit_slave_id(bond, skb, slave_id % slave_cnt);
--		} else {
--			bond_tx_drop(bond_dev, skb);
-+		if (unlikely(!pskb_may_pull(skb, noff + sizeof(*iph))))
-+			goto non_igmp;
-+
-+		iph = ip_hdr(skb);
-+		if (iph->protocol == IPPROTO_IGMP) {
-+			slave = rcu_dereference(bond->curr_active_slave);
-+			if (slave)
-+				bond_dev_queue_xmit(bond, skb, slave->dev);
-+			else
-+				bond_xmit_slave_id(bond, skb, 0);
-+			return NETDEV_TX_OK;
- 		}
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index 4e2576fc0c59..357475cceec6 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -187,10 +187,16 @@ static inline struct lowpan_peer *peer_lookup_dst(struct lowpan_btle_dev *dev,
  	}
  
-+non_igmp:
-+	slave_cnt = READ_ONCE(bond->slave_cnt);
-+	if (likely(slave_cnt)) {
-+		slave_id = bond_rr_gen_slave_id(bond);
-+		bond_xmit_slave_id(bond, skb, slave_id % slave_cnt);
-+	} else {
-+		bond_tx_drop(bond_dev, skb);
-+	}
- 	return NETDEV_TX_OK;
- }
+ 	if (!rt) {
+-		nexthop = &lowpan_cb(skb)->gw;
+-
+-		if (ipv6_addr_any(nexthop))
+-			return NULL;
++		if (ipv6_addr_any(&lowpan_cb(skb)->gw)) {
++			/* There is neither route nor gateway,
++			 * probably the destination is a direct peer.
++			 */
++			nexthop = daddr;
++		} else {
++			/* There is a known gateway
++			 */
++			nexthop = &lowpan_cb(skb)->gw;
++		}
+ 	} else {
+ 		nexthop = rt6_nexthop(rt, daddr);
  
 -- 
 2.20.1
