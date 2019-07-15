@@ -2,50 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91A896856C
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 10:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD46685AD
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 10:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729577AbfGOIad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 04:30:33 -0400
-Received: from s2mx02.siteserve.jp ([210.248.135.119]:22508 "EHLO
-        s2mx02.siteserve.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726170AbfGOIaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 04:30:30 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by s2mx02.siteserve.jp (Postfix) with ESMTP id 5CD6C11BF16;
-        Mon, 15 Jul 2019 17:10:52 +0900 (JST)
-X-Virus-Scanned: amavisd-new at s2mx02.siteserve.jp
-Received: from s2mx02.siteserve.jp ([127.0.0.1])
-        by localhost (mail.siteserve.jp [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id xrzqXF2rmh7E; Mon, 15 Jul 2019 17:10:51 +0900 (JST)
-Received: from webmail.nakagawa-consul.com (localhost.localdomain [127.0.0.1])
-        by s2mx02.siteserve.jp (Postfix) with ESMTP id D280B11BDB1;
-        Mon, 15 Jul 2019 17:10:49 +0900 (JST)
-Received: from 174.128.236.106
-        (RisuMail authenticated user morita@nakagawa-consul.com)
-        by webmail.nakagawa-consul.com with HTTP;
-        Mon, 15 Jul 2019 17:10:50 +0900 (JST)
-Message-ID: <50258.174.128.236.106.1563178250.risu@webmail.nakagawa-consul.com>
-Date:   Mon, 15 Jul 2019 17:10:50 +0900 (JST)
-Subject: Loan offer !!
-From:   "Smith Jerry" <morita@nakagawa-consul.com>
-Reply-To: kasaperkoloans@yahoo.com.hk
-User-Agent: RisuMail 3.1
-X-Mailer: RisuMail 3.1
-MIME-Version: 1.0
-Content-Type: text/plain;charset=us-ascii
-Content-Transfer-Encoding: 8bit
-X-Priority: 3 (Normal)
-Importance: Normal
-To:     undisclosed-recipients:;
+        id S1729490AbfGOIoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 04:44:05 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42510 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729207AbfGOIoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 04:44:05 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1hmwaW-0005iC-10; Mon, 15 Jul 2019 08:44:00 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH] e1000e: Make speed detection on hotplugging cable more reliable
+Date:   Mon, 15 Jul 2019 16:43:55 +0800
+Message-Id: <20190715084355.9962-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+After hotplugging an 1Gbps ethernet cable with 1Gbps link partner, the
+MII_BMSR may reports 10Mbps, renders the network rather slow.
 
+The issue has much lower fail rate after commit 59653e6497d1 ("e1000e:
+Make watchdog use delayed work"), which esssentially introduces some
+delay before running the watchdog task.
 
+But there's still a chance that the hotplugging event and the queued
+watchdog task gets run at the same time, then the original issue can be
+observed once again.
 
-Do you need a Loan? email us now on kasaperkoloans@yahoo.com.hk and get
-more details on the loan we offer
+So let's use mod_delayed_work() to add a deterministic 1 second delay
+before running watchdog task, after an interrupt.
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/ethernet/intel/e1000e/netdev.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index e4baa13b3cda..c83bf5349d53 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -1780,8 +1780,8 @@ static irqreturn_t e1000_intr_msi(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			queue_delayed_work(adapter->e1000_workqueue,
+-					   &adapter->watchdog_task, 1);
++			mod_delayed_work(adapter->e1000_workqueue,
++					 &adapter->watchdog_task, HZ);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1861,8 +1861,8 @@ static irqreturn_t e1000_intr(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			queue_delayed_work(adapter->e1000_workqueue,
+-					   &adapter->watchdog_task, 1);
++			mod_delayed_work(adapter->e1000_workqueue,
++					 &adapter->watchdog_task, HZ);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1907,8 +1907,8 @@ static irqreturn_t e1000_msix_other(int __always_unused irq, void *data)
+ 		hw->mac.get_link_status = true;
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			queue_delayed_work(adapter->e1000_workqueue,
+-					   &adapter->watchdog_task, 1);
++			mod_delayed_work(adapter->e1000_workqueue,
++					 &adapter->watchdog_task, HZ);
+ 	}
+ 
+ 	if (!test_bit(__E1000_DOWN, &adapter->state))
+-- 
+2.17.1
 
