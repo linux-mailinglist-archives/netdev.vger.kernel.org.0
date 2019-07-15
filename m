@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B33A697A0
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50C0D6978E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731808AbfGONvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:51:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41946 "EHLO mail.kernel.org"
+        id S1732315AbfGONxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:53:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49688 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731879AbfGONvI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:51:08 -0400
+        id S1732069AbfGONxL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:53:11 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB63920C01;
-        Mon, 15 Jul 2019 13:51:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4AC1720C01;
+        Mon, 15 Jul 2019 13:53:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198668;
-        bh=oRqbOAySbboqMZbkmrXo2KQeXzm8NK/i+iZVt347v4g=;
+        s=default; t=1563198790;
+        bh=WWSyR7ZkWOULUbOIOZcSxR4qgjOH/WofWi+q0Fjb8OU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SrEnjZdDaTnhnlwK01RWmiHuyNnvHJfPeoVJS32FwWCJZ62QWXgQhyABsHBIR3x4I
-         TwsM1cZWpyBEmZn/z/6iD6breyO3zZX+lnX6ZGjmiKgo3rZm65xfxRt7n5H/PXWLoZ
-         6e7mmVe4av44sQqis9bIklyhTk+G2+lKU85eJFYc=
+        b=UodZkVWbSz1sdBaBmkfjRnptKBM1aVtIdT+MTewHQIjGnkXdNmOOrNSGXn5gC661B
+         JtcIpjoCI6LfNo94DPZSJkdydqDm+tjzAlLmndWnFJVkjq4JNdxjEvFFy1FqGpFZs9
+         6/ZorlJz6YT2Y9fvJNdqgZYz5ewccle4DS1zhuhc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Robert Hancock <hancock@sedsystems.ca>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
+Cc:     Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <ariel.elior@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 079/249] net: sfp: add mutex to prevent concurrent state checks
-Date:   Mon, 15 Jul 2019 09:44:04 -0400
-Message-Id: <20190715134655.4076-79-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 104/249] qed: iWARP - Fix tc for MPA ll2 connection
+Date:   Mon, 15 Jul 2019 09:44:29 -0400
+Message-Id: <20190715134655.4076-104-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -44,65 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Robert Hancock <hancock@sedsystems.ca>
+From: Michal Kalderon <michal.kalderon@marvell.com>
 
-[ Upstream commit 2158e856f56bb762ef90f3ec244d41a519826f75 ]
+[ Upstream commit cb94d52b93c74fe1f2595734fabeda9f8ae891ee ]
 
-sfp_check_state can potentially be called by both a threaded IRQ handler
-and delayed work. If it is concurrently called, it could result in
-incorrect state management. Add a st_mutex to protect the state - this
-lock gets taken outside of code that checks and handle state changes, and
-the existing sm_mutex nests inside of it.
+The driver needs to assign a lossless traffic class for the MPA ll2
+connection to ensure no packets are dropped when returning from the
+driver as they will never be re-transmitted by the peer.
 
-Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+Fixes: ae3488ff37dc ("qed: Add ll2 connection for processing unaligned MPA packets")
+Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
+Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 71812be0ac64..b6efd2d41dce 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -186,10 +186,11 @@ struct sfp {
- 	struct gpio_desc *gpio[GPIO_MAX];
- 
- 	bool attached;
-+	struct mutex st_mutex;			/* Protects state */
- 	unsigned int state;
- 	struct delayed_work poll;
- 	struct delayed_work timeout;
--	struct mutex sm_mutex;
-+	struct mutex sm_mutex;			/* Protects state machine */
- 	unsigned char sm_mod_state;
- 	unsigned char sm_dev_state;
- 	unsigned short sm_state;
-@@ -1719,6 +1720,7 @@ static void sfp_check_state(struct sfp *sfp)
- {
- 	unsigned int state, i, changed;
- 
-+	mutex_lock(&sfp->st_mutex);
- 	state = sfp_get_state(sfp);
- 	changed = state ^ sfp->state;
- 	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
-@@ -1744,6 +1746,7 @@ static void sfp_check_state(struct sfp *sfp)
- 		sfp_sm_event(sfp, state & SFP_F_LOS ?
- 				SFP_E_LOS_HIGH : SFP_E_LOS_LOW);
- 	rtnl_unlock();
-+	mutex_unlock(&sfp->st_mutex);
- }
- 
- static irqreturn_t sfp_irq(int irq, void *data)
-@@ -1774,6 +1777,7 @@ static struct sfp *sfp_alloc(struct device *dev)
- 	sfp->dev = dev;
- 
- 	mutex_init(&sfp->sm_mutex);
-+	mutex_init(&sfp->st_mutex);
- 	INIT_DELAYED_WORK(&sfp->poll, sfp_poll);
- 	INIT_DELAYED_WORK(&sfp->timeout, sfp_timeout);
- 
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index ded556b7bab5..eeea8683d99b 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -2708,6 +2708,8 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
+ 	data.input.rx_num_desc = n_ooo_bufs * 2;
+ 	data.input.tx_num_desc = data.input.rx_num_desc;
+ 	data.input.tx_max_bds_per_packet = QED_IWARP_MAX_BDS_PER_FPDU;
++	data.input.tx_tc = PKT_LB_TC;
++	data.input.tx_dest = QED_LL2_TX_DEST_LB;
+ 	data.p_connection_handle = &iwarp_info->ll2_mpa_handle;
+ 	data.input.secondary_queue = true;
+ 	data.cbs = &cbs;
 -- 
 2.20.1
 
