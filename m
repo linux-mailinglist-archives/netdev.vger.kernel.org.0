@@ -2,103 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EAEE69A39
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 19:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1AE269A45
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 19:56:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731880AbfGORxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 13:53:22 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:39402 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729941AbfGORxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 13:53:22 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id CE23960DAB; Mon, 15 Jul 2019 17:53:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563213200;
-        bh=k3ChXNGFsdifjWHghdc8vll8SaEiy7GjD6ulRqw0jUI=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=LFxO1yF75FS88d5JZ3LUAa0SmYA2pEpKmFPCJrgCLmworScqTo8JW+wc64doREbdv
-         oDWunoFpjRAH6aE+YWyLkT78+6pDlWYrEyP00af0PGtTphGXhNDK6BqoBsW2Gqi5Ub
-         P+pvw0N4ztcpUMLCoeTJKhkzLKuuAv9RQ8ffn9Fg=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2DA126021C;
-        Mon, 15 Jul 2019 17:53:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563213200;
-        bh=k3ChXNGFsdifjWHghdc8vll8SaEiy7GjD6ulRqw0jUI=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=cDwpdQkDT5wTNPfSYWupIoTmE1U4CZ2+pArU4+dPINW+6BDPBL5Jee68BnoWy8OSX
-         42eDWNAbZGj/IiKj1aRiHpnRPhyY0kUpT32+DtvMPiRAUpFh8QxlASn1zatL8UiT+N
-         VYtXYcLnkllOaLFhNFW+HKo+FojFrVEBfa6FLDCk=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2DA126021C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1731958AbfGOR4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 13:56:52 -0400
+Received: from conssluserg-03.nifty.com ([210.131.2.82]:49401 "EHLO
+        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731078AbfGOR4w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 13:56:52 -0400
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id x6FHuk49009352;
+        Tue, 16 Jul 2019 02:56:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com x6FHuk49009352
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1563213407;
+        bh=9DNdwAOMrDNMDhRKaR9DRzklJ+6WxesMxATv1pupRXY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=EcNZEZAI9Rws1hjnvr2rW+x4gunjiHVPkw6eIpV1JeJv3/M1US0vh157JziyNrTdB
+         LRl4f8fObAyYijVUasxdWUPMMS3PiysrZw+oqbas4N09O9O53MYnFbAaTedAjOwIJ6
+         7ZntQU4UJMr4qyp/VYhIOlHoEJvbnCTSKQDB+ae2RWIfg3I25ixgFQTK0N6MO9lP9u
+         OyO45kbhpkUxozHktKYjzTFyIx3Whqpph5SGxB0GEJQNKV24Mf8JuAq/phkkx8u6xo
+         WL0mKiEitoUPdrqgSVNmwyMIogql3qw6DkzPE0LNSDsmz6AQLT5YH0lZIgmEpP0sR1
+         qxdLVmCC4v6Bg==
+X-Nifty-SrcIP: [209.85.217.51]
+Received: by mail-vs1-f51.google.com with SMTP id y16so11994093vsc.3;
+        Mon, 15 Jul 2019 10:56:47 -0700 (PDT)
+X-Gm-Message-State: APjAAAXzGlfG6/dKR41YHZC9dYklF1ubuKwLnBPoAFk0U8tUR9bh5BNJ
+        g50otexA6is0IdWHimXPGgQZe23kRsjZelJAcF8=
+X-Google-Smtp-Source: APXvYqzjIu0ZLvWAf2ZU5pOylmcgyKILZfFZ//irLAErTz0kjJcm+rkHjWiOwvjlXfyDX9t3Pi5gvy0kXQ+8Zjk3Koc=
+X-Received: by 2002:a67:d46:: with SMTP id 67mr17319200vsn.181.1563213406027;
+ Mon, 15 Jul 2019 10:56:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 1/2] rt2x00usb: fix rx queue hang
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190701105314.9707-1-smoch@web.de>
-References: <20190701105314.9707-1-smoch@web.de>
-To:     Soeren Moch <smoch@web.de>
-Cc:     Stanislaw Gruszka <sgruszka@redhat.com>,
-        Soeren Moch <smoch@web.de>, stable@vger.kernel.org,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190715175320.CE23960DAB@smtp.codeaurora.org>
-Date:   Mon, 15 Jul 2019 17:53:20 +0000 (UTC)
+References: <20190715144848.4cc41e07@canb.auug.org.au> <ccb5b818-c191-2d9e-311f-b2c79b7f6823@infradead.org>
+ <CAF90-WirEMg7arNOTmo+tyJ20rt_zeN=nr0OO6Qk0Ss8J4QrUA@mail.gmail.com> <20190715173341.zth4na7zekjsesaa@salvia>
+In-Reply-To: <20190715173341.zth4na7zekjsesaa@salvia>
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Tue, 16 Jul 2019 02:56:09 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS0rX_SRXqb=N=Td-DFNWd=PytDFje12gYh2pYNRBVAJA@mail.gmail.com>
+Message-ID: <CAK7LNAS0rX_SRXqb=N=Td-DFNWd=PytDFje12gYh2pYNRBVAJA@mail.gmail.com>
+Subject: Re: linux-next: Tree for Jul 15 (HEADERS_TEST w/ netfilter tables offload)
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Laura Garcia <nevola@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kbuild <linux-kbuild@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Soeren Moch <smoch@web.de> wrote:
+On Tue, Jul 16, 2019 at 2:33 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>
+> On Mon, Jul 15, 2019 at 07:28:04PM +0200, Laura Garcia wrote:
+> > CC'ing netfilter.
+> >
+> > On Mon, Jul 15, 2019 at 6:45 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> > >
+> > > On 7/14/19 9:48 PM, Stephen Rothwell wrote:
+> > > > Hi all,
+> > > >
+> > > > Please do not add v5.4 material to your linux-next included branches
+> > > > until after v5.3-rc1 has been released.
+> > > >
+> > > > Changes since 20190712:
+> > > >
+> > >
+> > > Hi,
+> > >
+> > > I am seeing these build errors from HEADERS_TEST (or KERNEL_HEADERS_TEST)
+> > > for include/net/netfilter/nf_tables_offload.h.s:
+> > >
+> > >   CC      include/net/netfilter/nf_tables_offload.h.s
+> [...]
+> > > Should this header file not be tested?
 
-> Since commit ed194d136769 ("usb: core: remove local_irq_save() around
->  ->complete() handler") the handler rt2x00usb_interrupt_rxdone() is
-> not running with interrupts disabled anymore. So this completion handler
-> is not guaranteed to run completely before workqueue processing starts
-> for the same queue entry.
-> Be sure to set all other flags in the entry correctly before marking
-> this entry ready for workqueue processing. This way we cannot miss error
-> conditions that need to be signalled from the completion handler to the
-> worker thread.
-> Note that rt2x00usb_work_rxdone() processes all available entries, not
-> only such for which queue_work() was called.
-> 
-> This patch is similar to what commit df71c9cfceea ("rt2x00: fix order
-> of entry flags modification") did for TX processing.
-> 
-> This fixes a regression on a RT5370 based wifi stick in AP mode, which
-> suddenly stopped data transmission after some period of heavy load. Also
-> stopping the hanging hostapd resulted in the error message "ieee80211
-> phy0: rt2x00queue_flush_queue: Warning - Queue 14 failed to flush".
-> Other operation modes are probably affected as well, this just was
-> the used testcase.
-> 
-> Fixes: ed194d136769 ("usb: core: remove local_irq_save() around ->complete() handler")
-> Cc: stable@vger.kernel.org # 4.20+
-> Signed-off-by: Soeren Moch <smoch@web.de>
-> Acked-by: Stanislaw Gruszka <sgruszka@redhat.com>
+This means you must endlessly exclude
+headers that include nf_tables.h
 
-Patch applied to wireless-drivers.git, thanks.
 
-41a531ffa4c5 rt2x00usb: fix rx queue hang
+> Yes, it should indeed be added.
+
+Adding 'header-test-' is the last resort.
+
+
+I had already queued a patch:
+
+git clone -b build-test
+git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+
+commit 9dae5c5fc798e0e970cca4cd1b224dece3ad4766
+Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Mon Jul 15 00:42:56 2019 +0900
+
+    netfilter: nf_tables: split local helpers out to nft_internals.h
+
+
+
+If it is OK, I will send it out.
+
+
 
 -- 
-https://patchwork.kernel.org/patch/11025561/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Best Regards
+Masahiro Yamada
