@@ -2,30 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5D98686C3
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 12:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 499D1686C6
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 12:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729712AbfGOKAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 06:00:33 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:35100 "EHLO
+        id S1729734AbfGOKAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 06:00:38 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:35104 "EHLO
         proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729257AbfGOKAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 06:00:32 -0400
+        with ESMTP id S1729709AbfGOKAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 06:00:34 -0400
 Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id ECDE12E8833;
-        Mon, 15 Jul 2019 12:00:30 +0200 (CEST)
+        by proxy.6wind.com (Postfix) with ESMTPS id 188F12E8834;
+        Mon, 15 Jul 2019 12:00:31 +0200 (CEST)
 Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.89)
         (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1hmxmY-0002E3-M2; Mon, 15 Jul 2019 12:00:30 +0200
+        id 1hmxmY-0002E5-PX; Mon, 15 Jul 2019 12:00:30 +0200
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
 To:     steffen.klassert@secunet.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH ipsec v2 0/4] xfrm interface: bugs fixes
-Date:   Mon, 15 Jul 2019 12:00:19 +0200
-Message-Id: <20190715100023.8475-1-nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Julien Floret <julien.floret@6wind.com>
+Subject: [PATCH ipsec v2 1/4] xfrm interface: avoid corruption on changelink
+Date:   Mon, 15 Jul 2019 12:00:20 +0200
+Message-Id: <20190715100023.8475-2-nicolas.dichtel@6wind.com>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <df990564-819a-314f-dda6-aab58a2e7b6e@6wind.com>
+In-Reply-To: <20190715100023.8475-1-nicolas.dichtel@6wind.com>
 References: <df990564-819a-314f-dda6-aab58a2e7b6e@6wind.com>
+ <20190715100023.8475-1-nicolas.dichtel@6wind.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -33,18 +36,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The new parameters must not be stored in the netdev_priv() before
+validation, it may corrupt the interface. Note also that if data is NULL,
+only a memset() is done.
 
-Here is a bunch of bugs fixes. Some have been seen by code review and some when
-playing with x-netns.
-The details are in each patch.
+$ ip link add xfrm1 type xfrm dev lo if_id 1
+$ ip link add xfrm2 type xfrm dev lo if_id 2
+$ ip link set xfrm1 type xfrm dev lo if_id 2
+RTNETLINK answers: File exists
+$ ip -d link list dev xfrm1
+5: xfrm1@lo: <NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 00:00:00:00:00:00 brd 00:00:00:00:00:00 promiscuity 0 minmtu 68 maxmtu 1500
+    xfrm if_id 0x2 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
 
-v1 -> v2:
- - add patch #3 and #4
+=> "if_id 0x2"
 
- include/net/xfrm.h        |  2 --
- net/xfrm/xfrm_interface.c | 56 +++++++++++++++++++++--------------------------
- 2 files changed, 25 insertions(+), 33 deletions(-)
+Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Tested-by: Julien Floret <julien.floret@6wind.com>
+---
+ net/xfrm/xfrm_interface.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Regards,
-Nicolas
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 74868f9d81fb..2310dc9e35c2 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -671,12 +671,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ 			   struct nlattr *data[],
+ 			   struct netlink_ext_ack *extack)
+ {
+-	struct xfrm_if *xi = netdev_priv(dev);
+ 	struct net *net = dev_net(dev);
++	struct xfrm_if_parms p;
++	struct xfrm_if *xi;
+ 
+-	xfrmi_netlink_parms(data, &xi->p);
+-
+-	xi = xfrmi_locate(net, &xi->p);
++	xfrmi_netlink_parms(data, &p);
++	xi = xfrmi_locate(net, &p);
+ 	if (!xi) {
+ 		xi = netdev_priv(dev);
+ 	} else {
+@@ -684,7 +684,7 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ 			return -EEXIST;
+ 	}
+ 
+-	return xfrmi_update(xi, &xi->p);
++	return xfrmi_update(xi, &p);
+ }
+ 
+ static size_t xfrmi_get_size(const struct net_device *dev)
+-- 
+2.21.0
 
