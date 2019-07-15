@@ -2,56 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A37669D2A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF25D69D2E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732070AbfGOUve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 16:51:34 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36614 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729640AbfGOUve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:51:34 -0400
-Received: by mail-pg1-f194.google.com with SMTP id l21so8288556pgm.3
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 13:51:33 -0700 (PDT)
+        id S1732692AbfGOUwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 16:52:40 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37249 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729640AbfGOUwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:52:40 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 19so7984037pfa.4
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 13:52:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yFb4nLlkGXtyewjPL6aHDFHiNnwUWqzNbmalePN7zSs=;
-        b=bXXjZeqDTzlEbkLdWHvrCucSz6dwS7DDtFdjVIx05NwS5uYI5m6Pd2zS2Y5ORWUaIB
-         ljMCZshij/yYxXdvkhAJR2u/fDPRFGU4IIU4eW4DNveiBLQtZyxS6tu7Jox65ezIH8j4
-         GXJlso4GtQQOzi5LAYCPVFoFseBrqd42qGIolenc1P2XqnwmmbFohsFlBCl5nmc29b97
-         b4C3D93HC/J/28LkLldpgE6rb7SyjocGAGLHPUC28UEaAQHmIHpzdDWe5MbUnXU4IoH8
-         Jm7h62fbg9UKpv2+5ScWoadg4yQ22TzCvoQLZp4PcG8GMpZCch/56wx7VY91Fb2ppb+l
-         V+0A==
+        bh=YHjXdcD/zzcFwWqFYitISKpmcb8VGL5mrJU3cHFDJio=;
+        b=zKqUoGlQHRRTmJU4lX083UapmWZKISeAWpaaXBOwgaOnBI2fqeiLJI/RPeQgnDLXrp
+         vNkfAVqgotu/0H7SPvqsaQSC94pwyVxxBvqOxZSpetKTOqApGEjPeoDVQFg2pbbte8jA
+         uyPM7yGPDy9Ue3/03HGJofKWehor+WbjJecQf20NqpTOBOYDfOvarRCtlmY6+EOI9sJP
+         YCJkyMo6y3HusoAKjmMaptV8t8/QUiauwlbdRcZJY2tV03x5JtB626D7bkNgmUIwjrjU
+         IMMMXlJlypYRgjXwnYfMnzOSuDFaRHb9IAt67oQ0Tu1PccGU0O8Mk3xtQVnqeFd5ukUr
+         0IDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yFb4nLlkGXtyewjPL6aHDFHiNnwUWqzNbmalePN7zSs=;
-        b=Zq1q7DsXeG+sojDtACfYZb2rlSx2PGh16mCmpFUCAvHY0CXESWumctOToldeUriRJJ
-         KyEtn09xcVqjfUXlnt551OK1IvezyMtFU474gFYUtJ40Hnzqri2k+TONCW4Me4/nTpKN
-         j/owi9vpTlaZlufFbGpWIZsuIZNhPntpofEF0heuPKZQiCsSjgREqPyPx9Rb40bD/O4s
-         bBxjUusgbfrLAsEwUfv5iXTx+S8mreunn6slCi6XruGTbwOsPg1mTEAvidaD9xja8Cmr
-         9gkN0LD+Q7oKouwG/IpnK/bbzXshcW1KpxHGOdd8fx68dnrrc386AbH0IDjhcWbkrE+T
-         PBcQ==
-X-Gm-Message-State: APjAAAURU7KUnkC8pFtYRiYxNmQIGrUgtgSCIgwmrPGz+SH0IMCjCkLS
-        UCybxsMim3aztWnW3Ww7nxI=
-X-Google-Smtp-Source: APXvYqxSbIiSOpm3QbhX0ZUkZbD4ePgrdLwtyhTZfe470aVDFbGThDaGRuMAkpDYPKN/8i9tx6k+5A==
-X-Received: by 2002:a17:90a:8591:: with SMTP id m17mr31974539pjn.100.1563223893530;
-        Mon, 15 Jul 2019 13:51:33 -0700 (PDT)
+        bh=YHjXdcD/zzcFwWqFYitISKpmcb8VGL5mrJU3cHFDJio=;
+        b=ksqyfI6/P08J/wXetrgmdXZqQDvHFlPUPh4fMmG1A2T8DXOxIPmPua4kqfLxGN6II0
+         EHlSjOtIkIwVy34KvB02eJ8Rl1rRI2TD7qvhAKCyh6MzPpQS4RzvLaAlEFbvYZx/gAgb
+         ws3js9tJOAuePmkv31T35BD8nD4hzqhNkV7kxNDi0VPKljr6o4t1W21VsG66XXPZFoWt
+         SMyToV09a+65rH4vkdaUFdxdW9nO1bYKnXUOKItLhW8AtQFcZVUiSAMECkrGzzfIJqRb
+         7cUjcUMINMpPLF0/sxbfQYrgoz4+q/i2w9CVMMK4SkrDGp2TOIpMOWfNDnzxydlqJdby
+         BjrA==
+X-Gm-Message-State: APjAAAXxvECFLFCsdF8EFEOWlVCzOK+N8JLB/gW5L4uxr5rvxnh7luA9
+        TEXvqy1n1Wni5xh+ue0rpCU=
+X-Google-Smtp-Source: APXvYqzWCtvHG9HrNyZ51rAnJN+54njXYYZP5AG9ATb0761bX7xTGl+jgHXxFOtmcxy43yGMvdxKFQ==
+X-Received: by 2002:a17:90a:7d09:: with SMTP id g9mr30771290pjl.38.1563223959813;
+        Mon, 15 Jul 2019 13:52:39 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id n17sm20231935pfq.182.2019.07.15.13.51.33
+        by smtp.gmail.com with ESMTPSA id f7sm17896141pfd.43.2019.07.15.13.52.39
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 13:51:33 -0700 (PDT)
-Date:   Mon, 15 Jul 2019 13:51:31 -0700
+        Mon, 15 Jul 2019 13:52:39 -0700 (PDT)
+Date:   Mon, 15 Jul 2019 13:52:38 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Tariq Toukan <tariqt@mellanox.com>
-Cc:     netdev@vger.kernel.org, moshe@mellanox.com, ayal@mellanox.com
-Subject: Re: [PATCH iproute2 master 0/3] devlink dumpit fixes
-Message-ID: <20190715135131.6e9f0ba0@hermes.lan>
-In-Reply-To: <1562756601-19171-1-git-send-email-tariqt@mellanox.com>
-References: <1562756601-19171-1-git-send-email-tariqt@mellanox.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        netdev <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
+        Mark Zhang <markz@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH iproute2-rc 1/8] rdma: Update uapi headers to add
+ statistic counter support
+Message-ID: <20190715135238.7c0c7242@hermes.lan>
+In-Reply-To: <20190710072455.9125-2-leon@kernel.org>
+References: <20190710072455.9125-1-leon@kernel.org>
+        <20190710072455.9125-2-leon@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,33 +65,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Jul 2019 14:03:18 +0300
-Tariq Toukan <tariqt@mellanox.com> wrote:
+On Wed, 10 Jul 2019 10:24:48 +0300
+Leon Romanovsky <leon@kernel.org> wrote:
 
-> Hi,
+> From: Mark Zhang <markz@mellanox.com>
 > 
-> This series from Aya contains several fixes for devlink health
-> dump show command with binary data.
+> Update rdma_netlink.h to kernel commit 6e7be47a5345 ("RDMA/nldev:
+> Allow get default counter statistics through RDMA netlink").
 > 
-> In patch 1 we replace the usage of doit with a dumpit, which
-> is non-blocking and allows transferring larger amount of data.
-> 
-> Patches 2 and 3 fix the output for binary data prints, for both
-> json and non-json.
-> 
-> Series generated against master commit:
-> 2eb23f3e7aaf devlink: Show devlink port number
-> 
-> Regards,
-> Tariq
-> 
-> Aya Levin (3):
->   devlink: Change devlink health dump show command to dumpit
->   devlink: Fix binary values print
->   devlink: Remove enclosing array brackets binary print with json format
-> 
->  devlink/devlink.c | 41 +++++++++++++++++++++--------------------
->  1 file changed, 21 insertions(+), 20 deletions(-)
-> 
+> Signed-off-by: Mark Zhang <markz@mellanox.com>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 
-Applied
+I am waiting on this until it gets to Linus's tree.
