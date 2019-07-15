@@ -2,55 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A8269F4D
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 01:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DBA669F8F
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 01:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731933AbfGOXEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 19:04:01 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40130 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731690AbfGOXEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 19:04:01 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hnA0l-00050r-8c; Tue, 16 Jul 2019 01:03:59 +0200
-Received: from [99.0.85.34] (helo=localhost.localdomain)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hnA0k-000S3H-Nv; Tue, 16 Jul 2019 01:03:59 +0200
-Subject: Re: [PATCH v2 bpf-next] selftests/bpf: remove logic duplication in
- test_verifier.c
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Krzesimir Nowak <krzesimir@kinvolk.io>
-References: <20190712174441.4089282-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2cec6d13-bfbf-bc04-0245-273a6652900b@iogearbox.net>
-Date:   Tue, 16 Jul 2019 01:03:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732128AbfGOXhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 19:37:53 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43688 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730429AbfGOXhx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 19:37:53 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f25so8445824pgv.10
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 16:37:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=D6cmxh/G160rFpo8s17a+dCwrfrc+faraADkJwLTnaI=;
+        b=kl4l+8zSsllrSRyouepVoWAKR17lBrcXosCi5nd60XdMxa97Oxkx3eV4DazAhIHNQq
+         TljAaVsS9hM1+TGWLoC2v3t5mhjGNp6eDC3mLfGfpM6c7xiTrOlAJgXMAx+AIqLefiGJ
+         XMlYC+8WIRZwGebmsYsysqI4D45QKEmSQyDR2D/+hmS1AXHYW82l54FfcqMKfGbrpXMa
+         jDdAD3z99AeVQdhk8cU8v0+PYOpVEEFYwksEElEJEqLhO3kzbG7cfosgyUzDGEocS4ZO
+         Dnvky08Mm6r1ccexXwlCg3QBoCbnGtRZ2oMl1Px8n84tk9B2m2CDHk3UZfFzDFDqiC5N
+         khaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=D6cmxh/G160rFpo8s17a+dCwrfrc+faraADkJwLTnaI=;
+        b=UTKacfdhBP6d6FK24NOOnVj4Fm8xSoM2wStoqMioTI9fx1uJBlBZwPfZbZJ6Nfkj0D
+         x/rZpgknPf1tBxr/aWViGCk/vJOVvcNyTl73sNk18GEQHcHXaalr3biL9W4JVlr53g7e
+         5qQLdxnUD+f2W4Xt0yKB3IpZYd8EA6apoYKbA5p7mlH9oS81VO4J2y4NriIqaUhEpK10
+         OL24iEvRTtEnxUXjEDJ8Us4IRH81YYkI5UuMAWj4KqDRSvr7M+rbg4U1UnOwobhH27l9
+         tjlm9Vgw3FkutSjPBdj5ei5yBt91FbYOdK7w6gCefsEEzHP5Gf/16Gsles+Gdc3drszI
+         ZDrw==
+X-Gm-Message-State: APjAAAVNgVQ5yAGAA2kULFpcv8yN1PVbLH95Gto4VYzLHVWwCXVOIPt2
+        O3VjF1HqAjOHGR5ZZAmMdKE=
+X-Google-Smtp-Source: APXvYqwkl+0E6/DAxEIVFL1rOKECnhajT+BDmnh/oy6YFqoKNsA4TqHdkYqa6Xx6OJ5PJ9bwxjk+cg==
+X-Received: by 2002:a63:5765:: with SMTP id h37mr2977728pgm.183.1563233871856;
+        Mon, 15 Jul 2019 16:37:51 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id y22sm16923360pgj.38.2019.07.15.16.37.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 15 Jul 2019 16:37:51 -0700 (PDT)
+Date:   Mon, 15 Jul 2019 16:37:43 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Vedang Patel <vedang.patel@intel.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, vinicius.gomes@intel.com,
+        leandro.maciel.dorileo@intel.com, jakub.kicinski@netronome.com,
+        m-karicheri2@ti.com, dsahern@gmail.com
+Subject: Re: [PATCH iproute2 net-next v3 2/5] taprio: Add support for
+ setting flags
+Message-ID: <20190715163743.2c6cec2b@hermes.lan>
+In-Reply-To: <1563231104-19912-2-git-send-email-vedang.patel@intel.com>
+References: <1563231104-19912-1-git-send-email-vedang.patel@intel.com>
+        <1563231104-19912-2-git-send-email-vedang.patel@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20190712174441.4089282-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25511/Mon Jul 15 10:10:35 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/12/19 7:44 PM, Andrii Nakryiko wrote:
-> test_verifier tests can specify single- and multi-runs tests. Internally
-> logic of handling them is duplicated. Get rid of it by making single run
-> retval/data specification to be a first run spec.
-> 
-> Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Mon, 15 Jul 2019 15:51:41 -0700
+Vedang Patel <vedang.patel@intel.com> wrote:
 
-Applied, thanks!
+> @@ -405,6 +420,7 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+>  	struct rtattr *tb[TCA_TAPRIO_ATTR_MAX + 1];
+>  	struct tc_mqprio_qopt *qopt = 0;
+>  	__s32 clockid = CLOCKID_INVALID;
+> +	__u32 taprio_flags = 0;
+>  	int i;
+>  
+>  	if (opt == NULL)
+> @@ -442,6 +458,11 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+>  
+>  	print_string(PRINT_ANY, "clockid", "clockid %s", get_clock_name(clockid));
+>  
+> +	if (tb[TCA_TAPRIO_ATTR_FLAGS]) {
+> +		taprio_flags = rta_getattr_u32(tb[TCA_TAPRIO_ATTR_FLAGS]);
+> +		print_uint(PRINT_ANY, "flags", " flags %x", taprio_flags);
+> +	}
+> +
+
+Overall this looks fine, but three small comments:
+1. It is better not to do unnecessary variable initialization
+2. It is better to move variables into the basic block where they are used.
+3. Use the print_0xhex() instead of print_uint() for hex values. The difference
+   is that in the JSON output, print_uint would be decimal but the print_0xhex
+   is always hex.  And use "flags %#x" so that it is clear you are printing flags in hex.
+
+
