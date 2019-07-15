@@ -2,160 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9BB6940E
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7666959B
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404558AbfGOOsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:48:40 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:43894 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404564AbfGOOsh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:48:37 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 54249BD5A6834CEA0A9A;
-        Mon, 15 Jul 2019 22:48:33 +0800 (CST)
-Received: from [127.0.0.1] (10.184.191.73) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Mon, 15 Jul 2019
- 22:48:25 +0800
-To:     <wensong@linux-vs.org>, <horms@verge.net.au>, <ja@ssi.bg>,
-        <pablo@netfilter.org>, <kadlec@blackhole.kfki.hu>, <fw@strlen.de>,
-        <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        <lvs-devel@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <coreteam@netfilter.org>, Mingfangsen <mingfangsen@huawei.com>,
-        <wangxiaogang3@huawei.com>, <xuhanbing@huawei.com>
-From:   hujunwei <hujunwei4@huawei.com>
-Subject: [PATCH net] ipvs: Improve robustness to the ipvs sysctl
-Message-ID: <1997375e-815d-137f-20c9-0829a8587ee9@huawei.com>
-Date:   Mon, 15 Jul 2019 22:48:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S2390044AbfGOOTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:19:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40382 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390020AbfGOOTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:19:09 -0400
+Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58B79205F4;
+        Mon, 15 Jul 2019 14:19:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563200347;
+        bh=FsQ+jpIE3XFJieXRwtj+makJtOrC9+Y0c8QfnZ+8o4g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kI/PtPgPiHpzRw13v9/2jdSUnPmQZPnxSqhJUPTplMdSC2IZV18ZO1Rm7vy3NFIOO
+         BUxPlROspYu6Vd6HvOg2wZgr+1dVzIde3A1t1wvOerhRM05ebsg91UFo5DO7CPSemT
+         5IyAc+GnJ5Yo18ru5jQlFIuXMP2jalpbtMTYe+Zs=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <ariel.elior@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 020/158] qed: Set the doorbell address correctly
+Date:   Mon, 15 Jul 2019 10:15:51 -0400
+Message-Id: <20190715141809.8445-20-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
+References: <20190715141809.8445-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.191.73]
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junwei Hu <hujunwei4@huawei.com>
+From: Michal Kalderon <michal.kalderon@marvell.com>
 
-The ipvs module parse the user buffer and save it to sysctl,
-then check if the value is valid. invalid value occurs
-over a period of time.
-Here, I add a variable, struct ctl_table tmp, used to read
-the value from the user buffer, and save only when it is valid.
+[ Upstream commit 8366d520019f366fabd6c7a13032bdcd837e18d4 ]
 
-Fixes: f73181c8288f ("ipvs: add support for sync threads")
-Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
+In 100g mode the doorbell bar is united for both engines. Set
+the correct offset in the hwfn so that the doorbell returned
+for RoCE is in the affined hwfn.
+
+Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
+Signed-off-by: Denis Bolotin <denis.bolotin@marvell.com>
+Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipvs/ip_vs_ctl.c | 61 +++++++++++++++++++++++-----------
- 1 file changed, 42 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_dev.c  | 29 ++++++++++++++--------
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c |  2 +-
+ 2 files changed, 19 insertions(+), 12 deletions(-)
 
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index 741d91aa4a8d..e78fd05f108b 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -1680,12 +1680,18 @@ proc_do_defense_mode(struct ctl_table *table, int write,
- 	int val = *valp;
- 	int rc;
-
--	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-+	struct ctl_table tmp = {
-+		.data = &val,
-+		.maxlen = sizeof(int),
-+		.mode = table->mode,
-+	};
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+index 4dd82a1612aa..a6a9688db307 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+@@ -3096,6 +3096,7 @@ static void qed_nvm_info_free(struct qed_hwfn *p_hwfn)
+ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
+ 				 void __iomem *p_regview,
+ 				 void __iomem *p_doorbells,
++				 u64 db_phys_addr,
+ 				 enum qed_pci_personality personality)
+ {
+ 	int rc = 0;
+@@ -3103,6 +3104,7 @@ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
+ 	/* Split PCI bars evenly between hwfns */
+ 	p_hwfn->regview = p_regview;
+ 	p_hwfn->doorbells = p_doorbells;
++	p_hwfn->db_phys_addr = db_phys_addr;
+ 
+ 	if (IS_VF(p_hwfn->cdev))
+ 		return qed_vf_hw_prepare(p_hwfn);
+@@ -3198,7 +3200,9 @@ int qed_hw_prepare(struct qed_dev *cdev,
+ 	/* Initialize the first hwfn - will learn number of hwfns */
+ 	rc = qed_hw_prepare_single(p_hwfn,
+ 				   cdev->regview,
+-				   cdev->doorbells, personality);
++				   cdev->doorbells,
++				   cdev->db_phys_addr,
++				   personality);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -3207,22 +3211,25 @@ int qed_hw_prepare(struct qed_dev *cdev,
+ 	/* Initialize the rest of the hwfns */
+ 	if (cdev->num_hwfns > 1) {
+ 		void __iomem *p_regview, *p_doorbell;
+-		u8 __iomem *addr;
++		u64 db_phys_addr;
++		u32 offset;
+ 
+ 		/* adjust bar offset for second engine */
+-		addr = cdev->regview +
+-		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
+-				       BAR_ID_0) / 2;
+-		p_regview = addr;
++		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
++					 BAR_ID_0) / 2;
++		p_regview = cdev->regview + offset;
+ 
+-		addr = cdev->doorbells +
+-		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
+-				       BAR_ID_1) / 2;
+-		p_doorbell = addr;
++		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
++					 BAR_ID_1) / 2;
 +
-+	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
- 	if (write && (*valp != val)) {
--		if ((*valp < 0) || (*valp > 3)) {
--			/* Restore the correct value */
-+		if (val < 0 || val > 3)
-+			rc = -EINVAL;
-+		else {
- 			*valp = val;
--		} else {
- 			update_defense_level(ipvs);
- 		}
- 	}
-@@ -1699,15 +1705,20 @@ proc_do_sync_threshold(struct ctl_table *table, int write,
- 	int *valp = table->data;
- 	int val[2];
- 	int rc;
-+	struct ctl_table tmp = {
-+		.data = &val,
-+		.maxlen = table->maxlen,
-+		.mode = table->mode,
-+	};
-
--	/* backup the value first */
- 	memcpy(val, valp, sizeof(val));
--
--	rc = proc_dointvec(table, write, buffer, lenp, ppos);
--	if (write && (valp[0] < 0 || valp[1] < 0 ||
--	    (valp[0] >= valp[1] && valp[1]))) {
--		/* Restore the correct value */
--		memcpy(valp, val, sizeof(val));
-+	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
-+	if (write) {
-+		if (val[0] < 0 || val[1] < 0 ||
-+		    (val[0] >= val[1] && val[1]))
-+			rc = -EINVAL;
-+		else
-+			memcpy(valp, val, sizeof(val));
- 	}
- 	return rc;
- }
-@@ -1720,12 +1731,18 @@ proc_do_sync_mode(struct ctl_table *table, int write,
- 	int val = *valp;
- 	int rc;
-
--	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-+	struct ctl_table tmp = {
-+		.data = &val,
-+		.maxlen = sizeof(int),
-+		.mode = table->mode,
-+	};
++		p_doorbell = cdev->doorbells + offset;
 +
-+	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
- 	if (write && (*valp != val)) {
--		if ((*valp < 0) || (*valp > 1)) {
--			/* Restore the correct value */
-+		if (val < 0 || val > 1)
-+			rc = -EINVAL;
-+		else
- 			*valp = val;
--		}
- 	}
- 	return rc;
- }
-@@ -1738,12 +1755,18 @@ proc_do_sync_ports(struct ctl_table *table, int write,
- 	int val = *valp;
- 	int rc;
-
--	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-+	struct ctl_table tmp = {
-+		.data = &val,
-+		.maxlen = sizeof(int),
-+		.mode = table->mode,
-+	};
-+
-+	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
- 	if (write && (*valp != val)) {
--		if (*valp < 1 || !is_power_of_2(*valp)) {
--			/* Restore the correct value */
-+		if (val < 1 || !is_power_of_2(val))
-+			rc = -EINVAL;
-+		else
- 			*valp = val;
--		}
- 	}
- 	return rc;
- }
++		db_phys_addr = cdev->db_phys_addr + offset;
+ 
+ 		/* prepare second hw function */
+ 		rc = qed_hw_prepare_single(&cdev->hwfns[1], p_regview,
+-					   p_doorbell, personality);
++					   p_doorbell, db_phys_addr,
++					   personality);
+ 
+ 		/* in case of error, need to free the previously
+ 		 * initiliazed hwfn 0.
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+index 7873d6dfd91f..13802b825d65 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+@@ -803,7 +803,7 @@ static int qed_rdma_add_user(void *rdma_cxt,
+ 				     dpi_start_offset +
+ 				     ((out_params->dpi) * p_hwfn->dpi_size));
+ 
+-	out_params->dpi_phys_addr = p_hwfn->cdev->db_phys_addr +
++	out_params->dpi_phys_addr = p_hwfn->db_phys_addr +
+ 				    dpi_start_offset +
+ 				    ((out_params->dpi) * p_hwfn->dpi_size);
+ 
 -- 
-2.21.GIT
+2.20.1
 
