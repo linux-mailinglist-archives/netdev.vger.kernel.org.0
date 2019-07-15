@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3628168E22
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:04:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A65668E24
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387800AbfGOODv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:03:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49344 "EHLO mail.kernel.org"
+        id S2387645AbfGOOD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:03:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733047AbfGOODu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:03:50 -0400
+        id S1733047AbfGOODy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:03:54 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 491352086C;
-        Mon, 15 Jul 2019 14:03:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E73052081C;
+        Mon, 15 Jul 2019 14:03:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199430;
-        bh=jtIGX7QQt3juwRiIEJhbVV6v+rMt/kTvO0hy90dvnaE=;
+        s=default; t=1563199433;
+        bh=26J0cNgRs2gDrMoGxYgt4ejtXtTwNyGDi1cQ8KooqFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0i9ChwpstwMF2T1tVAypA6CCUf+Zsc9WduUvBCw2aS1bQ7hfyuA7quR2f7J9EgLV6
-         vBQITekTlVEuFLbp6Bw6a1Ek/RDKrieokqQy50AYlad4CYmowDXmOdoLAmStjUr7hu
-         ovEhLYw980voU6Dzdt6oOdM7eyZUEJdq/OHUpHgk=
+        b=Ud0oh1dPAH2EIIKnXkRnmLxfKY4UzTvr5kwlZoRq76y6kHwURVBosnuGEphzN2djd
+         8undRiWtESheiHwm30O0EzQZYmt3naxV2pUAg1ooLP6+sdre8HZKYOc3uODVfHFJ6m
+         hPemGh3+rTtGLKKxK94k9zSR9DiiCCKV8QqlRZZM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alagu Sankar <alagusankar@silex-india.com>,
-        Wen Gong <wgong@codeaurora.org>,
+Cc:     Pradeep kumar Chitrapu <pradeepc@codeaurora.org>,
+        Zhi Chen <zhichen@codeaurora.org>,
+        Sven Eckelmann <sven@narfation.org>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 002/219] ath10k: htt: don't use txdone_fifo with SDIO
-Date:   Mon, 15 Jul 2019 10:00:03 -0400
-Message-Id: <20190715140341.6443-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 003/219] ath10k: fix incorrect multicast/broadcast rate setting
+Date:   Mon, 15 Jul 2019 10:00:04 -0400
+Message-Id: <20190715140341.6443-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,42 +46,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alagu Sankar <alagusankar@silex-india.com>
+From: Pradeep kumar Chitrapu <pradeepc@codeaurora.org>
 
-[ Upstream commit e2a6b711282a371c5153239e0468a48254f17ca6 ]
+[ Upstream commit 93ee3d108fc77e19efeac3ec5aa7d5886711bfef ]
 
-HTT High Latency (ATH10K_DEV_TYPE_HL) does not use txdone_fifo at all, we don't
-even initialise it by skipping ath10k_htt_tx_alloc_buf() in
-ath10k_htt_tx_start(). Because of this using QCA6174 SDIO
-ath10k_htt_rx_tx_compl_ind() will crash when it accesses unitialised
-txdone_fifo. So skip txdone_fifo when using High Latency mode.
+Invalid rate code is sent to firmware when multicast rate value of 0 is
+sent to driver indicating disabled case, causing broken mesh path.
+so fix that.
 
-Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00007-QCARMSWP-1.
+Tested on QCA9984 with firmware 10.4-3.6.1-00827
 
-Co-developed-by: Wen Gong <wgong@codeaurora.org>
-Signed-off-by: Alagu Sankar <alagusankar@silex-india.com>
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Sven tested on IPQ4019 with 10.4-3.5.3-00057 and QCA9888 with 10.4-3.5.3-00053
+(ath10k-firmware) and 10.4-3.6-00140 (linux-firmware 2018-12-16-211de167).
+
+Fixes: cd93b83ad92 ("ath10k: support for multicast rate control")
+Co-developed-by: Zhi Chen <zhichen@codeaurora.org>
+Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
+Signed-off-by: Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>
+Tested-by: Sven Eckelmann <sven@narfation.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_rx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index 1acc622d2183..f22840bbc389 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -2277,7 +2277,9 @@ static void ath10k_htt_rx_tx_compl_ind(struct ath10k *ar,
- 		 *  Note that with only one concurrent reader and one concurrent
- 		 *  writer, you don't need extra locking to use these macro.
- 		 */
--		if (!kfifo_put(&htt->txdone_fifo, tx_done)) {
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
-+			ath10k_txrx_tx_unref(htt, &tx_done);
-+		} else if (!kfifo_put(&htt->txdone_fifo, tx_done)) {
- 			ath10k_warn(ar, "txdone fifo overrun, msdu_id %d status %d\n",
- 				    tx_done.msdu_id, tx_done.status);
- 			ath10k_txrx_tx_unref(htt, &tx_done);
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 9c703d287333..e8997e22ceec 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -5588,8 +5588,8 @@ static void ath10k_bss_info_changed(struct ieee80211_hw *hw,
+ 	struct cfg80211_chan_def def;
+ 	u32 vdev_param, pdev_param, slottime, preamble;
+ 	u16 bitrate, hw_value;
+-	u8 rate, basic_rate_idx;
+-	int rateidx, ret = 0, hw_rate_code;
++	u8 rate, basic_rate_idx, rateidx;
++	int ret = 0, hw_rate_code, mcast_rate;
+ 	enum nl80211_band band;
+ 	const struct ieee80211_supported_band *sband;
+ 
+@@ -5776,7 +5776,11 @@ static void ath10k_bss_info_changed(struct ieee80211_hw *hw,
+ 	if (changed & BSS_CHANGED_MCAST_RATE &&
+ 	    !ath10k_mac_vif_chan(arvif->vif, &def)) {
+ 		band = def.chan->band;
+-		rateidx = vif->bss_conf.mcast_rate[band] - 1;
++		mcast_rate = vif->bss_conf.mcast_rate[band];
++		if (mcast_rate > 0)
++			rateidx = mcast_rate - 1;
++		else
++			rateidx = ffs(vif->bss_conf.basic_rates) - 1;
+ 
+ 		if (ar->phy_capability & WHAL_WLAN_11A_CAPABILITY)
+ 			rateidx += ATH10K_MAC_FIRST_OFDM_RATE_IDX;
 -- 
 2.20.1
 
