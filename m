@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3ACB695D3
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38773695CD
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389023AbfGOPA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 11:00:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58862 "EHLO mail.kernel.org"
+        id S2389579AbfGOOPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:15:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59936 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387719AbfGOOPI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:15:08 -0400
+        id S2389563AbfGOOPj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:15:39 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF5E721530;
-        Mon, 15 Jul 2019 14:15:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 952AC2083D;
+        Mon, 15 Jul 2019 14:15:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200107;
-        bh=BjOl+J090RIzEtaT3kR8G4TlYxlA1Brk2oMem9nGmQs=;
+        s=default; t=1563200138;
+        bh=hMG+kt4hs1pvjnwy7rXfF1p6L2ZnmHjDiYjpObXcHVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IMRRODilxg5QzSqMGoqYyvYnLPipHfXpO6Rcvz68qlrSmP0Ggal9Irs/y6x2j9EF5
-         +n/5Iv+VMIDKD4T5pk4JPO1U1domJPvZImsmql9kcaCHI3X0LzZ0fHb9ue1rcULOLd
-         Es83e3P+v4AZ2fJBq1X5EtjzuWhCFcn0XAXwiUV4=
+        b=Msy8vhi6iO+VNl/YPLVAt01eM25zDJHn2SnCjXCNG9yZDPiKQlE+lZhFsFUAuNPc9
+         2UyOTgMy6QFmipkABLJk1Xdq7AyC02/HSpSvPD7S8VFHXm602zH6ZbeL0j1VXQ0rAp
+         jEVaRRPtUF2qGCG1HpuxdZVE+k6oDoGIHndzLmR8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Chan <michael.chan@broadcom.com>,
+Cc:     Taehee Yoo <ap420073@gmail.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 185/219] bnxt_en: Disable bus master during PCI shutdown and driver unload.
-Date:   Mon, 15 Jul 2019 10:03:06 -0400
-Message-Id: <20190715140341.6443-185-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 192/219] vxlan: do not destroy fdb if register_netdevice() is failed
+Date:   Mon, 15 Jul 2019 10:03:13 -0400
+Message-Id: <20190715140341.6443-192-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -43,50 +44,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit c20dc142dd7b2884b8570eeab323bcd4a84294fa ]
+[ Upstream commit 7c31e54aeee517d1318dfc0bde9fa7de75893dc6 ]
 
-Some chips with older firmware can continue to perform DMA read from
-context memory even after the memory has been freed.  In the PCI shutdown
-method, we need to call pci_disable_device() to shutdown DMA to prevent
-this DMA before we put the device into D3hot.  DMA memory request in
-D3hot state will generate PCI fatal error.  Similarly, in the driver
-remove method, the context memory should only be freed after DMA has
-been shutdown for correctness.
+__vxlan_dev_create() destroys FDB using specific pointer which indicates
+a fdb when error occurs.
+But that pointer should not be used when register_netdevice() fails because
+register_netdevice() internally destroys fdb when error occurs.
 
-Fixes: 98f04cf0f1fc ("bnxt_en: Check context memory requirements from firmware.")
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+This patch makes vxlan_fdb_create() to do not link fdb entry to vxlan dev
+internally.
+Instead, a new function vxlan_fdb_insert() is added to link fdb to vxlan
+dev.
+
+vxlan_fdb_insert() is called after calling register_netdevice().
+This routine can avoid situation that ->ndo_uninit() destroys fdb entry
+in error path of register_netdevice().
+Hence, error path of __vxlan_dev_create() routine can have an opportunity
+to destroy default fdb entry by hand.
+
+Test command
+    ip link add bonding_masters type vxlan id 0 group 239.1.1.1 \
+	    dev enp0s9 dstport 4789
+
+Splat looks like:
+[  213.392816] kasan: GPF could be caused by NULL-ptr deref or user memory access
+[  213.401257] general protection fault: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[  213.402178] CPU: 0 PID: 1414 Comm: ip Not tainted 5.2.0-rc5+ #256
+[  213.402178] RIP: 0010:vxlan_fdb_destroy+0x120/0x220 [vxlan]
+[  213.402178] Code: df 48 8b 2b 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 06 01 00 00 4c 8b 63 08 48 b8 00 00 00 00 00 fc d
+[  213.402178] RSP: 0018:ffff88810cb9f0a0 EFLAGS: 00010202
+[  213.402178] RAX: dffffc0000000000 RBX: ffff888101d4a8c8 RCX: 0000000000000000
+[  213.402178] RDX: 1bd5a00000000040 RSI: ffff888101d4a8c8 RDI: ffff888101d4a8d0
+[  213.402178] RBP: 0000000000000000 R08: fffffbfff22b72d9 R09: 0000000000000000
+[  213.402178] R10: 00000000ffffffef R11: 0000000000000000 R12: dead000000000200
+[  213.402178] R13: ffff88810cb9f1f8 R14: ffff88810efccda0 R15: ffff88810efccda0
+[  213.402178] FS:  00007f7f6621a0c0(0000) GS:ffff88811b000000(0000) knlGS:0000000000000000
+[  213.402178] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  213.402178] CR2: 000055746f0807d0 CR3: 00000001123e0000 CR4: 00000000001006f0
+[  213.402178] Call Trace:
+[  213.402178]  __vxlan_dev_create+0x3a9/0x7d0 [vxlan]
+[  213.402178]  ? vxlan_changelink+0x740/0x740 [vxlan]
+[  213.402178]  ? rcu_read_unlock+0x60/0x60 [vxlan]
+[  213.402178]  ? __kasan_kmalloc.constprop.3+0xa0/0xd0
+[  213.402178]  vxlan_newlink+0x8d/0xc0 [vxlan]
+[  213.402178]  ? __vxlan_dev_create+0x7d0/0x7d0 [vxlan]
+[  213.554119]  ? __netlink_ns_capable+0xc3/0xf0
+[  213.554119]  __rtnl_newlink+0xb75/0x1180
+[  213.554119]  ? rtnl_link_unregister+0x230/0x230
+[ ... ]
+
+Fixes: 0241b836732f ("vxlan: fix default fdb entry netlink notify ordering during netdev create")
+Suggested-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/vxlan.c | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 30cafe4cdb6e..bf1fd513fa02 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10165,10 +10165,10 @@ static void bnxt_remove_one(struct pci_dev *pdev)
- 	bnxt_dcb_free(bp);
- 	kfree(bp->edev);
- 	bp->edev = NULL;
-+	bnxt_cleanup_pci(bp);
- 	bnxt_free_ctx_mem(bp);
- 	kfree(bp->ctx);
- 	bp->ctx = NULL;
--	bnxt_cleanup_pci(bp);
- 	bnxt_free_port_stats(bp);
- 	free_netdev(dev);
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 38ecb66fb3e9..82c25f07261f 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -806,6 +806,14 @@ static struct vxlan_fdb *vxlan_fdb_alloc(struct vxlan_dev *vxlan,
+ 	return f;
  }
-@@ -10730,6 +10730,7 @@ static void bnxt_shutdown(struct pci_dev *pdev)
  
- 	if (system_state == SYSTEM_POWER_OFF) {
- 		bnxt_clear_int_mode(bp);
-+		pci_disable_device(pdev);
- 		pci_wake_from_d3(pdev, bp->wol);
- 		pci_set_power_state(pdev, PCI_D3hot);
++static void vxlan_fdb_insert(struct vxlan_dev *vxlan, const u8 *mac,
++			     __be32 src_vni, struct vxlan_fdb *f)
++{
++	++vxlan->addrcnt;
++	hlist_add_head_rcu(&f->hlist,
++			   vxlan_fdb_head(vxlan, mac, src_vni));
++}
++
+ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+ 			    const u8 *mac, union vxlan_addr *ip,
+ 			    __u16 state, __be16 port, __be32 src_vni,
+@@ -831,18 +839,13 @@ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+ 		return rc;
  	}
+ 
+-	++vxlan->addrcnt;
+-	hlist_add_head_rcu(&f->hlist,
+-			   vxlan_fdb_head(vxlan, mac, src_vni));
+-
+ 	*fdb = f;
+ 
+ 	return 0;
+ }
+ 
+-static void vxlan_fdb_free(struct rcu_head *head)
++static void __vxlan_fdb_free(struct vxlan_fdb *f)
+ {
+-	struct vxlan_fdb *f = container_of(head, struct vxlan_fdb, rcu);
+ 	struct vxlan_rdst *rd, *nd;
+ 
+ 	list_for_each_entry_safe(rd, nd, &f->remotes, list) {
+@@ -852,6 +855,13 @@ static void vxlan_fdb_free(struct rcu_head *head)
+ 	kfree(f);
+ }
+ 
++static void vxlan_fdb_free(struct rcu_head *head)
++{
++	struct vxlan_fdb *f = container_of(head, struct vxlan_fdb, rcu);
++
++	__vxlan_fdb_free(f);
++}
++
+ static void vxlan_fdb_destroy(struct vxlan_dev *vxlan, struct vxlan_fdb *f,
+ 			      bool do_notify, bool swdev_notify)
+ {
+@@ -979,6 +989,7 @@ static int vxlan_fdb_update_create(struct vxlan_dev *vxlan,
+ 	if (rc < 0)
+ 		return rc;
+ 
++	vxlan_fdb_insert(vxlan, mac, src_vni, f);
+ 	rc = vxlan_fdb_notify(vxlan, f, first_remote_rtnl(f), RTM_NEWNEIGH,
+ 			      swdev_notify, extack);
+ 	if (rc)
+@@ -3573,12 +3584,17 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	if (err)
+ 		goto errout;
+ 
+-	/* notify default fdb entry */
+ 	if (f) {
++		vxlan_fdb_insert(vxlan, all_zeros_mac,
++				 vxlan->default_dst.remote_vni, f);
++
++		/* notify default fdb entry */
+ 		err = vxlan_fdb_notify(vxlan, f, first_remote_rtnl(f),
+ 				       RTM_NEWNEIGH, true, extack);
+-		if (err)
+-			goto errout;
++		if (err) {
++			vxlan_fdb_destroy(vxlan, f, false, false);
++			goto unregister;
++		}
+ 	}
+ 
+ 	list_add(&vxlan->next, &vn->vxlan_list);
+@@ -3590,7 +3606,8 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	 * destroy the entry by hand here.
+ 	 */
+ 	if (f)
+-		vxlan_fdb_destroy(vxlan, f, false, false);
++		__vxlan_fdb_free(f);
++unregister:
+ 	if (unregister)
+ 		unregister_netdevice(dev);
+ 	return err;
 -- 
 2.20.1
 
