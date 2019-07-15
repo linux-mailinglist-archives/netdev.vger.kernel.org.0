@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB1ED693C3
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51615693D3
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405091AbfGOOqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:46:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37850 "EHLO mail.kernel.org"
+        id S2405162AbfGOOrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:47:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39912 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405082AbfGOOqf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:46:35 -0400
+        id S2405130AbfGOOq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:46:57 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D1D8A20896;
-        Mon, 15 Jul 2019 14:46:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 88B2120651;
+        Mon, 15 Jul 2019 14:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201994;
-        bh=9ZBpCNdidHWzhwHJsmWMIf1Am1/Ul8xkGUop7dmrjr8=;
+        s=default; t=1563202016;
+        bh=qR146ivIQwhvLYQVXcYFs2DrnYiY9L6a2Ox+hVENN9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1HWZWIfYLobxpQGyZvtLOfXAISBBZkvhxenPxN/lpTNo1JYgctf+wqOHD0OxdIjJT
-         jNR0du8sqofEr28b4jQYuAVIq/Bkh7jmbnSIFkuPXAc/W/5PyztAJCNy5qFYHyoTkN
-         f+fTDrTuVowTx9sz2PMinca9V7ATAjiBCzvbEojI=
+        b=1KWw6/dfQQPtGL5p7tYcN+T/++7zJ2MOpKgVdlvyyYN00AyIKmXBp2tEWr6hm7yHi
+         r773PMAqo6mFXjoyn36yOMYv3s3RdxK5hxdkVYN5IDjleCgyEZlmNANMSK7oySGa6S
+         TkzWsaDm0EOU8y12uDq7cgUcJ03pV4Z6WB7gIvB0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Fabio Estevam <festevam@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 17/53] net: phy: Check against net_device being NULL
-Date:   Mon, 15 Jul 2019 10:44:59 -0400
-Message-Id: <20190715144535.11636-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 22/53] net: fec: Do not use netdev messages too early
+Date:   Mon, 15 Jul 2019 10:45:04 -0400
+Message-Id: <20190715144535.11636-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715144535.11636-1-sashal@kernel.org>
 References: <20190715144535.11636-1-sashal@kernel.org>
@@ -45,48 +43,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 82c76aca81187b3d28a6fb3062f6916450ce955e ]
+[ Upstream commit a19a0582363b9a5f8ba812f34f1b8df394898780 ]
 
-In general, we don't want MAC drivers calling phy_attach_direct with the
-net_device being NULL. Add checks against this in all the functions
-calling it: phy_attach() and phy_connect_direct().
+When a valid MAC address is not found the current messages
+are shown:
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+fec 2188000.ethernet (unnamed net_device) (uninitialized): Invalid MAC address: 00:00:00:00:00:00
+fec 2188000.ethernet (unnamed net_device) (uninitialized): Using random MAC address: aa:9f:25:eb:7e:aa
+
+Since the network device has not been registered at this point, it is better
+to use dev_err()/dev_info() instead, which will provide cleaner log
+messages like these:
+
+fec 2188000.ethernet: Invalid MAC address: 00:00:00:00:00:00
+fec 2188000.ethernet: Using random MAC address: aa:9f:25:eb:7e:aa
+
+Tested on a imx6dl-pico-pi board.
+
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_device.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/freescale/fec_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 70f26b30729c..c6a87834723d 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -472,6 +472,9 @@ int phy_connect_direct(struct net_device *dev, struct phy_device *phydev,
- {
- 	int rc;
- 
-+	if (!dev)
-+		return -EINVAL;
-+
- 	rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
- 	if (rc)
- 		return rc;
-@@ -704,6 +707,9 @@ struct phy_device *phy_attach(struct net_device *dev, const char *bus_id,
- 	struct device *d;
- 	int rc;
- 
-+	if (!dev)
-+		return ERR_PTR(-EINVAL);
-+
- 	/* Search the list of PHY devices on the mdio bus for the
- 	 * PHY with the requested name
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index ae8e4fc22e7b..0ee164d09f39 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1699,10 +1699,10 @@ static void fec_get_mac(struct net_device *ndev)
  	 */
+ 	if (!is_valid_ether_addr(iap)) {
+ 		/* Report it and use a random ethernet address instead */
+-		netdev_err(ndev, "Invalid MAC address: %pM\n", iap);
++		dev_err(&fep->pdev->dev, "Invalid MAC address: %pM\n", iap);
+ 		eth_hw_addr_random(ndev);
+-		netdev_info(ndev, "Using random MAC address: %pM\n",
+-			    ndev->dev_addr);
++		dev_info(&fep->pdev->dev, "Using random MAC address: %pM\n",
++			 ndev->dev_addr);
+ 		return;
+ 	}
+ 
 -- 
 2.20.1
 
