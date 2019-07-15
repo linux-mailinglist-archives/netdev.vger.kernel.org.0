@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8607369D09
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA63069D0B
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731988AbfGOUtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 16:49:18 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:37932 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729505AbfGOUtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:49:18 -0400
-Received: by mail-ot1-f65.google.com with SMTP id d17so18560046oth.5;
-        Mon, 15 Jul 2019 13:49:17 -0700 (PDT)
+        id S1732165AbfGOUtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 16:49:25 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:45677 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729505AbfGOUtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:49:25 -0400
+Received: by mail-ot1-f67.google.com with SMTP id x21so18506303otq.12;
+        Mon, 15 Jul 2019 13:49:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=B2ogZ6mjovzkCR5HJmoGraNTud1gYT/+smTPhr8188g=;
-        b=gZV8Tu17SHlNYM/fQS8Qttmu66ly4GyykrFHxK3/HViOrYp/5uIFGwKcI7vcrqVyUm
-         IsoIoX9q/WbYvWAlRORz5g4F0sAKjVZKij7INGet3e+GL0MnFfIGiIVBrU/DHCKE5MfU
-         fbNCuLVNbaAktiJVgqiNfIpCnRO/rCmOXUNeS0WBf8XIMPGqCn1uzx/siNN7r7eRepsr
-         TQEKwf1LWiH2yawrPjG2I51udj9+lVznir0zzV9+jhO5zp8UCas8Xq+Gx3pdznh7WYTj
-         y6vayC4pImFcbz0nEj3Hc/fysNFJ4IdurCkJYS68QajXOUcDEdcT2rOBesPILdwOMCpi
-         yi0Q==
+        bh=UiKaE+sa/JTtPfu66ECQVi+EOsevEAKzkG+J0EsB2cI=;
+        b=OZNR7DQ0gkcJBaoCDGjC3/4y6j6rKMfEpn+X4u5wlWMn6GyYahj1yxDToa5fZi2Z2I
+         PUo77rOZ/iAL/VF3cXcfx1hnWqOERtkDcqMwtcJ2L2rLMtH59kBUveCftVUQQDRpvnuV
+         ZCWg3oJ2tEnuboHGXm4iExL1gE4gIxbwgclsr52z8DTH0dNJpkdiYJrGARqRDwfrxKIX
+         cBemLZQAJuGFkRA0Kunvwalomj9x/5pJAsPW8M9qhhyr7O4bUw8ef/hC3pi/0Gsllsxa
+         qcPMwpO1RYqj/ucbS9UVvQe6JeoMCBKcXvRfppOQG9zL/9ihp5brTOhGpHVJP5sGrCHi
+         8mGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=B2ogZ6mjovzkCR5HJmoGraNTud1gYT/+smTPhr8188g=;
-        b=UizqqdI2dMA64TJnTxXhhSPUzJsmrqyV3QEkXKPT0H+HQg2ex7zuj5qaZu0JtyegxL
-         RTwS7pTpv9C8DYyJkpRGfo7rLyVkrpftha8od0aOqRkDKzF39BcQPt9XK1VcYGvLbZoZ
-         xNGuhjaTM3olYe4+tDB0es3r37zo98CLAcSaulXHrNpLuGaJbl6X9SdEJCfKJW5oCLGw
-         OrDaOA9Wr1dSUa4/gu0ySW37q0ttLZnC7WSPWlfDRHtS2sx/U/lGamVbDB+fb3RTI8Pb
-         0Eg46mZjzXortIX/4SGo1GyOQC77xe7jLzT4ZG3N888OkW/Wc0vOTBXeRlkAxR4gGbMq
-         BW6Q==
-X-Gm-Message-State: APjAAAU1FPz0+VEjhI1jvHrNP5AERQe1GoVaJHvJ1NWJPPK29rADbMOu
-        tNYFQHwtzfrmhXsGx9lkTCM=
-X-Google-Smtp-Source: APXvYqw1PS6SbWzw9iSPEYeNXt0KdiZdhA+n6zitIL/4QyzAouOcX0uBfmn4kmOu5Ba96N/hZM57GA==
-X-Received: by 2002:a9d:470f:: with SMTP id a15mr20072874otf.235.1563223757350;
-        Mon, 15 Jul 2019 13:49:17 -0700 (PDT)
+        bh=UiKaE+sa/JTtPfu66ECQVi+EOsevEAKzkG+J0EsB2cI=;
+        b=PX5Yn4AJj1pVGGbV9Jq5vImFUWhtrkjh1JWgztOq9h8JvFT+gC+I8Lca/1nXmcv2ex
+         Uod5szKM034+M938V0t4CtMC3pKDYCRY3mE2V8Qma28dv6t8CaSQfAcaWq3Au2xTbM2d
+         3WbAhMxta/3XtvnOYw6lmfMjpVfP84/WvjDyXp92i8o1XXZrRuYo30YM6J2uUdJ6rWnD
+         UEpU+iupEUxdTdG/XeJH/e67lWppdg8v9IsXYaWakt9ViEZhk23mUoF5pFbjNju25eja
+         zQM9UTl9/n6d1HHLl0eXWpMKU3W5eXGiEG7ZmRNeO5iAES9A9qlL6nHBZiA2xnTUffkL
+         5JdA==
+X-Gm-Message-State: APjAAAWE6ozHpy6JHA+4wLrJ+1I1MraiLt3TBaw1OJGSff8z54Qv2h+5
+        RteDgxNnuWZxZrBZVCFttHM=
+X-Google-Smtp-Source: APXvYqyaIr6KH1VdHwm2SPwcp1uLiJQ7gW0tLAbbKd908tfGXryV3v7UkL+o5HSHcoNuorlvLZ3uuA==
+X-Received: by 2002:a9d:7741:: with SMTP id t1mr5739795otl.178.1563223763952;
+        Mon, 15 Jul 2019 13:49:23 -0700 (PDT)
 Received: from [127.0.1.1] ([99.0.85.34])
-        by smtp.gmail.com with ESMTPSA id 132sm6414818oid.47.2019.07.15.13.49.16
+        by smtp.gmail.com with ESMTPSA id z20sm6088307oic.31.2019.07.15.13.49.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 13:49:16 -0700 (PDT)
-Subject: [bpf PATCH v3 2/8] tls: remove close callback sock unlock/lock
- around TX work flush
+        Mon, 15 Jul 2019 13:49:23 -0700 (PDT)
+Subject: [bpf PATCH v3 3/8] tls: remove sock unlock/lock around strp_done()
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub.kicinski@netronome.com, ast@kernel.org, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com,
         john.fastabend@gmail.com, bpf@vger.kernel.org
-Date:   Mon, 15 Jul 2019 13:49:15 -0700
-Message-ID: <156322375571.18678.11939499603669901288.stgit@john-XPS-13-9370>
+Date:   Mon, 15 Jul 2019 13:49:22 -0700
+Message-ID: <156322376245.18678.2590668444515934979.stgit@john-XPS-13-9370>
 In-Reply-To: <156322373173.18678.6003379631139659856.stgit@john-XPS-13-9370>
 References: <156322373173.18678.6003379631139659856.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.17.1-dirty
@@ -63,122 +62,221 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tls close() callback currently drops the sock lock, makes a
-cancel_delayed_work_sync() call, and then relocks the sock.
+The tls close() callback currently drops the sock lock to call
+strp_done(). Split up the RX cleanup into stopping the strparser
+and releasing most resources, syncing strparser and finally
+freeing the context.
 
-By restructuring the code we can avoid droping lock and then
-reclaiming it. To simplify this we do the following,
-
- tls_sk_proto_close
- set_bit(CLOSING)
- set_bit(SCHEDULE)
- cancel_delay_work_sync() <- cancel workqueue
- lock_sock(sk)
- ...
- release_sock(sk)
- strp_done()
-
-Setting the CLOSING bit prevents the SCHEDULE bit from being
-cleared by any workqueue items e.g. if one happens to be
-scheduled and run between when we set SCHEDULE bit and cancel
-work. Then because SCHEDULE bit is set now no new work will
-be scheduled.
-
-Tested with net selftests and bpf selftests.
+To avoid the need for a strp_done() call on the cleanup path
+of device offload make sure we don't arm the strparser until
+we are sure init will be successful.
 
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- include/net/tls.h  |    2 ++
- net/tls/tls_main.c |    3 +++
- net/tls/tls_sw.c   |   24 +++++++++++++++++-------
- 3 files changed, 22 insertions(+), 7 deletions(-)
+ include/net/tls.h    |    4 ++-
+ net/tls/tls_device.c |    1 -
+ net/tls/tls_main.c   |   65 +++++++++++++++++++++++++-------------------------
+ net/tls/tls_sw.c     |   33 ++++++++++++++++++-------
+ 4 files changed, 58 insertions(+), 45 deletions(-)
 
 diff --git a/include/net/tls.h b/include/net/tls.h
-index 43f551cd508b..d4276cb6de53 100644
+index d4276cb6de53..72ddd16de056 100644
 --- a/include/net/tls.h
 +++ b/include/net/tls.h
-@@ -162,6 +162,7 @@ struct tls_sw_context_tx {
- 	int async_capable;
- 
- #define BIT_TX_SCHEDULED	0
-+#define BIT_TX_CLOSING		1
- 	unsigned long tx_bitmask;
+@@ -107,9 +107,7 @@ struct tls_device {
+ enum {
+ 	TLS_BASE,
+ 	TLS_SW,
+-#ifdef CONFIG_TLS_DEVICE
+ 	TLS_HW,
+-#endif
+ 	TLS_HW_RECORD,
+ 	TLS_NUM_CONFIG,
  };
+@@ -357,6 +355,7 @@ int tls_sk_attach(struct sock *sk, int optname, char __user *optval,
  
-@@ -360,6 +361,7 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size);
+ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx);
+ void tls_sw_strparser_arm(struct sock *sk, struct tls_context *ctx);
++void tls_sw_strparser_done(struct tls_context *tls_ctx);
+ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size);
  int tls_sw_sendpage(struct sock *sk, struct page *page,
  		    int offset, size_t size, int flags);
- void tls_sw_close(struct sock *sk, long timeout);
-+void tls_sw_cancel_work_tx(struct tls_context *tls_ctx);
+@@ -365,6 +364,7 @@ void tls_sw_cancel_work_tx(struct tls_context *tls_ctx);
  void tls_sw_free_resources_tx(struct sock *sk);
  void tls_sw_free_resources_rx(struct sock *sk);
  void tls_sw_release_resources_rx(struct sock *sk);
++void tls_sw_free_ctx_rx(struct tls_context *tls_ctx);
+ int tls_sw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		   int nonblock, int flags, int *addr_len);
+ bool tls_sw_stream_read(const struct sock *sk);
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 4d67d72f007c..7c0b2b778703 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1045,7 +1045,6 @@ int tls_set_device_offload_rx(struct sock *sk, struct tls_context *ctx)
+ 	rc = tls_set_sw_offload(sk, ctx, 0);
+ 	if (rc)
+ 		goto release_ctx;
+-	tls_sw_strparser_arm(sk, ctx);
+ 
+ 	rc = netdev->tlsdev_ops->tls_dev_add(netdev, sk, TLS_OFFLOAD_CTX_DIR_RX,
+ 					     &ctx->crypto_recv.info,
 diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 85a9d7d57b32..ddda422498aa 100644
+index ddda422498aa..9f4a9da182ae 100644
 --- a/net/tls/tls_main.c
 +++ b/net/tls/tls_main.c
-@@ -268,6 +268,9 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 	void (*sk_proto_close)(struct sock *sk, long timeout);
- 	bool free_ctx = false;
+@@ -261,27 +261,9 @@ void tls_ctx_free(struct tls_context *ctx)
+ 	kfree(ctx);
+ }
  
+-static void tls_sk_proto_close(struct sock *sk, long timeout)
++static void tls_sk_proto_cleanup(struct sock *sk,
++				 struct tls_context *ctx, long timeo)
+ {
+-	struct tls_context *ctx = tls_get_ctx(sk);
+-	long timeo = sock_sndtimeo(sk, 0);
+-	void (*sk_proto_close)(struct sock *sk, long timeout);
+-	bool free_ctx = false;
+-
+-	if (ctx->tx_conf == TLS_SW)
+-		tls_sw_cancel_work_tx(ctx);
+-
+-	lock_sock(sk);
+-	sk_proto_close = ctx->sk_proto_close;
+-
+-	if (ctx->tx_conf == TLS_HW_RECORD && ctx->rx_conf == TLS_HW_RECORD)
+-		goto skip_tx_cleanup;
+-
+-	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE) {
+-		free_ctx = true;
+-		goto skip_tx_cleanup;
+-	}
+-
+ 	if (unlikely(sk->sk_write_pending) &&
+ 	    !wait_on_pending_writer(sk, &timeo))
+ 		tls_handle_open_record(sk, 0);
+@@ -298,27 +280,44 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+ 	}
+ 
+ 	if (ctx->rx_conf == TLS_SW)
+-		tls_sw_free_resources_rx(sk);
++		tls_sw_release_resources_rx(sk);
+ 
+ #ifdef CONFIG_TLS_DEVICE
+ 	if (ctx->rx_conf == TLS_HW)
+ 		tls_device_offload_cleanup_rx(sk);
+-
+-	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW) {
+-#else
+-	{
+ #endif
+-		tls_ctx_free(ctx);
+-		ctx = NULL;
+-	}
++}
++
++static void tls_sk_proto_close(struct sock *sk, long timeout)
++{
++	void (*sk_proto_close)(struct sock *sk, long timeout);
++	struct tls_context *ctx = tls_get_ctx(sk);
++	long timeo = sock_sndtimeo(sk, 0);
++
 +	if (ctx->tx_conf == TLS_SW)
 +		tls_sw_cancel_work_tx(ctx);
 +
- 	lock_sock(sk);
- 	sk_proto_close = ctx->sk_proto_close;
++	lock_sock(sk);
++	sk_proto_close = ctx->sk_proto_close;
++
++	if (ctx->tx_conf == TLS_HW_RECORD && ctx->rx_conf == TLS_HW_RECORD)
++		goto skip_tx_cleanup;
++
++	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE)
++		goto skip_tx_cleanup;
++
++	tls_sk_proto_cleanup(sk, ctx, timeo);
  
+ skip_tx_cleanup:
+ 	release_sock(sk);
++	if (ctx->rx_conf == TLS_SW || ctx->rx_conf == TLS_HW)
++		tls_sw_strparser_done(ctx);
++	if (ctx->rx_conf == TLS_SW)
++		tls_sw_free_ctx_rx(ctx);
+ 	sk_proto_close(sk, timeout);
+-	/* free ctx for TLS_HW_RECORD, used by tcp_set_state
+-	 * for sk->sk_prot->unhash [tls_hw_unhash]
+-	 */
+-	if (free_ctx)
++
++	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW &&
++	    ctx->tx_conf != TLS_HW_RECORD && ctx->rx_conf != TLS_HW_RECORD)
+ 		tls_ctx_free(ctx);
+ }
+ 
+@@ -544,9 +543,9 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
+ 			rc = tls_set_sw_offload(sk, ctx, 0);
+ 			if (rc)
+ 				goto err_crypto_info;
+-			tls_sw_strparser_arm(sk, ctx);
+ 			conf = TLS_SW;
+ 		}
++		tls_sw_strparser_arm(sk, ctx);
+ 	}
+ 
+ 	if (tx)
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index f58a8ffc2a9c..38c0e53c727d 100644
+index 38c0e53c727d..ee8fef312475 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -2054,6 +2054,15 @@ static void tls_data_ready(struct sock *sk)
+@@ -2114,25 +2114,40 @@ void tls_sw_release_resources_rx(struct sock *sk)
+ 		skb_queue_purge(&ctx->rx_list);
+ 		crypto_free_aead(ctx->aead_recv);
+ 		strp_stop(&ctx->strp);
+-		write_lock_bh(&sk->sk_callback_lock);
+-		sk->sk_data_ready = ctx->saved_data_ready;
+-		write_unlock_bh(&sk->sk_callback_lock);
+-		release_sock(sk);
+-		strp_done(&ctx->strp);
+-		lock_sock(sk);
++		/* If tls_sw_strparser_arm() was not called (cleanup paths)
++		 * we still want to strp_stop(), but sk->sk_data_ready was
++		 * never swapped.
++		 */
++		if (ctx->saved_data_ready) {
++			write_lock_bh(&sk->sk_callback_lock);
++			sk->sk_data_ready = ctx->saved_data_ready;
++			write_unlock_bh(&sk->sk_callback_lock);
++		}
  	}
  }
  
-+void tls_sw_cancel_work_tx(struct tls_context *tls_ctx)
-+{
-+	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
-+
-+	set_bit(BIT_TX_CLOSING, &ctx->tx_bitmask);
-+	set_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask);
-+	cancel_delayed_work_sync(&ctx->tx_work.work);
+-void tls_sw_free_resources_rx(struct sock *sk)
++void tls_sw_strparser_done(struct tls_context *tls_ctx)
+ {
+-	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+ 
+-	tls_sw_release_resources_rx(sk);
++	strp_done(&ctx->strp);
 +}
 +
- void tls_sw_free_resources_tx(struct sock *sk)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
-@@ -2065,11 +2074,6 @@ void tls_sw_free_resources_tx(struct sock *sk)
- 	if (atomic_read(&ctx->encrypt_pending))
- 		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
++void tls_sw_free_ctx_rx(struct tls_context *tls_ctx)
++{
++	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
  
--	release_sock(sk);
--	cancel_delayed_work_sync(&ctx->tx_work.work);
--	lock_sock(sk);
--
--	/* Tx whatever records we can transmit and abandon the rest */
- 	tls_tx_records(sk, -1);
+ 	kfree(ctx);
+ }
  
- 	/* Free up un-sent records in tx_list. First, free
-@@ -2137,11 +2141,17 @@ static void tx_work_handler(struct work_struct *work)
- 					       struct tx_work, work);
- 	struct sock *sk = tx_work->sk;
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
-+	struct tls_sw_context_tx *ctx;
- 
--	if (!test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
-+	if (unlikely(!tls_ctx))
- 		return;
- 
-+	ctx = tls_sw_ctx_tx(tls_ctx);
-+	if (test_bit(BIT_TX_CLOSING, &ctx->tx_bitmask))
-+		return;
++void tls_sw_free_resources_rx(struct sock *sk)
++{
++	struct tls_context *tls_ctx = tls_get_ctx(sk);
 +
-+	if (!test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
-+		return;
- 	lock_sock(sk);
- 	tls_tx_records(sk, -1);
- 	release_sock(sk);
++	tls_sw_release_resources_rx(sk);
++	tls_sw_free_ctx_rx(tls_ctx);
++}
++
+ /* The work handler to transmitt the encrypted records in tx_list */
+ static void tx_work_handler(struct work_struct *work)
+ {
 
