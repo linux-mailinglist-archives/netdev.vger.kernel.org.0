@@ -2,92 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2700369794
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FCAC698FD
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 18:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731856AbfGOPLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 11:11:48 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:42346 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731667AbfGOPLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 11:11:44 -0400
-Received: by mail-qk1-f195.google.com with SMTP id 201so11855239qkm.9;
-        Mon, 15 Jul 2019 08:11:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=obT241NE0xGOXdIPu6PnSNQNubI9lc5VVpLNN9jbZPs=;
-        b=rP4oVEnnurCqv7lMvDdDiqbxUqBGAfXAmVaTDNJW7/ac/tX03HH1xs4Sx8sQnRXKxL
-         XbJeGlW0kwt/fF4bXWRwCCEUDo84hxF78ZzK6IJ6MiKpfZoF+Ny6OmcsYMzCe/hFZFmG
-         qBNSLiQ2aJ5WEhVH94QLWF8B92cWkcVEDJT9o+xfASLEYGugM3izmazOpfkyyijfefk0
-         YArNqJoP/Pn3N1wIXWxm4O9tE32qw94kprulhPYbnYuPe9tVTqgW4z+WuAEbYAdk2dmd
-         S3Ov9+B0Qx4k1cwTwMEbhfsJeBeANkNfBqwvqWDt9jM6K366CB9V4VmqnLwl8dezhyfo
-         HHMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=obT241NE0xGOXdIPu6PnSNQNubI9lc5VVpLNN9jbZPs=;
-        b=cRIuY9BT3Mse05KDxmU8rYRD1v27slFsta3RxRBBh2SJeuGKeIrOWXKfkZc4+ZkE2C
-         MvlIoNG7ezGdpclhCmXTQWAYcrB6cqV/SYDQbo5C8dxjt0H8JROc9c8G4yIVBUyOHhWl
-         4LDwEMXBRlW4jUVKdVOsHgKDEuCHkRXMmSwZpvDeoGc9BDpwrw6w2QF12lm+1jodGzeb
-         Pk9qMDsSrSK528V9k34rQPTOHsBRZ6ept0dKDVC7ypNqtm/l6rJ/TaKQnvLx3tmlRe1L
-         ETXLGYOPeJE4SVRo2Xc45j/M/2GjhKiScLwlqZbOzXSt5X+Uc8aAbtWCUwXDSyhgBnSI
-         iwDg==
-X-Gm-Message-State: APjAAAXyPAG0axkrMP4AsP63Ce+mAa52EEiGNZcm9BFvWcwH9pBBk5uI
-        aqRA8a9TpZKlM9+M41CmE7ZIEWuXL/wyxFedJeE9abvm
-X-Google-Smtp-Source: APXvYqyZL2lm5AIzOLcpNgGzPpUAqU9zlfkN6pc052CC/Akm7TXhtA3X1fRroPCXrTXJNgwRvJfjDdwRAzOoEb3eUbk=
-X-Received: by 2002:a37:b646:: with SMTP id g67mr16659507qkf.92.1563203503210;
- Mon, 15 Jul 2019 08:11:43 -0700 (PDT)
+        id S1730098AbfGOQ2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 12:28:01 -0400
+Received: from E.TopQuark.net ([168.235.66.66]:58450 "EHLO E.TopQuark.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729533AbfGOQ2A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 12:28:00 -0400
+X-Greylist: delayed 567 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Jul 2019 12:28:00 EDT
+Received: from Mail1.TopQuark.net (pool-108-28-144-167.washdc.fios.verizon.net [108.28.144.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "Mail1.TopQuark.net", Issuer "TopQuark Mail Relay CA" (verified OK))
+        by Mail2.TopQuark.net (Postfix) with ESMTPS id 0BC7E30400FD;
+        Mon, 15 Jul 2019 12:18:27 -0400 (EDT)
+Received: from Mail1.TopQuark.net (unknown [127.0.0.1])
+        by Mail1.TopQuark.net (Postfix) with ESMTP id 63D3227EE066;
+        Mon, 15 Jul 2019 12:18:27 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=PaulSD.com; h=date:from:to
+        :cc:subject:message-id:mime-version:content-type; s=mail; bh=ycI
+        yazEtKwWCGWQ1zviCVAuA65M=; b=Nr6uwxzN9qPGdS08LZGIzYRs/leSnlT/JJK
+        SUrXsRPw269vyhB0dy9XEZS53HD2vek250R06NqyNh5SFq+ud8TvW4+XnPhQLfCR
+        EXoc4m6KtuIk32zzLGsSStgq5SDmBARJ1sAADngfs82w3CAIXo3SoVNp7+kfmnJl
+        qnrr2zGQ=
+Received: by Mail1.TopQuark.net (Postfix, from userid 1000)
+        id 5177F27EE1D3; Mon, 15 Jul 2019 12:18:27 -0400 (EDT)
+Date:   Mon, 15 Jul 2019 12:18:27 -0400
+From:   Paul Donohue <linux-kernel@PaulSD.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+Subject: IPv6 L2TP issues related to 93531c67
+Message-ID: <20190715161827.GB2622@TopQuark.net>
 MIME-Version: 1.0
-References: <20190715091103.4030-1-iii@linux.ibm.com>
-In-Reply-To: <20190715091103.4030-1-iii@linux.ibm.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 15 Jul 2019 08:11:27 -0700
-Message-ID: <CAEf4BzY-pcuiwyZ874yWiYFEK0kU6wytXRVNsegTUny5GChxEQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] samples/bpf: build with -D__TARGET_ARCH_$(SRCARCH)
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 15, 2019 at 2:11 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> While $ARCH can be relatively flexible (see Makefile and
-> tools/scripts/Makefile.arch), $SRCARCH always corresponds to a directory
-> name under arch/.
->
-> Therefore, build samples with -D__TARGET_ARCH_$(SRCARCH), since that
-> matches the expectations of bpf_helpers.h.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> Acked-by: Vasily Gorbik <gor@linux.ibm.com>
-> ---
+I have a system that establishes four L2TP over IPv6 tunnels using site-local addresses via the following:
+ip l2tp add tunnel tunnel_id 1233 peer_tunnel_id 1233 encap ip local fd23:2355:accd::2:4 remote fd23:2355:accd::2:3
+ip l2tp add session name net_l2tp1 tunnel_id 1233 session_id 1233 peer_session_id 1233
+ip link set dev net_l2tp1 up
+ip l2tp add tunnel tunnel_id 1235 peer_tunnel_id 1235 encap ip local fd23:2355:accd::2:4 remote fd23:2355:accd::2:2
+ip l2tp add session name net_l2tp2 tunnel_id 1235 session_id 1235 peer_session_id 1235
+ip link set dev net_l2tp2 up
+ip l2tp add tunnel tunnel_id 2233 peer_tunnel_id 2233 encap ip local fd23:2355:accd::2:4 remote fd23:2355:accd::2:3
+ip l2tp add session name net_l2tp3 tunnel_id 2233 session_id 2233 peer_session_id 2233
+ip link set dev net_l2tp3 up
+ip l2tp add tunnel tunnel_id 2235 peer_tunnel_id 2235 encap ip local fd23:2355:accd::2:4 remote fd23:2355:accd::2:2
+ip l2tp add session name net_l2tp4 tunnel_id 2235 session_id 2235 peer_session_id 2235
+ip link set dev net_l2tp4 up
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+These tunnels worked fine on kernel 4.4.  On kernel 4.15, there was a bug that caused intermittent L2TP packet errors, but everything worked fine after applying 4522a70db7aa5e77526a4079628578599821b193.
 
+However, after upgrading to kernel 4.18 with 4522a70d (or upgrading to kernel 5.0 which includes 4522a70d, or upgrading to the current master kernel branch), two of the four tunnels always fail to work properly after a reboot, although it appears random which two work and which two fail.
 
->  samples/bpf/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index f90daadfbc89..1d9be26b4edd 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -284,7 +284,7 @@ $(obj)/%.o: $(src)/%.c
->         $(Q)$(CLANG) $(NOSTDINC_FLAGS) $(LINUXINCLUDE) $(EXTRA_CFLAGS) -I$(obj) \
->                 -I$(srctree)/tools/testing/selftests/bpf/ \
->                 -D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
-> -               -D__TARGET_ARCH_$(ARCH) -Wno-compare-distinct-pointer-types \
-> +               -D__TARGET_ARCH_$(SRCARCH) -Wno-compare-distinct-pointer-types \
->                 -Wno-gnu-variable-sized-type-not-at-end \
->                 -Wno-address-of-packed-member -Wno-tautological-compare \
->                 -Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
-> --
-> 2.21.0
->
+When I say "fail to work properly", the problem is that packets generated by the l2tp kernel modules (in response to a packet being sent to the associated net_l2tpX interface) are silently dropped.  The l2tp_debugfs kernel module reports that L2TP packets are being transmitted with no errors, iptables counters and nflog rules can be used to confirm that well-formed packets are generated and sent, but tcpdump does not see the packets being sent on any interface on the system.  iptables reports that the destination interface of the lost packets is "lo" (which is clearly incorrect and probably an indicator of the underlying issue), but `tcpdump -nnn -i lo` doesn't show any packets.  Incoming L2TP packets appear to be processed correctly, only outgoing L2TP packets appear affected.
+
+Reverting commit 93531c6743157d7e8c5792f8ed1a57641149d62c (identified by bisection) fixes this issue.
+
+IPv4 L2TP tunnels do not appear affected by this issue.  Based on a few quick tests, it appears that switching to publicly-routable IPv6 addresses instead of site-local addresses seems to prevent this issue, although I haven't done sufficient testing of this, and it is not clear to me how the code in 93531c67 might be affected by the type of IPv6 address, so this observation may be a red herring.  Manually deleting and re-creating a broken interface seems to make it work again, although I have not thoroughly experimented with making changes after boot time to see if the problem is entirely random, if it is based on the number of existing interfaces, if it is based on a boot-time timing issue, etc.
+
+It is not obvious to me how commit 93531c6743157d7e8c5792f8ed1a57641149d62c causes this issue, or how it should be fixed.  Could someone take a look and point me in the right direction for further troubleshooting?
+
+Thanks!
