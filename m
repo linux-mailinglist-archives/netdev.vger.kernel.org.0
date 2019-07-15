@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C94AA6945F
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC1A6945D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404218AbfGOOhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2404247AbfGOOhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 15 Jul 2019 10:37:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52124 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:53000 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392046AbfGOOeq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:34:46 -0400
+        id S2404411AbfGOOfJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:35:09 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 576B0206B8;
-        Mon, 15 Jul 2019 14:34:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BEA2D217D8;
+        Mon, 15 Jul 2019 14:35:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201285;
-        bh=akGUhKVSHFGT8s4X5fyVfQB6wkOhTdhGrZbORvz2OMo=;
+        s=default; t=1563201308;
+        bh=ISiXIkP7Efpmxbr7CKuGfsjKqSepe7v3jybSx7GJ1LQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKpgrKz3fGRjBkK82R2tUdwqxiHnJi5VWgRyvQpnRzDdZ/0OJUmtS1/6o1S/0BOhE
-         3C3DpNQfNeza3Qy1HNzadp76dE9ihKnmwp5WRSJcYgKH5FV/g7oTPVic3sJtidimUb
-         tAfDvmQuRQ+CCjohvM5m3xxJjDX9qb/qoaOPHGkI=
+        b=lMmYXq3t3VcBTLlbx07piQP2wx7mW6KAKdpuuJ1DmeIGn7MjRJKAw6xe7euG/mo1p
+         WQdpbfPxNdp4lV7j4rpVRSizD9yJIBL2ahbAr8R5klrclzow36Z4dqnLJawQawaYaP
+         GJyt+NARTg0ivUytrQkS4Cj6VM2eVPFEBmf7MMgc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josua Mayer <josua.mayer@jm0.eu>,
-        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
-        Michael Scott <mike@foundries.io>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Taehee Yoo <ap420073@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 097/105] Bluetooth: 6lowpan: search for destination address in all peers
-Date:   Mon, 15 Jul 2019 10:28:31 -0400
-Message-Id: <20190715142839.9896-97-sashal@kernel.org>
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 104/105] gtp: fix use-after-free in gtp_newlink()
+Date:   Mon, 15 Jul 2019 10:28:38 -0400
+Message-Id: <20190715142839.9896-104-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
 References: <20190715142839.9896-1-sashal@kernel.org>
@@ -46,57 +44,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Josua Mayer <josua.mayer@jm0.eu>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit b188b03270b7f8568fc714101ce82fbf5e811c5a ]
+[ Upstream commit a2bed90704c68d3763bf24decb1b781a45395de8 ]
 
-Handle overlooked case where the target address is assigned to a peer
-and neither route nor gateway exist.
+Current gtp_newlink() could be called after unregister_pernet_subsys().
+gtp_newlink() uses gtp_net but it can be destroyed by
+unregister_pernet_subsys().
+So unregister_pernet_subsys() should be called after
+rtnl_link_unregister().
 
-For one peer, no checks are performed to see if it is meant to receive
-packets for a given address.
+Test commands:
+   #SHELL 1
+   while :
+   do
+	   for i in {1..5}
+	   do
+		./gtp-link add gtp$i &
+	   done
+	   killall gtp-link
+   done
 
-As soon as there is a second peer however, checks are performed
-to deal with routes and gateways for handling complex setups with
-multiple hops to a target address.
-This logic assumed that no route and no gateway imply that the
-destination address can not be reached, which is false in case of a
-direct peer.
+   #SHELL 2
+   while :
+   do
+	modprobe -rv gtp
+   done
 
-Acked-by: Jukka Rissanen <jukka.rissanen@linux.intel.com>
-Tested-by: Michael Scott <mike@foundries.io>
-Signed-off-by: Josua Mayer <josua.mayer@jm0.eu>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Splat looks like:
+[  753.176631] BUG: KASAN: use-after-free in gtp_newlink+0x9b4/0xa5c [gtp]
+[  753.177722] Read of size 8 at addr ffff8880d48f2458 by task gtp-link/7126
+[  753.179082] CPU: 0 PID: 7126 Comm: gtp-link Tainted: G        W         5.2.0-rc6+ #50
+[  753.185801] Call Trace:
+[  753.186264]  dump_stack+0x7c/0xbb
+[  753.186863]  ? gtp_newlink+0x9b4/0xa5c [gtp]
+[  753.187583]  print_address_description+0xc7/0x240
+[  753.188382]  ? gtp_newlink+0x9b4/0xa5c [gtp]
+[  753.189097]  ? gtp_newlink+0x9b4/0xa5c [gtp]
+[  753.189846]  __kasan_report+0x12a/0x16f
+[  753.190542]  ? gtp_newlink+0x9b4/0xa5c [gtp]
+[  753.191298]  kasan_report+0xe/0x20
+[  753.191893]  gtp_newlink+0x9b4/0xa5c [gtp]
+[  753.192580]  ? __netlink_ns_capable+0xc3/0xf0
+[  753.193370]  __rtnl_newlink+0xb9f/0x11b0
+[ ... ]
+[  753.241201] Allocated by task 7186:
+[  753.241844]  save_stack+0x19/0x80
+[  753.242399]  __kasan_kmalloc.constprop.3+0xa0/0xd0
+[  753.243192]  __kmalloc+0x13e/0x300
+[  753.243764]  ops_init+0xd6/0x350
+[  753.244314]  register_pernet_operations+0x249/0x6f0
+[ ... ]
+[  753.251770] Freed by task 7178:
+[  753.252288]  save_stack+0x19/0x80
+[  753.252833]  __kasan_slab_free+0x111/0x150
+[  753.253962]  kfree+0xc7/0x280
+[  753.254509]  ops_free_list.part.11+0x1c4/0x2d0
+[  753.255241]  unregister_pernet_operations+0x262/0x390
+[ ... ]
+[  753.285883] list_add corruption. next->prev should be prev (ffff8880d48f2458), but was ffff8880d497d878. (next.
+[  753.287241] ------------[ cut here ]------------
+[  753.287794] kernel BUG at lib/list_debug.c:25!
+[  753.288364] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[  753.289099] CPU: 0 PID: 7126 Comm: gtp-link Tainted: G    B   W         5.2.0-rc6+ #50
+[  753.291036] RIP: 0010:__list_add_valid+0x74/0xd0
+[  753.291589] Code: 48 39 da 75 27 48 39 f5 74 36 48 39 dd 74 31 48 83 c4 08 b8 01 00 00 00 5b 5d c3 48 89 d9 48b
+[  753.293779] RSP: 0018:ffff8880cae8f398 EFLAGS: 00010286
+[  753.294401] RAX: 0000000000000075 RBX: ffff8880d497d878 RCX: 0000000000000000
+[  753.296260] RDX: 0000000000000075 RSI: 0000000000000008 RDI: ffffed10195d1e69
+[  753.297070] RBP: ffff8880cd250ae0 R08: ffffed101b4bff21 R09: ffffed101b4bff21
+[  753.297899] R10: 0000000000000001 R11: ffffed101b4bff20 R12: ffff8880d497d878
+[  753.298703] R13: 0000000000000000 R14: ffff8880cd250ae0 R15: ffff8880d48f2458
+[  753.299564] FS:  00007f5f79805740(0000) GS:ffff8880da400000(0000) knlGS:0000000000000000
+[  753.300533] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  753.301231] CR2: 00007fe8c7ef4f10 CR3: 00000000b71a6006 CR4: 00000000000606f0
+[  753.302183] Call Trace:
+[  753.302530]  gtp_newlink+0x5f6/0xa5c [gtp]
+[  753.303037]  ? __netlink_ns_capable+0xc3/0xf0
+[  753.303576]  __rtnl_newlink+0xb9f/0x11b0
+[  753.304092]  ? rtnl_link_unregister+0x230/0x230
+
+Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/6lowpan.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/gtp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-index 4e2576fc0c59..357475cceec6 100644
---- a/net/bluetooth/6lowpan.c
-+++ b/net/bluetooth/6lowpan.c
-@@ -187,10 +187,16 @@ static inline struct lowpan_peer *peer_lookup_dst(struct lowpan_btle_dev *dev,
- 	}
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 53fd66534e3a..5de4053774b8 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -1383,9 +1383,9 @@ late_initcall(gtp_init);
  
- 	if (!rt) {
--		nexthop = &lowpan_cb(skb)->gw;
--
--		if (ipv6_addr_any(nexthop))
--			return NULL;
-+		if (ipv6_addr_any(&lowpan_cb(skb)->gw)) {
-+			/* There is neither route nor gateway,
-+			 * probably the destination is a direct peer.
-+			 */
-+			nexthop = daddr;
-+		} else {
-+			/* There is a known gateway
-+			 */
-+			nexthop = &lowpan_cb(skb)->gw;
-+		}
- 	} else {
- 		nexthop = rt6_nexthop(rt, daddr);
+ static void __exit gtp_fini(void)
+ {
+-	unregister_pernet_subsys(&gtp_net_ops);
+ 	genl_unregister_family(&gtp_genl_family);
+ 	rtnl_link_unregister(&gtp_link_ops);
++	unregister_pernet_subsys(&gtp_net_ops);
  
+ 	pr_info("GTP module unloaded\n");
+ }
 -- 
 2.20.1
 
