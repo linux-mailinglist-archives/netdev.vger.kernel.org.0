@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E7068DB6
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:01:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 186CB68DBC
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387471AbfGOOA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:00:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43048 "EHLO mail.kernel.org"
+        id S1733275AbfGOOBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:01:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43536 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387449AbfGOOA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:00:57 -0400
+        id S1731326AbfGOOBN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:01:13 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EB93E212F5;
-        Mon, 15 Jul 2019 14:00:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 125A52083D;
+        Mon, 15 Jul 2019 14:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199256;
-        bh=Ka9LjuFY7J/pn+330gSHEmJ1nVVqs86F2XRAsFPE378=;
+        s=default; t=1563199272;
+        bh=Yf2R0tM/bEIm2s6ta7L7vGbzeVyOgOPjlCcPctN/KQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGvy55SioLsVowBsHhlbOfLHjOrQYMX3q8KPTXOLP3qUnMzhRzPLp/IubXQMXe4hO
-         5HbN7zhTQD9r6G1ZaaLyahs+vclC8xUxyn53aaPrFqF6o/6tuDEFrIfqgLzMAsDDSp
-         /8h/xHbtGWq1Nsq/D1KjiQf8iD8GKWB5WpWTgZtM=
+        b=Fwv++oL5V0EuBr5agcmvMIwP64BBBKR9Q/ptnmuLzQJrZHJwJcn8vhNobB6FluTR2
+         zp/oD1l5l87sVoLtqjTWiSWDHyRFFIgHmYSI0aunMM/nprM10tNkw4R/368m0PQc5h
+         IqXczvIfMONgopWUwsMLv5Hd+KCEhaj1izF5AM9Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phong Tran <tranmanphong@gmail.com>,
-        syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.2 222/249] net: usb: asix: init MAC address buffers
-Date:   Mon, 15 Jul 2019 09:46:27 -0400
-Message-Id: <20190715134655.4076-222-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 224/249] libbpf: fix GCC8 warning for strncpy
+Date:   Mon, 15 Jul 2019 09:46:29 -0400
+Message-Id: <20190715134655.4076-224-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -45,121 +46,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phong Tran <tranmanphong@gmail.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit 78226f6eaac80bf30256a33a4926c194ceefdf36 ]
+[ Upstream commit cdfc7f888c2a355b01308e97c6df108f1c2b64e8 ]
 
-This is for fixing bug KMSAN: uninit-value in ax88772_bind
+GCC8 started emitting warning about using strncpy with number of bytes
+exactly equal destination size, which is generally unsafe, as can lead
+to non-zero terminated string being copied. Use IFNAMSIZ - 1 as number
+of bytes to ensure name is always zero-terminated.
 
-Tested by
-https://groups.google.com/d/msg/syzkaller-bugs/aFQurGotng4/eB_HlNhhCwAJ
-
-Reported-by: syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
-
-syzbot found the following crash on:
-
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=136d720ea00000
-kernel config:
-https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link:
-https://syzkaller.appspot.com/bug?extid=8a3fc6674bbc3978ed4e
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:
-https://syzkaller.appspot.com/x/repro.syz?x=12788316a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120359aaa00000
-
-==================================================================
-BUG: KMSAN: uninit-value in is_valid_ether_addr
-include/linux/etherdevice.h:200 [inline]
-BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr
-drivers/net/usb/asix_devices.c:73 [inline]
-BUG: KMSAN: uninit-value in ax88772_bind+0x93d/0x11e0
-drivers/net/usb/asix_devices.c:724
-CPU: 0 PID: 3348 Comm: kworker/0:2 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
-  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
-  ax88772_bind+0x93d/0x11e0 drivers/net/usb/asix_devices.c:724
-  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
-  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  process_scheduled_works kernel/workqueue.c:2331 [inline]
-  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
-  kthread+0x4b5/0x4f0 kernel/kthread.c:254
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
-
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/asix_devices.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/lib/bpf/xsk.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index c9bc96310ed4..ef548beba684 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -226,7 +226,7 @@ static void asix_phy_reset(struct usbnet *dev, unsigned int reset_bits)
- static int ax88172_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret = 0;
--	u8 buf[ETH_ALEN];
-+	u8 buf[ETH_ALEN] = {0};
- 	int i;
- 	unsigned long gpio_bits = dev->driver_info->data;
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 38667b62f1fe..8a7a05bc657d 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -337,7 +337,8 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
  
-@@ -677,7 +677,7 @@ static int asix_resume(struct usb_interface *intf)
- static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret, i;
--	u8 buf[ETH_ALEN], chipcode = 0;
-+	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
- 	u32 phyid;
- 	struct asix_common_private *priv;
- 
-@@ -1061,7 +1061,7 @@ static const struct net_device_ops ax88178_netdev_ops = {
- static int ax88178_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret;
--	u8 buf[ETH_ALEN];
-+	u8 buf[ETH_ALEN] = {0};
- 
- 	usbnet_get_endpoints(dev,intf);
- 
+ 	channels.cmd = ETHTOOL_GCHANNELS;
+ 	ifr.ifr_data = (void *)&channels;
+-	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ);
++	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
++	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+ 	err = ioctl(fd, SIOCETHTOOL, &ifr);
+ 	if (err && errno != EOPNOTSUPP) {
+ 		ret = -errno;
 -- 
 2.20.1
 
