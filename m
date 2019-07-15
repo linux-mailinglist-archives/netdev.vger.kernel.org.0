@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 795FE69C5E
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC9C69C83
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732456AbfGOUKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 16:10:05 -0400
-Received: from mail-eopbgr50045.outbound.protection.outlook.com ([40.107.5.45]:60879
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732427AbfGOUKD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 16:10:03 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Htjik/qt6ggRYULDJUqP0wh0xNYf/vR2VOMNTyZEXXeMfq3Yhp1uEZFmRRYQ+5hnKBsn7MnGKE+pUvQBATLGi7yMowJqsN2cQ0fBixTXVPmpDkP/XfaW8SNfr99T1JPt2he/nppYwZu9A1vbOQSbSJZBvJR+xjmtBdTVenG29cvOZc/ArWL1Re+IITB7VCFxdg1lG1ReXfwUGIFuamP4ULhfUqxPODfAjPY7gb8xaXkQKmB4qdG5X8QSJDi4heQhruFG5fLY6SflS+rBahIm4smSvBnPdF0wdJNYypCPRj5VXC2ozOEo2JiTHjLdVGTgmA12OQ9SQ5/s05v4eqdmGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Gv8mR6Ywm4T8CshI+Tsc3ht+12fhm7XTqWQQ/WsFGg=;
- b=dE3EhEUKlKkq5fVzuzgIMkAMtksUQgHwOJhnIbiFwhj5LkzX4Yl6kbSwMaPhefH3q1TE639P+LvFnBVJ2Ee3V03/Nbw47E4OiSvk/I34nJNU3m5zKr0P7sOY8iUbqE1JBMWtPZQVtUnXKpF1N0J4L6QsIhRbAJqnNO1iYZTg+hNol00DYh4UVCfEowX21Bgywf2Mr6pu3O+t/i3c8ytp/4OPMAQ5z1cLwn+U08ijR1jR3PS77WCglj9hGrJ9TqCKOgRGgibqF/T2O38BSNdutW68UG/SNKzwdZgSwDYSQLO39fSwmPEo/dwDAvM0u4HY5qekvyXCCW9jyP07YAmRJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Gv8mR6Ywm4T8CshI+Tsc3ht+12fhm7XTqWQQ/WsFGg=;
- b=AYHbSKGT8VTWE26yLaR/rRTmQG2FBhllOG3ePE0/yupdxzCUTlT+GoGJ5DPzU//n569NmK+CToK2YTvs5W/vcz5T8AY56EMctZwHIe/ES+nIJvOn24VhpC3l86ZpRZDnZt5SbdL4w09NGkO8fw7aM/tIGV8xliQx3T+YGqu7oSk=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2485.eurprd05.prod.outlook.com (10.168.74.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2073.14; Mon, 15 Jul 2019 20:09:58 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2073.012; Mon, 15 Jul 2019
- 20:09:58 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 3/3] net/mlx5e: Allow dissector meta key in tc flower
-Thread-Topic: [net 3/3] net/mlx5e: Allow dissector meta key in tc flower
-Thread-Index: AQHVO0lGL8Q0SBKBF0idvLtfCFhulg==
-Date:   Mon, 15 Jul 2019 20:09:58 +0000
-Message-ID: <20190715200940.31799-4-saeedm@mellanox.com>
-References: <20190715200940.31799-1-saeedm@mellanox.com>
-In-Reply-To: <20190715200940.31799-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [73.15.39.150]
-x-clientproxiedby: BYAPR07CA0061.namprd07.prod.outlook.com
- (2603:10b6:a03:60::38) To DB6PR0501MB2759.eurprd05.prod.outlook.com
- (2603:10a6:4:84::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 821ca68c-f117-4d04-2375-08d70960690d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2485;
-x-ms-traffictypediagnostic: DB6PR0501MB2485:
-x-microsoft-antispam-prvs: <DB6PR0501MB2485DE933DF316E9A645EDD6BECF0@DB6PR0501MB2485.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 00997889E7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(136003)(366004)(376002)(346002)(199004)(189003)(6436002)(305945005)(25786009)(7736002)(102836004)(6116002)(26005)(6506007)(81166006)(3846002)(81156014)(53936002)(107886003)(36756003)(14444005)(478600001)(486006)(6512007)(186003)(256004)(8676002)(68736007)(386003)(8936002)(2906002)(66556008)(86362001)(99286004)(66476007)(476003)(66946007)(64756008)(2616005)(446003)(11346002)(66066001)(5660300002)(71200400001)(66446008)(14454004)(71190400001)(4326008)(6916009)(52116002)(76176011)(1076003)(50226002)(54906003)(6486002)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2485;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: U/H/Ay5QKjQiwoAcMBJ3cZXkCqycvHSe8LrCYMNDswxvlwCzVBWRoxgY2f5ykADu8DFNAyN/lBoBN5IHm75JHKVGeaJLp+730XYS33DF9Wt0C7AeAoA0R1UdO3n79KlrLixOFCUiE8T65uloeItbiyRE5uowRaY60DOAxLqX4T8KClI7715jsLeH0rNrnI543WHanEu77vwJqFYvZvpKY+iH33kBKSecaMwitDucra9kyiCm3/8OeDEhXOxwLmNKsT9MYZ7y08NKoWYkfBhsQ5Zxak7R2l3AKnNjsWTSPolzcWvzHqlDASCBDbDa5LmYP0legA2KblB7hlQiQE+pg+Udf/AHE8+azEIq2bOChh6UqsFUpkOVGzDYy/Y9iKtWQtdYPobJdQLPFHgUJDEaVduliy1Dsq8KkAxnDScim8w=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1731054AbfGOUQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 16:16:56 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:42026 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729844AbfGOUQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:16:56 -0400
+Received: by mail-io1-f66.google.com with SMTP id e20so5899390iob.9
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 13:16:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zmGWbUm7Odh8E1jd5KlJTrVigC1hDfwKGrgGHQvVf5o=;
+        b=qE0tkznryrcqxjQwWWa3xxbuv3SXsW0rUFLrvvcmOYtgZJ5h8DB12Kba5jLjqQgBma
+         e+CRgEJ8Y45vyRI9jdDy1C2SBQnIpqn60s3tSf+fpshE2lq/xWq8eGfXT6KiGcckrLCV
+         6Rq4Nad5EfcmWqWYZs/cX6BIOtFtgZFXVcglXL8NXji8ngcH+xcgUWexd4lnC0vu/Na8
+         1gWHZqumzTwqb7EwFmaNGDprUqzmKUFTZcPPMT/bC2MrzLraP24qoGDP0clw87JCmSe/
+         d6Q3JkxcRpspxF13YLp4N3mUP/ZHowR6YmtBgpUd1BOfKj62kq904tlbS937vJ5Cc2rV
+         jQew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zmGWbUm7Odh8E1jd5KlJTrVigC1hDfwKGrgGHQvVf5o=;
+        b=SFURA895dIBq27WZCfTkxmCAUcCtnaH/AWMkGe5Fo9UrAS9crcWTGZyhWHur3mzKnz
+         Byb+nyk3hSTulX0193RwNmLuQWnJaDIHXoijrSnTgo+P2bYi6xSblXp1a7VAinGqs/+q
+         cfEDeRMf1NBUpyi4V9bzjs1mQz6YKbDyQL9K/iN3yM9VAJSNhFN0IwQnsn6UincItjyn
+         EeM0FKnYEI39egA61yWquFsa8AhUZKyE2AyqDdK2p9lm615cRikuc82Rrg+qhkauhzF5
+         RFxet0PBobE0y0X3bQgLnvZfC5Iwo5UIF8JPtSg16McgmLoR9IxijGDLcNtb4kqVuqdr
+         ltCQ==
+X-Gm-Message-State: APjAAAXErD2J1rIMPh9BUISZa0bzCw0q7Jq9EMb7mV8CxsfHswwwWk64
+        HruG+HYVMcdU5NvI0u9Mls0=
+X-Google-Smtp-Source: APXvYqzZQJpbaoDcOYHZ9L0PGzzGlUMR1/Re6LSsAMw4bnISrNSqug+hr/8HEI3nyr2AFk5eLvYS6g==
+X-Received: by 2002:a6b:6001:: with SMTP id r1mr22584164iog.229.1563221815752;
+        Mon, 15 Jul 2019 13:16:55 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:51b4:3c95:43b6:f3d0? ([2601:282:800:fd80:51b4:3c95:43b6:f3d0])
+        by smtp.googlemail.com with ESMTPSA id z19sm22809808ioh.12.2019.07.15.13.16.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Jul 2019 13:16:55 -0700 (PDT)
+Subject: Re: [PATCH iproute2 net-next v2 1/6] Kernel header update for
+ hardware offloading changes.
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        "Patel, Vedang" <vedang.patel@intel.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Murali Karicheri <m-karicheri2@ti.com>
+References: <1559859735-17237-1-git-send-email-vedang.patel@intel.com>
+ <0AFDC65C-2A16-47B7-96F6-F6844AF75095@intel.com>
+ <20190715125059.70470f9e@hermes.lan>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2c13cf19-0b4a-2149-1624-040191cedad9@gmail.com>
+Date:   Mon, 15 Jul 2019 14:16:53 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 821ca68c-f117-4d04-2375-08d70960690d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2019 20:09:58.2722
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2485
+In-Reply-To: <20190715125059.70470f9e@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+On 7/15/19 1:50 PM, Stephen Hemminger wrote:
+> On Mon, 15 Jul 2019 19:40:19 +0000
+> "Patel, Vedang" <vedang.patel@intel.com> wrote:
+> 
+>> Hi Stephen, 
+>>
+>> The kernel patches corresponding to this series have been merged. I just wanted to check whether these iproute2 related patches are on your TODO list.
+>>
+>> Let me know if you need any information from me on these patches.
+>>
+>> Thanks,
+>> Vedang Patel
+> 
+> 
+> David Ahern handles iproute2 next
+> 
+> https://patchwork.ozlabs.org/patch/1111466/
+> 
 
-Recently, fl_flow_key->indev_ifindex int field was refactored into
-flow_dissector_key_meta field. With this, flower classifier also sets
-FLOW_DISSECTOR_KEY_META flow dissector key. However, mlx5 flower dissector
-validation code rejects filters that use flow dissector keys that are not
-supported. Add FLOW_DISSECTOR_KEY_META to the list of allowed dissector
-keys in __parse_cls_flower() to prevent following error when offloading
-flower classifier to mlx5:
-
-Error: mlx5_core: Unsupported key.
-
-Fixes: 8212ed777f40 ("net: sched: cls_flower: use flow_dissector for ingres=
-s ifindex")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_tc.c
-index b95e0ae4d7fd..cc096f6011d9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1499,7 +1499,8 @@ static int __parse_cls_flower(struct mlx5e_priv *priv=
-,
- 	*match_level =3D MLX5_MATCH_NONE;
-=20
- 	if (dissector->used_keys &
--	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	    ~(BIT(FLOW_DISSECTOR_KEY_META) |
-+	      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
- 	      BIT(FLOW_DISSECTOR_KEY_BASIC) |
- 	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS) |
- 	      BIT(FLOW_DISSECTOR_KEY_VLAN) |
---=20
-2.21.0
-
+given the long time delay between when the iproute2 patches were posted
+and when the kernel side was accepted you will need to re-send the
+iproute2 patches.
