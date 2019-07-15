@@ -2,27 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C46C7686C5
+	by mail.lfdr.de (Postfix) with ESMTP id 4B145686C4
 	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 12:01:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729726AbfGOKAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 06:00:35 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:35107 "EHLO
+        id S1729720AbfGOKAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 06:00:34 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:35110 "EHLO
         proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729702AbfGOKAe (ORCPT
+        with ESMTP id S1729707AbfGOKAe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 06:00:34 -0400
 Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id 2A43B2E8835;
+        by proxy.6wind.com (Postfix) with ESMTPS id 3FF6B2E8836;
         Mon, 15 Jul 2019 12:00:31 +0200 (CEST)
 Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.89)
         (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1hmxmZ-0002E8-2Q; Mon, 15 Jul 2019 12:00:31 +0200
+        id 1hmxmZ-0002EB-4u; Mon, 15 Jul 2019 12:00:31 +0200
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
 To:     steffen.klassert@secunet.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH ipsec v2 2/4] xfrm interface: ifname may be wrong in logs
-Date:   Mon, 15 Jul 2019 12:00:21 +0200
-Message-Id: <20190715100023.8475-3-nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Julien Floret <julien.floret@6wind.com>
+Subject: [PATCH ipsec v2 3/4] xfrm interface: fix list corruption for x-netns
+Date:   Mon, 15 Jul 2019 12:00:22 +0200
+Message-Id: <20190715100023.8475-4-nicolas.dichtel@6wind.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190715100023.8475-1-nicolas.dichtel@6wind.com>
 References: <df990564-819a-314f-dda6-aab58a2e7b6e@6wind.com>
@@ -34,64 +36,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ifname is copied when the interface is created, but is never updated
-later. In fact, this property is used only in one error message, where the
-netdevice pointer is available, thus let's use it.
+dev_net(dev) is the netns of the device and xi->net is the link netns,
+where the device has been linked.
+changelink() must operate in the link netns to avoid a corruption of
+the xfrm lists.
+
+Note that xi->net and dev_net(xi->physdev) are always the same.
+
+Before the patch, the xfrmi lists may be corrupted and can later trigger a
+kernel panic.
 
 Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Reported-by: Julien Floret <julien.floret@6wind.com>
 Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Tested-by: Julien Floret <julien.floret@6wind.com>
 ---
- include/net/xfrm.h        |  1 -
- net/xfrm/xfrm_interface.c | 10 +---------
- 2 files changed, 1 insertion(+), 10 deletions(-)
+ net/xfrm/xfrm_interface.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index b22db30c3d88..ad761ef84797 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -983,7 +983,6 @@ static inline void xfrm_dst_destroy(struct xfrm_dst *xdst)
- void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev);
- 
- struct xfrm_if_parms {
--	char name[IFNAMSIZ];	/* name of XFRM device */
- 	int link;		/* ifindex of underlying L2 interface */
- 	u32 if_id;		/* interface identifyer */
- };
 diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 2310dc9e35c2..68336ee00d72 100644
+index 68336ee00d72..53e5e47b2c55 100644
 --- a/net/xfrm/xfrm_interface.c
 +++ b/net/xfrm/xfrm_interface.c
-@@ -145,8 +145,6 @@ static int xfrmi_create(struct net_device *dev)
- 	if (err < 0)
- 		goto out;
+@@ -503,7 +503,7 @@ static int xfrmi_change(struct xfrm_if *xi, const struct xfrm_if_parms *p)
  
--	strcpy(xi->p.name, dev->name);
--
- 	dev_hold(dev);
- 	xfrmi_link(xfrmn, xi);
- 
-@@ -294,7 +292,7 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
- 	if (tdev == dev) {
- 		stats->collisions++;
- 		net_warn_ratelimited("%s: Local routing loop detected!\n",
--				     xi->p.name);
-+				     dev->name);
- 		goto tx_err_dst_release;
- 	}
- 
-@@ -638,12 +636,6 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ static int xfrmi_update(struct xfrm_if *xi, struct xfrm_if_parms *p)
+ {
+-	struct net *net = dev_net(xi->dev);
++	struct net *net = xi->net;
+ 	struct xfrmi_net *xfrmn = net_generic(net, xfrmi_net_id);
  	int err;
  
+@@ -663,9 +663,9 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ 			   struct nlattr *data[],
+ 			   struct netlink_ext_ack *extack)
+ {
+-	struct net *net = dev_net(dev);
++	struct xfrm_if *xi = netdev_priv(dev);
++	struct net *net = xi->net;
+ 	struct xfrm_if_parms p;
+-	struct xfrm_if *xi;
+ 
  	xfrmi_netlink_parms(data, &p);
--
--	if (!tb[IFLA_IFNAME])
--		return -EINVAL;
--
--	nla_strlcpy(p.name, tb[IFLA_IFNAME], IFNAMSIZ);
--
  	xi = xfrmi_locate(net, &p);
- 	if (xi)
- 		return -EEXIST;
+@@ -707,7 +707,7 @@ static struct net *xfrmi_get_link_net(const struct net_device *dev)
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+ 
+-	return dev_net(xi->phydev);
++	return xi->net;
+ }
+ 
+ static const struct nla_policy xfrmi_policy[IFLA_XFRM_MAX + 1] = {
 -- 
 2.21.0
 
