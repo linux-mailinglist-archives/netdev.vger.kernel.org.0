@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51CDE694FE
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F41694FC
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391381AbfGOO0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:26:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35154 "EHLO mail.kernel.org"
+        id S2390435AbfGOO05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:26:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390462AbfGOO0p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:26:45 -0400
+        id S2391393AbfGOO0w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:26:52 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 11BC621842;
-        Mon, 15 Jul 2019 14:26:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C311A206B8;
+        Mon, 15 Jul 2019 14:26:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200804;
-        bh=zYV7CxvtS3NWj05ijEC7m/2+ntlXcyOu+ePKTd6O2c8=;
+        s=default; t=1563200811;
+        bh=ipCcHjIhlJAKSpf0KtDgEtW1PuWtCoxSDhCf9IAkvUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mBe4BIDZ/hyvRnEbDbFy6uUiD4kUsLMdVV6PK3nBTLO2JZL9e9ZW53hyXn5MvOTZ2
-         FwsxcxFxIBc2akQDBFz7bg9/9V1GHz75+WFCYzZt6IURTAhg0CgsI2lD8KQsvvXThR
-         obsEMoiB/A3zvu6rW6xPS5aaWnxN5ZvdU/h4L5zU=
+        b=K83LbY+cJCSDQ1+4tWvcLsYHpvRNsA3HaT32mjfdNutJ+qSwA2V5/1FAC5P9ZGl9A
+         GvpASQttmmjMNKx3zTjJHISCAcJxycni1IiLK3MRmrPhw5z+fuLY70kIeNbOduSYWU
+         gcIh5huOCItGSqD70+qJ2iyzkSLdDvwWyMSLM/wM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrei Otcheretianski <andrei.otcheretianski@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 134/158] iwlwifi: mvm: Drop large non sta frames
-Date:   Mon, 15 Jul 2019 10:17:45 -0400
-Message-Id: <20190715141809.8445-134-sashal@kernel.org>
+Cc:     Baruch Siach <baruch@tkos.co.il>, Song Liu <songliubraving@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 135/158] bpf: fix uapi bpf_prog_info fields alignment
+Date:   Mon, 15 Jul 2019 10:17:46 -0400
+Message-Id: <20190715141809.8445-135-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -44,39 +47,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit ac70499ee97231a418dc1a4d6c9dc102e8f64631 ]
+[ Upstream commit 0472301a28f6cf53a6bc5783e48a2d0bbff4682f ]
 
-In some buggy scenarios we could possible attempt to transmit frames larger
-than maximum MSDU size. Since our devices don't know how to handle this,
-it may result in asserts, hangs etc.
-This can happen, for example, when we receive a large multicast frame
-and try to transmit it back to the air in AP mode.
-Since in a legal scenario this should never happen, drop such frames and
-warn about it.
+Merge commit 1c8c5a9d38f60 ("Merge
+git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next") undid the
+fix from commit 36f9814a494 ("bpf: fix uapi hole for 32 bit compat
+applications") by taking the gpl_compatible 1-bit field definition from
+commit b85fab0e67b162 ("bpf: Add gpl_compatible flag to struct
+bpf_prog_info") as is. That breaks architectures with 16-bit alignment
+like m68k. Add 31-bit pad after gpl_compatible to restore alignment of
+following fields.
 
-Signed-off-by: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Thanks to Dmitry V. Levin his analysis of this bug history.
+
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Acked-by: Song Liu <songliubraving@fb.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/uapi/linux/bpf.h       | 1 +
+ tools/include/uapi/linux/bpf.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-index 2d21f0a1fa00..ffae299c3492 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-@@ -641,6 +641,9 @@ int iwl_mvm_tx_skb_non_sta(struct iwl_mvm *mvm, struct sk_buff *skb)
- 
- 	memcpy(&info, skb->cb, sizeof(info));
- 
-+	if (WARN_ON_ONCE(skb->len > IEEE80211_MAX_DATA_LEN + hdrlen))
-+		return -1;
-+
- 	if (WARN_ON_ONCE(info.flags & IEEE80211_TX_CTL_AMPDU))
- 		return -1;
- 
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 2932600ce271..d143e277cdaf 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2486,6 +2486,7 @@ struct bpf_prog_info {
+ 	char name[BPF_OBJ_NAME_LEN];
+ 	__u32 ifindex;
+ 	__u32 gpl_compatible:1;
++	__u32 :31; /* alignment pad */
+ 	__u64 netns_dev;
+ 	__u64 netns_ino;
+ 	__u32 nr_jited_ksyms;
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 66917a4eba27..bf4cd924aed5 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2484,6 +2484,7 @@ struct bpf_prog_info {
+ 	char name[BPF_OBJ_NAME_LEN];
+ 	__u32 ifindex;
+ 	__u32 gpl_compatible:1;
++	__u32 :31; /* alignment pad */
+ 	__u64 netns_dev;
+ 	__u64 netns_ino;
+ 	__u32 nr_jited_ksyms;
 -- 
 2.20.1
 
