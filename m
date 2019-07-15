@@ -2,67 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5525D68828
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 13:27:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22E28688DC
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 14:26:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729827AbfGOL0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 07:26:35 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37070 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729778AbfGOL0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 07:26:35 -0400
-Received: by mail-pg1-f195.google.com with SMTP id g15so7575178pgi.4
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 04:26:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=R/z9C++HzdZHJokF8YQvAcRfrfxDb5Hvo0pKZKIfP9w=;
-        b=DZYtSP9up/zrTjgazKls2iqXpeQdzKwgPDAakUNd6lH6FbZR5yGwVlJib4dq/9mc9v
-         bu8hmiF98dN+hTbbXbJ3X4Xi2SLOyOcbTYrfuFGKHWuw88phQm+JG/qZdKhbhJB533JF
-         wSha8TE9AGAIgZBoy+0gj04KNFKGrDgCaHjBMX620ooH+CI0OQHIyqgEk59lwDPXIsse
-         nMO8t2Fxmm/I9eHZsyzrvnrAA8CLrIKiQn8HUbPjrsAnz73LQv1BMnL39fGtWiKSvx6B
-         ETr16NQIBZ1Y7xy9W2D85mtkVy2FWAmh3YapTaXaN64xZOK0wxyeWGwXB71QlxiMNOiq
-         AzYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=R/z9C++HzdZHJokF8YQvAcRfrfxDb5Hvo0pKZKIfP9w=;
-        b=bBmD76zpQxW8aYXRGR3L+ePhv8XMcTPZWqRYcQzcsghg5RNN15q7IDVaX6dxJsq4KA
-         zryspJyVKHsZHdJ8XkF4jx/1pp/qGTk85bJAv7qkpYYhFJigJ+938y9HyJRQzDuDzKGW
-         rDL6hhBjDVS6j1sjEX3AMDQBC4VIGNA0c4dyNgjLz3VHaiYWfO5pim33L7ABT2pTLnC8
-         AotcmZMOrhzP3UepsM0vmcCkWQOag5nNDE9BPPDdJRI8KjjjAg44V8zoOYOp97Q1kkX8
-         FJwdNZhj1w1+i9oSWy2PrOj+HFXmPhh+B7ynkl3yx29d27Sux7M+rkSrwDGLsqFw61UD
-         OKKg==
-X-Gm-Message-State: APjAAAWrCBiePpCN2hpKnUhPBZWlVsVkrCDvxTLtcQxovQdekhub1MKP
-        mSUx0ZUzmflh11sgHCWNk+uUQEqkeJ2dIA9DAkw=
-X-Google-Smtp-Source: APXvYqy/NZzH6VDdeF9YLHJUdslhZPpzERu7eT5C2U0Jc9mPYJaLpUvUutK/FAAIj/Ml32jjVTLWKRDgLHRzfQ0KsDs=
-X-Received: by 2002:a17:90a:30aa:: with SMTP id h39mr28896724pjb.32.1563189994504;
- Mon, 15 Jul 2019 04:26:34 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a17:90a:8c14:0:0:0:0 with HTTP; Mon, 15 Jul 2019 04:26:33
- -0700 (PDT)
-From:   John Jacob <jjacobvsusa@gmail.com>
-Date:   Mon, 15 Jul 2019 04:26:33 -0700
-Message-ID: <CAKZDKkDge2J_qQiwtYYxvA=OTyk=bkqOhd7+sjwPTYOT1i58Kg@mail.gmail.com>
-Subject: Kindly Respond
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        id S1729977AbfGOM0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 08:26:10 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:46840 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728933AbfGOM0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 08:26:09 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1hn03R-0004qz-1F; Mon, 15 Jul 2019 12:26:05 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH v2] e1000e: Make speed detection on hotplugging cable more reliable
+Date:   Mon, 15 Jul 2019 20:25:55 +0800
+Message-Id: <20190715122555.11922-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190715084355.9962-1-kai.heng.feng@canonical.com>
+References: <20190715084355.9962-1-kai.heng.feng@canonical.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Sir,
+After hotplugging an 1Gbps ethernet cable with 1Gbps link partner, the
+MII_BMSR may report 10Mbps, renders the network rather slow.
 
-I am Barr Fredrick Mbogo a business consultant i have a lucrative
-business to discuss with you from the Eastern part of Africa Uganda
-aimed at agreed percentage upon your acceptance of my hand in business
-and friendship. Kindly respond to me if you are interested to partner
-with me for an update. Very important.
+The issue has much lower fail rate after commit 59653e6497d1 ("e1000e:
+Make watchdog use delayed work"), which essentially introduces some
+delay before running the watchdog task.
 
-Yours Sincerely,
-John Jacob,
-For,
-Barr Frederick Mbogo
-Business Consultant.
-Reply to: barrfredmbogo@consultant.com
+But there's still a chance that the hotplugging event and the queued
+watchdog task gets run at the same time, then the original issue can be
+observed once again.
+
+So let's use mod_delayed_work() to add a deterministic 1 second delay
+before running watchdog task, after an interrupt.
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/ethernet/intel/e1000e/netdev.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index e4baa13b3cda..c83bf5349d53 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -1780,8 +1780,8 @@ static irqreturn_t e1000_intr_msi(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			queue_delayed_work(adapter->e1000_workqueue,
+-					   &adapter->watchdog_task, 1);
++			mod_delayed_work(adapter->e1000_workqueue,
++					 &adapter->watchdog_task, HZ);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1861,8 +1861,8 @@ static irqreturn_t e1000_intr(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			queue_delayed_work(adapter->e1000_workqueue,
+-					   &adapter->watchdog_task, 1);
++			mod_delayed_work(adapter->e1000_workqueue,
++					 &adapter->watchdog_task, HZ);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1907,8 +1907,8 @@ static irqreturn_t e1000_msix_other(int __always_unused irq, void *data)
+ 		hw->mac.get_link_status = true;
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			queue_delayed_work(adapter->e1000_workqueue,
+-					   &adapter->watchdog_task, 1);
++			mod_delayed_work(adapter->e1000_workqueue,
++					 &adapter->watchdog_task, HZ);
+ 	}
+ 
+ 	if (!test_bit(__E1000_DOWN, &adapter->state))
+-- 
+2.17.1
+
