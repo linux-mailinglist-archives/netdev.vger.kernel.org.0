@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D3D68BA1
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F16768BAF
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730933AbfGONiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:38:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38312 "EHLO mail.kernel.org"
+        id S1730798AbfGONmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:42:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730529AbfGONiY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:38:24 -0400
+        id S1730951AbfGONi3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:38:29 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 844E8212F5;
-        Mon, 15 Jul 2019 13:38:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 20658212F5;
+        Mon, 15 Jul 2019 13:38:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563197904;
-        bh=KCYLOsGoG359+oREF2v3J7YYuSkQnjbjlMV7bKPIiJQ=;
+        s=default; t=1563197908;
+        bh=USYyIlXozhTDfeuNtXedF7A0tbFNdzrMU37qo5vlIGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TeAx34obir8nE0WGZwO8iBuo2YMij1EbxHFU8ZJWevOzUf06bXHa0Y4plFM/Zt3+1
-         WY5tga05CMff9Hlj3X0lYgDQTiBpfaTuYxzG7mrMyzcqGUc3wwZOtFUlvuzr3+3Vab
-         GH0UjFxFNeXnY/IzM0GchNGH0Yy1nsrfMq61BNlQ=
+        b=W/nts1j0QD9LhTg8JrVP5JfwgnBZWIUPW9CpjH8m2LUKn83DXnxe9D0jW93W5zHG1
+         Z8QsviXQvd3lNsrgd2OCxjP/qKiVyXxLN5mC5O3Y37eNBeKMp+/qdtfRwJ4W8azCmr
+         qZytpWrsAlUupetgMDueyYP/AI0LL9sac4VVa3Qk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Miguel Catalan Cid <miguel.catalan@i2cat.net>,
+Cc:     Surabhi Vishnoi <svishnoi@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 004/219] ath9k: Don't trust TX status TID number when reporting airtime
-Date:   Mon, 15 Jul 2019 09:34:36 -0400
-Message-Id: <20190715133811.2441-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 006/219] ath10k: Do not send probe response template for mesh
+Date:   Mon, 15 Jul 2019 09:34:38 -0400
+Message-Id: <20190715133811.2441-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715133811.2441-1-sashal@kernel.org>
 References: <20190715133811.2441-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,59 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Surabhi Vishnoi <svishnoi@codeaurora.org>
 
-[ Upstream commit 389b72e58259336c2d56d58b660b79cf4b9e0dcb ]
+[ Upstream commit 97354f2c432788e3163134df6bb144f4b6289d87 ]
 
-As already noted a comment in ath_tx_complete_aggr(), the hardware will
-occasionally send a TX status with the wrong tid number. If we trust the
-value, airtime usage will be reported to the wrong AC, which can cause the
-deficit on that AC to become very low, blocking subsequent attempts to
-transmit.
+Currently mac80211 do not support probe response template for
+mesh point. When WMI_SERVICE_BEACON_OFFLOAD is enabled, host
+driver tries to configure probe response template for mesh, but
+it fails because the interface type is not NL80211_IFTYPE_AP but
+NL80211_IFTYPE_MESH_POINT.
 
-To fix this, account airtime usage to the TID number from the original skb,
-instead of the one in the hardware TX status report.
+To avoid this failure, skip sending probe response template to
+firmware for mesh point.
 
-Reported-by: Miguel Catalan Cid <miguel.catalan@i2cat.net>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Tested HW: WCN3990/QCA6174/QCA9984
+
+Signed-off-by: Surabhi Vishnoi <svishnoi@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/xmit.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/xmit.c b/drivers/net/wireless/ath/ath9k/xmit.c
-index b17e1ca40995..3be0aeedb9b5 100644
---- a/drivers/net/wireless/ath/ath9k/xmit.c
-+++ b/drivers/net/wireless/ath/ath9k/xmit.c
-@@ -668,7 +668,8 @@ static bool bf_is_ampdu_not_probing(struct ath_buf *bf)
- static void ath_tx_count_airtime(struct ath_softc *sc,
- 				 struct ieee80211_sta *sta,
- 				 struct ath_buf *bf,
--				 struct ath_tx_status *ts)
-+				 struct ath_tx_status *ts,
-+				 u8 tid)
- {
- 	u32 airtime = 0;
- 	int i;
-@@ -679,7 +680,7 @@ static void ath_tx_count_airtime(struct ath_softc *sc,
- 		airtime += rate_dur * bf->rates[i].count;
- 	}
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index e8997e22ceec..b500fd427595 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -1630,6 +1630,10 @@ static int ath10k_mac_setup_prb_tmpl(struct ath10k_vif *arvif)
+ 	if (arvif->vdev_type != WMI_VDEV_TYPE_AP)
+ 		return 0;
  
--	ieee80211_sta_register_airtime(sta, ts->tid, airtime, 0);
-+	ieee80211_sta_register_airtime(sta, tid, airtime, 0);
- }
- 
- static void ath_tx_process_buffer(struct ath_softc *sc, struct ath_txq *txq,
-@@ -709,7 +710,7 @@ static void ath_tx_process_buffer(struct ath_softc *sc, struct ath_txq *txq,
- 	if (sta) {
- 		struct ath_node *an = (struct ath_node *)sta->drv_priv;
- 		tid = ath_get_skb_tid(sc, an, bf->bf_mpdu);
--		ath_tx_count_airtime(sc, sta, bf, ts);
-+		ath_tx_count_airtime(sc, sta, bf, ts, tid->tidno);
- 		if (ts->ts_status & (ATH9K_TXERR_FILT | ATH9K_TXERR_XRETRY))
- 			tid->clear_ps_filter = true;
- 	}
++	 /* For mesh, probe response and beacon share the same template */
++	if (ieee80211_vif_is_mesh(vif))
++		return 0;
++
+ 	prb = ieee80211_proberesp_get(hw, vif);
+ 	if (!prb) {
+ 		ath10k_warn(ar, "failed to get probe resp template from mac80211\n");
 -- 
 2.20.1
 
