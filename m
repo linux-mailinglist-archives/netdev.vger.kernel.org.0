@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8A856966F
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6FC56966C
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387675AbfGOOHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:07:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56790 "EHLO mail.kernel.org"
+        id S2388107AbfGOOH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:07:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57160 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388219AbfGOOHs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:07:48 -0400
+        id S2387959AbfGOOHy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:07:54 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E10E206B8;
-        Mon, 15 Jul 2019 14:07:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5882B2086C;
+        Mon, 15 Jul 2019 14:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199668;
-        bh=y3JRFyP6Z6LQye0vFZIpV0p99KiojwddtijmBPKCz4k=;
+        s=default; t=1563199673;
+        bh=oRqbOAySbboqMZbkmrXo2KQeXzm8NK/i+iZVt347v4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UG/80HU47v0bFBZRWPiIgeamvPFtEFEP5HEz5AQdJrJw8AXROHmUqMH3I1fyV+tkg
-         st4yKfybRcItiMvSTdITzrjhyAH3mlyLR+g4fE5mqz+0zPh0V6zBoL9wXozuFVljh0
-         x0omt0y33QnAUljHgVKL6MbSxT9lIfZOfZ45FLdg=
+        b=rprHbZP9QpyRvTtFAksw/VA7KoIUyt1+K/Zqp8i9gSwjowDWBZdmbeO5tmixuIZsK
+         1SvMGKdcmc9JFi4VnD1bFeLpXOQTEs5JXwOAJTVqn8IcaVUVHo4N2qbjGhnKTmdn0x
+         lhthma1e6L3qSctZ2wRant1mr38vDLF2rQHLowVw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Robert Hancock <hancock@sedsystems.ca>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 066/219] net: axienet: Fix race condition causing TX hang
-Date:   Mon, 15 Jul 2019 10:01:07 -0400
-Message-Id: <20190715140341.6443-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 069/219] net: sfp: add mutex to prevent concurrent state checks
+Date:   Mon, 15 Jul 2019 10:01:10 -0400
+Message-Id: <20190715140341.6443-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,62 +46,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Robert Hancock <hancock@sedsystems.ca>
 
-[ Upstream commit 7de44285c1f69ccfbe8be1d6a16fcd956681fee6 ]
+[ Upstream commit 2158e856f56bb762ef90f3ec244d41a519826f75 ]
 
-It is possible that the interrupt handler fires and frees up space in
-the TX ring in between checking for sufficient TX ring space and
-stopping the TX queue in axienet_start_xmit. If this happens, the
-queue wake from the interrupt handler will occur before the queue is
-stopped, causing a lost wakeup and the adapter's transmit hanging.
+sfp_check_state can potentially be called by both a threaded IRQ handler
+and delayed work. If it is concurrently called, it could result in
+incorrect state management. Add a st_mutex to protect the state - this
+lock gets taken outside of code that checks and handle state changes, and
+the existing sm_mutex nests inside of it.
 
-To avoid this, after stopping the queue, check again whether there is
-sufficient space in the TX ring. If so, wake up the queue again.
-
+Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 20 ++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/net/phy/sfp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 4041c75997ba..38a8ef194e05 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -614,6 +614,10 @@ static void axienet_start_xmit_done(struct net_device *ndev)
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 71812be0ac64..b6efd2d41dce 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -186,10 +186,11 @@ struct sfp {
+ 	struct gpio_desc *gpio[GPIO_MAX];
  
- 	ndev->stats.tx_packets += packets;
- 	ndev->stats.tx_bytes += size;
-+
-+	/* Matches barrier in axienet_start_xmit */
-+	smp_mb();
-+
- 	netif_wake_queue(ndev);
+ 	bool attached;
++	struct mutex st_mutex;			/* Protects state */
+ 	unsigned int state;
+ 	struct delayed_work poll;
+ 	struct delayed_work timeout;
+-	struct mutex sm_mutex;
++	struct mutex sm_mutex;			/* Protects state machine */
+ 	unsigned char sm_mod_state;
+ 	unsigned char sm_dev_state;
+ 	unsigned short sm_state;
+@@ -1719,6 +1720,7 @@ static void sfp_check_state(struct sfp *sfp)
+ {
+ 	unsigned int state, i, changed;
+ 
++	mutex_lock(&sfp->st_mutex);
+ 	state = sfp_get_state(sfp);
+ 	changed = state ^ sfp->state;
+ 	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
+@@ -1744,6 +1746,7 @@ static void sfp_check_state(struct sfp *sfp)
+ 		sfp_sm_event(sfp, state & SFP_F_LOS ?
+ 				SFP_E_LOS_HIGH : SFP_E_LOS_LOW);
+ 	rtnl_unlock();
++	mutex_unlock(&sfp->st_mutex);
  }
  
-@@ -669,9 +673,19 @@ axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ static irqreturn_t sfp_irq(int irq, void *data)
+@@ -1774,6 +1777,7 @@ static struct sfp *sfp_alloc(struct device *dev)
+ 	sfp->dev = dev;
  
- 	if (axienet_check_tx_bd_space(lp, num_frag)) {
--		if (!netif_queue_stopped(ndev))
--			netif_stop_queue(ndev);
--		return NETDEV_TX_BUSY;
-+		if (netif_queue_stopped(ndev))
-+			return NETDEV_TX_BUSY;
-+
-+		netif_stop_queue(ndev);
-+
-+		/* Matches barrier in axienet_start_xmit_done */
-+		smp_mb();
-+
-+		/* Space might have just been freed - check again */
-+		if (axienet_check_tx_bd_space(lp, num_frag))
-+			return NETDEV_TX_BUSY;
-+
-+		netif_wake_queue(ndev);
- 	}
+ 	mutex_init(&sfp->sm_mutex);
++	mutex_init(&sfp->st_mutex);
+ 	INIT_DELAYED_WORK(&sfp->poll, sfp_poll);
+ 	INIT_DELAYED_WORK(&sfp->timeout, sfp_timeout);
  
- 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 -- 
 2.20.1
 
