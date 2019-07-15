@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C88D86959D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:00:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E250A695A3
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389879AbfGOOSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:18:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38264 "EHLO mail.kernel.org"
+        id S2389910AbfGOOS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:18:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389864AbfGOOSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:18:21 -0400
+        id S2389529AbfGOOSZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:18:25 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2560C2081C;
-        Mon, 15 Jul 2019 14:18:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0EC5A2081C;
+        Mon, 15 Jul 2019 14:18:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200300;
-        bh=EV3vYm4/OUPfURKFoZ5vxdD3V3TipR3Bx8eeGRMIOrg=;
+        s=default; t=1563200304;
+        bh=PjotlXJDX9u0DWYVZV9CvhTezXZPphkRfNwjbqDKScA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hweNh6v4OFHXlR7MhseRmPl0nJdbt0UM26JpWJol1HMxMSJvtwSvJDBt9m+IRXXzc
-         0xc4enWHHp+gX5m6mw2MqOMEp9qxuwRc+0hKpkr3fEJBzwyRsHG4t7rGoGHA/GzUgW
-         pCGAT3e9lDPyKKU7D1Gjx6a4ZNtZDIP52QdZo8Po=
+        b=yXUkrupi9nEq5ePPjx7o9wghUVCBEKnkDlDI/3mz/qLH22qgKMaTTrslaiCN/iLii
+         6lLHo92SXhDXTAI/qWt0EdaZg+pvovB6WRyUaN/8T3iueNfDaj2CwSmy7+P09frU26
+         dudH0jhkbZQ4IwL/fk4w2aZPP8kZTrrTbzTyu1bY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tim Schumacher <timschumi@gmx.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 003/158] ath9k: Check for errors when reading SREV register
-Date:   Mon, 15 Jul 2019 10:15:34 -0400
-Message-Id: <20190715141809.8445-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 005/158] ath10k: add peer id check in ath10k_peer_find_by_id
+Date:   Mon, 15 Jul 2019 10:15:36 -0400
+Message-Id: <20190715141809.8445-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -44,121 +43,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tim Schumacher <timschumi@gmx.de>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit 2f90c7e5d09437a4d8d5546feaae9f1cf48cfbe1 ]
+[ Upstream commit 49ed34b835e231aa941257394716bc689bc98d9f ]
 
-Right now, if an error is encountered during the SREV register
-read (i.e. an EIO in ath9k_regread()), that error code gets
-passed all the way to __ath9k_hw_init(), where it is visible
-during the "Chip rev not supported" message.
+For some SDIO chip, the peer id is 65535 for MPDU with error status,
+then test_bit will trigger buffer overflow for peer's memory, if kasan
+enabled, it will report error.
 
-    ath9k_htc 1-1.4:1.0: ath9k_htc: HTC initialized with 33 credits
-    ath: phy2: Mac Chip Rev 0x0f.3 is not supported by this driver
-    ath: phy2: Unable to initialize hardware; initialization status: -95
-    ath: phy2: Unable to initialize hardware; initialization status: -95
-    ath9k_htc: Failed to initialize the device
+Reason is when station is in disconnecting status, firmware do not delete
+the peer info since it not disconnected completely, meanwhile some AP will
+still send data packet to station, then hardware will receive the packet
+and send to firmware, firmware's logic will report peer id of 65535 for
+MPDU with error status.
 
-Check for -EIO explicitly in ath9k_hw_read_revisions() and return
-a boolean based on the success of the operation. Check for that in
-__ath9k_hw_init() and abort with a more debugging-friendly message
-if reading the revisions wasn't successful.
+Add check for overflow the size of peer's peer_ids will avoid the buffer
+overflow access.
 
-    ath9k_htc 1-1.4:1.0: ath9k_htc: HTC initialized with 33 credits
-    ath: phy2: Failed to read SREV register
-    ath: phy2: Could not read hardware revision
-    ath: phy2: Unable to initialize hardware; initialization status: -95
-    ath: phy2: Unable to initialize hardware; initialization status: -95
-    ath9k_htc: Failed to initialize the device
+Call trace of kasan:
+dump_backtrace+0x0/0x2ec
+show_stack+0x20/0x2c
+__dump_stack+0x20/0x28
+dump_stack+0xc8/0xec
+print_address_description+0x74/0x240
+kasan_report+0x250/0x26c
+__asan_report_load8_noabort+0x20/0x2c
+ath10k_peer_find_by_id+0x180/0x1e4 [ath10k_core]
+ath10k_htt_t2h_msg_handler+0x100c/0x2fd4 [ath10k_core]
+ath10k_htt_htc_t2h_msg_handler+0x20/0x34 [ath10k_core]
+ath10k_sdio_irq_handler+0xcc8/0x1678 [ath10k_sdio]
+process_sdio_pending_irqs+0xec/0x370
+sdio_run_irqs+0x68/0xe4
+sdio_irq_work+0x1c/0x28
+process_one_work+0x3d8/0x8b0
+worker_thread+0x508/0x7cc
+kthread+0x24c/0x264
+ret_from_fork+0x10/0x18
 
-This helps when debugging by directly showing the first point of
-failure and it could prevent possible errors if a 0x0f.3 revision
-is ever supported.
+Tested with QCA6174 SDIO with firmware
+WLAN.RMH.4.4.1-00007-QCARMSWP-1.
 
-Signed-off-by: Tim Schumacher <timschumi@gmx.de>
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hw.c | 32 +++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 9 deletions(-)
+ drivers/net/wireless/ath/ath10k/txrx.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hw.c b/drivers/net/wireless/ath/ath9k/hw.c
-index bb319f22761f..b4f7ee423d40 100644
---- a/drivers/net/wireless/ath/ath9k/hw.c
-+++ b/drivers/net/wireless/ath/ath9k/hw.c
-@@ -252,8 +252,9 @@ void ath9k_hw_get_channel_centers(struct ath_hw *ah,
- /* Chip Revisions */
- /******************/
- 
--static void ath9k_hw_read_revisions(struct ath_hw *ah)
-+static bool ath9k_hw_read_revisions(struct ath_hw *ah)
+diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
+index cda164f6e9f6..6f62ddc0494c 100644
+--- a/drivers/net/wireless/ath/ath10k/txrx.c
++++ b/drivers/net/wireless/ath/ath10k/txrx.c
+@@ -156,6 +156,9 @@ struct ath10k_peer *ath10k_peer_find_by_id(struct ath10k *ar, int peer_id)
  {
-+	u32 srev;
- 	u32 val;
+ 	struct ath10k_peer *peer;
  
- 	if (ah->get_mac_revision)
-@@ -269,25 +270,33 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
- 			val = REG_READ(ah, AR_SREV);
- 			ah->hw_version.macRev = MS(val, AR_SREV_REVISION2);
- 		}
--		return;
-+		return true;
- 	case AR9300_DEVID_AR9340:
- 		ah->hw_version.macVersion = AR_SREV_VERSION_9340;
--		return;
-+		return true;
- 	case AR9300_DEVID_QCA955X:
- 		ah->hw_version.macVersion = AR_SREV_VERSION_9550;
--		return;
-+		return true;
- 	case AR9300_DEVID_AR953X:
- 		ah->hw_version.macVersion = AR_SREV_VERSION_9531;
--		return;
-+		return true;
- 	case AR9300_DEVID_QCA956X:
- 		ah->hw_version.macVersion = AR_SREV_VERSION_9561;
--		return;
-+		return true;
- 	}
- 
--	val = REG_READ(ah, AR_SREV) & AR_SREV_ID;
-+	srev = REG_READ(ah, AR_SREV);
++	if (peer_id >= BITS_PER_TYPE(peer->peer_ids))
++		return NULL;
 +
-+	if (srev == -EIO) {
-+		ath_err(ath9k_hw_common(ah),
-+			"Failed to read SREV register");
-+		return false;
-+	}
-+
-+	val = srev & AR_SREV_ID;
+ 	lockdep_assert_held(&ar->data_lock);
  
- 	if (val == 0xFF) {
--		val = REG_READ(ah, AR_SREV);
-+		val = srev;
- 		ah->hw_version.macVersion =
- 			(val & AR_SREV_VERSION2) >> AR_SREV_TYPE2_S;
- 		ah->hw_version.macRev = MS(val, AR_SREV_REVISION2);
-@@ -306,6 +315,8 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
- 		if (ah->hw_version.macVersion == AR_SREV_VERSION_5416_PCIE)
- 			ah->is_pciexpress = true;
- 	}
-+
-+	return true;
- }
- 
- /************************************/
-@@ -559,7 +570,10 @@ static int __ath9k_hw_init(struct ath_hw *ah)
- 	struct ath_common *common = ath9k_hw_common(ah);
- 	int r = 0;
- 
--	ath9k_hw_read_revisions(ah);
-+	if (!ath9k_hw_read_revisions(ah)) {
-+		ath_err(common, "Could not read hardware revisions");
-+		return -EOPNOTSUPP;
-+	}
- 
- 	switch (ah->hw_version.macVersion) {
- 	case AR_SREV_VERSION_5416_PCI:
+ 	list_for_each_entry(peer, &ar->peers, list)
 -- 
 2.20.1
 
