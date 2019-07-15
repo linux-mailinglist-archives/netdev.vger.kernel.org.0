@@ -2,113 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1AE269A45
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 19:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D96069A67
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:01:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731958AbfGOR4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 13:56:52 -0400
-Received: from conssluserg-03.nifty.com ([210.131.2.82]:49401 "EHLO
-        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731078AbfGOR4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 13:56:52 -0400
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id x6FHuk49009352;
-        Tue, 16 Jul 2019 02:56:47 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com x6FHuk49009352
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1563213407;
-        bh=9DNdwAOMrDNMDhRKaR9DRzklJ+6WxesMxATv1pupRXY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EcNZEZAI9Rws1hjnvr2rW+x4gunjiHVPkw6eIpV1JeJv3/M1US0vh157JziyNrTdB
-         LRl4f8fObAyYijVUasxdWUPMMS3PiysrZw+oqbas4N09O9O53MYnFbAaTedAjOwIJ6
-         7ZntQU4UJMr4qyp/VYhIOlHoEJvbnCTSKQDB+ae2RWIfg3I25ixgFQTK0N6MO9lP9u
-         OyO45kbhpkUxozHktKYjzTFyIx3Whqpph5SGxB0GEJQNKV24Mf8JuAq/phkkx8u6xo
-         WL0mKiEitoUPdrqgSVNmwyMIogql3qw6DkzPE0LNSDsmz6AQLT5YH0lZIgmEpP0sR1
-         qxdLVmCC4v6Bg==
-X-Nifty-SrcIP: [209.85.217.51]
-Received: by mail-vs1-f51.google.com with SMTP id y16so11994093vsc.3;
-        Mon, 15 Jul 2019 10:56:47 -0700 (PDT)
-X-Gm-Message-State: APjAAAXzGlfG6/dKR41YHZC9dYklF1ubuKwLnBPoAFk0U8tUR9bh5BNJ
-        g50otexA6is0IdWHimXPGgQZe23kRsjZelJAcF8=
-X-Google-Smtp-Source: APXvYqzjIu0ZLvWAf2ZU5pOylmcgyKILZfFZ//irLAErTz0kjJcm+rkHjWiOwvjlXfyDX9t3Pi5gvy0kXQ+8Zjk3Koc=
-X-Received: by 2002:a67:d46:: with SMTP id 67mr17319200vsn.181.1563213406027;
- Mon, 15 Jul 2019 10:56:46 -0700 (PDT)
+        id S1729135AbfGOSBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 14:01:31 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:32785 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726425AbfGOSBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 14:01:30 -0400
+Received: by mail-io1-f67.google.com with SMTP id z3so35613523iog.0
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 11:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=vgoBT1lA+XECKJCdWLUo0VZq3c1uEtUkNmSls9N868g=;
+        b=GFai68Wmt9uXhTY8z1kCDVG4WInWG19ZPWDWx4lucfcigvxmEt8LrT2waPE97czQ7n
+         x73U3cRzq14MUAecnPbiB+Mk4Db/Eq0z0bdkMDQkzXh6ef+FdMeE45K12Z2Y84LF3CYM
+         9YwJE5kPIckPV6mgJaFNiMuOhohmYpqiRv+MOssXFez+31yTF0Vs/Voi/LEzN9E86Mf/
+         Nuz7MCnltuJ0wu/i9ozGZumZsenxRiT8yFyHECtbKONAl3y6KQ/h6Qx/MAS3+F3KI8gj
+         qjKR/nNhgysFewwbu1pfx+dEvSjV2uyHMlUV/Sy7guwZ/ch9uMGO8Rx8EEaoZVMdgHnH
+         yE4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=vgoBT1lA+XECKJCdWLUo0VZq3c1uEtUkNmSls9N868g=;
+        b=hWcGYHHH5HtmnnNXXaQWdl0eLpgDB6iu3hWh8/raP5ZJRLmEJnbx4ZgfE3kCZph1xh
+         jYxZiNFZCC8bfarazM+KiX6sf6iZbBACIrYSoHD8WN0CehPN8j3B/tfV1m5A7zXzb1Lw
+         0pYBtS3r6Y2P1sGARO3LKyF58dM0okaMXK+BQvtrTcqPT51U7oItdvErwJEvZZoa1NhM
+         okWvi8PPkIOmSXwdygc6QYrxspxD+Ut5Fyy52IOOwGS3mBQ89jJ0hP2XjKUCAfDqY1OJ
+         5T/55Vepr1D/t/tSuuznywA9hhUwUMAV37vv1OJQEivkNz5TvsW4cyaCTQlvT6wtXRLd
+         VhEg==
+X-Gm-Message-State: APjAAAUJYewRqI+Ygq8TVvVsduyiel/nA89iJ7UcgzlSBHOdpqL3xkMf
+        X6mPDlRRpDs5922B28raHOn7rqDadO0719S1ud0jdaaJ
+X-Google-Smtp-Source: APXvYqzAFLQIr69nxyegDC2zD8G4zSu5e4o6Dk1HoQHbES18X0CcK/yq9u+9y1QUwX9Z6cW6PqylzDmT2e+PgwcRIgI=
+X-Received: by 2002:a5d:87da:: with SMTP id q26mr16767556ios.193.1563213689910;
+ Mon, 15 Jul 2019 11:01:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190715144848.4cc41e07@canb.auug.org.au> <ccb5b818-c191-2d9e-311f-b2c79b7f6823@infradead.org>
- <CAF90-WirEMg7arNOTmo+tyJ20rt_zeN=nr0OO6Qk0Ss8J4QrUA@mail.gmail.com> <20190715173341.zth4na7zekjsesaa@salvia>
-In-Reply-To: <20190715173341.zth4na7zekjsesaa@salvia>
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Tue, 16 Jul 2019 02:56:09 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS0rX_SRXqb=N=Td-DFNWd=PytDFje12gYh2pYNRBVAJA@mail.gmail.com>
-Message-ID: <CAK7LNAS0rX_SRXqb=N=Td-DFNWd=PytDFje12gYh2pYNRBVAJA@mail.gmail.com>
-Subject: Re: linux-next: Tree for Jul 15 (HEADERS_TEST w/ netfilter tables offload)
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Laura Garcia <nevola@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kbuild <linux-kbuild@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>
+References: <CAOp4FwSB_FRhpf1H0CdkvfgeYKc53E56yMkQViW4_w_9dY0CVg@mail.gmail.com>
+In-Reply-To: <CAOp4FwSB_FRhpf1H0CdkvfgeYKc53E56yMkQViW4_w_9dY0CVg@mail.gmail.com>
+From:   Loganaden Velvindron <loganaden@gmail.com>
+Date:   Mon, 15 Jul 2019 22:01:14 +0400
+Message-ID: <CAOp4FwQszD4ocAx6hWud5uvzv5EtuTOpYqJ10XhR5gxkXSZvFQ@mail.gmail.com>
+Subject: Re: Request for backport of 96125bf9985a75db00496dd2bc9249b777d2b19b
+To:     netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 2:33 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+On Fri, Jul 5, 2019 at 6:15 PM Loganaden Velvindron <loganaden@gmail.com> wrote:
 >
-> On Mon, Jul 15, 2019 at 07:28:04PM +0200, Laura Garcia wrote:
-> > CC'ing netfilter.
-> >
-> > On Mon, Jul 15, 2019 at 6:45 PM Randy Dunlap <rdunlap@infradead.org> wrote:
-> > >
-> > > On 7/14/19 9:48 PM, Stephen Rothwell wrote:
-> > > > Hi all,
-> > > >
-> > > > Please do not add v5.4 material to your linux-next included branches
-> > > > until after v5.3-rc1 has been released.
-> > > >
-> > > > Changes since 20190712:
-> > > >
-> > >
-> > > Hi,
-> > >
-> > > I am seeing these build errors from HEADERS_TEST (or KERNEL_HEADERS_TEST)
-> > > for include/net/netfilter/nf_tables_offload.h.s:
-> > >
-> > >   CC      include/net/netfilter/nf_tables_offload.h.s
-> [...]
-> > > Should this header file not be tested?
+> Hi folks,
+>
+> I read the guidelines for LTS/stable.
+> https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+>
+>
+> Although this is not a bugfix, I am humbly submitting a request so
+> that commit id
+> -- 96125bf9985a75db00496dd2bc9249b777d2b19b Allow 0.0.0.0/8 as a valid
+> address range --  is backported to all LTS kernels.
+>
+> My motivation for such a request is that we need this patch to be as
+> widely deployed as possible and as early as possible for interop and
+> hopefully move into better utilization of ipv4 addresses space. Hence
+> my request for it be added to -stable.
+>
 
-This means you must endlessly exclude
-headers that include nf_tables.h
+Any feedback ?
 
-
-> Yes, it should indeed be added.
-
-Adding 'header-test-' is the last resort.
-
-
-I had already queued a patch:
-
-git clone -b build-test
-git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
-
-commit 9dae5c5fc798e0e970cca4cd1b224dece3ad4766
-Author: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Mon Jul 15 00:42:56 2019 +0900
-
-    netfilter: nf_tables: split local helpers out to nft_internals.h
-
-
-
-If it is OK, I will send it out.
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+> Kind regards,
+> //Logan
