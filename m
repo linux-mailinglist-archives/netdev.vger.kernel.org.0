@@ -2,83 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2982369B0B
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D5969B0D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729986AbfGOSxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 14:53:21 -0400
-Received: from first.geanix.com ([116.203.34.67]:42686 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729513AbfGOSxV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 14:53:21 -0400
-Received: from zen.localdomain (unknown [85.184.140.241])
-        by first.geanix.com (Postfix) with ESMTPSA id BE061439D7;
-        Mon, 15 Jul 2019 18:52:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1563216774; bh=A/pOZIc6LJmtheAJTggufzDiQG1gWvquPFCDdSL0QZQ=;
-        h=From:To:Cc:Subject:Date;
-        b=Vu2H9HOC1XFaXeeNaqGXSO6Hgdruc89lNO1zbrksAiQHxIRRrgphzjtQs55tPup+J
-         Tu7fyIXw+CtECoP/UxGjapLUwfikBs4qhCCldPqUdnevw2A4sRdIBI8adbLou1yIVD
-         KaXP/aYFa1R5TcpFvuFPl78YnFEnaudVAZEEJUClZzQ6E9wHxGjjb7cvgsQ2PwFD3I
-         wR8J/NAAeZR6wOcjpwla4d0eJs085B1CxptZ3mXZ0DUyygh6Blrr6FMM4FWhTdbOSR
-         Nc8EFb4js1lMJP4HIW258uboYHYbkNMW+f5wbEKXwZOg/or4Cr/pmAfVgVjvaBp22M
-         QD1HediEQupTA==
-From:   =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sean Nyekjaer <sean@geanix.com>
-Subject: [PATCH] can: flexcan: free error skb if enqueueing failed
-Date:   Mon, 15 Jul 2019 20:53:08 +0200
-Message-Id: <20190715185308.104333-1-martin@geanix.com>
-X-Mailer: git-send-email 2.22.0
+        id S1729432AbfGOSzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 14:55:52 -0400
+Received: from mail-io1-f45.google.com ([209.85.166.45]:33243 "EHLO
+        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726074AbfGOSzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 14:55:52 -0400
+Received: by mail-io1-f45.google.com with SMTP id z3so35885954iog.0
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 11:55:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language;
+        bh=DrQ9yIu49v3DcR5+1/TvV4pzJZSv99kYr2CuDMA1JKU=;
+        b=TsDKhmD0BWOoMK4NA6Y/mSF4fnPhv6lLA/qJBzXIb4kg1V50kz7ZiqbZETS4kGZoUo
+         fZw0FcY7IeBH9NG5b1RlViLo3DOfLX4tksCVvAMY+aZgTB8L0SXf07zWBFXqQGrUeNR9
+         kaVCtqeH7a12bBHEHPM6c0qZaE1kyp7A98fP3Zix1O3sRhcBcDje29353zBDlyDxdm/N
+         OVieSzaZWvFVaONLqYdced6ak9pNhxUAmaRVkII8P6JRrfX8WIYcks//ZmnGt72Nfp/e
+         duGyz3+WJboDbc+EmGzmL2y3TmGNJ10zto7IHQpqW7jCgFKv+YPonZukYId+r81rnRuW
+         13VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language;
+        bh=DrQ9yIu49v3DcR5+1/TvV4pzJZSv99kYr2CuDMA1JKU=;
+        b=RGj+7BpoZ55d4HHOoyINQCJ649vCGoeyGIDefc3bJBkLWoSE9DAPcfJQ9NXRYh0QOv
+         ipJgN9vQrKXvdb+sJ2ZZgfoKhcGmPV/lwHhCWUHam7uMCF8zEX1Z/blbrF8IJWZ+96eB
+         UVgeCBB57H5oZzEwWRu7Li4m0W/rjwUVUuaXBPXhozOgWBDK6n4VzIRL+r42DbcgpnhZ
+         1C9htQ1LDr6WFbqFk3QCS+Q+L+wuIe1mi/sAe8nQ2Px6u2Py0VwqwQKKER/nkaYtWrgW
+         BOtKQ10Ld8mvVeW9vR+twB62P1W2sseUbzwxe6tzFP5E5KYdScZpTLa4nrQFoGVgWNSf
+         s51g==
+X-Gm-Message-State: APjAAAX7rWzZQQexSK15ZIpB1iGUXe0vIiGcfWgjpysoXJSUDB28QkSH
+        1hYbR2zV3zoJWIESNQsRo5NBwvxS
+X-Google-Smtp-Source: APXvYqwMbqr9+830oCSalB9vK/tAv1pVMYuxsGTLGW0QenuDuBNqZk4XA0Hzz4C5McB+6p2bJOLdsw==
+X-Received: by 2002:a6b:7401:: with SMTP id s1mr25035662iog.67.1563216950654;
+        Mon, 15 Jul 2019 11:55:50 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:51b4:3c95:43b6:f3d0? ([2601:282:800:fd80:51b4:3c95:43b6:f3d0])
+        by smtp.googlemail.com with ESMTPSA id d25sm17574646iom.52.2019.07.15.11.55.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Jul 2019 11:55:49 -0700 (PDT)
+Subject: Re: IPv6 L2TP issues related to 93531c67
+To:     Paul Donohue <linux-kernel@PaulSD.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+References: <20190715161827.GB2622@TopQuark.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d6db74f5-5add-7500-1b7a-fa62302a455f@gmail.com>
+Date:   Mon, 15 Jul 2019 12:55:48 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 8945dcc0271d
+In-Reply-To: <20190715161827.GB2622@TopQuark.net>
+Content-Type: multipart/mixed;
+ boundary="------------AEECEC2FE626767E5E22B4D9"
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the call to can_rx_offload_queue_sorted() fails, the passed skb isn't
-consumed, so the caller must do so.
+This is a multi-part message in MIME format.
+--------------AEECEC2FE626767E5E22B4D9
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-Fixes: 30164759db1b ("can: flexcan: make use of rx-offload's irq_offload_fifo")
-Signed-off-by: Martin Hundebøll <martin@geanix.com>
----
- drivers/net/can/flexcan.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Hi Paul:
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 1c66fb2ad76b..21f39e805d42 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -688,7 +688,8 @@ static void flexcan_irq_bus_err(struct net_device *dev, u32 reg_esr)
- 	if (tx_errors)
- 		dev->stats.tx_errors++;
- 
--	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
-+	if (can_rx_offload_queue_sorted(&priv->offload, skb, timestamp))
-+		kfree_skb(skb);
- }
- 
- static void flexcan_irq_state(struct net_device *dev, u32 reg_esr)
-@@ -732,7 +733,8 @@ static void flexcan_irq_state(struct net_device *dev, u32 reg_esr)
- 	if (unlikely(new_state == CAN_STATE_BUS_OFF))
- 		can_bus_off(dev);
- 
--	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
-+	if (can_rx_offload_queue_sorted(&priv->offload, skb, timestamp))
-+		kfree_skb(skb);
- }
- 
- static inline struct flexcan_priv *rx_offload_to_priv(struct can_rx_offload *offload)
--- 
-2.22.0
+As an FYI, gmail thinks your emails are spam.
 
+On 7/15/19 10:18 AM, Paul Donohue wrote:
+> I have a system that establishes four L2TP over IPv6 tunnels using site-local addresses via the following:
+...
+
+> 
+> These tunnels worked fine on kernel 4.4.  On kernel 4.15, there was a bug that caused intermittent L2TP packet errors, but everything worked fine after applying 4522a70db7aa5e77526a4079628578599821b193.
+> 
+> However, after upgrading to kernel 4.18 with 4522a70d (or upgrading to kernel 5.0 which includes 4522a70d, or upgrading to the current master kernel branch), two of the four tunnels always fail to work properly after a reboot, although it appears random which two work and which two fail.
+> 
+> When I say "fail to work properly", the problem is that packets generated by the l2tp kernel modules (in response to a packet being sent to the associated net_l2tpX interface) are silently dropped.  The l2tp_debugfs kernel module reports that L2TP packets are being transmitted with no errors, iptables counters and nflog rules can be used to confirm that well-formed packets are generated and sent, but tcpdump does not see the packets being sent on any interface on the system.  iptables reports that the destination interface of the lost packets is "lo" (which is clearly incorrect and probably an indicator of the underlying issue), but `tcpdump -nnn -i lo` doesn't show any packets.  Incoming L2TP packets appear to be processed correctly, only outgoing L2TP packets appear affected.
+> 
+> Reverting commit 93531c6743157d7e8c5792f8ed1a57641149d62c (identified by bisection) fixes this issue.
+
+That commit can not be reverted. It is a foundational piece for a lot of
+other changes. Did you mean the commit before it works and this commit
+fails?
+
+> 
+> IPv4 L2TP tunnels do not appear affected by this issue.  Based on a few quick tests, it appears that switching to publicly-routable IPv6 addresses instead of site-local addresses seems to prevent this issue, although I haven't done sufficient testing of this, and it is not clear to me how the code in 93531c67 might be affected by the type of IPv6 address, so this observation may be a red herring.  Manually deleting and re-creating a broken interface seems to make it work again, although I have not thoroughly experimented with making changes after boot time to see if the problem is entirely random, if it is based on the number of existing interfaces, if it is based on a boot-time timing issue, etc.
+> 
+> It is not obvious to me how commit 93531c6743157d7e8c5792f8ed1a57641149d62c causes this issue, or how it should be fixed.  Could someone take a look and point me in the right direction for further troubleshooting?
+> 
+
+Let's get a complete example that demonstrates the problem, and I can go
+from there. Can you take the attached script and update it so that it
+reflects the problem you are reporting? That script works on latest
+kernel as well as 4.14.133. It uses network namespaces for 2 hosts with
+a router between them.
+
+Also, check the return of the fib lookups using:
+    perf record -e fib6:* -a
+    <run test, ctrl-c on the record>
+    perf script
+
+Checkout the fib lookup parameters and result. Do they look correct to
+you for your setup?
+
+--------------AEECEC2FE626767E5E22B4D9
+Content-Type: application/x-sh;
+ name="l2tp.sh"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="l2tp.sh"
+
+#!/bin/bash
+#
+# L2TPv3 tunnel between 2 hosts
+#
+#            host-1          |   router   |     host-2
+#                            |            |
+#      lo          l2tp      |            |      l2tp           lo
+#  fc00:101::1   fc00:1::1   |            |   fc00:1::2    fc00:101::2
+#                  eth0      |            |     eth0
+#              2001:db8:1::1 |            | 2001:db8:2::1
+
+which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
+
+################################################################################
+# create namespaces and interconnects
+
+create_ns()
+{
+	local ns=$1
+	local addr=$2
+	local addr6=$3
+
+	[ -z "${addr}" ] && addr="-"
+	[ -z "${addr6}" ] && addr6="-"
+
+	ip netns add ${ns}
+
+	ip -netns ${ns} link set lo up
+	if [ "${addr}" != "-" ]; then
+		ip -netns ${ns} addr add dev lo ${addr}
+	fi
+	if [ "${addr6}" != "-" ]; then
+		ip -netns ${ns} -6 addr add dev lo ${addr6}
+	fi
+
+	ip -netns ${ns} ro add unreachable default metric 8192
+	ip -netns ${ns} -6 ro add unreachable default metric 8192
+
+	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
+}
+
+# create veth pair to connect namespaces and apply addresses.
+connect_ns()
+{
+	local ns1=$1
+	local ns1_dev=$2
+	local ns1_addr=$3
+	local ns1_addr6=$4
+	local ns2=$5
+	local ns2_dev=$6
+	local ns2_addr=$7
+	local ns2_addr6=$8
+
+	ip -netns ${ns1} li add ${ns1_dev} type veth peer name tmp
+	ip -netns ${ns1} li set ${ns1_dev} up
+	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}
+	ip -netns ${ns2} li set ${ns2_dev} up
+
+	if [ "${ns1_addr}" != "-" ]; then
+		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}
+		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr}
+	fi
+
+	if [ "${ns1_addr6}" != "-" ]; then
+		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}
+		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}
+	fi
+}
+
+################################################################################
+# test setup
+setup()
+{
+	create_ns host-1
+	create_ns host-2
+	create_ns router
+
+	connect_ns host-1 eth0 10.1.1.1/24 2001:db8:1::1/64 \
+	           router eth1 10.1.1.2/24 2001:db8:1::2/64
+
+	connect_ns host-2 eth0 10.1.2.1/24 2001:db8:2::1/64 \
+	           router eth2 10.1.2.2/24 2001:db8:2::2/64
+
+	ip -netns host-1 addr add dev lo fc00:101::1/128
+	ip -netns host-2 addr add dev lo fc00:101::2/128
+	sleep 5
+
+	ip -netns host-1 -6 ro add 2001:db8:2::/64 via 2001:db8:1::2
+	ip -netns host-2 -6 ro add 2001:db8:1::/64 via 2001:db8:2::2
+
+	#
+	# configure l2tpv3 tunnel on host-1
+	#
+	ip -netns host-1 l2tp add tunnel tunnel_id 1234 peer_tunnel_id 1235 \
+			 encap ip local 2001:db8:1::1 remote 2001:db8:2::1
+	ip -netns host-1 l2tp add session name l2tp1 tunnel_id 1234 \
+			 session_id 1234 peer_session_id 1235
+	ip -netns host-1 link set dev l2tp1 up
+	ip -netns host-1 addr add dev l2tp1 fc00:1::1 peer fc00:1::2
+
+	#
+	# configure l2tpv3 tunnel on host-2
+	#
+	ip -netns host-2 l2tp add tunnel tunnel_id 1235 peer_tunnel_id 1234 \
+			 encap ip local 2001:db8:2::1 remote 2001:db8:1::1
+	ip -netns host-2 l2tp add session name l2tp2 tunnel_id 1235 \
+			 session_id 1235 peer_session_id 1234
+	ip -netns host-2 link set dev l2tp2 up
+	ip -netns host-2 addr add dev l2tp2 fc00:1::2 peer fc00:1::1
+
+	sleep 5
+
+	#
+	# add routes to loopback addresses
+	#
+	ip -netns host-1 -6 ro add fc00:101::2/128 via fc00:1::2
+	ip -netns host-2 -6 ro add fc00:101::1/128 via fc00:1::1
+}
+
+################################################################################
+# main
+
+setup
+ip netns exec host-1 ${ping6} -c1 -w1 fc00:1::2
+ip netns exec host-1 ${ping6} -c1 -w1 fc00:101::2
+
+--------------AEECEC2FE626767E5E22B4D9--
