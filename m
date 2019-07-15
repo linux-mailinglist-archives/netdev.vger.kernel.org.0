@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C156950A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51CDE694FE
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390626AbfGOO03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:26:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34408 "EHLO mail.kernel.org"
+        id S2391381AbfGOO0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:26:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35154 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731275AbfGOO01 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:26:27 -0400
+        id S2390462AbfGOO0p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:26:45 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 235ED206B8;
-        Mon, 15 Jul 2019 14:26:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 11BC621842;
+        Mon, 15 Jul 2019 14:26:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200786;
-        bh=P78mhMoVyK+tE6/jcOESkeXJ3jzow0bobfLn/fpg0Mk=;
+        s=default; t=1563200804;
+        bh=zYV7CxvtS3NWj05ijEC7m/2+ntlXcyOu+ePKTd6O2c8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D9TMWVnvsxBOuKC2PIdNQ2tKhqxGcfVfUSPddkb1ZJcK9JfKebZq9nZjqh7ZeSOiX
-         QRKVkEVJPSkO3sp0rwd935JOiICohvvTG+2OR3mvabrwWtzedtaRDLK//rNMPpdM2F
-         P+NPoWANhcghSbT/SCG/DTdPPKS2475JXw59Ny2s=
+        b=mBe4BIDZ/hyvRnEbDbFy6uUiD4kUsLMdVV6PK3nBTLO2JZL9e9ZW53hyXn5MvOTZ2
+         FwsxcxFxIBc2akQDBFz7bg9/9V1GHz75+WFCYzZt6IURTAhg0CgsI2lD8KQsvvXThR
+         obsEMoiB/A3zvu6rW6xPS5aaWnxN5ZvdU/h4L5zU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 130/158] net: hns3: add some error checking in hclge_tm module
-Date:   Mon, 15 Jul 2019 10:17:41 -0400
-Message-Id: <20190715141809.8445-130-sashal@kernel.org>
+Cc:     Andrei Otcheretianski <andrei.otcheretianski@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 134/158] iwlwifi: mvm: Drop large non sta frames
+Date:   Mon, 15 Jul 2019 10:17:45 -0400
+Message-Id: <20190715141809.8445-134-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -45,54 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
 
-[ Upstream commit 04f25edb48c441fc278ecc154c270f16966cbb90 ]
+[ Upstream commit ac70499ee97231a418dc1a4d6c9dc102e8f64631 ]
 
-When hdev->tx_sch_mode is HCLGE_FLAG_VNET_BASE_SCH_MODE, the
-hclge_tm_schd_mode_vnet_base_cfg calls hclge_tm_pri_schd_mode_cfg
-with vport->vport_id as pri_id, which is used as index for
-hdev->tm_info.tc_info, it will cause out of bound access issue
-if vport_id is equal to or larger than HNAE3_MAX_TC.
+In some buggy scenarios we could possible attempt to transmit frames larger
+than maximum MSDU size. Since our devices don't know how to handle this,
+it may result in asserts, hangs etc.
+This can happen, for example, when we receive a large multicast frame
+and try to transmit it back to the air in AP mode.
+Since in a legal scenario this should never happen, drop such frames and
+warn about it.
 
-Also hardware only support maximum speed of HCLGE_ETHER_MAX_RATE.
-
-So this patch adds two checks for above cases.
-
-Fixes: 848440544b41 ("net: hns3: Add support of TX Scheduler & Shaper to HNS3 driver")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index 48235dc2dd56..11e9259ca040 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -54,7 +54,8 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
- 	u32 tick;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+index 2d21f0a1fa00..ffae299c3492 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+@@ -641,6 +641,9 @@ int iwl_mvm_tx_skb_non_sta(struct iwl_mvm *mvm, struct sk_buff *skb)
  
- 	/* Calc tick */
--	if (shaper_level >= HCLGE_SHAPER_LVL_CNT)
-+	if (shaper_level >= HCLGE_SHAPER_LVL_CNT ||
-+	    ir > HCLGE_ETHER_MAX_RATE)
- 		return -EINVAL;
+ 	memcpy(&info, skb->cb, sizeof(info));
  
- 	tick = tick_array[shaper_level];
-@@ -1057,6 +1058,9 @@ static int hclge_tm_schd_mode_vnet_base_cfg(struct hclge_vport *vport)
- 	int ret;
- 	u8 i;
- 
-+	if (vport->vport_id >= HNAE3_MAX_TC)
-+		return -EINVAL;
++	if (WARN_ON_ONCE(skb->len > IEEE80211_MAX_DATA_LEN + hdrlen))
++		return -1;
 +
- 	ret = hclge_tm_pri_schd_mode_cfg(hdev, vport->vport_id);
- 	if (ret)
- 		return ret;
+ 	if (WARN_ON_ONCE(info.flags & IEEE80211_TX_CTL_AMPDU))
+ 		return -1;
+ 
 -- 
 2.20.1
 
