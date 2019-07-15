@@ -2,95 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5468969E6E
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 23:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CCD69E79
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 23:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731356AbfGOVmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 17:42:13 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3384 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730574AbfGOVmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 17:42:13 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6FLQfBm093539
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 17:42:11 -0400
-Received: from e13.ny.us.ibm.com (e13.ny.us.ibm.com [129.33.205.203])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2ts0w6sqg2-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 17:42:11 -0400
-Received: from localhost
-        by e13.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <brking@linux.vnet.ibm.com>;
-        Mon, 15 Jul 2019 22:42:10 +0100
-Received: from b01cxnp23033.gho.pok.ibm.com (9.57.198.28)
-        by e13.ny.us.ibm.com (146.89.104.200) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 15 Jul 2019 22:42:08 +0100
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6FLg8fK49021428
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Jul 2019 21:42:08 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F12DE112063;
-        Mon, 15 Jul 2019 21:42:07 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A11FA112061;
-        Mon, 15 Jul 2019 21:42:07 +0000 (GMT)
-Received: from oc6034535106.ibm.com (unknown [9.10.86.34])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Jul 2019 21:42:07 +0000 (GMT)
-From:   Brian King <brking@linux.vnet.ibm.com>
-To:     GR-everest-linux-l2@marvell.com
-Cc:     skalluru@marvell.com, aelior@marvell.com, netdev@vger.kernel.org,
-        Brian King <brking@linux.vnet.ibm.com>
-Subject: [PATCH] bnx2x: Prevent load reordering in tx completion processing
-Date:   Mon, 15 Jul 2019 16:41:50 -0500
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-x-cbid: 19071521-0064-0000-0000-000003FBF128
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011435; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01232698; UDB=6.00649468; IPR=6.01014000;
- MB=3.00027731; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-15 21:42:10
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071521-0065-0000-0000-00003E463471
-Message-Id: <1563226910-21660-1-git-send-email-brking@linux.vnet.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-15_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=574 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907150243
+        id S1732632AbfGOVop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 17:44:45 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:41953 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731858AbfGOVop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 17:44:45 -0400
+Received: by mail-ot1-f68.google.com with SMTP id o101so18695714ota.8;
+        Mon, 15 Jul 2019 14:44:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hO2lc5/RCrOfroO8+pzsn6ZrqRVw3tFQDoLgNfzmBUQ=;
+        b=QxXDGZ3v64gyAMTDqUN0aDnOZUEUriuNBjPSYo18FhopZ8P0hjPzAG+ZIKn7zH4gUi
+         QQfKwc35vqrWxz9Pdos45CbPkxluZAY+xJxiCUnS/c8V3irYv3sVlFOGVsI03FOmIaXv
+         1EW+EKfby2IgVifnLuY8yMlV3B9g9zSRWk+MkjD42FojhmDrPbL1Gj05OvCQfmBMrtVC
+         H2sgMK8MwEiq61UuGNkJPV+VQ+plnLtUXI5O8yARGzjtU/JH3OxAdhS+CBaJnz7jEarF
+         rKc52Lygct/0tLMNo/N1pP0Qx0Vim/zzGg889XPO1TWBw/bRbhAqCy7vbi3fogYK9Wkn
+         2OSA==
+X-Gm-Message-State: APjAAAUsAOkRYO87kbLMCwaOxid9BCDbmnB2OvJG6nh20Bt2jxK632To
+        Re3Z9R3uMSLoWgU/fV0rp3nL8QXeSGq3NMcP2Ik=
+X-Google-Smtp-Source: APXvYqxeBU+lL3PSYmxhb7JppIVz9aT6KKyGzUIDEJ8gGEzipFV4PQx8sL/9KU3ERl8XEJvsrjqZy4/vHGyUSxfUvR0=
+X-Received: by 2002:a05:6830:1516:: with SMTP id k22mr18941426otp.189.1563227084317;
+ Mon, 15 Jul 2019 14:44:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190715143705.117908-1-joel@joelfernandes.org> <20190715143705.117908-9-joel@joelfernandes.org>
+In-Reply-To: <20190715143705.117908-9-joel@joelfernandes.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 15 Jul 2019 23:44:31 +0200
+Message-ID: <CAJZ5v0jdx1dgBZLyH_Loj1XVuLCV+HMHjk8r_n8xG7qmoH_z3A@mail.gmail.com>
+Subject: Re: [PATCH 8/9] acpi: Use built-in RCU list checking for
+ acpi_ioremaps list (v1)
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        NeilBrown <neilb@suse.com>, netdev <netdev@vger.kernel.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes an issue seen on Power systems with bnx2x which results
-in the skb is NULL WARN_ON in bnx2x_free_tx_pkt firing due to the skb
-pointer getting loaded in bnx2x_free_tx_pkt prior to the hw_cons
-load in bnx2x_tx_int. Adding a read memory barrier resolves the issue.
+On Mon, Jul 15, 2019 at 4:43 PM Joel Fernandes (Google)
+<joel@joelfernandes.org> wrote:
+>
+> list_for_each_entry_rcu has built-in RCU and lock checking. Make use of
+> it for acpi_ioremaps list traversal.
+>
+> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 
-Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 3 +++
- 1 file changed, 3 insertions(+)
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index 656ed80..e2be5a6 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -285,6 +285,9 @@ int bnx2x_tx_int(struct bnx2x *bp, struct bnx2x_fp_txdata *txdata)
- 	hw_cons = le16_to_cpu(*txdata->tx_cons_sb);
- 	sw_cons = txdata->tx_pkt_cons;
- 
-+	/* Ensure subsequent loads occur after hw_cons */
-+	smp_rmb();
-+
- 	while (sw_cons != hw_cons) {
- 		u16 pkt_cons;
- 
--- 
-1.8.3.1
-
+> ---
+>  drivers/acpi/osl.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
+> index 9c0edf2fc0dd..2f9d0d20b836 100644
+> --- a/drivers/acpi/osl.c
+> +++ b/drivers/acpi/osl.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/mm.h>
+>  #include <linux/highmem.h>
+> +#include <linux/lockdep.h>
+>  #include <linux/pci.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kmod.h>
+> @@ -80,6 +81,7 @@ struct acpi_ioremap {
+>
+>  static LIST_HEAD(acpi_ioremaps);
+>  static DEFINE_MUTEX(acpi_ioremap_lock);
+> +#define acpi_ioremap_lock_held() lock_is_held(&acpi_ioremap_lock.dep_map)
+>
+>  static void __init acpi_request_region (struct acpi_generic_address *gas,
+>         unsigned int length, char *desc)
+> @@ -206,7 +208,7 @@ acpi_map_lookup(acpi_physical_address phys, acpi_size size)
+>  {
+>         struct acpi_ioremap *map;
+>
+> -       list_for_each_entry_rcu(map, &acpi_ioremaps, list)
+> +       list_for_each_entry_rcu(map, &acpi_ioremaps, list, acpi_ioremap_lock_held())
+>                 if (map->phys <= phys &&
+>                     phys + size <= map->phys + map->size)
+>                         return map;
+> @@ -249,7 +251,7 @@ acpi_map_lookup_virt(void __iomem *virt, acpi_size size)
+>  {
+>         struct acpi_ioremap *map;
+>
+> -       list_for_each_entry_rcu(map, &acpi_ioremaps, list)
+> +       list_for_each_entry_rcu(map, &acpi_ioremaps, list, acpi_ioremap_lock_held())
+>                 if (map->virt <= virt &&
+>                     virt + size <= map->virt + map->size)
+>                         return map;
+> --
+> 2.22.0.510.g264f2c817a-goog
+>
