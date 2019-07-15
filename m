@@ -2,149 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 070FA69D31
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32DEF69D3C
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 23:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730467AbfGOU6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 16:58:49 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:35590 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729640AbfGOU6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:58:49 -0400
-Received: by mail-oi1-f195.google.com with SMTP id a127so13804733oii.2;
-        Mon, 15 Jul 2019 13:58:48 -0700 (PDT)
+        id S1732348AbfGOVEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 17:04:44 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:40244 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729640AbfGOVEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 17:04:43 -0400
+Received: by mail-lj1-f195.google.com with SMTP id m8so17686110lji.7
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 14:04:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=MCzU/WMkxkdv3seXO1CtWBOCZdI8seyWxMpeV6ILxPM=;
-        b=n/DcGixstP8vOcoFRzdudc00pT/rHSsxBRZ7R1BoGktUPgSXGdYcy4ajXkV+05oUKz
-         GR6hARvV6Nkvuy8ZgD7PZLOMcxRSSPUwdmH+m1vNQL+L0VtNoIDGJoS4omuFDQuIqNfI
-         XCmwRx+tGSUpxv+EddyPwFsFh5m3+YV0wbrTXQ59FEX8Yv+wSGtcnfT/0Hsa5ODoinJg
-         GmFJN+fiWVwXuWbPe17xa1K1jHFt7eApUpWSVBArd8BN5nHpFTdMz77uGwg9bsS/5qPN
-         +Wcb3aH+W0HZUVm04apqIHY/zDAQO6tbGJSBGyngbcEup24Hn7vLMHvH0cMv3Sbfk0pD
-         4b/A==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nMdAH6nTLDrGvTqGSOAbQkcOJz7RylQFzwai+/2x5Kg=;
+        b=C00/OWh9vq2MRiQn1E4VUuP+O+05mZjNiBnTBYE91LA3zA6l01Y3ZAFqD2sa2HJkYA
+         h5J92fYmst8NEM4kbY7z9ANwjGbMbqg3KDgovAqdXLcZH01wV9eGew+ThGgGmvphgmAD
+         MxCVdar45y7UYA1DDtDoQVv8dYq4cWtZjZQ6/WT8LjTbkRr544wt+KFFducPNhPYqfvf
+         wvewvBAHmtMQ3UdggObhYJdHU1TEreaMfaoyjsOy6hYFNOwCZ9YqhCLMTU3973yjiSJE
+         Yi+PlsVJ+lpWQCfj+ktNFR7xMaZJmXQJhqz9OR+Yp0H3xtV8sPxtgsA5H5qa8lTtOAmU
+         09Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=MCzU/WMkxkdv3seXO1CtWBOCZdI8seyWxMpeV6ILxPM=;
-        b=e5ao2v+a8LtxcvfdVXML1idjBbasa5e49uXgc4Eje4XK9O3tejKtDVHLsK0f5Nvzfa
-         ISzadcW7BAIKCqbbiQiXpLb3YOVr0XlvyOqrFHulq1uzqeG+BWHom2/saSCiO4r3i6tc
-         gEOHaL3bgHDnLvS5BHifcMQ12uVG2aocsCYcoGoj3gLh2tZLrenyNklnrFTyb6K2A8XT
-         GSQX2sU2XanojV7dBr5v+/LzGhy7jr6bL0PqyzPc6CONqe1LPv9wd0JMvsff+WaNFlIz
-         bmRA+yc1Qp6Ar5CJv+SmVe7bR4ImwF/Tm4xaYaUPuTl/pWaB79cKpk/NZtGIU3Kg/hMu
-         U4jQ==
-X-Gm-Message-State: APjAAAWvY47F22nVye9/NQ6kELY9yGzjGivOqDxaiJF0w+FdZw4pnGEU
-        NT6TbhdaNu4jWq9c8bHfn3Q=
-X-Google-Smtp-Source: APXvYqwoBb7Et3ZVKtXcT4k0fukPE8zlAdYcWoulCi+xqrDp6YXdoCwmdPm/tbl44NDcOr4i/OdLnQ==
-X-Received: by 2002:aca:4806:: with SMTP id v6mr14714890oia.133.1563224328332;
-        Mon, 15 Jul 2019 13:58:48 -0700 (PDT)
-Received: from localhost ([99.0.85.34])
-        by smtp.gmail.com with ESMTPSA id m21sm6837898otn.12.2019.07.15.13.58.47
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 13:58:47 -0700 (PDT)
-Date:   Mon, 15 Jul 2019 13:58:46 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        edumazet@google.com, bpf@vger.kernel.org
-Message-ID: <5d2ce906c0bb2_4e792ad8fc6505b8d5@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190711201633.552292e6@cakuba.netronome.com>
-References: <156261310104.31108.4569969631798277807.stgit@ubuntu3-kvm1>
- <156261324561.31108.14410711674221391677.stgit@ubuntu3-kvm1>
- <20190709194525.0d4c15a6@cakuba.netronome.com>
- <5d255dececd33_1b7a2aec940d65b45@john-XPS-13-9370.notmuch>
- <20190710123417.2157a459@cakuba.netronome.com>
- <20190710130411.08c54ddd@cakuba.netronome.com>
- <5d276814a76ad_698f2aaeaaf925bc8a@john-XPS-13-9370.notmuch>
- <20190711113218.2f0b8c1f@cakuba.netronome.com>
- <5d27a9627b092_19762abc80ff85b856@john-XPS-13-9370.notmuch>
- <20190711201633.552292e6@cakuba.netronome.com>
-Subject: Re: [bpf PATCH v2 2/6] bpf: tls fix transition through disconnect
- with close
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nMdAH6nTLDrGvTqGSOAbQkcOJz7RylQFzwai+/2x5Kg=;
+        b=ins9fzM3wgicX509twArfAhlrT5W6r4LcBlYkWJdlMyFN6ZTTVajQ27JOPFUUhP1qf
+         OESUgDmHRFe05tCEF3ruwQcpUhnziR0LZShYOWe/klDh6Tb1m51/I0xNAsrRlURc+AOC
+         Cie2IU5PbLOCHrYYfSe8QPE89vmRkv3qo3PcOzy7UXv/DsfUfDNZaozrz6Zl++2ut0IT
+         hFDfnRsvFg+JUEaJT7qc8pwmW2Fji2RMPGi+Z4H9Uo/OyYrTX07gaOpsXyuTMXewJvri
+         XkgZ2fbM2yGWEaZ063v1RrOssLl1VlA09MW0yUWsqGaCsq3Zbu4TSYAnTHuC5aPxmUTL
+         JCxA==
+X-Gm-Message-State: APjAAAV+RNs2CZVT2bGVFNMHUE/1ILvoMYjUWUayfMhRP9MbXAIEsei9
+        988UblxaLIS04nll0feeRsUjPyIvZLuP09siUw==
+X-Google-Smtp-Source: APXvYqx7xtowySesa4+9lw6Ozl7JVLEqOjJfTZIHvPqefLlVsTXkwA71CsctPNus3iiABl3+IN2es94OlE7TcFEpzio=
+X-Received: by 2002:a2e:5bdd:: with SMTP id m90mr14605368lje.46.1563224680729;
+ Mon, 15 Jul 2019 14:04:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1554732921.git.rgb@redhat.com> <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
+ <20190529145742.GA8959@cisco> <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+ <20190529153427.GB8959@cisco> <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+ <20190529222835.GD8959@cisco> <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+ <20190530170913.GA16722@mail.hallyn.com> <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
+ <20190708180558.5bar6ripag3sdadl@madcap2.tricolour.ca>
+In-Reply-To: <20190708180558.5bar6ripag3sdadl@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 15 Jul 2019 17:04:29 -0400
+Message-ID: <CAHC9VhRTT7JWqNnynvK04wKerjc-3UJ6R1uPtjCAPVr_tW-7MA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        Tycho Andersen <tycho@tycho.ws>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        ebiederm@xmission.com, nhorman@tuxdriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Thu, 11 Jul 2019 14:25:54 -0700, John Fastabend wrote:
-> > Jakub Kicinski wrote:
-> > > On Thu, 11 Jul 2019 09:47:16 -0700, John Fastabend wrote:  =
+On Mon, Jul 8, 2019 at 2:06 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2019-05-30 15:29, Paul Moore wrote:
 
-> > > > Jakub Kicinski wrote:  =
+...
 
-> > > > > On Wed, 10 Jul 2019 12:34:17 -0700, Jakub Kicinski wrote:    =
+> > [REMINDER: It is an "*audit* container ID" and not a general
+> > "container ID" ;)  Smiley aside, I'm not kidding about that part.]
+> >
+> > I'm not interested in supporting/merging something that isn't useful;
+> > if this doesn't work for your use case then we need to figure out what
+> > would work.  It sounds like nested containers are much more common in
+> > the lxc world, can you elaborate a bit more on this?
+> >
+> > As far as the possible solutions you mention above, I'm not sure I
+> > like the per-userns audit container IDs, I'd much rather just emit the
+> > necessary tracking information via the audit record stream and let the
+> > log analysis tools figure it out.  However, the bigger question is how
+> > to limit (re)setting the audit container ID when you are in a non-init
+> > userns.  For reasons already mentioned, using capable() is a non
+> > starter for everything but the initial userns, and using ns_capable()
+> > is equally poor as it essentially allows any userns the ability to
+> > munge it's audit container ID (obviously not good).  It appears we
+> > need a different method for controlling access to the audit container
+> > ID.
+>
+> We're not quite ready yet for multiple audit daemons and possibly not
+> yet for audit namespaces, but this is starting to look a lot like the
+> latter.
 
-> > > > > > > > > +		if (sk->sk_prot->unhash)
-> > > > > > > > > +			sk->sk_prot->unhash(sk);
-> > > > > > > > > +	}
-> > > > > > > > > +
-> > > > > > > > > +	ctx =3D tls_get_ctx(sk);
-> > > > > > > > > +	if (ctx->tx_conf =3D=3D TLS_SW || ctx->rx_conf =3D=3D=
- TLS_SW)
-> > > > > > > > > +		tls_sk_proto_cleanup(sk, ctx, timeo);    =
+A few quick comments on audit namespaces: the audit container ID is
+not envisioned as a new namespace (even in nested form) and neither do
+I consider running multiple audit daemons to be a new namespace.
 
-> > > > > =
+From my perspective we create namespaces to allow us to redefine a
+global resource for some subset of the system, e.g. providing a unique
+/tmp for some number of processes on the system.  While it may be
+tempting to think of the audit container ID as something we could
+"namespace", especially when multiple audit daemons are concerned, in
+some ways this would be counter productive; the audit container ID is
+intended to be a global ID that can be used to associate audit event
+records with a "container" where the "container" is defined by an
+orchestrator outside the audit subsystem.  The global nature of the
+audit container ID allows us to maintain a sane(ish) view of the
+system in the audit log, if we were to "namespace" the audit container
+ID such that the value was no longer guaranteed to be unique
+throughout the system, we would need to additionally track the audit
+namespace along with the audit container ID which starts to border on
+insanity IMHO.
 
-> > > > > Do we still need to hook into unhash? With patch 6 in place per=
-haps we
-> > > > > can just do disconnect =F0=9F=A5=BA    =
+> If we can't trust ns_capable() then why are we passing on
+> CAP_AUDIT_CONTROL?  It is being passed down and not stripped purposely
+> by the orchestrator/engine.  If ns_capable() isn't inherited how is it
+> gained otherwise?  Can it be inserted by cotainer image?  I think the
+> answer is "no".  Either we trust ns_capable() or we have audit
+> namespaces (recommend based on user namespace) (or both).
 
-> > > > =
+My thinking is that since ns_capable() checks the credentials with
+respect to the current user namespace we can't rely on it to control
+access since it would be possible for a privileged process running
+inside an unprivileged container to manipulate the audit container ID
+(containerized process has CAP_AUDIT_CONTROL, e.g. running as root in
+the container, while the container itself does not).
 
-> > > > ?? "can just do a disconnect", not sure I folow. We still need un=
-hash
-> > > > in cases where we have a TLS socket transition from ESTABLISHED
-> > > > to LISTEN state without calling close(). This is independent of i=
-f
-> > > > sockmap is running or not.
-> > > > =
+> At this point I would say we are at an impasse unless we trust
+> ns_capable() or we implement audit namespaces.
 
-> > > > Originally, I thought this would be extremely rare but I did see =
-it
-> > > > in real applications on the sockmap side so presumably it is poss=
-ible
-> > > > here as well.  =
+I'm not sure how we can trust ns_capable(), but if you can think of a
+way I would love to hear it.  I'm also not sure how namespacing audit
+is helpful (see my above comments), but if you think it is please
+explain.
 
-> > > =
+> I don't think another mechanism to trust nested orchestrators/engines
+> will buy us anything.
+>
+> Am I missing something?
 
-> > > Ugh, sorry, I meant shutdown. Instead of replacing the unhash callb=
-ack
-> > > replace the shutdown callback. We probably shouldn't release the so=
-cket
-> > > lock either there, but we can sleep, so I'll be able to run the dev=
-ice
-> > > connection remove callback (which sleep).
-> > =
+Based on your questions/comments above it looks like your
+understanding of ns_capable() does not match mine; if I'm thinking
+about ns_capable() incorrectly, please educate me.
 
-> > ah OK seems doable to me. Do you want to write that on top of this
-> > series? Or would you like to push it onto your branch and I can pull
-> > it in push the rest of the patches on top and send it out? I think
-> > if you can get to it in the next few days then it makes sense to wait=
-.
-> =
-
-> Mm.. perhaps its easiest if we forget about HW for now and get SW =
-
-> to work? Once you get the SW to 100% I can probably figure out what =
-
-> to do for HW, but I feel like we got too many moving parts ATM.
-
-Hi Jack,
-
-I went ahead and pushed a v3 with your patches at the front. This resolve=
-s
-a set of issues for me so I think it makes sense to push now and look
-to resolve any further issues later. I'll look into the close with pendin=
-g
-data potential issue to see if it is/is-not a real issue.
-
-Thanks,
-John=
+-- 
+paul moore
+www.paul-moore.com
