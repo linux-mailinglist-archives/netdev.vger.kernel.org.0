@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E35E68F9D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2643168FA3
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389597AbfGOOPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:15:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60030 "EHLO mail.kernel.org"
+        id S2389610AbfGOOPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:15:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389060AbfGOOPm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:15:42 -0400
+        id S2388999AbfGOOPs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:15:48 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0B8F22083D;
-        Mon, 15 Jul 2019 14:15:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1AF8220868;
+        Mon, 15 Jul 2019 14:15:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200141;
-        bh=ZfxLeIAit2+AABNE0jGYYUagqF5Ge5x9ILH6vhBtEQs=;
+        s=default; t=1563200148;
+        bh=R64sEWjE7fOnTDcA1+Fn6biGjYQ/zL3DIacAU7VyayE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZeZUHpv5ac6FfuCZbNE0uT+ibAGy/VggEETyRoz3/86VK5YpWNtTMSV8iY6kwVfeB
-         +P4vC0qhNLwVu127n/GoaQ5aw5apb+GAtpnR0j0m22EJXxitqpZXRasOWWnIKdKAYj
-         fgQNezxsrEmRrYJqH7lM02TNBVtqSd/VHW65qIcQ=
+        b=005O3z3A6Xo7SA+L8rh3yfLnicrWWHv11gdbUroMX4uGpjeV+LfPhpAK3U7ZhhqLu
+         DoU1jZR474TCc6vaEfOyVkZBVB2yPOJJQqfTKwg6fgTWASsryspOCxaz08X8yK9n/1
+         PqsTq761uO93sh8mukeOaDL4jbA534TYMou01A0c=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Guilherme G. Piccoli" <gpiccoli@canonical.com>,
-        Przemyslaw Hausman <przemyslaw.hausman@canonical.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+Cc:     Phong Tran <tranmanphong@gmail.com>,
+        syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 193/219] bnx2x: Prevent ptp_task to be rescheduled indefinitely
-Date:   Mon, 15 Jul 2019 10:03:14 -0400
-Message-Id: <20190715140341.6443-193-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.1 194/219] net: usb: asix: init MAC address buffers
+Date:   Mon, 15 Jul 2019 10:03:15 -0400
+Message-Id: <20190715140341.6443-194-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,153 +45,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+From: Phong Tran <tranmanphong@gmail.com>
 
-[ Upstream commit 3c91f25c2f72ba6001775a5932857c1d2131c531 ]
+[ Upstream commit 78226f6eaac80bf30256a33a4926c194ceefdf36 ]
 
-Currently bnx2x ptp worker tries to read a register with timestamp
-information in case of TX packet timestamping and in case it fails,
-the routine reschedules itself indefinitely. This was reported as a
-kworker always at 100% of CPU usage, which was narrowed down to be
-bnx2x ptp_task.
+This is for fixing bug KMSAN: uninit-value in ax88772_bind
 
-By following the ioctl handler, we could narrow down the problem to
-an NTP tool (chrony) requesting HW timestamping from bnx2x NIC with
-RX filter zeroed; this isn't reproducible for example with ptp4l
-(from linuxptp) since this tool requests a supported RX filter.
-It seems NIC FW timestamp mechanism cannot work well with
-RX_FILTER_NONE - driver's PTP filter init routine skips a register
-write to the adapter if there's not a supported filter request.
+Tested by
+https://groups.google.com/d/msg/syzkaller-bugs/aFQurGotng4/eB_HlNhhCwAJ
 
-This patch addresses the problem of bnx2x ptp thread's everlasting
-reschedule by retrying the register read 10 times; between the read
-attempts the thread sleeps for an increasing amount of time starting
-in 1ms to give FW some time to perform the timestamping. If it still
-fails after all retries, we bail out in order to prevent an unbound
-resource consumption from bnx2x.
+Reported-by: syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
 
-The patch also adds an ethtool statistic for accounting the skipped
-TX timestamp packets and it reduces the priority of timestamping
-error messages to prevent log flooding. The code was tested using
-both linuxptp and chrony.
+syzbot found the following crash on:
 
-Reported-and-tested-by: Przemyslaw Hausman <przemyslaw.hausman@canonical.com>
-Suggested-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
-Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
+git tree:       kmsan
+console output: https://syzkaller.appspot.com/x/log.txt?x=136d720ea00000
+kernel config:
+https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
+dashboard link:
+https://syzkaller.appspot.com/bug?extid=8a3fc6674bbc3978ed4e
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang
+06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
+syz repro:
+https://syzkaller.appspot.com/x/repro.syz?x=12788316a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120359aaa00000
+
+==================================================================
+BUG: KMSAN: uninit-value in is_valid_ether_addr
+include/linux/etherdevice.h:200 [inline]
+BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr
+drivers/net/usb/asix_devices.c:73 [inline]
+BUG: KMSAN: uninit-value in ax88772_bind+0x93d/0x11e0
+drivers/net/usb/asix_devices.c:724
+CPU: 0 PID: 3348 Comm: kworker/0:2 Not tainted 5.1.0+ #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
+  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
+  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
+  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
+  ax88772_bind+0x93d/0x11e0 drivers/net/usb/asix_devices.c:724
+  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
+  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
+  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
+  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
+  __device_attach+0x454/0x730 drivers/base/dd.c:844
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
+  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
+  device_add+0x288d/0x30e0 drivers/base/core.c:2106
+  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
+  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
+  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
+  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
+  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
+  __device_attach+0x454/0x730 drivers/base/dd.c:844
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
+  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
+  device_add+0x288d/0x30e0 drivers/base/core.c:2106
+  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
+  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
+  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+  port_event drivers/usb/core/hub.c:5350 [inline]
+  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
+  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
+  process_scheduled_works kernel/workqueue.c:2331 [inline]
+  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
+  kthread+0x4b5/0x4f0 kernel/kthread.c:254
+  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+
+Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   |  5 ++-
- .../ethernet/broadcom/bnx2x/bnx2x_ethtool.c   |  4 ++-
- .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 33 ++++++++++++++-----
- .../net/ethernet/broadcom/bnx2x/bnx2x_stats.h |  3 ++
- 4 files changed, 34 insertions(+), 11 deletions(-)
+ drivers/net/usb/asix_devices.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index ecb1bd7eb508..78a01880931c 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -3858,9 +3858,12 @@ netdev_tx_t bnx2x_start_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 3d93993e74da..2eca4168af2f 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -238,7 +238,7 @@ static void asix_phy_reset(struct usbnet *dev, unsigned int reset_bits)
+ static int ax88172_bind(struct usbnet *dev, struct usb_interface *intf)
+ {
+ 	int ret = 0;
+-	u8 buf[ETH_ALEN];
++	u8 buf[ETH_ALEN] = {0};
+ 	int i;
+ 	unsigned long gpio_bits = dev->driver_info->data;
  
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
- 		if (!(bp->flags & TX_TIMESTAMPING_EN)) {
-+			bp->eth_stats.ptp_skip_tx_ts++;
- 			BNX2X_ERR("Tx timestamping was not enabled, this packet will not be timestamped\n");
- 		} else if (bp->ptp_tx_skb) {
--			BNX2X_ERR("The device supports only a single outstanding packet to timestamp, this packet will not be timestamped\n");
-+			bp->eth_stats.ptp_skip_tx_ts++;
-+			netdev_err_once(bp->dev,
-+					"Device supports only a single outstanding packet to timestamp, this packet won't be timestamped\n");
- 		} else {
- 			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 			/* schedule check for Tx timestamp */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-index 59f227fcc68b..0e1b884a5344 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-@@ -182,7 +182,9 @@ static const struct {
- 	{ STATS_OFFSET32(driver_filtered_tx_pkt),
- 				4, false, "driver_filtered_tx_pkt" },
- 	{ STATS_OFFSET32(eee_tx_lpi),
--				4, true, "Tx LPI entry count"}
-+				4, true, "Tx LPI entry count"},
-+	{ STATS_OFFSET32(ptp_skip_tx_ts),
-+				4, false, "ptp_skipped_tx_tstamp" },
- };
+@@ -689,7 +689,7 @@ static int asix_resume(struct usb_interface *intf)
+ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ {
+ 	int ret, i;
+-	u8 buf[ETH_ALEN], chipcode = 0;
++	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
+ 	u32 phyid;
+ 	struct asix_common_private *priv;
  
- #define BNX2X_NUM_STATS		ARRAY_SIZE(bnx2x_stats_arr)
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index 626b491f7674..7a075f1f1242 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -15243,11 +15243,24 @@ static void bnx2x_ptp_task(struct work_struct *work)
- 	u32 val_seq;
- 	u64 timestamp, ns;
- 	struct skb_shared_hwtstamps shhwtstamps;
-+	bool bail = true;
-+	int i;
-+
-+	/* FW may take a while to complete timestamping; try a bit and if it's
-+	 * still not complete, may indicate an error state - bail out then.
-+	 */
-+	for (i = 0; i < 10; i++) {
-+		/* Read Tx timestamp registers */
-+		val_seq = REG_RD(bp, port ? NIG_REG_P1_TLLH_PTP_BUF_SEQID :
-+				 NIG_REG_P0_TLLH_PTP_BUF_SEQID);
-+		if (val_seq & 0x10000) {
-+			bail = false;
-+			break;
-+		}
-+		msleep(1 << i);
-+	}
+@@ -1073,7 +1073,7 @@ static const struct net_device_ops ax88178_netdev_ops = {
+ static int ax88178_bind(struct usbnet *dev, struct usb_interface *intf)
+ {
+ 	int ret;
+-	u8 buf[ETH_ALEN];
++	u8 buf[ETH_ALEN] = {0};
  
--	/* Read Tx timestamp registers */
--	val_seq = REG_RD(bp, port ? NIG_REG_P1_TLLH_PTP_BUF_SEQID :
--			 NIG_REG_P0_TLLH_PTP_BUF_SEQID);
--	if (val_seq & 0x10000) {
-+	if (!bail) {
- 		/* There is a valid timestamp value */
- 		timestamp = REG_RD(bp, port ? NIG_REG_P1_TLLH_PTP_BUF_TS_MSB :
- 				   NIG_REG_P0_TLLH_PTP_BUF_TS_MSB);
-@@ -15262,16 +15275,18 @@ static void bnx2x_ptp_task(struct work_struct *work)
- 		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
- 		shhwtstamps.hwtstamp = ns_to_ktime(ns);
- 		skb_tstamp_tx(bp->ptp_tx_skb, &shhwtstamps);
--		dev_kfree_skb_any(bp->ptp_tx_skb);
--		bp->ptp_tx_skb = NULL;
+ 	usbnet_get_endpoints(dev,intf);
  
- 		DP(BNX2X_MSG_PTP, "Tx timestamp, timestamp cycles = %llu, ns = %llu\n",
- 		   timestamp, ns);
- 	} else {
--		DP(BNX2X_MSG_PTP, "There is no valid Tx timestamp yet\n");
--		/* Reschedule to keep checking for a valid timestamp value */
--		schedule_work(&bp->ptp_task);
-+		DP(BNX2X_MSG_PTP,
-+		   "Tx timestamp is not recorded (register read=%u)\n",
-+		   val_seq);
-+		bp->eth_stats.ptp_skip_tx_ts++;
- 	}
-+
-+	dev_kfree_skb_any(bp->ptp_tx_skb);
-+	bp->ptp_tx_skb = NULL;
- }
- 
- void bnx2x_set_rx_ts(struct bnx2x *bp, struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
-index b2644ed13d06..d55e63692cf3 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
-@@ -207,6 +207,9 @@ struct bnx2x_eth_stats {
- 	u32 driver_filtered_tx_pkt;
- 	/* src: Clear-on-Read register; Will not survive PMF Migration */
- 	u32 eee_tx_lpi;
-+
-+	/* PTP */
-+	u32 ptp_skip_tx_ts;
- };
- 
- struct bnx2x_eth_q_stats {
 -- 
 2.20.1
 
