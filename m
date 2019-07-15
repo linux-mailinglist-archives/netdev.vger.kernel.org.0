@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6AB69275
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B6469228
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404001AbfGOOek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:34:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51868 "EHLO mail.kernel.org"
+        id S2392065AbfGOOex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:34:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391048AbfGOOeh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:34:37 -0400
+        id S2389089AbfGOOeu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:34:50 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D388204FD;
-        Mon, 15 Jul 2019 14:34:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8788121530;
+        Mon, 15 Jul 2019 14:34:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201276;
-        bh=PvNVaEj39Y0W8MzPo8TYSC/g+8BAomzevcla9rs/khc=;
+        s=default; t=1563201289;
+        bh=T/rEm6dfBuoUIPZwn0Ts5aPqe93cRaC6IMXhjHkGeTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gInT6q9i+NlS0aSvMsi0qQIgrPAnjSNrXGOnZVd3AYjE1qMaON+joD5K9u5EjnSBo
-         qB9HJBfhKxpcGTChiycrUrG08v41Y0IYzPmOL9/TJWiMDs5M+pmqJlgetvcPyK3hK4
-         gyGHP2gRaM5fjwrQxkJ1Ny7M9+RyxVayDPVeAfbo=
+        b=yeq6dY6YKu/89/ZgICdaI0nCbyQnxGf+gYdZ6Lx5DpEu/kGz4pDirG6x/6OLxYJ40
+         a+9AKxRjnJfA8oEY+l9WgbFMFbMU+IJmOo/Hhri88FTH4XZsAA7WkBhAPk4ecO+tPN
+         NpW306upEVvzKe4obEZQfVbq9ciDUvqKyBBISG2A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phong Tran <tranmanphong@gmail.com>,
-        syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.14 094/105] net: usb: asix: init MAC address buffers
-Date:   Mon, 15 Jul 2019 10:28:28 -0400
-Message-Id: <20190715142839.9896-94-sashal@kernel.org>
+Cc:     Matias Karhumaa <matias.karhumaa@gmail.com>,
+        Matti Kamunen <matti.kamunen@synopsys.com>,
+        Ari Timonen <ari.timonen@synopsys.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 098/105] Bluetooth: Check state in l2cap_disconnect_rsp
+Date:   Mon, 15 Jul 2019 10:28:32 -0400
+Message-Id: <20190715142839.9896-98-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
 References: <20190715142839.9896-1-sashal@kernel.org>
@@ -45,120 +46,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phong Tran <tranmanphong@gmail.com>
+From: Matias Karhumaa <matias.karhumaa@gmail.com>
 
-[ Upstream commit 78226f6eaac80bf30256a33a4926c194ceefdf36 ]
+[ Upstream commit 28261da8a26f4915aa257d12d506c6ba179d961f ]
 
-This is for fixing bug KMSAN: uninit-value in ax88772_bind
+Because of both sides doing L2CAP disconnection at the same time, it
+was possible to receive L2CAP Disconnection Response with CID that was
+already freed. That caused problems if CID was already reused and L2CAP
+Connection Request with same CID was sent out. Before this patch kernel
+deleted channel context regardless of the state of the channel.
 
-Tested by
-https://groups.google.com/d/msg/syzkaller-bugs/aFQurGotng4/eB_HlNhhCwAJ
+Example where leftover Disconnection Response (frame #402) causes local
+device to delete L2CAP channel which was not yet connected. This in
+turn confuses remote device's stack because same CID is re-used without
+properly disconnecting.
 
-Reported-by: syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
+Btmon capture before patch:
+** snip **
+> ACL Data RX: Handle 43 flags 0x02 dlen 8                #394 [hci1] 10.748949
+      Channel: 65 len 4 [PSM 3 mode 0] {chan 2}
+      RFCOMM: Disconnect (DISC) (0x43)
+         Address: 0x03 cr 1 dlci 0x00
+         Control: 0x53 poll/final 1
+         Length: 0
+         FCS: 0xfd
+< ACL Data TX: Handle 43 flags 0x00 dlen 8                #395 [hci1] 10.749062
+      Channel: 65 len 4 [PSM 3 mode 0] {chan 2}
+      RFCOMM: Unnumbered Ack (UA) (0x63)
+         Address: 0x03 cr 1 dlci 0x00
+         Control: 0x73 poll/final 1
+         Length: 0
+         FCS: 0xd7
+< ACL Data TX: Handle 43 flags 0x00 dlen 12               #396 [hci1] 10.749073
+      L2CAP: Disconnection Request (0x06) ident 17 len 4
+        Destination CID: 65
+        Source CID: 65
+> HCI Event: Number of Completed Packets (0x13) plen 5    #397 [hci1] 10.752391
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> HCI Event: Number of Completed Packets (0x13) plen 5    #398 [hci1] 10.753394
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> ACL Data RX: Handle 43 flags 0x02 dlen 12               #399 [hci1] 10.756499
+      L2CAP: Disconnection Request (0x06) ident 26 len 4
+        Destination CID: 65
+        Source CID: 65
+< ACL Data TX: Handle 43 flags 0x00 dlen 12               #400 [hci1] 10.756548
+      L2CAP: Disconnection Response (0x07) ident 26 len 4
+        Destination CID: 65
+        Source CID: 65
+< ACL Data TX: Handle 43 flags 0x00 dlen 12               #401 [hci1] 10.757459
+      L2CAP: Connection Request (0x02) ident 18 len 4
+        PSM: 1 (0x0001)
+        Source CID: 65
+> ACL Data RX: Handle 43 flags 0x02 dlen 12               #402 [hci1] 10.759148
+      L2CAP: Disconnection Response (0x07) ident 17 len 4
+        Destination CID: 65
+        Source CID: 65
+= bluetoothd: 00:1E:AB:4C:56:54: error updating services: Input/o..   10.759447
+> HCI Event: Number of Completed Packets (0x13) plen 5    #403 [hci1] 10.759386
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> ACL Data RX: Handle 43 flags 0x02 dlen 12               #404 [hci1] 10.760397
+      L2CAP: Connection Request (0x02) ident 27 len 4
+        PSM: 3 (0x0003)
+        Source CID: 65
+< ACL Data TX: Handle 43 flags 0x00 dlen 16               #405 [hci1] 10.760441
+      L2CAP: Connection Response (0x03) ident 27 len 8
+        Destination CID: 65
+        Source CID: 65
+        Result: Connection successful (0x0000)
+        Status: No further information available (0x0000)
+< ACL Data TX: Handle 43 flags 0x00 dlen 27               #406 [hci1] 10.760449
+      L2CAP: Configure Request (0x04) ident 19 len 19
+        Destination CID: 65
+        Flags: 0x0000
+        Option: Maximum Transmission Unit (0x01) [mandatory]
+          MTU: 1013
+        Option: Retransmission and Flow Control (0x04) [mandatory]
+          Mode: Basic (0x00)
+          TX window size: 0
+          Max transmit: 0
+          Retransmission timeout: 0
+          Monitor timeout: 0
+          Maximum PDU size: 0
+> HCI Event: Number of Completed Packets (0x13) plen 5    #407 [hci1] 10.761399
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> ACL Data RX: Handle 43 flags 0x02 dlen 16               #408 [hci1] 10.762942
+      L2CAP: Connection Response (0x03) ident 18 len 8
+        Destination CID: 66
+        Source CID: 65
+        Result: Connection successful (0x0000)
+        Status: No further information available (0x0000)
+*snip*
 
-syzbot found the following crash on:
+Similar case after the patch:
+*snip*
+> ACL Data RX: Handle 43 flags 0x02 dlen 8            #22702 [hci0] 1664.411056
+      Channel: 65 len 4 [PSM 3 mode 0] {chan 3}
+      RFCOMM: Disconnect (DISC) (0x43)
+         Address: 0x03 cr 1 dlci 0x00
+         Control: 0x53 poll/final 1
+         Length: 0
+         FCS: 0xfd
+< ACL Data TX: Handle 43 flags 0x00 dlen 8            #22703 [hci0] 1664.411136
+      Channel: 65 len 4 [PSM 3 mode 0] {chan 3}
+      RFCOMM: Unnumbered Ack (UA) (0x63)
+         Address: 0x03 cr 1 dlci 0x00
+         Control: 0x73 poll/final 1
+         Length: 0
+         FCS: 0xd7
+< ACL Data TX: Handle 43 flags 0x00 dlen 12           #22704 [hci0] 1664.411143
+      L2CAP: Disconnection Request (0x06) ident 11 len 4
+        Destination CID: 65
+        Source CID: 65
+> HCI Event: Number of Completed Pac.. (0x13) plen 5  #22705 [hci0] 1664.414009
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> HCI Event: Number of Completed Pac.. (0x13) plen 5  #22706 [hci0] 1664.415007
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> ACL Data RX: Handle 43 flags 0x02 dlen 12           #22707 [hci0] 1664.418674
+      L2CAP: Disconnection Request (0x06) ident 17 len 4
+        Destination CID: 65
+        Source CID: 65
+< ACL Data TX: Handle 43 flags 0x00 dlen 12           #22708 [hci0] 1664.418762
+      L2CAP: Disconnection Response (0x07) ident 17 len 4
+        Destination CID: 65
+        Source CID: 65
+< ACL Data TX: Handle 43 flags 0x00 dlen 12           #22709 [hci0] 1664.421073
+      L2CAP: Connection Request (0x02) ident 12 len 4
+        PSM: 1 (0x0001)
+        Source CID: 65
+> ACL Data RX: Handle 43 flags 0x02 dlen 12           #22710 [hci0] 1664.421371
+      L2CAP: Disconnection Response (0x07) ident 11 len 4
+        Destination CID: 65
+        Source CID: 65
+> HCI Event: Number of Completed Pac.. (0x13) plen 5  #22711 [hci0] 1664.424082
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> HCI Event: Number of Completed Pac.. (0x13) plen 5  #22712 [hci0] 1664.425040
+        Num handles: 1
+        Handle: 43
+        Count: 1
+> ACL Data RX: Handle 43 flags 0x02 dlen 12           #22713 [hci0] 1664.426103
+      L2CAP: Connection Request (0x02) ident 18 len 4
+        PSM: 3 (0x0003)
+        Source CID: 65
+< ACL Data TX: Handle 43 flags 0x00 dlen 16           #22714 [hci0] 1664.426186
+      L2CAP: Connection Response (0x03) ident 18 len 8
+        Destination CID: 66
+        Source CID: 65
+        Result: Connection successful (0x0000)
+        Status: No further information available (0x0000)
+< ACL Data TX: Handle 43 flags 0x00 dlen 27           #22715 [hci0] 1664.426196
+      L2CAP: Configure Request (0x04) ident 13 len 19
+        Destination CID: 65
+        Flags: 0x0000
+        Option: Maximum Transmission Unit (0x01) [mandatory]
+          MTU: 1013
+        Option: Retransmission and Flow Control (0x04) [mandatory]
+          Mode: Basic (0x00)
+          TX window size: 0
+          Max transmit: 0
+          Retransmission timeout: 0
+          Monitor timeout: 0
+          Maximum PDU size: 0
+> ACL Data RX: Handle 43 flags 0x02 dlen 16           #22716 [hci0] 1664.428804
+      L2CAP: Connection Response (0x03) ident 12 len 8
+        Destination CID: 66
+        Source CID: 65
+        Result: Connection successful (0x0000)
+        Status: No further information available (0x0000)
+*snip*
 
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=136d720ea00000
-kernel config:
-https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link:
-https://syzkaller.appspot.com/bug?extid=8a3fc6674bbc3978ed4e
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:
-https://syzkaller.appspot.com/x/repro.syz?x=12788316a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120359aaa00000
+Fix is to check that channel is in state BT_DISCONN before deleting the
+channel.
 
-==================================================================
-BUG: KMSAN: uninit-value in is_valid_ether_addr
-include/linux/etherdevice.h:200 [inline]
-BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr
-drivers/net/usb/asix_devices.c:73 [inline]
-BUG: KMSAN: uninit-value in ax88772_bind+0x93d/0x11e0
-drivers/net/usb/asix_devices.c:724
-CPU: 0 PID: 3348 Comm: kworker/0:2 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
-  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
-  ax88772_bind+0x93d/0x11e0 drivers/net/usb/asix_devices.c:724
-  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
-  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  process_scheduled_works kernel/workqueue.c:2331 [inline]
-  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
-  kthread+0x4b5/0x4f0 kernel/kthread.c:254
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+This bug was found while fuzzing Bluez's OBEX implementation using
+Synopsys Defensics.
 
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Matti Kamunen <matti.kamunen@synopsys.com>
+Reported-by: Ari Timonen <ari.timonen@synopsys.com>
+Signed-off-by: Matias Karhumaa <matias.karhumaa@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/asix_devices.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/bluetooth/l2cap_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index d0c0ac0c3519..9b751d4bd327 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -238,7 +238,7 @@ static void asix_phy_reset(struct usbnet *dev, unsigned int reset_bits)
- static int ax88172_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret = 0;
--	u8 buf[ETH_ALEN];
-+	u8 buf[ETH_ALEN] = {0};
- 	int i;
- 	unsigned long gpio_bits = dev->driver_info->data;
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 0ee64f67300a..0c2219f483d7 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4384,6 +4384,12 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
  
-@@ -689,7 +689,7 @@ static int asix_resume(struct usb_interface *intf)
- static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret, i;
--	u8 buf[ETH_ALEN], chipcode = 0;
-+	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
- 	u32 phyid;
- 	struct asix_common_private *priv;
+ 	l2cap_chan_lock(chan);
  
-@@ -1065,7 +1065,7 @@ static const struct net_device_ops ax88178_netdev_ops = {
- static int ax88178_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret;
--	u8 buf[ETH_ALEN];
-+	u8 buf[ETH_ALEN] = {0};
- 
- 	usbnet_get_endpoints(dev,intf);
++	if (chan->state != BT_DISCONN) {
++		l2cap_chan_unlock(chan);
++		mutex_unlock(&conn->chan_lock);
++		return 0;
++	}
++
+ 	l2cap_chan_hold(chan);
+ 	l2cap_chan_del(chan, 0);
  
 -- 
 2.20.1
