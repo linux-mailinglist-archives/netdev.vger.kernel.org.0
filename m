@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 186CB68DBC
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A2AB68DC8
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733275AbfGOOBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:01:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43536 "EHLO mail.kernel.org"
+        id S2387409AbfGOOBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:01:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43710 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731326AbfGOOBN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:01:13 -0400
+        id S1732216AbfGOOBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:01:22 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 125A52083D;
-        Mon, 15 Jul 2019 14:01:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D29DE20C01;
+        Mon, 15 Jul 2019 14:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199272;
-        bh=Yf2R0tM/bEIm2s6ta7L7vGbzeVyOgOPjlCcPctN/KQE=;
+        s=default; t=1563199281;
+        bh=6EGDGFXMhuPDKgjG9iOih392eCr4+z/n0ucJnaJcVI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fwv++oL5V0EuBr5agcmvMIwP64BBBKR9Q/ptnmuLzQJrZHJwJcn8vhNobB6FluTR2
-         zp/oD1l5l87sVoLtqjTWiSWDHyRFFIgHmYSI0aunMM/nprM10tNkw4R/368m0PQc5h
-         IqXczvIfMONgopWUwsMLv5Hd+KCEhaj1izF5AM9Q=
+        b=chTuGd6Xun01ENEqA0mY7pRiV/hxvjQyU8+Lqw+ig0+03cocEdNjbBVYu5vSiLtyL
+         id5Nj6gsPSYSp4n2ZStqL+JF/zZk9myOmVbdgm75VyV2WUWppkbbAir84A6Vg0W6Of
+         Sj+k4/qSqmANVvCPfN2ah1yYmpLgA16OGGwYfaxY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Yonghong Song <yhs@fb.com>,
+Cc:     Leo Yan <leo.yan@linaro.org>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 224/249] libbpf: fix GCC8 warning for strncpy
-Date:   Mon, 15 Jul 2019 09:46:29 -0400
-Message-Id: <20190715134655.4076-224-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 225/249] bpf, libbpf, smatch: Fix potential NULL pointer dereference
+Date:   Mon, 15 Jul 2019 09:46:30 -0400
+Message-Id: <20190715134655.4076-225-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -46,39 +44,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit cdfc7f888c2a355b01308e97c6df108f1c2b64e8 ]
+[ Upstream commit 33bae185f74d49a0d7b1bfaafb8e959efce0f243 ]
 
-GCC8 started emitting warning about using strncpy with number of bytes
-exactly equal destination size, which is generally unsafe, as can lead
-to non-zero terminated string being copied. Use IFNAMSIZ - 1 as number
-of bytes to ensure name is always zero-terminated.
+Based on the following report from Smatch, fix the potential NULL
+pointer dereference check:
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+  tools/lib/bpf/libbpf.c:3493
+  bpf_prog_load_xattr() warn: variable dereferenced before check 'attr'
+  (see line 3483)
+
+  3479 int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+  3480                         struct bpf_object **pobj, int *prog_fd)
+  3481 {
+  3482         struct bpf_object_open_attr open_attr = {
+  3483                 .file           = attr->file,
+  3484                 .prog_type      = attr->prog_type,
+                                         ^^^^^^
+  3485         };
+
+At the head of function, it directly access 'attr' without checking
+if it's NULL pointer. This patch moves the values assignment after
+validating 'attr' and 'attr->file'.
+
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
 Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/xsk.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 38667b62f1fe..8a7a05bc657d 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -337,7 +337,8 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 151f7ac1882e..3865a5d27251 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -3487,10 +3487,7 @@ int bpf_prog_load(const char *file, enum bpf_prog_type type,
+ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+ 			struct bpf_object **pobj, int *prog_fd)
+ {
+-	struct bpf_object_open_attr open_attr = {
+-		.file		= attr->file,
+-		.prog_type	= attr->prog_type,
+-	};
++	struct bpf_object_open_attr open_attr = {};
+ 	struct bpf_program *prog, *first_prog = NULL;
+ 	enum bpf_attach_type expected_attach_type;
+ 	enum bpf_prog_type prog_type;
+@@ -3503,6 +3500,9 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+ 	if (!attr->file)
+ 		return -EINVAL;
  
- 	channels.cmd = ETHTOOL_GCHANNELS;
- 	ifr.ifr_data = (void *)&channels;
--	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ);
-+	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
-+	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
- 	err = ioctl(fd, SIOCETHTOOL, &ifr);
- 	if (err && errno != EOPNOTSUPP) {
- 		ret = -errno;
++	open_attr.file = attr->file;
++	open_attr.prog_type = attr->prog_type;
++
+ 	obj = bpf_object__open_xattr(&open_attr);
+ 	if (IS_ERR_OR_NULL(obj))
+ 		return -ENOENT;
 -- 
 2.20.1
 
