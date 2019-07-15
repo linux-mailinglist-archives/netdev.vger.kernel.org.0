@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E250A695A3
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0DA0695D1
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389910AbfGOOS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:18:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38384 "EHLO mail.kernel.org"
+        id S2389601AbfGOOSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:18:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38762 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389529AbfGOOSZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:18:25 -0400
+        id S2388500AbfGOOSf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:18:35 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0EC5A2081C;
-        Mon, 15 Jul 2019 14:18:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 90C6921530;
+        Mon, 15 Jul 2019 14:18:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200304;
-        bh=PjotlXJDX9u0DWYVZV9CvhTezXZPphkRfNwjbqDKScA=;
+        s=default; t=1563200314;
+        bh=4EzUqz8VEanhcqiMXOvPEr7zr+gp3i1tR7nSD7Be9rQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yXUkrupi9nEq5ePPjx7o9wghUVCBEKnkDlDI/3mz/qLH22qgKMaTTrslaiCN/iLii
-         6lLHo92SXhDXTAI/qWt0EdaZg+pvovB6WRyUaN/8T3iueNfDaj2CwSmy7+P09frU26
-         dudH0jhkbZQ4IwL/fk4w2aZPP8kZTrrTbzTyu1bY=
+        b=MdsEMaCOvbYwM3vTmUTkfHWdCnclDkV2JJirdSHnG4titLwfp8r/fbp6VIUmP/HLQ
+         J/6xrCQtjCB/CLvQO8X8/12Pvda1GN1y54+Wcfj8KWEy7AqFGPu0Wh9+9fvdmo+0mH
+         qwZvPQrlMcu5wiwMBuFb/rR5WM+XeZ7BObaC1wz0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+Cc:     Anilkumar Kolli <akolli@codeaurora.org>,
+        Tamizh chelvam <tamizhr@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 005/158] ath10k: add peer id check in ath10k_peer_find_by_id
-Date:   Mon, 15 Jul 2019 10:15:36 -0400
-Message-Id: <20190715141809.8445-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 008/158] ath: DFS JP domain W56 fixed pulse type 3 RADAR detection
+Date:   Mon, 15 Jul 2019 10:15:39 -0400
+Message-Id: <20190715141809.8445-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -43,67 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <wgong@codeaurora.org>
+From: Anilkumar Kolli <akolli@codeaurora.org>
 
-[ Upstream commit 49ed34b835e231aa941257394716bc689bc98d9f ]
+[ Upstream commit d8792393a783158cbb2c39939cb897dc5e5299b6 ]
 
-For some SDIO chip, the peer id is 65535 for MPDU with error status,
-then test_bit will trigger buffer overflow for peer's memory, if kasan
-enabled, it will report error.
+Increase pulse width range from 1-2usec to 0-4usec.
+During data traffic HW occasionally fails detecting radar pulses,
+so that SW cannot get enough radar reports to achieve the success rate.
 
-Reason is when station is in disconnecting status, firmware do not delete
-the peer info since it not disconnected completely, meanwhile some AP will
-still send data packet to station, then hardware will receive the packet
-and send to firmware, firmware's logic will report peer id of 65535 for
-MPDU with error status.
+Tested ath10k hw and fw:
+	* QCA9888(10.4-3.5.1-00052)
+	* QCA4019(10.4-3.2.1.1-00017)
+	* QCA9984(10.4-3.6-00104)
+	* QCA988X(10.2.4-1.0-00041)
 
-Add check for overflow the size of peer's peer_ids will avoid the buffer
-overflow access.
+Tested ath9k hw: AR9300
 
-Call trace of kasan:
-dump_backtrace+0x0/0x2ec
-show_stack+0x20/0x2c
-__dump_stack+0x20/0x28
-dump_stack+0xc8/0xec
-print_address_description+0x74/0x240
-kasan_report+0x250/0x26c
-__asan_report_load8_noabort+0x20/0x2c
-ath10k_peer_find_by_id+0x180/0x1e4 [ath10k_core]
-ath10k_htt_t2h_msg_handler+0x100c/0x2fd4 [ath10k_core]
-ath10k_htt_htc_t2h_msg_handler+0x20/0x34 [ath10k_core]
-ath10k_sdio_irq_handler+0xcc8/0x1678 [ath10k_sdio]
-process_sdio_pending_irqs+0xec/0x370
-sdio_run_irqs+0x68/0xe4
-sdio_irq_work+0x1c/0x28
-process_one_work+0x3d8/0x8b0
-worker_thread+0x508/0x7cc
-kthread+0x24c/0x264
-ret_from_fork+0x10/0x18
-
-Tested with QCA6174 SDIO with firmware
-WLAN.RMH.4.4.1-00007-QCARMSWP-1.
-
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Tested-by: Tamizh chelvam <tamizhr@codeaurora.org>
+Signed-off-by: Tamizh chelvam <tamizhr@codeaurora.org>
+Signed-off-by: Anilkumar Kolli <akolli@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/txrx.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/ath/dfs_pattern_detector.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index cda164f6e9f6..6f62ddc0494c 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -156,6 +156,9 @@ struct ath10k_peer *ath10k_peer_find_by_id(struct ath10k *ar, int peer_id)
- {
- 	struct ath10k_peer *peer;
- 
-+	if (peer_id >= BITS_PER_TYPE(peer->peer_ids))
-+		return NULL;
-+
- 	lockdep_assert_held(&ar->data_lock);
- 
- 	list_for_each_entry(peer, &ar->peers, list)
+diff --git a/drivers/net/wireless/ath/dfs_pattern_detector.c b/drivers/net/wireless/ath/dfs_pattern_detector.c
+index d52b31b45df7..a274eb0d1968 100644
+--- a/drivers/net/wireless/ath/dfs_pattern_detector.c
++++ b/drivers/net/wireless/ath/dfs_pattern_detector.c
+@@ -111,7 +111,7 @@ static const struct radar_detector_specs jp_radar_ref_types[] = {
+ 	JP_PATTERN(0, 0, 1, 1428, 1428, 1, 18, 29, false),
+ 	JP_PATTERN(1, 2, 3, 3846, 3846, 1, 18, 29, false),
+ 	JP_PATTERN(2, 0, 1, 1388, 1388, 1, 18, 50, false),
+-	JP_PATTERN(3, 1, 2, 4000, 4000, 1, 18, 50, false),
++	JP_PATTERN(3, 0, 4, 4000, 4000, 1, 18, 50, false),
+ 	JP_PATTERN(4, 0, 5, 150, 230, 1, 23, 50, false),
+ 	JP_PATTERN(5, 6, 10, 200, 500, 1, 16, 50, false),
+ 	JP_PATTERN(6, 11, 20, 200, 500, 1, 12, 50, false),
 -- 
 2.20.1
 
