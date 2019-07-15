@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 473F868C3A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0EA68C3E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731935AbfGONuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:50:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37986 "EHLO mail.kernel.org"
+        id S1731514AbfGONuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:50:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731302AbfGONuA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:50:00 -0400
+        id S1731884AbfGONuN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:50:13 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C122217F4;
-        Mon, 15 Jul 2019 13:49:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1046D2086C;
+        Mon, 15 Jul 2019 13:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198599;
-        bh=ygqkvmXYeSMjc+q+7NgWYLUCBRvjvtpH4rdO+WLrD1M=;
+        s=default; t=1563198612;
+        bh=4jclNmLhAwt8DLiBC5lXtWQSh1W6MqW8PgYJ2U8KM+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t2FJjK+sOaVTEsMFnEddgFYwjxX7pst4j1Pxk5FTW05Jl5AoknITZUtGFcja53d8J
-         d4580vz7VFiCSADbMjdtgMds7SzKUElIsmZuzzS8ZMvHK1zEuCQv0/fMz49kw1mWn9
-         gshUmNlEIbYWVHEW5xRXs3BVc9J6eTQRgWUASlL0=
+        b=qogEX1dHLVi3BtyzrPZcnZPJHgnaqlr9IwmKGFCrZonrmPd7SpcuYIovQdOKlw9RD
+         dEgS0hB5vOqEU5Di/p6onph8pKe5nGcR3JEVTSqQxXc9uUy7alDm9Wy2my0fdEe9Kt
+         clw++iIrgeKlgwG61Road80eOb8kd6P0ubJad+6M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 055/249] net: dsa: sja1105: Fix broken fixed-link interfaces on user ports
-Date:   Mon, 15 Jul 2019 09:43:40 -0400
-Message-Id: <20190715134655.4076-55-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 059/249] batman-adv: Fix duplicated OGMs on NETDEV_UP
+Date:   Mon, 15 Jul 2019 09:43:44 -0400
+Message-Id: <20190715134655.4076-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,87 +46,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit af7cd0366ee994e8b35985d407261dc0ed9dfb4d ]
+[ Upstream commit 9e6b5648bbc4cd48fab62cecbb81e9cc3c6e7e88 ]
 
-PHYLIB and PHYLINK handle fixed-link interfaces differently. PHYLIB
-wraps them in a software PHY ("pseudo fixed link") phydev construct such
-that .adjust_link driver callbacks see an unified API. Whereas PHYLINK
-simply creates a phylink_link_state structure and passes it to
-.mac_config.
+The state of slave interfaces are handled differently depending on whether
+the interface is up or not. All active interfaces (IFF_UP) will transmit
+OGMs. But for B.A.T.M.A.N. IV, also non-active interfaces are scheduling
+(low TTL) OGMs on active interfaces. The code which setups and schedules
+the OGMs must therefore already be called when the interfaces gets added as
+slave interface and the transmit function must then check whether it has to
+send out the OGM or not on the specific slave interface.
 
-At the time the driver was introduced, DSA was using PHYLIB for the
-CPU/cascade ports (the ones with no net devices) and PHYLINK for
-everything else.
+But the commit f0d97253fb5f ("batman-adv: remove ogm_emit and ogm_schedule
+API calls") moved the setup code from the enable function to the activate
+function. The latter is called either when the added slave was already up
+when batadv_hardif_enable_interface processed the new interface or when a
+NETDEV_UP event was received for this slave interfac. As result, each
+NETDEV_UP would schedule a new OGM worker for the interface and thus OGMs
+would be send a lot more than expected.
 
-As explained below:
-
-commit aab9c4067d2389d0adfc9c53806437df7b0fe3d5
-Author: Florian Fainelli <f.fainelli@gmail.com>
-Date:   Thu May 10 13:17:36 2018 -0700
-
-  net: dsa: Plug in PHYLINK support
-
-  Drivers that utilize fixed links for user-facing ports (e.g: bcm_sf2)
-  will need to implement phylink_mac_ops from now on to preserve
-  functionality, since PHYLINK *does not* create a phy_device instance
-  for fixed links.
-
-In the above patch, DSA guards the .phylink_mac_config callback against
-a NULL phydev pointer.  Therefore, .adjust_link is not called in case of
-a fixed-link user port.
-
-This patch fixes the situation by converting the driver from using
-.adjust_link to .phylink_mac_config.  This can be done now in a unified
-fashion for both slave and CPU/cascade ports because DSA now uses
-PHYLINK for all ports.
-
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: f0d97253fb5f ("batman-adv: remove ogm_emit and ogm_schedule API calls")
+Reported-by: Linus Lüssing <linus.luessing@c0d3.blue>
+Tested-by: Linus Lüssing <linus.luessing@c0d3.blue>
+Acked-by: Marek Lindner <mareklindner@neomailbox.ch>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/batman-adv/bat_iv_ogm.c     | 4 ++--
+ net/batman-adv/hard-interface.c | 3 +++
+ net/batman-adv/types.h          | 3 +++
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 1c3959efebc4..844e038f3dc6 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -734,15 +734,16 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	return sja1105_clocking_setup_port(priv, port);
+diff --git a/net/batman-adv/bat_iv_ogm.c b/net/batman-adv/bat_iv_ogm.c
+index bd4138ddf7e0..240ed70912d6 100644
+--- a/net/batman-adv/bat_iv_ogm.c
++++ b/net/batman-adv/bat_iv_ogm.c
+@@ -2337,7 +2337,7 @@ batadv_iv_ogm_neigh_is_sob(struct batadv_neigh_node *neigh1,
+ 	return ret;
  }
  
--static void sja1105_adjust_link(struct dsa_switch *ds, int port,
--				struct phy_device *phydev)
-+static void sja1105_mac_config(struct dsa_switch *ds, int port,
-+			       unsigned int link_an_mode,
-+			       const struct phylink_link_state *state)
+-static void batadv_iv_iface_activate(struct batadv_hard_iface *hard_iface)
++static void batadv_iv_iface_enabled(struct batadv_hard_iface *hard_iface)
  {
- 	struct sja1105_private *priv = ds->priv;
+ 	/* begin scheduling originator messages on that interface */
+ 	batadv_iv_ogm_schedule(hard_iface);
+@@ -2683,8 +2683,8 @@ static void batadv_iv_gw_dump(struct sk_buff *msg, struct netlink_callback *cb,
+ static struct batadv_algo_ops batadv_batman_iv __read_mostly = {
+ 	.name = "BATMAN_IV",
+ 	.iface = {
+-		.activate = batadv_iv_iface_activate,
+ 		.enable = batadv_iv_ogm_iface_enable,
++		.enabled = batadv_iv_iface_enabled,
+ 		.disable = batadv_iv_ogm_iface_disable,
+ 		.update_mac = batadv_iv_ogm_iface_update_mac,
+ 		.primary_set = batadv_iv_ogm_primary_iface_set,
+diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
+index 79d1731b8306..3719cfd026f0 100644
+--- a/net/batman-adv/hard-interface.c
++++ b/net/batman-adv/hard-interface.c
+@@ -795,6 +795,9 @@ int batadv_hardif_enable_interface(struct batadv_hard_iface *hard_iface,
  
--	if (!phydev->link)
-+	if (!state->link)
- 		sja1105_adjust_port_config(priv, port, 0, false);
- 	else
--		sja1105_adjust_port_config(priv, port, phydev->speed, true);
-+		sja1105_adjust_port_config(priv, port, state->speed, true);
- }
+ 	batadv_hardif_recalc_extra_skbroom(soft_iface);
  
- static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
-@@ -1515,9 +1516,9 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
- static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.get_tag_protocol	= sja1105_get_tag_protocol,
- 	.setup			= sja1105_setup,
--	.adjust_link		= sja1105_adjust_link,
- 	.set_ageing_time	= sja1105_set_ageing_time,
- 	.phylink_validate	= sja1105_phylink_validate,
-+	.phylink_mac_config	= sja1105_mac_config,
- 	.get_strings		= sja1105_get_strings,
- 	.get_ethtool_stats	= sja1105_get_ethtool_stats,
- 	.get_sset_count		= sja1105_get_sset_count,
++	if (bat_priv->algo_ops->iface.enabled)
++		bat_priv->algo_ops->iface.enabled(hard_iface);
++
+ out:
+ 	return 0;
+ 
+diff --git a/net/batman-adv/types.h b/net/batman-adv/types.h
+index 74b644738a36..e0b25104cbfa 100644
+--- a/net/batman-adv/types.h
++++ b/net/batman-adv/types.h
+@@ -2129,6 +2129,9 @@ struct batadv_algo_iface_ops {
+ 	/** @enable: init routing info when hard-interface is enabled */
+ 	int (*enable)(struct batadv_hard_iface *hard_iface);
+ 
++	/** @enabled: notification when hard-interface was enabled (optional) */
++	void (*enabled)(struct batadv_hard_iface *hard_iface);
++
+ 	/** @disable: de-init routing info when hard-interface is disabled */
+ 	void (*disable)(struct batadv_hard_iface *hard_iface);
+ 
 -- 
 2.20.1
 
