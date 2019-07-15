@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3F669497
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:52:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC09269494
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403903AbfGOOan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:30:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43646 "EHLO mail.kernel.org"
+        id S2391729AbfGOOar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:30:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732596AbfGOOal (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:30:41 -0400
+        id S2391715AbfGOOaq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:30:46 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C58521537;
-        Mon, 15 Jul 2019 14:30:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 690ED206B8;
+        Mon, 15 Jul 2019 14:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201040;
-        bh=iEm+teuS33iZnnbykkyHG72+fGcBQ6+kaoeVAH4pEKg=;
+        s=default; t=1563201045;
+        bh=0+PQRiZLou/PTTsRJye5Vj2ZNtj+NHCjwZreg6i4Lrs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bRg6HBMWIQWiZ79/Mkh4xZBbM0q/z0A+kJCPkdGebQ0ayxZZd9Lw7q8TQSRYKk4ui
-         BMsGaKxMydMfSIru+8NPLAWOnKvCDk/9EG6a0n4zw27AVcytxlnlZUMPe1NzUpVH/m
-         Etwn6UVhbFZXMo9oiyDBEi8bWOhaYy6Zv6apfOcw=
+        b=xkI7PzfKI4twoD0u0QwPlEWa4GCJXFT6lZY9nRHbeHhtUB+c6ExRrsepbdG8cx5VR
+         hA0srV2mP5rcO1ZjsRsjWZaNW6C0nIrCf/rUbfq4IPX73Zbayat4EC1lcPU3uQz0/K
+         6AA913bceeKbnaty9GewXw3XRlLtqcYUyS+GB/vU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biao Huang <biao.huang@mediatek.com>,
+Cc:     Robert Hancock <hancock@sedsystems.ca>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 033/105] net: stmmac: dwmac4: fix flow control issue
-Date:   Mon, 15 Jul 2019 10:27:27 -0400
-Message-Id: <20190715142839.9896-33-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 035/105] net: axienet: Fix race condition causing TX hang
+Date:   Mon, 15 Jul 2019 10:27:29 -0400
+Message-Id: <20190715142839.9896-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
 References: <20190715142839.9896-1-sashal@kernel.org>
@@ -43,57 +43,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Biao Huang <biao.huang@mediatek.com>
+From: Robert Hancock <hancock@sedsystems.ca>
 
-[ Upstream commit ee326fd01e79dfa42014d55931260b68b9fa3273 ]
+[ Upstream commit 7de44285c1f69ccfbe8be1d6a16fcd956681fee6 ]
 
-Current dwmac4_flow_ctrl will not clear
-GMAC_RX_FLOW_CTRL_RFE/GMAC_RX_FLOW_CTRL_RFE bits,
-so MAC hw will keep flow control on although expecting
-flow control off by ethtool. Add codes to fix it.
+It is possible that the interrupt handler fires and frees up space in
+the TX ring in between checking for sufficient TX ring space and
+stopping the TX queue in axienet_start_xmit. If this happens, the
+queue wake from the interrupt handler will occur before the queue is
+stopped, causing a lost wakeup and the adapter's transmit hanging.
 
-Fixes: 477286b53f55 ("stmmac: add GMAC4 core support")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+To avoid this, after stopping the queue, check again whether there is
+sufficient space in the TX ring. If so, wake up the queue again.
+
+Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 20 ++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index ed5fcd4994f2..8445af580cb6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -474,8 +474,9 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 	if (fc & FLOW_RX) {
- 		pr_debug("\tReceive Flow-Control ON\n");
- 		flow |= GMAC_RX_FLOW_CTRL_RFE;
--		writel(flow, ioaddr + GMAC_RX_FLOW_CTRL);
- 	}
-+	writel(flow, ioaddr + GMAC_RX_FLOW_CTRL);
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index d46dc8cd1670..b481cb174b23 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -614,6 +614,10 @@ static void axienet_start_xmit_done(struct net_device *ndev)
+ 
+ 	ndev->stats.tx_packets += packets;
+ 	ndev->stats.tx_bytes += size;
 +
- 	if (fc & FLOW_TX) {
- 		pr_debug("\tTransmit Flow-Control ON\n");
- 
-@@ -483,7 +484,7 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 			pr_debug("\tduplex mode: PAUSE %d\n", pause_time);
- 
- 		for (queue = 0; queue < tx_cnt; queue++) {
--			flow |= GMAC_TX_FLOW_CTRL_TFE;
-+			flow = GMAC_TX_FLOW_CTRL_TFE;
- 
- 			if (duplex)
- 				flow |=
-@@ -491,6 +492,9 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 
- 			writel(flow, ioaddr + GMAC_QX_TX_FLOW_CTRL(queue));
- 		}
-+	} else {
-+		for (queue = 0; queue < tx_cnt; queue++)
-+			writel(0, ioaddr + GMAC_QX_TX_FLOW_CTRL(queue));
- 	}
++	/* Matches barrier in axienet_start_xmit */
++	smp_mb();
++
+ 	netif_wake_queue(ndev);
  }
  
+@@ -668,9 +672,19 @@ static int axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ 
+ 	if (axienet_check_tx_bd_space(lp, num_frag)) {
+-		if (!netif_queue_stopped(ndev))
+-			netif_stop_queue(ndev);
+-		return NETDEV_TX_BUSY;
++		if (netif_queue_stopped(ndev))
++			return NETDEV_TX_BUSY;
++
++		netif_stop_queue(ndev);
++
++		/* Matches barrier in axienet_start_xmit_done */
++		smp_mb();
++
++		/* Space might have just been freed - check again */
++		if (axienet_check_tx_bd_space(lp, num_frag))
++			return NETDEV_TX_BUSY;
++
++		netif_wake_queue(ndev);
+ 	}
+ 
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 -- 
 2.20.1
 
