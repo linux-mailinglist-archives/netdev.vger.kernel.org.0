@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB7768C49
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 724E368C57
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731969AbfGONue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:50:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40576 "EHLO mail.kernel.org"
+        id S1732062AbfGONvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:51:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41608 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731005AbfGONub (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:50:31 -0400
+        id S1731621AbfGONvA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:51:00 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E8F4020896;
-        Mon, 15 Jul 2019 13:50:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6D1E62081C;
+        Mon, 15 Jul 2019 13:50:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198630;
-        bh=tylYfJ8qe9eWn4vawkymXaytyEEvLSMul1aeM0MOwh4=;
+        s=default; t=1563198659;
+        bh=V7/RbqCX1YhchHKhMe9qWX6100K5iWkhdr8+rSnHO7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ixZSPSSU8dfT9/2xIBBP//M9m3VP7q37d1Gv8xPj0soojIpj7UNM3qmzXJmITl20F
-         /n0WoAqRLK4Fy3ucYFYleeFaL+U+3PRE4SKOMCjjjliDYq4N+wASpZBH/uWM53shnP
-         7zkNbf7rBmWjpQtbqwffIS3mPMwvaFuK/TtOemuk=
+        b=CzHdxMofD2WvIswbRrmKTdVv3RLl0rHMNUAnQuRjdjnWjQGAXnOKEMRrbSqdbZslL
+         j8r7npN6MUG4guyucaSE+5PmekTiDWOtjX08KsTMDQssXbs5Zj9A6pZlUrpQIYsgdv
+         gpiXQqBRtWqzAFAjK8HXSVKfqJvAk7l6Y8fXzydk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Weihang Li <liweihang@hisilicon.com>,
-        Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
+Cc:     Fabio Estevam <festevam@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 065/249] net: hns3: set ops to null when unregister ad_dev
-Date:   Mon, 15 Jul 2019 09:43:50 -0400
-Message-Id: <20190715134655.4076-65-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 075/249] net: fec: Do not use netdev messages too early
+Date:   Mon, 15 Jul 2019 09:44:00 -0400
+Message-Id: <20190715134655.4076-75-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -45,44 +43,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Weihang Li <liweihang@hisilicon.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 594a81b39525f0a17e92c2e0b167ae1400650380 ]
+[ Upstream commit a19a0582363b9a5f8ba812f34f1b8df394898780 ]
 
-The hclge/hclgevf and hns3 module can be unloaded independently,
-when hclge/hclgevf unloaded firstly, the ops of ae_dev should
-be set to NULL, otherwise it will cause an use-after-free problem.
+When a valid MAC address is not found the current messages
+are shown:
 
-Fixes: 38caee9d3ee8 ("net: hns3: Add support of the HNAE3 framework")
-Signed-off-by: Weihang Li <liweihang@hisilicon.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+fec 2188000.ethernet (unnamed net_device) (uninitialized): Invalid MAC address: 00:00:00:00:00:00
+fec 2188000.ethernet (unnamed net_device) (uninitialized): Using random MAC address: aa:9f:25:eb:7e:aa
+
+Since the network device has not been registered at this point, it is better
+to use dev_err()/dev_info() instead, which will provide cleaner log
+messages like these:
+
+fec 2188000.ethernet: Invalid MAC address: 00:00:00:00:00:00
+fec 2188000.ethernet: Using random MAC address: aa:9f:25:eb:7e:aa
+
+Tested on a imx6dl-pico-pi board.
+
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/freescale/fec_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.c b/drivers/net/ethernet/hisilicon/hns3/hnae3.c
-index fa8b8506b120..738e01393b68 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.c
-@@ -251,6 +251,7 @@ void hnae3_unregister_ae_algo(struct hnae3_ae_algo *ae_algo)
- 
- 		ae_algo->ops->uninit_ae_dev(ae_dev);
- 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_INITED_B, 0);
-+		ae_dev->ops = NULL;
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 38f10f7dcbc3..831bb709e783 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1689,10 +1689,10 @@ static void fec_get_mac(struct net_device *ndev)
+ 	 */
+ 	if (!is_valid_ether_addr(iap)) {
+ 		/* Report it and use a random ethernet address instead */
+-		netdev_err(ndev, "Invalid MAC address: %pM\n", iap);
++		dev_err(&fep->pdev->dev, "Invalid MAC address: %pM\n", iap);
+ 		eth_hw_addr_random(ndev);
+-		netdev_info(ndev, "Using random MAC address: %pM\n",
+-			    ndev->dev_addr);
++		dev_info(&fep->pdev->dev, "Using random MAC address: %pM\n",
++			 ndev->dev_addr);
+ 		return;
  	}
  
- 	list_del(&ae_algo->node);
-@@ -351,6 +352,7 @@ void hnae3_unregister_ae_dev(struct hnae3_ae_dev *ae_dev)
- 
- 		ae_algo->ops->uninit_ae_dev(ae_dev);
- 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_INITED_B, 0);
-+		ae_dev->ops = NULL;
- 	}
- 
- 	list_del(&ae_dev->node);
 -- 
 2.20.1
 
