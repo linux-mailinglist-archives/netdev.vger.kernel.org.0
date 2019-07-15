@@ -2,59 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C8769AA1
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:15:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2982369B0B
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731822AbfGOSPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 14:15:09 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:40229 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729535AbfGOSPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 14:15:09 -0400
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 14313240009
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 18:14:59 +0000 (UTC)
-Received: by mail-vs1-f41.google.com with SMTP id 2so12023049vso.8
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 11:14:59 -0700 (PDT)
-X-Gm-Message-State: APjAAAWQ3NTSx1/TATc0i/dBmgH3JbbzfLgdXRKXsXtOLmqCA1wTzZgJ
-        SDGHb/AclzLuWlqOKfBJyx2gtUFmun1nbK9sr+s=
-X-Google-Smtp-Source: APXvYqwVJYUbU67qqeU0dhnPfJ1EO8ly9l/SYnHA7ycalSFTBS/vADr3MFA4cDjOPyG58fWtwIZMP6N+2ffqFbT3BYg=
-X-Received: by 2002:a67:8d8a:: with SMTP id p132mr16802504vsd.103.1563214498122;
- Mon, 15 Jul 2019 11:14:58 -0700 (PDT)
+        id S1729986AbfGOSxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 14:53:21 -0400
+Received: from first.geanix.com ([116.203.34.67]:42686 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729513AbfGOSxV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 14:53:21 -0400
+Received: from zen.localdomain (unknown [85.184.140.241])
+        by first.geanix.com (Postfix) with ESMTPSA id BE061439D7;
+        Mon, 15 Jul 2019 18:52:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1563216774; bh=A/pOZIc6LJmtheAJTggufzDiQG1gWvquPFCDdSL0QZQ=;
+        h=From:To:Cc:Subject:Date;
+        b=Vu2H9HOC1XFaXeeNaqGXSO6Hgdruc89lNO1zbrksAiQHxIRRrgphzjtQs55tPup+J
+         Tu7fyIXw+CtECoP/UxGjapLUwfikBs4qhCCldPqUdnevw2A4sRdIBI8adbLou1yIVD
+         KaXP/aYFa1R5TcpFvuFPl78YnFEnaudVAZEEJUClZzQ6E9wHxGjjb7cvgsQ2PwFD3I
+         wR8J/NAAeZR6wOcjpwla4d0eJs085B1CxptZ3mXZ0DUyygh6Blrr6FMM4FWhTdbOSR
+         Nc8EFb4js1lMJP4HIW258uboYHYbkNMW+f5wbEKXwZOg/or4Cr/pmAfVgVjvaBp22M
+         QD1HediEQupTA==
+From:   =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Sean Nyekjaer <sean@geanix.com>
+Subject: [PATCH] can: flexcan: free error skb if enqueueing failed
+Date:   Mon, 15 Jul 2019 20:53:08 +0200
+Message-Id: <20190715185308.104333-1-martin@geanix.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-References: <20190705160809.5202-1-ap420073@gmail.com>
-In-Reply-To: <20190705160809.5202-1-ap420073@gmail.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Mon, 15 Jul 2019 11:15:01 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_DXSo37ZttVcW3fEuvB9_-2VtzZgf0JNq1ZhSfJJHSa7Q@mail.gmail.com>
-Message-ID: <CAOrHB_DXSo37ZttVcW3fEuvB9_-2VtzZgf0JNq1ZhSfJJHSa7Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: openvswitch: do not update max_headroom if
- new headroom is equal to old headroom
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 8945dcc0271d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 5, 2019 at 9:08 AM Taehee Yoo <ap420073@gmail.com> wrote:
->
-> When a vport is deleted, the maximum headroom size would be changed.
-> If the vport which has the largest headroom is deleted,
-> the new max_headroom would be set.
-> But, if the new headroom size is equal to the old headroom size,
-> updating routine is unnecessary.
->
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+If the call to can_rx_offload_queue_sorted() fails, the passed skb isn't
+consumed, so the caller must do so.
 
-Sorry for late reply. This patch looks good to me too.
+Fixes: 30164759db1b ("can: flexcan: make use of rx-offload's irq_offload_fifo")
+Signed-off-by: Martin Hundebøll <martin@geanix.com>
+---
+ drivers/net/can/flexcan.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-I am curious about reason to avoid adjustment to headroom. why are you
-trying to avoid unnecessary changes to headroom.
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 1c66fb2ad76b..21f39e805d42 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -688,7 +688,8 @@ static void flexcan_irq_bus_err(struct net_device *dev, u32 reg_esr)
+ 	if (tx_errors)
+ 		dev->stats.tx_errors++;
+ 
+-	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
++	if (can_rx_offload_queue_sorted(&priv->offload, skb, timestamp))
++		kfree_skb(skb);
+ }
+ 
+ static void flexcan_irq_state(struct net_device *dev, u32 reg_esr)
+@@ -732,7 +733,8 @@ static void flexcan_irq_state(struct net_device *dev, u32 reg_esr)
+ 	if (unlikely(new_state == CAN_STATE_BUS_OFF))
+ 		can_bus_off(dev);
+ 
+-	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
++	if (can_rx_offload_queue_sorted(&priv->offload, skb, timestamp))
++		kfree_skb(skb);
+ }
+ 
+ static inline struct flexcan_priv *rx_offload_to_priv(struct can_rx_offload *offload)
+-- 
+2.22.0
 
-Thanks,
-Pravin.
