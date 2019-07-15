@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C356568F1D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9413668F21
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:12:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389046AbfGOOMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:12:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50488 "EHLO mail.kernel.org"
+        id S2389061AbfGOOMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:12:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50666 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388986AbfGOOMQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:12:16 -0400
+        id S2388845AbfGOOMT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:12:19 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 376A320868;
-        Mon, 15 Jul 2019 14:12:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CEBC4212F5;
+        Mon, 15 Jul 2019 14:12:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199935;
-        bh=cbO4zdkqTuesiWPcuAY52CFiZWqXBjRRSrQvxkDaGn8=;
+        s=default; t=1563199939;
+        bh=ypsaCsMy7aKaSPm7oqFu4muO2A/ER6DGzY+uNTxvnzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FtVYyS5jJ/Ru4mxAa1TiCiVHPrJVr+A5kEuSDDQl7hJg/Z0oKBWldmqj+vW+h0NAk
-         gCjru3Qsnx/JvaDBGjS81M+QI++yoU4nqhQkrgJ1rGGPIzPq+43JD/2EK8Un8WS1ZF
-         piLcOnFNt6YrfSaYqRvmea7QLBqQfXEf7qUu/8uE=
+        b=ZCYGQah6WcyqsJvDzDC+rtYcLO7/AT1bFUy0kvlCJ5BIcB8pHDP1d0UCl7WOw8f5s
+         pRUfSkw7dc8aC+R5bY8vAQrWjH3rJJHmENb57eqpVk4QlpJZpvNJn4km86kJCdEhYn
+         fnzaBOaOfc3v9oOPKY5WBVtIjUmlwD5wgV4iOrbQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jakub Kicinski <kubakici@wp.pl>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 142/219] mt7601u: fix possible memory leak when the device is disconnected
-Date:   Mon, 15 Jul 2019 10:02:23 -0400
-Message-Id: <20190715140341.6443-142-sashal@kernel.org>
+Cc:     Julian Anastasov <ja@ssi.bg>,
+        syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com,
+        Eric Biggers <ebiggers@kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: [PATCH AUTOSEL 5.1 143/219] ipvs: fix tinfo memory leak in start_sync_thread
+Date:   Mon, 15 Jul 2019 10:02:24 -0400
+Message-Id: <20190715140341.6443-143-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,125 +48,399 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Julian Anastasov <ja@ssi.bg>
 
-[ Upstream commit 23377c200b2eb48a60d0f228b2a2e75ed6ee6060 ]
+[ Upstream commit 5db7c8b9f9fc2aeec671ae3ca6375752c162e0e7 ]
 
-When the device is disconnected while passing traffic it is possible
-to receive out of order urbs causing a memory leak since the skb linked
-to the current tx urb is not removed. Fix the issue deallocating the skb
-cleaning up the tx ring. Moreover this patch fixes the following kernel
-warning
+syzkaller reports for memory leak in start_sync_thread [1]
 
-[   57.480771] usb 1-1: USB disconnect, device number 2
-[   57.483451] ------------[ cut here ]------------
-[   57.483462] TX urb mismatch
-[   57.483481] WARNING: CPU: 1 PID: 32 at drivers/net/wireless/mediatek/mt7601u/dma.c:245 mt7601u_complete_tx+0x165/00
-[   57.483483] Modules linked in:
-[   57.483496] CPU: 1 PID: 32 Comm: kworker/1:1 Not tainted 5.2.0-rc1+ #72
-[   57.483498] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.12.0-2.fc30 04/01/2014
-[   57.483502] Workqueue: usb_hub_wq hub_event
-[   57.483507] RIP: 0010:mt7601u_complete_tx+0x165/0x1e0
-[   57.483510] Code: 8b b5 10 04 00 00 8b 8d 14 04 00 00 eb 8b 80 3d b1 cb e1 00 00 75 9e 48 c7 c7 a4 ea 05 82 c6 05 f
-[   57.483513] RSP: 0000:ffffc900000a0d28 EFLAGS: 00010092
-[   57.483516] RAX: 000000000000000f RBX: ffff88802c0a62c0 RCX: ffffc900000a0c2c
-[   57.483518] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff810a8371
-[   57.483520] RBP: ffff88803ced6858 R08: 0000000000000000 R09: 0000000000000001
-[   57.483540] R10: 0000000000000002 R11: 0000000000000000 R12: 0000000000000046
-[   57.483542] R13: ffff88802c0a6c88 R14: ffff88803baab540 R15: ffff88803a0cc078
-[   57.483548] FS:  0000000000000000(0000) GS:ffff88803eb00000(0000) knlGS:0000000000000000
-[   57.483550] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   57.483552] CR2: 000055e7f6780100 CR3: 0000000028c86000 CR4: 00000000000006a0
-[   57.483554] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   57.483556] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   57.483559] Call Trace:
-[   57.483561]  <IRQ>
-[   57.483565]  __usb_hcd_giveback_urb+0x77/0xe0
-[   57.483570]  xhci_giveback_urb_in_irq.isra.0+0x8b/0x140
-[   57.483574]  handle_cmd_completion+0xf5b/0x12c0
-[   57.483577]  xhci_irq+0x1f6/0x1810
-[   57.483581]  ? lockdep_hardirqs_on+0x9e/0x180
-[   57.483584]  ? _raw_spin_unlock_irq+0x24/0x30
-[   57.483588]  __handle_irq_event_percpu+0x3a/0x260
-[   57.483592]  handle_irq_event_percpu+0x1c/0x60
-[   57.483595]  handle_irq_event+0x2f/0x4c
-[   57.483599]  handle_edge_irq+0x7e/0x1a0
-[   57.483603]  handle_irq+0x17/0x20
-[   57.483607]  do_IRQ+0x54/0x110
-[   57.483610]  common_interrupt+0xf/0xf
-[   57.483612]  </IRQ>
+As Eric points out, kthread may start and stop before the
+threadfn function is called, so there is no chance the
+data (tinfo in our case) to be released in thread.
 
-Acked-by: Jakub Kicinski <kubakici@wp.pl>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fix this by releasing tinfo in the controlling code instead.
+
+[1]
+BUG: memory leak
+unreferenced object 0xffff8881206bf700 (size 32):
+ comm "syz-executor761", pid 7268, jiffies 4294943441 (age 20.470s)
+ hex dump (first 32 bytes):
+   00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
+   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ backtrace:
+   [<0000000057619e23>] kmemleak_alloc_recursive include/linux/kmemleak.h:55 [inline]
+   [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
+   [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
+   [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+   [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
+   [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10 net/netfilter/ipvs/ip_vs_sync.c:1862
+   [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780 net/netfilter/ipvs/ip_vs_ctl.c:2402
+   [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
+   [<00000000ece457c8>] nf_setsockopt+0x4c/0x80 net/netfilter/nf_sockopt.c:115
+   [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
+   [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
+   [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
+   [<00000000fa895401>] sock_common_setsockopt+0x38/0x50 net/core/sock.c:3130
+   [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
+   [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
+   [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
+   [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
+   [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:301
+   [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Reported-by: syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com
+Suggested-by: Eric Biggers <ebiggers@kernel.org>
+Fixes: 998e7a76804b ("ipvs: Use kthread_run() instead of doing a double-fork via kernel_thread()")
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt7601u/dma.c | 21 ++++++++++++++++-----
- drivers/net/wireless/mediatek/mt7601u/tx.c  |  4 ++--
- 2 files changed, 18 insertions(+), 7 deletions(-)
+ include/net/ip_vs.h             |   6 +-
+ net/netfilter/ipvs/ip_vs_ctl.c  |   4 -
+ net/netfilter/ipvs/ip_vs_sync.c | 134 +++++++++++++++++---------------
+ 3 files changed, 76 insertions(+), 68 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/dma.c b/drivers/net/wireless/mediatek/mt7601u/dma.c
-index 134f8a5bb5d4..401444f36402 100644
---- a/drivers/net/wireless/mediatek/mt7601u/dma.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/dma.c
-@@ -241,14 +241,25 @@ static void mt7601u_complete_tx(struct urb *urb)
- 	struct sk_buff *skb;
- 	unsigned long flags;
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 047f9a5ccaad..1790bb41c964 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -803,11 +803,12 @@ struct ipvs_master_sync_state {
+ 	struct ip_vs_sync_buff	*sync_buff;
+ 	unsigned long		sync_queue_len;
+ 	unsigned int		sync_queue_delay;
+-	struct task_struct	*master_thread;
+ 	struct delayed_work	master_wakeup_work;
+ 	struct netns_ipvs	*ipvs;
+ };
  
--	spin_lock_irqsave(&dev->tx_lock, flags);
-+	switch (urb->status) {
-+	case -ECONNRESET:
-+	case -ESHUTDOWN:
-+	case -ENOENT:
-+		return;
-+	default:
-+		dev_err_ratelimited(dev->dev, "tx urb failed: %d\n",
-+				    urb->status);
-+		/* fall through */
-+	case 0:
-+		break;
-+	}
++struct ip_vs_sync_thread_data;
++
+ /* How much time to keep dests in trash */
+ #define IP_VS_DEST_TRASH_PERIOD		(120 * HZ)
  
--	if (mt7601u_urb_has_error(urb))
--		dev_err(dev->dev, "Error: TX urb failed:%d\n", urb->status);
-+	spin_lock_irqsave(&dev->tx_lock, flags);
- 	if (WARN_ONCE(q->e[q->start].urb != urb, "TX urb mismatch"))
- 		goto out;
- 
- 	skb = q->e[q->start].skb;
-+	q->e[q->start].skb = NULL;
- 	trace_mt_tx_dma_done(dev, skb);
- 
- 	__skb_queue_tail(&dev->tx_skb_done, skb);
-@@ -448,10 +459,10 @@ static void mt7601u_free_tx_queue(struct mt7601u_tx_queue *q)
- {
- 	int i;
- 
--	WARN_ON(q->used);
--
- 	for (i = 0; i < q->entries; i++)  {
- 		usb_poison_urb(q->e[i].urb);
-+		if (q->e[i].skb)
-+			mt7601u_tx_status(q->dev, q->e[i].skb);
- 		usb_free_urb(q->e[i].urb);
+@@ -938,7 +939,8 @@ struct netns_ipvs {
+ 	spinlock_t		sync_lock;
+ 	struct ipvs_master_sync_state *ms;
+ 	spinlock_t		sync_buff_lock;
+-	struct task_struct	**backup_threads;
++	struct ip_vs_sync_thread_data *master_tinfo;
++	struct ip_vs_sync_thread_data *backup_tinfo;
+ 	int			threads_mask;
+ 	volatile int		sync_state;
+ 	struct mutex		sync_mutex;
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 053cd96b9c76..179e9d11e41b 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2382,9 +2382,7 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+ 			cfg.syncid = dm->syncid;
+ 			ret = start_sync_thread(ipvs, &cfg, dm->state);
+ 		} else {
+-			mutex_lock(&ipvs->sync_mutex);
+ 			ret = stop_sync_thread(ipvs, dm->state);
+-			mutex_unlock(&ipvs->sync_mutex);
+ 		}
+ 		goto out_dec;
  	}
- }
-diff --git a/drivers/net/wireless/mediatek/mt7601u/tx.c b/drivers/net/wireless/mediatek/mt7601u/tx.c
-index 3600e911a63e..4d81c45722fb 100644
---- a/drivers/net/wireless/mediatek/mt7601u/tx.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/tx.c
-@@ -117,9 +117,9 @@ void mt7601u_tx_status(struct mt7601u_dev *dev, struct sk_buff *skb)
- 	info->status.rates[0].idx = -1;
- 	info->flags |= IEEE80211_TX_STAT_ACK;
+@@ -3490,10 +3488,8 @@ static int ip_vs_genl_del_daemon(struct netns_ipvs *ipvs, struct nlattr **attrs)
+ 	if (!attrs[IPVS_DAEMON_ATTR_STATE])
+ 		return -EINVAL;
  
--	spin_lock(&dev->mac_lock);
-+	spin_lock_bh(&dev->mac_lock);
- 	ieee80211_tx_status(dev->hw, skb);
--	spin_unlock(&dev->mac_lock);
-+	spin_unlock_bh(&dev->mac_lock);
+-	mutex_lock(&ipvs->sync_mutex);
+ 	ret = stop_sync_thread(ipvs,
+ 			       nla_get_u32(attrs[IPVS_DAEMON_ATTR_STATE]));
+-	mutex_unlock(&ipvs->sync_mutex);
+ 	return ret;
  }
  
- static int mt7601u_skb_rooms(struct mt7601u_dev *dev, struct sk_buff *skb)
+diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
+index 2526be6b3d90..a4a78c4b06de 100644
+--- a/net/netfilter/ipvs/ip_vs_sync.c
++++ b/net/netfilter/ipvs/ip_vs_sync.c
+@@ -195,6 +195,7 @@ union ip_vs_sync_conn {
+ #define IPVS_OPT_F_PARAM	(1 << (IPVS_OPT_PARAM-1))
+ 
+ struct ip_vs_sync_thread_data {
++	struct task_struct *task;
+ 	struct netns_ipvs *ipvs;
+ 	struct socket *sock;
+ 	char *buf;
+@@ -374,8 +375,11 @@ static inline void sb_queue_tail(struct netns_ipvs *ipvs,
+ 					      max(IPVS_SYNC_SEND_DELAY, 1));
+ 		ms->sync_queue_len++;
+ 		list_add_tail(&sb->list, &ms->sync_queue);
+-		if ((++ms->sync_queue_delay) == IPVS_SYNC_WAKEUP_RATE)
+-			wake_up_process(ms->master_thread);
++		if ((++ms->sync_queue_delay) == IPVS_SYNC_WAKEUP_RATE) {
++			int id = (int)(ms - ipvs->ms);
++
++			wake_up_process(ipvs->master_tinfo[id].task);
++		}
+ 	} else
+ 		ip_vs_sync_buff_release(sb);
+ 	spin_unlock(&ipvs->sync_lock);
+@@ -1636,8 +1640,10 @@ static void master_wakeup_work_handler(struct work_struct *work)
+ 	spin_lock_bh(&ipvs->sync_lock);
+ 	if (ms->sync_queue_len &&
+ 	    ms->sync_queue_delay < IPVS_SYNC_WAKEUP_RATE) {
++		int id = (int)(ms - ipvs->ms);
++
+ 		ms->sync_queue_delay = IPVS_SYNC_WAKEUP_RATE;
+-		wake_up_process(ms->master_thread);
++		wake_up_process(ipvs->master_tinfo[id].task);
+ 	}
+ 	spin_unlock_bh(&ipvs->sync_lock);
+ }
+@@ -1703,10 +1709,6 @@ static int sync_thread_master(void *data)
+ 	if (sb)
+ 		ip_vs_sync_buff_release(sb);
+ 
+-	/* release the sending multicast socket */
+-	sock_release(tinfo->sock);
+-	kfree(tinfo);
+-
+ 	return 0;
+ }
+ 
+@@ -1740,11 +1742,6 @@ static int sync_thread_backup(void *data)
+ 		}
+ 	}
+ 
+-	/* release the sending multicast socket */
+-	sock_release(tinfo->sock);
+-	kfree(tinfo->buf);
+-	kfree(tinfo);
+-
+ 	return 0;
+ }
+ 
+@@ -1752,8 +1749,8 @@ static int sync_thread_backup(void *data)
+ int start_sync_thread(struct netns_ipvs *ipvs, struct ipvs_sync_daemon_cfg *c,
+ 		      int state)
+ {
+-	struct ip_vs_sync_thread_data *tinfo = NULL;
+-	struct task_struct **array = NULL, *task;
++	struct ip_vs_sync_thread_data *ti = NULL, *tinfo;
++	struct task_struct *task;
+ 	struct net_device *dev;
+ 	char *name;
+ 	int (*threadfn)(void *data);
+@@ -1822,7 +1819,7 @@ int start_sync_thread(struct netns_ipvs *ipvs, struct ipvs_sync_daemon_cfg *c,
+ 		threadfn = sync_thread_master;
+ 	} else if (state == IP_VS_STATE_BACKUP) {
+ 		result = -EEXIST;
+-		if (ipvs->backup_threads)
++		if (ipvs->backup_tinfo)
+ 			goto out_early;
+ 
+ 		ipvs->bcfg = *c;
+@@ -1849,28 +1846,22 @@ int start_sync_thread(struct netns_ipvs *ipvs, struct ipvs_sync_daemon_cfg *c,
+ 					  master_wakeup_work_handler);
+ 			ms->ipvs = ipvs;
+ 		}
+-	} else {
+-		array = kcalloc(count, sizeof(struct task_struct *),
+-				GFP_KERNEL);
+-		result = -ENOMEM;
+-		if (!array)
+-			goto out;
+ 	}
++	result = -ENOMEM;
++	ti = kcalloc(count, sizeof(struct ip_vs_sync_thread_data),
++		     GFP_KERNEL);
++	if (!ti)
++		goto out;
+ 
+ 	for (id = 0; id < count; id++) {
+-		result = -ENOMEM;
+-		tinfo = kmalloc(sizeof(*tinfo), GFP_KERNEL);
+-		if (!tinfo)
+-			goto out;
++		tinfo = &ti[id];
+ 		tinfo->ipvs = ipvs;
+-		tinfo->sock = NULL;
+ 		if (state == IP_VS_STATE_BACKUP) {
++			result = -ENOMEM;
+ 			tinfo->buf = kmalloc(ipvs->bcfg.sync_maxlen,
+ 					     GFP_KERNEL);
+ 			if (!tinfo->buf)
+ 				goto out;
+-		} else {
+-			tinfo->buf = NULL;
+ 		}
+ 		tinfo->id = id;
+ 		if (state == IP_VS_STATE_MASTER)
+@@ -1885,17 +1876,15 @@ int start_sync_thread(struct netns_ipvs *ipvs, struct ipvs_sync_daemon_cfg *c,
+ 			result = PTR_ERR(task);
+ 			goto out;
+ 		}
+-		tinfo = NULL;
+-		if (state == IP_VS_STATE_MASTER)
+-			ipvs->ms[id].master_thread = task;
+-		else
+-			array[id] = task;
++		tinfo->task = task;
+ 	}
+ 
+ 	/* mark as active */
+ 
+-	if (state == IP_VS_STATE_BACKUP)
+-		ipvs->backup_threads = array;
++	if (state == IP_VS_STATE_MASTER)
++		ipvs->master_tinfo = ti;
++	else
++		ipvs->backup_tinfo = ti;
+ 	spin_lock_bh(&ipvs->sync_buff_lock);
+ 	ipvs->sync_state |= state;
+ 	spin_unlock_bh(&ipvs->sync_buff_lock);
+@@ -1910,29 +1899,31 @@ int start_sync_thread(struct netns_ipvs *ipvs, struct ipvs_sync_daemon_cfg *c,
+ 
+ out:
+ 	/* We do not need RTNL lock anymore, release it here so that
+-	 * sock_release below and in the kthreads can use rtnl_lock
+-	 * to leave the mcast group.
++	 * sock_release below can use rtnl_lock to leave the mcast group.
+ 	 */
+ 	rtnl_unlock();
+-	count = id;
+-	while (count-- > 0) {
+-		if (state == IP_VS_STATE_MASTER)
+-			kthread_stop(ipvs->ms[count].master_thread);
+-		else
+-			kthread_stop(array[count]);
++	id = min(id, count - 1);
++	if (ti) {
++		for (tinfo = ti + id; tinfo >= ti; tinfo--) {
++			if (tinfo->task)
++				kthread_stop(tinfo->task);
++		}
+ 	}
+ 	if (!(ipvs->sync_state & IP_VS_STATE_MASTER)) {
+ 		kfree(ipvs->ms);
+ 		ipvs->ms = NULL;
+ 	}
+ 	mutex_unlock(&ipvs->sync_mutex);
+-	if (tinfo) {
+-		if (tinfo->sock)
+-			sock_release(tinfo->sock);
+-		kfree(tinfo->buf);
+-		kfree(tinfo);
++
++	/* No more mutexes, release socks */
++	if (ti) {
++		for (tinfo = ti + id; tinfo >= ti; tinfo--) {
++			if (tinfo->sock)
++				sock_release(tinfo->sock);
++			kfree(tinfo->buf);
++		}
++		kfree(ti);
+ 	}
+-	kfree(array);
+ 	return result;
+ 
+ out_early:
+@@ -1944,15 +1935,18 @@ int start_sync_thread(struct netns_ipvs *ipvs, struct ipvs_sync_daemon_cfg *c,
+ 
+ int stop_sync_thread(struct netns_ipvs *ipvs, int state)
+ {
+-	struct task_struct **array;
++	struct ip_vs_sync_thread_data *ti, *tinfo;
+ 	int id;
+ 	int retc = -EINVAL;
+ 
+ 	IP_VS_DBG(7, "%s(): pid %d\n", __func__, task_pid_nr(current));
+ 
++	mutex_lock(&ipvs->sync_mutex);
+ 	if (state == IP_VS_STATE_MASTER) {
++		retc = -ESRCH;
+ 		if (!ipvs->ms)
+-			return -ESRCH;
++			goto err;
++		ti = ipvs->master_tinfo;
+ 
+ 		/*
+ 		 * The lock synchronizes with sb_queue_tail(), so that we don't
+@@ -1971,38 +1965,56 @@ int stop_sync_thread(struct netns_ipvs *ipvs, int state)
+ 			struct ipvs_master_sync_state *ms = &ipvs->ms[id];
+ 			int ret;
+ 
++			tinfo = &ti[id];
+ 			pr_info("stopping master sync thread %d ...\n",
+-				task_pid_nr(ms->master_thread));
++				task_pid_nr(tinfo->task));
+ 			cancel_delayed_work_sync(&ms->master_wakeup_work);
+-			ret = kthread_stop(ms->master_thread);
++			ret = kthread_stop(tinfo->task);
+ 			if (retc >= 0)
+ 				retc = ret;
+ 		}
+ 		kfree(ipvs->ms);
+ 		ipvs->ms = NULL;
++		ipvs->master_tinfo = NULL;
+ 	} else if (state == IP_VS_STATE_BACKUP) {
+-		if (!ipvs->backup_threads)
+-			return -ESRCH;
++		retc = -ESRCH;
++		if (!ipvs->backup_tinfo)
++			goto err;
++		ti = ipvs->backup_tinfo;
+ 
+ 		ipvs->sync_state &= ~IP_VS_STATE_BACKUP;
+-		array = ipvs->backup_threads;
+ 		retc = 0;
+ 		for (id = ipvs->threads_mask; id >= 0; id--) {
+ 			int ret;
+ 
++			tinfo = &ti[id];
+ 			pr_info("stopping backup sync thread %d ...\n",
+-				task_pid_nr(array[id]));
+-			ret = kthread_stop(array[id]);
++				task_pid_nr(tinfo->task));
++			ret = kthread_stop(tinfo->task);
+ 			if (retc >= 0)
+ 				retc = ret;
+ 		}
+-		kfree(array);
+-		ipvs->backup_threads = NULL;
++		ipvs->backup_tinfo = NULL;
++	} else {
++		goto err;
+ 	}
++	id = ipvs->threads_mask;
++	mutex_unlock(&ipvs->sync_mutex);
++
++	/* No more mutexes, release socks */
++	for (tinfo = ti + id; tinfo >= ti; tinfo--) {
++		if (tinfo->sock)
++			sock_release(tinfo->sock);
++		kfree(tinfo->buf);
++	}
++	kfree(ti);
+ 
+ 	/* decrease the module use count */
+ 	ip_vs_use_count_dec();
++	return retc;
+ 
++err:
++	mutex_unlock(&ipvs->sync_mutex);
+ 	return retc;
+ }
+ 
+@@ -2021,7 +2033,6 @@ void ip_vs_sync_net_cleanup(struct netns_ipvs *ipvs)
+ {
+ 	int retc;
+ 
+-	mutex_lock(&ipvs->sync_mutex);
+ 	retc = stop_sync_thread(ipvs, IP_VS_STATE_MASTER);
+ 	if (retc && retc != -ESRCH)
+ 		pr_err("Failed to stop Master Daemon\n");
+@@ -2029,5 +2040,4 @@ void ip_vs_sync_net_cleanup(struct netns_ipvs *ipvs)
+ 	retc = stop_sync_thread(ipvs, IP_VS_STATE_BACKUP);
+ 	if (retc && retc != -ESRCH)
+ 		pr_err("Failed to stop Backup Daemon\n");
+-	mutex_unlock(&ipvs->sync_mutex);
+ }
 -- 
 2.20.1
 
