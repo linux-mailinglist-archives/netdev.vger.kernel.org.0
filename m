@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B39268F6A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0C368F70
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389327AbfGOOOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:14:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55858 "EHLO mail.kernel.org"
+        id S2389336AbfGOOOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:14:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389307AbfGOOOS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:14:18 -0400
+        id S2388726AbfGOOOX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:14:23 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7253212F5;
-        Mon, 15 Jul 2019 14:14:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FE1420651;
+        Mon, 15 Jul 2019 14:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200057;
-        bh=FHM3ABfh/RUD+fZcA9PBQ27KnHYDHp3MQWzw8dG8eb8=;
+        s=default; t=1563200062;
+        bh=ZWj+X78ZEPAHyiyMHCoWF8TDlSZ8suSoMHwF+vXujFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3YBtfeBumUBaRTTgHOGxOzF4Gg6WmLRJvCqOzzykEbsUikpmooYofnYzIy18HyCN
-         4/FmI0JrgGcQdGHebnZgaluzte00417Ygpq6F1cvnD0ZNBixfUL/r2N1UBXBmxQ45e
-         stWYOEYTm5XeGGYcI4Ra4cJPe6uEBV2/OQzc+LXc=
+        b=bnJvCN2nTgTL+kCf3OWdhJzxEMA0/qpPpB/HHAYU1icV2X6txWSC7s/yLU9KOPuZw
+         pEbNtTXHRUp+tfJVpOdwWInS+QOmdrczlZ9rGPXjxIprPKZuU8IThC8hbKrAHibsBv
+         pg6RZjKFliGRshBlClxQ9ZFj02EpcBDpou5gCHb4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonglong Liu <liuyonglong@huawei.com>,
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
         Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 173/219] net: hns3: fix a -Wformat-nonliteral compile warning
-Date:   Mon, 15 Jul 2019 10:02:54 -0400
-Message-Id: <20190715140341.6443-173-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 174/219] net: hns3: add some error checking in hclge_tm module
+Date:   Mon, 15 Jul 2019 10:02:55 -0400
+Message-Id: <20190715140341.6443-174-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,44 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonglong Liu <liuyonglong@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-[ Upstream commit 18d219b783da61a6cc77581f55fc4af2fa16bc36 ]
+[ Upstream commit 04f25edb48c441fc278ecc154c270f16966cbb90 ]
 
-When setting -Wformat=2, there is a compiler warning like this:
+When hdev->tx_sch_mode is HCLGE_FLAG_VNET_BASE_SCH_MODE, the
+hclge_tm_schd_mode_vnet_base_cfg calls hclge_tm_pri_schd_mode_cfg
+with vport->vport_id as pri_id, which is used as index for
+hdev->tm_info.tc_info, it will cause out of bound access issue
+if vport_id is equal to or larger than HNAE3_MAX_TC.
 
-hclge_main.c:xxx:x: warning: format not a string literal and no
-format arguments [-Wformat-nonliteral]
-strs[i].desc);
-^~~~
+Also hardware only support maximum speed of HCLGE_ETHER_MAX_RATE.
 
-This patch adds missing format parameter "%s" to snprintf() to
-fix it.
+So this patch adds two checks for above cases.
 
-Fixes: 46a3df9f9718 ("Add HNS3 Acceleration Engine & Compatibility Layer Support")
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Fixes: 848440544b41 ("net: hns3: Add support of TX Scheduler & Shaper to HNS3 driver")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 6d4d5a470163..563eefa20003 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -550,8 +550,7 @@ static u8 *hclge_comm_get_strings(u32 stringset,
- 		return buff;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index a7bbb6d3091a..0d53062f7bb5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -54,7 +54,8 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+ 	u32 tick;
  
- 	for (i = 0; i < size; i++) {
--		snprintf(buff, ETH_GSTRING_LEN,
--			 strs[i].desc);
-+		snprintf(buff, ETH_GSTRING_LEN, "%s", strs[i].desc);
- 		buff = buff + ETH_GSTRING_LEN;
- 	}
+ 	/* Calc tick */
+-	if (shaper_level >= HCLGE_SHAPER_LVL_CNT)
++	if (shaper_level >= HCLGE_SHAPER_LVL_CNT ||
++	    ir > HCLGE_ETHER_MAX_RATE)
+ 		return -EINVAL;
  
+ 	tick = tick_array[shaper_level];
+@@ -1124,6 +1125,9 @@ static int hclge_tm_schd_mode_vnet_base_cfg(struct hclge_vport *vport)
+ 	int ret;
+ 	u8 i;
+ 
++	if (vport->vport_id >= HNAE3_MAX_TC)
++		return -EINVAL;
++
+ 	ret = hclge_tm_pri_schd_mode_cfg(hdev, vport->vport_id);
+ 	if (ret)
+ 		return ret;
 -- 
 2.20.1
 
