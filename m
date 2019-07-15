@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72667694E3
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 858E8694D7
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390883AbfGOO17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:27:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37742 "EHLO mail.kernel.org"
+        id S2391310AbfGOO2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:28:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391097AbfGOO14 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:27:56 -0400
+        id S2391245AbfGOO2x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:28:53 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB4D8217F4;
-        Mon, 15 Jul 2019 14:27:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A8DA205ED;
+        Mon, 15 Jul 2019 14:28:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200876;
-        bh=nw0bhWN22ol0B/YQQyU6ci3+WNhpdXGVRICZGPGzAKU=;
+        s=default; t=1563200932;
+        bh=NGn3o6+tbHpNnY8ubVR15rDwQBSUyshmddAT7zU/3HA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IabpGdIjPGXm1KFLaS82PAh3lxrj/sOIPAJablVMD2r/A3DoNS3Yi2MEeBlDVRSA4
-         WSt4mOAACXxYcSNBbP73rp8SFMFUzsFxpafHrJP3S2hZU2b6UBIG0hrLaZSsYGdqJr
-         4RH42QIn/YYasjYCcwgQSLVhAVkQ07ULnvCsWV/s=
+        b=rlU+TGFc2DypgyFANHdfLhwk4wCkC94syZXEo33jpVanGpnrTQT3ZZvabJhWxLFbs
+         LV/HJm0+8drJd7oYghyCaYaMXAcGTZo1LLyaeJeu0trEBa/DVkN0otD5zFYroaLLzY
+         kW/Quiuok5nbFZ7Ahspx/n11/3dMWI1/kE0YCPLE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Tim Schumacher <timschumi@gmx.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 152/158] gtp: add missing gtp_encap_disable_sock() in gtp_encap_enable()
-Date:   Mon, 15 Jul 2019 10:18:03 -0400
-Message-Id: <20190715141809.8445-152-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 003/105] ath9k: Check for errors when reading SREV register
+Date:   Mon, 15 Jul 2019 10:26:57 -0400
+Message-Id: <20190715142839.9896-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
-References: <20190715141809.8445-1-sashal@kernel.org>
+In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
+References: <20190715142839.9896-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,41 +44,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Tim Schumacher <timschumi@gmx.de>
 
-[ Upstream commit e30155fd23c9c141cbe7d99b786e10a83a328837 ]
+[ Upstream commit 2f90c7e5d09437a4d8d5546feaae9f1cf48cfbe1 ]
 
-If an invalid role is sent from user space, gtp_encap_enable() will fail.
-Then, it should call gtp_encap_disable_sock() but current code doesn't.
-It makes memory leak.
+Right now, if an error is encountered during the SREV register
+read (i.e. an EIO in ath9k_regread()), that error code gets
+passed all the way to __ath9k_hw_init(), where it is visible
+during the "Chip rev not supported" message.
 
-Fixes: 91ed81f9abc7 ("gtp: support SGSN-side tunnels")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+    ath9k_htc 1-1.4:1.0: ath9k_htc: HTC initialized with 33 credits
+    ath: phy2: Mac Chip Rev 0x0f.3 is not supported by this driver
+    ath: phy2: Unable to initialize hardware; initialization status: -95
+    ath: phy2: Unable to initialize hardware; initialization status: -95
+    ath9k_htc: Failed to initialize the device
+
+Check for -EIO explicitly in ath9k_hw_read_revisions() and return
+a boolean based on the success of the operation. Check for that in
+__ath9k_hw_init() and abort with a more debugging-friendly message
+if reading the revisions wasn't successful.
+
+    ath9k_htc 1-1.4:1.0: ath9k_htc: HTC initialized with 33 credits
+    ath: phy2: Failed to read SREV register
+    ath: phy2: Could not read hardware revision
+    ath: phy2: Unable to initialize hardware; initialization status: -95
+    ath: phy2: Unable to initialize hardware; initialization status: -95
+    ath9k_htc: Failed to initialize the device
+
+This helps when debugging by directly showing the first point of
+failure and it could prevent possible errors if a 0x0f.3 revision
+is ever supported.
+
+Signed-off-by: Tim Schumacher <timschumi@gmx.de>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath9k/hw.c | 32 +++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 7a145172d503..83488f2bf7a0 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -847,8 +847,13 @@ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[])
+diff --git a/drivers/net/wireless/ath/ath9k/hw.c b/drivers/net/wireless/ath/ath9k/hw.c
+index a7f506eb7b36..406b52f114f0 100644
+--- a/drivers/net/wireless/ath/ath9k/hw.c
++++ b/drivers/net/wireless/ath/ath9k/hw.c
+@@ -250,8 +250,9 @@ void ath9k_hw_get_channel_centers(struct ath_hw *ah,
+ /* Chip Revisions */
+ /******************/
  
- 	if (data[IFLA_GTP_ROLE]) {
- 		role = nla_get_u32(data[IFLA_GTP_ROLE]);
--		if (role > GTP_ROLE_SGSN)
-+		if (role > GTP_ROLE_SGSN) {
-+			if (sk0)
-+				gtp_encap_disable_sock(sk0);
-+			if (sk1u)
-+				gtp_encap_disable_sock(sk1u);
- 			return -EINVAL;
-+		}
+-static void ath9k_hw_read_revisions(struct ath_hw *ah)
++static bool ath9k_hw_read_revisions(struct ath_hw *ah)
+ {
++	u32 srev;
+ 	u32 val;
+ 
+ 	if (ah->get_mac_revision)
+@@ -267,25 +268,33 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
+ 			val = REG_READ(ah, AR_SREV);
+ 			ah->hw_version.macRev = MS(val, AR_SREV_REVISION2);
+ 		}
+-		return;
++		return true;
+ 	case AR9300_DEVID_AR9340:
+ 		ah->hw_version.macVersion = AR_SREV_VERSION_9340;
+-		return;
++		return true;
+ 	case AR9300_DEVID_QCA955X:
+ 		ah->hw_version.macVersion = AR_SREV_VERSION_9550;
+-		return;
++		return true;
+ 	case AR9300_DEVID_AR953X:
+ 		ah->hw_version.macVersion = AR_SREV_VERSION_9531;
+-		return;
++		return true;
+ 	case AR9300_DEVID_QCA956X:
+ 		ah->hw_version.macVersion = AR_SREV_VERSION_9561;
+-		return;
++		return true;
  	}
  
- 	gtp->sk0 = sk0;
+-	val = REG_READ(ah, AR_SREV) & AR_SREV_ID;
++	srev = REG_READ(ah, AR_SREV);
++
++	if (srev == -EIO) {
++		ath_err(ath9k_hw_common(ah),
++			"Failed to read SREV register");
++		return false;
++	}
++
++	val = srev & AR_SREV_ID;
+ 
+ 	if (val == 0xFF) {
+-		val = REG_READ(ah, AR_SREV);
++		val = srev;
+ 		ah->hw_version.macVersion =
+ 			(val & AR_SREV_VERSION2) >> AR_SREV_TYPE2_S;
+ 		ah->hw_version.macRev = MS(val, AR_SREV_REVISION2);
+@@ -304,6 +313,8 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
+ 		if (ah->hw_version.macVersion == AR_SREV_VERSION_5416_PCIE)
+ 			ah->is_pciexpress = true;
+ 	}
++
++	return true;
+ }
+ 
+ /************************************/
+@@ -557,7 +568,10 @@ static int __ath9k_hw_init(struct ath_hw *ah)
+ 	struct ath_common *common = ath9k_hw_common(ah);
+ 	int r = 0;
+ 
+-	ath9k_hw_read_revisions(ah);
++	if (!ath9k_hw_read_revisions(ah)) {
++		ath_err(common, "Could not read hardware revisions");
++		return -EOPNOTSUPP;
++	}
+ 
+ 	switch (ah->hw_version.macVersion) {
+ 	case AR_SREV_VERSION_5416_PCI:
 -- 
 2.20.1
 
