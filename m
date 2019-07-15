@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 967BE694F0
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:55:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E28694EC
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:54:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390775AbfGOO1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:27:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36318 "EHLO mail.kernel.org"
+        id S2391473AbfGOO1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:27:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36498 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391085AbfGOO1N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:27:13 -0400
+        id S2391461AbfGOO1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:27:18 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A8251206B8;
-        Mon, 15 Jul 2019 14:27:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 21861206B8;
+        Mon, 15 Jul 2019 14:27:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200831;
-        bh=R64sEWjE7fOnTDcA1+Fn6biGjYQ/zL3DIacAU7VyayE=;
+        s=default; t=1563200837;
+        bh=Q2BeB/C8Xxr1+85qMCTF4SPOO4d/0Oqtv+BeqEcasWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j+MDXF02Q1odyrNtAUv4YcObMOWvlkXb4tk4Gs/k0yV1Lt9cM8iyLrHoazfoszcXU
-         j3svpNpYSEMor9Nvu9ido2KxtAS0gEil3J+xRvCVCxDY/gq+Qq0yCau+pVTFsN0zia
-         YkCnOV2kghwNTG0M6ELe9zoBa3Diypf0ZAu4aSjQ=
+        b=a++xgf03EVv0XOHSaFA8j8BICeWvi4JuQOk2mEjT/z98f5WF61Q7S+vcK/BG3EEBU
+         ZZphjPkVR37Qw22Q3sVy0k+7L7a/oKexkLEWNdBYx1BDVDxg4yJz1oGRUEkIjNTDpU
+         cdUcwM2wrjk7Llerv/pVMuAYgAoBHesKUc507+NI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phong Tran <tranmanphong@gmail.com>,
-        syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.19 139/158] net: usb: asix: init MAC address buffers
-Date:   Mon, 15 Jul 2019 10:17:50 -0400
-Message-Id: <20190715141809.8445-139-sashal@kernel.org>
+Cc:     Leo Yan <leo.yan@linaro.org>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 141/158] bpf, libbpf, smatch: Fix potential NULL pointer dereference
+Date:   Mon, 15 Jul 2019 10:17:52 -0400
+Message-Id: <20190715141809.8445-141-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -45,121 +44,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phong Tran <tranmanphong@gmail.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit 78226f6eaac80bf30256a33a4926c194ceefdf36 ]
+[ Upstream commit 33bae185f74d49a0d7b1bfaafb8e959efce0f243 ]
 
-This is for fixing bug KMSAN: uninit-value in ax88772_bind
+Based on the following report from Smatch, fix the potential NULL
+pointer dereference check:
 
-Tested by
-https://groups.google.com/d/msg/syzkaller-bugs/aFQurGotng4/eB_HlNhhCwAJ
+  tools/lib/bpf/libbpf.c:3493
+  bpf_prog_load_xattr() warn: variable dereferenced before check 'attr'
+  (see line 3483)
 
-Reported-by: syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
+  3479 int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+  3480                         struct bpf_object **pobj, int *prog_fd)
+  3481 {
+  3482         struct bpf_object_open_attr open_attr = {
+  3483                 .file           = attr->file,
+  3484                 .prog_type      = attr->prog_type,
+                                         ^^^^^^
+  3485         };
 
-syzbot found the following crash on:
+At the head of function, it directly access 'attr' without checking
+if it's NULL pointer. This patch moves the values assignment after
+validating 'attr' and 'attr->file'.
 
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=136d720ea00000
-kernel config:
-https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link:
-https://syzkaller.appspot.com/bug?extid=8a3fc6674bbc3978ed4e
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:
-https://syzkaller.appspot.com/x/repro.syz?x=12788316a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120359aaa00000
-
-==================================================================
-BUG: KMSAN: uninit-value in is_valid_ether_addr
-include/linux/etherdevice.h:200 [inline]
-BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr
-drivers/net/usb/asix_devices.c:73 [inline]
-BUG: KMSAN: uninit-value in ax88772_bind+0x93d/0x11e0
-drivers/net/usb/asix_devices.c:724
-CPU: 0 PID: 3348 Comm: kworker/0:2 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
-  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
-  ax88772_bind+0x93d/0x11e0 drivers/net/usb/asix_devices.c:724
-  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
-  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  process_scheduled_works kernel/workqueue.c:2331 [inline]
-  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
-  kthread+0x4b5/0x4f0 kernel/kthread.c:254
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
-
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/asix_devices.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/lib/bpf/libbpf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 3d93993e74da..2eca4168af2f 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -238,7 +238,7 @@ static void asix_phy_reset(struct usbnet *dev, unsigned int reset_bits)
- static int ax88172_bind(struct usbnet *dev, struct usb_interface *intf)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index bdb94939fd60..a350f97e3a1a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -2293,10 +2293,7 @@ int bpf_prog_load(const char *file, enum bpf_prog_type type,
+ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+ 			struct bpf_object **pobj, int *prog_fd)
  {
- 	int ret = 0;
--	u8 buf[ETH_ALEN];
-+	u8 buf[ETH_ALEN] = {0};
- 	int i;
- 	unsigned long gpio_bits = dev->driver_info->data;
+-	struct bpf_object_open_attr open_attr = {
+-		.file		= attr->file,
+-		.prog_type	= attr->prog_type,
+-	};
++	struct bpf_object_open_attr open_attr = {};
+ 	struct bpf_program *prog, *first_prog = NULL;
+ 	enum bpf_attach_type expected_attach_type;
+ 	enum bpf_prog_type prog_type;
+@@ -2309,6 +2306,9 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+ 	if (!attr->file)
+ 		return -EINVAL;
  
-@@ -689,7 +689,7 @@ static int asix_resume(struct usb_interface *intf)
- static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret, i;
--	u8 buf[ETH_ALEN], chipcode = 0;
-+	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
- 	u32 phyid;
- 	struct asix_common_private *priv;
- 
-@@ -1073,7 +1073,7 @@ static const struct net_device_ops ax88178_netdev_ops = {
- static int ax88178_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	int ret;
--	u8 buf[ETH_ALEN];
-+	u8 buf[ETH_ALEN] = {0};
- 
- 	usbnet_get_endpoints(dev,intf);
- 
++	open_attr.file = attr->file;
++	open_attr.prog_type = attr->prog_type;
++
+ 	obj = bpf_object__open_xattr(&open_attr);
+ 	if (IS_ERR_OR_NULL(obj))
+ 		return -ENOENT;
 -- 
 2.20.1
 
