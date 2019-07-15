@@ -2,150 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B299B6834E
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 07:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E0168376
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 08:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729073AbfGOFij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 01:38:39 -0400
-Received: from relay.sw.ru ([185.231.240.75]:40858 "EHLO relay.sw.ru"
+        id S1728256AbfGOGRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 02:17:05 -0400
+Received: from smtp3.goneo.de ([85.220.129.37]:36750 "EHLO smtp3.goneo.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726052AbfGOFii (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 01:38:38 -0400
-Received: from [172.16.24.21]
-        by relay.sw.ru with esmtp (Exim 4.92)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1hmtgp-00084E-4u; Mon, 15 Jul 2019 08:38:19 +0300
-Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
-To:     Xiaoming Ni <nixiaoming@huawei.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "adobriyan@gmail.com" <adobriyan@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "arjan@linux.intel.com" <arjan@linux.intel.com>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
-        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
-        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
-        "stable@kernel.org" <stable@kernel.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
-        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
-        "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
-        Dailei <dylix.dailei@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
- <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
- <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
- <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
- <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
- <20190712140729.GA11583@kroah.com>
- <65f50cf2-3051-ab55-078f-30930fe0c9bc@huawei.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <5521e5a4-66d9-aaf8-3a12-3999bfc6be8b@virtuozzo.com>
-Date:   Mon, 15 Jul 2019 08:38:07 +0300
+        id S1726074AbfGOGRF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 02:17:05 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by smtp3.goneo.de (Postfix) with ESMTP id C2C2623F2CD;
+        Mon, 15 Jul 2019 08:17:00 +0200 (CEST)
+X-Virus-Scanned: by goneo
+X-Spam-Flag: NO
+X-Spam-Score: -2.761
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.761 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=0.139, BAYES_00=-1.9] autolearn=ham
+Received: from smtp3.goneo.de ([127.0.0.1])
+        by localhost (smtp3.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 9DTgEevx57Ss; Mon, 15 Jul 2019 08:16:59 +0200 (CEST)
+Received: from [192.168.1.127] (dyndsl-091-248-140-021.ewe-ip-backbone.de [91.248.140.21])
+        by smtp3.goneo.de (Postfix) with ESMTPSA id 7016023F001;
+        Mon, 15 Jul 2019 08:16:54 +0200 (CEST)
+Subject: Re: [PATCH 8/8] docs: remove extra conf.py files
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Sean Paul <sean@poorly.run>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-crypto@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-sh@vger.kernel.org, alsa-devel@alsa-project.org
+References: <cover.1563115732.git.mchehab+samsung@kernel.org>
+ <12a160afc9e70156f671010bd4ccff9311acdc5e.1563115732.git.mchehab+samsung@kernel.org>
+From:   Markus Heiser <markus.heiser@darmarit.de>
+Message-ID: <e3ff0a8a-6956-3855-07be-9c126df2da2d@darmarit.de>
+Date:   Mon, 15 Jul 2019 08:16:54 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <65f50cf2-3051-ab55-078f-30930fe0c9bc@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <12a160afc9e70156f671010bd4ccff9311acdc5e.1563115732.git.mchehab+samsung@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: de-DE
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/19 5:45 AM, Xiaoming Ni wrote:
-> On 2019/7/12 22:07, gregkh@linuxfoundation.org wrote:
->> On Fri, Jul 12, 2019 at 09:11:57PM +0800, Xiaoming Ni wrote:
->>> On 2019/7/11 21:57, Vasily Averin wrote:
->>>> On 7/11/19 4:55 AM, Nixiaoming wrote:
->>>>> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
->>>>>> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
->>>>>>> Registering the same notifier to a hook repeatedly can cause the hook
->>>>>>> list to form a ring or lose other members of the list.
->>>>>>
->>>>>> I think is not enough to _prevent_ 2nd register attempt,
->>>>>> it's enough to detect just attempt and generate warning to mark host in bad state.
->>>>>>
->>>>>
->>>>> Duplicate registration is prevented in my patch, not just "mark host in bad state"
->>>>>
->>>>> Duplicate registration is checked and exited in notifier_chain_cond_register()
->>>>>
->>>>> Duplicate registration was checked in notifier_chain_register() but only 
->>>>> the alarm was triggered without exiting. added by commit 831246570d34692e 
->>>>> ("kernel/notifier.c: double register detection")
->>>>>
->>>>> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
->>>>>  which triggers an alarm and exits when a duplicate registration is detected.
->>>>>
->>>>>> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
->>>>>> and it can lead to host crash in any time: 
->>>>>> you can unregister notifier on first attempt it can be too early, it can be still in use.
->>>>>> on the other hand you can never call 2nd unregister at all.
->>>>>
->>>>> Since the member was not added to the linked list at the time of the second registration, 
->>>>> no linked list ring was formed. 
->>>>> The member is released on the first unregistration and -ENOENT on the second unregistration.
->>>>> After patching, the fault has been alleviated
->>>>
->>>> You are wrong here.
->>>> 2nd notifier's registration is a pure bug, this should never happen.
->>>> If you know the way to reproduce this situation -- you need to fix it. 
->>>>
->>>> 2nd registration can happen in 2 cases:
->>>> 1) missed rollback, when someone forget to call unregister after successfull registration, 
->>>> and then tried to call register again. It can lead to crash for example when according module will be unloaded.
->>>> 2) some subsystem is registered twice, for example from  different namespaces.
->>>> in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
->>>> in second namespace, it also can lead to unexpacted behaviour.
->>>>
->>> So in these two cases, is it more reasonable to trigger BUG() directly when checking for duplicate registration ?
->>> But why does current notifier_chain_register() just trigger WARN() without exiting ?
->>> notifier_chain_cond_register() direct exit without triggering WARN() ?
->>
->> It should recover from this, if it can be detected.  The main point is
->> that not all apis have to be this "robust" when used within the kernel
->> as we do allow for the callers to know what they are doing :)
->>
-> In the notifier_chain_register(), the condition ( (*nl) == n) is the same registration of the same hook.
->  We can intercept this situation and avoid forming a linked list ring to make the API more rob
+Hi Mauro,
 
-Once again -- yes, you CAN prevent list corruption, but you CANNOT recover the host and return it back to safe state.
-If double register event was detected -- it means you have bug in kernel.
+sorry, I havn't tested your patch, but one question ...
 
-Yes, you can add BUG here and crash the host immediately, but I prefer to use warning in such situations.
+Am 14.07.19 um 17:10 schrieb Mauro Carvalho Chehab:
+> Now that the latex_documents are handled automatically, we can
+> remove those extra conf.py files.
 
->> If this does not cause any additional problems or slow downs, it's
->> probably fine to add.
->>
-> Notifier_chain_register() is not a system hotspot function.
-> At the same time, there is already a WARN_ONCE judgment. There is no new judgment in the new patch.
-> It only changes the processing under the condition of (*nl) == n, which will not cause performance problems.
-> At the same time, avoiding the formation of a link ring can make the system more robust.
+We need these conf.py also for compiling books' into HTML.  For this
+the tags.add("subproject") is needed.  Should we realy drop this feature?
 
-I disagree, 
-yes, node will have correct list, but anyway node will work wrong and can crash the host in any time.
-
->> thanks,
->>
->> greg k-h
->>
->> .
->>
-> Thanks
-> 
-> Xiaoming Ni
-> 
-> 
-> 
+-- Markus --
