@@ -2,116 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CBD6861F
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 11:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC7DE68634
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 11:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729516AbfGOJQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 05:16:20 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42042 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729257AbfGOJQU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 05:16:20 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D28F13082B46;
-        Mon, 15 Jul 2019 09:16:19 +0000 (UTC)
-Received: from [10.72.12.123] (ovpn-12-123.pek2.redhat.com [10.72.12.123])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3A4D45C231;
-        Mon, 15 Jul 2019 09:16:10 +0000 (UTC)
-Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
- virtio-vsock
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20190710153707.twmzgmwqqw3pstos@steredhat>
- <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
- <20190711114134.xhmpciyglb2angl6@steredhat>
- <20190711152855-mutt-send-email-mst@kernel.org>
- <20190712100033.xs3xesz2plfwj3ag@steredhat>
- <a514d8a4-3a12-feeb-4467-af7a9fbf5183@redhat.com>
- <20190715074416.a3s2i5ausognotbn@steredhat>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <880c1ad2-7e02-3d5d-82d7-49076cc8d02b@redhat.com>
-Date:   Mon, 15 Jul 2019 17:16:09 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190715074416.a3s2i5ausognotbn@steredhat>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Mon, 15 Jul 2019 09:16:19 +0000 (UTC)
+        id S1729594AbfGOJVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 05:21:12 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:43399 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729563AbfGOJVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 05:21:12 -0400
+Received: from mail-pg1-f197.google.com ([209.85.215.197])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1hmxAT-0008Rl-HO
+        for netdev@vger.kernel.org; Mon, 15 Jul 2019 09:21:09 +0000
+Received: by mail-pg1-f197.google.com with SMTP id x19so10187511pgx.1
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 02:21:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=K7sR63lDZ6+bfE96HoDVWneUYi62vGyC0+ZoJVjOpqo=;
+        b=gw5QS08BvCIl7XEGaWTcWqw9YQguPbcZ2matHLulgXDcf0ef9qNVNvTm79/7v3F+dN
+         Cu466nhMsMgWLxphKUcl1EW/1tmCJErg+R1oJsV4foa9WDFcMb4DIlUxx1r/s+Ym+daB
+         9STdB/IvFHcUuykPjxddPIOJLXAQiwtmYZH2QOHcwxd6TKxcqpR4swkt/yGblqE8En87
+         N11NNBIrtNr6UDEdm/PxAGnhnXdcP3MUZs97UXva1vfVFSwHCh4r36B/PD/e3mPlMoaA
+         gy0PfsziyqQOBhv03jttj0En8ICb76xDJciyr4sJPrRdQ2UtsQWegGvanSpfD3gchRa1
+         ovOQ==
+X-Gm-Message-State: APjAAAXqczseTdhfcF797Da/laStvkhkxkhNV1UIuJqyhF0PXPkEY9SU
+        ZiG1MYx37BvC7SVzWTB7fRGY9N2GtJv93JEoeYG1HUmhZcp09zmF0g2SLh4+EPEZYbx3fn0OK+n
+        U/LBiaKzlr+681qSG7sNkAo/9wWTw4LNhmg==
+X-Received: by 2002:a17:90a:601:: with SMTP id j1mr27617739pjj.96.1563182468249;
+        Mon, 15 Jul 2019 02:21:08 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzHwAWIe0k8hTqh9iJGtpYLSTUNN/uaDfo3XVoAz1JGLpmxyFRzJG7TI40AZpQ93ZnK+ynB3A==
+X-Received: by 2002:a17:90a:601:: with SMTP id j1mr27617713pjj.96.1563182467961;
+        Mon, 15 Jul 2019 02:21:07 -0700 (PDT)
+Received: from [10.101.46.105] (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id u3sm14656829pjn.5.2019.07.15.02.21.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Jul 2019 02:21:07 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8;
+        delsp=yes;
+        format=flowed
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Make speed detection on
+ hotplugging cable more reliable
+From:   Kai Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <37a1e2af-64c6-4515-5dcc-6051e1192636@molgen.mpg.de>
+Date:   Mon, 15 Jul 2019 17:21:04 +0800
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Message-Id: <1BD6D413-E22A-40A3-B8E8-B9B56B9B5232@canonical.com>
+References: <20190715084355.9962-1-kai.heng.feng@canonical.com>
+ <017771d5-f168-493a-46a1-88e513941ba1@molgen.mpg.de>
+ <F9859C57-4F6D-4685-B4B6-D1D7DCB50D27@canonical.com>
+ <37a1e2af-64c6-4515-5dcc-6051e1192636@molgen.mpg.de>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+at 5:06 PM, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
 
->>>>>>>        struct sk_buff *virtskb_receive_small(struct virtskb *vs, ...);
->>>>>>>        struct sk_buff *virtskb_receive_big(struct virtskb *vs, ...);
->>>>>>>        struct sk_buff *virtskb_receive_mergeable(struct virtskb *vs, ...);
->>>>>>>
->>>>>>>        int virtskb_add_recvbuf_small(struct virtskb*vs, ...);
->>>>>>>        int virtskb_add_recvbuf_big(struct virtskb *vs, ...);
->>>>>>>        int virtskb_add_recvbuf_mergeable(struct virtskb *vs, ...);
->>>>>>>
->>>>>>> For the Guest->Host path it should be easier, so maybe I can add a
->>>>>>> "virtskb_send(struct virtskb *vs, struct sk_buff *skb)" with a part of the code
->>>>>>> of xmit_skb().
->>>>>> I may miss something, but I don't see any thing that prevents us from using
->>>>>> xmit_skb() directly.
->>>>>>
->>>>> Yes, but my initial idea was to make it more parametric and not related to the
->>>>> virtio_net_hdr, so the 'hdr_len' could be a parameter and the
->>>>> 'num_buffers' should be handled by the caller.
->>>>>
->>>>>>> Let me know if you have in mind better names or if I should put these function
->>>>>>> in another place.
->>>>>>>
->>>>>>> I would like to leave the control part completely separate, so, for example,
->>>>>>> the two drivers will negotiate the features independently and they will call
->>>>>>> the right virtskb_receive_*() function based on the negotiation.
->>>>>> If it's one the issue of negotiation, we can simply change the
->>>>>> virtnet_probe() to deal with different devices.
->>>>>>
->>>>>>
->>>>>>> I already started to work on it, but before to do more steps and send an RFC
->>>>>>> patch, I would like to hear your opinion.
->>>>>>> Do you think that makes sense?
->>>>>>> Do you see any issue or a better solution?
->>>>>> I still think we need to seek a way of adding some codes on virtio-net.c
->>>>>> directly if there's no huge different in the processing of TX/RX. That would
->>>>>> save us a lot time.
->>>>> After the reading of the buffers from the virtqueue I think the process
->>>>> is slightly different, because virtio-net will interface with the network
->>>>> stack, while virtio-vsock will interface with the vsock-core (socket).
->>>>> So the virtio-vsock implements the following:
->>>>> - control flow mechanism to avoid to loose packets, informing the peer
->>>>>     about the amount of memory available in the receive queue using some
->>>>>     fields in the virtio_vsock_hdr
->>>>> - de-multiplexing parsing the virtio_vsock_hdr and choosing the right
->>>>>     socket depending on the port
->>>>> - socket state handling
+> Dear Kai Heng,
+>
+>
+> (with or without hyphen?)
+>
+> On 7/15/19 11:00 AM, Kai Heng Feng wrote:
+>> at 4:52 PM, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+>>> On 7/15/19 10:43 AM, Kai-Heng Feng wrote:
+>>>> After hotplugging an 1Gbps ethernet cable with 1Gbps link partner, the
+>>>> MII_BMSR may reports 10Mbps, renders the network rather slow.
+>>>
+>>> s/may reports/may report/
+>>> s/renders/rendering/
 >>
->> I think it's just a branch, for ethernet, go for networking stack. otherwise
->> go for vsock core?
+>> Apparently English isn’t my mother tongue ;)
+>
+> No problem. Mine neither.
+>
+>>>> The issue has much lower fail rate after commit 59653e6497d1 ("e1000e:
+>>>> Make watchdog use delayed work"), which esssentially introduces some
+>>>
+>>> essentially
 >>
-> Yes, that should work.
+>> Ok.
+>>
+>>>> delay before running the watchdog task.
+>>>>
+>>>> But there's still a chance that the hotplugging event and the queued
+>>>> watchdog task gets run at the same time, then the original issue can be
+>>>> observed once again.
+>>>>
+>>>> So let's use mod_delayed_work() to add a deterministic 1 second delay
+>>>> before running watchdog task, after an interrupt.
+>>>
+>>> I am not clear about the effects for the user. Could you elaborate
+>>> please? Does the link now come up up to one second later?
+>>
+>> Yes, the link will be up on a fixed one second later.
+>>
+>> The delay varies between 0 to 2 seconds without this patch.
 >
-> So, I should refactor the functions that can be called also from the vsock
-> core, in order to remove "struct net_device *dev" parameter.
-> Maybe creating some wrappers for the network stack.
+> Is there no other fix? Regarding booting a system fast (less than six
+> seconds), a fixed one second delay is quite a regression on systems where
+> it worked before.
+
+This only affects when ethernet cable is hot plugged.
+
+Kai-Heng
+
 >
-> Otherwise I should create a fake net_device for vsock_core.
+>>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>>>
+>>> Any bug URL?
+>>
+>> If maintainers think it’s necessary then I’ll file one.
 >
-> What do you suggest?
+> Not necessary, if there is none. I thought you had one in Launchpad or so.
+>
+>
+> Kind regards,
+>
+> Paul
 
 
-I'm not quite sure I get the question. Can you just use the one that 
-created by virtio_net?
-
-
-Thanks
