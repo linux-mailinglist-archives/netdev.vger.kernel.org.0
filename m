@@ -2,110 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 155A069F2D
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 00:52:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9369B69F38
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 00:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731771AbfGOWv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 18:51:59 -0400
-Received: from mga03.intel.com ([134.134.136.65]:11569 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731510AbfGOWvy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 18:51:54 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Jul 2019 15:51:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,494,1557212400"; 
-   d="scan'208";a="178360028"
-Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga002.jf.intel.com with ESMTP; 15 Jul 2019 15:51:54 -0700
-From:   Vedang Patel <vedang.patel@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        stephen@networkplumber.org, vinicius.gomes@intel.com,
-        leandro.maciel.dorileo@intel.com, jakub.kicinski@netronome.com,
-        m-karicheri2@ti.com, dsahern@gmail.com,
-        Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH iproute2 net-next v3 5/5] tc: taprio: Update documentation
-Date:   Mon, 15 Jul 2019 15:51:44 -0700
-Message-Id: <1563231104-19912-5-git-send-email-vedang.patel@intel.com>
-X-Mailer: git-send-email 2.7.3
-In-Reply-To: <1563231104-19912-1-git-send-email-vedang.patel@intel.com>
-References: <1563231104-19912-1-git-send-email-vedang.patel@intel.com>
+        id S1731721AbfGOWyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 18:54:17 -0400
+Received: from www62.your-server.de ([213.133.104.62]:38728 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730960AbfGOWyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 18:54:17 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hn9rI-0004FB-U8; Tue, 16 Jul 2019 00:54:12 +0200
+Received: from [99.0.85.34] (helo=localhost.localdomain)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hn9rI-0001NB-Cu; Tue, 16 Jul 2019 00:54:12 +0200
+Subject: Re: [PATCH V35 23/29] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+To:     Matthew Garrett <matthewgarrett@google.com>, jmorris@namei.org
+Cc:     linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Matthew Garrett <mjg59@google.com>, netdev@vger.kernel.org,
+        Chun-Yi Lee <jlee@suse.com>
+References: <20190715195946.223443-1-matthewgarrett@google.com>
+ <20190715195946.223443-24-matthewgarrett@google.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5d363f09-d649-5693-45c0-bb99d69f0f38@iogearbox.net>
+Date:   Tue, 16 Jul 2019 00:54:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20190715195946.223443-24-matthewgarrett@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25511/Mon Jul 15 10:10:35 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the latest options, flags and txtime-delay, to the
-taprio manpage.
+On 7/15/19 9:59 PM, Matthew Garrett wrote:
+> From: David Howells <dhowells@redhat.com>
+> 
+> bpf_read() and bpf_read_str() could potentially be abused to (eg) allow
+> private keys in kernel memory to be leaked. Disable them if the kernel
+> has been locked down in confidentiality mode.
+> 
+> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Signed-off-by: Matthew Garrett <mjg59@google.com>
+> cc: netdev@vger.kernel.org
+> cc: Chun-Yi Lee <jlee@suse.com>
+> cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  include/linux/security.h     |  1 +
+>  kernel/trace/bpf_trace.c     | 10 ++++++++++
+>  security/lockdown/lockdown.c |  1 +
+>  3 files changed, 12 insertions(+)
+> 
+> diff --git a/include/linux/security.h b/include/linux/security.h
+> index 987d8427f091..8dd1741a52cd 100644
+> --- a/include/linux/security.h
+> +++ b/include/linux/security.h
+> @@ -118,6 +118,7 @@ enum lockdown_reason {
+>  	LOCKDOWN_INTEGRITY_MAX,
+>  	LOCKDOWN_KCORE,
+>  	LOCKDOWN_KPROBES,
+> +	LOCKDOWN_BPF_READ,
+>  	LOCKDOWN_CONFIDENTIALITY_MAX,
+>  };
+>  
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index ca1255d14576..605908da61c5 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -142,7 +142,12 @@ BPF_CALL_3(bpf_probe_read, void *, dst, u32, size, const void *, unsafe_ptr)
+>  {
+>  	int ret;
+>  
+> +	ret = security_locked_down(LOCKDOWN_BPF_READ);
+> +	if (ret)
+> +		goto out;
+> +
+>  	ret = probe_kernel_read(dst, unsafe_ptr, size);
+> +out:
+>  	if (unlikely(ret < 0))
+>  		memset(dst, 0, size);
 
-This also adds an example to run tc in txtime offload mode.
+Hmm, does security_locked_down() ever return a code > 0 or why do you
+have the double check on return code? If not, then for clarity the
+ret code from security_locked_down() should be checked as 'ret < 0'
+as well and out label should be at the memset directly instead.
 
-Signed-off-by: Vedang Patel <vedang.patel@intel.com>
----
- man/man8/tc-taprio.8 | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+> @@ -569,6 +574,10 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
+>  {
+>  	int ret;
+>  
+> +	ret = security_locked_down(LOCKDOWN_BPF_READ);
+> +	if (ret)
+> +		goto out;
+> +
+>  	/*
+>  	 * The strncpy_from_unsafe() call will likely not fill the entire
+>  	 * buffer, but that's okay in this circumstance as we're probing
+> @@ -579,6 +588,7 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
+>  	 * is returned that can be used for bpf_perf_event_output() et al.
+>  	 */
+>  	ret = strncpy_from_unsafe(dst, unsafe_ptr, size);
+> +out:
+>  	if (unlikely(ret < 0))
+>  		memset(dst, 0, size);
 
-diff --git a/man/man8/tc-taprio.8 b/man/man8/tc-taprio.8
-index 850be9b03649..e1d19ba19089 100644
---- a/man/man8/tc-taprio.8
-+++ b/man/man8/tc-taprio.8
-@@ -112,6 +112,26 @@ means that traffic class 0 is "active" for that schedule entry.
- long that state defined by <command> and <gate mask> should be held
- before moving to the next entry.
- 
-+.TP
-+flags
-+.br
-+Specifies different modes for taprio. Currently, only txtime-assist is
-+supported which can be enabled by setting it to 0x1. In this mode, taprio will
-+set the transmit timestamp depending on the interval in which the packet needs
-+to be transmitted. It will then utililize the
-+.BR etf(8)
-+qdisc to sort and transmit the packets at the right time. The second example
-+can be used as a reference to configure this mode.
-+
-+.TP
-+txtime-delay
-+.br
-+This parameter is specific to the txtime offload mode. It specifies the maximum
-+time a packet might take to reach the network card from the taprio qdisc. The
-+value should always be greater than the delta specified in the
-+.BR etf(8)
-+qdisc.
-+
- .SH EXAMPLES
- 
- The following example shows how an traffic schedule with three traffic
-@@ -137,6 +157,26 @@ reference CLOCK_TAI. The schedule is composed of three entries each of
-               clockid CLOCK_TAI
- .EE
- 
-+Following is an example to enable the txtime offload mode in taprio. See
-+.BR etf(8)
-+for more information about configuring the ETF qdisc.
-+
-+.EX
-+# tc qdisc replace dev eth0 parent root handle 100 taprio \\
-+              num_tc 3 \\
-+              map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
-+              queues 1@0 1@0 1@0 \\
-+              base-time 1528743495910289987 \\
-+              sched-entry S 01 300000 \\
-+              sched-entry S 02 300000 \\
-+              sched-entry S 04 400000 \\
-+              flags 0x1 \\
-+              txtime-delay 200000 \\
-+              clockid CLOCK_TAI
-+
-+# tc qdisc replace dev $IFACE parent 100:1 etf skip_skb_check \\
-+              offload delta 200000 clockid CLOCK_TAI
-+.EE
- 
- .SH AUTHORS
- Vinicius Costa Gomes <vinicius.gomes@intel.com>
--- 
-2.7.3
+Ditto.
 
+Thanks,
+Daniel
