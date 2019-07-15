@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB78168D82
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C34BD68D86
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733244AbfGON7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:59:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38980 "EHLO mail.kernel.org"
+        id S1733255AbfGON7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:59:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731636AbfGON7C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:59:02 -0400
+        id S1733252AbfGON7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:59:04 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D68420C01;
-        Mon, 15 Jul 2019 13:59:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9013D21530;
+        Mon, 15 Jul 2019 13:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199141;
-        bh=TQbRXzfc5WhIRgOGMu7vtqmyzHneb22EBvCzCpUcghY=;
+        s=default; t=1563199144;
+        bh=zpUo1nj/5sSnF28n+BhNMKd1g7eI0npNqkdu+ypBo2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KHLWXE0vaMTjvr+ArDNeAziyO7mvfmKmPCrm0TIMhqViVN2zNQCiTjlbGzclazenO
-         b/1dID1uM78eY81c9Gpgbz/GZCDunxqvaSYwFm86pSG4yoA4aOogI2hubdafVyEkDv
-         Jv4KxhapNwnegVhHnVvS5hdaFkCrCQk6BE7IQI84=
+        b=u+Gtecbt4JGGQxyPNvx89XmQOx1Q8UexygbVewVSgz9qHCMt+zbKJwokpvRxdMOlI
+         wTqkFpSZvzmiCU2fGdXGeXXH/tb4zmJE8hrQMRNT4X48aMJ7ZTwZCWT2LShmdQPRW8
+         IXwZ9TeHCY44MPW6DWUawkZ8uXAyP6LKLDvHt8XA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Alan Winkowski <walan@marvell.com>,
+Cc:     Vedang Patel <vedang.patel@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 203/249] net: mvpp2: prs: Don't override the sign bit in SRAM parser shift
-Date:   Mon, 15 Jul 2019 09:46:08 -0400
-Message-Id: <20190715134655.4076-203-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 204/249] igb: clear out skb->tstamp after reading the txtime
+Date:   Mon, 15 Jul 2019 09:46:09 -0400
+Message-Id: <20190715134655.4076-204-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -44,46 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
+From: Vedang Patel <vedang.patel@intel.com>
 
-[ Upstream commit 8ec3ede559956f8ad58db7b57d25ac724bab69e9 ]
+[ Upstream commit 1e08511d5d01884a3c9070afd52a47799312074a ]
 
-The Header Parser allows identifying various fields in the packet
-headers, used for various kind of filtering and classification
-steps.
+If a packet which is utilizing the launchtime feature (via SO_TXTIME socket
+option) also requests the hardware transmit timestamp, the hardware
+timestamp is not delivered to the userspace. This is because the value in
+skb->tstamp is mistaken as the software timestamp.
 
-This is a re-entrant process, where the offset in the packet header
-depends on the previous lookup results. This offset is represented in
-the SRAM results of the TCAM, as a shift to be operated.
+Applications, like ptp4l, request a hardware timestamp by setting the
+SOF_TIMESTAMPING_TX_HARDWARE socket option. Whenever a new timestamp is
+detected by the driver (this work is done in igb_ptp_tx_work() which calls
+igb_ptp_tx_hwtstamps() in igb_ptp.c[1]), it will queue the timestamp in the
+ERR_QUEUE for the userspace to read. When the userspace is ready, it will
+issue a recvmsg() call to collect this timestamp.  The problem is in this
+recvmsg() call. If the skb->tstamp is not cleared out, it will be
+interpreted as a software timestamp and the hardware tx timestamp will not
+be successfully sent to the userspace. Look at skb_is_swtx_tstamp() and the
+callee function __sock_recv_timestamp() in net/socket.c for more details.
 
-This shift can be negative in some cases, such as in IPv6 parsing.
-
-This commit prevents overriding the sign bit when setting the shift
-value, which could cause instabilities when parsing IPv6 flows.
-
-Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
-Suggested-by: Alan Winkowski <walan@marvell.com>
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-index ae2240074d8e..5692c6087bbb 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-@@ -312,7 +312,8 @@ static void mvpp2_prs_sram_shift_set(struct mvpp2_prs_entry *pe, int shift,
- 	}
- 
- 	/* Set value */
--	pe->sram[MVPP2_BIT_TO_WORD(MVPP2_PRS_SRAM_SHIFT_OFFS)] = shift & MVPP2_PRS_SRAM_SHIFT_MASK;
-+	pe->sram[MVPP2_BIT_TO_WORD(MVPP2_PRS_SRAM_SHIFT_OFFS)] |=
-+		shift & MVPP2_PRS_SRAM_SHIFT_MASK;
- 
- 	/* Reset and set operation */
- 	mvpp2_prs_sram_bits_clear(pe, MVPP2_PRS_SRAM_OP_SEL_SHIFT_OFFS,
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 39f33afc479c..005c1693efc8 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -5687,6 +5687,7 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
+ 	 */
+ 	if (tx_ring->launchtime_enable) {
+ 		ts = ns_to_timespec64(first->skb->tstamp);
++		first->skb->tstamp = 0;
+ 		context_desc->seqnum_seed = cpu_to_le32(ts.tv_nsec / 32);
+ 	} else {
+ 		context_desc->seqnum_seed = 0;
 -- 
 2.20.1
 
