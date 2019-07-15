@@ -2,145 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9B86869D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 11:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 290DB686AD
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 11:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729660AbfGOJsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 05:48:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46560 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729257AbfGOJsq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 05:48:46 -0400
-Received: from localhost (unknown [89.248.140.12])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8921520868;
-        Mon, 15 Jul 2019 09:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563184125;
-        bh=rXxqBfMQg2EG4iyMv7vrX3kTgm5DlwheYLQHvhxHNjA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=z+PftGO09z0D/JeJ92Wak1Y3vQw3/7ozhRrb+jF0qoR8OM355rVO2+he+9A6eKE3R
-         9KtrxVPByH1alDyasbTynLWMa8peh+z/VZeHIqqS5TUpd4xqgfuR7hvQoB6oUSDjXZ
-         c8lBbFmkkbvjs5niDCMA8M2BuLCwXZvjmx3osAQo=
-Date:   Mon, 15 Jul 2019 11:48:41 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Benjamin Poirier <bpoirier@suse.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 01/16] qlge: Remove irq_cnt
-Message-ID: <20190715094841.GC2955@kroah.com>
-References: <20190617074858.32467-1-bpoirier@suse.com>
- <20190715014016.GA27883@f1>
+        id S1729717AbfGOJwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 05:52:55 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39994 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729257AbfGOJwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 05:52:55 -0400
+Received: by mail-wm1-f66.google.com with SMTP id v19so14518181wmj.5
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 02:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=subject:from:to:cc:references:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PAaM48TdwzB0Flv7Dgc9aWFllbcyKHqhN40heY/1QM0=;
+        b=itEEvtBDJYaycVcFg1q4pqPipgQ53stjPNlgE5sb/o3nrhUiCGwjL2ZsI5KzaRQpIG
+         1a2+t4xjf5R9aMK3oc4EwZxA7TroJiLcxP2n0KZ4RJ6BIDfRMBjRt2mh4DsLWrUJwvCE
+         k33Ly4fGf3U+Vh1OcZY2+M2sjAj0nFjo2oliCKXipO6DtUMS1+suRRfWAPUjwzV++MQn
+         lzTnrs00AElSs/yGWsWJf5ghnvOAkcl0lCcE7zEtnuIy5qJGXtPGA7SyLceNIk2LCOxy
+         w+vfz+Yuwzg4yRDW+jlx9byV17+zH9QM30WeeNkY9D/UxGnuR5d3ewpVZCVjaGFHMaw4
+         sOFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=PAaM48TdwzB0Flv7Dgc9aWFllbcyKHqhN40heY/1QM0=;
+        b=G4k8T1ipifDyYcnxiS1noORkDKyEUkAHO+WRgUXjv8Lw+57iYRnMbWk6x21uCTwLku
+         b7Q7l/7nBBQIwesDrn7ywVHeA8KnBo7kzrneO41rwJNSg0WvXwaeYUFsOMcDRea+EBWd
+         69GawoAF9oRIf4QJFrxgkERZbDHvLBuxSopCLo2izODtNRva3oum9Bq3BYUEALdA2Joq
+         Ll9EVWRzTSpeC1t3xb3Uv9lNWf+P0OWdgDNzHujuR88PD6y9YD8zlz2eoOjMJkaWebtX
+         eSBgykaHX7H9ALAyP5cIf4NTD3MTQtru8tEgRakfFHBi4opxDv+41yveeXLIvh3VFeJV
+         6elA==
+X-Gm-Message-State: APjAAAXFqkIPUAGRcz4BUhg+AaEprBVr/Jg7PPVhUr9AGyWBKiDccBQe
+        VtqLyu/Tca7wek8GzM4OA82U3BqZGmw=
+X-Google-Smtp-Source: APXvYqzWsWDofQX6NEKVK4+B+Ty6LgL3ovwmc0DT8ZoctGzfbw8GSiIfMOgI5Qf2xQgjF1Cp61VPGQ==
+X-Received: by 2002:a1c:238e:: with SMTP id j136mr23229641wmj.144.1563184372695;
+        Mon, 15 Jul 2019 02:52:52 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:c118:a958:bcb2:844f? ([2a01:e35:8b63:dc30:c118:a958:bcb2:844f])
+        by smtp.gmail.com with ESMTPSA id j10sm28594356wrd.26.2019.07.15.02.52.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Jul 2019 02:52:52 -0700 (PDT)
+Subject: Re: [PATCH ipsec 0/2] xfrm interface: bug fix on changelink
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     steffen.klassert@secunet.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20190710074536.7505-1-nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <df990564-819a-314f-dda6-aab58a2e7b6e@6wind.com>
+Date:   Mon, 15 Jul 2019 11:52:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190715014016.GA27883@f1>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190710074536.7505-1-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 15, 2019 at 10:40:16AM +0900, Benjamin Poirier wrote:
-> On 2019/06/17 16:48, Benjamin Poirier wrote:
-> > qlge uses an irq enable/disable refcounting scheme that is:
-> > * poorly implemented
-> > 	Uses a spin_lock to protect accesses to the irq_cnt atomic variable
-> > * buggy
-> > 	Breaks when there is not a 1:1 sequence of irq - napi_poll, such as
-> > 	when using SO_BUSY_POLL.
-> > * unnecessary
-> > 	The purpose or irq_cnt is to reduce irq control writes when
-> > 	multiple work items result from one irq: the irq is re-enabled
-> > 	after all work is done.
-> > 	Analysis of the irq handler shows that there is only one case where
-> > 	there might be two workers scheduled at once, and those have
-> > 	separate irq masking bits.
-> > 
-> > Therefore, remove irq_cnt.
-> > 
-> > Additionally, we get a performance improvement:
-> > perf stat -e cycles -a -r5 super_netperf 100 -H 192.168.33.1 -t TCP_RR
-> > 
-> > Before:
-> > 628560
-> > 628056
-> > 622103
-> > 622744
-> > 627202
-> > [...]
-> >    268,803,947,669      cycles                 ( +-  0.09% )
-> > 
-> > After:
-> > 636300
-> > 634106
-> > 634984
-> > 638555
-> > 634188
-> > [...]
-> >    259,237,291,449      cycles                 ( +-  0.19% )
-> > 
-> > Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+Le 10/07/2019 à 09:45, Nicolas Dichtel a écrit :
 > 
-> David, Greg,
+> Here are two bug fix seen by code review. The first one avoids a corruption of
+> existing xfrm interfaces and the second is a minor fix of an error message.
 > 
-> Before I send v2 of this patchset, how about moving this driver out to
-> staging? The hardware has been declared EOL by the vendor but what's
-> more relevant to the Linux kernel is that the quality of this driver is
-> not on par with many other mainline drivers, IMO. Over in staging, the
-> code might benefit from the attention of interested parties (drive-by
-> fixers) or fade away into obscurity.
-> 
-> Now that I check, the code has >500 basic checkpatch issues. While
-> working on the rx processing code for the current patchset, I noticed
-> the following more structural issues:
-> * commit 7c734359d350 ("qlge: Size RX buffers based on MTU.",
->   v2.6.33-rc1) introduced dead code in the receive routines, which
->   should be rewritten anyways by the admission of the author himself
->   (see the comment above ql_build_rx_skb())
-> * truesize accounting is incorrect (ex: a 9000B frame has truesize 10280
->   while containing two frags of order-1 allocations, ie. >16K)
-> * in some cases the driver allocates skbs with head room but only puts
->   data in the frags
-> * there is an inordinate amount of disparate debugging code, most of
->   which is of questionable value. In particular, qlge_dbg.c has hundreds
->   of lines of code bitrotting away in ifdef land (doesn't compile since
->   commit 18c49b91777c ("qlge: do vlan cleanup", v3.1-rc1), 8 years ago).
-> * triggering an ethtool regdump will instead hexdump a 176k struct to
->   dmesg depending on some module parameters
-> * many structures are defined full of holes, as we found in this
->   thread already; are used inefficiently (struct rx_ring is used for rx
->   and tx completions, with some members relevant to one case only); are
->   initialized redundantly (ex. memset 0 after alloc_etherdev). The
->   driver also has a habit of using runtime checks where compile time
->   checks are possible.
-> * in terms of namespace, the driver uses either qlge_, ql_ (used by
->   other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
->   clashes, ex: struct ob_mac_iocb_req)
-> 
-> I'm guessing other parts of the driver have more issues of the same
-> nature. The driver also has many smaller issues like deprecated apis,
-> duplicate or useless comments, weird code structure (some "while" loops
-> that could be rewritten with simple "for", ex. ql_wait_reg_rdy()) and
-> weird line wrapping (all over, ex. the ql_set_routing_reg() calls in
-> qlge_set_multicast_list()).
-> 
-> I'm aware of some precedents for code moving from mainline to staging:
-> 1bb8155080c6 ncpfs: move net/ncpfs to drivers/staging/ncpfs (v4.16-rc1)
-> 6c391ff758eb irda: move drivers/net/irda to drivers/staging/irda/drivers
-> (v4.14-rc1)
-> 
-> What do you think is the best course of action in this case?
+>  include/net/xfrm.h        |  1 -
+>  net/xfrm/xfrm_interface.c | 20 ++++++--------------
+>  2 files changed, 6 insertions(+), 15 deletions(-)
+Please, drop this series, I will resend it.
 
-Feel free to move it to staging if you want it removed from the tree in
-a few releases if no one is willing to do the work to keep it alive.  If
-someone comes along later, it's a trivial revert to add it back.
 
-So send a patch moving it, with all of the information you listed above
-in a TODO file for the directory, and I'll be glad to take it.
-
-thanks,
-
-greg k-h
+Regards,
+Nicolas
