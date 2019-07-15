@@ -2,92 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA58C69EC5
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 00:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95FDD69ED9
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 00:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732179AbfGOWNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 18:13:19 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:37497 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727862AbfGOWNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 18:13:19 -0400
-Received: by mail-lj1-f196.google.com with SMTP id z28so17905198ljn.4;
-        Mon, 15 Jul 2019 15:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RYvawgoVXxgKzHpmJobAA5+pmQDaHULBJ3kgW7j4fMw=;
-        b=vVO92mJv1H+mtVSifGhFUZvrqSjH5WNcH9UcOMrfJ0/F40JP6tDJnocCojxnr8QGFH
-         0xP9OW3K2v1KMgOirmGR0qVpFDOkjyKA5ELY22HldUt9YDUcB3c+Y7ChUyszCYgz2IvU
-         gEG2MuwikJnLQYe3urWZrUMiE9ofVBcxC9qNoJglrnwL5/o0wnC3aggp9othtkHRzluM
-         95BZcJEeLKPHg/zEjo7+QLyUqGNtxQeMNYNIldxnCe8orDOmLh9R/U/l/qqNvs73p8Fr
-         RoQw1rFjUf0LXzofV+cuWrJ1HQ1YDEZ3R9HGm5U9SrViETfiJN1Z9paFRVSJ3mMT3AVI
-         LrjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RYvawgoVXxgKzHpmJobAA5+pmQDaHULBJ3kgW7j4fMw=;
-        b=N6Bav1MkKZDXMW+/9tXrO6/1S0/GGS6rv8G+9TqFg8lecYB7el3aVl9nNg3nlUWHyl
-         6TIXS1j1CuGMR1N6JTVOJ5RDLk5NtKlJhNNZ006B3EOS/iigCbG8WfCvKdZ+DyzZBHHE
-         puvZk5nekgNNqW1MA4/IskGqr3SJXUWh/ccXXoiPjt7rU+kiV955jdes/uCt1WBT7HdT
-         +oDhL+Is+1S+MHM/BTGfWzDpU3cDw/enYYex8tP7oUOp7KjvVD03EIB1YUTt/cQ6BoNr
-         Bn91crz9JOiFQIcjh2u+uf35H8ykJpHOZlwu1PHugVbQiHfrRJ/xv+zLAYMFypVAnrvt
-         wZ+g==
-X-Gm-Message-State: APjAAAXi5AhUpg0F9KjO6LPNvw1rMPRWNfdVI5kvDeIwILOd/DDKaTi6
-        F2FeYgBkxpAvkPUiWWyqcYK8tSIfZywBcz5i3M8=
-X-Google-Smtp-Source: APXvYqy/d+yxromHd4rFbHGssGVkg9GGpEgmZrJwyP3oSA2YWNgrA3A+czE1o4iCpfr5Cr57jiMxo5s3BrOfC6SvNwk=
-X-Received: by 2002:a2e:7818:: with SMTP id t24mr14949499ljc.210.1563228797204;
- Mon, 15 Jul 2019 15:13:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190704085224.65223-1-iii@linux.ibm.com>
-In-Reply-To: <20190704085224.65223-1-iii@linux.ibm.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 15 Jul 2019 15:13:05 -0700
-Message-ID: <CAADnVQ+H9bOW+EY6=AKt7mqgdEgaPhc1Wk_o=Ez43CracLCaiA@mail.gmail.com>
+        id S1732957AbfGOWQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 18:16:40 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33478 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727862AbfGOWQk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 18:16:40 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hn9Gw-0000qf-3w; Tue, 16 Jul 2019 00:16:38 +0200
+Received: from [99.0.85.34] (helo=localhost.localdomain)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hn9Gv-0000rq-Nu; Tue, 16 Jul 2019 00:16:37 +0200
 Subject: Re: [PATCH v2 bpf-next] selftests/bpf: fix "alu with different
  scalars 1" on s390
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>
 Cc:     bpf <bpf@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
         Y Song <ys114321@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+References: <20190704085224.65223-1-iii@linux.ibm.com>
+ <CAADnVQ+H9bOW+EY6=AKt7mqgdEgaPhc1Wk_o=Ez43CracLCaiA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <43594293-710b-b217-cd04-a8051e3742f7@iogearbox.net>
+Date:   Tue, 16 Jul 2019 00:16:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQ+H9bOW+EY6=AKt7mqgdEgaPhc1Wk_o=Ez43CracLCaiA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25511/Mon Jul 15 10:10:35 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 4, 2019 at 1:53 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> BPF_LDX_MEM is used to load the least significant byte of the retrieved
-> test_val.index, however, on big-endian machines it ends up retrieving
-> the most significant byte.
->
-> Use the correct least significant byte offset on big-endian machines.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> ---
->
-> v1->v2:
-> - use __BYTE_ORDER instead of __BYTE_ORDER__.
->
->  tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
-> index c3de1a2c9dc5..e5940c4e8b8f 100644
-> --- a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
-> +++ b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
-> @@ -183,7 +183,11 @@
->         BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
->         BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
->         BPF_EXIT_INSN(),
-> +#if __BYTE_ORDER == __LITTLE_ENDIAN
->         BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, 0),
-> +#else
-> +       BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, sizeof(int) - 1),
-> +#endif
+On 7/16/19 12:13 AM, Alexei Starovoitov wrote:
+> On Thu, Jul 4, 2019 at 1:53 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+>>
+>> BPF_LDX_MEM is used to load the least significant byte of the retrieved
+>> test_val.index, however, on big-endian machines it ends up retrieving
+>> the most significant byte.
+>>
+>> Use the correct least significant byte offset on big-endian machines.
+>>
+>> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+>> ---
+>>
+>> v1->v2:
+>> - use __BYTE_ORDER instead of __BYTE_ORDER__.
+>>
+>>  tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+>> index c3de1a2c9dc5..e5940c4e8b8f 100644
+>> --- a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+>> +++ b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+>> @@ -183,7 +183,11 @@
+>>         BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+>>         BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
+>>         BPF_EXIT_INSN(),
+>> +#if __BYTE_ORDER == __LITTLE_ENDIAN
+>>         BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, 0),
+>> +#else
+>> +       BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, sizeof(int) - 1),
+>> +#endif
+> 
+> I think tests should be arch and endian independent where possible.
+> In this case test_val.index is 4 byte and 4 byte load should work just as well.
 
-I think tests should be arch and endian independent where possible.
-In this case test_val.index is 4 byte and 4 byte load should work just as well.
+Yes, agree, this should be fixed with BPF_W as load.
+
+Thanks,
+Daniel
