@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C7666959B
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B886969590
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390044AbfGOOTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:19:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40382 "EHLO mail.kernel.org"
+        id S2390109AbfGOOT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:19:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390020AbfGOOTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:19:09 -0400
+        id S2389540AbfGOOT2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:19:28 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 58B79205F4;
-        Mon, 15 Jul 2019 14:19:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F141121530;
+        Mon, 15 Jul 2019 14:19:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200347;
-        bh=FsQ+jpIE3XFJieXRwtj+makJtOrC9+Y0c8QfnZ+8o4g=;
+        s=default; t=1563200366;
+        bh=bZDtxRGaOMxI1fmagdEOX3/BkdjvKXMnSye2oneZzUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kI/PtPgPiHpzRw13v9/2jdSUnPmQZPnxSqhJUPTplMdSC2IZV18ZO1Rm7vy3NFIOO
-         BUxPlROspYu6Vd6HvOg2wZgr+1dVzIde3A1t1wvOerhRM05ebsg91UFo5DO7CPSemT
-         5IyAc+GnJ5Yo18ru5jQlFIuXMP2jalpbtMTYe+Zs=
+        b=2pyAQTMqa6mkHKW5Mk8a/5RYKs88Z5eNluJ0fODNEdlVMtNFGdvnS2EVmxzH8bkKp
+         gBsac4jmRHzryZ+39K60mcerCEUTPC8U24EF2IGtC8kXeodBzJu474TglC9XXFORAg
+         2r2TzDQa7MaDOoro5rQhkIrAltaINCLpZS6dfg78=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <ariel.elior@marvell.com>,
-        Denis Bolotin <denis.bolotin@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Konstantin Khlebnikov <khlebnikov@yandex-team.ru>,
+        Joseph Yasi <joe.yasi@gmail.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Oleksandr Natalenko <oleksandr@redhat.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 020/158] qed: Set the doorbell address correctly
-Date:   Mon, 15 Jul 2019 10:15:51 -0400
-Message-Id: <20190715141809.8445-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 027/158] Revert "e1000e: fix cyclic resets at link up with active tx"
+Date:   Mon, 15 Jul 2019 10:15:58 -0400
+Message-Id: <20190715141809.8445-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -45,104 +46,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kalderon <michal.kalderon@marvell.com>
+From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
 
-[ Upstream commit 8366d520019f366fabd6c7a13032bdcd837e18d4 ]
+[ Upstream commit caff422ea81e144842bc44bab408d85ac449377b ]
 
-In 100g mode the doorbell bar is united for both engines. Set
-the correct offset in the hwfn so that the doorbell returned
-for RoCE is in the affined hwfn.
+This reverts commit 0f9e980bf5ee1a97e2e401c846b2af989eb21c61.
 
-Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Denis Bolotin <denis.bolotin@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+That change cased false-positive warning about hardware hang:
+
+e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+e1000e 0000:00:1f.6 eth0: Detected Hardware Unit Hang:
+   TDH                  <0>
+   TDT                  <1>
+   next_to_use          <1>
+   next_to_clean        <0>
+buffer_info[next_to_clean]:
+   time_stamp           <fffba7a7>
+   next_to_watch        <0>
+   jiffies              <fffbb140>
+   next_to_watch.status <0>
+MAC Status             <40080080>
+PHY Status             <7949>
+PHY 1000BASE-T Status  <0>
+PHY Extended Status    <3000>
+PCI Status             <10>
+e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+
+Besides warning everything works fine.
+Original issue will be fixed property in following patch.
+
+Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+Reported-by: Joseph Yasi <joe.yasi@gmail.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=203175
+Tested-by: Joseph Yasi <joe.yasi@gmail.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_dev.c  | 29 ++++++++++++++--------
- drivers/net/ethernet/qlogic/qed/qed_rdma.c |  2 +-
- 2 files changed, 19 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 4dd82a1612aa..a6a9688db307 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -3096,6 +3096,7 @@ static void qed_nvm_info_free(struct qed_hwfn *p_hwfn)
- static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 				 void __iomem *p_regview,
- 				 void __iomem *p_doorbells,
-+				 u64 db_phys_addr,
- 				 enum qed_pci_personality personality)
- {
- 	int rc = 0;
-@@ -3103,6 +3104,7 @@ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 	/* Split PCI bars evenly between hwfns */
- 	p_hwfn->regview = p_regview;
- 	p_hwfn->doorbells = p_doorbells;
-+	p_hwfn->db_phys_addr = db_phys_addr;
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 8cd339c92c1a..31ef42a031f2 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -5286,13 +5286,8 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 			/* 8000ES2LAN requires a Rx packet buffer work-around
+ 			 * on link down event; reset the controller to flush
+ 			 * the Rx packet buffer.
+-			 *
+-			 * If the link is lost the controller stops DMA, but
+-			 * if there is queued Tx work it cannot be done.  So
+-			 * reset the controller to flush the Tx packet buffers.
+ 			 */
+-			if ((adapter->flags & FLAG_RX_NEEDS_RESTART) ||
+-			    e1000_desc_unused(tx_ring) + 1 < tx_ring->count)
++			if (adapter->flags & FLAG_RX_NEEDS_RESTART)
+ 				adapter->flags |= FLAG_RESTART_NOW;
+ 			else
+ 				pm_schedule_suspend(netdev->dev.parent,
+@@ -5315,6 +5310,14 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 	adapter->gotc_old = adapter->stats.gotc;
+ 	spin_unlock(&adapter->stats64_lock);
  
- 	if (IS_VF(p_hwfn->cdev))
- 		return qed_vf_hw_prepare(p_hwfn);
-@@ -3198,7 +3200,9 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 	/* Initialize the first hwfn - will learn number of hwfns */
- 	rc = qed_hw_prepare_single(p_hwfn,
- 				   cdev->regview,
--				   cdev->doorbells, personality);
-+				   cdev->doorbells,
-+				   cdev->db_phys_addr,
-+				   personality);
- 	if (rc)
- 		return rc;
- 
-@@ -3207,22 +3211,25 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 	/* Initialize the rest of the hwfns */
- 	if (cdev->num_hwfns > 1) {
- 		void __iomem *p_regview, *p_doorbell;
--		u8 __iomem *addr;
-+		u64 db_phys_addr;
-+		u32 offset;
- 
- 		/* adjust bar offset for second engine */
--		addr = cdev->regview +
--		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
--				       BAR_ID_0) / 2;
--		p_regview = addr;
-+		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
-+					 BAR_ID_0) / 2;
-+		p_regview = cdev->regview + offset;
- 
--		addr = cdev->doorbells +
--		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
--				       BAR_ID_1) / 2;
--		p_doorbell = addr;
-+		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
-+					 BAR_ID_1) / 2;
++	/* If the link is lost the controller stops DMA, but
++	 * if there is queued Tx work it cannot be done.  So
++	 * reset the controller to flush the Tx packet buffers.
++	 */
++	if (!netif_carrier_ok(netdev) &&
++	    (e1000_desc_unused(tx_ring) + 1 < tx_ring->count))
++		adapter->flags |= FLAG_RESTART_NOW;
 +
-+		p_doorbell = cdev->doorbells + offset;
-+
-+		db_phys_addr = cdev->db_phys_addr + offset;
- 
- 		/* prepare second hw function */
- 		rc = qed_hw_prepare_single(&cdev->hwfns[1], p_regview,
--					   p_doorbell, personality);
-+					   p_doorbell, db_phys_addr,
-+					   personality);
- 
- 		/* in case of error, need to free the previously
- 		 * initiliazed hwfn 0.
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 7873d6dfd91f..13802b825d65 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -803,7 +803,7 @@ static int qed_rdma_add_user(void *rdma_cxt,
- 				     dpi_start_offset +
- 				     ((out_params->dpi) * p_hwfn->dpi_size));
- 
--	out_params->dpi_phys_addr = p_hwfn->cdev->db_phys_addr +
-+	out_params->dpi_phys_addr = p_hwfn->db_phys_addr +
- 				    dpi_start_offset +
- 				    ((out_params->dpi) * p_hwfn->dpi_size);
- 
+ 	/* If reset is necessary, do it outside of interrupt context. */
+ 	if (adapter->flags & FLAG_RESTART_NOW) {
+ 		schedule_work(&adapter->reset_task);
 -- 
 2.20.1
 
