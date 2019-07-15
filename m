@@ -2,102 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94DFA69D03
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:48:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B031769D05
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 22:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729875AbfGOUs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 16:48:28 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44820 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729505AbfGOUs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:48:27 -0400
-Received: by mail-pf1-f193.google.com with SMTP id t16so7962728pfe.11
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 13:48:27 -0700 (PDT)
+        id S1730443AbfGOUtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 16:49:05 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:40886 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729505AbfGOUtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 16:49:04 -0400
+Received: by mail-ot1-f66.google.com with SMTP id y20so2594229otk.7;
+        Mon, 15 Jul 2019 13:49:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vKetL6Hk7BIlYs67nTL5M9xydmGkj8hPTdOlbViijow=;
-        b=A2XXYR/8KZx5UggD5ilanhVccOJPuvgXePMLSrdJ7EaReZzqLqYVRTbery0Izs25y6
-         0ZJJr8NEYWXc5wSdEEgap4KqwLPll5x9Wm4BOxFBbnKBRqkiceF/kmiltsnL0iSdRDzG
-         nc/GUvFuTk5g26ai0uEYHifz0sw9f5Ft7VS0BjSPkDCZ/LqtTtdzIBxW/QQbCB6cqWZS
-         KuIt8C+88s2WLg59YLROmIDqg1p2gkab6zIRU7coqhuVV7ASw1FTgl7o7Neaj/QhXVHO
-         za7bBHQeVZSLNwbT0Sd6MXtmXwKfFSVotjcWLPSsGPXo9s64vf8BzZzZBfE04GpTpTLk
-         l9dA==
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=AjNrvGga0Rwkqc34Ofr3xEEo19X2YqWl7UCGJgM7/20=;
+        b=DupnNoh/L4HEHop3whDuE26LI93giUvtVz9tnrL2gw3FyMkvvk+dGFgDs78TgJtjOB
+         FJ+dx7IjZ0VyEzRXkBhRT8KASfdENwlPCUuYrQD3OhLF7mwtidKoZqXdmwcGGm47MTja
+         FJ4R5lT5xEIhCGXjCHmj5ccwuefhPz6N57ef4QX0zEglh1PTcLEmNBhNeVwWjRgYFVMO
+         74DPTpwCZDZbIdpcApHJ5zvTgo1Z1n9exV6SX6YY84FMoou4tyq8Y36Nx57a7MmEHyB7
+         Fcm6+lSngfV+3ZFx610a6zHeM6RhAOyjWG9R/UXWFc4zFYNRoml5GastQ4qN5tkrA1Ls
+         t3dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vKetL6Hk7BIlYs67nTL5M9xydmGkj8hPTdOlbViijow=;
-        b=Ss1oZepHXd7or42wcX8VW5q2cCSTPZp79HV+/YyU6IfPw9n/0X3ZaxLjTWak/C2dkd
-         B922u8ezodT/EoOEg0T7Hw/WoXOm/RzkTicKh7kiMRtg/xoGhLAR5pzbTPGBE5fYs7Vl
-         BMuXy2aMjaJa+weLKhL/ZAXBkT6/ct49Ah7GnL11BMS/DKTLzvtvnPMcNqfFwR31xbaH
-         VWhMa3HHjRhTLM9FBmW7FJW1FLes5KF1MIzkHvgnQcdB/P8AqzA3tjG84H4WbgiJkO4k
-         BSsr0cERd6A8/ZJRWY52vxPmZexquGpmE8T4p2dIpp1pqtAHMsD5VrLjLT1mFtnENrNF
-         MMIw==
-X-Gm-Message-State: APjAAAWrzIAiucj+mwJwsrNCUNSqAaz2Z8nSVPs2pj9pBo9NJ4MxHNMZ
-        mf57zsBpKD7/Yimo4BeBR8k=
-X-Google-Smtp-Source: APXvYqxvyxxJxJykHaVUBsarByG+YmhKuqBIcWe4q/239gh5B61DwzgIGE/N68M5wQzvJ3t1bJxxdg==
-X-Received: by 2002:a63:5823:: with SMTP id m35mr29356732pgb.329.1563223707215;
-        Mon, 15 Jul 2019 13:48:27 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i126sm17991795pfb.32.2019.07.15.13.48.26
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=AjNrvGga0Rwkqc34Ofr3xEEo19X2YqWl7UCGJgM7/20=;
+        b=mu8GEENjEX2hsgNyZU1IsyhJSz3Pkzq8P0/AZYNqJhKP8oWtSVsAx2JPaekDaU61xG
+         cA5ZviXIJk77wuYJu6DAKIUNTQtwQmySoaaiIJPUwveMAu8dcJR4TbcpoMUKc4anjW83
+         jBMx/KYI5C958GKG+YbV+5YczCngU8xpOcHc2bAFAuj8FQo5glOMi/aaZIcdPLwodufJ
+         1LCkoOJoAUidKXXDRTkEzNifoELMV/YfhSfKIKg1fwxwx99nB2V/1Tmu5JaWXnGfjCqs
+         h4l/wCC0xv1c49+icHrJHqeWY9W95EsSYp/BXgKuduUWEtEX41LAloGsJuSXq6JE3eyC
+         Ispg==
+X-Gm-Message-State: APjAAAURxKhJydXgMGKoC/TURTX7JR27lg1mbDGisV49zzcWmrGRcZ6n
+        IODUO7J43uTJFBsZieyStDM=
+X-Google-Smtp-Source: APXvYqzVsshJDbM8V1RaJLnuDTkTKstSYfT3QGlORYEGSL2UOyh4w9Alckf83zuuvAYae0vmfUudPA==
+X-Received: by 2002:a9d:5ed:: with SMTP id 100mr22370025otd.105.1563223743725;
+        Mon, 15 Jul 2019 13:49:03 -0700 (PDT)
+Received: from [127.0.1.1] ([99.0.85.34])
+        by smtp.gmail.com with ESMTPSA id 132sm6414590oid.47.2019.07.15.13.49.02
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 13:48:27 -0700 (PDT)
-Date:   Mon, 15 Jul 2019 13:48:20 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org
-Subject: Re: [PATCH iproute2] tc: util: constrain percentage in 0-100
- interval
-Message-ID: <20190715134820.119e0cb8@hermes.lan>
-In-Reply-To: <c0a9b4ce15d5389ac59fbf572f5f1b3030ec4c90.1563011008.git.aclaudi@redhat.com>
-References: <c0a9b4ce15d5389ac59fbf572f5f1b3030ec4c90.1563011008.git.aclaudi@redhat.com>
+        Mon, 15 Jul 2019 13:49:03 -0700 (PDT)
+Subject: [bpf PATCH v3 0/8] sockmap/tls fixes
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     jakub.kicinski@netronome.com, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com,
+        john.fastabend@gmail.com, bpf@vger.kernel.org
+Date:   Mon, 15 Jul 2019 13:49:01 -0700
+Message-ID: <156322373173.18678.6003379631139659856.stgit@john-XPS-13-9370>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 13 Jul 2019 11:44:07 +0200
-Andrea Claudi <aclaudi@redhat.com> wrote:
+Resolve a series of splats discovered by syzbot and an unhash
+TLS issue noted by Eric Dumazet.
 
-> parse_percent() currently allows to specify negative percentages
-> or value above 100%. However this does not seems to make sense,
-> as the function is used for probabilities or bandiwidth rates.
-> 
-> Moreover, using negative values leads to erroneous results
-> (using Bernoulli loss model as example):
-> 
-> $ ip link add test type dummy
-> $ ip link set test up
-> $ tc qdisc add dev test root netem loss gemodel -10% limit 10
-> $ tc qdisc show dev test
-> qdisc netem 800c: root refcnt 2 limit 10 loss gemodel p 90% r 10% 1-h 100% 1-k 0%
-> 
-> Using values above 100% we have instead:
-> 
-> $ ip link add test type dummy
-> $ ip link set test up
-> $ tc qdisc add dev test root netem loss gemodel 140% limit 10
-> $ tc qdisc show dev test
-> qdisc netem 800f: root refcnt 2 limit 10 loss gemodel p 40% r 60% 1-h 100% 1-k 0%
-> 
-> This commit changes parse_percent() with a check to ensure
-> percentage values stay between 1.0 and 0.0.
-> parse_percent_rate() function, which already employs a similar
-> check, is adjusted accordingly.
-> 
-> With this check in place, we have:
-> 
-> $ ip link add test type dummy
-> $ ip link set test up
-> $ tc qdisc add dev test root netem loss gemodel -10% limit 10
-> Illegal "loss gemodel p"
-> 
-> Fixes: 927e3cfb52b58 ("tc: B.W limits can now be specified in %.")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+The main issues revolved around interaction between TLS and
+sockmap tear down. TLS and sockmap could both reset sk->prot
+ops creating a condition where a close or unhash op could be
+called forever. A rare race condition resulting from a missing
+rcu sync operation was causing a use after free. Then on the
+TLS side dropping the sock lock and re-acquiring it during the
+close op could hang. Finally, sockmap must be deployed before
+tls for current stack assumptions to be met. This is enforced
+now. A feature series can enable it.
 
-Looks good. Applied
+To fix this first refactor TLS code so the lock is held for the
+entire teardown operation. Then add an unhash callback to ensure
+TLS can not transition from ESTABLISHED to LISTEN state. This
+transition is a similar bug to the one found and fixed previously
+in sockmap. Then apply three fixes to sockmap to fix up races
+on tear down around map free and close. Finally, if sockmap
+is destroyed before TLS we add a new ULP op update to inform
+the TLS stack it should not call sockmap ops. This last one
+appears to be the most commonly found issue from syzbot.
+
+---
+
+Jakub Kicinski (1):
+      net/tls: don't arm strparser immediately in tls_set_sw_offload()
+
+John Fastabend (7):
+      tls: remove close callback sock unlock/lock around TX work flush
+      tls: remove sock unlock/lock around strp_done()
+      bpf: tls fix transition through disconnect with close
+      bpf: sockmap, sock_map_delete needs to use xchg
+      bpf: sockmap, synchronize_rcu before free'ing map
+      bpf: sockmap, only create entry if ulp is not already enabled
+      bpf: sockmap/tls, close can race with map free
+
+
+ include/linux/skmsg.h |    8 ++-
+ include/net/tcp.h     |    3 +
+ include/net/tls.h     |   12 +++-
+ net/core/skmsg.c      |    4 +
+ net/core/sock_map.c   |   19 ++++--
+ net/ipv4/tcp_ulp.c    |   13 ++++
+ net/tls/tls_main.c    |  155 ++++++++++++++++++++++++++++++++++++++-----------
+ net/tls/tls_sw.c      |   76 +++++++++++++++++-------
+ 8 files changed, 221 insertions(+), 69 deletions(-)
+
+--
+Signature
