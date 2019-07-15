@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B407690FA
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 543DF6910E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391360AbfGOOZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:25:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32968 "EHLO mail.kernel.org"
+        id S2390808AbfGOO0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:26:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34276 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390741AbfGOOZq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:25:46 -0400
+        id S1731936AbfGOO0V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:26:21 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0AD9E20896;
-        Mon, 15 Jul 2019 14:25:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 60846217D8;
+        Mon, 15 Jul 2019 14:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200745;
-        bh=EAkPPELj4UMwGLtL3BtoJAdx1Nv63T7u3Q2Cqw1vBm4=;
+        s=default; t=1563200780;
+        bh=uKMX8Ym3o/S1IofsjFrz+39LEPoxQiwnccXs4ducSEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=psLQa/YbpJ/tZST7JtFqGipy3N1x5eySNiUKWAHvK0avuTAIUKtWnR03TP4LoHdPf
-         fSWJH0dyg7Adm+5K4HSE+2Cds1u/Eek3yNQ4hbRmzJYPU+1KLJzA7f6ONGk6V4VplY
-         je6iVZL31ZQ6WHL/J646POs/bLpOs/dm/tTGuxxE=
+        b=WcFuF53nw6dkfzsWcWS5XTZg9sEx9DGiPy3ygKzb0KZaSrajsB4cIL+0BDzluLY2C
+         zqEUCC5CoMI+l8f9CvQr7TL6QMrcHhPdjDbCzLc7qaflfwYZdVESAayfmYADBiMALp
+         Ate0rK4zdkbZW1bz/cpAUu0G+8t451BrhWFoknYY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ahmad Masri <amasri@codeaurora.org>,
-        Maya Erez <merez@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 121/158] wil6210: drop old event after wmi_call timeout
-Date:   Mon, 15 Jul 2019 10:17:32 -0400
-Message-Id: <20190715141809.8445-121-sashal@kernel.org>
+Cc:     Yonglong Liu <liuyonglong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 129/158] net: hns3: fix a -Wformat-nonliteral compile warning
+Date:   Mon, 15 Jul 2019 10:17:40 -0400
+Message-Id: <20190715141809.8445-129-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -46,56 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ahmad Masri <amasri@codeaurora.org>
+From: Yonglong Liu <liuyonglong@huawei.com>
 
-[ Upstream commit 1a276003111c0404f6bfeffe924c5a21f482428b ]
+[ Upstream commit 18d219b783da61a6cc77581f55fc4af2fa16bc36 ]
 
-This change fixes a rare race condition of handling WMI events after
-wmi_call expires.
+When setting -Wformat=2, there is a compiler warning like this:
 
-wmi_recv_cmd immediately handles an event when reply_buf is defined and
-a wmi_call is waiting for the event.
-However, in case the wmi_call has already timed-out, there will be no
-waiting/running wmi_call and the event will be queued in WMI queue and
-will be handled later in wmi_event_handle.
-Meanwhile, a new similar wmi_call for the same command and event may
-be issued. In this case, when handling the queued event we got WARN_ON
-printed.
+hclge_main.c:xxx:x: warning: format not a string literal and no
+format arguments [-Wformat-nonliteral]
+strs[i].desc);
+^~~~
 
-Fixing this case as a valid timeout and drop the unexpected event.
+This patch adds missing format parameter "%s" to snprintf() to
+fix it.
 
-Signed-off-by: Ahmad Masri <amasri@codeaurora.org>
-Signed-off-by: Maya Erez <merez@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: 46a3df9f9718 ("Add HNS3 Acceleration Engine & Compatibility Layer Support")
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/wmi.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/wmi.c b/drivers/net/wireless/ath/wil6210/wmi.c
-index 6e3b3031f29b..2010f771478d 100644
---- a/drivers/net/wireless/ath/wil6210/wmi.c
-+++ b/drivers/net/wireless/ath/wil6210/wmi.c
-@@ -2816,7 +2816,18 @@ static void wmi_event_handle(struct wil6210_priv *wil,
- 		/* check if someone waits for this event */
- 		if (wil->reply_id && wil->reply_id == id &&
- 		    wil->reply_mid == mid) {
--			WARN_ON(wil->reply_buf);
-+			if (wil->reply_buf) {
-+				/* event received while wmi_call is waiting
-+				 * with a buffer. Such event should be handled
-+				 * in wmi_recv_cmd function. Handling the event
-+				 * here means a previous wmi_call was timeout.
-+				 * Drop the event and do not handle it.
-+				 */
-+				wil_err(wil,
-+					"Old event (%d, %s) while wmi_call is waiting. Drop it and Continue waiting\n",
-+					id, eventid2name(id));
-+				return;
-+			}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 4648c6a9d9e8..89ca69fa2b97 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -663,8 +663,7 @@ static u8 *hclge_comm_get_strings(u32 stringset,
+ 		return buff;
  
- 			wmi_evt_call_handler(vif, id, evt_data,
- 					     len - sizeof(*wmi));
+ 	for (i = 0; i < size; i++) {
+-		snprintf(buff, ETH_GSTRING_LEN,
+-			 strs[i].desc);
++		snprintf(buff, ETH_GSTRING_LEN, "%s", strs[i].desc);
+ 		buff = buff + ETH_GSTRING_LEN;
+ 	}
+ 
 -- 
 2.20.1
 
