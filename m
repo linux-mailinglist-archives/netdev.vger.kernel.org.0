@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E8BC68FB9
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:16:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1ED568FC9
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389705AbfGOOQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:16:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33452 "EHLO mail.kernel.org"
+        id S2389761AbfGOOQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:16:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731290AbfGOOQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:16:25 -0400
+        id S2388880AbfGOOQo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:16:44 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D6CA206B8;
-        Mon, 15 Jul 2019 14:16:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 114502083D;
+        Mon, 15 Jul 2019 14:16:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200184;
-        bh=vKsXn2+tp/0Snr7P84MX3DCJco/k7jEpG0uIqM6X8YM=;
+        s=default; t=1563200203;
+        bh=AIScPPIYSfK6jsLJFhkajw+WDalE7mFiKPye5mWn2vQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nB1ah8GouYFO9LuIQEleUaTGOT6TQObSluT2rLOO+hIeAtitgpe63I6hMSo3voIV4
-         es2yBoVFMH9J/ok3mGL5DXLbxjXZx6BD9nuY17S1F4kZ5oBOouJG3nKc/dQQvN6KHo
-         9qbElcLDvppPswpT3T5M0faXgp8o6qhQE01cIEJ8=
+        b=ss93CXvI3Bhci5rOJFEQy4mDdCyOwytdZ+WAameCvFYNKfJh8RHTlwWuE9HsJFY56
+         TkxXKrN/uKfFvN01NjL/TLGmQtPzlfFrNm+oy+/C1yuhXLJbIXCj1m3Qdp0wobmjyv
+         8u7YlJT224gyn5tk6Aixq16f8ioGxRoBxMxvdu0w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jian Shen <shenjian15@huawei.com>, Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 203/219] net: hns3: enable broadcast promisc mode when initializing VF
-Date:   Mon, 15 Jul 2019 10:03:24 -0400
-Message-Id: <20190715140341.6443-203-sashal@kernel.org>
+Cc:     Josua Mayer <josua.mayer@jm0.eu>,
+        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
+        Michael Scott <mike@foundries.io>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 207/219] Bluetooth: 6lowpan: search for destination address in all peers
+Date:   Mon, 15 Jul 2019 10:03:28 -0400
+Message-Id: <20190715140341.6443-207-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -44,59 +46,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Josua Mayer <josua.mayer@jm0.eu>
 
-[ Upstream commit 2d5066fc175ea77a733d84df9ef414b34f311641 ]
+[ Upstream commit b188b03270b7f8568fc714101ce82fbf5e811c5a ]
 
-For revision 0x20, the broadcast promisc is enabled by firmware,
-it's unnecessary to enable it when initializing VF.
+Handle overlooked case where the target address is assigned to a peer
+and neither route nor gateway exist.
 
-For revision 0x21, it's necessary to enable broadcast promisc mode
-when initializing or re-initializing VF, otherwise, it will be
-unable to send and receive promisc packets.
+For one peer, no checks are performed to see if it is meant to receive
+packets for a given address.
 
-Fixes: f01f5559cac8 ("net: hns3: don't allow vf to enable promisc mode")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+As soon as there is a second peer however, checks are performed
+to deal with routes and gateways for handling complex setups with
+multiple hops to a target address.
+This logic assumed that no route and no gateway imply that the
+destination address can not be reached, which is false in case of a
+direct peer.
+
+Acked-by: Jukka Rissanen <jukka.rissanen@linux.intel.com>
+Tested-by: Michael Scott <mike@foundries.io>
+Signed-off-by: Josua Mayer <josua.mayer@jm0.eu>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ net/bluetooth/6lowpan.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 8dd7fef863f6..d7a15d5b6b61 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2425,6 +2425,12 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
- 		return ret;
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index a7cd23f00bde..50530561da98 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -187,10 +187,16 @@ static inline struct lowpan_peer *peer_lookup_dst(struct lowpan_btle_dev *dev,
  	}
  
-+	if (pdev->revision >= 0x21) {
-+		ret = hclgevf_set_promisc_mode(hdev, true);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	dev_info(&hdev->pdev->dev, "Reset done\n");
+ 	if (!rt) {
+-		nexthop = &lowpan_cb(skb)->gw;
+-
+-		if (ipv6_addr_any(nexthop))
+-			return NULL;
++		if (ipv6_addr_any(&lowpan_cb(skb)->gw)) {
++			/* There is neither route nor gateway,
++			 * probably the destination is a direct peer.
++			 */
++			nexthop = daddr;
++		} else {
++			/* There is a known gateway
++			 */
++			nexthop = &lowpan_cb(skb)->gw;
++		}
+ 	} else {
+ 		nexthop = rt6_nexthop(rt, daddr);
  
- 	return 0;
-@@ -2504,9 +2510,11 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 	 * firmware makes sure broadcast packets can be accepted.
- 	 * For revision 0x21, default to enable broadcast promisc mode.
- 	 */
--	ret = hclgevf_set_promisc_mode(hdev, true);
--	if (ret)
--		goto err_config;
-+	if (pdev->revision >= 0x21) {
-+		ret = hclgevf_set_promisc_mode(hdev, true);
-+		if (ret)
-+			goto err_config;
-+	}
- 
- 	/* Initialize RSS for this VF */
- 	ret = hclgevf_rss_init_hw(hdev);
 -- 
 2.20.1
 
