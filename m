@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C30869556
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:58:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213C569515
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:55:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390769AbfGOOXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:23:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55060 "EHLO mail.kernel.org"
+        id S2391394AbfGOOzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:55:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390118AbfGOOXb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:23:31 -0400
+        id S1731566AbfGOOYL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:24:11 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 427C52053B;
-        Mon, 15 Jul 2019 14:23:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6142E217F4;
+        Mon, 15 Jul 2019 14:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200609;
-        bh=4/m/2Mfax+c7i6Z3CxWlTyE2IYQ4BoDrA/ah/vbuP70=;
+        s=default; t=1563200650;
+        bh=ljjfcC5wq4RNJfSh5r/tp0HFdF8ZZPl3HrfpeUJxU58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f9Kph1UeimZKnpWuhQIYpFfJw5Ka5mn8e2Y7OfSVbcrxHWnPxKnTXR5EnBx9/zCiY
-         bkfxF9GFcrKz3lowMDdr4XTUW5kv8lWSD5srGndceq4FBtNZv4Kyu1eaAxIZxRLeBO
-         D0ui/GDSA7GqdmFgscYPnps6Y4kkxM/N8NSxp0p0=
+        b=h3xifsKKd4Q6p508IxkBxH/i7dcQjv5gJ6EK5b9+DTz4kUl+nh7xkTXFGbDiQZTwx
+         ObTsKgKTVJsWoM4uKmdsTC9cEg243QjnNQXm8Jcb0V+/kDIG0+aMtn16TyMbUQUsyo
+         Ny9TkePx7uxpYhonHwCrz30zpDsvyfoRsBJfNY9U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julian Anastasov <ja@ssi.bg>,
-        syzbot+722da59ccb264bc19910@syzkaller.appspotmail.com,
-        Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Subject: [PATCH AUTOSEL 4.19 091/158] ipvs: defer hook registration to avoid leaks
-Date:   Mon, 15 Jul 2019 10:17:02 -0400
-Message-Id: <20190715141809.8445-91-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        syzbot+1fcc5ef45175fc774231@syzkaller.appspotmail.com,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 103/158] rtlwifi: rtl8192cu: fix error handle when usb probe failed
+Date:   Mon, 15 Jul 2019 10:17:14 -0400
+Message-Id: <20190715141809.8445-103-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -47,118 +46,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julian Anastasov <ja@ssi.bg>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit cf47a0b882a4e5f6b34c7949d7b293e9287f1972 ]
+[ Upstream commit 6c0ed66f1a5b84e2a812c7c2d6571a5621bf3396 ]
 
-syzkaller reports for memory leak when registering hooks [1]
+rtl_usb_probe() must do error handle rtl_deinit_core() only if
+rtl_init_core() is done, otherwise goto error_out2.
 
-As we moved the nf_unregister_net_hooks() call into
-__ip_vs_dev_cleanup(), defer the nf_register_net_hooks()
-call, so that hooks are allocated and freed from same
-pernet_operations (ipvs_core_dev_ops).
+| usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+| rtl_usb: reg 0xf0, usbctrl_vendorreq TimeOut! status:0xffffffb9 value=0x0
+| rtl8192cu: Chip version 0x10
+| rtl_usb: reg 0xa, usbctrl_vendorreq TimeOut! status:0xffffffb9 value=0x0
+| rtl_usb: Too few input end points found
+| INFO: trying to register non-static key.
+| the code is fine but needs lockdep annotation.
+| turning off the locking correctness validator.
+| CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.1.0-rc4-319354-g9a33b36 #3
+| Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+| Google 01/01/2011
+| Workqueue: usb_hub_wq hub_event
+| Call Trace:
+|   __dump_stack lib/dump_stack.c:77 [inline]
+|   dump_stack+0xe8/0x16e lib/dump_stack.c:113
+|   assign_lock_key kernel/locking/lockdep.c:786 [inline]
+|   register_lock_class+0x11b8/0x1250 kernel/locking/lockdep.c:1095
+|   __lock_acquire+0xfb/0x37c0 kernel/locking/lockdep.c:3582
+|   lock_acquire+0x10d/0x2f0 kernel/locking/lockdep.c:4211
+|   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+|   _raw_spin_lock_irqsave+0x44/0x60 kernel/locking/spinlock.c:152
+|   rtl_c2hcmd_launcher+0xd1/0x390
+| drivers/net/wireless/realtek/rtlwifi/base.c:2344
+|   rtl_deinit_core+0x25/0x2d0 drivers/net/wireless/realtek/rtlwifi/base.c:574
+|   rtl_usb_probe.cold+0x861/0xa70
+| drivers/net/wireless/realtek/rtlwifi/usb.c:1093
+|   usb_probe_interface+0x31d/0x820 drivers/usb/core/driver.c:361
+|   really_probe+0x2da/0xb10 drivers/base/dd.c:509
+|   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
+|   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
+|   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
+|   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
+|   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
+|   device_add+0xad2/0x16e0 drivers/base/core.c:2106
+|   usb_set_configuration+0xdf7/0x1740 drivers/usb/core/message.c:2021
+|   generic_probe+0xa2/0xda drivers/usb/core/generic.c:210
+|   usb_probe_device+0xc0/0x150 drivers/usb/core/driver.c:266
+|   really_probe+0x2da/0xb10 drivers/base/dd.c:509
+|   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
+|   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
+|   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
+|   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
+|   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
+|   device_add+0xad2/0x16e0 drivers/base/core.c:2106
+|   usb_new_device.cold+0x537/0xccf drivers/usb/core/hub.c:2534
+|   hub_port_connect drivers/usb/core/hub.c:5089 [inline]
+|   hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+|   port_event drivers/usb/core/hub.c:5350 [inline]
+|   hub_event+0x138e/0x3b00 drivers/usb/core/hub.c:5432
+|   process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+|   worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+|   kthread+0x313/0x420 kernel/kthread.c:253
+|   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
 
-[1]
-BUG: memory leak
-unreferenced object 0xffff88810acd8a80 (size 96):
- comm "syz-executor073", pid 7254, jiffies 4294950560 (age 22.250s)
- hex dump (first 32 bytes):
-   02 00 00 00 00 00 00 00 50 8b bb 82 ff ff ff ff  ........P.......
-   00 00 00 00 00 00 00 00 00 77 bb 82 ff ff ff ff  .........w......
- backtrace:
-   [<0000000013db61f1>] kmemleak_alloc_recursive include/linux/kmemleak.h:55 [inline]
-   [<0000000013db61f1>] slab_post_alloc_hook mm/slab.h:439 [inline]
-   [<0000000013db61f1>] slab_alloc_node mm/slab.c:3269 [inline]
-   [<0000000013db61f1>] kmem_cache_alloc_node_trace+0x15b/0x2a0 mm/slab.c:3597
-   [<000000001a27307d>] __do_kmalloc_node mm/slab.c:3619 [inline]
-   [<000000001a27307d>] __kmalloc_node+0x38/0x50 mm/slab.c:3627
-   [<0000000025054add>] kmalloc_node include/linux/slab.h:590 [inline]
-   [<0000000025054add>] kvmalloc_node+0x4a/0xd0 mm/util.c:431
-   [<0000000050d1bc00>] kvmalloc include/linux/mm.h:637 [inline]
-   [<0000000050d1bc00>] kvzalloc include/linux/mm.h:645 [inline]
-   [<0000000050d1bc00>] allocate_hook_entries_size+0x3b/0x60 net/netfilter/core.c:61
-   [<00000000e8abe142>] nf_hook_entries_grow+0xae/0x270 net/netfilter/core.c:128
-   [<000000004b94797c>] __nf_register_net_hook+0x9a/0x170 net/netfilter/core.c:337
-   [<00000000d1545cbc>] nf_register_net_hook+0x34/0xc0 net/netfilter/core.c:464
-   [<00000000876c9b55>] nf_register_net_hooks+0x53/0xc0 net/netfilter/core.c:480
-   [<000000002ea868e0>] __ip_vs_init+0xe8/0x170 net/netfilter/ipvs/ip_vs_core.c:2280
-   [<000000002eb2d451>] ops_init+0x4c/0x140 net/core/net_namespace.c:130
-   [<000000000284ec48>] setup_net+0xde/0x230 net/core/net_namespace.c:316
-   [<00000000a70600fa>] copy_net_ns+0xf0/0x1e0 net/core/net_namespace.c:439
-   [<00000000ff26c15e>] create_new_namespaces+0x141/0x2a0 kernel/nsproxy.c:107
-   [<00000000b103dc79>] copy_namespaces+0xa1/0xe0 kernel/nsproxy.c:165
-   [<000000007cc008a2>] copy_process.part.0+0x11fd/0x2150 kernel/fork.c:2035
-   [<00000000c344af7c>] copy_process kernel/fork.c:1800 [inline]
-   [<00000000c344af7c>] _do_fork+0x121/0x4f0 kernel/fork.c:2369
-
-Reported-by: syzbot+722da59ccb264bc19910@syzkaller.appspotmail.com
-Fixes: 719c7d563c17 ("ipvs: Fix use-after-free in ip_vs_in")
-Signed-off-by: Julian Anastasov <ja@ssi.bg>
-Acked-by: Simon Horman <horms@verge.net.au>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reported-by: syzbot+1fcc5ef45175fc774231@syzkaller.appspotmail.com
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipvs/ip_vs_core.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/usb.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-index 62c0e80dcd71..a71f777d1353 100644
---- a/net/netfilter/ipvs/ip_vs_core.c
-+++ b/net/netfilter/ipvs/ip_vs_core.c
-@@ -2218,7 +2218,6 @@ static const struct nf_hook_ops ip_vs_ops[] = {
- static int __net_init __ip_vs_init(struct net *net)
- {
- 	struct netns_ipvs *ipvs;
--	int ret;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index 2ac5004d7a40..5adb939afee8 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -1081,13 +1081,13 @@ int rtl_usb_probe(struct usb_interface *intf,
+ 	rtlpriv->cfg->ops->read_eeprom_info(hw);
+ 	err = _rtl_usb_init(hw);
+ 	if (err)
+-		goto error_out;
++		goto error_out2;
+ 	rtl_usb_init_sw(hw);
+ 	/* Init mac80211 sw */
+ 	err = rtl_init_core(hw);
+ 	if (err) {
+ 		pr_err("Can't allocate sw for mac80211\n");
+-		goto error_out;
++		goto error_out2;
+ 	}
+ 	if (rtlpriv->cfg->ops->init_sw_vars(hw)) {
+ 		pr_err("Can't init_sw_vars\n");
+@@ -1108,6 +1108,7 @@ int rtl_usb_probe(struct usb_interface *intf,
  
- 	ipvs = net_generic(net, ip_vs_net_id);
- 	if (ipvs == NULL)
-@@ -2250,17 +2249,11 @@ static int __net_init __ip_vs_init(struct net *net)
- 	if (ip_vs_sync_net_init(ipvs) < 0)
- 		goto sync_fail;
- 
--	ret = nf_register_net_hooks(net, ip_vs_ops, ARRAY_SIZE(ip_vs_ops));
--	if (ret < 0)
--		goto hook_fail;
--
- 	return 0;
- /*
-  * Error handling
-  */
- 
--hook_fail:
--	ip_vs_sync_net_cleanup(ipvs);
- sync_fail:
- 	ip_vs_conn_net_cleanup(ipvs);
- conn_fail:
-@@ -2290,6 +2283,19 @@ static void __net_exit __ip_vs_cleanup(struct net *net)
- 	net->ipvs = NULL;
- }
- 
-+static int __net_init __ip_vs_dev_init(struct net *net)
-+{
-+	int ret;
-+
-+	ret = nf_register_net_hooks(net, ip_vs_ops, ARRAY_SIZE(ip_vs_ops));
-+	if (ret < 0)
-+		goto hook_fail;
-+	return 0;
-+
-+hook_fail:
-+	return ret;
-+}
-+
- static void __net_exit __ip_vs_dev_cleanup(struct net *net)
- {
- 	struct netns_ipvs *ipvs = net_ipvs(net);
-@@ -2309,6 +2315,7 @@ static struct pernet_operations ipvs_core_ops = {
- };
- 
- static struct pernet_operations ipvs_core_dev_ops = {
-+	.init = __ip_vs_dev_init,
- 	.exit = __ip_vs_dev_cleanup,
- };
- 
+ error_out:
+ 	rtl_deinit_core(hw);
++error_out2:
+ 	_rtl_usb_io_handler_release(hw);
+ 	usb_put_dev(udev);
+ 	complete(&rtlpriv->firmware_loading_complete);
 -- 
 2.20.1
 
