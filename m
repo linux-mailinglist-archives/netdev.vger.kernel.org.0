@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F61A68E4E
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9667D68E5F
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388109AbfGOOFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:05:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51500 "EHLO mail.kernel.org"
+        id S2388223AbfGOOGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:06:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53036 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388039AbfGOOFT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:05:19 -0400
+        id S2388211AbfGOOF6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:05:58 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7185C206B8;
-        Mon, 15 Jul 2019 14:05:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 71EA1206B8;
+        Mon, 15 Jul 2019 14:05:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199518;
-        bh=jdCVrBGq/WqfVFznp4hYp17AUmVsw3vFbaB+1H64BDM=;
+        s=default; t=1563199557;
+        bh=WZBqGEIMhE0Uex1jDnxC4nvxvLmwIk3xxMhYqrczuSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gOfHPHeyyMvmsUc8YkAiZ8GSI+7hanGlsWhMNoAGU9dfYD1qt/hEr0nFWcwB5Y/c+
-         QJmIulyu9qEUC27Wf2s9GrTkSaC9oMFB9JJZ0Kg5944KO8lxdLUkUZZVWCYHG27gnI
-         vCxt8aA9jtbPS01InR0PIffLtBy+fb1SYpKGES80=
+        b=Rgq+lIYjCdSM2UylscxHlVwUh78lBzZYh+rIHPAMk2oRVLgXiXENE26/VHfUD+frK
+         EAIM9G/HGisHfMvUH0DWtJP1CEo4/hYPfxuLW4BWUJH9WRiRS0Fu3LNki5LKA7Am27
+         jUl5As1W2Pxiow2lK9BMcuvodsxHVTXCJwO8Hbrs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Joao Pinto <jpinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
+Cc:     Konstantin Khlebnikov <khlebnikov@yandex-team.ru>,
+        Joseph Yasi <joe.yasi@gmail.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Oleksandr Natalenko <oleksandr@redhat.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 030/219] net: stmmac: Prevent missing interrupts when running NAPI
-Date:   Mon, 15 Jul 2019 10:00:31 -0400
-Message-Id: <20190715140341.6443-30-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 042/219] Revert "e1000e: fix cyclic resets at link up with active tx"
+Date:   Mon, 15 Jul 2019 10:00:43 -0400
+Message-Id: <20190715140341.6443-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -47,42 +46,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
+From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
 
-[ Upstream commit a976ca79e23f13bff79c14e7266cea4a0ea51e67 ]
+[ Upstream commit caff422ea81e144842bc44bab408d85ac449377b ]
 
-When we trigger NAPI we are disabling interrupts but in case we receive
-or send a packet in the meantime, as interrupts are disabled, we will
-miss this event.
+This reverts commit 0f9e980bf5ee1a97e2e401c846b2af989eb21c61.
 
-Trigger both NAPI instances (RX and TX) when at least one event happens
-so that we don't miss any interrupts.
+That change cased false-positive warning about hardware hang:
 
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-Cc: Joao Pinto <jpinto@synopsys.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+e1000e 0000:00:1f.6 eth0: Detected Hardware Unit Hang:
+   TDH                  <0>
+   TDT                  <1>
+   next_to_use          <1>
+   next_to_clean        <0>
+buffer_info[next_to_clean]:
+   time_stamp           <fffba7a7>
+   next_to_watch        <0>
+   jiffies              <fffbb140>
+   next_to_watch.status <0>
+MAC Status             <40080080>
+PHY Status             <7949>
+PHY 1000BASE-T Status  <0>
+PHY Extended Status    <3000>
+PCI Status             <10>
+e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+
+Besides warning everything works fine.
+Original issue will be fixed property in following patch.
+
+Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+Reported-by: Joseph Yasi <joe.yasi@gmail.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=203175
+Tested-by: Joseph Yasi <joe.yasi@gmail.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a634054dcb11..f3735d0458eb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2058,6 +2058,9 @@ static int stmmac_napi_check(struct stmmac_priv *priv, u32 chan)
- 						 &priv->xstats, chan);
- 	struct stmmac_channel *ch = &priv->channel[chan];
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index c10c9d7eadaa..6230b4bb1699 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -5309,13 +5309,8 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 			/* 8000ES2LAN requires a Rx packet buffer work-around
+ 			 * on link down event; reset the controller to flush
+ 			 * the Rx packet buffer.
+-			 *
+-			 * If the link is lost the controller stops DMA, but
+-			 * if there is queued Tx work it cannot be done.  So
+-			 * reset the controller to flush the Tx packet buffers.
+ 			 */
+-			if ((adapter->flags & FLAG_RX_NEEDS_RESTART) ||
+-			    e1000_desc_unused(tx_ring) + 1 < tx_ring->count)
++			if (adapter->flags & FLAG_RX_NEEDS_RESTART)
+ 				adapter->flags |= FLAG_RESTART_NOW;
+ 			else
+ 				pm_schedule_suspend(netdev->dev.parent,
+@@ -5338,6 +5333,14 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 	adapter->gotc_old = adapter->stats.gotc;
+ 	spin_unlock(&adapter->stats64_lock);
  
-+	if (status)
-+		status |= handle_rx | handle_tx;
++	/* If the link is lost the controller stops DMA, but
++	 * if there is queued Tx work it cannot be done.  So
++	 * reset the controller to flush the Tx packet buffers.
++	 */
++	if (!netif_carrier_ok(netdev) &&
++	    (e1000_desc_unused(tx_ring) + 1 < tx_ring->count))
++		adapter->flags |= FLAG_RESTART_NOW;
 +
- 	if ((status & handle_rx) && (chan < priv->plat->rx_queues_to_use)) {
- 		stmmac_disable_dma_irq(priv, priv->ioaddr, chan);
- 		napi_schedule_irqoff(&ch->rx_napi);
+ 	/* If reset is necessary, do it outside of interrupt context. */
+ 	if (adapter->flags & FLAG_RESTART_NOW) {
+ 		schedule_work(&adapter->reset_task);
 -- 
 2.20.1
 
