@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 798F568DF3
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE33D68DF6
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732946AbfGOODB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:03:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47062 "EHLO mail.kernel.org"
+        id S2387749AbfGOODE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:03:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47186 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387726AbfGOOC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:02:59 -0400
+        id S2387455AbfGOODD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:03:03 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1035F21849;
-        Mon, 15 Jul 2019 14:02:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DBE47217D9;
+        Mon, 15 Jul 2019 14:02:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199378;
-        bh=ptwHFtWCvy7RQL4VElwmOYqnBivnGZwqg/RB8KU40JQ=;
+        s=default; t=1563199382;
+        bh=saYp66UYcTDDQpWG5VhqspncKjwKOnk1Hdx4A4GhGMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ur+mBw0MxQB9S2br22CS2NaIx+ODeLUdikx9Od6nId7y9GXxkru879OalGFd1ay/4
-         oADxSdOSue2WV4ws9bTLarCW8PXiuXN7H034Tlhp6jYZgJ85uxQlUwMkwXXts8zo84
-         0J3uqKtnGyPhInVwHaznmLLmKtvyLCDYajUEsP4w=
+        b=Qmk9mkRJ6XAZ0jyCNl6dIyPDJPLSxnYLklgb+RKl5jD0B9J/xaJO/xv4huUr8/Ujv
+         atjpS1v8pBwOCKwA/2FXnlKe+Zuto4i6zCN4q0ZdMFPRxe9f0AhE7Kl8hGKFHX8EQ1
+         ozSsw5Yog6LDvqyUBk57L42uLa+PMknD+3EXukCw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 247/249] gtp: fix use-after-free in gtp_newlink()
-Date:   Mon, 15 Jul 2019 09:46:52 -0400
-Message-Id: <20190715134655.4076-247-sashal@kernel.org>
+Cc:     Ilya Maximets <i.maximets@samsung.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 248/249] xdp: fix race on generic receive path
+Date:   Mon, 15 Jul 2019 09:46:53 -0400
+Message-Id: <20190715134655.4076-248-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -44,109 +46,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Ilya Maximets <i.maximets@samsung.com>
 
-[ Upstream commit a2bed90704c68d3763bf24decb1b781a45395de8 ]
+[ Upstream commit bf0bdd1343efbbf65b4d53aef1fce14acbd79d50 ]
 
-Current gtp_newlink() could be called after unregister_pernet_subsys().
-gtp_newlink() uses gtp_net but it can be destroyed by
-unregister_pernet_subsys().
-So unregister_pernet_subsys() should be called after
-rtnl_link_unregister().
+Unlike driver mode, generic xdp receive could be triggered
+by different threads on different CPU cores at the same time
+leading to the fill and rx queue breakage. For example, this
+could happen while sending packets from two processes to the
+first interface of veth pair while the second part of it is
+open with AF_XDP socket.
 
-Test commands:
-   #SHELL 1
-   while :
-   do
-	   for i in {1..5}
-	   do
-		./gtp-link add gtp$i &
-	   done
-	   killall gtp-link
-   done
+Need to take a lock for each generic receive to avoid race.
 
-   #SHELL 2
-   while :
-   do
-	modprobe -rv gtp
-   done
-
-Splat looks like:
-[  753.176631] BUG: KASAN: use-after-free in gtp_newlink+0x9b4/0xa5c [gtp]
-[  753.177722] Read of size 8 at addr ffff8880d48f2458 by task gtp-link/7126
-[  753.179082] CPU: 0 PID: 7126 Comm: gtp-link Tainted: G        W         5.2.0-rc6+ #50
-[  753.185801] Call Trace:
-[  753.186264]  dump_stack+0x7c/0xbb
-[  753.186863]  ? gtp_newlink+0x9b4/0xa5c [gtp]
-[  753.187583]  print_address_description+0xc7/0x240
-[  753.188382]  ? gtp_newlink+0x9b4/0xa5c [gtp]
-[  753.189097]  ? gtp_newlink+0x9b4/0xa5c [gtp]
-[  753.189846]  __kasan_report+0x12a/0x16f
-[  753.190542]  ? gtp_newlink+0x9b4/0xa5c [gtp]
-[  753.191298]  kasan_report+0xe/0x20
-[  753.191893]  gtp_newlink+0x9b4/0xa5c [gtp]
-[  753.192580]  ? __netlink_ns_capable+0xc3/0xf0
-[  753.193370]  __rtnl_newlink+0xb9f/0x11b0
-[ ... ]
-[  753.241201] Allocated by task 7186:
-[  753.241844]  save_stack+0x19/0x80
-[  753.242399]  __kasan_kmalloc.constprop.3+0xa0/0xd0
-[  753.243192]  __kmalloc+0x13e/0x300
-[  753.243764]  ops_init+0xd6/0x350
-[  753.244314]  register_pernet_operations+0x249/0x6f0
-[ ... ]
-[  753.251770] Freed by task 7178:
-[  753.252288]  save_stack+0x19/0x80
-[  753.252833]  __kasan_slab_free+0x111/0x150
-[  753.253962]  kfree+0xc7/0x280
-[  753.254509]  ops_free_list.part.11+0x1c4/0x2d0
-[  753.255241]  unregister_pernet_operations+0x262/0x390
-[ ... ]
-[  753.285883] list_add corruption. next->prev should be prev (ffff8880d48f2458), but was ffff8880d497d878. (next.
-[  753.287241] ------------[ cut here ]------------
-[  753.287794] kernel BUG at lib/list_debug.c:25!
-[  753.288364] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
-[  753.289099] CPU: 0 PID: 7126 Comm: gtp-link Tainted: G    B   W         5.2.0-rc6+ #50
-[  753.291036] RIP: 0010:__list_add_valid+0x74/0xd0
-[  753.291589] Code: 48 39 da 75 27 48 39 f5 74 36 48 39 dd 74 31 48 83 c4 08 b8 01 00 00 00 5b 5d c3 48 89 d9 48b
-[  753.293779] RSP: 0018:ffff8880cae8f398 EFLAGS: 00010286
-[  753.294401] RAX: 0000000000000075 RBX: ffff8880d497d878 RCX: 0000000000000000
-[  753.296260] RDX: 0000000000000075 RSI: 0000000000000008 RDI: ffffed10195d1e69
-[  753.297070] RBP: ffff8880cd250ae0 R08: ffffed101b4bff21 R09: ffffed101b4bff21
-[  753.297899] R10: 0000000000000001 R11: ffffed101b4bff20 R12: ffff8880d497d878
-[  753.298703] R13: 0000000000000000 R14: ffff8880cd250ae0 R15: ffff8880d48f2458
-[  753.299564] FS:  00007f5f79805740(0000) GS:ffff8880da400000(0000) knlGS:0000000000000000
-[  753.300533] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  753.301231] CR2: 00007fe8c7ef4f10 CR3: 00000000b71a6006 CR4: 00000000000606f0
-[  753.302183] Call Trace:
-[  753.302530]  gtp_newlink+0x5f6/0xa5c [gtp]
-[  753.303037]  ? __netlink_ns_capable+0xc3/0xf0
-[  753.303576]  __rtnl_newlink+0xb9f/0x11b0
-[  753.304092]  ? rtnl_link_unregister+0x230/0x230
-
-Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: c497176cb2e4 ("xsk: add Rx receive functions and poll support")
+Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Tested-by: William Tu <u9012063@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/xdp_sock.h |  2 ++
+ net/xdp/xsk.c          | 31 ++++++++++++++++++++++---------
+ 2 files changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 5615cdb7202c..607f38712b4e 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -1382,9 +1382,9 @@ late_initcall(gtp_init);
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index d074b6d60f8a..ac3c047d058c 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -67,6 +67,8 @@ struct xdp_sock {
+ 	 * in the SKB destructor callback.
+ 	 */
+ 	spinlock_t tx_completion_lock;
++	/* Protects generic receive. */
++	spinlock_t rx_lock;
+ 	u64 rx_dropped;
+ };
  
- static void __exit gtp_fini(void)
- {
--	unregister_pernet_subsys(&gtp_net_ops);
- 	genl_unregister_family(&gtp_genl_family);
- 	rtnl_link_unregister(&gtp_link_ops);
-+	unregister_pernet_subsys(&gtp_net_ops);
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index a14e8864e4fa..5e0637db92ea 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -123,13 +123,17 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+ 	u64 addr;
+ 	int err;
  
- 	pr_info("GTP module unloaded\n");
+-	if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index)
+-		return -EINVAL;
++	spin_lock_bh(&xs->rx_lock);
++
++	if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
+ 
+ 	if (!xskq_peek_addr(xs->umem->fq, &addr) ||
+ 	    len > xs->umem->chunk_size_nohr - XDP_PACKET_HEADROOM) {
+-		xs->rx_dropped++;
+-		return -ENOSPC;
++		err = -ENOSPC;
++		goto out_drop;
+ 	}
+ 
+ 	addr += xs->umem->headroom;
+@@ -138,13 +142,21 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+ 	memcpy(buffer, xdp->data_meta, len + metalen);
+ 	addr += metalen;
+ 	err = xskq_produce_batch_desc(xs->rx, addr, len);
+-	if (!err) {
+-		xskq_discard_addr(xs->umem->fq);
+-		xsk_flush(xs);
+-		return 0;
+-	}
++	if (err)
++		goto out_drop;
++
++	xskq_discard_addr(xs->umem->fq);
++	xskq_produce_flush_desc(xs->rx);
+ 
++	spin_unlock_bh(&xs->rx_lock);
++
++	xs->sk.sk_data_ready(&xs->sk);
++	return 0;
++
++out_drop:
+ 	xs->rx_dropped++;
++out_unlock:
++	spin_unlock_bh(&xs->rx_lock);
+ 	return err;
  }
+ 
+@@ -765,6 +777,7 @@ static int xsk_create(struct net *net, struct socket *sock, int protocol,
+ 
+ 	xs = xdp_sk(sk);
+ 	mutex_init(&xs->mutex);
++	spin_lock_init(&xs->rx_lock);
+ 	spin_lock_init(&xs->tx_completion_lock);
+ 
+ 	mutex_lock(&net->xdp.lock);
 -- 
 2.20.1
 
