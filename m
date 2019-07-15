@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C467697F1
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95B3697EF
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:14:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731535AbfGONsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1731549AbfGONsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 15 Jul 2019 09:48:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58710 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:59336 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731528AbfGONsd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:48:33 -0400
+        id S1730599AbfGONsg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:48:36 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A53FD2067C;
-        Mon, 15 Jul 2019 13:48:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B727D2086C;
+        Mon, 15 Jul 2019 13:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198512;
-        bh=IPkW1wtyBmTysB6ZXNh7HzhfOaUUPUjyS64RiPcigIg=;
+        s=default; t=1563198515;
+        bh=u6RQSDbsXz7d1wIj1ywS08mITo8uSGdBMeqTUouL1To=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YyK3IJ3jlsJoAal0rZChXC//mTGtL2uJMt7kSUdnctkyIhs6P9J5sbV5uii5UkU9Q
-         VOk3PjYVUXNcwyNCA/fyq5pDtkp5JNML9EYp/+EaGpbgNq6Ruy4EzEjlmL7+wFU2jm
-         Ns+EX6ZFg0ISpNLiFiWx8A1sX35gxODTTlZDtvNo=
+        b=uPlQfAjpSnzeZAHCnSRKDRsN0g5XgS16rPJqPwZd+HQ+WoMJnB+ZjdtnMl8yrNSZT
+         G9HFhRni+IglK3QEGV+BWklRF882sqhNdMX4f2QdlcZ4/j1/QzjtVRnlp+LryhtHID
+         5+78Qr55TVLGyh4wI1Nv+lUyPT31AhCP7La+NzSk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
@@ -32,9 +32,9 @@ Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 031/249] net: stmmac: dwmac4/5: Clear unused address entries
-Date:   Mon, 15 Jul 2019 09:43:16 -0400
-Message-Id: <20190715134655.4076-31-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 032/249] net: stmmac: Prevent missing interrupts when running NAPI
+Date:   Mon, 15 Jul 2019 09:43:17 -0400
+Message-Id: <20190715134655.4076-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -49,12 +49,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jose Abreu <Jose.Abreu@synopsys.com>
 
-[ Upstream commit 0620ec6c62a5a07625b65f699adc5d1b90394ee6 ]
+[ Upstream commit a976ca79e23f13bff79c14e7266cea4a0ea51e67 ]
 
-In case we don't use a given address entry we need to clear it because
-it could contain previous values that are no longer valid.
+When we trigger NAPI we are disabling interrupts but in case we receive
+or send a packet in the meantime, as interrupts are disabled, we will
+miss this event.
 
-Found out while running stmmac selftests.
+Trigger both NAPI instances (RX and TX) when at least one event happens
+so that we don't miss any interrupts.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 Cc: Joao Pinto <jpinto@synopsys.com>
@@ -64,36 +66,23 @@ Cc: Alexandre Torgue <alexandre.torgue@st.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 99d772517242..206170d0bf81 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -443,14 +443,20 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
- 		 * are required
- 		 */
- 		value |= GMAC_PACKET_FILTER_PR;
--	} else if (!netdev_uc_empty(dev)) {
--		int reg = 1;
-+	} else {
- 		struct netdev_hw_addr *ha;
-+		int reg = 1;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 06358fe5b245..dbee9b0113e3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2048,6 +2048,9 @@ static int stmmac_napi_check(struct stmmac_priv *priv, u32 chan)
+ 						 &priv->xstats, chan);
+ 	struct stmmac_channel *ch = &priv->channel[chan];
  
- 		netdev_for_each_uc_addr(ha, dev) {
- 			dwmac4_set_umac_addr(hw, ha->addr, reg);
- 			reg++;
- 		}
++	if (status)
++		status |= handle_rx | handle_tx;
 +
-+		while (reg <= GMAC_MAX_PERFECT_ADDRESSES) {
-+			writel(0, ioaddr + GMAC_ADDR_HIGH(reg));
-+			writel(0, ioaddr + GMAC_ADDR_LOW(reg));
-+			reg++;
-+		}
- 	}
- 
- 	writel(value, ioaddr + GMAC_PACKET_FILTER);
+ 	if ((status & handle_rx) && (chan < priv->plat->rx_queues_to_use)) {
+ 		stmmac_disable_dma_irq(priv, priv->ioaddr, chan);
+ 		napi_schedule_irqoff(&ch->rx_napi);
 -- 
 2.20.1
 
