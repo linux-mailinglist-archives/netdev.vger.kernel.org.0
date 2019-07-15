@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 200796962A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:03:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C3D69632
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388665AbfGOOJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:09:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60512 "EHLO mail.kernel.org"
+        id S2388541AbfGOOKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:10:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388652AbfGOOJK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:09:10 -0400
+        id S2388061AbfGOOKG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:10:06 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2DFB212F5;
-        Mon, 15 Jul 2019 14:09:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AA88E2081C;
+        Mon, 15 Jul 2019 14:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199749;
-        bh=oLHMVyDyR9D/eTUhXbuQSLHOw8Bnlk5PSTnPXqxZkc4=;
+        s=default; t=1563199805;
+        bh=LaQblhdiV7y0KVA9JzhqcAZ/O1ITWftSFhPSvbzR3lI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pL5//F3DmfgfJ5Pfgtup0TfMdYtqC3iSfwQR4MFCAJrRantYyLFV9qLbsJr2flu3j
-         O98+FS1NlxqKk9kcoY2yhnLZQszCo9RfP25x2JERRP28qRtBxYOzYsH2cPJGwk7pap
-         8SBtJ2RQ9iI6NkQEQ5J4Ylowj+wUVjWhpclk8fnk=
+        b=a22VD5DhqzTsPRnw1HzfTbqh2FoPR3pLOohjm6TooRdD2/N/Ai5H6R8dOfrI/iqXA
+         rer2QAryn/AjUt4fdRbzEtyiOnn9+ueGVCAu4fYPCLcZmj1lJVEiuzTs2trgNhr/Cz
+         Uz2erWjNJht63oMM5TMcuzhvcY6PjXGEiVARUgfY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 094/219] net: hns3: delay ring buffer clearing during reset
-Date:   Mon, 15 Jul 2019 10:01:35 -0400
-Message-Id: <20190715140341.6443-94-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 111/219] net: netsec: initialize tx ring on ndo_open
+Date:   Mon, 15 Jul 2019 10:01:52 -0400
+Message-Id: <20190715140341.6443-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,93 +44,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
-[ Upstream commit 3a30964a2eef6aabd3ab18b979ea0eacf1147731 ]
+[ Upstream commit 39e3622edeffa63c2871153d8743c5825b139968 ]
 
-The driver may not be able to disable the ring through firmware
-when downing the netdev during reset process, which may cause
-hardware accessing freed buffer problem.
+Since we changed the Tx ring handling and now depends on bit31 to figure
+out the owner of the descriptor, we should initialize this every time
+the device goes down-up instead of doing it once on driver init. If the
+value is not correctly initialized the device won't have any available
+descriptors
 
-This patch delays the ring buffer clearing to reset uninit
-process because hardware will not access the ring buffer after
-hardware reset is completed.
+Changes since v1:
+- Typo fixes
 
-Fixes: bb6b94a896d4 ("net: hns3: Add reset interface implementation in client")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Fixes: 35e07d234739 ("net: socionext: remove mmio reads on Tx")
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Acked-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/socionext/netsec.c | 32 ++++++++++++++-----------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 6afdd376bc03..7e7c10513d2c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -28,7 +28,7 @@
- #define hns3_tx_bd_count(S)	DIV_ROUND_UP(S, HNS3_MAX_BD_SIZE)
- 
- static void hns3_clear_all_ring(struct hnae3_handle *h);
--static void hns3_force_clear_all_rx_ring(struct hnae3_handle *h);
-+static void hns3_force_clear_all_ring(struct hnae3_handle *h);
- static void hns3_remove_hw_addr(struct net_device *netdev);
- 
- static const char hns3_driver_name[] = "hns3";
-@@ -484,7 +484,12 @@ static void hns3_nic_net_down(struct net_device *netdev)
- 	/* free irq resources */
- 	hns3_nic_uninit_irq(priv);
- 
--	hns3_clear_all_ring(priv->ae_handle);
-+	/* delay ring buffer clearing to hns3_reset_notify_uninit_enet
-+	 * during reset process, because driver may not be able
-+	 * to disable the ring through firmware when downing the netdev.
-+	 */
-+	if (!hns3_nic_resetting(netdev))
-+		hns3_clear_all_ring(priv->ae_handle);
- }
- 
- static int hns3_nic_net_stop(struct net_device *netdev)
-@@ -3737,7 +3742,7 @@ static void hns3_client_uninit(struct hnae3_handle *handle, bool reset)
- 
- 	hns3_del_all_fd_rules(netdev, true);
- 
--	hns3_force_clear_all_rx_ring(handle);
-+	hns3_force_clear_all_ring(handle);
- 
- 	hns3_uninit_phy(netdev);
- 
-@@ -3909,7 +3914,7 @@ static void hns3_force_clear_rx_ring(struct hns3_enet_ring *ring)
- 	}
- }
- 
--static void hns3_force_clear_all_rx_ring(struct hnae3_handle *h)
-+static void hns3_force_clear_all_ring(struct hnae3_handle *h)
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index cba5881b2746..a10ef700f16d 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -1029,7 +1029,6 @@ static void netsec_free_dring(struct netsec_priv *priv, int id)
+ static int netsec_alloc_dring(struct netsec_priv *priv, enum ring_id id)
  {
- 	struct net_device *ndev = h->kinfo.netdev;
- 	struct hns3_nic_priv *priv = netdev_priv(ndev);
-@@ -3917,6 +3922,9 @@ static void hns3_force_clear_all_rx_ring(struct hnae3_handle *h)
- 	u32 i;
+ 	struct netsec_desc_ring *dring = &priv->desc_ring[id];
+-	int i;
  
- 	for (i = 0; i < h->kinfo.num_tqps; i++) {
-+		ring = priv->ring_data[i].ring;
-+		hns3_clear_tx_ring(ring);
+ 	dring->vaddr = dma_alloc_coherent(priv->dev, DESC_SZ * DESC_NUM,
+ 					  &dring->desc_dma, GFP_KERNEL);
+@@ -1040,19 +1039,6 @@ static int netsec_alloc_dring(struct netsec_priv *priv, enum ring_id id)
+ 	if (!dring->desc)
+ 		goto err;
+ 
+-	if (id == NETSEC_RING_TX) {
+-		for (i = 0; i < DESC_NUM; i++) {
+-			struct netsec_de *de;
+-
+-			de = dring->vaddr + (DESC_SZ * i);
+-			/* de->attr is not going to be accessed by the NIC
+-			 * until netsec_set_tx_de() is called.
+-			 * No need for a dma_wmb() here
+-			 */
+-			de->attr = 1U << NETSEC_TX_SHIFT_OWN_FIELD;
+-		}
+-	}
+-
+ 	return 0;
+ err:
+ 	netsec_free_dring(priv, id);
+@@ -1060,6 +1046,23 @@ static int netsec_alloc_dring(struct netsec_priv *priv, enum ring_id id)
+ 	return -ENOMEM;
+ }
+ 
++static void netsec_setup_tx_dring(struct netsec_priv *priv)
++{
++	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_TX];
++	int i;
 +
- 		ring = priv->ring_data[i + h->kinfo.num_tqps].ring;
- 		hns3_force_clear_rx_ring(ring);
- 	}
-@@ -4145,7 +4153,8 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
- 		return 0;
- 	}
++	for (i = 0; i < DESC_NUM; i++) {
++		struct netsec_de *de;
++
++		de = dring->vaddr + (DESC_SZ * i);
++		/* de->attr is not going to be accessed by the NIC
++		 * until netsec_set_tx_de() is called.
++		 * No need for a dma_wmb() here
++		 */
++		de->attr = 1U << NETSEC_TX_SHIFT_OWN_FIELD;
++	}
++}
++
+ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+ {
+ 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+@@ -1361,6 +1364,7 @@ static int netsec_netdev_open(struct net_device *ndev)
  
--	hns3_force_clear_all_rx_ring(handle);
-+	hns3_clear_all_ring(handle);
-+	hns3_force_clear_all_ring(handle);
+ 	pm_runtime_get_sync(priv->dev);
  
- 	hns3_nic_uninit_vector_data(priv);
- 
++	netsec_setup_tx_dring(priv);
+ 	ret = netsec_setup_rx_dring(priv);
+ 	if (ret) {
+ 		netif_err(priv, probe, priv->ndev,
 -- 
 2.20.1
 
