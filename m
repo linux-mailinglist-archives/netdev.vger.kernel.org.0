@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED6B669601
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC256960A
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388857AbfGOONW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:13:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53716 "EHLO mail.kernel.org"
+        id S2389267AbfGOOOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:14:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731050AbfGOONV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:13:21 -0400
+        id S1731356AbfGOONw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:13:52 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C4F2721530;
-        Mon, 15 Jul 2019 14:13:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B8449206B8;
+        Mon, 15 Jul 2019 14:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200000;
-        bh=XlGMvA78OvGLHAOA4r8DdAmpK8qtDo6lj0Fg1/lV9zs=;
+        s=default; t=1563200031;
+        bh=oiFz2NTIZMbWcBgnnWQwMU4e1+RSkgJOnzytLtRJPzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cQ7Wx9tW5pJBGiqgUCPWrbgVQORlJhhUXoR8FMGHvCf/xh03MsGqwraXesNp9IDI2
-         2TcYrKjobmWgdIC3/SYxXA1BTdomN5vgb4p8nKPDQ2UxheSmyTMeXqQ9XkW40QXCn5
-         kF/l5ZJ/VqhpawmGD2b59LVZ+ikg13SqQ0YRZYPU=
+        b=eFu21eClbnjr2A/mWVk2SRxGxEkb1n1ciDJ73hH+/3RGmdOQZE2jXN1bwlyUj9NqG
+         NzbCnKCcjXIWHmD8gQVUjph6INezPhbptreXkPOd+upcJhcLZcf+78m4qyq2NQQEy4
+         gVoZZJ3q/BQZJpMx3D8W5ed26+vVUQzR85a13jfM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiong Wang <jiong.wang@netronome.com>,
-        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Song Liu <songliubraving@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 156/219] bpf: fix BPF_ALU32 | BPF_ARSH on BE arches
-Date:   Mon, 15 Jul 2019 10:02:37 -0400
-Message-Id: <20190715140341.6443-156-sashal@kernel.org>
+Cc:     Zefir Kurtisi <zefir.kurtisi@neratec.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 164/219] ath9k: correctly handle short radar pulses
+Date:   Mon, 15 Jul 2019 10:02:45 -0400
+Message-Id: <20190715140341.6443-164-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -48,56 +44,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiong Wang <jiong.wang@netronome.com>
+From: Zefir Kurtisi <zefir.kurtisi@neratec.com>
 
-[ Upstream commit 75672dda27bd00109a84cd975c17949ad9c45663 ]
+[ Upstream commit df5c4150501ee7e86383be88f6490d970adcf157 ]
 
-Yauheni reported the following code do not work correctly on BE arches:
+In commit 3c0efb745a17 ("ath9k: discard undersized packets")
+the lower bound of RX packets was set to 10 (min ACK size) to
+filter those that would otherwise be treated as invalid at
+mac80211.
 
-       ALU_ARSH_X:
-               DST = (u64) (u32) ((*(s32 *) &DST) >> SRC);
-               CONT;
-       ALU_ARSH_K:
-               DST = (u64) (u32) ((*(s32 *) &DST) >> IMM);
-               CONT;
+Alas, short radar pulses are reported as PHY_ERROR frames
+with length set to 3. Therefore their detection stopped
+working after that commit.
 
-and are causing failure of test_verifier test 'arsh32 on imm 2' on BE
-arches.
+NOTE: ath9k drivers built thereafter will not pass DFS
+certification.
 
-The code is taking address and interpreting memory directly, so is not
-endianness neutral. We should instead perform standard C type casting on
-the variable. A u64 to s32 conversion will drop the high 32-bit and reserve
-the low 32-bit as signed integer, this is all we want.
+This extends the criteria for short packets to explicitly
+handle PHY_ERROR frames.
 
-Fixes: 2dc6b100f928 ("bpf: interpreter support BPF_ALU | BPF_ARSH")
-Reported-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Fixes: 3c0efb745a17 ("ath9k: discard undersized packets")
+Signed-off-by: Zefir Kurtisi <zefir.kurtisi@neratec.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/recv.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 06ba9c5f156b..932fd3fa5a5a 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1367,10 +1367,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
- 		insn++;
- 		CONT;
- 	ALU_ARSH_X:
--		DST = (u64) (u32) ((*(s32 *) &DST) >> SRC);
-+		DST = (u64) (u32) (((s32) DST) >> SRC);
- 		CONT;
- 	ALU_ARSH_K:
--		DST = (u64) (u32) ((*(s32 *) &DST) >> IMM);
-+		DST = (u64) (u32) (((s32) DST) >> IMM);
- 		CONT;
- 	ALU64_ARSH_X:
- 		(*(s64 *) &DST) >>= SRC;
+diff --git a/drivers/net/wireless/ath/ath9k/recv.c b/drivers/net/wireless/ath/ath9k/recv.c
+index 4e97f7f3b2a3..06e660858766 100644
+--- a/drivers/net/wireless/ath/ath9k/recv.c
++++ b/drivers/net/wireless/ath/ath9k/recv.c
+@@ -815,6 +815,7 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
+ 	struct ath_common *common = ath9k_hw_common(ah);
+ 	struct ieee80211_hdr *hdr;
+ 	bool discard_current = sc->rx.discard_next;
++	bool is_phyerr;
+ 
+ 	/*
+ 	 * Discard corrupt descriptors which are marked in
+@@ -827,8 +828,11 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
+ 
+ 	/*
+ 	 * Discard zero-length packets and packets smaller than an ACK
++	 * which are not PHY_ERROR (short radar pulses have a length of 3)
+ 	 */
+-	if (rx_stats->rs_datalen < 10) {
++	is_phyerr = rx_stats->rs_status & ATH9K_RXERR_PHY;
++	if (!rx_stats->rs_datalen ||
++	    (rx_stats->rs_datalen < 10 && !is_phyerr)) {
+ 		RX_STAT_INC(sc, rx_len_err);
+ 		goto corrupt;
+ 	}
 -- 
 2.20.1
 
