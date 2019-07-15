@@ -2,138 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 317A069B7C
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 21:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF7CB69B8E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 21:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731114AbfGOThA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 15:37:00 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39260 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730997AbfGOTg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 15:36:59 -0400
-Received: by mail-pl1-f196.google.com with SMTP id b7so8812836pls.6;
-        Mon, 15 Jul 2019 12:36:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZMZFpCm9N/xOShc4hGeJhjqpU1dBVFQxn4gJ5Yr8VYU=;
-        b=ouMD/x07ooCJnj+NYt5TApE5G94vM5KbLQmbdXlQVy+akuMZEEpCrtND7YKQG5YUeA
-         SwDKVhCmMNrLmoEdYnhOUJT7p2Js7T5gKnlL5psag4uSjc/eacvG09R20QX9ob1r4KGQ
-         JPUttDZsH8R58YIqWxPGf4pAOehWEDqdzpRPAvVxKz6f5hK1dym19x1TE2jRz8hHVpx0
-         UqQueUQ86Wq4EhgMr8yelYxObVmxnTeT2kl+gzYOROR0JeUAJOE9lJYDracn4NTfoh3G
-         4sWnaSWux8Tb332IFGX3aPQu0kyiBn2izgQl68gsJm9ydw4yE3c+5dgMn2bBWXbyvUpu
-         ia4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZMZFpCm9N/xOShc4hGeJhjqpU1dBVFQxn4gJ5Yr8VYU=;
-        b=pjoc49IbJaKxLbKZHaDkuSsUjMEMsW2JWNGT5AaHLqMFSWOJOAq18yLvOkrKR1P+JH
-         kkwYYQlaf3z7N5v95S/GqjSofPmtWvf+v6DylRp9DQD6BmsU3XUsDVKeActTjeMq1FZy
-         TDrOCBE8xQRnEBGANGBKV5hldREo79BQ6BLNVqyzbHPqOnqv/M+VWLmpWEa2zi3RO1mS
-         PMG/PJpvPJcifrLcRoThHsDzhvE0uPZ105rBAG8UlmsWcOg67VPd5DaAGJn2fgDyViIs
-         UnDrd+vXZBgM9tsLNQ0ScptjZV4tUTaqHYprEIVkSZ3wl7s7ipkWtWiOwL/GUg8UL1mu
-         dMdQ==
-X-Gm-Message-State: APjAAAVGGjRN61LDLVDxX6DugNO8PAZ69Tjpvt8+V4ZctAMworLBQ4kI
-        aJkg+vg1LLpgDyUfVOdB3Ts=
-X-Google-Smtp-Source: APXvYqxiXiuWWcy55kFQPdkmhXEuhD4sgNJY5WWi5qbrL1Ybmgv+FOQ8bkjHLfFA1omJ8iRmDA1Qtg==
-X-Received: by 2002:a17:902:4aa3:: with SMTP id x32mr28971983pld.119.1563219418289;
-        Mon, 15 Jul 2019 12:36:58 -0700 (PDT)
-Received: from bharath12345-Inspiron-5559 ([103.110.42.33])
-        by smtp.gmail.com with ESMTPSA id n19sm18786840pfa.11.2019.07.15.12.36.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Jul 2019 12:36:57 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 01:06:38 +0530
-From:   Bharath Vedartham <linux.bhar@gmail.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     akpm@linux-foundation.org, ira.weiny@intel.com,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Dimitri Sivanich <sivanich@sgi.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S1730692AbfGOTkW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Jul 2019 15:40:22 -0400
+Received: from mga12.intel.com ([192.55.52.136]:62362 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729948AbfGOTkV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 15:40:21 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Jul 2019 12:40:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,494,1557212400"; 
+   d="scan'208";a="187176797"
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+  by fmsmga001.fm.intel.com with ESMTP; 15 Jul 2019 12:40:21 -0700
+Received: from orsmsx122.amr.corp.intel.com (10.22.225.227) by
+ ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 15 Jul 2019 12:40:20 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.240]) by
+ ORSMSX122.amr.corp.intel.com ([169.254.11.139]) with mapi id 14.03.0439.000;
+ Mon, 15 Jul 2019 12:40:20 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Enrico Weigelt <info@metux.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Matt Sickler <Matt.Sickler@daktronics.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Keith Busch <keith.busch@intel.com>,
-        YueHaibing <yuehaibing@huawei.com>, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
-        kvm@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] mm/gup: Use put_user_page*() instead of put_page*()
-Message-ID: <20190715193638.GC21161@bharath12345-Inspiron-5559>
-References: <1563131456-11488-1-git-send-email-linux.bhar@gmail.com>
- <deea584f-2da2-8e1f-5a07-e97bf32c63bb@nvidia.com>
- <20190715065654.GA3716@bharath12345-Inspiron-5559>
- <1aeb21d9-6dc6-c7d2-58b6-279b1dfc523b@nvidia.com>
+        Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH iproute2 net-next v2 1/6] Kernel header update for
+ hardware offloading changes.
+Thread-Topic: [PATCH iproute2 net-next v2 1/6] Kernel header update for
+ hardware offloading changes.
+Thread-Index: AQHVHLZawMzre0Bl50KXhj1a6LTj8abMxi6A
+Date:   Mon, 15 Jul 2019 19:40:19 +0000
+Message-ID: <0AFDC65C-2A16-47B7-96F6-F6844AF75095@intel.com>
+References: <1559859735-17237-1-git-send-email-vedang.patel@intel.com>
+In-Reply-To: <1559859735-17237-1-git-send-email-vedang.patel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.11.11]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2A39362D5B6DF14EB0187936E8CE41EE@intel.com>
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1aeb21d9-6dc6-c7d2-58b6-279b1dfc523b@nvidia.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 15, 2019 at 11:10:20AM -0700, John Hubbard wrote:
-> On 7/14/19 11:56 PM, Bharath Vedartham wrote:
-> > On Sun, Jul 14, 2019 at 04:33:42PM -0700, John Hubbard wrote:
-> >> On 7/14/19 12:08 PM, Bharath Vedartham wrote:
-> [...]
-> >> 1. Pull down https://github.com/johnhubbard/linux/commits/gup_dma_core
-> >> and find missing conversions: look for any additional missing 
-> >> get_user_pages/put_page conversions. You've already found a couple missing 
-> >> ones. I haven't re-run a search in a long time, so there's probably even more.
-> >> 	a) And find more, after I rebase to 5.3-rc1: people probably are adding
-> >> 	get_user_pages() calls as we speak. :)
-> > Shouldn't this be documented then? I don't see any docs for using
-> > put_user_page*() in v5.2.1 in the memory management API section?
+Hi Stephen, 
+
+The kernel patches corresponding to this series have been merged. I just wanted to check whether these iproute2 related patches are on your TODO list.
+
+Let me know if you need any information from me on these patches.
+
+Thanks,
+Vedang Patel
+> On Jun 6, 2019, at 3:22 PM, Patel, Vedang <vedang.patel@intel.com> wrote:
 > 
-> Yes, it needs documentation. My first try (which is still in the above git
-> repo) was reviewed and found badly wanting, so I'm going to rewrite it. Meanwhile,
-> I agree that an interim note would be helpful, let me put something together.
+> This should only be updated after the kernel patches related to
+> txtime-offload have been merged into the kernel.
 > 
-> [...]
-> >>     https://github.com/johnhubbard/linux/commits/gup_dma_core
-> >>
-> >>     a) gets rebased often, and
-> >>
-> >>     b) has a bunch of commits (iov_iter and related) that conflict
-> >>        with the latest linux.git,
-> >>
-> >>     c) has some bugs in the bio area, that I'm fixing, so I don't trust
-> >>        that's it's safely runnable, for a few more days.
-> > I assume your repo contains only work related to fixing gup issues and
-> > not the main repo for gup development? i.e where gup changes are merged?
+> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+> ---
+> include/uapi/linux/pkt_sched.h | 5 +++++
+> 1 file changed, 5 insertions(+)
 > 
-> Correct, this is just a private tree, not a maintainer tree. But I'll try to
-> keep the gup_dma_core branch something that is usable by others, during the
-> transition over to put_user_page(), because the page-tracking patches are the
-> main way to test any put_user_page() conversions.
+> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+> index 8b2f993cbb77..c085860ff637 100644
+> --- a/include/uapi/linux/pkt_sched.h
+> +++ b/include/uapi/linux/pkt_sched.h
+> @@ -990,6 +990,7 @@ struct tc_etf_qopt {
+> 	__u32 flags;
+> #define TC_ETF_DEADLINE_MODE_ON	BIT(0)
+> #define TC_ETF_OFFLOAD_ON	BIT(1)
+> +#define TC_ETF_SKIP_SOCK_CHECK  BIT(2)
+> };
 > 
-> As Ira said, we're using linux-mm as the real (maintainer) tree.
-Thanks for the info! 
+> enum {
+> @@ -1158,6 +1159,8 @@ enum {
+>  *       [TCA_TAPRIO_ATTR_SCHED_ENTRY_INTERVAL]
+>  */
 > 
-> thanks,
+> +#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST 0x1
+> +
+> enum {
+> 	TCA_TAPRIO_ATTR_UNSPEC,
+> 	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
+> @@ -1169,6 +1172,8 @@ enum {
+> 	TCA_TAPRIO_ATTR_ADMIN_SCHED, /* The admin sched, only used in dump */
+> 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME, /* s64 */
+> 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
+> +	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
+> +	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* s32 */
+> 	__TCA_TAPRIO_ATTR_MAX,
+> };
+> 
 > -- 
-> John Hubbard
-> NVIDIA
+> 2.7.3
+> 
+
