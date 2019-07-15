@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAEE68E03
+	by mail.lfdr.de (Postfix) with ESMTP id C473568E04
 	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387400AbfGOOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:02:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46798 "EHLO mail.kernel.org"
+        id S2387710AbfGOOCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:02:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46854 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732689AbfGOOCq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:02:46 -0400
+        id S2387701AbfGOOCs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:02:48 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6008F2182B;
-        Mon, 15 Jul 2019 14:02:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5D42A2083D;
+        Mon, 15 Jul 2019 14:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199365;
-        bh=axuiteU3REGKBHGaC74O78KMeiShDR8gdHMYbFxMin0=;
+        s=default; t=1563199368;
+        bh=bM7uSQcdpSnqrQfQmkmr9p2Sfs518Bd1c1HB6AY6Qww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Djd8NsreOwIimpR9KGU+pK8AC7ASbuknqxfKmuCFsZjuggKWnTxCALyC3ou88KCGT
-         QqN7gpBvAoSHioVjNngMSgBOKsoOt7zANyExhReLqAmz+uKmm3OGp+JiiNuaAJwZAx
-         uTl7tP3w8lS7AB3q9oKKfeme41IeWBY8f2kXd0Q0=
+        b=ixkkB2ar7absYQG8G9Z/VOMTG+9Hz7voliCvGvRf7LKc6RGW80Rx8ES8+cUlRPoo8
+         pJatfArSz2s5fISEz2KXv7KjOV7RRRBcZhhyjftkqjN5Xzs7vY6Kuhf98XISlbWqOC
+         UBGZjv94ko/ZXGghpzgJFH7184omvzI11KUh55e0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Taehee Yoo <ap420073@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
         osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 244/249] gtp: fix suspicious RCU usage
-Date:   Mon, 15 Jul 2019 09:46:49 -0400
-Message-Id: <20190715134655.4076-244-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 245/249] gtp: fix Illegal context switch in RCU read-side critical section.
+Date:   Mon, 15 Jul 2019 09:46:50 -0400
+Message-Id: <20190715134655.4076-245-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -46,90 +46,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit e198987e7dd7d3645a53875151cd6f8fc425b706 ]
+[ Upstream commit 3f167e1921865b379a9becf03828e7202c7b4917 ]
 
-gtp_encap_enable_socket() and gtp_encap_destroy() are not protected
-by rcu_read_lock(). and it's not safe to write sk->sk_user_data.
-This patch make these functions to use lock_sock() instead of
-rcu_dereference_sk_user_data().
+ipv4_pdp_add() is called in RCU read-side critical section.
+So GFP_KERNEL should not be used in the function.
+This patch make ipv4_pdp_add() to use GFP_ATOMIC instead of GFP_KERNEL.
 
 Test commands:
-    gtp-link add gtp1
+gtp-link add gtp1 &
+gtp-tunnel add gtp1 v1 100 200 1.1.1.1 2.2.2.2
 
 Splat looks like:
-[   83.238315] =============================
-[   83.239127] WARNING: suspicious RCU usage
-[   83.239702] 5.2.0-rc6+ #49 Not tainted
-[   83.240268] -----------------------------
-[   83.241205] drivers/net/gtp.c:799 suspicious rcu_dereference_check() usage!
-[   83.243828]
-[   83.243828] other info that might help us debug this:
-[   83.243828]
-[   83.246325]
-[   83.246325] rcu_scheduler_active = 2, debug_locks = 1
-[   83.247314] 1 lock held by gtp-link/1008:
-[   83.248523]  #0: 0000000017772c7f (rtnl_mutex){+.+.}, at: __rtnl_newlink+0x5f5/0x11b0
-[   83.251503]
-[   83.251503] stack backtrace:
-[   83.252173] CPU: 0 PID: 1008 Comm: gtp-link Not tainted 5.2.0-rc6+ #49
-[   83.253271] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[   83.254562] Call Trace:
-[   83.254995]  dump_stack+0x7c/0xbb
-[   83.255567]  gtp_encap_enable_socket+0x2df/0x360 [gtp]
-[   83.256415]  ? gtp_find_dev+0x1a0/0x1a0 [gtp]
-[   83.257161]  ? memset+0x1f/0x40
-[   83.257843]  gtp_newlink+0x90/0xa21 [gtp]
-[   83.258497]  ? __netlink_ns_capable+0xc3/0xf0
-[   83.259260]  __rtnl_newlink+0xb9f/0x11b0
-[   83.260022]  ? rtnl_link_unregister+0x230/0x230
+[  130.618881] =============================
+[  130.626382] WARNING: suspicious RCU usage
+[  130.626994] 5.2.0-rc6+ #50 Not tainted
+[  130.627622] -----------------------------
+[  130.628223] ./include/linux/rcupdate.h:266 Illegal context switch in RCU read-side critical section!
+[  130.629684]
+[  130.629684] other info that might help us debug this:
+[  130.629684]
+[  130.631022]
+[  130.631022] rcu_scheduler_active = 2, debug_locks = 1
+[  130.632136] 4 locks held by gtp-tunnel/1025:
+[  130.632925]  #0: 000000002b93c8b7 (cb_lock){++++}, at: genl_rcv+0x15/0x40
+[  130.634159]  #1: 00000000f17bc999 (genl_mutex){+.+.}, at: genl_rcv_msg+0xfb/0x130
+[  130.635487]  #2: 00000000c644ed8e (rtnl_mutex){+.+.}, at: gtp_genl_new_pdp+0x18c/0x1150 [gtp]
+[  130.636936]  #3: 0000000007a1cde7 (rcu_read_lock){....}, at: gtp_genl_new_pdp+0x187/0x1150 [gtp]
+[  130.638348]
+[  130.638348] stack backtrace:
+[  130.639062] CPU: 1 PID: 1025 Comm: gtp-tunnel Not tainted 5.2.0-rc6+ #50
+[  130.641318] Call Trace:
+[  130.641707]  dump_stack+0x7c/0xbb
+[  130.642252]  ___might_sleep+0x2c0/0x3b0
+[  130.642862]  kmem_cache_alloc_trace+0x1cd/0x2b0
+[  130.643591]  gtp_genl_new_pdp+0x6c5/0x1150 [gtp]
+[  130.644371]  genl_family_rcv_msg+0x63a/0x1030
+[  130.645074]  ? mutex_lock_io_nested+0x1090/0x1090
+[  130.645845]  ? genl_unregister_family+0x630/0x630
+[  130.646592]  ? debug_show_all_locks+0x2d0/0x2d0
+[  130.647293]  ? check_flags.part.40+0x440/0x440
+[  130.648099]  genl_rcv_msg+0xa3/0x130
 [ ... ]
 
-Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
+Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/gtp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 01fc51892e48..61f19e66be55 100644
+index 61f19e66be55..b770335c03c1 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -289,12 +289,14 @@ static void gtp_encap_destroy(struct sock *sk)
- {
- 	struct gtp_dev *gtp;
+@@ -954,7 +954,7 @@ static int ipv4_pdp_add(struct gtp_dev *gtp, struct sock *sk,
  
--	gtp = rcu_dereference_sk_user_data(sk);
-+	lock_sock(sk);
-+	gtp = sk->sk_user_data;
- 	if (gtp) {
- 		udp_sk(sk)->encap_type = 0;
- 		rcu_assign_sk_user_data(sk, NULL);
- 		sock_put(sk);
- 	}
-+	release_sock(sk);
- }
- 
- static void gtp_encap_disable_sock(struct sock *sk)
-@@ -796,7 +798,8 @@ static struct sock *gtp_encap_enable_socket(int fd, int type,
- 		goto out_sock;
  	}
  
--	if (rcu_dereference_sk_user_data(sock->sk)) {
-+	lock_sock(sock->sk);
-+	if (sock->sk->sk_user_data) {
- 		sk = ERR_PTR(-EBUSY);
- 		goto out_sock;
- 	}
-@@ -812,6 +815,7 @@ static struct sock *gtp_encap_enable_socket(int fd, int type,
- 	setup_udp_tunnel_sock(sock_net(sock->sk), sock, &tuncfg);
+-	pctx = kmalloc(sizeof(struct pdp_ctx), GFP_KERNEL);
++	pctx = kmalloc(sizeof(*pctx), GFP_ATOMIC);
+ 	if (pctx == NULL)
+ 		return -ENOMEM;
  
- out_sock:
-+	release_sock(sock->sk);
- 	sockfd_put(sock);
- 	return sk;
- }
 -- 
 2.20.1
 
