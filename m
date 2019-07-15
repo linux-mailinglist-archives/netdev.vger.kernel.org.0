@@ -2,250 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D5969B0D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8038969B14
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 20:59:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729432AbfGOSzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 14:55:52 -0400
-Received: from mail-io1-f45.google.com ([209.85.166.45]:33243 "EHLO
-        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbfGOSzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 14:55:52 -0400
-Received: by mail-io1-f45.google.com with SMTP id z3so35885954iog.0
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 11:55:51 -0700 (PDT)
+        id S1730002AbfGOS7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 14:59:11 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36276 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729237AbfGOS7K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 14:59:10 -0400
+Received: by mail-pg1-f193.google.com with SMTP id l21so8158928pgm.3;
+        Mon, 15 Jul 2019 11:59:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language;
-        bh=DrQ9yIu49v3DcR5+1/TvV4pzJZSv99kYr2CuDMA1JKU=;
-        b=TsDKhmD0BWOoMK4NA6Y/mSF4fnPhv6lLA/qJBzXIb4kg1V50kz7ZiqbZETS4kGZoUo
-         fZw0FcY7IeBH9NG5b1RlViLo3DOfLX4tksCVvAMY+aZgTB8L0SXf07zWBFXqQGrUeNR9
-         kaVCtqeH7a12bBHEHPM6c0qZaE1kyp7A98fP3Zix1O3sRhcBcDje29353zBDlyDxdm/N
-         OVieSzaZWvFVaONLqYdced6ak9pNhxUAmaRVkII8P6JRrfX8WIYcks//ZmnGt72Nfp/e
-         duGyz3+WJboDbc+EmGzmL2y3TmGNJ10zto7IHQpqW7jCgFKv+YPonZukYId+r81rnRuW
-         13VQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wV1tVFXp4Dk7551aJryL+rhxiRYGF53mCFjrqi8D++Y=;
+        b=h2SLQDT1wFXz44rIFDfbQvFcKkb4upCgqv88sm6e+FnD+DDZF+/OmKp/KKlbKRnoBB
+         tNINZSJ3lnHjJ/iYRfuG5zpbA0mH8n0Bm3gMy5l1tf3b39D72eSRxE1L64MG8RDvm755
+         r5KvK26ryaMG7xIn1+VcaKrs9WO4+f8u1Wp/3gh1i++zJU22dTmNMvFAbJPbqfNu6Efg
+         /V1KXp4qqsTGjA+ErnOlluMnKPqaLHDXo11qDieYPBq+A6xALgrQWFt5ZPW30CrCbHet
+         KVDCcWjcDbVPtbQCpyROdGbyiFuMrW2vfyA29Mj2Wi78PyBjNcmod7mDFsLCQa6CK15W
+         6/dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language;
-        bh=DrQ9yIu49v3DcR5+1/TvV4pzJZSv99kYr2CuDMA1JKU=;
-        b=RGj+7BpoZ55d4HHOoyINQCJ649vCGoeyGIDefc3bJBkLWoSE9DAPcfJQ9NXRYh0QOv
-         ipJgN9vQrKXvdb+sJ2ZZgfoKhcGmPV/lwHhCWUHam7uMCF8zEX1Z/blbrF8IJWZ+96eB
-         UVgeCBB57H5oZzEwWRu7Li4m0W/rjwUVUuaXBPXhozOgWBDK6n4VzIRL+r42DbcgpnhZ
-         1C9htQ1LDr6WFbqFk3QCS+Q+L+wuIe1mi/sAe8nQ2Px6u2Py0VwqwQKKER/nkaYtWrgW
-         BOtKQ10Ld8mvVeW9vR+twB62P1W2sseUbzwxe6tzFP5E5KYdScZpTLa4nrQFoGVgWNSf
-         s51g==
-X-Gm-Message-State: APjAAAX7rWzZQQexSK15ZIpB1iGUXe0vIiGcfWgjpysoXJSUDB28QkSH
-        1hYbR2zV3zoJWIESNQsRo5NBwvxS
-X-Google-Smtp-Source: APXvYqwMbqr9+830oCSalB9vK/tAv1pVMYuxsGTLGW0QenuDuBNqZk4XA0Hzz4C5McB+6p2bJOLdsw==
-X-Received: by 2002:a6b:7401:: with SMTP id s1mr25035662iog.67.1563216950654;
-        Mon, 15 Jul 2019 11:55:50 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:51b4:3c95:43b6:f3d0? ([2601:282:800:fd80:51b4:3c95:43b6:f3d0])
-        by smtp.googlemail.com with ESMTPSA id d25sm17574646iom.52.2019.07.15.11.55.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Jul 2019 11:55:49 -0700 (PDT)
-Subject: Re: IPv6 L2TP issues related to 93531c67
-To:     Paul Donohue <linux-kernel@PaulSD.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-References: <20190715161827.GB2622@TopQuark.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d6db74f5-5add-7500-1b7a-fa62302a455f@gmail.com>
-Date:   Mon, 15 Jul 2019 12:55:48 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wV1tVFXp4Dk7551aJryL+rhxiRYGF53mCFjrqi8D++Y=;
+        b=dOpmxaew8Wmg3/jPWTPjsRtc596DI7xVIaE4l8Chy1ibiAyo5a7Lt0+Oix9wqQJ+zI
+         ieUhrFRNHaVB1rf5UtZIJwwLWtBjqcfWXOjm0TCjU86CM6GFadMwPxM2enKe78OeCYy+
+         IjkIkn1k2fF2w/CZKaMDnrar3gF2vGW+4VVayNDA5eGKt1yk/lhfPqXYE7oYDT6Wh0AW
+         QuzteNZb0vprX9WHVIFkgliqYvotHc/gjDEyCPO10Z1UyGiwn3p4r0qlYW9vCsYRa6Ju
+         pcIn8+hPUm5Wlg7ep6Dz2yZl6puFEfD/qmvM6UIRdTDcIM3JI54/p6lZF7Y7dixEgVer
+         6WBQ==
+X-Gm-Message-State: APjAAAVrb0R+6ZuijCXAAbx0ysGqhz3X3rDaBMEb+DmhJkJvM1KIQdlM
+        1L5lc9zCEyizlPQqEHekZWEQYMUsCfWSibu9fgpIrDA+ReA=
+X-Google-Smtp-Source: APXvYqwxVRz+kIkvMG7J0OELs3hTazVOrhRz8J56PbkcZ0aYpvLx67RGZ4nyusTrPkF6M3cYuWdNCgYXvO+MkimFsRk=
+X-Received: by 2002:a63:8a43:: with SMTP id y64mr28271790pgd.104.1563217149340;
+ Mon, 15 Jul 2019 11:59:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190715161827.GB2622@TopQuark.net>
-Content-Type: multipart/mixed;
- boundary="------------AEECEC2FE626767E5E22B4D9"
-Content-Language: en-US
+References: <000000000000d018ea058d9c46e3@google.com> <be6c249e-3b99-8388-5b13-547645b2fac9@hartkopp.net>
+In-Reply-To: <be6c249e-3b99-8388-5b13-547645b2fac9@hartkopp.net>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 15 Jul 2019 11:58:57 -0700
+Message-ID: <CAM_iQpXDDyXPn8C6Z1R-GdcarFpiRd3-S_E6GQrEaVdvjFfxeA@mail.gmail.com>
+Subject: Re: INFO: task hung in unregister_netdevice_notifier (3)
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     syzbot <syzbot+0f1827363a305f74996f@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------AEECEC2FE626767E5E22B4D9
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+On Mon, Jul 15, 2019 at 10:23 AM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+>
+> Hello all,
+>
+> On 14.07.19 06:07, syzbot wrote:
+> > syzbot has found a reproducer for the following crash on:
+>
+> the internal users of the CAN networking subsystem like CAN_BCM and
+> CAN_RAW hold a number of CAN identifier subscriptions ('filters') for
+> CAN netdevices (only type ARPHRD_CAN) in their socket data structures.
+>
+> The per-socket netdevice notifier is used to manage the ad-hoc removal
+> of these filters at netdevice removal time.
+>
+> What I can see in the console output at
+>
+> https://syzkaller.appspot.com/x/log.txt?x=10e45f0fa00000
+>
+> seems to be a race between an unknown register_netdevice_notifier() call
+> ("A") and the unregister_netdevice_notifier() ("B") likely invoked by
+> bcm_release() ("C"):
+>
+> [ 1047.294207][ T1049]  schedule+0xa8/0x270
+> [ 1047.318401][ T1049]  rwsem_down_write_slowpath+0x70a/0xf70
+> [ 1047.324114][ T1049]  ? downgrade_write+0x3c0/0x3c0
+> [ 1047.438644][ T1049]  ? mark_held_locks+0xf0/0xf0
+> [ 1047.443483][ T1049]  ? lock_acquire+0x190/0x410
+> [ 1047.448191][ T1049]  ? unregister_netdevice_notifier+0x7e/0x390
+> [ 1047.547227][ T1049]  down_write+0x13c/0x150
+> [ 1047.579535][ T1049]  ? down_write+0x13c/0x150
+> [ 1047.584106][ T1049]  ? __down_timeout+0x2d0/0x2d0
+> [ 1047.635356][ T1049]  ? mark_held_locks+0xf0/0xf0
+> [ 1047.640721][ T1049]  unregister_netdevice_notifier+0x7e/0x390  <- "B"
+> [ 1047.646667][ T1049]  ? __sock_release+0x89/0x280
+> [ 1047.709126][ T1049]  ? register_netdevice_notifier+0x630/0x630 <- "A"
+> [ 1047.715203][ T1049]  ? __kasan_check_write+0x14/0x20
+> [ 1047.775138][ T1049]  bcm_release+0x93/0x5e0                    <- "C"
+> [ 1047.795337][ T1049]  __sock_release+0xce/0x280
+> [ 1047.829016][ T1049]  sock_close+0x1e/0x30
+>
+> The question to me is now:
+>
+> Is the problem located in an (un)register_netdevice_notifier race OR is
+> it generally a bad idea to call unregister_netdevice_notifier() in a
+> sock release?
 
-Hi Paul:
+To me it doesn't look like anything wrong in CAN. If you look at a few
+more reports from syzbot for the same bug, it actually indicates
+something else is holding the pernet_ops_rwsem which caused this
+hung task.
 
-As an FYI, gmail thinks your emails are spam.
+When NMI is kicked, it shows nf_ct_iterate_cleanup() was getting
+stuck:
 
-On 7/15/19 10:18 AM, Paul Donohue wrote:
-> I have a system that establishes four L2TP over IPv6 tunnels using site-local addresses via the following:
-...
 
-> 
-> These tunnels worked fine on kernel 4.4.  On kernel 4.15, there was a bug that caused intermittent L2TP packet errors, but everything worked fine after applying 4522a70db7aa5e77526a4079628578599821b193.
-> 
-> However, after upgrading to kernel 4.18 with 4522a70d (or upgrading to kernel 5.0 which includes 4522a70d, or upgrading to the current master kernel branch), two of the four tunnels always fail to work properly after a reboot, although it appears random which two work and which two fail.
-> 
-> When I say "fail to work properly", the problem is that packets generated by the l2tp kernel modules (in response to a packet being sent to the associated net_l2tpX interface) are silently dropped.  The l2tp_debugfs kernel module reports that L2TP packets are being transmitted with no errors, iptables counters and nflog rules can be used to confirm that well-formed packets are generated and sent, but tcpdump does not see the packets being sent on any interface on the system.  iptables reports that the destination interface of the lost packets is "lo" (which is clearly incorrect and probably an indicator of the underlying issue), but `tcpdump -nnn -i lo` doesn't show any packets.  Incoming L2TP packets appear to be processed correctly, only outgoing L2TP packets appear affected.
-> 
-> Reverting commit 93531c6743157d7e8c5792f8ed1a57641149d62c (identified by bisection) fixes this issue.
-
-That commit can not be reverted. It is a foundational piece for a lot of
-other changes. Did you mean the commit before it works and this commit
-fails?
-
-> 
-> IPv4 L2TP tunnels do not appear affected by this issue.  Based on a few quick tests, it appears that switching to publicly-routable IPv6 addresses instead of site-local addresses seems to prevent this issue, although I haven't done sufficient testing of this, and it is not clear to me how the code in 93531c67 might be affected by the type of IPv6 address, so this observation may be a red herring.  Manually deleting and re-creating a broken interface seems to make it work again, although I have not thoroughly experimented with making changes after boot time to see if the problem is entirely random, if it is based on the number of existing interfaces, if it is based on a boot-time timing issue, etc.
-> 
-> It is not obvious to me how commit 93531c6743157d7e8c5792f8ed1a57641149d62c causes this issue, or how it should be fixed.  Could someone take a look and point me in the right direction for further troubleshooting?
-> 
-
-Let's get a complete example that demonstrates the problem, and I can go
-from there. Can you take the attached script and update it so that it
-reflects the problem you are reporting? That script works on latest
-kernel as well as 4.14.133. It uses network namespaces for 2 hosts with
-a router between them.
-
-Also, check the return of the fib lookups using:
-    perf record -e fib6:* -a
-    <run test, ctrl-c on the record>
-    perf script
-
-Checkout the fib lookup parameters and result. Do they look correct to
-you for your setup?
-
---------------AEECEC2FE626767E5E22B4D9
-Content-Type: application/x-sh;
- name="l2tp.sh"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="l2tp.sh"
-
-#!/bin/bash
-#
-# L2TPv3 tunnel between 2 hosts
-#
-#            host-1          |   router   |     host-2
-#                            |            |
-#      lo          l2tp      |            |      l2tp           lo
-#  fc00:101::1   fc00:1::1   |            |   fc00:1::2    fc00:101::2
-#                  eth0      |            |     eth0
-#              2001:db8:1::1 |            | 2001:db8:2::1
-
-which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
-
-################################################################################
-# create namespaces and interconnects
-
-create_ns()
-{
-	local ns=$1
-	local addr=$2
-	local addr6=$3
-
-	[ -z "${addr}" ] && addr="-"
-	[ -z "${addr6}" ] && addr6="-"
-
-	ip netns add ${ns}
-
-	ip -netns ${ns} link set lo up
-	if [ "${addr}" != "-" ]; then
-		ip -netns ${ns} addr add dev lo ${addr}
-	fi
-	if [ "${addr6}" != "-" ]; then
-		ip -netns ${ns} -6 addr add dev lo ${addr6}
-	fi
-
-	ip -netns ${ns} ro add unreachable default metric 8192
-	ip -netns ${ns} -6 ro add unreachable default metric 8192
-
-	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
-	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
-	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
-	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
-}
-
-# create veth pair to connect namespaces and apply addresses.
-connect_ns()
-{
-	local ns1=$1
-	local ns1_dev=$2
-	local ns1_addr=$3
-	local ns1_addr6=$4
-	local ns2=$5
-	local ns2_dev=$6
-	local ns2_addr=$7
-	local ns2_addr6=$8
-
-	ip -netns ${ns1} li add ${ns1_dev} type veth peer name tmp
-	ip -netns ${ns1} li set ${ns1_dev} up
-	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}
-	ip -netns ${ns2} li set ${ns2_dev} up
-
-	if [ "${ns1_addr}" != "-" ]; then
-		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}
-		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr}
-	fi
-
-	if [ "${ns1_addr6}" != "-" ]; then
-		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}
-		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}
-	fi
-}
-
-################################################################################
-# test setup
-setup()
-{
-	create_ns host-1
-	create_ns host-2
-	create_ns router
-
-	connect_ns host-1 eth0 10.1.1.1/24 2001:db8:1::1/64 \
-	           router eth1 10.1.1.2/24 2001:db8:1::2/64
-
-	connect_ns host-2 eth0 10.1.2.1/24 2001:db8:2::1/64 \
-	           router eth2 10.1.2.2/24 2001:db8:2::2/64
-
-	ip -netns host-1 addr add dev lo fc00:101::1/128
-	ip -netns host-2 addr add dev lo fc00:101::2/128
-	sleep 5
-
-	ip -netns host-1 -6 ro add 2001:db8:2::/64 via 2001:db8:1::2
-	ip -netns host-2 -6 ro add 2001:db8:1::/64 via 2001:db8:2::2
-
-	#
-	# configure l2tpv3 tunnel on host-1
-	#
-	ip -netns host-1 l2tp add tunnel tunnel_id 1234 peer_tunnel_id 1235 \
-			 encap ip local 2001:db8:1::1 remote 2001:db8:2::1
-	ip -netns host-1 l2tp add session name l2tp1 tunnel_id 1234 \
-			 session_id 1234 peer_session_id 1235
-	ip -netns host-1 link set dev l2tp1 up
-	ip -netns host-1 addr add dev l2tp1 fc00:1::1 peer fc00:1::2
-
-	#
-	# configure l2tpv3 tunnel on host-2
-	#
-	ip -netns host-2 l2tp add tunnel tunnel_id 1235 peer_tunnel_id 1234 \
-			 encap ip local 2001:db8:2::1 remote 2001:db8:1::1
-	ip -netns host-2 l2tp add session name l2tp2 tunnel_id 1235 \
-			 session_id 1235 peer_session_id 1234
-	ip -netns host-2 link set dev l2tp2 up
-	ip -netns host-2 addr add dev l2tp2 fc00:1::2 peer fc00:1::1
-
-	sleep 5
-
-	#
-	# add routes to loopback addresses
-	#
-	ip -netns host-1 -6 ro add fc00:101::2/128 via fc00:1::2
-	ip -netns host-2 -6 ro add fc00:101::1/128 via fc00:1::1
-}
-
-################################################################################
-# main
-
-setup
-ip netns exec host-1 ${ping6} -c1 -w1 fc00:1::2
-ip netns exec host-1 ${ping6} -c1 -w1 fc00:101::2
-
---------------AEECEC2FE626767E5E22B4D9--
+NMI backtrace for cpu 0
+CPU: 0 PID: 1044 Comm: khungtaskd Not tainted 5.2.0-rc5+ #42
+Hardware name: Google Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ nmi_cpu_backtrace.cold+0x63/0xa4 lib/nmi_backtrace.c:101
+ nmi_trigger_cpumask_backtrace+0x1be/0x236 lib/nmi_backtrace.c:62
+ arch_trigger_cpumask_backtrace+0x14/0x20 arch/x86/kernel/apic/hw_nmi.c:38
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
+ watchdog+0x9b7/0xec0 kernel/hung_task.c:289
+ kthread+0x354/0x420 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 6877 Comm: kworker/u4:1 Not tainted 5.2.0-rc5+ #42
+Hardware name: Google Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x50 kernel/kcov.c:95
+Code: 89 25 e4 bc 15 09 41 bc f4 ff ff ff e8 6d 04 ea ff 48 c7 05 ce
+bc 15 09 00 00 00 00 e9 a4 e9 ff ff 90 90 90 90 90 90 90 90 90 <55> 48
+89 e5 48 8b 75 08 65 48 8b 04 25 c0 fd 01 00 65 8b 15 f0 3a
+RSP: 0018:ffff888088fe7ac0 EFLAGS: 00000046
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff817637c6
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000005
+RBP: ffff888088fe7af8 R08: ffff888096406340 R09: fffffbfff118bda9
+R10: fffffbfff118bda8 R11: ffffffff88c5ed43 R12: ffffffff85b86d11
+R13: ffff888096406340 R14: 0000000000000001 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffff600400 CR3: 0000000099e59000 CR4: 00000000001406e0
+Call Trace:
+ __local_bh_enable_ip+0x11a/0x270 kernel/softirq.c:171
+ local_bh_enable include/linux/bottom_half.h:32 [inline]
+ get_next_corpse net/netfilter/nf_conntrack_core.c:2015 [inline]
+ nf_ct_iterate_cleanup+0x217/0x4e0 net/netfilter/nf_conntrack_core.c:2038
+ nf_conntrack_cleanup_net_list+0x7a/0x240 net/netfilter/nf_conntrack_core.c:2225
+ nf_conntrack_pernet_exit+0x159/0x1a0
+net/netfilter/nf_conntrack_standalone.c:1151
+ ops_exit_list.isra.0+0xfc/0x150 net/core/net_namespace.c:168
+ cleanup_net+0x4e2/0xa40 net/core/net_namespace.c:575
+ process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+ worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+ kthread+0x354/0x420 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
