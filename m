@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1479F6879E
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 13:03:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5525D68828
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 13:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729794AbfGOLBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 07:01:46 -0400
-Received: from mga03.intel.com ([134.134.136.65]:26027 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729603AbfGOLBq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 07:01:46 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Jul 2019 04:01:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,493,1557212400"; 
-   d="scan'208";a="250799348"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga001.jf.intel.com with ESMTP; 15 Jul 2019 04:01:43 -0700
-Received: from abityuts-desk1.fi.intel.com (abityuts-desk1.fi.intel.com [10.237.68.147])
-        by linux.intel.com (Postfix) with ESMTP id E6861580372;
-        Mon, 15 Jul 2019 04:01:41 -0700 (PDT)
-Message-ID: <cab2d7f27cc57a0bc680bd5f7e483461b841b96b.camel@gmail.com>
-Subject: Re: [PATCH] ethtool: igb: dump RR2DCDELAY register
-From:   Artem Bityutskiy <dedekind1@gmail.com>
-Reply-To: dedekind1@gmail.com
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "John W . Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org
-Date:   Mon, 15 Jul 2019 14:01:40 +0300
-In-Reply-To: <20190715091334.GB24551@unicorn.suse.cz>
-References: <20190715065228.88377-1-artem.bityutskiy@linux.intel.com>
-         <20190715091334.GB24551@unicorn.suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+        id S1729827AbfGOL0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 07:26:35 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37070 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729778AbfGOL0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 07:26:35 -0400
+Received: by mail-pg1-f195.google.com with SMTP id g15so7575178pgi.4
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 04:26:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=R/z9C++HzdZHJokF8YQvAcRfrfxDb5Hvo0pKZKIfP9w=;
+        b=DZYtSP9up/zrTjgazKls2iqXpeQdzKwgPDAakUNd6lH6FbZR5yGwVlJib4dq/9mc9v
+         bu8hmiF98dN+hTbbXbJ3X4Xi2SLOyOcbTYrfuFGKHWuw88phQm+JG/qZdKhbhJB533JF
+         wSha8TE9AGAIgZBoy+0gj04KNFKGrDgCaHjBMX620ooH+CI0OQHIyqgEk59lwDPXIsse
+         nMO8t2Fxmm/I9eHZsyzrvnrAA8CLrIKiQn8HUbPjrsAnz73LQv1BMnL39fGtWiKSvx6B
+         ETr16NQIBZ1Y7xy9W2D85mtkVy2FWAmh3YapTaXaN64xZOK0wxyeWGwXB71QlxiMNOiq
+         AzYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=R/z9C++HzdZHJokF8YQvAcRfrfxDb5Hvo0pKZKIfP9w=;
+        b=bBmD76zpQxW8aYXRGR3L+ePhv8XMcTPZWqRYcQzcsghg5RNN15q7IDVaX6dxJsq4KA
+         zryspJyVKHsZHdJ8XkF4jx/1pp/qGTk85bJAv7qkpYYhFJigJ+938y9HyJRQzDuDzKGW
+         rDL6hhBjDVS6j1sjEX3AMDQBC4VIGNA0c4dyNgjLz3VHaiYWfO5pim33L7ABT2pTLnC8
+         AotcmZMOrhzP3UepsM0vmcCkWQOag5nNDE9BPPDdJRI8KjjjAg44V8zoOYOp97Q1kkX8
+         FJwdNZhj1w1+i9oSWy2PrOj+HFXmPhh+B7ynkl3yx29d27Sux7M+rkSrwDGLsqFw61UD
+         OKKg==
+X-Gm-Message-State: APjAAAWrCBiePpCN2hpKnUhPBZWlVsVkrCDvxTLtcQxovQdekhub1MKP
+        mSUx0ZUzmflh11sgHCWNk+uUQEqkeJ2dIA9DAkw=
+X-Google-Smtp-Source: APXvYqy/NZzH6VDdeF9YLHJUdslhZPpzERu7eT5C2U0Jc9mPYJaLpUvUutK/FAAIj/Ml32jjVTLWKRDgLHRzfQ0KsDs=
+X-Received: by 2002:a17:90a:30aa:: with SMTP id h39mr28896724pjb.32.1563189994504;
+ Mon, 15 Jul 2019 04:26:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a17:90a:8c14:0:0:0:0 with HTTP; Mon, 15 Jul 2019 04:26:33
+ -0700 (PDT)
+From:   John Jacob <jjacobvsusa@gmail.com>
+Date:   Mon, 15 Jul 2019 04:26:33 -0700
+Message-ID: <CAKZDKkDge2J_qQiwtYYxvA=OTyk=bkqOhd7+sjwPTYOT1i58Kg@mail.gmail.com>
+Subject: Kindly Respond
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-07-15 at 11:13 +0200, Michal Kubecek wrote:
-> > +	/*
-> > +	 * Starting from kernel version 5.3 the registers dump buffer grew from
-> > +	 * 739 4-byte words to 740 words, and word 740 contains the RR2DCDLAY
-> 
-> nit: "E" missing here:                                                    ^
+Hello Sir,
 
-Fixed and sent out v2.
+I am Barr Fredrick Mbogo a business consultant i have a lucrative
+business to discuss with you from the Eastern part of Africa Uganda
+aimed at agreed percentage upon your acceptance of my hand in business
+and friendship. Kindly respond to me if you are interested to partner
+with me for an update. Very important.
 
-> > +	fprintf(stdout,
-> > +		"0x05BF4: RR2DCDELAY  (Max. DMA read delay)            0x%08X\n",
-> > +		regs_buff[739]);
-> 
-> Showing a delay as hex number doesn't seem very user friendly but that
-> also applies to many existing registers so it's probably better to be
-> consistent and perhaps do an overall cleanup later.
-
-Agree.
-
-Thanks!
-
+Yours Sincerely,
+John Jacob,
+For,
+Barr Frederick Mbogo
+Business Consultant.
+Reply to: barrfredmbogo@consultant.com
