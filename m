@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4105692C1
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B3F692C9
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:39:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392215AbfGOOiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:38:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37696 "EHLO mail.kernel.org"
+        id S2404215AbfGOOjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:39:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392109AbfGOOiy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:38:54 -0400
+        id S2391901AbfGOOjQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:39:16 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 54A892086C;
-        Mon, 15 Jul 2019 14:38:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7188A2086C;
+        Mon, 15 Jul 2019 14:39:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201533;
-        bh=gMYCMlIE9JhAmkeJS4THrWdhMpnJObwv71M4jlxwzgo=;
+        s=default; t=1563201555;
+        bh=FSZoq9WrIW60R8uTCwm1dsGcg3a3pKKxZCGZIwUgr7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CnqwdXCsz3QjrP8XfVDrZcV90yUh4RGLO9ucpRh9FN0AQ3rpRjdhq/PhhHNFtSK4X
-         Z7yv2UYelcREXzaCe87cRzsKE9tyzsh6nupRFol1v6DRQvr7cLAvYHu/+YFxzJSMbi
-         A5fux5555aop6ituxdo3POfWxGIeG09WaEDAnljk=
+        b=LL1unzeYM9KVRkaJcDd/Co61vjByfDxzd/4O4kTth3nYe7Pm41b/CoYEqKT4QygAD
+         jySGWVNy46OVejwDCME/pYC6FhXN0FSV1yT0L1hZpfSrPVhS/x96GXWsuR5ph0l5EV
+         d3aKto+D+heEIToiC/Y20yPhnd1HGKXH6slFO65M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 36/73] bpf: silence warning messages in core
-Date:   Mon, 15 Jul 2019 10:35:52 -0400
-Message-Id: <20190715143629.10893-36-sashal@kernel.org>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 41/73] vhost_net: disable zerocopy by default
+Date:   Mon, 15 Jul 2019 10:35:57 -0400
+Message-Id: <20190715143629.10893-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715143629.10893-1-sashal@kernel.org>
 References: <20190715143629.10893-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+From: Jason Wang <jasowang@redhat.com>
 
-[ Upstream commit aee450cbe482a8c2f6fa5b05b178ef8b8ff107ca ]
+[ Upstream commit 098eadce3c622c07b328d0a43dda379b38cf7c5e ]
 
-Compiling kernel/bpf/core.c with W=1 causes a flood of warnings:
+Vhost_net was known to suffer from HOL[1] issues which is not easy to
+fix. Several downstream disable the feature by default. What's more,
+the datapath was split and datacopy path got the support of batching
+and XDP support recently which makes it faster than zerocopy part for
+small packets transmission.
 
-kernel/bpf/core.c:1198:65: warning: initialized field overwritten [-Woverride-init]
- 1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
-      |                                                                 ^~~~
-kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
- 1087 |  INSN_3(ALU, ADD,  X),   \
-      |  ^~~~~~
-kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
- 1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
-      |   ^~~~~~~~~~~~
-kernel/bpf/core.c:1198:65: note: (near initialization for 'public_insntable[12]')
- 1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
-      |                                                                 ^~~~
-kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
- 1087 |  INSN_3(ALU, ADD,  X),   \
-      |  ^~~~~~
-kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
- 1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
-      |   ^~~~~~~~~~~~
+It looks to me that disable zerocopy by default is more
+appropriate. It cold be enabled by default again in the future if we
+fix the above issues.
 
-98 copies of the above.
+[1] https://patchwork.kernel.org/patch/3787671/
 
-The attached patch silences the warnings, because we *know* we're overwriting
-the default initializer. That leaves bpf/core.c with only 6 other warnings,
-which become more visible in comparison.
-
-Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vhost/net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index eed911d091da..5a590f22b4d4 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -1,4 +1,5 @@
- obj-y := core.o
-+CFLAGS_core.o += $(call cc-disable-warning, override-init)
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 681d0eade82f..75e1089dfb01 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -30,7 +30,7 @@
  
- obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o
- obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o
+ #include "vhost.h"
+ 
+-static int experimental_zcopytx = 1;
++static int experimental_zcopytx = 0;
+ module_param(experimental_zcopytx, int, 0444);
+ MODULE_PARM_DESC(experimental_zcopytx, "Enable Zero Copy TX;"
+ 		                       " 1 -Enable; 0 - Disable");
 -- 
 2.20.1
 
