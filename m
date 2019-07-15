@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8B968D58
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DBC68D77
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733007AbfGON5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:57:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36492 "EHLO mail.kernel.org"
+        id S1733194AbfGON6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:58:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38464 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731845AbfGON5w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:57:52 -0400
+        id S1733182AbfGON6n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:58:43 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F3102083D;
-        Mon, 15 Jul 2019 13:57:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BF16020C01;
+        Mon, 15 Jul 2019 13:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199071;
-        bh=EnoKj8gvrxt9vzbUip65DQKTkQ796pgK5snKd2HkWao=;
+        s=default; t=1563199122;
+        bh=WqktGmeWSSXDxWVRIbNsSlCg8q2cKH8/u0pTXGkeKNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Dj34TYX3ZfpKKIqSYMiU6OZ5PPoMIhaY4QyZueGiN1TmkcZBnuYopK0UHEwcxN6C
-         KR6btM1Nu2kuTPqteU2oZH+BPcrDJeTeoi66OugG7jU73ZaIW1BrcvsJn7Bh1++x3N
-         sDfp8K6MfDyF1wIdup+gDPjqbz0GNnP2COc5im1Q=
+        b=F4blulEXDJPBaM0sHA/JWBfUCWSRX9GsbjPsIMx6JczLIbU0yYWfz8MyjyM/gk6l1
+         IUNga7vv2ozoZaWQc8iqMHiJ93APBA2YvIjoq91DhO4RE+jsPh69Z5O77PcLMAjqdd
+         aAV9FrOZs0CvHDBKxTYd4au0Wo9f+XEGNSx4jH68=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jian Shen <shenjian15@huawei.com>, Peng Li <lipeng321@huawei.com>,
+Cc:     Yonglong Liu <liuyonglong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 180/249] net: hns3: restore the MAC autoneg state after reset
-Date:   Mon, 15 Jul 2019 09:45:45 -0400
-Message-Id: <20190715134655.4076-180-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 199/249] net: hns3: fix a -Wformat-nonliteral compile warning
+Date:   Mon, 15 Jul 2019 09:46:04 -0400
+Message-Id: <20190715134655.4076-199-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -44,45 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Yonglong Liu <liuyonglong@huawei.com>
 
-[ Upstream commit d736fc6c68a5f76e89a6c2c4100e3678706003a3 ]
+[ Upstream commit 18d219b783da61a6cc77581f55fc4af2fa16bc36 ]
 
-When doing global reset, the MAC autoneg state of fibre
-port is set to default, which may cause user configuration
-lost. This patch fixes it by restore the MAC autoneg state
-after reset.
+When setting -Wformat=2, there is a compiler warning like this:
 
-Fixes: 22f48e24a23d ("net: hns3: add autoneg and change speed support for fibre port")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+hclge_main.c:xxx:x: warning: format not a string literal and no
+format arguments [-Wformat-nonliteral]
+strs[i].desc);
+^~~~
+
+This patch adds missing format parameter "%s" to snprintf() to
+fix it.
+
+Fixes: 46a3df9f9718 ("Add HNS3 Acceleration Engine & Compatibility Layer Support")
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 4d9bcad26f06..645b9b3e0256 100644
+index 645b9b3e0256..f661281de36b 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -2389,6 +2389,15 @@ static int hclge_mac_init(struct hclge_dev *hdev)
- 		return ret;
+@@ -552,8 +552,7 @@ static u8 *hclge_comm_get_strings(u32 stringset,
+ 		return buff;
+ 
+ 	for (i = 0; i < size; i++) {
+-		snprintf(buff, ETH_GSTRING_LEN,
+-			 strs[i].desc);
++		snprintf(buff, ETH_GSTRING_LEN, "%s", strs[i].desc);
+ 		buff = buff + ETH_GSTRING_LEN;
  	}
  
-+	if (hdev->hw.mac.support_autoneg) {
-+		ret = hclge_set_autoneg_en(hdev, hdev->hw.mac.autoneg);
-+		if (ret) {
-+			dev_err(&hdev->pdev->dev,
-+				"Config mac autoneg fail ret=%d\n", ret);
-+			return ret;
-+		}
-+	}
-+
- 	mac->link = 0;
- 
- 	if (mac->user_fec_mode & BIT(HNAE3_FEC_USER_DEF)) {
 -- 
 2.20.1
 
