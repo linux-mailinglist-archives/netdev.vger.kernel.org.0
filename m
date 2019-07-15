@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF66691FF
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:34:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D7C6920A
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404072AbfGOOdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:33:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49334 "EHLO mail.kernel.org"
+        id S2391967AbfGOOdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:33:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391941AbfGOOdW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:33:22 -0400
+        id S2391698AbfGOOdt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:33:49 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 042C320C01;
-        Mon, 15 Jul 2019 14:33:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 38CB121842;
+        Mon, 15 Jul 2019 14:33:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201201;
-        bh=jjEVs5KqU9OpXXP/Pb29F89W5465fLthxALJSS97XaE=;
+        s=default; t=1563201228;
+        bh=cjZ9eAPwV6ur75qjON8eiNmZuZzBrIOiIC+AGvUlH9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U+uXI34KGAfEI6iZFanqYRqIrg4WAJUZ5u48yGA7NKasmuK8MQk2OJhNCStLuQbkS
-         j4rXo5NXJEwiu1doIqu9hIwCcAhpVss+/LiJ8KKfDT7xtoDA9OLA+QrOW/O+IgIqsp
-         bEI6M20EHW1uY+epTDXQ4faawGbWQV2vMH20UyNw=
+        b=FPkT6i+/+crP3KWvOd035XWO+ev0mgQNH0gKZYDrrBVMDq2hHXWUOgJjSYn+7m4U+
+         F94a3Od1pvKslH+225wGPsPD4FdW40en5IpJ7TaxmY5Sasn7yMzLYJdwNw5CjiuupB
+         H4ZTiD9DLEXiudC+hwJrGsdrDtRUalNNyO+I5e4w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 077/105] ath10k: fix PCIE device wake up failed
-Date:   Mon, 15 Jul 2019 10:28:11 -0400
-Message-Id: <20190715142839.9896-77-sashal@kernel.org>
+Cc:     "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 083/105] ixgbe: Check DDM existence in transceiver before access
+Date:   Mon, 15 Jul 2019 10:28:17 -0400
+Message-Id: <20190715142839.9896-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
 References: <20190715142839.9896-1-sashal@kernel.org>
@@ -44,49 +45,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaoqing Pan <miaoqing@codeaurora.org>
+From: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
 
-[ Upstream commit 011d4111c8c602ea829fa4917af1818eb0500a90 ]
+[ Upstream commit 655c91414579d7bb115a4f7898ee726fc18e0984 ]
 
-Observed PCIE device wake up failed after ~120 iterations of
-soft-reboot test. The error message is
-"ath10k_pci 0000:01:00.0: failed to wake up device : -110"
+Some transceivers may comply with SFF-8472 but not implement the Digital
+Diagnostic Monitoring (DDM) interface described in it. The existence of
+such area is specified by bit 6 of byte 92, set to 1 if implemented.
 
-The call trace as below:
-ath10k_pci_probe -> ath10k_pci_force_wake -> ath10k_pci_wake_wait ->
-ath10k_pci_is_awake
+Currently, due to not checking this bit ixgbe fails trying to read SFP
+module's eeprom with the follow message:
 
-Once trigger the device to wake up, we will continuously check the RTC
-state until it returns RTC_STATE_V_ON or timeout.
+ethtool -m enP51p1s0f0
+Cannot get Module EEPROM data: Input/output error
 
-But for QCA99x0 chips, we use wrong value for RTC_STATE_V_ON.
-Occasionally, we get 0x7 on the fist read, we thought as a failure
-case, but actually is the right value, also verified with the spec.
-So fix the issue by changing RTC_STATE_V_ON from 0x5 to 0x7, passed
-~2000 iterations.
+Because it fails to read the additional 256 bytes in which it was assumed
+to exist the DDM data.
 
-Tested HW: QCA9984
+This issue was noticed using a Mellanox Passive DAC PN 01FT738. The eeprom
+data was confirmed by Mellanox as correct and present in other Passive
+DACs in from other manufacturers.
 
-Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 3 ++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h     | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/hw.c b/drivers/net/wireless/ath/ath10k/hw.c
-index a860691d635d..e96534cd3d8b 100644
---- a/drivers/net/wireless/ath/ath10k/hw.c
-+++ b/drivers/net/wireless/ath/ath10k/hw.c
-@@ -168,7 +168,7 @@ const struct ath10k_hw_values qca6174_values = {
- };
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+index c3e7a8191128..f7e68083200c 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+@@ -3237,7 +3237,8 @@ static int ixgbe_get_module_info(struct net_device *dev,
+ 		page_swap = true;
+ 	}
  
- const struct ath10k_hw_values qca99x0_values = {
--	.rtc_state_val_on		= 5,
-+	.rtc_state_val_on		= 7,
- 	.ce_count			= 12,
- 	.msi_assign_ce_max		= 12,
- 	.num_target_ce_config_wlan	= 10,
+-	if (sff8472_rev == IXGBE_SFF_SFF_8472_UNSUP || page_swap) {
++	if (sff8472_rev == IXGBE_SFF_SFF_8472_UNSUP || page_swap ||
++	    !(addr_mode & IXGBE_SFF_DDM_IMPLEMENTED)) {
+ 		/* We have a SFP, but it does not support SFF-8472 */
+ 		modinfo->type = ETH_MODULE_SFF_8079;
+ 		modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h
+index b0cac961df3b..94df1d99be95 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h
+@@ -70,6 +70,7 @@
+ #define IXGBE_SFF_SOFT_RS_SELECT_10G		0x8
+ #define IXGBE_SFF_SOFT_RS_SELECT_1G		0x0
+ #define IXGBE_SFF_ADDRESSING_MODE		0x4
++#define IXGBE_SFF_DDM_IMPLEMENTED		0x40
+ #define IXGBE_SFF_QSFP_DA_ACTIVE_CABLE		0x1
+ #define IXGBE_SFF_QSFP_DA_PASSIVE_CABLE		0x8
+ #define IXGBE_SFF_QSFP_CONNECTOR_NOT_SEPARABLE	0x23
 -- 
 2.20.1
 
