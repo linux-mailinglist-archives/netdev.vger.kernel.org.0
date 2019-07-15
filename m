@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58ECD6923A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:35:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7267669236
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:35:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391777AbfGOOfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:35:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52314 "EHLO mail.kernel.org"
+        id S2390667AbfGOOfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:35:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52436 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392059AbfGOOew (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:34:52 -0400
+        id S2392080AbfGOOe4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:34:56 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1C6EA204FD;
-        Mon, 15 Jul 2019 14:34:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 418C1217D8;
+        Mon, 15 Jul 2019 14:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201291;
-        bh=RV405mXFcqCChCK9sTy7z/3u0YyxWOp945XfSPPBVgI=;
+        s=default; t=1563201295;
+        bh=R15Dur02kBigMDRIHtUKJvlxvLDcHq7NCdpT1UxamEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JZU3Ftds/LvnIcwnJLc0HES5f+XEaiRXi0oztYFG36wcNFT7fQQgiFBeAFcD/UHcC
-         EJgBp1YM2RwdNJBC6sd/Y95c7vBPLxojokeZAn36xXxwwT27LBOlc1xmt81Lvxtnnv
-         /fMoWGTy0dvRSGgLe2oT+89WwUy4i9204JEH7oCE=
+        b=Xiy1G7uT+tFjfAmZzOVt8saL6/PI/mh6zcfrCSAnMVax8OJQwUH2CcV0/hTjh/fEv
+         mDCyemNgroUGKet1Om4CRfabJp9qGxqctpDwTZgeOsWdmqWPtuiqdYfeAzSZL5lmxm
+         Y3qd5YJFUlVjZ2i2E5Y+hKrsSbCImqwxX7Nzp1aY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     csonsino <csonsino@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 099/105] gtp: add missing gtp_encap_disable_sock() in gtp_encap_enable()
-Date:   Mon, 15 Jul 2019 10:28:33 -0400
-Message-Id: <20190715142839.9896-99-sashal@kernel.org>
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 100/105] Bluetooth: validate BLE connection interval updates
+Date:   Mon, 15 Jul 2019 10:28:34 -0400
+Message-Id: <20190715142839.9896-100-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
 References: <20190715142839.9896-1-sashal@kernel.org>
@@ -44,41 +44,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: csonsino <csonsino@gmail.com>
 
-[ Upstream commit e30155fd23c9c141cbe7d99b786e10a83a328837 ]
+[ Upstream commit c49a8682fc5d298d44e8d911f4fa14690ea9485e ]
 
-If an invalid role is sent from user space, gtp_encap_enable() will fail.
-Then, it should call gtp_encap_disable_sock() but current code doesn't.
-It makes memory leak.
+Problem: The Linux Bluetooth stack yields complete control over the BLE
+connection interval to the remote device.
 
-Fixes: 91ed81f9abc7 ("gtp: support SGSN-side tunnels")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The Linux Bluetooth stack provides access to the BLE connection interval
+min and max values through /sys/kernel/debug/bluetooth/hci0/
+conn_min_interval and /sys/kernel/debug/bluetooth/hci0/conn_max_interval.
+These values are used for initial BLE connections, but the remote device
+has the ability to request a connection parameter update. In the event
+that the remote side requests to change the connection interval, the Linux
+kernel currently only validates that the desired value is within the
+acceptable range in the Bluetooth specification (6 - 3200, corresponding to
+7.5ms - 4000ms). There is currently no validation that the desired value
+requested by the remote device is within the min/max limits specified in
+the conn_min_interval/conn_max_interval configurations. This essentially
+leads to Linux yielding complete control over the connection interval to
+the remote device.
+
+The proposed patch adds a verification step to the connection parameter
+update mechanism, ensuring that the desired value is within the min/max
+bounds of the current connection. If the desired value is outside of the
+current connection min/max values, then the connection parameter update
+request is rejected and the negative response is returned to the remote
+device. Recall that the initial connection is established using the local
+conn_min_interval/conn_max_interval values, so this allows the Linux
+administrator to retain control over the BLE connection interval.
+
+The one downside that I see is that the current default Linux values for
+conn_min_interval and conn_max_interval typically correspond to 30ms and
+50ms respectively. If this change were accepted, then it is feasible that
+some devices would no longer be able to negotiate to their desired
+connection interval values. This might be remedied by setting the default
+Linux conn_min_interval and conn_max_interval values to the widest
+supported range (6 - 3200 / 7.5ms - 4000ms). This could lead to the same
+behavior as the current implementation, where the remote device could
+request to change the connection interval value to any value that is
+permitted by the Bluetooth specification, and Linux would accept the
+desired value.
+
+Signed-off-by: Carey Sonsino <csonsino@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_event.c  | 5 +++++
+ net/bluetooth/l2cap_core.c | 9 ++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index f38e32a7ec9c..dba3869b61be 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -845,8 +845,13 @@ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[])
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 363dc85bbc5c..3d2f64a6d623 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5089,6 +5089,11 @@ static void hci_le_remote_conn_param_req_evt(struct hci_dev *hdev,
+ 		return send_conn_param_neg_reply(hdev, handle,
+ 						 HCI_ERROR_UNKNOWN_CONN_ID);
  
- 	if (data[IFLA_GTP_ROLE]) {
- 		role = nla_get_u32(data[IFLA_GTP_ROLE]);
--		if (role > GTP_ROLE_SGSN)
-+		if (role > GTP_ROLE_SGSN) {
-+			if (sk0)
-+				gtp_encap_disable_sock(sk0);
-+			if (sk1u)
-+				gtp_encap_disable_sock(sk1u);
- 			return -EINVAL;
-+		}
- 	}
++	if (min < hcon->le_conn_min_interval ||
++	    max > hcon->le_conn_max_interval)
++		return send_conn_param_neg_reply(hdev, handle,
++						 HCI_ERROR_INVALID_LL_PARAMS);
++
+ 	if (hci_check_conn_params(min, max, latency, timeout))
+ 		return send_conn_param_neg_reply(hdev, handle,
+ 						 HCI_ERROR_INVALID_LL_PARAMS);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 0c2219f483d7..4dc1db85a9c2 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -5287,7 +5287,14 @@ static inline int l2cap_conn_param_update_req(struct l2cap_conn *conn,
  
- 	gtp->sk0 = sk0;
+ 	memset(&rsp, 0, sizeof(rsp));
+ 
+-	err = hci_check_conn_params(min, max, latency, to_multiplier);
++	if (min < hcon->le_conn_min_interval ||
++	    max > hcon->le_conn_max_interval) {
++		BT_DBG("requested connection interval exceeds current bounds.");
++		err = -EINVAL;
++	} else {
++		err = hci_check_conn_params(min, max, latency, to_multiplier);
++	}
++
+ 	if (err)
+ 		rsp.result = cpu_to_le16(L2CAP_CONN_PARAM_REJECTED);
+ 	else
 -- 
 2.20.1
 
