@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7D669646
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7436469648
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:03:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388641AbfGOOJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:09:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60324 "EHLO mail.kernel.org"
+        id S2388262AbfGOPDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 11:03:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60414 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388165AbfGOOJE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:09:04 -0400
+        id S1731342AbfGOOJG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:09:06 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D5127212F5;
-        Mon, 15 Jul 2019 14:09:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 87E1221537;
+        Mon, 15 Jul 2019 14:09:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199744;
-        bh=WWSyR7ZkWOULUbOIOZcSxR4qgjOH/WofWi+q0Fjb8OU=;
+        s=default; t=1563199745;
+        bh=CFGl4+O3ZTYIhz4Kf84ckCwmTrKaCP86jowfIG1yew8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KzQvDIj3zfqOA+g/FGrPdj1AYpQ3HgU5d9RukjBY4/QI3LRKuapErFcvDKH+Knt83
-         DSO08gdWOepY4S1XRdJF8ERsDaelkpSp7TccK//Su2BTA+EwG9jWG/7mTETizFuZq5
-         p+csxAkK3pkH2P8BtK8mdhtY/tLKGh//cOy5pP98=
+        b=f6j20K+BmowJWQ/lGPGsKQsntcsRHfkZCrIh8m49pikCq5QTSrD26RrK5I5esGgI2
+         E8M/hyANxcFKrcMaw7Sfge1G0h3YkrXXvDp3wG9jPrEcTa2Ae6KCfdqdFz9oZeVVWb
+         oHrXD3MhiM8X5+N5GB8vA0C+CZYoxeI7ELfu7tnI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <ariel.elior@marvell.com>,
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 091/219] qed: iWARP - Fix tc for MPA ll2 connection
-Date:   Mon, 15 Jul 2019 10:01:32 -0400
-Message-Id: <20190715140341.6443-91-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 092/219] net: hns3: fix for dereferencing before null checking
+Date:   Mon, 15 Jul 2019 10:01:33 -0400
+Message-Id: <20190715140341.6443-92-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -44,36 +45,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kalderon <michal.kalderon@marvell.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-[ Upstream commit cb94d52b93c74fe1f2595734fabeda9f8ae891ee ]
+[ Upstream commit 757188005f905664b0186b88cf26a7e844190a63 ]
 
-The driver needs to assign a lossless traffic class for the MPA ll2
-connection to ensure no packets are dropped when returning from the
-driver as they will never be re-transmitted by the peer.
+The netdev is dereferenced before null checking in the function
+hns3_setup_tc.
 
-Fixes: ae3488ff37dc ("qed: Add ll2 connection for processing unaligned MPA packets")
-Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+This patch moves the dereferencing after the null checking.
+
+Fixes: 76ad4f0ee747 ("net: hns3: Add support of HNS3 Ethernet Driver for hip08 SoC")
+
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-index ded556b7bab5..eeea8683d99b 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-@@ -2708,6 +2708,8 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
- 	data.input.rx_num_desc = n_ooo_bufs * 2;
- 	data.input.tx_num_desc = data.input.rx_num_desc;
- 	data.input.tx_max_bds_per_packet = QED_IWARP_MAX_BDS_PER_FPDU;
-+	data.input.tx_tc = PKT_LB_TC;
-+	data.input.tx_dest = QED_LL2_TX_DEST_LB;
- 	data.p_connection_handle = &iwarp_info->ll2_mpa_handle;
- 	data.input.secondary_queue = true;
- 	data.cbs = &cbs;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index cac17152157d..6afdd376bc03 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -1497,12 +1497,12 @@ static void hns3_nic_get_stats64(struct net_device *netdev,
+ static int hns3_setup_tc(struct net_device *netdev, void *type_data)
+ {
+ 	struct tc_mqprio_qopt_offload *mqprio_qopt = type_data;
+-	struct hnae3_handle *h = hns3_get_handle(netdev);
+-	struct hnae3_knic_private_info *kinfo = &h->kinfo;
+ 	u8 *prio_tc = mqprio_qopt->qopt.prio_tc_map;
++	struct hnae3_knic_private_info *kinfo;
+ 	u8 tc = mqprio_qopt->qopt.num_tc;
+ 	u16 mode = mqprio_qopt->mode;
+ 	u8 hw = mqprio_qopt->qopt.hw;
++	struct hnae3_handle *h;
+ 
+ 	if (!((hw == TC_MQPRIO_HW_OFFLOAD_TCS &&
+ 	       mode == TC_MQPRIO_MODE_CHANNEL) || (!hw && tc == 0)))
+@@ -1514,6 +1514,9 @@ static int hns3_setup_tc(struct net_device *netdev, void *type_data)
+ 	if (!netdev)
+ 		return -EINVAL;
+ 
++	h = hns3_get_handle(netdev);
++	kinfo = &h->kinfo;
++
+ 	return (kinfo->dcb_ops && kinfo->dcb_ops->setup_tc) ?
+ 		kinfo->dcb_ops->setup_tc(h, tc, prio_tc) : -EOPNOTSUPP;
+ }
 -- 
 2.20.1
 
