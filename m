@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0220C696CA
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:07:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 068E76969B
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388125AbfGOOFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:05:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51656 "EHLO mail.kernel.org"
+        id S2388150AbfGOOFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:05:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52164 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387652AbfGOOFY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:05:24 -0400
+        id S2387522AbfGOOFd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:05:33 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8577E206B8;
-        Mon, 15 Jul 2019 14:05:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7F8842086C;
+        Mon, 15 Jul 2019 14:05:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563199523;
-        bh=HpAbu3A6Jvf24y3EwjviCDineI4pRIVpAxvEnBhYvKQ=;
+        s=default; t=1563199532;
+        bh=gmamo8LY7ySs8JdtiPaUKz9OgOegExQDamlya6109g0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/lIP1P7PefVVZM1eZqqmpa0gWo898D/m7PElnJN85sAM7u2Qsof9QpT5fQwX2suQ
-         F6L6JjDLd4avzgpnG47yKGrsEtUSwHSBvww7N91hN5FfbOtGoHnxX0m8Y+xGFFOC/X
-         7pb+2CNF+imCXM02aWLhwXnhJ/wUBP7IbRiuRKR4=
+        b=RcKrMR40xwhOOjX2icStl+j3sI1ehn7NtY4vY2lYKUT7Q41p2UU4cDIjVlDOKLkA+
+         2qCwHWve/B9Wtmk+KxVi3F8RDOvw35wvNjHJ/iYUX7f90cuOAUCW8pfP1pLZl8DJUK
+         aL8a+ksbYQmytg/jN335LnKdIR5pwdElbA+lJ6cA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <ariel.elior@marvell.com>,
-        Denis Bolotin <denis.bolotin@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Jeremy Sowden <jeremy@azazel.net>,
+        syzbot+4f0529365f7f2208d9f0@syzkaller.appspotmail.com,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 032/219] qed: Set the doorbell address correctly
-Date:   Mon, 15 Jul 2019 10:00:33 -0400
-Message-Id: <20190715140341.6443-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 035/219] af_key: fix leaks in key_pol_get_resp and dump_sp.
+Date:   Mon, 15 Jul 2019 10:00:36 -0400
+Message-Id: <20190715140341.6443-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715140341.6443-1-sashal@kernel.org>
 References: <20190715140341.6443-1-sashal@kernel.org>
@@ -45,104 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kalderon <michal.kalderon@marvell.com>
+From: Jeremy Sowden <jeremy@azazel.net>
 
-[ Upstream commit 8366d520019f366fabd6c7a13032bdcd837e18d4 ]
+[ Upstream commit 7c80eb1c7e2b8420477fbc998971d62a648035d9 ]
 
-In 100g mode the doorbell bar is united for both engines. Set
-the correct offset in the hwfn so that the doorbell returned
-for RoCE is in the affined hwfn.
+In both functions, if pfkey_xfrm_policy2msg failed we leaked the newly
+allocated sk_buff.  Free it on error.
 
-Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Denis Bolotin <denis.bolotin@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 55569ce256ce ("Fix conversion between IPSEC_MODE_xxx and XFRM_MODE_xxx.")
+Reported-by: syzbot+4f0529365f7f2208d9f0@syzkaller.appspotmail.com
+Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_dev.c  | 29 ++++++++++++++--------
- drivers/net/ethernet/qlogic/qed/qed_rdma.c |  2 +-
- 2 files changed, 19 insertions(+), 12 deletions(-)
+ net/key/af_key.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 866cdc86a3f2..08045fd69fad 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -3441,6 +3441,7 @@ static void qed_nvm_info_free(struct qed_hwfn *p_hwfn)
- static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 				 void __iomem *p_regview,
- 				 void __iomem *p_doorbells,
-+				 u64 db_phys_addr,
- 				 enum qed_pci_personality personality)
- {
- 	struct qed_dev *cdev = p_hwfn->cdev;
-@@ -3449,6 +3450,7 @@ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 	/* Split PCI bars evenly between hwfns */
- 	p_hwfn->regview = p_regview;
- 	p_hwfn->doorbells = p_doorbells;
-+	p_hwfn->db_phys_addr = db_phys_addr;
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 4af1e1d60b9f..51c0f10bb131 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2442,8 +2442,10 @@ static int key_pol_get_resp(struct sock *sk, struct xfrm_policy *xp, const struc
+ 		goto out;
+ 	}
+ 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
+-	if (err < 0)
++	if (err < 0) {
++		kfree_skb(out_skb);
+ 		goto out;
++	}
  
- 	if (IS_VF(p_hwfn->cdev))
- 		return qed_vf_hw_prepare(p_hwfn);
-@@ -3544,7 +3546,9 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 	/* Initialize the first hwfn - will learn number of hwfns */
- 	rc = qed_hw_prepare_single(p_hwfn,
- 				   cdev->regview,
--				   cdev->doorbells, personality);
-+				   cdev->doorbells,
-+				   cdev->db_phys_addr,
-+				   personality);
- 	if (rc)
- 		return rc;
+ 	out_hdr = (struct sadb_msg *) out_skb->data;
+ 	out_hdr->sadb_msg_version = hdr->sadb_msg_version;
+@@ -2694,8 +2696,10 @@ static int dump_sp(struct xfrm_policy *xp, int dir, int count, void *ptr)
+ 		return PTR_ERR(out_skb);
  
-@@ -3553,22 +3557,25 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 	/* Initialize the rest of the hwfns */
- 	if (cdev->num_hwfns > 1) {
- 		void __iomem *p_regview, *p_doorbell;
--		u8 __iomem *addr;
-+		u64 db_phys_addr;
-+		u32 offset;
+ 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
+-	if (err < 0)
++	if (err < 0) {
++		kfree_skb(out_skb);
+ 		return err;
++	}
  
- 		/* adjust bar offset for second engine */
--		addr = cdev->regview +
--		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
--				       BAR_ID_0) / 2;
--		p_regview = addr;
-+		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
-+					 BAR_ID_0) / 2;
-+		p_regview = cdev->regview + offset;
- 
--		addr = cdev->doorbells +
--		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
--				       BAR_ID_1) / 2;
--		p_doorbell = addr;
-+		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
-+					 BAR_ID_1) / 2;
-+
-+		p_doorbell = cdev->doorbells + offset;
-+
-+		db_phys_addr = cdev->db_phys_addr + offset;
- 
- 		/* prepare second hw function */
- 		rc = qed_hw_prepare_single(&cdev->hwfns[1], p_regview,
--					   p_doorbell, personality);
-+					   p_doorbell, db_phys_addr,
-+					   personality);
- 
- 		/* in case of error, need to free the previously
- 		 * initiliazed hwfn 0.
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 7873d6dfd91f..13802b825d65 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -803,7 +803,7 @@ static int qed_rdma_add_user(void *rdma_cxt,
- 				     dpi_start_offset +
- 				     ((out_params->dpi) * p_hwfn->dpi_size));
- 
--	out_params->dpi_phys_addr = p_hwfn->cdev->db_phys_addr +
-+	out_params->dpi_phys_addr = p_hwfn->db_phys_addr +
- 				    dpi_start_offset +
- 				    ((out_params->dpi) * p_hwfn->dpi_size);
- 
+ 	out_hdr = (struct sadb_msg *) out_skb->data;
+ 	out_hdr->sadb_msg_version = pfk->dump.msg_version;
 -- 
 2.20.1
 
