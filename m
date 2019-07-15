@@ -2,65 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A77A682A4
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 05:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A77C682B0
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 05:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729162AbfGODTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jul 2019 23:19:51 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:43007 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729088AbfGODTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 23:19:50 -0400
-Received: by mail-pl1-f196.google.com with SMTP id ay6so7547370plb.9;
-        Sun, 14 Jul 2019 20:19:50 -0700 (PDT)
+        id S1729073AbfGODV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jul 2019 23:21:26 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46434 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbfGODV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jul 2019 23:21:26 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i8so6983394pgm.13;
+        Sun, 14 Jul 2019 20:21:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=+B0jx+4muj+M4b7c2kQfV0uSbE8FiTxBXwM9XgPCIac=;
-        b=rUrV/W2cFJNaa8vePeI9kEWvofvtQd3wBD4YW63KnfV+rcI+vl/TeWgDn1ZWBbJF+d
-         4PhGeWEFU9VVCds7ZsnsSapiOLg8VcaUaz2PBh9LPeEOu3GXL+cnPGQ406XBCMZ1nvqm
-         9jfFFnT0DMHGLUz1+sz+FOYuvQ19Nfwvpr822BFWOzV5thNTCtV/hf2qW+3//T6uwDIk
-         cyEDHmxDdFtBrIgVGR4P7jiVcksY5TCWKSd2pyYTj0lNNQMyfveZ508iYGk8ICDqmP6Q
-         M7690uJe75Qu3fgoe3g2UZefqxultpC2Pncsj/IwKbWZ1ED4qPc2sIwvzbw+TCEF8x9L
-         vtJg==
+        bh=fQU3ZitNVbm8g6DoiatmHMkRIAL8qxW71kXnvl1QgC8=;
+        b=XbAowxVqvNdy8E1lQinnYcjQHKkyTRK4zaOdGeWMOJAtvSf53PE1wo4OfS7WjZvTE0
+         FO8caUAxXl+wk+s2u2Eb8t6oGYsitr911KwmFgSTk3erDsqjpFNT81Ac16bF23GOfe5l
+         Z8PsEviv+DA6JMaWvyjp9qKRdXP/owmolf65Ul/Qb51H7vkFTlJoq8ghRhytxSp9Qybl
+         RAEGDvdcGVRBTn9M2s6i3aqn23QJszAIqhfxc9UWlhuxYUmrINZ+oLPLCKCqkmw9mF2q
+         hoITZTklk/JrP+H9sbaSbrm9MxHRcD2nd/qVS7Fkcm72EHttsGEnb3g5G3lPumDRplSV
+         qKpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=+B0jx+4muj+M4b7c2kQfV0uSbE8FiTxBXwM9XgPCIac=;
-        b=V5IQ2fhJFjap+UxAWrmgmSZI8hkILL8SlSj92Os9dNHQwA75JKwQ9KKAqMwDZ5b+jx
-         cqcrNzxMR0IQRbldov1MitbLyEtDmhKmLAipEWpBUiyYGyXuKWQ2EL3o06LulPNGFRPi
-         yOaqZw9s0xm2VtPiUdb70Y4r4U4vkQ1XadIlIkOZ4tPPg/ZmUKD+ApuqhbzWJJCcrjhH
-         E2CuKECCz/43K/qAX7XY74eaPCnW0fucZYwr5ZXAtN8cp7YN+8fdxZ113cZfni57wYS/
-         6dhlUBv3DdaE2C0I5nfB4echMD+DX0ZuGFCjfF09y2ZvI5TGew/oWUmF9xaj4jU+XAn2
-         45og==
-X-Gm-Message-State: APjAAAWxt9VQXF7Bd6BoVEKuOtSMLF9BGSVPXW5SAEq/eK3HAN1ukuLU
-        wlOtaz0QJoB1N5kjjmH2hbI=
-X-Google-Smtp-Source: APXvYqwQR7EYn7nM9TgFm/nKnIR49M8lFOUn+x0miZZg3gxoz/XgR4qWm5y30xqPSsvlAzLYNlmvmQ==
-X-Received: by 2002:a17:902:a612:: with SMTP id u18mr25087040plq.181.1563160789988;
-        Sun, 14 Jul 2019 20:19:49 -0700 (PDT)
+        bh=fQU3ZitNVbm8g6DoiatmHMkRIAL8qxW71kXnvl1QgC8=;
+        b=s0rv3N8gvZF/PeMPaqfL5sPRdeXfZug2empiAKHUh3ZiTXPtCuMcZhhuhOz+tYSgDk
+         K+LTsmGGFVNHq5u8eoD7kUXGOG2UTh874AA57bdxeDv93uFgKf4mpjU+cdNWN+VX97Gp
+         URszdWN/z9Jy/X8NTuxmQ9Upwg1u56QEp6LSdF+wKA0hawacOvqpOP1jBTSAMLC5xGA7
+         JVN6KYNFO3ZgzgqDfdcu+S3do8GC+u26kQv+skTBbWF4td6kL2gP/AiurpqQ0y2M9ITR
+         MN1h/cjBfdB932Lbeh9R9QdRhERQX0NYKDc9viS9D+1edl3TfZJR435qpYzQ3rPdSNia
+         v2NQ==
+X-Gm-Message-State: APjAAAX83ofJhvPvtaXY0P0OfIj9Rnd1cbqZ0pNCzzZQ8NtSsM4ky+SI
+        GxTLQUZRyUXLKPCpqyFYeug=
+X-Google-Smtp-Source: APXvYqw1SWs+vEujyYwb300maXHvrIECcJMnhv9T7DAFz24xMqClCEgqiec77HLsNWJls9sIMsovmA==
+X-Received: by 2002:a63:e54f:: with SMTP id z15mr24551571pgj.4.1563160885244;
+        Sun, 14 Jul 2019 20:21:25 -0700 (PDT)
 Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.googlemail.com with ESMTPSA id 2sm21006045pgm.39.2019.07.14.20.19.45
+        by smtp.googlemail.com with ESMTPSA id n26sm16548898pfa.83.2019.07.14.20.21.23
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 14 Jul 2019 20:19:49 -0700 (PDT)
+        Sun, 14 Jul 2019 20:21:24 -0700 (PDT)
 From:   Fuqian Huang <huangfq.daxian@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Avinash Patil <avinashp@quantenna.com>,
-        Sergey Matyukevich <smatyukevich@quantenna.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com,
+Cc:     Ronak Doshi <doshir@vmware.com>,
+        "VMware Inc ." <pv-drivers@vmware.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         Fuqian Huang <huangfq.daxian@gmail.com>
-Subject: [PATCH v3 20/24] wireless: Remove call to memset after dma_alloc_coherent
-Date:   Mon, 15 Jul 2019 11:19:41 +0800
-Message-Id: <20190715031941.7120-1-huangfq.daxian@gmail.com>
+Subject: [PATCH v3 19/24] vmxnet3: Remove call to memset after dma_alloc_coherent
+Date:   Mon, 15 Jul 2019 11:21:18 +0800
+Message-Id: <20190715032118.7417-1-huangfq.daxian@gmail.com>
 X-Mailer: git-send-email 2.11.0
 To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
@@ -78,74 +68,21 @@ Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
 Changes in v3:
   - Use actual commit rather than the merge commit in the commit message
 
- drivers/net/wireless/ath/ath10k/ce.c                     | 5 -----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c  | 2 --
- drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c | 2 --
- drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c | 2 --
- 4 files changed, 11 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_drv.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
-index eca87f7c5b6c..294fbc1e89ab 100644
---- a/drivers/net/wireless/ath/ath10k/ce.c
-+++ b/drivers/net/wireless/ath/ath10k/ce.c
-@@ -1704,9 +1704,6 @@ ath10k_ce_alloc_dest_ring_64(struct ath10k *ar, unsigned int ce_id,
- 	/* Correctly initialize memory to 0 to prevent garbage
- 	 * data crashing system when download firmware
- 	 */
--	memset(dest_ring->base_addr_owner_space_unaligned, 0,
--	       nentries * sizeof(struct ce_desc_64) + CE_DESC_RING_ALIGN);
--
- 	dest_ring->base_addr_owner_space =
- 			PTR_ALIGN(dest_ring->base_addr_owner_space_unaligned,
- 				  CE_DESC_RING_ALIGN);
-@@ -2019,8 +2016,6 @@ void ath10k_ce_alloc_rri(struct ath10k *ar)
- 		value |= ar->hw_ce_regs->upd->mask;
- 		ath10k_ce_write32(ar, ce_base_addr + ctrl1_regs, value);
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 3f48f05dd2a6..2a1918f25e47 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3430,7 +3430,6 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 			err = -ENOMEM;
+ 			goto err_ver;
+ 		}
+-		memset(adapter->coal_conf, 0, sizeof(*adapter->coal_conf));
+ 		adapter->coal_conf->coalMode = VMXNET3_COALESCE_DISABLED;
+ 		adapter->default_coal_mode = true;
  	}
--
--	memset(ce->vaddr_rri, 0, CE_COUNT * sizeof(u32));
- }
- EXPORT_SYMBOL(ath10k_ce_alloc_rri);
- 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 4ea5401c4d6b..5f0437a3fd82 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1023,8 +1023,6 @@ brcmf_pcie_init_dmabuffer_for_device(struct brcmf_pciedev_info *devinfo,
- 			       address & 0xffffffff);
- 	brcmf_pcie_write_tcm32(devinfo, tcm_dma_phys_addr + 4, address >> 32);
- 
--	memset(ring, 0, size);
--
- 	return (ring);
- }
- 
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c b/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c
-index 3aa3714d4dfd..5ec1c9bc1612 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c
-@@ -244,8 +244,6 @@ static int pearl_alloc_bd_table(struct qtnf_pcie_pearl_state *ps)
- 
- 	/* tx bd */
- 
--	memset(vaddr, 0, len);
--
- 	ps->bd_table_vaddr = vaddr;
- 	ps->bd_table_paddr = paddr;
- 	ps->bd_table_len = len;
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c b/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c
-index 9a4380ed7f1b..1f91088e3dff 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c
-@@ -199,8 +199,6 @@ static int topaz_alloc_bd_table(struct qtnf_pcie_topaz_state *ts,
- 	if (!vaddr)
- 		return -ENOMEM;
- 
--	memset(vaddr, 0, len);
--
- 	/* tx bd */
- 
- 	ts->tx_bd_vbase = vaddr;
 -- 
 2.11.0
 
