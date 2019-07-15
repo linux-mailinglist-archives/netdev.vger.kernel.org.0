@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A03F68C5F
+	by mail.lfdr.de (Postfix) with ESMTP id ECF6868C61
 	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731872AbfGONvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:51:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42442 "EHLO mail.kernel.org"
+        id S1731723AbfGONvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:51:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730952AbfGONvP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:51:15 -0400
+        id S1731882AbfGONvX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:51:23 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9EDD52086C;
-        Mon, 15 Jul 2019 13:51:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C70720651;
+        Mon, 15 Jul 2019 13:51:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198674;
-        bh=ilvjH9Ml4srFA9CkBFZD0/rLV1KQFMEQowPN1l6GCaE=;
+        s=default; t=1563198681;
+        bh=NcavvyEHRofd30EP+I5YkPBBZisXrwc0VMiuRrGWFEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hbvow764W+LP0FqsCYes0yMiFQVylspND4zHtunIwv5nQEMHWrA5+s5zvXRUZmvUM
-         fIp7tVkCWhPQ6swOpE43VmelZru+Bgk91tfyE8gxyz0/irFHdwGStyxK+juJh82Jqb
-         9gpBEV+vFf0MupvkHXKBesGpeF8+4t9R3Pxx3pYQ=
+        b=YOijsbH4v48UA/b7hRmqoaF4BqrauaIdKWn9UKUgSI6tiAJhJeqpaFxz8Zj0z9iN5
+         DZLMk7xg27Bf5qucWitWIhHtUBhIIyDxRItp27RrSbzniwaVp/w88mip8RWvnCE1LT
+         iUhQrqD8AQ5TtN01K2eM41sme2Q+KcV/FnKmA2Ps=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Aditya Pakki <pakki001@umn.edu>,
+Cc:     Stefano Brivio <sbrivio@redhat.com>,
+        NOYB <JunkYardMail1@Frontier.com>,
         Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 080/249] netfilter: ipset: fix a missing check of nla_parse
-Date:   Mon, 15 Jul 2019 09:44:05 -0400
-Message-Id: <20190715134655.4076-80-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 081/249] ipset: Fix memory accounting for hash types on resize
+Date:   Mon, 15 Jul 2019 09:44:06 -0400
+Message-Id: <20190715134655.4076-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -45,43 +46,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aditya Pakki <pakki001@umn.edu>
+From: Stefano Brivio <sbrivio@redhat.com>
 
-[ Upstream commit f4f5748bfec94cf418e49bf05f0c81a1b9ebc950 ]
+[ Upstream commit 11921796f4799ca9c61c4b22cc54d84aa69f8a35 ]
 
-When nla_parse fails, we should not use the results (the first
-argument). The fix checks if it fails, and if so, returns its error code
-upstream.
+If a fresh array block is allocated during resize, the current in-memory
+set size should be increased by the size of the block, not replaced by it.
 
-Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+Before the fix, adding entries to a hash set type, leading to a table
+resize, caused an inconsistent memory size to be reported. This becomes
+more obvious when swapping sets with similar sizes:
+
+  # cat hash_ip_size.sh
+  #!/bin/sh
+  FAIL_RETRIES=10
+
+  tries=0
+  while [ ${tries} -lt ${FAIL_RETRIES} ]; do
+  	ipset create t1 hash:ip
+  	for i in `seq 1 4345`; do
+  		ipset add t1 1.2.$((i / 255)).$((i % 255))
+  	done
+  	t1_init="$(ipset list t1|sed -n 's/Size in memory: \(.*\)/\1/p')"
+
+  	ipset create t2 hash:ip
+  	for i in `seq 1 4360`; do
+  		ipset add t2 1.2.$((i / 255)).$((i % 255))
+  	done
+  	t2_init="$(ipset list t2|sed -n 's/Size in memory: \(.*\)/\1/p')"
+
+  	ipset swap t1 t2
+  	t1_swap="$(ipset list t1|sed -n 's/Size in memory: \(.*\)/\1/p')"
+  	t2_swap="$(ipset list t2|sed -n 's/Size in memory: \(.*\)/\1/p')"
+
+  	ipset destroy t1
+  	ipset destroy t2
+  	tries=$((tries + 1))
+
+  	if [ ${t1_init} -lt 10000 ] || [ ${t2_init} -lt 10000 ]; then
+  		echo "FAIL after ${tries} tries:"
+  		echo "T1 size ${t1_init}, after swap ${t1_swap}"
+  		echo "T2 size ${t2_init}, after swap ${t2_swap}"
+  		exit 1
+  	fi
+  done
+  echo "PASS"
+  # echo -n 'func hash_ip4_resize +p' > /sys/kernel/debug/dynamic_debug/control
+  # ./hash_ip_size.sh
+  [ 2035.018673] attempt to resize set t1 from 10 to 11, t 00000000fe6551fa
+  [ 2035.078583] set t1 resized from 10 (00000000fe6551fa) to 11 (00000000172a0163)
+  [ 2035.080353] Table destroy by resize 00000000fe6551fa
+  FAIL after 4 tries:
+  T1 size 9064, after swap 71128
+  T2 size 71128, after swap 9064
+
+Reported-by: NOYB <JunkYardMail1@Frontier.com>
+Fixes: 9e41f26a505c ("netfilter: ipset: Count non-static extension memory for userspace")
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 Signed-off-by: Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipset/ip_set_core.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/netfilter/ipset/ip_set_hash_gen.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 3cdf171cd468..16afa0df4004 100644
---- a/net/netfilter/ipset/ip_set_core.c
-+++ b/net/netfilter/ipset/ip_set_core.c
-@@ -1541,10 +1541,14 @@ call_ad(struct sock *ctnl, struct sk_buff *skb, struct ip_set *set,
- 		memcpy(&errmsg->msg, nlh, nlh->nlmsg_len);
- 		cmdattr = (void *)&errmsg->msg + min_len;
- 
--		nla_parse_deprecated(cda, IPSET_ATTR_CMD_MAX, cmdattr,
--				     nlh->nlmsg_len - min_len,
--				     ip_set_adt_policy, NULL);
-+		ret = nla_parse_deprecated(cda, IPSET_ATTR_CMD_MAX, cmdattr,
-+					   nlh->nlmsg_len - min_len,
-+					   ip_set_adt_policy, NULL);
- 
-+		if (ret) {
-+			nlmsg_free(skb2);
-+			return ret;
-+		}
- 		errline = nla_data(cda[IPSET_ATTR_LINENO]);
- 
- 		*errline = lineno;
+diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
+index 10f619625abd..175f8fedcfaf 100644
+--- a/net/netfilter/ipset/ip_set_hash_gen.h
++++ b/net/netfilter/ipset/ip_set_hash_gen.h
+@@ -622,7 +622,7 @@ mtype_resize(struct ip_set *set, bool retried)
+ 					goto cleanup;
+ 				}
+ 				m->size = AHASH_INIT_SIZE;
+-				extsize = ext_size(AHASH_INIT_SIZE, dsize);
++				extsize += ext_size(AHASH_INIT_SIZE, dsize);
+ 				RCU_INIT_POINTER(hbucket(t, key), m);
+ 			} else if (m->pos >= m->size) {
+ 				struct hbucket *ht;
 -- 
 2.20.1
 
