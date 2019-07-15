@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64F4A69376
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4443D6935F
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404381AbfGOOoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:44:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59786 "EHLO mail.kernel.org"
+        id S2404035AbfGOOnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:43:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404737AbfGOOhi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:37:38 -0400
+        id S2392143AbfGOOhv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:37:51 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 871C92182B;
-        Mon, 15 Jul 2019 14:37:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7F2E421855;
+        Mon, 15 Jul 2019 14:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201457;
-        bh=l3sx+DTR5XMqGI7VvFkgD6Rz8QOfh2cE4z8GEbj5xWE=;
+        s=default; t=1563201471;
+        bh=RZ9gy97IZQOIU2tY0tMwmpnGSsWD1xY0FJS5/Ow20M8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YCNWfmEtSnLqSpDM416CQhN7RGJOB9Id59Ga8cKI+2J4uN3ql1cMpXYxOlslfAchC
-         AZJ3J853HoHCvI6GRG/2gMEjg16KmjtjPP/n+Pi83DtiNmk7i1pb2JJR5B2YHF8cV5
-         pnTxTaY3f0AX7NEfBE6DflqYc4Qc41cSuSjepCOo=
+        b=qmafoTXKuTQrmngBHu96L5kt5A/IMENWRvXJw8i6zKe9hTsZfaYGauXETj0rdWfcl
+         BVBlhdgvfcAhZyXe62FJgIV/rXuydaS7iDZbbtHvmWkYNXVgX3XB6H9sgYeLIemwCC
+         Y8WAo3dE6UAk8lDvolvhyNxnVpf9utbDMX/Qrg+8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konstantin Khlebnikov <khlebnikov@yandex-team.ru>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Joseph Yasi <joe.yasi@gmail.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Oleksandr Natalenko <oleksandr@redhat.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 18/73] e1000e: start network tx queue only when link is up
-Date:   Mon, 15 Jul 2019 10:35:34 -0400
-Message-Id: <20190715143629.10893-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 21/73] net: phy: Check against net_device being NULL
+Date:   Mon, 15 Jul 2019 10:35:37 -0400
+Message-Id: <20190715143629.10893-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715143629.10893-1-sashal@kernel.org>
 References: <20190715143629.10893-1-sashal@kernel.org>
@@ -47,76 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-[ Upstream commit d17ba0f616a08f597d9348c372d89b8c0405ccf3 ]
+[ Upstream commit 82c76aca81187b3d28a6fb3062f6916450ce955e ]
 
-Driver does not want to keep packets in Tx queue when link is lost.
-But present code only reset NIC to flush them, but does not prevent
-queuing new packets. Moreover reset sequence itself could generate
-new packets via netconsole and NIC falls into endless reset loop.
+In general, we don't want MAC drivers calling phy_attach_direct with the
+net_device being NULL. Add checks against this in all the functions
+calling it: phy_attach() and phy_connect_direct().
 
-This patch wakes Tx queue only when NIC is ready to send packets.
-
-This is proper fix for problem addressed by commit 0f9e980bf5ee
-("e1000e: fix cyclic resets at link up with active tx").
-
-Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-Tested-by: Joseph Yasi <joe.yasi@gmail.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/phy/phy_device.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index f56f8b6e2378..a0f97c5ab6ef 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -4212,7 +4212,7 @@ void e1000e_up(struct e1000_adapter *adapter)
- 		e1000_configure_msix(adapter);
- 	e1000_irq_enable(adapter);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 5048a6df6a8e..5c2c72b1ef8b 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -673,6 +673,9 @@ int phy_connect_direct(struct net_device *dev, struct phy_device *phydev,
+ {
+ 	int rc;
  
--	netif_start_queue(adapter->netdev);
-+	/* Tx queue started by watchdog timer when link is up */
++	if (!dev)
++		return -EINVAL;
++
+ 	rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
+ 	if (rc)
+ 		return rc;
+@@ -965,6 +968,9 @@ struct phy_device *phy_attach(struct net_device *dev, const char *bus_id,
+ 	struct device *d;
+ 	int rc;
  
- 	e1000e_trigger_lsc(adapter);
- }
-@@ -4588,6 +4588,7 @@ int e1000e_open(struct net_device *netdev)
- 	pm_runtime_get_sync(&pdev->dev);
- 
- 	netif_carrier_off(netdev);
-+	netif_stop_queue(netdev);
- 
- 	/* allocate transmit descriptors */
- 	err = e1000e_setup_tx_resources(adapter->tx_ring);
-@@ -4648,7 +4649,6 @@ int e1000e_open(struct net_device *netdev)
- 	e1000_irq_enable(adapter);
- 
- 	adapter->tx_hang_recheck = false;
--	netif_start_queue(netdev);
- 
- 	hw->mac.get_link_status = true;
- 	pm_runtime_put(&pdev->dev);
-@@ -5271,6 +5271,7 @@ static void e1000_watchdog_task(struct work_struct *work)
- 			if (phy->ops.cfg_on_link_up)
- 				phy->ops.cfg_on_link_up(hw);
- 
-+			netif_wake_queue(netdev);
- 			netif_carrier_on(netdev);
- 
- 			if (!test_bit(__E1000_DOWN, &adapter->state))
-@@ -5284,6 +5285,7 @@ static void e1000_watchdog_task(struct work_struct *work)
- 			/* Link status message must follow this format */
- 			pr_info("%s NIC Link is Down\n", adapter->netdev->name);
- 			netif_carrier_off(netdev);
-+			netif_stop_queue(netdev);
- 			if (!test_bit(__E1000_DOWN, &adapter->state))
- 				mod_timer(&adapter->phy_info_timer,
- 					  round_jiffies(jiffies + 2 * HZ));
++	if (!dev)
++		return ERR_PTR(-EINVAL);
++
+ 	/* Search the list of PHY devices on the mdio bus for the
+ 	 * PHY with the requested name
+ 	 */
 -- 
 2.20.1
 
