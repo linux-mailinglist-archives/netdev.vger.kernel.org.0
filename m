@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93AC6697EB
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:14:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 533F9697DD
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:14:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731576AbfGONsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:48:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59736 "EHLO mail.kernel.org"
+        id S1731606AbfGONsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:48:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731564AbfGONso (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:48:44 -0400
+        id S1730691AbfGONsx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:48:53 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3173B2067C;
-        Mon, 15 Jul 2019 13:48:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5253B2067C;
+        Mon, 15 Jul 2019 13:48:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198523;
-        bh=M8oYnJxeXBPkY5HQOxKLmoImQd3w9QKWiQyKPguFl00=;
+        s=default; t=1563198531;
+        bh=uhnvAancAVMkA3TSTecQZgPoV74ngOr7T0pi4tizkbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EENsJRpFQnL0pjEja3j/o8O12O75GxO1vdzrneEzIPJFMKFpVV1jogMbzjX70zdTf
-         PVa8aVU8QIgftMNSQFchjmQU8YQk925zaKNuYRNudhcwVPzHFaNvigFKi1Gr8MshgX
-         +RfIoDWAfjqm19aMh9sQygE2Oe4QAB6O+cg1R8fs=
+        b=0KqdjIYulVeDvhdEBWuRh0LoZcELnz1h9a8yscmowZAvAVFT4IxVMZxhAL9fy22Um
+         uztbBBzD6qSLzzCqFdX4bALTIHGVTq/ZCYe+x8B7TJ+Lws3lwBOd2JjsIuwqYKVrH2
+         X6co+4bI+BP5VgSUXwSPFLt29i9wFX4GeprEeLZU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+Cc:     Jian Shen <shenjian15@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 034/249] net: mvpp2: cls: Extract the RSS context when parsing the ethtool rule
-Date:   Mon, 15 Jul 2019 09:43:19 -0400
-Message-Id: <20190715134655.4076-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 036/249] net: hns3: fix for FEC configuration
+Date:   Mon, 15 Jul 2019 09:43:21 -0400
+Message-Id: <20190715134655.4076-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -43,41 +44,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit c561da68038a738f30eca21456534c2d1872d13d ]
+[ Upstream commit f438bfe9d4fe2e491505abfbf04d7c506e00d146 ]
 
-ethtool_rx_flow_rule_create takes into parameter the ethtool flow spec,
-which doesn't contain the rss context id. We therefore need to extract
-it ourself before parsing the ethtool rule.
+The FEC capbility may be changed with port speed changes. Driver
+needs to read the active FEC mode, and update FEC capability
+when port speed changes.
 
-The FLOW_RSS flag is only set in info->fs.flow_type, and not
-info->flow_type.
-
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Fixes: 7e6ec9148a1d ("net: hns3: add support for FEC encoding control")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-index a57d17ab91f0..fb06c0aa620a 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-@@ -1242,6 +1242,12 @@ int mvpp2_ethtool_cls_rule_ins(struct mvpp2_port *port,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index d3b1f8cb1155..4d9bcad26f06 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -2508,6 +2508,9 @@ static void hclge_update_link_status(struct hclge_dev *hdev)
  
- 	input.fs = &info->fs;
- 
-+	/* We need to manually set the rss_ctx, since this info isn't present
-+	 * in info->fs
-+	 */
-+	if (info->fs.flow_type & FLOW_RSS)
-+		input.rss_ctx = info->rss_context;
+ static void hclge_update_port_capability(struct hclge_mac *mac)
+ {
++	/* update fec ability by speed */
++	hclge_convert_setting_fec(mac);
 +
- 	ethtool_rule = ethtool_rx_flow_rule_create(&input);
- 	if (IS_ERR(ethtool_rule)) {
- 		ret = PTR_ERR(ethtool_rule);
+ 	/* firmware can not identify back plane type, the media type
+ 	 * read from configuration can help deal it
+ 	 */
+@@ -2580,6 +2583,10 @@ static int hclge_get_sfp_info(struct hclge_dev *hdev, struct hclge_mac *mac)
+ 		mac->speed_ability = le32_to_cpu(resp->speed_ability);
+ 		mac->autoneg = resp->autoneg;
+ 		mac->support_autoneg = resp->autoneg_ability;
++		if (!resp->active_fec)
++			mac->fec_mode = 0;
++		else
++			mac->fec_mode = BIT(resp->active_fec);
+ 	} else {
+ 		mac->speed_type = QUERY_SFP_SPEED;
+ 	}
 -- 
 2.20.1
 
