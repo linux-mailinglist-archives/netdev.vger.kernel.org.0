@@ -2,126 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4400169053
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 153AE6906B
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389466AbfGOOUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:20:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45838 "EHLO mail.kernel.org"
+        id S2390352AbfGOOVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:21:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390270AbfGOOUm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:20:42 -0400
+        id S2390342AbfGOOVh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:21:37 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC6EF206B8;
-        Mon, 15 Jul 2019 14:20:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 550E9217F4;
+        Mon, 15 Jul 2019 14:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200441;
-        bh=w55zOYYzJNMcdP+7zqKRNkT5GrF8Viwduokb96WWaeE=;
+        s=default; t=1563200497;
+        bh=tOpREwC9ptswgJC0xfpd7gAJ0c2qFXk1QPaIcgZfPME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mjO8bP5npvsYcJAi8lESgMjmIdsfmXkzwC0mv5rZvvu2d7kWJ2zSKVSDs3h6dCb7j
-         Z6XUQYQ3DTHE2MDMXniKqQWoUd2tEISU/dW9sDIkctxXNYE8ZtZZACR4VEJM0QYnGC
-         7lVeW3TGNcJS8nnQb710WoMq6IL1H2J/DUrSuo9E=
+        b=efPimlsdyQpU1K1xRjqytuRC8/acwVtNrhpSyBnJIjtF3Oymo3pveE37dXXT5HNHb
+         eS5LpbchMmqMvseU+bQgZNJOt9YUgQsQ2fK+2E2coxpQJXPA07pxmEAyKNY7u+cYvA
+         +FdFGvBaasuhTfK7xW8BdQSJt2+QMLZUZ/vTzJo4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>,
-        NOYB <JunkYardMail1@Frontier.com>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 051/158] ipset: Fix memory accounting for hash types on resize
-Date:   Mon, 15 Jul 2019 10:16:22 -0400
-Message-Id: <20190715141809.8445-51-sashal@kernel.org>
+Cc:     =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 062/158] bpf: silence warning messages in core
+Date:   Mon, 15 Jul 2019 10:16:33 -0400
+Message-Id: <20190715141809.8445-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
+From: Valdis Klētnieks <valdis.kletnieks@vt.edu>
 
-[ Upstream commit 11921796f4799ca9c61c4b22cc54d84aa69f8a35 ]
+[ Upstream commit aee450cbe482a8c2f6fa5b05b178ef8b8ff107ca ]
 
-If a fresh array block is allocated during resize, the current in-memory
-set size should be increased by the size of the block, not replaced by it.
+Compiling kernel/bpf/core.c with W=1 causes a flood of warnings:
 
-Before the fix, adding entries to a hash set type, leading to a table
-resize, caused an inconsistent memory size to be reported. This becomes
-more obvious when swapping sets with similar sizes:
+kernel/bpf/core.c:1198:65: warning: initialized field overwritten [-Woverride-init]
+ 1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
+      |                                                                 ^~~~
+kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
+ 1087 |  INSN_3(ALU, ADD,  X),   \
+      |  ^~~~~~
+kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
+ 1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
+      |   ^~~~~~~~~~~~
+kernel/bpf/core.c:1198:65: note: (near initialization for 'public_insntable[12]')
+ 1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
+      |                                                                 ^~~~
+kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
+ 1087 |  INSN_3(ALU, ADD,  X),   \
+      |  ^~~~~~
+kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
+ 1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
+      |   ^~~~~~~~~~~~
 
-  # cat hash_ip_size.sh
-  #!/bin/sh
-  FAIL_RETRIES=10
+98 copies of the above.
 
-  tries=0
-  while [ ${tries} -lt ${FAIL_RETRIES} ]; do
-  	ipset create t1 hash:ip
-  	for i in `seq 1 4345`; do
-  		ipset add t1 1.2.$((i / 255)).$((i % 255))
-  	done
-  	t1_init="$(ipset list t1|sed -n 's/Size in memory: \(.*\)/\1/p')"
+The attached patch silences the warnings, because we *know* we're overwriting
+the default initializer. That leaves bpf/core.c with only 6 other warnings,
+which become more visible in comparison.
 
-  	ipset create t2 hash:ip
-  	for i in `seq 1 4360`; do
-  		ipset add t2 1.2.$((i / 255)).$((i % 255))
-  	done
-  	t2_init="$(ipset list t2|sed -n 's/Size in memory: \(.*\)/\1/p')"
-
-  	ipset swap t1 t2
-  	t1_swap="$(ipset list t1|sed -n 's/Size in memory: \(.*\)/\1/p')"
-  	t2_swap="$(ipset list t2|sed -n 's/Size in memory: \(.*\)/\1/p')"
-
-  	ipset destroy t1
-  	ipset destroy t2
-  	tries=$((tries + 1))
-
-  	if [ ${t1_init} -lt 10000 ] || [ ${t2_init} -lt 10000 ]; then
-  		echo "FAIL after ${tries} tries:"
-  		echo "T1 size ${t1_init}, after swap ${t1_swap}"
-  		echo "T2 size ${t2_init}, after swap ${t2_swap}"
-  		exit 1
-  	fi
-  done
-  echo "PASS"
-  # echo -n 'func hash_ip4_resize +p' > /sys/kernel/debug/dynamic_debug/control
-  # ./hash_ip_size.sh
-  [ 2035.018673] attempt to resize set t1 from 10 to 11, t 00000000fe6551fa
-  [ 2035.078583] set t1 resized from 10 (00000000fe6551fa) to 11 (00000000172a0163)
-  [ 2035.080353] Table destroy by resize 00000000fe6551fa
-  FAIL after 4 tries:
-  T1 size 9064, after swap 71128
-  T2 size 71128, after swap 9064
-
-Reported-by: NOYB <JunkYardMail1@Frontier.com>
-Fixes: 9e41f26a505c ("netfilter: ipset: Count non-static extension memory for userspace")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
+Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipset/ip_set_hash_gen.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
-index 8a33dac4e805..ddfe06d7530b 100644
---- a/net/netfilter/ipset/ip_set_hash_gen.h
-+++ b/net/netfilter/ipset/ip_set_hash_gen.h
-@@ -625,7 +625,7 @@ mtype_resize(struct ip_set *set, bool retried)
- 					goto cleanup;
- 				}
- 				m->size = AHASH_INIT_SIZE;
--				extsize = ext_size(AHASH_INIT_SIZE, dsize);
-+				extsize += ext_size(AHASH_INIT_SIZE, dsize);
- 				RCU_INIT_POINTER(hbucket(t, key), m);
- 			} else if (m->pos >= m->size) {
- 				struct hbucket *ht;
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 0488b8258321..ffc39a7e028d 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-y := core.o
++CFLAGS_core.o += $(call cc-disable-warning, override-init)
+ 
+ obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o
+ obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
 -- 
 2.20.1
 
