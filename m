@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CD426943F
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C0B69439
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 16:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405046AbfGOOq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:46:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36706 "EHLO mail.kernel.org"
+        id S2405148AbfGOOrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:47:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40234 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405036AbfGOOqY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:46:24 -0400
+        id S2405138AbfGOOq7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:46:59 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D59FA21537;
-        Mon, 15 Jul 2019 14:46:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 82FD320896;
+        Mon, 15 Jul 2019 14:46:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563201983;
-        bh=rjXIrPC/VKGuER3lh7qxRBpyvcqcxN4Tu6CvnCk5rEU=;
+        s=default; t=1563202019;
+        bh=BPdIgGT0tqYI+OlkuCcMDMThltNWKW+ecBhdrrOI6Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/jjxjXSxd28MroyR1NAKD2oENc+KV4AeaSPCYBpZhaw4psrCknWKeGGmm6vm/vXQ
-         O9+EpZeyDbgwWDaooj4o4dp2i0s/+CPFHwR5y+4I1WEu35Rsb0yxvRKSYPjRSFyI7V
-         owFiWjjiUUFG/obqs4FiRWIjeTcWLEJ2OAskg5QA=
+        b=ykwnRmRjRAuFbpi/AD1nobVSAbDCoZEeTDzlNz9ItI7eFnU8ce6zQqjXRol/pNZGe
+         wS/pIOoETqms6yLWaN1XgpRqyK+BlOms9JVglAScar2MbiPU6zyCZz9jShAMG5iHer
+         p5FtjjomjknmQnl53HkFX658YjorsscJem5CS3Rc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anirudh Gupta <anirudhrudr@gmail.com>,
-        Anirudh Gupta <anirudh.gupta@sophos.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+Cc:     Robert Hancock <hancock@sedsystems.ca>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 14/53] xfrm: Fix xfrm sel prefix length validation
-Date:   Mon, 15 Jul 2019 10:44:56 -0400
-Message-Id: <20190715144535.11636-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 23/53] net: axienet: Fix race condition causing TX hang
+Date:   Mon, 15 Jul 2019 10:45:05 -0400
+Message-Id: <20190715144535.11636-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715144535.11636-1-sashal@kernel.org>
 References: <20190715144535.11636-1-sashal@kernel.org>
@@ -45,56 +43,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Gupta <anirudhrudr@gmail.com>
+From: Robert Hancock <hancock@sedsystems.ca>
 
-[ Upstream commit b38ff4075a80b4da5cb2202d7965332ca0efb213 ]
+[ Upstream commit 7de44285c1f69ccfbe8be1d6a16fcd956681fee6 ]
 
-Family of src/dst can be different from family of selector src/dst.
-Use xfrm selector family to validate address prefix length,
-while verifying new sa from userspace.
+It is possible that the interrupt handler fires and frees up space in
+the TX ring in between checking for sufficient TX ring space and
+stopping the TX queue in axienet_start_xmit. If this happens, the
+queue wake from the interrupt handler will occur before the queue is
+stopped, causing a lost wakeup and the adapter's transmit hanging.
 
-Validated patch with this command:
-ip xfrm state add src 1.1.6.1 dst 1.1.6.2 proto esp spi 4260196 \
-reqid 20004 mode tunnel aead "rfc4106(gcm(aes))" \
-0x1111016400000000000000000000000044440001 128 \
-sel src 1011:1:4::2/128 sel dst 1021:1:4::2/128 dev Port5
+To avoid this, after stopping the queue, check again whether there is
+sufficient space in the TX ring. If so, wake up the queue again.
 
-Fixes: 07bf7908950a ("xfrm: Validate address prefix lengths in the xfrm selector.")
-Signed-off-by: Anirudh Gupta <anirudh.gupta@sophos.com>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 20 ++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index b04c03043976..10fda9a39cc2 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -150,6 +150,22 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 58ba579793f8..f1e969128a4e 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -613,6 +613,10 @@ static void axienet_start_xmit_done(struct net_device *ndev)
  
- 	err = -EINVAL;
- 	switch (p->family) {
-+	case AF_INET:
-+		break;
+ 	ndev->stats.tx_packets += packets;
+ 	ndev->stats.tx_bytes += size;
 +
-+	case AF_INET6:
-+#if IS_ENABLED(CONFIG_IPV6)
-+		break;
-+#else
-+		err = -EAFNOSUPPORT;
-+		goto out;
-+#endif
++	/* Matches barrier in axienet_start_xmit */
++	smp_mb();
 +
-+	default:
-+		goto out;
-+	}
+ 	netif_wake_queue(ndev);
+ }
+ 
+@@ -667,9 +671,19 @@ static int axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ 
+ 	if (axienet_check_tx_bd_space(lp, num_frag)) {
+-		if (!netif_queue_stopped(ndev))
+-			netif_stop_queue(ndev);
+-		return NETDEV_TX_BUSY;
++		if (netif_queue_stopped(ndev))
++			return NETDEV_TX_BUSY;
 +
-+	switch (p->sel.family) {
- 	case AF_INET:
- 		if (p->sel.prefixlen_d > 32 || p->sel.prefixlen_s > 32)
- 			goto out;
++		netif_stop_queue(ndev);
++
++		/* Matches barrier in axienet_start_xmit_done */
++		smp_mb();
++
++		/* Space might have just been freed - check again */
++		if (axienet_check_tx_bd_space(lp, num_frag))
++			return NETDEV_TX_BUSY;
++
++		netif_wake_queue(ndev);
+ 	}
+ 
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 -- 
 2.20.1
 
