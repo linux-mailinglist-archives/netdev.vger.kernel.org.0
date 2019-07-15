@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B93A7695BC
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F155695AF
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390712AbfGOO7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 10:59:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38896 "EHLO mail.kernel.org"
+        id S2390027AbfGOOTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 10:19:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731727AbfGOOSi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:18:38 -0400
+        id S2389581AbfGOOTE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 10:19:04 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A880217D9;
-        Mon, 15 Jul 2019 14:18:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EEDAE212F5;
+        Mon, 15 Jul 2019 14:19:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563200317;
-        bh=6FtXUU8xqX1YpoNLCB5U17+hbveBVqfMJZXl/C9MpYg=;
+        s=default; t=1563200342;
+        bh=1KILYz1T4Mri1plGqQdoyl5xQXaJ7fsYY4jfQkv0pmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UJ8ByV9bcPB77OpxqsnU0+s7u9jTrQ1iOZ4CD0xyZA8dGw4fhf/fqgVu/wxKRsTkJ
-         9NpEH3gN1ab1I1YJ5hpSc8pB6cOapPFxBGosoYho+HEiinu3B+FtUK0xQ+/aizYmGA
-         Lj+ioX2nLMcEnGRs2UYZpaBEYl7aApP9qQaOS3vE=
+        b=oz9JpMVDhhH7bVEEiD4/CZgu4g9QF2mh/lckmqRrE+4bigPe8htfj8dt8WXyaM1fn
+         3oqYGqq06UvXfhHxNlqi2GZIuLK2C2hj94fX5pOCdE0yAHbT7QgsIdbL16SxfWaTNq
+         iEItOAvxqWgsqUfzG+clYoSAZpscQLCQwzoUYgcM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeremy Sowden <jeremy@azazel.net>,
-        syzbot+d454a826e670502484b8@syzkaller.appspotmail.com,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Joao Pinto <jpinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 010/158] batman-adv: fix for leaked TVLV handler.
-Date:   Mon, 15 Jul 2019 10:15:41 -0400
-Message-Id: <20190715141809.8445-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 018/158] net: stmmac: dwmac1000: Clear unused address entries
+Date:   Mon, 15 Jul 2019 10:15:49 -0400
+Message-Id: <20190715141809.8445-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715141809.8445-1-sashal@kernel.org>
 References: <20190715141809.8445-1-sashal@kernel.org>
@@ -44,37 +47,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeremy Sowden <jeremy@azazel.net>
+From: Jose Abreu <Jose.Abreu@synopsys.com>
 
-[ Upstream commit 17f78dd1bd624a4dd78ed5db3284a63ee807fcc3 ]
+[ Upstream commit 9463c445590091202659cdfdd44b236acadfbd84 ]
 
-A handler for BATADV_TVLV_ROAM was being registered when the
-translation-table was initialized, but not unregistered when the
-translation-table was freed.  Unregister it.
+In case we don't use a given address entry we need to clear it because
+it could contain previous values that are no longer valid.
 
-Fixes: 122edaa05940 ("batman-adv: tvlv - convert roaming adv packet to use tvlv unicast packets")
-Reported-by: syzbot+d454a826e670502484b8@syzkaller.appspotmail.com
-Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Found out while running stmmac selftests.
+
+Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+Cc: Joao Pinto <jpinto@synopsys.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/translation-table.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-table.c
-index 359ec1a6e822..9fa5389ea244 100644
---- a/net/batman-adv/translation-table.c
-+++ b/net/batman-adv/translation-table.c
-@@ -3821,6 +3821,8 @@ static void batadv_tt_purge(struct work_struct *work)
-  */
- void batadv_tt_free(struct batadv_priv *bat_priv)
- {
-+	batadv_tvlv_handler_unregister(bat_priv, BATADV_TVLV_ROAM, 1);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+index 0877bde6e860..21d131347e2e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+@@ -216,6 +216,12 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
+ 					    GMAC_ADDR_LOW(reg));
+ 			reg++;
+ 		}
 +
- 	batadv_tvlv_container_unregister(bat_priv, BATADV_TVLV_TT, 1);
- 	batadv_tvlv_handler_unregister(bat_priv, BATADV_TVLV_TT, 1);
++		while (reg <= perfect_addr_number) {
++			writel(0, ioaddr + GMAC_ADDR_HIGH(reg));
++			writel(0, ioaddr + GMAC_ADDR_LOW(reg));
++			reg++;
++		}
+ 	}
  
+ #ifdef FRAME_FILTER_DEBUG
 -- 
 2.20.1
 
