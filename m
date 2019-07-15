@@ -2,103 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA3068A97
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD50268B10
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730296AbfGONd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:33:27 -0400
-Received: from mout.web.de ([212.227.15.14]:34615 "EHLO mout.web.de"
+        id S1730899AbfGONiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:38:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730224AbfGONd0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:33:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1563197593;
-        bh=NnJ/McBC1xY+rwzKCrlqJKC2Om2QgKLKoSPz2k86HZs=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=lDJpYRQKu5cnV6RPREucuIc2C+kjFqX+K/O7AUztCw1LIETvORDnda7OuCBA53W1/
-         fIZEwItysUbuafGbil2oGWZqhmOYyIfgWHMD1w3bzTh1l7+4rH9gw5qnS0qkTxSqzr
-         4QnZy/VjwM9ekhTelGt/gYpopGw88xEHvO/jTisI=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.58.28] ([62.227.175.184]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lvf5Q-1iW6qK3s9E-017SQx; Mon, 15
- Jul 2019 15:33:13 +0200
-Subject: Re: [PATCH v2 1/2] rt2x00usb: fix rx queue hang
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Stanislaw Gruszka <sgruszka@redhat.com>, stable@vger.kernel.org,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190701105314.9707-1-smoch@web.de>
- <874l3nadjf.fsf@kamboji.qca.qualcomm.com>
-From:   Soeren Moch <smoch@web.de>
-Message-ID: <dd1caa78-182e-b0ce-c90c-9670f8455389@web.de>
-Date:   Mon, 15 Jul 2019 15:33:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730586AbfGONiR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:38:17 -0400
+Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 906DE2081C;
+        Mon, 15 Jul 2019 13:38:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563197896;
+        bh=NZraKEDuaB6vwvz8xVUkIR+7IQqLDfLfw8tb08+gex4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=djmFJjZ//V/P9gNj62sOrJyOvbXhCbbD0jGcVWvmLag7yI/K7s/NxVFedeYjbpb5I
+         wg1vON/M/qOAitGGumZXOGEUo3DyS7XXXL3Fiv00qvEZSxFz+MaqA9/tywD/GHZJlj
+         QzFFR17bujsIcXSsq6ZAHHFjoJVhN0i25L/pqO2A=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yingying Tang <yintang@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 001/219] ath10k: Check tx_stats before use it
+Date:   Mon, 15 Jul 2019 09:34:33 -0400
+Message-Id: <20190715133811.2441-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <874l3nadjf.fsf@kamboji.qca.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:djE4WeLVs9SwBsKtd/iffOLzKtax0CXU3ew0/RjUPxtGqz5u7ox
- ADBvZQTsFuUUtFrSk57QUyzDEY/v+2aWt5NmmVAlnALwq42qsVbjjuCD2cN+MTSAbfgfdm9
- gEad7au1pRtSGxj6SaNYNEXbbSZfq7H5jp4qLTgeUN/aJy1Q9HnPRcuNyIeyGXMpRq8Uuqh
- Sg6JOso+O3hgaKDkXgZkw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:88IpjVHAKF4=:FAfP5y9ry6qRspW+01MVoY
- uTosMf6N4OodFVYQ/q+FFT31SDaWWH6OUBlHd5sG+hevUXouT6lfeH3iHPpfpoNbC4Op8CYzL
- /8SeazaalhETrwEzm+VmhlGxkrQbyybKgOL4PHdnlfOY2mOyZ9/3dhmsalUeccxUEoHkjFlzh
- B6LI8BTuocvgX0cn5XEHwol2d+pYbD+u5ICQjMvVfBdAN8LC1ihXaAQcNWdSu1EE2cMJ/WyLq
- SM1A53iiXVZsvbPHTQ7Jv406P3xsj4NDJrScAJIvHdUSIT7fPcCv1reK4S89LdL1kNnNW7wQ0
- FO+N0O6j9nD4eFHUAaBPc5FM78v590lAU7zmPyY1rzMzX6hmzLHmUy/bUI7XuvexKwa8c8XgW
- FvEM6b22G+uk9REz69S/N4hWASCYoaeFWEApTOBs1UhDniQyc17IWKGtHNUpqj6y/zD++YOrA
- vJmgILErvu+jSU8HaTcMmsP7cevw4TYiIf1FtCqolK1+wnBk/vkhZNh3kFFfnWe5Q3iFm3RRI
- fK2HWF/Fvb/r7LCV0FWEDZ8kq1+Deb+tY4Z2PF2KP5KuFBlfi9feKwvp3V3DGRe+ib1g6B2sr
- ClJYUFIG8wsTg9z87TcwoPhXH+whPHUs1UbbC6vwF0FoXg1SIqfERBruUJXvrl1UJLOcLqdqx
- IcArd6Qe0t89t4mBKmfxbRiWY6l5eIatU/wPrWAAYT0FhTqPyUEdorF8i2dTUdonQQpnZuuKK
- 8aCz/BDnfSWxcLYLVsDeJ+sCd7I8mM/TuckEbb/PjOXVAkoWLR1Nc40Q63sNloIkADl+/wZkA
- eYapr6XgtCdb4SGEg0G8UvH5qmlR1isUqlfLLr08nWu4y87Nx/F4SYpzR1Ci/tWdmlQ9LyF9/
- GdOhn/p//SCorO7Ykv5QWbymVmcZ0uW5qi/0fmdy9jcUIUZdWaMJ0YFX6+KYUrLc7Pry/rXS5
- cFiZlAPgaqLg6F5Qdch04z7jSYiZrrrWxFqRk5sUrIGJtkvNW8EuaKvABiOE4Vmbn8AfkmLQB
- llXXKDxW6ex9nQzD7qGmVXcGe19MAInvB+ez4fTmiEVuUzWpSDzecjNn4z1S7LnvA4MKHNR4n
- O+2GCnFLaFpztQ=
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Yingying Tang <yintang@codeaurora.org>
 
+[ Upstream commit 9e7251fa38978b85108c44743e1436d48e8d0d76 ]
 
-On 15.07.19 10:48, Kalle Valo wrote:
-> Soeren Moch <smoch@web.de> writes:
->
->> Since commit ed194d136769 ("usb: core: remove local_irq_save() around
->>  ->complete() handler") the handler rt2x00usb_interrupt_rxdone() is
->> not running with interrupts disabled anymore. So this completion handler
->> is not guaranteed to run completely before workqueue processing starts
->> for the same queue entry.
->> Be sure to set all other flags in the entry correctly before marking
->> this entry ready for workqueue processing. This way we cannot miss error
->> conditions that need to be signalled from the completion handler to the
->> worker thread.
->> Note that rt2x00usb_work_rxdone() processes all available entries, not
->> only such for which queue_work() was called.
->>
->> This patch is similar to what commit df71c9cfceea ("rt2x00: fix order
->> of entry flags modification") did for TX processing.
->>
->> This fixes a regression on a RT5370 based wifi stick in AP mode, which
->> suddenly stopped data transmission after some period of heavy load. Also
->> stopping the hanging hostapd resulted in the error message "ieee80211
->> phy0: rt2x00queue_flush_queue: Warning - Queue 14 failed to flush".
->> Other operation modes are probably affected as well, this just was
->> the used testcase.
->>
->> Fixes: ed194d136769 ("usb: core: remove local_irq_save() around ->complete() handler")
->> Cc: stable@vger.kernel.org # 4.20+
->> Signed-off-by: Soeren Moch <smoch@web.de>
-> I'll queue this for v5.3.
->
-OK, thanks,
-Soeren
+tx_stats will be freed and set to NULL before debugfs_sta node is
+removed in station disconnetion process. So if read the debugfs_sta
+node there may be NULL pointer error. Add check for tx_stats before
+use it to resove this issue.
+
+Signed-off-by: Yingying Tang <yintang@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/debugfs_sta.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/debugfs_sta.c b/drivers/net/wireless/ath/ath10k/debugfs_sta.c
+index c704ae371c4d..42931a669b02 100644
+--- a/drivers/net/wireless/ath/ath10k/debugfs_sta.c
++++ b/drivers/net/wireless/ath/ath10k/debugfs_sta.c
+@@ -663,6 +663,13 @@ static ssize_t ath10k_dbg_sta_dump_tx_stats(struct file *file,
+ 
+ 	mutex_lock(&ar->conf_mutex);
+ 
++	if (!arsta->tx_stats) {
++		ath10k_warn(ar, "failed to get tx stats");
++		mutex_unlock(&ar->conf_mutex);
++		kfree(buf);
++		return 0;
++	}
++
+ 	spin_lock_bh(&ar->data_lock);
+ 	for (k = 0; k < ATH10K_STATS_TYPE_MAX; k++) {
+ 		for (j = 0; j < ATH10K_COUNTER_TYPE_MAX; j++) {
+-- 
+2.20.1
+
