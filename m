@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A112697D9
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3E8F697C2
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 17:13:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731760AbfGONth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:49:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33570 "EHLO mail.kernel.org"
+        id S1731581AbfGONuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:50:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40512 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731746AbfGONtg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:49:36 -0400
+        id S1731955AbfGONu3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:50:29 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C64122081C;
-        Mon, 15 Jul 2019 13:49:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 896AB2067C;
+        Mon, 15 Jul 2019 13:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563198575;
-        bh=QdGPfrNeNbkaP1KQzi0uqJbMx7P9OghW+bjOn6JK0rI=;
+        s=default; t=1563198628;
+        bh=CGAunlT7Noi4iBaQk9/HGjgIGmvAcb1wMMKm1D0nFvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pOO/BiIAZuauiXtoD+eE+Q3SQOybSD3TQt3R9uHjmkfBBHmQKldShFX9JHR0QhMro
-         u9LlICizCUNK0/KGDWs4zgxtnLBl/ymf3KZxkf+wQYtajqoRPRLbdU4AkKyotKaCTE
-         I8OlSxCgb9uCFrIExq46wVeKP8KvLpEWp2B2KIEU=
+        b=Chkfwv/uYzfUJKPwX+OmvPlqJ9XSbZme/e/ArGZnl5to39bdAgYTDgrTjwZH3RyDv
+         Fndr5HYunIknUM5HjI/z0hmddgF5Dlq65c7EQZpog+VKfgcVs+1OLhg6/ixa/TVgIQ
+         LQw4JjE1AGXhqui79BpcaO5i1B/0Gk6v3JBCwFyo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mitch Williams <mitch.a.williams@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+Cc:     Weihang Li <liweihang@hisilicon.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 049/249] ice: Check all VFs for MDD activity, don't disable
-Date:   Mon, 15 Jul 2019 09:43:34 -0400
-Message-Id: <20190715134655.4076-49-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 064/249] net: hns3: add a check to pointer in error_detected and slot_reset
+Date:   Mon, 15 Jul 2019 09:43:49 -0400
+Message-Id: <20190715134655.4076-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715134655.4076-1-sashal@kernel.org>
 References: <20190715134655.4076-1-sashal@kernel.org>
@@ -45,98 +45,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mitch Williams <mitch.a.williams@intel.com>
+From: Weihang Li <liweihang@hisilicon.com>
 
-[ Upstream commit 23c0112246b454e408fb0579b3f9089353d4d327 ]
+[ Upstream commit 661262bc3e0ecc9a1aed39c6b2a99766da2c22e2 ]
 
-Don't use the mdd_detected variable as an exit condition for this loop;
-the first VF to NOT have an MDD event will cause the loop to terminate.
+If we add a VF without loading hclgevf.ko and then there is a RAS error
+occurs, PCIe AER will call error_detected and slot_reset of all functions,
+and will get a NULL pointer when we check ad_dev->ops->handle_hw_ras_error.
+This will cause a call trace and failures on handling of follow-up RAS
+errors.
 
-Instead just look at all of the VFs, but don't disable them. This
-prevents proper release of resources if the VFs are rebooted or the VF
-driver reloaded. Instead, just log a message and call out repeat
-offenders.
+This patch check ae_dev and ad_dev->ops at first to solve above issues.
 
-To make it clear what we are doing, use a differently-named variable in
-the loop.
-
-Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Signed-off-by: Weihang Li <liweihang@hisilicon.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index dbf3d39ad8b1..1c803106e301 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -1161,16 +1161,16 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 		}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index cd59c0cc636a..5611b990ac34 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -1916,9 +1916,9 @@ static pci_ers_result_t hns3_error_detected(struct pci_dev *pdev,
+ 	if (state == pci_channel_io_perm_failure)
+ 		return PCI_ERS_RESULT_DISCONNECT;
+ 
+-	if (!ae_dev) {
++	if (!ae_dev || !ae_dev->ops) {
+ 		dev_err(&pdev->dev,
+-			"Can't recover - error happened during device init\n");
++			"Can't recover - error happened before device initialized\n");
+ 		return PCI_ERS_RESULT_NONE;
  	}
  
--	/* see if one of the VFs needs to be reset */
--	for (i = 0; i < pf->num_alloc_vfs && mdd_detected; i++) {
-+	/* check to see if one of the VFs caused the MDD */
-+	for (i = 0; i < pf->num_alloc_vfs; i++) {
- 		struct ice_vf *vf = &pf->vf[i];
+@@ -1937,6 +1937,9 @@ static pci_ers_result_t hns3_slot_reset(struct pci_dev *pdev)
  
--		mdd_detected = false;
-+		bool vf_mdd_detected = false;
+ 	dev_info(dev, "requesting reset due to PCI error\n");
  
- 		reg = rd32(hw, VP_MDET_TX_PQM(i));
- 		if (reg & VP_MDET_TX_PQM_VALID_M) {
- 			wr32(hw, VP_MDET_TX_PQM(i), 0xFFFF);
--			mdd_detected = true;
-+			vf_mdd_detected = true;
- 			dev_info(&pf->pdev->dev, "TX driver issue detected on VF %d\n",
- 				 i);
- 		}
-@@ -1178,7 +1178,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 		reg = rd32(hw, VP_MDET_TX_TCLAN(i));
- 		if (reg & VP_MDET_TX_TCLAN_VALID_M) {
- 			wr32(hw, VP_MDET_TX_TCLAN(i), 0xFFFF);
--			mdd_detected = true;
-+			vf_mdd_detected = true;
- 			dev_info(&pf->pdev->dev, "TX driver issue detected on VF %d\n",
- 				 i);
- 		}
-@@ -1186,7 +1186,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 		reg = rd32(hw, VP_MDET_TX_TDPU(i));
- 		if (reg & VP_MDET_TX_TDPU_VALID_M) {
- 			wr32(hw, VP_MDET_TX_TDPU(i), 0xFFFF);
--			mdd_detected = true;
-+			vf_mdd_detected = true;
- 			dev_info(&pf->pdev->dev, "TX driver issue detected on VF %d\n",
- 				 i);
- 		}
-@@ -1194,19 +1194,18 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 		reg = rd32(hw, VP_MDET_RX(i));
- 		if (reg & VP_MDET_RX_VALID_M) {
- 			wr32(hw, VP_MDET_RX(i), 0xFFFF);
--			mdd_detected = true;
-+			vf_mdd_detected = true;
- 			dev_info(&pf->pdev->dev, "RX driver issue detected on VF %d\n",
- 				 i);
- 		}
- 
--		if (mdd_detected) {
-+		if (vf_mdd_detected) {
- 			vf->num_mdd_events++;
--			dev_info(&pf->pdev->dev,
--				 "Use PF Control I/F to re-enable the VF\n");
--			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
-+			if (vf->num_mdd_events > 1)
-+				dev_info(&pf->pdev->dev, "VF %d has had %llu MDD events since last boot\n",
-+					 i, vf->num_mdd_events);
- 		}
- 	}
--
- }
- 
- /**
++	if (!ae_dev || !ae_dev->ops)
++		return PCI_ERS_RESULT_NONE;
++
+ 	/* request the reset */
+ 	if (ae_dev->ops->reset_event) {
+ 		if (!ae_dev->override_pci_need_reset)
 -- 
 2.20.1
 
