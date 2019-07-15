@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C14F968AC7
-	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:37:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4257268AA8
+	for <lists+netdev@lfdr.de>; Mon, 15 Jul 2019 15:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730501AbfGONgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 09:36:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59984 "EHLO mail.kernel.org"
+        id S1730535AbfGONgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 09:36:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60026 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730455AbfGONgD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:36:03 -0400
+        id S1730509AbfGONgF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 09:36:05 -0400
 Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1B54320868;
-        Mon, 15 Jul 2019 13:36:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8ED7121530;
+        Mon, 15 Jul 2019 13:36:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563197762;
-        bh=lGV2uMNimGPV9nxzkGcnvRJAD5cl8EMe+T+ATROi8Bc=;
+        s=default; t=1563197764;
+        bh=USYyIlXozhTDfeuNtXedF7A0tbFNdzrMU37qo5vlIGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PZbXm3uoxnR9ggp9PG5xC5V8BwT3NYVcOYVAmGIxDH1fgxjEsoJSBrydEUcCxtvkC
-         jd/TSckFHf3Aq8+F4MADleCt9+NMzigu/vNFizjhwOneO9bVd9BQ9N3u6e8qg4wvX3
-         +Ydod2tY2XSm7ezhGQm+zk7uPLebpyf/ICR2vRrs=
+        b=jZHLpM4Yuc83GcJqELYlGq3CJKXTd6H/84eWOqwqO5ygUaXT4Q0Y5lqm50YghRJIw
+         mAYfVXpYqynTUt/tG+o6LW6ehndSbTj2HKIQjAiS3b1VTCgQW9wAXo6pveS4IvtWmt
+         YIRCiQMg4HhwgWNRtLy5A6SuIO6QPRTaCp0hXBE0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Maya Erez <merez@codeaurora.org>,
+Cc:     Surabhi Vishnoi <svishnoi@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 005/249] wil6210: fix potential out-of-bounds read
-Date:   Mon, 15 Jul 2019 09:31:46 -0400
-Message-Id: <20190715133550.1772-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 006/249] ath10k: Do not send probe response template for mesh
+Date:   Mon, 15 Jul 2019 09:31:47 -0400
+Message-Id: <20190715133550.1772-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190715133550.1772-1-sashal@kernel.org>
 References: <20190715133550.1772-1-sashal@kernel.org>
@@ -46,52 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+From: Surabhi Vishnoi <svishnoi@codeaurora.org>
 
-[ Upstream commit bfabdd6997323adbedccb13a3fed1967fb8cf8f5 ]
+[ Upstream commit 97354f2c432788e3163134df6bb144f4b6289d87 ]
 
-Notice that *rc* can evaluate to up to 5, include/linux/netdevice.h:
+Currently mac80211 do not support probe response template for
+mesh point. When WMI_SERVICE_BEACON_OFFLOAD is enabled, host
+driver tries to configure probe response template for mesh, but
+it fails because the interface type is not NL80211_IFTYPE_AP but
+NL80211_IFTYPE_MESH_POINT.
 
-enum gro_result {
-        GRO_MERGED,
-        GRO_MERGED_FREE,
-        GRO_HELD,
-        GRO_NORMAL,
-        GRO_DROP,
-        GRO_CONSUMED,
-};
-typedef enum gro_result gro_result_t;
+To avoid this failure, skip sending probe response template to
+firmware for mesh point.
 
-In case *rc* evaluates to 5, we end up having an out-of-bounds read
-at drivers/net/wireless/ath/wil6210/txrx.c:821:
+Tested HW: WCN3990/QCA6174/QCA9984
 
-	wil_dbg_txrx(wil, "Rx complete %d bytes => %s\n",
-		     len, gro_res_str[rc]);
-
-Fix this by adding element "GRO_CONSUMED" to array gro_res_str.
-
-Addresses-Coverity-ID: 1444666 ("Out-of-bounds read")
-Fixes: 194b482b5055 ("wil6210: Debug print GRO Rx result")
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-Reviewed-by: Maya Erez <merez@codeaurora.org>
+Signed-off-by: Surabhi Vishnoi <svishnoi@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/txrx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath10k/mac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/wil6210/txrx.c b/drivers/net/wireless/ath/wil6210/txrx.c
-index 4ccfd1404458..d74837cce67f 100644
---- a/drivers/net/wireless/ath/wil6210/txrx.c
-+++ b/drivers/net/wireless/ath/wil6210/txrx.c
-@@ -750,6 +750,7 @@ void wil_netif_rx_any(struct sk_buff *skb, struct net_device *ndev)
- 		[GRO_HELD]		= "GRO_HELD",
- 		[GRO_NORMAL]		= "GRO_NORMAL",
- 		[GRO_DROP]		= "GRO_DROP",
-+		[GRO_CONSUMED]		= "GRO_CONSUMED",
- 	};
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index e8997e22ceec..b500fd427595 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -1630,6 +1630,10 @@ static int ath10k_mac_setup_prb_tmpl(struct ath10k_vif *arvif)
+ 	if (arvif->vdev_type != WMI_VDEV_TYPE_AP)
+ 		return 0;
  
- 	wil->txrx_ops.get_netif_rx_params(skb, &cid, &security);
++	 /* For mesh, probe response and beacon share the same template */
++	if (ieee80211_vif_is_mesh(vif))
++		return 0;
++
+ 	prb = ieee80211_proberesp_get(hw, vif);
+ 	if (!prb) {
+ 		ath10k_warn(ar, "failed to get probe resp template from mac80211\n");
 -- 
 2.20.1
 
