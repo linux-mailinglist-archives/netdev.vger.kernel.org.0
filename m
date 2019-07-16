@@ -2,91 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D956AB28
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 16:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9081A6AB56
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 17:05:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387758AbfGPO5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 10:57:17 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45703 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727849AbfGPO5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 10:57:16 -0400
-Received: by mail-qk1-f194.google.com with SMTP id s22so14795560qkj.12;
-        Tue, 16 Jul 2019 07:57:16 -0700 (PDT)
+        id S2387977AbfGPPE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 11:04:59 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41359 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728513AbfGPPE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 11:04:59 -0400
+Received: by mail-ed1-f68.google.com with SMTP id p15so20521097eds.8;
+        Tue, 16 Jul 2019 08:04:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BgJZu+NFX+3jW29/vzjk0xHEUBkPIVmYlV4knfrZMYY=;
-        b=hgEn46oZ3bHawcazIGOWXHJp3ac7X5lJf2TkApVies62XXejcmrCpK27KLi5gt7PQC
-         KeaPYKm3uB7OaD7kuzebXBqKLb0NTdwpMQ1f+1bdm5UWsFnj94wrbGk9Mu6q6Qj7PE6E
-         Fu00YJXqrWr9jvx8Lp0vbSLd3CPUhnr0gQtxXtbiTb8EhUGAacHwswIH+uH+8jHUMrzx
-         fDCK/+os/ibtby/yswLq66gsv6YMhwFlsIhpXoDkLMlicQWldyai3YUrHls31w+sSKN8
-         mUcvu4PcrwMPLbTISarBtzNFxJliyhffoeR59whhqcgP2tBi6pZO0788DwMwN5Vl1Et9
-         y1Eg==
+        bh=rLKY158y7o9w0mksAJ+3djh07wVS+19os39rfVhg5lg=;
+        b=J/O/qFcuyIvs6g/T4tYkcPanE4wXRHutSu7Cz2V3e0tuGetbFqGJgzdVQciBkvoCjD
+         W9si1HT8ydCMwlpeql2StLdH1Bbsl6B4u6aguIf27YBBOCuhWP79vGaxUS/BimHgardh
+         TJjXzRt8tdlynwNo5tmpRpstDTlg7f5UyA77zOxIzNWFE7eIp31gwHu8wNh2lK2RfHzF
+         RXh1kShvcwBpOGKjXoma6xoGUDqiXN92GfLcAjcTCa/1rQaRUWCdmrBYR9F5qbXG1i+/
+         4nP84yFQEBCzOyp4OV8l1bRRHB39HoGXNxEaYriBBYnyjZQJmVUGHUyz4n9wREGOdlMy
+         J9pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BgJZu+NFX+3jW29/vzjk0xHEUBkPIVmYlV4knfrZMYY=;
-        b=pG1SuB2mdIUoU+M/it+UNkZU9paIz/syBGxr2ZOZYLr0041++RStfUH5mVQKcCdi+P
-         aXyzw2MfyIJE7xL4sgaeD+pdkgIqhy3lpvhz9FY0B+eOX6j5FISQ+QIcYfERJFzIFFJ7
-         fn/LYdmtaa/1+WDb89xaVQ5gSd3fI5TanoNY7PMCEUmkSuMvf5Lava7TYQap5VvksjvR
-         kGqJzcjFtHZGBk3VFgBpc2tJOh/CT2KMZN/EuAxtK2mkClE1zHjOOEmouyCjaxbH2DDj
-         b2gePrQOAlEyO9yLBEbn7Ino00jQE/YtXZAGpEHI6EyaKAyZT8txbYD4MdKYNGHepXlc
-         5eKg==
-X-Gm-Message-State: APjAAAXsFJwRZK7tuIBQHXbUYkKJ7OyRBvRf40nCGDiHKWB/ulcOS7sy
-        4rT5X21z134/MbRlJ/i8gn4OdCAJZIifpuaYsI4=
-X-Google-Smtp-Source: APXvYqzkDSEW1hkEpUcsLQ6eQGMS3XvP1qb9mygmQAuAhWWj9OAm/FFcdMlsjW3RnVUENlep93Cm85ypH1q1Uyh12os=
-X-Received: by 2002:a37:bf42:: with SMTP id p63mr22418264qkf.437.1563289035793;
- Tue, 16 Jul 2019 07:57:15 -0700 (PDT)
+        bh=rLKY158y7o9w0mksAJ+3djh07wVS+19os39rfVhg5lg=;
+        b=YlOuDDf3b+wZfu4CFgfWMTTxRbEgGPwjY/7yBBTwjlpKsutmM+PgH/ytmApM2YPlb2
+         KsGK52ccOIpRWGn3PiPAiHSj/7ZbwnvWkcN3VY3HQcWn+ULBbyIIH42vpu3o+SOZpq6e
+         riEpDJW3gAAUwiZ/6me9Jt4TzqXsCH1g9VdKDHIpsChSTuw/3dR7ccMWN9wXiKpGLuVE
+         69yTfIJxCGIWETaQM5dtAtbVwfX4ko201ta6GUWQ+z2tYs3aQ/P1M+FyP+gAODmqxcCk
+         ACc11l8pvDTS6lO0fPkdkn+sAwq/smxEUSpRzg6eT2/Zn4lbeylEK/JOj6WTLUUGDOh9
+         Gx0Q==
+X-Gm-Message-State: APjAAAXpIxZkUMHlX8BzyU8MYJljwpAXFvHuIY0D0ygsmaeHB8QvI66W
+        Ws4gRLwXCpRxpMqiXa807o01gFoJI/UGBRTTHsc=
+X-Google-Smtp-Source: APXvYqz/bxWcm/h7JRe26DoT0RVddByJPiMQ5+4n35GneGsifipYzAOgkR7VE2fbyqNRGuZASkHFaUgQ+vauKMSvNwA=
+X-Received: by 2002:aa7:d30b:: with SMTP id p11mr30420633edq.23.1563289497311;
+ Tue, 16 Jul 2019 08:04:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190716105634.21827-1-iii@linux.ibm.com>
-In-Reply-To: <20190716105634.21827-1-iii@linux.ibm.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 16 Jul 2019 07:57:04 -0700
-Message-ID: <CAEf4Bzaf2Ys6H4h0rk6z+QhP-anonz=MBej5CaShXKL453MB4A@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] selftests/bpf: skip nmi test when perf hw events
- are disabled
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com,
-        Y Song <ys114321@gmail.com>
+References: <1563288840-1913-1-git-send-email-cai@lca.pw>
+In-Reply-To: <1563288840-1913-1-git-send-email-cai@lca.pw>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 16 Jul 2019 17:04:19 +0200
+Message-ID: <CAF=yD-KW-XnDvD0i8VbzrkLGNWEY6cPoaEcHy40hbghGXTo+kA@mail.gmail.com>
+Subject: Re: [PATCH] skbuff: fix compilation warnings in skb_dump()
+To:     Qian Cai <cai@lca.pw>
+Cc:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        clang-built-linux@googlegroups.com,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 3:56 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+On Tue, Jul 16, 2019 at 4:56 PM Qian Cai <cai@lca.pw> wrote:
 >
-> Some setups (e.g. virtual machines) might run with hardware perf events
-> disabled. If this is the case, skip the test_send_signal_nmi test.
+> The commit 6413139dfc64 ("skbuff: increase verbosity when dumping skb
+> data") introduced a few compilation warnings.
 >
-> Add a separate test involving a software perf event. This allows testing
-> the perf event path regardless of hardware perf event support.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> ---
+> net/core/skbuff.c:766:32: warning: format specifies type 'unsigned
+> short' but the argument has type 'unsigned int' [-Wformat]
+>                        level, sk->sk_family, sk->sk_type,
+> sk->sk_protocol);
+>                                              ^~~~~~~~~~~
+> net/core/skbuff.c:766:45: warning: format specifies type 'unsigned
+> short' but the argument has type 'unsigned int' [-Wformat]
+>                        level, sk->sk_family, sk->sk_type,
+> sk->sk_protocol);
+> ^~~~~~~~~~~~~~~
 
-LGTM!
+Ah, I looked at sk_family (skc_family), which is type unsigned short.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+But sk_type and sk_protocol are defined as
 
->
-> v1->v2: Skip the test instead of using a software event.
-> Add a separate test with a software event.
->
->  .../selftests/bpf/prog_tests/send_signal.c    | 33 ++++++++++++++++++-
->  1 file changed, 32 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-> index 67cea1686305..54218ee3c004 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-> @@ -173,6 +173,18 @@ static int test_send_signal_tracepoint(void)
->         return test_send_signal_common(&attr, BPF_PROG_TYPE_TRACEPOINT, "tracepoint");
->  }
->
+ unsigned int            sk_padding : 1,
+                                sk_kern_sock : 1,
+                                sk_no_check_tx : 1,
+                                sk_no_check_rx : 1,
+                                sk_userlocks : 4,
+                                sk_protocol  : 8,
+                                sk_type      : 16;
 
-[...]
+So %u is indeed needed instead of %hu.
+
+> Fix them by using the proper types, and also fix some checkpatch
+> warnings by using pr_info().
+>
+> WARNING: printk() should include KERN_<LEVEL> facility level
+> +               printk("%ssk family=%hu type=%u proto=%u\n",
+
+Converting printk to pr_info lowers all levels to KERN_INFO.
+
+skb_dump takes an explicit parameter level to be able to log at
+KERN_ERR or KERN_WARNING
+
+I would like to avoid those checkpatch warnings, but this is not the
+right approach.
+
+> Fixes: 6413139dfc64 ("skbuff: increase verbosity when dumping skb data")
+
+Thanks. For a v2, please mark the target branch, as [PATCH net v2].
