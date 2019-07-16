@@ -2,110 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B46526B022
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 21:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCFC26B026
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 21:56:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388714AbfGPTxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 15:53:22 -0400
-Received: from mga07.intel.com ([134.134.136.100]:53339 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388694AbfGPTxT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 15:53:19 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jul 2019 12:53:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,271,1559545200"; 
-   d="scan'208";a="342818288"
-Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga005.jf.intel.com with ESMTP; 16 Jul 2019 12:53:19 -0700
-From:   Vedang Patel <vedang.patel@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        stephen@networkplumber.org, vinicius.gomes@intel.com,
-        leandro.maciel.dorileo@intel.com, jakub.kicinski@netronome.com,
-        m-karicheri2@ti.com, dsahern@gmail.com,
-        Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH iproute2 net-next v4 6/6] tc: taprio: Update documentation
-Date:   Tue, 16 Jul 2019 12:53:09 -0700
-Message-Id: <1563306789-2908-6-git-send-email-vedang.patel@intel.com>
-X-Mailer: git-send-email 2.7.3
-In-Reply-To: <1563306789-2908-1-git-send-email-vedang.patel@intel.com>
-References: <1563306789-2908-1-git-send-email-vedang.patel@intel.com>
+        id S2388366AbfGPTzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 15:55:47 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:33135 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728807AbfGPTzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 15:55:46 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f20so721945pgj.0
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 12:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=d1Azkzib+8xqVPZDnLUrm8VJ9XsxX7J/EJPH6cpkkiQ=;
+        b=i8u0mJZ3MHHlIeEPYVqmIDXnyJUJDAuVU+IND305z0YyuzpuhVC9f3TSWMmFA6F8qQ
+         1sQnH87W0LKTtVmUyzGq73KF4FmF0JAVun1FDoTjVye/vQxJT4ZbYeSKQzFjw9HbfchC
+         iJUI0J8lELYarHgp390HWcCEd4VphNqRoVGDgdpuyZvos7OX+a0KmAeAJ/lAG4aXtfSf
+         W+/cbYZiTf717s+hxbZGnSGVSMIZdgP4Uj92PplslEdqFJdOP52Y09u3oxaj/OgaShS4
+         1o1CcFz5qg2nDghPRg9YgQgovT/AHCTjYrfh2+vldPrWxaKCh+UqUrti9yd7fHRcwTaR
+         v9YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=d1Azkzib+8xqVPZDnLUrm8VJ9XsxX7J/EJPH6cpkkiQ=;
+        b=jVnKcfaMmEHq7NdRhrDyu4f1WDcNm/06Q3ppYyIIz+rw9o18h0gkMTXvEx7u1UBuni
+         iqbYLlIpkDjCg8yUsMO4DmQYrTdCYy5HRXq9haMTLNGgCBRHMLOWjFP0qB1lVXAeQQwU
+         wzK9lHY0V/QzqCYpfDLxGxPlzmBvEtbYfH7BQjmXhGOPhWHwbjEjQpWmeSOiN9ANqZeD
+         UzIILm82VwysfgBLo7EGZ8gPb28DnUBRH8aLG+4RtmTExBocr6rgmTJs+60G/q3xVFD0
+         NyHsV40iLlPDnHVj9P621hEQjmr49uzbuNhhPXXPNnERi4baMFC02b1OLG60qRMjSgZT
+         TasA==
+X-Gm-Message-State: APjAAAU25d7NuPf71DnX+auDQqe1ObzVoeQJMw6utzv8rTocJsP31CGx
+        qpwRfnwVdokBwIyouR7RCno=
+X-Google-Smtp-Source: APXvYqzirQAAitbL7qs3tIm4MUCn3DWG9qDpP7wIIEXcZYovXa8t0DHyUTIPyePKS91fq+MseucnFQ==
+X-Received: by 2002:a63:7e17:: with SMTP id z23mr36608368pgc.14.1563306945971;
+        Tue, 16 Jul 2019 12:55:45 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id x22sm26357830pff.5.2019.07.16.12.55.44
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 16 Jul 2019 12:55:44 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 12:55:44 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@fb.com, andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf 1/2] selftests/bpf: fix test_verifier/test_maps make
+ dependencies
+Message-ID: <20190716195544.GB14834@mini-arch>
+References: <20190716193837.2808971-1-andriin@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190716193837.2808971-1-andriin@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the latest options, flags and txtime-delay, to the
-taprio manpage.
+On 07/16, Andrii Nakryiko wrote:
+> e46fc22e60a4 ("selftests/bpf: make directory prerequisites order-only")
+> exposed existing problem in Makefile for test_verifier and test_maps tests:
+> their dependency on auto-generated header file with a list of all tests wasn't
+> recorded explicitly. This patch fixes these issues.
+Why adding it explicitly fixes it? At least for test_verifier, we have
+the following rule:
 
-This also adds an example to run tc in txtime offload mode.
+	test_verifier.c: $(VERIFIER_TESTS_H)
 
-Signed-off-by: Vedang Patel <vedang.patel@intel.com>
----
- man/man8/tc-taprio.8 | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+And there should be implicit/builtin test_verifier -> test_verifier.c
+dependency rule.
 
-diff --git a/man/man8/tc-taprio.8 b/man/man8/tc-taprio.8
-index 850be9b03649..e1d19ba19089 100644
---- a/man/man8/tc-taprio.8
-+++ b/man/man8/tc-taprio.8
-@@ -112,6 +112,26 @@ means that traffic class 0 is "active" for that schedule entry.
- long that state defined by <command> and <gate mask> should be held
- before moving to the next entry.
- 
-+.TP
-+flags
-+.br
-+Specifies different modes for taprio. Currently, only txtime-assist is
-+supported which can be enabled by setting it to 0x1. In this mode, taprio will
-+set the transmit timestamp depending on the interval in which the packet needs
-+to be transmitted. It will then utililize the
-+.BR etf(8)
-+qdisc to sort and transmit the packets at the right time. The second example
-+can be used as a reference to configure this mode.
-+
-+.TP
-+txtime-delay
-+.br
-+This parameter is specific to the txtime offload mode. It specifies the maximum
-+time a packet might take to reach the network card from the taprio qdisc. The
-+value should always be greater than the delta specified in the
-+.BR etf(8)
-+qdisc.
-+
- .SH EXAMPLES
- 
- The following example shows how an traffic schedule with three traffic
-@@ -137,6 +157,26 @@ reference CLOCK_TAI. The schedule is composed of three entries each of
-               clockid CLOCK_TAI
- .EE
- 
-+Following is an example to enable the txtime offload mode in taprio. See
-+.BR etf(8)
-+for more information about configuring the ETF qdisc.
-+
-+.EX
-+# tc qdisc replace dev eth0 parent root handle 100 taprio \\
-+              num_tc 3 \\
-+              map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
-+              queues 1@0 1@0 1@0 \\
-+              base-time 1528743495910289987 \\
-+              sched-entry S 01 300000 \\
-+              sched-entry S 02 300000 \\
-+              sched-entry S 04 400000 \\
-+              flags 0x1 \\
-+              txtime-delay 200000 \\
-+              clockid CLOCK_TAI
-+
-+# tc qdisc replace dev $IFACE parent 100:1 etf skip_skb_check \\
-+              offload delta 200000 clockid CLOCK_TAI
-+.EE
- 
- .SH AUTHORS
- Vinicius Costa Gomes <vinicius.gomes@intel.com>
--- 
-2.7.3
+Same for maps, I guess:
 
+	$(OUTPUT)/test_maps: map_tests/*.c
+	test_maps.c: $(MAP_TESTS_H)
+
+So why is it not working as is? What I'm I missing?
