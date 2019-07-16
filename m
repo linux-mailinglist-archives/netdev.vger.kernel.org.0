@@ -2,140 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A351B6AFFA
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 21:43:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 618B76AFFE
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 21:43:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388710AbfGPTiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 15:38:50 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46636 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728858AbfGPTit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 15:38:49 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6GJbkx4020518
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 12:38:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=/27MRGCdL4PbTbze4k7vf8xcAzDRmMW+MR/RJxqUMAk=;
- b=P8kSywXjq/PWVi8BPuf7GBwav78Q0bWcuGyu4c1KLhA786IMlJ967j7ZayRrkjUWFYrQ
- 3oF0v0R4Yf4j8GoTnx9BSklEc5v/9hujIJUfTObwifU4pxziLgLV3+JJuwxvCYV094ID
- MjcYU7mZhS1UO1lXf4QCxGUsI41Ha+RQQSk= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2tsakpt9mt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 12:38:48 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 16 Jul 2019 12:38:47 -0700
-Received: by devvm1662.vll1.facebook.com (Postfix, from userid 137359)
-        id 4066A13432DA; Tue, 16 Jul 2019 12:38:46 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devvm1662.vll1.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <daniel@iogearbox.net>, <ast@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: vll1c12
-Subject: [PATCH bpf 2/2] selftests/bpf: structure test_{progs,maps,verifier} test runners uniformly
-Date:   Tue, 16 Jul 2019 12:38:37 -0700
-Message-ID: <20190716193837.2808971-2-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190716193837.2808971-1-andriin@fb.com>
-References: <20190716193837.2808971-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S2388753AbfGPTjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 15:39:18 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46400 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388736AbfGPTjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 15:39:18 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z1so22166294wru.13
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 12:39:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=JHtxnd2ZQ2lAM7CnK9XNjS6v40V+5VTZiu9B1CLj1tA=;
+        b=NVvHJoi1C9uJRcGmD4UqeWkCV6DJTrAzosFvpyWt/gV4Um0uIIOrVqOxH8S7ksO0dj
+         PSF9yV8Wx0weepHVA/zjwEAGGjXeiNQULJSvQUP+Lw5rpwlLke7jTS7F9U56IiSjh9dC
+         Xr6K1StUMs1HpWHcDjmuLcG90Y4/hugS+NSjnsVRr5+SvyfVU+o7HmOAr0tGIHiQMkga
+         OFTl0Xp37AgptL4k4d1BoIEFhD4x7CKBF9zR0c88ZbLqpq4jgoGIAQNLfbPTvZuVr+l5
+         Qfln76ptJa6o/8hluZTr3fIANPoouMmjAJm7k2y3xIamK3WJuU9bZANNv2fpTwB7/Af1
+         ZHfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=JHtxnd2ZQ2lAM7CnK9XNjS6v40V+5VTZiu9B1CLj1tA=;
+        b=Gyehlra1Gg/0oBri4uES3nglZk8NWz9jaIFedR8O73C/372TxqK1Tl1+d1usUwhLEq
+         ChoW2cgIWaPLfxSYkeEEQZBu335yIEjwMXKtwyK6k5GhvvJsB522LdqF3bkZzJtICW6Y
+         4hdOBcHDn87C9JAPMxflVvQHUsugg/ryTKBEzUiZnMooNZjJtUo7Rd+1ohsiD5zzUS3J
+         5LLzPoOG23l8W4I2RbRyCwWrMvVk8k1/3pKCg3jTl4ieKUmwy8P8k2k6tKw44O7CPk+9
+         gRh5i9UImiPwI1Y6fIs2zn5iWQ/f4/3O96nf59UVNwMCvPej5RpgI91CHJIWI8Fy/4DJ
+         D73w==
+X-Gm-Message-State: APjAAAU+pNFnKqrWe1Fiw4GGerLIDUAgalvWFRWNbb0mYrknOTksLfC0
+        Y1zqUJAuA6qIS4lwhzTHOl2zWA==
+X-Google-Smtp-Source: APXvYqwIJLpj3UhsiDrDdZsgIlTEC3VxF2dRe3d4BQnbnZcUc2bPEBgKHCtfZ0ZbfiZtJRWTgyApzw==
+X-Received: by 2002:adf:b64b:: with SMTP id i11mr37324159wre.205.1563305956022;
+        Tue, 16 Jul 2019 12:39:16 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
+        by smtp.gmail.com with ESMTPSA id t3sm14150205wmi.6.2019.07.16.12.39.14
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 16 Jul 2019 12:39:14 -0700 (PDT)
+References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com> <CAEf4BzavePpW-C+zORN1kwSUJAWuJ3LxZ6QGxqaE9msxCq8ZLA@mail.gmail.com> <87r26w24v4.fsf@netronome.com> <CAEf4BzaPFbYKUQzu7VoRd7idrqPDMEFF=UEmT2pGf+Lxz06+sA@mail.gmail.com> <87k1cj3b69.fsf@netronome.com> <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com> <87wogitlbi.fsf@netronome.com> <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Edward Cree <ecree@solarflare.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com, Yonghong Song <yhs@fb.com>
+Subject: Re: [RFC bpf-next 0/8] bpf: accelerate insn patching speed
+In-reply-to: <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
+Date:   Tue, 16 Jul 2019 20:39:11 +0100
+Message-ID: <871rypdb1c.fsf@netronome.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-16_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=870 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907160240
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's easier to follow the logic if it's structured the same.
-There is just slight difference between test_progs/test_maps and
-test_verifier. test_verifier's verifier/*.c files are not really compilable
-C files (they are more of include headers), so they can't be specified as
-explicit dependencies of test_verifier.
 
-Cc: Alexei Starovoitov <ast@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile | 24 ++++++++++--------------
- 1 file changed, 10 insertions(+), 14 deletions(-)
+Alexei Starovoitov writes:
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 9bc68d8abc5f..11c9c62c3362 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -176,6 +176,7 @@ endif
- endif
- 
- TEST_PROGS_CFLAGS := -I. -I$(OUTPUT)
-+TEST_MAPS_CFLAGS := -I. -I$(OUTPUT)
- TEST_VERIFIER_CFLAGS := -I. -I$(OUTPUT) -Iverifier
- 
- ifneq ($(SUBREG_CODEGEN),)
-@@ -227,16 +228,14 @@ ifeq ($(DWARF2BTF),y)
- 	$(BTF_PAHOLE) -J $@
- endif
- 
--PROG_TESTS_H := $(OUTPUT)/prog_tests/tests.h
--test_progs.c: $(PROG_TESTS_H)
--$(OUTPUT)/test_progs: CFLAGS += $(TEST_PROGS_CFLAGS)
--$(OUTPUT)/test_progs: prog_tests/*.c
--
- PROG_TESTS_DIR = $(OUTPUT)/prog_tests
- $(PROG_TESTS_DIR):
- 	mkdir -p $@
--
-+PROG_TESTS_H := $(PROG_TESTS_DIR)/tests.h
- PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
-+test_progs.c: $(PROG_TESTS_H)
-+$(OUTPUT)/test_progs: CFLAGS += $(TEST_PROGS_CFLAGS)
-+$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_H) $(PROG_TESTS_FILES)
- $(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
- 	$(shell ( cd prog_tests/; \
- 		  echo '/* Generated header, do not edit */'; \
-@@ -250,7 +249,6 @@ $(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
- 		  echo '#endif' \
- 		 ) > $(PROG_TESTS_H))
- 
--TEST_MAPS_CFLAGS := -I. -I$(OUTPUT)
- MAP_TESTS_DIR = $(OUTPUT)/map_tests
- $(MAP_TESTS_DIR):
- 	mkdir -p $@
-@@ -272,17 +270,15 @@ $(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
- 		  echo '#endif' \
- 		 ) > $(MAP_TESTS_H))
- 
--VERIFIER_TESTS_H := $(OUTPUT)/verifier/tests.h
--test_verifier.c: $(VERIFIER_TESTS_H)
--$(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
--$(OUTPUT)/test_verifier: test_verifier.c $(VERIFIER_TESTS_H)
--
- VERIFIER_TESTS_DIR = $(OUTPUT)/verifier
- $(VERIFIER_TESTS_DIR):
- 	mkdir -p $@
--
-+VERIFIER_TESTS_H := $(VERIFIER_TESTS_DIR)/tests.h
- VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
--$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
-+test_verifier.c: $(VERIFIER_TESTS_H)
-+$(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
-+$(OUTPUT)/test_verifier: test_verifier.c $(VERIFIER_TESTS_H)
-+$(VERIFIER_TESTS_H): $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
- 	$(shell ( cd verifier/; \
- 		  echo '/* Generated header, do not edit */'; \
- 		  echo '#ifdef FILL_ARRAY'; \
--- 
-2.17.1
+> On Tue, Jul 16, 2019 at 09:50:25AM +0100, Jiong Wang wrote:
+>> 
+>> Let me digest a little bit and do some coding, then I will come back. Some
+>> issues can only shown up during in-depth coding. I kind of feel handling
+>> aux reference in verifier layer is the part that will still introduce some
+>> un-clean code.
+>
+> I'm still internalizing this discussion. Only want to point out
+> that I think it's better to have simpler algorithm that consumes more
+> memory and slower than more complex algorithm that is more cpu/memory efficient.
+> Here we're aiming at 10x improvement anyway, so extra cpu and memory
+> here and there are good trade-off to make.
+>
+>> >> If there is no dead insn elimination opt, then we could just adjust
+>> >> offsets. When there is insn deleting, I feel the logic becomes more
+>> >> complex. One subprog could be completely deleted or partially deleted, so
+>> >> I feel just recalculate the whole subprog info as a side-product is
+>> >> much simpler.
+>> >
+>> > What's the situation where entirety of subprog can be deleted?
+>> 
+>> Suppose you have conditional jmp_imm, true path calls one subprog, false
+>> path calls the other. If insn walker later found it is also true, then the
+>> subprog at false path won't be marked as "seen", so it is entirely deleted.
+>> 
+>> I actually thought it is in theory one subprog could be deleted entirely,
+>> so if we support insn deletion inside verifier, then range info like
+>> line_info/subprog_info needs to consider one range is deleted.
+>
+> I don't think dead code elim can remove subprogs.
+> cfg check rejects code with dead progs.
+
+cfg check rejects unreachable code based on static analysis while one
+subprog passed cfg check could be identified as dead later after runtime
+value tracking, after check_cond_jmp_op pruning subprog call in false
+path and making the subprog dead?
+
+For example:
+
+  static subprog1()
+  static subprog2()
+  
+  foo(int mask)
+  {
+    if (mask & 0x1)
+      subprog1();
+    else
+      subprog2();
+    ...
+  }
+
+foo's incoming arg is a mask, and depending on whether the LSB is set, it
+calls different init functions, subprog1 or subprog2.
+
+foo might be called with a constant as mask, for example 0x8000. Then if
+foo is not called by someone else, subprog1 is dead if there is no other
+caller of it.
+
+LLVM is smart enough to optimize out such dead functions if they are only
+visible in the same compilation unit, and people might only write code in
+such shape when they are encapsulated in a lib. but if case like above is
+true, I think it is possible one subprog could be deleted by verifier
+entirely.
+
+> I don't think we have a test for such 'dead prog only due to verifier walk'
+> situation. I wonder what happens :)
 
