@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF6C69FE6
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 02:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012676A001
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 02:42:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732751AbfGPAed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 20:34:33 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46754 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730355AbfGPAed (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:34:33 -0400
-Received: by mail-qk1-f196.google.com with SMTP id r4so13122017qkm.13
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 17:34:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=AQgO6xg4ck+X8dRplESnGe0PwiYHyG5i9HAU6due/R4=;
-        b=HJhmcmPFD45Yn1y2cUcLDRF1WD8VII/bzgVAOmquEAkM9BCowk2mP+Hoe4eF32wEF6
-         4Vhp2/LuswDmCHY6DKbNyXqUzhIikfKviBj87fgLoe6j/Nnx2Mc8rKEWSuRBSdLCei/X
-         kFYuoastG3PWRh51zfJGsuUDW69KpkVzCa5sLh9zGLRo7V4H46fsm8DvqImdEZ/OILf/
-         IOwp4loYGbqnx5jXGC5lCa14mnY7wtAeOEmNNEILfP8Maj62eNpcKxA4S7G0wxg2DcgV
-         IR3tOeImOaKCWGcbbp5OzIRiCPSNc9VldTMWDZHz3UFxs+AZomFu63WHBSMArbXi4yPv
-         xtrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=AQgO6xg4ck+X8dRplESnGe0PwiYHyG5i9HAU6due/R4=;
-        b=X6fQkJVEMvbYVMSuG8QHnNvUhFho4KMYJ/fFIc47n1wISXgkVs0tZcdg95UrBFoEHi
-         q+WWcDTBsIEnqdullJXlUfe2ouaTDhzrY+O2+hIiz9EcprtAZoAAFJCyFJWZg9nf0XtG
-         CXsDvXfN7kQgGRRnjscn0NWpbZKJC67Jk7lOhOQdg5lCZx5vtf6H0/QhUBdYy9+xP3mk
-         jGx/f1xo02meTGquHv2QwD0lWJ44nEURMuvh+qPICS5JkLieVe6ukZSoL7CAdiv2k3l0
-         XEEXk8crusuGvB1vsx+opgjzWG5nPwdDN4yqCEd1UssMD4axvjJmMZyoiixCTBhSZ4JQ
-         MP4w==
-X-Gm-Message-State: APjAAAUfcXtPVdOxMZkdRkzBRFWnc9BfgtQZYSgE5V9r8E0EgFGGSL4N
-        Zua17R/CONBGs5Z13hiPGb0U8g==
-X-Google-Smtp-Source: APXvYqzEv91qGFCPpFBJI7k9WZMNQR+v2y7GkCMlplXoa8LVRUQBtH74nnqSpPi7UPcUNTetL+5nmg==
-X-Received: by 2002:a05:620a:1497:: with SMTP id w23mr18805681qkj.49.1563237272475;
-        Mon, 15 Jul 2019 17:34:32 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c14sm7457896qko.84.2019.07.15.17.34.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 17:34:32 -0700 (PDT)
-Date:   Mon, 15 Jul 2019 17:34:27 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Vedang Patel <vedang.patel@intel.com>, netdev@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        vinicius.gomes@intel.com, leandro.maciel.dorileo@intel.com,
-        m-karicheri2@ti.com, dsahern@gmail.com
-Subject: Re: [PATCH iproute2 net-next v3 2/5] taprio: Add support for
- setting flags
-Message-ID: <20190715173427.783a0849@cakuba.netronome.com>
-In-Reply-To: <20190715172422.4e127da2@hermes.lan>
-References: <1563231104-19912-1-git-send-email-vedang.patel@intel.com>
-        <1563231104-19912-2-git-send-email-vedang.patel@intel.com>
-        <20190715163743.2c6cec2b@hermes.lan>
-        <20190715171515.248460a6@cakuba.netronome.com>
-        <20190715172422.4e127da2@hermes.lan>
-Organization: Netronome Systems, Ltd.
+        id S1733011AbfGPAly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 20:41:54 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:54522 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730383AbfGPAly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:41:54 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6G0eSil053466;
+        Tue, 16 Jul 2019 00:41:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : subject : to :
+ cc : message-id : date : mime-version : content-type :
+ content-transfer-encoding; s=corp-2018-07-02;
+ bh=fqIgnIYTK9iAcWYx66nRvxPH9K+G+UHnuLByGtnv5H0=;
+ b=4IRGoMtpCnsAkoP9Sst8iU/FIAcKVhNn5gOVPqlgB06wm0AtdVHFJ1EDomiLKTWOnyfK
+ n4zk9aMjq6wFgt8SFQWhl1S62f9SEvj4ribnwdNYZNp35wEoaE22gL7lOYK1uO95DyJl
+ idud+NCN0H328wgBO/PWOptIgdouzsMruMTqu8dHsaIlWNS/YBMKMj206FkFqesr07j0
+ OxNOYaBn9bFHTKWQj430Kl4EF4cW26x3U+iri+SmQk0UMz/dmksqNb9g7FTKG7jYGGHQ
+ 3qVBdX/ecQoTl3rTz3tRV4y3Lv6c2E9a4MWORp/YPTXtqoxc/lnvQrhdRX+3BKAX4Qnq jA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 2tq7xqsd0w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 00:41:45 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6G0cFJd105590;
+        Tue, 16 Jul 2019 00:41:45 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3020.oracle.com with ESMTP id 2tq6mmjrrj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 00:41:45 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6G0fiVP025234;
+        Tue, 16 Jul 2019 00:41:44 GMT
+Received: from [10.211.54.105] (/10.211.54.105)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 15 Jul 2019 17:41:43 -0700
+From:   Gerd Rausch <gerd.rausch@oracle.com>
+Subject: [PATCH net-next v2 0/7] net/rds: RDMA fixes
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>
+Message-ID: <510cd678-67d6-bd53-1d8e-7a74c4efb14a@oracle.com>
+Date:   Mon, 15 Jul 2019 17:41:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9319 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1907160004
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9319 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907160004
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Jul 2019 17:24:22 -0700, Stephen Hemminger wrote:
-> On Mon, 15 Jul 2019 17:15:15 -0700
-> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-> > On Mon, 15 Jul 2019 16:37:43 -0700, Stephen Hemminger wrote:  
-> > > On Mon, 15 Jul 2019 15:51:41 -0700
-> > > Vedang Patel <vedang.patel@intel.com> wrote:    
-> > > > @@ -442,6 +458,11 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
-> > > >  
-> > > >  	print_string(PRINT_ANY, "clockid", "clockid %s", get_clock_name(clockid));
-> > > >  
-> > > > +	if (tb[TCA_TAPRIO_ATTR_FLAGS]) {
-> > > > +		taprio_flags = rta_getattr_u32(tb[TCA_TAPRIO_ATTR_FLAGS]);
-> > > > +		print_uint(PRINT_ANY, "flags", " flags %x", taprio_flags);
-> > > > +	}    
-> > >[...]
-> > > 3. Use the print_0xhex() instead of print_uint() for hex values. The difference
-> > >    is that in the JSON output, print_uint would be decimal but the print_0xhex
-> > >    is always hex.  And use "flags %#x" so that it is clear you are printing flags in hex.    
-> > 
-> > In my humble personal experience scripting tests using iproute2 and
-> > bpftool with Python I found printing the "hex string" instead of just
-> > outputing the integer value counter productive :( Even tho it looks
-> > better to the eye, JSON is primarily for machine processing and hex
-> > strings have to be manually converted.  
-> 
-> If it is hex on normal output, it should be hex on JSON output.
-> And what ever the normal output format is has to be accepted on command line as input.
+A number of net/rds fixes necessary to make "rds_rdma.ko"
+pass some basic Oracle internal tests.
 
-Ah, I forgot the output == input principle in iproute2!
-In any case if there was ever a vote whether to limit this principle to
-non-JSON output, and make machines' life easier, I'd vote 'yes' :)
+Gerd Rausch (7):
+  net/rds: Give fr_state a chance to transition to FRMR_IS_FREE
+  net/rds: Get rid of "wait_clean_list_grace" and add locking
+  net/rds: Wait for the FRMR_IS_FREE (or FRMR_IS_STALE) transition after
+    posting IB_WR_LOCAL_INV
+  net/rds: Fix NULL/ERR_PTR inconsistency
+  net/rds: Set fr_state only to FRMR_IS_FREE if IB_WR_LOCAL_INV had been
+    successful
+  net/rds: Keep track of and wait for FRWR segments in use upon shutdown
+  net/rds: Initialize ic->i_fastreg_wrs upon allocation
+
+ net/rds/ib.h      |  1 +
+ net/rds/ib_cm.c   |  9 ++++-
+ net/rds/ib_frmr.c | 84 ++++++++++++++++++++++++++++++++++++++++++-----
+ net/rds/ib_mr.h   |  4 +++
+ net/rds/ib_rdma.c | 60 +++++++++++----------------------
+ 5 files changed, 109 insertions(+), 49 deletions(-)
+
+-- 
+
+Changes in submitted patch v2:
+* Use "wait_event" instead of "wait_event_timeout" in order to
+  not have a deadline for the HCA firmware to respond.
