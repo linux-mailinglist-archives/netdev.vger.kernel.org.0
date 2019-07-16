@@ -2,266 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C4AF6AD7F
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 19:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC266ADA3
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 19:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388036AbfGPROj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 13:14:39 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:33404 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728124AbfGPROj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 13:14:39 -0400
-Received: by mail-vs1-f67.google.com with SMTP id m8so14489329vsj.0;
-        Tue, 16 Jul 2019 10:14:38 -0700 (PDT)
+        id S2388235AbfGPR2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 13:28:53 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41874 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730499AbfGPR2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 13:28:52 -0400
+Received: by mail-pg1-f194.google.com with SMTP id q4so9772359pgj.8
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 10:28:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=K2T5hXZ28GqFjDQWKXNnzayNSQkWAA4ayrA9/eIoHIk=;
-        b=ML7ZtHIqMEKlSdOcxsPF6riTTSqgesIeZrKbGD7HrTze3FDhjzRu0lyA0WD/PsVoJC
-         5V1ApPny/eRhwmxTsXfDdtoB8ZJ1IOnkyzM1dlSSRhXRozCnWJMgViCjapPaLNiUk8sM
-         PEe4Fl7nN786ZlgCTheHo339pxzCOOtLvTpyPosnfDbyzFjsyGY2JWcw51zTkKqcplma
-         PP5Ldrkl8+7IcMW6bJCTUpkofmk/m4EzkWeKp7OZ0ax30N3KyTd2COWhM+X8Sm6qP9Fn
-         ZvBrrHRiO0iz376Y2iKNFP0/PsTbJPi7xuNOVbuKnM+1PqhJ+5M4q7o56br3LxuUZCYN
-         bMGA==
+         :cc;
+        bh=FdipyjVpCY6f56Xd4OimbS+PX/++xiAeJwdsr6JXrj4=;
+        b=h1+V62UQ9GlP5V7C0IVqWNdDBKsnlQlECKOfmge8wZcQCKZdqLaxGAP+GFTdv6GM43
+         rsyjKA7SqGqU56sdSzRhGCyQ9fEcpRAkOuZoc/fykRCryb/mK1IJFA6rYJu74nY6zCXP
+         plvbFxEctwJ92ks0XB0cx3o3ptKwXdPR56Xp2M9jEdbyBmQvREnzRwijT5bcJQK8ciS0
+         CHmrSsEx2FL+yOvxYn8aj8xeJzpN/yDZlr/uPRH9K1OnIT57lKWkYZZLe5JLY+tHpxoF
+         vPlE1PtJIoTbnhydJ88RkCm1pYqsKye8E1Ee6wJUbVNzG7CCcGHdGc3tWJTq9mhurxUV
+         nPuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=K2T5hXZ28GqFjDQWKXNnzayNSQkWAA4ayrA9/eIoHIk=;
-        b=c5zO7F1/8VZxceI8AHpDT/WjyeeeLg6RcTDCPgQsODu2D6hW1aOsWNSQ9A8pnwHmNL
-         egzJO5NcjxT4OhVsBFET1uIY1OlIPgr4tajxDDjh8HIGuZaiUHzJtdpEGrktToDyvasQ
-         tYLCN1jcm1cjgUT3fFs7TVOA/Ae/bQmNepu2ogin1aWsDn8hYYg3QcR+tj+mVkawKG62
-         nL6Z0/gqR6gEWADQ6HR5cjrz17JiAHrzxOxJWPyEfnEGkOZoK1RWTStQIJnQs03BBGuy
-         Uu6IHUQrDW3Bpm8+8HcIQjnn3Piw5CIn90yoD35c2WoNxwOqYPdMmRqwRtK4bKmdSP3k
-         nZbQ==
-X-Gm-Message-State: APjAAAV7BTpqSOS5zBRQ06jonVzLbO31rYKr2E2oyoWDWZfgoC6w7TWL
-        oaI2vD1CkdMOJZdtnepGXwsp/3WqYS84WouklEc=
-X-Google-Smtp-Source: APXvYqxXMpdpp/7OzarEqZ8xGCio3PDPPIctuqs1PADOnXX2pUlVTIkJp3otcLCkxittg89fOlESkG1r20Y9Mrv5vzs=
-X-Received: by 2002:a67:d082:: with SMTP id s2mr18848597vsi.96.1563297277785;
- Tue, 16 Jul 2019 10:14:37 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=FdipyjVpCY6f56Xd4OimbS+PX/++xiAeJwdsr6JXrj4=;
+        b=ZbK+vb+tu+kbNr/z1R2Rv4NydXj+PwiHSFeUXNGxy0LJHq4DCfk09wMrJi/cQkkhqM
+         FUuuKGf3Hhj8bp21Q1v9UGAOjDaRlXoCkYHdt/KP8Cyj+m8fE5/gM9Pad9uXducDUBey
+         cqAacUZXvxhd9sX6gbdUvpaHMUhaqnbsrq+OQjnsGJE5qR4OwrT3y+6pDi89eRY3lYsn
+         1cVKiNY1rxpZoU/KVIzOlXHmmV7A+pypu3IYC5bzuzG3A8qakJhzbbHZ+sUKP8YKotZb
+         9XRWfND7p9UqT0kTh+ETAYlrxKXrWg5NA8XzNQfCMFKOI8+kzMAsEbaRZluyrDW3cli6
+         zHsQ==
+X-Gm-Message-State: APjAAAWFsx2BWEiBVAWZ7YYFi95IgNqtUv9YrsVYrvR+LllDksolJK6+
+        P/IYbsb2eNxvouvn2viNui1G42ZT3zS3tRkcu5TiLA==
+X-Google-Smtp-Source: APXvYqxRntwkNQJL/5FuY0S5lwsDvHNyTqDiq6hab1isYlxCWGc+m+UWftjkrghbfqa2HIoXg2UjyyrTCTM77O102is=
+X-Received: by 2002:a65:5687:: with SMTP id v7mr36183069pgs.263.1563298130577;
+ Tue, 16 Jul 2019 10:28:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1562359091.git.a.s.protopopov@gmail.com>
- <e183c0af99056f8ea4de06acb358ace7f3a3d6ae.1562359091.git.a.s.protopopov@gmail.com>
- <734dd45a-95b0-a7fd-9e1d-0535ef4d3e12@iogearbox.net> <CAEf4BzaGGVv2z8jB8MnT7=gnn4nG0cp7DGYxfnnnpohOT=ujCA@mail.gmail.com>
- <CAGn_itw=BqWXn7ibg6M7j4r2T5CMo0paBhBoQQv7b+x7D2g2ww@mail.gmail.com> <CAEf4BzYaiH_GhSJJjkGv4dGF7CbBrusTyShPP9DXvXjCLcmK+w@mail.gmail.com>
-In-Reply-To: <CAEf4BzYaiH_GhSJJjkGv4dGF7CbBrusTyShPP9DXvXjCLcmK+w@mail.gmail.com>
-From:   Anton Protopopov <a.s.protopopov@gmail.com>
-Date:   Tue, 16 Jul 2019 13:14:26 -0400
-Message-ID: <CAGn_itxPjTEHsnBik+KPxc+EGh5fT670nD=u_xZXBzBZq2jrvQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf, libbpf: add a new API bpf_object__reuse_maps()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
+References: <20190712001708.170259-1-ndesaulniers@google.com> <b219cf41933b2f965572af515cf9d3119293bfba.camel@perches.com>
+In-Reply-To: <b219cf41933b2f965572af515cf9d3119293bfba.camel@perches.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 16 Jul 2019 10:28:39 -0700
+Message-ID: <CAKwvOdkD_r2YBqRDy-uTGMG1YeRF8KokxjikR0XLkXLsdJca0g@mail.gmail.com>
+Subject: Re: [PATCH -next] iwlwifi: dbg: work around clang bug by marking
+ debug strings static
+To:     Joe Perches <joe@perches.com>, Kalle Valo <kvalo@codeaurora.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=D0=B2=D1=82, 9 =D0=B8=D1=8E=D0=BB. 2019 =D0=B3. =D0=B2 13:40, Andrii Nakry=
-iko <andrii.nakryiko@gmail.com>:
+On Thu, Jul 11, 2019 at 7:15 PM Joe Perches <joe@perches.com> wrote:
 >
-> On Mon, Jul 8, 2019 at 1:37 PM Anton Protopopov
-> <a.s.protopopov@gmail.com> wrote:
+> On Thu, 2019-07-11 at 17:17 -0700, Nick Desaulniers wrote:
+> > Commit r353569 in prerelease Clang-9 is producing a linkage failure:
 > >
-> > =D0=BF=D0=BD, 8 =D0=B8=D1=8E=D0=BB. 2019 =D0=B3. =D0=B2 13:54, Andrii N=
-akryiko <andrii.nakryiko@gmail.com>:
-> > >
-> > > On Fri, Jul 5, 2019 at 2:53 PM Daniel Borkmann <daniel@iogearbox.net>=
- wrote:
-> > > >
-> > > > On 07/05/2019 10:44 PM, Anton Protopopov wrote:
-> > > > > Add a new API bpf_object__reuse_maps() which can be used to repla=
-ce all maps in
-> > > > > an object by maps pinned to a directory provided in the path argu=
-ment.  Namely,
-> > > > > each map M in the object will be replaced by a map pinned to path=
-/M.name.
-> > > > >
-> > > > > Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
-> > > > > ---
-> > > > >  tools/lib/bpf/libbpf.c   | 34 ++++++++++++++++++++++++++++++++++
-> > > > >  tools/lib/bpf/libbpf.h   |  2 ++
-> > > > >  tools/lib/bpf/libbpf.map |  1 +
-> > > > >  3 files changed, 37 insertions(+)
-> > > > >
-> > > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > > > index 4907997289e9..84c9e8f7bfd3 100644
-> > > > > --- a/tools/lib/bpf/libbpf.c
-> > > > > +++ b/tools/lib/bpf/libbpf.c
-> > > > > @@ -3144,6 +3144,40 @@ int bpf_object__unpin_maps(struct bpf_obje=
-ct *obj, const char *path)
-> > > > >       return 0;
-> > > > >  }
-> > > > >
-> > > > > +int bpf_object__reuse_maps(struct bpf_object *obj, const char *p=
-ath)
-> > >
-> > > As is, bpf_object__reuse_maps() can be easily implemented by user
-> > > applications, as it's only using public libbpf APIs, so I'm not 100%
-> > > sure we need to add method like that to libbpf.
+> > ld: drivers/net/wireless/intel/iwlwifi/fw/dbg.o:
+> > in function `_iwl_fw_dbg_apply_point':
+> > dbg.c:(.text+0x827a): undefined reference to `__compiletime_assert_2387'
 > >
-> > The bpf_object__reuse_maps() can definitely be implemented by user
-> > applications, however, to use it a user also needs to re-implement the
-> > bpf_prog_load_xattr funciton, so it seemed to me that adding this
-> > functionality to the library is a better way.
->
-> I'm still not convinced. Looking at bpf_prog_load_xattr, I think some
-> of what it's doing should be part of bpf_object__object_xattr anyway
-> (all the expected type setting for programs).
->
-> Besides that, there isn't much more than just bpf_object__open and
-> bpf_object__load, to be honest. By doing open and load explicitly,
-> user gets an opportunity to do whatever adjustment they need: reuse
-> maps, adjust map sizes, etc. So I think we should improve
-> bpf_object__open to "guess" program attach types and add map
-> definition flags to allow reuse declaratively.
->
->
+> > when the following configs are enabled:
+> > - CONFIG_IWLWIFI
+> > - CONFIG_IWLMVM
+> > - CONFIG_KASAN
 > >
-> > >
-> > > > > +{
-> > > > > +     struct bpf_map *map;
-> > > > > +
-> > > > > +     if (!obj)
-> > > > > +             return -ENOENT;
-> > > > > +
-> > > > > +     if (!path)
-> > > > > +             return -EINVAL;
-> > > > > +
-> > > > > +     bpf_object__for_each_map(map, obj) {
-> > > > > +             int len, err;
-> > > > > +             int pinned_map_fd;
-> > > > > +             char buf[PATH_MAX];
-> > > >
-> > > > We'd need to skip the case of bpf_map__is_internal(map) since they =
-are always
-> > > > recreated for the given object.
-> > > >
-> > > > > +             len =3D snprintf(buf, PATH_MAX, "%s/%s", path, bpf_=
-map__name(map));
-> > > > > +             if (len < 0) {
-> > > > > +                     return -EINVAL;
-> > > > > +             } else if (len >=3D PATH_MAX) {
-> > > > > +                     return -ENAMETOOLONG;
-> > > > > +             }
-> > > > > +
-> > > > > +             pinned_map_fd =3D bpf_obj_get(buf);
-> > > > > +             if (pinned_map_fd < 0)
-> > > > > +                     return pinned_map_fd;
-> > > >
-> > > > Should we rather have a new map definition attribute that tells to =
-reuse
-> > > > the map if it's pinned in bpf fs, and if not, we create it and late=
-r on
-> > > > pin it? This is what iproute2 is doing and which we're making use o=
-f heavily.
-> > >
-> > > I'd like something like that as well. This would play nicely with
-> > > recently added BTF-defined maps as well.
-> > >
-> > > I think it should be not just pin/don't pin flag, but rather pinning
-> > > strategy, to accommodate various typical strategies of handling maps
-> > > that are already pinned. So something like this:
-> > >
-> > > 1. BPF_PIN_NOTHING - default, don't pin;
-> > > 2. BPF_PIN_EXCLUSIVE - pin, but if map is already pinned - fail;
-> > > 3. BPF_PIN_SET - pin; if existing map exists, reset its state to be
-> > > exact state of object's map;
-> > > 4. BPF_PIN_MERGE - pin, if map exists, fill in NULL entries only (thi=
-s
-> > > is how Cilium is pinning PROG_ARRAY maps, if I understand correctly);
-> > > 5. BPF_PIN_MERGE_OVERWRITE - pin, if map exists, overwrite non-NULL v=
-alues.
-> > >
-> > > This list is only for illustrative purposes, ideally people that have
-> > > a lot of experience using pinning for real-world use cases would chim=
-e
-> > > in on what strategies are useful and make sense.
+> > Work around the issue for now by marking the debug strings as `static`,
+> > which they probably should be any ways.
 > >
-> > My case was simply to reuse existing maps when reloading a program.
-> > Does it make sense for you to add only the simplest cases of listed abo=
-ve?
->
-> Of course, it's enum, so we can start with few clearly useful ones and
-> then expand more if we ever have a need. But I think we still need a
-> bit wider discussion and let people who use pinning to chime in.
->
+> > Link: https://bugs.llvm.org/show_bug.cgi?id=42580
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/580
+> > Reported-by: Arnd Bergmann <arnd@arndb.de>
+> > Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> > Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> > ---
+> >  drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > >
-> > Also, libbpf doesn't use standard naming conventions for pinning maps.
+> > diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> > index e411ac98290d..f8c90ea4e9b4 100644
+> > --- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> > +++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> > @@ -2438,7 +2438,7 @@ static void iwl_fw_dbg_info_apply(struct iwl_fw_runtime *fwrt,
+> >  {
+> >       u32 img_name_len = le32_to_cpu(dbg_info->img_name_len);
+> >       u32 dbg_cfg_name_len = le32_to_cpu(dbg_info->dbg_cfg_name_len);
+> > -     const char err_str[] =
+> > +     static const char err_str[] =
+> >               "WRT: ext=%d. Invalid %s name length %d, expected %d\n";
 >
-> We talked about this in another thread related to BTF-defined maps. I
-> think the way to go with this is to actually define a default pinning
-> root path, but allow to override it on bpf_object__open, if user needs
-> a different one.
+> Better still would be to use the format string directly
+> in both locations instead of trying to deduplicate it
+> via storing it into a separate pointer.
 >
-> > Does it make sense to provide a list of already open maps to the
-> > bpf_prog_load_xattr function as an attribute? In this case a user
-> > can execute his own policy on pinning, but still will have an option
-> > to reuse, reset, and merge maps.
->
-> As explained above, I don't think there isn't much added value in
-> bpf_prog_load, so I'd advise to just switch to explicit
-> bpf_object__open + bpf_object__load and get maximum control and
-> flexibility.
+> Let the compiler/linker consolidate the format.
+> It's smaller object code, allows format/argument verification,
+> and is simpler for humans to understand.
 
-Thanks for your comments. I can see now that using
-bpf_object__open/bpf_object__load makes better sense.
+Whichever Kalle prefers, I just want my CI green again.
 
 >
-> >
-> > >
-> > > > In bpf_object__reuse_maps() bailing out if bpf_obj_get() fails is p=
-erhaps
-> > > > too limiting for a generic API as new version of an object file may=
- contain
-> > > > new maps which are not yet present in bpf fs at that point.
-> > > >
-> > > > > +             err =3D bpf_map__reuse_fd(map, pinned_map_fd);
-> > > > > +             if (err)
-> > > > > +                     return err;
-> > > > > +     }
-> > > > > +
-> > > > > +     return 0;
-> > > > > +}
-> > > > > +
-> > > > >  int bpf_object__pin_programs(struct bpf_object *obj, const char =
-*path)
-> > > > >  {
-> > > > >       struct bpf_program *prog;
-> > > > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > > > > index d639f47e3110..7fe465a1be76 100644
-> > > > > --- a/tools/lib/bpf/libbpf.h
-> > > > > +++ b/tools/lib/bpf/libbpf.h
-> > > > > @@ -82,6 +82,8 @@ int bpf_object__variable_offset(const struct bp=
-f_object *obj, const char *name,
-> > > > >  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, cons=
-t char *path);
-> > > > >  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
-> > > > >                                     const char *path);
-> > > > > +LIBBPF_API int bpf_object__reuse_maps(struct bpf_object *obj,
-> > > > > +                                   const char *path);
-> > > > >  LIBBPF_API int bpf_object__pin_programs(struct bpf_object *obj,
-> > > > >                                       const char *path);
-> > > > >  LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj=
-,
-> > > > > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > > > > index 2c6d835620d2..66a30be6696c 100644
-> > > > > --- a/tools/lib/bpf/libbpf.map
-> > > > > +++ b/tools/lib/bpf/libbpf.map
-> > > > > @@ -172,5 +172,6 @@ LIBBPF_0.0.4 {
-> > > > >               btf_dump__new;
-> > > > >               btf__parse_elf;
-> > > > >               bpf_object__load_xattr;
-> > > > > +             bpf_object__reuse_maps;
-> > > > >               libbpf_num_possible_cpus;
-> > > > >  } LIBBPF_0.0.3;
-> > > > >
-> > > >
+> ---
+> diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> index e411ac98290d..25e6712932b8 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> @@ -2438,17 +2438,17 @@ static void iwl_fw_dbg_info_apply(struct iwl_fw_runtime *fwrt,
+>  {
+>         u32 img_name_len = le32_to_cpu(dbg_info->img_name_len);
+>         u32 dbg_cfg_name_len = le32_to_cpu(dbg_info->dbg_cfg_name_len);
+> -       const char err_str[] =
+> -               "WRT: ext=%d. Invalid %s name length %d, expected %d\n";
+>
+>         if (img_name_len != IWL_FW_INI_MAX_IMG_NAME_LEN) {
+> -               IWL_WARN(fwrt, err_str, ext, "image", img_name_len,
+> +               IWL_WARN(fwrt, "WRT: ext=%d. Invalid %s name length %d, expected %d\n",
+> +                        ext, "image", img_name_len,
+>                          IWL_FW_INI_MAX_IMG_NAME_LEN);
+>                 return;
+>         }
+>
+>         if (dbg_cfg_name_len != IWL_FW_INI_MAX_DBG_CFG_NAME_LEN) {
+> -               IWL_WARN(fwrt, err_str, ext, "debug cfg", dbg_cfg_name_len,
+> +               IWL_WARN(fwrt, "WRT: ext=%d. Invalid %s name length %d, expected %d\n",
+> +                        ext, "debug cfg", dbg_cfg_name_len,
+>                          IWL_FW_INI_MAX_DBG_CFG_NAME_LEN);
+>                 return;
+>         }
+> @@ -2775,8 +2775,6 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
+>                 struct iwl_ucode_tlv *tlv = iter;
+>                 void *ini_tlv = (void *)tlv->data;
+>                 u32 type = le32_to_cpu(tlv->type);
+> -               const char invalid_ap_str[] =
+> -                       "WRT: ext=%d. Invalid apply point %d for %s\n";
+>
+>                 switch (type) {
+>                 case IWL_UCODE_TLV_TYPE_DEBUG_INFO:
+> @@ -2786,8 +2784,8 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
+>                         struct iwl_fw_ini_allocation_data *buf_alloc = ini_tlv;
+>
+>                         if (pnt != IWL_FW_INI_APPLY_EARLY) {
+> -                               IWL_ERR(fwrt, invalid_ap_str, ext, pnt,
+> -                                       "buffer allocation");
+> +                               IWL_ERR(fwrt, "WRT: ext=%d. Invalid apply point %d for %s\n",
+> +                                       ext, pnt, "buffer allocation");
+>                                 goto next;
+>                         }
+>
+> @@ -2797,8 +2795,8 @@ static void _iwl_fw_dbg_apply_point(struct iwl_fw_runtime *fwrt,
+>                 }
+>                 case IWL_UCODE_TLV_TYPE_HCMD:
+>                         if (pnt < IWL_FW_INI_APPLY_AFTER_ALIVE) {
+> -                               IWL_ERR(fwrt, invalid_ap_str, ext, pnt,
+> -                                       "host command");
+> +                               IWL_ERR(fwrt, "WRT: ext=%d. Invalid apply point %d for %s\n",
+> +                                       ext, pnt, "host command");
+>                                 goto next;
+>                         }
+>                         iwl_fw_dbg_send_hcmd(fwrt, tlv, ext);
+>
+>
+
+
+-- 
+Thanks,
+~Nick Desaulniers
