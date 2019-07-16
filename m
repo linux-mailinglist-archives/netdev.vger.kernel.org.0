@@ -2,217 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EC96A08C
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 04:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51FA66A09B
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 04:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730787AbfGPCfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 22:35:40 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39676 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730356AbfGPCfk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jul 2019 22:35:40 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 39CA8AC1E;
-        Tue, 16 Jul 2019 02:35:37 +0000 (UTC)
-From:   Benjamin Poirier <bpoirier@suse.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
-Subject: [PATCH] qlge: Move drivers/net/ethernet/qlogic/qlge/ to drivers/staging/qlge/
-Date:   Tue, 16 Jul 2019 11:34:59 +0900
-Message-Id: <20190716023459.23266-1-bpoirier@suse.com>
-X-Mailer: git-send-email 2.22.0
+        id S1730765AbfGPCvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 22:51:05 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40274 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729302AbfGPCvE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 22:51:04 -0400
+Received: by mail-qt1-f196.google.com with SMTP id a15so17922796qtn.7;
+        Mon, 15 Jul 2019 19:51:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yZErbROM2VVb2DYbhf1qvTfxE9tFHSJiTJU7iwnRqzU=;
+        b=qLDbyLF61NTuheT6jlkBiVZswXOTVaI8dY/Igg/2pduEO+8+WHB9eVULl+a+IOOABU
+         VM97thx/H0rZzv7o8hXQnPMLX52qyidcAdLj1i4BY1h047+h9ZwsVtMG1hg+TklTBNAc
+         kFatbrEym9mdhM4G55kAtH3oDKgWzBASRp4w8XCv4zvjHzmyS5mVDNczzVS1k3e/GQM+
+         +EQJxtlupEQFdFUriN3Evr55VWshQpjXNc1uRdtjSDTZ/P1s9f4+/32+2lNT8GT22dfY
+         kQNYTgD50QSqR3qegjBj1N2YcgGJx1t/s4H5sfBFYjWb1HaVeuFQV5xgbqpT8VMwYSKb
+         ePAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yZErbROM2VVb2DYbhf1qvTfxE9tFHSJiTJU7iwnRqzU=;
+        b=Xhx+x61RhSSQ5V3Oo+z5kK211HIrIC58aShWjk9ka2LbAwjetDJPrqzUYWhRaTYNmI
+         FmqDJed4I+nkwl5JGRQSXPdaRFt0zNwGzQmbBHr94T/gdbBZILw4FbQcfYVLbRLcGf1w
+         PlcJdax9r9J6PNv5x0oQ/0qCcNMcsmtMHb29v1EUxglNfpopbLccpChz7KI3OZ+yHdt2
+         H8TWN2hsMSk3uP+4XMZql44UtA0OAaQ4Cqozw0TG29XTer4TQE2YAe4xAD7ae/+8rStz
+         ois7rLrKDL8B80ECPhkuGsXQaIhCJUbKeDz23YIXzCo3JgW91aSmKMh+6n0sm9m2cyOq
+         EzUQ==
+X-Gm-Message-State: APjAAAVmXJpdTWlTSzl/iaD2bbJDrXbYl+iR1RpxScnUuLI+Pt6T20/s
+        cWJCz/fEiOeHv+ll6czRMpM=
+X-Google-Smtp-Source: APXvYqzQxLuadhwcbe2BI8TLAbrM2BpX1wvqd/8nPogvoqpfbXk0peqo3jY9CxnuUsuhl9okTX6upg==
+X-Received: by 2002:ac8:2763:: with SMTP id h32mr21157340qth.350.1563245463548;
+        Mon, 15 Jul 2019 19:51:03 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:fb15:23ad:df80:c177:921b])
+        by smtp.gmail.com with ESMTPSA id q2sm8468473qkc.118.2019.07.15.19.51.02
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 15 Jul 2019 19:51:02 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 3B189C18C6; Mon, 15 Jul 2019 23:51:00 -0300 (-03)
+Date:   Mon, 15 Jul 2019 23:51:00 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Hariprasad Kelam <hariprasad.kelam@gmail.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sctp: fix warning "NULL check before some freeing
+ functions is not needed"
+Message-ID: <20190716025100.GM3390@localhost.localdomain>
+References: <20190716022002.GA19592@hari-Inspiron-1545>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190716022002.GA19592@hari-Inspiron-1545>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hardware has been declared EOL by the vendor more than 5 years ago.
-What's more relevant to the Linux kernel is that the quality of this driver
-is not on par with many other mainline drivers.
+On Tue, Jul 16, 2019 at 07:50:02AM +0530, Hariprasad Kelam wrote:
+> This patch removes NULL checks before calling kfree.
+> 
+> fixes below issues reported by coccicheck
+> net/sctp/sm_make_chunk.c:2586:3-8: WARNING: NULL check before some
+> freeing functions is not needed.
+> net/sctp/sm_make_chunk.c:2652:3-8: WARNING: NULL check before some
+> freeing functions is not needed.
+> net/sctp/sm_make_chunk.c:2667:3-8: WARNING: NULL check before some
+> freeing functions is not needed.
+> net/sctp/sm_make_chunk.c:2684:3-8: WARNING: NULL check before some
+> freeing functions is not needed.
+> 
+> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
 
-Cc: Manish Chopra <manishc@marvell.com>
-Message-id: <20190617074858.32467-1-bpoirier@suse.com>
-Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
----
- MAINTAINERS                                   |  2 +-
- drivers/net/ethernet/qlogic/Kconfig           |  9 ----
- drivers/net/ethernet/qlogic/Makefile          |  1 -
- drivers/staging/Kconfig                       |  2 +
- drivers/staging/Makefile                      |  1 +
- drivers/staging/qlge/Kconfig                  | 10 +++++
- .../ethernet/qlogic => staging}/qlge/Makefile |  0
- drivers/staging/qlge/TODO                     | 41 +++++++++++++++++++
- .../ethernet/qlogic => staging}/qlge/qlge.h   |  0
- .../qlogic => staging}/qlge/qlge_dbg.c        |  0
- .../qlogic => staging}/qlge/qlge_ethtool.c    |  0
- .../qlogic => staging}/qlge/qlge_main.c       |  0
- .../qlogic => staging}/qlge/qlge_mpi.c        |  0
- 13 files changed, 55 insertions(+), 11 deletions(-)
- create mode 100644 drivers/staging/qlge/Kconfig
- rename drivers/{net/ethernet/qlogic => staging}/qlge/Makefile (100%)
- create mode 100644 drivers/staging/qlge/TODO
- rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge.h (100%)
- rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_dbg.c (100%)
- rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_ethtool.c (100%)
- rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_main.c (100%)
- rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_mpi.c (100%)
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f5533d1bda2e..7347bbf97f66 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13145,7 +13145,7 @@ M:	Manish Chopra <manishc@marvell.com>
- M:	GR-Linux-NIC-Dev@marvell.com
- L:	netdev@vger.kernel.org
- S:	Supported
--F:	drivers/net/ethernet/qlogic/qlge/
-+F:	drivers/staging/qlge/
- 
- QM1D1B0004 MEDIA DRIVER
- M:	Akihiro Tsukada <tskd08@gmail.com>
-diff --git a/drivers/net/ethernet/qlogic/Kconfig b/drivers/net/ethernet/qlogic/Kconfig
-index a391cf6ee4b2..55a29ec76680 100644
---- a/drivers/net/ethernet/qlogic/Kconfig
-+++ b/drivers/net/ethernet/qlogic/Kconfig
-@@ -66,15 +66,6 @@ config QLCNIC_HWMON
- 
- 	  This data is available via the hwmon sysfs interface.
- 
--config QLGE
--	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
--	depends on PCI
--	---help---
--	  This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
--
--	  To compile this driver as a module, choose M here: the module
--	  will be called qlge.
--
- config NETXEN_NIC
- 	tristate "NetXen Multi port (1/10) Gigabit Ethernet NIC"
- 	depends on PCI
-diff --git a/drivers/net/ethernet/qlogic/Makefile b/drivers/net/ethernet/qlogic/Makefile
-index 6cd2e333a5fc..1ae4a0743bd5 100644
---- a/drivers/net/ethernet/qlogic/Makefile
-+++ b/drivers/net/ethernet/qlogic/Makefile
-@@ -5,7 +5,6 @@
- 
- obj-$(CONFIG_QLA3XXX) += qla3xxx.o
- obj-$(CONFIG_QLCNIC) += qlcnic/
--obj-$(CONFIG_QLGE) += qlge/
- obj-$(CONFIG_NETXEN_NIC) += netxen/
- obj-$(CONFIG_QED) += qed/
- obj-$(CONFIG_QEDE)+= qede/
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index 7c96a01eef6c..0b8a614be11e 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -120,4 +120,6 @@ source "drivers/staging/kpc2000/Kconfig"
- 
- source "drivers/staging/isdn/Kconfig"
- 
-+source "drivers/staging/qlge/Kconfig"
-+
- endif # STAGING
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index fcaac9693b83..741152511a10 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -50,3 +50,4 @@ obj-$(CONFIG_EROFS_FS)		+= erofs/
- obj-$(CONFIG_FIELDBUS_DEV)     += fieldbus/
- obj-$(CONFIG_KPC2000)		+= kpc2000/
- obj-$(CONFIG_ISDN_CAPI)		+= isdn/
-+obj-$(CONFIG_QLGE)		+= qlge/
-diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
-new file mode 100644
-index 000000000000..ae9ed2c5300b
---- /dev/null
-+++ b/drivers/staging/qlge/Kconfig
-@@ -0,0 +1,10 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+config QLGE
-+	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
-+	depends on PCI
-+	help
-+	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
-+
-+	To compile this driver as a module, choose M here. The module will be
-+	called qlge.
-diff --git a/drivers/net/ethernet/qlogic/qlge/Makefile b/drivers/staging/qlge/Makefile
-similarity index 100%
-rename from drivers/net/ethernet/qlogic/qlge/Makefile
-rename to drivers/staging/qlge/Makefile
-diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
-new file mode 100644
-index 000000000000..d17d6399d86f
---- /dev/null
-+++ b/drivers/staging/qlge/TODO
-@@ -0,0 +1,41 @@
-+* commit 7c734359d350 ("qlge: Size RX buffers based on MTU.", v2.6.33-rc1)
-+  introduced dead code in the receive routines, which should be rewritten
-+  anyways by the admission of the author himself, see the comment above
-+  ql_build_rx_skb(). That function is now used to handle packets that
-+  underwent header splitting but it still contains code to handle non split
-+  cases.
-+* truesize accounting is incorrect (ex: a 9000B frame has skb->truesize 10280
-+  while containing two frags of order-1 allocations, ie. >16K)
-+* while in that area, using 8k buffers for 9k frames seems to be an especially
-+  poor choice...
-+* in the "chain of large buffers" case, the driver uses an skb allocated with
-+  head room but only puts data in the frags.
-+* rename "rx" queues to "completion" queues. Calling tx completion queues "rx
-+  queues" is confusing.
-+* struct rx_ring is used for rx and tx completions, with some members relevant
-+  to one case only
-+* there is an inordinate amount of disparate debugging code, most of which is
-+  of questionable value. In particular, qlge_dbg.c has hundreds of lines of
-+  code bitrotting away in ifdef land (doesn't compile since commit
-+  18c49b91777c ("qlge: do vlan cleanup", v3.1-rc1), 8 years ago).
-+* triggering an ethtool regdump will instead hexdump a 176k struct to dmesg
-+  depending on some module parameters.
-+* the flow control implementation in firmware is buggy, disable it by default
-+* some structures are initialized redundantly (ex. memset 0 after
-+  alloc_etherdev)
-+* the driver has a habit of using runtime checks where compile time checks are
-+  possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
-+* reorder struct members to avoid holes if it doesn't impact performance
-+* in terms of namespace, the driver uses either qlge_, ql_ (used by
-+  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
-+  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
-+  prefix.
-+* avoid legacy/deprecated apis (ex. replace pci_dma_*, replace pci_enable_msi,
-+  use pci_iomap)
-+* some "while" loops could be rewritten with simple "for", ex.
-+  ql_wait_reg_rdy(), ql_start_rx_ring())
-+* remove duplicate and useless comments
-+* fix weird line wrapping (all over, ex. the ql_set_routing_reg() calls in
-+  qlge_set_multicast_list()).
-+* fix weird indentation (all over, ex. the for loops in qlge_get_stats())
-+* fix checkpatch issues
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-similarity index 100%
-rename from drivers/net/ethernet/qlogic/qlge/qlge.h
-rename to drivers/staging/qlge/qlge.h
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-similarity index 100%
-rename from drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
-rename to drivers/staging/qlge/qlge_dbg.c
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlge_ethtool.c
-similarity index 100%
-rename from drivers/net/ethernet/qlogic/qlge/qlge_ethtool.c
-rename to drivers/staging/qlge/qlge_ethtool.c
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-similarity index 100%
-rename from drivers/net/ethernet/qlogic/qlge/qlge_main.c
-rename to drivers/staging/qlge/qlge_main.c
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
-similarity index 100%
-rename from drivers/net/ethernet/qlogic/qlge/qlge_mpi.c
-rename to drivers/staging/qlge/qlge_mpi.c
--- 
-2.22.0
-
+> ---
+>  net/sctp/sm_make_chunk.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+> index ed39396..36bd8a6e 100644
+> --- a/net/sctp/sm_make_chunk.c
+> +++ b/net/sctp/sm_make_chunk.c
+> @@ -2582,8 +2582,7 @@ static int sctp_process_param(struct sctp_association *asoc,
+>  	case SCTP_PARAM_STATE_COOKIE:
+>  		asoc->peer.cookie_len =
+>  			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
+> -		if (asoc->peer.cookie)
+> -			kfree(asoc->peer.cookie);
+> +		kfree(asoc->peer.cookie);
+>  		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
+>  		if (!asoc->peer.cookie)
+>  			retval = 0;
+> @@ -2648,8 +2647,7 @@ static int sctp_process_param(struct sctp_association *asoc,
+>  			goto fall_through;
+>  
+>  		/* Save peer's random parameter */
+> -		if (asoc->peer.peer_random)
+> -			kfree(asoc->peer.peer_random);
+> +		kfree(asoc->peer.peer_random);
+>  		asoc->peer.peer_random = kmemdup(param.p,
+>  					    ntohs(param.p->length), gfp);
+>  		if (!asoc->peer.peer_random) {
+> @@ -2663,8 +2661,7 @@ static int sctp_process_param(struct sctp_association *asoc,
+>  			goto fall_through;
+>  
+>  		/* Save peer's HMAC list */
+> -		if (asoc->peer.peer_hmacs)
+> -			kfree(asoc->peer.peer_hmacs);
+> +		kfree(asoc->peer.peer_hmacs);
+>  		asoc->peer.peer_hmacs = kmemdup(param.p,
+>  					    ntohs(param.p->length), gfp);
+>  		if (!asoc->peer.peer_hmacs) {
+> @@ -2680,8 +2677,7 @@ static int sctp_process_param(struct sctp_association *asoc,
+>  		if (!ep->auth_enable)
+>  			goto fall_through;
+>  
+> -		if (asoc->peer.peer_chunks)
+> -			kfree(asoc->peer.peer_chunks);
+> +		kfree(asoc->peer.peer_chunks);
+>  		asoc->peer.peer_chunks = kmemdup(param.p,
+>  					    ntohs(param.p->length), gfp);
+>  		if (!asoc->peer.peer_chunks)
+> -- 
+> 2.7.4
+> 
