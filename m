@@ -2,164 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8546A9E9
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 15:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A68FF6AA4E
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 16:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727796AbfGPN4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 09:56:49 -0400
-Received: from E.TopQuark.net ([168.235.66.66]:59898 "EHLO E.TopQuark.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726039AbfGPN4t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 09:56:49 -0400
-Received: from Mail1.TopQuark.net (pool-108-28-144-167.washdc.fios.verizon.net [108.28.144.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "Mail1.TopQuark.net", Issuer "TopQuark Mail Relay CA" (verified OK))
-        by Mail2.TopQuark.net (Postfix) with ESMTPS id E7A383040002;
-        Tue, 16 Jul 2019 09:56:46 -0400 (EDT)
-Received: from Mail1.TopQuark.net (unknown [127.0.0.1])
-        by Mail1.TopQuark.net (Postfix) with ESMTP id 658C427EE061;
-        Tue, 16 Jul 2019 09:56:46 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=PaulSD.com; h=date:from:to
-        :cc:subject:message-id:references:mime-version:content-type
-        :in-reply-to; s=mail; bh=95npihLf9Hb2h9IkeA1/ZR7d5m0=; b=nrMgld2
-        3LTj9xMZ4/o5E87IvFkPjliklsZr+LpYw+J2UNNMx/6iTSesSvse23ZGPH0jsGmT
-        c6fLOdQC65vrbcvTHq+0u3FBrdXTr1cnXlES/UU6jIK/KTHBTgiWPEzx37o7LWXi
-        t/Hg7ZmUZbqoCdm8s524S3O54w+DLNnCxuvw=
-Received: by Mail1.TopQuark.net (Postfix, from userid 1000)
-        id 44BB027EE172; Tue, 16 Jul 2019 09:56:46 -0400 (EDT)
-Date:   Tue, 16 Jul 2019 09:56:46 -0400
-From:   Paul Donohue <linux-kernel@PaulSD.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Subject: Re: IPv6 L2TP issues related to 93531c67
-Message-ID: <20190716135646.GE2622@TopQuark.net>
-References: <20190715161827.GB2622@TopQuark.net>
- <d6db74f5-5add-7500-1b7a-fa62302a455f@gmail.com>
+        id S2387782AbfGPOHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 10:07:47 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2233 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726039AbfGPOHq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jul 2019 10:07:46 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id DCCD31401546E9464CDD;
+        Tue, 16 Jul 2019 22:07:42 +0800 (CST)
+Received: from [127.0.0.1] (10.57.88.168) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Tue, 16 Jul 2019
+ 22:07:32 +0800
+Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
+To:     Vasily Averin <vvs@virtuozzo.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "adobriyan@gmail.com" <adobriyan@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "arjan@linux.intel.com" <arjan@linux.intel.com>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jlayton@kernel.org" <jlayton@kernel.org>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
+        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
+        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
+        "stable@kernel.org" <stable@kernel.org>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
+        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
+        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
+        "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
+        Dailei <dylix.dailei@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
+ <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
+ <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
+ <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
+ <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
+ <20190712140729.GA11583@kroah.com>
+ <65f50cf2-3051-ab55-078f-30930fe0c9bc@huawei.com>
+ <5521e5a4-66d9-aaf8-3a12-3999bfc6be8b@virtuozzo.com>
+ <3bbc16ba-953c-a6b6-c5f3-4deaeaa25d10@huawei.com>
+ <e4753c70-de7c-063a-dc49-0edc7520ccd2@virtuozzo.com>
+From:   Xiaoming Ni <nixiaoming@huawei.com>
+Message-ID: <d418e8ed-de54-53af-a0db-3535ae50e540@huawei.com>
+Date:   Tue, 16 Jul 2019 22:07:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="HcAYCG3uE/tztfnV"
-Content-Disposition: inline
-In-Reply-To: <d6db74f5-5add-7500-1b7a-fa62302a455f@gmail.com>
+In-Reply-To: <e4753c70-de7c-063a-dc49-0edc7520ccd2@virtuozzo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.57.88.168]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---HcAYCG3uE/tztfnV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Mon, Jul 15, 2019 at 12:55:48PM -0600, David Ahern wrote:
-> As an FYI, gmail thinks your emails are spam.
-Ugh.  Thanks for letting me know.  I'll look into it.
-
-> On 7/15/19 10:18 AM, Paul Donohue wrote:
-> > Reverting commit 93531c6743157d7e8c5792f8ed1a57641149d62c (identified by bisection) fixes this issue.
-> That commit can not be reverted. It is a foundational piece for a lot of
-> other changes. Did you mean the commit before it works and this commit
-> fails?
-Sorry, yes, I meant the commit before it works, and this one fails.  I did not try reverting this commit on a more recent kernel.
-
-> > It is not obvious to me how commit 93531c6743157d7e8c5792f8ed1a57641149d62c causes this issue, or how it should be fixed.  Could someone take a look and point me in the right direction for further troubleshooting?
-> Let's get a complete example that demonstrates the problem, and I can go
-> from there. Can you take the attached script and update it so that it
-> reflects the problem you are reporting? That script works on latest
-> kernel as well as 4.14.133. It uses network namespaces for 2 hosts with
-> a router between them.
+On 2019/7/16 18:20, Vasily Averin wrote:
+> On 7/16/19 5:00 AM, Xiaoming Ni wrote:
+>> On 2019/7/15 13:38, Vasily Averin wrote:
+>>> On 7/14/19 5:45 AM, Xiaoming Ni wrote:
+>>>> On 2019/7/12 22:07, gregkh@linuxfoundation.org wrote:
+>>>>> On Fri, Jul 12, 2019 at 09:11:57PM +0800, Xiaoming Ni wrote:
+>>>>>> On 2019/7/11 21:57, Vasily Averin wrote:
+>>>>>>> On 7/11/19 4:55 AM, Nixiaoming wrote:
+>>>>>>>> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
+>>>>>>>>> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
+>>>>>>>>>> Registering the same notifier to a hook repeatedly can cause the hook
+>>>>>>>>>> list to form a ring or lose other members of the list.
+>>>>>>>>>
+>>>>>>>>> I think is not enough to _prevent_ 2nd register attempt,
+>>>>>>>>> it's enough to detect just attempt and generate warning to mark host in bad state.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Duplicate registration is prevented in my patch, not just "mark host in bad state"
+>>>>>>>>
+>>>>>>>> Duplicate registration is checked and exited in notifier_chain_cond_register()
+>>>>>>>>
+>>>>>>>> Duplicate registration was checked in notifier_chain_register() but only 
+>>>>>>>> the alarm was triggered without exiting. added by commit 831246570d34692e 
+>>>>>>>> ("kernel/notifier.c: double register detection")
+>>>>>>>>
+>>>>>>>> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
+>>>>>>>>  which triggers an alarm and exits when a duplicate registration is detected.
+>>>>>>>>
+>>>>>>>>> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
+>>>>>>>>> and it can lead to host crash in any time: 
+>>>>>>>>> you can unregister notifier on first attempt it can be too early, it can be still in use.
+>>>>>>>>> on the other hand you can never call 2nd unregister at all.
+>>>>>>>>
+>>>>>>>> Since the member was not added to the linked list at the time of the second registration, 
+>>>>>>>> no linked list ring was formed. 
+>>>>>>>> The member is released on the first unregistration and -ENOENT on the second unregistration.
+>>>>>>>> After patching, the fault has been alleviated
+>>>>>>>
+>>>>>>> You are wrong here.
+>>>>>>> 2nd notifier's registration is a pure bug, this should never happen.
+>>>>>>> If you know the way to reproduce this situation -- you need to fix it. 
+>>>>>>>
+>>>>>>> 2nd registration can happen in 2 cases:
+>>>>>>> 1) missed rollback, when someone forget to call unregister after successfull registration, 
+>>>>>>> and then tried to call register again. It can lead to crash for example when according module will be unloaded.
+>>>>>>> 2) some subsystem is registered twice, for example from  different namespaces.
+>>>>>>> in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
+>>>>>>> in second namespace, it also can lead to unexpacted behaviour.
+>>>>>>>
+>>>>>> So in these two cases, is it more reasonable to trigger BUG() directly when checking for duplicate registration ?
+>>>>>> But why does current notifier_chain_register() just trigger WARN() without exiting ?
+>>>>>> notifier_chain_cond_register() direct exit without triggering WARN() ?
+>>>>>
+>>>>> It should recover from this, if it can be detected.  The main point is
+>>>>> that not all apis have to be this "robust" when used within the kernel
+>>>>> as we do allow for the callers to know what they are doing :)
+>>>>>
+>>>> In the notifier_chain_register(), the condition ( (*nl) == n) is the same registration of the same hook.
+>>>>  We can intercept this situation and avoid forming a linked list ring to make the API more rob
+>>>
+>>> Once again -- yes, you CAN prevent list corruption, but you CANNOT recover the host and return it back to safe state.
+>>> If double register event was detected -- it means you have bug in kernel.
+>>>
+>>> Yes, you can add BUG here and crash the host immediately, but I prefer to use warning in such situations.
+>>>
+>>>>> If this does not cause any additional problems or slow downs, it's
+>>>>> probably fine to add.
+>>>>>
+>>>> Notifier_chain_register() is not a system hotspot function.
+>>>> At the same time, there is already a WARN_ONCE judgment. There is no new judgment in the new patch.
+>>>> It only changes the processing under the condition of (*nl) == n, which will not cause performance problems.
+>>>> At the same time, avoiding the formation of a link ring can make the system more robust.
+>>>
+>>> I disagree, 
+>>> yes, node will have correct list, but anyway node will work wrong and can crash the host in any time.
+>>
+>> Sorry, my description is not accurate.
+>>
+>> My patch feature does not prevent users from repeatedly registering hooks.
+>> But avoiding the chain ring caused by the user repeatedly registering the hook
+>>
+>> There are no modules for duplicate registration hooks in the current system.
+>> But considering that not all modules are in the kernel source tree,
+>> In order to improve the robustness of the kernel API, we should avoid the linked list ring caused by repeated registration.
+>> Or in order to improve the efficiency of problem location, when the duplicate registration is checked, the system crashes directly.
 > 
-> Also, check the return of the fib lookups using:
->     perf record -e fib6:* -a
->     <run test, ctrl-c on the record>
->     perf script
+> Detect of duplicate registration means an unrecoverable error,
+> from this point of view it makes sense to replace WARN_ONCE by BUG_ON.
+>  
+>> On the other hand, the difference between notifier_chain_register() and notifier_chain_cond_register() for duplicate registrations is confusing:
+>> Blocking the formation of the linked list ring in notifier_chain_cond_register()
+>> There is no interception of the linked list ring in notifier_chain_register(), just an alarm.
+>> Give me the illusion: Isn't notifier_chain_register() allowed to create a linked list ring?
 > 
-> Checkout the fib lookup parameters and result. Do they look correct to
-> you for your setup?
+> I'm not sure that I understood your question correctly but will try to answer.
+> As far as I see all callers of notifier_chain_cond_register checks return value, expect possible failure and handle it somehow.
+> On the other hand callers of notifier_chain_register() in many cases do not check return value and always expect success.
+> The goal of original WARN_ONCE -- to detect possible misuse of notifiers and it seems for me it correctly handles this task.
+>
+Notifier_chain_cond_register() has only one return value: 0
+At the same time, it is only called by blocking_notifier_chain_cond_register().
+In the function comment of blocking_notifier_chain_cond_register there is " Currently always returns zero."
+Therefore, the user cannot check whether the hook has duplicate registration or other errors by checking the return value.
 
-Unfortunately, I have a fairly complicated setup, so it took me a while to figure out which pieces were relevant ... But I think I've finally got it.  The missing piece was IPsec.
+If the interceptor list ring is added to notifier_chain_register(), notifier_chain_register()
+ And notifier_chain_cond_register() becomes redundant code, we can delete one of them
 
-After establishing an IPsec tunnel to carry the L2TP traffic, the first L2TP packet through the IPsec tunnel permanently breaks the associated L2TP tunnel.  Tearing down the IPsec tunnel does not restore functionality of the L2TP tunnel - I have to tear down and re-create the L2TP tunnel before it will work again.  In my real-world use case, I have two L2TP tunnels running over the same IPsec tunnel, and the first L2TP tunnel to send a packet after IPsec is established gets permanently broken, while the other L2TP tunnel works fine.
+> 
+> .
+> 
 
-I've attached a modified version of the script which demonstrates this issue.
-
-Thank you!
--Paul
-
---HcAYCG3uE/tztfnV
-Content-Type: application/x-sh
-Content-Disposition: attachment; filename="l2tp.sh"
-Content-Transfer-Encoding: quoted-printable
-
-#!/bin/bash=0A#=0A# L2TPv3 tunnel between 2 hosts=0A#=0A#            host-1=
-          |   router   |     host-2=0A#                            |       =
-     |=0A#      lo          l2tp      |            |      l2tp           lo=
-=0A#  fc00:101::1   fc00:1::1   |            |   fc00:1::2    fc00:101::2=
-=0A#                  eth0      |            |     eth0=0A#              20=
-01:db8:1::1 |            | 2001:db8:2::1=0A=0Awhich ping6 > /dev/null 2>&1 =
-&& ping6=3D$(which ping6) || ping6=3D$(which ping)=0A=0A###################=
-#############################################################=0A# create na=
-mespaces and interconnects=0A=0Acreate_ns()=0A{=0A	local ns=3D$1=0A	local a=
-ddr=3D$2=0A	local addr6=3D$3=0A=0A	[ -z "${addr}" ] && addr=3D"-"=0A	[ -z "=
-${addr6}" ] && addr6=3D"-"=0A=0A	ip netns add ${ns}=0A=0A	ip -netns ${ns} l=
-ink set lo up=0A	if [ "${addr}" !=3D "-" ]; then=0A		ip -netns ${ns} addr a=
-dd dev lo ${addr}=0A	fi=0A	if [ "${addr6}" !=3D "-" ]; then=0A		ip -netns $=
-{ns} -6 addr add dev lo ${addr6}=0A	fi=0A=0A	# Eliminate the need for sleep=
- after configuring IPs=0A	# Has no effect on this test case=0A	ip netns exe=
-c ${ns} sysctl -qw net.ipv6.conf.default.accept_dad=3D0=0A=0A	ip -netns ${n=
-s} ro add unreachable default metric 8192=0A	ip -netns ${ns} -6 ro add unre=
-achable default metric 8192=0A=0A	ip netns exec ${ns} sysctl -qw net.ipv4.i=
-p_forward=3D1=0A	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr=
-_on_down=3D1=0A	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=
-=3D1=0A	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=3D1=
-=0A}=0A=0A# create veth pair to connect namespaces and apply addresses.=0Ac=
-onnect_ns()=0A{=0A	local ns1=3D$1=0A	local ns1_dev=3D$2=0A	local ns1_addr=
-=3D$3=0A	local ns1_addr6=3D$4=0A	local ns2=3D$5=0A	local ns2_dev=3D$6=0A	lo=
-cal ns2_addr=3D$7=0A	local ns2_addr6=3D$8=0A=0A	ip -netns ${ns1} li add ${n=
-s1_dev} type veth peer name tmp=0A	ip -netns ${ns1} li set ${ns1_dev} up=0A=
-	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}=0A	ip -netns ${ns=
-2} li set ${ns2_dev} up=0A=0A	if [ "${ns1_addr}" !=3D "-" ]; then=0A		ip -n=
-etns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}=0A		ip -netns ${ns2} addr a=
-dd dev ${ns2_dev} ${ns2_addr}=0A	fi=0A=0A	if [ "${ns1_addr6}" !=3D "-" ]; t=
-hen=0A		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}=0A		ip -netns=
- ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}=0A	fi=0A}=0A=0A###############=
-#################################################################=0A# test =
-setup=0Asetup()=0A{=0A	create_ns host-1=0A	create_ns host-2=0A	create_ns ro=
-uter=0A=0A	connect_ns host-1 eth0 10.1.1.1/24 2001:db8:1::1/64 \=0A	       =
-    router eth1 10.1.1.2/24 2001:db8:1::2/64=0A=0A	connect_ns host-2 eth0 1=
-0.1.2.1/24 2001:db8:2::1/64 \=0A	           router eth2 10.1.2.2/24 2001:db=
-8:2::2/64=0A=0A	ip -netns host-1 addr add dev lo fc00:101::1/128=0A	ip -net=
-ns host-2 addr add dev lo fc00:101::2/128=0A	#sleep 5=0A=0A	ip -netns host-=
-1 -6 ro add 2001:db8:2::/64 via 2001:db8:1::2=0A	ip -netns host-2 -6 ro add=
- 2001:db8:1::/64 via 2001:db8:2::2=0A=0A	#=0A	# configure l2tpv3 tunnel on =
-host-1=0A	#=0A	ip -netns host-1 l2tp add tunnel tunnel_id 1234 peer_tunnel_=
-id 1235 \=0A			 encap ip local 2001:db8:1::1 remote 2001:db8:2::1=0A	ip -ne=
-tns host-1 l2tp add session name l2tp1 tunnel_id 1234 \=0A			 session_id 12=
-34 peer_session_id 1235=0A	ip -netns host-1 link set dev l2tp1 up=0A	ip -ne=
-tns host-1 addr add dev l2tp1 fc00:1::1 peer fc00:1::2=0A=0A	#=0A	# configu=
-re l2tpv3 tunnel on host-2=0A	#=0A	ip -netns host-2 l2tp add tunnel tunnel_=
-id 1235 peer_tunnel_id 1234 \=0A			 encap ip local 2001:db8:2::1 remote 200=
-1:db8:1::1=0A	ip -netns host-2 l2tp add session name l2tp2 tunnel_id 1235 \=
-=0A			 session_id 1235 peer_session_id 1234=0A	ip -netns host-2 link set de=
-v l2tp2 up=0A	ip -netns host-2 addr add dev l2tp2 fc00:1::2 peer fc00:1::1=
-=0A=0A	#sleep 5=0A=0A	#=0A	# add routes to loopback addresses=0A	#=0A	ip -n=
-etns host-1 -6 ro add fc00:101::2/128 via fc00:1::2=0A	ip -netns host-2 -6 =
-ro add fc00:101::1/128 via fc00:1::1=0A}=0A=0A#############################=
-###################################################=0A# main=0A=0Asetup=0A=
-=0A# L2TP tunnel works fine here=0Aip netns exec host-1 ${ping6} -c1 -w1 fc=
-00:1::2 >/dev/null || echo "L2TP tunnel not working"=0Aip netns exec host-1=
- ${ping6} -c1 -w1 fc00:101::2 >/dev/null || echo "L2TP tunnel not working"=
-=0A=0A# Configure IPsec=0Aip netns exec host-1 ip xfrm policy add src 2001:=
-db8:1::1/128 dst 2001:db8:2::1/128 dir out tmpl proto esp mode transport=0A=
-=0A# Expected to fail in this test case because the remote side doesn't hav=
-e ipsec=0A# configured, but actually fails to send any packets from 2001:db=
-8:1::1=0A# regardless of whether the remote side is configured=0Aip netns e=
-xec host-1 ${ping6} -c1 -w1 fc00:1::2 >/dev/null && echo "L2TP w/ IPsec une=
-xpectedly working???"=0A=0A# Deconfigure IPsec=0Aip netns exec host-1 ip xf=
-rm policy del src 2001:db8:1::1/128 dst 2001:db8:2::1/128 dir out=0A=0A# L2=
-TP tunnel should work since IPsec has been deconfigured,=0A# but the l2tp1 =
-device in host-1 is permanently broken=0Aip netns exec host-1 ${ping6} -c1 =
--w1 fc00:1::2=0A=0Aip netns del host-1=0Aip netns del host-2=0Aip netns del=
- router=0A
---HcAYCG3uE/tztfnV--
