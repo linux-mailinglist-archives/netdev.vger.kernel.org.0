@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC7AC69FCD
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 02:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDAB369FCF
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 02:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732984AbfGPA07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 20:26:59 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34895 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731522AbfGPA07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:26:59 -0400
-Received: by mail-pg1-f194.google.com with SMTP id s1so2194663pgr.2;
-        Mon, 15 Jul 2019 17:26:58 -0700 (PDT)
+        id S1733022AbfGPA1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 20:27:01 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:32797 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731522AbfGPA1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:27:00 -0400
+Received: by mail-pg1-f195.google.com with SMTP id m4so8513033pgk.0;
+        Mon, 15 Jul 2019 17:27:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fwlK1M4fb2tkuo8+0jNRCqdoKJePblfDoWTGTO4DzYw=;
-        b=SaHFFy42TwDuAX36P3ETxVA9V3oMokG7G8271mlpnq5rKm01Nt99O/gAJgDL3xnYY+
-         yv4GT5Gh+ZhQPHUJUnwJ0EHeskw6Zvb2+ExBUxkc2BHjWq/tq1OsTfdLcaMpwWWzQaJO
-         X1IA3TlrJmGHNn6Fp+6P5VpX3qHuG5BRAAqKfIFZ6AgyEvtNZHi3lYyvvdI9RxQO2oOt
-         l/ElBW6aljlxn7tivwbju/iiyg2tYCAKlnmga0mksvtwRPZtC9OOVMa0gIH8lJ53ZDMq
-         VhQcKZ1tRw0rR4Bajoc3/L/FTfcv6rmFMiHjrPCBSeOZQ0PfcVZJOFF8nNLFGG8HJcmO
-         q0yg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LqcoMtaNS2RyrNWMcSC9GoOqSA0YEyg/awjs8A8RAME=;
+        b=Px/FQsa3tSQJxXoLMUjaU9OndIbOBbnGY6k/SM58InTW8lafOP8SVcbAO7TzsH8RcD
+         4ZzyahnvMOzpTO4W4QvpZZ3B+qN6v6Efo84vfHRO+O/3SImibsE1ilVILwq3Qr0gdeyy
+         JjBWS1itZDaZakY9twJ7M5lN3meT12Lp+djeRthA0fnjVMnPCwj5ktMAeidgljSGerGm
+         5edeyV8t4uLoBgsIj4KmlZfeT8h4YSzBS9lcB05USYszMM3YX4MS6T+/BqndAqjqwOyT
+         VjDKTOihYwQ/iqp/dDL/9zjJoWHE0qJo7mvLmE3Fg4kDTWIDLZkbksNOYf2V5mcc/kiZ
+         XwNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fwlK1M4fb2tkuo8+0jNRCqdoKJePblfDoWTGTO4DzYw=;
-        b=GSzt8LTlt5CoVfb4/jbWpSDDJoidgYyAFwzOphDYQI6xaEzjFWSx4mBCv8h/nyfJ0I
-         BqkyhoDxpSC7OtwjXPMktmNh+qYGdnrOVoSMsWLjJWyxZEN0+ZYf5tkCyZ1qHH6R3jnU
-         okBfop2I/6SsMobDlTmjUyf7Ii3Uisy9VfiNAmkRQobSphVmMDV2osssVbw2OuFoHVPV
-         vNR1qA+d6wzP6gghp/b6ppHLRVTxucztZzdRea+dfanp0TBiwfcMKvyV9UdMPkdTBOqr
-         z2gwG25L6OyVUPRj3mYxrI6xNV7v4BjE3e+b6f6nM2KpcX52Xwx0GMX+MZhEXxRzR+46
-         H25A==
-X-Gm-Message-State: APjAAAXaS5GmY3D0UhIzevXbLLCntTbaw68KdpPxKxlSaAl2wtDc8m9I
-        IOexcmJtiDqApARV9jjxAwMqkH49
-X-Google-Smtp-Source: APXvYqxYPEIAfM+8Lbk/jp1LepWH8ykLD62QEwsayiTpGoMjMe5aMcWokCnRpKfqPuo8PnPHC7mERw==
-X-Received: by 2002:a17:90a:35e6:: with SMTP id r93mr32587029pjb.20.1563236818448;
-        Mon, 15 Jul 2019 17:26:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LqcoMtaNS2RyrNWMcSC9GoOqSA0YEyg/awjs8A8RAME=;
+        b=WHtSFBKnNLM7FURJvXRU40cXEf9b0kOC3OvFlDKl6E4Nemm+Xle1qMe6fzvcoEnJOz
+         cv2BFnehW617WffBKFz7fsT5cS1fhA/LDcDfcxByAbcX59lgoNA2fuOV/kQA7QREuSht
+         dBQpwOV/xyXjmFSp6+BMRYW9dpDnwGpltZVg7byw7um5DvEK5FyQWDPqmb8NWbtOz3a1
+         QB4jDQNnqnoUo6Fu6iUVUhwQ4td0PjlDZNJFTsOvMD5fGGw8cBj0D33achjQ+Z9u6vG7
+         AsrKSoJ6qOzh4JmWGJ+Y99/moWAJCyDmRp3W/6r2RxQ3TbaNDuVvGtipBIGW5aCow8h5
+         uVFg==
+X-Gm-Message-State: APjAAAXx9TJ9Zm1FxiFw5+fgW9HIFz2WJc1QkiuKCOJkUabbfrSKSIoJ
+        h4XhE5KzuzdolAJgQTiPBBxMtcN6
+X-Google-Smtp-Source: APXvYqwidKBy4tABnC017nexDQQeED0DnsOUQX/Ksqw0wUmKNC4joiiHAkqklDoV3FEEOsVN4cNitg==
+X-Received: by 2002:a17:90a:d14a:: with SMTP id t10mr32657581pjw.85.1563236819862;
+        Mon, 15 Jul 2019 17:26:59 -0700 (PDT)
 Received: from ppenkov.svl.corp.google.com ([2620:15c:2c4:201:7bd4:4f27:abe4:d695])
-        by smtp.gmail.com with ESMTPSA id q24sm16775444pjp.14.2019.07.15.17.26.57
+        by smtp.gmail.com with ESMTPSA id q24sm16775444pjp.14.2019.07.15.17.26.59
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 17:26:58 -0700 (PDT)
+        Mon, 15 Jul 2019 17:26:59 -0700 (PDT)
 From:   Petar Penkov <ppenkov.kernel@gmail.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
         edumazet@google.com, lmb@cloudflare.com, sdf@google.com,
         Petar Penkov <ppenkov@google.com>
-Subject: [bpf-next RFC 0/6] Introduce a BPF helper to generate SYN cookies
-Date:   Mon, 15 Jul 2019 17:26:44 -0700
-Message-Id: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
+Subject: [bpf-next RFC 1/6] tcp: tcp_syn_flood_action read port from socket
+Date:   Mon, 15 Jul 2019 17:26:45 -0700
+Message-Id: <20190716002650.154729-2-ppenkov.kernel@gmail.com>
 X-Mailer: git-send-email 2.22.0.510.g264f2c817a-goog
+In-Reply-To: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
+References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -62,54 +64,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petar Penkov <ppenkov@google.com>
 
-This patch series introduces a BPF helper function that allows generating SYN
-cookies from BPF.
+This allows us to call this function before an SKB has been
+allocated.
 
-The first two patches in the series modify several TCP helper functions to
-allow for SKB-less operation, as is the case with XDP.
+Signed-off-by: Petar Penkov <ppenkov@google.com>
+---
+ net/ipv4/tcp_input.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-The third patch introduces the bpf_tcp_gen_syncookie helper function which
-generates a SYN cookie for either XDP or TC programs. 
-
-The last three patches sync tools/ and add a test. 
-
-The primary design consideration I see in the patch series is the return value
-of the helper function. Currently bpf_tcp_gen_syncookie returns a 64-bit value
-that contains both the 32-bit syncookie, and the 16-bit mss value which is
-encoded in the cookie. On error, it would return a negative value instead. I
-chose this over writing the cookie into the provided TCP packet to avoid writing
-packet data as currently if a helper changes the packet data, the first argument
-has to point to the context (can this be relaxed?). 
-
-To make the API cleaner we can instead return something like the struct below
-though the return type would then not really be RET_INTEGER or any of the
-currently existing return types.
-struct bpf_syncookie {
-	u16 error; // or u8 error, u8 unused for future use
-	u16 mss;
-	u32 syncookie;
-}
-
-Petar Penkov (6):
-  tcp: tcp_syn_flood_action read port from socket
-  tcp: add skb-less helpers to retrieve SYN cookie
-  bpf: add bpf_tcp_gen_syncookie helper
-  bpf: sync bpf.h to tools/
-  selftests/bpf: bpf_tcp_gen_syncookie->bpf_helpers
-  selftests/bpf: add test for bpf_tcp_gen_syncookie
-
- include/net/tcp.h                             | 11 +++
- include/uapi/linux/bpf.h                      | 30 ++++++-
- net/core/filter.c                             | 62 +++++++++++++
- net/ipv4/tcp_input.c                          | 87 +++++++++++++++++--
- net/ipv4/tcp_ipv4.c                           |  8 ++
- net/ipv6/tcp_ipv6.c                           |  8 ++
- tools/include/uapi/linux/bpf.h                | 37 +++++++-
- tools/testing/selftests/bpf/bpf_helpers.h     |  3 +
- .../bpf/progs/test_tcp_check_syncookie_kern.c | 28 ++++--
- .../bpf/test_tcp_check_syncookie_user.c       | 61 +++++++++++--
- 10 files changed, 313 insertions(+), 22 deletions(-)
-
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index c21e8a22fb3b..8892df6de1d4 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6422,9 +6422,7 @@ EXPORT_SYMBOL(inet_reqsk_alloc);
+ /*
+  * Return true if a syncookie should be sent
+  */
+-static bool tcp_syn_flood_action(const struct sock *sk,
+-				 const struct sk_buff *skb,
+-				 const char *proto)
++static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
+ {
+ 	struct request_sock_queue *queue = &inet_csk(sk)->icsk_accept_queue;
+ 	const char *msg = "Dropping request";
+@@ -6444,7 +6442,7 @@ static bool tcp_syn_flood_action(const struct sock *sk,
+ 	    net->ipv4.sysctl_tcp_syncookies != 2 &&
+ 	    xchg(&queue->synflood_warned, 1) == 0)
+ 		net_info_ratelimited("%s: Possible SYN flooding on port %d. %s.  Check SNMP counters.\n",
+-				     proto, ntohs(tcp_hdr(skb)->dest), msg);
++				     proto, sk->sk_num, msg);
+ 
+ 	return want_cookie;
+ }
+@@ -6487,7 +6485,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	 */
+ 	if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
+ 	     inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+-		want_cookie = tcp_syn_flood_action(sk, skb, rsk_ops->slab_name);
++		want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+ 		if (!want_cookie)
+ 			goto drop;
+ 	}
 -- 
 2.22.0.510.g264f2c817a-goog
 
