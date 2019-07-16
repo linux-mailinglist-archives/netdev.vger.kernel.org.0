@@ -2,112 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BDCD6B19E
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 00:13:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0B16B1A4
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 00:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388237AbfGPWL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 18:11:29 -0400
-Received: from mx.paulo.ac ([212.47.230.6]:38830 "EHLO mx.paulo.ac"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726555AbfGPWL3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 18:11:29 -0400
-X-Greylist: delayed 386 seconds by postgrey-1.27 at vger.kernel.org; Tue, 16 Jul 2019 18:11:28 EDT
-From:   "Paulo Alcantara (SUSE)" <paulo@paulo.ac>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=paulo.ac; s=dkim;
-        t=1563314708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ictppub2W6BvEyEBopdH3SZbJ5aGmAVfnP2JIdC5ziw=;
-        b=RRK9oiUyWgvvZ/IptYF9PLQ1xizKsYLrwKwdM/sLiJ4LwBHd8XofxhGldej303oKtXQQfe
-        k8KBbOd7blWlT7ev+0JFnmuIPc2NCVh+2YqSjvGYzJ1qZjulFlwCHa4W9mbjNTpPrbacQg
-        FH/hyTm+f935hk/0BrGf3jt8tGxIcqfL7FJxurplRQBjDE9E40G+Oy8jz81+Ylhs1nP8SK
-        l52OjYtJ6OCWYDbmg7yjWkE1q6w3kUU2DQjLXE3L3VcRw0G+0nS8To0SSKU7NVojW4DFW1
-        HXAM1aAspoZg0OGq6Mj9udcjc1mkQIsyOT5bJc3jpzo27lZ3/bE3p4ITSWaMdA==
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Cc:     "Paulo Alcantara (SUSE)" <paulo@paulo.ac>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH 3/3] ipconfig: Handle CONFIG_CIFS_ROOT option
-Date:   Tue, 16 Jul 2019 19:04:52 -0300
-Message-Id: <20190716220452.3382-3-paulo@paulo.ac>
-In-Reply-To: <20190716220452.3382-1-paulo@paulo.ac>
-References: <20190716220452.3382-1-paulo@paulo.ac>
+        id S1731273AbfGPWM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 18:12:29 -0400
+Received: from mail-qt1-f171.google.com ([209.85.160.171]:34731 "EHLO
+        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbfGPWM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 18:12:29 -0400
+Received: by mail-qt1-f171.google.com with SMTP id k10so21340865qtq.1
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 15:12:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=qDHnXbU7Ysa2bN6UPo2OM5lnpAcBt26xw5f80BHot6g=;
+        b=tmpF3sS1FjltK8nasdTkiYHPf/xk0xcfRlZhf76Es14vFkXe+eIpF2uHSTH8+crSoT
+         F39lxkjb4QIu6YcUxCh0F/7qJhzF6wtfHKfbwEPpave7CQoNsVlkTDZoqLoGEbClSJKE
+         7FqN/icVRR1o8OPfM/RQcvu7p5uZrqsyM8fk4fFqyfQbox7QA7tJgUV64n6Tw9HNP0Mp
+         s+J0yLx6mPGHUwn6hq/0rdTrRncAR+TlqAC4Lw7IhgFojbNFXJWGWeZo8Ywe5Mz/DWaX
+         alLqHEhWmEhuin6ZRchS6v+TtgY/Fqs66dpTdiPBueSlrf+iaAldXEvvf3S8Nd/gMFqc
+         EGDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=qDHnXbU7Ysa2bN6UPo2OM5lnpAcBt26xw5f80BHot6g=;
+        b=ZapkRaBwuoSrNwexRMvJ+s84ajgdMUWGyrtBG/VZfGIZ2w0XNrnwFldgj5cVbx0RX5
+         hi64UK6jL7IEEFX+k3g0EQgBvpdA7UmsWoe7eQhutLNdAM8NcLqn0Ix6vENaiTb9bAVw
+         Q0ekKLmIOIvX1h4h+od5inGju+etJNkuihprTLNmvLCzl07ldWO+ec30TKlKsuB7hTJp
+         AY1KrWifcclKkBwdxk27AfcQ+DDwrl6K83Uc6QfME5jtQBq3y1Xr1722VT15jojRx38g
+         2bgZgUV5oV/bNoBvvQ8BO7eRwuikypnogx1S/zNLVW315V1Kyci7JTn4xSVf2Oj9kWsM
+         ZT+w==
+X-Gm-Message-State: APjAAAU2ctvf8Q1gnfE+lLNoF4On23M70u55IbhQ1wrZcM3mcg9pJx0t
+        xz2Qup7nKlR/WoKIO+Vd2T8jgA==
+X-Google-Smtp-Source: APXvYqyEcJ8B+1+Psk1jW1CyIaIDhqj84VlcXQpbozPYQzAnwLNGY+Bqc9BhS1ta/WJugYLis6q7sA==
+X-Received: by 2002:ac8:244f:: with SMTP id d15mr23913579qtd.32.1563315148694;
+        Tue, 16 Jul 2019 15:12:28 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id w24sm11757370qtb.35.2019.07.16.15.12.27
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 16 Jul 2019 15:12:28 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 15:12:23 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Edward Cree <ecree@solarflare.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [RFC bpf-next 0/8] bpf: accelerate insn patching speed
+Message-ID: <20190716151223.7208c033@cakuba.netronome.com>
+In-Reply-To: <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
+References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com>
+        <CAEf4BzavePpW-C+zORN1kwSUJAWuJ3LxZ6QGxqaE9msxCq8ZLA@mail.gmail.com>
+        <87r26w24v4.fsf@netronome.com>
+        <CAEf4BzaPFbYKUQzu7VoRd7idrqPDMEFF=UEmT2pGf+Lxz06+sA@mail.gmail.com>
+        <87k1cj3b69.fsf@netronome.com>
+        <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com>
+        <87wogitlbi.fsf@netronome.com>
+        <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=paulo.ac;
-        s=dkim; t=1563314708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ictppub2W6BvEyEBopdH3SZbJ5aGmAVfnP2JIdC5ziw=;
-        b=bLKUuVJo6GT8idBQcj0ehE0y7QFPEkaxkOZ0kwllhiWtA7HnpAo6lhnfnIcsPHf9TCbrAj
-        eDtQ3NuIYaKC/+nGDEjqy0T26HuGz/9dbFhkZfh09aswnTe/kxG5C5KwEDVoZsUjFqAMFb
-        K2Jtpq5NBFn6uda5ipXFtrA2+LJHbK6U5rnfjdeAbzW5pWoVJdL9zfENlkhbdexDNqL5h+
-        Q+N7TGVouFj2LvXed/7yxAzGtwhTMM4y68ZM0vG/fc7F20DYgDbL2Gl3dcZP72jA8hl5O8
-        MIsqaa4PuyCZ+zfvXIUvQlNrivQxH8wHqUz2vojcM51dKgxtZaHtCLYzf5ZDOA==
-ARC-Seal: i=1; s=dkim; d=paulo.ac; t=1563314708; a=rsa-sha256; cv=none;
-        b=Hd94DInN7pquLG+VckLfeKAMelmvmcLpX9PDLQ3GvfpZmvF5CesyE37/jRjVhp+Z0oc40p
-        Fj75WuMwybyNgTVmnXil68dC7naIkejRtge+yaeg7WeGbbkraPbOsh0YT3myBsQIdfz/Wj
-        kLpOPj6CWf9Fhypsv/cl3rCjWzXY+JGTEZau2fDKxq1OvKl0yvqCNUIKgp6YxXdCboewIu
-        zMaMxBvsYiDztIV8J7fzpLUdYBPjBpAZdAl7uQG2vQ3yTqBky92T+bDKOrK9Enc/iFkzED
-        67ehmAvO2elJPA++R9Hbty8hBGa6J2W8d99nPqI28oJboQSzIXqL6Up6nBv9Mw==
-ARC-Authentication-Results: i=1;
-        mx.paulo.ac;
-        auth=pass smtp.auth=paulo smtp.mailfrom=paulo@paulo.ac
-Authentication-Results: mx.paulo.ac;
-        auth=pass smtp.auth=paulo smtp.mailfrom=paulo@paulo.ac
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The experimental root file system support in cifs.ko relies on
-ipconfig to set up the network stack and then accessing the SMB share
-that contains the rootfs files.
+On Tue, 16 Jul 2019 09:17:03 -0700, Alexei Starovoitov wrote:
+> I don't think we have a test for such 'dead prog only due to verifier walk'
+> situation. I wonder what happens :)
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Signed-off-by: Paulo Alcantara (SUSE) <paulo@paulo.ac>
----
- net/ipv4/ipconfig.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index 9bcca08efec9..32e20b758b68 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -1483,10 +1483,10 @@ static int __init ip_auto_config(void)
- 	 * missing values.
- 	 */
- 	if (ic_myaddr == NONE ||
--#ifdef CONFIG_ROOT_NFS
-+#if defined(CONFIG_ROOT_NFS) || defined(CONFIG_CIFS_ROOT)
- 	    (root_server_addr == NONE &&
- 	     ic_servaddr == NONE &&
--	     ROOT_DEV == Root_NFS) ||
-+	     (ROOT_DEV == Root_NFS || ROOT_DEV == Root_CIFS)) ||
- #endif
- 	    ic_first_dev->next) {
- #ifdef IPCONFIG_DYNAMIC
-@@ -1513,6 +1513,12 @@ static int __init ip_auto_config(void)
- 				goto try_try_again;
- 			}
- #endif
-+#ifdef CONFIG_CIFS_ROOT
-+			if (ROOT_DEV == Root_CIFS) {
-+				pr_err("IP-Config: Retrying forever (CIFS root)...\n");
-+				goto try_try_again;
-+			}
-+#endif
- 
- 			if (--retries) {
- 				pr_err("IP-Config: Reopening network devices...\n");
--- 
-2.22.0
-
+FWIW we do have verifier and BTF self tests for dead code removal
+of entire subprogs! :)
