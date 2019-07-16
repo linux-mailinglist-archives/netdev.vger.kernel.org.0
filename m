@@ -2,173 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0B2A6A721
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 13:13:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7006A72D
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 13:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387689AbfGPLNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 07:13:33 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37464 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387580AbfGPLNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 07:13:32 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 19so8957492pfa.4
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 04:13:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=8NFJGPVlVAuYMPwOwTl0aBkcJ7/1gJuCLWe4ZLruxuU=;
-        b=eFbk7M92HouroEKZP0msAOxYiaXaS/2dbFJatwM4kpmpNxCG2xYCHSOShlXhHmfE/y
-         HGkpLzpVjnxwwgeoDQJJKFh0lBYkIHTQa7SmPAqKRACozyFI1kfcxgyGAhe+PYMgiKoV
-         TxyhCnO8KPyvyLcGu/qiDr7sGSerQN8PJUUr+ZQITlUAG3FZs1YFtHMqvb5GXWip8Cd6
-         x879/KTZqwwgfqf8qTL/8Fhu2rsWdmSFSKgR7tTOmxeuPB4LV1h8KvWPxzLdT/FYmbzt
-         Re6WG4jGnGzfkzfMqkQE+3p6FC6FWaId7hHmYWWVkEQiHCKVqOeGmEHXPEfk69iWGxsa
-         1r6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=8NFJGPVlVAuYMPwOwTl0aBkcJ7/1gJuCLWe4ZLruxuU=;
-        b=c9t8P9Pb+spYPQil53YDivg0ouLFSY9AqT/noYvLQPVu4FqT5XPD86GuERf9ZMXuVz
-         lJGXW2leq6g2SvP2PE9H8pX4Yhv2AWoRS5sAjjuwzzdBI9grqj9O9clrUJJtN0oV+0rQ
-         pA2uaobT/xPGzK/o/z2cEjRCKc72iI3G46RJYIstoR9WmLaFH3Vx3RV4P6cwHQhbVqoZ
-         050mLvNFOM6HCvZUlDB286DNE2jIyQ7zw9PwB4FZFyYCHN9975v19HLTtZEYpGgW8oKf
-         /+SGbIb8rkLNq6S9T6Jc68S/s1Olm1Ogw2lpuWBMXD39KlceJhjHljkkCwp0ePNZ3rap
-         P+dg==
-X-Gm-Message-State: APjAAAUDJz0AWghzrrj/MZpjX2jM0QNeGQouDRuyLyoX3UKtCLWrCfkA
-        1ZHuU87A5m+zas7ZRE2LB969Qw==
-X-Google-Smtp-Source: APXvYqxM/EzG6XkGwFUq5lCZpCu7Qc8I2MK4CsmMFswEozlWGhc+DzYVPw/ySuvYYAujJtb6hXwP4Q==
-X-Received: by 2002:a17:90a:db52:: with SMTP id u18mr35690859pjx.107.1563275611836;
-        Tue, 16 Jul 2019 04:13:31 -0700 (PDT)
-Received: from localhost.localdomain (li1433-81.members.linode.com. [45.33.106.81])
-        by smtp.gmail.com with ESMTPSA id 21sm19324907pjh.25.2019.07.16.04.13.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jul 2019 04:13:31 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Russell King <linux@armlinux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Justin He <Justin.He@arm.com>
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH 2/2] arm: Add support for function error injection
-Date:   Tue, 16 Jul 2019 19:13:01 +0800
-Message-Id: <20190716111301.1855-3-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190716111301.1855-1-leo.yan@linaro.org>
-References: <20190716111301.1855-1-leo.yan@linaro.org>
+        id S2387671AbfGPLQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 07:16:42 -0400
+Received: from mail.us.es ([193.147.175.20]:41820 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387624AbfGPLQm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jul 2019 07:16:42 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E43D320A535
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 13:16:39 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D5A8CFF6CC
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 13:16:39 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B93FF96165; Tue, 16 Jul 2019 13:16:39 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B31C0A6DA;
+        Tue, 16 Jul 2019 13:16:37 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 16 Jul 2019 13:16:37 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 82CC84265A2F;
+        Tue, 16 Jul 2019 13:16:37 +0200 (CEST)
+Date:   Tue, 16 Jul 2019 13:16:37 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingfangsen@huawei.com
+Subject: Re: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Message-ID: <20190716111637.s24hwb6a6bjlhdiq@salvia>
+References: <1562039976-203880-1-git-send-email-linmiaohe@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562039976-203880-1-git-send-email-linmiaohe@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implement regs_set_return_value() and
-override_function_with_return() to support function error injection
-for arm.
+On Tue, Jul 02, 2019 at 03:59:36AM +0000, Miaohe Lin wrote:
+> When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
+> ipv4/ipv6 packets will be dropped. Vrf device will pass
+> through netfilter hook twice. One with enslaved device
+> and another one with l3 master device. So in device may
+> dismatch witch out device because out device is always
+> enslaved device.So failed with the check of the rpfilter
+> and drop the packets by mistake.
 
-In the exception flow, we can update pt_regs::ARM_pc with
-pt_regs::ARM_lr so that can override the probed function return.
-
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
- arch/arm/Kconfig                       |  1 +
- arch/arm/include/asm/error-injection.h | 13 +++++++++++++
- arch/arm/include/asm/ptrace.h          |  5 +++++
- arch/arm/lib/Makefile                  |  2 ++
- arch/arm/lib/error-inject.c            | 19 +++++++++++++++++++
- 5 files changed, 40 insertions(+)
- create mode 100644 arch/arm/include/asm/error-injection.h
- create mode 100644 arch/arm/lib/error-inject.c
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 8869742a85df..f7932a5e29ea 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -74,6 +74,7 @@ config ARM
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if (CPU_V6 || CPU_V6K || CPU_V7) && MMU
- 	select HAVE_EXIT_THREAD
- 	select HAVE_FTRACE_MCOUNT_RECORD if !XIP_KERNEL
-+	select HAVE_FUNCTION_ERROR_INJECTION if !THUMB2_KERNEL
- 	select HAVE_FUNCTION_GRAPH_TRACER if !THUMB2_KERNEL && !CC_IS_CLANG
- 	select HAVE_FUNCTION_TRACER if !XIP_KERNEL
- 	select HAVE_GCC_PLUGINS
-diff --git a/arch/arm/include/asm/error-injection.h b/arch/arm/include/asm/error-injection.h
-new file mode 100644
-index 000000000000..da057e8ed224
---- /dev/null
-+++ b/arch/arm/include/asm/error-injection.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+
-+#ifndef __ASM_ERROR_INJECTION_H_
-+#define __ASM_ERROR_INJECTION_H_
-+
-+#include <linux/compiler.h>
-+#include <linux/linkage.h>
-+#include <asm/ptrace.h>
-+#include <asm-generic/error-injection.h>
-+
-+void override_function_with_return(struct pt_regs *regs);
-+
-+#endif /* __ASM_ERROR_INJECTION_H_ */
-diff --git a/arch/arm/include/asm/ptrace.h b/arch/arm/include/asm/ptrace.h
-index 91d6b7856be4..3b41f37b361a 100644
---- a/arch/arm/include/asm/ptrace.h
-+++ b/arch/arm/include/asm/ptrace.h
-@@ -89,6 +89,11 @@ static inline long regs_return_value(struct pt_regs *regs)
- 	return regs->ARM_r0;
- }
- 
-+static inline void regs_set_return_value(struct pt_regs *regs, unsigned long rc)
-+{
-+	regs->ARM_r0 = rc;
-+}
-+
- #define instruction_pointer(regs)	(regs)->ARM_pc
- 
- #ifdef CONFIG_THUMB2_KERNEL
-diff --git a/arch/arm/lib/Makefile b/arch/arm/lib/Makefile
-index 0bff0176db2c..d3d7430ecd76 100644
---- a/arch/arm/lib/Makefile
-+++ b/arch/arm/lib/Makefile
-@@ -43,3 +43,5 @@ ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
-   CFLAGS_xor-neon.o		+= $(NEON_FLAGS)
-   obj-$(CONFIG_XOR_BLOCKS)	+= xor-neon.o
- endif
-+
-+obj-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
-diff --git a/arch/arm/lib/error-inject.c b/arch/arm/lib/error-inject.c
-new file mode 100644
-index 000000000000..96319d017114
---- /dev/null
-+++ b/arch/arm/lib/error-inject.c
-@@ -0,0 +1,19 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/error-injection.h>
-+#include <linux/kprobes.h>
-+
-+void override_function_with_return(struct pt_regs *regs)
-+{
-+	/*
-+	 * 'regs' represents the state on entry of a predefined function in
-+	 * the kernel/module and which is captured on a kprobe.
-+	 *
-+	 * 'regs->ARM_lr' contains the the link register for the probed
-+	 * function and assign it to 'regs->ARM_pc', so when kprobe returns
-+	 * back from exception it will override the end of probed function
-+	 * and drirectly return to the predefined function's caller.
-+	 */
-+	regs->ARM_pc = regs->ARM_lr;
-+}
-+NOKPROBE_SYMBOL(override_function_with_return);
--- 
-2.17.1
-
+Applied to nf.git, thanks.
