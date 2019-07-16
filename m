@@ -2,471 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9E396A2D5
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 09:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67A7A6A30E
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 09:38:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730915AbfGPHVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 03:21:04 -0400
-Received: from mga03.intel.com ([134.134.136.65]:56499 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727996AbfGPHVD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 03:21:03 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jul 2019 00:21:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,496,1557212400"; 
-   d="scan'208";a="194796269"
-Received: from pipin.fi.intel.com ([10.237.72.175])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Jul 2019 00:20:59 -0700
-From:   Felipe Balbi <felipe.balbi@linux.intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Christopher S . Hall" <christopher.s.hall@intel.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>
-Subject: [RFC PATCH 5/5] PTP: Add support for Intel PMC Timed GPIO Controller
-Date:   Tue, 16 Jul 2019 10:20:38 +0300
-Message-Id: <20190716072038.8408-6-felipe.balbi@linux.intel.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
-References: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
+        id S1729778AbfGPHiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 03:38:06 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:33449 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726539AbfGPHiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 03:38:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id 132so22565041iou.0
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 00:38:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=bJw9LnzY1rJ9isWjFMt+q8i/a0JnuAOn1wY69zF7tck=;
+        b=Pzdc2fmoHbvpfuKqsfjrixNh7/Osqp3PL0qX9nkQeC9VF9bPVlIq13EFZllb14KRWm
+         t4sL+uHq1tnDYTpnq0CFs3m1ajv7LxeJWHw1YuKG4vk4+kju/MBLLZRf2lrZIeuizb2B
+         2XV6/775yhtJNgB1UMAjWoVBZm9Gk78zNxxq/EgxhW+8TERZqUpAxSgx2HtYib4W6TX2
+         b3pHPLlYIIEI7xlXvHdPgP6t5p5wX7LuRaIneP+wvPLmsA4kcOlwvgAtiIKgai9R69CJ
+         WXMg+TbNr9WKTTJFYkUjmEv5entjAYFckUKzqFUEZ4lsDwa3UUwNfXGKQpLHe3PLYCg5
+         e/gA==
+X-Gm-Message-State: APjAAAUcm1ITPfxa3WIdBivoAsHgvMDBY6LtFaiReHTG6AshMdl88OHl
+        tqQ/AsA+9QxrdMDJNyzzsLOaPcCnfBXwCXyym3qhSiSsLmND
+X-Google-Smtp-Source: APXvYqzyQlT37VPrWgoxkTZJsxTXY1bdJjfO+iKbm9CvgHcG4Czjv38KmkR7c6mQqGt31S/UIIc4uRt3bJdiyVSOEhBiNeTlRCz7
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:c615:: with SMTP id i21mr32100870jan.135.1563262685615;
+ Tue, 16 Jul 2019 00:38:05 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 00:38:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000111cbe058dc7754d@google.com>
+Subject: memory leak in new_inode_pseudo (2)
+From:   syzbot <syzbot+e682cca30bc101a4d9d9@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a driver supporting Intel Timed GPIO controller available as part
-of some Intel PMCs.
+Hello,
 
-Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+syzbot found the following crash on:
+
+HEAD commit:    fec88ab0 Merge tag 'for-linus-hmm' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15a3da1fa00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8422fa55ce69212c
+dashboard link: https://syzkaller.appspot.com/bug?extid=e682cca30bc101a4d9d9
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16ca5aa4600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+e682cca30bc101a4d9d9@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff8881223e5980 (size 768):
+   comm "syz-executor.0", pid 7093, jiffies 4294950175 (age 8.140s)
+   hex dump (first 32 bytes):
+     01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<0000000030f6ab07>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<0000000030f6ab07>] slab_post_alloc_hook mm/slab.h:522 [inline]
+     [<0000000030f6ab07>] slab_alloc mm/slab.c:3319 [inline]
+     [<0000000030f6ab07>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<0000000005b17a67>] sock_alloc_inode+0x1c/0xa0 net/socket.c:238
+     [<00000000cae2a9b4>] alloc_inode+0x2c/0xe0 fs/inode.c:227
+     [<000000004d22e56a>] new_inode_pseudo+0x18/0x70 fs/inode.c:916
+     [<000000007bb4d82d>] sock_alloc+0x1c/0x90 net/socket.c:554
+     [<00000000884dfd41>] __sock_create+0x8f/0x250 net/socket.c:1378
+     [<000000009dc85063>] sock_create_kern+0x3b/0x50 net/socket.c:1483
+     [<00000000ca0afb1d>] smc_create+0xae/0x160 net/smc/af_smc.c:1975
+     [<00000000ff903d89>] __sock_create+0x164/0x250 net/socket.c:1414
+     [<00000000c0787cdf>] sock_create net/socket.c:1465 [inline]
+     [<00000000c0787cdf>] __sys_socket+0x69/0x110 net/socket.c:1507
+     [<0000000067a4ade6>] __do_sys_socket net/socket.c:1516 [inline]
+     [<0000000067a4ade6>] __se_sys_socket net/socket.c:1514 [inline]
+     [<0000000067a4ade6>] __x64_sys_socket+0x1e/0x30 net/socket.c:1514
+     [<000000001e7b04ac>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:296
+     [<000000003fe40e36>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff88811f269f50 (size 56):
+   comm "syz-executor.0", pid 7093, jiffies 4294950175 (age 8.140s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+     00 5a 3e 22 81 88 ff ff 68 9f 26 1f 81 88 ff ff  .Z>"....h.&.....
+   backtrace:
+     [<0000000030f6ab07>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<0000000030f6ab07>] slab_post_alloc_hook mm/slab.h:522 [inline]
+     [<0000000030f6ab07>] slab_alloc mm/slab.c:3319 [inline]
+     [<0000000030f6ab07>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<000000005d4d6be7>] kmem_cache_zalloc include/linux/slab.h:738 [inline]
+     [<000000005d4d6be7>] lsm_inode_alloc security/security.c:522 [inline]
+     [<000000005d4d6be7>] security_inode_alloc+0x33/0xb0  
+security/security.c:875
+     [<00000000ef89212c>] inode_init_always+0x108/0x200 fs/inode.c:169
+     [<00000000647feaf5>] alloc_inode+0x49/0xe0 fs/inode.c:234
+     [<000000004d22e56a>] new_inode_pseudo+0x18/0x70 fs/inode.c:916
+     [<000000007bb4d82d>] sock_alloc+0x1c/0x90 net/socket.c:554
+     [<00000000884dfd41>] __sock_create+0x8f/0x250 net/socket.c:1378
+     [<000000009dc85063>] sock_create_kern+0x3b/0x50 net/socket.c:1483
+     [<00000000ca0afb1d>] smc_create+0xae/0x160 net/smc/af_smc.c:1975
+     [<00000000ff903d89>] __sock_create+0x164/0x250 net/socket.c:1414
+     [<00000000c0787cdf>] sock_create net/socket.c:1465 [inline]
+     [<00000000c0787cdf>] __sys_socket+0x69/0x110 net/socket.c:1507
+     [<0000000067a4ade6>] __do_sys_socket net/socket.c:1516 [inline]
+     [<0000000067a4ade6>] __se_sys_socket net/socket.c:1514 [inline]
+     [<0000000067a4ade6>] __x64_sys_socket+0x1e/0x30 net/socket.c:1514
+     [<000000001e7b04ac>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:296
+     [<000000003fe40e36>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
 ---
- drivers/ptp/Kconfig               |   8 +
- drivers/ptp/Makefile              |   1 +
- drivers/ptp/ptp-intel-pmc-tgpio.c | 378 ++++++++++++++++++++++++++++++
- 3 files changed, 387 insertions(+)
- create mode 100644 drivers/ptp/ptp-intel-pmc-tgpio.c
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index 9b8fee5178e8..bb0fce70a783 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -107,6 +107,14 @@ config PTP_1588_CLOCK_PCH
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called ptp_pch.
- 
-+config PTP_INTEL_PMC_TGPIO
-+	tristate "Intel PMC Timed GPIO"
-+	depends on X86
-+	depends on ACPI
-+	imply PTP_1588_CLOCK
-+	help
-+	  This driver adds support for Intel PMC Timed GPIO Controller
-+
- config PTP_1588_CLOCK_KVM
- 	tristate "KVM virtual PTP clock"
- 	depends on PTP_1588_CLOCK
-diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
-index 677d1d178a3e..ff89c90ace82 100644
---- a/drivers/ptp/Makefile
-+++ b/drivers/ptp/Makefile
-@@ -7,6 +7,7 @@ ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
- obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
- obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
- obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
-+obj-$(CONFIG_PTP_INTEL_PMC_TGPIO)	+= ptp-intel-pmc-tgpio.o
- obj-$(CONFIG_PTP_1588_CLOCK_PCH)	+= ptp_pch.o
- obj-$(CONFIG_PTP_1588_CLOCK_KVM)	+= ptp_kvm.o
- obj-$(CONFIG_PTP_1588_CLOCK_QORIQ)	+= ptp-qoriq.o
-diff --git a/drivers/ptp/ptp-intel-pmc-tgpio.c b/drivers/ptp/ptp-intel-pmc-tgpio.c
-new file mode 100644
-index 000000000000..880ece34868a
---- /dev/null
-+++ b/drivers/ptp/ptp-intel-pmc-tgpio.c
-@@ -0,0 +1,378 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Intel Timed GPIO Controller Driver
-+ *
-+ * Copyright (C) 2018 Intel Corporation
-+ * Author: Felipe Balbi <felipe.balbi@linux.intel.com>
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/bitops.h>
-+#include <linux/gpio.h>
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+#include <linux/kthread.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+#include <linux/ptp_clock_kernel.h>
-+#include <asm/tsc.h>
-+
-+#define TGPIOCTL		0x00
-+#define TGPIOCOMPV31_0		0x10
-+#define TGPIOCOMPV63_32		0x14
-+#define TGPIOPIV31_0		0x18
-+#define TGPIOPIV63_32		0x1c
-+#define TGPIOTCV31_0		0x20
-+#define TGPIOTCV63_32		0x24
-+#define TGPIOECCV31_0		0x28
-+#define TGPIOECCV63_32		0x2c
-+#define TGPIOEC31_0		0x30
-+#define TGPIOEC63_32		0x34
-+
-+/* Control Register */
-+#define TGPIOCTL_EN		BIT(0)
-+#define TGPIOCTL_DIR		BIT(1)
-+#define TGPIOCTL_EP		GENMASK(3, 2)
-+#define TGPIOCTL_EP_RISING_EDGE	(0 << 2)
-+#define TGPIOCTL_EP_FALLING_EDGE (1 << 2)
-+#define TGPIOCTL_EP_TOGGLE_EDGE	(2 << 2)
-+#define TGPIOCTL_PM		BIT(4)
-+
-+#define NSECS_PER_SEC		1000000000
-+#define TGPIO_MAX_ADJ_TIME	999999900
-+
-+struct intel_pmc_tgpio {
-+	struct ptp_clock_info	info;
-+	struct ptp_clock	*clock;
-+
-+	struct mutex		lock;
-+	struct device		*dev;
-+	void __iomem		*base;
-+
-+	struct task_struct	*event_thread;
-+	bool			input;
-+};
-+#define to_intel_pmc_tgpio(i)	(container_of((i), struct intel_pmc_tgpio, info))
-+
-+static inline u64 to_intel_pmc_tgpio_time(struct ptp_clock_time *t)
-+{
-+	return t->sec * NSECS_PER_SEC + t->nsec;
-+}
-+
-+static inline u64 intel_pmc_tgpio_readq(void __iomem *base, u32 offset)
-+{
-+	return lo_hi_readq(base + offset);
-+}
-+
-+static inline void intel_pmc_tgpio_writeq(void __iomem *base, u32 offset, u64 v)
-+{
-+	return lo_hi_writeq(v, base + offset);
-+}
-+
-+static inline u32 intel_pmc_tgpio_readl(void __iomem *base, u32 offset)
-+{
-+	return readl(base + offset);
-+}
-+
-+static inline void intel_pmc_tgpio_writel(void __iomem *base, u32 offset, u32 value)
-+{
-+	writel(value, base + offset);
-+}
-+
-+static struct ptp_pin_desc intel_pmc_tgpio_pin_config[] = {
-+	{					\
-+		.name	= "pin0",		\
-+		.index	= 0,			\
-+		.func	= PTP_PF_NONE,		\
-+		.chan	= 0,			\
-+	}
-+};
-+
-+static int intel_pmc_tgpio_gettime64(struct ptp_clock_info *info,
-+		struct timespec64 *ts)
-+{
-+	struct intel_pmc_tgpio	*tgpio = to_intel_pmc_tgpio(info);
-+	u64 now;
-+
-+	mutex_lock(&tgpio->lock);
-+	now = get_art_ns_now();
-+	*ts = ns_to_timespec64(now);
-+	mutex_unlock(&tgpio->lock);
-+
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_settime64(struct ptp_clock_info *info,
-+		const struct timespec64 *ts)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static int intel_pmc_tgpio_event_thread(void *_tgpio)
-+{
-+	struct intel_pmc_tgpio	*tgpio = _tgpio;
-+	u64 reg;
-+
-+	while (!kthread_should_stop()) {
-+		bool input;
-+		int i;
-+
-+		mutex_lock(&tgpio->lock);
-+		input = tgpio->input;
-+		mutex_unlock(&tgpio->lock);
-+
-+		if (!input)
-+			schedule();
-+
-+		reg = intel_pmc_tgpio_readq(tgpio->base, TGPIOEC31_0);
-+
-+		for (i = 0; i < reg; i++) {
-+			struct ptp_clock_event event;
-+
-+			event.type = PTP_CLOCK_EXTTS;
-+			event.index = 0;
-+			event.timestamp = intel_pmc_tgpio_readq(tgpio->base,
-+					TGPIOTCV31_0);
-+
-+			ptp_clock_event(tgpio->clock, &event);
-+		}
-+		schedule_timeout_interruptible(10);
-+	}
-+
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_config_input(struct intel_pmc_tgpio *tgpio,
-+		struct ptp_extts_request *extts, int on)
-+{
-+	u32			ctrl;
-+	bool			input;
-+
-+	ctrl = intel_pmc_tgpio_readl(tgpio->base, TGPIOCTL);
-+	ctrl &= ~TGPIOCTL_EN;
-+	intel_pmc_tgpio_writel(tgpio->base, TGPIOCTL, ctrl);
-+
-+	if (on) {
-+		ctrl |= TGPIOCTL_DIR;
-+
-+		if (extts->flags & PTP_RISING_EDGE &&
-+				extts->flags & PTP_FALLING_EDGE)
-+			ctrl |= TGPIOCTL_EP_TOGGLE_EDGE;
-+		else if (extts->flags & PTP_RISING_EDGE)
-+			ctrl |= TGPIOCTL_EP_RISING_EDGE;
-+		else if (extts->flags & PTP_FALLING_EDGE)
-+			ctrl |= TGPIOCTL_EP_FALLING_EDGE;
-+
-+		/* gotta program all other bits before EN bit is set */
-+		intel_pmc_tgpio_writel(tgpio->base, TGPIOCTL, ctrl);
-+		ctrl |= TGPIOCTL_EN;
-+		input = true;
-+	} else {
-+		ctrl &= ~(TGPIOCTL_DIR | TGPIOCTL_EN);
-+		input = false;
-+	}
-+
-+	intel_pmc_tgpio_writel(tgpio->base, TGPIOCTL, ctrl);
-+	tgpio->input = input;
-+
-+	if (input)
-+		wake_up_process(tgpio->event_thread);
-+
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_config_output(struct intel_pmc_tgpio *tgpio,
-+		struct ptp_perout_request *perout, int on)
-+{
-+	u32			ctrl;
-+
-+	ctrl = intel_pmc_tgpio_readl(tgpio->base, TGPIOCTL);
-+	if (on) {
-+		struct ptp_clock_time *period = &perout->period;
-+		struct ptp_clock_time *start = &perout->start;
-+
-+		if (ctrl & TGPIOCTL_EN)
-+			return 0;
-+
-+		intel_pmc_tgpio_writeq(tgpio->base, TGPIOCOMPV31_0,
-+				to_intel_pmc_tgpio_time(start));
-+
-+		intel_pmc_tgpio_writeq(tgpio->base, TGPIOPIV31_0,
-+				to_intel_pmc_tgpio_time(period));
-+
-+		ctrl &= ~TGPIOCTL_DIR;
-+		if (perout->flags & PTP_PEROUT_ONE_SHOT)
-+			ctrl &= ~TGPIOCTL_PM;
-+		else
-+			ctrl |= TGPIOCTL_PM;
-+
-+		/* gotta program all other bits before EN bit is set */
-+		intel_pmc_tgpio_writel(tgpio->base, TGPIOCTL, ctrl);
-+
-+		ctrl |= TGPIOCTL_EN;
-+		intel_pmc_tgpio_writel(tgpio->base, TGPIOCTL, ctrl);
-+	} else {
-+		if (!(ctrl & ~TGPIOCTL_EN))
-+			return 0;
-+
-+		ctrl &= ~(TGPIOCTL_EN | TGPIOCTL_PM);
-+		intel_pmc_tgpio_writel(tgpio->base, TGPIOCTL, ctrl);
-+	}
-+
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_enable(struct ptp_clock_info *info,
-+		struct ptp_clock_request *req, int on)
-+{
-+	struct intel_pmc_tgpio	*tgpio = to_intel_pmc_tgpio(info);
-+	int			ret = -EOPNOTSUPP;
-+
-+	mutex_lock(&tgpio->lock);
-+	switch (req->type) {
-+	case PTP_CLK_REQ_EXTTS:
-+		ret = intel_pmc_tgpio_config_input(tgpio, &req->extts, on);
-+		break;
-+	case PTP_CLK_REQ_PEROUT:
-+		ret = intel_pmc_tgpio_config_output(tgpio, &req->perout, on);
-+		break;
-+	default:
-+		break;
-+	}
-+	mutex_unlock(&tgpio->lock);
-+
-+	return ret;
-+}
-+
-+static int intel_pmc_tgpio_get_time_fn(ktime_t *device_time,
-+		struct system_counterval_t *system_counter, void *_tgpio)
-+{
-+	get_tsc_ns(system_counter, device_time);
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_getcrosststamp(struct ptp_clock_info *info,
-+		struct system_device_crosststamp *cts)
-+{
-+	struct intel_pmc_tgpio	*tgpio = to_intel_pmc_tgpio(info);
-+
-+	return get_device_system_crosststamp(intel_pmc_tgpio_get_time_fn, tgpio,
-+			NULL, cts);
-+}
-+
-+static int intel_pmc_tgpio_counttstamp(struct ptp_clock_info *info,
-+		struct ptp_event_count_tstamp *count)
-+{
-+	struct intel_pmc_tgpio	*tgpio = to_intel_pmc_tgpio(info);
-+	u32 dt_hi_tmp;
-+	u32 dt_hi;
-+	u32 dt_lo;
-+
-+	dt_hi_tmp = intel_pmc_tgpio_readl(tgpio->base, TGPIOTCV63_32);
-+	dt_lo = intel_pmc_tgpio_readl(tgpio->base, TGPIOTCV31_0);
-+
-+	count->event_count = intel_pmc_tgpio_readl(tgpio->base, TGPIOECCV63_32);
-+	count->event_count <<= 32;
-+	count->event_count |= intel_pmc_tgpio_readl(tgpio->base, TGPIOECCV31_0);
-+
-+	dt_hi = intel_pmc_tgpio_readl(tgpio->base, TGPIOTCV63_32);
-+
-+	if (dt_hi_tmp != dt_hi && dt_lo & 0x80000000)
-+		count->device_time.sec = dt_hi_tmp;
-+	else
-+		count->device_time.sec = dt_hi;
-+
-+	count->device_time.nsec = dt_lo;
-+
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_verify(struct ptp_clock_info *ptp, unsigned int pin,
-+		enum ptp_pin_function func, unsigned int chan)
-+{
-+	return 0;
-+}
-+
-+static const struct ptp_clock_info intel_pmc_tgpio_info = {
-+	.owner		= THIS_MODULE,
-+	.name		= "Intel PMC TGPIO",
-+	.max_adj	= 50000000,
-+	.n_pins		= 1,
-+	.n_ext_ts	= 1,
-+	.n_per_out	= 1,
-+	.pin_config	= intel_pmc_tgpio_pin_config,
-+	.gettime64	= intel_pmc_tgpio_gettime64,
-+	.settime64	= intel_pmc_tgpio_settime64,
-+	.enable		= intel_pmc_tgpio_enable,
-+	.getcrosststamp	= intel_pmc_tgpio_getcrosststamp,
-+	.counttstamp	= intel_pmc_tgpio_counttstamp,
-+	.verify		= intel_pmc_tgpio_verify,
-+};
-+
-+static int intel_pmc_tgpio_probe(struct platform_device *pdev)
-+{
-+	struct intel_pmc_tgpio	*tgpio;
-+	struct device		*dev;
-+	struct resource		*res;
-+
-+	dev = &pdev->dev;
-+	tgpio = devm_kzalloc(dev, sizeof(*tgpio), GFP_KERNEL);
-+	if (!tgpio)
-+		return -ENOMEM;
-+
-+	tgpio->dev = dev;
-+	tgpio->info = intel_pmc_tgpio_info;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	tgpio->base = devm_ioremap_resource(dev, res);
-+	if (!tgpio->base)
-+		return -ENOMEM;
-+
-+	mutex_init(&tgpio->lock);
-+	platform_set_drvdata(pdev, tgpio);
-+
-+	tgpio->event_thread = kthread_create(intel_pmc_tgpio_event_thread,
-+			tgpio, dev_name(tgpio->dev));
-+	if (IS_ERR(tgpio->event_thread))
-+		return PTR_ERR(tgpio->event_thread);
-+
-+	tgpio->clock = ptp_clock_register(&tgpio->info, &pdev->dev);
-+	if (IS_ERR(tgpio->clock))
-+		return PTR_ERR(tgpio->clock);
-+
-+	wake_up_process(tgpio->event_thread);
-+
-+	return 0;
-+}
-+
-+static int intel_pmc_tgpio_remove(struct platform_device *pdev)
-+{
-+	struct intel_pmc_tgpio	*tgpio = platform_get_drvdata(pdev);
-+
-+	ptp_clock_unregister(tgpio->clock);
-+
-+	return 0;
-+}
-+
-+static const struct acpi_device_id intel_pmc_acpi_match[] = {
-+	/* TODO */
-+
-+	{  },
-+};
-+
-+/* MODULE_ALIAS("acpi*:TODO:*"); */
-+
-+static struct platform_driver intel_pmc_tgpio_driver = {
-+	.probe		= intel_pmc_tgpio_probe,
-+	.remove		= intel_pmc_tgpio_remove,
-+	.driver		= {
-+		.name	= "intel-pmc-tgpio",
-+		.acpi_match_table = ACPI_PTR(intel_pmc_acpi_match),
-+	},
-+};
-+
-+module_platform_driver(intel_pmc_tgpio_driver);
-+
-+MODULE_AUTHOR("Felipe Balbi <felipe.balbi@linux.intel.com>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Intel PMC Timed GPIO Controller Driver");
--- 
-2.22.0
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
