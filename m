@@ -2,133 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8646B04D
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 22:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B416B076
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 22:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388590AbfGPUPE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Jul 2019 16:15:04 -0400
-Received: from mga12.intel.com ([192.55.52.136]:47566 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728579AbfGPUPE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 16:15:04 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jul 2019 13:15:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,271,1559545200"; 
-   d="scan'208";a="175504312"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Jul 2019 13:15:03 -0700
-Received: from orsmsx162.amr.corp.intel.com (10.22.240.85) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 16 Jul 2019 13:15:03 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.240]) by
- ORSMSX162.amr.corp.intel.com ([169.254.3.137]) with mapi id 14.03.0439.000;
- Tue, 16 Jul 2019 13:15:03 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "Murali Karicheri" <m-karicheri2@ti.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "Brown, Aaron F" <aaron.f.brown@intel.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next v1] fix: taprio: Change type of txtime-delay
- parameter to u32
-Thread-Topic: [PATCH net-next v1] fix: taprio: Change type of txtime-delay
- parameter to u32
-Thread-Index: AQHVPBAH2Iab5gicXE2VxFW40gJB96bOI4OA
-Date:   Tue, 16 Jul 2019 20:15:02 +0000
-Message-ID: <853E300D-C6C5-420F-849F-4739B3758490@intel.com>
-References: <1563306738-2779-1-git-send-email-vedang.patel@intel.com>
-In-Reply-To: <1563306738-2779-1-git-send-email-vedang.patel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.201]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2FF43D508270474690B9D2408DF964A5@intel.com>
-Content-Transfer-Encoding: 8BIT
+        id S2388713AbfGPUcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 16:32:46 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:35753 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728137AbfGPUcp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 16:32:45 -0400
+Received: by mail-vs1-f67.google.com with SMTP id u124so14871144vsu.2
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 13:32:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=81NxWyaYYLOx3U0CNAY+vem2FwAQtGrb2n7o/OCCQ6Q=;
+        b=EzQNWrBC5qDZZtG/w0lKikRR/oNojiw9cBTeaFyF+wRtC0dUeoMDAVmJAyqgyBzSEe
+         NnHR+bKb6u1SnmKae3PIH+umXwHZMHtFajbm/8e/0FKjLrjds+MrgdBNWGVgxTk/yr6r
+         a85dbUuIp7o5N3v/8tNZHHWO3WTJG2qgU7hh2JmzThDmC4LWVEqOIQxnLnkYtDSCe2ti
+         5FQhqEyqvKKdQWNiHM1ecC46U6rAWhmCVAaC9TfrC8eScLAfgKAcSwq1bSAoiEmgzGkY
+         v9jXDgZ1Ero5tUf69xUGxmjRwnF44LzOVHGe3Veh7QYw4fFvqvGOrUYAfq8zFdebhPQT
+         bgcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=81NxWyaYYLOx3U0CNAY+vem2FwAQtGrb2n7o/OCCQ6Q=;
+        b=ONnrZaf1QbMhPPM/G2/sj1ngugb8N41dnACcdETY2Qa8C+3seHyA+FSOSZIsCuwpGh
+         xJ2LWmxrPZnU94MVnfUeMPIEciGViaGStawHxal7UaF8glf7NzFjAdEH6nO86EAQkerK
+         5HqLpza4nQgjCk32x47ZFEbK3hlwUHfEQ8C1ROQD8ip7eElLYddxotIOJv3/98hOrlHx
+         kKSbtvQ1HtG8V2jOHhxPBSNYKXDkq82PrqwHse+1BjTggBc2DV54EmaY/JpGnQPK5IE2
+         /EH9WvbvDM7oPqRJ2JG8dfd9LePssMc/21KgxoyFNEYkg4ejctZFDiwjiob0dOrAhXGz
+         bFWw==
+X-Gm-Message-State: APjAAAVrOb7TrIEkmxtLEv8fWil4UQC+o7Mq0Ga4ATzEDiq75DXWCJzP
+        IiGX7huJg+d4ZBy3mVY+5x9VvqCORuBb57NsxxiH6A==
+X-Google-Smtp-Source: APXvYqxQj6V0JsV1Wq1M4PK/ZqnLQAggZqvxwAWQtvoVxjTqMsgvXgRRn/MxQo0FX6SkSFdhHPKRHE9oRdeF58llyro=
+X-Received: by 2002:a67:fb02:: with SMTP id d2mr12106614vsr.207.1563309164025;
+ Tue, 16 Jul 2019 13:32:44 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190715195946.223443-1-matthewgarrett@google.com>
+ <20190715195946.223443-24-matthewgarrett@google.com> <5d363f09-d649-5693-45c0-bb99d69f0f38@iogearbox.net>
+In-Reply-To: <5d363f09-d649-5693-45c0-bb99d69f0f38@iogearbox.net>
+From:   Matthew Garrett <mjg59@google.com>
+Date:   Tue, 16 Jul 2019 13:32:33 -0700
+Message-ID: <CACdnJuudpnaQ5YUhoxmxNWVdRB6v0u0Bf2O6NmYOXjp8_govyg@mail.gmail.com>
+Subject: Re: [PATCH V35 23/29] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     James Morris <jmorris@namei.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I request that this patch should also be considered for the net tree since it fixes the data type of of the txtime_delay parameter and should go in with the iproute2 patches which implement support for txtime-assist mode. 
+On Mon, Jul 15, 2019 at 3:54 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> Hmm, does security_locked_down() ever return a code > 0 or why do you
+> have the double check on return code? If not, then for clarity the
+> ret code from security_locked_down() should be checked as 'ret < 0'
+> as well and out label should be at the memset directly instead.
 
-Thanks,
-Vedang Patel
-
-> On Jul 16, 2019, at 12:52 PM, Patel, Vedang <vedang.patel@intel.com> wrote:
-> 
-> During the review of the iproute2 patches for txtime-assist mode, it was
-> pointed out that it does not make sense for the txtime-delay parameter to
-> be negative. So, change the type of the parameter from s32 to u32.
-> 
-> Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
-> Reported-by: Stephen Hemminger <stephen@networkplumber.org>
-> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
-> ---
-> include/uapi/linux/pkt_sched.h | 2 +-
-> net/sched/sch_taprio.c         | 6 +++---
-> 2 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-> index 1f623252abe8..18f185299f47 100644
-> --- a/include/uapi/linux/pkt_sched.h
-> +++ b/include/uapi/linux/pkt_sched.h
-> @@ -1174,7 +1174,7 @@ enum {
-> 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME, /* s64 */
-> 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
-> 	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
-> -	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* s32 */
-> +	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
-> 	__TCA_TAPRIO_ATTR_MAX,
-> };
-> 
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 388750ddc57a..c39db507ba3f 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -75,7 +75,7 @@ struct taprio_sched {
-> 	struct sched_gate_list __rcu *admin_sched;
-> 	struct hrtimer advance_timer;
-> 	struct list_head taprio_list;
-> -	int txtime_delay;
-> +	u32 txtime_delay;
-> };
-> 
-> static ktime_t sched_base_time(const struct sched_gate_list *sched)
-> @@ -1113,7 +1113,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
-> 			goto unlock;
-> 		}
-> 
-> -		q->txtime_delay = nla_get_s32(tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]);
-> +		q->txtime_delay = nla_get_u32(tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]);
-> 	}
-> 
-> 	if (!TXTIME_ASSIST_IS_ENABLED(taprio_flags) &&
-> @@ -1430,7 +1430,7 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
-> 		goto options_error;
-> 
-> 	if (q->txtime_delay &&
-> -	    nla_put_s32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
-> +	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
-> 		goto options_error;
-> 
-> 	if (oper && dump_schedule(skb, oper))
-> -- 
-> 2.7.3
-> 
-
+It doesn't, so I'll update. Thanks!
