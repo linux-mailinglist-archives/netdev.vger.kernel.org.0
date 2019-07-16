@@ -2,132 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A7A6A30E
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 09:38:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B70786A35E
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 09:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729778AbfGPHiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 03:38:06 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:33449 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbfGPHiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 03:38:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id 132so22565041iou.0
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 00:38:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=bJw9LnzY1rJ9isWjFMt+q8i/a0JnuAOn1wY69zF7tck=;
-        b=Pzdc2fmoHbvpfuKqsfjrixNh7/Osqp3PL0qX9nkQeC9VF9bPVlIq13EFZllb14KRWm
-         t4sL+uHq1tnDYTpnq0CFs3m1ajv7LxeJWHw1YuKG4vk4+kju/MBLLZRf2lrZIeuizb2B
-         2XV6/775yhtJNgB1UMAjWoVBZm9Gk78zNxxq/EgxhW+8TERZqUpAxSgx2HtYib4W6TX2
-         b3pHPLlYIIEI7xlXvHdPgP6t5p5wX7LuRaIneP+wvPLmsA4kcOlwvgAtiIKgai9R69CJ
-         WXMg+TbNr9WKTTJFYkUjmEv5entjAYFckUKzqFUEZ4lsDwa3UUwNfXGKQpLHe3PLYCg5
-         e/gA==
-X-Gm-Message-State: APjAAAUcm1ITPfxa3WIdBivoAsHgvMDBY6LtFaiReHTG6AshMdl88OHl
-        tqQ/AsA+9QxrdMDJNyzzsLOaPcCnfBXwCXyym3qhSiSsLmND
-X-Google-Smtp-Source: APXvYqzyQlT37VPrWgoxkTZJsxTXY1bdJjfO+iKbm9CvgHcG4Czjv38KmkR7c6mQqGt31S/UIIc4uRt3bJdiyVSOEhBiNeTlRCz7
+        id S1730796AbfGPH5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 03:57:51 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49515 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727075AbfGPH5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 03:57:51 -0400
+Received: from pd9ef1cb8.dip0.t-ipconnect.de ([217.239.28.184] helo=nanos)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1hnILA-0001DC-9h; Tue, 16 Jul 2019 09:57:36 +0200
+Date:   Tue, 16 Jul 2019 09:57:35 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Christopher S . Hall" <christopher.s.hall@intel.com>
+Subject: Re: [RFC PATCH 1/5] x86: tsc: add tsc to art helpers
+In-Reply-To: <20190716072038.8408-2-felipe.balbi@linux.intel.com>
+Message-ID: <alpine.DEB.2.21.1907160952040.1767@nanos.tec.linutronix.de>
+References: <20190716072038.8408-1-felipe.balbi@linux.intel.com> <20190716072038.8408-2-felipe.balbi@linux.intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c615:: with SMTP id i21mr32100870jan.135.1563262685615;
- Tue, 16 Jul 2019 00:38:05 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 00:38:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000111cbe058dc7754d@google.com>
-Subject: memory leak in new_inode_pseudo (2)
-From:   syzbot <syzbot+e682cca30bc101a4d9d9@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Felipe,
 
-syzbot found the following crash on:
+On Tue, 16 Jul 2019, Felipe Balbi wrote:
 
-HEAD commit:    fec88ab0 Merge tag 'for-linus-hmm' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15a3da1fa00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8422fa55ce69212c
-dashboard link: https://syzkaller.appspot.com/bug?extid=e682cca30bc101a4d9d9
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16ca5aa4600000
+-ENOCHANGELOG
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e682cca30bc101a4d9d9@syzkaller.appspotmail.com
+As you said in the cover letter:
 
-BUG: memory leak
-unreferenced object 0xffff8881223e5980 (size 768):
-   comm "syz-executor.0", pid 7093, jiffies 4294950175 (age 8.140s)
-   hex dump (first 32 bytes):
-     01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000030f6ab07>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<0000000030f6ab07>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<0000000030f6ab07>] slab_alloc mm/slab.c:3319 [inline]
-     [<0000000030f6ab07>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
-     [<0000000005b17a67>] sock_alloc_inode+0x1c/0xa0 net/socket.c:238
-     [<00000000cae2a9b4>] alloc_inode+0x2c/0xe0 fs/inode.c:227
-     [<000000004d22e56a>] new_inode_pseudo+0x18/0x70 fs/inode.c:916
-     [<000000007bb4d82d>] sock_alloc+0x1c/0x90 net/socket.c:554
-     [<00000000884dfd41>] __sock_create+0x8f/0x250 net/socket.c:1378
-     [<000000009dc85063>] sock_create_kern+0x3b/0x50 net/socket.c:1483
-     [<00000000ca0afb1d>] smc_create+0xae/0x160 net/smc/af_smc.c:1975
-     [<00000000ff903d89>] __sock_create+0x164/0x250 net/socket.c:1414
-     [<00000000c0787cdf>] sock_create net/socket.c:1465 [inline]
-     [<00000000c0787cdf>] __sys_socket+0x69/0x110 net/socket.c:1507
-     [<0000000067a4ade6>] __do_sys_socket net/socket.c:1516 [inline]
-     [<0000000067a4ade6>] __se_sys_socket net/socket.c:1514 [inline]
-     [<0000000067a4ade6>] __x64_sys_socket+0x1e/0x30 net/socket.c:1514
-     [<000000001e7b04ac>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000003fe40e36>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>  (3) The change in arch/x86/kernel/tsc.c needs to be reviewed at length
+>      before going in.
 
-BUG: memory leak
-unreferenced object 0xffff88811f269f50 (size 56):
-   comm "syz-executor.0", pid 7093, jiffies 4294950175 (age 8.140s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 5a 3e 22 81 88 ff ff 68 9f 26 1f 81 88 ff ff  .Z>"....h.&.....
-   backtrace:
-     [<0000000030f6ab07>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<0000000030f6ab07>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<0000000030f6ab07>] slab_alloc mm/slab.c:3319 [inline]
-     [<0000000030f6ab07>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
-     [<000000005d4d6be7>] kmem_cache_zalloc include/linux/slab.h:738 [inline]
-     [<000000005d4d6be7>] lsm_inode_alloc security/security.c:522 [inline]
-     [<000000005d4d6be7>] security_inode_alloc+0x33/0xb0  
-security/security.c:875
-     [<00000000ef89212c>] inode_init_always+0x108/0x200 fs/inode.c:169
-     [<00000000647feaf5>] alloc_inode+0x49/0xe0 fs/inode.c:234
-     [<000000004d22e56a>] new_inode_pseudo+0x18/0x70 fs/inode.c:916
-     [<000000007bb4d82d>] sock_alloc+0x1c/0x90 net/socket.c:554
-     [<00000000884dfd41>] __sock_create+0x8f/0x250 net/socket.c:1378
-     [<000000009dc85063>] sock_create_kern+0x3b/0x50 net/socket.c:1483
-     [<00000000ca0afb1d>] smc_create+0xae/0x160 net/smc/af_smc.c:1975
-     [<00000000ff903d89>] __sock_create+0x164/0x250 net/socket.c:1414
-     [<00000000c0787cdf>] sock_create net/socket.c:1465 [inline]
-     [<00000000c0787cdf>] __sys_socket+0x69/0x110 net/socket.c:1507
-     [<0000000067a4ade6>] __do_sys_socket net/socket.c:1516 [inline]
-     [<0000000067a4ade6>] __se_sys_socket net/socket.c:1514 [inline]
-     [<0000000067a4ade6>] __x64_sys_socket+0x1e/0x30 net/socket.c:1514
-     [<000000001e7b04ac>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000003fe40e36>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+So some information what those interfaces are used for and why they are
+needed would be really helpful.
 
+> +void get_tsc_ns(struct system_counterval_t *tsc_counterval, u64 *tsc_ns)
+> +{
+> +	u64 tmp, res, rem;
+> +	u64 cycles;
+> +
+> +	tsc_counterval->cycles = clocksource_tsc.read(NULL);
+> +	cycles = tsc_counterval->cycles;
+> +	tsc_counterval->cs = art_related_clocksource;
+> +
+> +	rem = do_div(cycles, tsc_khz);
+> +
+> +	res = cycles * USEC_PER_SEC;
+> +	tmp = rem * USEC_PER_SEC;
+> +
+> +	do_div(tmp, tsc_khz);
+> +	res += tmp;
+> +
+> +	*tsc_ns = res;
+> +}
+> +EXPORT_SYMBOL(get_tsc_ns);
+> +
+> +u64 get_art_ns_now(void)
+> +{
+> +	struct system_counterval_t tsc_cycles;
+> +	u64 tsc_ns;
+> +
+> +	get_tsc_ns(&tsc_cycles, &tsc_ns);
+> +
+> +	return tsc_ns;
+> +}
+> +EXPORT_SYMBOL(get_art_ns_now);
 
+While the changes look innocuous I'm missing the big picture why this needs
+to emulate ART instead of simply using TSC directly.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Thanks,
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+	tglx
