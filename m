@@ -2,129 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8DF6A087
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 04:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1D26A089
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 04:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388252AbfGPCUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 22:20:10 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39080 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388235AbfGPCUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 22:20:09 -0400
-Received: by mail-pl1-f194.google.com with SMTP id b7so9268067pls.6;
-        Mon, 15 Jul 2019 19:20:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=VUDuI4pL0Ekx2N2uEollbqzuyx08xmpBeQ/1wJ8aM7M=;
-        b=AAoU6nnQFDoCdjNFvCT51oPpPU3tvRyghfvKLvPrC0RRjA5GA/joOKGMo0jwsKVIkA
-         t2KurV3wAKMmPI87DyaAxtuGG5d9TPdCqoPLZewJD+JJUsqcUMzFvXFV3EZz7QMDe73Q
-         uXKkRBlspKb8aw7jEc68AOA664+/tq2RiMfVFx68ll0Uly5wgLKLBOn2fKEl+IteNQUa
-         aCCbXHUDkmanmoQVucYK1rvTszxEOyV17oMK9GX6RepEpbmgtaM0iJsh5bu+9n0N2TzF
-         LkRJdRoAwBMpEOd8N4MJYwP245fkc9cD8HKW3y4De9d1E87iElvapvfmIcB0p8Ug9k78
-         T80Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=VUDuI4pL0Ekx2N2uEollbqzuyx08xmpBeQ/1wJ8aM7M=;
-        b=YXkqFjBZbr6xA//JMSA0KNAJ/LyggrJ4/y0bgQjmtc8XMfmKil/QphzXXAPng21UX5
-         lhOKL0R0eLK1sJy9sT+074Xi+addLmQJtLiq+aooGRmEG1PPes3UlByC6LeRX71BIkUQ
-         UosEUOWjImcg7jBJi88hyVqIAMkYiAWu7jU7bYOYmUo+4AHEHRcugyT1w31wPDHX0WQe
-         AOsF2Ls8GCSESM52iRm9BaXKk6ixaEArP/XKHzWNXv9+A40fvF0iva/YsD2qbx9ASJni
-         rW3GaNORUTLO+ZyTl77aDBZyhHrcThWAfn7QsWerVPTWnZuA6otMgm+uc0yZteCcJBfj
-         sxSA==
-X-Gm-Message-State: APjAAAWXk17SUd7GfHQmJ5XU5yv2foubUzW4GQ5MDcFJe+8GOWqKTEax
-        Z9YkcelGhi9xJaoaYeM/nNP6Rsn8
-X-Google-Smtp-Source: APXvYqyaj/PtxUYGQWhs/mghaR/zwZbR00DCBWCEmjHu0u/6iHSmC4HSbOWjQhenRG98f5R/luQaMg==
-X-Received: by 2002:a17:902:ff11:: with SMTP id f17mr32632981plj.121.1563243609102;
-        Mon, 15 Jul 2019 19:20:09 -0700 (PDT)
-Received: from hari-Inspiron-1545 ([183.83.86.126])
-        by smtp.gmail.com with ESMTPSA id q24sm16908669pjp.14.2019.07.15.19.20.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Jul 2019 19:20:08 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 07:50:02 +0530
-From:   Hariprasad Kelam <hariprasad.kelam@gmail.com>
-To:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: sctp: fix warning "NULL check before some freeing
- functions is not needed"
-Message-ID: <20190716022002.GA19592@hari-Inspiron-1545>
+        id S2389198AbfGPC1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 22:27:02 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:54998 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389175AbfGPC1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 22:27:01 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6G2NN07121902;
+        Tue, 16 Jul 2019 02:26:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=4q/tR0CDQreA8oPieWpnL4ddckx77OE/YYibaD5siEQ=;
+ b=CnSZTBwu83n2U942g1lirkFOrdxNLjAQTnF2Shvb7sZy63u+l0yipKfXkD08dKRrM1dN
+ HbeaHBcbdWfhtuZz+coaIUvHZwBjcDv9bbGol3dxjUEAOGGb1svqg7Wc20dMJTTgQR/7
+ py2bAaWNSipkHwoREoUfx1zvI+nDFYL7B/hSOO7tIu2cocB2ifWlEOBfFTSYRP+RX2Gl
+ hz8RVxMkWbR+6P74/hUDow7il7URgfpGrQzo0cklDoRVzDq58GuI4pdP8A75eq69dEvK
+ lb5awL6NwDxKTYimyH/+c5wTlfpfZur1cgs/K9S2NSKZoi2YTFkvoq6iijXWK7ZeGpX3 hQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2tq7xqsnb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 02:26:58 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6G2NE6Z117328;
+        Tue, 16 Jul 2019 02:24:58 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 2tq742vsd5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 02:24:57 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6G2Oviv015061;
+        Tue, 16 Jul 2019 02:24:57 GMT
+Received: from [10.159.138.226] (/10.159.138.226)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 15 Jul 2019 19:24:57 -0700
+Subject: Re: [PATCH net-next v2 0/7] net/rds: RDMA fixes
+To:     David Miller <davem@davemloft.net>
+Cc:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org
+References: <510cd678-67d6-bd53-1d8e-7a74c4efb14a@oracle.com>
+ <20190715.190547.2251732138126894888.davem@davemloft.net>
+From:   Gerd Rausch <gerd.rausch@oracle.com>
+Message-ID: <fab1fb9a-13e3-9f10-5abe-bd4154505c9a@oracle.com>
+Date:   Mon, 15 Jul 2019 19:24:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <20190715.190547.2251732138126894888.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9319 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=824
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1907160028
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9319 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=891 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907160028
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes NULL checks before calling kfree.
+Hi David,
 
-fixes below issues reported by coccicheck
-net/sctp/sm_make_chunk.c:2586:3-8: WARNING: NULL check before some
-freeing functions is not needed.
-net/sctp/sm_make_chunk.c:2652:3-8: WARNING: NULL check before some
-freeing functions is not needed.
-net/sctp/sm_make_chunk.c:2667:3-8: WARNING: NULL check before some
-freeing functions is not needed.
-net/sctp/sm_make_chunk.c:2684:3-8: WARNING: NULL check before some
-freeing functions is not needed.
+This was a followup to the patch-series that I had already sent.
+I'll re-write the Subject-prefix and re-submit it for "net".
 
-Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
----
- net/sctp/sm_make_chunk.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+Sorry for the noise,
 
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index ed39396..36bd8a6e 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -2582,8 +2582,7 @@ static int sctp_process_param(struct sctp_association *asoc,
- 	case SCTP_PARAM_STATE_COOKIE:
- 		asoc->peer.cookie_len =
- 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
--		if (asoc->peer.cookie)
--			kfree(asoc->peer.cookie);
-+		kfree(asoc->peer.cookie);
- 		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
- 		if (!asoc->peer.cookie)
- 			retval = 0;
-@@ -2648,8 +2647,7 @@ static int sctp_process_param(struct sctp_association *asoc,
- 			goto fall_through;
- 
- 		/* Save peer's random parameter */
--		if (asoc->peer.peer_random)
--			kfree(asoc->peer.peer_random);
-+		kfree(asoc->peer.peer_random);
- 		asoc->peer.peer_random = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_random) {
-@@ -2663,8 +2661,7 @@ static int sctp_process_param(struct sctp_association *asoc,
- 			goto fall_through;
- 
- 		/* Save peer's HMAC list */
--		if (asoc->peer.peer_hmacs)
--			kfree(asoc->peer.peer_hmacs);
-+		kfree(asoc->peer.peer_hmacs);
- 		asoc->peer.peer_hmacs = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_hmacs) {
-@@ -2680,8 +2677,7 @@ static int sctp_process_param(struct sctp_association *asoc,
- 		if (!ep->auth_enable)
- 			goto fall_through;
- 
--		if (asoc->peer.peer_chunks)
--			kfree(asoc->peer.peer_chunks);
-+		kfree(asoc->peer.peer_chunks);
- 		asoc->peer.peer_chunks = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_chunks)
--- 
-2.7.4
+  Gerd
 
+On 15/07/2019 19.05, David Miller wrote:
+> 
+> net-next is closed, and why are you submitting bug fixes for net-next
+> when 'net' is the appropriate tree to target for that purpose?
+> 
