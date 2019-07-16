@@ -2,141 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4496B262
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 01:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 546266B270
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 01:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389133AbfGPXa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 19:30:28 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:39164 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389124AbfGPXa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 19:30:28 -0400
-Received: by mail-lf1-f68.google.com with SMTP id v85so14942423lfa.6
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 16:30:27 -0700 (PDT)
+        id S2388969AbfGPXhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 19:37:22 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:39573 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387623AbfGPXhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 19:37:21 -0400
+Received: by mail-qk1-f195.google.com with SMTP id w190so16031538qkc.6;
+        Tue, 16 Jul 2019 16:37:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=YWcpEc5FvGUxMrkeRiB0cnwgYS5TPs4Urt5+gPVZDh8=;
-        b=kfuVXg1GBNwcOoznZPvryqh6/i2XrbBE6hkmVUMgSZi+LTGFCMeiia9P0u53fqR03S
-         Db8ww5cz17ZFCZKlTuva1FUSo3Y2oMZofZ8fP/h1fLivURlC81chU7PWbmPju7Admx1Z
-         0vNl1Znw/JxnQbaEB3qodZy91u3UJcA/kBkF3/fop+D+uNxeIU9ClEdXjFRvVywlejx8
-         DnAqQwuvXO4VpPWfxjCThhbeKljqILhPjFnODqbpRq1N11o4FSdml1BI7L1b7dz9y+YP
-         fYw1lfsvEQejaiRHp3kfd9vzzpXxhC6v4ipIrx4uMBDRiXoRA77MJ55m7j30qsm5olyc
-         8AKg==
+        bh=v5GkqRT93fkTP8BIazbltyBlI4Rs29NRIKAXiRzsYNg=;
+        b=YxiJmcJ/JbDWjJLZecgwJR/GwBW2LNBWM6hDVHQepI2K4AJGtKY2D4+no0cfCjVRd+
+         v6XaiRAhkI1Ys0f9mYAYaY3B49g/hNQLelqz4ReG8VNBhETOV27PMLIDxHowi7pqtbLB
+         gtgreh0tV0hf0cNkpKAvWPIGjUJlOjqOdPJsSFNqnwLN++HYHA6JtWBvmtrlCEqoR4C6
+         FRDW7y3c671+QB2VrK7hk1oklcBmkUIg8N2uRxzV8g3BUzlLbcP/hZ8lGjWcz+hEAdwg
+         Z0N6jU8V9Q4dRHgPoMz1cE0TvyXDv3m9Fr5Y+fM8euw710lliL+rueiHJxN7VYR8DNgK
+         J7Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=YWcpEc5FvGUxMrkeRiB0cnwgYS5TPs4Urt5+gPVZDh8=;
-        b=eMuSqCh6mWgGX9pdJ1nCRJzYf46xtpDiLsgOHj0uy3NGmEGb/Y7EWQFxvXn7wECEZ3
-         aOEjYWYk7M7DSHkp2BECbpTGOo+liLuVxMjr1xZnr2HY6Igyjo90UbxE7LRvu2eCoQkV
-         CemeSdIjng/hzDizMR7IRBvHb+IV74L4oJ3bq/dmlUC69mUlbVEHpfDgiNbZRz8tKz7l
-         xEGUA6qrzXpQxMrYDyjkci4+yF852HQBPmyOyHGoo6E/X5OIUWJe6tCIccqV9KYPGryh
-         sY47nUfG8OhasXuGvx1q1w+BbYqBOJXBSq349Oquwipjpm2ucv0yviEbBwXfZXeOUXS4
-         s8RQ==
-X-Gm-Message-State: APjAAAXrYUe8PULHVzkX763F8zUV+YSbxCOldWjGk/xu9Ju20jdMg/iz
-        jAWqgWIw6wZR1AxQ8GWhZLzQmQIl9v55wpfd3Q==
-X-Google-Smtp-Source: APXvYqxz39ngK72ytLQXqEXgHBnS7WXBpZpi6vOwRoyqlsR7YPmTcb6oeRneK/RtXK9BLw25UxnyGGXWi29uMJ0dI9o=
-X-Received: by 2002:ac2:4109:: with SMTP id b9mr14480083lfi.31.1563319826317;
- Tue, 16 Jul 2019 16:30:26 -0700 (PDT)
+        bh=v5GkqRT93fkTP8BIazbltyBlI4Rs29NRIKAXiRzsYNg=;
+        b=m8Vbn4lISIgIHi3q4J2bJNpglmHMgaDbzRa6yY0AT7LHuUpvY+wgwmzpOXkXL2QMDf
+         hbvW9Hwi5CipXliSI5xBLvNEWut9MAqOicQqvY08Pi0w9VSXHnlAkrF2pMxwDuao0i/P
+         m+J14uylzmJro8QSAC5ATxriyC0qkdT+4avhT86cszOlyys2wxdLYUwtiZV540miWs5e
+         Tl8+PAU2QiQUVobTaRSwh2fybANPLFa06lmyzt+VW8jdREslhaR06F4fClI32AAcDwdy
+         JrHNxrXeeQmraySd+uCZB6JNeM53buxVQrsajk84zNEFX12J1Z1cQBoAfB5Z+qUZnW4n
+         W7LQ==
+X-Gm-Message-State: APjAAAWnDsRGsCC26f09G8tvk51I1JUDfKYcL6R7zcW7crxCSdsFhYVQ
+        XQN7s3LFH4RAs7TiCAbUmrSBmJKrieKS1Q5qJ5U=
+X-Google-Smtp-Source: APXvYqzvAbZtiu/m/hAlglJ0EcKb017eA2pmCBAy2Me/9kE6sk8Okh/h4dM7FGYjxsAtI+cWYv+XZjzQpPWdRhOWwHE=
+X-Received: by 2002:a37:9b48:: with SMTP id d69mr24856940qke.449.1563320240187;
+ Tue, 16 Jul 2019 16:37:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190529145742.GA8959@cisco> <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
- <20190529153427.GB8959@cisco> <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
- <20190529222835.GD8959@cisco> <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
- <20190530170913.GA16722@mail.hallyn.com> <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
- <20190708180558.5bar6ripag3sdadl@madcap2.tricolour.ca> <CAHC9VhRTT7JWqNnynvK04wKerjc-3UJ6R1uPtjCAPVr_tW-7MA@mail.gmail.com>
- <20190716220320.sotbfqplgdructg7@madcap2.tricolour.ca>
-In-Reply-To: <20190716220320.sotbfqplgdructg7@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 16 Jul 2019 19:30:15 -0400
-Message-ID: <CAHC9VhScHizB2r5q3T5s0P3jkYdvzBPPudDksosYFp_TO7W9-Q@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Tycho Andersen <tycho@tycho.ws>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        ebiederm@xmission.com, nhorman@tuxdriver.com
+References: <20190716193837.2808971-1-andriin@fb.com> <20190716195544.GB14834@mini-arch>
+ <CAEf4BzZ4XAdjasYq+JGFHnhwEV3G5UYWBuqKMK1yu1KRLn19MQ@mail.gmail.com> <20190716225735.GC14834@mini-arch>
+In-Reply-To: <20190716225735.GC14834@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 16 Jul 2019 16:37:08 -0700
+Message-ID: <CAEf4BzY7NYZSGuRHVye_CerZ1BBBLsDyOT2ar5sBXsPGy8g0xA@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] selftests/bpf: fix test_verifier/test_maps make dependencies
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 6:03 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2019-07-15 17:04, Paul Moore wrote:
-> > On Mon, Jul 8, 2019 at 2:06 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-
-...
-
-> > > If we can't trust ns_capable() then why are we passing on
-> > > CAP_AUDIT_CONTROL?  It is being passed down and not stripped purposely
-> > > by the orchestrator/engine.  If ns_capable() isn't inherited how is it
-> > > gained otherwise?  Can it be inserted by cotainer image?  I think the
-> > > answer is "no".  Either we trust ns_capable() or we have audit
-> > > namespaces (recommend based on user namespace) (or both).
-> >
-> > My thinking is that since ns_capable() checks the credentials with
-> > respect to the current user namespace we can't rely on it to control
-> > access since it would be possible for a privileged process running
-> > inside an unprivileged container to manipulate the audit container ID
-> > (containerized process has CAP_AUDIT_CONTROL, e.g. running as root in
-> > the container, while the container itself does not).
+On Tue, Jul 16, 2019 at 3:57 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
 >
-> What makes an unprivileged container unprivileged?  "root", or "CAP_*"?
-
-My understanding is that when most people refer to an unprivileged
-container they are referring to a container run without capabilities
-or a container run by a user other than root.  I'm sure there are
-better definitions out there, by folks much smarter than me on these
-things, but that's my working definition.
-
-> If CAP_AUDIT_CONTROL is granted, does "root" matter?
-
-Our discussions here have been about capabilities, not UIDs.  The only
-reason root might matter is that it generally has the full capability
-set.
-
-> Does it matter what user namespace it is in?
-
-What likely matters is what check is called: capable() or
-ns_capable().  Those can yield very different results.
-
-> I understand that root is *gained* in an
-> unprivileged user namespace, but capabilities are inherited or permitted
-> and that process either has it or it doesn't and an unprivileged user
-> namespace can't gain a capability that has been rescinded.  Different
-> subsystems use the userid or capabilities or both to determine
-> privileges.
-
-Once again, I believe the important thing to focus on here is
-capable() vs ns_capable().  We can't safely rely on ns_capable() for
-the audit container ID policy since that is easily met inside the
-container regardless of the process' creds which started the
-container.
-
-> In this case, is the userid relevant?
-
-We don't do UID checks, we do capability checks, so yes, the UID is irrelevant.
-
-> > > At this point I would say we are at an impasse unless we trust
-> > > ns_capable() or we implement audit namespaces.
+> On 07/16, Andrii Nakryiko wrote:
+> > On Tue, Jul 16, 2019 at 12:55 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > >
+> > > On 07/16, Andrii Nakryiko wrote:
+> > > > e46fc22e60a4 ("selftests/bpf: make directory prerequisites order-only")
+> > > > exposed existing problem in Makefile for test_verifier and test_maps tests:
+> > > > their dependency on auto-generated header file with a list of all tests wasn't
+> > > > recorded explicitly. This patch fixes these issues.
+> > > Why adding it explicitly fixes it? At least for test_verifier, we have
+> > > the following rule:
+> > >
+> > >         test_verifier.c: $(VERIFIER_TESTS_H)
+> > >
+> > > And there should be implicit/builtin test_verifier -> test_verifier.c
+> > > dependency rule.
+> > >
+> > > Same for maps, I guess:
+> > >
+> > >         $(OUTPUT)/test_maps: map_tests/*.c
+> > >         test_maps.c: $(MAP_TESTS_H)
+> > >
+> > > So why is it not working as is? What I'm I missing?
 > >
-> > I'm not sure how we can trust ns_capable(), but if you can think of a
-> > way I would love to hear it.  I'm also not sure how namespacing audit
-> > is helpful (see my above comments), but if you think it is please
-> > explain.
+> > I don't know exactly why it's not working, but it's clearly because of
+> > that. It's the only difference between how test_progs are set up,
+> > which didn't break, and test_maps/test_verifier, which did.
+> >
+> > Feel free to figure it out through a maze of Makefiles why it didn't
+> > work as expected, but this definitely fixed a breakage (at least for
+> > me).
+> Agreed on not wasting time. I took a brief look (with make -qp) and I
+> don't have any clue.
+
+Oh, -qp is cool, noted :)
+
 >
-> So if we are not namespacing, why do we not trust capabilities?
+> By default implicit matching doesn't work:
+> # makefile (from 'Makefile', line 261)
+> /linux/tools/testing/selftests/bpf/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+> /linux/tools/testing/selftests/bpf/test_maps: map_tests/sk_storage_map.c /linux/tools/testing/selftests/bpf/test_stub.o /linux/tools/testing/selftests/bpf/libbpf.a
+> #  Implicit rule search has not been done.
+> #  File is an intermediate prerequisite.
+> #  Modification time never checked.
+> #  File has not been updated.
+> # variable set hash-table stats:
+> # Load=1/32=3%, Rehash=0, Collisions=0/2=0%
+>
+> If I comment out the following line:
+> $(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
+>
+> Then it works:
+> # makefile (from 'Makefile', line 261)
+> /linux/tools/testing/selftests/bpf/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+> /linux/tools/testing/selftests/bpf/test_maps: test_maps.c map_tests/sk_storage_map.c
+> #  Implicit rule search has been done.
+> #  Implicit/static pattern stem: 'test_maps'
+> #  File is an intermediate prerequisite.
+> #  File does not exist.
+> #  File has not been updated.
+> # variable set hash-table stats:
+> # Load=1/32=3%, Rehash=0, Collisions=0/2=0%
+> #  recipe to execute (from '../lib.mk', line 138):
+>         $(LINK.c) $^ $(LDLIBS) -o $@
+>
+> It's because "File is an intermediate prerequisite.", but I
+> don't see how it's is a intermediate prerequisite for anything...
 
-We can trust capable(CAP_AUDIT_CONTROL) for enforcing audit container
-ID policy, we can not trust ns_capable(CAP_AUDIT_CONTROL).
+Well, it's "File is an intermediate prerequisite." in both cases, so I
+don't know if that's it.
+Makefiles is not my strong suit, honestly, and definitely not an area
+of passion, so no idea
 
--- 
-paul moore
-www.paul-moore.com
+>
+>
+> One other optional suggestion I have to your second patch: maybe drop all
+> those dependencies on the directories altogether? Why not do the following
+> instead, for example (same for test_progs/test_maps)?
+
+Some of those _TEST_DIR's are dependencies of multiple targets, so
+you'd need to replicate that `mkdir -p $@` in multiple places, which
+is annoying.
+
+But I also don't think we need to worry about creating them, because
+there is always at least one test (otherwise those tests are useless
+anyways) in those directories, so we might as well just remove those
+dependencies, I guess.
+
+TBH, those explicit dependencies are good to specify anyways, so I
+think this fix is good. Second patch just makes the layout of
+dependencies similar, so it's easier to spot differences like this
+one.
+
+As usual, I'll let Alexei and Daniel decide which one to apply (or if
+we need to take some other approach to fixing this).
+
+
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 1296253b3422..c2d087ce6d4b 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -277,12 +277,9 @@ VERIFIER_TESTS_H := $(OUTPUT)/verifier/tests.h
+>  test_verifier.c: $(VERIFIER_TESTS_H)
+>  $(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
+>
+> -VERIFIER_TESTS_DIR = $(OUTPUT)/verifier
+> -$(VERIFIER_TESTS_DIR):
+> -       mkdir -p $@
+> -
+>  VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
+> -$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
+> +$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES)
+> +       mkdir -p $(dir $@)
+>         $(shell ( cd verifier/; \
+>                   echo '/* Generated header, do not edit */'; \
+>                   echo '#ifdef FILL_ARRAY'; \
