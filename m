@@ -2,390 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF8846A43A
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 10:50:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A6026A511
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 11:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730754AbfGPIud (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 04:50:33 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43498 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726465AbfGPIuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 04:50:32 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p13so19954046wru.10
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 01:50:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=5FNphxI2hZy6LXt0m/EziqiBbD8lYcv9Gi93uYzYO/o=;
-        b=XYUtOn3xPwN1s9y6PwTvYMV8cBCG6gHPPzwxtevGycIA+PjQN1q0Z6RmKvEv4p3UxV
-         dBi4WGnj3ZdTrDSGDpw21wTnGpn5kFVpjhL8wLuaNOUo28n8xNzp7XIK7tg/goB6S42A
-         jJGfs8Qq8j3RzaldwJC9BFTwvk4N38Y3NraixpVFCjoZxsJSsEHJTtHl2ENwLD6lgZrJ
-         2f2Lmes617R6tjEfQWRf0hWTKdgb/wVMHs76igdy/bXVgpkwsO9yKgw1nayxeRLBMHYS
-         8g4/Vj640mltnTYQznLDvaqq755XJ6GmV/+21X5YjNSxVJff99O+Q7h/OwXkVKnYD8YB
-         wjaw==
+        id S1731843AbfGPJka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 05:40:30 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53500 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbfGPJk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 05:40:29 -0400
+Received: by mail-wm1-f68.google.com with SMTP id x15so17948923wmj.3
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 02:40:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=5FNphxI2hZy6LXt0m/EziqiBbD8lYcv9Gi93uYzYO/o=;
-        b=HBjBjHd9E3Sk95luHPypl095In2+PAjM7mtIb85o0iB4SBZ+MLqUEhKGKyzHGXE6Po
-         AGP8hfO4VNphabe3GiH/0cRwexh9F/ufVX3AMsVpFcnh0vJWVFveO1oa3vGfjOaYSAwk
-         Dg/i/h4F0EowD055HgCvAd0QDthuJORW7iosbRm/k9ew4fn8KV8zLi65KSApDdfZOS82
-         bhjLA39QDqLl9CSjuC7r8qN0jC4RJtT/PdQILvswMzTJkcn5z3umjeVqHVhZ3oPhiX9M
-         3EPC39iQaePWz80T6eE4zo3obrgNbKcfips8L8I38PZEykYx+KEChbLcJx3abtB6TRkC
-         PP8w==
-X-Gm-Message-State: APjAAAVWwg/9Wbl5UxQ+X1TfHmf7EwLhZqYuLe/eUX/UgjLyLFRcXuYm
-        t8GuEpdS8LOswqGZ6ajdQurxz0o1//U=
-X-Google-Smtp-Source: APXvYqz07iIGWXV6rsYznNUAhNBoqkl+RqHS1ah1NqqxhAHfAd5MTNbNLk55rdEZWM7kOzVw7HBg9g==
-X-Received: by 2002:adf:dc51:: with SMTP id m17mr8970072wrj.256.1563267029063;
-        Tue, 16 Jul 2019 01:50:29 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id f70sm21479573wme.22.2019.07.16.01.50.26
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 16 Jul 2019 01:50:26 -0700 (PDT)
-References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com> <CAEf4BzavePpW-C+zORN1kwSUJAWuJ3LxZ6QGxqaE9msxCq8ZLA@mail.gmail.com> <87r26w24v4.fsf@netronome.com> <CAEf4BzaPFbYKUQzu7VoRd7idrqPDMEFF=UEmT2pGf+Lxz06+sA@mail.gmail.com> <87k1cj3b69.fsf@netronome.com> <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiong Wang <jiong.wang@netronome.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Edward Cree <ecree@solarflare.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com, Yonghong Song <yhs@fb.com>
-Subject: Re: [RFC bpf-next 0/8] bpf: accelerate insn patching speed
-In-reply-to: <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com>
-Date:   Tue, 16 Jul 2019 09:50:25 +0100
-Message-ID: <87wogitlbi.fsf@netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=G7qEHGieurM6YM0uix2FXgt3bWLkQEvhE+XCjMO9gL4=;
+        b=hCIkN2/nUCXog+nrNoo8YbDvlOwlyuWlb6OACPSFb0ZQpxK3KKdJVQDRrXMWqvZ4lg
+         63GUmM+xN7qqjUiQUCTwYMEa1tRyWrHS2uQchg2CEOs2DHqMiN78IaN3A9JtDf0fSP9Z
+         gxVxyxgmcDLdZlfu0bKztlszXziN7h/ANK5QjrPKiJ/P36NvbDLdiN391iYxynsjAwXg
+         bWKGTK/vQDe90C2FN7EwzThZxTUPovzY1Pq+QYuWsn9L9P02VE3ndkexIbGYbHcouVuO
+         IS8SfHTQC8Wyu1nYtqdZQxBwFoWnt6j85m7YzngZlY35Exk2CMCQJSgfR2ropajcCbJb
+         QQvA==
+X-Gm-Message-State: APjAAAUuE+FRZHc1I1e97A8OQqgUofxjfEu0/KGNxYwzkcP6B3lBmHC7
+        LqP20wyovFGTWhIhK2RfdIIFQA==
+X-Google-Smtp-Source: APXvYqzkgE02fSqkpO09OcgpakUjs3eVhIEOQ/qW6Awsi+eR/AVHCupes1EPfKEiPidW1Nw+dw5beA==
+X-Received: by 2002:a7b:c1da:: with SMTP id a26mr29804721wmj.128.1563270027202;
+        Tue, 16 Jul 2019 02:40:27 -0700 (PDT)
+Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
+        by smtp.gmail.com with ESMTPSA id o6sm37931894wra.27.2019.07.16.02.40.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 16 Jul 2019 02:40:26 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 11:40:24 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
+ virtio-vsock
+Message-ID: <20190716094024.ob43g5lxga5uwb7z@steredhat>
+References: <20190710153707.twmzgmwqqw3pstos@steredhat>
+ <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
+ <20190711114134.xhmpciyglb2angl6@steredhat>
+ <20190711152855-mutt-send-email-mst@kernel.org>
+ <20190712100033.xs3xesz2plfwj3ag@steredhat>
+ <a514d8a4-3a12-feeb-4467-af7a9fbf5183@redhat.com>
+ <20190715074416.a3s2i5ausognotbn@steredhat>
+ <20190715134115-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190715134115-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 15, 2019 at 01:50:28PM -0400, Michael S. Tsirkin wrote:
+> On Mon, Jul 15, 2019 at 09:44:16AM +0200, Stefano Garzarella wrote:
+> > On Fri, Jul 12, 2019 at 06:14:39PM +0800, Jason Wang wrote:
 
-Andrii Nakryiko writes:
+[...]
 
-> On Mon, Jul 15, 2019 at 2:21 AM Jiong Wang <jiong.wang@netronome.com> wrote:
->>
->>
->> Andrii Nakryiko writes:
->>
->> > On Thu, Jul 11, 2019 at 4:22 AM Jiong Wang <jiong.wang@netronome.com> wrote:
->> >>
->> >>
->> >> Andrii Nakryiko writes:
->> >>
->> >> > On Thu, Jul 4, 2019 at 2:31 PM Jiong Wang <jiong.wang@netronome.com> wrote:
->> >> >>
->> >> >> This is an RFC based on latest bpf-next about acclerating insn patching
->> >> >> speed, it is now near the shape of final PATCH set, and we could see the
->> >> >> changes migrating to list patching would brings, so send out for
->> >> >> comments. Most of the info are in cover letter. I splitted the code in a
->> >> >> way to show API migration more easily.
->> >> >
->> >> >
->> >> > Hey Jiong,
->> >> >
->> >> >
->> >> > Sorry, took me a while to get to this and learn more about instruction
->> >> > patching. Overall this looks good and I think is a good direction.
->> >> > I'll post high-level feedback here, and some more
->> >> > implementation-specific ones in corresponding patches.
->> >>
->> >> Great, thanks very much for the feedbacks. Most of your feedbacks are
->> >> hitting those pain points I exactly had ran into. For some of them, I
->> >> thought similar solutions like yours, but failed due to various
->> >> reasons. Let's go through them again, I could have missed some important
->> >> things.
->> >>
->> >> Please see my replies below.
->> >
->> > Thanks for thoughtful reply :)
->> >
->> >>
->> >> >>
->> >> >> Test Results
->> >> >> ===
->> >> >>   - Full pass on test_verifier/test_prog/test_prog_32 under all three
->> >> >>     modes (interpreter, JIT, JIT with blinding).
->> >> >>
->> >> >>   - Benchmarking shows 10 ~ 15x faster on medium sized prog, and reduce
->> >> >>     patching time from 5100s (nearly one and a half hour) to less than
->> >> >>     0.5s for 1M insn patching.
->> >> >>
->> >> >> Known Issues
->> >> >> ===
->> >> >>   - The following warning is triggered when running scale test which
->> >> >>     contains 1M insns and patching:
->> >> >>       warning of mm/page_alloc.c:4639 __alloc_pages_nodemask+0x29e/0x330
->> >> >>
->> >> >>     This is caused by existing code, it can be reproduced on bpf-next
->> >> >>     master with jit blinding enabled, then run scale unit test, it will
->> >> >>     shown up after half an hour. After this set, patching is very fast, so
->> >> >>     it shows up quickly.
->> >> >>
->> >> >>   - No line info adjustment support when doing insn delete, subprog adj
->> >> >>     is with bug when doing insn delete as well. Generally, removal of insns
->> >> >>     could possibly cause remove of entire line or subprog, therefore
->> >> >>     entries of prog->aux->linfo or env->subprog needs to be deleted. I
->> >> >>     don't have good idea and clean code for integrating this into the
->> >> >>     linearization code at the moment, will do more experimenting,
->> >> >>     appreciate ideas and suggestions on this.
->> >> >
->> >> > Is there any specific problem to detect which line info to delete? Or
->> >> > what am I missing besides careful implementation?
->> >>
->> >> Mostly line info and subprog info are range info which covers a range of
->> >> insns. Deleting insns could causing you adjusting the range or removing one
->> >> range entirely. subprog info could be fully recalcuated during
->> >> linearization while line info I need some careful implementation and I
->> >> failed to have clean code for this during linearization also as said no
->> >> unit tests to help me understand whether the code is correct or not.
->> >>
->> >
->> > Ok, that's good that it's just about clean implementation. Try to
->> > implement it as clearly as possible. Then post it here, and if it can
->> > be improved someone (me?) will try to help to clean it up further.
->> >
->> > Not a big expert on line info, so can't comment on that,
->> > unfortunately. Maybe Yonghong can chime in (cc'ed)
->> >
->> >
->> >> I will described this latter, spent too much time writing the following
->> >> reply. Might worth an separate discussion thread.
->> >>
->> >> >>
->> >> >>     Insn delete doesn't happen on normal programs, for example Cilium
->> >> >>     benchmarks, and happens rarely on test_progs, so the test coverage is
->> >> >>     not good. That's also why this RFC have a full pass on selftest with
->> >> >>     this known issue.
->> >> >
->> >> > I hope you'll add test for deletion (and w/ corresponding line info)
->> >> > in final patch set :)
->> >>
->> >> Will try. Need to spend some time on BTF format.
->> >> >
->> >> >>
->> >> >>   - Could further use mem pool to accelerate the speed, changes are trivial
->> >> >>     on top of this RFC, and could be 2x extra faster. Not included in this
->> >> >>     RFC as reducing the algo complexity from quadratic to linear of insn
->> >> >>     number is the first step.
->> >> >
->> >> > Honestly, I think that would add more complexity than necessary, and I
->> >> > think we can further speed up performance without that, see below.
->> >> >
->> >> >>
->> >> >> Background
->> >> >> ===
->> >> >> This RFC aims to accelerate BPF insn patching speed, patching means expand
->> >> >> one bpf insn at any offset inside bpf prog into a set of new insns, or
->> >> >> remove insns.
->> >> >>
->> >> >> At the moment, insn patching is quadratic of insn number, this is due to
->> >> >> branch targets of jump insns needs to be adjusted, and the algo used is:
->> >> >>
->> >> >>   for insn inside prog
->> >> >>     patch insn + regeneate bpf prog
->> >> >>     for insn inside new prog
->> >> >>       adjust jump target
->> >> >>
->> >> >> This is causing significant time spending when a bpf prog requires large
->> >> >> amount of patching on different insns. Benchmarking shows it could take
->> >> >> more than half minutes to finish patching when patching number is more
->> >> >> than 50K, and the time spent could be more than one hour when patching
->> >> >> number is around 1M.
->> >> >>
->> >> >>   15000   :    3s
->> >> >>   45000   :   29s
->> >> >>   95000   :  125s
->> >> >>   195000  :  712s
->> >> >>   1000000 : 5100s
->> >> >>
->> >> >> This RFC introduces new patching infrastructure. Before doing insn
->> >> >> patching, insns in bpf prog are turned into a singly linked list, insert
->> >> >> new insns just insert new list node, delete insns just set delete flag.
->> >> >> And finally, the list is linearized back into array, and branch target
->> >> >> adjustment is done for all jump insns during linearization. This algo
->> >> >> brings the time complexity from quadratic to linear of insn number.
->> >> >>
->> >> >> Benchmarking shows the new patching infrastructure could be 10 ~ 15x faster
->> >> >> on medium sized prog, and for a 1M patching it reduce the time from 5100s
->> >> >> to less than 0.5s.
->> >> >>
->> >> >> Patching API
->> >> >> ===
->> >> >> Insn patching could happen on two layers inside BPF. One is "core layer"
->> >> >> where only BPF insns are patched. The other is "verification layer" where
->> >> >> insns have corresponding aux info as well high level subprog info, so
->> >> >> insn patching means aux info needs to be patched as well, and subprog info
->> >> >> needs to be adjusted. BPF prog also has debug info associated, so line info
->> >> >> should always be updated after insn patching.
->> >> >>
->> >> >> So, list creation, destroy, insert, delete is the same for both layer,
->> >> >> but lineration is different. "verification layer" patching require extra
->> >> >> work. Therefore the patch APIs are:
->> >> >>
->> >> >>    list creation:                bpf_create_list_insn
->> >> >>    list patch:                   bpf_patch_list_insn
->> >> >>    list pre-patch:               bpf_prepatch_list_insn
->> >> >
->> >> > I think pre-patch name is very confusing, until I read full
->> >> > description I couldn't understand what it's supposed to be used for.
->> >> > Speaking of bpf_patch_list_insn, patch is also generic enough to leave
->> >> > me wondering whether instruction buffer is inserted after instruction,
->> >> > or instruction is replaced with a bunch of instructions.
->> >> >
->> >> > So how about two more specific names:
->> >> > bpf_patch_list_insn -> bpf_list_insn_replace (meaning replace given
->> >> > instruction with a list of patch instructions)
->> >> > bpf_prepatch_list_insn -> bpf_list_insn_prepend (well, I think this
->> >> > one is pretty clear).
->> >>
->> >> My sense on English word is not great, will switch to above which indeed
->> >> reads more clear.
->> >>
->> >> >>    list lineration (core layer): prog = bpf_linearize_list_insn(prog, list)
->> >> >>    list lineration (veri layer): env = verifier_linearize_list_insn(env, list)
->> >> >
->> >> > These two functions are both quite involved, as well as share a lot of
->> >> > common code. I'd rather have one linearize instruction, that takes env
->> >> > as an optional parameter. If env is specified (which is the case for
->> >> > all cases except for constant blinding pass), then adjust aux_data and
->> >> > subprogs along the way.
->> >>
->> >> Two version of lineration and how to unify them was a painpoint to me. I
->> >> thought to factor out some of the common code out, but it actually doesn't
->> >> count much, the final size counting + insnsi resize parts are the same,
->> >> then things start to diverge since the "Copy over insn" loop.
->> >>
->> >> verifier layer needs to copy and initialize aux data etc. And jump
->> >> relocation is different. At core layer, the use case is JIT blinding which
->> >> could expand an jump_imm insn into a and/or/jump_reg sequence, and the
->> >
->> > Sorry, I didn't get what "could expand an jump_imm insn into a
->> > and/or/jump_reg sequence", maybe you can clarify if I'm missing
->> > something.
->> >
->> > But from your cover letter description, core layer has no jumps at
->> > all, while verifier has jumps inside patch buffer. So, if you support
->> > jumps inside of patch buffer, it will automatically work for core
->> > layer. Or what am I missing?
->>
->> I meant in core layer (JIT blinding), there is the following patching:
->>
->> input:
->>   insn 0             insn 0
->>   insn 1             insn 1
->>   jmp_imm   >>       mov_imm  \
->>   insn 2             xor_imm    insn seq expanded from jmp_imm
->>   insn 3             jmp_reg  /
->>                      insn 2
->>                      insn 3
->>
->>
->> jmp_imm is the insn that will be patched, and the actually transformation
->> is to expand it into mov_imm/xor_imm/jmp_reg sequence. "jmp_reg", sitting
->> at the end of the patch buffer, must jump to the same destination as the
->> original jmp_imm, so "jmp_reg" is an insn inside patch buffer but should
->> be relocated, and the jump destination is outside of patch buffer.
->
->
-> Ok, great, thanks for explaining, yeah it's definitely something that
-> we should be able to support. BUT. It got me thinking a bit more and I
-> think I have simpler and more elegant solution now, again, supporting
-> both core-layer and verifier-layer operations.
->
-> struct bpf_patchable_insn {
->    struct bpf_patchable_insn *next;
->    struct bpf_insn insn;
->    int orig_idx; /* original non-patched index */
->    int new_idx;  /* new index, will be filled only during linearization */
-> };
->
-> struct bpf_patcher {
->     /* dummy head node of a chain of patchable instructions */
->     struct bpf_patchable_insn insn_head;
->     /* dynamic array of size(original instruction count)
->      * this is a map from original instruction index to a first
->      * patchable instruction that replaced that instruction (or
->      * just original instruction as bpf_patchable_insn).
->      */
->     int *orig_idx_to_patchable_insn;
->     int cnt;
-> };
->
-> Few points, but it should be pretty clear just from comments and definitions:
-> 1. When you created bpf_patcher, you create patchabe_insn list, fill
-> orig_idx_to_patchable_insn map to store proper pointers. This array is
-> NEVER changed after that.
-> 2. When replacing instruction, you re-use struct bpf_patchable_insn
-> for first patched instruction, then append after that (not prepend to
-> next instruction to not disrupt orig_idx -> patchable_insn mapping).
-> 3. During linearizations, you first traverse the chain of instructions
-> and trivially assing new_idxs.
-> 4. No need for patchabe_insn->target anymore. All jumps use relative
-> instruction offsets, right?
+> > > 
+> > > 
+> > > I think it's just a branch, for ethernet, go for networking stack. otherwise
+> > > go for vsock core?
+> > > 
+> > 
+> > Yes, that should work.
+> > 
+> > So, I should refactor the functions that can be called also from the vsock
+> > core, in order to remove "struct net_device *dev" parameter.
+> > Maybe creating some wrappers for the network stack.
+> > 
+> > Otherwise I should create a fake net_device for vsock_core.
+> > 
+> > What do you suggest?
+> 
+> Neither.
+> 
+> I think what Jason was saying all along is this:
+> 
+> virtio net doesn't actually lose packets, at least most
+> of the time. And it actually most of the time
+> passes all packets to host. So it's possible to use a virtio net
+> device (possibly with a feature flag that says "does not lose packets,
+> all packets go to host") and build vsock on top.
 
-Yes, all jumps are pc-relative.
+Yes, I got it after the latest Jason's reply.
 
-> So when you need to determine new
-> instruction index during linearization, you just do (after you
-> calculated new instruction indicies):
->
-> func adjust_jmp(struct bpf_patcher* patcher, struct bpf_patchable_insn *insn) {
->    int old_jmp_idx = insn->orig_idx + jmp_offset_of(insn->insn);
->    int new_jmp_idx = patcher->orig_idx_to_patchable_insn[old_jmp_idx]->new_idx;
->    adjust_jmp_offset(insn->insn, new_jmp_idx) - insn->orig_idx;
-> }
+> 
+> and all of this is nice, but don't expect anything easy,
+> or any quick results.
 
-Hmm, this algo is kinds of the same this RFC, just we have organized "new_index"
-as "idx_map". And in this RFC, only new_idx of one original insn matters,
-no space is allocated for patched insns. (As mentioned, JIT blinding
-requires the last insn inside patch buffer relocated to original jump
-offset, so there was a little special handling in the relocation loop in
-core layer linearization code)
+I expected this... :-(
 
-> The idea is that we want to support quick look-up by original
-> instruction index. That's what orig_idx_to_patchable_insn provides. On
-> the other hand, no existing instruction is ever referencing newly
-> patched instruction by its new offset, so with careful implementation,
-> you can transparently support all the cases, regardless if it's in
-> core layer or verifier layer (so, e.g., verifier layer patched
-> instructions now will be able to jump out of patched buffer, if
-> necessary, neat, right?).
->
-> It is cleaner than everything we've discussed so far. Unless I missed
-> something critical (it's all quite convoluted, so I might have
-> forgotten some parts already). Let me know what you think.
+> 
+> Also, in a sense it's a missed opportunity: we could cut out a lot
+> of fat and see just how fast can a protocol that is completely
+> new and separate from networking stack go.
 
-Let me digest a little bit and do some coding, then I will come back. Some
-issues can only shown up during in-depth coding. I kind of feel handling
-aux reference in verifier layer is the part that will still introduce some
-un-clean code.
+In this case, if we will try to do a PoC, what do you think is better?
+    1. new AF_VSOCK + network-stack + virtio-net modified
+        Maybe it is allow us to reuse a lot of stuff already written,
+        but we will go through the network stack
 
-<snip>
->> If there is no dead insn elimination opt, then we could just adjust
->> offsets. When there is insn deleting, I feel the logic becomes more
->> complex. One subprog could be completely deleted or partially deleted, so
->> I feel just recalculate the whole subprog info as a side-product is
->> much simpler.
->
-> What's the situation where entirety of subprog can be deleted?
+    2. new AF_VSOCK + glue + virtio-net modified
+        Intermediate approach, similar to Jason's proposal
 
-Suppose you have conditional jmp_imm, true path calls one subprog, false
-path calls the other. If insn walker later found it is also true, then the
-subprog at false path won't be marked as "seen", so it is entirely deleted.
+    3, new AF_VSOCK + new virtio-vsock
+        Can be the thinnest, but we have to rewrite many things, with the risk
+        of making the same mistakes as the current implementation.
 
-I actually thought it is in theory one subprog could be deleted entirely,
-so if we support insn deletion inside verifier, then range info like
-line_info/subprog_info needs to consider one range is deleted.
 
-Thanks.
-Regards,
-Jiong
+> Instead vsock implementation carries so much baggage from both
+> networking stack - such as softirq processing - and itself such as
+> workqueues, global state and crude locking - to the point where
+> it's actually slower than TCP.
+
+I agree, and I'm finding new issues while I'm trying to support nested
+VMs, allowing multiple vsock transports (virtio-vsock and vhost-vsock in
+the KVM case) at runtime.
+
+> 
+
+[...]
+
+> > > 
+> > > I suggest to do this step by step:
+> > > 
+> > > 1) use virtio-net but keep some protocol logic
+> > > 
+> > > 2) separate protocol logic and merge it to exist Linux networking stack
+> > 
+> > Make sense, thanks for the suggestions, I'll try to do these steps!
+> > 
+> > Thanks,
+> > Stefano
+> 
+> 
+> An alternative is look at sources of overhead in vsock and get rid of
+> them, or rewrite it from scratch focusing on performance.
+
+I started looking at virtio-vsock and vhost-vsock trying to do very
+simple changes [1] to increase the performance. I should send a v4 of that
+series as a very short term, then I'd like to have a deeper look to understand
+if it is better to try to optimize or rewrite it from scratch.
+
+
+Thanks,
+Stefano
+
+[1] https://patchwork.kernel.org/cover/10970145/
+
