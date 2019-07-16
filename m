@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE29E69F90
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 01:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C50869FBE
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 02:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732586AbfGOXiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 19:38:24 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40265 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730429AbfGOXiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 19:38:24 -0400
-Received: by mail-pf1-f193.google.com with SMTP id p184so8143490pfp.7
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 16:38:24 -0700 (PDT)
+        id S1731734AbfGPAPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 20:15:22 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32925 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730623AbfGPAPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:15:22 -0400
+Received: by mail-qt1-f193.google.com with SMTP id r6so13446982qtt.0
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 17:15:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Wb9AhnVU2nGcM7ZtKetQrB0t0U0Isi9C+wVTlQwcOjs=;
-        b=ERA2QWrlK8htpNT2sTGmJa4xRpoZhpbL/dAne30J25OEBNaJLv4qw2jy9V4FTZduEZ
-         rmomZvvs4WshHUVSLspIcP3xBOJpEZbyjGlLBoJk0X6Y9b27ATI9QNYstO9Ffw/05kTS
-         AqPuiQ/d1Xrqw05vol46mPxMN5ngRs+cQUECsg6ZlGvBWAHjDZM6o8nStUn3rNvpsK/5
-         5vPGldwvjreWebTm/JLs4k7XUthgC2Thn3azHBaK8xXBGfWf0nhfGayL5FXzrAycMwWM
-         swlKhjoI/fXy+SocqyjBrIA0IMUSFgD+E9x9ODxjzbDgK/2klisBXJfcijCpXK8mTy6o
-         CIRQ==
+         :organization:mime-version:content-transfer-encoding;
+        bh=mGLcFoi2noLeTaUWKi9eL7v73PQm/ALxgkUrR5U7mqA=;
+        b=YunTNJXA4HvOumMshpF2VJNxH0MvBUJ1Gvknnye3YuqfSDo+U+CEotHtOQM3y6jG2L
+         1zv2uA5eNRMTAgN80F0N6F1x2Wzm/wHDEPU2aX+75aZrj+2DVVaizX3LAEdoreY+FYfa
+         eobxmFFRXBTjpJVjAGkTSmmdFX5nl92e610WTBm0PuqhZqcSnlylQLD71984b5gRBb6l
+         tTF4hzMsWIsChrulQ4cwfZ1yYsHwpY/5GqXjnP2Kb3muM2xTjZ6WxaceSCnM9zh7SyrI
+         7coARvmmFxYR81rw47vs6KTmhrBvC6RPvUtBOI7p9EWl4cp66BoE134D2K+A22v+9WlS
+         SL+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Wb9AhnVU2nGcM7ZtKetQrB0t0U0Isi9C+wVTlQwcOjs=;
-        b=KN4856LJCmSu4PPw+rnLVIzvObeIq4Uh6t5TqHFFkoJlWS4YsM14Z7EzG7vRUXzJ4C
-         eKAbVnn4t4GJFcJM6ne+SMiTHqSi6gK3BhNnq9GL57YwCoQIzIWZUgtsXIF72k3CCBs5
-         QUaWwFw+WLvLqyfmbvi4hcAswYUdKHHiqsN9YiloLlkyInIdaQXdGNuGkcv0l6C//cLd
-         EuHTi+0g0L4ikBHkmiUPEtLPs/SgwhLh1RJWjEDHwUprsPrtZobo7geXwY4+B/FX/UH8
-         RMlYyg5bzEG6wslMv9wxCWe+kL8FbICRSeNS0UtNuNKdbPq3kPJC4254ipNPc9ePukvW
-         DqMQ==
-X-Gm-Message-State: APjAAAX0N9ylz3huUM1C0ctHprzc1RVWjwWePzFOmUAaRK9GcSjrR/k3
-        ENBvCvTHINy+Xp7TFCnXjGU=
-X-Google-Smtp-Source: APXvYqyOWEajqHEeDQkjoeanYncJmvRr5GJ160W2DECeYjuVO2KIrwOQjpNL243BxnmxNuda9nogYw==
-X-Received: by 2002:a63:2259:: with SMTP id t25mr27709190pgm.298.1563233903664;
-        Mon, 15 Jul 2019 16:38:23 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id s7sm16217326pjn.28.2019.07.15.16.38.23
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=mGLcFoi2noLeTaUWKi9eL7v73PQm/ALxgkUrR5U7mqA=;
+        b=M+cEtKqSfBUr05y/jFcMp/6YguD+h7jfTalsvo4PvUrKoboIS+NZhM+l8q8KK9pvnx
+         wPZlkO1E67VILZopOIwG04tfyEVZLoZCHwFcxBVJ/aAYtD5INmegalkaR8sapTpgeBnJ
+         tsmtS6b57eYOVXbzd1hTvdyDShK9B73zFJIOvxIIhTYvFCpmOcbIIEFnp6tMk8dwDBcn
+         f4afJdlHKSwESGzM+YtyOTN4ekVQ0pKcWUeZS0v6ib/+LIa8iW2rvuXEHrobspNNT4hQ
+         3bjnPW3/JWiBgKAYzAysYavkqbBBAdRF8ZJo64LDGrTU3lQNS4EOnINhKdEib+3+TzYK
+         cTDQ==
+X-Gm-Message-State: APjAAAVQtlMGFiVPu4SI+2+H5pZrPqN1fcJrF/eII9K3DpFKtO3wbL1D
+        rBPI5At9h5snDeSavAOqUrwCToNe944=
+X-Google-Smtp-Source: APXvYqxhSfT1UAsXSj5T8ML4jl3PBG/bDOethW5HnCRwlgMxuobXycdoh7U3RFbcwWNmHuMxDAbxxA==
+X-Received: by 2002:aed:38c2:: with SMTP id k60mr19340619qte.83.1563236120727;
+        Mon, 15 Jul 2019 17:15:20 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t8sm8251276qkt.75.2019.07.15.17.15.18
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 16:38:23 -0700 (PDT)
-Date:   Mon, 15 Jul 2019 16:38:22 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vedang Patel <vedang.patel@intel.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, vinicius.gomes@intel.com,
-        leandro.maciel.dorileo@intel.com, jakub.kicinski@netronome.com,
+        Mon, 15 Jul 2019 17:15:20 -0700 (PDT)
+Date:   Mon, 15 Jul 2019 17:15:15 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Vedang Patel <vedang.patel@intel.com>, netdev@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        vinicius.gomes@intel.com, leandro.maciel.dorileo@intel.com,
         m-karicheri2@ti.com, dsahern@gmail.com
-Subject: Re: [PATCH iproute2 net-next v3 3/5] taprio: add support for
- setting txtime_delay.
-Message-ID: <20190715163822.32596123@hermes.lan>
-In-Reply-To: <1563231104-19912-3-git-send-email-vedang.patel@intel.com>
+Subject: Re: [PATCH iproute2 net-next v3 2/5] taprio: Add support for
+ setting flags
+Message-ID: <20190715171515.248460a6@cakuba.netronome.com>
+In-Reply-To: <20190715163743.2c6cec2b@hermes.lan>
 References: <1563231104-19912-1-git-send-email-vedang.patel@intel.com>
-        <1563231104-19912-3-git-send-email-vedang.patel@intel.com>
+        <1563231104-19912-2-git-send-email-vedang.patel@intel.com>
+        <20190715163743.2c6cec2b@hermes.lan>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -65,9 +67,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Jul 2019 15:51:42 -0700
-Vedang Patel <vedang.patel@intel.com> wrote:
+On Mon, 15 Jul 2019 16:37:43 -0700, Stephen Hemminger wrote:
+> On Mon, 15 Jul 2019 15:51:41 -0700
+> Vedang Patel <vedang.patel@intel.com> wrote:
+> > @@ -442,6 +458,11 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+> >  
+> >  	print_string(PRINT_ANY, "clockid", "clockid %s", get_clock_name(clockid));
+> >  
+> > +	if (tb[TCA_TAPRIO_ATTR_FLAGS]) {
+> > +		taprio_flags = rta_getattr_u32(tb[TCA_TAPRIO_ATTR_FLAGS]);
+> > +		print_uint(PRINT_ANY, "flags", " flags %x", taprio_flags);
+> > +	}
+>[...]
+> 3. Use the print_0xhex() instead of print_uint() for hex values. The difference
+>    is that in the JSON output, print_uint would be decimal but the print_0xhex
+>    is always hex.  And use "flags %#x" so that it is clear you are printing flags in hex.
 
-> +			if (get_s32(&txtime_delay, *argv, 0)) {
-
-Is txtime_delay of a negative value meaningful?
+In my humble personal experience scripting tests using iproute2 and
+bpftool with Python I found printing the "hex string" instead of just
+outputing the integer value counter productive :( Even tho it looks
+better to the eye, JSON is primarily for machine processing and hex
+strings have to be manually converted.
