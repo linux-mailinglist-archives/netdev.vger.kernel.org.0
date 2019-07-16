@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1CC96A1F4
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 07:52:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB206A1F7
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 07:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733110AbfGPFwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 01:52:37 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37282 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbfGPFwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 01:52:36 -0400
-Received: by mail-pl1-f194.google.com with SMTP id b3so9513708plr.4
-        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 22:52:36 -0700 (PDT)
+        id S1729534AbfGPFzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 01:55:17 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40350 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726590AbfGPFzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 01:55:17 -0400
+Received: by mail-pl1-f193.google.com with SMTP id a93so9501045pla.7
+        for <netdev@vger.kernel.org>; Mon, 15 Jul 2019 22:55:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1QQ2ug0XR7SjX83JZC95By4qdW13anT8lE1WwBsOGg8=;
-        b=nBo7wfFcvZKjZ9OuKdL/DisNygkqoFsIXu96HiDI19Ebim+QME0Ukeg6psOUC4Yqz7
-         LAWz8JhnJ8BvkDoU6aYz95bRMd33wJyG/b0fKjWBUlTRTs+xIXVBCVLdMDDjziNdLUhl
-         yhmLXXu28YsTwUryg/9LWwKte66JxVUfYr92q0kx6Ns7XhIubH2sr87daI5hFFk6Nslm
-         uFoqEXNlcoCQsW4/k4Qc6LVGUGDpyLhyBvkCaljRQHB9cv1YfTmnrnwJEloETz8NsQKn
-         YBFYEMdqD5C8b7yweuBuCu8XavOsqw9AGHTACT/ZBuRb8g6yx0EwwkziNk3vGSm66Q/Q
-         aXDQ==
+        bh=RlCA90112tAvbzPxVBehLoEGm+dZ8qWusJBsaqezzKQ=;
+        b=HJ0GlqX9vNn5vyxctp74cdCbjz9LEVbhrk+p9eA0p2nK9nPpRuTOort7hvWFlkEQZ1
+         Ew7LwFerYdTHFIFvbadzxE6pOIveTNOWTcYInHyxxXbvcpvZ+2gR5FAOkqn4Kf2IfJwR
+         A2rfO5rcuggbU94Cq/khoqv2jp11FtO2+ROyczZyLA4fvbTVcLGXXhndCw3Tgq6Qyedm
+         wUIVNdsj8uHgxz7DWBwTvuLe4aJDGIHsPyrjAnwx3B/miZ7wNRAbBvaewiKh54ni9JDn
+         F39jfn5yoQS1rt86M8KDzvEJ863o1kDCYTSC464UQbv7k0eZ0FQhs3Z57S0k1bRSLSiO
+         RRpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1QQ2ug0XR7SjX83JZC95By4qdW13anT8lE1WwBsOGg8=;
-        b=QrXRakoMYQButww6ktuBmZURU1aXKcjgC0NNdlDBtr/dbhMTUGDDcn7hCQPWu64cCp
-         AWI5GLJ+vZlnSFLH5+nVh5AZ6SwuuppyLlcUPCJJ7waSiR68okj21U8qD1Ar8tIkUApy
-         seSXM2tIcDHYyzE/VWKwUPB2ZzfMxp8FecqE3Vz6cr1t4L3aYHIulleKrEdXaWg2Sg0V
-         /rt09+JqHX2Q19qUVT85f1YX4YrF2AhkJ/dG8Ackqvmvuoa8kKnTDe5XLkh98T1sRDZk
-         XNtdttfLSGydUsswb54ZZVdKV/6e5bPjc0dCk/EsXAWsYoswjbnNGqNpk1P/spDwTuvC
-         uMJA==
-X-Gm-Message-State: APjAAAV0aXcjFDEQyqTclkD+uH9FvUDbapYnfok9WCfX7aWGHBgZD+V2
-        TNDEGeLICCprQ7zHBSeXyMBdUI2V
-X-Google-Smtp-Source: APXvYqyFLKtD/96whBz/OvL24ukHI50LwYBVJZlXB8AYlf7IFtRadLNFfrgv0FtjPnWwaujROGzBqg==
-X-Received: by 2002:a17:902:6b85:: with SMTP id p5mr30470844plk.225.1563256355843;
-        Mon, 15 Jul 2019 22:52:35 -0700 (PDT)
+        bh=RlCA90112tAvbzPxVBehLoEGm+dZ8qWusJBsaqezzKQ=;
+        b=EOYds4nl1l3GfXa9Y7PKFysFoGMlXhlWHasWNaQdCkmsLxnUtxbA7N4qXdNHI8PUxL
+         BLTQcJ+V3bhwZ+/m0L/1eyuxIAbDAn44R5iLmGrJlliQGbq5Os4yEsS9ZMgyqibUk/xw
+         z8CRX8UnWJjVqgXC2JGvaiPRM0wcQWBQuPlntVE0k7R+wv3OtspgMLXooaC1CwWe2Llt
+         SlH3cEL+RVg0fklucBkBtgWLg5aLqSI4A3xKPV9aPJdbFXJ7nsArl9XylKJp6FxB3WJc
+         d4CAn8fKg0cK0PGldTGr/+LMaVIDx/Losc5M6msm7gT8zxuvGO1Uu/YlVsncNpcjC3zh
+         6ptg==
+X-Gm-Message-State: APjAAAVEB7mu6shSO50EE4KNlODfWOMtjaLIZopaAgymrqHavE2ZC7L1
+        YmyS9gZ0C9uBcfv4wPec4z0oClvG
+X-Google-Smtp-Source: APXvYqxIcfcb9KUVUeGLcIrM9l2ZeilXyPBlIyHa8kHAGZnRTQBO3fAUfhL61rCxNjOQG/fTtECgpw==
+X-Received: by 2002:a17:902:b186:: with SMTP id s6mr32909467plr.343.1563256517040;
+        Mon, 15 Jul 2019 22:55:17 -0700 (PDT)
 Received: from localhost.localdomain ([110.227.64.207])
-        by smtp.gmail.com with ESMTPSA id p1sm21496992pff.74.2019.07.15.22.52.33
+        by smtp.gmail.com with ESMTPSA id d8sm14787330pgh.45.2019.07.15.22.55.13
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 22:52:35 -0700 (PDT)
+        Mon, 15 Jul 2019 22:55:16 -0700 (PDT)
 From:   Nishka Dasgupta <nishkadg.linux@gmail.com>
-To:     alexandre.belloni@bootlin.com, unglinuxdriver@microchip.com,
-        davem@davemloft.net, netdev@vger.kernel.org
+To:     nbd@openwrt.org, john@phrozen.org, sean.wang@mediatek.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 Cc:     Nishka Dasgupta <nishkadg.linux@gmail.com>
-Subject: [PATCH] net: ethernet: mscc: ocelot_board: Add of_node_put() before return
-Date:   Tue, 16 Jul 2019 11:22:19 +0530
-Message-Id: <20190716055219.3051-1-nishkadg.linux@gmail.com>
+Subject: [PATCH] net: ethernet: mediatek: mtk_eth_soc: Add of_node_put() before goto
+Date:   Tue, 16 Jul 2019 11:25:04 +0530
+Message-Id: <20190716055504.3113-1-nishkadg.linux@gmail.com>
 X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -59,41 +61,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Each iteration of for_each_available_child_of_node puts the previous
-node, but in the case of a return from the middle of the loop, there is
-no put, thus causing a memory leak. Hence add an of_node_put before the
-return in two places.
+Each iteration of for_each_child_of_node puts the previous node, but in
+the case of a goto from the middle of the loop, there is no put, thus
+causing a memory leak. Hence add an of_node_put before the goto.
 Issue found with Coccinelle.
 
 Signed-off-by: Nishka Dasgupta <nishkadg.linux@gmail.com>
 ---
- drivers/net/ethernet/mscc/ocelot_board.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index 58bde1a9eacb..2451d4a96490 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -291,8 +291,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index b20b3a5a1ebb..c39d7f4ab1d4 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2548,8 +2548,10 @@ static int mtk_probe(struct platform_device *pdev)
  			continue;
  
- 		err = ocelot_probe_port(ocelot, port, regs, phy);
+ 		err = mtk_add_mac(eth, mac_np);
 -		if (err)
 +		if (err) {
-+			of_node_put(portnp);
- 			return err;
++			of_node_put(mac_np);
+ 			goto err_deinit_hw;
 +		}
+ 	}
  
- 		phy_mode = of_get_phy_mode(portnp);
- 		if (phy_mode < 0)
-@@ -318,6 +320,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 			dev_err(ocelot->dev,
- 				"invalid phy mode for port%d, (Q)SGMII only\n",
- 				port);
-+			of_node_put(portnp);
- 			return -EINVAL;
- 		}
- 
+ 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_INT)) {
 -- 
 2.19.1
 
