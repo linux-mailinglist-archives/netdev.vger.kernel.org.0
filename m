@@ -2,135 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2396A667
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 12:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A806A6D0
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 12:54:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732851AbfGPKWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 06:22:17 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38676 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727796AbfGPKWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 06:22:17 -0400
-Received: by mail-wr1-f68.google.com with SMTP id g17so20316430wrr.5
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 03:22:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=smhcNCF3QZCjfbSBTphGFkxRSXnqQ2w3E9AxAE5LvCI=;
-        b=rMXjsxIMHFmxvXCV6OdVhI2xP0JwmYympXGOytQAZrd7vc8O8ivVR0N6KRjcqxSYo5
-         v39cc9kKbGkm3X20ZCkCqfxOPuyOa/72Iy+ewQSavpBSW74/WJjP/TCYX8lbgNtP/LkH
-         r8vaTWJGOEm48Uf+FihJvDEDBGcUIbhokfdPFcWrrJNY+4pRz10nlCURkonmg58jI4Mr
-         N98TulAdT/xzkK32gn9EWiP8FD54b7CoG731Bn4LOyshtnA8RRc74lkotsLlf1xTpq2A
-         Z+UTp/R340dJKgXCOAZ3CYHF6IDEh/BRgsPNsW2GjztF1UaLC5Bx9a+XL6I0C/23nqUG
-         Y3wA==
-X-Gm-Message-State: APjAAAWQm0ZAUZJlb3/KoGDwVBJiXHDi2sSLp0qfBWzY/+aRYg0IETvR
-        ak6vG2Ja2Kc4CpJproqfUMwKgw==
-X-Google-Smtp-Source: APXvYqyg2hrBQwkYKUpfFSVJBuo0b7N0PorjCPKDNYNI7q3PPk8rrBkrfyejKvxdyaYxyU+U5gDF7Q==
-X-Received: by 2002:adf:d08e:: with SMTP id y14mr7969596wrh.309.1563272535581;
-        Tue, 16 Jul 2019 03:22:15 -0700 (PDT)
-Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
-        by smtp.gmail.com with ESMTPSA id s12sm18227457wmh.34.2019.07.16.03.22.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 16 Jul 2019 03:22:15 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 12:22:13 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
- virtio-vsock
-Message-ID: <20190716102213.b6lerchbwm7rwz54@steredhat>
-References: <20190710153707.twmzgmwqqw3pstos@steredhat>
- <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
- <20190711114134.xhmpciyglb2angl6@steredhat>
- <20190711152855-mutt-send-email-mst@kernel.org>
- <20190712100033.xs3xesz2plfwj3ag@steredhat>
- <a514d8a4-3a12-feeb-4467-af7a9fbf5183@redhat.com>
- <20190715074416.a3s2i5ausognotbn@steredhat>
- <20190715134115-mutt-send-email-mst@kernel.org>
- <20190716094024.ob43g5lxga5uwb7z@steredhat>
- <20190716055837-mutt-send-email-mst@kernel.org>
+        id S2387503AbfGPKyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 06:54:06 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57624 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1733067AbfGPKyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 06:54:05 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6GArX6m036604
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 06:54:04 -0400
+Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2tscv8rw67-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 06:54:04 -0400
+Received: from localhost
+        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Tue, 16 Jul 2019 11:54:02 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 16 Jul 2019 11:53:58 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6GArvxF54722710
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 10:53:57 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EAEC811C058;
+        Tue, 16 Jul 2019 10:53:56 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9264E11C052;
+        Tue, 16 Jul 2019 10:53:56 +0000 (GMT)
+Received: from white.boeblingen.de.ibm.com (unknown [9.152.96.205])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 16 Jul 2019 10:53:56 +0000 (GMT)
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com,
+        alexei.starovoitov@gmail.com, daniel@iogearbox.net,
+        ys114321@gmail.com, Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH bpf v3] selftests/bpf: fix "alu with different scalars 1" on s390
+Date:   Tue, 16 Jul 2019 12:53:53 +0200
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716055837-mutt-send-email-mst@kernel.org>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071610-0020-0000-0000-000003540257
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071610-0021-0000-0000-000021A7CE0C
+Message-Id: <20190716105353.21704-1-iii@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-16_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=638 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907160137
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 06:01:33AM -0400, Michael S. Tsirkin wrote:
-> On Tue, Jul 16, 2019 at 11:40:24AM +0200, Stefano Garzarella wrote:
-> > On Mon, Jul 15, 2019 at 01:50:28PM -0400, Michael S. Tsirkin wrote:
-> > > On Mon, Jul 15, 2019 at 09:44:16AM +0200, Stefano Garzarella wrote:
-> > > > On Fri, Jul 12, 2019 at 06:14:39PM +0800, Jason Wang wrote:
-> > 
-> > [...]
-> > 
-> > > > > 
-> > > > > 
-> > > > > I think it's just a branch, for ethernet, go for networking stack. otherwise
-> > > > > go for vsock core?
-> > > > > 
-> > > > 
-> > > > Yes, that should work.
-> > > > 
-> > > > So, I should refactor the functions that can be called also from the vsock
-> > > > core, in order to remove "struct net_device *dev" parameter.
-> > > > Maybe creating some wrappers for the network stack.
-> > > > 
-> > > > Otherwise I should create a fake net_device for vsock_core.
-> > > > 
-> > > > What do you suggest?
-> > > 
-> > > Neither.
-> > > 
-> > > I think what Jason was saying all along is this:
-> > > 
-> > > virtio net doesn't actually lose packets, at least most
-> > > of the time. And it actually most of the time
-> > > passes all packets to host. So it's possible to use a virtio net
-> > > device (possibly with a feature flag that says "does not lose packets,
-> > > all packets go to host") and build vsock on top.
-> > 
-> > Yes, I got it after the latest Jason's reply.
-> > 
-> > > 
-> > > and all of this is nice, but don't expect anything easy,
-> > > or any quick results.
-> > 
-> > I expected this... :-(
-> > 
-> > > 
-> > > Also, in a sense it's a missed opportunity: we could cut out a lot
-> > > of fat and see just how fast can a protocol that is completely
-> > > new and separate from networking stack go.
-> > 
-> > In this case, if we will try to do a PoC, what do you think is better?
-> >     1. new AF_VSOCK + network-stack + virtio-net modified
-> >         Maybe it is allow us to reuse a lot of stuff already written,
-> >         but we will go through the network stack
-> > 
-> >     2. new AF_VSOCK + glue + virtio-net modified
-> >         Intermediate approach, similar to Jason's proposal
-> > 
-> >     3, new AF_VSOCK + new virtio-vsock
-> >         Can be the thinnest, but we have to rewrite many things, with the risk
-> >         of making the same mistakes as the current implementation.
-> > 
-> 
-> 1 or 3 imho. I wouldn't expect a lot from 2.  I slightly favor 3 and
-> Jason 1. So take your pick :)
-> 
+BPF_LDX_MEM is used to load the least significant byte of the retrieved
+test_val.index, however, on big-endian machines it ends up retrieving
+the most significant byte.
 
-Yes, I agree :)
+Change the test to load the whole int in order to make it
+endianness-independent.
 
-Maybe "Jason 1" could be the short term (and an opportunity to study better the
-code and sources of overhead) and "new AF_VSOCK + new virtio-vsock" the long
-term goal with the multi-transport support in mind.
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+---
 
-Thank you so much for your guidance and useful advice,
-Stefano
+v1->v2:
+- use __BYTE_ORDER instead of __BYTE_ORDER__.
+v2->v3:
+- load the whole int instead of byte.
+
+ tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+index c3de1a2c9dc5..a53d99cebd9f 100644
+--- a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
++++ b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+@@ -183,7 +183,7 @@
+ 	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+ 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
+ 	BPF_EXIT_INSN(),
+-	BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, 0),
++	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_0, 0),
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 3),
+ 	BPF_MOV64_IMM(BPF_REG_2, 0),
+ 	BPF_MOV64_IMM(BPF_REG_3, 0x100000),
+-- 
+2.21.0
+
