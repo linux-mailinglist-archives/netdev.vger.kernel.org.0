@@ -2,86 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1D26A089
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 04:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82EC96A08C
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 04:35:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389198AbfGPC1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 22:27:02 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:54998 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389175AbfGPC1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 22:27:01 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6G2NN07121902;
-        Tue, 16 Jul 2019 02:26:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=4q/tR0CDQreA8oPieWpnL4ddckx77OE/YYibaD5siEQ=;
- b=CnSZTBwu83n2U942g1lirkFOrdxNLjAQTnF2Shvb7sZy63u+l0yipKfXkD08dKRrM1dN
- HbeaHBcbdWfhtuZz+coaIUvHZwBjcDv9bbGol3dxjUEAOGGb1svqg7Wc20dMJTTgQR/7
- py2bAaWNSipkHwoREoUfx1zvI+nDFYL7B/hSOO7tIu2cocB2ifWlEOBfFTSYRP+RX2Gl
- hz8RVxMkWbR+6P74/hUDow7il7URgfpGrQzo0cklDoRVzDq58GuI4pdP8A75eq69dEvK
- lb5awL6NwDxKTYimyH/+c5wTlfpfZur1cgs/K9S2NSKZoi2YTFkvoq6iijXWK7ZeGpX3 hQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 2tq7xqsnb2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Jul 2019 02:26:58 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6G2NE6Z117328;
-        Tue, 16 Jul 2019 02:24:58 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3020.oracle.com with ESMTP id 2tq742vsd5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Jul 2019 02:24:57 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6G2Oviv015061;
-        Tue, 16 Jul 2019 02:24:57 GMT
-Received: from [10.159.138.226] (/10.159.138.226)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 15 Jul 2019 19:24:57 -0700
-Subject: Re: [PATCH net-next v2 0/7] net/rds: RDMA fixes
-To:     David Miller <davem@davemloft.net>
-Cc:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org
-References: <510cd678-67d6-bd53-1d8e-7a74c4efb14a@oracle.com>
- <20190715.190547.2251732138126894888.davem@davemloft.net>
-From:   Gerd Rausch <gerd.rausch@oracle.com>
-Message-ID: <fab1fb9a-13e3-9f10-5abe-bd4154505c9a@oracle.com>
-Date:   Mon, 15 Jul 2019 19:24:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730787AbfGPCfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 22:35:40 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39676 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730356AbfGPCfk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jul 2019 22:35:40 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 39CA8AC1E;
+        Tue, 16 Jul 2019 02:35:37 +0000 (UTC)
+From:   Benjamin Poirier <bpoirier@suse.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
+Subject: [PATCH] qlge: Move drivers/net/ethernet/qlogic/qlge/ to drivers/staging/qlge/
+Date:   Tue, 16 Jul 2019 11:34:59 +0900
+Message-Id: <20190716023459.23266-1-bpoirier@suse.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <20190715.190547.2251732138126894888.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9319 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=824
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1907160028
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9319 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=891 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1907160028
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+The hardware has been declared EOL by the vendor more than 5 years ago.
+What's more relevant to the Linux kernel is that the quality of this driver
+is not on par with many other mainline drivers.
 
-This was a followup to the patch-series that I had already sent.
-I'll re-write the Subject-prefix and re-submit it for "net".
+Cc: Manish Chopra <manishc@marvell.com>
+Message-id: <20190617074858.32467-1-bpoirier@suse.com>
+Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+---
+ MAINTAINERS                                   |  2 +-
+ drivers/net/ethernet/qlogic/Kconfig           |  9 ----
+ drivers/net/ethernet/qlogic/Makefile          |  1 -
+ drivers/staging/Kconfig                       |  2 +
+ drivers/staging/Makefile                      |  1 +
+ drivers/staging/qlge/Kconfig                  | 10 +++++
+ .../ethernet/qlogic => staging}/qlge/Makefile |  0
+ drivers/staging/qlge/TODO                     | 41 +++++++++++++++++++
+ .../ethernet/qlogic => staging}/qlge/qlge.h   |  0
+ .../qlogic => staging}/qlge/qlge_dbg.c        |  0
+ .../qlogic => staging}/qlge/qlge_ethtool.c    |  0
+ .../qlogic => staging}/qlge/qlge_main.c       |  0
+ .../qlogic => staging}/qlge/qlge_mpi.c        |  0
+ 13 files changed, 55 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/staging/qlge/Kconfig
+ rename drivers/{net/ethernet/qlogic => staging}/qlge/Makefile (100%)
+ create mode 100644 drivers/staging/qlge/TODO
+ rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge.h (100%)
+ rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_dbg.c (100%)
+ rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_ethtool.c (100%)
+ rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_main.c (100%)
+ rename drivers/{net/ethernet/qlogic => staging}/qlge/qlge_mpi.c (100%)
 
-Sorry for the noise,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f5533d1bda2e..7347bbf97f66 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13145,7 +13145,7 @@ M:	Manish Chopra <manishc@marvell.com>
+ M:	GR-Linux-NIC-Dev@marvell.com
+ L:	netdev@vger.kernel.org
+ S:	Supported
+-F:	drivers/net/ethernet/qlogic/qlge/
++F:	drivers/staging/qlge/
+ 
+ QM1D1B0004 MEDIA DRIVER
+ M:	Akihiro Tsukada <tskd08@gmail.com>
+diff --git a/drivers/net/ethernet/qlogic/Kconfig b/drivers/net/ethernet/qlogic/Kconfig
+index a391cf6ee4b2..55a29ec76680 100644
+--- a/drivers/net/ethernet/qlogic/Kconfig
++++ b/drivers/net/ethernet/qlogic/Kconfig
+@@ -66,15 +66,6 @@ config QLCNIC_HWMON
+ 
+ 	  This data is available via the hwmon sysfs interface.
+ 
+-config QLGE
+-	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
+-	depends on PCI
+-	---help---
+-	  This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
+-
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called qlge.
+-
+ config NETXEN_NIC
+ 	tristate "NetXen Multi port (1/10) Gigabit Ethernet NIC"
+ 	depends on PCI
+diff --git a/drivers/net/ethernet/qlogic/Makefile b/drivers/net/ethernet/qlogic/Makefile
+index 6cd2e333a5fc..1ae4a0743bd5 100644
+--- a/drivers/net/ethernet/qlogic/Makefile
++++ b/drivers/net/ethernet/qlogic/Makefile
+@@ -5,7 +5,6 @@
+ 
+ obj-$(CONFIG_QLA3XXX) += qla3xxx.o
+ obj-$(CONFIG_QLCNIC) += qlcnic/
+-obj-$(CONFIG_QLGE) += qlge/
+ obj-$(CONFIG_NETXEN_NIC) += netxen/
+ obj-$(CONFIG_QED) += qed/
+ obj-$(CONFIG_QEDE)+= qede/
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 7c96a01eef6c..0b8a614be11e 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -120,4 +120,6 @@ source "drivers/staging/kpc2000/Kconfig"
+ 
+ source "drivers/staging/isdn/Kconfig"
+ 
++source "drivers/staging/qlge/Kconfig"
++
+ endif # STAGING
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index fcaac9693b83..741152511a10 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -50,3 +50,4 @@ obj-$(CONFIG_EROFS_FS)		+= erofs/
+ obj-$(CONFIG_FIELDBUS_DEV)     += fieldbus/
+ obj-$(CONFIG_KPC2000)		+= kpc2000/
+ obj-$(CONFIG_ISDN_CAPI)		+= isdn/
++obj-$(CONFIG_QLGE)		+= qlge/
+diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
+new file mode 100644
+index 000000000000..ae9ed2c5300b
+--- /dev/null
++++ b/drivers/staging/qlge/Kconfig
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: GPL-2.0
++
++config QLGE
++	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
++	depends on PCI
++	help
++	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
++
++	To compile this driver as a module, choose M here. The module will be
++	called qlge.
+diff --git a/drivers/net/ethernet/qlogic/qlge/Makefile b/drivers/staging/qlge/Makefile
+similarity index 100%
+rename from drivers/net/ethernet/qlogic/qlge/Makefile
+rename to drivers/staging/qlge/Makefile
+diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
+new file mode 100644
+index 000000000000..d17d6399d86f
+--- /dev/null
++++ b/drivers/staging/qlge/TODO
+@@ -0,0 +1,41 @@
++* commit 7c734359d350 ("qlge: Size RX buffers based on MTU.", v2.6.33-rc1)
++  introduced dead code in the receive routines, which should be rewritten
++  anyways by the admission of the author himself, see the comment above
++  ql_build_rx_skb(). That function is now used to handle packets that
++  underwent header splitting but it still contains code to handle non split
++  cases.
++* truesize accounting is incorrect (ex: a 9000B frame has skb->truesize 10280
++  while containing two frags of order-1 allocations, ie. >16K)
++* while in that area, using 8k buffers for 9k frames seems to be an especially
++  poor choice...
++* in the "chain of large buffers" case, the driver uses an skb allocated with
++  head room but only puts data in the frags.
++* rename "rx" queues to "completion" queues. Calling tx completion queues "rx
++  queues" is confusing.
++* struct rx_ring is used for rx and tx completions, with some members relevant
++  to one case only
++* there is an inordinate amount of disparate debugging code, most of which is
++  of questionable value. In particular, qlge_dbg.c has hundreds of lines of
++  code bitrotting away in ifdef land (doesn't compile since commit
++  18c49b91777c ("qlge: do vlan cleanup", v3.1-rc1), 8 years ago).
++* triggering an ethtool regdump will instead hexdump a 176k struct to dmesg
++  depending on some module parameters.
++* the flow control implementation in firmware is buggy, disable it by default
++* some structures are initialized redundantly (ex. memset 0 after
++  alloc_etherdev)
++* the driver has a habit of using runtime checks where compile time checks are
++  possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
++* reorder struct members to avoid holes if it doesn't impact performance
++* in terms of namespace, the driver uses either qlge_, ql_ (used by
++  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
++  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
++  prefix.
++* avoid legacy/deprecated apis (ex. replace pci_dma_*, replace pci_enable_msi,
++  use pci_iomap)
++* some "while" loops could be rewritten with simple "for", ex.
++  ql_wait_reg_rdy(), ql_start_rx_ring())
++* remove duplicate and useless comments
++* fix weird line wrapping (all over, ex. the ql_set_routing_reg() calls in
++  qlge_set_multicast_list()).
++* fix weird indentation (all over, ex. the for loops in qlge_get_stats())
++* fix checkpatch issues
+diff --git a/drivers/net/ethernet/qlogic/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+similarity index 100%
+rename from drivers/net/ethernet/qlogic/qlge/qlge.h
+rename to drivers/staging/qlge/qlge.h
+diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+similarity index 100%
+rename from drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
+rename to drivers/staging/qlge/qlge_dbg.c
+diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlge_ethtool.c
+similarity index 100%
+rename from drivers/net/ethernet/qlogic/qlge/qlge_ethtool.c
+rename to drivers/staging/qlge/qlge_ethtool.c
+diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+similarity index 100%
+rename from drivers/net/ethernet/qlogic/qlge/qlge_main.c
+rename to drivers/staging/qlge/qlge_main.c
+diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
+similarity index 100%
+rename from drivers/net/ethernet/qlogic/qlge/qlge_mpi.c
+rename to drivers/staging/qlge/qlge_mpi.c
+-- 
+2.22.0
 
-  Gerd
-
-On 15/07/2019 19.05, David Miller wrote:
-> 
-> net-next is closed, and why are you submitting bug fixes for net-next
-> when 'net' is the appropriate tree to target for that purpose?
-> 
