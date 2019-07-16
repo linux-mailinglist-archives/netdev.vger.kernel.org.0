@@ -2,165 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 339C06A661
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 12:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F2396A667
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 12:22:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732589AbfGPKUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 06:20:46 -0400
-Received: from relay.sw.ru ([185.231.240.75]:45958 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731401AbfGPKUp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 06:20:45 -0400
-Received: from [172.16.24.21]
-        by relay.sw.ru with esmtp (Exim 4.92)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1hnKZU-0007vg-Tc; Tue, 16 Jul 2019 13:20:32 +0300
-Subject: Re: [PATCH v3 0/3] kernel/notifier.c: avoid duplicate registration
-To:     Xiaoming Ni <nixiaoming@huawei.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "adobriyan@gmail.com" <adobriyan@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "arjan@linux.intel.com" <arjan@linux.intel.com>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "Nadia.Derbey@bull.net" <Nadia.Derbey@bull.net>,
-        "paulmck@linux.vnet.ibm.com" <paulmck@linux.vnet.ibm.com>,
-        "semen.protsenko@linaro.org" <semen.protsenko@linaro.org>,
-        "stable@kernel.org" <stable@kernel.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
-        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
-        "Huangjianhui (Alex)" <alex.huangjianhui@huawei.com>,
-        Dailei <dylix.dailei@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1562728147-30251-1-git-send-email-nixiaoming@huawei.com>
- <f628ff03-eb47-62f3-465b-fe4ed046b30c@virtuozzo.com>
- <E490CD805F7529488761C40FD9D26EF12AC9D068@dggemm507-mbx.china.huawei.com>
- <d70ba831-85c7-d5a3-670a-144fa4d139cc@virtuozzo.com>
- <8ee6f763-ccce-ab58-3d96-21f5e1622916@huawei.com>
- <20190712140729.GA11583@kroah.com>
- <65f50cf2-3051-ab55-078f-30930fe0c9bc@huawei.com>
- <5521e5a4-66d9-aaf8-3a12-3999bfc6be8b@virtuozzo.com>
- <3bbc16ba-953c-a6b6-c5f3-4deaeaa25d10@huawei.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <e4753c70-de7c-063a-dc49-0edc7520ccd2@virtuozzo.com>
-Date:   Tue, 16 Jul 2019 13:20:24 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732851AbfGPKWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 06:22:17 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38676 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727796AbfGPKWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 06:22:17 -0400
+Received: by mail-wr1-f68.google.com with SMTP id g17so20316430wrr.5
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 03:22:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=smhcNCF3QZCjfbSBTphGFkxRSXnqQ2w3E9AxAE5LvCI=;
+        b=rMXjsxIMHFmxvXCV6OdVhI2xP0JwmYympXGOytQAZrd7vc8O8ivVR0N6KRjcqxSYo5
+         v39cc9kKbGkm3X20ZCkCqfxOPuyOa/72Iy+ewQSavpBSW74/WJjP/TCYX8lbgNtP/LkH
+         r8vaTWJGOEm48Uf+FihJvDEDBGcUIbhokfdPFcWrrJNY+4pRz10nlCURkonmg58jI4Mr
+         N98TulAdT/xzkK32gn9EWiP8FD54b7CoG731Bn4LOyshtnA8RRc74lkotsLlf1xTpq2A
+         Z+UTp/R340dJKgXCOAZ3CYHF6IDEh/BRgsPNsW2GjztF1UaLC5Bx9a+XL6I0C/23nqUG
+         Y3wA==
+X-Gm-Message-State: APjAAAWQm0ZAUZJlb3/KoGDwVBJiXHDi2sSLp0qfBWzY/+aRYg0IETvR
+        ak6vG2Ja2Kc4CpJproqfUMwKgw==
+X-Google-Smtp-Source: APXvYqyg2hrBQwkYKUpfFSVJBuo0b7N0PorjCPKDNYNI7q3PPk8rrBkrfyejKvxdyaYxyU+U5gDF7Q==
+X-Received: by 2002:adf:d08e:: with SMTP id y14mr7969596wrh.309.1563272535581;
+        Tue, 16 Jul 2019 03:22:15 -0700 (PDT)
+Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
+        by smtp.gmail.com with ESMTPSA id s12sm18227457wmh.34.2019.07.16.03.22.14
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 16 Jul 2019 03:22:15 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 12:22:13 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [RFC] virtio-net: share receive_*() and add_recvbuf_*() with
+ virtio-vsock
+Message-ID: <20190716102213.b6lerchbwm7rwz54@steredhat>
+References: <20190710153707.twmzgmwqqw3pstos@steredhat>
+ <9574bc38-4c5c-2325-986b-430e4a2b6661@redhat.com>
+ <20190711114134.xhmpciyglb2angl6@steredhat>
+ <20190711152855-mutt-send-email-mst@kernel.org>
+ <20190712100033.xs3xesz2plfwj3ag@steredhat>
+ <a514d8a4-3a12-feeb-4467-af7a9fbf5183@redhat.com>
+ <20190715074416.a3s2i5ausognotbn@steredhat>
+ <20190715134115-mutt-send-email-mst@kernel.org>
+ <20190716094024.ob43g5lxga5uwb7z@steredhat>
+ <20190716055837-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <3bbc16ba-953c-a6b6-c5f3-4deaeaa25d10@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190716055837-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/19 5:00 AM, Xiaoming Ni wrote:
-> On 2019/7/15 13:38, Vasily Averin wrote:
->> On 7/14/19 5:45 AM, Xiaoming Ni wrote:
->>> On 2019/7/12 22:07, gregkh@linuxfoundation.org wrote:
->>>> On Fri, Jul 12, 2019 at 09:11:57PM +0800, Xiaoming Ni wrote:
->>>>> On 2019/7/11 21:57, Vasily Averin wrote:
->>>>>> On 7/11/19 4:55 AM, Nixiaoming wrote:
->>>>>>> On Wed, July 10, 2019 1:49 PM Vasily Averin wrote:
->>>>>>>> On 7/10/19 6:09 AM, Xiaoming Ni wrote:
->>>>>>>>> Registering the same notifier to a hook repeatedly can cause the hook
->>>>>>>>> list to form a ring or lose other members of the list.
->>>>>>>>
->>>>>>>> I think is not enough to _prevent_ 2nd register attempt,
->>>>>>>> it's enough to detect just attempt and generate warning to mark host in bad state.
->>>>>>>>
->>>>>>>
->>>>>>> Duplicate registration is prevented in my patch, not just "mark host in bad state"
->>>>>>>
->>>>>>> Duplicate registration is checked and exited in notifier_chain_cond_register()
->>>>>>>
->>>>>>> Duplicate registration was checked in notifier_chain_register() but only 
->>>>>>> the alarm was triggered without exiting. added by commit 831246570d34692e 
->>>>>>> ("kernel/notifier.c: double register detection")
->>>>>>>
->>>>>>> My patch is like a combination of 831246570d34692e and notifier_chain_cond_register(),
->>>>>>>  which triggers an alarm and exits when a duplicate registration is detected.
->>>>>>>
->>>>>>>> Unexpected 2nd register of the same hook most likely will lead to 2nd unregister,
->>>>>>>> and it can lead to host crash in any time: 
->>>>>>>> you can unregister notifier on first attempt it can be too early, it can be still in use.
->>>>>>>> on the other hand you can never call 2nd unregister at all.
->>>>>>>
->>>>>>> Since the member was not added to the linked list at the time of the second registration, 
->>>>>>> no linked list ring was formed. 
->>>>>>> The member is released on the first unregistration and -ENOENT on the second unregistration.
->>>>>>> After patching, the fault has been alleviated
->>>>>>
->>>>>> You are wrong here.
->>>>>> 2nd notifier's registration is a pure bug, this should never happen.
->>>>>> If you know the way to reproduce this situation -- you need to fix it. 
->>>>>>
->>>>>> 2nd registration can happen in 2 cases:
->>>>>> 1) missed rollback, when someone forget to call unregister after successfull registration, 
->>>>>> and then tried to call register again. It can lead to crash for example when according module will be unloaded.
->>>>>> 2) some subsystem is registered twice, for example from  different namespaces.
->>>>>> in this case unregister called during sybsystem cleanup in first namespace will incorrectly remove notifier used 
->>>>>> in second namespace, it also can lead to unexpacted behaviour.
->>>>>>
->>>>> So in these two cases, is it more reasonable to trigger BUG() directly when checking for duplicate registration ?
->>>>> But why does current notifier_chain_register() just trigger WARN() without exiting ?
->>>>> notifier_chain_cond_register() direct exit without triggering WARN() ?
->>>>
->>>> It should recover from this, if it can be detected.  The main point is
->>>> that not all apis have to be this "robust" when used within the kernel
->>>> as we do allow for the callers to know what they are doing :)
->>>>
->>> In the notifier_chain_register(), the condition ( (*nl) == n) is the same registration of the same hook.
->>>  We can intercept this situation and avoid forming a linked list ring to make the API more rob
->>
->> Once again -- yes, you CAN prevent list corruption, but you CANNOT recover the host and return it back to safe state.
->> If double register event was detected -- it means you have bug in kernel.
->>
->> Yes, you can add BUG here and crash the host immediately, but I prefer to use warning in such situations.
->>
->>>> If this does not cause any additional problems or slow downs, it's
->>>> probably fine to add.
->>>>
->>> Notifier_chain_register() is not a system hotspot function.
->>> At the same time, there is already a WARN_ONCE judgment. There is no new judgment in the new patch.
->>> It only changes the processing under the condition of (*nl) == n, which will not cause performance problems.
->>> At the same time, avoiding the formation of a link ring can make the system more robust.
->>
->> I disagree, 
->> yes, node will have correct list, but anyway node will work wrong and can crash the host in any time.
+On Tue, Jul 16, 2019 at 06:01:33AM -0400, Michael S. Tsirkin wrote:
+> On Tue, Jul 16, 2019 at 11:40:24AM +0200, Stefano Garzarella wrote:
+> > On Mon, Jul 15, 2019 at 01:50:28PM -0400, Michael S. Tsirkin wrote:
+> > > On Mon, Jul 15, 2019 at 09:44:16AM +0200, Stefano Garzarella wrote:
+> > > > On Fri, Jul 12, 2019 at 06:14:39PM +0800, Jason Wang wrote:
+> > 
+> > [...]
+> > 
+> > > > > 
+> > > > > 
+> > > > > I think it's just a branch, for ethernet, go for networking stack. otherwise
+> > > > > go for vsock core?
+> > > > > 
+> > > > 
+> > > > Yes, that should work.
+> > > > 
+> > > > So, I should refactor the functions that can be called also from the vsock
+> > > > core, in order to remove "struct net_device *dev" parameter.
+> > > > Maybe creating some wrappers for the network stack.
+> > > > 
+> > > > Otherwise I should create a fake net_device for vsock_core.
+> > > > 
+> > > > What do you suggest?
+> > > 
+> > > Neither.
+> > > 
+> > > I think what Jason was saying all along is this:
+> > > 
+> > > virtio net doesn't actually lose packets, at least most
+> > > of the time. And it actually most of the time
+> > > passes all packets to host. So it's possible to use a virtio net
+> > > device (possibly with a feature flag that says "does not lose packets,
+> > > all packets go to host") and build vsock on top.
+> > 
+> > Yes, I got it after the latest Jason's reply.
+> > 
+> > > 
+> > > and all of this is nice, but don't expect anything easy,
+> > > or any quick results.
+> > 
+> > I expected this... :-(
+> > 
+> > > 
+> > > Also, in a sense it's a missed opportunity: we could cut out a lot
+> > > of fat and see just how fast can a protocol that is completely
+> > > new and separate from networking stack go.
+> > 
+> > In this case, if we will try to do a PoC, what do you think is better?
+> >     1. new AF_VSOCK + network-stack + virtio-net modified
+> >         Maybe it is allow us to reuse a lot of stuff already written,
+> >         but we will go through the network stack
+> > 
+> >     2. new AF_VSOCK + glue + virtio-net modified
+> >         Intermediate approach, similar to Jason's proposal
+> > 
+> >     3, new AF_VSOCK + new virtio-vsock
+> >         Can be the thinnest, but we have to rewrite many things, with the risk
+> >         of making the same mistakes as the current implementation.
+> > 
 > 
-> Sorry, my description is not accurate.
+> 1 or 3 imho. I wouldn't expect a lot from 2.  I slightly favor 3 and
+> Jason 1. So take your pick :)
 > 
-> My patch feature does not prevent users from repeatedly registering hooks.
-> But avoiding the chain ring caused by the user repeatedly registering the hook
-> 
-> There are no modules for duplicate registration hooks in the current system.
-> But considering that not all modules are in the kernel source tree,
-> In order to improve the robustness of the kernel API, we should avoid the linked list ring caused by repeated registration.
-> Or in order to improve the efficiency of problem location, when the duplicate registration is checked, the system crashes directly.
 
-Detect of duplicate registration means an unrecoverable error,
-from this point of view it makes sense to replace WARN_ONCE by BUG_ON.
- 
-> On the other hand, the difference between notifier_chain_register() and notifier_chain_cond_register() for duplicate registrations is confusing:
-> Blocking the formation of the linked list ring in notifier_chain_cond_register()
-> There is no interception of the linked list ring in notifier_chain_register(), just an alarm.
-> Give me the illusion: Isn't notifier_chain_register() allowed to create a linked list ring?
+Yes, I agree :)
 
-I'm not sure that I understood your question correctly but will try to answer.
-As far as I see all callers of notifier_chain_cond_register checks return value, expect possible failure and handle it somehow.
-On the other hand callers of notifier_chain_register() in many cases do not check return value and always expect success.
-The goal of original WARN_ONCE -- to detect possible misuse of notifiers and it seems for me it correctly handles this task.
+Maybe "Jason 1" could be the short term (and an opportunity to study better the
+code and sources of overhead) and "new AF_VSOCK + new virtio-vsock" the long
+term goal with the multi-transport support in mind.
 
+Thank you so much for your guidance and useful advice,
+Stefano
