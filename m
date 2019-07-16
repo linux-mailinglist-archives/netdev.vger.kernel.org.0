@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 814A36B0AD
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 22:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D8126B0B1
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 22:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388588AbfGPU5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 16:57:53 -0400
-Received: from mail-pl1-f175.google.com ([209.85.214.175]:38493 "EHLO
-        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728575AbfGPU5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 16:57:52 -0400
-Received: by mail-pl1-f175.google.com with SMTP id az7so10725093plb.5
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 13:57:52 -0700 (PDT)
+        id S2388797AbfGPU6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 16:58:24 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40092 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728575AbfGPU6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 16:58:24 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w10so10027298pgj.7
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 13:58:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3GLI+fm34YP2cU/EVZ/4XMeJusEXnS4qIZw8p2CywWI=;
-        b=Hg1NmNsd/iHUCpe5txmjoK3/SqkgWk/BXX/utOruNXy9b3/1wxTsxYUgIUI4MFDmWP
-         HE/FvGJwX/hvyoTGtcAXtcGGWwrCAECDtiQqSLaKEOE9KEJVTLDwSPM68N04r+E31UcD
-         yP+cwscjs+QVLg+dtxIOxwuO6e2BG2RXbg+q8Na5BuYeK9EhqQ2Q+4MbzWoHilCDFxiy
-         wwxEC8pGeYCEtAcfIzyH7G0wRZinH4TYW/hJsRNWH5RqD28o/cECl0b0B7g+qXVaZIUc
-         yQNK2CKOiYDScRkobSWN2OWXc82nhB0f1RTs31cvIWkDtIPjdwO7ZB/TYtZ8UFmNj7ld
-         6j7A==
+        bh=Kl9yNljOWc7+nq5LzihsD/npOAxJjIk2+RGu+am0yhM=;
+        b=p8XA6XZaIYXhE6iE7dGRR7CSvmYkcMtG0Bh8Z+uZfwG+QySeQpcRihpz3YPwBZ0Iao
+         HInyXjmom9O9ipAk1HaL93n/HDEvztKeQ8XyYRZY+p5JrCpIGZlNusjVFTFcQ+CM0yFP
+         x7k7V4B5c4XCAFmpU3ELu41Kw/eBDVAyB09OvPaiK4MC/2BtMqFfDpJSlXvfby9EsU/l
+         7dgacFKrC/JGFTPIOqUtUZ27miSKt8eMK+ykKhryBAxf+MP1d8hwAtr15eZTUydksdwR
+         1riwBzllOfrt8UcIBbOCaKk6yD2DVVr8x+ZipUuYddTnTqk7Ce4uJwShpb9JBdBWwr9B
+         PIkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3GLI+fm34YP2cU/EVZ/4XMeJusEXnS4qIZw8p2CywWI=;
-        b=DgfhPMhYoR5yL+RldFCDN27fnwC9oKOZVhQaSL+Ny1ZT/aArkWqZDnasN7khYkcIJO
-         QyAM1eqjtYxu4/wf/oyqvAl5vspo03uXTgb9pqHhyBSrhQ/2viqZDXh2TkRoofvTT2f/
-         oVlWWxAUa9AI+6s8PMAIKf1UuGW92nr6uI+UVEgJ42pCircHaz5/qBt1rp7YKe0nLyRK
-         368X4a83PQrv1Vpj1dRFCWDambetu5jiBCQAOVTNjaDY4q/EyWRO+NUpYBUZaxhq9kGt
-         e9aRqaASVgfDZdm+kzlzQswtwJH5xWIaFaV/ziRLoayHa/eKVvQcC597qnQ4eAN1XGwe
-         dnFA==
-X-Gm-Message-State: APjAAAU8ctfwmqBhZJrGlxx6TEsc7xNAw+gLb2m+TMhynqMFITs2ztt6
-        ky+jc40rC7cIAAOJ5wMSNmJ2aRunlOo=
-X-Google-Smtp-Source: APXvYqxyocC8Y79RggIbm0IS48ra47kakIOx5rP0juuDXCRH/QtTgGIfxDBOYeZCJ47le9SFfGoQPA==
-X-Received: by 2002:a17:902:27a8:: with SMTP id d37mr38315099plb.150.1563310672049;
-        Tue, 16 Jul 2019 13:57:52 -0700 (PDT)
+        bh=Kl9yNljOWc7+nq5LzihsD/npOAxJjIk2+RGu+am0yhM=;
+        b=RBpic+V5LSON54Ggp1TlQehuD4I/qnZbzUxX8Lb8McQHBUIIt0oR/WBClWUP793ze3
+         X82y6av27td2NWwSWnVHYMbOZov/qU7wKNMsgrNgLRXxIh4xejJ2a+oZ01rOnHItGbNP
+         tYDWUiyJvqLSS30IsLATxe25bQcxuRWDIM5IvDDEf3UqcobB4HyFdTqv9QOvZ9ACwTzv
+         00y26aqDT7hD+ZPDZM1zISNLrLKBl3DwHzwJW1ovmjylzk5IaL5v6B+eFKB/+20rkOKE
+         IOisGFWF65UAOw33JcA7/gkiQCas6WdBnAEsrrPIVvAH6yfcfCx27npihFHT0Yciehb6
+         OrXA==
+X-Gm-Message-State: APjAAAVuRG7/SgfcAE4vPWb/9zg34iObe8J9vHwbDcBeanNZ/991f76U
+        AqOw9EKy7oCIKJvVe3+kHCJm5MZFYwk=
+X-Google-Smtp-Source: APXvYqzzmVrk4C2Fvzd97Xgf9dior7eobZTmvDVUvE9OmWRFwaPNoLcbFhDN6Ly0ksAMiYG4bygZJQ==
+X-Received: by 2002:a63:ce01:: with SMTP id y1mr33140401pgf.389.1563310702928;
+        Tue, 16 Jul 2019 13:58:22 -0700 (PDT)
 Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id z4sm36016562pfg.166.2019.07.16.13.57.51
+        by smtp.gmail.com with ESMTPSA id a1sm18746125pfc.97.2019.07.16.13.58.22
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 16 Jul 2019 13:57:51 -0700 (PDT)
+        Tue, 16 Jul 2019 13:58:22 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [Patch net v2] net_sched: unset TCQ_F_CAN_BYPASS when adding filters
-Date:   Tue, 16 Jul 2019 13:57:30 -0700
-Message-Id: <20190716205730.19675-1-xiyou.wangcong@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>, Julian Anastasov <ja@ssi.bg>,
+        David Ahern <dsahern@gmail.com>
+Subject: [Patch net v2 1/2] fib: relax source validation check for loopback packets
+Date:   Tue, 16 Jul 2019 13:58:03 -0700
+Message-Id: <20190716205804.19775-1-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -59,77 +59,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For qdisc's that support TC filters and set TCQ_F_CAN_BYPASS,
-notably fq_codel, it makes no sense to let packets bypass the TC
-filters we setup in any scenario, otherwise our packets steering
-policy could not be enforced.
+In a rare case where we redirect local packets from veth to lo,
+these packets fail to pass the source validation when rp_filter
+is turned on, as the tracing shows:
 
-This can be reproduced easily with the following script:
+  <...>-311708 [040] ..s1 7951180.957825: fib_table_lookup: table 254 oif 0 iif 1 src 10.53.180.130 dst 10.53.180.130 tos 0 scope 0 flags 0
+  <...>-311708 [040] ..s1 7951180.957826: fib_table_lookup_nh: nexthop dev eth0 oif 4 src 10.53.180.130
 
- ip li add dev dummy0 type dummy
- ifconfig dummy0 up
- tc qd add dev dummy0 root fq_codel
- tc filter add dev dummy0 parent 8001: protocol arp basic action mirred egress redirect dev lo
- tc filter add dev dummy0 parent 8001: protocol ip basic action mirred egress redirect dev lo
- ping -I dummy0 192.168.112.1
+So, the fib table lookup returns eth0 as the nexthop even though
+the packets are local and should be routed to loopback nonetheless,
+but they can't pass the dev match check in fib_info_nh_uses_dev()
+without this patch.
 
-Without this patch, packets are sent directly to dummy0 without
-hitting any of the filters. With this patch, packets are redirected
-to loopback as expected.
+It should be safe to relax this check for this special case, as
+normally packets coming out of loopback device still have skb_dst
+so they won't even hit this slow path.
 
-This fix is not perfect, it only unsets the flag but does not set it back
-because we have to save the information somewhere in the qdisc if we
-really want that. Note, both fq_codel and sfq clear this flag in their
-->bind_tcf() but this is clearly not sufficient when we don't use any
-class ID.
-
-Fixes: 23624935e0c4 ("net_sched: TCQ_F_CAN_BYPASS generalization")
-Cc: Eric Dumazet <edumazet@google.com>
+Cc: Julian Anastasov <ja@ssi.bg>
+Cc: David Ahern <dsahern@gmail.com>
 Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- net/sched/cls_api.c      | 1 +
- net/sched/sch_fq_codel.c | 2 --
- net/sched/sch_sfq.c      | 2 --
- 3 files changed, 1 insertion(+), 4 deletions(-)
+ net/ipv4/fib_frontend.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 278014e26aec..d144233423c5 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -2152,6 +2152,7 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
- 			       RTM_NEWTFILTER, false, rtnl_held);
- 		tfilter_put(tp, fh);
-+		q->flags &= ~TCQ_F_CAN_BYPASS;
- 	}
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 317339cd7f03..e8bc939b56dd 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -388,6 +388,11 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+ 	fib_combine_itag(itag, &res);
  
- errout:
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index e2faf33d282b..d59fbcc745d1 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -596,8 +596,6 @@ static unsigned long fq_codel_find(struct Qdisc *sch, u32 classid)
- static unsigned long fq_codel_bind(struct Qdisc *sch, unsigned long parent,
- 			      u32 classid)
- {
--	/* we cannot bypass queue discipline anymore */
--	sch->flags &= ~TCQ_F_CAN_BYPASS;
- 	return 0;
- }
- 
-diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
-index 420bd8411677..68404a9d2ce4 100644
---- a/net/sched/sch_sfq.c
-+++ b/net/sched/sch_sfq.c
-@@ -824,8 +824,6 @@ static unsigned long sfq_find(struct Qdisc *sch, u32 classid)
- static unsigned long sfq_bind(struct Qdisc *sch, unsigned long parent,
- 			      u32 classid)
- {
--	/* we cannot bypass queue discipline anymore */
--	sch->flags &= ~TCQ_F_CAN_BYPASS;
- 	return 0;
- }
- 
+ 	dev_match = fib_info_nh_uses_dev(res.fi, dev);
++	/* This is not common, loopback packets retain skb_dst so normally they
++	 * would not even hit this slow path.
++	 */
++	dev_match = dev_match || (res.type == RTN_LOCAL &&
++				  dev == net->loopback_dev);
+ 	if (dev_match) {
+ 		ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_HOST;
+ 		return ret;
 -- 
 2.21.0
 
