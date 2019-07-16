@@ -2,113 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 078AA6B1CA
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 00:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7497D6B1D0
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 00:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388105AbfGPW05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 18:26:57 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45716 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728434AbfGPW04 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 18:26:56 -0400
-Received: by mail-pl1-f194.google.com with SMTP id y8so10826809plr.12;
-        Tue, 16 Jul 2019 15:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hcjV9uH9o/Tpwbd+n48l2oD9yyltFtf5hW/1E21RjyU=;
-        b=Ymf6xo4NrjW2SIVOsZOOqSvetHWupjVmlYrmElXDyHBKCX8ks4YgoT7Anv5Qpom3GA
-         qnP5F7jnSEy+ilw9DoY72QKUnhDhBtQlhoBpsgip8PfmUHXc2eEKy/Yfm0ax8OXHa0Yb
-         MIoHxh045on0dY/ZFz0VdDKW+zMNgxe+lYfouF865NoJ9R4vBJG1R3l14IEacMupMwyA
-         t77qcoozBWRaZlVop7hqq3X3DTIbqnGOvpG9prSTXDu1cc2vYN1NxzhGv/F5OvJZfmBH
-         utVEaG7rHNqfd45NSI7jCq6f9bYsfmufbe6w5OeAJccc6jN6ccfcLte3It6Yh9VJ4ytv
-         5RFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hcjV9uH9o/Tpwbd+n48l2oD9yyltFtf5hW/1E21RjyU=;
-        b=TnjCOu2x/K4ATt6NfCFpCzWPu2n+VRiU1eeu/bTY0ff83Kgu9rm0nflvxFZbtLAXbL
-         ceLBJgQmNyiOIh2vRFntrElA4Dxw5nxd0pWUPhQATJkWUqvlP836vvch813hAJ/ClNjh
-         DIP9PBUhU2FF9mp8ceOFdcuzcEVUmkIsng8R8SJKkLD+plXTWLO4QudVTQdy/fNqjW1H
-         g4TY7Jf1/JR4xL+HkN4bfbBciGnJZE6wS5c6xy3hlQDrmCC54I9MVFhnaKV4s373bh9P
-         eW9/4K3jk0myTQ0lkDlxpAqIM3i3cYhMH5UqGvXupJ0DCfJgetVCwnyxs1sLIUwWFwdb
-         dU/g==
-X-Gm-Message-State: APjAAAXHlDpLWnQsaVtpx91CqGJxesY7koe2i4Zf6hgZWu0S78fiHcla
-        IEhpZXxNPwjJZXYtsUmhg0I=
-X-Google-Smtp-Source: APXvYqwC3kdgKK35Yn22pK0bh+EbrHOnIHECPI36YpDJ37htRFwCfM16yjI+qWCYeN28q10/j4LYFg==
-X-Received: by 2002:a17:902:7894:: with SMTP id q20mr37225250pll.339.1563316015990;
-        Tue, 16 Jul 2019 15:26:55 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::c7d4])
-        by smtp.gmail.com with ESMTPSA id l15sm21540039pgf.5.2019.07.16.15.26.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jul 2019 15:26:54 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 15:26:52 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Brendan Gregg <brendan.d.gregg@gmail.com>, connoro@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
-        jeffv@google.com, Karim Yaghmour <karim.yaghmour@opersys.com>,
-        kernel-team@android.com, linux-kselftest@vger.kernel.org,
-        Manali Shukla <manalishukla14@gmail.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matt Mullins <mmullins@fb.com>,
-        Michal Gregorczyk <michalgr@fb.com>,
-        Michal Gregorczyk <michalgr@live.com>,
-        Mohammad Husain <russoue@gmail.com>, namhyung@google.com,
-        namhyung@kernel.org, netdev@vger.kernel.org,
-        paul.chaignon@gmail.com, primiano@google.com,
-        Qais Yousef <qais.yousef@arm.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
-References: <20190710141548.132193-1-joel@joelfernandes.org>
- <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
- <20190716213050.GA161922@google.com>
+        id S2388711AbfGPW27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 18:28:59 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:44262 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728566AbfGPW24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 18:28:56 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6GMDmTt109905;
+        Tue, 16 Jul 2019 22:28:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : subject : to :
+ cc : message-id : date : mime-version : content-type :
+ content-transfer-encoding; s=corp-2018-07-02;
+ bh=fBqQSLWxnoVlHiuschLf4pxHxPE3fTPbmNAmMqYdX1Y=;
+ b=0BCqiFj1OtLSIjtBOaURmw2LHDKidDRMihL2bOuSC95MakdE/7VnjhmpmODpyDNZEtV1
+ ekqop0cFj4GK4g+7rRj1lV/N/iz8dt6JXDmCzm3O4e97a0eBm/mxr4+23QCbvC+PwgkE
+ W5VKBLUvFD/b+9uc8NYjUh4l39um0uqyrJwCHp72YvWzSNWn1cYoNrV6XEkzOWVWDfFq
+ UemwtW/sZ9CZStLnsCz5mk+nc0QPtmOd7QKuoWB93LcyILO+azd+ib0Z9uvh57j51Rh3
+ Yy0M1CXGD8Yz5ACrGKoRIJM3aagjNHIv3dgrOlTXNTKuP0rVvBjDTv7VtpIOMp938NaT HA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2tq7xqy4eh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 22:28:47 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6GMCg30064546;
+        Tue, 16 Jul 2019 22:28:47 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2tq5bcnrvt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Jul 2019 22:28:46 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6GMSkF8096156;
+        Tue, 16 Jul 2019 22:28:46 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2tq5bcnrvp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jul 2019 22:28:46 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x6GMSjiE017566;
+        Tue, 16 Jul 2019 22:28:45 GMT
+Received: from [10.211.55.164] (/10.211.55.164)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 16 Jul 2019 22:28:43 +0000
+From:   Gerd Rausch <gerd.rausch@oracle.com>
+Subject: [PATCH net v3 0/7] net/rds: RDMA fixes
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Cc:     David Miller <davem@davemloft.net>
+Message-ID: <3fd6ddd1-97e2-2c64-1772-b689eb3ee7ba@oracle.com>
+Date:   Tue, 16 Jul 2019 15:28:43 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716213050.GA161922@google.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9320 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907160261
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 05:30:50PM -0400, Joel Fernandes wrote:
-> 
-> I also thought about the pinning idea before, but we also want to add support
-> for not just raw tracepoints, but also regular tracepoints (events if you
-> will). I am hesitant to add a new BPF API just for creating regular
-> tracepoints and then pinning those as well.
+A number of net/rds fixes necessary to make "rds_rdma.ko"
+pass some basic Oracle internal tests.
 
-and they should be done through the pinning as well.
+Gerd Rausch (7):
+  net/rds: Give fr_state a chance to transition to FRMR_IS_FREE
+  net/rds: Get rid of "wait_clean_list_grace" and add locking
+  net/rds: Wait for the FRMR_IS_FREE (or FRMR_IS_STALE) transition after
+    posting IB_WR_LOCAL_INV
+  net/rds: Fix NULL/ERR_PTR inconsistency
+  net/rds: Set fr_state only to FRMR_IS_FREE if IB_WR_LOCAL_INV had been
+    successful
+  net/rds: Keep track of and wait for FRWR segments in use upon shutdown
+  net/rds: Initialize ic->i_fastreg_wrs upon allocation
 
-> I don't see why a new bpf node for a trace event is a bad idea, really.
+ net/rds/ib.h      |  1 +
+ net/rds/ib_cm.c   |  9 ++++-
+ net/rds/ib_frmr.c | 84 ++++++++++++++++++++++++++++++++++++++++++-----
+ net/rds/ib_mr.h   |  4 +++
+ net/rds/ib_rdma.c | 60 +++++++++++----------------------
+ 5 files changed, 109 insertions(+), 49 deletions(-)
 
-See the patches for kprobe/uprobe FD-based api and the reasons behind it.
-tldr: text is racy, doesn't scale, poor security, etc.
+-- 
 
-> tracefs is how we deal with trace events on Android. 
-
-android has made mistakes in the past as well.
-
-> This is a natural extension to that and fits with the security model
-> well.
-
-I think it's the opposite.
-I'm absolutely against text based apis.
-
+Changes in submitted patch v3:
+* Use "wait_event" instead of "wait_event_timeout" in order to
+  not have a deadline for the HCA firmware to respond.
