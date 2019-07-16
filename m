@@ -2,135 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D69AE6B1C7
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 00:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 078AA6B1CA
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 00:27:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387762AbfGPWZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 18:25:34 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17838 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728434AbfGPWZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 18:25:34 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6GMCFfk118974
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 18:25:32 -0400
-Received: from e13.ny.us.ibm.com (e13.ny.us.ibm.com [129.33.205.203])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tspehhrv6-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 18:25:32 -0400
-Received: from localhost
-        by e13.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <tlfalcon@linux.ibm.com>;
-        Tue, 16 Jul 2019 23:25:31 +0100
-Received: from b01cxnp23033.gho.pok.ibm.com (9.57.198.28)
-        by e13.ny.us.ibm.com (146.89.104.200) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 16 Jul 2019 23:25:28 +0100
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6GMPRkG39387528
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Jul 2019 22:25:27 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 29284124054;
-        Tue, 16 Jul 2019 22:25:27 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4D233124053;
-        Tue, 16 Jul 2019 22:25:26 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.85.183.21])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 16 Jul 2019 22:25:26 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     bjking1@us.ibm.com, pradeep@us.ibm.com,
-        Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: [PATCH net] bonding: Force slave speed check after link state recovery for 802.3ad
-Date:   Tue, 16 Jul 2019 17:25:10 -0500
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-x-cbid: 19071622-0064-0000-0000-000003FC991D
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011441; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01233183; UDB=6.00649764; IPR=6.01014494;
- MB=3.00027750; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-16 22:25:29
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071622-0065-0000-0000-00003E4A1110
-Message-Id: <1563315910-25634-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-16_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907160261
+        id S2388105AbfGPW05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 18:26:57 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45716 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728434AbfGPW04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 18:26:56 -0400
+Received: by mail-pl1-f194.google.com with SMTP id y8so10826809plr.12;
+        Tue, 16 Jul 2019 15:26:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=hcjV9uH9o/Tpwbd+n48l2oD9yyltFtf5hW/1E21RjyU=;
+        b=Ymf6xo4NrjW2SIVOsZOOqSvetHWupjVmlYrmElXDyHBKCX8ks4YgoT7Anv5Qpom3GA
+         qnP5F7jnSEy+ilw9DoY72QKUnhDhBtQlhoBpsgip8PfmUHXc2eEKy/Yfm0ax8OXHa0Yb
+         MIoHxh045on0dY/ZFz0VdDKW+zMNgxe+lYfouF865NoJ9R4vBJG1R3l14IEacMupMwyA
+         t77qcoozBWRaZlVop7hqq3X3DTIbqnGOvpG9prSTXDu1cc2vYN1NxzhGv/F5OvJZfmBH
+         utVEaG7rHNqfd45NSI7jCq6f9bYsfmufbe6w5OeAJccc6jN6ccfcLte3It6Yh9VJ4ytv
+         5RFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=hcjV9uH9o/Tpwbd+n48l2oD9yyltFtf5hW/1E21RjyU=;
+        b=TnjCOu2x/K4ATt6NfCFpCzWPu2n+VRiU1eeu/bTY0ff83Kgu9rm0nflvxFZbtLAXbL
+         ceLBJgQmNyiOIh2vRFntrElA4Dxw5nxd0pWUPhQATJkWUqvlP836vvch813hAJ/ClNjh
+         DIP9PBUhU2FF9mp8ceOFdcuzcEVUmkIsng8R8SJKkLD+plXTWLO4QudVTQdy/fNqjW1H
+         g4TY7Jf1/JR4xL+HkN4bfbBciGnJZE6wS5c6xy3hlQDrmCC54I9MVFhnaKV4s373bh9P
+         eW9/4K3jk0myTQ0lkDlxpAqIM3i3cYhMH5UqGvXupJ0DCfJgetVCwnyxs1sLIUwWFwdb
+         dU/g==
+X-Gm-Message-State: APjAAAXHlDpLWnQsaVtpx91CqGJxesY7koe2i4Zf6hgZWu0S78fiHcla
+        IEhpZXxNPwjJZXYtsUmhg0I=
+X-Google-Smtp-Source: APXvYqwC3kdgKK35Yn22pK0bh+EbrHOnIHECPI36YpDJ37htRFwCfM16yjI+qWCYeN28q10/j4LYFg==
+X-Received: by 2002:a17:902:7894:: with SMTP id q20mr37225250pll.339.1563316015990;
+        Tue, 16 Jul 2019 15:26:55 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::c7d4])
+        by smtp.gmail.com with ESMTPSA id l15sm21540039pgf.5.2019.07.16.15.26.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 16 Jul 2019 15:26:54 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 15:26:52 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
+        Brendan Gregg <brendan.d.gregg@gmail.com>, connoro@google.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
+        jeffv@google.com, Karim Yaghmour <karim.yaghmour@opersys.com>,
+        kernel-team@android.com, linux-kselftest@vger.kernel.org,
+        Manali Shukla <manalishukla14@gmail.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Matt Mullins <mmullins@fb.com>,
+        Michal Gregorczyk <michalgr@fb.com>,
+        Michal Gregorczyk <michalgr@live.com>,
+        Mohammad Husain <russoue@gmail.com>, namhyung@google.com,
+        namhyung@kernel.org, netdev@vger.kernel.org,
+        paul.chaignon@gmail.com, primiano@google.com,
+        Qais Yousef <qais.yousef@arm.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
+ ftrace
+Message-ID: <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
+References: <20190710141548.132193-1-joel@joelfernandes.org>
+ <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
+ <20190716213050.GA161922@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190716213050.GA161922@google.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following scenario was encountered during testing of logical
-partition mobility on pseries partitions with bonded ibmvnic
-adapters in LACP mode.
+On Tue, Jul 16, 2019 at 05:30:50PM -0400, Joel Fernandes wrote:
+> 
+> I also thought about the pinning idea before, but we also want to add support
+> for not just raw tracepoints, but also regular tracepoints (events if you
+> will). I am hesitant to add a new BPF API just for creating regular
+> tracepoints and then pinning those as well.
 
-1. Driver receives a signal that the device has been
-   swapped, and it needs to reset to initialize the new
-   device.
+and they should be done through the pinning as well.
 
-2. Driver reports loss of carrier and begins initialization.
+> I don't see why a new bpf node for a trace event is a bad idea, really.
 
-3. Bonding driver receives NETDEV_CHANGE notifier and checks
-   the slave's current speed and duplex settings. Because these
-   are unknown at the time, the bond sets its link state to
-   BOND_LINK_FAIL and handles the speed update, clearing
-   AD_PORT_LACP_ENABLE.
+See the patches for kprobe/uprobe FD-based api and the reasons behind it.
+tldr: text is racy, doesn't scale, poor security, etc.
 
-4. Driver finishes recovery and reports that the carrier is on.
+> tracefs is how we deal with trace events on Android. 
 
-5. Bond receives a new notification and checks the speed again.
-   The speeds are valid but miimon has not altered the link
-   state yet.  AD_PORT_LACP_ENABLE remains off.
+android has made mistakes in the past as well.
 
-Because the slave's link state is still BOND_LINK_FAIL,
-no further port checks are made when it recovers. Though
-the slave devices are operational and have valid speed
-and duplex settings, the bond will not send LACPDU's. The
-simplest fix I can see is to force another speed check
-in bond_miimon_commit. This way the bond will update
-AD_PORT_LACP_ENABLE if needed when transitioning from
-BOND_LINK_FAIL to BOND_LINK_UP.
+> This is a natural extension to that and fits with the security model
+> well.
 
-CC: Jarod Wilson <jarod@redhat.com>
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
----
- drivers/net/bonding/bond_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 9b7016a..02fd782 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2196,6 +2196,15 @@ static void bond_miimon_commit(struct bonding *bond)
- 	bond_for_each_slave(bond, slave, iter) {
- 		switch (slave->new_link) {
- 		case BOND_LINK_NOCHANGE:
-+			/* For 802.3ad mode, check current slave speed and
-+			 * duplex again in case its port was disabled after
-+			 * invalid speed/duplex reporting but recovered before
-+			 * link monitoring could make a decision on the actual
-+			 * link status
-+			 */
-+			if (BOND_MODE(bond) == BOND_MODE_8023AD &&
-+			    slave->link == BOND_LINK_UP)
-+				bond_3ad_adapter_speed_duplex_changed(slave);
- 			continue;
- 
- 		case BOND_LINK_UP:
--- 
-1.8.3.1
+I think it's the opposite.
+I'm absolutely against text based apis.
 
