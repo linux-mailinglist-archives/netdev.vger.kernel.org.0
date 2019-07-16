@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 832DF69FD2
+	by mail.lfdr.de (Postfix) with ESMTP id F09DC69FD3
 	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 02:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733035AbfGPA1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jul 2019 20:27:03 -0400
-Received: from mail-pf1-f172.google.com ([209.85.210.172]:40322 "EHLO
-        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731522AbfGPA1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:27:02 -0400
-Received: by mail-pf1-f172.google.com with SMTP id p184so8191814pfp.7;
-        Mon, 15 Jul 2019 17:27:01 -0700 (PDT)
+        id S1733047AbfGPA1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jul 2019 20:27:04 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:36476 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731009AbfGPA1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jul 2019 20:27:03 -0400
+Received: by mail-pg1-f194.google.com with SMTP id l21so8507105pgm.3;
+        Mon, 15 Jul 2019 17:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kR0eAk9Wpb9hrd+QvnzWqDUYGA359kOAWHMIgTlrfl0=;
-        b=ikecxLh6YgezZpx821yjNnkCUY2J8h3Y9mOmJ7FcANanV6x+x8pz1q8MiLYqyAXHwo
-         BeDp1pNRy25Xf0zLu/96gNq+Tvgr7gO0fsM2scDGWlep6I5zWMIKXBCmwhtmz4e4TfgQ
-         ZwiQDP1DSaRpaIBRWPONF9Ko0IXlOPsgmr9IM3Y/2iLjiRHxqghWa1QNutRJz05OytbN
-         KqeiJEghP4yg8eq65cZL4A5nGZhBmGYeQi8e6+8l3+fKjQhOuLaBaPbD9+Xnhpxxyhn6
-         Q64ijDT8f1JTHyJCE7mE88z1TKXp6P73KCDwGKDGQUhCKUQNKMvcCwrsJHC/qcSuiiFy
-         LDQQ==
+        bh=+/EwL7Q5l4U6k3tjN3kXQVZrpS1BmiE9Ulp1kUWWVbY=;
+        b=V3gvjWUwOg9SJgtHTlKTfTEfp3hTtaAQ4t0ClckL6i3qOHuNmY/qaL7qAw5CeLykG1
+         Nr0Q5g08kV/ADS7tAdUXNDr++P/sm7iDqe0dd4ZTdi8KxTGL6MVexQKqCCwkvRqKOzQ5
+         072OtbUcl4uAnlCZXkfZrdK+EGUFuuj4k18Z461UTuJuMPYzIfWqPKjrm67B9MS7wQlu
+         ZbBHQN0hAaagC55wLOONHHJhW4uF2b8Bq8tTCUGjkg6oJwauKaBiRFvNxBoS/yxhlAW8
+         wX2x+BAf6z8IJPBJjWQZf2oGfnf2zM974u1kuLyK6dDpxXuPx0LxIpX3/eEeAyvq60mk
+         AQvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kR0eAk9Wpb9hrd+QvnzWqDUYGA359kOAWHMIgTlrfl0=;
-        b=n8wyG7CyTDCGf7Mxp7nf/7YzLKl08IGXu8W259MhG8xhgjlfPQHOeGViNeuuZOAPWh
-         XKTUo0sB0gpJQKyq9RYAivtRSsWT/1UlxCnWQsqmW5G2/0kILqFHNnK3UpbmzTnvRxlQ
-         uYFycvdd3Q4AZs7k0+kVIhxAgTRizK+RQiqDdbkhahV09ahC2z2axiBKWU6SGKlAyZbw
-         9jrJJBg+4xLW0LhUU9UO32/qGHTnQXyeeuh6A/wihcajFie2YpP60jiJ9i1EAHVQUd1a
-         IYG2uT3NanP82jLkvAcVZqZyDUUqlOZl+QsD+mzNJqiP1oc6uAWx2H8lT6nPnZzvFpXa
-         2AUg==
-X-Gm-Message-State: APjAAAVxne0pczIuJe4Uqin+Viz8rXKdAIn962uQggqVfUfcwlY4Q99n
-        SHBUHzzJQxvNpVMCUOTbowNmQ7zQ
-X-Google-Smtp-Source: APXvYqyGiP3cVnXztZpXcNV75aLBJE8CAzbtVrRHtZc9LLPmYlEh2cdc52FohHmbe3SnuNHeplsDfg==
-X-Received: by 2002:a17:90a:cb87:: with SMTP id a7mr33388106pju.130.1563236821242;
-        Mon, 15 Jul 2019 17:27:01 -0700 (PDT)
+        bh=+/EwL7Q5l4U6k3tjN3kXQVZrpS1BmiE9Ulp1kUWWVbY=;
+        b=ppp/1GymqKo6jyrttUVehtCfn4EoXpksVzv7clQqVJnOt6kW4jtNviwCjdfli1j078
+         YS6xU1RrcdN5k0PSQldOS0kWkNeWaP2jcDhEGwLe/KuB6IJtCgFeL1WzoJzKJ1I0TOkT
+         IJsJKQBn+R7NvYDkLAHvoX345ybKi/+EVDJp3rKW52azDrC79i9sgyo7SxJRY8C+zrvx
+         OuWotqJ16FdmJ/zIohe9Mg0gJEE6iy3m0I/ZVWZViD0bBkEkMBWKMLWXAp1qtkqHe/EY
+         sTj5dembaP1D31Z7YMbuezHSXGYJA+SrpTxMYMjJY+RBnQfS4LiGi/8aJd1LTHuBoOkG
+         41Wg==
+X-Gm-Message-State: APjAAAUbx0xY4POm2zCqL0KkTUvbvuDVh6h02tP+6/80hf3PJAfPmrsz
+        QTNsKt/uzl7DHxW/vzysBQu4xbra
+X-Google-Smtp-Source: APXvYqxOTUULmZglveq3jY9uKF++8mkrfvrgC3avQPcb1eF9LcT0kbSvS1v+qXAK83e1ZecRmREfWg==
+X-Received: by 2002:a63:6904:: with SMTP id e4mr2507358pgc.321.1563236822388;
+        Mon, 15 Jul 2019 17:27:02 -0700 (PDT)
 Received: from ppenkov.svl.corp.google.com ([2620:15c:2c4:201:7bd4:4f27:abe4:d695])
-        by smtp.gmail.com with ESMTPSA id q24sm16775444pjp.14.2019.07.15.17.27.00
+        by smtp.gmail.com with ESMTPSA id q24sm16775444pjp.14.2019.07.15.17.27.01
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 15 Jul 2019 17:27:00 -0700 (PDT)
+        Mon, 15 Jul 2019 17:27:02 -0700 (PDT)
 From:   Petar Penkov <ppenkov.kernel@gmail.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
         edumazet@google.com, lmb@cloudflare.com, sdf@google.com,
         Petar Penkov <ppenkov@google.com>
-Subject: [bpf-next RFC 2/6] tcp: add skb-less helpers to retrieve SYN cookie
-Date:   Mon, 15 Jul 2019 17:26:46 -0700
-Message-Id: <20190716002650.154729-3-ppenkov.kernel@gmail.com>
+Subject: [bpf-next RFC 3/6] bpf: add bpf_tcp_gen_syncookie helper
+Date:   Mon, 15 Jul 2019 17:26:47 -0700
+Message-Id: <20190716002650.154729-4-ppenkov.kernel@gmail.com>
 X-Mailer: git-send-email 2.22.0.510.g264f2c817a-goog
 In-Reply-To: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
 References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
@@ -64,174 +64,153 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petar Penkov <ppenkov@google.com>
 
-This patch allows generation of a SYN cookie before an SKB has been
-allocated, as is the case at XDP.
+This helper function allows BPF programs to try to generate SYN
+cookies, given a reference to a listener socket. The function works
+from XDP and with an skb context since bpf_skc_lookup_tcp can lookup a
+socket in both cases.
 
 Signed-off-by: Petar Penkov <ppenkov@google.com>
+Suggested-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/tcp.h    | 11 ++++++
- net/ipv4/tcp_input.c | 79 ++++++++++++++++++++++++++++++++++++++++++++
- net/ipv4/tcp_ipv4.c  |  8 +++++
- net/ipv6/tcp_ipv6.c  |  8 +++++
- 4 files changed, 106 insertions(+)
+ include/uapi/linux/bpf.h | 30 ++++++++++++++++++-
+ net/core/filter.c        | 62 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 91 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index cca3c59b98bf..a128e22c0d5d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -414,6 +414,17 @@ void tcp_parse_options(const struct net *net, const struct sk_buff *skb,
- 		       int estab, struct tcp_fastopen_cookie *foc);
- const u8 *tcp_parse_md5sig_option(const struct tcphdr *th);
- 
-+/*
-+ *	BPF SKB-less helpers
-+ */
-+u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
-+			 struct tcphdr *tch, u32 *cookie);
-+u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
-+			 struct tcphdr *tch, u32 *cookie);
-+u16 tcp_get_syncookie(struct request_sock_ops *rsk_ops,
-+		      const struct tcp_request_sock_ops *af_ops,
-+		      struct sock *sk, void *iph, struct tcphdr *tch,
-+		      u32 *cookie);
- /*
-  *	TCP v4 functions exported for the inet6 API
-  */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 8892df6de1d4..1406d7e0953c 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -3782,6 +3782,52 @@ static void smc_parse_options(const struct tcphdr *th,
- #endif
- }
- 
-+/* Try to parse the MSS option from the TCP header. Return 0 on failure, clamped
-+ * value on success.
-+ *
-+ * Invoked for BPF SYN cookie generation, so th should be a SYN.
-+ */
-+static u16 tcp_parse_mss_option(const struct net *net, const struct tcphdr *th,
-+				u16 user_mss)
-+{
-+	const unsigned char *ptr = (const unsigned char *)(th + 1);
-+	int length = (th->doff * 4) - sizeof(struct tcphdr);
-+	u16 mss = 0;
-+
-+	while (length > 0) {
-+		int opcode = *ptr++;
-+		int opsize;
-+
-+		switch (opcode) {
-+		case TCPOPT_EOL:
-+			return mss;
-+		case TCPOPT_NOP:	/* Ref: RFC 793 section 3.1 */
-+			length--;
-+			continue;
-+		default:
-+			if (length < 2)
-+				return mss;
-+			opsize = *ptr++;
-+			if (opsize < 2) /* "silly options" */
-+				return mss;
-+			if (opsize > length)
-+				return mss;	/* fail on partial options */
-+			if (opcode == TCPOPT_MSS && opsize == TCPOLEN_MSS) {
-+				u16 in_mss = get_unaligned_be16(ptr);
-+
-+				if (in_mss) {
-+					if (user_mss && user_mss < in_mss)
-+						in_mss = user_mss;
-+					mss = in_mss;
-+				}
-+			}
-+			ptr += opsize - 2;
-+			length -= opsize;
-+		}
-+	}
-+	return mss;
-+}
-+
- /* Look for tcp options. Normally only called on SYN and SYNACK packets.
-  * But, this can also be called on packets in the established flow when
-  * the fast version below fails.
-@@ -6464,6 +6510,39 @@ static void tcp_reqsk_record_syn(const struct sock *sk,
- 	}
- }
- 
-+u16 tcp_get_syncookie(struct request_sock_ops *rsk_ops,
-+		      const struct tcp_request_sock_ops *af_ops,
-+		      struct sock *sk, void *iph, struct tcphdr *th,
-+		      u32 *cookie)
-+{
-+	u16 mss = 0;
-+#ifdef CONFIG_SYN_COOKIES
-+	bool is_v4 = rsk_ops->family == AF_INET;
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	if (sock_net(sk)->ipv4.sysctl_tcp_syncookies != 2 &&
-+	    !inet_csk_reqsk_queue_is_full(sk))
-+		return 0;
-+
-+	if (!tcp_syn_flood_action(sk, rsk_ops->slab_name))
-+		return 0;
-+
-+	if (sk_acceptq_is_full(sk)) {
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
-+		return 0;
-+	}
-+
-+	mss = tcp_parse_mss_option(sock_net(sk), th, tp->rx_opt.user_mss);
-+	if (!mss)
-+		mss = af_ops->mss_clamp;
-+
-+	tcp_synq_overflow(sk);
-+	*cookie = is_v4 ? __cookie_v4_init_sequence(iph, th, &mss)
-+			: __cookie_v6_init_sequence(iph, th, &mss);
-+#endif
-+	return mss;
-+}
-+
- int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 		     const struct tcp_request_sock_ops *af_ops,
- 		     struct sock *sk, struct sk_buff *skb)
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index d57641cb3477..0e06e59784bd 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1515,6 +1515,14 @@ static struct sock *tcp_v4_cookie_check(struct sock *sk, struct sk_buff *skb)
- 	return sk;
- }
- 
-+u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
-+			 struct tcphdr *tch, u32 *cookie)
-+{
-+	return tcp_get_syncookie(&tcp_request_sock_ops,
-+				 &tcp_request_sock_ipv4_ops, sk, iph, tch,
-+				 cookie);
-+}
-+
- /* The socket must have it's spinlock held when we get
-  * here, unless it is a TCP_LISTEN socket.
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 6f68438aa4ed..abf4a85c76d1 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2713,6 +2713,33 @@ union bpf_attr {
+  *		**-EPERM** if no permission to send the *sig*.
   *
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index d56a9019a0fe..ce46cdba54bc 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1058,6 +1058,14 @@ static struct sock *tcp_v6_cookie_check(struct sock *sk, struct sk_buff *skb)
- 	return sk;
- }
+  *		**-EAGAIN** if bpf program can try again.
++ *
++ * s64 bpf_tcp_gen_syncookie(struct bpf_sock *sk, void *iph, u32 iph_len, struct tcphdr *th, u32 th_len)
++ *	Description
++ *		Try to issue a SYN cookie for the packet with corresponding
++ *		IP/TCP headers, *iph* and *th*, on the listening socket in *sk*.
++ *
++ *		*iph* points to the start of the IPv4 or IPv6 header, while
++ *		*iph_len* contains **sizeof**\ (**struct iphdr**) or
++ *		**sizeof**\ (**struct ip6hdr**).
++ *
++ *		*th* points to the start of the TCP header, while *th_len*
++ *		contains **sizeof**\ (**struct tcphdr**).
++ *
++ *	Return
++ *		On success, lower 32 bits hold the generated SYN cookie in
++ *		network order and the higher 32 bits hold the MSS value for that
++ *		cookie.
++ *
++ *		On failure, the returned value is one of the following:
++ *
++ *		**-EINVAL** SYN cookie cannot be issued due to error
++ *
++ *		**-ENOENT** SYN cookie should not be issued (no SYN flood)
++ *
++ *		**-ENOTSUPP** kernel configuration does not enable SYN cookies
++ *
++ *		**-EPROTONOSUPPORT** *sk* family is not AF_INET/AF_INET6
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2824,7 +2851,8 @@ union bpf_attr {
+ 	FN(strtoul),			\
+ 	FN(sk_storage_get),		\
+ 	FN(sk_storage_delete),		\
+-	FN(send_signal),
++	FN(send_signal),		\
++	FN(tcp_gen_syncookie),
  
-+u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
-+			 struct tcphdr *tch, u32 *cookie)
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 47f6386fb17a..109fd1e286f4 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5850,6 +5850,64 @@ static const struct bpf_func_proto bpf_tcp_check_syncookie_proto = {
+ 	.arg5_type	= ARG_CONST_SIZE,
+ };
+ 
++BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
++	   struct tcphdr *, th, u32, th_len)
 +{
-+	return tcp_get_syncookie(&tcp6_request_sock_ops,
-+				 &tcp_request_sock_ipv6_ops, sk, iph, tch,
-+				 cookie);
++#ifdef CONFIG_SYN_COOKIES
++	u32 cookie;
++	u16 mss;
++
++	if (unlikely(th_len < sizeof(*th)))
++		return -EINVAL;
++
++	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
++		return -EINVAL;
++
++	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies)
++		return -EINVAL;
++
++	if (!th->syn || th->ack || th->fin || th->rst)
++		return -EINVAL;
++
++	switch (sk->sk_family) {
++	case AF_INET:
++		if (unlikely(iph_len < sizeof(struct iphdr)))
++			return -EINVAL;
++		mss = tcp_v4_get_syncookie(sk, iph, th, &cookie);
++		break;
++
++#if IS_BUILTIN(CONFIG_IPV6)
++	case AF_INET6:
++		if (unlikely(iph_len < sizeof(struct ipv6hdr)))
++			return -EINVAL;
++		mss = tcp_v6_get_syncookie(sk, iph, th, &cookie);
++		break;
++#endif /* CONFIG_IPV6 */
++
++	default:
++		return -EPROTONOSUPPORT;
++	}
++	if (mss <= 0)
++		return -ENOENT;
++
++	return htonl(cookie) | ((u64)mss << 32);
++#else
++	return -ENOTSUPP;
++#endif /* CONFIG_SYN_COOKIES */
 +}
 +
- static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
- {
- 	if (skb->protocol == htons(ETH_P_IP))
++static const struct bpf_func_proto bpf_tcp_gen_syncookie_proto = {
++	.func		= bpf_tcp_gen_syncookie,
++	.gpl_only	= true, /* __cookie_v*_init_sequence() is GPL */
++	.pkt_access	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_SOCK_COMMON,
++	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_CONST_SIZE,
++	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg5_type	= ARG_CONST_SIZE,
++};
++
+ #endif /* CONFIG_INET */
+ 
+ bool bpf_helper_changes_pkt_data(void *func)
+@@ -6135,6 +6193,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_tcp_check_syncookie_proto;
+ 	case BPF_FUNC_skb_ecn_set_ce:
+ 		return &bpf_skb_ecn_set_ce_proto;
++	case BPF_FUNC_tcp_gen_syncookie:
++		return &bpf_tcp_gen_syncookie_proto;
+ #endif
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+@@ -6174,6 +6234,8 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_xdp_skc_lookup_tcp_proto;
+ 	case BPF_FUNC_tcp_check_syncookie:
+ 		return &bpf_tcp_check_syncookie_proto;
++	case BPF_FUNC_tcp_gen_syncookie:
++		return &bpf_tcp_gen_syncookie_proto;
+ #endif
+ 	default:
+ 		return bpf_base_func_proto(func_id);
 -- 
 2.22.0.510.g264f2c817a-goog
 
