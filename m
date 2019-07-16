@@ -2,135 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80F8E6AC7E
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 18:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53ED96AC92
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 18:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388006AbfGPQIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 12:08:31 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:45732 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387959AbfGPQIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 12:08:30 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m23so20477096lje.12
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 09:08:29 -0700 (PDT)
+        id S1730431AbfGPQRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 12:17:06 -0400
+Received: from mail-pl1-f176.google.com ([209.85.214.176]:37548 "EHLO
+        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727796AbfGPQRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 12:17:06 -0400
+Received: by mail-pl1-f176.google.com with SMTP id b3so10366049plr.4;
+        Tue, 16 Jul 2019 09:17:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/PtK1riFgjOIHlhJQFDyC4q5ySxhAO8yRuQks2dZNfk=;
-        b=Qwsq8LGcu+4f6+GbfIyFs2u6MHmOVpuck5n/OWKzIuI5zY2IEMHVb2BlOPpRjweGnr
-         9i8WS3lTXJvrmNA3uKxRy/kBzYt9LaiqRshEtKmQEJUbp5IcyCsprGyn+/Hostoq0Akp
-         fBp77TXTneOqutrYEP4nt1/3Z35g24lfztChoxSwOTJHnvFJU0e4D6mkSR+WiqY5947O
-         nUfntsUfvTqtO5CBerTxsjINgBIZoRysGAHtdFIJX2J3zv5YHlQOcJYFs3td5L4fR8Lk
-         d0sWfz0Mu/72Rs/IxvY5zxIgaImboim9OQzpxpGSwCOla8rOm2uf6o8KvI1dmBTbh+OU
-         4jcw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=471pmIh3LX9u0h9TelKOd0JUS/NmfxeCjVSYlSHX1vA=;
+        b=BHX96+CtyC/9UyJM8geZzQCl7YMjdyWxXBFUNJ3ogMqlbkTBDOFiTBPxve9ANcOPjM
+         RTj3pZiOzdzp9Fk8e6EyKYcalLqfw6d2XY2JIzRhxCc4zLLewI8JiDvCCdBGTyiWSVoo
+         PTv+EI518GZW01V4SNUikUs6E6rLPuB3m9VEOsXOJW4U+5GwJmW7fZlMC3mTs/5Xq4Xo
+         kwS+McI9N1Md40nhqGAJPoXGrDMXbDqT6j08NBZycgDC399ih7+PxhI7cH3lGDsoy3tV
+         HJiiR+uEdzFpFQLQMKKLAz541QIqrfP0lCjPXmdXTzSV5h2Qv4/j/jqhCL4iQaUJV8od
+         mN8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/PtK1riFgjOIHlhJQFDyC4q5ySxhAO8yRuQks2dZNfk=;
-        b=QqkgHqG3yu9bK/2gfGayab3jnZnlg66NRHxQ21n+M2qTFVa1zJzV5irEhjeI8aH1Ly
-         JpnlyHVxpudjB6dr4q18ib67tEKtb7pZmez8gI5Ctl1To6chQTDaZNMevleJn6ksIwjM
-         zeK7UXiDmpdNc7pyKD+X6a7IVt4ZW2fn/tgG/+EWn8CMD2DuisEfBLuaukbyvattpe+4
-         tutz4C3QE2kOJ3J5cRR0ddg3i5K1m8bV+GSiQYDsM2VUMSznhYRkh0ajCoImL05gQfKt
-         UU7d525dyfdO/4SxkC/KoDeWxlS1Rq+FRInoDYNV8jAVja8FHzcA2KH/8/IQucGJDmJK
-         Zr+A==
-X-Gm-Message-State: APjAAAWAGZCbeQb6SSTNV4Vq1JWtyQpbPUoVbab0q+y6D/bXgvHp5jso
-        pXeEQMFmJV52MVoyeFbwbdvXXCi4pY6SvKviaQ==
-X-Google-Smtp-Source: APXvYqyKryFIQegG0hjOTB9NgCpoMoahL1Zn87LGMl/BlFDzO2b4dUJIotzjf0uK56x3MSXiQ8vlXsbNOXtxYHU7vwc=
-X-Received: by 2002:a2e:9dc1:: with SMTP id x1mr18159218ljj.0.1563293308121;
- Tue, 16 Jul 2019 09:08:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=471pmIh3LX9u0h9TelKOd0JUS/NmfxeCjVSYlSHX1vA=;
+        b=VB7db/eINkCQFBhPpyyzLEE/8TP6srpnUGCnyhv3IgqfaTzZId/aeIP9ND7xcSf+Zn
+         I1JuHwnwsbjEcD1V7dCGTg+HDJqRN5FiIxZmW/8ZbVMgIhKVUPUxW5MDarBGjT83JzjR
+         Y1lPWG/QzbF7s7f3dacSfVozGeZxaY0SOvsGvg/XiL0D+yGI4SHVNovx5IKce1o34Jvl
+         mujUjr0Q0b2dTAx1wcuBpV1Nm/IO6ABEWwtPtfp6zQNiWhAxCqiickgCVhEqqYSi+x5K
+         /1VyvHqRZr41VbMIbyaXgoLXMgndx4/uWAvCd3dk4Hwjl6ecZwExODXGOJmxBCPlR/OV
+         QSkg==
+X-Gm-Message-State: APjAAAUg1t3g0gwmb3DKi10vh8UFIqnoIZHiVpz9C+oKfnmShm4VGZdG
+        rTu/7iu/vyqNkN33BoLu3AU=
+X-Google-Smtp-Source: APXvYqwN+pc0Y9LsKyVNpNsE27R6cpG/jC7EJi86D4SSuxhw4CiTszbvDUbJ5/XWBhFv7A+TqT17gQ==
+X-Received: by 2002:a17:902:724a:: with SMTP id c10mr34374635pll.298.1563293825493;
+        Tue, 16 Jul 2019 09:17:05 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::c7d4])
+        by smtp.gmail.com with ESMTPSA id j12sm10852106pff.4.2019.07.16.09.17.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 16 Jul 2019 09:17:04 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 09:17:03 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Edward Cree <ecree@solarflare.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com, Yonghong Song <yhs@fb.com>
+Subject: Re: [RFC bpf-next 0/8] bpf: accelerate insn patching speed
+Message-ID: <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
+References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com>
+ <CAEf4BzavePpW-C+zORN1kwSUJAWuJ3LxZ6QGxqaE9msxCq8ZLA@mail.gmail.com>
+ <87r26w24v4.fsf@netronome.com>
+ <CAEf4BzaPFbYKUQzu7VoRd7idrqPDMEFF=UEmT2pGf+Lxz06+sA@mail.gmail.com>
+ <87k1cj3b69.fsf@netronome.com>
+ <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com>
+ <87wogitlbi.fsf@netronome.com>
 MIME-Version: 1.0
-References: <20190529153427.GB8959@cisco> <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
- <20190529222835.GD8959@cisco> <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
- <20190530170913.GA16722@mail.hallyn.com> <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
- <20190530212900.GC5739@cisco> <CAHC9VhT5HPt9rCJoDutdvA3r1Y1GOHfpXe2eJ54atNC1=Vd8LA@mail.gmail.com>
- <20190708181237.5poheliito7zpvmc@madcap2.tricolour.ca> <CAHC9VhT0V+xi_6nAR5TsM2vs34LbgMeO=-W+MS_kqiXRRzneZQ@mail.gmail.com>
- <20190716153705.xx7dwrhliny5amut@madcap2.tricolour.ca>
-In-Reply-To: <20190716153705.xx7dwrhliny5amut@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 16 Jul 2019 12:08:16 -0400
-Message-ID: <CAHC9VhTaLqCo8rmAaySJQB+Pf-580=3mvX1rPmtEeb9o5Uy9Qg@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     Tycho Andersen <tycho@tycho.ws>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        ebiederm@xmission.com, nhorman@tuxdriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wogitlbi.fsf@netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 11:37 AM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2019-07-15 17:09, Paul Moore wrote:
-> > On Mon, Jul 8, 2019 at 2:12 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > On 2019-05-30 19:26, Paul Moore wrote:
+On Tue, Jul 16, 2019 at 09:50:25AM +0100, Jiong Wang wrote:
+> 
+> Let me digest a little bit and do some coding, then I will come back. Some
+> issues can only shown up during in-depth coding. I kind of feel handling
+> aux reference in verifier layer is the part that will still introduce some
+> un-clean code.
+
+I'm still internalizing this discussion. Only want to point out
+that I think it's better to have simpler algorithm that consumes more
+memory and slower than more complex algorithm that is more cpu/memory efficient.
+Here we're aiming at 10x improvement anyway, so extra cpu and memory
+here and there are good trade-off to make.
+
+> >> If there is no dead insn elimination opt, then we could just adjust
+> >> offsets. When there is insn deleting, I feel the logic becomes more
+> >> complex. One subprog could be completely deleted or partially deleted, so
+> >> I feel just recalculate the whole subprog info as a side-product is
+> >> much simpler.
 > >
-> > ...
-> >
-> > > > I like the creativity, but I worry that at some point these
-> > > > limitations are going to be raised (limits have a funny way of doing
-> > > > that over time) and we will be in trouble.  I say "trouble" because I
-> > > > want to be able to quickly do an audit container ID comparison and
-> > > > we're going to pay a penalty for these larger values (we'll need this
-> > > > when we add multiple auditd support and the requisite record routing).
-> > > >
-> > > > Thinking about this makes me also realize we probably need to think a
-> > > > bit longer about audit container ID conflicts between orchestrators.
-> > > > Right now we just take the value that is given to us by the
-> > > > orchestrator, but if we want to allow multiple container orchestrators
-> > > > to work without some form of cooperation in userspace (I think we have
-> > > > to assume the orchestrators will not talk to each other) we likely
-> > > > need to have some way to block reuse of an audit container ID.  We
-> > > > would either need to prevent the orchestrator from explicitly setting
-> > > > an audit container ID to a currently in use value, or instead generate
-> > > > the audit container ID in the kernel upon an event triggered by the
-> > > > orchestrator (e.g. a write to a /proc file).  I suspect we should
-> > > > start looking at the idr code, I think we will need to make use of it.
-> > >
-> > > To address this, I'd suggest that it is enforced to only allow the
-> > > setting of descendants and to maintain a master list of audit container
-> > > identifiers (with a hash table if necessary later) that includes the
-> > > container owner.
-> >
-> > We're discussing the audit container ID management policy elsewhere in
-> > this thread so I won't comment on that here, but I did want to say
-> > that we will likely need something better than a simple list of audit
-> > container IDs from the start.  It's common for systems to have
-> > thousands of containers now (or multiple thousands), which tells me
-> > that a list is a poor choice.  You mentioned a hash table, so I would
-> > suggest starting with that over the list for the initial patchset.
->
-> I saw that as an internal incremental improvement that did not affect
-> the API, so I wanted to keep things a bit simpler (as you've requested
-> in the past) to get this going, and add that enhancement later.
+> > What's the situation where entirety of subprog can be deleted?
+> 
+> Suppose you have conditional jmp_imm, true path calls one subprog, false
+> path calls the other. If insn walker later found it is also true, then the
+> subprog at false path won't be marked as "seen", so it is entirely deleted.
+> 
+> I actually thought it is in theory one subprog could be deleted entirely,
+> so if we support insn deletion inside verifier, then range info like
+> line_info/subprog_info needs to consider one range is deleted.
 
-In general a simple approach is a good way to start when the
-problem/use-case is not very well understood; in other words, don't
-spend a lot of time/effort optimizing something you don't yet
-understand.  In this case we know that people want to deploy a *lot*
-of containers on a single system so we should design the data
-structures appropriately.  A list is simply not a good fit here, I
-believe/hope you know that too.
+I don't think dead code elim can remove subprogs.
+cfg check rejects code with dead progs.
+I don't think we have a test for such 'dead prog only due to verifier walk'
+situation. I wonder what happens :)
 
-> I'll start working on it now.  The hash table would simply point to
-> lists anyways unless you can recommend a better approach.
-
-I assume when you say "point to lists" you are talking about using
-lists for the hash buckets?  If so, yes that should be fine at this
-point.  In general if the per-bucket lists become a bottleneck we can
-look at the size of the table (or make it tunable) or even use a
-different approach entirely.  Ultimately the data store is an
-implementation detail private to the audit subsystem in the kernel so
-we should be able to change it as necessary without breaking anything.
-
--- 
-paul moore
-www.paul-moore.com
