@@ -2,136 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA6C6AFF4
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 21:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45BD6AFF8
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 21:43:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388663AbfGPTip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 15:38:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52422 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726213AbfGPTip (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 15:38:45 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2FDCA3092647;
-        Tue, 16 Jul 2019 19:38:43 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-14.phx2.redhat.com [10.3.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CB95E60C44;
-        Tue, 16 Jul 2019 19:38:31 +0000 (UTC)
-Date:   Tue, 16 Jul 2019 15:38:28 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Tycho Andersen <tycho@tycho.ws>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-Message-ID: <20190716193828.xvm67iv5jyypvvxp@madcap2.tricolour.ca>
-References: <cover.1554732921.git.rgb@redhat.com>
- <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
- <20190529145742.GA8959@cisco>
- <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
- <20190708175105.7zb6mikjw2wmnwln@madcap2.tricolour.ca>
- <CAHC9VhRFeCFSCn=m6wgDK2tXBN1euc2+bw8o=CfNwptk8t=j7A@mail.gmail.com>
+        id S2388697AbfGPTit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 15:38:49 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44262 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728518AbfGPTis (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 15:38:48 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6GJc8Gm003557
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 12:38:47 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=jse4qdAs8+qPCz3lu4vB+jWsVxQyuRw+JMdBkNPQvQE=;
+ b=bPhDyUnnUoxw0cLzYiblh+7QpSFdEj0IeJO51A6nkx1TULL7wDEkrBdFJ4GeDcNFN5du
+ RurRvvNJAOVtOGMk8yp9F5DfQlrOcyV4aimzTkMCNa3PkLt5A/cADSwfcgbzeyTPf5xB
+ rTmb3sHUMfSpgBSX3mIy1SRPIHCAg2YgTK0= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tsj89rn9e-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 12:38:47 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 16 Jul 2019 12:38:46 -0700
+Received: by devvm1662.vll1.facebook.com (Postfix, from userid 137359)
+        id 114A713432D6; Tue, 16 Jul 2019 12:38:44 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devvm1662.vll1.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <daniel@iogearbox.net>, <ast@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Cluster: vll1c12
+Subject: [PATCH bpf 1/2] selftests/bpf: fix test_verifier/test_maps make dependencies
+Date:   Tue, 16 Jul 2019 12:38:36 -0700
+Message-ID: <20190716193837.2808971-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhRFeCFSCn=m6wgDK2tXBN1euc2+bw8o=CfNwptk8t=j7A@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 16 Jul 2019 19:38:44 +0000 (UTC)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-16_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=958 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907160240
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-07-15 16:38, Paul Moore wrote:
-> On Mon, Jul 8, 2019 at 1:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > On 2019-05-29 11:29, Paul Moore wrote:
-> 
-> ...
-> 
-> > > The idea is that only container orchestrators should be able to
-> > > set/modify the audit container ID, and since setting the audit
-> > > container ID can have a significant effect on the records captured
-> > > (and their routing to multiple daemons when we get there) modifying
-> > > the audit container ID is akin to modifying the audit configuration
-> > > which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
-> > > is that you would only change the audit container ID from one
-> > > set/inherited value to another if you were nesting containers, in
-> > > which case the nested container orchestrator would need to be granted
-> > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
-> > > compromise).  We did consider allowing for a chain of nested audit
-> > > container IDs, but the implications of doing so are significant
-> > > (implementation mess, runtime cost, etc.) so we are leaving that out
-> > > of this effort.
-> >
-> > We had previously discussed the idea of restricting
-> > orchestrators/engines from only being able to set the audit container
-> > identifier on their own descendants, but it was discarded.  I've added a
-> > check to ensure this is now enforced.
-> 
-> When we weren't allowing nested orchestrators it wasn't necessary, but
-> with the move to support nesting I believe this will be a requirement.
-> We might also need/want to restrict audit container ID changes if a
-> descendant is acting as a container orchestrator and managing one or
-> more audit container IDs; although I'm less certain of the need for
-> this.
+e46fc22e60a4 ("selftests/bpf: make directory prerequisites order-only")
+exposed existing problem in Makefile for test_verifier and test_maps tests:
+their dependency on auto-generated header file with a list of all tests wasn't
+recorded explicitly. This patch fixes these issues.
 
-I was of the opinion it was necessary before with single-layer parallel
-orchestrators/engines.
+Fixes: 51a0e301a563 ("bpf: Add BPF_MAP_TYPE_SK_STORAGE test to test_maps")
+Fixes: 6b7b6995c43e ("selftests: bpf: tests.h should depend on .c files, not the output")
+Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> > I've also added a check to ensure that a process can't set its own audit
-> > container identifier ...
-> 
-> What does this protect against, or what problem does this solve?
-> Considering how easy it is to fork/exec, it seems like this could be
-> trivially bypassed.
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 1296253b3422..9bc68d8abc5f 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -86,8 +86,6 @@ $(OUTPUT)/urandom_read: $(OUTPUT)/%: %.c
+ $(OUTPUT)/test_stub.o: test_stub.c
+ 	$(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) -c -o $@ $<
+ 
+-$(OUTPUT)/test_maps: map_tests/*.c
+-
+ BPFOBJ := $(OUTPUT)/libbpf.a
+ 
+ $(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
+@@ -257,9 +255,10 @@ MAP_TESTS_DIR = $(OUTPUT)/map_tests
+ $(MAP_TESTS_DIR):
+ 	mkdir -p $@
+ MAP_TESTS_H := $(MAP_TESTS_DIR)/tests.h
++MAP_TESTS_FILES := $(wildcard map_tests/*.c)
+ test_maps.c: $(MAP_TESTS_H)
+ $(OUTPUT)/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+-MAP_TESTS_FILES := $(wildcard map_tests/*.c)
++$(OUTPUT)/test_maps: test_maps.c $(MAP_TESTS_H) $(MAP_TESTS_FILES)
+ $(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
+ 	$(shell ( cd map_tests/; \
+ 		  echo '/* Generated header, do not edit */'; \
+@@ -276,6 +275,7 @@ $(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
+ VERIFIER_TESTS_H := $(OUTPUT)/verifier/tests.h
+ test_verifier.c: $(VERIFIER_TESTS_H)
+ $(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
++$(OUTPUT)/test_verifier: test_verifier.c $(VERIFIER_TESTS_H)
+ 
+ VERIFIER_TESTS_DIR = $(OUTPUT)/verifier
+ $(VERIFIER_TESTS_DIR):
+-- 
+2.17.1
 
-Well, for starters, it would remove one layer of nesting.  It would
-separate the functional layers of processes.  Other than that, it seems
-like a gut feeling that it is just wrong to allow it.  It seems like a
-layer violation that one container orchestrator/engine could set its own
-audit container identifier and then set its children as well.  It would
-be its own parent.  It would make it harder to verify adherance to
-descendancy and inheritance rules.
-
-> > ... and that if the identifier is already set, then the
-> > orchestrator/engine must be in a descendant user namespace from the
-> > orchestrator that set the previously inherited audit container
-> > identifier.
-> 
-> You lost me here ... although I don't like the idea of relying on X
-> namespace inheritance for a hard coded policy on setting the audit
-> container ID; we've worked hard to keep this independent of any
-> definition of a "container" and it would sadden me greatly if we had
-> to go back on that.
-
-This would seem to be the one concession I'm reluctantly making to try
-to solve this nested container orchestrator/engine challenge.
-
-Would backing off on that descendant user namespace requirement and only
-require that a nested audit container identifier only be permitted on a
-descendant task be sufficient?  It may for this use case, but I suspect
-not for additional audit daemons (we're not there yet) and message
-routing to those daemons.
-
-The one difference here is that it does not depend on this if the audit
-container identifier has not already been set.
-
-> paul moore
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
