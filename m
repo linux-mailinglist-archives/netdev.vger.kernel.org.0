@@ -2,208 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7696B11B
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 23:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46A176B136
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 23:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731273AbfGPVaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 17:30:55 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44679 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728781AbfGPVaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 17:30:55 -0400
-Received: by mail-pf1-f195.google.com with SMTP id t16so9712399pfe.11
-        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 14:30:54 -0700 (PDT)
+        id S2387928AbfGPVjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 17:39:33 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37946 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730444AbfGPVjd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 17:39:33 -0400
+Received: by mail-lf1-f66.google.com with SMTP id h28so14805599lfj.5
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 14:39:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6kokd9urqLvw9xwd+5O0M4O8FIkMVqne6oLchOnowAo=;
-        b=ibh8wssZe0klgvCEqtGL5SQYOhiDO0uXhSwtj8BIDydBS/3FWbCP2DMLOIemRLeltT
-         6QDu7NnPUf1dtPT4XHSPqhDA6hcF4aXFo11wvy1b8U6H/wvgF+hSctwPbOQhSv0jpsbp
-         fhcGESGlAlBkev0SBC+CEsGGSRfNnL1GJ8ZlQ=
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UEoPNCG4kcJsbXvvedTVI/oUGPgfgDGC69R8YkpN0Ls=;
+        b=E/8ikrwAfufbeGPzCfXxpn5EWxAfgLdy6LHVoRbFXYE9RhSrT+fCW/Ym0WBFnLVgpW
+         6eknLnGyCQrub7C+oH2iB/3f89aqw/gEyuWoo9sMXXD1lgoKI/evg2UIhXk69H2wbB8W
+         gBxoGQuij1gb1iyR95rQw/C8tqo7SbwCJcSPs2g6BA53k9qfo3IoqUoApxcsPMMsLYs+
+         fbB5qmrjBhLFCO4IrMKKA++ei7tfjIrtjqwlLB9q9YGyuC3urVN/8I/CF1zxnWHvLmkT
+         JHSkdhSFe+zled5GOpaKiAju6oSKwU0EPnFIWV879EhYNYZt26KZKzjjM+atv4cMxtPQ
+         ZcJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6kokd9urqLvw9xwd+5O0M4O8FIkMVqne6oLchOnowAo=;
-        b=ULhZ881nSWxo3OxxgKq1um6r7liNtGlD6Uiho/9PLOA9LaryUngKOoHQFZbKaGkjcD
-         z1uPjb6wXqDz7cTor2TSHAv4+F7r/14bw6SaA3oKGfOsKAS9321uDp0nug304l7JUBXi
-         MIAhS2dxxEH93FkMa9sN1Wm9bGAt1YPuJ+xqv6Dl+ykBi447Wg6CoGlMWpzznNIiu4Mr
-         WcqGRdQdt0H0CDyL+PeX19shEIFyG8JF0nxiKVlHdB2Y5pnVBYlhoUcrhxAiyhmOLwEh
-         qikGTBg7IgTJkpFXV1sClzeSxnnzSEsP2vxYDo4mvC0v/BP5MHLtRbVSksMcz0ueIxtJ
-         8qWg==
-X-Gm-Message-State: APjAAAUuWs828gekoKbCwH5MZYn2HkGn9s3bLQP9R34DLJ72BcopZy2Q
-        Cb7A7qm3qoZi3U/6z2jd3Ig=
-X-Google-Smtp-Source: APXvYqzP8aGlzyfvDVIxVivD9Z3lMgtTzbpkjETtCBTYCZiV8fxcj98GUhamPPzgUeCiezYOCwcypg==
-X-Received: by 2002:a63:4612:: with SMTP id t18mr27566053pga.85.1563312653706;
-        Tue, 16 Jul 2019 14:30:53 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id 21sm10450343pfj.76.2019.07.16.14.30.51
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 16 Jul 2019 14:30:52 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 17:30:50 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Brendan Gregg <brendan.d.gregg@gmail.com>, connoro@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
-        jeffv@google.com, Karim Yaghmour <karim.yaghmour@opersys.com>,
-        kernel-team@android.com, linux-kselftest@vger.kernel.org,
-        Manali Shukla <manalishukla14@gmail.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matt Mullins <mmullins@fb.com>,
-        Michal Gregorczyk <michalgr@fb.com>,
-        Michal Gregorczyk <michalgr@live.com>,
-        Mohammad Husain <russoue@gmail.com>, namhyung@google.com,
-        namhyung@kernel.org, netdev@vger.kernel.org,
-        paul.chaignon@gmail.com, primiano@google.com,
-        Qais Yousef <qais.yousef@arm.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190716213050.GA161922@google.com>
-References: <20190710141548.132193-1-joel@joelfernandes.org>
- <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UEoPNCG4kcJsbXvvedTVI/oUGPgfgDGC69R8YkpN0Ls=;
+        b=QYyX9O8dSv0jQVdXrazKj/lHTkvceLSkoydkB57I0Eqctvrf88b6idHKUyidIQyzd+
+         CiCpyVtOCVvYyp777ouxnDc3BuGkNXz/WInOMRSGF/d8lwh1/KvZgALaOCqN6b8PpG35
+         nzSFSWG8UwM5dWrrsoDKIW/Qwxo/33uQaITmUpXQ6jao1vn8XIFNzAXs9eJqwbzMq8Yx
+         HAtDghZtjpASjzBEuydukLG3NcaOZhP6GyLi1QeGu/BqT2KmYD/C+Ku0Pz3PQx2ecTaZ
+         lcl4aclVzA/tVdD8B0d4MLNDBD+ZfLXHUMnFGlCbKvHq7mfBGVoLnkiiaZPAUSkGwR0E
+         ZSzQ==
+X-Gm-Message-State: APjAAAW/vEin0TMVU4NUnuDANkVZ0s6ECNf9znDoryDa5DBgTJ79xAgN
+        SLaJaaebFilkjkmsUREEO/tb0veS5N6zzYNmpQ==
+X-Google-Smtp-Source: APXvYqxVWwwG619v+YKQRDGT+YX+qm23m31n4KUpCUeLscpXJaA+UAUtNCEiDZTilTsw6kcSugeGwveeG28ePWlfYQw=
+X-Received: by 2002:a19:8093:: with SMTP id b141mr16328818lfd.137.1563313170619;
+ Tue, 16 Jul 2019 14:39:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1554732921.git.rgb@redhat.com> <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
+ <20190529145742.GA8959@cisco> <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+ <20190708175105.7zb6mikjw2wmnwln@madcap2.tricolour.ca> <CAHC9VhRFeCFSCn=m6wgDK2tXBN1euc2+bw8o=CfNwptk8t=j7A@mail.gmail.com>
+ <20190716193828.xvm67iv5jyypvvxp@madcap2.tricolour.ca>
+In-Reply-To: <20190716193828.xvm67iv5jyypvvxp@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 16 Jul 2019 17:39:19 -0400
+Message-ID: <CAHC9VhTFW44gMMey8NnJzAeVxObwKhTgXcnt09q-7DtkFUiMCA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     Tycho Andersen <tycho@tycho.ws>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 01:54:57PM -0700, Alexei Starovoitov wrote:
-> On Wed, Jul 10, 2019 at 10:15:44AM -0400, Joel Fernandes (Google) wrote:
-> > Hi,
-> 
-> why are you cc-ing the whole world for this patch set?
+On Tue, Jul 16, 2019 at 3:38 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2019-07-15 16:38, Paul Moore wrote:
+> > On Mon, Jul 8, 2019 at 1:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > On 2019-05-29 11:29, Paul Moore wrote:
+> >
+> > ...
+> >
+> > > > The idea is that only container orchestrators should be able to
+> > > > set/modify the audit container ID, and since setting the audit
+> > > > container ID can have a significant effect on the records captured
+> > > > (and their routing to multiple daemons when we get there) modifying
+> > > > the audit container ID is akin to modifying the audit configuration
+> > > > which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
+> > > > is that you would only change the audit container ID from one
+> > > > set/inherited value to another if you were nesting containers, in
+> > > > which case the nested container orchestrator would need to be granted
+> > > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
+> > > > compromise).  We did consider allowing for a chain of nested audit
+> > > > container IDs, but the implications of doing so are significant
+> > > > (implementation mess, runtime cost, etc.) so we are leaving that out
+> > > > of this effort.
+> > >
+> > > We had previously discussed the idea of restricting
+> > > orchestrators/engines from only being able to set the audit container
+> > > identifier on their own descendants, but it was discarded.  I've added a
+> > > check to ensure this is now enforced.
+> >
+> > When we weren't allowing nested orchestrators it wasn't necessary, but
+> > with the move to support nesting I believe this will be a requirement.
+> > We might also need/want to restrict audit container ID changes if a
+> > descendant is acting as a container orchestrator and managing one or
+> > more audit container IDs; although I'm less certain of the need for
+> > this.
+>
+> I was of the opinion it was necessary before with single-layer parallel
+> orchestrators/engines.
 
-Well, the whole world happens to be interested in BPF on Android.
+One of the many things we've disagreed on, but it doesn't really
+matter at this point.
 
-> I'll reply to all as well, but I suspect a bunch of folks consider it spam.
-> Please read Documentation/bpf/bpf_devel_QA.rst
+> > > I've also added a check to ensure that a process can't set its own audit
+> > > container identifier ...
+> >
+> > What does this protect against, or what problem does this solve?
+> > Considering how easy it is to fork/exec, it seems like this could be
+> > trivially bypassed.
+>
+> Well, for starters, it would remove one layer of nesting.  It would
+> separate the functional layers of processes.
 
-Ok, I'll read it.
+This doesn't seem like something we need to protect against, what's
+the harm?  My opinion at this point is that we should only add
+restrictions to protect against problematic or dangerous situations; I
+don't believe one extra layer of nesting counts as either.
 
-> Also, I think, netdev@vger rejects emails with 80+ characters in cc as spam,
-> so I'm not sure this set reached public mailing lists.
+Perhaps the container folks on the To/CC line can comment on this?  If
+there is a valid reason for this restriction, great, let's do it,
+otherwise it seems like an unnecessary hard coded policy to me.
 
-Certainly the CC list here is not added to folks who consider it spam. All
-the folks added have been interested in BPF on Android at various points of
-time. Is this CC list really that large? It has around 24 email addresses or
-so. I can trim it a bit if needed. Also, you sound like as if people are
-screaming at me to stop emailing them, certainly that's not the case and no
-one has told me it is spam.
+> Other than that, it seems
+> like a gut feeling that it is just wrong to allow it.  It seems like a
+> layer violation that one container orchestrator/engine could set its own
+> audit container identifier and then set its children as well.  It would
+> be its own parent.
 
-And, it did reach the public archive btw:
-https://lore.kernel.org/netdev/20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com/T/#m1460ba463b78312e38b68b8c118f673d2ead9446
+I suspect you are right that the current crop of container engines
+won't do this, but who knows what we'll be doing with "containers" 5,
+or even 10, years from now.  With that in mind, let me ask the
+question again: is allowing an orchestrator the ability to set its own
+audit container ID problematic and/or dangerous?
 
-> > These patches make it possible to attach BPF programs directly to tracepoints
-> > using ftrace (/sys/kernel/debug/tracing) without needing the process doing the
-> > attach to be alive. This has the following benefits:
-> > 
-> > 1. Simplified Security: In Android, we have finer-grained security controls to
-> > specific ftrace trace events using SELinux labels. We control precisely who is
-> > allowed to enable an ftrace event already. By adding a node to ftrace for
-> > attaching BPF programs, we can use the same mechanism to further control who is
-> > allowed to attach to a trace event.
-> > 
-> > 2. Process lifetime: In Android we are adding usecases where a tracing program
-> > needs to be attached all the time to a tracepoint, for the full life time of
-> > the system. Such as to gather statistics where there no need for a detach for
-> > the full system lifetime. With perf or bpf(2)'s BPF_RAW_TRACEPOINT_OPEN, this
-> > means keeping a process alive all the time.  However, in Android our BPF loader
-> > currently (for hardeneded security) involves just starting a process at boot
-> > time, doing the BPF program loading, and then pinning them to /sys/fs/bpf.  We
-> > don't keep this process alive all the time. It is more suitable to do a
-> > one-shot attach of the program using ftrace and not need to have a process
-> > alive all the time anymore for this. Such process also needs elevated
-> > privileges since tracepoint program loading currently requires CAP_SYS_ADMIN
-> > anyway so by design Android's bpfloader runs once at init and exits.
-> > 
-> > This series add a new bpf file to /sys/kernel/debug/tracing/events/X/Y/bpf
-> > The following commands can be written into it:
-> > attach:<fd>     Attaches BPF prog fd to tracepoint
-> > detach:<fd>     Detaches BPF prog fd to tracepoint
-> 
-> Looks like, to detach a program the user needs to read a text file,
-> parse bpf prog id from text into binary. Then call fd_from_id bpf syscall,
-> get a binary FD, convert it back to text and write as a text back into this file.
-> I think this is just a single example why text based apis are not accepted
-> in bpf anymore.
+> It would make it harder to verify adherance to descendancy and inheritance rules.
 
-This can also be considered a tracefs API.
+The audit log should contain all the information needed to track that,
+right?  If it doesn't, then I think we have a problem with the
+information we are logging.  Right?
 
-And we can certainly change the detach to accept program ids as well if
-that's easier. 'detach:prog:<prog_id>' and 'detach:fd:<fd>'.
+> > > ... and that if the identifier is already set, then the
+> > > orchestrator/engine must be in a descendant user namespace from the
+> > > orchestrator that set the previously inherited audit container
+> > > identifier.
+> >
+> > You lost me here ... although I don't like the idea of relying on X
+> > namespace inheritance for a hard coded policy on setting the audit
+> > container ID; we've worked hard to keep this independent of any
+> > definition of a "container" and it would sadden me greatly if we had
+> > to go back on that.
+>
+> This would seem to be the one concession I'm reluctantly making to try
+> to solve this nested container orchestrator/engine challenge.
 
-By the way, I can also list the set of cumbersome steps needed to attach a
-BPF program using perf and I bet it will be longer ;-)
+As I said, you lost me on this - how does this help?  A more detailed
+explanation of how this helps resolve the nesting problem would be
+useful.
 
-> Through the patch set you call it ftrace. As far as I can see, this set
-> has zero overlap with ftrace. There is no ftrace-bpf connection here at all
-> that we discussed in the past Steven. It's all quite confusing.
+> Would backing off on that descendant user namespace requirement and only
+> require that a nested audit container identifier only be permitted on a
+> descendant task be sufficient?  It may for this use case, but I suspect
+> not for additional audit daemons (we're not there yet) and message
+> routing to those daemons.
+>
+> The one difference here is that it does not depend on this if the audit
+> container identifier has not already been set.
 
-It depends on what you mean by ftrace, may be I can call it 'trace events' or
-something if it is less ambiguious. All of this has been collectively called
-ftrace before.
-
-I am not sure if you you are making sense actually, trace_events mechanism is
-a part of ftrace. See the documentation: Documentation/trace/ftrace.rst. Even
-the documentation file name has the word ftrace in it.
-
-I have also spoken to Steven before about this, I don't think he ever told me
-there is no connection so again I am a bit lost at your comments.
-
-> I suggest android to solve sticky raw_tracepoint problem with user space deamon.
-> The reasons, you point out why user daemon cannot be used, sound weak to me.
-
-I don't think it is weak. It seems overkill to have a daemon for a trace
-event that is say supposed to be attached to all the time for the lifetime of
-the system. Why should there be a daemon consuming resources if it is active
-all the time?
-
-In Android, we are very careful about spawning useless processes and leaving
-them alive for the lifetime of the system - for no good reason. Our security
-teams also don't like this, and they can comment more.
-
-> Another acceptable solution would be to introduce pinning of raw_tp objects.
-> bpf progs and maps can be pinned in bpffs already. Pinning raw_tp would
-> be natural extension.
-
-I don't think the pinning solves the security problem, it just solves the
-process lifetime problem. Currently, attaching trace events through perf
-requires CAP_SYS_ADMIN. However, with ftrace events, we already control
-security of events by labeling the nodes in tracefs and granting access to
-the labeled context through the selinux policies. Having a 'bpf' node in
-tracefs for events, and granting access to the labels is a natural extension.
-
-I also thought about the pinning idea before, but we also want to add support
-for not just raw tracepoints, but also regular tracepoints (events if you
-will). I am hesitant to add a new BPF API just for creating regular
-tracepoints and then pinning those as well.
-
-I don't see why a new bpf node for a trace event is a bad idea, really.
-tracefs is how we deal with trace events on Android. We do it in production
-systems. This is a natural extension to that and fits with the security model
-well.
-
-thanks,
-
- - Joel
-
-
-
-
+-- 
+paul moore
+www.paul-moore.com
