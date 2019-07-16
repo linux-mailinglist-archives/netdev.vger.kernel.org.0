@@ -2,141 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E61A16B0AA
-	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 22:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 814A36B0AD
+	for <lists+netdev@lfdr.de>; Tue, 16 Jul 2019 22:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388758AbfGPUzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 16:55:03 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35020 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728575AbfGPUzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 16:55:02 -0400
-Received: by mail-pl1-f193.google.com with SMTP id w24so10730671plp.2;
-        Tue, 16 Jul 2019 13:55:01 -0700 (PDT)
+        id S2388588AbfGPU5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 16:57:53 -0400
+Received: from mail-pl1-f175.google.com ([209.85.214.175]:38493 "EHLO
+        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728575AbfGPU5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 16:57:52 -0400
+Received: by mail-pl1-f175.google.com with SMTP id az7so10725093plb.5
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 13:57:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JyDP2xrY1+vm6sbAE05lGR3/BE8oRL7Tl3eVMst2SbI=;
-        b=Heifp6lPgv05YjnXAE6GeXjzI1GGrmbh6WZginvD1pu6jIKYv7O1u4o8f9ZLo7O43J
-         GWwLegDY3aS6djFvijJkap3lbDOJimy431xQPA/7pF8mRgtYIf8yJJ5kSHFmHqGFMD9x
-         INh3r+mOdj9UsKQ7ufiIpwx5n6odOWCAhM3QyoKrloRRCmePIUR2wDQiYiyoatidc2+j
-         wlSO+pEClBKL6XEp9ULmFfpEXkIz6Q5fKGjZsKJmZnhgj3X7gib9JGp8I+VYCRb28aFt
-         s+SNVfKZW/od80ZoYlLDxP3/p2N4mvQyK1DdeS/Z6TYiE0bX5vfj7dH0cM4Xm0fMMSLb
-         Wjnw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3GLI+fm34YP2cU/EVZ/4XMeJusEXnS4qIZw8p2CywWI=;
+        b=Hg1NmNsd/iHUCpe5txmjoK3/SqkgWk/BXX/utOruNXy9b3/1wxTsxYUgIUI4MFDmWP
+         HE/FvGJwX/hvyoTGtcAXtcGGWwrCAECDtiQqSLaKEOE9KEJVTLDwSPM68N04r+E31UcD
+         yP+cwscjs+QVLg+dtxIOxwuO6e2BG2RXbg+q8Na5BuYeK9EhqQ2Q+4MbzWoHilCDFxiy
+         wwxEC8pGeYCEtAcfIzyH7G0wRZinH4TYW/hJsRNWH5RqD28o/cECl0b0B7g+qXVaZIUc
+         yQNK2CKOiYDScRkobSWN2OWXc82nhB0f1RTs31cvIWkDtIPjdwO7ZB/TYtZ8UFmNj7ld
+         6j7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JyDP2xrY1+vm6sbAE05lGR3/BE8oRL7Tl3eVMst2SbI=;
-        b=BOGlP2EzSN1OhPZ1/c6MXg+B5NXdKi/2/3HIWJSx5OMWIjx8z+WVAa7k5vkYN5gjp+
-         FoX9+UvosesXzByBBMJ0irRJmPDCnNJ6bKGmcDAtnnWT7HF9mP754RrZfE9rJ3rdBt0M
-         TJhcPZc+5Kjfgq9w2OIxRR21msaLvetkxadFWnMNTV0sIsPsxkMulfjBVxW0o+PMFAOn
-         IUsslIp782k7IjmJ9ZMuL0EE1HFgX+6o/o2d3qjGxCLobgimH4xAFKCJwhWUDu8w8R7/
-         E5Z9q20BjwHnSwKOEtsv2WzqEVxV4wahU4lVkrXxJxSCbmiu8342KuKt53FJmiy19H73
-         yLKw==
-X-Gm-Message-State: APjAAAUaRk1YD1qFzEDcOy8yt7qSOM4M7huyk2REsfcW6ZXan6mPm0AY
-        Dph8aUAeLhM2YjEJJXydlB4=
-X-Google-Smtp-Source: APXvYqzhq/GJvJ6rmN/or6wgrI2tKcjSDWXXI6SiYB/Y6tgHmyzGbm7M/E5KZ5ezy8gEDEWjVLMooQ==
-X-Received: by 2002:a17:902:724a:: with SMTP id c10mr35809877pll.298.1563310501294;
-        Tue, 16 Jul 2019 13:55:01 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::c7d4])
-        by smtp.gmail.com with ESMTPSA id 4sm26151120pfc.92.2019.07.16.13.54.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jul 2019 13:55:00 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 13:54:57 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Brendan Gregg <brendan.d.gregg@gmail.com>, connoro@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
-        jeffv@google.com, Karim Yaghmour <karim.yaghmour@opersys.com>,
-        kernel-team@android.com, linux-kselftest@vger.kernel.org,
-        Manali Shukla <manalishukla14@gmail.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matt Mullins <mmullins@fb.com>,
-        Michal Gregorczyk <michalgr@fb.com>,
-        Michal Gregorczyk <michalgr@live.com>,
-        Mohammad Husain <russoue@gmail.com>, namhyung@google.com,
-        namhyung@kernel.org, netdev@vger.kernel.org,
-        paul.chaignon@gmail.com, primiano@google.com,
-        Qais Yousef <qais.yousef@arm.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
-References: <20190710141548.132193-1-joel@joelfernandes.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3GLI+fm34YP2cU/EVZ/4XMeJusEXnS4qIZw8p2CywWI=;
+        b=DgfhPMhYoR5yL+RldFCDN27fnwC9oKOZVhQaSL+Ny1ZT/aArkWqZDnasN7khYkcIJO
+         QyAM1eqjtYxu4/wf/oyqvAl5vspo03uXTgb9pqHhyBSrhQ/2viqZDXh2TkRoofvTT2f/
+         oVlWWxAUa9AI+6s8PMAIKf1UuGW92nr6uI+UVEgJ42pCircHaz5/qBt1rp7YKe0nLyRK
+         368X4a83PQrv1Vpj1dRFCWDambetu5jiBCQAOVTNjaDY4q/EyWRO+NUpYBUZaxhq9kGt
+         e9aRqaASVgfDZdm+kzlzQswtwJH5xWIaFaV/ziRLoayHa/eKVvQcC597qnQ4eAN1XGwe
+         dnFA==
+X-Gm-Message-State: APjAAAU8ctfwmqBhZJrGlxx6TEsc7xNAw+gLb2m+TMhynqMFITs2ztt6
+        ky+jc40rC7cIAAOJ5wMSNmJ2aRunlOo=
+X-Google-Smtp-Source: APXvYqxyocC8Y79RggIbm0IS48ra47kakIOx5rP0juuDXCRH/QtTgGIfxDBOYeZCJ47le9SFfGoQPA==
+X-Received: by 2002:a17:902:27a8:: with SMTP id d37mr38315099plb.150.1563310672049;
+        Tue, 16 Jul 2019 13:57:52 -0700 (PDT)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id z4sm36016562pfg.166.2019.07.16.13.57.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 16 Jul 2019 13:57:51 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [Patch net v2] net_sched: unset TCQ_F_CAN_BYPASS when adding filters
+Date:   Tue, 16 Jul 2019 13:57:30 -0700
+Message-Id: <20190716205730.19675-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190710141548.132193-1-joel@joelfernandes.org>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 10:15:44AM -0400, Joel Fernandes (Google) wrote:
-> Hi,
+For qdisc's that support TC filters and set TCQ_F_CAN_BYPASS,
+notably fq_codel, it makes no sense to let packets bypass the TC
+filters we setup in any scenario, otherwise our packets steering
+policy could not be enforced.
 
-why are you cc-ing the whole world for this patch set?
-I'll reply to all as well, but I suspect a bunch of folks consider it spam.
-Please read Documentation/bpf/bpf_devel_QA.rst
+This can be reproduced easily with the following script:
 
-Also, I think, netdev@vger rejects emails with 80+ characters in cc as spam,
-so I'm not sure this set reached public mailing lists.
+ ip li add dev dummy0 type dummy
+ ifconfig dummy0 up
+ tc qd add dev dummy0 root fq_codel
+ tc filter add dev dummy0 parent 8001: protocol arp basic action mirred egress redirect dev lo
+ tc filter add dev dummy0 parent 8001: protocol ip basic action mirred egress redirect dev lo
+ ping -I dummy0 192.168.112.1
 
-> These patches make it possible to attach BPF programs directly to tracepoints
-> using ftrace (/sys/kernel/debug/tracing) without needing the process doing the
-> attach to be alive. This has the following benefits:
-> 
-> 1. Simplified Security: In Android, we have finer-grained security controls to
-> specific ftrace trace events using SELinux labels. We control precisely who is
-> allowed to enable an ftrace event already. By adding a node to ftrace for
-> attaching BPF programs, we can use the same mechanism to further control who is
-> allowed to attach to a trace event.
-> 
-> 2. Process lifetime: In Android we are adding usecases where a tracing program
-> needs to be attached all the time to a tracepoint, for the full life time of
-> the system. Such as to gather statistics where there no need for a detach for
-> the full system lifetime. With perf or bpf(2)'s BPF_RAW_TRACEPOINT_OPEN, this
-> means keeping a process alive all the time.  However, in Android our BPF loader
-> currently (for hardeneded security) involves just starting a process at boot
-> time, doing the BPF program loading, and then pinning them to /sys/fs/bpf.  We
-> don't keep this process alive all the time. It is more suitable to do a
-> one-shot attach of the program using ftrace and not need to have a process
-> alive all the time anymore for this. Such process also needs elevated
-> privileges since tracepoint program loading currently requires CAP_SYS_ADMIN
-> anyway so by design Android's bpfloader runs once at init and exits.
-> 
-> This series add a new bpf file to /sys/kernel/debug/tracing/events/X/Y/bpf
-> The following commands can be written into it:
-> attach:<fd>     Attaches BPF prog fd to tracepoint
-> detach:<fd>     Detaches BPF prog fd to tracepoint
+Without this patch, packets are sent directly to dummy0 without
+hitting any of the filters. With this patch, packets are redirected
+to loopback as expected.
 
-Looks like, to detach a program the user needs to read a text file,
-parse bpf prog id from text into binary. Then call fd_from_id bpf syscall,
-get a binary FD, convert it back to text and write as a text back into this file.
-I think this is just a single example why text based apis are not accepted
-in bpf anymore.
+This fix is not perfect, it only unsets the flag but does not set it back
+because we have to save the information somewhere in the qdisc if we
+really want that. Note, both fq_codel and sfq clear this flag in their
+->bind_tcf() but this is clearly not sufficient when we don't use any
+class ID.
 
-Through the patch set you call it ftrace. As far as I can see, this set
-has zero overlap with ftrace. There is no ftrace-bpf connection here at all
-that we discussed in the past Steven. It's all quite confusing.
+Fixes: 23624935e0c4 ("net_sched: TCQ_F_CAN_BYPASS generalization")
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/sched/cls_api.c      | 1 +
+ net/sched/sch_fq_codel.c | 2 --
+ net/sched/sch_sfq.c      | 2 --
+ 3 files changed, 1 insertion(+), 4 deletions(-)
 
-I suggest android to solve sticky raw_tracepoint problem with user space deamon.
-The reasons, you point out why user daemon cannot be used, sound weak to me.
-Another acceptable solution would be to introduce pinning of raw_tp objects.
-bpf progs and maps can be pinned in bpffs already. Pinning raw_tp would
-be natural extension.
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 278014e26aec..d144233423c5 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -2152,6 +2152,7 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
+ 			       RTM_NEWTFILTER, false, rtnl_held);
+ 		tfilter_put(tp, fh);
++		q->flags &= ~TCQ_F_CAN_BYPASS;
+ 	}
+ 
+ errout:
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index e2faf33d282b..d59fbcc745d1 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -596,8 +596,6 @@ static unsigned long fq_codel_find(struct Qdisc *sch, u32 classid)
+ static unsigned long fq_codel_bind(struct Qdisc *sch, unsigned long parent,
+ 			      u32 classid)
+ {
+-	/* we cannot bypass queue discipline anymore */
+-	sch->flags &= ~TCQ_F_CAN_BYPASS;
+ 	return 0;
+ }
+ 
+diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
+index 420bd8411677..68404a9d2ce4 100644
+--- a/net/sched/sch_sfq.c
++++ b/net/sched/sch_sfq.c
+@@ -824,8 +824,6 @@ static unsigned long sfq_find(struct Qdisc *sch, u32 classid)
+ static unsigned long sfq_bind(struct Qdisc *sch, unsigned long parent,
+ 			      u32 classid)
+ {
+-	/* we cannot bypass queue discipline anymore */
+-	sch->flags &= ~TCQ_F_CAN_BYPASS;
+ 	return 0;
+ }
+ 
+-- 
+2.21.0
 
