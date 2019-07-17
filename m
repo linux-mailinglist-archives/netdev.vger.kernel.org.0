@@ -2,55 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB3086B975
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 11:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF716B9B5
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfGQJnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 05:43:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49774 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725890AbfGQJnj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 05:43:39 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DDAAD8666A;
-        Wed, 17 Jul 2019 09:43:38 +0000 (UTC)
-Received: from localhost (unknown [10.40.205.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id ABBDC60BE2;
-        Wed, 17 Jul 2019 09:43:36 +0000 (UTC)
-Date:   Wed, 17 Jul 2019 11:43:34 +0200
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH AUTOSEL 5.2 226/249] selftests: bpf: fix inlines in
- test_lwt_seg6local
-Message-ID: <20190717114334.5556a14e@redhat.com>
-In-Reply-To: <20190715134655.4076-226-sashal@kernel.org>
-References: <20190715134655.4076-1-sashal@kernel.org>
-        <20190715134655.4076-226-sashal@kernel.org>
+        id S1726326AbfGQKFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 06:05:02 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:52790 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726784AbfGQKFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 06:05:01 -0400
+Received: by mail-io1-f69.google.com with SMTP id p12so26547292iog.19
+        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 03:05:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TTvRZwA8TDPGBK9TibJ6ly9VeeNnSU2IT+OU5u4KhhE=;
+        b=PvR55KinjuA9p92teSAnTSDcz/ypx4FocCfZzngzCGQNT0XbUg9KCaR8+d9k9VZPGX
+         S9QNwRKdyC9SyHUklNRmidimhIbJJdwofIr3zxg95nYJ5kDgMKs4S/r0Ap0Q0HniEvqP
+         LkU2qVkUpVOahi7O/JuVlLoS7r6uiYhJx30TxunSHfRrtPUUtx+U8knPb0b8g0CZ/W3Y
+         UWJtTW+Q+yYBtb3GGeEheUI4Z2C0JaKfQJXHvxrJ4c/6onHRoAW2Xsu3fWITKV5zqhWY
+         mQQ7pUxZ5VMROxo8TH/X7ySFSgazplv5fCagXcXbkS+q51VGin/Gjucm2pZVo+R9QV0w
+         f0lQ==
+X-Gm-Message-State: APjAAAWNE/wh9tj4oDNbCTiDUU7yByx3rWciv3d7CPRuDLeF30NrlhBF
+        Qffi1PlCBeBYNEMm74av4Cr89VTmOimQzMr2geFERYGmZVel
+X-Google-Smtp-Source: APXvYqygQgdRgLCMVKgGwqYS2YzrTxrwtIneXoQQgmYGyvms+ow3F6cA2ozkKNBfmEvrb6Cbs/OgXfe3/5McPbETYvJRCUiZzHs9
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Wed, 17 Jul 2019 09:43:39 +0000 (UTC)
+X-Received: by 2002:a05:6638:281:: with SMTP id c1mr40048066jaq.43.1563357900838;
+ Wed, 17 Jul 2019 03:05:00 -0700 (PDT)
+Date:   Wed, 17 Jul 2019 03:05:00 -0700
+In-Reply-To: <00000000000015d943058ddcb1b3@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000561cd5058ddda0ce@google.com>
+Subject: Re: WARNING: held lock freed in nr_release
+From:   syzbot <syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Jul 2019 09:46:31 -0400, Sasha Levin wrote:
-> From: Jiri Benc <jbenc@redhat.com>
-> 
-> [ Upstream commit 11aca65ec4db09527d3e9b6b41a0615b7da4386b ]
-> 
-> Selftests are reporting this failure in test_lwt_seg6local.sh:
+syzbot has bisected this bug to:
 
-I don't think this is critical in any way and I don't think this is a
-stable material. How was this selected?
+commit c8c8218ec5af5d2598381883acbefbf604e56b5e
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Jun 27 21:30:58 2019 +0000
 
- Jiri
+     netrom: fix a memory leak in nr_rx_frame()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14022e8fa00000
+start commit:   a5b64700 fix: taprio: Change type of txtime-delay paramete..
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=16022e8fa00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12022e8fa00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87305c3ca9c25c70
+dashboard link: https://syzkaller.appspot.com/bug?extid=a34e5f3d0300163f0c87
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1460b458600000
+
+Reported-by: syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com
+Fixes: c8c8218ec5af ("netrom: fix a memory leak in nr_rx_frame()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
