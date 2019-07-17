@@ -2,79 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B6886B317
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 03:18:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3CB26B325
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 03:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726104AbfGQBSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 21:18:04 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:41126 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726075AbfGQBSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 21:18:03 -0400
-Received: by mail-lf1-f65.google.com with SMTP id 62so10218753lfa.8;
-        Tue, 16 Jul 2019 18:18:02 -0700 (PDT)
+        id S1725989AbfGQBYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 21:24:12 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44913 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725850AbfGQBYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 21:24:11 -0400
+Received: by mail-pl1-f194.google.com with SMTP id t14so11010911plr.11;
+        Tue, 16 Jul 2019 18:24:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cGIrD8hmFJN1O8PXvtPzZbs27wrTnDcmi4staxVd3OI=;
-        b=qAb4kIaPKdgexPaSXtzjYxWmilrDzboXMzAQ75KtpRLYXailuTWRPOkerE8fyK2CE8
-         QYFImlF3YoVD5qiSxrCBTBzjTHkekfY2gcaZrxL4r/BTxH2oczbZ+dk9L1GwtzscHeDg
-         98p6wKF3je75O+8s0IGmHoGeX5nt20RXcP2Hm5wf+7+mi0Te7O52ra2Fsa6HCYqYb+3Y
-         zX2TMFcslGRuoHPc2y115AADgTt6gqswC9AMDQzdiKH3eGPM9N3cJFpTtTWF5ec7aaJ0
-         mmUBXZIQTnJWjJ5Xtl6LuIdsmvwqqop0Thh/Oc7KAh9pV2r9UL/LjXB1lojJR1mHfQG8
-         GaNA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=6M9uF5bstPPN0pYSwASOOs//F+sr/bjg9ukHy0L2y4g=;
+        b=sGHO2hRx3t2OIYOt5aLQicz0Q57voCcLIYaRKX6aoUVl/8NBDi3LCYeMIBWnf3ThDm
+         oT+ABzqYVQRq12jHvsh6nbNk/PfZEWqVVkurYXVJgkFChccWT573+BBkzm+CE5OwLOIX
+         MJgqoIJ8j8W8enXLLE9MNUIN7UF3J6It1n6A/RPOlwVknVBX3beF+DYTgtSzE5bo9dt7
+         tcUEdpdMzjno1vY0+zvssEONN2lES/32gBdjV3YSS8pLnZY+DMXGNcR1141YOV+f/ART
+         r2UxG960fHxVifgbuA0RA/KLHMTKNMswRS5eRDSHt3d4y55qrcLNqvL+ZZgVY1dGZOoh
+         t94A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cGIrD8hmFJN1O8PXvtPzZbs27wrTnDcmi4staxVd3OI=;
-        b=gCCJGab19141hNaWmPKVtcBmIp1R8zS/KKoSIMrr87wgpa/zqtWzV4PqM0g6qGtGi2
-         +5P5kLXtbpPh8cV7C0K2ucNu7F+mZmG5a4nPEP67f68Urm9nTASqhzlVpymQRhK1VHVp
-         eZCA4Vz/xZL4lA2QgBJYh6MbHPlsUYRkYEYc82HKJWx4lAtMYKccwVAmQ94hkGr/U2l5
-         Z4/xfSRKMY9FW+JJceEzPAB86XrUNW0zdgeDcyyxP2bnab/wR25pVmwi1HUFCdiuOQoS
-         9zKRRppwl2QaHihmwMre8Y/y1fIIS+9DCTOjyRHl0hjA5LySmtbtcauseE5mBvMSyGue
-         RF3g==
-X-Gm-Message-State: APjAAAWMFrdUOmwGalO2p3eftDIbySYr9dS3g6cJQX6U2XvdgEeb2n8Z
-        6n0uqsj/oQwvEBYOBbcSw/O1nHwFYNUqgvrZWSA=
-X-Google-Smtp-Source: APXvYqzIUUcr4f0vfvtcm3leALHR2jLLCZsjwSgpnOid53MDmvyhMH9vJ45jDJt0oRiAo8ecibzdGvlu+hgkVhvU6Z4=
-X-Received: by 2002:ac2:465e:: with SMTP id s30mr2156488lfo.19.1563326281722;
- Tue, 16 Jul 2019 18:18:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com>
- <CAEf4BzavePpW-C+zORN1kwSUJAWuJ3LxZ6QGxqaE9msxCq8ZLA@mail.gmail.com>
- <87r26w24v4.fsf@netronome.com> <CAEf4BzaPFbYKUQzu7VoRd7idrqPDMEFF=UEmT2pGf+Lxz06+sA@mail.gmail.com>
- <87k1cj3b69.fsf@netronome.com> <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com>
- <87wogitlbi.fsf@netronome.com> <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
- <20190716151223.7208c033@cakuba.netronome.com>
-In-Reply-To: <20190716151223.7208c033@cakuba.netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=6M9uF5bstPPN0pYSwASOOs//F+sr/bjg9ukHy0L2y4g=;
+        b=RGmTYNYBl0cJyvnUB5nqz2sRIgaobD2YxmuwTuznTh4E9HwVlEsFnczNnC96defVZr
+         0AKJbPyBkLk+1rcfwK1WnEejfmbB2mXgOoqkFRrG8cER8sUIVEhKkBh3SaBrp6s9m4W9
+         fh8J8vYfBtNmrvklVr/lzBW4xHB7k+n8mQfkVXlqtOGiUBA5BC3Ym9gQHx7kfMDna86U
+         GmyBG8xXMc1LPUP4tDORWfL5HwvFGR6dvGCntKON1xrWbcXtx0ztw0T9Da/dwLTBIFlq
+         T+tSwfjmMmTUZ4GlUK0LingvdUwxyn4smfXlRNpqvgrSHUQcGrMBTZl9vwVnYbM8SnRF
+         C+UA==
+X-Gm-Message-State: APjAAAVEGfF4Pt+W6Knc4qCW0+2556oUn9llmjXQYrb6fgGbwVi9dP6h
+        G9lMuxzm5am/m10BK3rrTfyR0a8Qpuo=
+X-Google-Smtp-Source: APXvYqxZAeP0010wWGd4gGZMai5AEonP7WPfRkoTP5x6U+IRFYKYd4rrMPkVjcong96gN6ITvRUnfQ==
+X-Received: by 2002:a17:902:9f8e:: with SMTP id g14mr39388892plq.67.1563326650873;
+        Tue, 16 Jul 2019 18:24:10 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::b82a])
+        by smtp.gmail.com with ESMTPSA id v138sm23218547pfc.15.2019.07.16.18.24.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 16 Jul 2019 18:24:10 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 18:24:07 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 16 Jul 2019 18:17:49 -0700
-Message-ID: <CAADnVQLQtDLQRXY+MuSRzpxZdnE0BZiU7O6eayGttyt-vpErqg@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/8] bpf: accelerate insn patching speed
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiong Wang <jiong.wang@netronome.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
+        Brendan Gregg <brendan.d.gregg@gmail.com>, connoro@google.com,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Edward Cree <ecree@solarflare.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com,
+        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
+        jeffv@google.com, Karim Yaghmour <karim.yaghmour@opersys.com>,
+        kernel-team@android.com, linux-kselftest@vger.kernel.org,
+        Manali Shukla <manalishukla14@gmail.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Matt Mullins <mmullins@fb.com>,
+        Michal Gregorczyk <michalgr@fb.com>,
+        Michal Gregorczyk <michalgr@live.com>,
+        Mohammad Husain <russoue@gmail.com>, namhyung@google.com,
+        namhyung@kernel.org, netdev@vger.kernel.org,
+        paul.chaignon@gmail.com, primiano@google.com,
+        Qais Yousef <qais.yousef@arm.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
         Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
+ ftrace
+Message-ID: <20190717012406.lugqemvubixfdd6v@ast-mbp.dhcp.thefacebook.com>
+References: <20190710141548.132193-1-joel@joelfernandes.org>
+ <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
+ <20190716213050.GA161922@google.com>
+ <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
+ <20190716224150.GC172157@google.com>
+ <20190716235500.GA199237@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190716235500.GA199237@google.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 3:12 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Tue, 16 Jul 2019 09:17:03 -0700, Alexei Starovoitov wrote:
-> > I don't think we have a test for such 'dead prog only due to verifier walk'
-> > situation. I wonder what happens :)
->
-> FWIW we do have verifier and BTF self tests for dead code removal
-> of entire subprogs! :)
+On Tue, Jul 16, 2019 at 07:55:00PM -0400, Joel Fernandes wrote:
+> On Tue, Jul 16, 2019 at 06:41:50PM -0400, Joel Fernandes wrote:
+> > On Tue, Jul 16, 2019 at 03:26:52PM -0700, Alexei Starovoitov wrote:
+> > > On Tue, Jul 16, 2019 at 05:30:50PM -0400, Joel Fernandes wrote:
+> > > > 
+> > > > I also thought about the pinning idea before, but we also want to add support
+> > > > for not just raw tracepoints, but also regular tracepoints (events if you
+> > > > will). I am hesitant to add a new BPF API just for creating regular
+> > > > tracepoints and then pinning those as well.
+> > > 
+> > > and they should be done through the pinning as well.
+> > 
+> > Hmm ok, I will give it some more thought.
+> 
+> I think I can make the new BPF API + pinning approach work, I will try to
+> work on something like this and post it soon.
+> 
+> Also, I had a question below if you don't mind taking a look:
+> 
+> thanks Alexei!
+> 
+> > > > I don't see why a new bpf node for a trace event is a bad idea, really.
+> > > 
+> > > See the patches for kprobe/uprobe FD-based api and the reasons behind it.
+> > > tldr: text is racy, doesn't scale, poor security, etc.
+> > 
+> > Is it possible to use perf without CAP_SYS_ADMIN and control security at the
+> > per-event level? We are selective about who can access which event, using
+> > selinux. That's how our ftrace-based tracers work. Its fine grained per-event
+> > control. That's where I was going with the tracefs approach since we get that
+> > granularity using the file system.
 
-Thanks! Indeed.
+android's choice of selinux is not a factor in deciding kernel apis.
+It's completely separate discusion wether disallowing particular tracepoints
+for given user make sense at all.
+Just because you can hack it in via selinux blocking particular
+/sys/debug/tracing/ directory and convince yourself that it's somehow
+makes android more secure. It doesn't mean that all new api should fit
+into this model.
+I think allowing one tracepoint and disallowing another is pointless
+from security point of view. Tracing bpf program can do bpf_probe_read
+of anything.
+
