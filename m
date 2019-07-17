@@ -2,80 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 904906C1AD
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 21:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E2116C20C
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 22:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727104AbfGQTqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 15:46:48 -0400
-Received: from mail-pf1-f182.google.com ([209.85.210.182]:38539 "EHLO
-        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725873AbfGQTqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 15:46:48 -0400
-Received: by mail-pf1-f182.google.com with SMTP id y15so11354559pfn.5
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 12:46:48 -0700 (PDT)
+        id S1727610AbfGQUTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 16:19:31 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:35104 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725993AbfGQUTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 16:19:30 -0400
+Received: by mail-wm1-f67.google.com with SMTP id l2so23392185wmg.0;
+        Wed, 17 Jul 2019 13:19:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=7lJLO2f7sUbmPmmNVeD3rAr1/Rsn85WwYcdLa3zGdTk=;
-        b=f4fLQotU4ZBJLd9mSuNnkQOdtakTlWOr/zrIASyxTj+QjilSfVgMYYSc1OvXu+GJEq
-         VmpXYUBW/E+Rc1+C6rB17fwjPrCc4uEDueOwzVrrMe+EXy1aI4HLz9lsbx/99LohWEZL
-         yx527o6Niu5/XPxvn11UpsC/zVPQv1UdYyVfA+Z9hQgMhAb6PgOfppVXuii8ahpsDNVv
-         CyxhTNbFy/GhSpbBbs1PZU2Id4AJnjuBxJB5t5HsNe9BM6WA8eEZ5qjrr0B8iCN6Kith
-         BtZ9R83PDj/wwUacXf4SxCc8/w5tabyeoPlh6STlZAUny5l7COsnb/pqWwdfCWTKtooI
-         ECgA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=nqaMPv708RCiesrxZDz1cZrIB3dLCSSINVU8+So70w0=;
+        b=qln0DjeKwd94XPAiTvY1WJ/CL7tTNBmdoL8p2i+aj2tj2RtVTVZWjR2Rb+16c1e1Kh
+         jMlXYQBkLVc7H6+Fc44QHiGsKIibSnZ+IzbOj9/4EFAoPHu/A5Lv8MCPIaGpHW3j7+Xk
+         6KHi3NJPjbBkDcZq3qMJkzna6/7asPVRyLLCIO1Xy2/yPL5DKHBaHRmLODzVhx3HZkpJ
+         l5IrZn7PXCb5LL+8Fz5Tn7WqQhxHctBNeUIehZqVXkS8pRpuo6Rpql0j8SwmCjeWvPJv
+         u3DrSsUnjGFSE7M/ACJGdn9+QoJjNRSI1tVc/mRWiGjT3hci2WzLTK4jYaCQ+FBGS4SP
+         Z+MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=7lJLO2f7sUbmPmmNVeD3rAr1/Rsn85WwYcdLa3zGdTk=;
-        b=jbmwnCX8H2fJCcsYV9+XqNr+TZLiDSHjuqzCnKcktIoBmN8W6dbrC4q0GekCt6vV1s
-         U5Z9yaNFbsV/M8DJ4H9SBMzWeZa7hnFOKuD1bPzFQWgyeBxgdBjDSAu1puJzJxMTrviR
-         UPclpEcCuNzDEOHlf07kPfAMY2kJ4/QXStzy4wmNMAZzMrgDeU2C838PceHVG6WGh6UT
-         3XTwonaXq5QW6wUSAwp45Ep+/RhGzQNMahF8pom0uZlB2OIjAlnkSH2kjec14hCtJ8Kr
-         JCMkEFyDZA4Ayuaj/LwnOjoVLdjeEGl8iSA18vjhJfkqGYDEYarFrEB5nWktekFubLaR
-         z06w==
-X-Gm-Message-State: APjAAAWfx6WiIv8Vg/1amuxdViblVIu95vAErr8/IX1aQGeM9pl/ZbTS
-        yUuc8R+NROyuSPsyb+ULHzfwV8+A9V8=
-X-Google-Smtp-Source: APXvYqx1Pa9ksf2yocjZ5prvWvzHHt8iT4uAj9j9v6CWWfJOVbdKKJ23sDKS2/DJqUA90U1LotU1sg==
-X-Received: by 2002:a65:6081:: with SMTP id t1mr43762799pgu.9.1563392807319;
-        Wed, 17 Jul 2019 12:46:47 -0700 (PDT)
-Received: from localhost.localdomain (76-14-106-55.rk.wavecable.com. [76.14.106.55])
-        by smtp.gmail.com with ESMTPSA id u7sm22007305pgr.94.2019.07.17.12.46.46
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 17 Jul 2019 12:46:46 -0700 (PDT)
-From:   Rosen Penev <rosenp@gmail.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCHv2] net: ag71xx: Add missing header
-Date:   Wed, 17 Jul 2019 12:46:45 -0700
-Message-Id: <20190717194645.24239-1-rosenp@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=nqaMPv708RCiesrxZDz1cZrIB3dLCSSINVU8+So70w0=;
+        b=ibwmWH81ELSumkwW9w8un5wNhEPVEl/k2IDcK08z/wi0hgDn1fnx+EwNSSIv6oIsto
+         l+rpZ2Qq2iBXAqemQUIuJ/FGbXQZVo/gFStjBGvz/Wt5r2louYrWP3ySmVkhdYHUDYiS
+         8rTHwtuv5KbWeOKJk61DzSk/qO93JIuOrXzM5HGofDBeEy19FfISwYT/oSiK9DLqNXxb
+         rXgnqKOgTv7G4WmW2V0rSdrjQOgLZmTAlHHpoUvkYWsjSsBerAOXvKGOXQdejvMd9oU2
+         liq6eXy6YTRPF8Ux1RV0eVSR3xGk6yA58BTtPglUOXWWsUYkXABt1oSqvdgeT3wrfJua
+         yyig==
+X-Gm-Message-State: APjAAAVI+l2t2wkWvu/cs3ONpayHGqHU28un0rT0tv96NkpMbZCT5efN
+        1kBSfiJbjHBFH9XzLXP2s+E=
+X-Google-Smtp-Source: APXvYqwK1dsG8qqPpVwTplC7CW84CZEZ0F4XKUlx8chgxaOXxW7ZmkQrifWn4fhsWl8GynTuyQJ6EA==
+X-Received: by 2002:a1c:b146:: with SMTP id a67mr37260276wmf.124.1563394768433;
+        Wed, 17 Jul 2019 13:19:28 -0700 (PDT)
+Received: from debian ([78.40.148.180])
+        by smtp.gmail.com with ESMTPSA id y1sm20423638wma.32.2019.07.17.13.19.27
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 17 Jul 2019 13:19:27 -0700 (PDT)
+Date:   Wed, 17 Jul 2019 21:19:25 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     peterz@infradead.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: regression with napi/softirq ?
+Message-ID: <20190717201925.fur57qfs2x3ha6aq@debian>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ag71xx uses devm_ioremap_nocache. This fixes usage of an implicit function
+Hi All,
 
-Fixes: d51b6ce441d356369387d20bc1de5f2edb0ab71e
+I am using v4.14.55 on an Intel Atom based board and I am seeing network
+packet drops frequently on wireshark logs. After lots of debugging it
+seems that when this happens softirq is taking huge time to start after
+it has been raised. This is a small snippet from ftrace:
 
-Signed-off-by: Rosen Penev <rosenp@gmail.com>
----
- v2: Target net instead of net-next
- drivers/net/ethernet/atheros/ag71xx.c | 1 +
- 1 file changed, 1 insertion(+)
+           <...>-2110  [001] dNH1   466.634916: irq_handler_entry: irq=126 name=eth0-TxRx-0
+           <...>-2110  [001] dNH1   466.634917: softirq_raise: vec=3 [action=NET_RX]
+           <...>-2110  [001] dNH1   466.634918: irq_handler_exit: irq=126 ret=handled
+     ksoftirqd/1-15    [001] ..s.   466.635826: softirq_entry: vec=3 [action=NET_RX]
+     ksoftirqd/1-15    [001] ..s.   466.635852: softirq_exit: vec=3 [action=NET_RX]
+     ksoftirqd/1-15    [001] d.H.   466.635856: irq_handler_entry: irq=126 name=eth0-TxRx-0
+     ksoftirqd/1-15    [001] d.H.   466.635857: softirq_raise: vec=3 [action=NET_RX]
+     ksoftirqd/1-15    [001] d.H.   466.635858: irq_handler_exit: irq=126 ret=handled
+     ksoftirqd/1-15    [001] ..s.   466.635860: softirq_entry: vec=3 [action=NET_RX]
+     ksoftirqd/1-15    [001] ..s.   466.635863: softirq_exit: vec=3 [action=NET_RX]
 
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index 72a57c6cd254..8f450a03a885 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -35,6 +35,7 @@
- #include <linux/regmap.h>
- #include <linux/reset.h>
- #include <linux/clk.h>
-+#include <linux/io.h>
- 
- /* For our NAPI weight bigger does *NOT* mean better - it means more
-  * D-cache misses and lots more wasted cycles than we'll ever
--- 
-2.17.1
+So, softirq was raised at 466.634917 but it started at 466.635826 almost
+909 usec after it was raised.
+
+If I move back to v4.4 kernel I still see similar behaviour but the maximum
+delay I get is in the range of 500usec. But if I move back to v3.8 kernel I
+can see there is no packet loss and the maximum delay between softirq_raise
+and irq_handler_entry is 103usec.
+
+Is this a known issue?
+Will really appreciate your help in this problem.
+
+
+--
+Regards
+Sudip
 
