@@ -2,116 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4171A6C2B4
+	by mail.lfdr.de (Postfix) with ESMTP id B0A7B6C2B5
 	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 23:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbfGQVkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 17:40:52 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:43703 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727205AbfGQVkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 17:40:52 -0400
-Received: by mail-ot1-f67.google.com with SMTP id j11so2470735otp.10;
-        Wed, 17 Jul 2019 14:40:51 -0700 (PDT)
+        id S1729050AbfGQVk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 17:40:57 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:41383 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727205AbfGQVk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 17:40:57 -0400
+Received: by mail-lf1-f66.google.com with SMTP id 62so12704321lfa.8;
+        Wed, 17 Jul 2019 14:40:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JwCY5EkX6qsSCI1zqTSmNzIVniTYPiFia3C3pkf6gXE=;
-        b=Oui+ecCfFLBBgtSmUJViQyKvDee4rnPVVVxZZq6vZZTBhBkUYkeheQyB5cyJ2EPCYn
-         qSj1BDqGkQaEN9QLj7v//zqlXqRlqKlyRZIVqhe/APlDIkuhJtPzRJEmVag7WFBte2bY
-         Lqv5BzzRxApG1McZHAYYOgj7VjMpBz2BN8wcOcaDVnbmsmjmyn4C91Jb+RFckM3bNB0v
-         Wpewsgu/++kYdMmv9vwfitUWM3BAcRxs6vvylfdizkFAPxh83jLiFf5NxZUmmFV0eLev
-         KhB1fUacbnJms/HzNNNhMFW2IC4qdnw+LqyMvknUyWl583p1OPvx6XslBLCjOMJscVQg
-         Biaw==
+        bh=AUNlCsTwwbO9HSCCZ59q/nRyBLJZ8Uq2qfPS4sjf2bw=;
+        b=PvVtUppYSVSwPllMj/jefCGyUXmYsbq6cX8TAneIQFzhUiVapI8hru8mlyNoC1u5cY
+         kX0Fh/e0s20T4TxxryeP7pGijakb1+2YdLXRE836V7aR5S8LhCEEkiQoN0qYmYcwMnko
+         /0S8dTbyNZsgIWvBArjoqFlsuFw2Lc3AsiWZz2bAcMQWXq7U57KwuOtNibxmbR60yDUl
+         Eyc7EU4tm4scELD6aH/zUdw+yvK+WWBqrywcxkxbaS4egkHu9G1CxgDtOpKE83fwjjFP
+         I/It7qlp21yZ4EYrAlzZ4zRz/eH4Z55hmQ+JQm5z0gURy7ijBQytnqwnQ88yGsJ5pmHz
+         1gLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JwCY5EkX6qsSCI1zqTSmNzIVniTYPiFia3C3pkf6gXE=;
-        b=ht/nt4cMLs93eg2a0t9yCVL0jGgaSWtUbmuJ5Lqx7btzLLQ1oW6r3r/dKwtN6JPhiq
-         7NdAW3IQ41hJO1rJy4kdvEwH8BmZ6NsBU1SoMolPcoQcYpKXlM4I415lSvK4Y6o9PkNA
-         lZEk8Ig6mOOL1DrmdJrsDbs1tYQrvSaD6T9MnmocdlIK4vhtPnWdmQaoSA6WyLxEpkM/
-         DISp1XMZg2mvCOFb1YcH3fdeGu73LBeiS3EgMMVrRla7lTDRljpDcnIO9jRNfgwWBpbf
-         BzF0wh+wzuArAEeVU23a2pMGyUMc0aYA9P0djaf/1JJ0SS61e25Kyes9SaTvtT+RqFK5
-         dqeg==
-X-Gm-Message-State: APjAAAUEyPIb+/6PVwmB4ZjR4e3sRtGcsXkgG0Y9M3BdFkcEordOrR/R
-        a8tBNlVZKB/4EPpdQjj5RVhAr2ZYNz1aJAI7nx8=
-X-Google-Smtp-Source: APXvYqysf8UWPm8GTDujuPn5wVlp6jl/AWJqP+AE7CvVunAzweacnZCJdfiO11rsJ1qDVpL0VrJQKsSWa8Yqs3pHsZ4=
-X-Received: by 2002:a9d:6c46:: with SMTP id g6mr29693212otq.104.1563399650821;
- Wed, 17 Jul 2019 14:40:50 -0700 (PDT)
+        bh=AUNlCsTwwbO9HSCCZ59q/nRyBLJZ8Uq2qfPS4sjf2bw=;
+        b=m5o9QuO1H7TfMswqt524XohYFRr8D4xXAxdeLspAxujKvnNCDmubYsFXTZ7TbrB4Nr
+         0qzO8VP5YQ42cQzeyZVNssPeL0ngPpdN9QvuVtNM+STWg6bqOW0E5I61UOBfPIkGjH7P
+         9EJco8AKarsgbwHT5qn4VvcGXcgtGCKBsA7OtVpRNwAdA6fdTS5mmlIuJzyypacpY4Rm
+         knm8SdXq8gjou/04TULQFu7IbboUr9EN7AG4WNs36/uFe5dv5u1N/gQ4E6cX73xtgca/
+         yCouP9gcTkQ69Y3xUCZQtxjOQDWnC0SPDaMLr4JZmpafEweyryZpEI6kdPgj/Y5IT+e1
+         p5kA==
+X-Gm-Message-State: APjAAAUKPuRCfLaAKoalqRSxXI6wCazuiNix7Lzfrgkfj6UIAolg2VQt
+        wRd5y/45rHWW8hAeRe1vcGXoWvQHd3oSniPsbIBMjbSx
+X-Google-Smtp-Source: APXvYqy9PfpIuDhwCi3MxfklB+DfN4XCTqP4heoMN4SE1wUj9s49KxDiS+adaMTbOahayBbHXFx/O7ROh+3tSNPcTNo=
+X-Received: by 2002:ac2:4351:: with SMTP id o17mr18944366lfl.100.1563399654721;
+ Wed, 17 Jul 2019 14:40:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190717201925.fur57qfs2x3ha6aq@debian> <alpine.DEB.2.21.1907172238490.1778@nanos.tec.linutronix.de>
-In-Reply-To: <alpine.DEB.2.21.1907172238490.1778@nanos.tec.linutronix.de>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Wed, 17 Jul 2019 22:40:14 +0100
-Message-ID: <CADVatmO_m-NYotb9Htd7gS0d2-o0DeEWeDJ1uYKE+oj_HjoN0Q@mail.gmail.com>
-Subject: Re: regression with napi/softirq ?
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20190710141548.132193-1-joel@joelfernandes.org>
+ <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
+ <20190716213050.GA161922@google.com> <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
+ <20190716224150.GC172157@google.com> <20190716235500.GA199237@google.com>
+ <20190717012406.lugqemvubixfdd6v@ast-mbp.dhcp.thefacebook.com> <20190717130119.GA138030@google.com>
+In-Reply-To: <20190717130119.GA138030@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 17 Jul 2019 14:40:42 -0700
+Message-ID: <CAADnVQJY_=yeY0C3k1ZKpRFu5oNbB4zhQf5tQnLr=Mi8i6cgeQ@mail.gmail.com>
+Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to ftrace
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Android Kernel Team <kernel-team@android.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Jul 17, 2019 at 6:01 AM Joel Fernandes <joel@joelfernandes.org> wrote:
 
-On Wed, Jul 17, 2019 at 9:53 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+I trimmed cc. some emails were bouncing.
+
+> > I think allowing one tracepoint and disallowing another is pointless
+> > from security point of view. Tracing bpf program can do bpf_probe_read
+> > of anything.
 >
-> On Wed, 17 Jul 2019, Sudip Mukherjee wrote:
-> > I am using v4.14.55 on an Intel Atom based board and I am seeing network
-> > packet drops frequently on wireshark logs. After lots of debugging it
-> > seems that when this happens softirq is taking huge time to start after
-> > it has been raised. This is a small snippet from ftrace:
-> >
-> >            <...>-2110  [001] dNH1   466.634916: irq_handler_entry: irq=126 name=eth0-TxRx-0
-> >            <...>-2110  [001] dNH1   466.634917: softirq_raise: vec=3 [action=NET_RX]
-> >            <...>-2110  [001] dNH1   466.634918: irq_handler_exit: irq=126 ret=handled
-> >      ksoftirqd/1-15    [001] ..s.   466.635826: softirq_entry: vec=3 [action=NET_RX]
-> >      ksoftirqd/1-15    [001] ..s.   466.635852: softirq_exit: vec=3 [action=NET_RX]
-> >      ksoftirqd/1-15    [001] d.H.   466.635856: irq_handler_entry: irq=126 name=eth0-TxRx-0
-> >      ksoftirqd/1-15    [001] d.H.   466.635857: softirq_raise: vec=3 [action=NET_RX]
-> >      ksoftirqd/1-15    [001] d.H.   466.635858: irq_handler_exit: irq=126 ret=handled
-> >      ksoftirqd/1-15    [001] ..s.   466.635860: softirq_entry: vec=3 [action=NET_RX]
-> >      ksoftirqd/1-15    [001] ..s.   466.635863: softirq_exit: vec=3 [action=NET_RX]
-> >
-> > So, softirq was raised at 466.634917 but it started at 466.635826 almost
-> > 909 usec after it was raised.
->
-> This is a situation where the network softirq decided to delegate softirq
-> processing to ksoftirqd. That happens when too much work is available while
-> processing softirqs on return from interrupt.
->
-> That means that softirq processing happens under scheduler control. So if
-> there are other runnable tasks on the same CPU ksoftirqd can be delayed
-> until their time slice expired. As a consequence ksoftirqd might not be
-> able to catch up with the incoming packet flood and the NIC starts to drop.
+> I think the assumption here is the user controls the program instructions at
+> runtime, but that's not the case. The BPF program we are loading is not
+> dynamically generated, it is built at build time and it is loaded from a
+> secure verified partition, so even though it can do bpf_probe_read, it is
+> still not something that the user can change.
 
-Yes, and I see in the ftrace that there are many other userspace processes
-getting scheduled in that time.
+so you're saying that by having a set of signed bpf programs which
+instructions are known to be non-malicious and allowed set of tracepoints
+to attach via selinux whitelist, such setup will be safe?
+Have you considered how mix and match will behave?
 
->
-> You can hack ksoftirq_running() to return always false to avoid this, but
-> that might cause application starvation and a huge packet buffer backlog
-> when the amount of incoming packets makes the CPU do nothing else than
-> softirq processing.
+> And, we are planning to make it
+> even more secure by making it kernel verify the program at load time as well
+> (you were on some discussions about that a few months ago).
 
-I tried that now, it is better but still not as good as v3.8
-Now I am getting 375.9usec as the maximum time between raising the softirq
-and it starting to execute and packet drops still there.
-
-And just a thought, do you think there should be a CONFIG_ option for
-this feature
-of ksoftirqd_running() so that it can be disabled if needed by users like us?
-
-Can you please think of anything else that might have changed which I still need
-to change to make the time comparable to v3.8..
-
-
--- 
-Regards
-Sudip
+It sounds like api decisions for this sticky raw_tp feature are
+driven by security choices which are not actually secure.
+I'm suggesting to avoid bringing up point of security as a reason for
+this api design, since it's making the opposite effect.
