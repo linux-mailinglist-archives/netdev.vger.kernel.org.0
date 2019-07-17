@@ -2,102 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA2F86BA71
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:40:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DA1D6BA91
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:53:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbfGQKkr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jul 2019 06:40:47 -0400
-Received: from m4a0039g.houston.softwaregrp.com ([15.124.2.85]:43265 "EHLO
-        m4a0039g.houston.softwaregrp.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725941AbfGQKkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 06:40:46 -0400
-X-Greylist: delayed 905 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Jul 2019 06:40:46 EDT
-Received: FROM m4a0039g.houston.softwaregrp.com (15.120.17.146) BY m4a0039g.houston.softwaregrp.com WITH ESMTP
- FOR netdev@vger.kernel.org;
- Wed, 17 Jul 2019 10:40:45 +0000
-Received: from M4W0334.microfocus.com (2002:f78:1192::f78:1192) by
- M4W0334.microfocus.com (2002:f78:1192::f78:1192) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Wed, 17 Jul 2019 10:25:21 +0000
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (15.124.8.11) by
- M4W0334.microfocus.com (15.120.17.146) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10 via Frontend Transport; Wed, 17 Jul 2019 10:25:21 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tl4Ck39cJ8fZKR8az5axtbLjpuwWPmDAsm02Y2eB7MiO9wm3GLteyF5hIxkMZmr3gF/ba7UQVYkIgdB6OQjlr6uU/6ExTt2p6o+SXu56K0ddizTUZF6OHHqth1LsLhktxhyodX/+JKN6erj89iIkbkdyv09ZAAJRRK2PRItYbGLufuKFFf1c3Di+CSa4AWof3MUPi6JVpJD5HnrtsgfkaN7M6MAUJQhIc64TJd+WqYpqM6mMYQDKUpMQYCrocHgfdXWc8ycVQYcFECIWp43Pbsg5nmFHvp3bFtWZFfiBTZGj9GbCJzXuWrsScDTxaJy+kl7ySo+Olqri0hGDKoPqWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zuuAN3vg0dNFlBgLGocV58U/H1Jm+oXdmGIQeMjIb5c=;
- b=JeKJ71ErfGkgkwffe5LGAYm5Y7ydze63RSNaJ6P6IB9D3UVBoBHjncoVH7a2UDsOHrx8YIl1rYqH9oDIj/5kO6QnK1atIMOxmazK7rUtt4xLbKPbACxX/0xen1dSgovwtRCrkE1ZniIu3Gva/I0vvWChn0CEKcJGMHjED+Lb2Ws+KJrIzeDSbks8rGft3ytlKOYdwU003JzC61AkIGnx6MY+41vguhmR9LLsQl+udUiimFBsfJ95Z9b/MQtV1aACvqG9ErHFg7EgRLYQ7a0vT/tFVIRApHyrpPcRUKSSD2iPZ47q8Gi0fqCfmWkIRt48CqKaneLH7Dx0cept6aJRSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=suse.com;dmarc=pass action=none header.from=suse.com;dkim=pass
- header.d=suse.com;arc=none
-Received: from CH2PR18MB3189.namprd18.prod.outlook.com (52.132.244.203) by
- CH2PR18MB3176.namprd18.prod.outlook.com (52.132.244.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2073.10; Wed, 17 Jul 2019 10:25:19 +0000
-Received: from CH2PR18MB3189.namprd18.prod.outlook.com
- ([fe80::2053:cdc8:d81c:a5d6]) by CH2PR18MB3189.namprd18.prod.outlook.com
- ([fe80::2053:cdc8:d81c:a5d6%7]) with mapi id 15.20.2073.012; Wed, 17 Jul 2019
- 10:25:19 +0000
-From:   Firo Yang <firo.yang@suse.com>
-To:     Benjamin Poirier <BPoirier@suse.com>
-CC:     Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        Sathya Perla <sathya.perla@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] be2net: Signal that the device cannot transmit during
- reconfiguration
-Thread-Topic: [PATCH net] be2net: Signal that the device cannot transmit
- during reconfiguration
-Thread-Index: AQHVO67z2A6t0cO8nkSyQhUeM2Az8KbOMBQEgABKiSaAAAY7iIAADO7ggAANWMg=
-Date:   Wed, 17 Jul 2019 10:25:19 +0000
-Message-ID: <CH2PR18MB3189803176C2D913A8476F9C88C90@CH2PR18MB3189.namprd18.prod.outlook.com>
-References: <20190716081655.7676-1-bpoirier@suse.com>
- <CH2PR18MB31898E033896F9760D36BFF288C90@CH2PR18MB3189.namprd18.prod.outlook.com>
- <20190717082340.GA6015@f1>
- <CH2PR18MB3189AD09E590F16443D8D5BA88C90@CH2PR18MB3189.namprd18.prod.outlook.com>,<20190717093208.GA6511@f1>
-In-Reply-To: <20190717093208.GA6511@f1>
-Accept-Language: en-US, en-GB, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=firo.yang@suse.com; 
-x-originating-ip: [45.122.156.254]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 82ddb616-fad7-445d-0e2e-08d70aa111b5
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CH2PR18MB3176;
-x-ms-traffictypediagnostic: CH2PR18MB3176:
-x-microsoft-antispam-prvs: <CH2PR18MB31768FE103FA51B8D9CD0B0888C90@CH2PR18MB3176.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1728;
-x-forefront-prvs: 01018CB5B3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(366004)(136003)(39860400002)(376002)(396003)(199004)(189003)(11346002)(446003)(186003)(14454004)(26005)(81166006)(66946007)(81156014)(102836004)(9686003)(476003)(6436002)(8676002)(44832011)(54906003)(256004)(7736002)(6246003)(2906002)(6506007)(53936002)(6862004)(76176011)(7696005)(316002)(76116006)(305945005)(64756008)(68736007)(5660300002)(229853002)(52536014)(4326008)(99286004)(66556008)(6636002)(66446008)(558084003)(66066001)(55016002)(3846002)(486006)(478600001)(8936002)(33656002)(6116002)(74316002)(25786009)(71200400001)(66476007)(71190400001)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:CH2PR18MB3176;H:CH2PR18MB3189.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: suse.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: T+gw7xIqcQeV1cqy9Y1Vvvh+TuOcoKCLYw8ehte4Rt34OjmofAVRlPc0o0rd/atrRytEoOtFAl4BVjzbTJsDGRpfMA+5+jvq68s2mkSKZdVvcvKrbzpwIXqs/armQycVIeJkiWSbOV0aAe0lBqzEhMm0Tkby/k0eH2flqOeYhBGM5ei6H7Gd65IkJHc0Faa/CmBdug8BPbuHF4ntFEv/JevS18qjh+FYIiLr2tVV5aVVTn6L3+GFGRRt7P/wvM2Xx20MA/jopf8IMEKPZBAoSoqQ70HMpkxlaWcJ97CGXGbwNzifpykboyEP/5xausdPOhPy7MDKovPSbuyibevDmavVSxmQ0zSdmgzu5HbH009pkd5jrI7JR91U0lFAKoAp8s7QDmHoUbcHjO5GCPO8XvznF/sIwR/OUVPKnDHmDlU=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 82ddb616-fad7-445d-0e2e-08d70aa111b5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2019 10:25:19.7666
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 856b813c-16e5-49a5-85ec-6f081e13b527
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: firo.yang@suse.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR18MB3176
-X-OriginatorOrg: suse.com
+        id S1726684AbfGQKxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 06:53:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42680 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725893AbfGQKxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jul 2019 06:53:06 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7A52A3082134;
+        Wed, 17 Jul 2019 10:53:06 +0000 (UTC)
+Received: from hp-dl380pg8-01.lab.eng.pek2.redhat.com (hp-dl380pg8-01.lab.eng.pek2.redhat.com [10.73.8.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2CB8E1001B27;
+        Wed, 17 Jul 2019 10:52:56 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jfreimann@redhat.com, tiwei.bie@intel.com,
+        maxime.coquelin@redhat.com
+Subject: [PATCH V3 00/15] Packed virtqueue support for vhost
+Date:   Wed, 17 Jul 2019 06:52:40 -0400
+Message-Id: <20190717105255.63488-1-jasowang@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 17 Jul 2019 10:53:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Crystal clear. Many thanks.
+Hi all:
 
-// Firo
+This series implements packed virtqueues which were described
+at [1]. In this version we try to address the performance regression
+saw by V2. The root cause is packed virtqueue need more times of
+userspace memory accesssing which turns out to be very
+expensive. Thanks to the help of 7f466032dc9e ("vhost: access vq
+metadata through kernel virtual address"), such overhead cold be
+eliminated. So in this version, we can see about 2% improvement for
+packed virtqueue on PPS.
+
+More optimizations (e.g IN_ORDER) is on the road.
+
+Please review.
+
+[1] https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html#x1-610007
+
+This version were tested with:
+- zercopy/datacopy
+- mergeable buffer on/off
+- TCP stream & virtio-user
+
+Changes from V2:
+- rebase on top of vhost metadata accelreation series
+- introduce shadow used ring API
+- new SET_VRING_BASE/GET_VRING_BASE that takes care about warp counter
+  and index for both avail and used
+- various twaeaks
+
+Changes from V1:
+- drop uapi patch and use Tiwei's
+- split the enablement of packed virtqueue into a separate patch
+
+Changes from RFC V5:
+- save unnecessary barriers during vhost_add_used_packed_n()
+- more compact math for event idx
+- fix failure of SET_VRING_BASE when avail_wrap_counter is true
+- fix not copy avail_wrap_counter during GET_VRING_BASE
+- introduce SET_VRING_USED_BASE/GET_VRING_USED_BASE for syncing
+- last_used_idx
+- rename used_wrap_counter to last_used_wrap_counter
+- rebase to net-next
+
+Changes from RFC V4:
+- fix signalled_used index recording
+- track avail index correctly
+- various minor fixes
+
+Changes from RFC V3:
+- Fix math on event idx checking
+- Sync last avail wrap counter through GET/SET_VRING_BASE
+- remove desc_event prefix in the driver/device structure
+
+Changes from RFC V2:
+- do not use & in checking desc_event_flags
+- off should be most significant bit
+- remove the workaround of mergeable buffer for dpdk prototype
+- id should be in the last descriptor in the chain
+- keep _F_WRITE for write descriptor when adding used
+- device flags updating should use ADDR_USED type
+- return error on unexpected unavail descriptor in a chain
+- return false in vhost_ve_avail_empty is descriptor is available
+- track last seen avail_wrap_counter
+- correctly examine available descriptor in get_indirect_packed()
+- vhost_idx_diff should return u16 instead of bool
+
+Changes from RFC V1:
+- Refactor vhost used elem code to avoid open coding on used elem
+- Event suppression support (compile test only).
+- Indirect descriptor support (compile test only).
+- Zerocopy support.
+- vIOMMU support.
+- SCSI/VSOCK support (compile test only).
+- Fix several bugs
+
+Jason Wang (15):
+  vhost: simplify meta data pointer accessing
+  vhost: remove the unnecessary parameter of vhost_vq_avail_empty()
+  vhost: remove unnecessary parameter of
+    vhost_enable_notify()/vhost_disable_notify
+  vhost-net: don't use vhost_add_used_n() for zerocopy
+  vhost: introduce helpers to manipulate shadow used ring
+  vhost_net: switch TX to use shadow used ring API
+  vhost_net: calculate last used length once for mergeable buffer
+  vhost_net: switch to use shadow used ring API for RX
+  vhost: do not export vhost_add_used_n() and
+    vhost_add_used_and_signal_n()
+  vhost: hide used ring layout from device
+  vhost: do not use vring_used_elem
+  vhost: vhost_put_user() can accept metadata type
+  vhost: packed ring support
+  vhost: event suppression for packed ring
+  vhost: enable packed virtqueues
+
+ drivers/vhost/net.c   |  200 +++---
+ drivers/vhost/scsi.c  |   72 +-
+ drivers/vhost/test.c  |    6 +-
+ drivers/vhost/vhost.c | 1508 +++++++++++++++++++++++++++++++++++------
+ drivers/vhost/vhost.h |   78 ++-
+ drivers/vhost/vsock.c |   57 +-
+ 6 files changed, 1513 insertions(+), 408 deletions(-)
+
+-- 
+2.18.1
+
