@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C336C321
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 00:25:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 867866C327
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 00:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729604AbfGQWYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 18:24:50 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42964 "EHLO
+        id S1730773AbfGQW0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 18:26:37 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42980 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727106AbfGQWYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 18:24:50 -0400
+        with ESMTP id S1730031AbfGQW0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 18:26:35 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A3B1C14EC5846;
-        Wed, 17 Jul 2019 15:24:49 -0700 (PDT)
-Date:   Wed, 17 Jul 2019 15:24:49 -0700 (PDT)
-Message-Id: <20190717.152449.1720887196144102382.davem@davemloft.net>
-To:     jon.maloy@ericsson.com
-Cc:     netdev@vger.kernel.org, gordan.mihaljevic@dektech.com.au,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        canh.d.luu@dektech.com.au, ying.xue@windriver.com,
-        tipc-discussion@lists.sourceforge.net
-Subject: Re: [net 1/1] tipc: initialize 'validated' field of received
- packets
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DF3E714EC7274;
+        Wed, 17 Jul 2019 15:26:33 -0700 (PDT)
+Date:   Wed, 17 Jul 2019 15:26:33 -0700 (PDT)
+Message-Id: <20190717.152633.681021760422039901.davem@davemloft.net>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@PaulSD.com, dsahern@gmail.com
+Subject: Re: [PATCH net] ipv6: rt6_check should return NULL if 'from' is
+ NULL
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1563399824-4462-1-git-send-email-jon.maloy@ericsson.com>
-References: <1563399824-4462-1-git-send-email-jon.maloy@ericsson.com>
+In-Reply-To: <20190717220843.974-1-dsahern@kernel.org>
+References: <20190717220843.974-1-dsahern@kernel.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 17 Jul 2019 15:24:50 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 17 Jul 2019 15:26:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jon.maloy@ericsson.com>
-Date: Wed, 17 Jul 2019 23:43:44 +0200
+From: David Ahern <dsahern@kernel.org>
+Date: Wed, 17 Jul 2019 15:08:43 -0700
 
-> The tipc_msg_validate() function leaves a boolean flag 'validated' in
-> the validated buffer's control block, to avoid performing this action
-> more than once. However, at reception of new packets, the position of
-> this field may already have been set by lower layer protocols, so
-> that the packet is erroneously perceived as already validated by TIPC.
+> From: David Ahern <dsahern@gmail.com>
 > 
-> We fix this by initializing the said field to 'false' before performing
-> the initial validation.
+> Paul reported that l2tp sessions were broken after the commit referenced
+> in the Fixes tag. Prior to this commit rt6_check returned NULL if the
+> rt6_info 'from' was NULL - ie., the dst_entry was disconnected from a FIB
+> entry. Restore that behavior.
 > 
-> Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+> Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
+> Reported-by: Paul Donohue <linux-kernel@PaulSD.com>
+> Tested-by: Paul Donohue <linux-kernel@PaulSD.com>
+> Signed-off-by: David Ahern <dsahern@gmail.com>
 
-Applied.
+Applied and queued up for -stable, thanks.
