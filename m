@@ -2,107 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3F66B47E
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 04:26:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B4C26B4DD
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 05:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbfGQC0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 22:26:40 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:34006 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbfGQC0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 22:26:40 -0400
-Received: by mail-pf1-f194.google.com with SMTP id b13so10041204pfo.1;
-        Tue, 16 Jul 2019 19:26:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=YrC43cySLmvhT7jcXqIESrh9T+esJb3VyruAtGvWklQ=;
-        b=iC5k5od51hFItFL9tL4vr8o7TW6pB/GeaSaCUilaHkVfhIiHYdfaYIhENt5DviJvq6
-         p8I7v4kU1XcVqywJRWgICyCIiGkg0Sjqwjb84mxGAb1hjHhjYF6P3ehcC96NivIrHJdB
-         mu/+fDB+XjLQJJqWyXWw8f62HVh+gFOYM71/7DaSTf5jAllW//K9glgl78VSNFscMWLz
-         b4u5Na6WflqAg71GHTXpfJGfkkXDglMJlbVurmv7Wdue4ojqiKZm5zAf22WctU6CuPuq
-         pbvxMRQepM0NpwGon8JJG0SLDyB0Yq+ZE4VdSO+k4ylmfavjTbcqnAqY+sCpyHDUY8rw
-         fFNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YrC43cySLmvhT7jcXqIESrh9T+esJb3VyruAtGvWklQ=;
-        b=YDlrA8ImcR5kbYbnaczBkLHNCxTR/mIeRZ9rYOrWzuI11DmBWBJNqXGBi8D/GeV4s0
-         naSOGorX8R7mt47hTfC3hsjZotO3kQAtkhHKoxECgWfcJCUhIjoI7a9soBG+BxSS2nRR
-         o4ocy4rt7i2dffDVtO/TPRtlXIPq2zdW0/hoLrpwsOeXhAEkERp1rPUK/k5mhy/R9G0n
-         ODMs78gu04Erq8q2qXsi/X4KirECz72VGv57zAEYMoZwN3PuFtLyp7RpdB1W3vSoO5dj
-         Qrg6bdi2g3VXZOhgSJY1YoVMBKYyhGXx6yTr4ZuzZeaEucUHimwMA57kMVmZVHAUwOBw
-         89IQ==
-X-Gm-Message-State: APjAAAW2T4SI+JSrwGU8Q90M+BHgcCngx5kxhpAOofWX5KgmH37uogD4
-        I7EG14cYkQ+MsW1usXcauSk=
-X-Google-Smtp-Source: APXvYqypKZ19FyqVMLMyasN2rkZg0ulvBbwu96S5BDCgbzkBr/fwMRO0hSjyg/FI8IeZ0NkI95m+AQ==
-X-Received: by 2002:a63:6904:: with SMTP id e4mr10262795pgc.321.1563330399256;
-        Tue, 16 Jul 2019 19:26:39 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::b82a])
-        by smtp.gmail.com with ESMTPSA id k70sm26336954pje.14.2019.07.16.19.26.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jul 2019 19:26:38 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 19:26:36 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Petar Penkov <ppenkov.kernel@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, edumazet@google.com, lmb@cloudflare.com,
-        sdf@google.com, Petar Penkov <ppenkov@google.com>
-Subject: Re: [bpf-next RFC 3/6] bpf: add bpf_tcp_gen_syncookie helper
-Message-ID: <20190717022635.yt7kczxa73kbi7ep@ast-mbp.dhcp.thefacebook.com>
-References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
- <20190716002650.154729-4-ppenkov.kernel@gmail.com>
- <b6ef24b0-0415-c67d-5a66-21f1c2530414@gmail.com>
+        id S1728124AbfGQDGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 23:06:38 -0400
+Received: from smtprelay0182.hostedemail.com ([216.40.44.182]:35905 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726069AbfGQDGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 23:06:37 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 4A32B34A1;
+        Wed, 17 Jul 2019 03:06:36 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3871:3872:3874:4321:4605:5007:6119:7903:10004:10400:10848:11232:11658:11914:12296:12297:12740:12760:12895:13069:13161:13229:13311:13357:13439:14181:14659:14721:21080:21433:21451:21627:30054:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:23,LUA_SUMMARY:none
+X-HE-Tag: cause64_738513b3fb42d
+X-Filterd-Recvd-Size: 1832
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf11.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 17 Jul 2019 03:06:33 +0000 (UTC)
+Message-ID: <fa656d2d8a1677a0a1fbea4b7f60dfca2661827b.camel@perches.com>
+Subject: Re: [PATCH] skbuff: fix compilation warnings in skb_dump()
+From:   Joe Perches <joe@perches.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Qian Cai <cai@lca.pw>
+Cc:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        clang-built-linux@googlegroups.com,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Date:   Tue, 16 Jul 2019 20:06:32 -0700
+In-Reply-To: <CAF=yD-KW-XnDvD0i8VbzrkLGNWEY6cPoaEcHy40hbghGXTo+kA@mail.gmail.com>
+References: <1563288840-1913-1-git-send-email-cai@lca.pw>
+         <CAF=yD-KW-XnDvD0i8VbzrkLGNWEY6cPoaEcHy40hbghGXTo+kA@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6ef24b0-0415-c67d-5a66-21f1c2530414@gmail.com>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 09:59:26AM +0200, Eric Dumazet wrote:
-> 
-> 
-> On 7/16/19 2:26 AM, Petar Penkov wrote:
-> > From: Petar Penkov <ppenkov@google.com>
+On Tue, 2019-07-16 at 17:04 +0200, Willem de Bruijn wrote:
+> On Tue, Jul 16, 2019 at 4:56 PM Qian Cai <cai@lca.pw> wrote:
+> > Fix them by using the proper types, and also fix some checkpatch
+> > warnings by using pr_info().
 > > 
-> > This helper function allows BPF programs to try to generate SYN
-> > cookies, given a reference to a listener socket. The function works
-> > from XDP and with an skb context since bpf_skc_lookup_tcp can lookup a
-> > socket in both cases.
-> > 
-> ...
-> >  
-> > +BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
-> > +	   struct tcphdr *, th, u32, th_len)
-> > +{
-> > +#ifdef CONFIG_SYN_COOKIES
-> > +	u32 cookie;
-> > +	u16 mss;
-> > +
-> > +	if (unlikely(th_len < sizeof(*th)))
+> > WARNING: printk() should include KERN_<LEVEL> facility level
+> > +               printk("%ssk family=%hu type=%u proto=%u\n",
 > 
+> Converting printk to pr_info lowers all levels to KERN_INFO.
 > 
-> You probably need to check that th_len == th->doff * 4
+> skb_dump takes an explicit parameter level to be able to log at
+> KERN_ERR or KERN_WARNING
+> 
+> I would like to avoid those checkpatch warnings, but this is not the
+> right approach.
 
-+1
-that is surely necessary for safety.
+Just ignore checkpatch when it doesn't know that
+the printk actually includes a KERN_<LEVEL> via
+"%s...", level
 
-Considering the limitation of 5 args the api choice is good.
-struct bpf_syncookie approach doesn't look natural to me.
-And I couldn't come up with any better way to represent this helper.
-So let's go with 
-return htonl(cookie) | ((u64)mss << 32);
-My only question is why htonl ?
-
-Independently of that...
-Since we've been hitting this 5 args limit too much,
-we need to start thinking how to extend BPF ISA to pass
-args 6,7,8 on stack.
 
