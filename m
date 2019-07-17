@@ -2,147 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0877A6B8E8
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 11:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A336B6B8F1
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 11:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730661AbfGQJIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 05:08:11 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:44877 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbfGQJIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 05:08:11 -0400
-Received: by mail-lf1-f68.google.com with SMTP id r15so10978172lfm.11
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 02:08:10 -0700 (PDT)
+        id S1726336AbfGQJJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 05:09:08 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:35662 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725941AbfGQJJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 05:09:08 -0400
+Received: by mail-qk1-f196.google.com with SMTP id r21so16910312qke.2
+        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 02:09:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
+        d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k7UdXNTU/Lcm5T+73Mu9Lk3fJTqZdL2ygB2hxg/bvs0=;
-        b=ARPF8ysRS2qme660bnfPo9Sf6dUPUtYkSPR39gw+zuIoL7NZtNifRCF1SXDGFunevB
-         uB8IuWYM1iKac8uIBfwlUQMiC8nlsO8DxhVUztZfWDxGTVv0AP3VA2gNewP/19w1a1LW
-         +DLcKtE6254Ku0JHNY1kGsvrzSV9XAaFc8P93ruj/1XfqkiXTeiLARokVfXAhvHNhUAp
-         oU/deRwXfo0vLuXt+HfYNfQX609LSRr1XRlJKA2ojTpGANWQaz3QzdMP8uvHrMD7iW8j
-         FKIENDnCF1zDqRZvKhZ/RJljDTl2EmbDSDS67+xcSz06fthg9HXQPPGsqQ0bzxxY3PqD
-         Ki/Q==
+         :cc:content-transfer-encoding;
+        bh=aG2CHW+kcT8fYp6zyhNxkRG44CByJ+PkKI4bP1KAC9Q=;
+        b=nEvtiM0vEuknajfYSP7dcELsVINeap3xQb80ItNFWmTQ3ClsCqLcjuGYyOepDDh4Rx
+         G0isqu3Bw+Idu+fBO9Gvam1Nv9+nFHYK5R5KHG2OJnIlBVDC19yFhdCVctMLeLetpDCw
+         KXQQcSx+pExznuUyHCiDCX0DhOYF/l441nxSs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k7UdXNTU/Lcm5T+73Mu9Lk3fJTqZdL2ygB2hxg/bvs0=;
-        b=ZY7P3HrUQ1tmk+kpRUmkHXkEc17mhdLiTOnubff1DTCan9hx1xAmGsGJd4S7tckUtw
-         VYDD3mtuZ8d5OrJ0sFKX1mwmLIuN2lSbAesNeP4P224gndnO2tC+QkqjEH+EqBv0UCw6
-         zGPRZcySt/eesJeCDlvGnMCaRSAJAgkUdVpVjCz4Ae5kLkXg7qwWdx7M7ChEcpi27Ekh
-         m1eoR+RU/cbIlb+RZF/sf6/g3t8rbAXJEZ3FDxbgUp6NzLKzMbLzke4PXjhTvbZPTqRw
-         IPjak37rkFEqtTGU1Y3FrfSdHHElPSB2HUJeb09wraCPu0EZbIN2Z7kiF76jmCHanu1U
-         aNzw==
-X-Gm-Message-State: APjAAAUEITN6F3sRslsMsWR1ais3RxWUxr4kye8QAG87HKST6sLJ5Sra
-        3j62LGJ61tglrBxBHpM2bEiyTEtozIur6DU1m2N+cA==
-X-Google-Smtp-Source: APXvYqyUa5Y6gp/AOOmOhWXG0woHIHFHQ/pw+MgFTpkHnca8dVBQpSXO7UwrMm763Jwm92ZWv/5Cb/402QneMPo+DUs=
-X-Received: by 2002:ac2:4644:: with SMTP id s4mr17067571lfo.158.1563354489475;
- Wed, 17 Jul 2019 02:08:09 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aG2CHW+kcT8fYp6zyhNxkRG44CByJ+PkKI4bP1KAC9Q=;
+        b=LQxDLarZsYtAzvch3Hk+RUC4pQdwjNaxzz7LmYs4sT2xYsulM1dt9Cx5qNwYkrSsKo
+         SrqyEiFsrVyJz/BdBfotDukb0aXXMLVxCEcgSXG4JzbtHQJFpmhFhsYIpmPJViUPAzsc
+         zIeQCWrFWkIbvdIZqEQlLh9DUhdCMfA+MKAA9lO5zixY8Md010zn/X9ZWWLRKJpD4Ok+
+         iCtukGwnAwFJ4FyFQ0FeZIdsveSDptXQAJBxlZPc9Q8+d7h3zF3jk5vtVm81/+/JDYiO
+         QBAmbEHS1rimNnx8O5+4fDMTTzbHInSpdHc3djXFIEv9l4UmDa+1i1FpGZRE/BQ/Sxd5
+         R78Q==
+X-Gm-Message-State: APjAAAU7Yn+HZ0AyNZDz6wF8QAg2IF0peTaSNvUvX0XuFHspcW4f4Pui
+        u5a/hzFHYHZehHvQrw/xmBIXNCpAkM7J94+cIWPYKA==
+X-Google-Smtp-Source: APXvYqyYMX7ZcIhcrJE0YLQzSb9aZvbzL7jL3v6TDB4+HCxHDVrqSEfOXxyqIFXGF5L+4se8Yl65GK/5x9aq9V58xes=
+X-Received: by 2002:a05:620a:136d:: with SMTP id d13mr25324854qkl.22.1563354547147;
+ Wed, 17 Jul 2019 02:09:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <1558611952-13295-1-git-send-email-yash.shah@sifive.com>
- <1558611952-13295-2-git-send-email-yash.shah@sifive.com> <CAL_Jsq+p5PnTDgxuh9_Aw1RvTk4aTYjKxyMq7DPczLzQVv8_ew@mail.gmail.com>
- <b0c60ec9-2f57-c3f5-c3b4-ee83a5ec4c45@microchip.com>
-In-Reply-To: <b0c60ec9-2f57-c3f5-c3b4-ee83a5ec4c45@microchip.com>
-From:   Yash Shah <yash.shah@sifive.com>
-Date:   Wed, 17 Jul 2019 14:37:33 +0530
-Message-ID: <CAJ2_jOFEVZQat0Yprg4hem4jRrqkB72FKSeQj4p8P5KA-+rgww@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net/macb: bindings doc: add sifive fu540-c000 binding
-To:     Nicolas Ferre <Nicolas.Ferre@microchip.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Sachin Ghadi <sachin.ghadi@sifive.com>
+References: <CAJPywTL5aKYB40FsAFYFEuhErhgQpYZP5Q_ipMG9pDxqipcEDg@mail.gmail.com>
+ <CAPkQJpRJadEqxOcdb_U5Tz6NPE3h3FzootQt3r2GgPP0aYsVvA@mail.gmail.com>
+In-Reply-To: <CAPkQJpRJadEqxOcdb_U5Tz6NPE3h3FzootQt3r2GgPP0aYsVvA@mail.gmail.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 17 Jul 2019 11:08:55 +0200
+Message-ID: <CAJPywTL1MwQWoznv3xGLdjbAUL-LK6pZh1YETg4y8HODK5-zQw@mail.gmail.com>
+Subject: Re: OOM triggered by SCTP
+To:     malc <mlashley@gmail.com>
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, Linux SCTP <linux-sctp@vger.kernel.org>,
+        netdev@vger.kernel.org, kernel-team <kernel-team@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 9:08 PM <Nicolas.Ferre@microchip.com> wrote:
+Malc, thanks taking a look.
+
+I'm able to trigger the problem on non-SMP virtme with 4GiB ram, but
+I'm not able to trigger it on my SMP host with 16GiB.
+
+The slab info from dmesg (on 4GiB run):
+Unreclaimable slab info:
+SCTPv6                 31068KB      31068KB
+sctp_chunk             24321KB      24990KB
+sctp_bind_bucket         972KB        972KB
+skbuff_head_cache      28484KB      29051KB
+kmalloc-8k                82KB        148KB
+kmalloc-4k             81897KB      82943KB
+kmalloc-2k               314KB        382KB
+kmalloc-1k             27446KB      29547KB
+kmalloc-512            30312KB      30915KB
+
+The biggest issue is that the OOM is often unrecoverable:
+
+---[ end Kernel panic - not syncing: System is deadlocked on memory ]---
+Out of memory and no killable processes...
+Kernel panic - not syncing: System is deadlocked on memory
+
+I noticed sctp_mem toggle. Would tweaking it change anything?
+net.sctp.sctp_mem =3D 80976    107969    161952
+net.sctp.sctp_rmem =3D 4096    865500    3455008
+net.sctp.sctp_wmem =3D 4096    16384    3455008
+
+For the record, stuffing "shutdown(sd, SHUT_RDWR)" before the "close"
+doesn't solve the problem.
+
+Marek
+
+On Wed, Jul 17, 2019 at 1:59 AM malc <mlashley@gmail.com> wrote:
 >
-> On 23/05/2019 at 22:50, Rob Herring wrote:
-> > On Thu, May 23, 2019 at 6:46 AM Yash Shah <yash.shah@sifive.com> wrote:
-> >>
-> >> Add the compatibility string documentation for SiFive FU540-C0000
-> >> interface.
-> >> On the FU540, this driver also needs to read and write registers in a
-> >> management IP block that monitors or drives boundary signals for the
-> >> GEMGXL IP block that are not directly mapped to GEMGXL registers.
-> >> Therefore, add additional range to "reg" property for SiFive GEMGXL
-> >> management IP registers.
-> >>
-> >> Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> >> ---
-> >>   Documentation/devicetree/bindings/net/macb.txt | 3 +++
-> >>   1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-> >> index 9c5e944..91a2a66 100644
-> >> --- a/Documentation/devicetree/bindings/net/macb.txt
-> >> +++ b/Documentation/devicetree/bindings/net/macb.txt
-> >> @@ -4,6 +4,7 @@ Required properties:
-> >>   - compatible: Should be "cdns,[<chip>-]{macb|gem}"
-> >>     Use "cdns,at91rm9200-emac" Atmel at91rm9200 SoC.
-> >>     Use "cdns,at91sam9260-macb" for Atmel at91sam9 SoCs.
-> >> +  Use "cdns,fu540-macb" for SiFive FU540-C000 SoC.
+> On Tue, Jul 16, 2019 at 10:49 PM Marek Majkowski <marek@cloudflare.com> w=
+rote:
 > >
-> > This pattern that Atmel started isn't really correct. The vendor
-> > prefix here should be sifive. 'cdns' would be appropriate for a
-> > fallback.
->
-> Ok, we missed this for the sam9x60 SoC that we added recently then.
->
-> Anyway a little too late, coming back to this machine, and talking to
-> Yash, isn't "sifive,fu540-c000-macb" more specific and a better match
-> for being future proof? I would advice for the most specific possible
-> with other compatible strings on the same line in the DT, like:
->
-> "sifive,fu540-c000-macb", "sifive,fu540-macb"
->
-
-Yes, I agree that "sifive,fu540-c000-macb" is a better match.
-
-> Moreover, is it really a "macb" or a "gem" type of interface from
-> Cadence? Not a big deal, but just to discuss the topic to the bone...
-
-I believe it should be "gem". I will plan to submit the patch for
-these changes. Thanks for pointing it out.
-
-- Yash
-
->
-> Note that I'm fine if you consider that what you have in net-next new is
-> correct.
->
-> Regards,
->    Nicolas
->
-> >>     Use "cdns,sam9x60-macb" for Microchip sam9x60 SoC.
-> >>     Use "cdns,np4-macb" for NP4 SoC devices.
-> >>     Use "cdns,at32ap7000-macb" for other 10/100 usage or use the generic form: "cdns,macb".
-> >> @@ -17,6 +18,8 @@ Required properties:
-> >>     Use "cdns,zynqmp-gem" for Zynq Ultrascale+ MPSoC.
-> >>     Or the generic form: "cdns,emac".
-> >>   - reg: Address and length of the register set for the device
-> >> +       For "cdns,fu540-macb", second range is required to specify the
-> >> +       address and length of the registers for GEMGXL Management block.
-> >>   - interrupts: Should contain macb interrupt
-> >>   - phy-mode: See ethernet.txt file in the same directory.
-> >>   - clock-names: Tuple listing input clock names.
-> >> --
-> >> 1.9.1
-> >>
+> > Morning,
 > >
+> > My poor man's fuzzer found something interesting in SCTP. It seems
+> > like creating large number of SCTP sockets + some magic dance, upsets
+> > a memory subsystem related to SCTP. The sequence:
+> >
+> >  - create SCTP socket
+> >  - call setsockopts (SCTP_EVENTS)
+> >  - call bind(::1, port)
+> >  - call sendmsg(long buffer, MSG_CONFIRM, ::1, port)
+> >  - close SCTP socket
+> >  - repeat couple thousand times
+> >
+> > Full code:
+> > https://gist.github.com/majek/bd083dae769804d39134ce01f4f802bb#file-tes=
+t_sctp-c
+> >
+> > I'm running it on virtme the simplest way:
+> > $ virtme-run --show-boot-console --rw --pwd --kimg bzImage --memory
+> > 512M --script-sh ./test_sctp
+> >
+> > Originally I was running it inside net namespace, and just having a
+> > localhost interface is sufficient to trigger the problem.
+> >
+> > Kernel is 5.2.1 (with KASAN and such, but that shouldn't be a factor).
+> > In some tests I saw a message that might indicate something funny
+> > hitting neighbor table:
+> >
+> > neighbour: ndisc_cache: neighbor table overflow!
+> >
+> > I'm not addr-decoding the stack trace, since it seems unrelated to the
+> > root cause.
+> >
+> > Cheers,
+> >     Marek
 >
+> I _think_ this is an 'expected' peculiarity of SCTP on loopback - you
+> test_sctp.c ends up creating actual associations to itself on the same
+> socket (you can test safely by reducing the port range (say
+> 30000-32000) and setting the for-loop-clause to 'run < 1')
+> You'll see a bunch of associations established like the following
+> (note that I(kernel) was dropping packets for this capture - even with
+> /only/ 2000 sockets used...)
 >
-> --
-> Nicolas Ferre
+> $ tshark -r sctp.pcap -Y 'sctp.assoc_index=3D=3D4'
+>   21 0.000409127          ::1 =E2=86=92 ::1           SCTP INIT
+>   22 0.000436281          ::1 =E2=86=92 ::1           SCTP INIT_ACK
+>   23 0.000442106          ::1 =E2=86=92 ::1           SCTP COOKIE_ECHO
+>   24 0.000463007          ::1 =E2=86=92 ::1           SCTP COOKIE_ACK DAT=
+A
+> (Message Fragment)
+>                                               presumably your close()
+> happens here and we enter SHUTDOWN-PENDING, where we wait for pending
+> data to be acknowledged, I'm not convinced that we shouldn't be
+> SACK'ing the data from the 'peer' at this point - but for whatever
+> reason, we aren't.
+>                                               We then run thru
+> path-max-retrans, and finally ABORT (the abort indication also shows
+> the PMR-exceeded indication in the 'Cause Information')
+>   25 0.000476083          ::1 =E2=86=92 ::1           SCTP SACK
+> 13619 3.017788109          ::1 =E2=86=92 ::1           SCTP DATA (retrans=
+mission)
+> 14022 3.222690889          ::1 =E2=86=92 ::1           SCTP SACK
+> 18922 21.938217449          ::1 =E2=86=92 ::1           SCTP SACK
+> 33476 69.831029904          ::1 =E2=86=92 ::1           SCTP HEARTBEAT
+> 33561 69.831310796          ::1 =E2=86=92 ::1           SCTP HEARTBEAT_AC=
+K
+> 40816 94.102667600          ::1 =E2=86=92 ::1           SCTP SACK
+> 40910 95.942741287          ::1 =E2=86=92 ::1           SCTP DATA (retran=
+smission)
+> 41039 96.152023010          ::1 =E2=86=92 ::1           SCTP SACK
+> 41100 100.182685237          ::1 =E2=86=92 ::1           SCTP SACK
+> 41212 108.230746764          ::1 =E2=86=92 ::1           SCTP DATA (retra=
+nsmission)
+> 41345 108.439061392          ::1 =E2=86=92 ::1           SCTP SACK
+> 41407 116.422688507          ::1 =E2=86=92 ::1           SCTP HEARTBEAT
+> 41413 116.423183124          ::1 =E2=86=92 ::1           SCTP HEARTBEAT_A=
+CK
+> 41494 124.823749255          ::1 =E2=86=92 ::1           SCTP SACK
+> 41576 126.663648718          ::1 =E2=86=92 ::1           SCTP ABORT
+>
+> With your entire 512M - you'd only have about 16KB for each of these
+> 31K associations tops, I suspect that having a 64KB pending data chunk
+> (fragmented ULP msg) for each association for >=3D 90s is what is
+> exhausting memory here - although I'm sure Neil or Michael will be
+> along to correct me ;-)
+>
+> What's interesting - as you reduce the payload size - we end up
+> bundling DATA from the 'initiator' side (in COOKIE ECHO) - and
+> everything works as expected... (the SACK here is for the bundled DATA
+> chunks TSN.
+>
+> mlashley@duality /tmp $ tshark -r /tmp/sctp_index4_10K.pcap
+>    1 0.000000000          ::1 =E2=86=92 ::1          SCTP INIT
+>    2 0.000014491          ::1 =E2=86=92 ::1          SCTP INIT_ACK
+>    3 0.000024190          ::1 =E2=86=92 ::1          SCTP COOKIE_ECHO DAT=
+A
+>    4 0.000034833          ::1 =E2=86=92 ::1          SCTP COOKIE_ACK
+>    5 0.000040646          ::1 =E2=86=92 ::1          SCTP SACK
+>    6 0.000050287          ::1 =E2=86=92 ::1          SCTP ABORT
+>
+> In short - the SCTP associations /can/ persist after user-space calls
+> close() whilst there is outstanding data (for path.max.retrans *
+> rto-with-doubling[due to T3-rtx expiry])
+>
+> (My tests on 5.2.0 as it is what I had to hand...)
+>
+> Cheers,
+> malc.
