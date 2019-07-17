@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE696C219
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 22:30:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 716186C21A
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 22:30:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727385AbfGQU37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727434AbfGQU37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 17 Jul 2019 16:29:59 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33149 "EHLO
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:50733 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727184AbfGQU36 (ORCPT
+        by vger.kernel.org with ESMTP id S1727147AbfGQU36 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 16:29:58 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C373522305;
-        Wed, 17 Jul 2019 16:29:55 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 44F3A222C6;
+        Wed, 17 Jul 2019 16:29:57 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 17 Jul 2019 16:29:55 -0400
+  by compute3.internal (MEProxy); Wed, 17 Jul 2019 16:29:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=CAelEhhd5g6P0MgATOUM2cnz6Amq6PIMn1NhHdz4DGs=; b=wy/WMJeG
-        /p3fx08aMYx1K/A5mWqztjc8v2W+HceJlDFb3waBEeMxmCaLkYePMmiQSRUDr0ao
-        D3iv3r63SPpBQW5Gagllpt5AcARDcUD/TBO3QZv6Z6W20Zsr9GNw6GrH9AwwLiNB
-        1U9hhz3tHaATqdWuNY+bJpaS6cAPBjDmwDAKXNUBhE8GgwrxBX3ahs9hir614ckH
-        /o3oTWkKR2dCfzrUWDmVQM6C+Dqz2JD5NzsQVAWdNq9DwzeaxB2mfZIx37XLVUdw
-        KYMibkrDj/A7ynhh0yibQs0nOXYY2eoHxbEFoZfmkrKT2X/tIgoLzqx4ylgGkNFS
-        9gdYC4V/bW19Tw==
-X-ME-Sender: <xms:Q4UvXYuZxKj6S6eZ8FkFqrNTS8iBPPVdlkvnoIjP-9yJouB0CZiU6g>
+        fm3; bh=sJkod6AZZOKqBtGXdviO2krAsce0Ai1mNBxQ0/tC07c=; b=E20P+0gh
+        Lh+zIzknIRhPf3EM2JaLM+MJ5Sl+DzojzpxJ9csKLKcI8z2w1S34urCvoLJQ+Dkp
+        noIopnzuv1lGWd5j25POD0ZnD+24ZyFHOfDAgQSxaC4hrKEO2P9HtJqm8uD7ELhU
+        iDey2s7BiEeWkqsMpQLyjtsgpVzqNy03jkEI2W4gEn4kSQ6oexXuWKyCKUm1nQ1k
+        y95OOknA+plGpcdZu7tD/2T3DNfR2+z0sfiHC1uhCY8eWv7NGKQLk3sXIJwzbkMP
+        KPdAoLOWrFFDjLLtnTj02EoZyfJTfe/c35CQJoZ9toilEdN8aS+SUhl9fhsC1+3J
+        hv+VjiHA46Rmew==
+X-ME-Sender: <xms:RYUvXYivkOkpSnCwtF9h6r3wMR84JoAwkscgMnXaW2hG9FNLZac55A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrieefgdduvdekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeejjedrudefkedrvdegledrvddtleenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:Q4UvXRrucHbmUqevABJgRqDvqEcS-VwN53ycC89vhLq_ncx1nMGw6A>
-    <xmx:Q4UvXa4jyfSsl4fFxELMImJlizm3WkqV3pNdaaJ6BqahXqjz5qC7sg>
-    <xmx:Q4UvXWznpaZWQG28iXnQaqYgfDv3-f6zfbG78VXNZyLD4VLzLwVk3w>
-    <xmx:Q4UvXcp4ALc-F0pA6NHPlmbZTWLwzZh3rC8HImLlhzVHn2tiLY684w>
+    ufhiiigvpedu
+X-ME-Proxy: <xmx:RYUvXeb9KJdNYIMrClPzkBpq-KSPMw9R8gMzneuz_BIo_J8nMmTB-w>
+    <xmx:RYUvXe8K2zkWGmniHUJr1MHEif2NS9D59taTkrbXebXoZ8BHuDyJlA>
+    <xmx:RYUvXSdz_1v7KOpj046IRkoUQ4PCl02a7YHKmaniSYMN8nPr2M8tLg>
+    <xmx:RYUvXSa8zGzJJuCkeK2Ghvu5yuloCH5hsAfX4bZedCx1QKKS46YgGQ>
 Received: from localhost.localdomain (unknown [77.138.249.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4E277380083;
-        Wed, 17 Jul 2019 16:29:54 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BA1C8380074;
+        Wed, 17 Jul 2019 16:29:55 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 1/2] mlxsw: spectrum_dcb: Configure DSCP map as the last rule is removed
-Date:   Wed, 17 Jul 2019 23:29:07 +0300
-Message-Id: <20190717202908.1547-2-idosch@idosch.org>
+Subject: [PATCH net 2/2] mlxsw: spectrum: Do not process learned records with a dummy FID
+Date:   Wed, 17 Jul 2019 23:29:08 +0300
+Message-Id: <20190717202908.1547-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190717202908.1547-1-idosch@idosch.org>
 References: <20190717202908.1547-1-idosch@idosch.org>
@@ -59,73 +59,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+From: Ido Schimmel <idosch@mellanox.com>
 
-Spectrum systems use DSCP rewrite map to update DSCP field in egressing
-packets to correspond to priority that the packet has. Whether rewriting
-will take place is determined at the point when the packet ingresses the
-switch: if the port is in Trust L3 mode, packet priority is determined from
-the DSCP map at the port, and DSCP rewrite will happen. If the port is in
-Trust L2 mode, 802.1p is used for packet prioritization, and no DSCP
-rewrite will happen.
+The switch periodically sends notifications about learned FDB entries.
+Among other things, the notification includes the FID (Filtering
+Identifier) and the port on which the MAC was learned.
 
-The driver determines the port trust mode based on whether any DSCP
-prioritization rules are in effect at given port. If there are any, trust
-level is L3, otherwise it's L2. When the last DSCP rule is removed, the
-port is switched to trust L2. Under that scenario, if DSCP of a packet
-should be rewritten, it should be rewritten to 0.
+In case the driver does not have the FID defined on the relevant port,
+the following error will be periodically generated:
 
-However, when switching to Trust L2, the driver neglects to also update the
-DSCP rewrite map. The last DSCP rule thus remains in effect, and packets
-egressing through this port, if they have the right priority, will have
-their DSCP set according to this rule.
+mlxsw_spectrum2 0000:06:00.0 swp32: Failed to find a matching {Port, VID} following FDB notification
 
-Fix by first configuring the rewrite map, and only then switching to trust
-L2 and bailing out.
+This is not supposed to happen under normal conditions, but can happen
+if an ingress tc filter with a redirect action is installed on a bridged
+port. The redirect action will cause the packet's FID to be changed to
+the dummy FID and a learning notification will be emitted with this FID
+- which is not defined on the bridged port.
 
-Fixes: b2b1dab6884e ("mlxsw: spectrum: Support ieee_setapp, ieee_delapp")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Reported-by: Alex Veber <alexve@mellanox.com>
-Tested-by: Alex Veber <alexve@mellanox.com>
+Fix this by having the driver ignore learning notifications generated
+with the dummy FID and delete them from the device.
+
+Another option is to chain an ignore action after the redirect action
+which will cause the device to disable learning, but this means that we
+need to consume another action whenever a redirect action is used. In
+addition, the scenario described above is merely a corner case.
+
+Fixes: cedbb8b25948 ("mlxsw: spectrum_flower: Set dummy FID before forward action")
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Tested-by: Alex Kushnarov <alexanderk@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum_dcb.c   | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h         |  1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c     | 10 ++++++++++
+ .../net/ethernet/mellanox/mlxsw/spectrum_switchdev.c   |  6 ++++++
+ 3 files changed, 17 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-index b25048c6c761..21296fa7f7fb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-@@ -408,14 +408,6 @@ static int mlxsw_sp_port_dcb_app_update(struct mlxsw_sp_port *mlxsw_sp_port)
- 	have_dscp = mlxsw_sp_port_dcb_app_prio_dscp_map(mlxsw_sp_port,
- 							&prio_map);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index a252b080dda9..131f62ce9297 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -830,6 +830,7 @@ int mlxsw_sp_setup_tc_prio(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			   struct tc_prio_qopt_offload *p);
  
--	if (!have_dscp) {
--		err = mlxsw_sp_port_dcb_toggle_trust(mlxsw_sp_port,
--					MLXSW_REG_QPTS_TRUST_STATE_PCP);
--		if (err)
--			netdev_err(mlxsw_sp_port->dev, "Couldn't switch to trust L2\n");
--		return err;
--	}
--
- 	mlxsw_sp_port_dcb_app_dscp_prio_map(mlxsw_sp_port, default_prio,
- 					    &dscp_map);
- 	err = mlxsw_sp_port_dcb_app_update_qpdpm(mlxsw_sp_port,
-@@ -432,6 +424,14 @@ static int mlxsw_sp_port_dcb_app_update(struct mlxsw_sp_port *mlxsw_sp_port)
- 		return err;
+ /* spectrum_fid.c */
++bool mlxsw_sp_fid_is_dummy(struct mlxsw_sp *mlxsw_sp, u16 fid_index);
+ bool mlxsw_sp_fid_lag_vid_valid(const struct mlxsw_sp_fid *fid);
+ struct mlxsw_sp_fid *mlxsw_sp_fid_lookup_by_index(struct mlxsw_sp *mlxsw_sp,
+ 						  u16 fid_index);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+index 46baf3b44309..8df3cb21baa6 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+@@ -126,6 +126,16 @@ static const int *mlxsw_sp_packet_type_sfgc_types[] = {
+ 	[MLXSW_SP_FLOOD_TYPE_MC]	= mlxsw_sp_sfgc_mc_packet_types,
+ };
+ 
++bool mlxsw_sp_fid_is_dummy(struct mlxsw_sp *mlxsw_sp, u16 fid_index)
++{
++	enum mlxsw_sp_fid_type fid_type = MLXSW_SP_FID_TYPE_DUMMY;
++	struct mlxsw_sp_fid_family *fid_family;
++
++	fid_family = mlxsw_sp->fid_core->fid_family_arr[fid_type];
++
++	return fid_family->start_index == fid_index;
++}
++
+ bool mlxsw_sp_fid_lag_vid_valid(const struct mlxsw_sp_fid *fid)
+ {
+ 	return fid->fid_family->lag_vid_valid;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index 50111f228d77..5ecb45118400 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -2468,6 +2468,9 @@ static void mlxsw_sp_fdb_notify_mac_process(struct mlxsw_sp *mlxsw_sp,
+ 		goto just_remove;
  	}
  
-+	if (!have_dscp) {
-+		err = mlxsw_sp_port_dcb_toggle_trust(mlxsw_sp_port,
-+					MLXSW_REG_QPTS_TRUST_STATE_PCP);
-+		if (err)
-+			netdev_err(mlxsw_sp_port->dev, "Couldn't switch to trust L2\n");
-+		return err;
-+	}
++	if (mlxsw_sp_fid_is_dummy(mlxsw_sp, fid))
++		goto just_remove;
 +
- 	err = mlxsw_sp_port_dcb_toggle_trust(mlxsw_sp_port,
- 					     MLXSW_REG_QPTS_TRUST_STATE_DSCP);
- 	if (err) {
+ 	mlxsw_sp_port_vlan = mlxsw_sp_port_vlan_find_by_fid(mlxsw_sp_port, fid);
+ 	if (!mlxsw_sp_port_vlan) {
+ 		netdev_err(mlxsw_sp_port->dev, "Failed to find a matching {Port, VID} following FDB notification\n");
+@@ -2527,6 +2530,9 @@ static void mlxsw_sp_fdb_notify_mac_lag_process(struct mlxsw_sp *mlxsw_sp,
+ 		goto just_remove;
+ 	}
+ 
++	if (mlxsw_sp_fid_is_dummy(mlxsw_sp, fid))
++		goto just_remove;
++
+ 	mlxsw_sp_port_vlan = mlxsw_sp_port_vlan_find_by_fid(mlxsw_sp_port, fid);
+ 	if (!mlxsw_sp_port_vlan) {
+ 		netdev_err(mlxsw_sp_port->dev, "Failed to find a matching {Port, VID} following FDB notification\n");
 -- 
 2.21.0
 
