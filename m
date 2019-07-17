@@ -2,132 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D146B369
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 03:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A58316B36C
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 03:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbfGQBar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 21:30:47 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46958 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725850AbfGQBaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 21:30:46 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c73so9963638pfb.13;
-        Tue, 16 Jul 2019 18:30:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=neITER+zvrYjuYhibRCAZ2mUIZDBc7bmWlN6HB6gcKI=;
-        b=TyR3sxcqDcPBUFP6dAEFu9mdfp2q7bo/1ysGD6URAEn7Ok+LEneWbbq2jIFJ7jO6xr
-         E80POzx+7wBoYrK+X/onpGbJxavYHEluy/+nuA6UekMJncvOnLcGGk7xJXM85z3VdET/
-         M1l/sNuRZeipKzRNofXoiBhKLviWcFlNhyxXyXm2JrIMNmyYT++TDaBqft9CQBEOcLe1
-         7bbMoqeJ1uxJ9X6yyW4NmhpoAC9pMBfqCM2wRUK+3Dr2l6sLk9CzFJQIAddJuZ7Dz017
-         EGcQf3BHBW6sy/c6ubaAvYZMmP2mYdmmRdQ0Ux5XUF0wSQ0mhDAVP2EKJqnvZMFzOe9z
-         K+kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=neITER+zvrYjuYhibRCAZ2mUIZDBc7bmWlN6HB6gcKI=;
-        b=DxqM7HdcrHTf7+UlvfXs4oMwYg/8H6gFD7b8ecCDG5A6d7Fi7PWKECF6mCCj1KSUGU
-         idi0tLV3ssgHSANClX2ccy2VTiii3jtTkcICaTVf4ydFD2N11UL5MNWJILXWuEnreutZ
-         qjvAXxQuJGLhbVSdSt0WHyTVZzlMbgyaVJpVjS94/Tc4pMEXChxfjT6wVADblZiZ//HI
-         BUhETGvzD9j9IoL/w+rNx5UJ4yLZD+OyJhlrp5Ag2mIO573d8isWNSA4s97lpg2eq81/
-         xszX4ZkwP969UeMA/pSb7z7iBiOjCuUeRrO1H/H2NsHF1M57VnG6Oh9gsh+1EPsG1z4O
-         NMuw==
-X-Gm-Message-State: APjAAAVMcS3ztg9/3VqV3Pk53Gej1vMw0z2B1eKmdLcVTPvqxd/4z+qg
-        9AuYzaCXRY078XjLufYs+f4=
-X-Google-Smtp-Source: APXvYqxteJxMDlwlCNvvq4SuGqWoZbP7NjOqGn0uk70RZ1WP54WvJSTMSu99Enj+T2+HriAe3TQQ9Q==
-X-Received: by 2002:a63:5964:: with SMTP id j36mr37012010pgm.428.1563327046011;
-        Tue, 16 Jul 2019 18:30:46 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::b82a])
-        by smtp.gmail.com with ESMTPSA id a3sm23436067pfi.63.2019.07.16.18.30.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jul 2019 18:30:44 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 18:30:42 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        linux-kernel@vger.kernel.org,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Brendan Gregg <brendan.d.gregg@gmail.com>, connoro@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
-        jeffv@google.com, Karim Yaghmour <karim.yaghmour@opersys.com>,
-        kernel-team@android.com, linux-kselftest@vger.kernel.org,
-        Manali Shukla <manalishukla14@gmail.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matt Mullins <mmullins@fb.com>,
-        Michal Gregorczyk <michalgr@fb.com>,
-        Michal Gregorczyk <michalgr@live.com>,
-        Mohammad Husain <russoue@gmail.com>, namhyung@google.com,
-        namhyung@kernel.org, netdev@vger.kernel.org,
-        paul.chaignon@gmail.com, primiano@google.com,
-        Qais Yousef <qais.yousef@arm.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190717013041.53sbn3tgfhtxgyb3@ast-mbp.dhcp.thefacebook.com>
-References: <20190710141548.132193-1-joel@joelfernandes.org>
- <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
- <20190716213050.GA161922@google.com>
- <20190716183117.77b3ed49@gandalf.local.home>
+        id S1726019AbfGQBcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 21:32:46 -0400
+Received: from mail-eopbgr20043.outbound.protection.outlook.com ([40.107.2.43]:56964
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725856AbfGQBcq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jul 2019 21:32:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Eu1dnk/e5mzkNn4cF2hIjJGUj/D0SapbsTNWhwLyEyr8CfAm/ytQPBdjRjuww0L1CRJXc2Jk/nTlkUONXK6dMRXjPiim4gQz4udtAjmEdZT/zsSKKuQnVWZ/OnuTtKrTS6cK1WCwxmyhzwjEDEZAMEvU96LWieAIBtaoqSQLllFpPwG3i+ElSJugWYQWgPtIv4J7uLYCqWQg772VkuxzVVL6V0XQSXYE0jAoq8z5D9UC4vHYWbh7aQzoombkWeYMvYvXgV6dhN2Iy+2WJ6aST46uulbZG1Q4t+gjzz/l2sju7VlpsZuHlLsBuPhDW/zkrwyznHn87bWwRlQE4XLiJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pyByxjlNd5gF/gvMuXebC8//j6u9791TEgyavOkRB1M=;
+ b=WdKwtro23ideLhrhJHx0zoF0lWXVVsjKB8xG0/t/roxakXl42ZXABEuUmt1iKJkkB9sartlBm5fsgVSVtW5bRNuVBfmYIOKaAY7r/P4+TlJJ1h7e3eSdzFLED6pp8ekOU0XRP6uvOR66WNHL+WhVgI/tCkhljfzfLXxAMMXSWb15cBAUqD6V9hI3FVjAAwqztTmo83R1VmD+XIk31yqWAxLOAQ3Zl+liyOdGYkTy7rsk0qVnW5FOIP9kYqDcUzLj/yA8QI5pqzjC9SLeEyu/iWiAQLEgwqzLYEMhKwAto6ZNfS3FIzkiVyTp4Bz1xxofOxFP+OMbu8dfniFFCy0q6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=nxp.com;dmarc=pass action=none header.from=nxp.com;dkim=pass
+ header.d=nxp.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pyByxjlNd5gF/gvMuXebC8//j6u9791TEgyavOkRB1M=;
+ b=Q3Dcl+EIiOWNQWT4Bmce8FxA4KF+4bfFQaLRrNQvYBXvwHZQ6BYzqiO5iAc8chSWqNC5c1A7nmsv4vC23hcuezaKAZ2U9PnulQiXS1xISgAsTaXyUWKmiDqfKAE2zIllrt6/7h9dv1Zo0NE05h9CpPlUOFJdTA1k5w70JiFrM9w=
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.5.23) by
+ VI1PR0402MB3501.eurprd04.prod.outlook.com (52.134.4.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2073.14; Wed, 17 Jul 2019 01:32:33 +0000
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::c539:7bdc:7eea:2a52]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::c539:7bdc:7eea:2a52%7]) with mapi id 15.20.2073.012; Wed, 17 Jul 2019
+ 01:32:33 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] [PATCH v1] net: fec: optionally reset PHY via a
+ reset-controller
+Thread-Topic: [EXT] [PATCH v1] net: fec: optionally reset PHY via a
+ reset-controller
+Thread-Index: AQHVO1EEL3ng1jsYe0KS/0rCZTBO1KbMdjtAgADFVICAAMwi4A==
+Date:   Wed, 17 Jul 2019 01:32:33 +0000
+Message-ID: <VI1PR0402MB36009A9893832F89BB932E09FFC90@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+References: <20190715210512.15823-1-TheSven73@gmail.com>
+ <VI1PR0402MB36009E99D7361583702B84DDFFCE0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+ <CAGngYiUb5==QSM1-oa4bSeqhGyoaTw_dWjygLo=0X60eX=wQhQ@mail.gmail.com>
+In-Reply-To: <CAGngYiUb5==QSM1-oa4bSeqhGyoaTw_dWjygLo=0X60eX=wQhQ@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fugang.duan@nxp.com; 
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2fd37790-7ec5-4345-9717-08d70a56a418
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB3501;
+x-ms-traffictypediagnostic: VI1PR0402MB3501:
+x-microsoft-antispam-prvs: <VI1PR0402MB350195766D7616AEFABD5FB8FFC90@VI1PR0402MB3501.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 01018CB5B3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(376002)(136003)(39860400002)(346002)(199004)(189003)(316002)(25786009)(14454004)(68736007)(54906003)(7696005)(229853002)(186003)(26005)(8936002)(4326008)(5660300002)(71200400001)(478600001)(33656002)(71190400001)(52536014)(99286004)(305945005)(76116006)(76176011)(102836004)(7736002)(86362001)(53936002)(8676002)(66476007)(64756008)(66556008)(66946007)(66446008)(1411001)(486006)(256004)(14444005)(74316002)(6246003)(9686003)(11346002)(55016002)(6116002)(4744005)(53546011)(3846002)(66066001)(446003)(6506007)(81156014)(81166006)(6436002)(2906002)(476003)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3501;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: VsLkYD+LsOhhJ2sJRfXumyPIMgaKME+5wFmaQbC5laPNh2sD/jVuaXFHXMSSBa4G3hDPAE9g0+4elZHmEIc6GL6D4mo4/Fl9ej7pDChd9+vvDbDV1x0jyXHnB/vdvq5swBfoQ8N+idHC9ms4nlYaOlQDc8JF+ofDxSbqkLiGvx15MAWJESY0HqUh8WLw0yVkorPwo0FNy595pTgUXjsJAS4oqH+2woqkFMSpUVUOnZsHRwStoCl5HtoYbk3tgzN8tdYy/IYYRL/aoW2uVtgec2FDUJyN2+xcZfnz10U2qMklg8F15x94HnZ9WsxPhR650uoIa1ZyRRL54hmyCQ0vSIXHVNe7OdyEWZbn/9Ktk78Ps1IOATWPQyLv8EhrQdhwo2e+MmAHiaN35pd3PBifKPIJAHrdwArBC74+h9F+/RU=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716183117.77b3ed49@gandalf.local.home>
-User-Agent: NeoMutt/20180223
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fd37790-7ec5-4345-9717-08d70a56a418
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2019 01:32:33.2494
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fugang.duan@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3501
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 06:31:17PM -0400, Steven Rostedt wrote:
-> On Tue, 16 Jul 2019 17:30:50 -0400
-> Joel Fernandes <joel@joelfernandes.org> wrote:
-> 
-> > I don't see why a new bpf node for a trace event is a bad idea, really.
-> > tracefs is how we deal with trace events on Android. We do it in production
-> > systems. This is a natural extension to that and fits with the security model
-> > well.
-> 
-> What I would like to see is a way to have BPF inject data into the
-> ftrace ring buffer directly. There's a bpf_trace_printk() that I find a
-> bit of a hack (especially since it hooks into trace_printk() which is
-> only for debugging purposes). Have a dedicated bpf ftrace ring
-> buffer event that can be triggered is what I am looking for. Then comes
-> the issue of what ring buffer to place it in, as ftrace can have
-> multiple ring buffer instances. But these instances are defined by the
-> tracefs instances directory. Having a way to associate a bpf program to
-> a specific event in a specific tracefs directory could allow for ways to
-> trigger writing into the correct ftrace buffer.
-
-bpf can write anything (including full skb) into perf ring buffer.
-I don't think there is a use case yet to write into ftrace ring buffer.
-But I can be convinced otherwise :)
-
-> But looking over the patches, I see what Alexei means that there's no
-> overlap with ftrace and these patches except for the tracefs directory
-> itself (which is part of the ftrace infrastructure). And the trace
-> events are technically part of the ftrace infrastructure too. I see the
-> tracefs interface being used, but I don't see how the bpf programs
-> being added affect the ftrace ring buffer or other parts of ftrace. And
-> I'm guessing that's what is confusing Alexei.
-
-yep.
-What I really like to see some day is proper integration of real ftrace
-and bpf. So that bpf progs can be invoked from some of the ftrace machinery.
-And the other way around.
-Like I'd love to be able to start ftracing all functions from bpf
-and stop it from bpf.
-The use case is kernel debugging. I'd like to examine a bunch of condition
-and start ftracing the execution. Then later decide wether this collection
-of ip addresses is interesting to analyze and post process it quickly
-while still inside bpf program.
+RnJvbTogU3ZlbiBWYW4gQXNicm9lY2sgPHRoZXN2ZW43M0BnbWFpbC5jb20+IFNlbnQ6IFR1ZXNk
+YXksIEp1bHkgMTYsIDIwMTkgOToxOSBQTQ0KPiBIaSBBbmR5LA0KPiANCj4gT24gTW9uLCBKdWwg
+MTUsIDIwMTkgYXQgMTA6MDIgUE0gQW5keSBEdWFuIDxmdWdhbmcuZHVhbkBueHAuY29tPg0KPiB3
+cm90ZToNCj4gPg0KPiA+IHRoZSBwaHlsaWIgYWxyZWFkeSBjYW4gaGFuZGxlIG1paSBidXMgcmVz
+ZXQgYW5kIHBoeSBkZXZpY2UgcmVzZXQNCj4gDQo+IFRoYXQncyBhIGdyZWF0IHN1Z2dlc3Rpb24s
+IHRoYW5rIHlvdSAhISBJIGNvbXBsZXRlbHkgb3Zlcmxvb2tlZCB0aGF0IGNvZGUuDQo+IFdoYXQg
+d2lsbCBoYXBwZW4gdG8gdGhlIGxlZ2FjeSBwaHkgcmVzZXQgY29kZSBpbiBmZWM/IEFyZSB0aGVy
+ZSBtYW55IHVzZXJzDQo+IGxlZnQ/DQoNClllcywgc28gdGhlIG9sZCBsZWdhY3kgY29kZSBpcyBr
+ZXB0IHRoZXJlLiBCdXQgaXQgaXMgYmV0dGVyIHRvIGNsZWFuIHVwIGFsbCBpZiANCnRoZXJlIGhh
+dmUgZW5vdWdoIGJvYXJkcyB0byB2ZXJpZnkgdGhlbS4NCg==
