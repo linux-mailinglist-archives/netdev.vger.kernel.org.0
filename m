@@ -2,89 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D6546BF7E
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 18:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4D96BF94
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 18:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727237AbfGQQNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 12:13:52 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:47694 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726620AbfGQQNu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 12:13:50 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id BBF80605C121F65CC65C;
-        Thu, 18 Jul 2019 00:13:46 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Thu, 18 Jul 2019
- 00:13:42 +0800
-Date:   Wed, 17 Jul 2019 17:13:20 +0100
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-CC:     <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        "Len Brown" <lenb@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-        "Hartmut Knaack" <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        "Frederic Barrat" <fbarrat@linux.ibm.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        "Stefano Stabellini" <sstabellini@kernel.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-acpi@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <linux-pm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <xen-devel@lists.xenproject.org>,
-        <linux-mm@kvack.org>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v4 13/15] docs: ABI: testing: make the files compatible
- with ReST output
-Message-ID: <20190717171320.000035c2@huawei.com>
-In-Reply-To: <88d15fa38167e3f2e73e65e1c1a1f39bca0267b4.1563365880.git.mchehab+samsung@kernel.org>
-References: <cover.1563365880.git.mchehab+samsung@kernel.org>
-        <88d15fa38167e3f2e73e65e1c1a1f39bca0267b4.1563365880.git.mchehab+samsung@kernel.org>
-Organization: Huawei
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1727033AbfGQQ0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 12:26:00 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34762 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726081AbfGQQ0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 12:26:00 -0400
+Received: by mail-io1-f67.google.com with SMTP id k8so46774822iot.1;
+        Wed, 17 Jul 2019 09:25:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=q85Vqz3W3GGbylK1esF8kHL+MDaJe7lgEUVgXvvv680=;
+        b=UIZqLy36FrzuqzlSij4fpKHyCDQbyeWmZivDxFkWEHq6TiXCi050zbeQLW+BZ21cCq
+         L//0M6e6DLd9c+44KMMxoX01rjvpVgjJc8kSNT6uNMOZFHqwXLgWaGf7J8gAlYN0TBPf
+         ySMjgAl2sLyKhIBiDlHlih7OV2WUb1PWSGAgZw8j5NrVE88STnXefzpk7FWqfJye9IGp
+         b+u5Ch3Z7YpQmK7zB8TCHps2EAA4DmQKjmho25XfVU9gq3v2m5Ww+LobYQVDUz9ba4Fw
+         y2gPW9/RCpphkL83XWalymMZR9vwhPwXmdvZsRiMPuI6KVOEnDz3J3O8NQhXtP0k2Ayg
+         mFpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=q85Vqz3W3GGbylK1esF8kHL+MDaJe7lgEUVgXvvv680=;
+        b=ukCntUIAtWNPd/wltpQwNCURn6sIKovh7aR8cP3GzKw5qj4rcMspoopm877fc6nX9e
+         bHlPfVFjmzjBTxOXJSx6qymvkatirUUNBfIDAAJwFXiHRONtzm05Py8RvwC5O2QB2Ydo
+         g4cEDb8uRGAv6+gt9Ws6PpBaqrvJP3aQtO9OYvshm572vTasepnEEZDwXDvtuZGVG8Am
+         pQnBrI4IPfTRvvulHQAeDRbK8jVl5z/tQHRRA3pVf9TswHT7/2feRhcKiz9SkMJ+CIMv
+         Wdgfg4RDStK+/7JNQ+HW/eXx1CxvZDGcAIHrrW0xWgTs9yClXFodg8nziIXbU98berg2
+         S9lg==
+X-Gm-Message-State: APjAAAXovKHeBcNvLOODf9HNNZmTEe8834h0vLDk2bDwfvGhtaEVQU0d
+        F56yIE3BcAV0pmzkhxvdl2RHwPbgs69MFjb5y31yJ1KS
+X-Google-Smtp-Source: APXvYqwNeyrP61LXt+3XiReh2rpcBk7k2Hir60riIrD3lHk0660TDaWEorO+QAW82L9mtPy2hcFVi3ISWDfPEdKO1IY=
+X-Received: by 2002:a5d:9d58:: with SMTP id k24mr37098017iok.116.1563380759162;
+ Wed, 17 Jul 2019 09:25:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
+References: <20190716115910.23093-1-iii@linux.ibm.com> <CAH3MdRWGVDjW8cA9EbnFjK8ko1EqeyDyC_LoRTsxhLsYn1fZtw@mail.gmail.com>
+ <CAH3MdRU-u1Gn6uj2D=mzXvdC2RDWas3Ec0QXObKsLac1GwuREQ@mail.gmail.com>
+ <98C6AA13-A44D-4FF1-BA73-1BD446BD773A@linux.ibm.com> <4311B5C3-8D1B-4958-9CDE-450662A7851D@linux.ibm.com>
+In-Reply-To: <4311B5C3-8D1B-4958-9CDE-450662A7851D@linux.ibm.com>
+From:   Y Song <ys114321@gmail.com>
+Date:   Wed, 17 Jul 2019 09:25:23 -0700
+Message-ID: <CAH3MdRV-qsJnyZVV1GnxRZ4=3KXTvKSgETp90fyevxycmAiHmA@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix narrower loads on s390
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        gor@linux.ibm.com, heiko.carstens@de.ibm.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Jul 2019 09:28:17 -0300
-Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
+On Wed, Jul 17, 2019 at 3:36 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+>
+> > Am 17.07.2019 um 11:21 schrieb Ilya Leoshkevich <iii@linux.ibm.com>:
+> >
+> >> Am 17.07.2019 um 07:11 schrieb Y Song <ys114321@gmail.com>:
+> >>
+> >> [sorry, resend again as previous one has come text messed out due to
+> >> networking issues]
+> >>
+> >> On Tue, Jul 16, 2019 at 10:08 PM Y Song <ys114321@gmail.com> wrote:
+> >>>
+> >>> On Tue, Jul 16, 2019 at 4:59 AM Ilya Leoshkevich <iii@linux.ibm.com> =
+wrote:
+> >>>>
+> >>>> test_pkt_md_access is failing on s390, since the associated eBPF pro=
+g
+> >>>> returns TC_ACT_SHOT, which in turn happens because loading a part of=
+ a
+> >>>> struct __sk_buff field produces an incorrect result.
+> >>>>
+> >>>> The problem is that when verifier emits the code to replace partial =
+load
+> >>>> of a field with a full load, a shift and a bitwise AND, it assumes t=
+hat
+> >>>> the machine is little endian.
+> >>>>
+> >>>> Adjust shift count calculation to account for endianness.
+> >>>>
+> >>>> Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program co=
+ntext fields")
+> >>>> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> >>>> ---
+> >>>> kernel/bpf/verifier.c | 8 ++++++--
+> >>>> 1 file changed, 6 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> >>>> index 5900cbb966b1..3f9353653558 100644
+> >>>> --- a/kernel/bpf/verifier.c
+> >>>> +++ b/kernel/bpf/verifier.c
+> >>>> @@ -8616,8 +8616,12 @@ static int convert_ctx_accesses(struct bpf_ve=
+rifier_env *env)
+> >>>>               }
+> >>>>
+> >>>>               if (is_narrower_load && size < target_size) {
+> >>>> -                       u8 shift =3D (off & (size_default - 1)) * 8;
+> >>>> -
+> >>>> +                       u8 load_off =3D off & (size_default - 1);
+> >>>> +#ifdef __LITTLE_ENDIAN
+> >>>> +                       u8 shift =3D load_off * 8;
+> >>>> +#else
+> >>>> +                       u8 shift =3D (size_default - (load_off + siz=
+e)) * 8;
+> >>>> +#endif
+> >>>
+> >> All the values are in register. The shifting operations should be the
+> >> same for big endian and little endian, e.g., value 64 >> 2 =3D 16 when
+> >> value "64" is in register. So I did not see a problem here.
+> >>
+> >> Could you elaborate which field access in test_pkt_md_access
+> >> caused problem?
+> >
+> > The very first one: TEST_FIELD(__u8,  len, 0xFF);
+> >
+> >> It would be good if you can give detailed memory layout and register v=
+alues
+> >> to illustrate the problem.
+> >
+> > Suppose len =3D 0x11223344. On a big endian system, this would be
+> >
+> > 11 22 33 44
+> >
+> > Now, we would like to do *(u8 *)&len, the desired result is 0x11.
+> > Verifier should emit the following: ((*(u32 *)&len) >> 24) & 0xff, but =
+as
+> > of today it misses the shift.
+> >
+> > On a little endian system the layout is:
+> >
+> > 44 33 22 11
+> >
+> > and the desired result is different - 0x44. Verifier correctly emits
+> > (*(u32 *)&len) & 0xff.
+>
+> I=E2=80=99ve just realized, that this example does not reflect what the t=
+est is
+> doing on big-endian systems (there is an #ifdef for those).
+>
+> Here is a better one: len=3D0x11223344 and we would like to do
+> ((u8 *)&len)[3].
+>
+> len is represented as `11 22 33 44` in memory, so the desired result is
+> 0x44. It can be obtained by doing (*(u32 *)&len) & 0xff, but today the
+> verifier does ((*(u32 *)&len) >> 24) & 0xff instead.
 
-> Some files over there won't parse well by Sphinx.
-> 
-> Fix them.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Hi Mauro,
+What you described above for the memory layout all makes sense.
+The root cause is for big endian, we should do *((u8 *)&len + 3).
+This is exactly what macros in test_pkt_md_access.c tries to do.
 
-Does feel like this one should perhaps have been broken up a touch!
+if  __BYTE_ORDER__ =3D=3D __ORDER_LITTLE_ENDIAN__
+#define TEST_FIELD(TYPE, FIELD, MASK)                                   \
+        {                                                               \
+                TYPE tmp =3D *(volatile TYPE *)&skb->FIELD;               \
+                if (tmp !=3D ((*(volatile __u32 *)&skb->FIELD) & MASK))   \
+                        return TC_ACT_SHOT;                             \
+        }
+#else
+#define TEST_FIELD_OFFSET(a, b) ((sizeof(a) - sizeof(b)) / sizeof(b))
+#define TEST_FIELD(TYPE, FIELD, MASK)                                   \
+        {                                                               \
+                TYPE tmp =3D *((volatile TYPE *)&skb->FIELD +             \
+                              TEST_FIELD_OFFSET(skb->FIELD, TYPE));     \
+                if (tmp !=3D ((*(volatile __u32 *)&skb->FIELD) & MASK))   \
+                        return TC_ACT_SHOT;                             \
+        }
+#endif
 
-For the IIO ones I've eyeballed it rather than testing the results
-
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-
+Could you check whether your __BYTE_ORDER__ is set
+correctly or not for this case? You may need to tweak Makefile
+if you are doing cross compilation, I am not sure how as I
+did not have environment.
