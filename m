@@ -2,93 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67DF86B2E2
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B6886B317
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 03:18:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389051AbfGQAa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 20:30:57 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:47210 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729521AbfGQAa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:30:56 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6H0T5DW086898;
-        Wed, 17 Jul 2019 00:30:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=+OmuX5IMIfqkKElSKCZFFVvvAf/NERvIolG+tzD78/M=;
- b=k6LZW+9K7+TsmuWNKKqOC4AdhAxz8+IFXcy4d2D0s6fPCNmiq0NCgHv83SwK+amIHyOo
- 7kPlc0RKY1YZ4ptEMzuoLMkNuVLaI26h6vfJitnhkztpBtFoIF/f+PyjIonLFPbxRNfi
- +O4O+1+6iV7GucxGuvEnSil+jAQKbWQ+gZZFdC1rivVHGj4aYveXormXL2INRSoqNR5O
- iXFQBcwKTtTKUDPx3wCxO/DlpiApkGmzKZcCDmw5lylXXd5KBkcfDfnF/SbchhTeb0PP
- 99geX5GhAPz8nEjwjIIfv3Bq+nrF5Mrn+GoTGVefRyoPxr4zeRLrfVryVwl+p7Nf7Fnt fQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2tq78pqfeh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Jul 2019 00:30:50 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6H0SAdG192559;
-        Wed, 17 Jul 2019 00:28:49 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 2tq4du7e1w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 17 Jul 2019 00:28:49 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6H0Snkj193501;
-        Wed, 17 Jul 2019 00:28:49 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 2tq4du7e1t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Jul 2019 00:28:49 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6H0SmkM010024;
-        Wed, 17 Jul 2019 00:28:48 GMT
-Received: from [192.168.86.192] (/69.181.241.203)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 17 Jul 2019 00:28:48 +0000
-Subject: Re: [PATCH net v3 6/7] net/rds: Keep track of and wait for FRWR
- segments in use upon shutdown
-To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Cc:     David Miller <davem@davemloft.net>
-References: <28ded44a-bce9-8632-d7e8-fe843140658e@oracle.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <ab50c07c-ed8c-c747-89b9-32cac2146645@oracle.com>
-Date:   Tue, 16 Jul 2019 17:28:47 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        id S1726104AbfGQBSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 21:18:04 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:41126 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726075AbfGQBSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 21:18:03 -0400
+Received: by mail-lf1-f65.google.com with SMTP id 62so10218753lfa.8;
+        Tue, 16 Jul 2019 18:18:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cGIrD8hmFJN1O8PXvtPzZbs27wrTnDcmi4staxVd3OI=;
+        b=qAb4kIaPKdgexPaSXtzjYxWmilrDzboXMzAQ75KtpRLYXailuTWRPOkerE8fyK2CE8
+         QYFImlF3YoVD5qiSxrCBTBzjTHkekfY2gcaZrxL4r/BTxH2oczbZ+dk9L1GwtzscHeDg
+         98p6wKF3je75O+8s0IGmHoGeX5nt20RXcP2Hm5wf+7+mi0Te7O52ra2Fsa6HCYqYb+3Y
+         zX2TMFcslGRuoHPc2y115AADgTt6gqswC9AMDQzdiKH3eGPM9N3cJFpTtTWF5ec7aaJ0
+         mmUBXZIQTnJWjJ5Xtl6LuIdsmvwqqop0Thh/Oc7KAh9pV2r9UL/LjXB1lojJR1mHfQG8
+         GaNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cGIrD8hmFJN1O8PXvtPzZbs27wrTnDcmi4staxVd3OI=;
+        b=gCCJGab19141hNaWmPKVtcBmIp1R8zS/KKoSIMrr87wgpa/zqtWzV4PqM0g6qGtGi2
+         +5P5kLXtbpPh8cV7C0K2ucNu7F+mZmG5a4nPEP67f68Urm9nTASqhzlVpymQRhK1VHVp
+         eZCA4Vz/xZL4lA2QgBJYh6MbHPlsUYRkYEYc82HKJWx4lAtMYKccwVAmQ94hkGr/U2l5
+         Z4/xfSRKMY9FW+JJceEzPAB86XrUNW0zdgeDcyyxP2bnab/wR25pVmwi1HUFCdiuOQoS
+         9zKRRppwl2QaHihmwMre8Y/y1fIIS+9DCTOjyRHl0hjA5LySmtbtcauseE5mBvMSyGue
+         RF3g==
+X-Gm-Message-State: APjAAAWMFrdUOmwGalO2p3eftDIbySYr9dS3g6cJQX6U2XvdgEeb2n8Z
+        6n0uqsj/oQwvEBYOBbcSw/O1nHwFYNUqgvrZWSA=
+X-Google-Smtp-Source: APXvYqzIUUcr4f0vfvtcm3leALHR2jLLCZsjwSgpnOid53MDmvyhMH9vJ45jDJt0oRiAo8ecibzdGvlu+hgkVhvU6Z4=
+X-Received: by 2002:ac2:465e:: with SMTP id s30mr2156488lfo.19.1563326281722;
+ Tue, 16 Jul 2019 18:18:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <28ded44a-bce9-8632-d7e8-fe843140658e@oracle.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9320 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1907170004
+References: <1562275611-31790-1-git-send-email-jiong.wang@netronome.com>
+ <CAEf4BzavePpW-C+zORN1kwSUJAWuJ3LxZ6QGxqaE9msxCq8ZLA@mail.gmail.com>
+ <87r26w24v4.fsf@netronome.com> <CAEf4BzaPFbYKUQzu7VoRd7idrqPDMEFF=UEmT2pGf+Lxz06+sA@mail.gmail.com>
+ <87k1cj3b69.fsf@netronome.com> <CAEf4BzYDAVUgajz4=dRTu5xQDddp5pi2s=T1BdFmRLZjOwGypQ@mail.gmail.com>
+ <87wogitlbi.fsf@netronome.com> <20190716161701.mk5ye47aj2slkdjp@ast-mbp.dhcp.thefacebook.com>
+ <20190716151223.7208c033@cakuba.netronome.com>
+In-Reply-To: <20190716151223.7208c033@cakuba.netronome.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 16 Jul 2019 18:17:49 -0700
+Message-ID: <CAADnVQLQtDLQRXY+MuSRzpxZdnE0BZiU7O6eayGttyt-vpErqg@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/8] bpf: accelerate insn patching speed
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Edward Cree <ecree@solarflare.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/19 3:29 PM, Gerd Rausch wrote:
-> Since "rds_ib_free_frmr" and "rds_ib_free_frmr_list" simply put
-> the FRMR memory segments on the "drop_list" or "free_list",
-> and it is the job of "rds_ib_flush_mr_pool" to reap those entries
-> by ultimately issuing a "IB_WR_LOCAL_INV" work-request,
-> we need to trigger and then wait for all those memory segments
-> attached to a particular connection to be fully released before
-> we can move on to release the QP, CQ, etc.
-> 
-> So we make "rds_ib_conn_path_shutdown" wait for one more
-> atomic_t called "i_fastreg_inuse_count" that keeps track of how
-> many FRWR memory segments are out there marked "FRMR_IS_INUSE"
-> (and also wake_up rds_ib_ring_empty_wait, as they go away).
-> 
-> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
-> ---
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+On Tue, Jul 16, 2019 at 3:12 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Tue, 16 Jul 2019 09:17:03 -0700, Alexei Starovoitov wrote:
+> > I don't think we have a test for such 'dead prog only due to verifier walk'
+> > situation. I wonder what happens :)
+>
+> FWIW we do have verifier and BTF self tests for dead code removal
+> of entire subprogs! :)
+
+Thanks! Indeed.
