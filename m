@@ -2,153 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0466BA5F
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:36:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA2F86BA71
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:40:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbfGQKgm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jul 2019 06:36:42 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1552 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726575AbfGQKgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 06:36:41 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6HAVgHj070520
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 06:36:40 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tt1mf9898-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 06:36:40 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Wed, 17 Jul 2019 11:36:37 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 17 Jul 2019 11:36:35 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6HAaYPA42598592
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Jul 2019 10:36:34 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 93008A4055;
-        Wed, 17 Jul 2019 10:36:34 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 66101A4053;
-        Wed, 17 Jul 2019 10:36:34 +0000 (GMT)
-Received: from dyn-9-152-96-15.boeblingen.de.ibm.com (unknown [9.152.96.15])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 17 Jul 2019 10:36:34 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH bpf] bpf: fix narrower loads on s390
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-In-Reply-To: <98C6AA13-A44D-4FF1-BA73-1BD446BD773A@linux.ibm.com>
-Date:   Wed, 17 Jul 2019 12:36:34 +0200
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com
+        id S1726685AbfGQKkr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jul 2019 06:40:47 -0400
+Received: from m4a0039g.houston.softwaregrp.com ([15.124.2.85]:43265 "EHLO
+        m4a0039g.houston.softwaregrp.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725941AbfGQKkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 06:40:46 -0400
+X-Greylist: delayed 905 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Jul 2019 06:40:46 EDT
+Received: FROM m4a0039g.houston.softwaregrp.com (15.120.17.146) BY m4a0039g.houston.softwaregrp.com WITH ESMTP
+ FOR netdev@vger.kernel.org;
+ Wed, 17 Jul 2019 10:40:45 +0000
+Received: from M4W0334.microfocus.com (2002:f78:1192::f78:1192) by
+ M4W0334.microfocus.com (2002:f78:1192::f78:1192) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Wed, 17 Jul 2019 10:25:21 +0000
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (15.124.8.11) by
+ M4W0334.microfocus.com (15.120.17.146) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10 via Frontend Transport; Wed, 17 Jul 2019 10:25:21 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tl4Ck39cJ8fZKR8az5axtbLjpuwWPmDAsm02Y2eB7MiO9wm3GLteyF5hIxkMZmr3gF/ba7UQVYkIgdB6OQjlr6uU/6ExTt2p6o+SXu56K0ddizTUZF6OHHqth1LsLhktxhyodX/+JKN6erj89iIkbkdyv09ZAAJRRK2PRItYbGLufuKFFf1c3Di+CSa4AWof3MUPi6JVpJD5HnrtsgfkaN7M6MAUJQhIc64TJd+WqYpqM6mMYQDKUpMQYCrocHgfdXWc8ycVQYcFECIWp43Pbsg5nmFHvp3bFtWZFfiBTZGj9GbCJzXuWrsScDTxaJy+kl7ySo+Olqri0hGDKoPqWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zuuAN3vg0dNFlBgLGocV58U/H1Jm+oXdmGIQeMjIb5c=;
+ b=JeKJ71ErfGkgkwffe5LGAYm5Y7ydze63RSNaJ6P6IB9D3UVBoBHjncoVH7a2UDsOHrx8YIl1rYqH9oDIj/5kO6QnK1atIMOxmazK7rUtt4xLbKPbACxX/0xen1dSgovwtRCrkE1ZniIu3Gva/I0vvWChn0CEKcJGMHjED+Lb2Ws+KJrIzeDSbks8rGft3ytlKOYdwU003JzC61AkIGnx6MY+41vguhmR9LLsQl+udUiimFBsfJ95Z9b/MQtV1aACvqG9ErHFg7EgRLYQ7a0vT/tFVIRApHyrpPcRUKSSD2iPZ47q8Gi0fqCfmWkIRt48CqKaneLH7Dx0cept6aJRSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=suse.com;dmarc=pass action=none header.from=suse.com;dkim=pass
+ header.d=suse.com;arc=none
+Received: from CH2PR18MB3189.namprd18.prod.outlook.com (52.132.244.203) by
+ CH2PR18MB3176.namprd18.prod.outlook.com (52.132.244.150) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2073.10; Wed, 17 Jul 2019 10:25:19 +0000
+Received: from CH2PR18MB3189.namprd18.prod.outlook.com
+ ([fe80::2053:cdc8:d81c:a5d6]) by CH2PR18MB3189.namprd18.prod.outlook.com
+ ([fe80::2053:cdc8:d81c:a5d6%7]) with mapi id 15.20.2073.012; Wed, 17 Jul 2019
+ 10:25:19 +0000
+From:   Firo Yang <firo.yang@suse.com>
+To:     Benjamin Poirier <BPoirier@suse.com>
+CC:     Ajit Khaparde <ajit.khaparde@broadcom.com>,
+        Sathya Perla <sathya.perla@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] be2net: Signal that the device cannot transmit during
+ reconfiguration
+Thread-Topic: [PATCH net] be2net: Signal that the device cannot transmit
+ during reconfiguration
+Thread-Index: AQHVO67z2A6t0cO8nkSyQhUeM2Az8KbOMBQEgABKiSaAAAY7iIAADO7ggAANWMg=
+Date:   Wed, 17 Jul 2019 10:25:19 +0000
+Message-ID: <CH2PR18MB3189803176C2D913A8476F9C88C90@CH2PR18MB3189.namprd18.prod.outlook.com>
+References: <20190716081655.7676-1-bpoirier@suse.com>
+ <CH2PR18MB31898E033896F9760D36BFF288C90@CH2PR18MB3189.namprd18.prod.outlook.com>
+ <20190717082340.GA6015@f1>
+ <CH2PR18MB3189AD09E590F16443D8D5BA88C90@CH2PR18MB3189.namprd18.prod.outlook.com>,<20190717093208.GA6511@f1>
+In-Reply-To: <20190717093208.GA6511@f1>
+Accept-Language: en-US, en-GB, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=firo.yang@suse.com; 
+x-originating-ip: [45.122.156.254]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 82ddb616-fad7-445d-0e2e-08d70aa111b5
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CH2PR18MB3176;
+x-ms-traffictypediagnostic: CH2PR18MB3176:
+x-microsoft-antispam-prvs: <CH2PR18MB31768FE103FA51B8D9CD0B0888C90@CH2PR18MB3176.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1728;
+x-forefront-prvs: 01018CB5B3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(366004)(136003)(39860400002)(376002)(396003)(199004)(189003)(11346002)(446003)(186003)(14454004)(26005)(81166006)(66946007)(81156014)(102836004)(9686003)(476003)(6436002)(8676002)(44832011)(54906003)(256004)(7736002)(6246003)(2906002)(6506007)(53936002)(6862004)(76176011)(7696005)(316002)(76116006)(305945005)(64756008)(68736007)(5660300002)(229853002)(52536014)(4326008)(99286004)(66556008)(6636002)(66446008)(558084003)(66066001)(55016002)(3846002)(486006)(478600001)(8936002)(33656002)(6116002)(74316002)(25786009)(71200400001)(66476007)(71190400001)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:CH2PR18MB3176;H:CH2PR18MB3189.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: suse.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: T+gw7xIqcQeV1cqy9Y1Vvvh+TuOcoKCLYw8ehte4Rt34OjmofAVRlPc0o0rd/atrRytEoOtFAl4BVjzbTJsDGRpfMA+5+jvq68s2mkSKZdVvcvKrbzpwIXqs/armQycVIeJkiWSbOV0aAe0lBqzEhMm0Tkby/k0eH2flqOeYhBGM5ei6H7Gd65IkJHc0Faa/CmBdug8BPbuHF4ntFEv/JevS18qjh+FYIiLr2tVV5aVVTn6L3+GFGRRt7P/wvM2Xx20MA/jopf8IMEKPZBAoSoqQ70HMpkxlaWcJ97CGXGbwNzifpykboyEP/5xausdPOhPy7MDKovPSbuyibevDmavVSxmQ0zSdmgzu5HbH009pkd5jrI7JR91U0lFAKoAp8s7QDmHoUbcHjO5GCPO8XvznF/sIwR/OUVPKnDHmDlU=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: 8BIT
-References: <20190716115910.23093-1-iii@linux.ibm.com>
- <CAH3MdRWGVDjW8cA9EbnFjK8ko1EqeyDyC_LoRTsxhLsYn1fZtw@mail.gmail.com>
- <CAH3MdRU-u1Gn6uj2D=mzXvdC2RDWas3Ec0QXObKsLac1GwuREQ@mail.gmail.com>
- <98C6AA13-A44D-4FF1-BA73-1BD446BD773A@linux.ibm.com>
-To:     Y Song <ys114321@gmail.com>
-X-Mailer: Apple Mail (2.3445.9.1)
-X-TM-AS-GCONF: 00
-x-cbid: 19071710-0016-0000-0000-00000293A12A
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071710-0017-0000-0000-000032F17815
-Message-Id: <4311B5C3-8D1B-4958-9CDE-450662A7851D@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-17_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=988 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907170128
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82ddb616-fad7-445d-0e2e-08d70aa111b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2019 10:25:19.7666
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 856b813c-16e5-49a5-85ec-6f081e13b527
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: firo.yang@suse.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR18MB3176
+X-OriginatorOrg: suse.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 17.07.2019 um 11:21 schrieb Ilya Leoshkevich <iii@linux.ibm.com>:
-> 
->> Am 17.07.2019 um 07:11 schrieb Y Song <ys114321@gmail.com>:
->> 
->> [sorry, resend again as previous one has come text messed out due to
->> networking issues]
->> 
->> On Tue, Jul 16, 2019 at 10:08 PM Y Song <ys114321@gmail.com> wrote:
->>> 
->>> On Tue, Jul 16, 2019 at 4:59 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->>>> 
->>>> test_pkt_md_access is failing on s390, since the associated eBPF prog
->>>> returns TC_ACT_SHOT, which in turn happens because loading a part of a
->>>> struct __sk_buff field produces an incorrect result.
->>>> 
->>>> The problem is that when verifier emits the code to replace partial load
->>>> of a field with a full load, a shift and a bitwise AND, it assumes that
->>>> the machine is little endian.
->>>> 
->>>> Adjust shift count calculation to account for endianness.
->>>> 
->>>> Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program context fields")
->>>> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
->>>> ---
->>>> kernel/bpf/verifier.c | 8 ++++++--
->>>> 1 file changed, 6 insertions(+), 2 deletions(-)
->>>> 
->>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>>> index 5900cbb966b1..3f9353653558 100644
->>>> --- a/kernel/bpf/verifier.c
->>>> +++ b/kernel/bpf/verifier.c
->>>> @@ -8616,8 +8616,12 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
->>>>               }
->>>> 
->>>>               if (is_narrower_load && size < target_size) {
->>>> -                       u8 shift = (off & (size_default - 1)) * 8;
->>>> -
->>>> +                       u8 load_off = off & (size_default - 1);
->>>> +#ifdef __LITTLE_ENDIAN
->>>> +                       u8 shift = load_off * 8;
->>>> +#else
->>>> +                       u8 shift = (size_default - (load_off + size)) * 8;
->>>> +#endif
->>> 
->> All the values are in register. The shifting operations should be the
->> same for big endian and little endian, e.g., value 64 >> 2 = 16 when
->> value "64" is in register. So I did not see a problem here.
->> 
->> Could you elaborate which field access in test_pkt_md_access
->> caused problem?
-> 
-> The very first one: TEST_FIELD(__u8,  len, 0xFF);
-> 
->> It would be good if you can give detailed memory layout and register values
->> to illustrate the problem.
-> 
-> Suppose len = 0x11223344. On a big endian system, this would be
-> 
-> 11 22 33 44
-> 
-> Now, we would like to do *(u8 *)&len, the desired result is 0x11.
-> Verifier should emit the following: ((*(u32 *)&len) >> 24) & 0xff, but as
-> of today it misses the shift.
-> 
-> On a little endian system the layout is:
-> 
-> 44 33 22 11
-> 
-> and the desired result is different - 0x44. Verifier correctly emits
-> (*(u32 *)&len) & 0xff.
+Crystal clear. Many thanks.
 
-I’ve just realized, that this example does not reflect what the test is
-doing on big-endian systems (there is an #ifdef for those).
-
-Here is a better one: len=0x11223344 and we would like to do
-((u8 *)&len)[3].
-
-len is represented as `11 22 33 44` in memory, so the desired result is
-0x44. It can be obtained by doing (*(u32 *)&len) & 0xff, but today the
-verifier does ((*(u32 *)&len) >> 24) & 0xff instead.
+// Firo
