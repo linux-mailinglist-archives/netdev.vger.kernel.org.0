@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 691516BB5C
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 13:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4B806BB6F
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 13:31:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729604AbfGQLan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 07:30:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46532 "EHLO mx1.redhat.com"
+        id S1730971AbfGQLar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 07:30:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43306 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725873AbfGQLam (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 07:30:42 -0400
+        id S1725873AbfGQLap (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jul 2019 07:30:45 -0400
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3449BC18B2CC;
-        Wed, 17 Jul 2019 11:30:42 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id A2DB8307D860;
+        Wed, 17 Jul 2019 11:30:44 +0000 (UTC)
 Received: from steredhat.redhat.com (ovpn-116-100.ams2.redhat.com [10.36.116.100])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 68C215C257;
-        Wed, 17 Jul 2019 11:30:31 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F3495E1A8;
+        Wed, 17 Jul 2019 11:30:42 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -27,146 +27,177 @@ Cc:     linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org,
         Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
         "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH v4 0/5] vsock/virtio: optimizations to increase the throughput
-Date:   Wed, 17 Jul 2019 13:30:25 +0200
-Message-Id: <20190717113030.163499-1-sgarzare@redhat.com>
+Subject: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
+Date:   Wed, 17 Jul 2019 13:30:26 +0200
+Message-Id: <20190717113030.163499-2-sgarzare@redhat.com>
+In-Reply-To: <20190717113030.163499-1-sgarzare@redhat.com>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Wed, 17 Jul 2019 11:30:42 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Wed, 17 Jul 2019 11:30:44 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series tries to increase the throughput of virtio-vsock with slight
-changes.
-While I was testing the v2 of this series I discovered an huge use of memory,
-so I added patch 1 to mitigate this issue. I put it in this series in order
-to better track the performance trends.
+Since virtio-vsock was introduced, the buffers filled by the host
+and pushed to the guest using the vring, are directly queued in
+a per-socket list. These buffers are preallocated by the guest
+with a fixed size (4 KB).
 
-v4:
-- rebased all patches on current master (conflicts is Patch 4)
-- Patch 1: added Stefan's R-b
-- Patch 3: removed lock when buf_alloc is written [David];
-           moved this patch after "vsock/virtio: reduce credit update messages"
-           to make it clearer
-- Patch 4: vhost_exceeds_weight() is recently introduced, so I've solved some
-           conflicts
+The maximum amount of memory used by each socket should be
+controlled by the credit mechanism.
+The default credit available per-socket is 256 KB, but if we use
+only 1 byte per packet, the guest can queue up to 262144 of 4 KB
+buffers, using up to 1 GB of memory per-socket. In addition, the
+guest will continue to fill the vring with new 4 KB free buffers
+to avoid starvation of other sockets.
 
-v3: https://patchwork.kernel.org/cover/10970145
+This patch mitigates this issue copying the payload of small
+packets (< 128 bytes) into the buffer of last packet queued, in
+order to avoid wasting memory.
 
-v2: https://patchwork.kernel.org/cover/10938743
-
-v1: https://patchwork.kernel.org/cover/10885431
-
-Below are the benchmarks step by step. I used iperf3 [1] modified with VSOCK
-support. As Micheal suggested in the v1, I booted host and guest with 'nosmap'.
-
-A brief description of patches:
-- Patches 1:   limit the memory usage with an extra copy for small packets
-- Patches 2+3: reduce the number of credit update messages sent to the
-               transmitter
-- Patches 4+5: allow the host to split packets on multiple buffers and use
-               VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max packet size allowed
-
-                    host -> guest [Gbps]
-pkt_size before opt   p 1     p 2+3    p 4+5
-
-32         0.032     0.030    0.048    0.051
-64         0.061     0.059    0.108    0.117
-128        0.122     0.112    0.227    0.234
-256        0.244     0.241    0.418    0.415
-512        0.459     0.466    0.847    0.865
-1K         0.927     0.919    1.657    1.641
-2K         1.884     1.813    3.262    3.269
-4K         3.378     3.326    6.044    6.195
-8K         5.637     5.676   10.141   11.287
-16K        8.250     8.402   15.976   16.736
-32K       13.327    13.204   19.013   20.515
-64K       21.241    21.341   20.973   21.879
-128K      21.851    22.354   21.816   23.203
-256K      21.408    21.693   21.846   24.088
-512K      21.600    21.899   21.921   24.106
-
-                    guest -> host [Gbps]
-pkt_size before opt   p 1     p 2+3    p 4+5
-
-32         0.045     0.046    0.057    0.057
-64         0.089     0.091    0.103    0.104
-128        0.170     0.179    0.192    0.200
-256        0.364     0.351    0.361    0.379
-512        0.709     0.699    0.731    0.790
-1K         1.399     1.407    1.395    1.427
-2K         2.670     2.684    2.745    2.835
-4K         5.171     5.199    5.305    5.451
-8K         8.442     8.500   10.083    9.941
-16K       12.305    12.259   13.519   15.385
-32K       11.418    11.150   11.988   24.680
-64K       10.778    10.659   11.589   35.273
-128K      10.421    10.339   10.939   40.338
-256K      10.300     9.719   10.508   36.562
-512K       9.833     9.808   10.612   35.979
-
-As Stefan suggested in the v1, I measured also the efficiency in this way:
-    efficiency = Mbps / (%CPU_Host + %CPU_Guest)
-
-The '%CPU_Guest' is taken inside the VM. I know that it is not the best way,
-but it's provided for free from iperf3 and could be an indication.
-
-        host -> guest efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
-pkt_size before opt   p 1     p 2+3    p 4+5
-
-32         0.35      0.45     0.79     1.02
-64         0.56      0.80     1.41     1.54
-128        1.11      1.52     3.03     3.12
-256        2.20      2.16     5.44     5.58
-512        4.17      4.18    10.96    11.46
-1K         8.30      8.26    20.99    20.89
-2K        16.82     16.31    39.76    39.73
-4K        30.89     30.79    74.07    75.73
-8K        53.74     54.49   124.24   148.91
-16K       80.68     83.63   200.21   232.79
-32K      132.27    132.52   260.81   357.07
-64K      229.82    230.40   300.19   444.18
-128K     332.60    329.78   331.51   492.28
-256K     331.06    337.22   339.59   511.59
-512K     335.58    328.50   331.56   504.56
-
-        guest -> host efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
-pkt_size before opt   p 1     p 2+3    p 4+5
-
-32         0.43      0.43     0.53     0.56
-64         0.85      0.86     1.04     1.10
-128        1.63      1.71     2.07     2.13
-256        3.48      3.35     4.02     4.22
-512        6.80      6.67     7.97     8.63
-1K        13.32     13.31    15.72    15.94
-2K        25.79     25.92    30.84    30.98
-4K        50.37     50.48    58.79    59.69
-8K        95.90     96.15   107.04   110.33
-16K      145.80    145.43   143.97   174.70
-32K      147.06    144.74   146.02   282.48
-64K      145.25    143.99   141.62   406.40
-128K     149.34    146.96   147.49   489.34
-256K     156.35    149.81   152.21   536.37
-512K     151.65    150.74   151.52   519.93
-
-[1] https://github.com/stefano-garzarella/iperf/
-
-Stefano Garzarella (5):
-  vsock/virtio: limit the memory used per-socket
-  vsock/virtio: reduce credit update messages
-  vsock/virtio: fix locking in virtio_transport_inc_tx_pkt()
-  vhost/vsock: split packets to send using multiple buffers
-  vsock/virtio: change the maximum packet size allowed
-
- drivers/vhost/vsock.c                   | 68 ++++++++++++-----
- include/linux/virtio_vsock.h            |  4 +-
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vhost/vsock.c                   |  2 +
+ include/linux/virtio_vsock.h            |  1 +
  net/vmw_vsock/virtio_transport.c        |  1 +
- net/vmw_vsock/virtio_transport_common.c | 99 ++++++++++++++++++++-----
- 4 files changed, 134 insertions(+), 38 deletions(-)
+ net/vmw_vsock/virtio_transport_common.c | 60 +++++++++++++++++++++----
+ 4 files changed, 55 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 6a50e1d0529c..6c8390a2af52 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -329,6 +329,8 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+ 		return NULL;
+ 	}
+ 
++	pkt->buf_len = pkt->len;
++
+ 	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
+ 	if (nbytes != pkt->len) {
+ 		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
+diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+index e223e2632edd..7d973903f52e 100644
+--- a/include/linux/virtio_vsock.h
++++ b/include/linux/virtio_vsock.h
+@@ -52,6 +52,7 @@ struct virtio_vsock_pkt {
+ 	/* socket refcnt not held, only use for cancellation */
+ 	struct vsock_sock *vsk;
+ 	void *buf;
++	u32 buf_len;
+ 	u32 len;
+ 	u32 off;
+ 	bool reply;
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index 0815d1357861..082a30936690 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -307,6 +307,7 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
+ 			break;
+ 		}
+ 
++		pkt->buf_len = buf_len;
+ 		pkt->len = buf_len;
+ 
+ 		sg_init_one(&hdr, &pkt->hdr, sizeof(pkt->hdr));
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 6f1a8aff65c5..095221f94786 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -26,6 +26,9 @@
+ /* How long to wait for graceful shutdown of a connection */
+ #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
+ 
++/* Threshold for detecting small packets to copy */
++#define GOOD_COPY_LEN  128
++
+ static const struct virtio_transport *virtio_transport_get_ops(void)
+ {
+ 	const struct vsock_transport *t = vsock_core_get_transport();
+@@ -64,6 +67,9 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+ 		pkt->buf = kmalloc(len, GFP_KERNEL);
+ 		if (!pkt->buf)
+ 			goto out_pkt;
++
++		pkt->buf_len = len;
++
+ 		err = memcpy_from_msg(pkt->buf, info->msg, len);
+ 		if (err)
+ 			goto out;
+@@ -841,24 +847,60 @@ virtio_transport_recv_connecting(struct sock *sk,
+ 	return err;
+ }
+ 
++static void
++virtio_transport_recv_enqueue(struct vsock_sock *vsk,
++			      struct virtio_vsock_pkt *pkt)
++{
++	struct virtio_vsock_sock *vvs = vsk->trans;
++	bool free_pkt = false;
++
++	pkt->len = le32_to_cpu(pkt->hdr.len);
++	pkt->off = 0;
++
++	spin_lock_bh(&vvs->rx_lock);
++
++	virtio_transport_inc_rx_pkt(vvs, pkt);
++
++	/* Try to copy small packets into the buffer of last packet queued,
++	 * to avoid wasting memory queueing the entire buffer with a small
++	 * payload.
++	 */
++	if (pkt->len <= GOOD_COPY_LEN && !list_empty(&vvs->rx_queue)) {
++		struct virtio_vsock_pkt *last_pkt;
++
++		last_pkt = list_last_entry(&vvs->rx_queue,
++					   struct virtio_vsock_pkt, list);
++
++		/* If there is space in the last packet queued, we copy the
++		 * new packet in its buffer.
++		 */
++		if (pkt->len <= last_pkt->buf_len - last_pkt->len) {
++			memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
++			       pkt->len);
++			last_pkt->len += pkt->len;
++			free_pkt = true;
++			goto out;
++		}
++	}
++
++	list_add_tail(&pkt->list, &vvs->rx_queue);
++
++out:
++	spin_unlock_bh(&vvs->rx_lock);
++	if (free_pkt)
++		virtio_transport_free_pkt(pkt);
++}
++
+ static int
+ virtio_transport_recv_connected(struct sock *sk,
+ 				struct virtio_vsock_pkt *pkt)
+ {
+ 	struct vsock_sock *vsk = vsock_sk(sk);
+-	struct virtio_vsock_sock *vvs = vsk->trans;
+ 	int err = 0;
+ 
+ 	switch (le16_to_cpu(pkt->hdr.op)) {
+ 	case VIRTIO_VSOCK_OP_RW:
+-		pkt->len = le32_to_cpu(pkt->hdr.len);
+-		pkt->off = 0;
+-
+-		spin_lock_bh(&vvs->rx_lock);
+-		virtio_transport_inc_rx_pkt(vvs, pkt);
+-		list_add_tail(&pkt->list, &vvs->rx_queue);
+-		spin_unlock_bh(&vvs->rx_lock);
+-
++		virtio_transport_recv_enqueue(vsk, pkt);
+ 		sk->sk_data_ready(sk);
+ 		return err;
+ 	case VIRTIO_VSOCK_OP_CREDIT_UPDATE:
 -- 
 2.20.1
 
