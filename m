@@ -2,157 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA546B2AE
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:10:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91F76B2B7
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388880AbfGQAKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 20:10:12 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:46304 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728597AbfGQAKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:10:12 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6H07KiH124292;
-        Tue, 16 Jul 2019 20:08:00 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tsnmnejq4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Jul 2019 20:07:59 -0400
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6H07OI6125043;
-        Tue, 16 Jul 2019 20:07:59 -0400
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tsnmnejpc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Jul 2019 20:07:59 -0400
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x6H06MZU032508;
-        Wed, 17 Jul 2019 00:07:57 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma01wdc.us.ibm.com with ESMTP id 2tq6x63b2y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Jul 2019 00:07:57 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6H07vFM39780686
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Jul 2019 00:07:57 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1A3E4B2065;
-        Wed, 17 Jul 2019 00:07:57 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C0D28B206E;
-        Wed, 17 Jul 2019 00:07:56 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.80.225.134])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 17 Jul 2019 00:07:56 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id 30CFA16C8E9B; Tue, 16 Jul 2019 17:07:57 -0700 (PDT)
-Date:   Tue, 16 Jul 2019 17:07:57 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>, c0d1n61at3@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com, kernel-team@android.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
-        peterz@infradead.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [PATCH 2/9] rcu: Add support for consolidated-RCU reader
- checking (v3)
-Message-ID: <20190717000757.GQ14271@linux.ibm.com>
-Reply-To: paulmck@linux.ibm.com
-References: <20190715143705.117908-1-joel@joelfernandes.org>
- <20190715143705.117908-3-joel@joelfernandes.org>
- <20190716183833.GD14271@linux.ibm.com>
- <20190716184649.GA130463@google.com>
- <20190716185303.GM14271@linux.ibm.com>
- <20190716220205.GB172157@google.com>
+        id S1728635AbfGQAPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 20:15:01 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43851 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728597AbfGQAPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:15:00 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f25so10220268pgv.10
+        for <netdev@vger.kernel.org>; Tue, 16 Jul 2019 17:15:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fojjWXnCNTwdB1qCbhOF2YM47yyMWWOW/0JcmLJ0iRk=;
+        b=YE7a9qO4fPE3NGrT1o8cT7vFjeWdno0t+1GO570rBLthwBSE1+eLN/1L/jc5pfJ5jP
+         MtK64Wb7UveXeN0rTPCsa6StaP3zPIpRsVc4GnIVCPrCuBGvNq2S9ZsOYgT7nLEjcdoy
+         p64eEfbZ4VVVNzEOaG9Hz7tqL3oWZm14+OAtlVSGQnaG+MsJqca8gYcPs+4tWmThVknx
+         JU24qAYA50i9deZOIlYHFvC/I/bM6NvLUaFj+SSaBegG2R4pat+Qi148jo/6038Fx0r/
+         xlGTaPSiNKA5fYb4fLsYmwynvOMoqCR1ARUBI/dgi6bR9ejSkan5dzDjfG5VwhDcuzxW
+         sElA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fojjWXnCNTwdB1qCbhOF2YM47yyMWWOW/0JcmLJ0iRk=;
+        b=sWtYzLwqpHd4Pz4lLIGkhaYB77FfCO2Ky/XQB6duUvbbWlNasEDIg8YduEGK2h0eKw
+         cVMyL0SDBzjkuAfpKKpwCyVWHGp7CZV32NoQZGgGUmfoyf76Zz9McUUOpbmi5d8qkDV9
+         KxoM29DAguQkUYxg6purCQqIjPbH0UZ7Ve0IfO3T0Mol82OqqA8yIRKSJnlqO9693YLo
+         GgKc3cFQ/JULzWfc79Dg1IZYnufMdtEQFCxNdlPZXryoZmcvXC/AEbN9r4Kgo6hBVJ6w
+         xzXM8EM0BixHq//pnbh0Xy+GE8/UgAk3DH9ooTX45DfU1+3MpmFyQVL30Au1X3MZe0WQ
+         yl9Q==
+X-Gm-Message-State: APjAAAUVw9FLN2+10maehz1i968z9R2Yi5rsLg/5jIghui7ZJxf7SbM7
+        /JZiLeUChY7ZmClYJsV/K4A=
+X-Google-Smtp-Source: APXvYqwFrMGDvFaAdW626eYVaWza9wE0Pvdrh0DP1UjjBmFCK8oOBeomd0JY9zDOycFmBA4GLLra+A==
+X-Received: by 2002:a17:90a:374a:: with SMTP id u68mr39915485pjb.4.1563322499898;
+        Tue, 16 Jul 2019 17:14:59 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id o13sm21338707pje.28.2019.07.16.17.14.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 16 Jul 2019 17:14:57 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 17:14:57 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf 1/2] selftests/bpf: fix test_verifier/test_maps make
+ dependencies
+Message-ID: <20190717001457.GD14834@mini-arch>
+References: <20190716193837.2808971-1-andriin@fb.com>
+ <20190716195544.GB14834@mini-arch>
+ <CAEf4BzZ4XAdjasYq+JGFHnhwEV3G5UYWBuqKMK1yu1KRLn19MQ@mail.gmail.com>
+ <20190716225735.GC14834@mini-arch>
+ <CAEf4BzY7NYZSGuRHVye_CerZ1BBBLsDyOT2ar5sBXsPGy8g0xA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190716220205.GB172157@google.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-16_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907160263
+In-Reply-To: <CAEf4BzY7NYZSGuRHVye_CerZ1BBBLsDyOT2ar5sBXsPGy8g0xA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 06:02:05PM -0400, Joel Fernandes wrote:
-> On Tue, Jul 16, 2019 at 11:53:03AM -0700, Paul E. McKenney wrote:
-> [snip]
-> > > > A few more things below.
-> > > > > ---
-> > > > >  include/linux/rculist.h  | 28 ++++++++++++++++++++-----
-> > > > >  include/linux/rcupdate.h |  7 +++++++
-> > > > >  kernel/rcu/Kconfig.debug | 11 ++++++++++
-> > > > >  kernel/rcu/update.c      | 44 ++++++++++++++++++++++++----------------
-> > > > >  4 files changed, 67 insertions(+), 23 deletions(-)
-> > > > > 
-> > > > > diff --git a/include/linux/rculist.h b/include/linux/rculist.h
-> > > > > index e91ec9ddcd30..1048160625bb 100644
-> > > > > --- a/include/linux/rculist.h
-> > > > > +++ b/include/linux/rculist.h
-> > > > > @@ -40,6 +40,20 @@ static inline void INIT_LIST_HEAD_RCU(struct list_head *list)
-> > > > >   */
-> > > > >  #define list_next_rcu(list)	(*((struct list_head __rcu **)(&(list)->next)))
-> > > > >  
-> > > > > +/*
-> > > > > + * Check during list traversal that we are within an RCU reader
-> > > > > + */
-> > > > > +
-> > > > > +#ifdef CONFIG_PROVE_RCU_LIST
-> > > > 
-> > > > This new Kconfig option is OK temporarily, but unless there is reason to
-> > > > fear malfunction that a few weeks of rcutorture, 0day, and -next won't
-> > > > find, it would be better to just use CONFIG_PROVE_RCU.  The overall goal
-> > > > is to reduce the number of RCU knobs rather than grow them, must though
-> > > > history might lead one to believe otherwise.  :-/
-> > > 
-> > > If you want, we can try to drop this option and just use PROVE_RCU however I
-> > > must say there may be several warnings that need to be fixed in a short
-> > > period of time (even a few weeks may be too short) considering the 1000+
-> > > uses of RCU lists.
-> > Do many people other than me build with CONFIG_PROVE_RCU?  If so, then
-> > that would be a good reason for a temporary CONFIG_PROVE_RCU_LIST,
-> > as in going away in a release or two once the warnings get fixed.
+On 07/16, Andrii Nakryiko wrote:
+> On Tue, Jul 16, 2019 at 3:57 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 07/16, Andrii Nakryiko wrote:
+> > > On Tue, Jul 16, 2019 at 12:55 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > > >
+> > > > On 07/16, Andrii Nakryiko wrote:
+> > > > > e46fc22e60a4 ("selftests/bpf: make directory prerequisites order-only")
+> > > > > exposed existing problem in Makefile for test_verifier and test_maps tests:
+> > > > > their dependency on auto-generated header file with a list of all tests wasn't
+> > > > > recorded explicitly. This patch fixes these issues.
+> > > > Why adding it explicitly fixes it? At least for test_verifier, we have
+> > > > the following rule:
+> > > >
+> > > >         test_verifier.c: $(VERIFIER_TESTS_H)
+> > > >
+> > > > And there should be implicit/builtin test_verifier -> test_verifier.c
+> > > > dependency rule.
+> > > >
+> > > > Same for maps, I guess:
+> > > >
+> > > >         $(OUTPUT)/test_maps: map_tests/*.c
+> > > >         test_maps.c: $(MAP_TESTS_H)
+> > > >
+> > > > So why is it not working as is? What I'm I missing?
+> > >
+> > > I don't know exactly why it's not working, but it's clearly because of
+> > > that. It's the only difference between how test_progs are set up,
+> > > which didn't break, and test_maps/test_verifier, which did.
+> > >
+> > > Feel free to figure it out through a maze of Makefiles why it didn't
+> > > work as expected, but this definitely fixed a breakage (at least for
+> > > me).
+> > Agreed on not wasting time. I took a brief look (with make -qp) and I
+> > don't have any clue.
 > 
-> PROVE_RCU is enabled by default with PROVE_LOCKING, so it is used quite
-> heavilty.
+> Oh, -qp is cool, noted :)
 > 
-> > > But I don't mind dropping it and it may just accelerate the fixing up of all
-> > > callers.
-> > 
-> > I will let you decide based on the above question.  But if you have
-> > CONFIG_PROVE_RCU_LIST, as noted below, it needs to depend on RCU_EXPERT.
+> >
+> > By default implicit matching doesn't work:
+> > # makefile (from 'Makefile', line 261)
+> > /linux/tools/testing/selftests/bpf/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+> > /linux/tools/testing/selftests/bpf/test_maps: map_tests/sk_storage_map.c /linux/tools/testing/selftests/bpf/test_stub.o /linux/tools/testing/selftests/bpf/libbpf.a
+> > #  Implicit rule search has not been done.
+> > #  File is an intermediate prerequisite.
+> > #  Modification time never checked.
+> > #  File has not been updated.
+> > # variable set hash-table stats:
+> > # Load=1/32=3%, Rehash=0, Collisions=0/2=0%
+> >
+> > If I comment out the following line:
+> > $(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
+> >
+> > Then it works:
+> > # makefile (from 'Makefile', line 261)
+> > /linux/tools/testing/selftests/bpf/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+> > /linux/tools/testing/selftests/bpf/test_maps: test_maps.c map_tests/sk_storage_map.c
+> > #  Implicit rule search has been done.
+> > #  Implicit/static pattern stem: 'test_maps'
+> > #  File is an intermediate prerequisite.
+> > #  File does not exist.
+> > #  File has not been updated.
+> > # variable set hash-table stats:
+> > # Load=1/32=3%, Rehash=0, Collisions=0/2=0%
+> > #  recipe to execute (from '../lib.mk', line 138):
+> >         $(LINK.c) $^ $(LDLIBS) -o $@
+> >
+> > It's because "File is an intermediate prerequisite.", but I
+> > don't see how it's is a intermediate prerequisite for anything...
 > 
-> Ok, will make it depend. But yes for temporary purpose, I will leave it as a
-> config and remove it later.
+> Well, it's "File is an intermediate prerequisite." in both cases, so I
+> don't know if that's it.
+> Makefiles is not my strong suit, honestly, and definitely not an area
+> of passion, so no idea
+> 
+> >
+> >
+> > One other optional suggestion I have to your second patch: maybe drop all
+> > those dependencies on the directories altogether? Why not do the following
+> > instead, for example (same for test_progs/test_maps)?
+> 
+> Some of those _TEST_DIR's are dependencies of multiple targets, so
+> you'd need to replicate that `mkdir -p $@` in multiple places, which
+> is annoying.
+Agreed, but one single "mkdir -p $@" might be better than having three
+lines that define XXX_TEST_DIR and then add a target that mkdir's it.
+Up to you, I can give it a try once your changes are in; the
+Makefile becomes hairier by the day, thx for cleaning it up a bit :-)
 
-Very good, thank you!  Plus you got another ack.  ;-)
+> But I also don't think we need to worry about creating them, because
+> there is always at least one test (otherwise those tests are useless
+> anyways) in those directories, so we might as well just remove those
+> dependencies, I guess.
+We probably care about them for "make -C tools/selftests O=$PWD/xyz" case
+where OUTPUT would point to a fresh/clean directory.
 
-							Thanx, Paul
+> TBH, those explicit dependencies are good to specify anyways, so I
+> think this fix is good. Second patch just makes the layout of
+> dependencies similar, so it's easier to spot differences like this
+> one.
+> 
+> As usual, I'll let Alexei and Daniel decide which one to apply (or if
+> we need to take some other approach to fixing this).
+I agree, both of your changes look good. I was just trying to understand
+what's happening because I was assuming implicit rules to always kick
+in.
+
+> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > index 1296253b3422..c2d087ce6d4b 100644
+> > --- a/tools/testing/selftests/bpf/Makefile
+> > +++ b/tools/testing/selftests/bpf/Makefile
+> > @@ -277,12 +277,9 @@ VERIFIER_TESTS_H := $(OUTPUT)/verifier/tests.h
+> >  test_verifier.c: $(VERIFIER_TESTS_H)
+> >  $(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
+> >
+> > -VERIFIER_TESTS_DIR = $(OUTPUT)/verifier
+> > -$(VERIFIER_TESTS_DIR):
+> > -       mkdir -p $@
+> > -
+> >  VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
+> > -$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
+> > +$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES)
+> > +       mkdir -p $(dir $@)
+> >         $(shell ( cd verifier/; \
+> >                   echo '/* Generated header, do not edit */'; \
+> >                   echo '#ifdef FILL_ARRAY'; \
