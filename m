@@ -2,197 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2167E6B2C7
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4ED6B2C9
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728714AbfGQAWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 20:22:17 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:41536 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728235AbfGQAWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:22:17 -0400
-Received: by mail-qt1-f195.google.com with SMTP id d17so21502775qtj.8;
-        Tue, 16 Jul 2019 17:22:16 -0700 (PDT)
+        id S1729263AbfGQAXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 20:23:21 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:39839 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728235AbfGQAXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:23:21 -0400
+Received: by mail-oi1-f194.google.com with SMTP id m202so17099199oig.6;
+        Tue, 16 Jul 2019 17:23:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=D5TOuzcko6XHsvSKWxDxv5DWtv966Tffgh+HsiwHY5g=;
-        b=DjFMUuwZzMdpJ2ZLh5d7z8qJ/Hb3ige3gfKqiLGleI9HKfYBSHY3nd441Y7kj8foWR
-         qUvAZf/95SUQtmULKltGebudLK9Gh1gYDgYzLVaXpMlj0LVEZ5FE2SoxXd4uTnPzND7/
-         oFJnVGxsctJXlktS+2/6GG8I3yg/JzzA6Bu1jKnSD2ekzqmxYhyh9h1DUG4IRYm58Z1w
-         m6LTM7T4lcCTRTHjxecetrHHfedls3qJ/8LOJOn4RTl77yoaYQfrp+i0ONYG/brVDj3t
-         wEmp7DYf4x+S40fG6UczpZmILhCUF9QpjCrpnleHKm4owuMEE1nbh+rVWEIJw5wrB6RC
-         OBuQ==
+        bh=II5t7xXFbfBgQJHak24dyTai7VO42Pm3JKrGMChFOUY=;
+        b=XmcetWm8AKndqUA4ABKAoDLKqKWD8HMKdQW7OKIBHNCYYpuO/yGqzX4xxY7Zjo44GA
+         OjRxdh/Dlo3ryhLt3LaXnjMQ1al6N2wrmTriCy6a4PT0zFCK3TjrhyR+s9HLbz0Aqab5
+         VWK7Pv55cdJnUTRIIgzN/tFBuPaQ9FvXO1yCQcWMy0XvhPGNzg5tgnJ7AFHFYM4S8pps
+         qB5Jp8RSJtkSNN6qkGVzEcNxtYtG8tXDAjH2MaIxMgoY+XctYTtWgIAvl1Exnrt5gyGh
+         7zBhKwPNucjk04akB6aWakmaa8WafhgzfZUXGkxAnifyrelwam8mJ3IMXrxKzO3P6rg0
+         vyNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=D5TOuzcko6XHsvSKWxDxv5DWtv966Tffgh+HsiwHY5g=;
-        b=oWS2E3dzgFvHbQp1/4lQ5ieYYI09WBmd2E6kYp9rRb/orMw380qdOZEM1SeLALiczj
-         qXh1Us0UQATXqvRzqsieRw32JsGy2hyrQldZvsGmHddhdC/i6B3bo7XbPStEEivZ8O9E
-         QDsh4UrhqHI6EBbuZ2xYUc5sKVh1cpJz3aMa+QSvd4SEHyo5kr+QW/p/M8egD+ID7naE
-         yTE0Se7+pmVblrh55jXpHr3vxoElZfTMRyO3Hyxvb+Ga4FQZnf+xy1VxIDK3up1b3+0l
-         GYdVeWO4KyoM3JB26+EFt2PXjATPzxYOPdCnMxZoD62mbGod3ZY5A4KCsPG1LjuxUAT5
-         cL/A==
-X-Gm-Message-State: APjAAAWCamuVdViM9KStppG52A7DqZ1r3LZabLy5NKX2VcO4RibeHyOC
-        MtdLVOHsJXuTLJTZHuX7OI19GonzLo7mWjv8lMI=
-X-Google-Smtp-Source: APXvYqxPvMlLgFkLrEVvnynl520lT9e3sKtxAY3l9saYi1wt55TUdq/JYN2ctWXZh1wO7YnYKnNvJC/kLwgvHY7/0Aw=
-X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr26371518qvh.78.1563322936161;
- Tue, 16 Jul 2019 17:22:16 -0700 (PDT)
+        bh=II5t7xXFbfBgQJHak24dyTai7VO42Pm3JKrGMChFOUY=;
+        b=g4V9viJD9Ap41+/0BiXRD8ioVpeXKiFC5uEGskYlnsskOvKUPyruA1tv+a3V+iN3Gw
+         ZcDqh1erQwO109fpMt68NIxo/SlpYcP79c21DcCm59Gkf8DQ1DDlu5cvJGJgf/7eoSjT
+         hhz5BIFvPNdMyYA5oJ/0nw3fzkqj3wU7dih7rdyYCoqhkzQSSV5fK/Ysq6Jao4P9oHGz
+         tjHDj/Bv4DjONzURkevThcPCemGx68DTG5EaATB/g5p7g9h/EYordJTbX6LkFkyQZ8/z
+         qcqm850djNCtWULOw/8Dh1i83cYQBGkhMXerBeH2mYO7z8VLIB/VKe6S42TxLCjE7mqM
+         PIvQ==
+X-Gm-Message-State: APjAAAW4P1JXhvv/Eu9HbEGg604+fBXb7FvRPNVlbp+4SrzxOvGXjK6d
+        PftMbL33E1GPEflrpvzCZCgp568RVaCU4X0WDHQ=
+X-Google-Smtp-Source: APXvYqzlDXwgIUEfeTBGhDqx9Wh1ZgAPgjKp7XY0ESkWRpbIvobSlPsvwaLug1jWir8ir9T1vKfy4RC39GAifJE5DvM=
+X-Received: by 2002:a05:6808:98:: with SMTP id s24mr17584663oic.127.1563322999838;
+ Tue, 16 Jul 2019 17:23:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190716193837.2808971-1-andriin@fb.com> <20190716195544.GB14834@mini-arch>
- <CAEf4BzZ4XAdjasYq+JGFHnhwEV3G5UYWBuqKMK1yu1KRLn19MQ@mail.gmail.com>
- <20190716225735.GC14834@mini-arch> <CAEf4BzY7NYZSGuRHVye_CerZ1BBBLsDyOT2ar5sBXsPGy8g0xA@mail.gmail.com>
- <20190717001457.GD14834@mini-arch>
-In-Reply-To: <20190717001457.GD14834@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 16 Jul 2019 17:22:04 -0700
-Message-ID: <CAEf4BzZQ9MRTNH434=oyxBjQQXWEfjMV4nU14-=LfvERafwRKw@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] selftests/bpf: fix test_verifier/test_maps make dependencies
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
+ <20190716002650.154729-3-ppenkov.kernel@gmail.com> <CACAyw99Umy6gaAu1DFTgemRXpZWmxeTSeCZDwdHWzLWeG8Ur3Q@mail.gmail.com>
+In-Reply-To: <CACAyw99Umy6gaAu1DFTgemRXpZWmxeTSeCZDwdHWzLWeG8Ur3Q@mail.gmail.com>
+From:   Petar Penkov <ppenkov.kernel@gmail.com>
+Date:   Tue, 16 Jul 2019 17:23:09 -0700
+Message-ID: <CAGdtWsR1a6fMsuB6u6yi1+r_n8Sm6kE-NcgjZa2aVS5_cmLSSg@mail.gmail.com>
+Subject: Re: [bpf-next RFC 2/6] tcp: add skb-less helpers to retrieve SYN cookie
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Eric Dumazet <edumazet@google.com>,
         Stanislav Fomichev <sdf@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
+        Petar Penkov <ppenkov@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 5:15 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+On Tue, Jul 16, 2019 at 4:35 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> On 07/16, Andrii Nakryiko wrote:
-> > On Tue, Jul 16, 2019 at 3:57 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > >
-> > > On 07/16, Andrii Nakryiko wrote:
-> > > > On Tue, Jul 16, 2019 at 12:55 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > >
-> > > > > On 07/16, Andrii Nakryiko wrote:
-> > > > > > e46fc22e60a4 ("selftests/bpf: make directory prerequisites order-only")
-> > > > > > exposed existing problem in Makefile for test_verifier and test_maps tests:
-> > > > > > their dependency on auto-generated header file with a list of all tests wasn't
-> > > > > > recorded explicitly. This patch fixes these issues.
-> > > > > Why adding it explicitly fixes it? At least for test_verifier, we have
-> > > > > the following rule:
-> > > > >
-> > > > >         test_verifier.c: $(VERIFIER_TESTS_H)
-> > > > >
-> > > > > And there should be implicit/builtin test_verifier -> test_verifier.c
-> > > > > dependency rule.
-> > > > >
-> > > > > Same for maps, I guess:
-> > > > >
-> > > > >         $(OUTPUT)/test_maps: map_tests/*.c
-> > > > >         test_maps.c: $(MAP_TESTS_H)
-> > > > >
-> > > > > So why is it not working as is? What I'm I missing?
-> > > >
-> > > > I don't know exactly why it's not working, but it's clearly because of
-> > > > that. It's the only difference between how test_progs are set up,
-> > > > which didn't break, and test_maps/test_verifier, which did.
-> > > >
-> > > > Feel free to figure it out through a maze of Makefiles why it didn't
-> > > > work as expected, but this definitely fixed a breakage (at least for
-> > > > me).
-> > > Agreed on not wasting time. I took a brief look (with make -qp) and I
-> > > don't have any clue.
+> On Tue, 16 Jul 2019 at 01:27, Petar Penkov <ppenkov.kernel@gmail.com> wrote:
 > >
-> > Oh, -qp is cool, noted :)
+> > From: Petar Penkov <ppenkov@google.com>
 > >
-> > >
-> > > By default implicit matching doesn't work:
-> > > # makefile (from 'Makefile', line 261)
-> > > /linux/tools/testing/selftests/bpf/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
-> > > /linux/tools/testing/selftests/bpf/test_maps: map_tests/sk_storage_map.c /linux/tools/testing/selftests/bpf/test_stub.o /linux/tools/testing/selftests/bpf/libbpf.a
-> > > #  Implicit rule search has not been done.
-> > > #  File is an intermediate prerequisite.
-> > > #  Modification time never checked.
-> > > #  File has not been updated.
-> > > # variable set hash-table stats:
-> > > # Load=1/32=3%, Rehash=0, Collisions=0/2=0%
-> > >
-> > > If I comment out the following line:
-> > > $(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
-> > >
-> > > Then it works:
-> > > # makefile (from 'Makefile', line 261)
-> > > /linux/tools/testing/selftests/bpf/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
-> > > /linux/tools/testing/selftests/bpf/test_maps: test_maps.c map_tests/sk_storage_map.c
-> > > #  Implicit rule search has been done.
-> > > #  Implicit/static pattern stem: 'test_maps'
-> > > #  File is an intermediate prerequisite.
-> > > #  File does not exist.
-> > > #  File has not been updated.
-> > > # variable set hash-table stats:
-> > > # Load=1/32=3%, Rehash=0, Collisions=0/2=0%
-> > > #  recipe to execute (from '../lib.mk', line 138):
-> > >         $(LINK.c) $^ $(LDLIBS) -o $@
-> > >
-> > > It's because "File is an intermediate prerequisite.", but I
-> > > don't see how it's is a intermediate prerequisite for anything...
+> > This patch allows generation of a SYN cookie before an SKB has been
+> > allocated, as is the case at XDP.
 > >
-> > Well, it's "File is an intermediate prerequisite." in both cases, so I
-> > don't know if that's it.
-> > Makefiles is not my strong suit, honestly, and definitely not an area
-> > of passion, so no idea
+> > Signed-off-by: Petar Penkov <ppenkov@google.com>
+> > ---
+> >  include/net/tcp.h    | 11 ++++++
+> >  net/ipv4/tcp_input.c | 79 ++++++++++++++++++++++++++++++++++++++++++++
+> >  net/ipv4/tcp_ipv4.c  |  8 +++++
+> >  net/ipv6/tcp_ipv6.c  |  8 +++++
+> >  4 files changed, 106 insertions(+)
 > >
-> > >
-> > >
-> > > One other optional suggestion I have to your second patch: maybe drop all
-> > > those dependencies on the directories altogether? Why not do the following
-> > > instead, for example (same for test_progs/test_maps)?
+> > diff --git a/include/net/tcp.h b/include/net/tcp.h
+> > index cca3c59b98bf..a128e22c0d5d 100644
+> > --- a/include/net/tcp.h
+> > +++ b/include/net/tcp.h
+> > @@ -414,6 +414,17 @@ void tcp_parse_options(const struct net *net, const struct sk_buff *skb,
+> >                        int estab, struct tcp_fastopen_cookie *foc);
+> >  const u8 *tcp_parse_md5sig_option(const struct tcphdr *th);
 > >
-> > Some of those _TEST_DIR's are dependencies of multiple targets, so
-> > you'd need to replicate that `mkdir -p $@` in multiple places, which
-> > is annoying.
-> Agreed, but one single "mkdir -p $@" might be better than having three
-> lines that define XXX_TEST_DIR and then add a target that mkdir's it.
-> Up to you, I can give it a try once your changes are in; the
-> Makefile becomes hairier by the day, thx for cleaning it up a bit :-)
+> > +/*
+> > + *     BPF SKB-less helpers
+> > + */
+> > +u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
+> > +                        struct tcphdr *tch, u32 *cookie);
+> > +u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
+> > +                        struct tcphdr *tch, u32 *cookie);
+> > +u16 tcp_get_syncookie(struct request_sock_ops *rsk_ops,
+> > +                     const struct tcp_request_sock_ops *af_ops,
+> > +                     struct sock *sk, void *iph, struct tcphdr *tch,
+> > +                     u32 *cookie);
+> >  /*
+> >   *     TCP v4 functions exported for the inet6 API
+> >   */
+> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> > index 8892df6de1d4..1406d7e0953c 100644
+> > --- a/net/ipv4/tcp_input.c
+> > +++ b/net/ipv4/tcp_input.c
+> > @@ -3782,6 +3782,52 @@ static void smc_parse_options(const struct tcphdr *th,
+> >  #endif
+> >  }
+> >
+> > +/* Try to parse the MSS option from the TCP header. Return 0 on failure, clamped
+> > + * value on success.
+> > + *
+> > + * Invoked for BPF SYN cookie generation, so th should be a SYN.
+> > + */
+> > +static u16 tcp_parse_mss_option(const struct net *net, const struct tcphdr *th,
+> > +                               u16 user_mss)
 >
-> > But I also don't think we need to worry about creating them, because
-> > there is always at least one test (otherwise those tests are useless
-> > anyways) in those directories, so we might as well just remove those
-> > dependencies, I guess.
-> We probably care about them for "make -C tools/selftests O=$PWD/xyz" case
-> where OUTPUT would point to a fresh/clean directory.
+> net seems unused?
 
-Oh, yes, out-of-tree builds, forgot about that, so yeah, we need that.
+Ah, good catch! Will remove this in the v2.
 
 >
-> > TBH, those explicit dependencies are good to specify anyways, so I
-> > think this fix is good. Second patch just makes the layout of
-> > dependencies similar, so it's easier to spot differences like this
-> > one.
+> > +{
+> > +       const unsigned char *ptr = (const unsigned char *)(th + 1);
+> > +       int length = (th->doff * 4) - sizeof(struct tcphdr);
+> > +       u16 mss = 0;
+> > +
+> > +       while (length > 0) {
+> > +               int opcode = *ptr++;
+> > +               int opsize;
+> > +
+> > +               switch (opcode) {
+> > +               case TCPOPT_EOL:
+> > +                       return mss;
+> > +               case TCPOPT_NOP:        /* Ref: RFC 793 section 3.1 */
+> > +                       length--;
+> > +                       continue;
+> > +               default:
+> > +                       if (length < 2)
+> > +                               return mss;
+> > +                       opsize = *ptr++;
+> > +                       if (opsize < 2) /* "silly options" */
+> > +                               return mss;
+> > +                       if (opsize > length)
+> > +                               return mss;     /* fail on partial options */
+> > +                       if (opcode == TCPOPT_MSS && opsize == TCPOLEN_MSS) {
+> > +                               u16 in_mss = get_unaligned_be16(ptr);
+> > +
+> > +                               if (in_mss) {
+> > +                                       if (user_mss && user_mss < in_mss)
+> > +                                               in_mss = user_mss;
+> > +                                       mss = in_mss;
+> > +                               }
+> > +                       }
+> > +                       ptr += opsize - 2;
+> > +                       length -= opsize;
+> > +               }
+> > +       }
+> > +       return mss;
+> > +}
+> > +
+> >  /* Look for tcp options. Normally only called on SYN and SYNACK packets.
+> >   * But, this can also be called on packets in the established flow when
+> >   * the fast version below fails.
+> > @@ -6464,6 +6510,39 @@ static void tcp_reqsk_record_syn(const struct sock *sk,
+> >         }
+> >  }
 > >
-> > As usual, I'll let Alexei and Daniel decide which one to apply (or if
-> > we need to take some other approach to fixing this).
-> I agree, both of your changes look good. I was just trying to understand
-> what's happening because I was assuming implicit rules to always kick
-> in.
+> > +u16 tcp_get_syncookie(struct request_sock_ops *rsk_ops,
+> > +                     const struct tcp_request_sock_ops *af_ops,
+> > +                     struct sock *sk, void *iph, struct tcphdr *th,
+> > +                     u32 *cookie)
+> > +{
+> > +       u16 mss = 0;
+> > +#ifdef CONFIG_SYN_COOKIES
+> > +       bool is_v4 = rsk_ops->family == AF_INET;
+> > +       struct tcp_sock *tp = tcp_sk(sk);
+> > +
+> > +       if (sock_net(sk)->ipv4.sysctl_tcp_syncookies != 2 &&
+> > +           !inet_csk_reqsk_queue_is_full(sk))
+> > +               return 0;
+> > +
+> > +       if (!tcp_syn_flood_action(sk, rsk_ops->slab_name))
+> > +               return 0;
+> > +
+> > +       if (sk_acceptq_is_full(sk)) {
+> > +               NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
+> > +               return 0;
+> > +       }
+> > +
+> > +       mss = tcp_parse_mss_option(sock_net(sk), th, tp->rx_opt.user_mss);
+> > +       if (!mss)
+> > +               mss = af_ops->mss_clamp;
+> > +
+> > +       tcp_synq_overflow(sk);
+> > +       *cookie = is_v4 ? __cookie_v4_init_sequence(iph, th, &mss)
+> > +                       : __cookie_v6_init_sequence(iph, th, &mss);
+> > +#endif
+> > +       return mss;
+> > +}
+> > +
+> >  int tcp_conn_request(struct request_sock_ops *rsk_ops,
+> >                      const struct tcp_request_sock_ops *af_ops,
+> >                      struct sock *sk, struct sk_buff *skb)
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index d57641cb3477..0e06e59784bd 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -1515,6 +1515,14 @@ static struct sock *tcp_v4_cookie_check(struct sock *sk, struct sk_buff *skb)
+> >         return sk;
+> >  }
+> >
+> > +u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
+> > +                        struct tcphdr *tch, u32 *cookie)
+> > +{
+> > +       return tcp_get_syncookie(&tcp_request_sock_ops,
+> > +                                &tcp_request_sock_ipv4_ops, sk, iph, tch,
+> > +                                cookie);
+> > +}
+> > +
+> >  /* The socket must have it's spinlock held when we get
+> >   * here, unless it is a TCP_LISTEN socket.
+> >   *
+> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > index d56a9019a0fe..ce46cdba54bc 100644
+> > --- a/net/ipv6/tcp_ipv6.c
+> > +++ b/net/ipv6/tcp_ipv6.c
+> > @@ -1058,6 +1058,14 @@ static struct sock *tcp_v6_cookie_check(struct sock *sk, struct sk_buff *skb)
+> >         return sk;
+> >  }
+> >
+> > +u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
+> > +                        struct tcphdr *tch, u32 *cookie)
+> > +{
+> > +       return tcp_get_syncookie(&tcp6_request_sock_ops,
+> > +                                &tcp_request_sock_ipv6_ops, sk, iph, tch,
+> > +                                cookie);
+> > +}
+> > +
+> >  static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+> >  {
+> >         if (skb->protocol == htons(ETH_P_IP))
+> > --
+> > 2.22.0.510.g264f2c817a-goog
+> >
 >
-> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > > index 1296253b3422..c2d087ce6d4b 100644
-> > > --- a/tools/testing/selftests/bpf/Makefile
-> > > +++ b/tools/testing/selftests/bpf/Makefile
-> > > @@ -277,12 +277,9 @@ VERIFIER_TESTS_H := $(OUTPUT)/verifier/tests.h
-> > >  test_verifier.c: $(VERIFIER_TESTS_H)
-> > >  $(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
-> > >
-> > > -VERIFIER_TESTS_DIR = $(OUTPUT)/verifier
-> > > -$(VERIFIER_TESTS_DIR):
-> > > -       mkdir -p $@
-> > > -
-> > >  VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
-> > > -$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
-> > > +$(OUTPUT)/verifier/tests.h: $(VERIFIER_TEST_FILES)
-> > > +       mkdir -p $(dir $@)
-> > >         $(shell ( cd verifier/; \
-> > >                   echo '/* Generated header, do not edit */'; \
-> > >                   echo '#ifdef FILL_ARRAY'; \
+>
+> --
+> Lorenz Bauer  |  Systems Engineer
+> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+>
+> www.cloudflare.com
