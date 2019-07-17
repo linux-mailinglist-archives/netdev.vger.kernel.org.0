@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED62D6BB66
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 13:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0376BBBC
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 13:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731919AbfGQLbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 07:31:02 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52654 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731609AbfGQLa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 07:30:56 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B716C3082B3F;
-        Wed, 17 Jul 2019 11:30:56 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-116-100.ams2.redhat.com [10.36.116.100])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A42EB5C28C;
-        Wed, 17 Jul 2019 11:30:54 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH v4 5/5] vsock/virtio: change the maximum packet size allowed
-Date:   Wed, 17 Jul 2019 13:30:30 +0200
-Message-Id: <20190717113030.163499-6-sgarzare@redhat.com>
-In-Reply-To: <20190717113030.163499-1-sgarzare@redhat.com>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
+        id S1726793AbfGQLqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 07:46:42 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2673 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725799AbfGQLqm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jul 2019 07:46:42 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 18378D04C90FF11C46DC;
+        Wed, 17 Jul 2019 19:46:39 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 17 Jul 2019 19:46:29 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+Subject: [PATCH] net: ethernet: fix error return code in ag71xx_probe()
+Date:   Wed, 17 Jul 2019 11:52:15 +0000
+Message-ID: <20190717115215.22965-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 17 Jul 2019 11:30:56 +0000 (UTC)
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since now we are able to split packets, we can avoid limiting
-their sizes to VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE.
-Instead, we can use VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max
-packet size.
+Fix to return error code -ENOMEM from the dmam_alloc_coherent() error
+handling case instead of 0, as done elsewhere in this function.
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: d51b6ce441d3 ("net: ethernet: add ag71xx driver")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/atheros/ag71xx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 56fab3f03d0e..94cc0fa3e848 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -181,8 +181,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	vvs = vsk->trans;
+diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+index 72a57c6cd254..446d62e93439 100644
+--- a/drivers/net/ethernet/atheros/ag71xx.c
++++ b/drivers/net/ethernet/atheros/ag71xx.c
+@@ -1724,8 +1724,10 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	ag->stop_desc = dmam_alloc_coherent(&pdev->dev,
+ 					    sizeof(struct ag71xx_desc),
+ 					    &ag->stop_desc_dma, GFP_KERNEL);
+-	if (!ag->stop_desc)
++	if (!ag->stop_desc) {
++		err = -ENOMEM;
+ 		goto err_free;
++	}
  
- 	/* we can send less than pkt_len bytes */
--	if (pkt_len > VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE)
--		pkt_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-+	if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
-+		pkt_len = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
- 
- 	/* virtio_transport_get_credit might return less than pkt_len credit */
- 	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
--- 
-2.20.1
+ 	ag->stop_desc->data = 0;
+ 	ag->stop_desc->ctrl = 0;
+
+
 
