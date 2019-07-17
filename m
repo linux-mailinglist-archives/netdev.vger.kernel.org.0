@@ -2,63 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB58E6B820
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 10:23:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F0FF6B844
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 10:34:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727996AbfGQIX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 04:23:57 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57702 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725912AbfGQIX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 04:23:57 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E2C3CAEA4;
-        Wed, 17 Jul 2019 08:23:55 +0000 (UTC)
-Date:   Wed, 17 Jul 2019 17:23:40 +0900
-From:   Benjamin Poirier <bpoirier@suse.com>
-To:     Firo Yang <firo.yang@suse.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        Sathya Perla <sathya.perla@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] be2net: Signal that the device cannot transmit
- during reconfiguration
-Message-ID: <20190717082340.GA6015@f1>
-References: <20190716081655.7676-1-bpoirier@suse.com>
- <CH2PR18MB31898E033896F9760D36BFF288C90@CH2PR18MB3189.namprd18.prod.outlook.com>
+        id S1727005AbfGQIdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 04:33:53 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52315 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725873AbfGQIdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 04:33:53 -0400
+Received: by mail-wm1-f65.google.com with SMTP id s3so21219273wms.2
+        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 01:33:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DPqMvnqkO8b0h+ZSKhMZDugdDV7HoHpxp4MnEW4lcak=;
+        b=eUzP8vOOcOCpZdDTDtZMq8j5klOev1qCQLhczxgsCrLubpe8mKKSBUQrEbueKBcgQN
+         BX2uJ5KLH2zTI8j+07PS8/T1MSqimUj+LTNHlWCfBcNe5lbE4fK58teFMt0+iMSeGVZq
+         hC/ldGSbrEazvJZzedu5+t7zGIL45TcGIL5AFaBWhX6h99twg+CAuGhgBYDcmlmOmQHX
+         ZlMoaAB/SkJGA7gzLqOqRDscbNIFLSU69SWp3SF41I3I7+tG6snuHpg44CHR81G8h9nB
+         UMKvUjFCmpylCbQstzC5OObRd7QeVtE0g0vpKpCIb4xP4Zgu/ccjTNnB0NjKmweYhTHW
+         q2xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DPqMvnqkO8b0h+ZSKhMZDugdDV7HoHpxp4MnEW4lcak=;
+        b=RRltgJoT7529JBYm8grHf/gZdQ3QMgK5uUDBwvPCZ5lPV1mKYr1xkgqopm0bcioh5Q
+         0hK6gjGgczEHzuDGbJBQ2qz8+yhyPasia5X4Du0rAKQ1larXmYEDQ7aWbUm8vyqkS6ZQ
+         XofT5sYgrUwRgLY0imeA1SVVeN8uzvj0N9Josum3F35Lr5kZmXg8tJtX/7hlcjsrCdgs
+         DSVSihxIElqBcr3YjFKnKSnxDp/rmgWP9BiUrcSbD7IrmySRtrb5WArGmomzgj4SRCrh
+         iqg2G3o404Kj9o2NBGMg5Quq40hnWlqRCUJv5TFC0PqtDb7tfRjy5MK55xvqJP/1eQU/
+         lAqQ==
+X-Gm-Message-State: APjAAAWc8WMKrcrWgnbd7g7tYUY/mVk5MUJSgKMCAI4WGTy4DFV6GAYy
+        NSPbclhQF4yKtTz3Kg5K2j8kWQa8
+X-Google-Smtp-Source: APXvYqw1nmr3GOo9u4tfs77lyr2WrNTr6WM5KkIbrH+MjahC/azFwJNv7OpnlAH/vCgcRi2y333GEg==
+X-Received: by 2002:a7b:c206:: with SMTP id x6mr35178071wmi.156.1563352430569;
+        Wed, 17 Jul 2019 01:33:50 -0700 (PDT)
+Received: from [192.168.8.147] (189.163.185.81.rev.sfr.net. [81.185.163.189])
+        by smtp.gmail.com with ESMTPSA id e6sm23566749wrw.23.2019.07.17.01.33.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Jul 2019 01:33:48 -0700 (PDT)
+Subject: Re: [PATCH] net/mlx5: Replace kfree with kvfree
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20190717080322.13631-1-hslester96@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <2102aecf-03f1-0235-4ae1-93830b437f83@gmail.com>
+Date:   Wed, 17 Jul 2019 10:33:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CH2PR18MB31898E033896F9760D36BFF288C90@CH2PR18MB3189.namprd18.prod.outlook.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190717080322.13631-1-hslester96@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/07/17 13:23, Firo Yang wrote:
-> I think there is a problem if dev_watchdog() is triggered before netif_carrier_off(). dev_watchdog() might call ->ndo_tx_timeout(), i.e. be_tx_timeout(), if txq timeout  happens. Thus be_tx_timeout() could still be able to access the memory which is being freed by be_update_queues().
 
-Good point. That's a separate problem which would occur in case of real
-tx timeout. How about this followup change:
 
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -4698,8 +4698,13 @@ int be_update_queues(struct be_adapter *adapter)
- 	int status;
- 
- 	if (netif_running(netdev)) {
-+		/* be_tx_timeout() must not run concurrently with this
-+		 * function, synchronize with an already-running dev_watchdog
-+		 */
-+		netif_tx_lock_bh(netdev);
- 		/* device cannot transmit now, avoid dev_watchdog timeouts */
- 		netif_carrier_off(netdev);
-+		netif_tx_unlock_bh(netdev);
- 
- 		be_close(netdev);
- 	}
+On 7/17/19 10:03 AM, Chuhong Yuan wrote:
+> Variable allocated by kvmalloc should not be freed by kfree.
+> Because it may be allocated by vmalloc.
+> So replace kfree with kvfree here.
+> 
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> ---
+
+Please add corresponding Fixes: tag, thanks !
+
+>  drivers/net/ethernet/mellanox/mlx5/core/health.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> index 2fe6923f7ce0..9314777d99e3 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> @@ -597,7 +597,7 @@ mlx5_fw_fatal_reporter_dump(struct devlink_health_reporter *reporter,
+>  	err = devlink_fmsg_arr_pair_nest_end(fmsg);
+>  
+>  free_data:
+> -	kfree(cr_data);
+> +	kvfree(cr_data);
+>  	return err;
+>  }
+>  
+> 
