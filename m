@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C83CA6C2FD
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 00:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 431346C309
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 00:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbfGQWHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 18:07:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51188 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727543AbfGQWHk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 18:07:40 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB418205F4;
-        Wed, 17 Jul 2019 22:07:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563401259;
-        bh=E3HeMHJzji7XjV2syyDT2sJd4Lj6TFvLVdfiv0mxPzI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BfP8JRuzQ7Rb72MbauEu0MOSHMO+2q/6+PH+mrdueZgwxX7c5ipWVE3WMtFhXmGOi
-         8ZEslCubf1qeIBF+KabQ0kYF88aQ6bOTxFppl5ArAB4MGsKnfSimwEqsWT6fw8zXpH
-         HchQp5P0Cnz5Uwo/MfeoS2vtWAtsQWaakvrdqzDg=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@PaulSD.com,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] ipv6: rt6_check should return NULL if 'from' is NULL
-Date:   Wed, 17 Jul 2019 15:08:43 -0700
-Message-Id: <20190717220843.974-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1728066AbfGQWQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 18:16:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42902 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726917AbfGQWQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 18:16:29 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4551414EB9022;
+        Wed, 17 Jul 2019 15:16:28 -0700 (PDT)
+Date:   Wed, 17 Jul 2019 15:16:25 -0700 (PDT)
+Message-Id: <20190717.151625.1987585161672863516.davem@davemloft.net>
+To:     pablo@netfilter.org
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        jiri@resnulli.us, jakub.kicinski@netronome.com
+Subject: Re: [PATCH net,v3 1/4] net: openvswitch: rename flow_stats to
+ sw_flow_stats
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190717194248.2522-1-pablo@netfilter.org>
+References: <20190717194248.2522-1-pablo@netfilter.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 17 Jul 2019 15:16:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
 
-Paul reported that l2tp sessions were broken after the commit referenced
-in the Fixes tag. Prior to this commit rt6_check returned NULL if the
-rt6_info 'from' was NULL - ie., the dst_entry was disconnected from a FIB
-entry. Restore that behavior.
+What is this series doing?
 
-Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
-Reported-by: Paul Donohue <linux-kernel@PaulSD.com>
-Tested-by: Paul Donohue <linux-kernel@PaulSD.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- net/ipv6/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Where is your "0/4" cover letter which would tell us this?
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 4d2e6b31a8d6..6fe3097b9ab7 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -2563,7 +2563,7 @@ static struct dst_entry *rt6_check(struct rt6_info *rt,
- {
- 	u32 rt_cookie = 0;
- 
--	if ((from && !fib6_get_cookie_safe(from, &rt_cookie)) ||
-+	if (!from || !fib6_get_cookie_safe(from, &rt_cookie) ||
- 	    rt_cookie != cookie)
- 		return NULL;
- 
--- 
-2.11.0
+Also:
 
+> OVS compilation breaks here after this patchset since flow_stats
+> structure is already defined in include/net/flow_offload.h. This patch
+> is new in this batch.
+
+You need to explain in more detail and in more context what this
+means.  Does the build break when this patch is applies?  If so, why
+is that OK?
+
+I'm tossing this series until you submit it properly.
