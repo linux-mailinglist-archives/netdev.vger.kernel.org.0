@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 774826C06F
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 19:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB4E6C077
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 19:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727351AbfGQRcQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jul 2019 13:32:16 -0400
-Received: from mga07.intel.com ([134.134.136.100]:41732 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbfGQRcP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 13:32:15 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Jul 2019 10:32:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,275,1559545200"; 
-   d="scan'208";a="178968431"
-Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
-  by orsmga002.jf.intel.com with ESMTP; 17 Jul 2019 10:32:15 -0700
-Received: from orsmsx159.amr.corp.intel.com (10.22.240.24) by
- ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 17 Jul 2019 10:32:15 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.240]) by
- ORSMSX159.amr.corp.intel.com ([169.254.11.26]) with mapi id 14.03.0439.000;
- Wed, 17 Jul 2019 10:32:14 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "Murali Karicheri" <m-karicheri2@ti.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "Brown, Aaron F" <aaron.f.brown@intel.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next v1] fix: taprio: Change type of txtime-delay
- parameter to u32
-Thread-Topic: [PATCH net-next v1] fix: taprio: Change type of txtime-delay
- parameter to u32
-Thread-Index: AQHVPBAH2Iab5gicXE2VxFW40gJB96bONWkAgAFS4wA=
-Date:   Wed, 17 Jul 2019 17:32:10 +0000
-Message-ID: <D18998A5-4B08-4F27-897F-A34B7C15684F@intel.com>
-References: <1563306738-2779-1-git-send-email-vedang.patel@intel.com>
- <20190716.141904.308520366333461345.davem@davemloft.net>
-In-Reply-To: <20190716.141904.308520366333461345.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <25F096A2937A7A4CA810742E06D34141@intel.com>
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S2387928AbfGQRgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 13:36:40 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39582 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727357AbfGQRgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 13:36:40 -0400
+Received: by mail-io1-f67.google.com with SMTP id f4so47070373ioh.6
+        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 10:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=siSAH3elZRfbOKhNiI+jb+Cv36f2qsbbwpjf7J9k0Z4=;
+        b=1aZYwNdPO/ImAUZzkl5Oelx39YAAG3UsY8VyCKdQ4f+z+nGT5JzL90gQ6oGBc2O7x9
+         mOeq3ILuep0nwhw/duz9A2u4R2XPYqfr0ItNdVeR4wYQ5gpIRDNrlYft+NIy2MAf+K+f
+         VWME4YlmlKE92nY5Ilrgx2j+vl7a8Z6AcMtxGH2LX5T2PsEnO/6VgNtkG82NnxBjWdlz
+         +AC1w3bBayr4XOA/n9c9TdgxlC9/ZfJ8AizhGtbGvBlb84CqPs4DEiLGLmsOR0kTPpTE
+         p1D5UOPYO1FMr9tN+D8tJLXSpY4hryLg5hf8KQeDNyqXu316HcZ/FwDCZif/cNa+7ZkR
+         FPnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=siSAH3elZRfbOKhNiI+jb+Cv36f2qsbbwpjf7J9k0Z4=;
+        b=gP+NO4KJrgVXvhGAvFOoTI5TgGAeNcMmDNfGSAvx8BqmOXhKyaCPIc4y9715HblqMN
+         6coQdm0U2TOL+qi5vew3qsPjjSdn4VmYXw4YGA8bzb40QptJBS5uxr4J5tAAKqgZvha5
+         8gEKYgZTeXMmKDQehNgtMqNBg8BXaesV4IuxK30+n5CUXt/slWDN64RyLz3yphwzyqvi
+         quKuEVslSKRRFaUVM2ZA/+aTVTFOFbidEke7q/hMXlz21Ff4HZIhLggnh0Z8TlL4VpAG
+         XOUG2vX8HhPjdi0BfWx4E/vZ4SYB768LJnDtQdYneNfy1OhJVykeK0b7ocUxVEmqgZnt
+         I0Sw==
+X-Gm-Message-State: APjAAAVftwdPx1QVn0MnQy7kryAQAIebISSg+9WbLdJ/FAGPzxLGYfPR
+        LqTdvYi6Xb7opCJGamgZw6o=
+X-Google-Smtp-Source: APXvYqylaT0nrKZ5HXdHZHb2/c+CBBeRlFQ+dofPh98M3tv4kxw6G6fAbr06odkQktNYoJkXTAyMwQ==
+X-Received: by 2002:a6b:4107:: with SMTP id n7mr34497593ioa.12.1563384999424;
+        Wed, 17 Jul 2019 10:36:39 -0700 (PDT)
+Received: from mojatatu.com ([64.26.149.125])
+        by smtp.gmail.com with ESMTPSA id 20sm29052967iog.62.2019.07.17.10.36.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 17 Jul 2019 10:36:39 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net-next v2 0/2] Fix batched event generation for skbedit action
+Date:   Wed, 17 Jul 2019 13:36:30 -0400
+Message-Id: <1563384992-9430-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When adding or deleting a batch of entries, the kernel sends up to
+TCA_ACT_MAX_PRIO (defined to 32 in kernel) entries in an event to user
+space. However it does not consider that the action sizes may vary and
+require different skb sizes.
 
+For example, consider the following script adding 32 entries with all
+supported skbedit parameters (in order to maximize netlink messages size):
 
-> On Jul 16, 2019, at 2:19 PM, David Miller <davem@davemloft.net> wrote:
-> 
-> From: Vedang Patel <vedang.patel@intel.com>
-> Date: Tue, 16 Jul 2019 12:52:18 -0700
-> 
->> During the review of the iproute2 patches for txtime-assist mode, it was
->> pointed out that it does not make sense for the txtime-delay parameter to
->> be negative. So, change the type of the parameter from s32 to u32.
->> 
->> Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
->> Reported-by: Stephen Hemminger <stephen@networkplumber.org>
->> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
-> 
-> You should have targetted this at 'net' as that's the only tree open
-> right now.
-> 
-> I'll apply this.
+% cat tc-batch.sh
+TC="sudo /mnt/iproute2.git/tc/tc"
 
-Sorry about that.
+$TC actions flush action skbedit
+for i in `seq 1 $1`;
+do
+   cmd="action skbedit queue_mapping 2 priority 10 mark 7/0xaabbccdd ptype host inheritdsfield index $i "
+   args=$args$cmd
+done
+$TC actions add $args
+%
+% ./tc-batch.sh 32
+Error: Failed to fill netlink attributes while adding TC action.
+We have an error talking to the kernel
+%
 
-I will keep this in mind from next time. 
+patch 1 adds callback in tc_action_ops of skbedit action, which calculates
+the action size, and passes size to tcf_add_notify()/tcf_del_notify().
 
-Thanks,
-Vedang
+patch 2 updates the TDC test suite with relevant skbedit test cases.
+
+v2:
+   Added Fixes: tag
+   Added cover letter with details on the patchset
+
+Roman Mashak (2):
+  net sched: update skbedit action for batched events operations
+  tc-testing: updated skbedit action tests with batch create/delete
+
+ net/sched/act_skbedit.c                            | 12 ++++++
+ .../tc-testing/tc-tests/actions/skbedit.json       | 47 ++++++++++++++++++++++
+ 2 files changed, 59 insertions(+)
+
+-- 
+2.7.4
+
