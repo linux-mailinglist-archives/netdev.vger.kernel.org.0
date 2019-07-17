@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF716B9B5
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE3A6B9DD
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 12:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbfGQKFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 06:05:02 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:52790 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726784AbfGQKFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 06:05:01 -0400
-Received: by mail-io1-f69.google.com with SMTP id p12so26547292iog.19
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 03:05:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=TTvRZwA8TDPGBK9TibJ6ly9VeeNnSU2IT+OU5u4KhhE=;
-        b=PvR55KinjuA9p92teSAnTSDcz/ypx4FocCfZzngzCGQNT0XbUg9KCaR8+d9k9VZPGX
-         S9QNwRKdyC9SyHUklNRmidimhIbJJdwofIr3zxg95nYJ5kDgMKs4S/r0Ap0Q0HniEvqP
-         LkU2qVkUpVOahi7O/JuVlLoS7r6uiYhJx30TxunSHfRrtPUUtx+U8knPb0b8g0CZ/W3Y
-         UWJtTW+Q+yYBtb3GGeEheUI4Z2C0JaKfQJXHvxrJ4c/6onHRoAW2Xsu3fWITKV5zqhWY
-         mQQ7pUxZ5VMROxo8TH/X7ySFSgazplv5fCagXcXbkS+q51VGin/Gjucm2pZVo+R9QV0w
-         f0lQ==
-X-Gm-Message-State: APjAAAWNE/wh9tj4oDNbCTiDUU7yByx3rWciv3d7CPRuDLeF30NrlhBF
-        Qffi1PlCBeBYNEMm74av4Cr89VTmOimQzMr2geFERYGmZVel
-X-Google-Smtp-Source: APXvYqygQgdRgLCMVKgGwqYS2YzrTxrwtIneXoQQgmYGyvms+ow3F6cA2ozkKNBfmEvrb6Cbs/OgXfe3/5McPbETYvJRCUiZzHs9
-MIME-Version: 1.0
-X-Received: by 2002:a05:6638:281:: with SMTP id c1mr40048066jaq.43.1563357900838;
- Wed, 17 Jul 2019 03:05:00 -0700 (PDT)
-Date:   Wed, 17 Jul 2019 03:05:00 -0700
-In-Reply-To: <00000000000015d943058ddcb1b3@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000561cd5058ddda0ce@google.com>
-Subject: Re: WARNING: held lock freed in nr_release
-From:   syzbot <syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+        id S1726458AbfGQKOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 06:14:45 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:63867 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfGQKOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 06:14:44 -0400
+Received: from fsav305.sakura.ne.jp (fsav305.sakura.ne.jp [153.120.85.136])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id x6HADtYS087173;
+        Wed, 17 Jul 2019 19:13:55 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav305.sakura.ne.jp (F-Secure/fsigk_smtp/530/fsav305.sakura.ne.jp);
+ Wed, 17 Jul 2019 19:13:55 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/530/fsav305.sakura.ne.jp)
+Received: from [192.168.1.8] (softbank126012062002.bbtec.net [126.12.62.2])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id x6HADodo087151
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
+        Wed, 17 Jul 2019 19:13:55 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: KASAN: use-after-free Write in check_noncircular
+To:     Dmitry Vyukov <dvyukov@google.com>
+References: <0000000000001e443b058ddcb128@google.com>
+Cc:     syzbot <syzbot+f5ceb7c55f59455035ca@syzkaller.appspotmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        syzkaller-bugs@googlegroups.com
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <d87d7844-5dce-b423-9d54-4e51d482ba5f@i-love.sakura.ne.jp>
+Date:   Wed, 17 Jul 2019 19:13:52 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <0000000000001e443b058ddcb128@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+This is not a TOMOYO's bug. But
 
-commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu Jun 27 21:30:58 2019 +0000
+On 2019/07/17 17:58, syzbot wrote:
+> ==================================================================
+> BUG: KASAN: use-after-free in check_noncircular+0x91/0x560 kernel/locking/lockdep.c:1722
+> Write of size 56 at addr ffff888089815160 by task syz-executor.4/8772
+> 
+> CPU: 1 PID: 8772 Comm: syz-executor.4 Not tainted 5.2.0+ #31
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+> 
 
-     netrom: fix a memory leak in nr_rx_frame()
+what happened here? No trace was printed to console output?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14022e8fa00000
-start commit:   a5b64700 fix: taprio: Change type of txtime-delay paramete..
-git tree:       net
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=16022e8fa00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12022e8fa00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=87305c3ca9c25c70
-dashboard link: https://syzkaller.appspot.com/bug?extid=a34e5f3d0300163f0c87
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1460b458600000
-
-Reported-by: syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com
-Fixes: c8c8218ec5af ("netrom: fix a memory leak in nr_rx_frame()")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> Allocated by task 8457:
