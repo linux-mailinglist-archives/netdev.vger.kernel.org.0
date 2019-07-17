@@ -2,128 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 154EC6C079
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 19:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 200CA6C07D
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 19:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388236AbfGQRgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 13:36:46 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:36188 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfGQRgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 13:36:45 -0400
-Received: by mail-io1-f66.google.com with SMTP id o9so47120213iom.3
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 10:36:45 -0700 (PDT)
+        id S2388358AbfGQRgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 13:36:49 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34014 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725948AbfGQRgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 13:36:48 -0400
+Received: by mail-pf1-f194.google.com with SMTP id b13so11189055pfo.1;
+        Wed, 17 Jul 2019 10:36:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VikfknS/bkhly6szckUIdHfqtKi1WQDv/sbkVo/HIW8=;
-        b=OTMSI60b59oL/JaY20L4tULmSdXRuNKnnNKBpiOj1BbzwvQIjvSQdrStRSJectVjqZ
-         XF7hs7kPaV8hRGyr/9rWEeD6wwXeplb0QH8hFZFYeCHlJ2bc4vpq1ihdYRMjdi4YDfN1
-         1QETO8wwF6yEis7GyFyLhPXcO1VtfDoz0wbdKVTuhS+yzifahCjZnKz/SAJQKMzmixXG
-         oESws4lls2P6Rq4VObMACnY6K95d/VACXqhqVijDTc/FOTJSYPAnNaThbzU9qThrSZFh
-         71B+kVfq0b0LMq+O9jHPmrnU+xR23hnfzZn8aeiklQIAjyKn4U5er/4Ss2b1rGctnpKt
-         AM9A==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AEjoDdJMIzeflgkExnRt8ZGteBiC6Dg9NI5aSUpgDNI=;
+        b=uJfl8nmKNeAE9U8+6415p7ApMqk5SuluNv8zlj8GAurFJGMiSVb6zBFoIlp4ERNaNy
+         INIbsu5CW3MjVDPs5hxiLEqFjD+oSE3qGPkil2e3ezkqOoMTwn5lh7+UOKcl3QZmvL29
+         igXMXXpJeW4v8PF9oTrvLQt4XTQ26xeU1epDJKVEG2sVtzIdmU1UE8Zw1FFHqFiN0dmB
+         gRtHIdOA4JEJU+0EHsruxdgJUJ7TNGz8sOXFzVWc/xS6jnfEd+nTgFx71VipIA/ToCEI
+         dVIr5XokghsUCPuo2uFE/2v9Wr91O4O95J0gGToWCHL4me864+4F2CGmZQ1f3PRXybFD
+         7OUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=VikfknS/bkhly6szckUIdHfqtKi1WQDv/sbkVo/HIW8=;
-        b=ZDMPmV7NqHhCcKE2ZITAs69EMGuH1xlqauuoz3tMkKHc0MtwqvzI8/2RuOx+TMVkgt
-         /BIUkA8dOwpaT9qJR3CwZN0mJiJLvnJXvwHqSduxqV27XaoCsEduY3cgno35bQHyMsuo
-         T3fiaJOITR7aZYn41ThnymdvD6iLnbbQD0tPPuoyCt8JKyynuNl2k9Yc7nqYX/vIUIJH
-         4o/CouHlYKYVHPkb4XjMf9ammcawyN4r37fexZ6eSGjpSW9fZdD//80bE8uIo0ZakqNY
-         iASrJzwSJb4qULnI1QpskW5Vw3TVaEpWiGAhX4nQZWYl0/l+ypKeese9RbKKeq9lgQCA
-         lg2Q==
-X-Gm-Message-State: APjAAAXYHe/o0XPoKRMV5/ernjO58/KDCwvznzYt4e3uaEPd8DrTkNRW
-        Qb6X42KL5STnvTLDvKo3rFI=
-X-Google-Smtp-Source: APXvYqw/4hmbYvIlQLg8PPbGqs+NyQw88Sf3xoAyzF4RWNMTx5M6zjSjzZUYYncx9drVMxEYjvE4ew==
-X-Received: by 2002:a5d:85c3:: with SMTP id e3mr37953614ios.265.1563385004766;
-        Wed, 17 Jul 2019 10:36:44 -0700 (PDT)
-Received: from mojatatu.com ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id 20sm29052967iog.62.2019.07.17.10.36.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 17 Jul 2019 10:36:44 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next v2 2/2] tc-testing: updated skbedit action tests with batch create/delete
-Date:   Wed, 17 Jul 2019 13:36:32 -0400
-Message-Id: <1563384992-9430-3-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1563384992-9430-1-git-send-email-mrv@mojatatu.com>
-References: <1563384992-9430-1-git-send-email-mrv@mojatatu.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AEjoDdJMIzeflgkExnRt8ZGteBiC6Dg9NI5aSUpgDNI=;
+        b=Ehdfsx8vy2owXKqiemN6j9MpS/8bk7Y2Jhdscs6Kxn8zZdkKC03/edWOln7xxjCyP2
+         3W2rjKugehCOJgqCFJGxPNNZNmgAR6h0a9ddYVqW9adgeyXASQsu/GMP+e2OSLhWd90+
+         pyPBMP2yjhkocoGY0/cDnuQHeumnTiRpdYgCCtysK1/2DL1IchOAnIL/tDwEkb1Urorg
+         VzrJKEV8T7pBMYEYbeWSRNIAmLy5mWjcuCUr2QhrX2sJmSlRnWt4CYI9ZyfISbJMnMQ5
+         w/ReheiNycU4tR0mlc1V7/oMtKU76HthJBSqAY4uYpev+KY5eRRqqoU6FzWSwZs8/V1r
+         vrqA==
+X-Gm-Message-State: APjAAAV3FUrz5W/jJuPdupCRvR+JhYJd0TFKXC51ysXsyJvLUyR5CqHC
+        TbFxRlIO1CJA9RzovyABaLY=
+X-Google-Smtp-Source: APXvYqxZFXxVDZvHXhEXrcu7anHd6TYVduKou34JRU4OEG5DrhCmv8W/ugMixVYfV4NTPoXvEUs1RQ==
+X-Received: by 2002:a63:3ec7:: with SMTP id l190mr44080907pga.334.1563385008207;
+        Wed, 17 Jul 2019 10:36:48 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id l27sm2706020pgn.19.2019.07.17.10.36.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 17 Jul 2019 10:36:47 -0700 (PDT)
+Date:   Wed, 17 Jul 2019 10:36:45 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Christopher S . Hall" <christopher.s.hall@intel.com>
+Subject: Re: [RFC PATCH 4/5] PTP: Add flag for non-periodic output
+Message-ID: <20190717173645.GD1464@localhost>
+References: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
+ <20190716072038.8408-5-felipe.balbi@linux.intel.com>
+ <20190716163927.GA2125@localhost>
+ <87k1ch2m1i.fsf@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87k1ch2m1i.fsf@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update TDC tests with cases varifying ability of TC to install or delete
-batches of skbedit actions.
+On Wed, Jul 17, 2019 at 09:49:13AM +0300, Felipe Balbi wrote:
+> No worries, I'll work on this after vacations (I'll off for 2 weeks
+> starting next week). I thought about adding a new IOCTL until I saw that
+> rsv field. Oh well :-)
 
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- .../tc-testing/tc-tests/actions/skbedit.json       | 47 ++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+It would be great if you could fix up the PTP ioctls as a preface to
+your series.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-index bf5ebf59c2d4..9cdd2e31ac2c 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-@@ -670,5 +670,52 @@
-         "teardown": [
-             "$TC actions flush action skbedit"
-         ]
-+    },
-+    {
-+        "id": "630c",
-+        "name": "Add batch of 32 skbedit actions with all parameters and cookie",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "bash -c \"for i in \\`seq 1 32\\`; do cmd=\\\"action skbedit queue_mapping 2 priority 10 mark 7/0xaabbccdd ptype host inheritdsfield index \\$i cookie aabbccddeeff112233445566778800a1 \\\"; args=\"\\$args\\$cmd\"; done && $TC actions add \\$args\"",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "^[ \t]+index [0-9]+ ref",
-+        "matchCount": "32",
-+        "teardown": [
-+            "$TC actions flush action skbedit"
-+        ]
-+    },
-+    {
-+        "id": "706d",
-+        "name": "Delete batch of 32 skbedit actions with all parameters",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ],
-+            "bash -c \"for i in \\`seq 1 32\\`; do cmd=\\\"action skbedit queue_mapping 2 priority 10 mark 7/0xaabbccdd ptype host inheritdsfield index \\$i \\\"; args=\\\"\\$args\\$cmd\\\"; done && $TC actions add \\$args\""
-+        ],
-+        "cmdUnderTest": "bash -c \"for i in \\`seq 1 32\\`; do cmd=\\\"action skbedit index \\$i \\\"; args=\"\\$args\\$cmd\"; done && $TC actions del \\$args\"",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action skbedit",
-+        "matchPattern": "^[ \t]+index [0-9]+ ref",
-+        "matchCount": "0",
-+        "teardown": []
-     }
- ]
--- 
-2.7.4
-
+Thanks,
+Richard
