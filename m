@@ -2,102 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56FDF6B71C
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 09:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C99CA6B794
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 09:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725932AbfGQHHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 03:07:39 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34812 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725873AbfGQHHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 03:07:39 -0400
-Received: by mail-pl1-f194.google.com with SMTP id i2so11474553plt.1
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 00:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=STQjFOD3USINkj9qErQKrsBiU5H7YIvj79KmIFnrB9Q=;
-        b=W3XyGdzDsexqe0muEM722ykD0hL+8JfwPIlYwPnV4DD0TjMu+tAsuTICk6QeYBYnMy
-         JYQtdrviTygejdwujje2maMnJf/yAJPuRETyboAyccAbcoz473Ylaf1UBDptAr6eCRFg
-         poDc9aCorXO6EPuXIDDLSAeBFt+ZbKpAN1gck=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=STQjFOD3USINkj9qErQKrsBiU5H7YIvj79KmIFnrB9Q=;
-        b=ePZ62Hz4f4EzOf6cBFxGUzQruDECwrwLnO/fUP/e0m6oROon6VVYXqUVITPFT2FiPM
-         3Hw+LTV+G/K7lZ93ocGd7/QJ9sK141q1GLAI4e9c6qmwFpe7ecBiF/mhj3L2nNSImp55
-         eRHQD4M1iZCf38Dn0uyP6c/FZo202DsEZa7Wit4cAd2MXayphJIe39go6Nn2NI3CVdBC
-         GubxOoTmBfe3ALLeSxhhYpWuB7U1Oav453xhl2xUgZWV866XynhHyOFYA1XlZfvnPzi8
-         XC0B1cmOU0kD/VI3XO3XCBJruGEmsmlhR1dwURGDW9bEO8jJXBBxNxz2fEWbEXaRiWkd
-         Rrcw==
-X-Gm-Message-State: APjAAAUjcv9rwuO8KYWVlVmZT+SfCarXuPN9VQgDdlbZuzoj1XB9TP6A
-        sKyPDm+TKs1J0CodH+Dwe3s2jceHDLM=
-X-Google-Smtp-Source: APXvYqy96SMmiKKLWY67yIGo/SXIFZc+ZOm3cU5Am6Kf3+Np3Khnabm7vQpMPbayVupzSiZIIe81GQ==
-X-Received: by 2002:a17:902:7488:: with SMTP id h8mr19094229pll.168.1563347258966;
-        Wed, 17 Jul 2019 00:07:38 -0700 (PDT)
-Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r1sm22512849pgv.70.2019.07.17.00.07.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 17 Jul 2019 00:07:38 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] bnxt_en: Fix VNIC accounting when enabling aRFS on 57500 chips.
-Date:   Wed, 17 Jul 2019 03:07:23 -0400
-Message-Id: <1563347243-8100-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1729377AbfGQHti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 03:49:38 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:49711 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727019AbfGQHth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 03:49:37 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1hnegv-00033E-Hg; Wed, 17 Jul 2019 07:49:34 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     johannes.berg@intel.com, emmanuel.grumbach@intel.com,
+        luciano.coelho@intel.com, marcel@holtmann.org,
+        johan.hedberg@gmail.com
+Cc:     linuxwifi@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH v2 1/3] Bluetooth: btintel: Add firmware lock function
+Date:   Wed, 17 Jul 2019 15:49:18 +0800
+Message-Id: <20190717074920.21624-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike legacy chips, 57500 chips don't need additional VNIC resources
-for aRFS/ntuple.  Fix the code accordingly so that we don't reserve
-and allocate additional VNICs on 57500 chips.  Without this patch,
-the driver is failing to initialize when it tries to allocate extra
-VNICs.
+When Intel 8260 starts to load Bluetooth firmware and WiFi firmware, by
+calling btintel_download_firmware() and iwl_pcie_load_given_ucode_8000()
+respectively, the Bluetooth btintel_download_firmware() aborts half way:
+[   11.950216] Bluetooth: hci0: Failed to send firmware data (-38)
 
-Fixes: ac33906c67e2 ("bnxt_en: Add support for aRFS on 57500 chips.")
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Let btusb and iwlwifi load firmwares exclusively can avoid the issue, so
+introduce a lock to use in btusb and iwlwifi.
+
+This issue still occurs with latest WiFi and Bluetooth firmwares.
+
+BugLink: https://bugs.launchpad.net/bugs/1832988
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
+v2:
+ - Add bug report link.
+ - Rebase on latest wireless-next.
 
-Please queue this for 5.2 -stable also.  Thanks.
+ drivers/bluetooth/btintel.c   | 14 ++++++++++++++
+ drivers/bluetooth/btintel.h   | 10 ++++++++++
+ include/linux/intel-wifi-bt.h |  8 ++++++++
+ 3 files changed, 32 insertions(+)
+ create mode 100644 include/linux/intel-wifi-bt.h
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 1069eb0..7134d2c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3075,7 +3075,7 @@ static int bnxt_alloc_vnics(struct bnxt *bp)
- 	int num_vnics = 1;
+diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
+index bb99c8653aab..93ab18d6ddad 100644
+--- a/drivers/bluetooth/btintel.c
++++ b/drivers/bluetooth/btintel.c
+@@ -20,6 +20,8 @@
  
- #ifdef CONFIG_RFS_ACCEL
--	if (bp->flags & BNXT_FLAG_RFS)
-+	if ((bp->flags & (BNXT_FLAG_RFS | BNXT_FLAG_CHIP_P5)) == BNXT_FLAG_RFS)
- 		num_vnics += bp->rx_nr_rings;
- #endif
+ #define BDADDR_INTEL (&(bdaddr_t) {{0x00, 0x8b, 0x9e, 0x19, 0x03, 0x00}})
  
-@@ -7186,6 +7186,9 @@ static int bnxt_alloc_rfs_vnics(struct bnxt *bp)
- #ifdef CONFIG_RFS_ACCEL
- 	int i, rc = 0;
- 
-+	if (bp->flags & BNXT_FLAG_CHIP_P5)
-+		return 0;
++static DEFINE_MUTEX(firmware_lock);
 +
- 	for (i = 0; i < bp->rx_nr_rings; i++) {
- 		struct bnxt_vnic_info *vnic;
- 		u16 vnic_id = i + 1;
-@@ -9645,7 +9648,7 @@ int bnxt_check_rings(struct bnxt *bp, int tx, int rx, bool sh, int tcs,
- 		return -ENOMEM;
+ int btintel_check_bdaddr(struct hci_dev *hdev)
+ {
+ 	struct hci_rp_read_bd_addr *bda;
+@@ -709,6 +711,18 @@ int btintel_download_firmware(struct hci_dev *hdev, const struct firmware *fw,
+ }
+ EXPORT_SYMBOL_GPL(btintel_download_firmware);
  
- 	vnics = 1;
--	if (bp->flags & BNXT_FLAG_RFS)
-+	if ((bp->flags & (BNXT_FLAG_RFS | BNXT_FLAG_CHIP_P5)) == BNXT_FLAG_RFS)
- 		vnics += rx_rings;
++void btintel_firmware_lock(void)
++{
++	mutex_lock(&firmware_lock);
++}
++EXPORT_SYMBOL_GPL(btintel_firmware_lock);
++
++void btintel_firmware_unlock(void)
++{
++	mutex_unlock(&firmware_lock);
++}
++EXPORT_SYMBOL_GPL(btintel_firmware_unlock);
++
+ MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
+ MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
+ MODULE_VERSION(VERSION);
+diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
+index 3d846190f2bf..b3682d27d2ee 100644
+--- a/drivers/bluetooth/btintel.h
++++ b/drivers/bluetooth/btintel.h
+@@ -87,6 +87,8 @@ int btintel_read_boot_params(struct hci_dev *hdev,
+ 			     struct intel_boot_params *params);
+ int btintel_download_firmware(struct hci_dev *dev, const struct firmware *fw,
+ 			      u32 *boot_param);
++void btintel_firmware_lock(void);
++void btintel_firmware_unlock(void);
+ #else
  
- 	if (bp->flags & BNXT_FLAG_AGG_RINGS)
+ static inline int btintel_check_bdaddr(struct hci_dev *hdev)
+@@ -181,4 +183,12 @@ static inline int btintel_download_firmware(struct hci_dev *dev,
+ {
+ 	return -EOPNOTSUPP;
+ }
++
++static inline void btintel_firmware_lock(void)
++{
++}
++
++static inline void btintel_firmware_unlock(void)
++{
++}
+ #endif
+diff --git a/include/linux/intel-wifi-bt.h b/include/linux/intel-wifi-bt.h
+new file mode 100644
+index 000000000000..260ed628d19b
+--- /dev/null
++++ b/include/linux/intel-wifi-bt.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __INTEL_WIFI_BT_H__
++#define __INTEL_WIFI_BT_H__
++
++void btintel_firmware_lock(void);
++void btintel_firmware_unlock(void);
++
++#endif
 -- 
-2.5.1
+2.17.1
 
