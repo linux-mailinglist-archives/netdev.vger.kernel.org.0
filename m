@@ -2,252 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB4ED6B2C9
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B85CB6B2CB
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729263AbfGQAXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 20:23:21 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:39839 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728235AbfGQAXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:23:21 -0400
-Received: by mail-oi1-f194.google.com with SMTP id m202so17099199oig.6;
-        Tue, 16 Jul 2019 17:23:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=II5t7xXFbfBgQJHak24dyTai7VO42Pm3JKrGMChFOUY=;
-        b=XmcetWm8AKndqUA4ABKAoDLKqKWD8HMKdQW7OKIBHNCYYpuO/yGqzX4xxY7Zjo44GA
-         OjRxdh/Dlo3ryhLt3LaXnjMQ1al6N2wrmTriCy6a4PT0zFCK3TjrhyR+s9HLbz0Aqab5
-         VWK7Pv55cdJnUTRIIgzN/tFBuPaQ9FvXO1yCQcWMy0XvhPGNzg5tgnJ7AFHFYM4S8pps
-         qB5Jp8RSJtkSNN6qkGVzEcNxtYtG8tXDAjH2MaIxMgoY+XctYTtWgIAvl1Exnrt5gyGh
-         7zBhKwPNucjk04akB6aWakmaa8WafhgzfZUXGkxAnifyrelwam8mJ3IMXrxKzO3P6rg0
-         vyNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=II5t7xXFbfBgQJHak24dyTai7VO42Pm3JKrGMChFOUY=;
-        b=g4V9viJD9Ap41+/0BiXRD8ioVpeXKiFC5uEGskYlnsskOvKUPyruA1tv+a3V+iN3Gw
-         ZcDqh1erQwO109fpMt68NIxo/SlpYcP79c21DcCm59Gkf8DQ1DDlu5cvJGJgf/7eoSjT
-         hhz5BIFvPNdMyYA5oJ/0nw3fzkqj3wU7dih7rdyYCoqhkzQSSV5fK/Ysq6Jao4P9oHGz
-         tjHDj/Bv4DjONzURkevThcPCemGx68DTG5EaATB/g5p7g9h/EYordJTbX6LkFkyQZ8/z
-         qcqm850djNCtWULOw/8Dh1i83cYQBGkhMXerBeH2mYO7z8VLIB/VKe6S42TxLCjE7mqM
-         PIvQ==
-X-Gm-Message-State: APjAAAW4P1JXhvv/Eu9HbEGg604+fBXb7FvRPNVlbp+4SrzxOvGXjK6d
-        PftMbL33E1GPEflrpvzCZCgp568RVaCU4X0WDHQ=
-X-Google-Smtp-Source: APXvYqzlDXwgIUEfeTBGhDqx9Wh1ZgAPgjKp7XY0ESkWRpbIvobSlPsvwaLug1jWir8ir9T1vKfy4RC39GAifJE5DvM=
-X-Received: by 2002:a05:6808:98:: with SMTP id s24mr17584663oic.127.1563322999838;
- Tue, 16 Jul 2019 17:23:19 -0700 (PDT)
+        id S1730493AbfGQA0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 20:26:17 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:57356 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728699AbfGQA0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:26:17 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6H0OvvK001163;
+        Wed, 17 Jul 2019 00:26:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=fHEoOqqR2/nWXFYbhP+3p4B7SA93U5PxyaUELIp60so=;
+ b=w60fmZYvc0+JGEdFbJTC0RG848u2LMPxkWiKSmMZqqj3lO84wJS77uth9vi9i2LaEJxz
+ qa2nj1ZWhxlRcW9gYzJI8xW41kqdgbWJBbAd+KArtpnYb7i2e1C2mSk2LW/LqEIXOhEe
+ KUc3sZJUtsO4r/FXts9Sb593ehu0R1v+ZXPhHb/gK86hOUr140KWikQF2QKB3GeyjB+1
+ 6FoJ3OuPTVn2ULYBHAT5yW2MTeaHlrzjIktkkz7uWTfS2hJKVnw7DViU7jdMmV85yxVA
+ KAL8xVpz4v08terunH86v1NiTaL42lC6MpuThaPVZcHNoF27NFLM1ExGiV8RFoZ9lmO/ bA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2tq7xqye35-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Jul 2019 00:26:07 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6H0MxTK110046;
+        Wed, 17 Jul 2019 00:26:06 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2tq5bcq0xr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 17 Jul 2019 00:26:06 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6H0Q6bA114555;
+        Wed, 17 Jul 2019 00:26:06 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2tq5bcq0xn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Jul 2019 00:26:06 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x6H0Q5XX001141;
+        Wed, 17 Jul 2019 00:26:05 GMT
+Received: from [192.168.86.192] (/69.181.241.203)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 17 Jul 2019 00:26:05 +0000
+Subject: Re: [PATCH net v3 1/7] net/rds: Give fr_state a chance to transition
+ to FRMR_IS_FREE
+To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Cc:     David Miller <davem@davemloft.net>
+References: <491db13c-3843-b57a-c9c5-9c7e7c18381a@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <88c45c78-13fb-9774-6397-397b5d08c78e@oracle.com>
+Date:   Tue, 16 Jul 2019 17:26:04 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
- <20190716002650.154729-3-ppenkov.kernel@gmail.com> <CACAyw99Umy6gaAu1DFTgemRXpZWmxeTSeCZDwdHWzLWeG8Ur3Q@mail.gmail.com>
-In-Reply-To: <CACAyw99Umy6gaAu1DFTgemRXpZWmxeTSeCZDwdHWzLWeG8Ur3Q@mail.gmail.com>
-From:   Petar Penkov <ppenkov.kernel@gmail.com>
-Date:   Tue, 16 Jul 2019 17:23:09 -0700
-Message-ID: <CAGdtWsR1a6fMsuB6u6yi1+r_n8Sm6kE-NcgjZa2aVS5_cmLSSg@mail.gmail.com>
-Subject: Re: [bpf-next RFC 2/6] tcp: add skb-less helpers to retrieve SYN cookie
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <491db13c-3843-b57a-c9c5-9c7e7c18381a@oracle.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9320 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907170003
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 4:35 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
->
-> On Tue, 16 Jul 2019 at 01:27, Petar Penkov <ppenkov.kernel@gmail.com> wrote:
-> >
-> > From: Petar Penkov <ppenkov@google.com>
-> >
-> > This patch allows generation of a SYN cookie before an SKB has been
-> > allocated, as is the case at XDP.
-> >
-> > Signed-off-by: Petar Penkov <ppenkov@google.com>
-> > ---
-> >  include/net/tcp.h    | 11 ++++++
-> >  net/ipv4/tcp_input.c | 79 ++++++++++++++++++++++++++++++++++++++++++++
-> >  net/ipv4/tcp_ipv4.c  |  8 +++++
-> >  net/ipv6/tcp_ipv6.c  |  8 +++++
-> >  4 files changed, 106 insertions(+)
-> >
-> > diff --git a/include/net/tcp.h b/include/net/tcp.h
-> > index cca3c59b98bf..a128e22c0d5d 100644
-> > --- a/include/net/tcp.h
-> > +++ b/include/net/tcp.h
-> > @@ -414,6 +414,17 @@ void tcp_parse_options(const struct net *net, const struct sk_buff *skb,
-> >                        int estab, struct tcp_fastopen_cookie *foc);
-> >  const u8 *tcp_parse_md5sig_option(const struct tcphdr *th);
-> >
-> > +/*
-> > + *     BPF SKB-less helpers
-> > + */
-> > +u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
-> > +                        struct tcphdr *tch, u32 *cookie);
-> > +u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
-> > +                        struct tcphdr *tch, u32 *cookie);
-> > +u16 tcp_get_syncookie(struct request_sock_ops *rsk_ops,
-> > +                     const struct tcp_request_sock_ops *af_ops,
-> > +                     struct sock *sk, void *iph, struct tcphdr *tch,
-> > +                     u32 *cookie);
-> >  /*
-> >   *     TCP v4 functions exported for the inet6 API
-> >   */
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index 8892df6de1d4..1406d7e0953c 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -3782,6 +3782,52 @@ static void smc_parse_options(const struct tcphdr *th,
-> >  #endif
-> >  }
-> >
-> > +/* Try to parse the MSS option from the TCP header. Return 0 on failure, clamped
-> > + * value on success.
-> > + *
-> > + * Invoked for BPF SYN cookie generation, so th should be a SYN.
-> > + */
-> > +static u16 tcp_parse_mss_option(const struct net *net, const struct tcphdr *th,
-> > +                               u16 user_mss)
->
-> net seems unused?
+On 7/16/19 3:28 PM, Gerd Rausch wrote:
+> In the context of FRMR (ib_frmr.c):
+> 
+> Memory regions make it onto the "clean_list" via "rds_ib_flush_mr_pool",
+> after the memory region has been posted for invalidation via
+> "rds_ib_post_inv".
+> 
+> At that point in time, "fr_state" may still be in state "FRMR_IS_INUSE",
+> since the only place where "fr_state" transitions to "FRMR_IS_FREE"
+> is in "rds_ib_mr_cqe_handler", which is triggered by a tasklet.
+> 
+> So in case we notice that "fr_state != FRMR_IS_FREE" (see below),
+> we wait for "fr_inv_done" to trigger with a maximum of 10msec.
+> Then we check again, and only put the memory region onto the drop_list
+> (via "rds_ib_free_frmr") in case the situation remains unchanged.
+> 
+> This avoids the problem of memory-regions bouncing between "clean_list"
+> and "drop_list" before they even have a chance to be properly invalidated.
+> 
+> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> ---
+Thanks for the update.
 
-Ah, good catch! Will remove this in the v2.
-
->
-> > +{
-> > +       const unsigned char *ptr = (const unsigned char *)(th + 1);
-> > +       int length = (th->doff * 4) - sizeof(struct tcphdr);
-> > +       u16 mss = 0;
-> > +
-> > +       while (length > 0) {
-> > +               int opcode = *ptr++;
-> > +               int opsize;
-> > +
-> > +               switch (opcode) {
-> > +               case TCPOPT_EOL:
-> > +                       return mss;
-> > +               case TCPOPT_NOP:        /* Ref: RFC 793 section 3.1 */
-> > +                       length--;
-> > +                       continue;
-> > +               default:
-> > +                       if (length < 2)
-> > +                               return mss;
-> > +                       opsize = *ptr++;
-> > +                       if (opsize < 2) /* "silly options" */
-> > +                               return mss;
-> > +                       if (opsize > length)
-> > +                               return mss;     /* fail on partial options */
-> > +                       if (opcode == TCPOPT_MSS && opsize == TCPOLEN_MSS) {
-> > +                               u16 in_mss = get_unaligned_be16(ptr);
-> > +
-> > +                               if (in_mss) {
-> > +                                       if (user_mss && user_mss < in_mss)
-> > +                                               in_mss = user_mss;
-> > +                                       mss = in_mss;
-> > +                               }
-> > +                       }
-> > +                       ptr += opsize - 2;
-> > +                       length -= opsize;
-> > +               }
-> > +       }
-> > +       return mss;
-> > +}
-> > +
-> >  /* Look for tcp options. Normally only called on SYN and SYNACK packets.
-> >   * But, this can also be called on packets in the established flow when
-> >   * the fast version below fails.
-> > @@ -6464,6 +6510,39 @@ static void tcp_reqsk_record_syn(const struct sock *sk,
-> >         }
-> >  }
-> >
-> > +u16 tcp_get_syncookie(struct request_sock_ops *rsk_ops,
-> > +                     const struct tcp_request_sock_ops *af_ops,
-> > +                     struct sock *sk, void *iph, struct tcphdr *th,
-> > +                     u32 *cookie)
-> > +{
-> > +       u16 mss = 0;
-> > +#ifdef CONFIG_SYN_COOKIES
-> > +       bool is_v4 = rsk_ops->family == AF_INET;
-> > +       struct tcp_sock *tp = tcp_sk(sk);
-> > +
-> > +       if (sock_net(sk)->ipv4.sysctl_tcp_syncookies != 2 &&
-> > +           !inet_csk_reqsk_queue_is_full(sk))
-> > +               return 0;
-> > +
-> > +       if (!tcp_syn_flood_action(sk, rsk_ops->slab_name))
-> > +               return 0;
-> > +
-> > +       if (sk_acceptq_is_full(sk)) {
-> > +               NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
-> > +               return 0;
-> > +       }
-> > +
-> > +       mss = tcp_parse_mss_option(sock_net(sk), th, tp->rx_opt.user_mss);
-> > +       if (!mss)
-> > +               mss = af_ops->mss_clamp;
-> > +
-> > +       tcp_synq_overflow(sk);
-> > +       *cookie = is_v4 ? __cookie_v4_init_sequence(iph, th, &mss)
-> > +                       : __cookie_v6_init_sequence(iph, th, &mss);
-> > +#endif
-> > +       return mss;
-> > +}
-> > +
-> >  int tcp_conn_request(struct request_sock_ops *rsk_ops,
-> >                      const struct tcp_request_sock_ops *af_ops,
-> >                      struct sock *sk, struct sk_buff *skb)
-> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > index d57641cb3477..0e06e59784bd 100644
-> > --- a/net/ipv4/tcp_ipv4.c
-> > +++ b/net/ipv4/tcp_ipv4.c
-> > @@ -1515,6 +1515,14 @@ static struct sock *tcp_v4_cookie_check(struct sock *sk, struct sk_buff *skb)
-> >         return sk;
-> >  }
-> >
-> > +u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
-> > +                        struct tcphdr *tch, u32 *cookie)
-> > +{
-> > +       return tcp_get_syncookie(&tcp_request_sock_ops,
-> > +                                &tcp_request_sock_ipv4_ops, sk, iph, tch,
-> > +                                cookie);
-> > +}
-> > +
-> >  /* The socket must have it's spinlock held when we get
-> >   * here, unless it is a TCP_LISTEN socket.
-> >   *
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index d56a9019a0fe..ce46cdba54bc 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -1058,6 +1058,14 @@ static struct sock *tcp_v6_cookie_check(struct sock *sk, struct sk_buff *skb)
-> >         return sk;
-> >  }
-> >
-> > +u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
-> > +                        struct tcphdr *tch, u32 *cookie)
-> > +{
-> > +       return tcp_get_syncookie(&tcp6_request_sock_ops,
-> > +                                &tcp_request_sock_ipv6_ops, sk, iph, tch,
-> > +                                cookie);
-> > +}
-> > +
-> >  static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
-> >  {
-> >         if (skb->protocol == htons(ETH_P_IP))
-> > --
-> > 2.22.0.510.g264f2c817a-goog
-> >
->
->
-> --
-> Lorenz Bauer  |  Systems Engineer
-> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
->
-> www.cloudflare.com
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
