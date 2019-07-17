@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 867866C327
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 00:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C086C34C
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 00:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730773AbfGQW0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 18:26:37 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42980 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730031AbfGQW0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 18:26:35 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DF3E714EC7274;
-        Wed, 17 Jul 2019 15:26:33 -0700 (PDT)
-Date:   Wed, 17 Jul 2019 15:26:33 -0700 (PDT)
-Message-Id: <20190717.152633.681021760422039901.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@PaulSD.com, dsahern@gmail.com
-Subject: Re: [PATCH net] ipv6: rt6_check should return NULL if 'from' is
- NULL
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190717220843.974-1-dsahern@kernel.org>
-References: <20190717220843.974-1-dsahern@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 17 Jul 2019 15:26:34 -0700 (PDT)
+        id S1729497AbfGQWwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 18:52:47 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36672 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727653AbfGQWwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jul 2019 18:52:47 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 522FFAB91;
+        Wed, 17 Jul 2019 22:52:46 +0000 (UTC)
+Date:   Thu, 18 Jul 2019 07:52:39 +0900
+From:   Benjamin Poirier <bpoirier@suse.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     gregkh@linuxfoundation.org, GR-Linux-NIC-Dev@marvell.com,
+        manishc@marvell.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] qlge: Move drivers/net/ethernet/qlogic/qlge/ to
+ drivers/staging/qlge/
+Message-ID: <20190717225239.GA12765@f1>
+References: <20190716023459.23266-1-bpoirier@suse.com>
+ <20190717.120208.205802053970227674.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190717.120208.205802053970227674.davem@davemloft.net>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Wed, 17 Jul 2019 15:08:43 -0700
-
-> From: David Ahern <dsahern@gmail.com>
+On 2019/07/17 12:02, David Miller wrote:
+> From: Benjamin Poirier <bpoirier@suse.com>
+> Date: Tue, 16 Jul 2019 11:34:59 +0900
 > 
-> Paul reported that l2tp sessions were broken after the commit referenced
-> in the Fixes tag. Prior to this commit rt6_check returned NULL if the
-> rt6_info 'from' was NULL - ie., the dst_entry was disconnected from a FIB
-> entry. Restore that behavior.
+> > The hardware has been declared EOL by the vendor more than 5 years ago.
+> > What's more relevant to the Linux kernel is that the quality of this driver
+> > is not on par with many other mainline drivers.
+> > 
+> > Cc: Manish Chopra <manishc@marvell.com>
+> > Message-id: <20190617074858.32467-1-bpoirier@suse.com>
+> > Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
 > 
-> Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
-> Reported-by: Paul Donohue <linux-kernel@PaulSD.com>
-> Tested-by: Paul Donohue <linux-kernel@PaulSD.com>
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Please resubmit this when the net-next tree opens back up.
+> 
 
-Applied and queued up for -stable, thanks.
+Sorry, I thought this was gonna go through Greg's tree. Will do.
