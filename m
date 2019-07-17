@@ -2,73 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2C5D6B45A
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 04:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA3F66B47E
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 04:26:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbfGQCLV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Jul 2019 22:11:21 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2424 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725294AbfGQCLV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jul 2019 22:11:21 -0400
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.57])
-        by Forcepoint Email with ESMTP id 78D2F484A41040BB8CD1;
-        Wed, 17 Jul 2019 10:11:19 +0800 (CST)
-Received: from dggeme715-chm.china.huawei.com (10.1.199.111) by
- DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 17 Jul 2019 10:11:19 +0800
-Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
- dggeme715-chm.china.huawei.com (10.1.199.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Wed, 17 Jul 2019 10:11:19 +0800
-Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
- dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
- Wed, 17 Jul 2019 10:11:18 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mingfangsen <mingfangsen@huawei.com>
-Subject: Re: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Thread-Topic: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Thread-Index: AdU8QlbhtubzmFNYThKSosUPU/VBFA==
-Date:   Wed, 17 Jul 2019 02:11:18 +0000
-Message-ID: <e2f6a02b54724c5bb04a4ba34100d2fd@huawei.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.184.189.20]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726466AbfGQC0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 22:26:40 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34006 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbfGQC0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 22:26:40 -0400
+Received: by mail-pf1-f194.google.com with SMTP id b13so10041204pfo.1;
+        Tue, 16 Jul 2019 19:26:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YrC43cySLmvhT7jcXqIESrh9T+esJb3VyruAtGvWklQ=;
+        b=iC5k5od51hFItFL9tL4vr8o7TW6pB/GeaSaCUilaHkVfhIiHYdfaYIhENt5DviJvq6
+         p8I7v4kU1XcVqywJRWgICyCIiGkg0Sjqwjb84mxGAb1hjHhjYF6P3ehcC96NivIrHJdB
+         mu/+fDB+XjLQJJqWyXWw8f62HVh+gFOYM71/7DaSTf5jAllW//K9glgl78VSNFscMWLz
+         b4u5Na6WflqAg71GHTXpfJGfkkXDglMJlbVurmv7Wdue4ojqiKZm5zAf22WctU6CuPuq
+         pbvxMRQepM0NpwGon8JJG0SLDyB0Yq+ZE4VdSO+k4ylmfavjTbcqnAqY+sCpyHDUY8rw
+         fFNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YrC43cySLmvhT7jcXqIESrh9T+esJb3VyruAtGvWklQ=;
+        b=YDlrA8ImcR5kbYbnaczBkLHNCxTR/mIeRZ9rYOrWzuI11DmBWBJNqXGBi8D/GeV4s0
+         naSOGorX8R7mt47hTfC3hsjZotO3kQAtkhHKoxECgWfcJCUhIjoI7a9soBG+BxSS2nRR
+         o4ocy4rt7i2dffDVtO/TPRtlXIPq2zdW0/hoLrpwsOeXhAEkERp1rPUK/k5mhy/R9G0n
+         ODMs78gu04Erq8q2qXsi/X4KirECz72VGv57zAEYMoZwN3PuFtLyp7RpdB1W3vSoO5dj
+         Qrg6bdi2g3VXZOhgSJY1YoVMBKYyhGXx6yTr4ZuzZeaEucUHimwMA57kMVmZVHAUwOBw
+         89IQ==
+X-Gm-Message-State: APjAAAW2T4SI+JSrwGU8Q90M+BHgcCngx5kxhpAOofWX5KgmH37uogD4
+        I7EG14cYkQ+MsW1usXcauSk=
+X-Google-Smtp-Source: APXvYqypKZ19FyqVMLMyasN2rkZg0ulvBbwu96S5BDCgbzkBr/fwMRO0hSjyg/FI8IeZ0NkI95m+AQ==
+X-Received: by 2002:a63:6904:: with SMTP id e4mr10262795pgc.321.1563330399256;
+        Tue, 16 Jul 2019 19:26:39 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::b82a])
+        by smtp.gmail.com with ESMTPSA id k70sm26336954pje.14.2019.07.16.19.26.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 16 Jul 2019 19:26:38 -0700 (PDT)
+Date:   Tue, 16 Jul 2019 19:26:36 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Petar Penkov <ppenkov.kernel@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, edumazet@google.com, lmb@cloudflare.com,
+        sdf@google.com, Petar Penkov <ppenkov@google.com>
+Subject: Re: [bpf-next RFC 3/6] bpf: add bpf_tcp_gen_syncookie helper
+Message-ID: <20190717022635.yt7kczxa73kbi7ep@ast-mbp.dhcp.thefacebook.com>
+References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
+ <20190716002650.154729-4-ppenkov.kernel@gmail.com>
+ <b6ef24b0-0415-c67d-5a66-21f1c2530414@gmail.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6ef24b0-0415-c67d-5a66-21f1c2530414@gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Tue, Jul 17, 2019 at 19:17:36PM +0000, Pablo wrote:
-> > On Tue, Jul 02, 2019 at 03:59:36AM +0000, Miaohe Lin wrote:
-> > When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
-> > ipv4/ipv6 packets will be dropped. Vrf device will pass through 
-> > netfilter hook twice. One with enslaved device and another one with l3 
-> > master device. So in device may dismatch witch out device because out 
-> > device is always enslaved device.So failed with the check of the 
-> > rpfilter and drop the packets by mistake.
->
-> Applied to nf.git, thanks.
+On Tue, Jul 16, 2019 at 09:59:26AM +0200, Eric Dumazet wrote:
+> 
+> 
+> On 7/16/19 2:26 AM, Petar Penkov wrote:
+> > From: Petar Penkov <ppenkov@google.com>
+> > 
+> > This helper function allows BPF programs to try to generate SYN
+> > cookies, given a reference to a listener socket. The function works
+> > from XDP and with an skb context since bpf_skc_lookup_tcp can lookup a
+> > socket in both cases.
+> > 
+> ...
+> >  
+> > +BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
+> > +	   struct tcphdr *, th, u32, th_len)
+> > +{
+> > +#ifdef CONFIG_SYN_COOKIES
+> > +	u32 cookie;
+> > +	u16 mss;
+> > +
+> > +	if (unlikely(th_len < sizeof(*th)))
+> 
+> 
+> You probably need to check that th_len == th->doff * 4
 
-Many thanks. It's really a longterm stuff. Thanks for your
-patience. Have a nice day!
++1
+that is surely necessary for safety.
 
-Best wishes.
+Considering the limitation of 5 args the api choice is good.
+struct bpf_syncookie approach doesn't look natural to me.
+And I couldn't come up with any better way to represent this helper.
+So let's go with 
+return htonl(cookie) | ((u64)mss << 32);
+My only question is why htonl ?
+
+Independently of that...
+Since we've been hitting this 5 args limit too much,
+we need to start thinking how to extend BPF ISA to pass
+args 6,7,8 on stack.
+
