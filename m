@@ -2,52 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 733106C2A8
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 23:31:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4171A6C2B4
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 23:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbfGQVbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 17:31:14 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:37116 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726917AbfGQVbO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jul 2019 17:31:14 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id DC7F65FEB1;
-        Wed, 17 Jul 2019 23:31:11 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="Y1Mag4ir";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 82B4C1D15C07;
-        Wed, 17 Jul 2019 23:31:11 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 82B4C1D15C07
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1563399071;
-        bh=OUnw6YIBPD+atbkFig4vIJnBvqEisgFqsgM6Z5l98eY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Y1Mag4irJdiDg+H+Ugm889jsCDnSwpjQPwZZAO4eDLuXhqW3+0IKK6Ai05Uwc0DNH
-         t0d7BfgDfo8hmVRKCxXcsfKr9RXhM18M76W2ixkbiTIUzyvBwIJwvY2wdWwswoCngc
-         xRq8yqJYzj7TZTTU0IL7nZWv5W9cdih+mPteJq05TDQ0cnRQTmP8X4A7y6Obm8czf2
-         jIcrW+dbP6lDPvYtqWDjFLqpzXl+WboP4NhMxurZ+Cnr0u9y+r1KJg55dxbgBzvohL
-         tnM+ZyKrYS6r50mU5fq7eYKNsVOiqAs4UZ4UD+3MIIgrYQ2l3qJ/3Q1AeTCBpY2WmR
-         JK6sRGT8OJKwg==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Wed, 17 Jul 2019 21:31:11 +0000
-Date:   Wed, 17 Jul 2019 21:31:11 +0000
-Message-ID: <20190717213111.Horde.nir2D5kAJww569fjh8BZgZm@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     netdev@vger.kernel.org
-Cc:     Russell King <rmk+kernel@arm.linux.org.uk>
-Subject: phylink: flow control on fixed-link not working.
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1727653AbfGQVkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 17:40:52 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:43703 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727205AbfGQVkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 17:40:52 -0400
+Received: by mail-ot1-f67.google.com with SMTP id j11so2470735otp.10;
+        Wed, 17 Jul 2019 14:40:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JwCY5EkX6qsSCI1zqTSmNzIVniTYPiFia3C3pkf6gXE=;
+        b=Oui+ecCfFLBBgtSmUJViQyKvDee4rnPVVVxZZq6vZZTBhBkUYkeheQyB5cyJ2EPCYn
+         qSj1BDqGkQaEN9QLj7v//zqlXqRlqKlyRZIVqhe/APlDIkuhJtPzRJEmVag7WFBte2bY
+         Lqv5BzzRxApG1McZHAYYOgj7VjMpBz2BN8wcOcaDVnbmsmjmyn4C91Jb+RFckM3bNB0v
+         Wpewsgu/++kYdMmv9vwfitUWM3BAcRxs6vvylfdizkFAPxh83jLiFf5NxZUmmFV0eLev
+         KhB1fUacbnJms/HzNNNhMFW2IC4qdnw+LqyMvknUyWl583p1OPvx6XslBLCjOMJscVQg
+         Biaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JwCY5EkX6qsSCI1zqTSmNzIVniTYPiFia3C3pkf6gXE=;
+        b=ht/nt4cMLs93eg2a0t9yCVL0jGgaSWtUbmuJ5Lqx7btzLLQ1oW6r3r/dKwtN6JPhiq
+         7NdAW3IQ41hJO1rJy4kdvEwH8BmZ6NsBU1SoMolPcoQcYpKXlM4I415lSvK4Y6o9PkNA
+         lZEk8Ig6mOOL1DrmdJrsDbs1tYQrvSaD6T9MnmocdlIK4vhtPnWdmQaoSA6WyLxEpkM/
+         DISp1XMZg2mvCOFb1YcH3fdeGu73LBeiS3EgMMVrRla7lTDRljpDcnIO9jRNfgwWBpbf
+         BzF0wh+wzuArAEeVU23a2pMGyUMc0aYA9P0djaf/1JJ0SS61e25Kyes9SaTvtT+RqFK5
+         dqeg==
+X-Gm-Message-State: APjAAAUEyPIb+/6PVwmB4ZjR4e3sRtGcsXkgG0Y9M3BdFkcEordOrR/R
+        a8tBNlVZKB/4EPpdQjj5RVhAr2ZYNz1aJAI7nx8=
+X-Google-Smtp-Source: APXvYqysf8UWPm8GTDujuPn5wVlp6jl/AWJqP+AE7CvVunAzweacnZCJdfiO11rsJ1qDVpL0VrJQKsSWa8Yqs3pHsZ4=
+X-Received: by 2002:a9d:6c46:: with SMTP id g6mr29693212otq.104.1563399650821;
+ Wed, 17 Jul 2019 14:40:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190717201925.fur57qfs2x3ha6aq@debian> <alpine.DEB.2.21.1907172238490.1778@nanos.tec.linutronix.de>
+In-Reply-To: <alpine.DEB.2.21.1907172238490.1778@nanos.tec.linutronix.de>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Wed, 17 Jul 2019 22:40:14 +0100
+Message-ID: <CADVatmO_m-NYotb9Htd7gS0d2-o0DeEWeDJ1uYKE+oj_HjoN0Q@mail.gmail.com>
+Subject: Re: regression with napi/softirq ?
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -55,44 +60,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-I am trying to enable flow control/pause on PHYLINK and fixed-link.
+On Wed, Jul 17, 2019 at 9:53 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> On Wed, 17 Jul 2019, Sudip Mukherjee wrote:
+> > I am using v4.14.55 on an Intel Atom based board and I am seeing network
+> > packet drops frequently on wireshark logs. After lots of debugging it
+> > seems that when this happens softirq is taking huge time to start after
+> > it has been raised. This is a small snippet from ftrace:
+> >
+> >            <...>-2110  [001] dNH1   466.634916: irq_handler_entry: irq=126 name=eth0-TxRx-0
+> >            <...>-2110  [001] dNH1   466.634917: softirq_raise: vec=3 [action=NET_RX]
+> >            <...>-2110  [001] dNH1   466.634918: irq_handler_exit: irq=126 ret=handled
+> >      ksoftirqd/1-15    [001] ..s.   466.635826: softirq_entry: vec=3 [action=NET_RX]
+> >      ksoftirqd/1-15    [001] ..s.   466.635852: softirq_exit: vec=3 [action=NET_RX]
+> >      ksoftirqd/1-15    [001] d.H.   466.635856: irq_handler_entry: irq=126 name=eth0-TxRx-0
+> >      ksoftirqd/1-15    [001] d.H.   466.635857: softirq_raise: vec=3 [action=NET_RX]
+> >      ksoftirqd/1-15    [001] d.H.   466.635858: irq_handler_exit: irq=126 ret=handled
+> >      ksoftirqd/1-15    [001] ..s.   466.635860: softirq_entry: vec=3 [action=NET_RX]
+> >      ksoftirqd/1-15    [001] ..s.   466.635863: softirq_exit: vec=3 [action=NET_RX]
+> >
+> > So, softirq was raised at 466.634917 but it started at 466.635826 almost
+> > 909 usec after it was raised.
+>
+> This is a situation where the network softirq decided to delegate softirq
+> processing to ksoftirqd. That happens when too much work is available while
+> processing softirqs on return from interrupt.
+>
+> That means that softirq processing happens under scheduler control. So if
+> there are other runnable tasks on the same CPU ksoftirqd can be delayed
+> until their time slice expired. As a consequence ksoftirqd might not be
+> able to catch up with the incoming packet flood and the NIC starts to drop.
 
-My setup SOC mac (mt7621) <-> RGMII <-> SWITCH mac (mt7530).
+Yes, and I see in the ftrace that there are many other userspace processes
+getting scheduled in that time.
 
-It seems that in fixed-link mode all the flow control/pause bits are  
-cleared in
-phylink_parse_fixedlink(). If I read phylink_parse_fixedlink() [0] correctly,
-I see that pl->link_config.advertising is AND with pl->supprted which has only
-the PHY_SETTING() modes bits set. pl->link_config.advertising is losing Pause
-bits. pl->link_config.advertising is used in phylink_resolve_flow() to set the
-MLO_PAUSE_RX/TX BITS.
+>
+> You can hack ksoftirq_running() to return always false to avoid this, but
+> that might cause application starvation and a huge packet buffer backlog
+> when the amount of incoming packets makes the CPU do nothing else than
+> softirq processing.
 
-I think this is an error.
-Because in phylink_start() see this part [1].
+I tried that now, it is better but still not as good as v3.8
+Now I am getting 375.9usec as the maximum time between raising the softirq
+and it starting to execute and packet drops still there.
 
-  /* Apply the link configuration to the MAC when starting. This allows
-   * a fixed-link to start with the correct parameters, and also
-   * ensures that we set the appropriate advertisement for Serdes links.
-   */
-  phylink_resolve_flow(pl, &pl->link_config);
-  phylink_mac_config(pl, &pl->link_config);
+And just a thought, do you think there should be a CONFIG_ option for
+this feature
+of ksoftirqd_running() so that it can be disabled if needed by users like us?
+
+Can you please think of anything else that might have changed which I still need
+to change to make the time comparable to v3.8..
 
 
-If I add a this hacky patch below, flow control is enabled on the fixed-link.
-         if (s) {
-                 __set_bit(s->bit, pl->supported);
-+               if (phylink_test(pl->link_config.advertising, Pause))
-+                       phylink_set(pl->supported, Pause);
-         } else {
-
-So is phylink_parse_fixedlink() broken or should it handled in a other way?
-
-Greats,
-
-René
-
-[0]:  
-https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phylink.c#L196
-[1]:  
-https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phylink.c#L897
-
+-- 
+Regards
+Sudip
