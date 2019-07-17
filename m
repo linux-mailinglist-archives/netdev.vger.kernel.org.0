@@ -2,102 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E88C56B2D5
-	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D35C76B2D7
+	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 02:28:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729521AbfGQA1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jul 2019 20:27:14 -0400
-Received: from mail-oi1-f179.google.com ([209.85.167.179]:45720 "EHLO
-        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726954AbfGQA1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:27:14 -0400
-Received: by mail-oi1-f179.google.com with SMTP id m206so17081304oib.12;
-        Tue, 16 Jul 2019 17:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EL/6M6nABk8geR3zifY0ykcSAGPgQ2Du6hrpZZL0v08=;
-        b=p3SdR+yeeUXVr/8TrpfALcVvFFbqM1x3A62KcQuN3+u1AWqMwheQSe0Bl56gSr1qyn
-         7xJdNGS5vBJ8yOmMN7xh5BP9M90sEXO9KZzFIeEmD8izph0F9djKZPeqh2dSAsw9daml
-         OiNwtzDQB4MlYATEn7PHEQpCMqVICAnC+5jQxGFbBtRtF/GW/gCkkkYmXR3Brjl/w2JM
-         x79+fZI75ae/1MOeLmpKE8BnYNegMzLOdDtFJQK2cWuVzC0bNby0D+P3zH8VeIqAJNgf
-         Cz3paVQOisFwnqI4IwhHui82O46JAPeQwlya3l2ukwdJcjkcqz617bmbVWqHJLSnH5Vc
-         elmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EL/6M6nABk8geR3zifY0ykcSAGPgQ2Du6hrpZZL0v08=;
-        b=IHg/G24cZfS3QtWyq3DRPOFz23bLn1Avqb0XTArCAy56JGpHHyPKLVcjmt/XVLJkSp
-         XmL7xTi0ZblTK/bIjnDoHPm6/Rn2I5iLVXgmp2jyZiD6piRFAM/K6kJLGKXeKkvOKHze
-         d8vv/MsKxbDgMxE1LIGeHhFow0akwtG0NSK+0UgRpC0Fq244Mp2TudFa2QziY+8vhF+W
-         GtpzIaKgTFAwXqSnXaqnTaIYrskw0Xn3LOb2R8KCl+pgtzDyA2D+O0I0GcJ3fKzrwqnD
-         dRLGJb63lIBUiwHAR/KRgHCW3tTvna3PW3euyPuYMHGgpwv4daRFV0Ra1BtIZZYjK19U
-         IoKA==
-X-Gm-Message-State: APjAAAUCJpjAkohnA1paSLGg+i1aeqB52k/bDtfVACQh4RWlNNJOZoPk
-        jDrBi6qJLNsB8DF1zcMqI5l24twNTxJMTKgq5iI=
-X-Google-Smtp-Source: APXvYqx987acpIBFyTRr/J+L8CxKwmY8lmBugyo27do20U+n/cTbhcj0zyf7cG0jMoWxA1KLzZ8ESMt1ksv8MspKLAE=
-X-Received: by 2002:aca:bf54:: with SMTP id p81mr18008053oif.1.1563323233596;
- Tue, 16 Jul 2019 17:27:13 -0700 (PDT)
+        id S2388105AbfGQA1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jul 2019 20:27:43 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:44700 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726954AbfGQA1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jul 2019 20:27:42 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6H0Nb0q083610;
+        Wed, 17 Jul 2019 00:27:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=haiAXbGn1uoplGyo70XigaV5C0JLddwoKjoJAZcoaSI=;
+ b=Jz2HLwnwN9cZitlkJ0MwelhdHsZMp9mxy/GrQ3tj0bBiHMuIj3b7OnfDjV7bcCpEEMN4
+ +Li+EgjQ5o5txvR01sa6LEEnRfBoJEFtw0EyYDY4KxXIIUPaQ1FQ77oZPORhyc+jbNnv
+ KHwCJ3ouj1KbGCqWxoachAPLTRN4JLnmYmoQbZvqSpmxdi5xZtTb2DACTwx77GrCKFa0
+ frto41P4DTDj977oYt/k1ltizG5PdjtkzjIPB1dvB8Rd9JyxcjjFvOSX2/bzhIBE2BGv
+ oJQ1aTCG6/rczUEpS4U33q5bOSEllTlDPx1oHB3kenQu6b4u5oHUZay8beHJTnvH5agf Ig== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2tq78pqf8a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Jul 2019 00:27:39 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6H0NArQ110286;
+        Wed, 17 Jul 2019 00:27:39 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2tq5bcq19w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 17 Jul 2019 00:27:39 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6H0RcZO116348;
+        Wed, 17 Jul 2019 00:27:38 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3030.oracle.com with ESMTP id 2tq5bcq19s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Jul 2019 00:27:38 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6H0RbvZ009374;
+        Wed, 17 Jul 2019 00:27:37 GMT
+Received: from [192.168.86.192] (/69.181.241.203)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 17 Jul 2019 00:27:37 +0000
+Subject: Re: [PATCH net v3 3/7] net/rds: Wait for the FRMR_IS_FREE (or
+ FRMR_IS_STALE) transition after posting IB_WR_LOCAL_INV
+To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Cc:     David Miller <davem@davemloft.net>
+References: <59304e3c-e15f-6a3b-a8d2-63de370ed847@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <7b2f5433-b289-dc4a-47f9-33df8d5b5503@oracle.com>
+Date:   Tue, 16 Jul 2019 17:27:36 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20190716002650.154729-1-ppenkov.kernel@gmail.com>
- <20190716002650.154729-4-ppenkov.kernel@gmail.com> <b6ef24b0-0415-c67d-5a66-21f1c2530414@gmail.com>
- <CACAyw9_5+3cznRspLJ2ZDcK22keLVtQQHbQOypSs4sx-F=ajow@mail.gmail.com>
-In-Reply-To: <CACAyw9_5+3cznRspLJ2ZDcK22keLVtQQHbQOypSs4sx-F=ajow@mail.gmail.com>
-From:   Petar Penkov <ppenkov.kernel@gmail.com>
-Date:   Tue, 16 Jul 2019 17:27:02 -0700
-Message-ID: <CAGdtWsRWAYPedUQQbx1d6PF9sCj6bAXhvhez74ujQYJ8syMvZA@mail.gmail.com>
-Subject: Re: [bpf-next RFC 3/6] bpf: add bpf_tcp_gen_syncookie helper
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <59304e3c-e15f-6a3b-a8d2-63de370ed847@oracle.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9320 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=844 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907170003
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for the reviews!
+On 7/16/19 3:29 PM, Gerd Rausch wrote:
+> In order to:
+> 1) avoid a silly bouncing between "clean_list" and "drop_list"
+>     triggered by function "rds_ib_reg_frmr" as it is releases frmr
+>     regions whose state is not "FRMR_IS_FREE" right away.
+> 
+> 2) prevent an invalid access error in a race from a pending
+>     "IB_WR_LOCAL_INV" operation with a teardown ("dma_unmap_sg", "put_page")
+>     and de-registration ("ib_dereg_mr") of the corresponding
+>     memory region.
+> 
+> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> ---
+Thanks for updated version.
 
-On Tue, Jul 16, 2019 at 4:56 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
->
-> On Tue, 16 Jul 2019 at 08:59, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > > +             return -EINVAL;
-> > > +
-> > > +     if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
-> > > +             return -EINVAL;
-> > > +
-> > > +     if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies)
-> > > +             return -EINVAL;
-> > > +
-> > > +     if (!th->syn || th->ack || th->fin || th->rst)
-> > > +             return -EINVAL;
-> > > +
-> > > +     switch (sk->sk_family) {
-> >
-> > This is strange, because a dual stack listener will have sk->sk_family set to AF_INET6.
-> >
-> > What really matters here is if the packet is IPv4 or IPv6.
-> >
-> > So you need to look at iph->version instead.
-> >
-> > Then look if the socket family allows this packet to be processed
-> > (For example AF_INET6 sockets might prevent IPv4 packets, see sk->sk_ipv6only )
-
-This makes a lot of sense, thanks Eric, will update!
->
-> Does this apply for (the existing) tcp_check_syn_cookie as well?
-
-I think we will probably have to update the check there, too.
->
-> --
-> Lorenz Bauer  |  Systems Engineer
-> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
->
-> www.cloudflare.com
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
