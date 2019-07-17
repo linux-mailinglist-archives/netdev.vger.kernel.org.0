@@ -2,101 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB4E6C077
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD0E6C078
 	for <lists+netdev@lfdr.de>; Wed, 17 Jul 2019 19:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387928AbfGQRgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 13:36:40 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:39582 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727357AbfGQRgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 13:36:40 -0400
-Received: by mail-io1-f67.google.com with SMTP id f4so47070373ioh.6
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 10:36:39 -0700 (PDT)
+        id S2388112AbfGQRgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 13:36:44 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:38558 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725948AbfGQRgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 13:36:43 -0400
+Received: by mail-io1-f68.google.com with SMTP id j6so14762698ioa.5
+        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 10:36:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=siSAH3elZRfbOKhNiI+jb+Cv36f2qsbbwpjf7J9k0Z4=;
-        b=1aZYwNdPO/ImAUZzkl5Oelx39YAAG3UsY8VyCKdQ4f+z+nGT5JzL90gQ6oGBc2O7x9
-         mOeq3ILuep0nwhw/duz9A2u4R2XPYqfr0ItNdVeR4wYQ5gpIRDNrlYft+NIy2MAf+K+f
-         VWME4YlmlKE92nY5Ilrgx2j+vl7a8Z6AcMtxGH2LX5T2PsEnO/6VgNtkG82NnxBjWdlz
-         +AC1w3bBayr4XOA/n9c9TdgxlC9/ZfJ8AizhGtbGvBlb84CqPs4DEiLGLmsOR0kTPpTE
-         p1D5UOPYO1FMr9tN+D8tJLXSpY4hryLg5hf8KQeDNyqXu316HcZ/FwDCZif/cNa+7ZkR
-         FPnA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=yFuQgRLCvgqVYgcCy+Uh7QQG8aoqbyuH7wC0cZg4/DQ=;
+        b=vZ1LdyWmsK7LKyCa/QyseT4myK9rFEZd68XauT+ZH8XygzNg8ulcVq3fP2sGRBqWTP
+         ETxlsAWcJaL85Q1yiyk1c+8NCe220RF1jm/5xTF5aLwajpHpjNpDeA4XYbWtDBX6cW9f
+         3AUOMm2GLlXlTK30SZRmcuaS3fx2/gXOblqc2sXfhcBk3Qkedz1JbTq5Zf8qjvUAW5fI
+         buRwPMZerleWPCaWNWuM8MQpRAHC2qyB9PY28GAltxqmco143HLMmIJMfRTQvNX/Kbvb
+         XGZ6h31p5cCBUMNnaLGAgG2mfJogSrCxcwWy/7c9xLhxRKIQwN1IHnFyTJn81mMpxkZY
+         bVtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=siSAH3elZRfbOKhNiI+jb+Cv36f2qsbbwpjf7J9k0Z4=;
-        b=gP+NO4KJrgVXvhGAvFOoTI5TgGAeNcMmDNfGSAvx8BqmOXhKyaCPIc4y9715HblqMN
-         6coQdm0U2TOL+qi5vew3qsPjjSdn4VmYXw4YGA8bzb40QptJBS5uxr4J5tAAKqgZvha5
-         8gEKYgZTeXMmKDQehNgtMqNBg8BXaesV4IuxK30+n5CUXt/slWDN64RyLz3yphwzyqvi
-         quKuEVslSKRRFaUVM2ZA/+aTVTFOFbidEke7q/hMXlz21Ff4HZIhLggnh0Z8TlL4VpAG
-         XOUG2vX8HhPjdi0BfWx4E/vZ4SYB768LJnDtQdYneNfy1OhJVykeK0b7ocUxVEmqgZnt
-         I0Sw==
-X-Gm-Message-State: APjAAAVftwdPx1QVn0MnQy7kryAQAIebISSg+9WbLdJ/FAGPzxLGYfPR
-        LqTdvYi6Xb7opCJGamgZw6o=
-X-Google-Smtp-Source: APXvYqylaT0nrKZ5HXdHZHb2/c+CBBeRlFQ+dofPh98M3tv4kxw6G6fAbr06odkQktNYoJkXTAyMwQ==
-X-Received: by 2002:a6b:4107:: with SMTP id n7mr34497593ioa.12.1563384999424;
-        Wed, 17 Jul 2019 10:36:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=yFuQgRLCvgqVYgcCy+Uh7QQG8aoqbyuH7wC0cZg4/DQ=;
+        b=cDOqZNc2qMe1/LZP7dzDjPAFQxv5iG2XglBnsQpIGAEhdsvmbiRKc3ZjY3j6zUb4YI
+         wzsCZd6V5bteCsXRAPCNdIPDkrEMRxvM4K67RimC510OuI328uuOZTi0L4zs+D+2E1eL
+         ndFdkqsGKy7rF/CourTL68SJI3rKR1TZB+9pqjm2GDXv8UQplB8ibx2I6OGNg8NUB1w3
+         na6R1aO3rYRvDmtcEk1FUPVmLlsTldx8Kh+ccCNPDqLRYTHzJixEB59uULcUfil4PArM
+         120O5IPtJT3tOfPXuuorM3BcqFK+2zNGbw1bHJzv/3bCyOE8YgigQSrqEcsXSGeGj4Y2
+         IfNw==
+X-Gm-Message-State: APjAAAUMvQX4sz6mAZtDjTcR/3joHc0wjGk52QJipL61p45EXH6BsAhB
+        uGvCHVXWuFUUHsy5SYGch0E=
+X-Google-Smtp-Source: APXvYqxVF93l3glNqKXR3q54YLWpGlxa+7Ymk55flDk8DB8AqwrFrKsRQsYFY9JLLEdrp15Wl6De0A==
+X-Received: by 2002:a6b:b556:: with SMTP id e83mr37150548iof.94.1563385002920;
+        Wed, 17 Jul 2019 10:36:42 -0700 (PDT)
 Received: from mojatatu.com ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id 20sm29052967iog.62.2019.07.17.10.36.38
+        by smtp.gmail.com with ESMTPSA id 20sm29052967iog.62.2019.07.17.10.36.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 17 Jul 2019 10:36:39 -0700 (PDT)
+        Wed, 17 Jul 2019 10:36:42 -0700 (PDT)
 From:   Roman Mashak <mrv@mojatatu.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us,
         Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next v2 0/2] Fix batched event generation for skbedit action
-Date:   Wed, 17 Jul 2019 13:36:30 -0400
-Message-Id: <1563384992-9430-1-git-send-email-mrv@mojatatu.com>
+Subject: [PATCH net-next v2 1/2] net sched: update skbedit action for batched events operations
+Date:   Wed, 17 Jul 2019 13:36:31 -0400
+Message-Id: <1563384992-9430-2-git-send-email-mrv@mojatatu.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1563384992-9430-1-git-send-email-mrv@mojatatu.com>
+References: <1563384992-9430-1-git-send-email-mrv@mojatatu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adding or deleting a batch of entries, the kernel sends up to
-TCA_ACT_MAX_PRIO (defined to 32 in kernel) entries in an event to user
-space. However it does not consider that the action sizes may vary and
-require different skb sizes.
+Add get_fill_size() routine used to calculate the action size
+when building a batch of events.
 
-For example, consider the following script adding 32 entries with all
-supported skbedit parameters (in order to maximize netlink messages size):
+Fixes: ca9b0e27e ("pkt_action: add new action skbedit")
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ net/sched/act_skbedit.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-% cat tc-batch.sh
-TC="sudo /mnt/iproute2.git/tc/tc"
-
-$TC actions flush action skbedit
-for i in `seq 1 $1`;
-do
-   cmd="action skbedit queue_mapping 2 priority 10 mark 7/0xaabbccdd ptype host inheritdsfield index $i "
-   args=$args$cmd
-done
-$TC actions add $args
-%
-% ./tc-batch.sh 32
-Error: Failed to fill netlink attributes while adding TC action.
-We have an error talking to the kernel
-%
-
-patch 1 adds callback in tc_action_ops of skbedit action, which calculates
-the action size, and passes size to tcf_add_notify()/tcf_del_notify().
-
-patch 2 updates the TDC test suite with relevant skbedit test cases.
-
-v2:
-   Added Fixes: tag
-   Added cover letter with details on the patchset
-
-Roman Mashak (2):
-  net sched: update skbedit action for batched events operations
-  tc-testing: updated skbedit action tests with batch create/delete
-
- net/sched/act_skbedit.c                            | 12 ++++++
- .../tc-testing/tc-tests/actions/skbedit.json       | 47 ++++++++++++++++++++++
- 2 files changed, 59 insertions(+)
-
+diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+index 215a06705cef..dc3c653ec45e 100644
+--- a/net/sched/act_skbedit.c
++++ b/net/sched/act_skbedit.c
+@@ -306,6 +306,17 @@ static int tcf_skbedit_search(struct net *net, struct tc_action **a, u32 index)
+ 	return tcf_idr_search(tn, a, index);
+ }
+ 
++static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
++{
++	return nla_total_size(sizeof(struct tc_skbedit))
++		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
++		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
++		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
++		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
++		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
++		+ nla_total_size_64bit(sizeof(u64)); /* TCA_SKBEDIT_FLAGS */
++}
++
+ static struct tc_action_ops act_skbedit_ops = {
+ 	.kind		=	"skbedit",
+ 	.id		=	TCA_ID_SKBEDIT,
+@@ -315,6 +326,7 @@ static struct tc_action_ops act_skbedit_ops = {
+ 	.init		=	tcf_skbedit_init,
+ 	.cleanup	=	tcf_skbedit_cleanup,
+ 	.walk		=	tcf_skbedit_walker,
++	.get_fill_size	=	tcf_skbedit_get_fill_size,
+ 	.lookup		=	tcf_skbedit_search,
+ 	.size		=	sizeof(struct tcf_skbedit),
+ };
 -- 
 2.7.4
 
