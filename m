@@ -2,54 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 281B76C4D0
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 04:10:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E579D6C4D4
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 04:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731625AbfGRCIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 22:08:17 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:43906 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727822AbfGRCIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 22:08:17 -0400
-Received: by mail-ot1-f68.google.com with SMTP id j11so3051173otp.10
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 19:08:16 -0700 (PDT)
+        id S2387497AbfGRCIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 22:08:54 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:47047 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728087AbfGRCIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 22:08:51 -0400
+Received: by mail-oi1-f196.google.com with SMTP id 65so20197001oid.13
+        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 19:08:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fredlawl-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=2mNcSjYZTDX0o1c19DbRjvyTa/HNfq/i+DQ1fyLMpb8=;
-        b=RdHlDRQe5S5oi+uNSNrU5wCY6AShBOUjqkKqq+XMXulSred1DqPs6bRNsISZgijTzc
-         T4fmwGiw086AACYsEan0gyggOa7O8eK5wQO2I3ZuQWKBM6J/XtlfzdGsnsVk/6ag4rwU
-         eHJVrjzSyYAx4GKZQWQuO6Y+/PW+SOkKR+qJ7pSfntCE/1x3P599Uz24gZclQbczvwcr
-         JGVfYbbajXJZdLPcSn3sI+fi3Sy075xdBSQGeM1O4vCVMPUxpMmfboClKrVivUUYzO3C
-         9EXyvBKWce+0nsjAnSfNGHez5tXJyX/bThpiPcj+6PsCYT4e5YFNgSqMOFjWv3ha28YL
-         8Q6A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=pYIGokAnHiTaXGPTQHk0GqCr5VmgXxhysOu7yDy4mE8=;
+        b=mTXnqU5jjT+d2PiAwqfS+oHZeBwddIfIzbgwJr5HJVj8OZu3Ejhi+A9hQAi3E1QXSB
+         p6yso+LASKDHoVMvrSZNUJW8Qr/lVybvydLGLZG3dAWCnsQe9rQVN9QPaP7cXSOOm7xG
+         WeqBJrZ7jJE0djFZh+4thTZM1/E0H6ZFc4+kAD5x48/AIdMh8SWZL9dZtCJBm9OVm3eH
+         hJBKA/kvNzNJnG5RfU9oPb10jIKyI3UyWzoAX2uJ9/ndXvbz/1w5O7at+bEgY29vT8Un
+         cx5tgXraKzGDqNnRvqxLNfVGtKJDyu6t+DvKjYCl0HBdgLrZT/IlUcw4u2gwiB4nTnZ7
+         vcMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2mNcSjYZTDX0o1c19DbRjvyTa/HNfq/i+DQ1fyLMpb8=;
-        b=X7Zip0Mia1cm1AG6zxg0K3jm6Bprg+yYYWdR2eXoV27wArZbl3yFc7PiqknovHz712
-         knvlfDlfIdlr+VlajXcuwceJRQE7x+Yq1wmJyqIi6miAOyV1xGuF52CqxpJ/pLsV2CTe
-         fanzFBDL6tMzTOoYIOmSinpf6M7ULoJe0vFMYGN0sNVSiVgug+5+r9ORynbLQZvjELEY
-         wA1OjCkX1RaA60TEI5q7QnPzxdI6Jvy3wpmEcrwq1e0T1MY7EQEoZyD6jm0FJjnGtqaj
-         aJndU/T0Br2m6MUFVelFfcIFai5Pmc2ViZOjHEhmo257nqq8WTnMC5Ky5Zh1CWDkEbT8
-         sq6Q==
-X-Gm-Message-State: APjAAAV2ouvxcQrqSmHNY/Njs4Z+WE6ev05DUJDrQIpzbNxGWn1jiA6H
-        Ioqrhjk6S27PcJPVuMNPmLM=
-X-Google-Smtp-Source: APXvYqyUNDeuG65SzIx+VkEwU+3LdqvKyg46CnObeAwb+sKQYCAp4EPr/mSodztNtlWtg2BRyPqAPg==
-X-Received: by 2002:a9d:6195:: with SMTP id g21mr34150314otk.103.1563415695901;
-        Wed, 17 Jul 2019 19:08:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=pYIGokAnHiTaXGPTQHk0GqCr5VmgXxhysOu7yDy4mE8=;
+        b=ja2DC3Q3MrdbnYCc+Ndm1Q6ULYhOpUM2Hofjf//NcD0pLoX3pzmUhf+TcGF408A4Sm
+         J4NyVGMu7mo4wAwqa/nySjZcch3HlnircS2dJvAI8mq/rkULcLbzWz24jCbzK4z7JDNs
+         /IgDQ7jZggW3Wgio3sS1nKDcQPX+owgptJ4NUskUJsl9jaLDiXxpKxm2X4Ou7NgAiloU
+         ovgQ3Y7c0rpBxntmSpoacGYC5gbmrhxaAeAEiNlnjUQtNG1MigfJ3w/+QNGB/rO0CR7h
+         pr7yuWA2IQfk0Rv9GKNufsDa3jSH2pC261vykkomnS3caTamzh1PanNW2NeU+gYh43Fc
+         5FjQ==
+X-Gm-Message-State: APjAAAWIjYTNfpv964RY1Q9jWYJcFkN7qBz805xCQxBndHU8RZB1AFxB
+        byu5dfx4b9LHTKtQKmAlXMwv0HbL1ZQYiQ==
+X-Google-Smtp-Source: APXvYqyU0Pfb/5vUCO66TmKbYlCzgLlHqd41g6a+kdgNWxNg9gHANJ35Dgn3P91SIentrM9mHXMU4w==
+X-Received: by 2002:aca:382:: with SMTP id 124mr19829874oid.80.1563415730827;
+        Wed, 17 Jul 2019 19:08:50 -0700 (PDT)
 Received: from linux.fredlawl.com ([2600:1700:18a0:11d0:18af:e893:6cb0:139a])
-        by smtp.gmail.com with ESMTPSA id w3sm9563125otb.55.2019.07.17.19.08.14
+        by smtp.gmail.com with ESMTPSA id 93sm9102146ota.77.2019.07.17.19.08.49
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 17 Jul 2019 19:08:15 -0700 (PDT)
+        Wed, 17 Jul 2019 19:08:50 -0700 (PDT)
 From:   Frederick Lawler <fred@fredlawl.com>
-To:     vishal@chelsio.com
-Cc:     Frederick Lawler <fred@fredlawl.com>, netdev@vger.kernel.org,
+To:     jeffrey.t.kirsher@intel.com
+Cc:     Frederick Lawler <fred@fredlawl.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bhelgaas@google.com
-Subject: [PATCH] cxgb4: Prefer pcie_capability_read_word()
-Date:   Wed, 17 Jul 2019 21:07:36 -0500
-Message-Id: <20190718020745.8867-1-fred@fredlawl.com>
+Subject: [PATCH] igc: Prefer pcie_capability_read_word()
+Date:   Wed, 17 Jul 2019 21:07:39 -0500
+Message-Id: <20190718020745.8867-4-fred@fredlawl.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190718020745.8867-1-fred@fredlawl.com>
+References: <20190718020745.8867-1-fred@fredlawl.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -65,68 +69,45 @@ pcie_capability_read_word() and pcie_capability_write_word().
 
 Signed-off-by: Frederick Lawler <fred@fredlawl.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 6 ++----
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c      | 9 +++------
- 2 files changed, 5 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 715e4edcf4a2..98ff71434673 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -5441,7 +5441,6 @@ static int cxgb4_iov_configure(struct pci_dev *pdev, int num_vfs)
- 		char name[IFNAMSIZ];
- 		u32 devcap2;
- 		u16 flags;
--		int pos;
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 34fa0e60a780..8e8ad07a5776 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -3891,13 +3891,11 @@ void igc_write_pci_cfg(struct igc_hw *hw, u32 reg, u16 *value)
+ s32 igc_read_pcie_cap_reg(struct igc_hw *hw, u32 reg, u16 *value)
+ {
+ 	struct igc_adapter *adapter = hw->back;
+-	u16 cap_offset;
  
- 		/* If we want to instantiate Virtual Functions, then our
- 		 * parent bridge's PCI-E needs to support Alternative Routing
-@@ -5449,9 +5448,8 @@ static int cxgb4_iov_configure(struct pci_dev *pdev, int num_vfs)
- 		 * and above.
- 		 */
- 		pbridge = pdev->bus->self;
--		pos = pci_find_capability(pbridge, PCI_CAP_ID_EXP);
--		pci_read_config_word(pbridge, pos + PCI_EXP_FLAGS, &flags);
--		pci_read_config_dword(pbridge, pos + PCI_EXP_DEVCAP2, &devcap2);
-+		pcie_capability_read_word(pbridge, PCI_EXP_FLAGS, &flags);
-+		pcie_capability_read_dword(pbridge, PCI_EXP_DEVCAP2, &devcap2);
+-	cap_offset = pci_find_capability(adapter->pdev, PCI_CAP_ID_EXP);
+-	if (!cap_offset)
++	if (!pci_is_pcie(adapter->pdev))
+ 		return -IGC_ERR_CONFIG;
  
- 		if ((flags & PCI_EXP_FLAGS_VERS) < 2 ||
- 		    !(devcap2 & PCI_EXP_DEVCAP2_ARI)) {
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index f9b70be59792..346d7b59c50b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -7267,7 +7267,6 @@ int t4_fixup_host_params(struct adapter *adap, unsigned int page_size,
- 	} else {
- 		unsigned int pack_align;
- 		unsigned int ingpad, ingpack;
--		unsigned int pcie_cap;
+-	pci_read_config_word(adapter->pdev, cap_offset + reg, value);
++	pcie_capability_read_word(adapter->pdev, reg, value);
  
- 		/* T5 introduced the separation of the Free List Padding and
- 		 * Packing Boundaries.  Thus, we can select a smaller Padding
-@@ -7292,8 +7291,7 @@ int t4_fixup_host_params(struct adapter *adap, unsigned int page_size,
- 		 * multiple of the Maximum Payload Size.
- 		 */
- 		pack_align = fl_align;
--		pcie_cap = pci_find_capability(adap->pdev, PCI_CAP_ID_EXP);
--		if (pcie_cap) {
-+		if (pci_is_pcie(adap->pdev)) {
- 			unsigned int mps, mps_log;
- 			u16 devctl;
+ 	return IGC_SUCCESS;
+ }
+@@ -3905,13 +3903,11 @@ s32 igc_read_pcie_cap_reg(struct igc_hw *hw, u32 reg, u16 *value)
+ s32 igc_write_pcie_cap_reg(struct igc_hw *hw, u32 reg, u16 *value)
+ {
+ 	struct igc_adapter *adapter = hw->back;
+-	u16 cap_offset;
  
-@@ -7301,9 +7299,8 @@ int t4_fixup_host_params(struct adapter *adap, unsigned int page_size,
- 			 * [bits 7:5] encodes sizes as powers of 2 starting at
- 			 * 128 bytes.
- 			 */
--			pci_read_config_word(adap->pdev,
--					     pcie_cap + PCI_EXP_DEVCTL,
--					     &devctl);
-+			pcie_capability_read_word(adap->pdev, PCI_EXP_DEVCTL,
-+						  &devctl);
- 			mps_log = ((devctl & PCI_EXP_DEVCTL_PAYLOAD) >> 5) + 7;
- 			mps = 1 << mps_log;
- 			if (mps > pack_align)
+-	cap_offset = pci_find_capability(adapter->pdev, PCI_CAP_ID_EXP);
+-	if (!cap_offset)
++	if (!pci_is_pcie(adapter->pdev))
+ 		return -IGC_ERR_CONFIG;
+ 
+-	pci_write_config_word(adapter->pdev, cap_offset + reg, *value);
++	pcie_capability_write_word(adapter->pdev, reg, *value);
+ 
+ 	return IGC_SUCCESS;
+ }
 -- 
 2.17.1
 
