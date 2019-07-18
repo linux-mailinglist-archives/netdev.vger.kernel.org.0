@@ -2,153 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 990B76C511
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 04:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D8356C723
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 05:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732235AbfGRCvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 22:51:47 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33684 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727851AbfGRCvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 22:51:47 -0400
-Received: by mail-pg1-f196.google.com with SMTP id f20so2900239pgj.0
-        for <netdev@vger.kernel.org>; Wed, 17 Jul 2019 19:51:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yLarAZTpweIC1BdUqX+3ijZ3HifFvejAA7UqeAP5Lhs=;
-        b=URgXerQufM7qYv3HPde0X/qEUwO02Jxo7qRR0JUssemT5LKRuGkfzKKZhhDq7CjGba
-         p3/IIrVYL0PHfWDFtX75KOma4hDD7nve2uF41j1uQNO/dOyMZziP5Cw9cHSu9YEdrlzM
-         e/oYsDmEeGthz2/3eEQ1LZUZHOm0jYUH2jyl8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yLarAZTpweIC1BdUqX+3ijZ3HifFvejAA7UqeAP5Lhs=;
-        b=o+UMSvW/GkYne+PxIDpqDVb+LpwO8GhGACLJAGb++OCvzTnwFxUtSZYf4QvSdX8fP6
-         U5/4NAdqady6OBQXKtoxvlwmjfgkvdX66PGT0uLHbsSznj5PcCvuVOj2zmejd5gOS7EG
-         M+Zm1z5YjYGoWPbUvFBlEAxK3SiWhnsP0SPZisNLQFpwqSc0NPGZMowKsm63RsdXy1yb
-         /hgvbkTGT3vVb5+9cKW/KdwVvsmR/kdzKn8JdgWqoT4QF4TRYgYCT0hjmNWRhNJDvVQv
-         HxPxmTg5aJxy8cgD181KX1r6gD9GldlqERgBOXBSNMLdOzFOMe4S6tOfokvehBauGcV1
-         ZqOA==
-X-Gm-Message-State: APjAAAX06p0a8K8WwUFRMKLD+pPyHkP2Guv+kEZhQGslV1m9goV1BPr/
-        0K0J+ElGuOBySOBlUZ+fEiY=
-X-Google-Smtp-Source: APXvYqyVRmvTk3VQ5lO6EIVaGhf6ezsSDsWJWyoFvo41QVT+B/w1MZqk60Ab8WhI1LA2VcLn+Jm9ww==
-X-Received: by 2002:a63:9e43:: with SMTP id r3mr19902707pgo.148.1563418306192;
-        Wed, 17 Jul 2019 19:51:46 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id l1sm34920564pfl.9.2019.07.17.19.51.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 17 Jul 2019 19:51:45 -0700 (PDT)
-Date:   Wed, 17 Jul 2019 22:51:43 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, kernel-team@android.com
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190718025143.GB153617@google.com>
-References: <20190710141548.132193-1-joel@joelfernandes.org>
- <20190716205455.iimn3pqpvsc3k4ry@ast-mbp.dhcp.thefacebook.com>
- <20190716213050.GA161922@google.com>
- <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
- <20190716224150.GC172157@google.com>
- <20190716235500.GA199237@google.com>
- <20190717012406.lugqemvubixfdd6v@ast-mbp.dhcp.thefacebook.com>
- <20190717130119.GA138030@google.com>
- <CAADnVQJY_=yeY0C3k1ZKpRFu5oNbB4zhQf5tQnLr=Mi8i6cgeQ@mail.gmail.com>
+        id S2391403AbfGRDVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 23:21:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49372 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391108AbfGRDVk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jul 2019 23:21:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=OLN2ssxBCi2lizosRARqkxg4FJwV5XL1VRdKvxZMwtI=; b=XSi6+rANtjY2xLgQwiZ6O3wERQ
+        xzN1g2gJSam1Xn5NKXbgewSkTIlm6vmy9E2RJoTXvfr72v7zIXRv22wTvshVIcAN4uTho5va5hFwm
+        LwIG5dmz4pclDxiZLxkBXZ+JxP0QBOzAIhKRHHiZfv6Jfqgl3ne4356s7xujBIF6Kzds=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hnwzB-0002xw-64; Thu, 18 Jul 2019 05:21:37 +0200
+Date:   Thu, 18 Jul 2019 05:21:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
+Message-ID: <20190718032137.GG6962@lunn.ch>
+References: <20190708192532.27420-1-snelson@pensando.io>
+ <20190708192532.27420-14-snelson@pensando.io>
+ <20190709022703.GB5835@lunn.ch>
+ <649f7e96-a76b-79f0-db25-d3ce57397df5@pensando.io>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAADnVQJY_=yeY0C3k1ZKpRFu5oNbB4zhQf5tQnLr=Mi8i6cgeQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <649f7e96-a76b-79f0-db25-d3ce57397df5@pensando.io>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
-
-On Wed, Jul 17, 2019 at 02:40:42PM -0700, Alexei Starovoitov wrote:
-> On Wed, Jul 17, 2019 at 6:01 AM Joel Fernandes <joel@joelfernandes.org> wrote:
-> 
-> I trimmed cc. some emails were bouncing.
-
-Ok, thanks.
-
-> > > I think allowing one tracepoint and disallowing another is pointless
-> > > from security point of view. Tracing bpf program can do bpf_probe_read
-> > > of anything.
+On Tue, Jul 09, 2019 at 03:42:39PM -0700, Shannon Nelson wrote:
+> On 7/8/19 7:27 PM, Andrew Lunn wrote:
+> >>+static int ionic_get_module_eeprom(struct net_device *netdev,
+> >>+				   struct ethtool_eeprom *ee,
+> >>+				   u8 *data)
+> >>+{
+> >>+	struct lif *lif = netdev_priv(netdev);
+> >>+	struct ionic_dev *idev = &lif->ionic->idev;
+> >>+	struct xcvr_status *xcvr;
+> >>+	u32 len;
+> >>+
+> >>+	/* copy the module bytes into data */
+> >>+	xcvr = &idev->port_info->status.xcvr;
+> >>+	len = min_t(u32, sizeof(xcvr->sprom), ee->len);
+> >>+	memcpy(data, xcvr->sprom, len);
+> >Hi Shannon
 > >
-> > I think the assumption here is the user controls the program instructions at
-> > runtime, but that's not the case. The BPF program we are loading is not
-> > dynamically generated, it is built at build time and it is loaded from a
-> > secure verified partition, so even though it can do bpf_probe_read, it is
-> > still not something that the user can change.
+> >This also looks odd. Where is the call into the firmware to get the
+> >eeprom contents? Even though it is called 'eeprom', the data is not
+> >static. It contains real time diagnostic values, temperature, transmit
+> >power, receiver power, voltages etc.
 > 
-> so you're saying that by having a set of signed bpf programs which
-> instructions are known to be non-malicious and allowed set of tracepoints
-> to attach via selinux whitelist, such setup will be safe?
-> Have you considered how mix and match will behave?
+> idev->port_info is a memory mapped space that the device keeps up-to-date.
 
-Do you mean the effect of mixing tracepoints and programs? I have not
-considered this. I am Ok with further enforcing of this (only certain
-tracepoints can be attached to certain programs) if needed. What do
-you think? We could have a new bpf(2) syscall attribute specify which
-tracepoint is expected, or similar.
+Hi Shannon
 
-I wanted to walk you through our 2 usecases we are working on:
+It at least needs a comment. How frequently does the device update
+this chunk of memory? It would be good to comment about that as
+well. Or do MMIO reads block while i2c operations occur to update the
+memory?
 
-1. timeinstate: By hooking 2 programs onto sched_switch and cpu_frequency
-tracepoints, we are able to collect CPU power per-UID (specific app). Connor
-O'Brien is working on that.
-
-2. inode to file path mapping: By hooking onto VFS tracepoints we are adding to
-the android kernels, we can collect data when the kernel resolves a file path
-to a inode/device number. A BPF map stores the inode/dev number (key) and the
-path (value). We have usecases where we need a high speed lookup of this
-without having to scan all the files in the filesystem.
-
-For the first usecase, the BPF program will be loaded and attached to the
-scheduler and cpufreq tracepoints at boot time and will stay attached
-forever.  This is why I was saying having a daemon to stay alive all the time
-is pointless. However, if since you are completely against using tracefs
-which it sounds like, then we can do a daemon that is always alive.
-
-For the second usecase, the program attach is needed on-demand unlike the
-first usecase, and then after the usecase completes, it is detached to avoid
-overhead.
-
-For the second usecase, privacy is important and we want the data to not be
-available to any process. So we want to make sure only selected processes can
-attach to that tracepoint. This is the reason why I was doing working on
-these patches which use the tracefs as well, since we get that level of
-control.
-
-As you can see, I was trying to solve the sticky tracepoint problem in
-usecase 1 and the privacy problem in usecase 2.
-
-I had some discussions today at office and we think we can use the daemon
-approach to solve both these problems as well which I think would make you
-happy as well.
-
-What do you think about all of this? Any other feedback?
-
-> > And, we are planning to make it
-> > even more secure by making it kernel verify the program at load time as well
-> > (you were on some discussions about that a few months ago).
+> >>+
+> >>+	dev_dbg(&lif->netdev->dev, "notifyblock eid=0x%llx link_status=0x%x link_speed=0x%x link_down_cnt=0x%x\n",
+> >>+		lif->info->status.eid,
+> >>+		lif->info->status.link_status,
+> >>+		lif->info->status.link_speed,
+> >>+		lif->info->status.link_down_count);
+> >>+	dev_dbg(&lif->netdev->dev, "  port_status id=0x%x status=0x%x speed=0x%x\n",
+> >>+		idev->port_info->status.id,
+> >>+		idev->port_info->status.status,
+> >>+		idev->port_info->status.speed);
+> >>+	dev_dbg(&lif->netdev->dev, "    xcvr status state=0x%x phy=0x%x pid=0x%x\n",
+> >>+		xcvr->state, xcvr->phy, xcvr->pid);
+> >>+	dev_dbg(&lif->netdev->dev, "  port_config state=0x%x speed=0x%x mtu=0x%x an_enable=0x%x fec_type=0x%x pause_type=0x%x loopback_mode=0x%x\n",
+> >>+		idev->port_info->config.state,
+> >>+		idev->port_info->config.speed,
+> >>+		idev->port_info->config.mtu,
+> >>+		idev->port_info->config.an_enable,
+> >>+		idev->port_info->config.fec_type,
+> >>+		idev->port_info->config.pause_type,
+> >>+		idev->port_info->config.loopback_mode);
+> >It is a funny place to have all the debug code.
 > 
-> It sounds like api decisions for this sticky raw_tp feature are
-> driven by security choices which are not actually secure.
-> I'm suggesting to avoid bringing up point of security as a reason for
-> this api design, since it's making the opposite effect.
+> Someone wanted a hook for getting some link info on the fly on request.
 
-Ok, that's a fair point.
+I would suggest deleting it all. Most of it is already available via
+ethtool.
 
-thanks,
-
- - Joel
-
+	Andrew
