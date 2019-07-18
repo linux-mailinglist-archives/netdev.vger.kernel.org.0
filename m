@@ -2,61 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A709E6D2B1
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 19:24:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7EC6D2B4
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 19:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728111AbfGRRX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 13:23:59 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:52569 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726715AbfGRRX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 13:23:59 -0400
-Received: by mail-wm1-f65.google.com with SMTP id s3so26365946wms.2
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 10:23:57 -0700 (PDT)
+        id S1728179AbfGRRY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 13:24:59 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46952 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726715AbfGRRY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 13:24:59 -0400
+Received: by mail-pl1-f195.google.com with SMTP id c2so14190447plz.13;
+        Thu, 18 Jul 2019 10:24:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=1l4MYfUylL3FDqrY/r6h4sLUjyKxBToZk0j1q7ZdUgI=;
-        b=uIzvSQ/IN/Ff4RTJqVNm8bHhS7VRhg+sSe33eJC/Sinau20PqWOse+nVpX63OGc9Qa
-         xXgkCzhJqMYseFG2ET4iXYnBe5MVnxcNAWs2HidGovQXhGlFWZYUvncfaY1qn3IEr+IP
-         /wHZEktdsLKRfqzfd+l7ezdhlMI7CEDLIhN/FAHnxdQXI1eklKCKoA18C/Adia1vodpc
-         m6/FQZ0FIimWdGwkqTgRHwFSaJMWo1971cZz3CF7zUN1Fmm5qiHE6AkGA3FWpRdt3g7N
-         NokfDUGf2owy6zFQ+r8gRP/16YuArz67leey9Sj5Kn6NpCjV58DSxQI/t39dPwPLiFJa
-         ycxA==
+        bh=h4KM16AJCEnawXjbC6EYg2ky3+xFcsQfPWjnU3iI0xk=;
+        b=Zhh4lzxKutlytA8K7NNmADDDdG0xx9mBlt3BF26zO854ZJaLpIbjkO1ML4r7K49gkK
+         DdZzEb0W/9sFqR/lM+cT+drxwSmZNqr5Tdm1Zc8G62BMntBbIHYgFfp4Hb7alqpkqi1R
+         NGeOKr2F+tdIBuKMHs+pN8HDa7nD16OftNQ3M82sbpyO7lKnVdqNMf3ZXAaitS7Xlv7j
+         zor9S+42FwvqwJdIRJVZ2QRpOv8cOZpdzUCWJs2BrREme0errgeX5aeeis71+/fxr3z/
+         xn8Uq8RZd7RU9VoZ1wYp33UUo2giI3zxTThjTUeB2LP9Whh378O3FwZLA0v5X8R2FrEx
+         UaaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=1l4MYfUylL3FDqrY/r6h4sLUjyKxBToZk0j1q7ZdUgI=;
-        b=DCMQkGJnCI/beT0G0owFGV/ZERQWuvjr1cUuApl6LB3NlgZxKFmrf6+gCbFT6wyY0b
-         LzD4myYIheCqK1JzbjkfSNorqW+7s63ertQxISofgYWoT0ZaWLJyozzrprtK4yctLvHE
-         qNyL3AiH9LWWRiEBY376ReIusnlBTxGI0fj5LeDC2Q88/w+FoDDikV2p6OKAuZO3Fb+l
-         Y18vzbRQs2c9dHsTl4mRD/hIGqfR9jTDFjf3naBHkZ6QMXmvs1ZOtLWpv4Iqp5eNG3ey
-         IiwlHC6p1btOr46E9pnTFuZipDovgtAHTYeVbazDZUK21ran5kobOu06DreHuUdLlJCE
-         +VjQ==
-X-Gm-Message-State: APjAAAWDhXNSTf6bTQVJwwkOFE5KTyWFhxjGbsansgJdbwAVSkLgsI7Z
-        SPwyaeAuPsdVIF6nosqZ3JOGYInA
-X-Google-Smtp-Source: APXvYqxIBETeYtBJMv0/HQJiyyMwaTLdTxk3N0H4GDGfH26O6xkQMf2/V13k3wy2T2zN12wTxDzg7Q==
-X-Received: by 2002:a1c:ca14:: with SMTP id a20mr2390655wmg.71.1563470636663;
-        Thu, 18 Jul 2019 10:23:56 -0700 (PDT)
+        bh=h4KM16AJCEnawXjbC6EYg2ky3+xFcsQfPWjnU3iI0xk=;
+        b=k0a2pnvT/Rjej6acxP30dnBX2qhPMKsh0L0IyE3hssbFQqmfViGdU3SxZnueuasgM0
+         KWkhRiyIYnaUao+94+9yhEorWE/HxJqoFVuTqyWCYhQrP4Bmmq+rRIsVpUZuxU02MELa
+         zo7a5ZVWkKEIx9vcMWgXsfdLdFh5VgAMKmeq4OI4lrvkCZsZL0hOOnpDZpYaelbbVLiw
+         qUMuTWWX1jgM4UZIzzxb1HrzoQ21DBgRYSEB2hLAQW82w9nWvXWe+rRGKp6pq8Kd1BXc
+         msoc5fCrFrP/YHm9ih6oPeqdbVqAfsp1qFzd+uj6bML1Q7HZIWrC8OGmta4G/ec4mWof
+         ejEA==
+X-Gm-Message-State: APjAAAXBpoZ23OwoUnf4tuedIvflbthZx1tXNafydB8r9STBMg/L7EeO
+        7PvS2cpjJU1b4tqfdRdzMRXKaUqn
+X-Google-Smtp-Source: APXvYqyjWLKTCj3qviedalLGbbHAMEAlV7frr1SGdUdD09LxUi1+uI691HGh0ar/taC7FVteCwwglg==
+X-Received: by 2002:a17:902:e383:: with SMTP id ch3mr51045961plb.23.1563470697565;
+        Thu, 18 Jul 2019 10:24:57 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b15sm42821888wrt.77.2019.07.18.10.23.53
+        by smtp.googlemail.com with ESMTPSA id v8sm23575502pgs.82.2019.07.18.10.24.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 18 Jul 2019 10:23:54 -0700 (PDT)
-Subject: Re: [PATCH net] be2net: Synchronize be_update_queues with
- dev_watchdog
-To:     Benjamin Poirier <bpoirier@suse.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Sathya Perla <sathya.perla@broadcom.com>,
-        Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Firo Yang <fyang@suse.com>,
-        Saeed Mahameed <saeedm@mellanox.com>, netdev@vger.kernel.org
-References: <20190718014218.16610-1-bpoirier@suse.com>
+        Thu, 18 Jul 2019 10:24:56 -0700 (PDT)
+Subject: Re: [PATCH] net: dsa: sja1105: Fix missing unlock on error in
+ sk_buff()
+To:     Wei Yongjun <weiyongjun1@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20190717062956.127446-1-weiyongjun1@huawei.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -113,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <42269a37-0353-29c8-ce13-51cb2feeb9af@gmail.com>
-Date:   Thu, 18 Jul 2019 10:23:46 -0700
+Message-ID: <fd5f3779-f28f-f5f3-c18d-76fdecb47239@gmail.com>
+Date:   Thu, 18 Jul 2019 10:24:54 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190718014218.16610-1-bpoirier@suse.com>
+In-Reply-To: <20190717062956.127446-1-weiyongjun1@huawei.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -127,17 +123,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/17/19 6:42 PM, Benjamin Poirier wrote:
-> As pointed out by Firo Yang, a netdev tx timeout may trigger just before an
-> ethtool set_channels operation is started. be_tx_timeout(), which dumps
-> some queue structures, is not written to run concurrently with
-> be_update_queues(), which frees/allocates those queues structures. Add some
-> synchronization between the two.
+On 7/16/19 11:29 PM, Wei Yongjun wrote:
+> Add the missing unlock before return from function sk_buff()
+> in the error handling case.
 > 
-> Message-id: <CH2PR18MB31898E033896F9760D36BFF288C90@CH2PR18MB3189.namprd18.prod.outlook.com>
-> Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+> Fixes: f3097be21bf1 ("net: dsa: sja1105: Add a state machine for RX timestamping")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-Would not moving the netif_tx_disable() in be_close() further up in the
-function resolve that problem as well?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
