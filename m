@@ -2,89 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8BE56D57C
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65A156D57F
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391413AbfGRTxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 15:53:04 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:43058 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727781AbfGRTxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 15:53:04 -0400
-Received: by mail-oi1-f193.google.com with SMTP id w79so22503475oif.10;
-        Thu, 18 Jul 2019 12:53:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/BAco0qTgyfJ8ndZzbhvqz94T+T1pPPU3Fqjw/cFLps=;
-        b=nW6kgwO+5AOfTm3FSkl7N9sJcwHTCEUPlrvRBDc5G3FKn1LbLB2gxabP98tb6/y72o
-         dtc0GCjblMnHKYEAf8ATrDoknCDAQ9NTFUnMXCNe5aqGRp/US3zz2Bnz9pPUYdSCPXig
-         LrZ01aFRxs50n5MBeBhgBWPGMWGabpgUHzczWiVP5FtC4Ryx8Fq+z7y9KYdeFM7e7zH+
-         tnLDTGFsYh1DJmccfxnLSdb6awxms4+S77W0IbzAZObFxNP9z8HtJMuCQwL3V5B//XYm
-         jWmyKBUof/ICQZF4UTWwVEAp/UYVsvoVUzicuq3nP1Ghl4NjQCIfR7blvqnoaubm1fcI
-         MjNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/BAco0qTgyfJ8ndZzbhvqz94T+T1pPPU3Fqjw/cFLps=;
-        b=oVGj7S5ThggeeQruWBNUdewcTu9a1MIXc3uQ/96THhZiAlsfVZJ1d7S80WIQs5k0tT
-         2yAWEVEnmR/GRFkZ3NloE9b+3Efn8ga6xB46wdvKeQYzyHdg463fb1TTW74bD4Bbz60k
-         21ixuBx+hzzAZUefuI01j5mQYhk7g8G/Cl8trFAxeJKIRpRIilbItAZ6Ubq5a22V1Vt8
-         1kLdaTa6yKagOPQLEjHF24bdbsJ1oXWbQj0CqtcHpvPhDdCL+7BZDUeBbMmGUNKvi2P+
-         Zj+TxnCih4neIJR52TJ/a7l0QN3dK9Nid+IGgEvqYze9FgjHo+ukefYnPkx0KSppeJmx
-         pciQ==
-X-Gm-Message-State: APjAAAU0TdGrC9wFo9i8LmZzCMYjfyxX8TXIn/Z057SlShzTh6njzdxh
-        twMtThvrAZTDbmFm0+fgYw6uwrYW0GLYfLOGTRs=
-X-Google-Smtp-Source: APXvYqwTBPzyPhPjB0VaBnbsiYOrGI3rkLFZrwgDaKK3LTDTHNYYlEPvOYwHkit/SyzUnkQw3nflcqZiU86SaVW9do4=
-X-Received: by 2002:aca:75c2:: with SMTP id q185mr25667268oic.103.1563479583204;
- Thu, 18 Jul 2019 12:53:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190718143428.2392-1-TheSven73@gmail.com> <1563468471.2676.36.camel@pengutronix.de>
- <CAOMZO5A_BuWMr1n_fFv4veyaXdcfjxO+9nFAgGfCrmAhNmzV5g@mail.gmail.com>
- <CAGngYiULAjXwwxmUyHxEXhv1WzSeE_wE3idOLSnD5eEaZg3xDw@mail.gmail.com> <20190718194131.GK25635@lunn.ch>
-In-Reply-To: <20190718194131.GK25635@lunn.ch>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Thu, 18 Jul 2019 15:52:52 -0400
-Message-ID: <CAGngYiWESbg6uq4pdtb5--YSzatwAwXiGnRjiAfAQj8nRYPMqw@mail.gmail.com>
-Subject: Re: [PATCH] net: fec: generate warning when using deprecated phy reset
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S2391130AbfGRTzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 15:55:47 -0400
+Received: from mga18.intel.com ([134.134.136.126]:40934 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728054AbfGRTzr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 15:55:47 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jul 2019 12:55:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,279,1559545200"; 
+   d="scan'208";a="158881593"
+Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
+  by orsmga007.jf.intel.com with ESMTP; 18 Jul 2019 12:55:46 -0700
+From:   Vedang Patel <vedang.patel@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        stephen@networkplumber.org, vinicius.gomes@intel.com,
+        leandro.maciel.dorileo@intel.com, jakub.kicinski@netronome.com,
+        m-karicheri2@ti.com, dsahern@gmail.com,
+        Vedang Patel <vedang.patel@intel.com>
+Subject: [PATCH iproute2 net-next v5 1/5] etf: Add skip_sock_check
+Date:   Thu, 18 Jul 2019 12:55:39 -0700
+Message-Id: <1563479743-8371-1-git-send-email-vedang.patel@intel.com>
+X-Mailer: git-send-email 2.7.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+ETF Qdisc currently checks for a socket with SO_TXTIME socket option. If
+either is not present, the packet is dropped. In the future commits, we
+want other Qdiscs to add packet with launchtime to the ETF Qdisc. Also,
+there are some packets (e.g. ICMP packets) which may not have a socket
+associated with them.  So, add an option to skip this check.
 
-On Thu, Jul 18, 2019 at 3:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Hi Sven
->
-> One option would be to submit a patch or a patchset changing all
-> existing device tree files to make use of the core method. Anybody
-> cut/pasting will then automatically use the correct core way of doing
-> it.
->
-> There is also a move towards using YAML to verify the correctness of
-> DT files. It should be possible to mark the old property as
-> deprecated, so there will be a build time warning, not a boot time
-> warning.
->
+Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+---
+ tc/q_etf.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-Thanks for the helpful suggestions, that makes sense.
+diff --git a/tc/q_etf.c b/tc/q_etf.c
+index 76aca476c61d..c2090589bc64 100644
+--- a/tc/q_etf.c
++++ b/tc/q_etf.c
+@@ -130,6 +130,13 @@ static int etf_parse_opt(struct qdisc_util *qu, int argc,
+ 				explain_clockid(*argv);
+ 				return -1;
+ 			}
++		} else if (strcmp(*argv, "skip_sock_check") == 0) {
++			if (opt.flags & TC_ETF_SKIP_SOCK_CHECK) {
++				fprintf(stderr, "etf: duplicate \"skip_sock_check\" specification\n");
++				return -1;
++			}
++
++			opt.flags |= TC_ETF_SKIP_SOCK_CHECK;
+ 		} else if (strcmp(*argv, "help") == 0) {
+ 			explain();
+ 			return -1;
+@@ -171,8 +178,10 @@ static int etf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	print_uint(PRINT_ANY, "delta", "delta %d ", qopt->delta);
+ 	print_string(PRINT_ANY, "offload", "offload %s ",
+ 				(qopt->flags & TC_ETF_OFFLOAD_ON) ? "on" : "off");
+-	print_string(PRINT_ANY, "deadline_mode", "deadline_mode %s",
++	print_string(PRINT_ANY, "deadline_mode", "deadline_mode %s ",
+ 				(qopt->flags & TC_ETF_DEADLINE_MODE_ON) ? "on" : "off");
++	print_string(PRINT_ANY, "skip_sock_check", "skip_sock_check %s",
++				(qopt->flags & TC_ETF_SKIP_SOCK_CHECK) ? "on" : "off");
+ 
+ 	return 0;
+ }
+-- 
+2.7.3
 
-What I keep forgetting in my little arm-imx6 world, is that devicetrees
-aren't in-kernel apis, but that they have out-of-kernel
-dependencies. It makes more sense to to see them as userspace
-apis, albeit directed at firmware/bootloaders, right?
-
-So if bootloaders were as varied/uncontrollable as userspace,
-then deprecated properties would have to be supported forever...
