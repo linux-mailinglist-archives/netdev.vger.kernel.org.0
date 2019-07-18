@@ -2,419 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2D46D360
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 20:00:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E0C46D36D
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 20:04:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390941AbfGRR7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 13:59:44 -0400
-Received: from mail.us.es ([193.147.175.20]:57272 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390901AbfGRR7n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 13:59:43 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DA619BEBAE
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 19:59:40 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C6CD6115108
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 19:59:40 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BBF35115101; Thu, 18 Jul 2019 19:59:40 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 37958DA704;
-        Thu, 18 Jul 2019 19:59:38 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 18 Jul 2019 19:59:38 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id EADFE4265A2F;
-        Thu, 18 Jul 2019 19:59:37 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        jakub.kicinski@netronome.com, pshelar@ovn.org
-Subject: [PATCH net,v4 4/4] net: flow_offload: add flow_block structure and use it
-Date:   Thu, 18 Jul 2019 19:59:31 +0200
-Message-Id: <20190718175931.13529-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190718175931.13529-1-pablo@netfilter.org>
-References: <20190718175931.13529-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2390368AbfGRSER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 14:04:17 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46951 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387815AbfGRSER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 14:04:17 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h21so28127138qtn.13;
+        Thu, 18 Jul 2019 11:04:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BMtI8iXYEKCct6oAZQbFTWHKTZ52NdcALBMk5wfK+Vw=;
+        b=BdXW20e1NUqfhj2zipibqlMgnLAa0/jqdkuchP70Mng1/pfvcC0CI0cn3S8cf0H7eO
+         oWpWC360agDTsn8GKNGDxvULX0kVlJo3JmdwjxD8jFPHNB2UIPCkyc+TI5jzi7mXzknm
+         +peHXAotjkl6O8e7WrWFjhmVp02LVXqHr86040FRwwmRwIQ0pSw3ZbGuu+GVXSZzE2Mx
+         9SOu6u/rpKxikUzmqb4MMJH+vsdHZRn7IZIPzz4Ivp7MdVxapjibdurtW/K0ziih0whM
+         OOsnelyI4Yr/QVO+SfuXVQsOYL4H4BRT5/ETCONww1UdvW/zZTTLt/MyudASuml5MQLy
+         1tyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BMtI8iXYEKCct6oAZQbFTWHKTZ52NdcALBMk5wfK+Vw=;
+        b=fMybSZqqEy6fT7N8jJImhJq2MRwZk9TmSzomYY9dVHzT1m2yJF54/bI4ZDbB9JRCYU
+         RVG3rZl4qMbbbu1aRD4RTksPEesO/aIsazrWnOfQw6pyBL6cY/N1IpQFOAyadRL6CgBf
+         uJTmpNQS0Q3bPhkcwmhU3xvmvJEQsY0p6Q32Wly7hwpfGJ22m3CP7ftXVKrTYC6qrOlc
+         k7c4Zf4dVSfgsjs8BQFYnhdEGm23B1I2Gkqoot1JFzmJ0PBEkz2ykTklF0+TiixwuWtt
+         t2AK6jkOz3Uv9FlxsKDm517ZQaDNY0PRjgEbToePSwfaX7LmnnSfNioQoAb7r77FYUY5
+         uvVQ==
+X-Gm-Message-State: APjAAAVpC7Iq1L0szLG9uOngquTEdD6AgWqTpNbSw+NxRdmXbggbSoyb
+        XwjJbLGXcsvetepwbkdK+jWdE6adgOFpFlzrgLo=
+X-Google-Smtp-Source: APXvYqxMesmkfDSiANsDzpbJqGJtgA19KN51Zr2fHQgUIequjcyeJV2n0P0IBMUFMSID5U4zffNo8y3ns9FcIVjXoyY=
+X-Received: by 2002:ac8:6601:: with SMTP id c1mr31175305qtp.93.1563473055984;
+ Thu, 18 Jul 2019 11:04:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190718172513.2394157-1-andriin@fb.com> <20190718175533.GG2093@redhat.com>
+In-Reply-To: <20190718175533.GG2093@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 18 Jul 2019 11:04:04 -0700
+Message-ID: <CAEf4BzaPySx-hBwD5Lxo1tD7F_8ejA9qFjC0-ag56cakweqcbA@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix missing __WORDSIZE definition
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This object stores the flow block callbacks that are attached to this
-block. Update flow_block_cb_lookup() to take this new object.
+On Thu, Jul 18, 2019 at 10:55 AM Arnaldo Carvalho de Melo
+<arnaldo.melo@gmail.com> wrote:
+>
+> Em Thu, Jul 18, 2019 at 10:25:13AM -0700, Andrii Nakryiko escreveu:
+> > hashmap.h depends on __WORDSIZE being defined. It is defined by
+> > glibc/musl in different headers. It's an explicit goal for musl to be
+> > "non-detectable" at compilation time, so instead include glibc header if
+> > glibc is explicitly detected and fall back to musl header otherwise.
+> >
+> > Fixes: e3b924224028 ("libbpf: add resizable non-thread safe internal hashmap")
+> > Reported-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> I fixed this here differently, as below, I didn't send it because I'm still
+> testing it, so far, with a few other fixes and cherry-picking "libbpf: fix ptr
+> to u64 conversion warning on 32-bit platforms" that is still in the bpf tree
+> and is needed for the cross build containers in my suite that are 32-bit, I
+> have the results below, this builds perf + libbpf (where elfutils is available,
+> which is in most cases, except the uCLibc containers due to missing argp-devel),
+> with gcc and with clang:
+>
+> [perfbuilder@quaco linux-perf-tools-build]$ export PERF_TARBALL=http://192.168.124.1/perf/perf-5.2.0.tar.xz
+> [perfbuilder@quaco linux-perf-tools-build]$ time dm
+>    1 alpine:3.4                    : Ok   gcc (Alpine 5.3.0) 5.3.0, clang version 3.8.0 (tags/RELEASE_380/final)
+>    2 alpine:3.5                    : Ok   gcc (Alpine 6.2.1) 6.2.1 20160822, clang version 3.8.1 (tags/RELEASE_381/final)
+>    3 alpine:3.6                    : Ok   gcc (Alpine 6.3.0) 6.3.0, clang version 4.0.0 (tags/RELEASE_400/final)
+>    4 alpine:3.7                    : Ok   gcc (Alpine 6.4.0) 6.4.0, Alpine clang version 5.0.0 (tags/RELEASE_500/final) (based on LLVM 5.0.0)
+>    5 alpine:3.8                    : Ok   gcc (Alpine 6.4.0) 6.4.0, Alpine clang version 5.0.1 (tags/RELEASE_501/final) (based on LLVM 5.0.1)
+>    6 alpine:3.9                    : Ok   gcc (Alpine 8.3.0) 8.3.0, Alpine clang version 5.0.1 (tags/RELEASE_502/final) (based on LLVM 5.0.1)
+>    7 alpine:3.10                   : Ok   gcc (Alpine 8.3.0) 8.3.0, Alpine clang version 8.0.0 (tags/RELEASE_800/final) (based on LLVM 8.0.0)
+>    8 alpine:edge                   : Ok   gcc (Alpine 8.3.0) 8.3.0, Alpine clang version 7.0.1 (tags/RELEASE_701/final) (based on LLVM 7.0.1)
+>    9 amazonlinux:1                 : Ok   gcc (GCC) 7.2.1 20170915 (Red Hat 7.2.1-2), clang version 3.6.2 (tags/RELEASE_362/final)
+>   10 amazonlinux:2                 : Ok   gcc (GCC) 7.3.1 20180303 (Red Hat 7.3.1-5), clang version 7.0.1 (Amazon Linux 2 7.0.1-1.amzn2.0.2)
+>   11 android-ndk:r12b-arm          : Ok   arm-linux-androideabi-gcc (GCC) 4.9.x 20150123 (prerelease)
+>   12 android-ndk:r15c-arm          : Ok   arm-linux-androideabi-gcc (GCC) 4.9.x 20150123 (prerelease)
+>   13 centos:5                      : Ok   gcc (GCC) 4.1.2 20080704 (Red Hat 4.1.2-55)
+>   14 centos:6                      : Ok   gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-23)
+>   15 centos:7                      : Ok   gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36), clang version 3.4.2 (tags/RELEASE_34/dot2-final)
+>   16 clearlinux:latest             : Ok   gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190628 gcc-9-branch@272773, clang version 8.0.0 (tags/RELEASE_800/final)
+>   17 debian:8                      : Ok   gcc (Debian 4.9.2-10+deb8u2) 4.9.2, Debian clang version 3.5.0-10 (tags/RELEASE_350/final) (based on LLVM 3.5.0)
+>   18 debian:9                      : Ok   gcc (Debian 6.3.0-18+deb9u1) 6.3.0 20170516, clang version 3.8.1-24 (tags/RELEASE_381/final)
+>   19 debian:10                     : Ok   gcc (Debian 8.3.0-6) 8.3.0, clang version 7.0.1-8 (tags/RELEASE_701/final)
+>   20 debian:experimental           : Ok   gcc (Debian 8.3.0-19) 8.3.0, clang version 7.0.1-8 (tags/RELEASE_701/final)
+>   21 debian:experimental-x-arm64   : Ok   aarch64-linux-gnu-gcc (Debian 8.3.0-19) 8.3.0
+>   22 debian:experimental-x-mips    : Ok   mips-linux-gnu-gcc (Debian 8.3.0-19) 8.3.0
+>   23 debian:experimental-x-mips64  : Ok   mips64-linux-gnuabi64-gcc (Debian 8.3.0-7) 8.3.0
+>   24 debian:experimental-x-mipsel  : Ok   mipsel-linux-gnu-gcc (Debian 8.3.0-19) 8.3.0
+>   25 fedora:20                     : Ok   gcc (GCC) 4.8.3 20140911 (Red Hat 4.8.3-7), clang version 3.4.2 (tags/RELEASE_34/dot2-final)
+>   26 fedora:22                     : Ok   gcc (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6), clang version 3.5.0 (tags/RELEASE_350/final)
+>   27 fedora:23                     : Ok   gcc (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6), clang version 3.7.0 (tags/RELEASE_370/final)
+>   28 fedora:24                     : Ok   gcc (GCC) 6.3.1 20161221 (Red Hat 6.3.1-1), clang version 3.8.1 (tags/RELEASE_381/final)
+>   29 fedora:24-x-ARC-uClibc        : Ok   arc-linux-gcc (ARCompact ISA Linux uClibc toolchain 2017.09-rc2) 7.1.1 20170710
+>
+> I've pushed it to a tmp.perf/core branch in my
+> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tree, that has
+> these:
+>
+> d5e1f2d60d41 (HEAD -> perf/core, acme.korg/tmp.perf/core) libbpf: fix ptr to u64 conversion warning on 32-bit platforms
+> 7c08fd16f917 tools lib bpf: Avoid designated initializers for unnamed union members
+> 4c9f83c95ad6 tools lib bpf: Avoid using 'link' as it shadows a global definition in some systems
+> bdb07df4a0ad tools lib bpf: Fix endianness macro usage for some compilers
+> 66dbf3caff52 tools lib bpf: Replace __WORDSIZE with BITS_PER_LONG to build on the musl libc
+>
+> Please take a look and check if everything is fine on your side. The HEAD I'll
+> remove if Daniel thinks it should wait that landing via the BPF tree, I just put it
+> there for the test builds.
+>
+> commit 66dbf3caff52be0d004bcb9ac4cea4c19eb75dfc
+> Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+> Date:   Thu Jul 18 09:46:28 2019 -0300
+>
+>     tools lib bpf: Replace __WORDSIZE with BITS_PER_LONG to build on the musl libc
+>
+>     BITS_PER_LONG is more generally available and equivalent to __WORDSIZE,
+>     so use it instead to keep it building in systems using the mustl libc
+>     where __WORDSIZE is in a different place than in glibc.
+>
+>     And do this by explicitely adding the header where this definition is
+>     (asm/bitsperlong.h) instead of getting it indirectly.
+>
+>     Cc: Adrian Hunter <adrian.hunter@intel.com>
+>     Cc: Alexei Starovoitov <ast@kernel.org>
+>     Cc: Andrii Nakryiko <andriin@fb.com>
+>     Cc: Jiri Olsa <jolsa@kernel.org>
+>     Cc: Namhyung Kim <namhyung@kernel.org>
+>     Fixes: e3b924224028 ("libbpf: add resizable non-thread safe internal hashmap")
+>     Link: https://lkml.kernel.org/n/tip-61vydgldzmmz5w2mf6rv3ryl@git.kernel.org
+>     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+>
+> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+> index 03748a742146..f1f37b574d9c 100644
+> --- a/tools/lib/bpf/hashmap.h
+> +++ b/tools/lib/bpf/hashmap.h
+> @@ -10,12 +10,13 @@
+>
+>  #include <stdbool.h>
+>  #include <stddef.h>
+> +#include <asm/bitsperlong.h>
 
-This patch restores the block sharing feature.
+Relying on this header is problematic when syncing libbpf into Github
+mirror. There we'll need to re-implement it anyway, and again,
+probably through __WORDSIZE or some other tricks. So if we can do away
+without kernel specific header that would be great.
 
-Fixes: da3eeb904ff4 ("net: flow_offload: add list handling functions")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v3: add flow_block_init() - Jiri Pirko.
-    rename flow/flow_block/ - Jiri Pirko.
-    fix documentation in nft_stats - Jiri Pirko.
-    update flow_block_cb_lookup() argument to take flow_block
-    and adapt callers - Jiri Pirko.
-v4: no changes.
-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c    |  2 +-
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c      |  8 +++++---
- drivers/net/ethernet/mscc/ocelot_flower.c           |  8 ++++----
- drivers/net/ethernet/mscc/ocelot_tc.c               |  2 +-
- drivers/net/ethernet/netronome/nfp/flower/offload.c |  5 +++--
- include/net/flow_offload.h                          | 12 +++++++++++-
- include/net/netfilter/nf_tables.h                   |  5 +++--
- include/net/sch_generic.h                           |  2 +-
- net/core/flow_offload.c                             |  6 +++---
- net/dsa/slave.c                                     |  2 +-
- net/netfilter/nf_tables_api.c                       |  2 +-
- net/netfilter/nf_tables_offload.c                   |  5 +++--
- net/sched/cls_api.c                                 | 10 +++++++---
- 13 files changed, 44 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 2162412073c5..7f747cb1a4f4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -752,7 +752,7 @@ mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
- 		if (!indr_priv)
- 			return -ENOENT;
- 
--		block_cb = flow_block_cb_lookup(f,
-+		block_cb = flow_block_cb_lookup(f->block,
- 						mlx5e_rep_indr_setup_block_cb,
- 						indr_priv);
- 		if (!block_cb)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 51cd0b6f1f3e..650638152bbc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1604,7 +1604,8 @@ mlxsw_sp_setup_tc_block_flower_bind(struct mlxsw_sp_port *mlxsw_sp_port,
- 	bool register_block = false;
- 	int err;
- 
--	block_cb = flow_block_cb_lookup(f, mlxsw_sp_setup_tc_block_cb_flower,
-+	block_cb = flow_block_cb_lookup(f->block,
-+					mlxsw_sp_setup_tc_block_cb_flower,
- 					mlxsw_sp);
- 	if (!block_cb) {
- 		acl_block = mlxsw_sp_acl_block_create(mlxsw_sp, f->net);
-@@ -1656,7 +1657,8 @@ mlxsw_sp_setup_tc_block_flower_unbind(struct mlxsw_sp_port *mlxsw_sp_port,
- 	struct flow_block_cb *block_cb;
- 	int err;
- 
--	block_cb = flow_block_cb_lookup(f, mlxsw_sp_setup_tc_block_cb_flower,
-+	block_cb = flow_block_cb_lookup(f->block,
-+					mlxsw_sp_setup_tc_block_cb_flower,
- 					mlxsw_sp);
- 	if (!block_cb)
- 		return;
-@@ -1717,7 +1719,7 @@ static int mlxsw_sp_setup_tc_block(struct mlxsw_sp_port *mlxsw_sp_port,
- 	case FLOW_BLOCK_UNBIND:
- 		mlxsw_sp_setup_tc_block_flower_unbind(mlxsw_sp_port,
- 						      f, ingress);
--		block_cb = flow_block_cb_lookup(f, cb, mlxsw_sp_port);
-+		block_cb = flow_block_cb_lookup(f->block, cb, mlxsw_sp_port);
- 		if (!block_cb)
- 			return -ENOENT;
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 6a11aea8b186..59487d446a09 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -316,8 +316,8 @@ int ocelot_setup_tc_block_flower_bind(struct ocelot_port *port,
- 	if (f->binder_type == FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS)
- 		return -EOPNOTSUPP;
- 
--	block_cb = flow_block_cb_lookup(f, ocelot_setup_tc_block_cb_flower,
--					port);
-+	block_cb = flow_block_cb_lookup(f->block,
-+					ocelot_setup_tc_block_cb_flower, port);
- 	if (!block_cb) {
- 		port_block = ocelot_port_block_create(port);
- 		if (!port_block)
-@@ -350,8 +350,8 @@ void ocelot_setup_tc_block_flower_unbind(struct ocelot_port *port,
- {
- 	struct flow_block_cb *block_cb;
- 
--	block_cb = flow_block_cb_lookup(f, ocelot_setup_tc_block_cb_flower,
--					port);
-+	block_cb = flow_block_cb_lookup(f->block,
-+					ocelot_setup_tc_block_cb_flower, port);
- 	if (!block_cb)
- 		return;
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
-index fba9512e9ca6..16a6db71ca5e 100644
---- a/drivers/net/ethernet/mscc/ocelot_tc.c
-+++ b/drivers/net/ethernet/mscc/ocelot_tc.c
-@@ -169,7 +169,7 @@ static int ocelot_setup_tc_block(struct ocelot_port *port,
- 		list_add_tail(&block_cb->driver_list, f->driver_block_list);
- 		return 0;
- 	case FLOW_BLOCK_UNBIND:
--		block_cb = flow_block_cb_lookup(f, cb, port);
-+		block_cb = flow_block_cb_lookup(f->block, cb, port);
- 		if (!block_cb)
- 			return -ENOENT;
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 93ab0db6c504..e209f150c5f2 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1327,7 +1327,8 @@ static int nfp_flower_setup_tc_block(struct net_device *netdev,
- 		list_add_tail(&block_cb->driver_list, &nfp_block_cb_list);
- 		return 0;
- 	case FLOW_BLOCK_UNBIND:
--		block_cb = flow_block_cb_lookup(f, nfp_flower_setup_tc_block_cb,
-+		block_cb = flow_block_cb_lookup(f->block,
-+						nfp_flower_setup_tc_block_cb,
- 						repr);
- 		if (!block_cb)
- 			return -ENOENT;
-@@ -1440,7 +1441,7 @@ nfp_flower_setup_indr_tc_block(struct net_device *netdev, struct nfp_app *app,
- 		if (!cb_priv)
- 			return -ENOENT;
- 
--		block_cb = flow_block_cb_lookup(f,
-+		block_cb = flow_block_cb_lookup(f->block,
- 						nfp_flower_setup_indr_block_cb,
- 						cb_priv);
- 		if (!block_cb)
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 98bf3af5c84d..2b555ba78a02 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -248,6 +248,10 @@ enum flow_block_binder_type {
- 	FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS,
- };
- 
-+struct flow_block {
-+	struct list_head cb_list;
-+};
-+
- struct netlink_ext_ack;
- 
- struct flow_block_offload {
-@@ -255,6 +259,7 @@ struct flow_block_offload {
- 	enum flow_block_binder_type binder_type;
- 	bool block_shared;
- 	struct net *net;
-+	struct flow_block *block;
- 	struct list_head cb_list;
- 	struct list_head *driver_block_list;
- 	struct netlink_ext_ack *extack;
-@@ -279,7 +284,7 @@ struct flow_block_cb *flow_block_cb_alloc(flow_setup_cb_t *cb,
- 					  void (*release)(void *cb_priv));
- void flow_block_cb_free(struct flow_block_cb *block_cb);
- 
--struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *offload,
-+struct flow_block_cb *flow_block_cb_lookup(struct flow_block *block,
- 					   flow_setup_cb_t *cb, void *cb_ident);
- 
- void *flow_block_cb_priv(struct flow_block_cb *block_cb);
-@@ -336,4 +341,9 @@ flow_cls_offload_flow_rule(struct flow_cls_offload *flow_cmd)
- 	return flow_cmd->rule;
- }
- 
-+static inline void flow_block_init(struct flow_block *flow_block)
-+{
-+	INIT_LIST_HEAD(&flow_block->cb_list);
-+}
-+
- #endif /* _NET_FLOW_OFFLOAD_H */
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 35dfdd9f69b3..9b624566b82d 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -11,6 +11,7 @@
- #include <linux/rhashtable.h>
- #include <net/netfilter/nf_flow_table.h>
- #include <net/netlink.h>
-+#include <net/flow_offload.h>
- 
- struct module;
- 
-@@ -951,7 +952,7 @@ struct nft_stats {
-  *	@stats: per-cpu chain stats
-  *	@chain: the chain
-  *	@dev_name: device name that this base chain is attached to (if any)
-- *	@cb_list: list of flow block callbacks (for hardware offload)
-+ *	@flow_block: flow block (for hardware offload)
-  */
- struct nft_base_chain {
- 	struct nf_hook_ops		ops;
-@@ -961,7 +962,7 @@ struct nft_base_chain {
- 	struct nft_stats __percpu	*stats;
- 	struct nft_chain		chain;
- 	char 				dev_name[IFNAMSIZ];
--	struct list_head		cb_list;
-+	struct flow_block		flow_block;
- };
- 
- static inline struct nft_base_chain *nft_base_chain(const struct nft_chain *chain)
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 9482e060483b..6b6b01234dd9 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -399,7 +399,7 @@ struct tcf_block {
- 	refcount_t refcnt;
- 	struct net *net;
- 	struct Qdisc *q;
--	struct list_head cb_list;
-+	struct flow_block flow_block;
- 	struct list_head owner_list;
- 	bool keep_dst;
- 	unsigned int offloadcnt; /* Number of oddloaded filters */
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index a800fa78d96c..d63b970784dc 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -193,12 +193,12 @@ void flow_block_cb_free(struct flow_block_cb *block_cb)
- }
- EXPORT_SYMBOL(flow_block_cb_free);
- 
--struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *f,
-+struct flow_block_cb *flow_block_cb_lookup(struct flow_block *block,
- 					   flow_setup_cb_t *cb, void *cb_ident)
- {
- 	struct flow_block_cb *block_cb;
- 
--	list_for_each_entry(block_cb, f->driver_block_list, driver_list) {
-+	list_for_each_entry(block_cb, &block->cb_list, list) {
- 		if (block_cb->cb == cb &&
- 		    block_cb->cb_ident == cb_ident)
- 			return block_cb;
-@@ -268,7 +268,7 @@ int flow_block_cb_setup_simple(struct flow_block_offload *f,
- 		list_add_tail(&block_cb->driver_list, driver_block_list);
- 		return 0;
- 	case FLOW_BLOCK_UNBIND:
--		block_cb = flow_block_cb_lookup(f, cb, cb_ident);
-+		block_cb = flow_block_cb_lookup(f->block, cb, cb_ident);
- 		if (!block_cb)
- 			return -ENOENT;
- 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index d697a64fb564..33f41178afcc 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -975,7 +975,7 @@ static int dsa_slave_setup_tc_block(struct net_device *dev,
- 		list_add_tail(&block_cb->driver_list, &dsa_slave_block_cb_list);
- 		return 0;
- 	case FLOW_BLOCK_UNBIND:
--		block_cb = flow_block_cb_lookup(f, cb, dev);
-+		block_cb = flow_block_cb_lookup(f->block, cb, dev);
- 		if (!block_cb)
- 			return -ENOENT;
- 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 014e06b0b5cf..605a7cfe7ca7 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -1662,7 +1662,7 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
- 
- 		chain->flags |= NFT_BASE_CHAIN | flags;
- 		basechain->policy = NF_ACCEPT;
--		INIT_LIST_HEAD(&basechain->cb_list);
-+		flow_block_init(&basechain->flow_block);
- 	} else {
- 		chain = kzalloc(sizeof(*chain), GFP_KERNEL);
- 		if (chain == NULL)
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 2c3302845f67..64f5fd5f240e 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -116,7 +116,7 @@ static int nft_setup_cb_call(struct nft_base_chain *basechain,
- 	struct flow_block_cb *block_cb;
- 	int err;
- 
--	list_for_each_entry(block_cb, &basechain->cb_list, list) {
-+	list_for_each_entry(block_cb, &basechain->flow_block.cb_list, list) {
- 		err = block_cb->cb(type, type_data, block_cb->cb_priv);
- 		if (err < 0)
- 			return err;
-@@ -154,7 +154,7 @@ static int nft_flow_offload_rule(struct nft_trans *trans,
- static int nft_flow_offload_bind(struct flow_block_offload *bo,
- 				 struct nft_base_chain *basechain)
- {
--	list_splice(&bo->cb_list, &basechain->cb_list);
-+	list_splice(&bo->cb_list, &basechain->flow_block.cb_list);
- 	return 0;
- }
- 
-@@ -198,6 +198,7 @@ static int nft_flow_offload_chain(struct nft_trans *trans,
- 		return -EOPNOTSUPP;
- 
- 	bo.command = cmd;
-+	bo.block = &basechain->flow_block;
- 	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
- 	bo.extack = &extack;
- 	INIT_LIST_HEAD(&bo.cb_list);
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 78f0f2815b8c..15796fd47fda 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -691,6 +691,8 @@ static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
- 	if (!indr_dev->block)
- 		return;
- 
-+	bo.block = &indr_dev->block->flow_block;
-+
- 	indr_block_cb->cb(indr_dev->dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
- 			  &bo);
- 	tcf_block_setup(indr_dev->block, &bo);
-@@ -775,6 +777,7 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
- 		.command	= command,
- 		.binder_type	= ei->binder_type,
- 		.net		= dev_net(dev),
-+		.block		= &block->flow_block,
- 		.block_shared	= tcf_block_shared(block),
- 		.extack		= extack,
- 	};
-@@ -810,6 +813,7 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
- 	bo.net = dev_net(dev);
- 	bo.command = command;
- 	bo.binder_type = ei->binder_type;
-+	bo.block = &block->flow_block;
- 	bo.block_shared = tcf_block_shared(block);
- 	bo.extack = extack;
- 	INIT_LIST_HEAD(&bo.cb_list);
-@@ -987,8 +991,8 @@ static struct tcf_block *tcf_block_create(struct net *net, struct Qdisc *q,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 	mutex_init(&block->lock);
-+	flow_block_init(&block->flow_block);
- 	INIT_LIST_HEAD(&block->chain_list);
--	INIT_LIST_HEAD(&block->cb_list);
- 	INIT_LIST_HEAD(&block->owner_list);
- 	INIT_LIST_HEAD(&block->chain0.filter_chain_list);
- 
-@@ -1570,7 +1574,7 @@ static int tcf_block_bind(struct tcf_block *block,
- 
- 		i++;
- 	}
--	list_splice(&bo->cb_list, &block->cb_list);
-+	list_splice(&bo->cb_list, &block->flow_block.cb_list);
- 
- 	return 0;
- 
-@@ -3156,7 +3160,7 @@ int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
- 	if (block->nooffloaddevcnt && err_stop)
- 		return -EOPNOTSUPP;
- 
--	list_for_each_entry(block_cb, &block->cb_list, list) {
-+	list_for_each_entry(block_cb, &block->flow_block.cb_list, list) {
- 		err = block_cb->cb(type, type_data, block_cb->cb_priv);
- 		if (err) {
- 			if (err_stop)
--- 
-2.11.0
-
+>  #include "libbpf_internal.h"
+>
+>  static inline size_t hash_bits(size_t h, int bits)
+>  {
+>         /* shuffle bits and return requested number of upper bits */
+> -       return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
+> +       return (h * 11400714819323198485llu) >> (BITS_PER_LONG - bits);
+>  }
+>
+>  typedef size_t (*hashmap_hash_fn)(const void *key, void *ctx);
