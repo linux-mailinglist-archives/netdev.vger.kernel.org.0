@@ -2,239 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B61986D3D7
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 20:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6A06D3DC
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 20:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390864AbfGRS0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 14:26:15 -0400
-Received: from mail.us.es ([193.147.175.20]:38564 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727780AbfGRS0P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 14:26:15 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 4BD2EB5AB0
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 20:26:12 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3C6DA91F4
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 20:26:12 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 316DF115107; Thu, 18 Jul 2019 20:26:12 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8692FDA704;
-        Thu, 18 Jul 2019 20:26:09 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 18 Jul 2019 20:26:09 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 53B7A4265A31;
-        Thu, 18 Jul 2019 20:26:09 +0200 (CEST)
-Date:   Thu, 18 Jul 2019 20:26:08 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     yangxingwu <xingwu.yang@gmail.com>
-Cc:     wensong@linux-vs.org, horms@verge.net.au, ja@ssi.bg,
-        kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel@vger.kernel.org, joe@perches.com
-Subject: Re: [PATCH v2] net/netfilter: remove unnecessary spaces
-Message-ID: <20190718182608.apjgz5xbpsyvxfp6@salvia>
-References: <20190715082747.fdlpvekbqyhwx724@salvia>
- <20190716021301.27753-1-xingwu.yang@gmail.com>
+        id S2391071AbfGRS0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 14:26:43 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:19030 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390987AbfGRS0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 14:26:43 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6IIOnaY098094
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 14:26:42 -0400
+Received: from e31.co.us.ibm.com (e31.co.us.ibm.com [32.97.110.149])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ttvv3b47y-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 14:26:42 -0400
+Received: from localhost
+        by e31.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <brking@linux.vnet.ibm.com>;
+        Thu, 18 Jul 2019 19:26:41 +0100
+Received: from b03cxnp08028.gho.boulder.ibm.com (9.17.130.20)
+        by e31.co.us.ibm.com (192.168.1.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 18 Jul 2019 19:26:38 +0100
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6IIQce865470792
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 18 Jul 2019 18:26:38 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EA927BE051;
+        Thu, 18 Jul 2019 18:26:37 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8B4A2BE056;
+        Thu, 18 Jul 2019 18:26:37 +0000 (GMT)
+Received: from oc6034535106.ibm.com (unknown [9.10.86.34])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 18 Jul 2019 18:26:37 +0000 (GMT)
+Subject: Re: [EXT] [PATCH] bnx2x: Prevent load reordering in tx completion
+ processing
+To:     Manish Chopra <manishc@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+Cc:     Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1563226910-21660-1-git-send-email-brking@linux.vnet.ibm.com>
+ <DM6PR18MB2697C972B49EAD3AE7C3F37AABC80@DM6PR18MB2697.namprd18.prod.outlook.com>
+From:   Brian King <brking@linux.vnet.ibm.com>
+Date:   Thu, 18 Jul 2019 13:26:37 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716021301.27753-1-xingwu.yang@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <DM6PR18MB2697C972B49EAD3AE7C3F37AABC80@DM6PR18MB2697.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 19071818-8235-0000-0000-00000EBB2D9C
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011453; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000287; SDB=6.01234036; UDB=6.00650285; IPR=6.01015363;
+ MB=3.00027783; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-18 18:26:40
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071818-8236-0000-0000-000046744E05
+Message-Id: <247dddf2-9a46-cb02-f7a6-228274ac81d6@linux.vnet.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-18_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907180188
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looks good, but you will have to wait until net-next reopens:
-
-http://vger.kernel.org/~davem/net-next.html
-
-Will keep this in my patchwork until that happens.
-
-Thanks.
-
-On Tue, Jul 16, 2019 at 10:13:01AM +0800, yangxingwu wrote:
-> this patch removes extra spaces
+On 7/18/19 5:12 AM, Manish Chopra wrote:
+>> -----Original Message-----
+>> From: Brian King <brking@linux.vnet.ibm.com>
+>> Sent: Tuesday, July 16, 2019 3:12 AM
+>> To: GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+>> Cc: Sudarsana Reddy Kalluru <skalluru@marvell.com>; Ariel Elior
+>> <aelior@marvell.com>; netdev@vger.kernel.org; Brian King
+>> <brking@linux.vnet.ibm.com>
+>> Subject: [EXT] [PATCH] bnx2x: Prevent load reordering in tx completion
+>> processing
+>>
+>> External Email
+>>
+>> ----------------------------------------------------------------------
+>> This patch fixes an issue seen on Power systems with bnx2x which results in
+>> the skb is NULL WARN_ON in bnx2x_free_tx_pkt firing due to the skb pointer
+>> getting loaded in bnx2x_free_tx_pkt prior to the hw_cons load in
+>> bnx2x_tx_int. Adding a read memory barrier resolves the issue.
+>>
+>> Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
+>> ---
+>>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>> index 656ed80..e2be5a6 100644
+>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>> @@ -285,6 +285,9 @@ int bnx2x_tx_int(struct bnx2x *bp, struct
+>> bnx2x_fp_txdata *txdata)
+>>  	hw_cons = le16_to_cpu(*txdata->tx_cons_sb);
+>>  	sw_cons = txdata->tx_pkt_cons;
+>>
+>> +	/* Ensure subsequent loads occur after hw_cons */
+>> +	smp_rmb();
+>> +
+>>  	while (sw_cons != hw_cons) {
+>>  		u16 pkt_cons;
+>>
+>> --
+>> 1.8.3.1
 > 
-> Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
-> ---
->  net/netfilter/ipset/ip_set_hash_gen.h  | 2 +-
->  net/netfilter/ipset/ip_set_list_set.c  | 2 +-
->  net/netfilter/ipvs/ip_vs_core.c        | 2 +-
->  net/netfilter/ipvs/ip_vs_mh.c          | 4 ++--
->  net/netfilter/ipvs/ip_vs_proto_tcp.c   | 2 +-
->  net/netfilter/nf_conntrack_ftp.c       | 2 +-
->  net/netfilter/nf_conntrack_proto_tcp.c | 2 +-
->  net/netfilter/nfnetlink_log.c          | 4 ++--
->  net/netfilter/nfnetlink_queue.c        | 4 ++--
->  net/netfilter/xt_IDLETIMER.c           | 2 +-
->  10 files changed, 13 insertions(+), 13 deletions(-)
+> Could you please explain a bit in detail what could have caused skb to NULL exactly ?
+> Curious that if skb would have been NULL for some reason it did not cause NULL pointer dereference in bnx2x_free_tx_pkt() on below call -
 > 
-> diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
-> index 10f6196..eb907d2 100644
-> --- a/net/netfilter/ipset/ip_set_hash_gen.h
-> +++ b/net/netfilter/ipset/ip_set_hash_gen.h
-> @@ -954,7 +954,7 @@ struct htype {
->  		mtype_data_netmask(d, NCIDR_GET(h->nets[j].cidr[0]));
->  #endif
->  		key = HKEY(d, h->initval, t->htable_bits);
-> -		n =  rcu_dereference_bh(hbucket(t, key));
-> +		n = rcu_dereference_bh(hbucket(t, key));
->  		if (!n)
->  			continue;
->  		for (i = 0; i < n->pos; i++) {
-> diff --git a/net/netfilter/ipset/ip_set_list_set.c b/net/netfilter/ipset/ip_set_list_set.c
-> index 8ada318..5c2be76 100644
-> --- a/net/netfilter/ipset/ip_set_list_set.c
-> +++ b/net/netfilter/ipset/ip_set_list_set.c
-> @@ -289,7 +289,7 @@ struct list_set {
->  	if (n &&
->  	    !(SET_WITH_TIMEOUT(set) &&
->  	      ip_set_timeout_expired(ext_timeout(n, set))))
-> -		n =  NULL;
-> +		n = NULL;
->  
->  	e = kzalloc(set->dsize, GFP_ATOMIC);
->  	if (!e)
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index 7138556..6b3ae76 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -615,7 +615,7 @@ int ip_vs_leave(struct ip_vs_service *svc, struct sk_buff *skb,
->  		unsigned int flags = (svc->flags & IP_VS_SVC_F_ONEPACKET &&
->  				      iph->protocol == IPPROTO_UDP) ?
->  				      IP_VS_CONN_F_ONE_PACKET : 0;
-> -		union nf_inet_addr daddr =  { .all = { 0, 0, 0, 0 } };
-> +		union nf_inet_addr daddr = { .all = { 0, 0, 0, 0 } };
->  
->  		/* create a new connection entry */
->  		IP_VS_DBG(6, "%s(): create a cache_bypass entry\n", __func__);
-> diff --git a/net/netfilter/ipvs/ip_vs_mh.c b/net/netfilter/ipvs/ip_vs_mh.c
-> index 94d9d34..da0280c 100644
-> --- a/net/netfilter/ipvs/ip_vs_mh.c
-> +++ b/net/netfilter/ipvs/ip_vs_mh.c
-> @@ -174,8 +174,8 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
->  		return 0;
->  	}
->  
-> -	table =  kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
-> -			 sizeof(unsigned long), GFP_KERNEL);
-> +	table = kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
-> +			sizeof(unsigned long), GFP_KERNEL);
->  	if (!table)
->  		return -ENOMEM;
->  
-> diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> index 915ac82..c7b46a9 100644
-> --- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> +++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> @@ -710,7 +710,7 @@ static int __ip_vs_tcp_init(struct netns_ipvs *ipvs, struct ip_vs_proto_data *pd
->  							sizeof(tcp_timeouts));
->  	if (!pd->timeout_table)
->  		return -ENOMEM;
-> -	pd->tcp_state_table =  tcp_states;
-> +	pd->tcp_state_table = tcp_states;
->  	return 0;
->  }
->  
-> diff --git a/net/netfilter/nf_conntrack_ftp.c b/net/netfilter/nf_conntrack_ftp.c
-> index 8c6c11b..26c1ff8 100644
-> --- a/net/netfilter/nf_conntrack_ftp.c
-> +++ b/net/netfilter/nf_conntrack_ftp.c
-> @@ -162,7 +162,7 @@ static int try_rfc959(const char *data, size_t dlen,
->  	if (length == 0)
->  		return 0;
->  
-> -	cmd->u3.ip =  htonl((array[0] << 24) | (array[1] << 16) |
-> +	cmd->u3.ip = htonl((array[0] << 24) | (array[1] << 16) |
->  				    (array[2] << 8) | array[3]);
->  	cmd->u.tcp.port = htons((array[4] << 8) | array[5]);
->  	return length;
-> diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-> index 1e2cc83..48f3a67 100644
-> --- a/net/netfilter/nf_conntrack_proto_tcp.c
-> +++ b/net/netfilter/nf_conntrack_proto_tcp.c
-> @@ -1225,7 +1225,7 @@ static int tcp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
->  	[CTA_PROTOINFO_TCP_WSCALE_ORIGINAL] = { .type = NLA_U8 },
->  	[CTA_PROTOINFO_TCP_WSCALE_REPLY]    = { .type = NLA_U8 },
->  	[CTA_PROTOINFO_TCP_FLAGS_ORIGINAL]  = { .len = sizeof(struct nf_ct_tcp_flags) },
-> -	[CTA_PROTOINFO_TCP_FLAGS_REPLY]	    = { .len =  sizeof(struct nf_ct_tcp_flags) },
-> +	[CTA_PROTOINFO_TCP_FLAGS_REPLY]	    = { .len = sizeof(struct nf_ct_tcp_flags) },
->  };
->  
->  #define TCP_NLATTR_SIZE	( \
-> diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
-> index 6dee4f9..d69e186 100644
-> --- a/net/netfilter/nfnetlink_log.c
-> +++ b/net/netfilter/nfnetlink_log.c
-> @@ -651,7 +651,7 @@ static void nfulnl_instance_free_rcu(struct rcu_head *head)
->  	/* FIXME: do we want to make the size calculation conditional based on
->  	 * what is actually present?  way more branches and checks, but more
->  	 * memory efficient... */
-> -	size =    nlmsg_total_size(sizeof(struct nfgenmsg))
-> +	size = nlmsg_total_size(sizeof(struct nfgenmsg))
->  		+ nla_total_size(sizeof(struct nfulnl_msg_packet_hdr))
->  		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
->  		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
-> @@ -668,7 +668,7 @@ static void nfulnl_instance_free_rcu(struct rcu_head *head)
->  		+ nla_total_size(sizeof(struct nfgenmsg));	/* NLMSG_DONE */
->  
->  	if (in && skb_mac_header_was_set(skb)) {
-> -		size +=   nla_total_size(skb->dev->hard_header_len)
-> +		size += nla_total_size(skb->dev->hard_header_len)
->  			+ nla_total_size(sizeof(u_int16_t))	/* hwtype */
->  			+ nla_total_size(sizeof(u_int16_t));	/* hwlen */
->  	}
-> diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-> index 89750f7..a1ef6e3 100644
-> --- a/net/netfilter/nfnetlink_queue.c
-> +++ b/net/netfilter/nfnetlink_queue.c
-> @@ -394,7 +394,7 @@ static int nfqnl_put_bridge(struct nf_queue_entry *entry, struct sk_buff *skb)
->  	char *secdata = NULL;
->  	u32 seclen = 0;
->  
-> -	size =    nlmsg_total_size(sizeof(struct nfgenmsg))
-> +	size = nlmsg_total_size(sizeof(struct nfgenmsg))
->  		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hdr))
->  		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
->  		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
-> @@ -453,7 +453,7 @@ static int nfqnl_put_bridge(struct nf_queue_entry *entry, struct sk_buff *skb)
->  	}
->  
->  	if (queue->flags & NFQA_CFG_F_UID_GID) {
-> -		size +=  (nla_total_size(sizeof(u_int32_t))	/* uid */
-> +		size += (nla_total_size(sizeof(u_int32_t))	/* uid */
->  			+ nla_total_size(sizeof(u_int32_t)));	/* gid */
->  	}
->  
-> diff --git a/net/netfilter/xt_IDLETIMER.c b/net/netfilter/xt_IDLETIMER.c
-> index 9cec9ea..f56d3ed 100644
-> --- a/net/netfilter/xt_IDLETIMER.c
-> +++ b/net/netfilter/xt_IDLETIMER.c
-> @@ -283,7 +283,7 @@ static int __init idletimer_tg_init(void)
->  
->  	idletimer_tg_kobj = &idletimer_tg_device->kobj;
->  
-> -	err =  xt_register_target(&idletimer_tg);
-> +	err = xt_register_target(&idletimer_tg);
->  	if (err < 0) {
->  		pr_debug("couldn't register xt target\n");
->  		goto out_dev;
-> -- 
-> 1.8.3.1
+> prefetch(&skb->end);
 > 
+> Which is prior to the said WARN_ON(!skb) in bnx2x_free_tx_pkt().
+
+Right. In this case, that would end up passing an invalid address to prefetch. On a
+Power processor, that turns into a dcbt instruction (data cache block touch), which
+is a hint to the process that the subsequent code may access that data cache block.
+Passing an invalid address to dcbt causes no harm. I just built a userspace program
+to validate that doing something very similar to what is happening here, and the dcbt
+executed with no errors, no segfault to the userspace process.
+
+This is the scenario I think is occurring. 
+
+CPU[0]
+bnx2x_start_xmit
+[1] tx_buf->skb = skb; /* store skb pointer */
+[2] ...
+[3] wmb(); 
+[4] DOORBELL_RELAXED
+
+CPU[1]
+bnx2x_tx_int
+[5]  hw_cons = le16_to_cpu(*txdata->tx_cons_sb);
+[6]  sw_cons = txdata->tx_pkt_cons;
+[7]  while (sw_cons != hw_cons) {
+[8]  pkt_cons = TX_BD(sw_cons);
+[9]  bnx2x_free_tx_pkt
+[10]  tx_buf = &txdata->tx_buf_ring[pkt_cons];
+[11]  skb = tx_buf->skb;
+[12]  prefetch(&skb->end);
+[13]  ...
+[14]  WARN_ON(!skb);
+
+
+On CPU0 we are in the process of sending a TX buffer to the adapter. We have a wmb at [3]
+to ensure that all stores to cacheable storage are coherent with respect to the
+non-cacheable store at [4] to tell the adapter about the new TX buffer.
+
+On CPU1, we have a potential race condition if the processor is aggressively reordering
+loads. If we find ourselves in bnx2x_tx_int, while still in bn2x_start_xmit on CPU0,
+its possible the processor could begin speculatively executing well into [11]. Since there
+is no read barrier of any sort to tell the processor that the load of the skb pointer
+cannot happen until the load of hw_cons has occurred, we could end up speculatively
+loading the skb pointer before the write in [1] has completed with respect to CPU1. 
+
+Adding the smp_rmb between 6 and 7 ensures that the load at 5 occurs prior to the
+load at 11.
+
+This was reproducing consistently on a 16 socket Power 9 system built of four, four socket
+nodes, with 10 bnx2x adapters and 26TB of memory. The NUMA effects can get to be exaggerated
+a bit on these systems. With this patch, the system runs without issues. We've now been able to
+run the workload multiple times with no issues.
+
+Thanks,
+
+Brian
+
+
+-- 
+Brian King
+Power Linux I/O
+IBM Linux Technology Center
+
