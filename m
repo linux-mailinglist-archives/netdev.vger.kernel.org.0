@@ -2,98 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 426A46CF97
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 16:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3E06CFD9
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 16:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403763AbfGROVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 10:21:04 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:35977 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390345AbfGROVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 10:21:04 -0400
-Received: by mail-io1-f68.google.com with SMTP id o9so51761675iom.3
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 07:21:03 -0700 (PDT)
+        id S2390893AbfGROb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 10:31:58 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:38362 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390758AbfGROb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 10:31:57 -0400
+Received: by mail-lj1-f196.google.com with SMTP id r9so27574029ljg.5
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 07:31:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hkZ9r2YZdJZ/Wyu1ekSiigPT2RrlJcMtq5jKa4P1/JU=;
-        b=L3UEwR5i0GoRAblPYbhOR3RrUoLbLRBgXxc/dzSVpG+SrAou1KYgz9Of7G56VBAqHn
-         Azu77CfAgEO/KuzdY3j6ksOIKPJyZiMzG3/J+HT7O93JZ2i/h9MFVzTqn8qFbCNTRmYJ
-         1jeykHnpJgl2LQJAqjS1XpxF1rnLPJqUp21yQhFmSfyd2FOUXJGJoJv0tJF5N64wDbrk
-         g8iy1DB32B9SsZ7ujfKZFNsBAAnZoQtWphCycFf4FaE5v8Aglba3hO6SV0YrPEjaYBp3
-         lCugTXuIwCJ2+OE4QpN5gulJeP3TOJ8jKhpygGer5TxvlId13f69KYKuBXGjpe2YlLTW
-         dajQ==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=YuZvrhYEOH5kOeoeerSdymDuKqfe6N+miiqSmvIcCRY=;
+        b=JGML5JpkE0YeTqjqSxoEqYGglhwo4tbg5k/fc+7eLYxgm5080dMjozb3iKsTXstIfZ
+         cW4Oc8nHffi47nV69CyYfb9ummQPAnEG5SM4VjEnbBtaHeHbTVJmQ+/hFj+bRMCwmeLp
+         JhV03h/nK76hG1gPem5ZANo+zP6L2GILNib3DUd4qJqqA4FZKe2FapnY8RaEgVErihBK
+         niHCOwvi9dmy26J65K7XzcoyCftu2k+2SZSquIkY3CLgFhjOuXioP7VVp/t67AnPkvts
+         8WU3u+Sc0sm4AtHP/QNCOztt+6s3t81McLLCcGzidRHFBbzSZ/kq1ZEfpyUc8U8xU8vc
+         8Pew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hkZ9r2YZdJZ/Wyu1ekSiigPT2RrlJcMtq5jKa4P1/JU=;
-        b=X047q+mTCGFks8p8HG4nA3uuI/jMD4TlPNKrvMRR87wsBM3NqC/CNYIgfA2eFacCuR
-         Ahni8HOoNbKIDm7AVcvV3Zs7OkKFO6pWO2Ag7mE8zZ7nm19qtYSNRgrtNpdWmhBo7Ogz
-         njVD7Wdq96/XrJIyBBeNBLrAYR5uJfntDV+LWMo2uRp9DLfbxnbKkCf4TG7mZR04SQuH
-         P7kXeUnotnWqfil8dQl+7LX4oloxUmk/fUocTbkW/fOzADnoDFa+zQS3gtPyiiBoWZXK
-         XD//lyIW9geq9ccI+cBI5Un0FEELviiw+DzoVvVr5cdQE6Gy60i6zT+0wl96rmErDaGl
-         TW5Q==
-X-Gm-Message-State: APjAAAWHrNHI+qAVIgQ5LZgL2/ArALk48HAepQR/TdUc/xQdAYzfNsE7
-        ndE6cQxvP2YQNNkel2cLQtLqj60I
-X-Google-Smtp-Source: APXvYqwhcv1nR0fkbhV8TqN9u1VsRzcOUyds4lZMvBOIlSog0q7NO7bJVtP5B8zOnJUYjlpXpNAYfA==
-X-Received: by 2002:a5d:87d6:: with SMTP id q22mr40701069ios.2.1563459663311;
-        Thu, 18 Jul 2019 07:21:03 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:54f6:cf0:7185:650f? ([2601:282:800:fd80:54f6:cf0:7185:650f])
-        by smtp.googlemail.com with ESMTPSA id p3sm30103538iom.7.2019.07.18.07.21.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 18 Jul 2019 07:21:02 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: Unlink sibling route in case of failure
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, alexpe@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20190717203933.3073-1-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f6dacc3e-7b20-2441-dd7d-99d3983bddc3@gmail.com>
-Date:   Thu, 18 Jul 2019 08:21:01 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=YuZvrhYEOH5kOeoeerSdymDuKqfe6N+miiqSmvIcCRY=;
+        b=Qad1cxjdnK6K1pbw2hGMxE+08nUaWuBEKw96gV/9Uy9W4BNfaDSzZbNfnUgpxL3OhT
+         pd8/SFKkQaMDsSEW4IbCX2Hb1vdyUQw6zu4+nsTgMqS/Pqwr2Z4G+x3vIhWzYOCNk5EM
+         G9AEwurpFUQ8xYDnmPh9PgaOu4lQrnj9/tL0H/0FXBHjpI8aQXlNgih+9RHtaff6RL5C
+         wv0qHF6R6w+KGJnn4c1BLKMF1m4odWccknRl/m769gsSu3j4bjDYLiqFgTlVxIcay55E
+         sTa1APYqYrO1puhnznBd6oAFPBOeDWYpjzD4sWNbBJlupNQGDJAVQHUK6xX+RgZ4J6C1
+         2e+w==
+X-Gm-Message-State: APjAAAXhk2BuPw8yNOzR32iY2tKyUrZlSGsQhCMiwX7kzoxfKrp60xoQ
+        tNDMlwDmZ7BOtH+jcWF8v9EXVZDMR9LEkleNmf8=
+X-Google-Smtp-Source: APXvYqyb0QFqAJSmXRhIX3xwrauSfKhUwlcSt7Na6JaqVzRZ1Bll4JTvbVPx+QxlTiU0p+EbHhmifldnxiaMgaF9q6A=
+X-Received: by 2002:a2e:9b81:: with SMTP id z1mr24733602lji.101.1563460315763;
+ Thu, 18 Jul 2019 07:31:55 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190717203933.3073-1-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:ac2:51b8:0:0:0:0:0 with HTTP; Thu, 18 Jul 2019 07:31:55
+ -0700 (PDT)
+From:   Ruby Williams <rubywilliams6846@gmail.com>
+Date:   Thu, 18 Jul 2019 02:31:55 -1200
+X-Google-Sender-Auth: tBxnQkQZz6vLD64cw2fSSyGNO1k
+Message-ID: <CAMPJMTf6Qq5jTA2kThKU6h9=261EhiqvyLiwS-MYatAb+=S7Aw@mail.gmail.com>
+Subject: Re: May the peace of God be with you,you,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/17/19 2:39 PM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> When a route needs to be appended to an existing multipath route,
-> fib6_add_rt2node() first appends it to the siblings list and increments
-> the number of sibling routes on each sibling.
-> 
-> Later, the function notifies the route via call_fib6_entry_notifiers().
-> In case the notification is vetoed, the route is not unlinked from the
-> siblings list, which can result in a use-after-free.
-> 
-> Fix this by unlinking the route from the siblings list before returning
-> an error.
-> 
-> Audited the rest of the call sites from which the FIB notification chain
-> is called and could not find more problems.
-> 
-> Fixes: 2233000cba40 ("net/ipv6: Move call_fib6_entry_notifiers up for route adds")
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Reported-by: Alexander Petrovskiy <alexpe@mellanox.com>
-> ---
-> Dave, this will not apply cleanly to stable trees due to recent changes
-> in net-next. I can prepare another patch for stable if needed.
-> ---
->  net/ipv6/ip6_fib.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
-> 
+Greetings My Dear,
 
-Thanks for the fix, Ido. I can help with the ports as well.
+    I sent this mail praying it will found you in a good condition of
+health, since I myself are in a very critical health condition in
+which I  sleep every night without knowing if I may be alive to see
+the next day. I am Mrs. Ruby Williams  Carlsen from Denmark wife of
+late Mr Williams Carlsen, a widow suffering from long time illness. I
+have some funds I inherited from my late husband, the sum of (eleven
+million dollars) my Doctor told me recently that I have serious
+sickness which is cancer problem. What disturbs me most is my stroke
+sickness. Having known my condition, I decided to donate this fund to
+a good person that will utilize it the way i am going to instruct
+herein. I need a very honest and God fearing person who can claim this
+money and use it for Charity works, for orphanages, widows and also
+build schools for less privileges that will be named after my late
+husband if possible and to promote the word of God and the effort that
+the house of God is maintained.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+I do not want a situation where this money will be used in an ungodly
+manner. That's why I'm takingthis decision. I'm not afraid of death so
+I know where I'm going. I accept this decision because I do not have
+any child who will inherit this money after I die. Please I want your
+sincerely and urgent answer to know if you will be able to execute
+this project, and I will give you more information on how the fund
+will be transferred to your bank account. I am waiting for your reply.
 
+May God Bless you,
+Mrs. Ruby Williams.
