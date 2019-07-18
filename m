@@ -2,63 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2549F6D575
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:52:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BE56D57C
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391404AbfGRTu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 15:50:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50896 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727687AbfGRTu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 15:50:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=f9NYi/JQfKwrckhrLZX09z+ipOmqXvg6F6g6rgIJULA=; b=o7Q3/nGx8gD9nw1+QVSQHD+BN0
-        aS19BJWloHnqgRVYcSmom4PtMuEC/oKOSQ3KSuS+O1q40bf00gKUYX3jJobXFIuZkAXz737PUgUe1
-        /2Gxr0z8XPBCJ4q7UfzuDy43NiHl9lMKXirYYQAmooWOQtLYZMrEvJUWR/O9LvzimYPw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hoCQK-0002w6-Tp; Thu, 18 Jul 2019 21:50:40 +0200
-Date:   Thu, 18 Jul 2019 21:50:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Christopher S . Hall" <christopher.s.hall@intel.com>
-Subject: Re: [RFC PATCH 0/5] PTP: add support for Intel's TGPIO controller
-Message-ID: <20190718195040.GL25635@lunn.ch>
-References: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
+        id S2391413AbfGRTxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 15:53:04 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:43058 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727781AbfGRTxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 15:53:04 -0400
+Received: by mail-oi1-f193.google.com with SMTP id w79so22503475oif.10;
+        Thu, 18 Jul 2019 12:53:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/BAco0qTgyfJ8ndZzbhvqz94T+T1pPPU3Fqjw/cFLps=;
+        b=nW6kgwO+5AOfTm3FSkl7N9sJcwHTCEUPlrvRBDc5G3FKn1LbLB2gxabP98tb6/y72o
+         dtc0GCjblMnHKYEAf8ATrDoknCDAQ9NTFUnMXCNe5aqGRp/US3zz2Bnz9pPUYdSCPXig
+         LrZ01aFRxs50n5MBeBhgBWPGMWGabpgUHzczWiVP5FtC4Ryx8Fq+z7y9KYdeFM7e7zH+
+         tnLDTGFsYh1DJmccfxnLSdb6awxms4+S77W0IbzAZObFxNP9z8HtJMuCQwL3V5B//XYm
+         jWmyKBUof/ICQZF4UTWwVEAp/UYVsvoVUzicuq3nP1Ghl4NjQCIfR7blvqnoaubm1fcI
+         MjNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/BAco0qTgyfJ8ndZzbhvqz94T+T1pPPU3Fqjw/cFLps=;
+        b=oVGj7S5ThggeeQruWBNUdewcTu9a1MIXc3uQ/96THhZiAlsfVZJ1d7S80WIQs5k0tT
+         2yAWEVEnmR/GRFkZ3NloE9b+3Efn8ga6xB46wdvKeQYzyHdg463fb1TTW74bD4Bbz60k
+         21ixuBx+hzzAZUefuI01j5mQYhk7g8G/Cl8trFAxeJKIRpRIilbItAZ6Ubq5a22V1Vt8
+         1kLdaTa6yKagOPQLEjHF24bdbsJ1oXWbQj0CqtcHpvPhDdCL+7BZDUeBbMmGUNKvi2P+
+         Zj+TxnCih4neIJR52TJ/a7l0QN3dK9Nid+IGgEvqYze9FgjHo+ukefYnPkx0KSppeJmx
+         pciQ==
+X-Gm-Message-State: APjAAAU0TdGrC9wFo9i8LmZzCMYjfyxX8TXIn/Z057SlShzTh6njzdxh
+        twMtThvrAZTDbmFm0+fgYw6uwrYW0GLYfLOGTRs=
+X-Google-Smtp-Source: APXvYqwTBPzyPhPjB0VaBnbsiYOrGI3rkLFZrwgDaKK3LTDTHNYYlEPvOYwHkit/SyzUnkQw3nflcqZiU86SaVW9do4=
+X-Received: by 2002:aca:75c2:: with SMTP id q185mr25667268oic.103.1563479583204;
+ Thu, 18 Jul 2019 12:53:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190718143428.2392-1-TheSven73@gmail.com> <1563468471.2676.36.camel@pengutronix.de>
+ <CAOMZO5A_BuWMr1n_fFv4veyaXdcfjxO+9nFAgGfCrmAhNmzV5g@mail.gmail.com>
+ <CAGngYiULAjXwwxmUyHxEXhv1WzSeE_wE3idOLSnD5eEaZg3xDw@mail.gmail.com> <20190718194131.GK25635@lunn.ch>
+In-Reply-To: <20190718194131.GK25635@lunn.ch>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Thu, 18 Jul 2019 15:52:52 -0400
+Message-ID: <CAGngYiWESbg6uq4pdtb5--YSzatwAwXiGnRjiAfAQj8nRYPMqw@mail.gmail.com>
+Subject: Re: [PATCH] net: fec: generate warning when using deprecated phy reset
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 10:20:33AM +0300, Felipe Balbi wrote:
-> TGPIO is a new IP which allows for time synchronization between systems
-> without any other means of synchronization such as PTP or NTP. The
-> driver is implemented as part of the PTP framework since its features
-> covered most of what this controller can do.
+Hi Andrew,
 
-Hi Felipe
+On Thu, Jul 18, 2019 at 3:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> Hi Sven
+>
+> One option would be to submit a patch or a patchset changing all
+> existing device tree files to make use of the core method. Anybody
+> cut/pasting will then automatically use the correct core way of doing
+> it.
+>
+> There is also a move towards using YAML to verify the correctness of
+> DT files. It should be possible to mark the old property as
+> deprecated, so there will be a build time warning, not a boot time
+> warning.
+>
 
-Given the name TGPIO, can it also be used for plain old boring GPIO?
-Does there need to be some sort of mux between GPIO and TGPIO? And an
-interface into the generic GPIO core?
+Thanks for the helpful suggestions, that makes sense.
 
-Also, is this always embedded into a SoC? Or could it actually be in a
-discrete NIC?
+What I keep forgetting in my little arm-imx6 world, is that devicetrees
+aren't in-kernel apis, but that they have out-of-kernel
+dependencies. It makes more sense to to see them as userspace
+apis, albeit directed at firmware/bootloaders, right?
 
-Thanks
-	Andrew
+So if bootloaders were as varied/uncontrollable as userspace,
+then deprecated properties would have to be supported forever...
