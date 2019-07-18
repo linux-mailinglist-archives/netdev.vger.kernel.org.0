@@ -2,173 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0722D6D651
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 23:16:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B10C6D65A
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 23:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbfGRVQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 17:16:42 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:43087 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727685AbfGRVQl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 17:16:41 -0400
-Received: by mail-qk1-f196.google.com with SMTP id m14so21606098qka.10;
-        Thu, 18 Jul 2019 14:16:41 -0700 (PDT)
+        id S1728020AbfGRVVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 17:21:42 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:45718 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727767AbfGRVVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 17:21:42 -0400
+Received: by mail-vs1-f68.google.com with SMTP id h28so20136791vsl.12
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 14:21:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iba2KQpPE7SITH+9AYOcxKiP/U5m4j3sBxoYky/TYmg=;
-        b=qLbazF8th1IsIqhC+uzx9jzOqpeSSod5P1cNwL1ptr+GIek7KAEkf33eeygN/hibmN
-         tvl4OXFX+vmkdDlNl3nv0hpHP3VEqSuSVhZqMMLjT1mBA/cl9i0eULWccYDE3v1pN66M
-         Bmp3AteVjjUW2UupwF7mhE9QvMTphDHHxrrLTSaLhgmnKNus81EvtH4eFYh1c4YQxO51
-         y7vlu+hiyySb5IJdjMNNmWIjrBnWVuIMptjGGDzCr8bvWe8yFlBQo93xWgc5KFRkA6S3
-         e/yflnwEgSKfiCEhjjV/wN21a2U80NIpK5MmAOjpHZZwFLrJ1XqGcc1Rd+uUXJmU+9mP
-         U1LQ==
+        bh=JLWgE4G1xumD+5ZusInPzcVsAid5/1NnJBPXIPh5kwU=;
+        b=c/8BoGQt9/QOqtqbYVLLVLcLBKKCNOL7ZGgciVXxCS21F1WB5gBw1Lhtv1yMwGbQ/8
+         FL7h6h0baE/EM6HpjnHtdgaCQxgO1LCBFh5EMOP8abh9QCVx9P0iVVBR1osJKkuIj37I
+         7In1Y7cMeJe/ozyMDC/3pmdbyV+j2J3tmfucx9P0zn3zlgwZMEGPszlG/ypDkHx9w0ey
+         VmnNdkY5C43kS4BMQYBEBtVWCnmD58X/+gFuHIi7F0VXGS7IeLhQ6lpyF6vygZUViVa0
+         OEbs/lPqkuIOfBqlLezNboG1lpxEwSrVjAGOZTHk62zaj5AxQJAcmrSg06aF3ENi3eNO
+         sM1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iba2KQpPE7SITH+9AYOcxKiP/U5m4j3sBxoYky/TYmg=;
-        b=qfZfj4l2HLNv4q52wbpioeYWDgV9KLFm6TJc037ZJP/kzQqZYYVRbKj1gCzxOZBCnQ
-         QCJQU9Lz6SyTwL2W2cobl84qtq0CIykXqaaAOHbQ2ZGMcJNsXfq2m/U7+9qvyRe/vFsX
-         1IdyFbbdjfgRew9gN/JskCPVN7HTinIcZnp5mpK+t4mR8/WMEZ+Qi0eG3f82WtP+rdAh
-         WwBtPdWjKh26GLPkGMYnx8aDvxQsF11bzJTUl+z6qqDzdEGgP1LhtX5a3wzpmzLunHE6
-         mwPY1N09Wfql5zjCPz8wH0FNvzVSH1GbHCrvd1zZPhY/eDIz8dbH4DV1lwYTaSY/e0qB
-         ltJQ==
-X-Gm-Message-State: APjAAAVbVL7WRVPt/eN3njVuPRma0fwKiFuxS/J8y5qt4NBtLJDgbYK5
-        FUkeMgc5PB4yq8kZ6s8skFbwVZXx2EXVfR85rME=
-X-Google-Smtp-Source: APXvYqyheSJF9udl7pCCdypbxQpk3vcjRFttMxyLMGS3Nbok9flPKKoO9v6CdV5sm9hxZOFxZncryaZzvmQJP7UD5cA=
-X-Received: by 2002:a37:bf42:: with SMTP id p63mr33133525qkf.437.1563484600543;
- Thu, 18 Jul 2019 14:16:40 -0700 (PDT)
+        bh=JLWgE4G1xumD+5ZusInPzcVsAid5/1NnJBPXIPh5kwU=;
+        b=tf2pCTIBXMVxsDDoGoNb2TXx3fXDQmePM9KE8BvdxEBCm8tiOZ7lspv79tVWhsj3ev
+         DYyv303jlNdc4XArAp5S6bZZuws5sDbN9vJnPP/T6aFzsCtdDOrFJ9DSIym7iqm28Smk
+         OWbG0KwsibHpvdro9r7hna2nzbkLUAlHAGGjzt+twOWs5n7+hnYXWd6kIxhl5I8kKj7a
+         CqsN7OSIEj8AhAuRwpUrjnZGjJr8dRBheB2H+ElF0mh0PXgrhQUCJHpN2SBd0KnTcbpF
+         jS/ixJpJqV2nXHGDs91hqhiW/VZ4bWJPlQzgh1yR+RKrYmX9m5PXXsKks/TpdKQpRr7k
+         mJSA==
+X-Gm-Message-State: APjAAAVNHbtxBJazeQiGFpq99OVC3gOh3nIFwvet5uGre+cZulPF/S3O
+        0UmyjOGfBkHM1U8M1ge0GYD1uRSecQZq29Ba77SJ
+X-Google-Smtp-Source: APXvYqzw6e79MIrSSr/wveDt3o5nS/x3WVT9g6SIC9rmt/BfJdmhC96Gcdb7mp3vJdj09OD/y6QUPsswLWFlksDLylI=
+X-Received: by 2002:a67:d39e:: with SMTP id b30mr30387881vsj.212.1563484900833;
+ Thu, 18 Jul 2019 14:21:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190718172513.2394157-1-andriin@fb.com> <20190718175533.GG2093@redhat.com>
- <CAEf4BzaPySx-hBwD5Lxo1tD7F_8ejA9qFjC0-ag56cakweqcbA@mail.gmail.com>
- <20190718185619.GL3624@kernel.org> <20190718191452.GM3624@kernel.org>
-In-Reply-To: <20190718191452.GM3624@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jul 2019 14:16:29 -0700
-Message-ID: <CAEf4BzburdiRTYSJUSpSFAxKmf6ELpvEeNW502eKskzyyMaUxQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix missing __WORDSIZE definition
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@gmail.com>
+References: <1562959401-19815-1-git-send-email-cai@lca.pw> <20190712.154606.493382088615011132.davem@davemloft.net>
+ <EFD25845-097A-46B1-9C1A-02458883E4DA@lca.pw> <20190712.175038.755685144649934618.davem@davemloft.net>
+ <D7E57421-A6F4-4453-878A-8F173A856296@lca.pw> <CAKwvOdkCfqfpJYYX+iu2nLCUUkeDorDdVP3e7koB9NYsRwgCNw@mail.gmail.com>
+In-Reply-To: <CAKwvOdkCfqfpJYYX+iu2nLCUUkeDorDdVP3e7koB9NYsRwgCNw@mail.gmail.com>
+From:   Bill Wendling <morbo@google.com>
+Date:   Thu, 18 Jul 2019 14:21:29 -0700
+Message-ID: <CAGG=3QUvdwJs1wW1w+5Mord-qFLa=_WkjTsiZuwGfcjkoEJGNQ@mail.gmail.com>
+Subject: Re: [PATCH] be2net: fix adapter->big_page_size miscaculation
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Qian Cai <cai@lca.pw>, James Y Knight <jyknight@google.com>,
+        David Miller <davem@davemloft.net>, sathya.perla@broadcom.com,
+        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        somnath.kotur@broadcom.com, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, netdev@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 12:14 PM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
+[My previous response was marked as spam...]
+
+Top-of-tree clang says that it's const:
+
+$ gcc a.c -O2 && ./a.out
+a is a const.
+
+$ clang a.c -O2 && ./a.out
+a is a const.
+
+
+On Thu, Jul 18, 2019 at 2:10 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
 >
-> Em Thu, Jul 18, 2019 at 03:56:19PM -0300, Arnaldo Carvalho de Melo escreveu:
-> > I'll stop and replace my patch with yours to see if it survives all the
-> > test builds...
+> On Thu, Jul 18, 2019 at 2:01 PM Qian Cai <cai@lca.pw> wrote:
+> >
+> >
+> >
+> > > On Jul 12, 2019, at 8:50 PM, David Miller <davem@davemloft.net> wrote:
+> > >
+> > > From: Qian Cai <cai@lca.pw>
+> > > Date: Fri, 12 Jul 2019 20:27:09 -0400
+> > >
+> > >> Actually, GCC would consider it a const with -O2 optimized level because it found that it was never modified and it does not understand it is a module parameter. Considering the following code.
+> > >>
+> > >> # cat const.c
+> > >> #include <stdio.h>
+> > >>
+> > >> static int a = 1;
+> > >>
+> > >> int main(void)
+> > >> {
+> > >>      if (__builtin_constant_p(a))
+> > >>              printf("a is a const.\n");
+> > >>
+> > >>      return 0;
+> > >> }
+> > >>
+> > >> # gcc -O2 const.c -o const
+> > >
+> > > That's not a complete test case, and with a proper test case that
+> > > shows the externalization of the address of &a done by the module
+> > > parameter macros, gcc should not make this optimization or we should
+> > > define the module parameter macros in a way that makes this properly
+> > > clear to the compiler.
+> > >
+> > > It makes no sense to hack around this locally in drivers and other
+> > > modules.
+> >
+> > If you see the warning in the original patch,
+> >
+> > https://lore.kernel.org/netdev/1562959401-19815-1-git-send-email-cai@lca.pw/
+> >
+> > GCC definitely optimize rx_frag_size  to be a constant while I just confirmed clang
+> > -O2 does not. The problem is that I have no clue about how to let GCC not to
+> > optimize a module parameter.
+> >
+> > Though, I have added a few people who might know more of compilers than myself.
 >
-> So, Alpine:3.4, the first image for this distro I did when I started
-> these builds, survives the 6 builds with gcc and clang with your patch:
+> + Bill and James, who probably knows more than they'd like to about
+> __builtin_constant_p and more than other LLVM folks at this point.
 >
->
-> [perfbuilder@quaco linux-perf-tools-build]$ export PERF_TARBALL=http://192.168.124.1/perf/perf-5.2.0.tar.xz
-> [perfbuilder@quaco linux-perf-tools-build]$ dm
->    1  alpine:3.4                    : Ok   gcc (Alpine 5.3.0) 5.3.0, clang version 3.8.0 (tags/RELEASE_380/final)
->
->
-> [perfbuilder@quaco linux-perf-tools-build]$ grep "+ make" dm.log/alpine\:3.4
-> + make ARCH= CROSS_COMPILE= EXTRA_CFLAGS= -C /git/linux/tools/perf O=/tmp/build/perf
-> + make ARCH= CROSS_COMPILE= EXTRA_CFLAGS= NO_LIBELF=1 -C /git/linux/tools/perf O=/tmp/build/perf
-> + make ARCH= CROSS_COMPILE= EXTRA_CFLAGS= -C /git/linux/tools/perf O=/tmp/build/perf CC=clang
-> + make ARCH= CROSS_COMPILE= EXTRA_CFLAGS= NO_LIBELF=1 -C /git/linux/tools/perf O=/tmp/build/perf CC=clang
-> + make ARCH= CROSS_COMPILE= EXTRA_CFLAGS= LIBCLANGLLVM=1 -C /git/linux/tools/perf O=/tmp/build/perf CC=clang
-> + make ARCH= CROSS_COMPILE= EXTRA_CFLAGS= LIBCLANGLLVM=1 -C /git/linux/tools/perf O=/tmp/build/perf
-> [perfbuilder@quaco linux-perf-tools-build]$
->
-> Probably all the rest will go well, will let you know.
->
-> Daniel, do you mind if I carry this one in my perf/core branch? Its
-> small and shouldn't clash with other patches, I think. It should go
-> upstream soon:
->
-> Andrii, there are these others:
-
-I took a look at them, but I think it would be better, if you could
-post them as proper patches to
-bpf@vger.kernel.org/netdev@vger.kernel.org, so that others can check
-and comment, if necessary.
-
-One nit for all three of them: we typically prefix subject with just
-"libbpf: " instead of "tools lib libbpf".
-
->
-> 8dfb6ed300bf tools lib bpf: Avoid designated initializers for unnamed union members
-
-+ attr.sample_period = attr.wakeup_events = 1;
-
-let's instead
-
-+ attr.sample_period = 1;
-+ attr.wakeup_events = 1;
-
-I don't like multi-assignments.
-
-Also, if we are doing explicit assignment, let's do it for all the
-fields, not split initialization like that.
-
-
-> 80f7f8f21441 tools lib bpf: Avoid using 'link' as it shadows a global definition in some systems
-
-For this one I'm confused. What compiler/system you are getting it on?
-
-I tried to reproduce it with this example (trying both global
-variable, as well as function):
-
-#include <stdio.h>
-
-//int link = 1;
-void link() {}
-
-int f(int link) {
-        return link;
-}
-int main() {
-        printf("%d\n", f(123));
-        return 0;
-}
-
-I haven't gotten any errors nor warnings. I'm certainly liking
-existing naming better, but my main concern is that we'll probably add
-more code like this, and we'll forget about this problem and will
-re-introduce.
-
-So I'd rather figure out why it's happening and some rare system and
-see if we can mitigate that without all the renames.
-
-
-> d93fe741e291 tools lib bpf: Fix endianness macro usage for some compilers
-
-This one looks good to me, thanks!
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
-
->
-> If you could take a look at them at my tmp.perf/core branch at:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/log/?h=tmp.perf/core
->
-> I'm force pushing it now to replace my __WORDSIZE patch with yours, the
-> SHAs should be the 3 above and the one below.
->
-> And to build cleanly I had to cherry pick this one:
->
-> 3091dafc1884 (HEAD -> perf/core) libbpf: fix ptr to u64 conversion warning on 32-bit platforms
->
-> Alpine:3.5 just finished:
->
->    2 alpine:3.5                    : Ok   gcc (Alpine 6.2.1) 6.2.1 20160822, clang version 3.8.1 (tags/RELEASE_381/final)
->
-> - Arnaldo
+> --
+> Thanks,
+> ~Nick Desaulniers
