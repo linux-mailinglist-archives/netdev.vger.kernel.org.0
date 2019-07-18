@@ -2,110 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFEDF6D0B0
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 17:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE0B36D0CA
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 17:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390645AbfGRPIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 11:08:25 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:39256 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727623AbfGRPIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 11:08:25 -0400
-Received: by mail-wm1-f66.google.com with SMTP id u25so15707118wmc.4;
-        Thu, 18 Jul 2019 08:08:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=THnMSwcMi6ZEUqLptsuGsLv729OzubtW7+jZJzOORao=;
-        b=rrD8yUfD+ihIcehHCcCFz0Ac57bDu5gPMvg4l3QV5LmEugHtJ8MMHJkFzbTKd+raSd
-         QKQTO8fQ6wsYvmnORzbPKfhx0HB0wYtq38PMYbAnQO/qq10Uct+3sLILru/C2C7JhlZm
-         qroEeZHReIXiGF5qRFzqnzyOG7vO+ZnwfnUivun3WuCnhVFtUdsFf45JPUDcCY+uQGY1
-         gzxaSIkelXrvHGxpMGDcaa8UA8Ahnxnf9Y65OE05Q++cqTvMZbVfgGa/qFS9ziunyU99
-         88Jy1MHsyxieFeUZDAGakbkUyz4awFEgT/ozDfyaLqkQ7qwnr/lt6o973s/Vps7f5SAP
-         YKYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=THnMSwcMi6ZEUqLptsuGsLv729OzubtW7+jZJzOORao=;
-        b=ECBnPTHEK41h25ii/LlnwsuhFVhOTIb29RsF82pgTYiI4kYDpqeUAlnjBjlTev3/3i
-         Tst5ONcDPajP1YX3jaxzZmmO8iYgPpfFcW6AYNUueGhyD8XpaWEOAGNbPGQcu0p2vmY8
-         /S81Jer+LU7kSOm1UAYGhSFRnIw0z3x5NwMkOBkDYusYykauWhMmN++aolUT8vHYq9Ew
-         O6l8NILAQpcLmroX2HhuNodeEW1F+QT9m/iLzhhhd5ee3UNLKr/Bkf5AdNAgfWYOMbfC
-         W3unQ15mK2ch4cTEzb3KCjGCIYWLRiL2fQ+O1BuEKdqsdB2Jw5cEnGRTv33l+v48hUOr
-         XzDg==
-X-Gm-Message-State: APjAAAV7OQFuQFWUuaPLdlGA/y8YbOyEwyuZexpsgA3fDvJM8GoyaSjt
-        8XIX+1Ttq3+ka1HgmVA3t4hkz7JK
-X-Google-Smtp-Source: APXvYqxr+MPNVi7k1iTeINPRi72qSsdg22udy0HGe1QSJ0YtDFSRzi5v9v7U7HJ+vZS5XREyVQSPXQ==
-X-Received: by 2002:a7b:c7c2:: with SMTP id z2mr38589419wmk.147.1563462502909;
-        Thu, 18 Jul 2019 08:08:22 -0700 (PDT)
-Received: from [192.168.8.147] (72.160.185.81.rev.sfr.net. [81.185.160.72])
-        by smtp.gmail.com with ESMTPSA id h16sm26925802wrv.88.2019.07.18.08.08.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 18 Jul 2019 08:08:22 -0700 (PDT)
-Subject: Re: regression with napi/softirq ?
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20190717201925.fur57qfs2x3ha6aq@debian>
- <alpine.DEB.2.21.1907172238490.1778@nanos.tec.linutronix.de>
- <CADVatmO_m-NYotb9Htd7gS0d2-o0DeEWeDJ1uYKE+oj_HjoN0Q@mail.gmail.com>
- <alpine.DEB.2.21.1907172345360.1778@nanos.tec.linutronix.de>
- <052e43b6-26f8-3e46-784e-dc3c6a82bdf0@gmail.com>
- <CADVatmN6xNO1iMQ4ihsT5OqV2cuj2ajq+v00NrtUyOHkiKPo-Q@mail.gmail.com>
- <8124bbe5-eaa8-2106-2695-4788ec0f6544@gmail.com>
- <CADVatmPQRf9A9z1LbHe5cd+bFLrPGG12YxPh2-yXAj_C9s8ZeA@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <870de0d9-5c08-9431-a46a-33ee4d3a6617@gmail.com>
-Date:   Thu, 18 Jul 2019 17:08:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2390698AbfGRPN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 11:13:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50206 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390302AbfGRPNY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 11:13:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=/e4qJAHtJXmwYKF013t3QPS6FfQWdbnnFMctkcP7TX4=; b=OPXu0I/6Un6hwESiN4Tk81h5Ev
+        NvO3HRiepBJc3RHkhtUjjA7r2mvrSy4mIn4XwNWoasMk6TlHF9BeD3PEwKGw/x290iCo/wJdN3B8i
+        gM1qaA8v94GyP3eroP2vjZ4IHb+4CY9S1neUlaccB5VnMg+uJEJTYwoWen2I6TVDa5ug=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ho85m-0007ZX-M3; Thu, 18 Jul 2019 17:13:10 +0200
+Date:   Thu, 18 Jul 2019 17:13:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Parshuram Thombare <pthombar@cadence.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        f.fainelli@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux-kernel@vger.kernel.org, rafalc@cadence.com,
+        piotrs@cadence.com, aniljoy@cadence.com, arthurm@cadence.com,
+        stevenh@cadence.com, mparab@cadence.com
+Subject: Re: [PATCH v6 0/5] net: macb: cover letter
+Message-ID: <20190718151310.GE25635@lunn.ch>
+References: <1562769391-31803-1-git-send-email-pthombar@cadence.com>
 MIME-Version: 1.0
-In-Reply-To: <CADVatmPQRf9A9z1LbHe5cd+bFLrPGG12YxPh2-yXAj_C9s8ZeA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1562769391-31803-1-git-send-email-pthombar@cadence.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 10, 2019 at 03:36:31PM +0100, Parshuram Thombare wrote:
+> Hello !
+> 
+> This is 6th version of patch set containing following patches
+> for Cadence ethernet controller driver.
 
+Hi Parshuram
 
-On 7/18/19 2:55 PM, Sudip Mukherjee wrote:
+One thing which was never clear is how you are testing the features
+you are adding. Please could you describe your test setup and how each
+new feature is tested using that hardware. I'm particularly interested
+in what C45 device are you using? But i expect Russell would like to
+know more about SFP modules you are using. Do you have any which
+require 1000BaseX, 2500BaseX, or provide copper 1G?
 
-> Thanks Eric. But there is no improvement in delay between
-> softirq_raise and softirq_entry with this change.
-> But moving to a later kernel (linus master branch? ) like Thomas has
-> said in the other mail might be difficult atm. I can definitely
-> move to v4.14.133 if that helps. Thomas ?
-
-If you are tracking max latency then I guess you have to tweak SOFTIRQ_NOW_MASK
-to include NET_RX_SOFTIRQ
-
-The patch I gave earlier would only lower the probability of events, not completely get rid of them.
-
-
-
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index 0427a86743a46b7e1891f7b6c1ff585a8a1695f5..302046dd8d7e6740e466c422954f22565fe19e69 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -81,7 +81,7 @@ static void wakeup_softirqd(void)
-  * right now. Let ksoftirqd handle this at its own rate, to get fairness,
-  * unless we're doing some of the synchronous softirqs.
-  */
--#define SOFTIRQ_NOW_MASK ((1 << HI_SOFTIRQ) | (1 << TASKLET_SOFTIRQ))
-+#define SOFTIRQ_NOW_MASK ((1 << HI_SOFTIRQ) | (1 << TASKLET_SOFTIRQ) | (1 << NET_RX_SOFTIRQ))
- static bool ksoftirqd_running(unsigned long pending)
- {
-        struct task_struct *tsk = __this_cpu_read(ksoftirqd);
-
-
-
+Thanks
+	Andrew
