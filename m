@@ -2,146 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB3B76D52D
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD166D547
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404059AbfGRTpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 15:45:22 -0400
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:52442 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404033AbfGRTpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 15:45:19 -0400
-Received: by mail-pf1-f202.google.com with SMTP id a20so17187872pfn.19
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 12:45:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=+kj/i0peoh/v65WgevbFUm6xG2Y2qR8kjesuSzHy2lw=;
-        b=fUk+ZTcoldUn+2TCtr1PoKSI+zovfN9gKmXjF4DrrDJ2mSIEUWLiWeWLX372f4p7D7
-         XH47RYmM1fDnYZrXQezARD7Bq4u3XiB7YfGYIBP2lw2CaDaI5pLwSZpqdZVUvMMDZ4a3
-         Ui6jNsTXZVHxNPcmbFg1EEz62Z2B0DEvIv8WosO1SgJE9k2GlfUb3uP9EEak5G4+pbZU
-         pML3LBLqQq3brER9SrLoE55UgsBTAAID2fkHr3thzYM+waRIXUXdGVRDnkk+LTv0nnt1
-         R+Zo0PRnopkj51Suj0kOGDZoLZd8t2G0hpiwyTBSuZ6qXwF3WpC3oqf9DSXYLKtkhkIG
-         6JmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=+kj/i0peoh/v65WgevbFUm6xG2Y2qR8kjesuSzHy2lw=;
-        b=cLf4fWY8MqYlfFdHgJe11I/NScdLJiNXyR3pMZTPYKftdKn7vBXYZ9p6HS7e9c3hz/
-         9LdIrDogE7fgXfDRqwCp8U2IZ1NJITZHkxEKB/JSwC7dSk5BCB6Jjiy5cspk3WNLKcE7
-         k817+HEGA9RnFN3mUFp4q2w3G+j5KNQbPc2jvU+RFgzmzP/zawPYyu3K70ZWRfS7saXm
-         Xs7s4yT4pq/Ag4Ba57spHggEx/shtz4x4gKrvYrgbQgFNb5sndnxtZwADQE2S/2Y1/ut
-         Hb3TaqtF/57IuDFp2xtAEK3wQtaSmdDPdibOq16442TvFIn1JRiqJ+KgUfyOQuoJqhRr
-         ibjg==
-X-Gm-Message-State: APjAAAUjcRANvlQXLesM5/cemqDNfR72KnNPZJjY5AWMMWd0r4LvuR5k
-        xaOsvsCUQLPxDV5/d2ZcfYBLmLs6MhPZVTKhIgZcDQ==
-X-Google-Smtp-Source: APXvYqw2sxTZK/+Pp57R6A0PaZfCVXeZ1BWP5no8glAKxdRukIof4kMsddZqmrhFlykd+PpgRIKXIGQ6acGXoyjx5NaKtg==
-X-Received: by 2002:a63:24c1:: with SMTP id k184mr50552564pgk.120.1563479118172;
- Thu, 18 Jul 2019 12:45:18 -0700 (PDT)
-Date:   Thu, 18 Jul 2019 12:44:09 -0700
-In-Reply-To: <20190718194415.108476-1-matthewgarrett@google.com>
-Message-Id: <20190718194415.108476-24-matthewgarrett@google.com>
-Mime-Version: 1.0
-References: <20190718194415.108476-1-matthewgarrett@google.com>
-X-Mailer: git-send-email 2.22.0.510.g264f2c817a-goog
-Subject: [PATCH V36 23/29] bpf: Restrict bpf when kernel lockdown is in
- confidentiality mode
-From:   Matthew Garrett <matthewgarrett@google.com>
-To:     jmorris@namei.org
-Cc:     linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Matthew Garrett <mjg59@google.com>, netdev@vger.kernel.org,
-        Chun-Yi Lee <jlee@suse.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+        id S2404179AbfGRTp5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jul 2019 15:45:57 -0400
+Received: from mga18.intel.com ([134.134.136.126]:40300 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404208AbfGRTp4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 15:45:56 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jul 2019 12:45:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,279,1559545200"; 
+   d="scan'208";a="176107529"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by FMSMGA003.fm.intel.com with ESMTP; 18 Jul 2019 12:45:55 -0700
+Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
+ ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 18 Jul 2019 12:45:55 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.240]) by
+ ORSMSX161.amr.corp.intel.com ([169.254.4.246]) with mapi id 14.03.0439.000;
+ Thu, 18 Jul 2019 12:45:55 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH iproute2 net-next v4 1/6] Update kernel headers
+Thread-Topic: [PATCH iproute2 net-next v4 1/6] Update kernel headers
+Thread-Index: AQHVPBAl/v6gN2xMYUaZ5DN8ENyYoKbRGsGAgAAlKgA=
+Date:   Thu, 18 Jul 2019 19:45:50 +0000
+Message-ID: <0D8498F1-430A-4C4C-9E9D-1F2A205BB672@intel.com>
+References: <1563306789-2908-1-git-send-email-vedang.patel@intel.com>
+ <f1a94a8c-ca50-f9db-795f-b5077a2d308e@gmail.com>
+In-Reply-To: <f1a94a8c-ca50-f9db-795f-b5077a2d308e@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.14.208]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <8345B6B9B559C04F8571ED319438143E@intel.com>
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
 
-bpf_read() and bpf_read_str() could potentially be abused to (eg) allow
-private keys in kernel memory to be leaked. Disable them if the kernel
-has been locked down in confidentiality mode.
 
-Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Signed-off-by: Matthew Garrett <mjg59@google.com>
-cc: netdev@vger.kernel.org
-cc: Chun-Yi Lee <jlee@suse.com>
-cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
----
- include/linux/security.h     |  1 +
- kernel/trace/bpf_trace.c     | 10 ++++++++++
- security/lockdown/lockdown.c |  1 +
- 3 files changed, 12 insertions(+)
+> On Jul 18, 2019, at 10:32 AM, David Ahern <dsahern@gmail.com> wrote:
+> 
+> On 7/16/19 1:53 PM, Vedang Patel wrote:
+>> The type for txtime-delay parameter will change from s32 to u32. So,
+>> make the corresponding change in the ABI file as well.
+>> 
+>> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+>> ---
+>> include/uapi/linux/pkt_sched.h | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+>> index 1f623252abe8..18f185299f47 100644
+>> --- a/include/uapi/linux/pkt_sched.h
+>> +++ b/include/uapi/linux/pkt_sched.h
+>> @@ -1174,7 +1174,7 @@ enum {
+>> 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME, /* s64 */
+>> 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
+>> 	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
+>> -	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* s32 */
+>> +	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
+>> 	__TCA_TAPRIO_ATTR_MAX,
+>> };
+>> 
+>> 
+> 
+> kernel uapi headers are synced from the kernel. You will need to make
+> this change to the kernel header and it will make its way to iproute2
+Okay, I will drop this patch in the next version.
 
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 987d8427f091..8dd1741a52cd 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -118,6 +118,7 @@ enum lockdown_reason {
- 	LOCKDOWN_INTEGRITY_MAX,
- 	LOCKDOWN_KCORE,
- 	LOCKDOWN_KPROBES,
-+	LOCKDOWN_BPF_READ,
- 	LOCKDOWN_CONFIDENTIALITY_MAX,
- };
- 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index ca1255d14576..492a8bfaae98 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -142,8 +142,13 @@ BPF_CALL_3(bpf_probe_read, void *, dst, u32, size, const void *, unsafe_ptr)
- {
- 	int ret;
- 
-+	ret = security_locked_down(LOCKDOWN_BPF_READ);
-+	if (ret < 0)
-+		goto out;
-+
- 	ret = probe_kernel_read(dst, unsafe_ptr, size);
- 	if (unlikely(ret < 0))
-+out:
- 		memset(dst, 0, size);
- 
- 	return ret;
-@@ -569,6 +574,10 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
- {
- 	int ret;
- 
-+	ret = security_locked_down(LOCKDOWN_BPF_READ);
-+	if (ret < 0)
-+		goto out;
-+
- 	/*
- 	 * The strncpy_from_unsafe() call will likely not fill the entire
- 	 * buffer, but that's okay in this circumstance as we're probing
-@@ -580,6 +589,7 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
- 	 */
- 	ret = strncpy_from_unsafe(dst, unsafe_ptr, size);
- 	if (unlikely(ret < 0))
-+out:
- 		memset(dst, 0, size);
- 
- 	return ret;
-diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index 6b123cbf3748..1b89d3e8e54d 100644
---- a/security/lockdown/lockdown.c
-+++ b/security/lockdown/lockdown.c
-@@ -33,6 +33,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
- 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
- 	[LOCKDOWN_KCORE] = "/proc/kcore access",
- 	[LOCKDOWN_KPROBES] = "use of kprobes",
-+	[LOCKDOWN_BPF_READ] = "use of bpf to read kernel RAM",
- 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
- };
- 
--- 
-2.22.0.510.g264f2c817a-goog
-
+Thanks,
+Vedang
