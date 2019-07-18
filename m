@@ -2,127 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8046D5A1
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 22:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5686D5CA
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 22:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391472AbfGRUO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 16:14:58 -0400
-Received: from mail-io1-f53.google.com ([209.85.166.53]:36539 "EHLO
-        mail-io1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391319AbfGRUO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 16:14:57 -0400
-Received: by mail-io1-f53.google.com with SMTP id o9so53724153iom.3;
-        Thu, 18 Jul 2019 13:14:57 -0700 (PDT)
+        id S2403897AbfGRUbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 16:31:00 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:43282 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727972AbfGRUbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 16:31:00 -0400
+Received: by mail-lj1-f195.google.com with SMTP id y17so4063675ljk.10;
+        Thu, 18 Jul 2019 13:30:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=r2pTm0RwMQarnOMoV8lDgMG4J6XK5815xYl1WaBhWuw=;
-        b=jXt46JwdBMPM4AF2MXHtgaUsQMs3wXwa8Ez4IImyYL5lK0RzY+Por1cwu6pd3tf1GK
-         LrR59Z86usCvS5PmkGhF3DPyAYzBW9zSlJJMqBiO/DfbEJy4NJ+BGaB2eCH1E3ERB7it
-         hf9/1kg5cy1KyOyY/PlWh63D5KRrr8tLDGxHLUH0gxkLR1rYP0+NHe4sRkS08I6N0XrV
-         JU7TSwR1wWwxivUuoIpCQNY8YwM5drG9QWzXEwcQyhOrHW5HW7BGP0GICe9p6fZfIf1V
-         9Mzjq9NaONVeWjIHfoGxtbcHJ/60e/CclfhDs0EBmZQcAJ8WmTyhYeV6q0a9825w6QF3
-         Fa/Q==
+        bh=5uFK7MqKRb+oFVKD89Io/malOAroV84oVCRoYwQTVLs=;
+        b=ByuNj8jVyAGVVYdET8ktdlDqRCowxA9phMWJ7m0Sg/hw15WKOcetKCoYWFrQQJQRKo
+         LtEcfREetsclcT4WkgGXcEBP0H8PXdH/UinOi0mrnbXCaG1uU7JZ/TSnEnww/R4X/mTz
+         oY9MWuFdVzOuJB5eaML5omcF2fQwGzk4Q2mCo4iQ+VdUEQ8P4ArKNmYpxQn4VQnZcBIm
+         tZibUPoWhfIJRuQA9XBnVICH4JPqmb7LBSilxOxr8Kol1LQFKxRHzVLNBPcYd0GBe9qK
+         UJK5HYVWYrK9uQ2rjRIQICntWRhJ/+09hxemcPaQHi7E/J8jQ2HvL+W709oR5yYvVCaO
+         1FkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=r2pTm0RwMQarnOMoV8lDgMG4J6XK5815xYl1WaBhWuw=;
-        b=SQHJuno+MXcY9P/5NzVi4mOA+gfuygpaXZkFSxrIKaaBo/tpoxJuh5pXit5rF4ZOeW
-         9fKINWwcnZOy1bfWkRNfd0doOs7t51O/ZZj2itJIHJzL6KdxOOhc5+b/qfNNE0kRsRPH
-         AhQ+mYmLl5eZ4OY5RhqIv0HnTWa84U8aj280YPSnQwCxLaOmXkp//oPl/xWVAYby2NN+
-         PF9I0NVUWbWwJ6uMfsnRj5EUGW2Rj/GC9Fjqey0+JyWM5noJ/6zPPE1LoTJaxsqQz7o7
-         XjJf0gTPQERs8xOvd0RaNSBWGCizvRoKe5GHauuYnjQgZZOkQSAVOqXHa/LOKKeRQW1S
-         uJzg==
-X-Gm-Message-State: APjAAAVGrcYiIwfciNqVz8x5MRkRVVzCK/pgzutKiNKs5rJNxJk+BANW
-        Bvj401pAckoJDLVg9a9tCBo=
-X-Google-Smtp-Source: APXvYqxSMTFdNpWMpK6BWoxyGer9NJ15j1T9DNe6DsnJeFmfcT3n3z8uenJp6lvRsFHRyu9jM7R6XA==
-X-Received: by 2002:a5d:8b52:: with SMTP id c18mr44577354iot.89.1563480896915;
-        Thu, 18 Jul 2019 13:14:56 -0700 (PDT)
-Received: from svens-asus.arcx.com ([184.94.50.30])
-        by smtp.gmail.com with ESMTPSA id p3sm31399170iom.7.2019.07.18.13.14.56
+        bh=5uFK7MqKRb+oFVKD89Io/malOAroV84oVCRoYwQTVLs=;
+        b=Wd/ttAEyMjnAWJmG6cpWJ5G0iiigr1Dp59imj/LLlHB/+T6lDyJeDmoe+mvsApnNZf
+         up5B7z0ITJFd5ElYDH9CCbsIdooeDg4AFGu3Eiixcxv3GAXOlYOBS6Mb7kd2oFGsgecB
+         QlQvOkzM6tPNyba0jVreclm4TwnCF6dmxjDiYGivoxTopmj0ET7vOfnDyxAFprREMO9V
+         lXnKKyQqt8tSgRZdR5BVmUzfbUPIrSmO1nS8W2Ggt5qmdMWGCjXj0Cr65ohBYh4YL0NL
+         11K0/2Bx68R/lywTNoH/90+lgVYJSomS2arS02Zx/ngPzlz+R3yfKJNOjcqUflI0by4C
+         HFTA==
+X-Gm-Message-State: APjAAAX23c6cw6DfX54srxA1ajs+a+btBb05ze+0QbCSkw7nupvqFXJH
+        lcdOyCHuBNop1jOcyd2NAys=
+X-Google-Smtp-Source: APXvYqzYOuKKYg4wEuoB/Wrmt94ndQPSqKVzWpoKOkFOelXaVESsDwy8xn8HcjyigaNiphMBNBSVag==
+X-Received: by 2002:a2e:9a13:: with SMTP id o19mr26037315lji.102.1563481858169;
+        Thu, 18 Jul 2019 13:30:58 -0700 (PDT)
+Received: from ul001888.eu.tieto.com ([91.90.160.140])
+        by smtp.gmail.com with ESMTPSA id d16sm5229387ljc.96.2019.07.18.13.30.56
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 18 Jul 2019 13:14:56 -0700 (PDT)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Fugang Duan <fugang.duan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Fabio Estevam <festevam@gmail.com>,
-        Lucas Stach <l.stach@pengutronix.de>
-Subject: [PATCH v1] dt-bindings: fec: explicitly mark deprecated properties
-Date:   Thu, 18 Jul 2019 16:14:53 -0400
-Message-Id: <20190718201453.13062-1-TheSven73@gmail.com>
+        Thu, 18 Jul 2019 13:30:57 -0700 (PDT)
+From:   Vasyl Gomonovych <gomonovych@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org
+Cc:     Vasyl Gomonovych <gomonovych@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ath10k: Use ARRAY_SIZE
+Date:   Thu, 18 Jul 2019 22:30:32 +0200
+Message-Id: <20190718203032.15528-1-gomonovych@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fec's gpio phy reset properties have been deprecated.
-Update the dt-bindings documentation to explicitly mark
-them as such, and provide a short description of the
-recommended alternative.
+fix coccinelle warning, use ARRAY_SIZE
 
-Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+Signed-off-by: Vasyl Gomonovych <gomonovych@gmail.com>
 ---
- .../devicetree/bindings/net/fsl-fec.txt       | 30 +++++++++++--------
- 1 file changed, 17 insertions(+), 13 deletions(-)
+ drivers/net/wireless/ath/ath10k/snoc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fec.txt b/Documentation/devicetree/bindings/net/fsl-fec.txt
-index 2d41fb96ce0a..5b88fae0307d 100644
---- a/Documentation/devicetree/bindings/net/fsl-fec.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fec.txt
-@@ -7,18 +7,6 @@ Required properties:
- - phy-mode : See ethernet.txt file in the same directory
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index b491361e6ed4..49fc04412e9b 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -976,8 +976,7 @@ static int ath10k_snoc_wlan_enable(struct ath10k *ar,
+ 				  sizeof(struct ath10k_svc_pipe_cfg);
+ 	cfg.ce_svc_cfg = (struct ath10k_svc_pipe_cfg *)
+ 		&target_service_to_ce_map_wlan;
+-	cfg.num_shadow_reg_cfg = sizeof(target_shadow_reg_cfg_map) /
+-					sizeof(struct ath10k_shadow_reg_cfg);
++	cfg.num_shadow_reg_cfg = ARRAY_SIZE(target_shadow_reg_cfg_map);
+ 	cfg.shadow_reg_cfg = (struct ath10k_shadow_reg_cfg *)
+ 		&target_shadow_reg_cfg_map;
  
- Optional properties:
--- phy-reset-gpios : Should specify the gpio for phy reset
--- phy-reset-duration : Reset duration in milliseconds.  Should present
--  only if property "phy-reset-gpios" is available.  Missing the property
--  will have the duration be 1 millisecond.  Numbers greater than 1000 are
--  invalid and 1 millisecond will be used instead.
--- phy-reset-active-high : If present then the reset sequence using the GPIO
--  specified in the "phy-reset-gpios" property is reversed (H=reset state,
--  L=operation state).
--- phy-reset-post-delay : Post reset delay in milliseconds. If present then
--  a delay of phy-reset-post-delay milliseconds will be observed after the
--  phy-reset-gpios has been toggled. Can be omitted thus no delay is
--  observed. Delay is in range of 1ms to 1000ms. Other delays are invalid.
- - phy-supply : regulator that powers the Ethernet PHY.
- - phy-handle : phandle to the PHY device connected to this device.
- - fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
-@@ -47,11 +35,27 @@ Optional properties:
-   For imx6sx, "int0" handles all 3 queues and ENET_MII. "pps" is for the pulse
-   per second interrupt associated with 1588 precision time protocol(PTP).
- 
--
- Optional subnodes:
- - mdio : specifies the mdio bus in the FEC, used as a container for phy nodes
-   according to phy.txt in the same directory
- 
-+Deprecated optional properties:
-+	To avoid these, create a phy node according to phy.txt in the same
-+	directory, and point the fec's "phy-handle" property to it. Then use
-+	the phy's reset binding, again described by phy.txt.
-+- phy-reset-gpios : Should specify the gpio for phy reset
-+- phy-reset-duration : Reset duration in milliseconds.  Should present
-+  only if property "phy-reset-gpios" is available.  Missing the property
-+  will have the duration be 1 millisecond.  Numbers greater than 1000 are
-+  invalid and 1 millisecond will be used instead.
-+- phy-reset-active-high : If present then the reset sequence using the GPIO
-+  specified in the "phy-reset-gpios" property is reversed (H=reset state,
-+  L=operation state).
-+- phy-reset-post-delay : Post reset delay in milliseconds. If present then
-+  a delay of phy-reset-post-delay milliseconds will be observed after the
-+  phy-reset-gpios has been toggled. Can be omitted thus no delay is
-+  observed. Delay is in range of 1ms to 1000ms. Other delays are invalid.
-+
- Example:
- 
- ethernet@83fec000 {
 -- 
 2.17.1
 
