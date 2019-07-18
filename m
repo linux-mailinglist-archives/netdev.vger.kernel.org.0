@@ -2,101 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30CF96D5D8
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 22:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E191D6D5EF
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 22:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391267AbfGRUgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 16:36:17 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55430 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727687AbfGRUgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 16:36:17 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B8A3815280D71;
-        Thu, 18 Jul 2019 13:36:16 -0700 (PDT)
-Date:   Thu, 18 Jul 2019 13:36:14 -0700 (PDT)
-Message-Id: <20190718.133614.1555276747207613273.davem@davemloft.net>
-To:     pablo@netfilter.org
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        jiri@resnulli.us, jakub.kicinski@netronome.com, pshelar@ovn.org
-Subject: Re: [PATCH net,v4 0/4] flow_offload fixes
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190718.123939.886909513952061536.davem@davemloft.net>
-References: <20190718175931.13529-1-pablo@netfilter.org>
-        <20190718.123939.886909513952061536.davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jul 2019 13:36:17 -0700 (PDT)
+        id S2391043AbfGRUn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 16:43:58 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37861 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728028AbfGRUn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 16:43:58 -0400
+Received: by mail-pl1-f193.google.com with SMTP id b3so14472289plr.4;
+        Thu, 18 Jul 2019 13:43:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LYEXZ5N9rPpogmDAcWX6hwABOAs14BvUTBurxuuI1RY=;
+        b=BB5hxWg3aJdp8hn8wlbXIAyYL+T1ONv8UiDdbsJUvl7cnmHGgeh5nSVKDpd46jefRI
+         OAZIoClrZ8z9dTc6WxJdaQ4rWT3ohTqTRQJczOMuku0bdVSpyryYyMotUhrn4p0PQBj+
+         OR98GFIWyCoC4Kczi7EBydUGPy/5ubdP8jOa3ag2Pf8sfx7rEek/WxS+FqCYM/AA5N9e
+         ArqU/ejTPUkN6Rh0RED0SZ+WlXjw1vmtlhSPhH7Zv8qgs0t7kKg0+JTQjggbcoXYVWMx
+         6s35qNer+Ore2H6OhHqlnk1EldBbqZvoLLNn9mrUmFVId8dHkUxkS3dPdtVUI+HAxWx+
+         399w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LYEXZ5N9rPpogmDAcWX6hwABOAs14BvUTBurxuuI1RY=;
+        b=BO4iQ9I4No6FVOwh/ekA7U69sr4qL6pSZVeXoAOVeqWtE4qbijR2OomTaxqDgqHUPA
+         qDMZMLJW0+WsKvRGpjr6bRiO49M/3m1k6y+3pxioOtOafLriX2EB4uego+TK4G8PStHF
+         E9fHleoJEalK6d8Ljz6tBdjVBFWGcFTCgmbR6WUcY5A056PV/JVCtcYTSzJp18E8Pskf
+         x3ShurETbfWHp257VeNrzEDHcfjFvMeEsPxrlt3X3g6Tg/NdpHtrLAb+3tABd0UmEBrC
+         6rdz9JS91ftr4W875P4mffOUYcoASTcEfdscwl5fqQaNVCuOq1psCaMQhGTAOBrsY+xb
+         Odqw==
+X-Gm-Message-State: APjAAAVAC0ATpJU4KaiB6lFH9MuLLLuhaCaLyHq7bcs+EekNFt1GTfPp
+        IFsjFxcg1BuiKDlsAl+J8dDflGsr
+X-Google-Smtp-Source: APXvYqxdVxflYcy1YfwwID/ae0S15efGydHsA9phGsaHFyYJjkmzNOF6ylcR74wiPpsyQ+cpRdgDSw==
+X-Received: by 2002:a17:902:b591:: with SMTP id a17mr50565034pls.96.1563482637275;
+        Thu, 18 Jul 2019 13:43:57 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::3:f9e9])
+        by smtp.gmail.com with ESMTPSA id b68sm37017265pfb.149.2019.07.18.13.43.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 18 Jul 2019 13:43:56 -0700 (PDT)
+Date:   Thu, 18 Jul 2019 13:43:54 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ys114321@gmail.com,
+        gor@linux.ibm.com, heiko.carstens@de.ibm.com, daniel@iogearbox.net
+Subject: Re: [PATCH bpf v2] bpf: fix narrower loads on s390
+Message-ID: <20190718204353.nkdsvvxybqt7vahk@ast-mbp>
+References: <20190718150103.84837-1-iii@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190718150103.84837-1-iii@linux.ibm.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogVGh1LCAxOCBK
-dWwgMjAxOSAxMjozOTozOSAtMDcwMCAoUERUKQ0KDQo+IFNlcmllcyBhcHBsaWVkLCB0aGFuayB5
-b3UuDQoNCkFjdHVhbGx5LCBJIGhhZCB0byByZXZlcnQsIHRoaXMgYnJlYWtzIHRoZSBidWlsZDoN
-Cg0KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4vaW5jbHVkZS9uZXQvbmV0ZmlsdGVyL25mX3RhYmxl
-c19vZmZsb2FkLmg6NCwNCiAgICAgICAgICAgICAgICAgZnJvbSA8Y29tbWFuZC1saW5lPjoNCi4v
-aW5jbHVkZS9uZXQvZmxvd19vZmZsb2FkLmg6IEluIGZ1bmN0aW9uIKFmbG93X2Jsb2NrX2NiX2Fk
-ZKI6DQouL2luY2x1ZGUvbmV0L2Zsb3dfb2ZmbG9hZC5oOjI5NzoyOiBlcnJvcjogaW1wbGljaXQg
-ZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24goWxpc3RfYWRkX3RhaWyiIFstV2Vycm9yPWltcGxpY2l0
-LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQ0KICBsaXN0X2FkZF90YWlsKCZibG9ja19jYi0+bGlzdCwg
-Jm9mZmxvYWQtPmNiX2xpc3QpOw0KICBefn5+fn5+fn5+fn5+DQouL2luY2x1ZGUvbmV0L2Zsb3df
-b2ZmbG9hZC5oOiBJbiBmdW5jdGlvbiChZmxvd19ibG9ja19jYl9yZW1vdmWiOg0KLi9pbmNsdWRl
-L25ldC9mbG93X29mZmxvYWQuaDozMDM6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9m
-IGZ1bmN0aW9uIKFsaXN0X21vdmWiIFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0
-aW9uXQ0KICBsaXN0X21vdmUoJmJsb2NrX2NiLT5saXN0LCAmb2ZmbG9hZC0+Y2JfbGlzdCk7DQog
-IF5+fn5+fn5+fg0KLi9pbmNsdWRlL25ldC9mbG93X29mZmxvYWQuaDogSW4gZnVuY3Rpb24goWZs
-b3dfYmxvY2tfaW5pdKI6DQouL2luY2x1ZGUvbmV0L2Zsb3dfb2ZmbG9hZC5oOjM0NjoyOiBlcnJv
-cjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24goUlOSVRfTElTVF9IRUFEojsgZGlk
-IHlvdSBtZWFuIKFYQVRUUl9MSVNUX01BWKI/IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRl
-Y2xhcmF0aW9uXQ0KICBJTklUX0xJU1RfSEVBRCgmZmxvd19ibG9jay0+Y2JfbGlzdCk7DQogIF5+
-fn5+fn5+fn5+fn5+DQogIFhBVFRSX0xJU1RfTUFYDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gLi9p
-bmNsdWRlL25ldC9uZXRmaWx0ZXIvbmZfdGFibGVzLmg6NSwNCiAgICAgICAgICAgICAgICAgZnJv
-bSAuL2luY2x1ZGUvbmV0L25ldGZpbHRlci9uZl90YWJsZXNfb2ZmbG9hZC5oOjUsDQogICAgICAg
-ICAgICAgICAgIGZyb20gPGNvbW1hbmQtbGluZT46DQouL2luY2x1ZGUvbGludXgvbGlzdC5oOiBB
-dCB0b3AgbGV2ZWw6DQouL2luY2x1ZGUvbGludXgvbGlzdC5oOjI2OjIwOiB3YXJuaW5nOiBjb25m
-bGljdGluZyB0eXBlcyBmb3IgoUlOSVRfTElTVF9IRUFEog0KIHN0YXRpYyBpbmxpbmUgdm9pZCBJ
-TklUX0xJU1RfSEVBRChzdHJ1Y3QgbGlzdF9oZWFkICpsaXN0KQ0KICAgICAgICAgICAgICAgICAg
-ICBefn5+fn5+fn5+fn5+fg0KLi9pbmNsdWRlL2xpbnV4L2xpc3QuaDoyNjoyMDogZXJyb3I6IHN0
-YXRpYyBkZWNsYXJhdGlvbiBvZiChSU5JVF9MSVNUX0hFQUSiIGZvbGxvd3Mgbm9uLXN0YXRpYyBk
-ZWNsYXJhdGlvbg0KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4vaW5jbHVkZS9uZXQvbmV0ZmlsdGVy
-L25mX3RhYmxlc19vZmZsb2FkLmg6NCwNCiAgICAgICAgICAgICAgICAgZnJvbSA8Y29tbWFuZC1s
-aW5lPjoNCi4vaW5jbHVkZS9uZXQvZmxvd19vZmZsb2FkLmg6MzQ2OjI6IG5vdGU6IHByZXZpb3Vz
-IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIKFJTklUX0xJU1RfSEVBRKIgd2FzIGhlcmUNCiAgSU5J
-VF9MSVNUX0hFQUQoJmZsb3dfYmxvY2stPmNiX2xpc3QpOw0KICBefn5+fn5+fn5+fn5+fg0KSW4g
-ZmlsZSBpbmNsdWRlZCBmcm9tIC4vaW5jbHVkZS9uZXQvbmV0ZmlsdGVyL25mX3RhYmxlcy5oOjUs
-DQogICAgICAgICAgICAgICAgIGZyb20gLi9pbmNsdWRlL25ldC9uZXRmaWx0ZXIvbmZfdGFibGVz
-X29mZmxvYWQuaDo1LA0KICAgICAgICAgICAgICAgICBmcm9tIDxjb21tYW5kLWxpbmU+Og0KLi9p
-bmNsdWRlL2xpbnV4L2xpc3QuaDo5MToyMDogd2FybmluZzogY29uZmxpY3RpbmcgdHlwZXMgZm9y
-IKFsaXN0X2FkZF90YWlsog0KIHN0YXRpYyBpbmxpbmUgdm9pZCBsaXN0X2FkZF90YWlsKHN0cnVj
-dCBsaXN0X2hlYWQgKm5ldywgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkNCiAgICAgICAgICAgICAg
-ICAgICAgXn5+fn5+fn5+fn5+fg0KLi9pbmNsdWRlL2xpbnV4L2xpc3QuaDo5MToyMDogZXJyb3I6
-IHN0YXRpYyBkZWNsYXJhdGlvbiBvZiChbGlzdF9hZGRfdGFpbKIgZm9sbG93cyBub24tc3RhdGlj
-IGRlY2xhcmF0aW9uDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gLi9pbmNsdWRlL25ldC9uZXRmaWx0
-ZXIvbmZfdGFibGVzX29mZmxvYWQuaDo0LA0KICAgICAgICAgICAgICAgICBmcm9tIDxjb21tYW5k
-LWxpbmU+Og0KLi9pbmNsdWRlL25ldC9mbG93X29mZmxvYWQuaDoyOTc6Mjogbm90ZTogcHJldmlv
-dXMgaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgoWxpc3RfYWRkX3RhaWyiIHdhcyBoZXJlDQogIGxp
-c3RfYWRkX3RhaWwoJmJsb2NrX2NiLT5saXN0LCAmb2ZmbG9hZC0+Y2JfbGlzdCk7DQogIF5+fn5+
-fn5+fn5+fn4NCkluIGZpbGUgaW5jbHVkZWQgZnJvbSAuL2luY2x1ZGUvbmV0L25ldGZpbHRlci9u
-Zl90YWJsZXMuaDo1LA0KICAgICAgICAgICAgICAgICBmcm9tIC4vaW5jbHVkZS9uZXQvbmV0Zmls
-dGVyL25mX3RhYmxlc19vZmZsb2FkLmg6NSwNCiAgICAgICAgICAgICAgICAgZnJvbSA8Y29tbWFu
-ZC1saW5lPjoNCi4vaW5jbHVkZS9saW51eC9saXN0Lmg6MTk5OjIwOiB3YXJuaW5nOiBjb25mbGlj
-dGluZyB0eXBlcyBmb3IgoWxpc3RfbW92ZaINCiBzdGF0aWMgaW5saW5lIHZvaWQgbGlzdF9tb3Zl
-KHN0cnVjdCBsaXN0X2hlYWQgKmxpc3QsIHN0cnVjdCBsaXN0X2hlYWQgKmhlYWQpDQogICAgICAg
-ICAgICAgICAgICAgIF5+fn5+fn5+fg0KLi9pbmNsdWRlL2xpbnV4L2xpc3QuaDoxOTk6MjA6IGVy
-cm9yOiBzdGF0aWMgZGVjbGFyYXRpb24gb2YgoWxpc3RfbW92ZaIgZm9sbG93cyBub24tc3RhdGlj
-IGRlY2xhcmF0aW9uDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gLi9pbmNsdWRlL25ldC9uZXRmaWx0
-ZXIvbmZfdGFibGVzX29mZmxvYWQuaDo0LA0KICAgICAgICAgICAgICAgICBmcm9tIDxjb21tYW5k
-LWxpbmU+Og0KLi9pbmNsdWRlL25ldC9mbG93X29mZmxvYWQuaDozMDM6Mjogbm90ZTogcHJldmlv
-dXMgaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgoWxpc3RfbW92ZaIgd2FzIGhlcmUNCiAgbGlzdF9t
-b3ZlKCZibG9ja19jYi0+bGlzdCwgJm9mZmxvYWQtPmNiX2xpc3QpOw0KICBefn5+fn5+fn4NCmNj
-MTogc29tZSB3YXJuaW5ncyBiZWluZyB0cmVhdGVkIGFzIGVycm9ycw0KbWFrZVsxXTogKioqIFtz
-Y3JpcHRzL01ha2VmaWxlLmJ1aWxkOjMwNDogaW5jbHVkZS9uZXQvbmV0ZmlsdGVyL25mX3RhYmxl
-c19vZmZsb2FkLmguc10gRXJyb3IgMQ0KbWFrZTogKioqIFtNYWtlZmlsZToxMDc3OiBpbmNsdWRl
-XSBFcnJvciAyDQptYWtlOiAqKiogV2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLg0K
+On Thu, Jul 18, 2019 at 05:01:03PM +0200, Ilya Leoshkevich wrote:
+> The very first check in test_pkt_md_access is failing on s390, which
+> happens because loading a part of a struct __sk_buff field produces
+> an incorrect result.
+> 
+> The preprocessed code of the check is:
+> 
+> {
+> 	__u8 tmp = *((volatile __u8 *)&skb->len +
+> 		((sizeof(skb->len) - sizeof(__u8)) / sizeof(__u8)));
+> 	if (tmp != ((*(volatile __u32 *)&skb->len) & 0xFF)) return 2;
+> };
+> 
+> clang generates the following code for it:
+> 
+>       0:	71 21 00 03 00 00 00 00	r2 = *(u8 *)(r1 + 3)
+>       1:	61 31 00 00 00 00 00 00	r3 = *(u32 *)(r1 + 0)
+>       2:	57 30 00 00 00 00 00 ff	r3 &= 255
+>       3:	5d 23 00 1d 00 00 00 00	if r2 != r3 goto +29 <LBB0_10>
+> 
+> Finally, verifier transforms it to:
+> 
+>   0: (61) r2 = *(u32 *)(r1 +104)
+>   1: (bc) w2 = w2
+>   2: (74) w2 >>= 24
+>   3: (bc) w2 = w2
+>   4: (54) w2 &= 255
+>   5: (bc) w2 = w2
+> 
+> The problem is that when verifier emits the code to replace a partial
+> load of a struct __sk_buff field (*(u8 *)(r1 + 3)) with a full load of
+> struct sk_buff field (*(u32 *)(r1 + 104)), an optional shift and a
+> bitwise AND, it assumes that the machine is little endian and
+> incorrectly decides to use a shift.
+> 
+> Adjust shift count calculation to account for endianness.
+> 
+> Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program context fields")
+> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> ---
+>  include/linux/filter.h | 13 +++++++++++++
+>  kernel/bpf/verifier.c  |  4 ++--
+>  2 files changed, 15 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index ff65d22cf336..4fe88e43f0fe 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -24,6 +24,8 @@
+>  
+>  #include <net/sch_generic.h>
+>  
+> +#include <asm/byteorder.h>
+> +
+
+unnecessary empty line
+
+>  #include <uapi/linux/filter.h>
+>  #include <uapi/linux/bpf.h>
+>  
+> @@ -1216,4 +1218,15 @@ struct bpf_sockopt_kern {
+>  	s32		retval;
+>  };
+>  
+> +static inline u8 bpf_narrower_load_shift(u32 size_default, u32 size, u32 off)
+
+please place this function right after bpf_ctx_narrow_access_ok()
+and order arguments the same way as bpf_ctx_narrow_access_ok does.
+
+> +{
+> +	u8 load_off = off & (size_default - 1);
+> +
+> +#ifdef __LITTLE_ENDIAN
+> +	return load_off * 8;
+> +#else
+> +	return (size_default - (load_off + size)) * 8;
+> +#endif
+> +}
+> +
+>  #endif /* __LINUX_FILTER_H__ */
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 5900cbb966b1..48edc9c9a879 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -8616,8 +8616,8 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+>  		}
+>  
+>  		if (is_narrower_load && size < target_size) {
+> -			u8 shift = (off & (size_default - 1)) * 8;
+> -
+> +			u8 shift = bpf_narrower_load_shift(size_default, size,
+> +							   off);
+>  			if (ctx_field_size <= 4) {
+>  				if (shift)
+>  					insn_buf[cnt++] = BPF_ALU32_IMM(BPF_RSH,
+> -- 
+> 2.21.0
+> 
