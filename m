@@ -2,72 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A0546D3FC
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 20:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E40766D412
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 20:38:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391170AbfGRSaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 14:30:16 -0400
-Received: from mail.us.es ([193.147.175.20]:39422 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391150AbfGRSaQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 14:30:16 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 50D62B5AB2
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 20:30:14 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4108E1150DA
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 20:30:14 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 240F896166; Thu, 18 Jul 2019 20:30:14 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7281C202D2;
-        Thu, 18 Jul 2019 20:30:11 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 18 Jul 2019 20:30:11 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 49BF44265A31;
-        Thu, 18 Jul 2019 20:30:11 +0200 (CEST)
-Date:   Thu, 18 Jul 2019 20:30:10 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     davem@davemloft.net, kadlec@netfilter.org, fw@strlen.de,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        wenxu@ucloud.cn, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        coreteam@netfilter.org, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next] netfilter: nft_meta: Fix build error
-Message-ID: <20190718183010.s243aiunyycpz3np@salvia>
-References: <20190709070126.29972-1-yuehaibing@huawei.com>
+        id S2391074AbfGRSij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 14:38:39 -0400
+Received: from mail-eopbgr50082.outbound.protection.outlook.com ([40.107.5.82]:31876
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2391010AbfGRSij (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 14:38:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aaSMuGgq+9vRWiccNTG27c3hBUYzi6nGecDFaIs1YNjC/jNBRjYp+I6rZ9r9hMnHRwXvOiVJ619D2wohSpxw/hQgtQSwSOrBg1PBHqG71B8Rif74eZ9UdPX2wHaF/H/rWAI9keCMyBaxLkPetzGB773VC6ITXw3NQggZtyb42mCkdbfD0bCgz6igjxKPz+mmzm2vAuF6kcCRNtroF7lHME6ITkg0dge1m5K8lZb7wmibM30XTp0NuiF/hNvK7VshT8YYW4BOkyeDA5iaqMCUjgaI7byBDPHBqueT9rgfkfIOnEx156Pt7lFkIQMPItrxCjkhFyTW5eVorOiRMeNk3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EGcnDIdM/z2Haz0aH3+TSDh1c8E3qwPN7AIbLjWtm/w=;
+ b=Uq9Z+B63ZYDh9rgXwiN82xHDuflQV1qZ7zaS908AUH0svG/kRvX2BfWupgoNV2UYGbIxVEjHx4vKnZUCmqBGcOmyUs8zxiwQEIXnln0OE20ywwi3m4aX1SaCEbhy7YoDRuVaf8cz9OFm901Uy3tPTH2GfP9i8lvV7SLb7WqGBnLfuaFbKxvxJZ4QiLHbY42ASC7kYdFGnCUCrr5NGDo3a9zw6QP7NXz4DwrqsiY2BX6LkUplYel0pAk2VYj5J7uPGm3iTBSw4k7mAhrxNSENY14httQRuTmuMBi213nLeU/JP5xm+lDacpXf8SWycpc3/1FS4OW3seRwQOWH3uxoqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EGcnDIdM/z2Haz0aH3+TSDh1c8E3qwPN7AIbLjWtm/w=;
+ b=gE0IPk+8F0G5Gw4Jv+hSrPB3QO00M/9So1mKukLWTkX2QhkjDyguhHkvxlIOVlgaVMvDqFAepcC7THwpKfDkxz6lBZwFYAPLuemw1yqXMzz3Lun6WX2yH7OgqXpzpeqm86WMelQixCC9tynLRx2Bs/ZkCLrDVxm9GXE2c0ujPnA=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2232.eurprd05.prod.outlook.com (10.168.56.19) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2073.14; Thu, 18 Jul 2019 18:38:34 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Thu, 18 Jul 2019
+ 18:38:34 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "hslester96@gmail.com" <hslester96@gmail.com>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] net/mlx5: Replace kfree with kvfree
+Thread-Topic: [PATCH v2] net/mlx5: Replace kfree with kvfree
+Thread-Index: AQHVPIiD+q6qV5am40aetSTVO/Hh9KbQtu4A
+Date:   Thu, 18 Jul 2019 18:38:34 +0000
+Message-ID: <76783a8ca91cb7d0e454cf699c4984243df0081d.camel@mellanox.com>
+References: <20190717101456.17401-1-hslester96@gmail.com>
+In-Reply-To: <20190717101456.17401-1-hslester96@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [73.93.153.50]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e541ba23-f9e8-4605-6e5a-08d70baf23f6
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2232;
+x-ms-traffictypediagnostic: DB6PR0501MB2232:
+x-microsoft-antispam-prvs: <DB6PR0501MB223233270E59B9CA797F7B3FBEC80@DB6PR0501MB2232.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 01026E1310
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(366004)(346002)(136003)(39860400002)(199004)(189003)(6916009)(58126008)(6436002)(229853002)(8936002)(316002)(5640700003)(81156014)(3846002)(1361003)(81166006)(2501003)(68736007)(6512007)(14444005)(66066001)(25786009)(486006)(7736002)(256004)(53936002)(478600001)(8676002)(14454004)(54906003)(76116006)(71190400001)(71200400001)(2906002)(26005)(91956017)(36756003)(446003)(99286004)(186003)(76176011)(6116002)(102836004)(6486002)(2351001)(86362001)(305945005)(6246003)(11346002)(66476007)(66446008)(66556008)(1411001)(5660300002)(6506007)(66946007)(2616005)(118296001)(4326008)(476003)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2232;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: BbshuiZdt34tnV8yChKbW/x6qir2cekgSguXzPbxkZF7CXakaMB5FKV3sHXUv3LkyfDXa4FaLRJUdjBqOeYEKT5Ub7cmANNgbDIaQdq6/EsUBrEifiVQvnVCJ/LWy/raZaBg50H8ge2xCpBzrTkIYq84YTizZCY7MdW+XpnQK6aFjblmN1V34DqkoIxnHysj7E8sKosUYF2i+jp7+iwEibnF4CAG/hIGkU2B+JnYQC09XCywclhkcRjxymCnbc+wS+1UEZ5UWCYUnG6wLSF3/jj0iuhcZKBqoLp9OwZzstaJsDYx3nFd19p5A13I1D57p6xbXRjvTOCXE/hgcLDzaTc26NzAfhW8C+w8yPLRqTDMbFzVEQs3fDQAhE45SStzJKGtX0pEb7nTaTaAWaTDXMC4oPICBC4JbT3vyAn3yv0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0268E5955D3485479A4E3E191C96DE71@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709070126.29972-1-yuehaibing@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e541ba23-f9e8-4605-6e5a-08d70baf23f6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2019 18:38:34.6179
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2232
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 03:01:26PM +0800, YueHaibing wrote:
-> If NFT_BRIDGE_META is y and NF_TABLES is m, building fails:
-> 
-> net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_init':
-> nft_meta_bridge.c:(.text+0xd0): undefined reference to `nft_parse_register'
-> nft_meta_bridge.c:(.text+0xec): undefined reference to `nft_validate_register_store'
-
-I took this one from Arnd instead:
-
-https://patchwork.ozlabs.org/patch/1130262/
-
-Thanks.
+T24gV2VkLCAyMDE5LTA3LTE3IGF0IDE4OjE0ICswODAwLCBDaHVob25nIFl1YW4gd3JvdGU6DQo+
+IFZhcmlhYmxlIGFsbG9jYXRlZCBieSBrdm1hbGxvYyBzaG91bGQgbm90IGJlIGZyZWVkIGJ5IGtm
+cmVlLg0KPiBCZWNhdXNlIGl0IG1heSBiZSBhbGxvY2F0ZWQgYnkgdm1hbGxvYy4NCj4gU28gcmVw
+bGFjZSBrZnJlZSB3aXRoIGt2ZnJlZSBoZXJlLg0KPiANCj4gRml4ZXM6IDliMWYyOTgyMzYwNTcg
+KCJuZXQvbWx4NTogQWRkIHN1cHBvcnQgZm9yIEZXIGZhdGFsIHJlcG9ydGVyDQo+IGR1bXAiKQ0K
+PiBTaWduZWQtb2ZmLWJ5OiBDaHVob25nIFl1YW4gPGhzbGVzdGVyOTZAZ21haWwuY29tPg0KDQpB
+Y2tlZC1ieTogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQoNCkRhdmUsIGkg
+Z3Vlc3MgdGhpcyBjYW4gZ28gdG8gbmV0Lg0KDQpUaGFua3MsDQpTYWVlZC4NCg0KPiAtLS0NCj4g
+Q2hhbmdlcyBpbiB2MjoNCj4gICAtIEFkZCBjb3JyZXNwb25kaW5nIEZpeGVzIHRhZw0KPiANCj4g
+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9oZWFsdGguYyB8IDIgKy0N
+Cj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4g
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9oZWFs
+dGguYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9oZWFsdGgu
+Yw0KPiBpbmRleCAyZmU2OTIzZjdjZTAuLjkzMTQ3NzdkOTllMyAxMDA2NDQNCj4gLS0tIGEvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2hlYWx0aC5jDQo+ICsrKyBiL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9oZWFsdGguYw0KPiBAQCAtNTk3
+LDcgKzU5Nyw3IEBAIG1seDVfZndfZmF0YWxfcmVwb3J0ZXJfZHVtcChzdHJ1Y3QNCj4gZGV2bGlu
+a19oZWFsdGhfcmVwb3J0ZXIgKnJlcG9ydGVyLA0KPiAgCWVyciA9IGRldmxpbmtfZm1zZ19hcnJf
+cGFpcl9uZXN0X2VuZChmbXNnKTsNCj4gIA0KPiAgZnJlZV9kYXRhOg0KPiAtCWtmcmVlKGNyX2Rh
+dGEpOw0KPiArCWt2ZnJlZShjcl9kYXRhKTsNCj4gIAlyZXR1cm4gZXJyOw0KPiAgfQ0KPiAgDQo=
