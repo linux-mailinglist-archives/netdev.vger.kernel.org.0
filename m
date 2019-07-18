@@ -2,80 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D63E86CFF9
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 16:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 793A46D004
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 16:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727776AbfGROig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 10:38:36 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37324 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726040AbfGROig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 10:38:36 -0400
-Received: by mail-wm1-f66.google.com with SMTP id f17so25948647wme.2
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 07:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=JJvgkaSmjCJtrmNzhzZMuMwrF6MiFraFG+jIt7ToOOM=;
-        b=BWQaoHxs1KNZfOL28/JXC62H2rsulGa8CnEr+UoSrvoCMzJnNrS5V/+X8cPs67sgiO
-         s9CD0PU3QmRGfNv9stXfuMJB6rgAwabpJ0stB+UnYbftkjFqH6d8iTlAaysf54OlrkgM
-         uohfuqUZPVxgGuS0zjdT1JAUCjtqHHwZftG3P+b/9PctF5c8yij34RIBUdL7EDy9O4na
-         lFcHlLGa7y/ap62KVYY9nUr5TpQ3IzxFwdNGNIjuAA4XaEhQh2Lv698LI/bdFObZaVbk
-         1qWTCQwfRkh70eoU5v/rci/OzkMKUrQ/XCtXgWsCtX8LPR389CZGL/zFSOWM7bB2Mfof
-         6AcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=JJvgkaSmjCJtrmNzhzZMuMwrF6MiFraFG+jIt7ToOOM=;
-        b=ms2f0rv+Jdb5F63noeDYj9iaSr2S5/SXWlBx15aa8RhTfZCr8gjjE3kYVhpYAZXwp6
-         d880HsGDOsRuaZTi9YkTXjLzgN4ENfM8oEKJcG08e/3z+Ty4eIBxWptRq3T3kV/8p63J
-         dHj2JbMsPcip2hLsAQ5btUPycmiYDdMwEpX9ValoV2Mvjaa66EhAEBkut8n6t/0ErvPr
-         EU2TNpw+IpSWkPrrTV6HptBTGONirGry9jBiOQmuO3u0izNCXQpqZcDlijJ4KqIMux95
-         M2Sz2H6Y0mXI3vLvXdmhc4PbXkCwljKJ8bf9hZRq2nuKx6w/QNWxl0cGxm6UTHdMw1sU
-         xyzw==
-X-Gm-Message-State: APjAAAWH8nK+3Bl0kAaO5XoBC6FrYkf3WJDyz2fS7R1ONi9vSdBEkbIQ
-        UDLQ814iXE6AaqVzVdbES1BE/AQh+24=
-X-Google-Smtp-Source: APXvYqzpcXInRk8WqTXhpR8RjA0fIY3xW8H0E1yF0ePgHZ55pDOtquRo4EUJapiGY1UqJrkEzhWXuA==
-X-Received: by 2002:a7b:ce83:: with SMTP id q3mr44754448wmj.116.1563460714019;
-        Thu, 18 Jul 2019 07:38:34 -0700 (PDT)
-Received: from apalos.lan (athedsl-373703.home.otenet.gr. [79.131.11.197])
-        by smtp.gmail.com with ESMTPSA id g131sm18477312wmf.37.2019.07.18.07.38.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 18 Jul 2019 07:38:32 -0700 (PDT)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        davem@davemloft.net
-Cc:     ard.biesheuvel@linaro.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: [PATCH] MAINTAINERS: update netsec driver
-Date:   Thu, 18 Jul 2019 17:38:30 +0300
-Message-Id: <1563460710-28454-1-git-send-email-ilias.apalodimas@linaro.org>
-X-Mailer: git-send-email 2.7.4
+        id S2390302AbfGROm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 10:42:57 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37236 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726040AbfGROm5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 10:42:57 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 35C6DC065134;
+        Thu, 18 Jul 2019 14:42:56 +0000 (UTC)
+Received: from redhat.com (ovpn-120-147.rdu2.redhat.com [10.10.120.147])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 972C45D739;
+        Thu, 18 Jul 2019 14:42:48 +0000 (UTC)
+Date:   Thu, 18 Jul 2019 10:42:47 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     ? jiang <jiangkidd@hotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "jiangran.jr@alibaba-inc.com" <jiangran.jr@alibaba-inc.com>
+Subject: Re: [PATCH] virtio-net: parameterize min ring num_free for virtio
+ receive
+Message-ID: <20190718103641-mutt-send-email-mst@kernel.org>
+References: <BYAPR14MB32056583C4963342F5D817C4A6C80@BYAPR14MB3205.namprd14.prod.outlook.com>
+ <20190718085836-mutt-send-email-mst@kernel.org>
+ <bdd30ef5-4f69-8218-eed0-38c6daac42db@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bdd30ef5-4f69-8218-eed0-38c6daac42db@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Thu, 18 Jul 2019 14:42:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add myself to maintainers since i provided the XDP and page_pool
-implementation
+On Thu, Jul 18, 2019 at 10:01:05PM +0800, Jason Wang wrote:
+> 
+> On 2019/7/18 下午9:04, Michael S. Tsirkin wrote:
+> > On Thu, Jul 18, 2019 at 12:55:50PM +0000, ? jiang wrote:
+> > > This change makes ring buffer reclaim threshold num_free configurable
+> > > for better performance, while it's hard coded as 1/2 * queue now.
+> > > According to our test with qemu + dpdk, packet dropping happens when
+> > > the guest is not able to provide free buffer in avail ring timely.
+> > > Smaller value of num_free does decrease the number of packet dropping
+> > > during our test as it makes virtio_net reclaim buffer earlier.
+> > > 
+> > > At least, we should leave the value changeable to user while the
+> > > default value as 1/2 * queue is kept.
+> > > 
+> > > Signed-off-by: jiangkidd<jiangkidd@hotmail.com>
+> > That would be one reason, but I suspect it's not the
+> > true one. If you need more buffer due to jitter
+> > then just increase the queue size. Would be cleaner.
+> > 
+> > 
+> > However are you sure this is the reason for
+> > packet drops? Do you see them dropped by dpdk
+> > due to lack of space in the ring? As opposed to
+> > by guest?
+> > 
+> > 
+> 
+> Besides those, this patch depends on the user to choose a suitable threshold
+> which is not good. You need either a good value with demonstrated numbers or
+> something smarter.
+> 
+> Thanks
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+I do however think that we have a problem right now: try_fill_recv can
+take up a long time during which net stack does not run at all. Imagine
+a 1K queue - we are talking 512 packets. That's exceessive.  napi poll
+weight solves a similar problem, so it might make sense to cap this at
+napi_poll_weight.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 211ea3a199bd..64f659d8346c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14789,6 +14789,7 @@ F:	Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
- 
- SOCIONEXT (SNI) NETSEC NETWORK DRIVER
- M:	Jassi Brar <jaswinder.singh@linaro.org>
-+M:	Ilias Apalodimas <ilias.apalodimas@linaro.org>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/socionext/netsec.c
+Which will allow tweaking it through a module parameter as a
+side effect :) Maybe just do NAPI_POLL_WEIGHT.
+
+Need to be careful though: queues can also be small and I don't think we
+want to exceed queue size / 2, or maybe queue size - napi_poll_weight.
+Definitely must not exceed the full queue size.
+
 -- 
-2.20.1
-
+MST
