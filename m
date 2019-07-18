@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B50B86D748
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 01:31:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E77CC6D74A
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 01:32:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726131AbfGRXao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 19:30:44 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57178 "EHLO
+        id S1726147AbfGRXcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 19:32:10 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57218 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbfGRXan (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 19:30:43 -0400
+        with ESMTP id S1725992AbfGRXcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 19:32:10 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 353511528C8BD;
-        Thu, 18 Jul 2019 16:30:43 -0700 (PDT)
-Date:   Thu, 18 Jul 2019 16:30:42 -0700 (PDT)
-Message-Id: <20190718.163042.844837284595324517.davem@davemloft.net>
-To:     brking@linux.vnet.ibm.com
-Cc:     GR-everest-linux-l2@marvell.com, skalluru@marvell.com,
-        aelior@marvell.com, netdev@vger.kernel.org
-Subject: Re: [PATCH] bnx2x: Prevent load reordering in tx completion
- processing
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8A45A1528C8C4;
+        Thu, 18 Jul 2019 16:32:09 -0700 (PDT)
+Date:   Thu, 18 Jul 2019 16:32:07 -0700 (PDT)
+Message-Id: <20190718.163207.289099133864098969.davem@davemloft.net>
+To:     chuhongyuan@outlook.com
+Cc:     csully@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] gve: replace kfree with kvfree
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1563226910-21660-1-git-send-email-brking@linux.vnet.ibm.com>
-References: <1563226910-21660-1-git-send-email-brking@linux.vnet.ibm.com>
+In-Reply-To: <MWHPR11MB1757F23147F85B59BCF1628BAFC90@MWHPR11MB1757.namprd11.prod.outlook.com>
+References: <MWHPR11MB1757F23147F85B59BCF1628BAFC90@MWHPR11MB1757.namprd11.prod.outlook.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jul 2019 16:30:43 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jul 2019 16:32:09 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brian King <brking@linux.vnet.ibm.com>
-Date: Mon, 15 Jul 2019 16:41:50 -0500
+From: Chuhong YUAN <chuhongyuan@outlook.com>
+Date: Wed, 17 Jul 2019 00:59:02 +0000
 
-> This patch fixes an issue seen on Power systems with bnx2x which results
-> in the skb is NULL WARN_ON in bnx2x_free_tx_pkt firing due to the skb
-> pointer getting loaded in bnx2x_free_tx_pkt prior to the hw_cons
-> load in bnx2x_tx_int. Adding a read memory barrier resolves the issue.
+> Variables allocated by kvzalloc should not be freed by kfree.
+> Because they may be allocated by vmalloc.
+> So we replace kfree with kvfree here.
 > 
-> Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
+> Signed-off-by: Chuhong Yuan <chuhongyuan@outlook.com>
 
-I agree with Brian's explanation of how the reordering can happen, and why
-the crash doesn't show up in the prefetch() call.
+Applied, thanks Chuhong.
 
-I'll give the Marvell folks one more day to give a proper ACK.
-
-Thanks.
+GVE maintainers, you are upstream now and have to stay on top of review
+of changes like this.  Otherwise I'll just review it myself and apply
+it unless I find problems, and that may not be what you want :)
