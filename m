@@ -2,104 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA7B6D550
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:47:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2549F6D575
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404231AbfGRTqX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jul 2019 15:46:23 -0400
-Received: from mga02.intel.com ([134.134.136.20]:9311 "EHLO mga02.intel.com"
+        id S2391404AbfGRTu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 15:50:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50896 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403805AbfGRTqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 15:46:20 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jul 2019 12:46:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,279,1559545200"; 
-   d="scan'208";a="179354434"
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by orsmga002.jf.intel.com with ESMTP; 18 Jul 2019 12:46:19 -0700
-Received: from orsmsx155.amr.corp.intel.com (10.22.240.21) by
- ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 18 Jul 2019 12:46:19 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.240]) by
- ORSMSX155.amr.corp.intel.com ([169.254.7.34]) with mapi id 14.03.0439.000;
- Thu, 18 Jul 2019 12:46:19 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "m-karicheri2@ti.com" <m-karicheri2@ti.com>
-Subject: Re: [PATCH iproute2 net-next v4 5/6] tc: etf: Add documentation for
- skip-skb-check.
-Thread-Topic: [PATCH iproute2 net-next v4 5/6] tc: etf: Add documentation
- for skip-skb-check.
-Thread-Index: AQHVPBAl9DzL9SOaAEauhmueMNwg4abRG/CAgAAkJgA=
-Date:   Thu, 18 Jul 2019 19:46:15 +0000
-Message-ID: <9198D117-BE06-468A-A908-24A162EDED0A@intel.com>
-References: <1563306789-2908-1-git-send-email-vedang.patel@intel.com>
- <1563306789-2908-5-git-send-email-vedang.patel@intel.com>
- <32e4deac-aaab-c437-1b76-529c16731877@gmail.com>
-In-Reply-To: <32e4deac-aaab-c437-1b76-529c16731877@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.208]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <BAC54C2689563A498324377805648A19@intel.com>
-Content-Transfer-Encoding: 8BIT
+        id S1727687AbfGRTu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 15:50:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=f9NYi/JQfKwrckhrLZX09z+ipOmqXvg6F6g6rgIJULA=; b=o7Q3/nGx8gD9nw1+QVSQHD+BN0
+        aS19BJWloHnqgRVYcSmom4PtMuEC/oKOSQ3KSuS+O1q40bf00gKUYX3jJobXFIuZkAXz737PUgUe1
+        /2Gxr0z8XPBCJ4q7UfzuDy43NiHl9lMKXirYYQAmooWOQtLYZMrEvJUWR/O9LvzimYPw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hoCQK-0002w6-Tp; Thu, 18 Jul 2019 21:50:40 +0200
+Date:   Thu, 18 Jul 2019 21:50:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Christopher S . Hall" <christopher.s.hall@intel.com>
+Subject: Re: [RFC PATCH 0/5] PTP: add support for Intel's TGPIO controller
+Message-ID: <20190718195040.GL25635@lunn.ch>
+References: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 16, 2019 at 10:20:33AM +0300, Felipe Balbi wrote:
+> TGPIO is a new IP which allows for time synchronization between systems
+> without any other means of synchronization such as PTP or NTP. The
+> driver is implemented as part of the PTP framework since its features
+> covered most of what this controller can do.
 
+Hi Felipe
 
-> On Jul 18, 2019, at 10:36 AM, David Ahern <dsahern@gmail.com> wrote:
-> 
-> On 7/16/19 1:53 PM, Vedang Patel wrote:
->> Document the newly added option (skip-skb-check) on the etf man-page.
->> 
->> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
->> ---
->> man/man8/tc-etf.8 | 10 ++++++++++
->> 1 file changed, 10 insertions(+)
->> 
->> diff --git a/man/man8/tc-etf.8 b/man/man8/tc-etf.8
->> index 30a12de7d2c7..2e01a591dbaa 100644
->> --- a/man/man8/tc-etf.8
->> +++ b/man/man8/tc-etf.8
->> @@ -106,6 +106,16 @@ referred to as "Launch Time" or "Time-Based Scheduling" by the
->> documentation of network interface controllers.
->> The default is for this option to be disabled.
->> 
->> +.TP
->> +skip_skb_check
-> 
-> patch 1 adds skip_sock_check.
-> 
-Yes. I will fix this typo in the next version.
+Given the name TGPIO, can it also be used for plain old boring GPIO?
+Does there need to be some sort of mux between GPIO and TGPIO? And an
+interface into the generic GPIO core?
 
-Thanks,
-Vedang
->> +.br
->> +.BR etf(8)
->> +currently drops any packet which does not have a socket associated with it or
->> +if the socket does not have SO_TXTIME socket option set. But, this will not
->> +work if the launchtime is set by another entity inside the kernel (e.g. some
->> +other Qdisc). Setting the skip_skb_check will skip checking for a socket
->> +associated with the packet.
->> +
->> .SH EXAMPLES
->> 
->> ETF is used to enforce a Quality of Service. It controls when each
+Also, is this always embedded into a SoC? Or could it actually be in a
+discrete NIC?
 
+Thanks
+	Andrew
