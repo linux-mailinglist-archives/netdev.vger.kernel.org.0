@@ -2,98 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 750226CCC0
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 12:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 138AB6CCC9
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 12:32:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727131AbfGRK1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 06:27:13 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:41442 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726482AbfGRK1N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 06:27:13 -0400
-Received: by mail-lj1-f193.google.com with SMTP id d24so26770979ljg.8;
-        Thu, 18 Jul 2019 03:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=CTzA0mQSX6E47LpcppeqTyEneaomnmHbIOubDMZudK0=;
-        b=O/erVWvoh8NFIDf748Kxi+xjNbM4DWAWHafjSL6Uo+YxpPQH2Bw68sGU0SN2gks9jz
-         jusCdVYMibb7vdakufKuhF/X8ebgx93XDykEF39ssQ6JbCCeT/gW2CvNQDDQHFdlNqr2
-         9tmXhysj0fuwOvhrP61Utgl0z96BBP43FVZyF8j6cSIXhkPkD/AnNZpli6jq+6Glf5X7
-         dilNbIax+HVDYn8OhRPGaAqi2i6m+TaAbnOXf+LEpgDkRupMGSFlqXpwb7huV/ogpoX7
-         pvMVA/3/D3zG0TPaS/+IFluis577k0pkc//NQF2TQeH37bplocKpXGzLzsV4djghF4Mu
-         yX9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=CTzA0mQSX6E47LpcppeqTyEneaomnmHbIOubDMZudK0=;
-        b=rfJONGJyo8S/8/gSwEqzuFfYg7iZeMfg7gfTVJTFRhpAzI4EfjpAImVqBC730FI7u7
-         pKRX8Lu/h8fpf7d7ppcidgayhawbYuuNvyR249Bk7egzeh1+R00w2lgqhacvlZbJR1bp
-         9Cj1jkkN+bCpRNAdULdW1Rw4ZvN1jZntxh3XuLMJg8HPb82GcYIDUoAzCLaAL/rjvKbq
-         1+4d3hj7uj8JHA+d2mg0hkdNubJ++xobgTmrct0B+rixLj4vi7p/L7HPgORih+Y+hMW+
-         88r42sW/ld8eRITq5CsEljprzdqXwGv0Xic7oSqo3MaeMjUQajmqjpsQqT6Tl6iUsJKl
-         7FlQ==
-X-Gm-Message-State: APjAAAXxN20wjtNhzLhyxNTnp5IyJp3939EAnex49OMF0w+UX7VlH1sm
-        Kx7FEot4tJewU9knqSJ/Z/g=
-X-Google-Smtp-Source: APXvYqyt7eV3lUulX+41r2RetIzxtfsevPiEn1vh8b8VbPpRvO2Dw47qb8/UIx27OdyQRTbZXeqXFw==
-X-Received: by 2002:a2e:63cd:: with SMTP id s74mr23521248lje.164.1563445630790;
-        Thu, 18 Jul 2019 03:27:10 -0700 (PDT)
-Received: from peter.cuba.int. ([83.220.32.68])
-        by smtp.googlemail.com with ESMTPSA id y5sm4989913ljj.5.2019.07.18.03.27.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 18 Jul 2019 03:27:09 -0700 (PDT)
-From:   Peter Kosyh <p.kosyh@gmail.com>
-To:     p.kosyh@gmail.com
-Cc:     davem@davemloft.net, David Ahern <dsa@cumulusnetworks.com>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
-Date:   Thu, 18 Jul 2019 13:26:55 +0300
-Message-Id: <20190718102655.17619-1-p.kosyh@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        id S2389549AbfGRKbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 06:31:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:50538 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726482AbfGRKby (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 06:31:54 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AB7823084029;
+        Thu, 18 Jul 2019 10:31:54 +0000 (UTC)
+Received: from [10.72.12.199] (ovpn-12-199.pek2.redhat.com [10.72.12.199])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 814325D6A9;
+        Thu, 18 Jul 2019 10:31:42 +0000 (UTC)
+Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
+From:   Jason Wang <jasowang@redhat.com>
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com, idos@mellanox.com,
+        Rob Miller <rob.miller@broadcom.com>,
+        Ariel Adam <aadam@redhat.com>
+References: <20190703115245.GA22374@___>
+ <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com> <20190703130817.GA1978@___>
+ <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
+ <20190704062134.GA21116@___> <20190705084946.67b8f9f5@x1.home>
+ <20190708061625.GA15936@___>
+ <deae5ede-57e9-41e6-ea42-d84e07ca480a@redhat.com>
+ <20190709063317.GA29300@___>
+ <9aafdc4d-0203-b96e-c205-043db132eb06@redhat.com>
+ <20190710062233.GA16212@___>
+ <1b49aa84-2c1f-eec2-2809-711e1f2dd7de@redhat.com>
+Message-ID: <90e6a722-ce7b-2ab3-0d2d-19b2ca09f2d1@redhat.com>
+Date:   Thu, 18 Jul 2019 18:31:36 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <1b49aa84-2c1f-eec2-2809-711e1f2dd7de@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Thu, 18 Jul 2019 10:31:54 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vrf_process_v4_outbound() and vrf_process_v6_outbound() do routing
-using ip/ipv6 addresses, but don't make sure the header is available in
-skb->data[] (skb_headlen() is less then header size).
 
-The situation may occures while forwarding from MPLS layer to vrf, for example.
+On 2019/7/10 下午3:22, Jason Wang wrote:
+>> Yeah, that's a major concern. If it's true, is it something
+>> that's not acceptable?
+>
+>
+> I think not, but I don't know if any other one that care this.
+>
+>
+>>
+>>> And I do see some new RFC for VFIO to add more DMA API.
+>> Is there any pointers?
+>
+>
+> I don't remember the details, but it should be something related to 
+> SVA support in recent intel IOMMU.
 
-So, patch adds pskb_may_pull() calls in is_ip_tx_frame(), just before call
-to vrf_process_... functions.
 
-Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
----
- drivers/net/vrf.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+E.g this series:
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 54edf8956a25..7c0200bc46f9 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -292,13 +292,16 @@ static netdev_tx_t is_ip_tx_frame(struct sk_buff *skb, struct net_device *dev)
- {
- 	switch (skb->protocol) {
- 	case htons(ETH_P_IP):
-+		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct iphdr)))
-+			break;
- 		return vrf_process_v4_outbound(skb, dev);
- 	case htons(ETH_P_IPV6):
-+		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct ipv6hdr)))
-+			break;
- 		return vrf_process_v6_outbound(skb, dev);
--	default:
--		vrf_tx_error(dev, skb);
--		return NET_XMIT_DROP;
- 	}
-+	vrf_tx_error(dev, skb);
-+	return NET_XMIT_DROP;
- }
- 
- static netdev_tx_t vrf_xmit(struct sk_buff *skb, struct net_device *dev)
--- 
-2.11.0
+https://www.spinics.net/lists/iommu/msg37146.html
+
+Thanks
 
