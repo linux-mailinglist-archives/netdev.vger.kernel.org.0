@@ -2,97 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0330A6D2C0
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 19:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAAA76D2C2
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 19:28:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388031AbfGRR1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 13:27:01 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33135 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728279AbfGRR1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 13:27:01 -0400
-Received: by mail-qt1-f195.google.com with SMTP id r6so23846864qtt.0;
-        Thu, 18 Jul 2019 10:27:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cDq0jlOaaqXB8MtjadL1ZALSmY3trdskBEz5Or/556U=;
-        b=WHn2g0SEdhD+d/7M85HvLN7gxwEas23PTjaYDoBhGWGdlxuwotYTOreCJZHFHux7Jn
-         4Tk13E3NKBK4QdxKw/mO0psEEfOoIgGJFz1jtUIOTdC3Lhp3lBpPgcgrR2UpH+jJLukr
-         zy8UxAt/3t3c356p12kuBaSbz3U8025bJA8blqVG1gKmWlyif53g03Z5S3a6PTfyGb3i
-         HubL4PG0i0H/tyOsKW4/RwySjSEF15uVaamm2G0L0+C/V+amG7nAhnqiQgxU9miYymOB
-         fz7WdGBtxEzrWoLh/81Y90qx+p3dEg1wMh5YzKlB614KwbOO28Mo9Q8jeWbfotXuFlyG
-         R88A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cDq0jlOaaqXB8MtjadL1ZALSmY3trdskBEz5Or/556U=;
-        b=PbpJ08FNQl3KcwbA0uveL/w6CrkZprctk5Ku3usLEST5noBDY8lSA+Xzdq5x0cr3Qx
-         3RrFgUr1pjYl/tGdt2BuCh2+71vZ38ETwN8dJPnxJkiwO/Ooe7y/hazyvUg5y9Kes3E2
-         8JoYMyjRQkaToHVDYBN0dymAn+7yQqdbJ+9LgPy7Wj9cUzT1yyUEu4g9veMi217WM8pU
-         NGJt0mrVxpmTe239Vxv7UCWK4OFwWCC7m4s657cylN4nEdS9ab5PFSyu88qbxmLK157e
-         Na/nVfrsqUGCpRUsglojsahUtDtk4HHP+p0n7MxWCPlXZ4yR4gf2PwWjBbrUtpqohO7x
-         RlKQ==
-X-Gm-Message-State: APjAAAVfBXkmGQRkfeiukSfqM7gOqjAJl8UOI1R9cgbKeYBYna08phTx
-        TkvzsC3MSEt4mkms64aPsG6UWqkA1H60NVzVo8E=
-X-Google-Smtp-Source: APXvYqyg+dnFA4IHKr/EGA4IPVODmVmLSZlCb+7auZQTm545YHixAZb5uCn58q4n4uyOl4jnsJJahEWFY0NuNs5Xvnk=
-X-Received: by 2002:a05:6214:1306:: with SMTP id a6mr34568735qvv.38.1563470820141;
- Thu, 18 Jul 2019 10:27:00 -0700 (PDT)
+        id S1728014AbfGRR2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 13:28:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50542 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726715AbfGRR2Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 13:28:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ROZvNkyx08i9Y29CgpPCBA8kNmjXwd8YUEojmJ6Pkjo=; b=TDDJhHTzoY4LBTJdlxprgjXBD9
+        bJZ3cvZx0J2L6yqRRGUL41k6cmVvspp5AmZyjaEJIK4z0I8HRuOzOhpNLqd5GuMeBFWnvYIiQkk51
+        fG2iaCehjJ5tLwWvQoYiLV+e3bh4hbJx+QsW1AV+32ree8GSG14SBrchUU954mX0/l/Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hoACd-0000Fm-Rs; Thu, 18 Jul 2019 19:28:23 +0200
+Date:   Thu, 18 Jul 2019 19:28:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
+Message-ID: <20190718172823.GH25635@lunn.ch>
+References: <20190708192532.27420-1-snelson@pensando.io>
+ <20190708192532.27420-14-snelson@pensando.io>
+ <20190709022703.GB5835@lunn.ch>
+ <649f7e96-a76b-79f0-db25-d3ce57397df5@pensando.io>
+ <20190718032137.GG6962@lunn.ch>
+ <35761cbb-aa2d-d698-7368-6ebe25607fe0@pensando.io>
 MIME-Version: 1.0
-References: <20190718172513.2394157-1-andriin@fb.com>
-In-Reply-To: <20190718172513.2394157-1-andriin@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jul 2019 10:26:48 -0700
-Message-ID: <CAEf4BzYK0XAXPLaqTzy6S3wDgrrvAJHyEjk2OoZfbYTRJbkVVQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix missing __WORDSIZE definition
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Arnaldo Carvalho de Melo <acme@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <35761cbb-aa2d-d698-7368-6ebe25607fe0@pensando.io>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 10:25 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> hashmap.h depends on __WORDSIZE being defined. It is defined by
-> glibc/musl in different headers. It's an explicit goal for musl to be
-> "non-detectable" at compilation time, so instead include glibc header if
-> glibc is explicitly detected and fall back to musl header otherwise.
->
-> Fixes: e3b924224028 ("libbpf: add resizable non-thread safe internal hashmap")
-> Reported-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/hashmap.h | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-> index 03748a742146..46a8cb667994 100644
-> --- a/tools/lib/bpf/hashmap.h
-> +++ b/tools/lib/bpf/hashmap.h
-> @@ -10,7 +10,12 @@
->
->  #include <stdbool.h>
->  #include <stddef.h>
-> +#ifdef __GLIBC__
-> +#include <bits/wordsize.h>
-> +#else
-> +#include <bits/reg.h>
->  #include "libbpf_internal.h"
-> +#endif
+On Thu, Jul 18, 2019 at 10:05:23AM -0700, Shannon Nelson wrote:
+> On 7/17/19 8:21 PM, Andrew Lunn wrote:
+> >On Tue, Jul 09, 2019 at 03:42:39PM -0700, Shannon Nelson wrote:
+> >>On 7/8/19 7:27 PM, Andrew Lunn wrote:
+> >>>>+static int ionic_get_module_eeprom(struct net_device *netdev,
+> >>>>+				   struct ethtool_eeprom *ee,
+> >>>>+				   u8 *data)
+> >>>>+{
+> >>>>+	struct lif *lif = netdev_priv(netdev);
+> >>>>+	struct ionic_dev *idev = &lif->ionic->idev;
+> >>>>+	struct xcvr_status *xcvr;
+> >>>>+	u32 len;
+> >>>>+
+> >>>>+	/* copy the module bytes into data */
+> >>>>+	xcvr = &idev->port_info->status.xcvr;
+> >>>>+	len = min_t(u32, sizeof(xcvr->sprom), ee->len);
+> >>>>+	memcpy(data, xcvr->sprom, len);
+> >>>Hi Shannon
+> >>>
+> >>>This also looks odd. Where is the call into the firmware to get the
+> >>>eeprom contents? Even though it is called 'eeprom', the data is not
+> >>>static. It contains real time diagnostic values, temperature, transmit
+> >>>power, receiver power, voltages etc.
+> >>idev->port_info is a memory mapped space that the device keeps up-to-date.
+> >Hi Shannon
+> >
+> >It at least needs a comment. How frequently does the device update
+> >this chunk of memory? It would be good to comment about that as
+> >well. Or do MMIO reads block while i2c operations occur to update the
+> >memory?
+> 
+> The device keeps this updated when changes happen internally so that there
+> is no need to block on MMIO read. 
 
-Disregard this version, #endif on the wrong line. Fixing in v2.
+Hi Shannon
 
->
->  static inline size_t hash_bits(size_t h, int bits)
->  {
-> --
-> 2.17.1
->
+I'm thinking about the diagnostic page. RX and TX power, temperature,
+alarms etc. These are real time values, so you should read them on
+demand, or at last only cache them for a short time.
+
+	Andrew
