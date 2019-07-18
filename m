@@ -2,66 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9E26D589
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 22:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8046D5A1
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 22:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391490AbfGRT7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 15:59:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50932 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727687AbfGRT7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 15:59:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=R7O5LP/5Ym00KWv7HG9gFcq8IIB8ZOQ/FMTwFy1ifdg=; b=M1mdM+DLgSvZed+ZFt8f3/ZFkl
-        nuhpiL9qV1pIcRRB5dP2Kc/Gw05xN5FqwBWRLf7AkuCGk70khNSU24swBaggDsftwMx9doClqPF4D
-        8sA2aFROBc5IZS3yB52zh02onqmwG+dxfDLUvt0+QgnWf65hgzzKxGGJu3SzNfsxYKzE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hoCZB-00037X-NR; Thu, 18 Jul 2019 21:59:49 +0200
-Date:   Thu, 18 Jul 2019 21:59:49 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: fec: generate warning when using deprecated phy
- reset
-Message-ID: <20190718195949.GM25635@lunn.ch>
-References: <20190718143428.2392-1-TheSven73@gmail.com>
- <1563468471.2676.36.camel@pengutronix.de>
- <CAOMZO5A_BuWMr1n_fFv4veyaXdcfjxO+9nFAgGfCrmAhNmzV5g@mail.gmail.com>
- <CAGngYiULAjXwwxmUyHxEXhv1WzSeE_wE3idOLSnD5eEaZg3xDw@mail.gmail.com>
- <20190718194131.GK25635@lunn.ch>
- <CAGngYiWESbg6uq4pdtb5--YSzatwAwXiGnRjiAfAQj8nRYPMqw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGngYiWESbg6uq4pdtb5--YSzatwAwXiGnRjiAfAQj8nRYPMqw@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S2391472AbfGRUO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 16:14:58 -0400
+Received: from mail-io1-f53.google.com ([209.85.166.53]:36539 "EHLO
+        mail-io1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391319AbfGRUO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 16:14:57 -0400
+Received: by mail-io1-f53.google.com with SMTP id o9so53724153iom.3;
+        Thu, 18 Jul 2019 13:14:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=r2pTm0RwMQarnOMoV8lDgMG4J6XK5815xYl1WaBhWuw=;
+        b=jXt46JwdBMPM4AF2MXHtgaUsQMs3wXwa8Ez4IImyYL5lK0RzY+Por1cwu6pd3tf1GK
+         LrR59Z86usCvS5PmkGhF3DPyAYzBW9zSlJJMqBiO/DfbEJy4NJ+BGaB2eCH1E3ERB7it
+         hf9/1kg5cy1KyOyY/PlWh63D5KRrr8tLDGxHLUH0gxkLR1rYP0+NHe4sRkS08I6N0XrV
+         JU7TSwR1wWwxivUuoIpCQNY8YwM5drG9QWzXEwcQyhOrHW5HW7BGP0GICe9p6fZfIf1V
+         9Mzjq9NaONVeWjIHfoGxtbcHJ/60e/CclfhDs0EBmZQcAJ8WmTyhYeV6q0a9825w6QF3
+         Fa/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=r2pTm0RwMQarnOMoV8lDgMG4J6XK5815xYl1WaBhWuw=;
+        b=SQHJuno+MXcY9P/5NzVi4mOA+gfuygpaXZkFSxrIKaaBo/tpoxJuh5pXit5rF4ZOeW
+         9fKINWwcnZOy1bfWkRNfd0doOs7t51O/ZZj2itJIHJzL6KdxOOhc5+b/qfNNE0kRsRPH
+         AhQ+mYmLl5eZ4OY5RhqIv0HnTWa84U8aj280YPSnQwCxLaOmXkp//oPl/xWVAYby2NN+
+         PF9I0NVUWbWwJ6uMfsnRj5EUGW2Rj/GC9Fjqey0+JyWM5noJ/6zPPE1LoTJaxsqQz7o7
+         XjJf0gTPQERs8xOvd0RaNSBWGCizvRoKe5GHauuYnjQgZZOkQSAVOqXHa/LOKKeRQW1S
+         uJzg==
+X-Gm-Message-State: APjAAAVGrcYiIwfciNqVz8x5MRkRVVzCK/pgzutKiNKs5rJNxJk+BANW
+        Bvj401pAckoJDLVg9a9tCBo=
+X-Google-Smtp-Source: APXvYqxSMTFdNpWMpK6BWoxyGer9NJ15j1T9DNe6DsnJeFmfcT3n3z8uenJp6lvRsFHRyu9jM7R6XA==
+X-Received: by 2002:a5d:8b52:: with SMTP id c18mr44577354iot.89.1563480896915;
+        Thu, 18 Jul 2019 13:14:56 -0700 (PDT)
+Received: from svens-asus.arcx.com ([184.94.50.30])
+        by smtp.gmail.com with ESMTPSA id p3sm31399170iom.7.2019.07.18.13.14.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 18 Jul 2019 13:14:56 -0700 (PDT)
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Fugang Duan <fugang.duan@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Fabio Estevam <festevam@gmail.com>,
+        Lucas Stach <l.stach@pengutronix.de>
+Subject: [PATCH v1] dt-bindings: fec: explicitly mark deprecated properties
+Date:   Thu, 18 Jul 2019 16:14:53 -0400
+Message-Id: <20190718201453.13062-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> What I keep forgetting in my little arm-imx6 world, is that devicetrees
-> aren't in-kernel apis, but that they have out-of-kernel
-> dependencies. It makes more sense to to see them as userspace
-> apis, albeit directed at firmware/bootloaders, right?
+fec's gpio phy reset properties have been deprecated.
+Update the dt-bindings documentation to explicitly mark
+them as such, and provide a short description of the
+recommended alternative.
 
-It is an ongoing debate, but generally they should be considered ABI
-and follow the ABI rules about not breaking backwards compatibility.
+Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+---
+ .../devicetree/bindings/net/fsl-fec.txt       | 30 +++++++++++--------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-However, there is also an argument that something like a NAS box
-running Debian is going to use the DT blob which came with the kernel,
-so deprecated DT properties and the code to support them could be
-removed after a period of time.
+diff --git a/Documentation/devicetree/bindings/net/fsl-fec.txt b/Documentation/devicetree/bindings/net/fsl-fec.txt
+index 2d41fb96ce0a..5b88fae0307d 100644
+--- a/Documentation/devicetree/bindings/net/fsl-fec.txt
++++ b/Documentation/devicetree/bindings/net/fsl-fec.txt
+@@ -7,18 +7,6 @@ Required properties:
+ - phy-mode : See ethernet.txt file in the same directory
+ 
+ Optional properties:
+-- phy-reset-gpios : Should specify the gpio for phy reset
+-- phy-reset-duration : Reset duration in milliseconds.  Should present
+-  only if property "phy-reset-gpios" is available.  Missing the property
+-  will have the duration be 1 millisecond.  Numbers greater than 1000 are
+-  invalid and 1 millisecond will be used instead.
+-- phy-reset-active-high : If present then the reset sequence using the GPIO
+-  specified in the "phy-reset-gpios" property is reversed (H=reset state,
+-  L=operation state).
+-- phy-reset-post-delay : Post reset delay in milliseconds. If present then
+-  a delay of phy-reset-post-delay milliseconds will be observed after the
+-  phy-reset-gpios has been toggled. Can be omitted thus no delay is
+-  observed. Delay is in range of 1ms to 1000ms. Other delays are invalid.
+ - phy-supply : regulator that powers the Ethernet PHY.
+ - phy-handle : phandle to the PHY device connected to this device.
+ - fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
+@@ -47,11 +35,27 @@ Optional properties:
+   For imx6sx, "int0" handles all 3 queues and ENET_MII. "pps" is for the pulse
+   per second interrupt associated with 1588 precision time protocol(PTP).
+ 
+-
+ Optional subnodes:
+ - mdio : specifies the mdio bus in the FEC, used as a container for phy nodes
+   according to phy.txt in the same directory
+ 
++Deprecated optional properties:
++	To avoid these, create a phy node according to phy.txt in the same
++	directory, and point the fec's "phy-handle" property to it. Then use
++	the phy's reset binding, again described by phy.txt.
++- phy-reset-gpios : Should specify the gpio for phy reset
++- phy-reset-duration : Reset duration in milliseconds.  Should present
++  only if property "phy-reset-gpios" is available.  Missing the property
++  will have the duration be 1 millisecond.  Numbers greater than 1000 are
++  invalid and 1 millisecond will be used instead.
++- phy-reset-active-high : If present then the reset sequence using the GPIO
++  specified in the "phy-reset-gpios" property is reversed (H=reset state,
++  L=operation state).
++- phy-reset-post-delay : Post reset delay in milliseconds. If present then
++  a delay of phy-reset-post-delay milliseconds will be observed after the
++  phy-reset-gpios has been toggled. Can be omitted thus no delay is
++  observed. Delay is in range of 1ms to 1000ms. Other delays are invalid.
++
+ Example:
+ 
+ ethernet@83fec000 {
+-- 
+2.17.1
 
-	Andrew
