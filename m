@@ -2,148 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3186D66D
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 23:28:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5D76D6AD
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 23:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728032AbfGRV2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 17:28:52 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:46535 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727921AbfGRV2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 17:28:51 -0400
-Received: by mail-vs1-f65.google.com with SMTP id r3so20137596vsr.13
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 14:28:51 -0700 (PDT)
+        id S1728140AbfGRVxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 17:53:16 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45735 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391342AbfGRVxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 17:53:12 -0400
+Received: by mail-lf1-f66.google.com with SMTP id u10so20265438lfm.12
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 14:53:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IyK1/KrXVcCjWB4+QnzI7G/fiGV+kyeRskwzWya7BVY=;
-        b=J9Qur1k8uNZ28gr48EMeSZ5ZTadMyC+P0cOv8o6AarTthN35uwczlGRmvY8UZsH9at
-         CtA9IoRohHkMgwB2ebkWUm7Nx+LFI4mYGXIkaRub7bqQKmxvFwPByme+wpvPG/Hr6rsz
-         u/OWhQbIFBZ1PO2pfsVrrKzY4ev5fGAtvetHGXN3Cuta0dNkxiwqEr4V5/+Ce22z0bnO
-         TRoTnfPnz0wCmcTiy9LhuQwbUwEZZI4u2q44Ekr5D7Wjnnz393BabKupdNWUO8keo5TF
-         +EUpE6Romg+Pmp6jS2Q5FJGUR4FyQYcmq8xMpG2kVmn2APPnTZmHQx4DDwepa15Vkv5a
-         7mhQ==
+        bh=RhzTrt+KngzjicFbTv3vZ6r7DsUfT24hW3ZTH7kCo04=;
+        b=BDDC63AbbksIGaPLCaZ+G2vZ+QlUC0Y4xmaYnnx1w9Sn0c/YSKCOyE3F3bipx/OPNo
+         bY+GCUelVN9YgKRNdiGTQc7e9dxHE8srVeTFP4z3kHDTgyTHdIJxEgeYAGwEg5uRlCR4
+         SJCBe/KsTQXTy1ZbjaHtMM7hkizkZLcw0c9zfxcr0RvysIbU+uTnupNfETlIA5tdojdb
+         eaHLpJsvTbxt6FmfE6Rqf0hRmvzcJp0R71+FTYwBZjMbwYRjqxFe4jlSYdDpAlcz6a+v
+         gHInJ6oZUdBaKuk2fyjd8yd5aDlkZ2MjSHc//o4Z3Oextu3SQoPtQvrnS0hkfu0OOV0b
+         pBqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IyK1/KrXVcCjWB4+QnzI7G/fiGV+kyeRskwzWya7BVY=;
-        b=Nk20wx8ul+6WKdv3OJv2BDL0pO/FOKiOy4j1AG2vRh7SR8ffObFTKQTVNa15k9BWEL
-         IGiTCzkvnsB9rwkhnhVei8m3kZ6H0YedWD2T4PhtAybHq+7Ktgk06qRTr9YejiTh+44z
-         icwJIKQZxYd0a2YRwEW4Gy8AJsH7mrwUkPnQ52P53e+a5Vt2g5/KPkmdNA2AtZObakZr
-         lTeDVoDAT1tp7c1/q34VY7ICIJOJnNo9RBpDlX1GZKOxaYsy4xU8Q3xoa+kQCzV6FSx+
-         qS3kLbl8wtyVpeVqN7/xJ/ovvt81KhZFJAaXKpsfK8z+UX34ldqyKSRFFCD9cL71J6Hi
-         dVFA==
-X-Gm-Message-State: APjAAAUR/l5RT3GqJHFpIddpXBSDAma/WB9DbSeuTeSw2p8UyJXbinhN
-        o0Yr8DTCl+ZtnLVcZByp0t67S87mySCv7N6AYBxj
-X-Google-Smtp-Source: APXvYqzExSySUxynZMmwMGCuSd9ZHoeZd8IEzBzfN0Xzew4NVEGhby0MPyLAOWrGO4tC+scR8VOj/sF/JVKFOUiEUKk=
-X-Received: by 2002:a67:d39e:: with SMTP id b30mr30406445vsj.212.1563485330475;
- Thu, 18 Jul 2019 14:28:50 -0700 (PDT)
+        bh=RhzTrt+KngzjicFbTv3vZ6r7DsUfT24hW3ZTH7kCo04=;
+        b=UDMktSjK8k0ESWU8yKnW2AtgSSLtiuuQ+M7UCtA/y8CZx4ls7Y3FvROw3RB9apYd70
+         ggtxBVYSYVr+fqQibhta1iimSIbotwao5jdt7k33lB4AOqR87XMcxaAuGq7QLOSnV/on
+         qTLWKmafDLTVhNPr9CtP6gFFehSwn9Ljw9nkvwHG63iSPIEfJVhXxidUT0p2fnmoLhnf
+         HiF64RAAW/uf2mqjh5iIhevXuc9rjWNoAgw+ZIV216IQ1FPPmcw1/5b5VGX/gQcvGETs
+         jdZtQFi2aASyCDy35ifmzW7lNvGCVTz3/PkZk539Sj6HsB6ioAo+DtHUsDc3C3eHmYgP
+         IZOw==
+X-Gm-Message-State: APjAAAVAsk4z9/qL9pHrYdVSWSFCTC1mp5KaLyB3g9tZ5hPt6nrxx+mO
+        XHtANqk4YvWoigo7cE9R8CzZpFqtu3THMB0nxg==
+X-Google-Smtp-Source: APXvYqyGCCJtInWCDaYi60JZY3NOkc1TuPq3hehijvo4gTpiQWjSYxIYBAQx3HMzGAWPk3gWvXKxriSLAdaQ7algVzQ=
+X-Received: by 2002:a19:8093:: with SMTP id b141mr22767615lfd.137.1563486789899;
+ Thu, 18 Jul 2019 14:53:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <1562959401-19815-1-git-send-email-cai@lca.pw> <20190712.154606.493382088615011132.davem@davemloft.net>
- <EFD25845-097A-46B1-9C1A-02458883E4DA@lca.pw> <20190712.175038.755685144649934618.davem@davemloft.net>
- <D7E57421-A6F4-4453-878A-8F173A856296@lca.pw> <CAKwvOdkCfqfpJYYX+iu2nLCUUkeDorDdVP3e7koB9NYsRwgCNw@mail.gmail.com>
- <CAGG=3QWkgm+YhC=TWEWwt585Lbm8ZPG-uFre-kBRv+roPzZFbA@mail.gmail.com> <CAKwvOd=B=Lj-hTtbe88bo89wLxJrDAsm3fJisSMD=hKkRHf6zw@mail.gmail.com>
-In-Reply-To: <CAKwvOd=B=Lj-hTtbe88bo89wLxJrDAsm3fJisSMD=hKkRHf6zw@mail.gmail.com>
-From:   Bill Wendling <morbo@google.com>
-Date:   Thu, 18 Jul 2019 14:28:39 -0700
-Message-ID: <CAGG=3QXGqOkfTXC6LRqALJkWaX1L_nnYs3+1xXeojqKF3kftbw@mail.gmail.com>
-Subject: Re: [PATCH] be2net: fix adapter->big_page_size miscaculation
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Qian Cai <cai@lca.pw>, James Y Knight <jyknight@google.com>,
-        David Miller <davem@davemloft.net>, sathya.perla@broadcom.com,
-        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        somnath.kotur@broadcom.com, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, netdev@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>
+References: <20190529153427.GB8959@cisco> <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+ <20190529222835.GD8959@cisco> <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+ <20190530170913.GA16722@mail.hallyn.com> <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
+ <20190708180558.5bar6ripag3sdadl@madcap2.tricolour.ca> <CAHC9VhRTT7JWqNnynvK04wKerjc-3UJ6R1uPtjCAPVr_tW-7MA@mail.gmail.com>
+ <20190716220320.sotbfqplgdructg7@madcap2.tricolour.ca> <CAHC9VhScHizB2r5q3T5s0P3jkYdvzBPPudDksosYFp_TO7W9-Q@mail.gmail.com>
+ <20190718005145.eshekqfr3navqqiy@madcap2.tricolour.ca>
+In-Reply-To: <20190718005145.eshekqfr3navqqiy@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 18 Jul 2019 17:52:58 -0400
+Message-ID: <CAHC9VhTYV02ws3QcezER5cY+Xt+tExcJEO-dumTDx=FXGFh3nw@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        Tycho Andersen <tycho@tycho.ws>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        ebiederm@xmission.com, nhorman@tuxdriver.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Possibly. I'd need to ask him. :-)
+On Wed, Jul 17, 2019 at 8:52 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2019-07-16 19:30, Paul Moore wrote:
 
-On Thu, Jul 18, 2019 at 2:22 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
+...
+
+> > We can trust capable(CAP_AUDIT_CONTROL) for enforcing audit container
+> > ID policy, we can not trust ns_capable(CAP_AUDIT_CONTROL).
 >
-> On Thu, Jul 18, 2019 at 2:18 PM Bill Wendling <morbo@google.com> wrote:
-> >
-> > Top-of-tree clang says that it's const:
-> >
-> > $ gcc a.c -O2 && ./a.out
-> > a is a const.
-> >
-> > $ clang a.c -O2 && ./a.out
-> > a is a const.
->
-> Right, so I know you (Bill) did a lot of work to refactor
-> __builtin_constant_p handling in Clang and LLVM in the
-> pre-llvm-9-release timeframe.  I suspect Qian might not be using
-> clang-9 built from source (as clang-8 is the current release) and thus
-> observing differences.
->
-> >
-> > On Thu, Jul 18, 2019 at 2:10 PM Nick Desaulniers <ndesaulniers@google.com> wrote:
-> >>
-> >> On Thu, Jul 18, 2019 at 2:01 PM Qian Cai <cai@lca.pw> wrote:
-> >> >
-> >> >
-> >> >
-> >> > > On Jul 12, 2019, at 8:50 PM, David Miller <davem@davemloft.net> wrote:
-> >> > >
-> >> > > From: Qian Cai <cai@lca.pw>
-> >> > > Date: Fri, 12 Jul 2019 20:27:09 -0400
-> >> > >
-> >> > >> Actually, GCC would consider it a const with -O2 optimized level because it found that it was never modified and it does not understand it is a module parameter. Considering the following code.
-> >> > >>
-> >> > >> # cat const.c
-> >> > >> #include <stdio.h>
-> >> > >>
-> >> > >> static int a = 1;
-> >> > >>
-> >> > >> int main(void)
-> >> > >> {
-> >> > >>      if (__builtin_constant_p(a))
-> >> > >>              printf("a is a const.\n");
-> >> > >>
-> >> > >>      return 0;
-> >> > >> }
-> >> > >>
-> >> > >> # gcc -O2 const.c -o const
-> >> > >
-> >> > > That's not a complete test case, and with a proper test case that
-> >> > > shows the externalization of the address of &a done by the module
-> >> > > parameter macros, gcc should not make this optimization or we should
-> >> > > define the module parameter macros in a way that makes this properly
-> >> > > clear to the compiler.
-> >> > >
-> >> > > It makes no sense to hack around this locally in drivers and other
-> >> > > modules.
-> >> >
-> >> > If you see the warning in the original patch,
-> >> >
-> >> > https://lore.kernel.org/netdev/1562959401-19815-1-git-send-email-cai@lca.pw/
-> >> >
-> >> > GCC definitely optimize rx_frag_size  to be a constant while I just confirmed clang
-> >> > -O2 does not. The problem is that I have no clue about how to let GCC not to
-> >> > optimize a module parameter.
-> >> >
-> >> > Though, I have added a few people who might know more of compilers than myself.
-> >>
-> >> + Bill and James, who probably knows more than they'd like to about
-> >> __builtin_constant_p and more than other LLVM folks at this point.
-> >>
-> >> --
-> >> Thanks,
-> >> ~Nick Desaulniers
->
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
+> Ok.  So does a process in a non-init user namespace have two (or more)
+> sets of capabilities stored in creds, one in the init_user_ns, and one
+> in current_user_ns?  Or does it get stripped of all its capabilities in
+> init_user_ns once it has its own set in current_user_ns?  If the former,
+> then we can use capable().  If the latter, we need another mechanism, as
+> you have suggested might be needed.
+
+Unfortunately I think the problem is that ultimately we need to allow
+any container orchestrator that has been given privileges to manage
+the audit container ID to also grant that privilege to any of the
+child process/containers it manages.  I don't believe we can do that
+with capabilities based on the code I've looked at, and the
+discussions I've had, but if you find a way I would leave to hear it.
+
+> If some random unprivileged user wants to fire up a container
+> orchestrator/engine in his own user namespace, then audit needs to be
+> namespaced.  Can we safely discard this scenario for now?
+
+I think the only time we want to allow a container orchestrator to
+manage the audit container ID is if it has been granted that privilege
+by someone who has that privilege already.  In the zero-container, or
+single-level of containers, case this is relatively easy, and we can
+accomplish it using CAP_AUDIT_CONTROL as the privilege.  If we start
+nesting container orchestrators it becomes more complicated as we need
+to be able to support granting and inheriting this privilege in a
+manner; this is why I suggested a new mechanism *may* be necessary.
+
+--
+paul moore
+www.paul-moore.com
