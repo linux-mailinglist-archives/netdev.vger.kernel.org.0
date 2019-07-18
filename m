@@ -2,200 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CF366CCB6
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 12:25:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 750226CCC0
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 12:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389689AbfGRKY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 06:24:58 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:39156 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726482AbfGRKY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 06:24:58 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1ho3ap-0001te-US; Thu, 18 Jul 2019 12:24:56 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     <netfilter-devel@vger.kernel.org>, Florian Westphal <fw@strlen.de>,
-        Jason Muskat <jason@metalcastle.ca>
-Subject: [RFC net] net: generate icmp redirects after netfilter forward hook
-Date:   Thu, 18 Jul 2019 12:24:40 +0200
-Message-Id: <20190718102440.8355-1-fw@strlen.de>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1727131AbfGRK1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 06:27:13 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:41442 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726482AbfGRK1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 06:27:13 -0400
+Received: by mail-lj1-f193.google.com with SMTP id d24so26770979ljg.8;
+        Thu, 18 Jul 2019 03:27:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=CTzA0mQSX6E47LpcppeqTyEneaomnmHbIOubDMZudK0=;
+        b=O/erVWvoh8NFIDf748Kxi+xjNbM4DWAWHafjSL6Uo+YxpPQH2Bw68sGU0SN2gks9jz
+         jusCdVYMibb7vdakufKuhF/X8ebgx93XDykEF39ssQ6JbCCeT/gW2CvNQDDQHFdlNqr2
+         9tmXhysj0fuwOvhrP61Utgl0z96BBP43FVZyF8j6cSIXhkPkD/AnNZpli6jq+6Glf5X7
+         dilNbIax+HVDYn8OhRPGaAqi2i6m+TaAbnOXf+LEpgDkRupMGSFlqXpwb7huV/ogpoX7
+         pvMVA/3/D3zG0TPaS/+IFluis577k0pkc//NQF2TQeH37bplocKpXGzLzsV4djghF4Mu
+         yX9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=CTzA0mQSX6E47LpcppeqTyEneaomnmHbIOubDMZudK0=;
+        b=rfJONGJyo8S/8/gSwEqzuFfYg7iZeMfg7gfTVJTFRhpAzI4EfjpAImVqBC730FI7u7
+         pKRX8Lu/h8fpf7d7ppcidgayhawbYuuNvyR249Bk7egzeh1+R00w2lgqhacvlZbJR1bp
+         9Cj1jkkN+bCpRNAdULdW1Rw4ZvN1jZntxh3XuLMJg8HPb82GcYIDUoAzCLaAL/rjvKbq
+         1+4d3hj7uj8JHA+d2mg0hkdNubJ++xobgTmrct0B+rixLj4vi7p/L7HPgORih+Y+hMW+
+         88r42sW/ld8eRITq5CsEljprzdqXwGv0Xic7oSqo3MaeMjUQajmqjpsQqT6Tl6iUsJKl
+         7FlQ==
+X-Gm-Message-State: APjAAAXxN20wjtNhzLhyxNTnp5IyJp3939EAnex49OMF0w+UX7VlH1sm
+        Kx7FEot4tJewU9knqSJ/Z/g=
+X-Google-Smtp-Source: APXvYqyt7eV3lUulX+41r2RetIzxtfsevPiEn1vh8b8VbPpRvO2Dw47qb8/UIx27OdyQRTbZXeqXFw==
+X-Received: by 2002:a2e:63cd:: with SMTP id s74mr23521248lje.164.1563445630790;
+        Thu, 18 Jul 2019 03:27:10 -0700 (PDT)
+Received: from peter.cuba.int. ([83.220.32.68])
+        by smtp.googlemail.com with ESMTPSA id y5sm4989913ljj.5.2019.07.18.03.27.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 18 Jul 2019 03:27:09 -0700 (PDT)
+From:   Peter Kosyh <p.kosyh@gmail.com>
+To:     p.kosyh@gmail.com
+Cc:     davem@davemloft.net, David Ahern <dsa@cumulusnetworks.com>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
+Date:   Thu, 18 Jul 2019 13:26:55 +0300
+Message-Id: <20190718102655.17619-1-p.kosyh@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting from
-https://bugzilla.kernel.org/show_bug.cgi?id=204155
+vrf_process_v4_outbound() and vrf_process_v6_outbound() do routing
+using ip/ipv6 addresses, but don't make sure the header is available in
+skb->data[] (skb_headlen() is less then header size).
 
- ----
-1. Configure an PPPoE interface (e.g., ppp0) with an IPv6 address and
-   a prefixlen of 64; e.g., 2001:0DB8::1/64.
-2. Configure a Netfilter ip6table rule to drop IN to OUT forwarding of traffic
-   across the PPP interface: ip6tables -A FORWARD -i ppp+ -o ppp+ -j DROP
-3. Create a Netfilter NFLOG rule to log all outbound traffic.
-4. From an Internet IPv6 Address initiate TCP traffic to an IPv6 address
-   within the /64 IPv6 address space from step 1, but an IPv6 address that
-   is NOT configured on that interface; e.g., ` nc 2001:0DB8::2 80`
-5. Observe the NFLOG showing the Netfilter ip6table filter FORWARD rule
-   is matched and therefore the traffic should be dropped.
-6. Observe the traffic from step 4, that should have been dropped,
-   resulted in an outbound ICMPv6 Redirect with a source IPv6 address of
-   the PPP interface’s Local Link to the Internet IPv6 Address.
- ----
+The situation may occures while forwarding from MPLS layer to vrf, for example.
 
-Problem is that we emit the redirect before passing the packet to the
-netfilter FORWARD hook.   The same "problem" exists in ipv4.
+So, patch adds pskb_may_pull() calls in is_ip_tx_frame(), just before call
+to vrf_process_... functions.
 
-There are various counter-arguments to changing this, e.g.  we would
-still emit such redirect when packet is dropped later in the stack
-(e.g. in POSTROUTING or qdisc).
-
-We will also still emit e.g. ICMPV6 PKTTOOBIG error, as that occurs
-before FORWARD as well, and moving that seems wrong (packet
-has to be dropped).
-
-The only argument that I can think of in favor of this change
-is the lack of a proper alternative to filtering such traffic.
-
-PREROUTING would work, but at that point we lack the
-"packet will be forwarded from ppp0 to ppp0" information that
-we only have available in FORWARD.
-
-Compile tested only.
-
-Cc: Jason Muskat <jason@metalcastle.ca>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
 ---
- net/ipv4/ip_forward.c | 16 +++++------
- net/ipv6/ip6_output.c | 63 ++++++++++++++++++++++++-------------------
- 2 files changed, 44 insertions(+), 35 deletions(-)
+ drivers/net/vrf.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/ip_forward.c b/net/ipv4/ip_forward.c
-index 06f6f280b9ff..33c46470c966 100644
---- a/net/ipv4/ip_forward.c
-+++ b/net/ipv4/ip_forward.c
-@@ -69,6 +69,14 @@ static int ip_forward_finish(struct net *net, struct sock *sk, struct sk_buff *s
- 	__IP_INC_STATS(net, IPSTATS_MIB_OUTFORWDATAGRAMS);
- 	__IP_ADD_STATS(net, IPSTATS_MIB_OUTOCTETS, skb->len);
- 
-+	/*
-+	 *	We now generate an ICMP HOST REDIRECT giving the route
-+	 *	we calculated.
-+	 */
-+	if (IPCB(skb)->flags & IPSKB_DOREDIRECT && !opt->srr &&
-+	    !skb_sec_path(skb))
-+		ip_rt_send_redirect(skb);
-+
- #ifdef CONFIG_NET_SWITCHDEV
- 	if (skb->offload_l3_fwd_mark) {
- 		consume_skb(skb);
-@@ -143,14 +151,6 @@ int ip_forward(struct sk_buff *skb)
- 	/* Decrease ttl after skb cow done */
- 	ip_decrease_ttl(iph);
- 
--	/*
--	 *	We now generate an ICMP HOST REDIRECT giving the route
--	 *	we calculated.
--	 */
--	if (IPCB(skb)->flags & IPSKB_DOREDIRECT && !opt->srr &&
--	    !skb_sec_path(skb))
--		ip_rt_send_redirect(skb);
--
- 	if (net->ipv4.sysctl_ip_fwd_update_priority)
- 		skb->priority = rt_tos2priority(iph->tos);
- 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 8e49fd62eea9..2dafd2da2926 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -383,11 +383,45 @@ static int ip6_forward_proxy_check(struct sk_buff *skb)
- static inline int ip6_forward_finish(struct net *net, struct sock *sk,
- 				     struct sk_buff *skb)
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 54edf8956a25..7c0200bc46f9 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -292,13 +292,16 @@ static netdev_tx_t is_ip_tx_frame(struct sk_buff *skb, struct net_device *dev)
  {
-+	struct inet6_skb_parm *opt = IP6CB(skb);
- 	struct dst_entry *dst = skb_dst(skb);
+ 	switch (skb->protocol) {
+ 	case htons(ETH_P_IP):
++		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct iphdr)))
++			break;
+ 		return vrf_process_v4_outbound(skb, dev);
+ 	case htons(ETH_P_IPV6):
++		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct ipv6hdr)))
++			break;
+ 		return vrf_process_v6_outbound(skb, dev);
+-	default:
+-		vrf_tx_error(dev, skb);
+-		return NET_XMIT_DROP;
+ 	}
++	vrf_tx_error(dev, skb);
++	return NET_XMIT_DROP;
+ }
  
- 	__IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTFORWDATAGRAMS);
- 	__IP6_ADD_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTOCTETS, skb->len);
- 
-+	/* IPv6 specs say nothing about it, but it is clear that we cannot
-+	   send redirects to source routed frames.
-+	   We don't send redirects to frames decapsulated from IPsec.
-+	 */
-+	if (IP6CB(skb)->iif == dst->dev->ifindex &&
-+	    opt->srcrt == 0 && !skb_sec_path(skb)) {
-+		struct ipv6hdr *hdr = ipv6_hdr(skb);
-+		struct in6_addr *target = NULL;
-+		struct inet_peer *peer;
-+		struct rt6_info *rt;
-+
-+		/*
-+		 *	incoming and outgoing devices are the same
-+		 *	send a redirect.
-+		 */
-+
-+		rt = (struct rt6_info *) dst;
-+		if (rt->rt6i_flags & RTF_GATEWAY)
-+			target = &rt->rt6i_gateway;
-+		else
-+			target = &hdr->daddr;
-+
-+		peer = inet_getpeer_v6(net->ipv6.peers, &hdr->daddr, 1);
-+
-+		/* Limit redirects both by destination (here)
-+		   and by source (inside ndisc_send_redirect)
-+		 */
-+		if (inet_peer_xrlim_allow(peer, 1*HZ))
-+			ndisc_send_redirect(skb, target);
-+		if (peer)
-+			inet_putpeer(peer);
-+	}
-+
- #ifdef CONFIG_NET_SWITCHDEV
- 	if (skb->offload_l3_fwd_mark) {
- 		consume_skb(skb);
-@@ -498,33 +532,8 @@ int ip6_forward(struct sk_buff *skb)
- 	   send redirects to source routed frames.
- 	   We don't send redirects to frames decapsulated from IPsec.
- 	 */
--	if (IP6CB(skb)->iif == dst->dev->ifindex &&
--	    opt->srcrt == 0 && !skb_sec_path(skb)) {
--		struct in6_addr *target = NULL;
--		struct inet_peer *peer;
--		struct rt6_info *rt;
--
--		/*
--		 *	incoming and outgoing devices are the same
--		 *	send a redirect.
--		 */
--
--		rt = (struct rt6_info *) dst;
--		if (rt->rt6i_flags & RTF_GATEWAY)
--			target = &rt->rt6i_gateway;
--		else
--			target = &hdr->daddr;
--
--		peer = inet_getpeer_v6(net->ipv6.peers, &hdr->daddr, 1);
--
--		/* Limit redirects both by destination (here)
--		   and by source (inside ndisc_send_redirect)
--		 */
--		if (inet_peer_xrlim_allow(peer, 1*HZ))
--			ndisc_send_redirect(skb, target);
--		if (peer)
--			inet_putpeer(peer);
--	} else {
-+	if (IP6CB(skb)->iif != dst->dev->ifindex ||
-+	    opt->srcrt || skb_sec_path(skb)) {
- 		int addrtype = ipv6_addr_type(&hdr->saddr);
- 
- 		/* This check is security critical. */
+ static netdev_tx_t vrf_xmit(struct sk_buff *skb, struct net_device *dev)
 -- 
-2.21.0
+2.11.0
 
