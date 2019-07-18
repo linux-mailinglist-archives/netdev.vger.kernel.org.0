@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB8E06D264
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 18:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1979F6D26F
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 18:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbfGRQwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 12:52:37 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41696 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726649AbfGRQwh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 12:52:37 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d17so27865358qtj.8
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 09:52:37 -0700 (PDT)
+        id S1727770AbfGRQ67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 12:58:59 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:44912 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727623AbfGRQ67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 12:58:59 -0400
+Received: by mail-io1-f65.google.com with SMTP id s7so52458700iob.11
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 09:58:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6Z8ZblcEDGJiFTraika0ZhtMow6CiMXco/UOv2Tyjq8=;
-        b=VreUP1I4Yn1ODKbtlaq4OhmxqhR5tloHcoxCMvjUhDX09/B/xQVDf3IhVFTE3yptsZ
-         o4wLRygSoc/zLoxf+7aWqtJ/7VYeslZUeCyyFFmwjITs7ETg/v8Uxj6LiUvmChdnta/a
-         hWaqa4gZAykFkW00Bv1r2sT9DTiizFeo25aNJ5ZjuDoS2/g1cTxFa1dyLtqZdQmE+yKT
-         pHJY23N5ayQlro8hKJnqMdskdyGG++l9juOd47RQ5SxnZtlVbJf2RFpY6TwMrAS1c9k2
-         CUZC5TxMQ88f7qdsWV9FE4FROjdlDmSDHgHJb8D691wDAlgv+wLysjxjiuFtUH/lZTbe
-         KcNw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FLviXMSpU9ReD21RHrDBoaOtK19HwNoXlrVIdW8ZxHU=;
+        b=uKTLC5h76yY7j3bHYvyZqC6EVJCia6SSTiWySKnTY3aJJcOMA84DVmb/tOcU0J7JCg
+         69MAJz5DaxX35ZXjInOLUcjgkmpJKIb261wrgITb31xk3WET62grOGo4+TXtGJ18t58t
+         2L05/tR/b995m6PpCWYySlai5HatEeegD9jQcI0izLPhtiVBbzHeevbM3YVt1QLV1qSe
+         R2aa5zls5MMc4nFf+7qqheqlKNovMH3Lcie8DvjxKhpf7pP4mgFRNRhTQS70EDPWVRQ1
+         vjvLH6OHIYbLt8CPwGb3fgDuBWW/lxuo++n0k1iu6J6DPq/6BfjHnHZtTaOGkZZh8CVv
+         bKuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6Z8ZblcEDGJiFTraika0ZhtMow6CiMXco/UOv2Tyjq8=;
-        b=DNnZeejzZDzgjarzYWBVfLbde33FRZAtdwARbezL4puE5PhKvmVOKTsgySqyK2oGnf
-         C1wAHxTESliKt2enXiXGWA2ZXLxr1gNK9TUr0//fIzBKFth44fLph2p1DAm22PbihHQ0
-         8W2TOnuYbbgiatee0/yfvhqnRgpR78f4JtSHVnX3/BsELRtJQ3zpssQPZFpdZAJSi0Vm
-         t/qlXAQuS5aElEYOsTLHyAGST10qIpwez9Opa0oBFq/114epwlgyGt/3rwT4xMijvini
-         TWyFJybI+pjGx9JxFqJAWrRb6HW0wtx8o52oSTFSszuuQE7Q1cpcvzHGRmqWeeS2GCSP
-         JZww==
-X-Gm-Message-State: APjAAAX4IWeGmwN9rRKwln+I33QjNOQm7o6DLYsM4H3uUbp6Ogwn6V+V
-        +QB6oG5zofrq8n8i18du6ejFzm/GqQq3gQ==
-X-Google-Smtp-Source: APXvYqyN0ENnaUtojMTDCQ3zEn41aBxeF7IzHx4Rb4W0jI9WAjwarDyRgh34AOVQVkaMcv7EJNNSDg==
-X-Received: by 2002:ac8:19ac:: with SMTP id u41mr32428543qtj.46.1563468756448;
-        Thu, 18 Jul 2019 09:52:36 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:7fee:c1f1:6380:7c32:8066])
-        by smtp.gmail.com with ESMTPSA id x2sm12599780qkc.92.2019.07.18.09.52.35
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 18 Jul 2019 09:52:35 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 2BBC6C0918; Thu, 18 Jul 2019 13:52:33 -0300 (-03)
-Date:   Thu, 18 Jul 2019 13:52:33 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@mellanox.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FLviXMSpU9ReD21RHrDBoaOtK19HwNoXlrVIdW8ZxHU=;
+        b=gN9TeCxCQzydQNYMJFZt3li1l6Nqia4GrRV0fPo0sp61nH6CbKcgiX+fpEC+OI9SpZ
+         KWsK4itdJTF6ih3TFXwQ79xq7oBKhIwK2g5Y0Eebg2L+qtuL3GKcwqMKMduW5tjpdcSh
+         e+uijcrNUBbejTrweALqA3h7oc5OTqWXNoPuQ1lQLO9MFN+EpuhEMs3dM2qZC5fHKJ9F
+         Q8lv90ou1XmqHEoijjptQVlgbOTOvXqDPxwGc2tRleuP/NWryL89Xd5mI8GWVvp+uDT0
+         2TKAowzXldjhZm/QuGjOPidCt6ybhUHiUbsXOr6FWZD/LSnxb1/F2iphMdUvtQUGRpw+
+         1W6A==
+X-Gm-Message-State: APjAAAVH8yj1RYHrF06RftsglLgHDtM+nzx4rsYxg++givrP0nTZWnEN
+        XKpo/idKnCYq/ZfQKJ0rcE4=
+X-Google-Smtp-Source: APXvYqwlXOzj6/apJCEOJLMe88O7xXUFA+QQuC50pcmYRx/dtsSDZcYWEn/YpDjTYEIK7Da6/qmOfw==
+X-Received: by 2002:a05:6638:52:: with SMTP id a18mr50349152jap.75.1563469138464;
+        Thu, 18 Jul 2019 09:58:58 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:d57e:4df9:f3b0:1b7c? ([2601:282:800:fd80:d57e:4df9:f3b0:1b7c])
+        by smtp.googlemail.com with ESMTPSA id i23sm20143556ioj.24.2019.07.18.09.58.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 18 Jul 2019 09:58:57 -0700 (PDT)
+Subject: Re: [PATCH net-next iproute2 v2 0/3] net/sched: Introduce tc
+ connection tracking
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Paul Blakey <paulb@mellanox.com>
 Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
         Yossi Kuperman <yossiku@mellanox.com>,
         Oz Shlomo <ozsh@mellanox.com>,
@@ -61,28 +61,36 @@ Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
         John Hurley <john.hurley@netronome.com>,
         Simon Horman <simon.horman@netronome.com>,
         Justin Pettit <jpettit@ovn.org>
-Subject: Re: [PATCH net-next iproute2 v2 0/3] net/sched: Introduce tc
- connection tracking
-Message-ID: <20190718165233.GT3390@localhost.localdomain>
 References: <1562832867-32347-1-git-send-email-paulb@mellanox.com>
  <9286cbad-6821-786a-6882-d2bf56b3cf05@mellanox.com>
+ <20190718165233.GT3390@localhost.localdomain>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <62d7b2a2-82d4-cd2e-d508-c37b4829998c@gmail.com>
+Date:   Thu, 18 Jul 2019 10:58:56 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9286cbad-6821-786a-6882-d2bf56b3cf05@mellanox.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190718165233.GT3390@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 03:00:34PM +0000, Paul Blakey wrote:
-> Hey guys,
+On 7/18/19 10:52 AM, Marcelo Ricardo Leitner wrote:
+> On Thu, Jul 18, 2019 at 03:00:34PM +0000, Paul Blakey wrote:
+>> Hey guys,
+>>
+>> any more comments?
 > 
-> any more comments?
+> From my side, just the man page on tc-ct(8) that is missing.
+> Everything else seems to be in place.
+> 
+> Thanks,
+> Marcelo
+> 
 
-From my side, just the man page on tc-ct(8) that is missing.
-Everything else seems to be in place.
-
-Thanks,
-Marcelo
+Paul: If there are no other comments, I'll push these to iproute2-next
+later today. In that case, send the man page as a follow on patch.
