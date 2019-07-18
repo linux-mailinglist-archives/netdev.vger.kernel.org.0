@@ -2,107 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F5D76D6AD
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 23:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F161A6D6C4
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 00:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbfGRVxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 17:53:16 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:45735 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391342AbfGRVxM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 17:53:12 -0400
-Received: by mail-lf1-f66.google.com with SMTP id u10so20265438lfm.12
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 14:53:11 -0700 (PDT)
+        id S1728140AbfGRWMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 18:12:47 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39271 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727781AbfGRWMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 18:12:46 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b7so14585651pls.6;
+        Thu, 18 Jul 2019 15:12:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RhzTrt+KngzjicFbTv3vZ6r7DsUfT24hW3ZTH7kCo04=;
-        b=BDDC63AbbksIGaPLCaZ+G2vZ+QlUC0Y4xmaYnnx1w9Sn0c/YSKCOyE3F3bipx/OPNo
-         bY+GCUelVN9YgKRNdiGTQc7e9dxHE8srVeTFP4z3kHDTgyTHdIJxEgeYAGwEg5uRlCR4
-         SJCBe/KsTQXTy1ZbjaHtMM7hkizkZLcw0c9zfxcr0RvysIbU+uTnupNfETlIA5tdojdb
-         eaHLpJsvTbxt6FmfE6Rqf0hRmvzcJp0R71+FTYwBZjMbwYRjqxFe4jlSYdDpAlcz6a+v
-         gHInJ6oZUdBaKuk2fyjd8yd5aDlkZ2MjSHc//o4Z3Oextu3SQoPtQvrnS0hkfu0OOV0b
-         pBqg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=L/vMBz0gKnDGWIBpHaUwZO2m9oAQAiDwzG+wKapV5/Q=;
+        b=gVybyDuC2n3eMfkAefaFlUXrdWd3Mo7xsiB0WsZsrYcbWz+rbFNseuDWQtnBEtgZys
+         soMYBS/qS9hRBVnHbiAqpqh4teMp5iblh+CdHe3zMn85t0ORATz1XV+amMC2jdXEEig6
+         1k2lBXVY6wFTdVwmn41/QzXxiZ375MQ3AtCYKMQmU7jKCbeADNyUeFUptaZnbUC7UU9n
+         W4Z9Ax8yx6Sk0lGnRnozfnbCZAf9hNtszurlznEombj6NDqNbHrndkD7GAqZJs+vCKih
+         Qci+/VwhiXtp4mxOI6etOwDeZVwCs5Mo4BqDxe5AFg4vV30UGOm26dlTexAGgAQslw45
+         A4qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RhzTrt+KngzjicFbTv3vZ6r7DsUfT24hW3ZTH7kCo04=;
-        b=UDMktSjK8k0ESWU8yKnW2AtgSSLtiuuQ+M7UCtA/y8CZx4ls7Y3FvROw3RB9apYd70
-         ggtxBVYSYVr+fqQibhta1iimSIbotwao5jdt7k33lB4AOqR87XMcxaAuGq7QLOSnV/on
-         qTLWKmafDLTVhNPr9CtP6gFFehSwn9Ljw9nkvwHG63iSPIEfJVhXxidUT0p2fnmoLhnf
-         HiF64RAAW/uf2mqjh5iIhevXuc9rjWNoAgw+ZIV216IQ1FPPmcw1/5b5VGX/gQcvGETs
-         jdZtQFi2aASyCDy35ifmzW7lNvGCVTz3/PkZk539Sj6HsB6ioAo+DtHUsDc3C3eHmYgP
-         IZOw==
-X-Gm-Message-State: APjAAAVAsk4z9/qL9pHrYdVSWSFCTC1mp5KaLyB3g9tZ5hPt6nrxx+mO
-        XHtANqk4YvWoigo7cE9R8CzZpFqtu3THMB0nxg==
-X-Google-Smtp-Source: APXvYqyGCCJtInWCDaYi60JZY3NOkc1TuPq3hehijvo4gTpiQWjSYxIYBAQx3HMzGAWPk3gWvXKxriSLAdaQ7algVzQ=
-X-Received: by 2002:a19:8093:: with SMTP id b141mr22767615lfd.137.1563486789899;
- Thu, 18 Jul 2019 14:53:09 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=L/vMBz0gKnDGWIBpHaUwZO2m9oAQAiDwzG+wKapV5/Q=;
+        b=S9eh9bu+or4iig0O5dZ+6P06G38slEFBHrjOVIsuJxK0IODn0UURFqIp4iIwQVdrsl
+         E7ZkeuB+SVsel17xekMCqKsEnJQxQYd1oJ/1I7oq0Jf0PVj7iicPm0i2StXTW0fGaTER
+         zUBKWBAsITOFr3iyVf5rtH01TOiajt2AlezUk/H4/e+PIwllJ/UFpNOWrcERU9wdFb82
+         6jkvAqY+FbJ4QhBN/IpvF/NfUQAO768Xx1d4or6u9mpKV1zBLP4As+ptTEbTmSSy/qmm
+         F2Qhl6LXlcfIMR7YsVg7WKKApOPQ1A9WCzkTcH3vkRZutTnSYWrzNzMF3mbslnEnIIN0
+         OZOA==
+X-Gm-Message-State: APjAAAUIhmRkXJHUQ7sGV2ksNANYIOYGIiGqebkng5mwJnAEQyHVeE+R
+        EG7jDY6lSQge0q0P3wC0RjfcqgWm
+X-Google-Smtp-Source: APXvYqyHtZ8S2jkiyXV6GCBLDCKazxSrCXu8T+rQHac346xoL2SmZAxYy5p3790nH0uYew+aQggeZQ==
+X-Received: by 2002:a17:902:2aa8:: with SMTP id j37mr50346469plb.316.1563487965642;
+        Thu, 18 Jul 2019 15:12:45 -0700 (PDT)
+Received: from [192.168.0.16] ([97.115.142.179])
+        by smtp.gmail.com with ESMTPSA id j128sm13832489pfg.28.2019.07.18.15.12.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 18 Jul 2019 15:12:45 -0700 (PDT)
+Subject: Re: [PATCH] openvswitch: Fix a possible memory leak on dst_cache
+To:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1563466028-2531-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <9b231232-dd6e-5733-2af9-e2fb3d6ae0a4@gmail.com>
+Date:   Thu, 18 Jul 2019 15:12:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190529153427.GB8959@cisco> <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
- <20190529222835.GD8959@cisco> <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
- <20190530170913.GA16722@mail.hallyn.com> <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
- <20190708180558.5bar6ripag3sdadl@madcap2.tricolour.ca> <CAHC9VhRTT7JWqNnynvK04wKerjc-3UJ6R1uPtjCAPVr_tW-7MA@mail.gmail.com>
- <20190716220320.sotbfqplgdructg7@madcap2.tricolour.ca> <CAHC9VhScHizB2r5q3T5s0P3jkYdvzBPPudDksosYFp_TO7W9-Q@mail.gmail.com>
- <20190718005145.eshekqfr3navqqiy@madcap2.tricolour.ca>
-In-Reply-To: <20190718005145.eshekqfr3navqqiy@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 18 Jul 2019 17:52:58 -0400
-Message-ID: <CAHC9VhTYV02ws3QcezER5cY+Xt+tExcJEO-dumTDx=FXGFh3nw@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Tycho Andersen <tycho@tycho.ws>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        ebiederm@xmission.com, nhorman@tuxdriver.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1563466028-2531-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 17, 2019 at 8:52 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2019-07-16 19:30, Paul Moore wrote:
-
-...
-
-> > We can trust capable(CAP_AUDIT_CONTROL) for enforcing audit container
-> > ID policy, we can not trust ns_capable(CAP_AUDIT_CONTROL).
+On 7/18/2019 9:07 AM, Haishuang Yan wrote:
+> dst_cache should be destroyed when fail to add flow actions.
 >
-> Ok.  So does a process in a non-init user namespace have two (or more)
-> sets of capabilities stored in creds, one in the init_user_ns, and one
-> in current_user_ns?  Or does it get stripped of all its capabilities in
-> init_user_ns once it has its own set in current_user_ns?  If the former,
-> then we can use capable().  If the latter, we need another mechanism, as
-> you have suggested might be needed.
+> Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
+> Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+> ---
+>   net/openvswitch/flow_netlink.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+> index d7559c6..1fd1cdd 100644
+> --- a/net/openvswitch/flow_netlink.c
+> +++ b/net/openvswitch/flow_netlink.c
+> @@ -2608,6 +2608,7 @@ static int validate_and_copy_set_tun(const struct nlattr *attr,
+>   			 sizeof(*ovs_tun), log);
+>   	if (IS_ERR(a)) {
+>   		dst_release((struct dst_entry *)tun_dst);
+> +		dst_cache_destroy(&tun_dst->u.tun_info.dst_cache);
+>   		return PTR_ERR(a);
+>   	}
+>   
 
-Unfortunately I think the problem is that ultimately we need to allow
-any container orchestrator that has been given privileges to manage
-the audit container ID to also grant that privilege to any of the
-child process/containers it manages.  I don't believe we can do that
-with capabilities based on the code I've looked at, and the
-discussions I've had, but if you find a way I would leave to hear it.
+Nack.
 
-> If some random unprivileged user wants to fire up a container
-> orchestrator/engine in his own user namespace, then audit needs to be
-> namespaced.  Can we safely discard this scenario for now?
+dst_release will decrement the ref count and will 
+call_rcu(&dst->rcu_head, dst_destroy_rcu) if the ref count is zero.  No 
+other net drivers call dst_destroy SFAICT.
 
-I think the only time we want to allow a container orchestrator to
-manage the audit container ID is if it has been granted that privilege
-by someone who has that privilege already.  In the zero-container, or
-single-level of containers, case this is relatively easy, and we can
-accomplish it using CAP_AUDIT_CONTROL as the privilege.  If we start
-nesting container orchestrators it becomes more complicated as we need
-to be able to support granting and inheriting this privilege in a
-manner; this is why I suggested a new mechanism *may* be necessary.
+Haishuang,
 
---
-paul moore
-www.paul-moore.com
+are you trying to fix some specific problem here?
+
+Thanks,
+
+- Greg
+
+
