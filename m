@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCE96CB55
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 10:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D366CB58
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 10:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389357AbfGRI6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 04:58:14 -0400
-Received: from mga17.intel.com ([192.55.52.151]:10418 "EHLO mga17.intel.com"
+        id S2389572AbfGRI7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 04:59:15 -0400
+Received: from mga06.intel.com ([134.134.136.31]:13975 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726383AbfGRI6N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 04:58:13 -0400
+        id S1726383AbfGRI7O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 04:59:14 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jul 2019 01:58:13 -0700
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jul 2019 01:59:14 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,276,1559545200"; 
-   d="scan'208";a="173124356"
+   d="scan'208";a="158725434"
 Received: from pipin.fi.intel.com (HELO pipin) ([10.237.72.175])
-  by orsmga006.jf.intel.com with ESMTP; 18 Jul 2019 01:58:10 -0700
+  by orsmga007.jf.intel.com with ESMTP; 18 Jul 2019 01:59:11 -0700
 From:   Felipe Balbi <felipe.balbi@linux.intel.com>
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
@@ -27,11 +27,11 @@ Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org,
         "Christopher S . Hall" <christopher.s.hall@intel.com>
-Subject: Re: [RFC PATCH 0/5] PTP: add support for Intel's TGPIO controller
-In-Reply-To: <20190717173915.GE1464@localhost>
-References: <20190716072038.8408-1-felipe.balbi@linux.intel.com> <20190716164123.GB2125@localhost> <87ef2p2lvc.fsf@linux.intel.com> <20190717173915.GE1464@localhost>
-Date:   Thu, 18 Jul 2019 11:58:09 +0300
-Message-ID: <87imrziuse.fsf@linux.intel.com>
+Subject: Re: [RFC PATCH 4/5] PTP: Add flag for non-periodic output
+In-Reply-To: <20190717173645.GD1464@localhost>
+References: <20190716072038.8408-1-felipe.balbi@linux.intel.com> <20190716072038.8408-5-felipe.balbi@linux.intel.com> <20190716163927.GA2125@localhost> <87k1ch2m1i.fsf@linux.intel.com> <20190717173645.GD1464@localhost>
+Date:   Thu, 18 Jul 2019 11:59:10 +0300
+Message-ID: <87ftn3iuqp.fsf@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -44,15 +44,18 @@ Hi,
 
 Richard Cochran <richardcochran@gmail.com> writes:
 
-> On Wed, Jul 17, 2019 at 09:52:55AM +0300, Felipe Balbi wrote:
->> 
->> It's just a pin, like a GPIO. So it would be a PCB trace, flat flex,
->> copper wire... Anything, really.
+> On Wed, Jul 17, 2019 at 09:49:13AM +0300, Felipe Balbi wrote:
+>> No worries, I'll work on this after vacations (I'll off for 2 weeks
+>> starting next week). I thought about adding a new IOCTL until I saw that
+>> rsv field. Oh well :-)
 >
-> Cool.  Are there any Intel CPUs available that have this feature?
+> It would be great if you could fix up the PTP ioctls as a preface to
+> your series.
 
-At least canon lake has it, but its BIOS doesn't enable it. This is
-something that will be more important on future CPUs.
+no problem, anything in particular in mind? Just create new versions of
+all the IOCTLs so we can actually use the reserved fields in the future?
+
+cheers
 
 -- 
 balbi
