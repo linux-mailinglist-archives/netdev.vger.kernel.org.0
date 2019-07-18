@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5241F6CC06
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 11:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 909886CC17
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 11:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389845AbfGRJhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 05:37:42 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41554 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726665AbfGRJhl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 05:37:41 -0400
-Received: by mail-wr1-f68.google.com with SMTP id c2so24702650wrm.8
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 02:37:40 -0700 (PDT)
+        id S2389549AbfGRJmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 05:42:49 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:45997 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726383AbfGRJmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 05:42:49 -0400
+Received: by mail-lf1-f68.google.com with SMTP id u10so18688970lfm.12;
+        Thu, 18 Jul 2019 02:42:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=5gpt/zcvafN1FXFMWf3dMVSAEfdVCbW03VkO8WwV5vo=;
+        b=S2WE0InyJmLKEBoGNgjlrk3QaZPdurWS35GRbBRPUi7+l+dLipZr1X4zFxoapUPCsg
+         /DNCxvrXLyHASE0MKWonphIUU1E/bo2xtV71nXxuQDn37bXqljdBcirjwttzgbme3F7a
+         D8+an2rOKh+uqE5pUdnEoZqNIZozFqnx3cDL/mYNzqDpcEb5NSzWdCniulaXhA6BhBn5
+         +NzL1B/1JUMZiBlEF9eU6hA0tudvfnLN2CEaPiqvs2TegupPANrdWagcSuWTZYFWw4ut
+         hFzVdExQEbska1S12lXRqUL2xPyDDQXmKk73l0IDjUAtLUyIrkF/72pJcQS0gbOxGg97
+         VliQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Vums2zz+KqGmXaH/Vl3B9M8z+ViEwY48CergeYbypPk=;
-        b=Cv0/TtMLwJWYwZslHIakJRhruHwfXGAc+RgsQG+OmkDbiKaDL4s24iTVJ6ATPE7Vhs
-         WXnFLsK26Hb1i9mUsVRgnQZ9/G98Wb01mkuJgGRegdSilMcJyfc9zycWqOTKEfMpMcOQ
-         4NB15oLGvyrHmk6xUebPGq5vEIyiGal39O+hdsZi8fYgh6YQM12uG3TKhgg8IIi0h0BV
-         TBOO97ERD5EyPRlBz73gWZbawa6RDsD4QOHeob92p2kdfMxpvQKeNfBw/lItAsjyzGvr
-         fJN0Mhfw0aR7CMc66/rJ7ElpG3wOcBnVSnvLmlDIPQZPfZ+g924AACDhR3klB/0c9p07
-         cdqQ==
-X-Gm-Message-State: APjAAAUNc/TGTlD60wOcftTaf7+3urg09ALu4Q1n4A/FPzL8Mr75mT5T
-        lLfCt/XAmHoYI9LAS5OrxIuTbQ==
-X-Google-Smtp-Source: APXvYqxYCA1EVl1T2DVO3iZedENcjrNB6Hslgz4pOwp4UFAclSWI8asScK5ZYvkj/r17GyN6S1B6Kg==
-X-Received: by 2002:adf:ec0f:: with SMTP id x15mr13474237wrn.165.1563442659406;
-        Thu, 18 Jul 2019 02:37:39 -0700 (PDT)
-Received: from steredhat ([5.171.190.136])
-        by smtp.gmail.com with ESMTPSA id q18sm27647509wrw.36.2019.07.18.02.37.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 18 Jul 2019 02:37:38 -0700 (PDT)
-Date:   Thu, 18 Jul 2019 11:37:30 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 4/5] vhost/vsock: split packets to send using multiple
- buffers
-Message-ID: <CAGxU2F6oo7Cou7t9o=gG2=wxHMKX9xYQXNxVtDYeHq5fyEhJWg@mail.gmail.com>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-5-sgarzare@redhat.com>
- <20190717105336-mutt-send-email-mst@kernel.org>
- <CAGxU2F45v40qAOHkm1Hk2E69gCS0UwVgS5NS+tDXXuzdF4EixA@mail.gmail.com>
- <20190718041234-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190718041234-mutt-send-email-mst@kernel.org>
-User-Agent: NeoMutt/20180716
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5gpt/zcvafN1FXFMWf3dMVSAEfdVCbW03VkO8WwV5vo=;
+        b=MbmbOd+QjMXh5rVfbXk9FGHlrUzZrXpFNO396LCNMv4VxM3sPeucqu1F6XnF7Vom0m
+         rcIhB/Th5uYhTgqWeyTQ0ExZSBMrsH4aNYDwzs3UgNP+7VjkEWJSfIyX/jL1Fm+UwIzX
+         0s6sNV22LDgOrTO3/tL8osQWXP9ONR8PrgMtvXPsd9knfQ/TcjS6NaW6mrxIahdpy0KL
+         wUpR8mKbbMeBoHBbQK3TJUETsxCcFWHcDoBLJ0hGe64hiJg7Wjlh6i4uGgXLZWhXo7PD
+         shBQgiOsLkDYFeE728SsekgvmS0jQ8OIjmfvSjYWGv1DAMozU7lh6oOh0Zn7W/sQr9LZ
+         pOsg==
+X-Gm-Message-State: APjAAAWwGgRYQa7wExPsMyXj5ufYBwJeUr+crZSVcQNn+OAhQUlFqior
+        l7r7O+x1PA26aBUAWE/DusI=
+X-Google-Smtp-Source: APXvYqyA1yFFPTV8h5ZXJHEmv9lw2X1Fq4eve3kn8IkgNRYpOvoZ41FJTupm0GNqOSNec1JehdsM3w==
+X-Received: by 2002:ac2:414d:: with SMTP id c13mr2767424lfi.47.1563442966991;
+        Thu, 18 Jul 2019 02:42:46 -0700 (PDT)
+Received: from peter.cuba.int. ([83.220.32.68])
+        by smtp.googlemail.com with ESMTPSA id e87sm5675260ljf.54.2019.07.18.02.42.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 18 Jul 2019 02:42:46 -0700 (PDT)
+From:   Peter Kosyh <p.kosyh@gmail.com>
+To:     p.kosyh@gmail.com
+Cc:     davem@davemloft.net, David Ahern <dsa@cumulusnetworks.com>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
+Date:   Thu, 18 Jul 2019 12:41:14 +0300
+Message-Id: <20190718094114.13718-1-p.kosyh@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 10:13 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Thu, Jul 18, 2019 at 09:50:14AM +0200, Stefano Garzarella wrote:
-> > On Wed, Jul 17, 2019 at 4:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > On Wed, Jul 17, 2019 at 01:30:29PM +0200, Stefano Garzarella wrote:
-> > > > If the packets to sent to the guest are bigger than the buffer
-> > > > available, we can split them, using multiple buffers and fixing
-> > > > the length in the packet header.
-> > > > This is safe since virtio-vsock supports only stream sockets.
-> > > >
-> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > >
-> > > So how does it work right now? If an app
-> > > does sendmsg with a 64K buffer and the other
-> > > side publishes 4K buffers - does it just stall?
-> >
-> > Before this series, the 64K (or bigger) user messages was split in 4K packets
-> > (fixed in the code) and queued in an internal list for the TX worker.
-> >
-> > After this series, we will queue up to 64K packets and then it will be split in
-> > the TX worker, depending on the size of the buffers available in the
-> > vring. (The idea was to allow EWMA or a configuration of the buffers size, but
-> > for now we postponed it)
->
-> Got it. Using workers for xmit is IMHO a bad idea btw.
-> Why is it done like this?
+vrf_process_v4_outbound() and vrf_process_v6_outbound() do routing
+using ip/ipv6 addresses, but don't make sure the header is available in
+skb->data[] (skb_headlen() is less then header size).
 
-Honestly, I don't know the exact reasons for this design, but I suppose
-that the idea was to have only one worker that uses the vring, and
-multiple user threads that enqueue packets in the list.
-This can simplify the code and we can put the user threads to sleep if
-we don't have "credit" available (this means that the receiver doesn't
-have space to receive the packet).
+The situation may occures while forwarding from MPLS layer to vrf, for
+example.
 
-What are the drawbacks in your opinion?
+So, this patch adds pskb_may_pull() calls in is_ip_tx_frame(), just before
+call to vrf_process_... functions.
 
+Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
+---
+ drivers/net/vrf.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Thanks,
-Stefano
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 54edf8956a25..d552f29a58d1 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -292,13 +292,16 @@ static netdev_tx_t is_ip_tx_frame(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	switch (skb->protocol) {
+ 	case htons(ETH_P_IP):
++		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct iphdr))
++			break;
+ 		return vrf_process_v4_outbound(skb, dev);
+ 	case htons(ETH_P_IPV6):
++		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct ipv6hdr))
++			break;
+ 		return vrf_process_v6_outbound(skb, dev);
+-	default:
+-		vrf_tx_error(dev, skb);
+-		return NET_XMIT_DROP;
+ 	}
++	vrf_tx_error(dev, skb);
++	return NET_XMIT_DROP;
+ }
+ 
+ static netdev_tx_t vrf_xmit(struct sk_buff *skb, struct net_device *dev)
+-- 
+2.11.0
+
