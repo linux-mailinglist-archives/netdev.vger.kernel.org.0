@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E1EA6D44F
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5556D453
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 21:03:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726040AbfGRTBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 15:01:16 -0400
-Received: from mail.us.es ([193.147.175.20]:45604 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391011AbfGRTBP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 15:01:15 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id C1C9D1022B0
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 21:01:13 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B2DE711510C
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 21:01:13 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A2513115103; Thu, 18 Jul 2019 21:01:13 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 802B2D2F98;
-        Thu, 18 Jul 2019 21:01:11 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 18 Jul 2019 21:01:11 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 4BCCE4265A31;
-        Thu, 18 Jul 2019 21:01:11 +0200 (CEST)
-Date:   Thu, 18 Jul 2019 21:01:10 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        "David S. Miller" <davem@davemloft.net>, wenxu <wenxu@ucloud.cn>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [net-next] netfilter: bridge: make NF_TABLES_BRIDGE
- tristate
-Message-ID: <20190718190110.akn54iwb2mui72cd@salvia>
-References: <20190710080835.296696-1-arnd@arndb.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190710080835.296696-1-arnd@arndb.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2391052AbfGRTDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 15:03:03 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:54276 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727685AbfGRTDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 15:03:03 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 659101527DCC1;
+        Thu, 18 Jul 2019 12:03:02 -0700 (PDT)
+Date:   Thu, 18 Jul 2019 12:03:01 -0700 (PDT)
+Message-Id: <20190718.120301.1523874454003539281.davem@davemloft.net>
+To:     dsahern@gmail.com
+Cc:     idosch@idosch.org, netdev@vger.kernel.org, alexpe@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net] ipv6: Unlink sibling route in case of failure
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <f6dacc3e-7b20-2441-dd7d-99d3983bddc3@gmail.com>
+References: <20190717203933.3073-1-idosch@idosch.org>
+        <f6dacc3e-7b20-2441-dd7d-99d3983bddc3@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jul 2019 12:03:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 10:08:20AM +0200, Arnd Bergmann wrote:
-> The new nft_meta_bridge code fails to link as built-in when NF_TABLES
-> is a loadable module.
-> 
-> net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_eval':
-> nft_meta_bridge.c:(.text+0x1e8): undefined reference to `nft_meta_get_eval'
-> net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_init':
-> nft_meta_bridge.c:(.text+0x468): undefined reference to `nft_meta_get_init'
-> nft_meta_bridge.c:(.text+0x49c): undefined reference to `nft_parse_register'
-> nft_meta_bridge.c:(.text+0x4cc): undefined reference to `nft_validate_register_store'
-> net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_module_exit':
-> nft_meta_bridge.c:(.exit.text+0x14): undefined reference to `nft_unregister_expr'
-> net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_module_init':
-> nft_meta_bridge.c:(.init.text+0x14): undefined reference to `nft_register_expr'
-> net/bridge/netfilter/nft_meta_bridge.o:(.rodata+0x60): undefined reference to `nft_meta_get_dump'
-> net/bridge/netfilter/nft_meta_bridge.o:(.rodata+0x88): undefined reference to `nft_meta_set_eval'
-> 
-> This can happen because the NF_TABLES_BRIDGE dependency itself is just a
-> 'bool'.  Make the symbol a 'tristate' instead so Kconfig can propagate the
-> dependencies correctly.
+From: David Ahern <dsahern@gmail.com>
+Date: Thu, 18 Jul 2019 08:21:01 -0600
 
-Hm. Something breaks here. Investigating. Looks like bridge support is
-gone after this, nft fails to register the filter chain type:
+> On 7/17/19 2:39 PM, Ido Schimmel wrote:
+>> From: Ido Schimmel <idosch@mellanox.com>
+>> 
+>> When a route needs to be appended to an existing multipath route,
+>> fib6_add_rt2node() first appends it to the siblings list and increments
+>> the number of sibling routes on each sibling.
+>> 
+>> Later, the function notifies the route via call_fib6_entry_notifiers().
+>> In case the notification is vetoed, the route is not unlinked from the
+>> siblings list, which can result in a use-after-free.
+>> 
+>> Fix this by unlinking the route from the siblings list before returning
+>> an error.
+>> 
+>> Audited the rest of the call sites from which the FIB notification chain
+>> is called and could not find more problems.
+>> 
+>> Fixes: 2233000cba40 ("net/ipv6: Move call_fib6_entry_notifiers up for route adds")
+>> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+>> Reported-by: Alexander Petrovskiy <alexpe@mellanox.com>
+>> ---
+>> Dave, this will not apply cleanly to stable trees due to recent changes
+>> in net-next. I can prepare another patch for stable if needed.
+>> ---
+>>  net/ipv6/ip6_fib.c | 18 +++++++++++++++++-
+>>  1 file changed, 17 insertions(+), 1 deletion(-)
+>> 
+> 
+> Thanks for the fix, Ido. I can help with the ports as well.
+> 
+> Reviewed-by: David Ahern <dsahern@gmail.com>
 
-# nft add table bridge x
-# nft add chain bridge x y { type filter hook input priority 0\; }
-Error: Could not process rule: No such file or directory
+Applied and queued up for -stable.
+
+Since I've done a bunch of ipv6 routing fix backports through David's
+refactoring and cleanups, I'll give this one a try too :-) If I run
+into problems I'll ask for help.
+
+Thanks.
