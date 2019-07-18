@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 006D06C4EF
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 04:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F162A6C507
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 04:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732948AbfGRCVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jul 2019 22:21:17 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40590 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727653AbfGRCVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 22:21:17 -0400
-Received: by mail-pl1-f195.google.com with SMTP id a93so12988539pla.7;
-        Wed, 17 Jul 2019 19:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=p+LjhuKBh7nce7Y+lpAKDWjlvBnJG3DCGoCsO8czRPA=;
-        b=V9oXHnjNRMBPoc/XZ7mKAQDwsYqQUg+QzF44fwuMzKNaE/56hg24mSLhmd664iXS9I
-         neugAspe7T7CagYX5h6Ixx3fe1uNSe3YrHuB0qX3WFpMsFA2UISxh6CAP9x8dvMXDojZ
-         t0oSgQByNbYb75yFM3KQX8k14t4whJDqU345lKoxnTVLWFOWBjKkCGSndn0xClnFq6aL
-         jitefDyI/BkvVvS/W/2S1BJI/JIvov1c+1HpIIx0wwlqqe1HkREbWDVBmlCFswOqhAG4
-         bsSAYAit3ogE8QbRKSx1J9K+jIC7elr4KpX9LEw7nWrd1WHl1FmuXAGyBj2YH+WUvKD/
-         aQfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=p+LjhuKBh7nce7Y+lpAKDWjlvBnJG3DCGoCsO8czRPA=;
-        b=UzXmQJxIlroKhhHlznebwDWbPR1HdowpNL59hilcXcF8DUJqysDo4A6iuNyXkolwiL
-         zL6R1IjDqDyz6JTp+CaDyYaLxOR5tyaTXaQzz2eNMI1sFtE4N7VbjR2CdjlfRFvcFAYf
-         +KuMkX/rRgNEVNuxZaGOaZajx0wzmmNm0UUlZgvk1z6eVJYBW+mYBs4C+Neia6lehb9R
-         ow6Vkcjqkj+k8T3u0oN1W2eJu43b5i1webd992efWl2EIu3O09ANouRRpaP/qtqwQW7+
-         Xru8EzK5Z00DDkjrPdng2H2D8OsQ88tfw+cDQxQZ1/ETdPPSdo8jnWS0cB9SQThRqQoz
-         Z6Sw==
-X-Gm-Message-State: APjAAAXagb5GxGU33KsVUxz34K88wVFXTtdH/BTxPS7pw7R3TLmTRDJ2
-        UjyOfN6e4XWdb1xnFw/nV+8=
-X-Google-Smtp-Source: APXvYqzhp9UNPhJLbPgEiS9emIzKfx6Lb59KI+5aqhHAwWjsr4RjI3qsDA6KHINu5FC8UZj2ZDrZUw==
-X-Received: by 2002:a17:902:59c3:: with SMTP id d3mr45913396plj.22.1563416476874;
-        Wed, 17 Jul 2019 19:21:16 -0700 (PDT)
-Received: from hari-Inspiron-1545 ([183.83.86.126])
-        by smtp.gmail.com with ESMTPSA id q69sm39143218pjb.0.2019.07.17.19.21.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 17 Jul 2019 19:21:16 -0700 (PDT)
-Date:   Thu, 18 Jul 2019 07:51:10 +0530
-From:   Hariprasad Kelam <hariprasad.kelam@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: dsa: sja1105: Release lock in error case
-Message-ID: <20190718022110.GA19222@hari-Inspiron-1545>
+        id S1732313AbfGRCrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jul 2019 22:47:39 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:45094 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727804AbfGRCri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jul 2019 22:47:38 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x6I2jKju025492, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x6I2jKju025492
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Thu, 18 Jul 2019 10:45:20 +0800
+Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
+ RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Thu, 18 Jul
+ 2019 10:45:19 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "yuehaibing@huawei.com" <yuehaibing@huawei.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "natechancellor@gmail.com" <natechancellor@gmail.com>,
+        "hariprasad.kelam@gmail.com" <hariprasad.kelam@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: btcoex: fix issue possible condition with no effect (if == else)
+Thread-Topic: [PATCH] rtlwifi: btcoex: fix issue possible condition with no
+ effect (if == else)
+Thread-Index: AQHVOOY1W6hVhmptY0OYy+EIYozmE6bPLcOA
+Date:   Thu, 18 Jul 2019 02:45:19 +0000
+Message-ID: <1563417919.4276.0.camel@realtek.com>
+References: <20190712191535.GA4215@hari-Inspiron-1545>
+In-Reply-To: <20190712191535.GA4215@hari-Inspiron-1545>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.114]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8A9B338587918D4EA57C625C3531B5C5@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds release of unlock in fail case.
-
-Issue identified by coccicheck
-
-Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
----
- net/dsa/tag_sja1105.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index 1d96c9d..26363d7 100644
---- a/net/dsa/tag_sja1105.c
-+++ b/net/dsa/tag_sja1105.c
-@@ -216,6 +216,7 @@ static struct sk_buff
- 		if (!skb) {
- 			dev_err_ratelimited(dp->ds->dev,
- 					    "Failed to copy stampable skb\n");
-+			spin_unlock(&sp->data->meta_lock);
- 			return NULL;
- 		}
- 		sja1105_transfer_meta(skb, meta);
--- 
-2.7.4
-
+T24gRnJpLCAyMDE5LTA3LTEyIGF0IDE5OjE1ICswMDAwLCBIYXJpcHJhc2FkIEtlbGFtIHdyb3Rl
+Og0KPiBmaXggYmVsb3cgaXNzdWUgcmVwb3J0ZWQgYnkgY29jY2ljaGVjaw0KPiBkcml2ZXJzL25l
+dC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvYnRjb2V4aXN0L2hhbGJ0Y291dHNyYy5jOjUxNDox
+LTM6DQo+IFdBUk5JTkc6IHBvc3NpYmxlIGNvbmRpdGlvbiB3aXRoIG5vIGVmZmVjdCAoaWYgPT0g
+ZWxzZSkNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEhhcmlwcmFzYWQgS2VsYW0gPGhhcmlwcmFzYWQu
+a2VsYW1AZ21haWwuY29tPg0KPiAtLS0NCj4gwqBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVr
+L3J0bHdpZmkvYnRjb2V4aXN0L2hhbGJ0Y291dHNyYy5jIHwgOCArLS0tLS0tLQ0KPiDCoDEgZmls
+ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgNyBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvYnRjb2V4aXN0L2hhbGJ0
+Y291dHNyYy5jDQo+IGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL2J0Y29l
+eGlzdC9oYWxidGNvdXRzcmMuYw0KPiBpbmRleCAxNTIyNDJhLi4xOTFkYWZkMCAxMDA2NDQNCj4g
+LS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL2J0Y29leGlzdC9oYWxi
+dGNvdXRzcmMuYw0KPiArKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkv
+YnRjb2V4aXN0L2hhbGJ0Y291dHNyYy5jDQo+IEBAIC01MDksMTMgKzUwOSw3IEBAIHN0YXRpYyB1
+MzIgaGFsYnRjX2dldF93aWZpX2xpbmtfc3RhdHVzKHN0cnVjdCBidGNfY29leGlzdA0KPiAqYnRj
+b2V4aXN0KQ0KPiDCoA0KPiDCoHN0YXRpYyBzMzIgaGFsYnRjX2dldF93aWZpX3Jzc2koc3RydWN0
+IHJ0bF9wcml2ICpydGxwcml2KQ0KPiDCoHsNCj4gLQlpbnQgdW5kZWNfc21fcHdkYiA9IDA7DQo+
+IC0NCj4gLQlpZiAocnRscHJpdi0+bWFjODAyMTEubGlua19zdGF0ZSA+PSBNQUM4MDIxMV9MSU5L
+RUQpDQo+IC0JCXVuZGVjX3NtX3B3ZGIgPSBydGxwcml2LT5kbS51bmRlY19zbV9wd2RiOw0KPiAt
+CWVsc2UgLyogYXNzb2NpYXRlZCBlbnRyeSBwd2RiICovDQo+IC0JCXVuZGVjX3NtX3B3ZGIgPSBy
+dGxwcml2LT5kbS51bmRlY19zbV9wd2RiOw0KPiAtCXJldHVybiB1bmRlY19zbV9wd2RiOw0KPiAr
+CXJldHVybiBydGxwcml2LT5kbS51bmRlY19zbV9wd2RiOw0KPiDCoH0NCj4gwqANCj4gwqBzdGF0
+aWMgYm9vbCBoYWxidGNfZ2V0KHZvaWQgKnZvaWRfYnRjb2V4aXN0LCB1OCBnZXRfdHlwZSwgdm9p
+ZCAqb3V0X2J1ZikNCg0KSXQgbG9va3MgZ29vZCB0byBtZS4gVGhhbmsgeW91Lg0KDQpBY2tlZC1i
+eTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+DQoNCg0K
