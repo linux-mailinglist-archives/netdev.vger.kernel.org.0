@@ -2,120 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E78D16CF63
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 16:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08C446CF68
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 16:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403763AbfGROCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 10:02:49 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:44717 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727733AbfGROCs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 10:02:48 -0400
-Received: by mail-io1-f65.google.com with SMTP id s7so51491001iob.11
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 07:02:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=N24J+jmdN0lKgcrjm3AxPIDQpb2nNWH2GoBgCJq2grY=;
-        b=a44Ogx8yhBjHD7qABQSqkr5enznNXtYgqI1iXd2mCVVKPh1tpLJni/TI0ZojQtJYz5
-         +EfkjSyqcJCg8lrRYizJs6mn+x1tS5LM9/E7mSXhvm7vC9I94o9IfQ0+ZstKc7zZ5Bii
-         l834vuoPlUIFmBpyYeMOiMiX8CR5daXKWDJBg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=N24J+jmdN0lKgcrjm3AxPIDQpb2nNWH2GoBgCJq2grY=;
-        b=goHNAkDBdxNiGJDmcmJMxnQLNh+cPceXwHWLv611GkV2C3wcIZIQQfdAn7rVUpnP2s
-         1+uJofXb5VMM7Szh7ZcsQ21HxsufzbbMMUxv7jXhQ48DfRF575eQuqzz5sJ+5QTEEsjL
-         d697j14jxgYZz0p5bwRqxTCZhuTYy3UNNSBTomCHybAxfToZAAHgwathDwC3xsJLr3xv
-         j3wPXS7bXz1m8XKWCyWHJNnW2UAqC88C/1GrflNVFaGFTlBENpIoHsWpyAFzJIAuYY9O
-         AE3IK8jtBAr46zbWTpdb4sNsOUSsvl8KSG7huyX0anund4rQaJT59wVtKxKs2AvR3kDl
-         OVcw==
-X-Gm-Message-State: APjAAAUjAei8by5DaNglrD7jqJ1OWKrpA85uyiO/Q/qh9ks648YCzF+i
-        PR+J+1UBYMBBu+WOpXcfTRp7OA==
-X-Google-Smtp-Source: APXvYqzbPH7wSI0MnT9Mx4FrGE2zoAB/gDPIi+LM9imGGFG3EsRABb3Yx2dGWfJKo2lwgTwmADNM7Q==
-X-Received: by 2002:a5e:d618:: with SMTP id w24mr7995031iom.73.1563458567767;
-        Thu, 18 Jul 2019 07:02:47 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:54f6:cf0:7185:650f? ([2601:282:800:fd80:54f6:cf0:7185:650f])
-        by smtp.googlemail.com with ESMTPSA id i4sm39896096iog.31.2019.07.18.07.02.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 18 Jul 2019 07:02:46 -0700 (PDT)
-Subject: Re: [PATCH] Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
-To:     Peter Kosyh <p.kosyh@gmail.com>
-Cc:     davem@davemloft.net, Shrijeet Mukherjee <shrijeet@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190718094114.13718-1-p.kosyh@gmail.com>
-From:   David Ahern <dsa@cumulusnetworks.com>
-Message-ID: <213bada2-fe81-3c14-1506-11abf0f3ca22@cumulusnetworks.com>
-Date:   Thu, 18 Jul 2019 08:02:45 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S2403813AbfGRODa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 10:03:30 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:49016 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390391AbfGROD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 10:03:29 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id E5DD960E5C; Thu, 18 Jul 2019 14:03:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563458609;
+        bh=z+kGUfaXfhyP2uVpB2cL+swut/NwkjyopUAnTQSr58o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=L1VDOS5VY2yfl/+dUUs2UaLZHnK3OqbIGjNAxCP5pMHZQZZEs/WSepurvxufOnT+P
+         4dnVraL6oEGRqAzVnXSlQRyp9wZ3Y7PuP1qi3uVsUJ0n1W2BXKvpoVfUyuot2nG/l6
+         srEHB9h6ZgN9qJyF+RY+vzDsq+vv78bqQVSm4Go8=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6667B60E5C;
+        Thu, 18 Jul 2019 14:03:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563458607;
+        bh=z+kGUfaXfhyP2uVpB2cL+swut/NwkjyopUAnTQSr58o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nuJDLqHleP27YuI8FF2cx++XvLzq/3tKBQWvWJMrx+AFUsoT7KJjA5QAHa2BzPfL3
+         +Jq+wzGR0aPPPCRTYEQOIXI3LKD1e2HMfwXpRBaC/BX5nS8pTejg7r8h+SQjLWfDFl
+         eSFKJ+rIoQVK7ogEOLO16GB2vn7aydK87b8OVcpk=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6667B60E5C
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: pull-request: wireless-drivers 2019-07-18
+Date:   Thu, 18 Jul 2019 17:03:24 +0300
+Message-ID: <87y30v1lub.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20190718094114.13718-1-p.kosyh@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-your subject line needs a proper Subject - a one-line summary of the
-change starting with 'vrf:'. See examples from 'git log drivers/net/vrf.c'
+Hi Dave,
 
+here are first fixes which have accumulated during the merge window.
+This pull request is to net tree for 5.3. Please let me know if there
+are any problems.
 
-On 7/18/19 3:41 AM, Peter Kosyh wrote:
-> vrf_process_v4_outbound() and vrf_process_v6_outbound() do routing
-> using ip/ipv6 addresses, but don't make sure the header is available in
-> skb->data[] (skb_headlen() is less then header size).
-> 
-> The situation may occures while forwarding from MPLS layer to vrf, for
-> example.
+Kalle
 
-so the use case is a label pop with the nexthop as the VRF device?
+The following changes since commit 76104862cccaeaa84fdd23e39f2610a96296291c:
 
-> 
-> So, this patch adds pskb_may_pull() calls in is_ip_tx_frame(), just before
-> call to vrf_process_... functions.
-> 
-> Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
-> ---
->  drivers/net/vrf.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-> index 54edf8956a25..d552f29a58d1 100644
-> --- a/drivers/net/vrf.c
-> +++ b/drivers/net/vrf.c
-> @@ -292,13 +292,16 @@ static netdev_tx_t is_ip_tx_frame(struct sk_buff *skb, struct net_device *dev)
->  {
->  	switch (skb->protocol) {
->  	case htons(ETH_P_IP):
-> +		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct iphdr))
-> +			break;
+  sky2: Disable MSI on P5W DH Deluxe (2019-07-14 13:45:54 -0700)
 
-that check goes in vrf_process_v4_outbound.
+are available in the git repository at:
 
->  		return vrf_process_v4_outbound(skb, dev);
->  	case htons(ETH_P_IPV6):
-> +		if (!pskb_may_pull(skb, ETH_HLEN + sizeof(struct ipv6hdr))
-> +			break;
+  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-for-davem-2019-07-18
 
-that check goes in vrf_process_v6_outbound
+for you to fetch changes up to 41a531ffa4c5aeb062f892227c00fabb3b4a9c91:
 
-leave this higher level sorter untouched.
+  rt2x00usb: fix rx queue hang (2019-07-15 20:52:18 +0300)
 
->  		return vrf_process_v6_outbound(skb, dev);
-> -	default:
-> -		vrf_tx_error(dev, skb);
-> -		return NET_XMIT_DROP;
->  	}
-> +	vrf_tx_error(dev, skb);
-> +	return NET_XMIT_DROP;
->  }
->  
->  static netdev_tx_t vrf_xmit(struct sk_buff *skb, struct net_device *dev)
-> 
+----------------------------------------------------------------
+wireless-drivers fixes for 5.3
 
+First set of fixes for 5.3.
+
+iwlwifi
+
+* add new cards for 9000 and 20000 series and qu c-step devices
+
+ath10k
+
+* workaround an uninitialised variable warning
+
+rt2x00
+
+* fix rx queue hand on USB
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      ath10k: work around uninitialized vht_pfr variable
+
+Ihab Zhaika (1):
+      iwlwifi: add new cards for 9000 and 20000 series
+
+Luca Coelho (1):
+      iwlwifi: pcie: add support for qu c-step devices
+
+Soeren Moch (1):
+      rt2x00usb: fix rx queue hang
+
+ drivers/net/wireless/ath/ath10k/mac.c           |  2 +
+ drivers/net/wireless/intel/iwlwifi/cfg/22000.c  | 53 +++++++++++++++++++++++++
+ drivers/net/wireless/intel/iwlwifi/iwl-config.h |  7 ++++
+ drivers/net/wireless/intel/iwlwifi/iwl-csr.h    |  2 +
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c   | 23 +++++++++++
+ drivers/net/wireless/ralink/rt2x00/rt2x00usb.c  | 12 +++---
+ 6 files changed, 93 insertions(+), 6 deletions(-)
