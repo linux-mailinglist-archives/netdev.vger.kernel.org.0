@@ -2,126 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9159D6CCE5
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 12:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E35D96CD3E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 13:18:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727559AbfGRKkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 06:40:33 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52978 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbfGRKkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 06:40:33 -0400
-Received: by mail-wm1-f66.google.com with SMTP id s3so25083380wms.2
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 03:40:31 -0700 (PDT)
+        id S2390066AbfGRLSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 07:18:45 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:35654 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726495AbfGRLSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 07:18:45 -0400
+Received: by mail-ot1-f66.google.com with SMTP id j19so28606793otq.2;
+        Thu, 18 Jul 2019 04:18:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=7yPTaXbQyKlL2rjpDNddy0lKI6ybm9F1OcVoCCBgcok=;
-        b=YTLy8ezj9g+madQQ1mj/0NWjZ1QJl2zg3hUVbY46M3Ej16v7wAaYWThB1awJbHf8+K
-         1EYp2Orbjl6YjEEtj9v3fFvdyuGnG9gtiFPpdsiGftNAkgv7TKUVvFWKS8SPYLP9fGXN
-         kSz2OLO5vYw/QzCHfC5pLBFg4+lL1JocSahAIq8RoWjtTjJ++C3ey/YHVSgZBXGt/5ip
-         m33qSzFtaed27DuA1IlenOdTNlZYeWUvcszyR5z05eLuqSQyXBlCBsdi6wSERVyiHD1Z
-         mLG9CyBdn1kyba+QaleS5GKz1TBO3TT4F+HgScWcDTJdzu7m58pazQ+LnmhcXaC/N0YP
-         cayg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aj2rqABk0xuHkR9UGCVKlVt81H3iXGb+Hp1fclBgK0k=;
+        b=LwRuicFm6ghp8965yMx2N/Mf3pRxn2pcfB3y8A89qv2GrqgGFDc3FzbUFxhsr6IMX0
+         h3Yvbay4jN1p7vNT44yr19HuGyAG5ALGS/Nnnsq2Pk2y46XkQadATq08L5fyQ9e4p8jg
+         6cNhivL9NpsV/BU6SHykSy+eYJVR3bc2b9cBaclf9AdfiUzm+m9bPm4yRyDr1LglKnjQ
+         3Ua1mlQ9ULtAKnwgNEvDQnh4bBpM1DsTQpR9OfrErolad5fHlaD0li+GPow8BTSoJTAU
+         pE/kbJPZE57qZvK3hM+ulLCuSk+NYluQuxzsgfjaCQtFRFTYu/3c5XntoG583fI1w7Xb
+         ubZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=7yPTaXbQyKlL2rjpDNddy0lKI6ybm9F1OcVoCCBgcok=;
-        b=bdLqQA8SbCtJRCCP/Vm5fgOuNZiArb/kxkG9rGyOx048WxqB1Y0BiYS2dCVZjqNX6y
-         veUo/ldcoraq9lKdHt+fn2a6eEDaK9ALpQxQ7XoUo9DWYZp/XCAIGuPFXJdBD8MUhx5g
-         wvtXGlQz4kdmlQzQYvRg/mTmoXRyWF3LV0VUBDTGPRf63DEXXLdMV34ZF8u/PCxKv4nu
-         g0D21/+vqxN4Mn+C/bcCNIaXaEAzoETRne7CdxqEriStJymfLc1Kxky5ATHMNXoTuyks
-         gz49SI/KBHXxJl8a0jSnbctbdIO8UpfzixUomN3MkTqJMuvVL483Ezc0CbDNiJSl8tQx
-         z7Tw==
-X-Gm-Message-State: APjAAAXutroDK+o8iK8VsF4Kq8BUM4ndvJY0UbnhM8+a1a9X8fHz0pCk
-        iOnUiG/6U4zIeBPliKei3BcGNvufXt2vsvRaHTg=
-X-Google-Smtp-Source: APXvYqwp1vDqs9YJHdW8IgyrbtCABRz05csW5iz9M0n7wTrGRpOpSKDcFOMQ/F3rtALosYkRj69pt5qxM86sGRhR6Ho=
-X-Received: by 2002:a05:600c:490:: with SMTP id d16mr43032983wme.104.1563446431173;
- Thu, 18 Jul 2019 03:40:31 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aj2rqABk0xuHkR9UGCVKlVt81H3iXGb+Hp1fclBgK0k=;
+        b=iqmOZigrIzAZ6Xf7r9EPFYYHF1rdoonsz9ugh0pk4YfjUIGsHmPZI+u7y0KMG+Dv+5
+         lmnVwRuCAU/aRYwZqgiDPTKZaCJCNnClzEwPXKA2rl0rpfxrPSoJVEDWZ8va3UR24IfM
+         3OnSD3K2TeB9NnF+gmI/jIjgdxq26jg7597XbDD0JzF4S27MZ5o+7RiPPCsJ7L0rgL1t
+         qZq5OIkaKFVN+ghPB+oMdo4tTQUglCgyhsqffed3f1uRil2HYW0F2ZQPMpyThBSPU0Nn
+         +8U4fJWFCCkMlBfcUKU3v3kqmnVoEC0lLQ1oGsNsEQfu8tY5RgfO4u/mrVflVgEi/IUw
+         YSnQ==
+X-Gm-Message-State: APjAAAVY4cCqemOTgcNhwOk/WvpLSiP/aEPYZow9PZRGm5iVXyOV2DTr
+        7SsR5sOQwERqsyTMCHycwQM4DfQqJ7xDray/xDY=
+X-Google-Smtp-Source: APXvYqwW+8Qp0sCOChKDlD2SYquMDCfHQEumwfAoGI0H3Qi7XJFTlYr0GE2VfUmfFnWm9gyjhcWDuPddC6FEvq5vh94=
+X-Received: by 2002:a05:6830:1697:: with SMTP id k23mr3310130otr.16.1563448724309;
+ Thu, 18 Jul 2019 04:18:44 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:adf:b34f:0:0:0:0:0 with HTTP; Thu, 18 Jul 2019 03:40:30
- -0700 (PDT)
-From:   "Mr.Jarrah Mohmmed" <jarrahmohamed10@gmail.com>
-Date:   Thu, 18 Jul 2019 03:40:30 -0700
-X-Google-Sender-Auth: GPO6RvKctloRcexKyqZKxi7N3lI
-Message-ID: <CAGCuFrOaQq_3yr-+pKMYBkfrs5_v94n1P52GLYLRtLiWgK+gpA@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
+References: <20190717201925.fur57qfs2x3ha6aq@debian> <alpine.DEB.2.21.1907172238490.1778@nanos.tec.linutronix.de>
+ <CADVatmO_m-NYotb9Htd7gS0d2-o0DeEWeDJ1uYKE+oj_HjoN0Q@mail.gmail.com>
+ <alpine.DEB.2.21.1907172345360.1778@nanos.tec.linutronix.de> <052e43b6-26f8-3e46-784e-dc3c6a82bdf0@gmail.com>
+In-Reply-To: <052e43b6-26f8-3e46-784e-dc3c6a82bdf0@gmail.com>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Thu, 18 Jul 2019 12:18:07 +0100
+Message-ID: <CADVatmN6xNO1iMQ4ihsT5OqV2cuj2ajq+v00NrtUyOHkiKPo-Q@mail.gmail.com>
+Subject: Re: regression with napi/softirq ?
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Dear Friend,
+Hi Eric,
 
-Before I introduce myself, I wish to inform you that this letter is
-not a hoax mail and I urge you to treat it serious. This letter must
-come to you as a big surprise, but I believe it is only a day that
-people meet and become great friends and business partners. Please I
-want you to read this letter very carefully and I must apologize for
-barging this message into your mail box without any formal
-introduction due to the urgency and confidentiality of this business
-and I know that this message will come to you as a surprise. Please
-this is not a joke and I will not like you to joke with it ok, with
-due respect to your person and much sincerity of purpose, I make this
-contact with you as I believe that you can be of great assistance to
-me. My name is Mr Jarrah Mohmmed, from Burkina Faso, West Africa. I
-work in United Bank for Africa (UBA) as telex manager, please see this
-as a confidential message and do not reveal it to another person and
-let me know whether you can be of assistance regarding my proposal
-below because it is top secret.
+On Thu, Jul 18, 2019 at 7:58 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 7/17/19 11:52 PM, Thomas Gleixner wrote:
+> > Sudip,
+> >
+> > On Wed, 17 Jul 2019, Sudip Mukherjee wrote:
+> >> On Wed, Jul 17, 2019 at 9:53 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> >>> You can hack ksoftirq_running() to return always false to avoid this, but
+> >>> that might cause application starvation and a huge packet buffer backlog
+> >>> when the amount of incoming packets makes the CPU do nothing else than
+> >>> softirq processing.
+> >>
+> >> I tried that now, it is better but still not as good as v3.8
+> >> Now I am getting 375.9usec as the maximum time between raising the softirq
+> >> and it starting to execute and packet drops still there.
+> >>
+> >> And just a thought, do you think there should be a CONFIG_ option for
+> >> this feature of ksoftirqd_running() so that it can be disabled if needed
+> >> by users like us?
+> >
+> > If at all then a sysctl to allow runtime control.
+> >
 
-I am about to retire from active Banking service to start a new life
-but I am skeptical to reveal this particular secret to a stranger. You
-must assure me that everything will be handled confidentially because
-we are not going to suffer again in life. It has been 10 years now
-that most of the greedy African Politicians used our bank to launder
-money overseas through the help of their Political advisers. Most of
-the funds which they transferred out of the shores of Africa were gold
-and oil money that was supposed to have been used to develop the
-continent. Their Political advisers always inflated the amounts before
-transferring to foreign accounts, so I also used the opportunity to
-divert part of the funds hence I am aware that there is no official
-trace of how much was transferred as all the accounts used for such
-transfers were being closed after transfer. I acted as the Bank
-Officer to most of the politicians and when I discovered that they
-were using me to succeed in their greedy act; I also cleaned some of
-their banking records from the Bank files and no one cared to ask me
-because the money was too much for them to control. They laundered
-over $5billion Dollars during the process.
+<snip>
 
-Before I send this message to you, I have already diverted
-($10.5million Dollars) to an escrow account belonging to no one in the
-bank. The bank is anxious now to know who the beneficiary to the funds
-is because they have made a lot of profits with the funds. It is more
-than Eight years now and most of the politicians are no longer using
-our bank to transfer funds overseas. The ($10.5million Dollars) has
-been laying waste in our bank and I don=E2=80=99t want to retire from the b=
-ank
-without transferring the funds to a foreign account to enable me share
-the proceeds with the receiver (a foreigner). The money will be shared
-60% for me and 40% for you. There is no one coming to ask you about
-the funds because I secured everything. I only want you to assist me
-by providing a reliable bank account where the funds can be
-transferred.
+>
+> ksoftirqd might be spuriously scheduled from tx path, when
+> __qdisc_run() also reacts to need_resched().
+>
+> By raising NET_TX while we are processing NET_RX (say we send a TCP ACK packet
+> in response to incoming packet), we force __do_softirq() to perform
+> another loop, but before doing an other round, it will also check need_resched()
+> and eventually call wakeup_softirqd()
+>
+> I wonder if following patch makes any difference.
+>
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 11c03cf4aa74b44663c74e0e3284140b0c75d9c4..ab736e974396394ae6ba409868aaea56a50ad57b 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -377,6 +377,8 @@ void __qdisc_run(struct Qdisc *q)
+>         int packets;
+>
+>         while (qdisc_restart(q, &packets)) {
+> +               if (qdisc_is_empty(q))
+> +                       break;
 
-You are not to face any difficulties or legal implications as I am
-going to handle the transfer personally. If you are capable of
-receiving the funds, do let me know immediately to enable me give you
-a detailed information on what to do. For me, I have not stolen the
-money from anyone because the other people that took the whole money
-did not face any problems. This is my chance to grab my own life
-opportunity but you must keep the details of the funds secret to avoid
-any leakages as no one in the bank knows about my plans. Please get
-back to me if you are interested and capable to handle this project, I
-shall intimate you on what to do when I hear from your confirmation
-and acceptance. If you are capable of being my trusted associate, do
-declare your consent to me I am looking forward to hear from you
-immediately for further information.
-Thanks with my best regards.
+unfortunately its v4.14.55 and qdisc_is_empty() is not yet introduced.
+And I can not backport 28cff537ef2e ("net: sched: add empty status
+flag for NOLOCK qdisc")
+also as TCQ_F_NOLOCK is there. :(
 
-Mr Jarrah Mohmmed
+
+-- 
+Regards
+Sudip
