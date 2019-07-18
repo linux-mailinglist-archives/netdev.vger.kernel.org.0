@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6306CA01
-	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 09:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E235D6CA03
+	for <lists+netdev@lfdr.de>; Thu, 18 Jul 2019 09:37:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389169AbfGRHhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 03:37:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49432 "EHLO mx1.redhat.com"
+        id S1726572AbfGRHhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 03:37:41 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:44100 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726397AbfGRHhA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 03:37:00 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726383AbfGRHhl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 03:37:41 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 4CFB520250;
+        Thu, 18 Jul 2019 09:37:40 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id z2dBpsUiSK1C; Thu, 18 Jul 2019 09:37:39 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7F92B300CB25;
-        Thu, 18 Jul 2019 07:37:00 +0000 (UTC)
-Received: from localhost (unknown [10.40.205.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2822360C44;
-        Thu, 18 Jul 2019 07:36:55 +0000 (UTC)
-Date:   Thu, 18 Jul 2019 09:36:54 +0200
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH AUTOSEL 5.2 226/249] selftests: bpf: fix inlines in
- test_lwt_seg6local
-Message-ID: <20190718093654.0a3426f5@redhat.com>
-In-Reply-To: <20190717234757.GD3079@sasha-vm>
-References: <20190715134655.4076-1-sashal@kernel.org>
-        <20190715134655.4076-226-sashal@kernel.org>
-        <20190717114334.5556a14e@redhat.com>
-        <20190717234757.GD3079@sasha-vm>
+        by a.mx.secunet.com (Postfix) with ESMTPS id E8AB6201C6;
+        Thu, 18 Jul 2019 09:37:39 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 18 Jul 2019
+ 09:37:39 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 9FF653180529;
+ Thu, 18 Jul 2019 09:37:39 +0200 (CEST)
+Date:   Thu, 18 Jul 2019 09:37:39 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH ipsec v2 0/4] xfrm interface: bugs fixes
+Message-ID: <20190718073739.GT17989@gauss3.secunet.de>
+References: <df990564-819a-314f-dda6-aab58a2e7b6e@6wind.com>
+ <20190715100023.8475-1-nicolas.dichtel@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Thu, 18 Jul 2019 07:37:00 +0000 (UTC)
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190715100023.8475-1-nicolas.dichtel@6wind.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Jul 2019 19:47:57 -0400, Sasha Levin wrote:
-> It fixes a bug, right?
+On Mon, Jul 15, 2019 at 12:00:19PM +0200, Nicolas Dichtel wrote:
+> 
+> Here is a bunch of bugs fixes. Some have been seen by code review and some when
+> playing with x-netns.
+> The details are in each patch.
+> 
+> v1 -> v2:
+>  - add patch #3 and #4
 
-A bug in selftests. And quite likely, it probably happens only with
-some compiler versions.
+Series applied, thanks Nicolas!
 
-I don't think patches only touching tools/testing/selftests/ qualify
-for stable in general. They don't affect the end users.
-
- Jiri
