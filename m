@@ -2,69 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79A286D93F
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 05:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F6D6D95E
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 05:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbfGSDAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 23:00:21 -0400
-Received: from alexa-out-tai-02.qualcomm.com ([103.229.16.227]:42783 "EHLO
-        alexa-out-tai-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726015AbfGSDAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 23:00:21 -0400
-X-Greylist: delayed 366 seconds by postgrey-1.27 at vger.kernel.org; Thu, 18 Jul 2019 23:00:20 EDT
-Received: from ironmsg03-tai.qualcomm.com ([10.249.140.8])
-  by alexa-out-tai-02.qualcomm.com with ESMTP; 19 Jul 2019 10:54:13 +0800
-X-IronPort-AV: E=McAfee;i="6000,8403,9322"; a="34578808"
-Received: from akronite-sh-dev01.ap.qualcomm.com ([10.231.215.213])
-  by ironmsg03-tai.qualcomm.com with ESMTP; 19 Jul 2019 10:54:01 +0800
-Received: by akronite-sh-dev01.ap.qualcomm.com (Postfix, from userid 206661)
-        id 9FB7E1F42B; Fri, 19 Jul 2019 10:54:00 +0800 (CST)
-From:   xiaofeis <xiaofeis@codeaurora.org>
-To:     davem@davemloft.net
-Cc:     vkoul@kernel.org, netdev@vger.kernel.org, andrew@lunn.ch,
-        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        niklas.cassel@linaro.org, xiazha@codeaurora.org,
-        xiaofeis <xiaofeis@codeaurora.org>
-Subject: [PATCH] qca8k: enable port flow control
-Date:   Fri, 19 Jul 2019 10:53:11 +0800
-Message-Id: <1563504791-43398-1-git-send-email-xiaofeis@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
+        id S1726100AbfGSDen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 23:34:43 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:59302 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726055AbfGSDen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 23:34:43 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 893281405184F;
+        Thu, 18 Jul 2019 20:34:42 -0700 (PDT)
+Date:   Thu, 18 Jul 2019 20:34:38 -0700 (PDT)
+Message-Id: <20190718.203438.2073335732713416227.davem@davemloft.net>
+To:     weiyongjun1@huawei.com
+Cc:     jcliburn@gmail.com, chris.snook@gmail.com, o.rempel@pengutronix.de,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH v2] ag71xx: fix error return code in ag71xx_probe()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190719012157.100396-1-weiyongjun1@huawei.com>
+References: <20190717115215.22965-1-weiyongjun1@huawei.com>
+        <20190719012157.100396-1-weiyongjun1@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jul 2019 20:34:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set phy device advertising to enable MAC flow control.
+From: Wei Yongjun <weiyongjun1@huawei.com>
+Date: Fri, 19 Jul 2019 01:21:57 +0000
 
-Change-Id: Ibf0f554b072fc73136ec9f7ffb90c20b25a4faae
-Signed-off-by: Xiaofei Shen <xiaofeis@codeaurora.org>
----
- drivers/net/dsa/qca8k.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> Fix to return error code -ENOMEM from the dmam_alloc_coherent() error
+> handling case instead of 0, as done elsewhere in this function.
+> 
+> Fixes: d51b6ce441d3 ("net: ethernet: add ag71xx driver")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index d93be14..95ac081 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1,7 +1,7 @@
- /*
-  * Copyright (C) 2009 Felix Fietkau <nbd@nbd.name>
-  * Copyright (C) 2011-2012 Gabor Juhos <juhosg@openwrt.org>
-- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2015, 2019, The Linux Foundation. All rights reserved.
-  * Copyright (c) 2016 John Crispin <john@phrozen.org>
-  *
-  * This program is free software; you can redistribute it and/or modify
-@@ -800,6 +800,8 @@
- 	qca8k_port_set_status(priv, port, 1);
- 	priv->port_sts[port].enabled = 1;
- 
-+	phy->advertising |= (ADVERTISED_Pause | ADVERTISED_Asym_Pause);
-+
- 	return 0;
- }
- 
--- 
-1.9.1
-
+Applied.
