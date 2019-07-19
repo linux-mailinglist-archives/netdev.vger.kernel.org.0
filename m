@@ -2,145 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B5E96E2E7
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 10:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0796E31F
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 11:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727390AbfGSIvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 04:51:17 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43532 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725794AbfGSIvR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 04:51:17 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id BEFDB2EED01;
-        Fri, 19 Jul 2019 08:51:16 +0000 (UTC)
-Received: from [10.72.12.179] (ovpn-12-179.pek2.redhat.com [10.72.12.179])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 29D6C5C57A;
-        Fri, 19 Jul 2019 08:51:01 +0000 (UTC)
-Subject: Re: [PATCH v4 4/5] vhost/vsock: split packets to send using multiple
- buffers
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-5-sgarzare@redhat.com>
- <20190717105336-mutt-send-email-mst@kernel.org>
- <CAGxU2F45v40qAOHkm1Hk2E69gCS0UwVgS5NS+tDXXuzdF4EixA@mail.gmail.com>
- <20190718041234-mutt-send-email-mst@kernel.org>
- <CAGxU2F6oo7Cou7t9o=gG2=wxHMKX9xYQXNxVtDYeHq5fyEhJWg@mail.gmail.com>
- <20190718072741-mutt-send-email-mst@kernel.org>
- <20190719080832.7hoeus23zjyrx3cc@steredhat>
- <fcd19719-e5a9-adad-1e6c-c84487187088@redhat.com>
- <20190719083920.67qo2umpthz454be@steredhat>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <53da84b9-184f-1377-0582-ab7cf42ebdb6@redhat.com>
-Date:   Fri, 19 Jul 2019 16:51:00 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726247AbfGSJHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 05:07:00 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:50020 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726029AbfGSJHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 05:07:00 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6J96vps051774
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 05:06:57 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tu85de8km-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 05:06:57 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Fri, 19 Jul 2019 10:06:51 +0100
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 19 Jul 2019 10:06:47 +0100
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6J96j5N57016560
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Jul 2019 09:06:45 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BD768AE051;
+        Fri, 19 Jul 2019 09:06:45 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7CDB2AE053;
+        Fri, 19 Jul 2019 09:06:45 +0000 (GMT)
+Received: from white.boeblingen.de.ibm.com (unknown [9.152.98.35])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 19 Jul 2019 09:06:45 +0000 (GMT)
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com, rdna@fb.com,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH bpf] selftests/bpf: fix sendmsg6_prog on s390
+Date:   Fri, 19 Jul 2019 11:06:11 +0200
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190719083920.67qo2umpthz454be@steredhat>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Fri, 19 Jul 2019 08:51:16 +0000 (UTC)
+X-TM-AS-GCONF: 00
+x-cbid: 19071909-0016-0000-0000-000002944ACF
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071909-0017-0000-0000-000032F22AE9
+Message-Id: <20190719090611.91743-1-iii@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-19_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907190106
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+"sendmsg6: rewrite IP & port (C)" fails on s390, because the code in
+sendmsg_v6_prog() assumes that (ctx->user_ip6[0] & 0xFFFF) refers to
+leading IPv6 address digits, which is not the case on big-endian
+machines.
 
-On 2019/7/19 下午4:39, Stefano Garzarella wrote:
-> On Fri, Jul 19, 2019 at 04:21:52PM +0800, Jason Wang wrote:
->> On 2019/7/19 下午4:08, Stefano Garzarella wrote:
->>> On Thu, Jul 18, 2019 at 07:35:46AM -0400, Michael S. Tsirkin wrote:
->>>> On Thu, Jul 18, 2019 at 11:37:30AM +0200, Stefano Garzarella wrote:
->>>>> On Thu, Jul 18, 2019 at 10:13 AM Michael S. Tsirkin<mst@redhat.com>  wrote:
->>>>>> On Thu, Jul 18, 2019 at 09:50:14AM +0200, Stefano Garzarella wrote:
->>>>>>> On Wed, Jul 17, 2019 at 4:55 PM Michael S. Tsirkin<mst@redhat.com>  wrote:
->>>>>>>> On Wed, Jul 17, 2019 at 01:30:29PM +0200, Stefano Garzarella wrote:
->>>>>>>>> If the packets to sent to the guest are bigger than the buffer
->>>>>>>>> available, we can split them, using multiple buffers and fixing
->>>>>>>>> the length in the packet header.
->>>>>>>>> This is safe since virtio-vsock supports only stream sockets.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Stefano Garzarella<sgarzare@redhat.com>
->>>>>>>> So how does it work right now? If an app
->>>>>>>> does sendmsg with a 64K buffer and the other
->>>>>>>> side publishes 4K buffers - does it just stall?
->>>>>>> Before this series, the 64K (or bigger) user messages was split in 4K packets
->>>>>>> (fixed in the code) and queued in an internal list for the TX worker.
->>>>>>>
->>>>>>> After this series, we will queue up to 64K packets and then it will be split in
->>>>>>> the TX worker, depending on the size of the buffers available in the
->>>>>>> vring. (The idea was to allow EWMA or a configuration of the buffers size, but
->>>>>>> for now we postponed it)
->>>>>> Got it. Using workers for xmit is IMHO a bad idea btw.
->>>>>> Why is it done like this?
->>>>> Honestly, I don't know the exact reasons for this design, but I suppose
->>>>> that the idea was to have only one worker that uses the vring, and
->>>>> multiple user threads that enqueue packets in the list.
->>>>> This can simplify the code and we can put the user threads to sleep if
->>>>> we don't have "credit" available (this means that the receiver doesn't
->>>>> have space to receive the packet).
->>>> I think you mean the reverse: even without credits you can copy from
->>>> user and queue up data, then process it without waking up the user
->>>> thread.
->>> I checked the code better, but it doesn't seem to do that.
->>> The .sendmsg callback of af_vsock, check if the transport has space
->>> (virtio-vsock transport returns the credit available). If there is no
->>> space, it put the thread to sleep on the 'sk_sleep(sk)' wait_queue.
->>>
->>> When the transport receives an update of credit available on the other
->>> peer, it calls 'sk->sk_write_space(sk)' that wakes up the thread
->>> sleeping, that will queue the new packet.
->>>
->>> So, in the current implementation, the TX worker doesn't check the
->>> credit available, it only sends the packets.
->>>
->>>> Does it help though? It certainly adds up work outside of
->>>> user thread context which means it's not accounted for
->>>> correctly.
->>> I can try to xmit the packet directly in the user thread context, to see
->>> the improvements.
->>
->> It will then looks more like what virtio-net (and other networking device)
->> did.
-> I'll try ASAP, the changes should not be too complicated... I hope :)
->
->>
->>>> Maybe we want more VQs. Would help improve parallelism. The question
->>>> would then become how to map sockets to VQs. With a simple hash
->>>> it's easy to create collisions ...
->>> Yes, more VQs can help but the map question is not simple to answer.
->>> Maybe we can do an hash on the (cid, port) or do some kind of estimation
->>> of queue utilization and try to balance.
->>> Should the mapping be unique?
->>
->> It sounds to me you want some kind of fair queuing? We've already had
->> several qdiscs that do this.
-> Thanks for pointing it out!
->
->> So if we use the kernel networking xmit path, all those issues could be
->> addressed.
-> One more point to AF_VSOCK + net-stack, but we have to evaluate possible
-> drawbacks in using the net-stack. (e.g. more latency due to the complexity
-> of the net-stack?)
+Since checking bitwise operations doesn't seem to be the point of the
+test, replace two short comparisons with a single int comparison.
 
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+---
+ tools/testing/selftests/bpf/progs/sendmsg6_prog.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Yes, we need benchmark the performance. But as we've noticed, current 
-vsock implementation is not efficient, and for stream socket, the 
-overhead should be minimal. The most important thing is to avoid 
-reinventing things that has already existed.
+diff --git a/tools/testing/selftests/bpf/progs/sendmsg6_prog.c b/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
+index 5aeaa284fc47..a68062820410 100644
+--- a/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
++++ b/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
+@@ -41,8 +41,7 @@ int sendmsg_v6_prog(struct bpf_sock_addr *ctx)
+ 	}
+ 
+ 	/* Rewrite destination. */
+-	if ((ctx->user_ip6[0] & 0xFFFF) == bpf_htons(0xFACE) &&
+-	     ctx->user_ip6[0] >> 16 == bpf_htons(0xB00C)) {
++	if (ctx->user_ip6[0] == bpf_htonl(0xFACEB00C)) {
+ 		ctx->user_ip6[0] = bpf_htonl(DST_REWRITE_IP6_0);
+ 		ctx->user_ip6[1] = bpf_htonl(DST_REWRITE_IP6_1);
+ 		ctx->user_ip6[2] = bpf_htonl(DST_REWRITE_IP6_2);
+-- 
+2.21.0
 
-Thanks
-
-
->
-> Thanks,
-> Stefano
