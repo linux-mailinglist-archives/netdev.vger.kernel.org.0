@@ -2,177 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6B16EB73
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 22:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17E2F6EB88
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 22:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731629AbfGSUFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 16:05:50 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40514 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728812AbfGSUFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 16:05:49 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v19so30082396wmj.5;
-        Fri, 19 Jul 2019 13:05:48 -0700 (PDT)
+        id S1730861AbfGSUUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 16:20:30 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33811 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728346AbfGSUU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 16:20:29 -0400
+Received: by mail-pl1-f196.google.com with SMTP id i2so16156140plt.1
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 13:20:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LhwuEfAWfiEHK8h+/sGCMcZbf2WkYnCPlgk8A3vAekc=;
-        b=aZ6pI29mc8rQNUafXyq9rPme6gj6WIeWZv6e1FXQ6vnfDWO6baE3wG5YE09axX0NKT
-         vTc/Ct2llNDfKtZFgdIyWVgqviYmugoNZRTctJdCyekfHMm51zeNena++xU7CQ1qighk
-         QB7gOhZHTBKr84B3N4lZ6KXydpZpEayklJX0dBK1GyC9d6f9b76n2ls6dcgcDhBZQzZ5
-         kDE2510r8EeTHF6RA+p919Nqmzp7W0hgflMlysk4nx38WsUz5hlQrjXB1BgU0SNy4ebN
-         g1P04X99bFcT/KGmU52zjVSuGSRr5e5RS+uberbnakv4eP9a3VAcWpz71yuLUkgHKg28
-         ybAQ==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=ZZpvE/zu8w6qfDkqqcEWEfv6g/P8g9fAeH+0sOWsdIA=;
+        b=UdRmacIgEVe7YRsnVYbnqOuHVRopxBZ5Qyg/mPLUJIdGp4yAp41FKLHdzEtcENWzsc
+         VgF7xqXyU7tmtT5FICGVbeOYN1oWNps0fanAYBJ8e39riZZaScW2KiWkd5IwOOgp3KMo
+         nhNJWpf2InqOJaOXhBHcy/9+Fv4A73z45mA8t6m/CWvUd0zDUkRF7Sdn6sbNHjcnQKbf
+         Tta/SmD5/Q8DZYCU7EphcKG4wugUGkNH1YWYd7/iVJ3LYBAGHH4E+CSLjHlqkP1TfcmX
+         v/Ym2JIbxK17e9MJEkRUmM7Wiq+YswO+fs61vAlBZxD+FZRkHGgk9TIhyX5F8lWb72KD
+         1GpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LhwuEfAWfiEHK8h+/sGCMcZbf2WkYnCPlgk8A3vAekc=;
-        b=mkUHCNYw1VB6LLlgmACqLgOoRiGPi4A4Ika6uCkv5svs2/Brb7W3oSgLmYw1ygUj6q
-         4amtxODOBdZUycUKLJIWY6Wgz9NC8ofLVRonNtWaskPx/fYuew9/hWPuiNMvQgtNMcNt
-         +uCtpTVaQrz9js55P+YOzove3XxdpK1UY4bL4r5R+UyXm9JByCQfPCzSW2t0I4y/vrne
-         z0CStjMpNKBVC8z4MqNdQIG041I7n95HP3L1OjLlRtRNQjlsW2pAwVKvsWTp3iXbSm7c
-         uIzEKZ3fgBZayllHM+VlLo/ZGEnCxOy32wOObr03EAExy7MwtqCOqGjWbsZF7g+6CLV7
-         5q6g==
-X-Gm-Message-State: APjAAAUedcZ0bKJJ2z9XjMi992MXJg/V00YS1/yWRbMgcIGLIBFELQNH
-        pWav8ZEZcWeDtG7GQrTUmwQuhPt0
-X-Google-Smtp-Source: APXvYqwmzDlp81Z8OSCWa5VeLuVh1tSdAWMlvZ7w7wN10bNLCP9vJQt+Ja6w8/mC/EY2qPuV0Ko5OQ==
-X-Received: by 2002:a1c:c747:: with SMTP id x68mr49510714wmf.138.1563566747044;
-        Fri, 19 Jul 2019 13:05:47 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:40e3:8fe6:4421:a541? ([2003:ea:8bd6:c00:40e3:8fe6:4421:a541])
-        by smtp.googlemail.com with ESMTPSA id o6sm57912418wra.27.2019.07.19.13.05.45
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=ZZpvE/zu8w6qfDkqqcEWEfv6g/P8g9fAeH+0sOWsdIA=;
+        b=AJCD4dg7Ay/1Uz5oxSNLjg0JvKs2jgqB4D8xU07C7W1pkio58nebFbEKkQZ2Vgppm2
+         1B+xK+mY9qo+lcSo57iDatbcwaXbAhT1VCTjDUamCZHdXm4nE5ZfM5lWXyuWnymJqzR2
+         IX8N4H35sNMWJAoOiRhpT3IcicXPS3WjoR68L8hTF5wDK5zR/Gbgcb/Qd9oEmWCCB+Bx
+         M1rK9ZH7XXExijA3c6etnjomLDIyMqZCs3edT7PhcAylDnanOBzoxcVQ37iIRxnMpvQY
+         NJhzWqTjEm2Nbc/JJVlG1oUOqhy58IoD4gRv6igvtq7EXDwq6RUT+uEJRRgatGqKH6SF
+         B/Sg==
+X-Gm-Message-State: APjAAAXB2KpEiS5r/b9QVoSq/mrhO60DOo8oOpo/NEh8oQqZ/DsP3Eqp
+        Peta4yVpWcIXT8WD/zdO6yPbFfr4Ha8=
+X-Google-Smtp-Source: APXvYqx/ztalkD6cQhTyzCePyzv6iVlrq26uhHchhjF1aoIsQzo5/cyKv6tLSCAi7qgzJm69m0S19Q==
+X-Received: by 2002:a17:902:70cc:: with SMTP id l12mr17329172plt.87.1563567628477;
+        Fri, 19 Jul 2019 13:20:28 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id y10sm32786030pfm.66.2019.07.19.13.20.27
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 19 Jul 2019 13:05:45 -0700 (PDT)
-Subject: Re: network problems with r8169
-To:     Thomas Voegtle <tv@lio96.de>
-References: <alpine.LSU.2.21.1907182032370.7080@er-systems.de>
-Cc:     linux-kernel@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <2eeedff5-4911-db6e-6bfd-99b591daa7ef@gmail.com>
-Date:   Fri, 19 Jul 2019 22:05:38 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Fri, 19 Jul 2019 13:20:27 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <20190708192532.27420-1-snelson@pensando.io>
+ <20190708192532.27420-14-snelson@pensando.io> <20190709021426.GA5835@lunn.ch>
+ <10c66ecf-6d67-d206-b496-6f8139f218a8@pensando.io>
+ <20190718032814.GH6962@lunn.ch>
+ <00a22345-4904-57b4-f40b-9ddd2e7398ec@pensando.io>
+ <20190719024013.GC24765@lunn.ch>
+ <15796ade-68dd-4350-e481-3a3a1e7ce3d5@pensando.io>
+ <20190719190715.GO25635@lunn.ch>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <087d62dc-5a73-b924-8b03-d92fc03acd23@pensando.io>
+Date:   Fri, 19 Jul 2019 13:20:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.LSU.2.21.1907182032370.7080@er-systems.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20190719190715.GO25635@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.07.2019 20:50, Thomas Voegtle wrote:
-> 
-> Hello,
-> 
-> I'm having network problems with the commits on r8169 since v5.2. There are ping packet loss, sometimes 100%, sometimes 50%. In the end network is unusable.
-> 
-> v5.2 is fine, I bisected it down to:
-> 
-> a2928d28643e3c064ff41397281d20c445525032 is the first bad commit
-> commit a2928d28643e3c064ff41397281d20c445525032
-> Author: Heiner Kallweit <hkallweit1@gmail.com>
-> Date:   Sun Jun 2 10:53:49 2019 +0200
-> 
->     r8169: use paged versions of phylib MDIO access functions
-> 
->     Use paged versions of phylib MDIO access functions to simplify
->     the code.
-> 
->     Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> 
-> Reverting that commit on top of v5.2-11564-g22051d9c4a57 fixes the problem
-> for me (had to adjust the renaming to r8169_main.c).
-> 
-> I have a:
-> 04:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd.
-> RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller [10ec:8168] (rev
-> 0c)
->         Subsystem: Biostar Microtech Int'l Corp Device [1565:2400]
->         Kernel driver in use: r8169
-> 
-> on a BIOSTAR H81MG motherboard.
-> 
-Interesting. I have the same chip version (RTL8168g) and can't reproduce
-the issue. Can you provide a full dmesg output and test the patch below
-on top of linux-next? I'd be interested in the WARN_ON stack traces
-(if any) and would like to know whether the experimental change to
-__phy_modify_changed helps.
+On 7/19/19 12:07 PM, Andrew Lunn wrote:
+> On Fri, Jul 19, 2019 at 11:41:28AM -0700, Shannon Nelson wrote:
+>> On 7/18/19 7:40 PM, Andrew Lunn wrote:
+>>> On Thu, Jul 18, 2019 at 05:12:07PM -0700, Shannon Nelson wrote:
+>>>> On 7/17/19 8:28 PM, Andrew Lunn wrote:
+>>>>> On Fri, Jul 12, 2019 at 10:16:31PM -0700, Shannon Nelson wrote:
+>>>>>> On 7/8/19 7:14 PM, Andrew Lunn wrote:
+>>>>>>>> +static int ionic_set_pauseparam(struct net_device *netdev,
+>>>>>>>> +				struct ethtool_pauseparam *pause)
+>>>>>>>> +{
+>>>>>>>> +	struct lif *lif = netdev_priv(netdev);
+>>>>>>>> +	struct ionic *ionic = lif->ionic;
+>>>>>>>> +	struct ionic_dev *idev = &lif->ionic->idev;
+>>>>>>>> +
+>>>>>>>> +	u32 requested_pause;
+>>>>>>>> +	u32 cur_autoneg;
+>>>>>>>> +	int err;
+>>>>>>>> +
+>>>>>>>> +	cur_autoneg = idev->port_info->config.an_enable ? AUTONEG_ENABLE :
+>>>>>>>> +								AUTONEG_DISABLE;
+>>>>>>>> +	if (pause->autoneg != cur_autoneg) {
+>>>>>>>> +		netdev_info(netdev, "Please use 'ethtool -s ...' to change autoneg\n");
+>>>>>>>> +		return -EOPNOTSUPP;
+>>>>>>>> +	}
+>>>>>>>> +
+>>>>>>>> +	/* change both at the same time */
+>>>>>>>> +	requested_pause = PORT_PAUSE_TYPE_LINK;
+>>>>>>>> +	if (pause->rx_pause)
+>>>>>>>> +		requested_pause |= IONIC_PAUSE_F_RX;
+>>>>>>>> +	if (pause->tx_pause)
+>>>>>>>> +		requested_pause |= IONIC_PAUSE_F_TX;
+>>>>>>>> +
+>>>>>>>> +	if (requested_pause == idev->port_info->config.pause_type)
+>>>>>>>> +		return 0;
+>>>>>>>> +
+>>>>>>>> +	idev->port_info->config.pause_type = requested_pause;
+>>>>>>>> +
+>>>>>>>> +	mutex_lock(&ionic->dev_cmd_lock);
+>>>>>>>> +	ionic_dev_cmd_port_pause(idev, requested_pause);
+>>>>>>>> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+>>>>>>>> +	mutex_unlock(&ionic->dev_cmd_lock);
+>>>>>>>> +	if (err)
+>>>>>>>> +		return err;
+>>>>>>> Hi Shannon
+>>>>>>>
+>>>>>>> I've no idea what the firmware black box is doing, but this looks
+>>>>>>> wrong.
+>>>>>>>
+>>>>>>> pause->autoneg is about if the results of auto-neg should be used or
+>>>>>>> not. If false, just configure the MAC with the pause settings and you
+>>>>>>> are done. If the interface is being forced, so autoneg in general is
+>>>>>>> disabled, just configure the MAC and you are done.
+>>>>>>>
+>>>>>>> If pause->autoneg is true and the interface is using auto-neg as a
+>>>>>>> whole, you pass the pause values to the PHY for it to advertise and
+>>>>>>> trigger an auto-neg. Once autoneg has completed, and the resolved
+>>>>>>> settings are available, the MAC is configured with the resolved
+>>>>>>> values.
+>>>>>>>
+>>>>>>> Looking at this code, i don't see any difference between configuring
+>>>>>>> the MAC or configuring the PHY. I would expect pause->autoneg to be
+>>>>>>> part of requested_pause somehow, so the firmware knows what is should
+>>>>>>> do.
+>>>>>>>
+>>>>>>> 	Andrew
+>>>>>> In this device there's actually very little the driver can do to directly
+>>>>>> configure the mac or phy besides passing through to the firmware what the
+>>>>>> user has requested - that happens here for the pause values, and in
+>>>>>> ionic_set_link_ksettings() for autoneg.  The firmware is managing the port
+>>>>>> based on these requests with the help of internally configured rules defined
+>>>>>> in a customer setting.
+>>>>> I get that. But the firmware needs to conform to what Linux
+>>>>> expects. And what i see here does not conform. That is why i gave a
+>>>>> bit of detail in my reply.
+>>>>>
+>>>>> What exactly does the firmware do? Once we know that, we can figure
+>>>>> out when the driver should return -EOPNOTSUPP because of firmware
+>>>>> limitations, and what it can configure and should return 0.
+>>>> Because this is fairly smart FW, it handles this as expected.  I can add
+>>>> this as another comment in the code.
+>>> Hi Shannon
+>>>
+>>> Looking at the code, i don't see how it can handle this
+>>> correctly. Please look at my comments, particularly the meaning of
+>>> pause->autoneg and describe how the firmware does the right thing,
+>>> given what information it is passed.
+>>>
+>> I guess I'm not sure how much better I can answer your question. Like
+>> several other devices, we don't support selecting pause->autoneg.  The
+>> firmware manages the PHY itself, the driver doesn't have direct access to
+>> the PHY.  The driver passes the tx and rx pause info down to the firmware in
+>> a command request.  The NIC firmware does an autoneg if autoneg is enabled
+>> on the port.
+> Hi Shannon
+>
+> Thanks. That was the information i was looking for.
+>
+> Please return -EOPNOTSUPP if pause->autoneg indicates autoneg results
+> should not be used. Your firmware does not support it, so the driver
+> should error out. Also the get function should use a hard coded value
+> for pause->autoneg.
+>
+> If you ever fix your firmware, you can add full support for pause
+> configuration.
+>
+>
 
-> 
-> greetings,
-> 
->   Thomas
-> 
-> 
-Heiner
-
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 8d7dd4c5f..26be73000 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1934,6 +1934,8 @@ static int rtl_get_eee_supp(struct rtl8169_private *tp)
- 	struct phy_device *phydev = tp->phydev;
- 	int ret;
- 
-+	WARN_ON(phy_read(phydev, 0x1f));
-+
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_34:
- 	case RTL_GIGA_MAC_VER_35:
-@@ -1957,6 +1959,8 @@ static int rtl_get_eee_lpadv(struct rtl8169_private *tp)
- 	struct phy_device *phydev = tp->phydev;
- 	int ret;
- 
-+	WARN_ON(phy_read(phydev, 0x1f));
-+
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_34:
- 	case RTL_GIGA_MAC_VER_35:
-@@ -1980,6 +1984,8 @@ static int rtl_get_eee_adv(struct rtl8169_private *tp)
- 	struct phy_device *phydev = tp->phydev;
- 	int ret;
- 
-+	WARN_ON(phy_read(phydev, 0x1f));
-+
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_34:
- 	case RTL_GIGA_MAC_VER_35:
-@@ -2003,6 +2009,8 @@ static int rtl_set_eee_adv(struct rtl8169_private *tp, int val)
- 	struct phy_device *phydev = tp->phydev;
- 	int ret = 0;
- 
-+	WARN_ON(phy_read(phydev, 0x1f));
-+
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_34:
- 	case RTL_GIGA_MAC_VER_35:
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 16667fbac..1aa1142b8 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -463,12 +463,10 @@ int __phy_modify_changed(struct phy_device *phydev, u32 regnum, u16 mask,
- 		return ret;
- 
- 	new = (ret & ~mask) | set;
--	if (new == ret)
--		return 0;
- 
--	ret = __phy_write(phydev, regnum, new);
-+	__phy_write(phydev, regnum, new);
- 
--	return ret < 0 ? ret : 1;
-+	return new != ret;
- }
- EXPORT_SYMBOL_GPL(__phy_modify_changed);
- 
--- 
-2.22.0
+Thanks for the help,
+sln
 
