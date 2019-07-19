@@ -2,143 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 539156EB70
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 22:04:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6B16EB73
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 22:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731523AbfGSUEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 16:04:45 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:38664 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727497AbfGSUEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 16:04:44 -0400
-Received: by mail-qk1-f194.google.com with SMTP id a27so24161378qkk.5;
-        Fri, 19 Jul 2019 13:04:44 -0700 (PDT)
+        id S1731629AbfGSUFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 16:05:50 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40514 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728812AbfGSUFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 16:05:49 -0400
+Received: by mail-wm1-f68.google.com with SMTP id v19so30082396wmj.5;
+        Fri, 19 Jul 2019 13:05:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KgzbnyihRsw5YwTm7SdiFF/zXhcaOpif95Kf3MqJxBY=;
-        b=P0+v4hJrU8jqZSNngmeP7/FXPteQB0Dx84Z0ggbNG42+cxT84wlm6NRuIGK3mkqLxG
-         ofS9GFmbUExt7b5uNYvs+83qh/XXFlQz/1MA9VQQ3Ocu9tNpZ5r4pWlX5WnLHlQV7toQ
-         jNW1KaP0GQ4azRxarWFymz2vu+mldivdMuouHnGRq8xsuQGNxtI6GBQWmeN/9JMZ+nkc
-         JG2W8Nd3qj4ew5YX1rakVmCuZKjOxl/+keUVxgwPIMo7VTjPcJvfYH3wwigx00M/F0PL
-         mWwjKfUPHhLSC44oLDrlRqBx8b9SCIntDdqbyt7YBPzNHiMbw2oZ9Tnm0+6UQGXZM7BG
-         BvFA==
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LhwuEfAWfiEHK8h+/sGCMcZbf2WkYnCPlgk8A3vAekc=;
+        b=aZ6pI29mc8rQNUafXyq9rPme6gj6WIeWZv6e1FXQ6vnfDWO6baE3wG5YE09axX0NKT
+         vTc/Ct2llNDfKtZFgdIyWVgqviYmugoNZRTctJdCyekfHMm51zeNena++xU7CQ1qighk
+         QB7gOhZHTBKr84B3N4lZ6KXydpZpEayklJX0dBK1GyC9d6f9b76n2ls6dcgcDhBZQzZ5
+         kDE2510r8EeTHF6RA+p919Nqmzp7W0hgflMlysk4nx38WsUz5hlQrjXB1BgU0SNy4ebN
+         g1P04X99bFcT/KGmU52zjVSuGSRr5e5RS+uberbnakv4eP9a3VAcWpz71yuLUkgHKg28
+         ybAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KgzbnyihRsw5YwTm7SdiFF/zXhcaOpif95Kf3MqJxBY=;
-        b=sefcYwPVvg0KI/rt5qL61h3yLlU9QH5HD7EDcYLA65RR6r9I4ZTg593veZGcixiMnw
-         7AfV1ZSox+3dazqFFCGxVDYrCzkRnMKZcM4TSVPs1JD21gr4RDernfr5us6w/onz4a5Z
-         3WQM9XaQU/7at8md+5L08QXn6hjfk1D8gZqMpvdR6Z0yWK9dMB6BIODkKvbhDhXP5+0N
-         ZzIbpx1AIBxTxOIGuXUrOrtfucc5L1bkCPFoNpcRvclPWF1N/55HUnhumPKitGX6MMTJ
-         xjZdQG0HyPYIyzw9iyHAisNK1pmChE+X36nN8wfPBt9/yYpZQq9uOrea5J9m+qcLogbq
-         Rx3w==
-X-Gm-Message-State: APjAAAW3T+qIwcyya0wIc9OdFm1l6Qz5skOxJIBMn9o+XqScwFhVFHWV
-        wNSO3CxtGwthCEkgs6jn9PpsTYF3BOKXIiaFSdQucO3S
-X-Google-Smtp-Source: APXvYqzeRSpz2YxRkp57icEpaASDSR1b/c8uGpQ5DxBVTEvjIKmj+n5EoFQT33OMXuUkApGXQEmNTekrxUxC3fPkLec=
-X-Received: by 2002:a37:9b48:: with SMTP id d69mr38532135qke.449.1563566683627;
- Fri, 19 Jul 2019 13:04:43 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LhwuEfAWfiEHK8h+/sGCMcZbf2WkYnCPlgk8A3vAekc=;
+        b=mkUHCNYw1VB6LLlgmACqLgOoRiGPi4A4Ika6uCkv5svs2/Brb7W3oSgLmYw1ygUj6q
+         4amtxODOBdZUycUKLJIWY6Wgz9NC8ofLVRonNtWaskPx/fYuew9/hWPuiNMvQgtNMcNt
+         +uCtpTVaQrz9js55P+YOzove3XxdpK1UY4bL4r5R+UyXm9JByCQfPCzSW2t0I4y/vrne
+         z0CStjMpNKBVC8z4MqNdQIG041I7n95HP3L1OjLlRtRNQjlsW2pAwVKvsWTp3iXbSm7c
+         uIzEKZ3fgBZayllHM+VlLo/ZGEnCxOy32wOObr03EAExy7MwtqCOqGjWbsZF7g+6CLV7
+         5q6g==
+X-Gm-Message-State: APjAAAUedcZ0bKJJ2z9XjMi992MXJg/V00YS1/yWRbMgcIGLIBFELQNH
+        pWav8ZEZcWeDtG7GQrTUmwQuhPt0
+X-Google-Smtp-Source: APXvYqwmzDlp81Z8OSCWa5VeLuVh1tSdAWMlvZ7w7wN10bNLCP9vJQt+Ja6w8/mC/EY2qPuV0Ko5OQ==
+X-Received: by 2002:a1c:c747:: with SMTP id x68mr49510714wmf.138.1563566747044;
+        Fri, 19 Jul 2019 13:05:47 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd6:c00:40e3:8fe6:4421:a541? ([2003:ea:8bd6:c00:40e3:8fe6:4421:a541])
+        by smtp.googlemail.com with ESMTPSA id o6sm57912418wra.27.2019.07.19.13.05.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 19 Jul 2019 13:05:45 -0700 (PDT)
+Subject: Re: network problems with r8169
+To:     Thomas Voegtle <tv@lio96.de>
+References: <alpine.LSU.2.21.1907182032370.7080@er-systems.de>
+Cc:     linux-kernel@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <2eeedff5-4911-db6e-6bfd-99b591daa7ef@gmail.com>
+Date:   Fri, 19 Jul 2019 22:05:38 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190718172513.2394157-1-andriin@fb.com> <20190718175533.GG2093@redhat.com>
- <CAEf4BzaPySx-hBwD5Lxo1tD7F_8ejA9qFjC0-ag56cakweqcbA@mail.gmail.com>
- <20190718185619.GL3624@kernel.org> <20190718191452.GM3624@kernel.org>
- <CAEf4BzburdiRTYSJUSpSFAxKmf6ELpvEeNW502eKskzyyMaUxQ@mail.gmail.com>
- <20190719011644.GN3624@kernel.org> <CAEf4BzaKDTnqe4QYebNSoCLfhcUJbhzgXC5sG+y+c4JLc9PFqg@mail.gmail.com>
- <20190719181423.GO3624@kernel.org> <CAEf4BzZtYnVG3tnn25-TTJLOmeevv9fSZnAf7S2pG3VA+dMM+Q@mail.gmail.com>
- <20190719183417.GQ3624@kernel.org>
-In-Reply-To: <20190719183417.GQ3624@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 19 Jul 2019 13:04:32 -0700
-Message-ID: <CAEf4Bzb6Dfup+aRuWLyTj3=-Nyq3wWGsLXRSX7s=aMVs8WBiWQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix missing __WORDSIZE definition
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <alpine.LSU.2.21.1907182032370.7080@er-systems.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 11:34 AM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
->
-> Em Fri, Jul 19, 2019 at 11:26:50AM -0700, Andrii Nakryiko escreveu:
-> > On Fri, Jul 19, 2019 at 11:14 AM Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> wrote:
-> > > Em Fri, Jul 19, 2019 at 10:54:44AM -0700, Andrii Nakryiko escreveu:
-> > > > Ok, did some more googling. This warning (turned error in your setup)
-> > > > is emitted when -Wshadow option is enabled for GCC/clang. It appears
-> > > > to be disabled by default, so it must be enabled somewhere for perf
-> > > > build or something.
->
-> > > Right, I came to the exact same conclusion, doing tests here:
->
-> > > [perfbuilder@3a58896a648d tmp]$ gcc -Wshadow shadow_global_decl.c   -o shadow_global_decl
-> > > shadow_global_decl.c: In function 'main':
-> > > shadow_global_decl.c:9: warning: declaration of 'link' shadows a global declaration
-> > > shadow_global_decl.c:4: warning: shadowed declaration is here
-> > > [perfbuilder@3a58896a648d tmp]$ gcc --version |& head -1
-> > > gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-23)
-> > > [perfbuilder@3a58896a648d tmp]$ gcc shadow_global_decl.c   -o shadow_global_decl
-> > > [perfbuilder@3a58896a648d tmp]$
->
-> > > So I'm going to remove this warning from the places where it causes
-> > > problems.
->
-> > > > Would it be possible to disable it at least for libbpf when building
-> > > > from perf either everywhere or for those systems where you see this
-> > > > warning? I don't think this warning is useful, to be honest, just
-> > > > random name conflict between any local and global variables will cause
-> > > > this.
->
-> > > Yeah, I might end up having this applied.
->
-> > Thanks!
->
-> So, I'm ending up with the patch below, there is some value after all in
-> Wshadow, that is, from gcc 4.8 onwards :-)
+On 18.07.2019 20:50, Thomas Voegtle wrote:
+> 
+> Hello,
+> 
+> I'm having network problems with the commits on r8169 since v5.2. There are ping packet loss, sometimes 100%, sometimes 50%. In the end network is unusable.
+> 
+> v5.2 is fine, I bisected it down to:
+> 
+> a2928d28643e3c064ff41397281d20c445525032 is the first bad commit
+> commit a2928d28643e3c064ff41397281d20c445525032
+> Author: Heiner Kallweit <hkallweit1@gmail.com>
+> Date:   Sun Jun 2 10:53:49 2019 +0200
+> 
+>     r8169: use paged versions of phylib MDIO access functions
+> 
+>     Use paged versions of phylib MDIO access functions to simplify
+>     the code.
+> 
+>     Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> 
+> Reverting that commit on top of v5.2-11564-g22051d9c4a57 fixes the problem
+> for me (had to adjust the renaming to r8169_main.c).
+> 
+> I have a:
+> 04:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd.
+> RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller [10ec:8168] (rev
+> 0c)
+>         Subsystem: Biostar Microtech Int'l Corp Device [1565:2400]
+>         Kernel driver in use: r8169
+> 
+> on a BIOSTAR H81MG motherboard.
+> 
+Interesting. I have the same chip version (RTL8168g) and can't reproduce
+the issue. Can you provide a full dmesg output and test the patch below
+on top of linux-next? I'd be interested in the WARN_ON stack traces
+(if any) and would like to know whether the experimental change to
+__phy_modify_changed helps.
 
-I agree with the intent, but see below.
+> 
+> greetings,
+> 
+>   Thomas
+> 
+> 
+Heiner
 
->
-> - Arnaldo
->
-> diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
-> index 495066bafbe3..ded7a950dc40 100644
-> --- a/tools/scripts/Makefile.include
-> +++ b/tools/scripts/Makefile.include
-> @@ -32,7 +32,6 @@ EXTRA_WARNINGS += -Wno-system-headers
->  EXTRA_WARNINGS += -Wold-style-definition
->  EXTRA_WARNINGS += -Wpacked
->  EXTRA_WARNINGS += -Wredundant-decls
-> -EXTRA_WARNINGS += -Wshadow
->  EXTRA_WARNINGS += -Wstrict-prototypes
->  EXTRA_WARNINGS += -Wswitch-default
->  EXTRA_WARNINGS += -Wswitch-enum
-> @@ -69,8 +68,16 @@ endif
->  # will do for now and keep the above -Wstrict-aliasing=3 in place
->  # in newer systems.
->  # Needed for the __raw_cmpxchg in tools/arch/x86/include/asm/cmpxchg.h
-> +#
-> +# See https://lkml.org/lkml/2006/11/28/253 and https://gcc.gnu.org/gcc-4.8/changes.html,
-> +# that takes into account Linus's comments (search for Wshadow) for the reasoning about
-> +# -Wshadow not being interesting before gcc 4.8.
-> +
->  ifneq ($(filter 3.%,$(MAKE_VERSION)),)  # make-3
 
-This is checking make version, not GCC version. So code comment and
-configurations are not in sync?
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 8d7dd4c5f..26be73000 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1934,6 +1934,8 @@ static int rtl_get_eee_supp(struct rtl8169_private *tp)
+ 	struct phy_device *phydev = tp->phydev;
+ 	int ret;
+ 
++	WARN_ON(phy_read(phydev, 0x1f));
++
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_34:
+ 	case RTL_GIGA_MAC_VER_35:
+@@ -1957,6 +1959,8 @@ static int rtl_get_eee_lpadv(struct rtl8169_private *tp)
+ 	struct phy_device *phydev = tp->phydev;
+ 	int ret;
+ 
++	WARN_ON(phy_read(phydev, 0x1f));
++
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_34:
+ 	case RTL_GIGA_MAC_VER_35:
+@@ -1980,6 +1984,8 @@ static int rtl_get_eee_adv(struct rtl8169_private *tp)
+ 	struct phy_device *phydev = tp->phydev;
+ 	int ret;
+ 
++	WARN_ON(phy_read(phydev, 0x1f));
++
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_34:
+ 	case RTL_GIGA_MAC_VER_35:
+@@ -2003,6 +2009,8 @@ static int rtl_set_eee_adv(struct rtl8169_private *tp, int val)
+ 	struct phy_device *phydev = tp->phydev;
+ 	int ret = 0;
+ 
++	WARN_ON(phy_read(phydev, 0x1f));
++
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_34:
+ 	case RTL_GIGA_MAC_VER_35:
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 16667fbac..1aa1142b8 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -463,12 +463,10 @@ int __phy_modify_changed(struct phy_device *phydev, u32 regnum, u16 mask,
+ 		return ret;
+ 
+ 	new = (ret & ~mask) | set;
+-	if (new == ret)
+-		return 0;
+ 
+-	ret = __phy_write(phydev, regnum, new);
++	__phy_write(phydev, regnum, new);
+ 
+-	return ret < 0 ? ret : 1;
++	return new != ret;
+ }
+ EXPORT_SYMBOL_GPL(__phy_modify_changed);
+ 
+-- 
+2.22.0
 
->  EXTRA_WARNINGS += -fno-strict-aliasing
-> +EXTRA_WARNINGS += -Wno-shadow
-> +else
-> +EXTRA_WARNINGS += -Wshadow
->  endif
->
->  ifneq ($(findstring $(MAKEFLAGS), w),w)
