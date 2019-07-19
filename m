@@ -2,241 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 420886EB5D
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 21:52:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539156EB70
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 22:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729375AbfGSTwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 15:52:30 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:42140 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727602AbfGSTwa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 15:52:30 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 592395FD60;
-        Fri, 19 Jul 2019 21:52:26 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="hc8rGyRc";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 2527C1D1AC06;
-        Fri, 19 Jul 2019 21:52:26 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 2527C1D1AC06
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1563565946;
-        bh=SdljpNzWzfLj6ByRIoFAtEsKkYjke3HBx8FPu60sYlA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hc8rGyRcDDUbju4t2OMVxEqYnX0GaTh3g9wZ6J6O+lCYxrDPDz5rQ+kG/OlJuU+mO
-         V17r9UE1CMxYkfqEY1msvHjthbAy0ps4VMLXlNJRHHkz+Mmz0EIBbvQe1ZdV50yeKr
-         KJxmdqkgqTuGfmVPhKACGS3tFUBdx/fhTEUuivfHStuSFwKiv1YKNF0vMprZALgVhq
-         RWsu7SNwJDpp9pAftPhWAcmWYwdK7/W1iCgKTaKn93PyZRNKwlH3AGm74/fgITJEcG
-         dJOomnlQ5/gH70/AH4NB2YMggwcyb4BaglelfPZvdnclz+NsC07hv93527C2jjtDd5
-         /AdhvrCqPHb/Q==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Fri, 19 Jul 2019 19:52:26 +0000
-Date:   Fri, 19 Jul 2019 19:52:26 +0000
-Message-ID: <20190719195226.Horde.MpIE5TFL_P5-pUU6V-K6R9J@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org
-Subject: Re: phylink: flow control on fixed-link not working.
-References: <20190717213111.Horde.nir2D5kAJww569fjh8BZgZm@www.vdorst.com>
- <20190717215150.tk3gvq7lqc56scac@shell.armlinux.org.uk>
- <20190717225816.Horde.Lym7vHLMewe-3L_Elk45WIQ@www.vdorst.com>
-In-Reply-To: <20190717225816.Horde.Lym7vHLMewe-3L_Elk45WIQ@www.vdorst.com>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1731523AbfGSUEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 16:04:45 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:38664 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727497AbfGSUEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 16:04:44 -0400
+Received: by mail-qk1-f194.google.com with SMTP id a27so24161378qkk.5;
+        Fri, 19 Jul 2019 13:04:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KgzbnyihRsw5YwTm7SdiFF/zXhcaOpif95Kf3MqJxBY=;
+        b=P0+v4hJrU8jqZSNngmeP7/FXPteQB0Dx84Z0ggbNG42+cxT84wlm6NRuIGK3mkqLxG
+         ofS9GFmbUExt7b5uNYvs+83qh/XXFlQz/1MA9VQQ3Ocu9tNpZ5r4pWlX5WnLHlQV7toQ
+         jNW1KaP0GQ4azRxarWFymz2vu+mldivdMuouHnGRq8xsuQGNxtI6GBQWmeN/9JMZ+nkc
+         JG2W8Nd3qj4ew5YX1rakVmCuZKjOxl/+keUVxgwPIMo7VTjPcJvfYH3wwigx00M/F0PL
+         mWwjKfUPHhLSC44oLDrlRqBx8b9SCIntDdqbyt7YBPzNHiMbw2oZ9Tnm0+6UQGXZM7BG
+         BvFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KgzbnyihRsw5YwTm7SdiFF/zXhcaOpif95Kf3MqJxBY=;
+        b=sefcYwPVvg0KI/rt5qL61h3yLlU9QH5HD7EDcYLA65RR6r9I4ZTg593veZGcixiMnw
+         7AfV1ZSox+3dazqFFCGxVDYrCzkRnMKZcM4TSVPs1JD21gr4RDernfr5us6w/onz4a5Z
+         3WQM9XaQU/7at8md+5L08QXn6hjfk1D8gZqMpvdR6Z0yWK9dMB6BIODkKvbhDhXP5+0N
+         ZzIbpx1AIBxTxOIGuXUrOrtfucc5L1bkCPFoNpcRvclPWF1N/55HUnhumPKitGX6MMTJ
+         xjZdQG0HyPYIyzw9iyHAisNK1pmChE+X36nN8wfPBt9/yYpZQq9uOrea5J9m+qcLogbq
+         Rx3w==
+X-Gm-Message-State: APjAAAW3T+qIwcyya0wIc9OdFm1l6Qz5skOxJIBMn9o+XqScwFhVFHWV
+        wNSO3CxtGwthCEkgs6jn9PpsTYF3BOKXIiaFSdQucO3S
+X-Google-Smtp-Source: APXvYqzeRSpz2YxRkp57icEpaASDSR1b/c8uGpQ5DxBVTEvjIKmj+n5EoFQT33OMXuUkApGXQEmNTekrxUxC3fPkLec=
+X-Received: by 2002:a37:9b48:: with SMTP id d69mr38532135qke.449.1563566683627;
+ Fri, 19 Jul 2019 13:04:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190718172513.2394157-1-andriin@fb.com> <20190718175533.GG2093@redhat.com>
+ <CAEf4BzaPySx-hBwD5Lxo1tD7F_8ejA9qFjC0-ag56cakweqcbA@mail.gmail.com>
+ <20190718185619.GL3624@kernel.org> <20190718191452.GM3624@kernel.org>
+ <CAEf4BzburdiRTYSJUSpSFAxKmf6ELpvEeNW502eKskzyyMaUxQ@mail.gmail.com>
+ <20190719011644.GN3624@kernel.org> <CAEf4BzaKDTnqe4QYebNSoCLfhcUJbhzgXC5sG+y+c4JLc9PFqg@mail.gmail.com>
+ <20190719181423.GO3624@kernel.org> <CAEf4BzZtYnVG3tnn25-TTJLOmeevv9fSZnAf7S2pG3VA+dMM+Q@mail.gmail.com>
+ <20190719183417.GQ3624@kernel.org>
+In-Reply-To: <20190719183417.GQ3624@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 19 Jul 2019 13:04:32 -0700
+Message-ID: <CAEf4Bzb6Dfup+aRuWLyTj3=-Nyq3wWGsLXRSX7s=aMVs8WBiWQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix missing __WORDSIZE definition
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting René van Dorst <opensource@vdorst.com>:
+On Fri, Jul 19, 2019 at 11:34 AM Arnaldo Carvalho de Melo
+<arnaldo.melo@gmail.com> wrote:
+>
+> Em Fri, Jul 19, 2019 at 11:26:50AM -0700, Andrii Nakryiko escreveu:
+> > On Fri, Jul 19, 2019 at 11:14 AM Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> wrote:
+> > > Em Fri, Jul 19, 2019 at 10:54:44AM -0700, Andrii Nakryiko escreveu:
+> > > > Ok, did some more googling. This warning (turned error in your setup)
+> > > > is emitted when -Wshadow option is enabled for GCC/clang. It appears
+> > > > to be disabled by default, so it must be enabled somewhere for perf
+> > > > build or something.
+>
+> > > Right, I came to the exact same conclusion, doing tests here:
+>
+> > > [perfbuilder@3a58896a648d tmp]$ gcc -Wshadow shadow_global_decl.c   -o shadow_global_decl
+> > > shadow_global_decl.c: In function 'main':
+> > > shadow_global_decl.c:9: warning: declaration of 'link' shadows a global declaration
+> > > shadow_global_decl.c:4: warning: shadowed declaration is here
+> > > [perfbuilder@3a58896a648d tmp]$ gcc --version |& head -1
+> > > gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-23)
+> > > [perfbuilder@3a58896a648d tmp]$ gcc shadow_global_decl.c   -o shadow_global_decl
+> > > [perfbuilder@3a58896a648d tmp]$
+>
+> > > So I'm going to remove this warning from the places where it causes
+> > > problems.
+>
+> > > > Would it be possible to disable it at least for libbpf when building
+> > > > from perf either everywhere or for those systems where you see this
+> > > > warning? I don't think this warning is useful, to be honest, just
+> > > > random name conflict between any local and global variables will cause
+> > > > this.
+>
+> > > Yeah, I might end up having this applied.
+>
+> > Thanks!
+>
+> So, I'm ending up with the patch below, there is some value after all in
+> Wshadow, that is, from gcc 4.8 onwards :-)
 
-> Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
->
->> On Wed, Jul 17, 2019 at 09:31:11PM +0000, René van Dorst wrote:
->>> Hi,
->>>
->>> I am trying to enable flow control/pause on PHYLINK and fixed-link.
->>>
->>> My setup SOC mac (mt7621) <-> RGMII <-> SWITCH mac (mt7530).
->>>
->>> It seems that in fixed-link mode all the flow control/pause bits  
->>> are cleared
->>> in
->>> phylink_parse_fixedlink(). If I read phylink_parse_fixedlink() [0]  
->>> correctly,
->>> I see that pl->link_config.advertising is AND with pl->supprted  
->>> which has only
->>> the PHY_SETTING() modes bits set. pl->link_config.advertising is  
->>> losing Pause
->>> bits. pl->link_config.advertising is used in  
->>> phylink_resolve_flow() to set the
->>> MLO_PAUSE_RX/TX BITS.
->>>
->>> I think this is an error.
->>> Because in phylink_start() see this part [1].
->>>
->>> /* Apply the link configuration to the MAC when starting. This allows
->>>  * a fixed-link to start with the correct parameters, and also
->>>  * ensures that we set the appropriate advertisement for Serdes links.
->>>  */
->>> phylink_resolve_flow(pl, &pl->link_config);
->>> phylink_mac_config(pl, &pl->link_config);
->>>
->>>
->>> If I add a this hacky patch below, flow control is enabled on the  
->>> fixed-link.
->>>        if (s) {
->>>                __set_bit(s->bit, pl->supported);
->>> +               if (phylink_test(pl->link_config.advertising, Pause))
->>> +                       phylink_set(pl->supported, Pause);
->>>        } else {
->>>
->>> So is phylink_parse_fixedlink() broken or should it handled in a other way?
->>
->> Quite simply, if the MAC says it doesn't support pause modes (i.o.w.
->> the validate callback clears them) then pause modes aren't supported.
->
-> Hi Russel,
->
-> Thanks for your response.
->
-> I believe that I am setting pause bits right on both ends see SOC [0] and
-> SWITCH [1] and also in the DTS [2].
->
-> Correct me if it is not the right way.
->
->
-> Maybe I am looking in the wrong part of the code.
-> But I added many debug lines in phylink_parse_fixedlink() [3] to see what
-> happens with the Pause bit in the pl->link_config.advertising and  
-> pl->supported.
->
->
-> This is the dmesg output.
-> [    1.991245] libphy: Fixed MDIO Bus: probed
-> [    2.031260] phylink_create: config0: Pause
-> [    2.039410] phylink_create: supported: Pause
-> [    2.047904] mtk_validate: mask: Pause
-> [    2.055186] mtk_validate: supported: Pause
-> [    2.063332] mtk_validate: advertising: Pause
-> [    2.071825] phylink_create: config1: Pause
-> [    2.079966] phylink_create: config2: Pause
-> [    2.088132] phylink_parse_fixedlink: config: Pause
-> [    2.097660] phylink_parse_fixedlink: support: Pause
-> [    2.107366] mtk_validate: mask: Pause
-> [    2.114647] mtk_validate: supported: Pause
-> [    2.122792] mtk_validate: advertising: Pause
-> [    2.131283] phylink_parse_fixedlink: config2: Pause
-> [    2.140971] phylink_parse_fixedlink: support2: Pause
-> [    2.150845] phylink_parse_fixedlink: config3: Pause
-> [    2.160546] phylink_parse_fixedlink: support3: Pause
-> [    2.170420] phylink_parse_fixedlink: config4: Pause
-> [    2.180120] phylink_parse_fixedlink: config5: Pause
->
-> [    5.854674] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
-> [    5.867665] phylink_resolve_flow: PAUSE_AN: pause: 0, 12, 8dfba630
-> [    5.867670] phylink_resolve_flow: new_pause: 0
-> [    5.879980] mt7530 mdio-bus:1f: phylink_mac_config:  
-> mode=fixed/trgmii/1Gbps/Full adv=00,00000000,00000220 pause=12  
-> link=1 an=1
-> [    6.651239] DSA: tree 0 setup
-> [    6.658192] input: gpio-keys as /devices/platform/gpio-keys/input/input0
-> [    6.672108] mt7530 mdio-bus:1f: phylink_mac_config:  
-> mode=fixed/trgmii/1Gbps/Full adv=00,00000000,00000220 pause=12  
-> link=1 an=1
-> [   28.937543] mtk_soc_eth 1e100000.ethernet eth0: configuring for  
-> fixed/trgmii link mode
-> [   28.965884] mtk_soc_eth 1e100000.ethernet eth0:  
-> phylink_mac_config: mode=fixed/trgmii/1Gbps/Full  
-> adv=00,00000000,00000220 pause=12 link=1 an=1
-> [   29.000740] mtk_soc_eth 1e100000.ethernet eth0:  
-> phylink_mac_config: mode=fixed/trgmii/1Gbps/Full  
-> adv=00,00000000,00000220 pause=12 link=1 an=1
-> [   29.026392] mtk_soc_eth 1e100000.ethernet eth0: Link is Up -  
-> 1Gbps/Full - flow control off
-> [   29.373577] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
->
->
-> I don't see the "config6:" [4] debug.
-> I think the pause bits are always cleared in  
-> pl->link_config.advertising by phylink_parse_fixedlink()
->
-> Again I may understand the code wrong or I am looking at the wrong place.
-> So I hope you can point me in the right direction...
-
-Hi Russel,
-
-If I use this patch below:
-
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 5d0af041b8f9..a6aebaa14338 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -216,6 +216,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
-                                pl->supported, true);
-         linkmode_zero(pl->supported);
-         phylink_set(pl->supported, MII);
-+       phylink_set(pl->supported, Pause);
-+       phylink_set(pl->supported, Asym_Pause);
-         if (s) {
-                 __set_bit(s->bit, pl->supported);
-         } else {
-
-Which is similar thing also done in phylink_parse_mode().
-
-I get these results:
-- DTS = 'Pause' is set in the fixed-link
-- validate = No means phylink_set(mask, Pause) is not used in validate  
-callback.
-- flow = results reported my link is Up line.
-
-+-----+----------+-------+
-| DTS | validate | flow  |
-+-----+----------+-------+
-| Yes | Yes      | rx/tx |
-| No  | Yes      | off   |
-| Yes | No       | off   |
-+-----+----------+-------+
-
-What do you think?
-Can this be a correct fix?
-
-Greats,
-
-René
+I agree with the intent, but see below.
 
 >
-> Greats,
+> - Arnaldo
 >
-> René
->
->
-> [0]:  
-> https://github.com/vDorst/linux-1/blob/8538cdefd425592d249a71445c466159b0f27475/drivers/net/ethernet/mediatek/mtk_eth_soc.c#L502
-> [1]:  
-> https://github.com/vDorst/linux-1/blob/8538cdefd425592d249a71445c466159b0f27475/drivers/net/dsa/mt7530.c#L1468
-> [2]:  
-> https://github.com/vDorst/linux-1/blob/8538cdefd425592d249a71445c466159b0f27475/drivers/staging/mt7621-dts/UBNT-ER-e50.dtsi#L122
-> [3]:  
-> https://github.com/vDorst/linux-1/blob/8538cdefd425592d249a71445c466159b0f27475/drivers/net/phy/phylink.c#L214
-> [4]:  
-> https://github.com/vDorst/linux-1/blob/8538cdefd425592d249a71445c466159b0f27475/drivers/net/phy/phylink.c#L263
->
->>
->> --
->> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
->> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down  
->> 622kbps up
->> According to speedtest.net: 11.9Mbps down 500kbps up
+> diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
+> index 495066bafbe3..ded7a950dc40 100644
+> --- a/tools/scripts/Makefile.include
+> +++ b/tools/scripts/Makefile.include
+> @@ -32,7 +32,6 @@ EXTRA_WARNINGS += -Wno-system-headers
+>  EXTRA_WARNINGS += -Wold-style-definition
+>  EXTRA_WARNINGS += -Wpacked
+>  EXTRA_WARNINGS += -Wredundant-decls
+> -EXTRA_WARNINGS += -Wshadow
+>  EXTRA_WARNINGS += -Wstrict-prototypes
+>  EXTRA_WARNINGS += -Wswitch-default
+>  EXTRA_WARNINGS += -Wswitch-enum
+> @@ -69,8 +68,16 @@ endif
+>  # will do for now and keep the above -Wstrict-aliasing=3 in place
+>  # in newer systems.
+>  # Needed for the __raw_cmpxchg in tools/arch/x86/include/asm/cmpxchg.h
+> +#
+> +# See https://lkml.org/lkml/2006/11/28/253 and https://gcc.gnu.org/gcc-4.8/changes.html,
+> +# that takes into account Linus's comments (search for Wshadow) for the reasoning about
+> +# -Wshadow not being interesting before gcc 4.8.
+> +
+>  ifneq ($(filter 3.%,$(MAKE_VERSION)),)  # make-3
 
+This is checking make version, not GCC version. So code comment and
+configurations are not in sync?
 
-
+>  EXTRA_WARNINGS += -fno-strict-aliasing
+> +EXTRA_WARNINGS += -Wno-shadow
+> +else
+> +EXTRA_WARNINGS += -Wshadow
+>  endif
+>
+>  ifneq ($(findstring $(MAKEFLAGS), w),w)
