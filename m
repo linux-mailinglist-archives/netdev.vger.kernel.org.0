@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4913F6E89B
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 18:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 919C86E89E
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 18:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730838AbfGSQUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 12:20:30 -0400
-Received: from mail.us.es ([193.147.175.20]:42832 "EHLO mail.us.es"
+        id S1730873AbfGSQUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 12:20:36 -0400
+Received: from mail.us.es ([193.147.175.20]:42854 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730824AbfGSQUa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 12:20:30 -0400
+        id S1730842AbfGSQUe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 12:20:34 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7E828C1A6C
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 18:20:28 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 64D3CC1A67
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 18:20:30 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6E2F3D2F98
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 18:20:28 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 568451150DE
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 18:20:30 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 50139DA732; Fri, 19 Jul 2019 18:20:28 +0200 (CEST)
+        id 4B2171150CB; Fri, 19 Jul 2019 18:20:30 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 27EEADA732;
-        Fri, 19 Jul 2019 18:20:26 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0FA13115101;
+        Fri, 19 Jul 2019 18:20:28 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 19 Jul 2019 18:20:26 +0200 (CEST)
+ Fri, 19 Jul 2019 18:20:28 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [47.60.47.94])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 5A3BB4265A31;
-        Fri, 19 Jul 2019 18:20:25 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 46B6C4265A32;
+        Fri, 19 Jul 2019 18:20:27 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
         jakub.kicinski@netronome.com, pshelar@ovn.org
-Subject: [PATCH nf,v5 1/4] net: openvswitch: rename flow_stats to sw_flow_stats
-Date:   Fri, 19 Jul 2019 18:20:13 +0200
-Message-Id: <20190719162016.10243-2-pablo@netfilter.org>
+Subject: [PATCH nf,v5 2/4] net: flow_offload: remove netns parameter from flow_block_cb_alloc()
+Date:   Fri, 19 Jul 2019 18:20:14 +0200
+Message-Id: <20190719162016.10243-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190719162016.10243-1-pablo@netfilter.org>
 References: <20190719162016.10243-1-pablo@netfilter.org>
@@ -51,133 +51,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a flow_stats structure defined in include/net/flow_offload.h
-and a follow up patch adds #include <net/flow_offload.h> to
-net/sch_generic.h.
+No need to annotate the netns on the flow block callback object,
+flow_block_cb_is_busy() already checks for used blocks.
 
-This breaks compilation since OVS codebase includes net/sock.h which
-pulls in linux/filter.h which includes net/sch_generic.h.
-
-In file included from ./include/net/sch_generic.h:18:0,
-                 from ./include/linux/filter.h:25,
-                 from ./include/net/sock.h:59,
-                 from ./include/linux/tcp.h:19,
-                 from net/openvswitch/datapath.c:24
-
-This definition takes precedence on OVS since it is placed in the
-networking core, so rename flow_stats in OVS to sw_flow_stats since
-this structure is contained in sw_flow.
-
+Fixes: d63db30c8537 ("net: flow_offload: add flow_block_cb_alloc() and flow_block_cb_free()")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v5: no changes.
 
- net/openvswitch/flow.c       | 8 ++++----
- net/openvswitch/flow.h       | 4 ++--
- net/openvswitch/flow_table.c | 8 ++++----
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c    | 3 +--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c      | 5 ++---
+ drivers/net/ethernet/mscc/ocelot_flower.c           | 3 +--
+ drivers/net/ethernet/mscc/ocelot_tc.c               | 2 +-
+ drivers/net/ethernet/netronome/nfp/flower/offload.c | 6 ++----
+ include/net/flow_offload.h                          | 3 +--
+ net/core/flow_offload.c                             | 9 +++------
+ net/dsa/slave.c                                     | 2 +-
+ 8 files changed, 12 insertions(+), 21 deletions(-)
 
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index dca3b1e2acf0..bc89e16e0505 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -59,7 +59,7 @@ u64 ovs_flow_used_time(unsigned long flow_jiffies)
- void ovs_flow_stats_update(struct sw_flow *flow, __be16 tcp_flags,
- 			   const struct sk_buff *skb)
- {
--	struct flow_stats *stats;
-+	struct sw_flow_stats *stats;
- 	unsigned int cpu = smp_processor_id();
- 	int len = skb->len + (skb_vlan_tag_present(skb) ? VLAN_HLEN : 0);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 7245d287633d..2162412073c5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -735,8 +735,7 @@ mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
+ 		list_add(&indr_priv->list,
+ 			 &rpriv->uplink_priv.tc_indr_block_priv_list);
  
-@@ -87,7 +87,7 @@ void ovs_flow_stats_update(struct sw_flow *flow, __be16 tcp_flags,
- 			if (likely(flow->stats_last_writer != -1) &&
- 			    likely(!rcu_access_pointer(flow->stats[cpu]))) {
- 				/* Try to allocate CPU-specific stats. */
--				struct flow_stats *new_stats;
-+				struct sw_flow_stats *new_stats;
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       mlx5e_rep_indr_setup_block_cb,
++		block_cb = flow_block_cb_alloc(mlx5e_rep_indr_setup_block_cb,
+ 					       indr_priv, indr_priv,
+ 					       mlx5e_rep_indr_tc_block_unbind);
+ 		if (IS_ERR(block_cb)) {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 4d34d42b3b0e..a469035400cf 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1610,8 +1610,7 @@ mlxsw_sp_setup_tc_block_flower_bind(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		acl_block = mlxsw_sp_acl_block_create(mlxsw_sp, f->net);
+ 		if (!acl_block)
+ 			return -ENOMEM;
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       mlxsw_sp_setup_tc_block_cb_flower,
++		block_cb = flow_block_cb_alloc(mlxsw_sp_setup_tc_block_cb_flower,
+ 					       mlxsw_sp, acl_block,
+ 					       mlxsw_sp_tc_block_flower_release);
+ 		if (IS_ERR(block_cb)) {
+@@ -1702,7 +1701,7 @@ static int mlxsw_sp_setup_tc_block(struct mlxsw_sp_port *mlxsw_sp_port,
+ 					  &mlxsw_sp_block_cb_list))
+ 			return -EBUSY;
  
- 				new_stats =
- 					kmem_cache_alloc_node(flow_stats_cache,
-@@ -134,7 +134,7 @@ void ovs_flow_stats_get(const struct sw_flow *flow,
+-		block_cb = flow_block_cb_alloc(f->net, cb, mlxsw_sp_port,
++		block_cb = flow_block_cb_alloc(cb, mlxsw_sp_port,
+ 					       mlxsw_sp_port, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 7aaddc09c185..6a11aea8b186 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -323,8 +323,7 @@ int ocelot_setup_tc_block_flower_bind(struct ocelot_port *port,
+ 		if (!port_block)
+ 			return -ENOMEM;
  
- 	/* We open code this to make sure cpu 0 is always considered */
- 	for (cpu = 0; cpu < nr_cpu_ids; cpu = cpumask_next(cpu, &flow->cpu_used_mask)) {
--		struct flow_stats *stats = rcu_dereference_ovsl(flow->stats[cpu]);
-+		struct sw_flow_stats *stats = rcu_dereference_ovsl(flow->stats[cpu]);
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       ocelot_setup_tc_block_cb_flower,
++		block_cb = flow_block_cb_alloc(ocelot_setup_tc_block_cb_flower,
+ 					       port, port_block,
+ 					       ocelot_tc_block_unbind);
+ 		if (IS_ERR(block_cb)) {
+diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
+index 9e6464ffae5d..abbcb66bf5ac 100644
+--- a/drivers/net/ethernet/mscc/ocelot_tc.c
++++ b/drivers/net/ethernet/mscc/ocelot_tc.c
+@@ -156,7 +156,7 @@ static int ocelot_setup_tc_block(struct ocelot_port *port,
+ 		if (flow_block_cb_is_busy(cb, port, &ocelot_block_cb_list))
+ 			return -EBUSY;
  
- 		if (stats) {
- 			/* Local CPU may write on non-local stats, so we must
-@@ -158,7 +158,7 @@ void ovs_flow_stats_clear(struct sw_flow *flow)
+-		block_cb = flow_block_cb_alloc(f->net, cb, port, port, NULL);
++		block_cb = flow_block_cb_alloc(cb, port, port, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
  
- 	/* We open code this to make sure cpu 0 is always considered */
- 	for (cpu = 0; cpu < nr_cpu_ids; cpu = cpumask_next(cpu, &flow->cpu_used_mask)) {
--		struct flow_stats *stats = ovsl_dereference(flow->stats[cpu]);
-+		struct sw_flow_stats *stats = ovsl_dereference(flow->stats[cpu]);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index faa8ba012a37..93ab0db6c504 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1318,8 +1318,7 @@ static int nfp_flower_setup_tc_block(struct net_device *netdev,
+ 					  &nfp_block_cb_list))
+ 			return -EBUSY;
  
- 		if (stats) {
- 			spin_lock_bh(&stats->lock);
-diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-index 3e2cc2202d66..a5506e2d4b7a 100644
---- a/net/openvswitch/flow.h
-+++ b/net/openvswitch/flow.h
-@@ -194,7 +194,7 @@ struct sw_flow_actions {
- 	struct nlattr actions[];
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       nfp_flower_setup_tc_block_cb,
++		block_cb = flow_block_cb_alloc(nfp_flower_setup_tc_block_cb,
+ 					       repr, repr, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+@@ -1424,8 +1423,7 @@ nfp_flower_setup_indr_tc_block(struct net_device *netdev, struct nfp_app *app,
+ 		cb_priv->app = app;
+ 		list_add(&cb_priv->list, &priv->indr_block_cb_priv);
+ 
+-		block_cb = flow_block_cb_alloc(f->net,
+-					       nfp_flower_setup_indr_block_cb,
++		block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
+ 					       cb_priv, cb_priv,
+ 					       nfp_flower_setup_indr_tc_release);
+ 		if (IS_ERR(block_cb)) {
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index db337299e81e..aa9b5287b231 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -264,7 +264,6 @@ struct flow_block_offload {
+ struct flow_block_cb {
+ 	struct list_head	driver_list;
+ 	struct list_head	list;
+-	struct net		*net;
+ 	tc_setup_cb_t		*cb;
+ 	void			*cb_ident;
+ 	void			*cb_priv;
+@@ -272,7 +271,7 @@ struct flow_block_cb {
+ 	unsigned int		refcnt;
  };
  
--struct flow_stats {
-+struct sw_flow_stats {
- 	u64 packet_count;		/* Number of packets matched. */
- 	u64 byte_count;			/* Number of bytes matched. */
- 	unsigned long used;		/* Last used time (in jiffies). */
-@@ -216,7 +216,7 @@ struct sw_flow {
- 	struct cpumask cpu_used_mask;
- 	struct sw_flow_mask *mask;
- 	struct sw_flow_actions __rcu *sf_acts;
--	struct flow_stats __rcu *stats[]; /* One for each CPU.  First one
-+	struct sw_flow_stats __rcu *stats[]; /* One for each CPU.  First one
- 					   * is allocated at flow creation time,
- 					   * the rest are allocated on demand
- 					   * while holding the 'stats[0].lock'.
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index 988fd8a94e43..cf3582c5ed70 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -66,7 +66,7 @@ void ovs_flow_mask_key(struct sw_flow_key *dst, const struct sw_flow_key *src,
- struct sw_flow *ovs_flow_alloc(void)
- {
- 	struct sw_flow *flow;
--	struct flow_stats *stats;
-+	struct sw_flow_stats *stats;
- 
- 	flow = kmem_cache_zalloc(flow_cache, GFP_KERNEL);
- 	if (!flow)
-@@ -110,7 +110,7 @@ static void flow_free(struct sw_flow *flow)
- 	for (cpu = 0; cpu < nr_cpu_ids; cpu = cpumask_next(cpu, &flow->cpu_used_mask))
- 		if (flow->stats[cpu])
- 			kmem_cache_free(flow_stats_cache,
--					(struct flow_stats __force *)flow->stats[cpu]);
-+					(struct sw_flow_stats __force *)flow->stats[cpu]);
- 	kmem_cache_free(flow_cache, flow);
+-struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
++struct flow_block_cb *flow_block_cb_alloc(tc_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv));
+ void flow_block_cb_free(struct flow_block_cb *block_cb);
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 76f8db3841d7..507de4b48815 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -165,7 +165,7 @@ void flow_rule_match_enc_opts(const struct flow_rule *rule,
  }
+ EXPORT_SYMBOL(flow_rule_match_enc_opts);
  
-@@ -712,13 +712,13 @@ int ovs_flow_init(void)
+-struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
++struct flow_block_cb *flow_block_cb_alloc(tc_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv))
+ {
+@@ -175,7 +175,6 @@ struct flow_block_cb *flow_block_cb_alloc(struct net *net, tc_setup_cb_t *cb,
+ 	if (!block_cb)
+ 		return ERR_PTR(-ENOMEM);
  
- 	flow_cache = kmem_cache_create("sw_flow", sizeof(struct sw_flow)
- 				       + (nr_cpu_ids
--					  * sizeof(struct flow_stats *)),
-+					  * sizeof(struct sw_flow_stats *)),
- 				       0, 0, NULL);
- 	if (flow_cache == NULL)
- 		return -ENOMEM;
+-	block_cb->net = net;
+ 	block_cb->cb = cb;
+ 	block_cb->cb_ident = cb_ident;
+ 	block_cb->cb_priv = cb_priv;
+@@ -200,8 +199,7 @@ struct flow_block_cb *flow_block_cb_lookup(struct flow_block_offload *f,
+ 	struct flow_block_cb *block_cb;
  
- 	flow_stats_cache
--		= kmem_cache_create("sw_flow_stats", sizeof(struct flow_stats),
-+		= kmem_cache_create("sw_flow_stats", sizeof(struct sw_flow_stats),
- 				    0, SLAB_HWCACHE_ALIGN, NULL);
- 	if (flow_stats_cache == NULL) {
- 		kmem_cache_destroy(flow_cache);
+ 	list_for_each_entry(block_cb, f->driver_block_list, driver_list) {
+-		if (block_cb->net == f->net &&
+-		    block_cb->cb == cb &&
++		if (block_cb->cb == cb &&
+ 		    block_cb->cb_ident == cb_ident)
+ 			return block_cb;
+ 	}
+@@ -261,8 +259,7 @@ int flow_block_cb_setup_simple(struct flow_block_offload *f,
+ 		if (flow_block_cb_is_busy(cb, cb_ident, driver_block_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net, cb, cb_ident,
+-					       cb_priv, NULL);
++		block_cb = flow_block_cb_alloc(cb, cb_ident, cb_priv, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 614c38ece104..6ca9ec58f881 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -967,7 +967,7 @@ static int dsa_slave_setup_tc_block(struct net_device *dev,
+ 		if (flow_block_cb_is_busy(cb, dev, &dsa_slave_block_cb_list))
+ 			return -EBUSY;
+ 
+-		block_cb = flow_block_cb_alloc(f->net, cb, dev, dev, NULL);
++		block_cb = flow_block_cb_alloc(cb, dev, dev, NULL);
+ 		if (IS_ERR(block_cb))
+ 			return PTR_ERR(block_cb);
+ 
 -- 
 2.11.0
 
