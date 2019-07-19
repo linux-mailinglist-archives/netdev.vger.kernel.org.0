@@ -2,95 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 909AF6E12B
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 08:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A166E1B4
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 09:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbfGSGty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 02:49:54 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33629 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726076AbfGSGty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 02:49:54 -0400
-Received: by mail-qt1-f194.google.com with SMTP id r6so25710925qtt.0;
-        Thu, 18 Jul 2019 23:49:53 -0700 (PDT)
+        id S1727372AbfGSH2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 03:28:07 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:56929 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726036AbfGSH2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 03:28:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id u25so33460270iol.23
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 00:28:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zfGToBds18suaPosWKE/2T3izyW6zSmNZU6D/7RAmgE=;
-        b=dRlMdD6mtIvR0/lIBO7qZ8eZanxbmLa9LS2pl3Gk2gRHle7GnFA9x8Ufdu80b+Bbzo
-         qOWVmyEMaIBhUTSSO1WpQ6KPP/2QwjjNaAJDcrGCisdBwfrZqJtur+qLDZ9j/Roe/eqR
-         kk7k3sVm/NEOkCkeBzijehXxwH0H84URbgl5yC0n/x8v5YPWruBTsjVvFUQJ3z7fJFsu
-         zVnTxBHJqbZfCunETl7C/pFS8HTsoBBje3kPnkPioTLEP3BsGettdIwC0fyV4A4F93Mg
-         GriaJ0nSVs9Al8Y6EhspnSbThYjrLWgD98KwG9gkDDTRBgwQzVR9r4D0BMaSoJnQAVkP
-         6J9g==
-X-Gm-Message-State: APjAAAVduD1myj4y0lCl/BYHzITkCbSYixglICsUZRY0TYBJek3R8pTm
-        aiL/sMP8Fm66Bmee924+5nBE+F3nZivItCIAli8=
-X-Google-Smtp-Source: APXvYqyNjTc42pQ1sKjehQS1untTD4duEeurrsI/kTdOBEK71qAdbybFsNiZBlVojBbGxe4c1/U/qrE8abUEnZ12d+8=
-X-Received: by 2002:a0c:ba2c:: with SMTP id w44mr35836449qvf.62.1563518993465;
- Thu, 18 Jul 2019 23:49:53 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ZOKptcEQOKWGsH6kGRMFGwq91Xnv2C9B1wmV09hcJ5c=;
+        b=kSBXwKQ8fK4fEzD28DGh7bKcMW5h554PDzPPGpyaBe6NCgrprla/ozsBd7lDEt3X44
+         7JH2FUAgv1QpAwjzP5ZJqrzLOQl6szWejWZXGJcUJdtzqWDoZniSJgXs8pqEzelm0AYB
+         TRn1l3TBHe37BCTnq2yHUw2xlOICxytVINTZfADehesRvahxMCDXPAoxSBSjnq9uh6xq
+         cUm6HapCtVr0ghRwNc4ApjsB43ip71BQ6rCGDwnEHR/Kv0nWBbPnAsbp/9JskUx+ShPD
+         vJFQcQeQmIrRz1brhdkzqUNlQH5ZW4BWDEmohJmgP1KhkkIVVmXTC2G1XSRDhZLxEeiK
+         V+tQ==
+X-Gm-Message-State: APjAAAVTgnBochPQknn2QYnOzMXO5EQAlGvkPJe8vtZ7MKQsjEwG7b5t
+        enSYB0GrrwVoCwlz5xdyoR86mBkWqB1Hxyb1B0lDiL9z7SWV
+X-Google-Smtp-Source: APXvYqwq1aitWQEim6lQXQr33Kk51C3EOokbRynQEU6MrgfMrNRrXpweFrRMsyfcmQvBV6/b6gCQupDYuZMxFC/ee0R0bXMv0cj+
 MIME-Version: 1.0
-References: <20190710080835.296696-1-arnd@arndb.de> <20190718190110.akn54iwb2mui72cd@salvia>
- <20190719063749.45io5pxcxrlmrqqn@salvia>
-In-Reply-To: <20190719063749.45io5pxcxrlmrqqn@salvia>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 19 Jul 2019 08:49:37 +0200
-Message-ID: <CAK8P3a0XzP3Oj9rZGBbcj8=na94QgUJiLNsNPxCBC_xK7O6AoQ@mail.gmail.com>
-Subject: Re: [PATCH] [net-next] netfilter: bridge: make NF_TABLES_BRIDGE tristate
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        "David S. Miller" <davem@davemloft.net>, wenxu <wenxu@ucloud.cn>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam@netfilter.org, bridge@lists.linux-foundation.org,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a5d:9e48:: with SMTP id i8mr46417366ioi.51.1563521285924;
+ Fri, 19 Jul 2019 00:28:05 -0700 (PDT)
+Date:   Fri, 19 Jul 2019 00:28:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d8b010058e03aaf8@google.com>
+Subject: BUG: unable to handle kernel paging request in corrupted (2)
+From:   syzbot <syzbot+08b7a2c58acdfa12c82d@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 8:37 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->
-> On Thu, Jul 18, 2019 at 09:01:10PM +0200, Pablo Neira Ayuso wrote:
-> > On Wed, Jul 10, 2019 at 10:08:20AM +0200, Arnd Bergmann wrote:
-> > > The new nft_meta_bridge code fails to link as built-in when NF_TABLES
-> > > is a loadable module.
-> > >
-> > > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_eval':
-> > > nft_meta_bridge.c:(.text+0x1e8): undefined reference to `nft_meta_get_eval'
-> > > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_init':
-> > > nft_meta_bridge.c:(.text+0x468): undefined reference to `nft_meta_get_init'
-> > > nft_meta_bridge.c:(.text+0x49c): undefined reference to `nft_parse_register'
-> > > nft_meta_bridge.c:(.text+0x4cc): undefined reference to `nft_validate_register_store'
-> > > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_module_exit':
-> > > nft_meta_bridge.c:(.exit.text+0x14): undefined reference to `nft_unregister_expr'
-> > > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_module_init':
-> > > nft_meta_bridge.c:(.init.text+0x14): undefined reference to `nft_register_expr'
-> > > net/bridge/netfilter/nft_meta_bridge.o:(.rodata+0x60): undefined reference to `nft_meta_get_dump'
-> > > net/bridge/netfilter/nft_meta_bridge.o:(.rodata+0x88): undefined reference to `nft_meta_set_eval'
-> > >
-> > > This can happen because the NF_TABLES_BRIDGE dependency itself is just a
-> > > 'bool'.  Make the symbol a 'tristate' instead so Kconfig can propagate the
-> > > dependencies correctly.
-> >
-> > Hm. Something breaks here. Investigating. Looks like bridge support is
-> > gone after this, nft fails to register the filter chain type:
-> >
-> > # nft add table bridge x
-> > # nft add chain bridge x y { type filter hook input priority 0\; }
-> > Error: Could not process rule: No such file or directory
->
-> Found it. It seems this patch is needed, on top of your patch.
+Hello,
 
-Right, makes sense.
+syzbot found the following crash on:
 
-> I can just squash this chunk into your original patch and push it out
-> if you're OK witht this.
+HEAD commit:    49d05fe2 ipv6: rt6_check should return NULL if 'from' is N..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=104b5f70600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87305c3ca9c25c70
+dashboard link: https://syzkaller.appspot.com/bug?extid=08b7a2c58acdfa12c82d
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143a78f4600000
 
-Yes, please do.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+08b7a2c58acdfa12c82d@syzkaller.appspotmail.com
 
-      Arnd
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+BUG: unable to handle page fault for address: 00000000ffffffff
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD 9ad32067 P4D 9ad32067 PUD 0
+Oops: 0010 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 9920 Comm: syz-executor.1 Not tainted 5.2.0+ #91
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+BUG: kernel NULL pointer dereference, address: 0000000000000002
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD 9ad32067 P4D 9ad32067 PUD 9ad33067 PMD 0
+Oops: 0010 [#2] PREEMPT SMP KASAN
+CPU: 0 PID: 9920 Comm: syz-executor.1 Not tainted 5.2.0+ #91
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:0x2
+Code: Bad RIP value.
+RSP: 0000:ffff888092932a20 EFLAGS: 00010086
+RAX: 000000000000002d RBX: ffff888092932a40 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815c1016 RDI: ffffed1012526536
+RBP: ffffffff81724d28 R08: 000000000000002d R09: ffffed1015d044fa
+R10: ffffed1015d044f9 R11: ffff8880ae8227cf R12: ffffffff81b3e334
+R13: 0000000000000010 R14: 0000000000000000 R15: 1ffff1101252654b
+FS:  000055555572a940(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd8 CR3: 000000009c4d1000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
