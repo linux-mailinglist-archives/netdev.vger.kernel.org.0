@@ -2,88 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0BD36EA0C
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 19:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F646EA1A
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 19:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729410AbfGSRWw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 19 Jul 2019 13:22:52 -0400
-Received: from mga18.intel.com ([134.134.136.126]:51090 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728435AbfGSRWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 13:22:52 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Jul 2019 10:22:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,283,1559545200"; 
-   d="scan'208";a="168612025"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by fmsmga008.fm.intel.com with ESMTP; 19 Jul 2019 10:22:50 -0700
-Received: from orsmsx114.amr.corp.intel.com (10.22.240.10) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 19 Jul 2019 10:22:49 -0700
-Received: from orsmsx104.amr.corp.intel.com ([169.254.4.232]) by
- ORSMSX114.amr.corp.intel.com ([169.254.8.237]) with mapi id 14.03.0439.000;
- Fri, 19 Jul 2019 10:22:49 -0700
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>
-CC:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH v2 05/10] ixgbe: modify driver for
- handling offsets
-Thread-Topic: [Intel-wired-lan] [PATCH v2 05/10] ixgbe: modify driver for
- handling offsets
-Thread-Index: AQHVO8jADe0dFIZmAkOLSwzcbZi3pqbSNXpA
-Date:   Fri, 19 Jul 2019 17:22:48 +0000
-Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D40C33D@ORSMSX104.amr.corp.intel.com>
-References: <20190620090958.2135-1-kevin.laatz@intel.com>
- <20190716030637.5634-1-kevin.laatz@intel.com>
- <20190716030637.5634-6-kevin.laatz@intel.com>
-In-Reply-To: <20190716030637.5634-6-kevin.laatz@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYWMzZjNjZjAtNGEzZS00YmM5LTkxOTgtZGZmZGQ4NWRiNDg0IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiVk9QOXZUTlRyc0JuUnNZVFwvZHVCT0FTaHU4YnpTRXh2SEd6eUp2TG1acXY1ZDdmRW8xTzM1UW9pYnR0Y1wvemd4In0=
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.0.400.15
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1731032AbfGSR21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 13:28:27 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46864 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728226AbfGSR21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 13:28:27 -0400
+Received: by mail-qk1-f193.google.com with SMTP id r4so23731396qkm.13;
+        Fri, 19 Jul 2019 10:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YQdxHwgD6BkG2btn7ZJ+raWLPXv95G8zip6/mSc1b0M=;
+        b=pxupLYU+JfkFsm9nJC7j2+lZVNhPpYCdUllENGuQAF747LGLA9rmjj73cH+fRRAxjC
+         p79SR3uHQ2LMEd/K0KbcutZrkgHnRiC4Tr/ns1t/kLNf40j44P6fT21dzJPW0hBM7KVk
+         G5L4oZQ0c3Zv42EmPQ1LzA0c7J+8ccNedAU5HaVXLiI06OXXAtgVLSlz/RSbUHv5Dvl7
+         T+I70p5ir4AovM5RGkDQLE1Gw+dH+ex/KjZgMCNVJoexkQD2bFeVVkp+RIAUARhsNV0P
+         O2fVQ7qOuq3KDPzpaCnSK32HrGx3MrRuWB9M7vr16UlpyZbLCCOUzYngLmvy31645fSe
+         MXbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YQdxHwgD6BkG2btn7ZJ+raWLPXv95G8zip6/mSc1b0M=;
+        b=SKcdAWmnq9RpeHjYpS7fxfualZHqK+mFEPmY96GJUVmG720MrNpXRWqm4hIYJ+X/+N
+         lqkgb3hwwpwnCW+ooH0P1iDXQH3cq1UHyzi4NgWVi2a580+0ZIURr3hyjy90KJ4R3xpY
+         ajJdvxEnrPrZQg9+XN9PElWtB1RnFCri9/qtsBiYMJIFvOGdXB1fHZ2Vg8MZZ/Qq0JgQ
+         +LC1js4IrVbhOyzMw/Ugt7DxqhyglR+AUXjXnqldMk5Rv6c7Or0V3JTZ5ymob/9hX/xU
+         FCu6M4bAKVK24+QChj6syq9gMMUPud5oRlzBALORapRWZw9mRLViGGSMpCHSlFtcLm2k
+         y0IQ==
+X-Gm-Message-State: APjAAAXTadVkTojW7qQFfsDSyPDDppjBJ6R1hPBLD4bLkJIioxnei+pR
+        q3MsYSc+xCYFfMtdLQq9uNqRJ3pxPOvaggRD/BI=
+X-Google-Smtp-Source: APXvYqxkh9i7nR3GIJjsIbfezBbI/vVEp6Xyl/7vOCvPEsks+4k9/SiUQpqGN2f2zmSLq5YhYnZ3fC1X8M51sQ3u2GI=
+X-Received: by 2002:a37:bf42:: with SMTP id p63mr36928588qkf.437.1563557306169;
+ Fri, 19 Jul 2019 10:28:26 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190719143407.20847-1-acme@kernel.org> <20190719143407.20847-3-acme@kernel.org>
+In-Reply-To: <20190719143407.20847-3-acme@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 19 Jul 2019 10:28:14 -0700
+Message-ID: <CAEf4BzbvMyS=Z4Gxmsou5MB1mPiXLM_XKKefOgeWMf=i7NQi5A@mail.gmail.com>
+Subject: Re: [PATCH 2/2] libbpf: Avoid designated initializers for unnamed
+ union members
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Clark Williams <williams@redhat.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Kevin Laatz
-> Sent: Monday, July 15, 2019 8:07 PM
-> To: netdev@vger.kernel.org; ast@kernel.org; daniel@iogearbox.net; Topel,
-> Bjorn <bjorn.topel@intel.com>; Karlsson, Magnus
-> <magnus.karlsson@intel.com>; jakub.kicinski@netronome.com;
-> jonathan.lemon@gmail.com
-> Cc: Richardson, Bruce <bruce.richardson@intel.com>; Loftus, Ciara
-> <ciara.loftus@intel.com>; intel-wired-lan@lists.osuosl.org;
-> bpf@vger.kernel.org; Laatz, Kevin <kevin.laatz@intel.com>
-> Subject: [Intel-wired-lan] [PATCH v2 05/10] ixgbe: modify driver for handling
-> offsets
-> 
-> With the addition of the unaligned chunks option, we need to make sure we
-> handle the offsets accordingly based on the mode we are currently running
-> in. This patch modifies the driver to appropriately mask the address for each
-> case.
-> 
-> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
+On Fri, Jul 19, 2019 at 7:34 AM Arnaldo Carvalho de Melo
+<acme@kernel.org> wrote:
+>
+> From: Arnaldo Carvalho de Melo <acme@redhat.com>
+>
+> As it fails to build in some systems with:
+>
+>   libbpf.c: In function 'perf_buffer__new':
+>   libbpf.c:4515: error: unknown field 'sample_period' specified in initializer
+>   libbpf.c:4516: error: unknown field 'wakeup_events' specified in initializer
+>
+> Doing as:
+>
+>     attr.sample_period = 1;
+>
+> I.e. not as a designated initializer makes it build everywhere.
+>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Cc: Adrian Hunter <adrian.hunter@intel.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jiri Olsa <jolsa@kernel.org>
+> Cc: Namhyung Kim <namhyung@kernel.org>
+> Fixes: fb84b8224655 ("libbpf: add perf buffer API")
+> Link: https://lkml.kernel.org/n/tip-hnlmch8qit1ieksfppmr32si@git.kernel.org
+> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 > ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 26 ++++++++++++++++----
->  1 file changed, 21 insertions(+), 5 deletions(-)
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Thanks, Arnaldo!
 
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
+>  tools/lib/bpf/libbpf.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index b1dec5b1de54..aaca132def74 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -4508,13 +4508,13 @@ struct perf_buffer *perf_buffer__new(int map_fd, size_t page_cnt,
+>                                      const struct perf_buffer_opts *opts)
+>  {
+>         struct perf_buffer_params p = {};
+> -       struct perf_event_attr attr = {
+> -               .config = PERF_COUNT_SW_BPF_OUTPUT,
+> -               .type = PERF_TYPE_SOFTWARE,
+> -               .sample_type = PERF_SAMPLE_RAW,
+> -               .sample_period = 1,
+> -               .wakeup_events = 1,
+> -       };
+> +       struct perf_event_attr attr = { 0, };
+> +
+> +       attr.config = PERF_COUNT_SW_BPF_OUTPUT,
+> +       attr.type = PERF_TYPE_SOFTWARE;
+> +       attr.sample_type = PERF_SAMPLE_RAW;
+> +       attr.sample_period = 1;
+> +       attr.wakeup_events = 1;
+>
+>         p.attr = &attr;
+>         p.sample_cb = opts ? opts->sample_cb : NULL;
+> --
+> 2.21.0
+>
