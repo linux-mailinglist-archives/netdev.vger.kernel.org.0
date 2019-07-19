@@ -2,114 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FBF6DA86
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 06:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D206DC97
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 06:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730143AbfGSECt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 00:02:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34300 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727344AbfGSECX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 00:02:23 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A33C221882;
-        Fri, 19 Jul 2019 04:02:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563508942;
-        bh=6qZTZz30NAHwEqFoGbZfRcIgZb51RzVxHwbCIXJpDnY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2d2FmylPKnp4owLBl1jVu+EGNTidX3EhT0IHdLzmDphh1skJQjuJWOhkDJML5DxWs
-         wJjHY+5OWyPgo7KuBhJWmgk0ApKCywNPnf9garHwlXukhHhtMbkHxVJHTXNAginBk7
-         VOEssIuFtrpk3yxqpnzFce/DL4zvM4L9EsV/vk8Q=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.2 167/171] cxgb4: reduce kernel stack usage in cudbg_collect_mem_region()
-Date:   Thu, 18 Jul 2019 23:56:38 -0400
-Message-Id: <20190719035643.14300-167-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
-References: <20190719035643.14300-1-sashal@kernel.org>
+        id S1728727AbfGSERO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 00:17:14 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40622 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388771AbfGSERL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 00:17:11 -0400
+Received: by mail-pg1-f195.google.com with SMTP id w10so13855938pgj.7
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 21:17:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ycpPHNxqb5ySmdrFI4gF1EW+XlKwz3+7x6Ww0ox7ffE=;
+        b=Tfvddlp1r4RVj3yKuiQ7DpfiZ+xy7aTJeMK3MQtlvbrzJUHiewspdyDj+ujTKfHGXb
+         j+EzMGdEh2dCFdvYMmh9R78jvhFETpytpBRiqIHjVmYyLN/cqZ8o4z1gI1rXHO3yPRNd
+         N/zglXtUAADMD4jPWuA31dSpWcBFv11wHWBvMwe8YeMnigixvHnkZRb70adkAOELP/EA
+         TnDCJkP1iQjGcFNA68fxn0sZfayY6asV+IofqZMh9asxPIp1GugPT5IxoaPsmx5j7WaB
+         TkTe950tRnflF54fheTNaZA6TxfpPO8dcs4nuLBBp69Aj337xCM+zHOnLG7S/wRUbhG7
+         LBDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ycpPHNxqb5ySmdrFI4gF1EW+XlKwz3+7x6Ww0ox7ffE=;
+        b=lJbxP5s/WAUIgitngG8B3ecOagD2CuvKwiM4Of+QninEZV2SCl3gCC3GfZqmgr4KBk
+         E1uFWgwWBB/NZApq+G6kI0ffM3WE28bPs1bPD4qMN1mKplSb3bHTKIdT0fpvnNx3w8Ws
+         9HFQR8BY8iD1buG7suOBxi7QM4sJBPf9MB9bgt2aHl7wlSWMO4ZPQyPjaTLYNO3Pz64y
+         VeC2igGLl46tzk1X1IGxlFQWuWqba6VAqgG1sFqEVmVyPPUTQebgoSLEiLcgoEDVV2vn
+         Oopm8M804xLXISFr2vbRmy+ix6nMOzVnwBmJTUhScJbdygpF5evS56u4ZMhl/J7GsCrg
+         HXgA==
+X-Gm-Message-State: APjAAAXbIVEU+/ab18PsKTrv3pHUQNvHPPKLU8RI0UhyJqPxVb0KbgOI
+        vBbcS7aZghMrDi7Sl63u8MoTE3RYQEVjOg==
+X-Google-Smtp-Source: APXvYqzFWYSikpC4HxhT5Y8+R3irP1EbKLywvKw74azedsBI6HnP2qND1CNy/SwUAD8/wuAdsMp7/A==
+X-Received: by 2002:a65:62c4:: with SMTP id m4mr50493954pgv.243.1563509830875;
+        Thu, 18 Jul 2019 21:17:10 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id s11sm383946pgc.78.2019.07.18.21.17.08
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 18 Jul 2019 21:17:10 -0700 (PDT)
+Date:   Fri, 19 Jul 2019 12:17:00 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Jianlin Shi <jishi@redhat.com>
+Subject: Re: [PATCH v2 net-next 03/11] net/ipv4: Plumb support for filtering
+ route dumps
+Message-ID: <20190719041700.GO18865@dhcp-12-139.nay.redhat.com>
+References: <20181016015651.22696-1-dsahern@kernel.org>
+ <20181016015651.22696-4-dsahern@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20181016015651.22696-4-dsahern@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi David,
 
-[ Upstream commit 752c2ea2d8e7c23b0f64e2e7d4337f3604d44c9f ]
+Before commit 18a8021a7be3 ("net/ipv4: Plumb support for filtering route
+dumps"), when we dump a non-exist table, ip cmd exits silently.
 
-The cudbg_collect_mem_region() and cudbg_read_fw_mem() both use several
-hundred kilobytes of kernel stack space. One gets inlined into the other,
-which causes the stack usage to be combined beyond the warning limit
-when building with clang:
+# ip -4 route list table 1
+# echo $?
+0
 
-drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:1057:12: error: stack frame size of 1244 bytes in function 'cudbg_collect_mem_region' [-Werror,-Wframe-larger-than=]
+After commit 18a8021a7be3 ("net/ipv4: Plumb support for filtering route
+dumps"). When we dump a non-exist table, as we returned -ENOENT, ip route
+shows:
 
-Restructuring cudbg_collect_mem_region() lets clang do the same
-optimization that gcc does and reuse the stack slots as it can
-see that the large variables are never used together.
+# ip -4 route show table 1
+Error: ipv4: FIB table does not exist.
+Dump terminated
+# echo $?
+2
 
-A better fix might be to avoid using cudbg_meminfo on the stack
-altogether, but that requires a larger rewrite.
+For me it looks make sense to return -ENOENT if we do not have the route
+table. But this changes the userspace behavior. Do you think if we need to
+keep backward compatible or just let it do as it is right now?
 
-Fixes: a1c69520f785 ("cxgb4: collect MC memory dump")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index a76529a7662d..c2e92786608b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-@@ -1054,14 +1054,12 @@ static void cudbg_t4_fwcache(struct cudbg_init *pdbg_init,
- 	}
- }
- 
--static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
--				    struct cudbg_buffer *dbg_buff,
--				    struct cudbg_error *cudbg_err,
--				    u8 mem_type)
-+static unsigned long cudbg_mem_region_size(struct cudbg_init *pdbg_init,
-+					   struct cudbg_error *cudbg_err,
-+					   u8 mem_type)
- {
- 	struct adapter *padap = pdbg_init->adap;
- 	struct cudbg_meminfo mem_info;
--	unsigned long size;
- 	u8 mc_idx;
- 	int rc;
- 
-@@ -1075,7 +1073,16 @@ static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
- 	if (rc)
- 		return rc;
- 
--	size = mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
-+	return mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
-+}
-+
-+static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
-+				    struct cudbg_buffer *dbg_buff,
-+				    struct cudbg_error *cudbg_err,
-+				    u8 mem_type)
-+{
-+	unsigned long size = cudbg_mem_region_size(pdbg_init, cudbg_err, mem_type);
-+
- 	return cudbg_read_fw_mem(pdbg_init, dbg_buff, mem_type, size,
- 				 cudbg_err);
- }
--- 
-2.20.1
-
+Thanks
+Hangbin
