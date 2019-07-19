@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0796E31F
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 11:07:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E4676E324
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 11:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726247AbfGSJHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 05:07:00 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:50020 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726029AbfGSJHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 05:07:00 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6J96vps051774
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 05:06:57 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tu85de8km-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 05:06:57 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Fri, 19 Jul 2019 10:06:51 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 19 Jul 2019 10:06:47 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6J96j5N57016560
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Jul 2019 09:06:45 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BD768AE051;
-        Fri, 19 Jul 2019 09:06:45 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7CDB2AE053;
-        Fri, 19 Jul 2019 09:06:45 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.98.35])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 19 Jul 2019 09:06:45 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     gor@linux.ibm.com, heiko.carstens@de.ibm.com, rdna@fb.com,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH bpf] selftests/bpf: fix sendmsg6_prog on s390
-Date:   Fri, 19 Jul 2019 11:06:11 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1727076AbfGSJHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 05:07:38 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41071 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfGSJHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 05:07:37 -0400
+Received: by mail-pf1-f194.google.com with SMTP id m30so13907827pff.8;
+        Fri, 19 Jul 2019 02:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XVW3vUyQIGlttxB7d4coQNzCIFhrIEtf8tciYiOHfMM=;
+        b=kSJour3PB25SjVK+zTOUmCSVJJMU+pBRgmBaNXOp4U2TLYeO899DuO4rmrR0V8c8Tx
+         8SRLDCDqcc/z3pdAT2ITifncdNMk1q131CqOUMdUFTE3oso5CqWpEv6sXOfK4HV/l8P0
+         SDASWajXB4cmXRFtwZbK7Ci0Hd84CRuP7dg/3Y5mRi8R0uzWmo68dOVpKytCmrzuaKwU
+         +DSgmOykXwmdm4MIuNlrxsY9wHAwzhE4oynOg+DKa7zSGn6mAOmfBr1Doa1J4PKZgWnn
+         I//Tsuj40cNKYCtqC6vk4YcGO9p+Rw9mBsgEu006hQNLRn3qIEER6q9pMUk4yS8/NvNO
+         lXZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XVW3vUyQIGlttxB7d4coQNzCIFhrIEtf8tciYiOHfMM=;
+        b=nJMesKNyTEuXHbddf2Qf3RGjcTKZtuMUBcvbumvrQnE02JtvJhYLNvDVn1gDLmNqJr
+         qvsmf+9c/BZ4e/gsWjJNnaNfE66apvSyGVy2RThQxWHxGLqFVtlJTPKJrI9qdy513iex
+         V/mmKaZXt/972yIxfJYAT0whMZ+HIfEhvNytzy2+rHwW9ED9PNZZQk5HFUVd15B9jBL+
+         YxuCiWrMfS+7g59RMf+GGpHAtTiqP4rvWVBz9F0QSumXWc4SE8io38dUtjWbCaQk5E6h
+         EzxYW5P1KVXRWsdMdJ5UjI5bkZ17azDPziVh+/kmaOIo5oqVtMm7b/CXWjPiNG7v4x38
+         JfyA==
+X-Gm-Message-State: APjAAAWTad4L8qV0S/fYOTbI8fuznv0fcJZbQXID4R1Sbrcenct4cJ0R
+        GEKRkk6WLA7lCCZr7JfTAWg=
+X-Google-Smtp-Source: APXvYqyjSDLx5lH9egeR88KsrwSkCirIGl9HHEdsM3Nz+aKE8lyMEY5RzKoWTbu1soMFSage/QWrEQ==
+X-Received: by 2002:a63:db45:: with SMTP id x5mr40825943pgi.293.1563527256835;
+        Fri, 19 Jul 2019 02:07:36 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id d2sm27223139pjs.21.2019.07.19.02.07.34
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 19 Jul 2019 02:07:36 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] ax88179_178a: Merge memcpy + le32_to_cpus to get_unaligned_le32
+Date:   Fri, 19 Jul 2019 17:07:15 +0800
+Message-Id: <20190719090714.19037-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071909-0016-0000-0000-000002944ACF
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071909-0017-0000-0000-000032F22AE9
-Message-Id: <20190719090611.91743-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-19_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907190106
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"sendmsg6: rewrite IP & port (C)" fails on s390, because the code in
-sendmsg_v6_prog() assumes that (ctx->user_ip6[0] & 0xFFFF) refers to
-leading IPv6 address digits, which is not the case on big-endian
-machines.
+Merge the combo use of memcpy and le32_to_cpus.
+Use get_unaligned_le32 instead.
+This simplifies the code.
 
-Since checking bitwise operations doesn't seem to be the point of the
-test, replace two short comparisons with a single int comparison.
-
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- tools/testing/selftests/bpf/progs/sendmsg6_prog.c | 3 +--
+ drivers/net/usb/ax88179_178a.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/sendmsg6_prog.c b/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
-index 5aeaa284fc47..a68062820410 100644
---- a/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
-+++ b/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
-@@ -41,8 +41,7 @@ int sendmsg_v6_prog(struct bpf_sock_addr *ctx)
- 	}
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index 0bc457ba8574..72d165114b67 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1366,8 +1366,7 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		return 0;
  
- 	/* Rewrite destination. */
--	if ((ctx->user_ip6[0] & 0xFFFF) == bpf_htons(0xFACE) &&
--	     ctx->user_ip6[0] >> 16 == bpf_htons(0xB00C)) {
-+	if (ctx->user_ip6[0] == bpf_htonl(0xFACEB00C)) {
- 		ctx->user_ip6[0] = bpf_htonl(DST_REWRITE_IP6_0);
- 		ctx->user_ip6[1] = bpf_htonl(DST_REWRITE_IP6_1);
- 		ctx->user_ip6[2] = bpf_htonl(DST_REWRITE_IP6_2);
+ 	skb_trim(skb, skb->len - 4);
+-	memcpy(&rx_hdr, skb_tail_pointer(skb), 4);
+-	le32_to_cpus(&rx_hdr);
++	rx_hdr = get_unaligned_le32(skb_tail_pointer(skb));
+ 
+ 	pkt_cnt = (u16)rx_hdr;
+ 	hdr_off = (u16)(rx_hdr >> 16);
 -- 
-2.21.0
+2.20.1
 
