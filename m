@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9209E6E49C
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 13:00:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9118F6E4A0
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 13:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbfGSLAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 07:00:36 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33962 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725853AbfGSLAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 07:00:35 -0400
-Received: by mail-wm1-f68.google.com with SMTP id w9so23469483wmd.1
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 04:00:33 -0700 (PDT)
+        id S1727649AbfGSLAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 07:00:42 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:50559 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727516AbfGSLAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 07:00:40 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v15so28402193wml.0
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 04:00:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=p99w0BBTMUDKLq7M+PHtpd6CWrdpcjy1bhE6Hexmt70=;
-        b=yGhgmnLLK7i/q6mVfSd31W6I2cqSjSyrXTEGJLOj6lvi+fRBRA0NiFIIP5FsFyaF8O
-         3u9YIyl58Cf1JFR5aNHD3FIxPRdSU5Wn/PtzkHPNTrF6gnpBJwqNyUJ3Z+MUMM1Uqok0
-         3IxJvBm5o9gJ6apRKGPBSH079Le2+pzThj4rZf25ZRX9BxE6ArasSLIOR0XlWMLPQ8bC
-         WUCc395IdumA7pGOpX+I2FInffTxUapc8dYKt9MF6MQjrZ+0RfGPDUzvrXU9IxQ6Jj5f
-         ELgj/vy6V58gxmf7PwYA2rdCl7ZEolS/g8mM0fTmIJjZhlwHcy5ObxILBCx5epNHefIt
-         P/6g==
+        bh=4Ge50GJLJB+ZKejv+wdmPqWVtRwoDTOFbE4Gy6yyR7E=;
+        b=m9la+q9evZgvlJu4ThVTrxOYG7TN1AzeMSXB2kNa7/ndbnBVrGBp56eQ+U2NcHxTfq
+         ncAemEpDKYV/kVFhLIfnXZHqEoegd8olrpAmmEi86vTlL2WvNViNrY8NGQEvHzgHhu+B
+         CHyc12M3wyEwd+QZAL5PAohA2MZf9T6EbyNl1owyXd1bAz/XFPtoYUb4fg41gbnlsu43
+         67mRcKNsC4P6Hb/IO8MBeHipQLvUWiskaamGkN1dtxC9J7sU95fwb2iHgIKNKjFdwoE4
+         c8tZ6eqf68pYKnDKkeaup9Scu/ggBP9ZxK8TFyUQFbHO5J1eWdztjzk2TQthZUXY4DBF
+         iVSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=p99w0BBTMUDKLq7M+PHtpd6CWrdpcjy1bhE6Hexmt70=;
-        b=sALs2cG1WVVQSNB0xhoqZGKCOKEoZf+XLl58+YGkgWbx9OnwtuJ9wTbh4TTl+zWJHi
-         +wpgZ/sxc4oFqu0U9fkhsPBpg+2sPhJVlIEDVLFYG1luOnSL27py9Zi7tHoISw1WaUOW
-         r01lJkmAzk3btsKfHs87QsmZcSgVe+mHyZOUJ9tCgyjWrdv2fJPByk2DKoE38QGcLZjf
-         pVJ+44PhKUHB+P30jrO9qjeoDIxo5VHF3usI//Ppjf7pd30Clu4/JLRGAtoham4HI0XD
-         zQqXbaW7et1jFmaw6C5kTF7bVA4FV/iS5+317ALdeHo7Iew3NW9OiE80n7r5bwfn2MJx
-         k9Wg==
-X-Gm-Message-State: APjAAAUZNPFfiyPb5bklPnJbEDGMZJX7WoW8hklljVqzljYdrtLWXOpM
-        dzjwUjJc/PONcNEIYgkB+P4RtIea
-X-Google-Smtp-Source: APXvYqyiIwNh8q9W+X09J0tViNi3MbJODK14FPhhJ7sQF67lSpwTbZLuh5L81bm8YRhlAgI7zj27EQ==
-X-Received: by 2002:a05:600c:1008:: with SMTP id c8mr48196518wmc.133.1563534032614;
-        Fri, 19 Jul 2019 04:00:32 -0700 (PDT)
+        bh=4Ge50GJLJB+ZKejv+wdmPqWVtRwoDTOFbE4Gy6yyR7E=;
+        b=nQxPejFZz1phahx7QQ8F31sjgXXPTZ1WS87QHErxQAiMG3yUtKFFwzlHF4+MdFrgT+
+         vRJe3eeN3A2dKQv+nTzwmI7zyNOJ6bN/QWeFJMChjh3kAdZML3win7CQir7kvRFHwUSG
+         MTv8YSUA8SGPXyAwafDvcePGtw6CNGtPv0iCkWErPk0NkS/EJT+KcgSWXI/iT6PH82JA
+         XdKG+PZpY1wmNI09zEvLzY2+zKBtSSQSZTIuyXvsr7rQO1gj4QivmSiziVTwGgUN7mMJ
+         Rbuiq9iJoBa/EOPJUr4rmfYcHmwgYGU3LBgjAj9oszAM/C9POy0RQ7nisJ8a0LN812L+
+         u9OA==
+X-Gm-Message-State: APjAAAXOWr9y1ESc3ofscTxkgf8io/QrjP9NcNQxPcdy/ITlEJ02y1th
+        DZopHjrI7ChumDJ4LixDhPBFPl9C
+X-Google-Smtp-Source: APXvYqwspe92XxfCIWZp3amOzBCjryx/pIqvU/d62qzwuzriMXHkVGleIAo/28nA6Uj6G91FCxpu2A==
+X-Received: by 2002:a05:600c:2117:: with SMTP id u23mr47795857wml.117.1563534033508;
+        Fri, 19 Jul 2019 04:00:33 -0700 (PDT)
 Received: from localhost (ip-62-24-94-150.net.upcbroadband.cz. [62.24.94.150])
-        by smtp.gmail.com with ESMTPSA id t1sm41873450wra.74.2019.07.19.04.00.32
+        by smtp.gmail.com with ESMTPSA id b203sm34338970wmd.41.2019.07.19.04.00.33
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 19 Jul 2019 04:00:32 -0700 (PDT)
+        Fri, 19 Jul 2019 04:00:33 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         sthemmin@microsoft.com, dsahern@gmail.com, dcbw@redhat.com,
         mkubecek@suse.cz, andrew@lunn.ch, parav@mellanox.com,
         saeedm@mellanox.com, mlxsw@mellanox.com
-Subject: [patch net-next rfc 2/7] net: introduce name_node struct to be used in hashlist
-Date:   Fri, 19 Jul 2019 13:00:24 +0200
-Message-Id: <20190719110029.29466-3-jiri@resnulli.us>
+Subject: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and delete alternative ifnames
+Date:   Fri, 19 Jul 2019 13:00:25 +0200
+Message-Id: <20190719110029.29466-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190719110029.29466-1-jiri@resnulli.us>
 References: <20190719110029.29466-1-jiri@resnulli.us>
@@ -65,217 +65,313 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
+Add two commands to add and delete alternative ifnames for net device.
+Each net device can have multiple alternative names.
+
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/linux/netdevice.h | 10 +++-
- net/core/dev.c            | 96 +++++++++++++++++++++++++++++++--------
- 2 files changed, 86 insertions(+), 20 deletions(-)
+ include/linux/netdevice.h      |   4 ++
+ include/uapi/linux/if.h        |   1 +
+ include/uapi/linux/if_link.h   |   1 +
+ include/uapi/linux/rtnetlink.h |   7 +++
+ net/core/dev.c                 |  58 ++++++++++++++++++-
+ net/core/rtnetlink.c           | 102 +++++++++++++++++++++++++++++++++
+ security/selinux/nlmsgtab.c    |   4 +-
+ 7 files changed, 175 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 88292953aa6f..74f99f127b0e 100644
+index 74f99f127b0e..6922fdb483ca 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -918,6 +918,12 @@ struct dev_ifalias {
- struct devlink;
- struct tlsdev_ops;
+@@ -920,10 +920,14 @@ struct tlsdev_ops;
  
-+struct netdev_name_node {
-+	struct hlist_node hlist;
-+	struct net_device *dev;
-+	char *name;
-+};
+ struct netdev_name_node {
+ 	struct hlist_node hlist;
++	struct list_head list;
+ 	struct net_device *dev;
+ 	char *name;
+ };
+ 
++int netdev_name_node_alt_create(struct net_device *dev, char *name);
++int netdev_name_node_alt_destroy(struct net_device *dev, char *name);
 +
  /*
   * This structure defines the management hooks for network devices.
   * The following hooks can be defined; unless noted otherwise, they are
-@@ -1551,7 +1557,7 @@ enum netdev_priv_flags {
-  *		(i.e. as seen by users in the "Space.c" file).  It is the name
-  *		of the interface.
-  *
-- *	@name_hlist: 	Device name hash chain, please keep it close to name[]
-+ *	@name_node:	Name hashlist node
-  *	@ifalias:	SNMP alias
-  *	@mem_end:	Shared memory end
-  *	@mem_start:	Shared memory start
-@@ -1761,7 +1767,7 @@ enum netdev_priv_flags {
+diff --git a/include/uapi/linux/if.h b/include/uapi/linux/if.h
+index 7fea0fd7d6f5..4bf33344aab1 100644
+--- a/include/uapi/linux/if.h
++++ b/include/uapi/linux/if.h
+@@ -33,6 +33,7 @@
+ #define	IFNAMSIZ	16
+ #endif /* __UAPI_DEF_IF_IFNAMSIZ */
+ #define	IFALIASZ	256
++#define	ALTIFNAMSIZ	128
+ #include <linux/hdlc/ioctl.h>
  
- struct net_device {
- 	char			name[IFNAMSIZ];
--	struct hlist_node	name_hlist;
-+	struct netdev_name_node	*name_node;
- 	struct dev_ifalias	__rcu *ifalias;
- 	/*
- 	 *	I/O specific fields
+ /* For glibc compatibility. An empty enum does not compile. */
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 4a8c02cafa9a..92268946e04a 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -167,6 +167,7 @@ enum {
+ 	IFLA_NEW_IFINDEX,
+ 	IFLA_MIN_MTU,
+ 	IFLA_MAX_MTU,
++	IFLA_ALT_IFNAME_MOD, /* Alternative ifname to add/delete */
+ 	__IFLA_MAX
+ };
+ 
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index ce2a623abb75..b36cfd83eb76 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -164,6 +164,13 @@ enum {
+ 	RTM_GETNEXTHOP,
+ #define RTM_GETNEXTHOP	RTM_GETNEXTHOP
+ 
++	RTM_NEWALTIFNAME = 108,
++#define RTM_NEWALTIFNAME	RTM_NEWALTIFNAME
++	RTM_DELALTIFNAME,
++#define RTM_DELALTIFNAME	RTM_DELALTIFNAME
++	RTM_GETALTIFNAME,
++#define RTM_GETALTIFNAME	RTM_GETALTIFNAME
++
+ 	__RTM_MAX,
+ #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
+ };
 diff --git a/net/core/dev.c b/net/core/dev.c
-index fc676b2610e3..ad0d42fbdeee 100644
+index ad0d42fbdeee..2a3be2b279d3 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -228,6 +228,66 @@ static inline void rps_unlock(struct softnet_data *sd)
- #endif
- }
- 
-+static struct netdev_name_node *netdev_name_node_alloc(struct net_device *dev,
-+						       char *name)
-+{
+@@ -244,7 +244,13 @@ static struct netdev_name_node *netdev_name_node_alloc(struct net_device *dev,
+ static struct netdev_name_node *
+ netdev_name_node_head_alloc(struct net_device *dev)
+ {
+-	return netdev_name_node_alloc(dev, dev->name);
 +	struct netdev_name_node *name_node;
 +
-+	name_node = kzalloc(sizeof(*name_node), GFP_KERNEL);
++	name_node = netdev_name_node_alloc(dev, dev->name);
 +	if (!name_node)
 +		return NULL;
-+	name_node->dev = dev;
-+	name_node->name = name;
++	INIT_LIST_HEAD(&name_node->list);
 +	return name_node;
-+}
-+
-+static struct netdev_name_node *
-+netdev_name_node_head_alloc(struct net_device *dev)
+ }
+ 
+ static void netdev_name_node_free(struct netdev_name_node *name_node)
+@@ -288,6 +294,55 @@ static struct netdev_name_node *netdev_name_node_lookup_rcu(struct net *net,
+ 	return NULL;
+ }
+ 
++int netdev_name_node_alt_create(struct net_device *dev, char *name)
 +{
-+	return netdev_name_node_alloc(dev, dev->name);
-+}
-+
-+static void netdev_name_node_free(struct netdev_name_node *name_node)
-+{
-+	kfree(name_node);
-+}
-+
-+static void netdev_name_node_add(struct net *net,
-+				 struct netdev_name_node *name_node)
-+{
-+	hlist_add_head_rcu(&name_node->hlist,
-+			   dev_name_hash(net, name_node->name));
-+}
-+
-+static void netdev_name_node_del(struct netdev_name_node *name_node)
-+{
-+	hlist_del_rcu(&name_node->hlist);
-+}
-+
-+static struct netdev_name_node *netdev_name_node_lookup(struct net *net,
-+							const char *name)
-+{
-+	struct hlist_head *head = dev_name_hash(net, name);
 +	struct netdev_name_node *name_node;
++	struct net *net = dev_net(dev);
 +
-+	hlist_for_each_entry(name_node, head, hlist)
-+		if (!strcmp(name_node->name, name))
-+			return name_node;
-+	return NULL;
++	name_node = netdev_name_node_lookup(net, name);
++	if (name_node)
++		return -EEXIST;
++	name_node = netdev_name_node_alloc(dev, name);
++	if (!name_node)
++		return -ENOMEM;
++	netdev_name_node_add(net, name_node);
++	/* The node that holds dev->name acts as a head of per-device list. */
++	list_add_tail(&name_node->list, &dev->name_node->list);
++
++	return 0;
++}
++EXPORT_SYMBOL(netdev_name_node_alt_create);
++
++static void __netdev_name_node_alt_destroy(struct netdev_name_node *name_node)
++{
++	list_del(&name_node->list);
++	netdev_name_node_del(name_node);
++	kfree(name_node->name);
++	netdev_name_node_free(name_node);
 +}
 +
-+static struct netdev_name_node *netdev_name_node_lookup_rcu(struct net *net,
-+							    const char *name)
++int netdev_name_node_alt_destroy(struct net_device *dev, char *name)
 +{
-+	struct hlist_head *head = dev_name_hash(net, name);
 +	struct netdev_name_node *name_node;
++	struct net *net = dev_net(dev);
 +
-+	hlist_for_each_entry_rcu(name_node, head, hlist)
-+		if (!strcmp(name_node->name, name))
-+			return name_node;
-+	return NULL;
++	name_node = netdev_name_node_lookup(net, name);
++	if (!name_node)
++		return -ENOENT;
++	__netdev_name_node_alt_destroy(name_node);
++
++	return 0;
++}
++EXPORT_SYMBOL(netdev_name_node_alt_destroy);
++
++static void netdev_name_node_alt_flush(struct net_device *dev)
++{
++	struct netdev_name_node *name_node, *tmp;
++
++	list_for_each_entry_safe(name_node, tmp, &dev->name_node->list, list)
++		__netdev_name_node_alt_destroy(name_node);
 +}
 +
  /* Device list insertion */
  static void list_netdevice(struct net_device *dev)
  {
-@@ -237,7 +297,7 @@ static void list_netdevice(struct net_device *dev)
- 
- 	write_lock_bh(&dev_base_lock);
- 	list_add_tail_rcu(&dev->dev_list, &net->dev_base_head);
--	hlist_add_head_rcu(&dev->name_hlist, dev_name_hash(net, dev->name));
-+	netdev_name_node_add(net, dev->name_node);
- 	hlist_add_head_rcu(&dev->index_hlist,
- 			   dev_index_hash(net, dev->ifindex));
- 	write_unlock_bh(&dev_base_lock);
-@@ -255,7 +315,7 @@ static void unlist_netdevice(struct net_device *dev)
- 	/* Unlink dev from the device chain */
- 	write_lock_bh(&dev_base_lock);
- 	list_del_rcu(&dev->dev_list);
--	hlist_del_rcu(&dev->name_hlist);
-+	netdev_name_node_del(dev->name_node);
- 	hlist_del_rcu(&dev->index_hlist);
- 	write_unlock_bh(&dev_base_lock);
- 
-@@ -733,14 +793,10 @@ EXPORT_SYMBOL_GPL(dev_fill_metadata_dst);
- 
- struct net_device *__dev_get_by_name(struct net *net, const char *name)
- {
--	struct net_device *dev;
--	struct hlist_head *head = dev_name_hash(net, name);
-+	struct netdev_name_node *node_name;
- 
--	hlist_for_each_entry(dev, head, name_hlist)
--		if (!strncmp(dev->name, name, IFNAMSIZ))
--			return dev;
--
--	return NULL;
-+	node_name = netdev_name_node_lookup(net, name);
-+	return node_name ? node_name->dev : NULL;
- }
- EXPORT_SYMBOL(__dev_get_by_name);
- 
-@@ -758,14 +814,10 @@ EXPORT_SYMBOL(__dev_get_by_name);
- 
- struct net_device *dev_get_by_name_rcu(struct net *net, const char *name)
- {
--	struct net_device *dev;
--	struct hlist_head *head = dev_name_hash(net, name);
--
--	hlist_for_each_entry_rcu(dev, head, name_hlist)
--		if (!strncmp(dev->name, name, IFNAMSIZ))
--			return dev;
-+	struct netdev_name_node *node_name;
- 
--	return NULL;
-+	node_name = netdev_name_node_lookup_rcu(net, name);
-+	return node_name ? node_name->dev : NULL;
- }
- EXPORT_SYMBOL(dev_get_by_name_rcu);
- 
-@@ -1232,13 +1284,13 @@ int dev_change_name(struct net_device *dev, const char *newname)
- 	netdev_adjacent_rename_links(dev, oldname);
- 
- 	write_lock_bh(&dev_base_lock);
--	hlist_del_rcu(&dev->name_hlist);
-+	netdev_name_node_del(dev->name_node);
- 	write_unlock_bh(&dev_base_lock);
- 
- 	synchronize_rcu();
- 
- 	write_lock_bh(&dev_base_lock);
--	hlist_add_head_rcu(&dev->name_hlist, dev_name_hash(net, dev->name));
-+	netdev_name_node_add(net, dev->name_node);
- 	write_unlock_bh(&dev_base_lock);
- 
- 	ret = call_netdevice_notifiers(NETDEV_CHANGENAME, dev);
-@@ -8206,6 +8258,8 @@ static void rollback_registered_many(struct list_head *head)
+@@ -8258,6 +8313,7 @@ static void rollback_registered_many(struct list_head *head)
  		dev_uc_flush(dev);
  		dev_mc_flush(dev);
  
-+		netdev_name_node_free(dev->name_node);
-+
++		netdev_name_node_alt_flush(dev);
+ 		netdev_name_node_free(dev->name_node);
+ 
  		if (dev->netdev_ops->ndo_uninit)
- 			dev->netdev_ops->ndo_uninit(dev);
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 1ee6460f8275..7a2010b16e10 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1750,6 +1750,8 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+ 	[IFLA_CARRIER_DOWN_COUNT] = { .type = NLA_U32 },
+ 	[IFLA_MIN_MTU]		= { .type = NLA_U32 },
+ 	[IFLA_MAX_MTU]		= { .type = NLA_U32 },
++	[IFLA_ALT_IFNAME_MOD]	= { .type = NLA_STRING,
++				    .len = ALTIFNAMSIZ - 1 },
+ };
  
-@@ -8648,6 +8702,10 @@ int register_netdevice(struct net_device *dev)
- 	if (ret < 0)
- 		goto out;
+ static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+@@ -3373,6 +3375,103 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	return err;
+ }
  
-+	dev->name_node = netdev_name_node_head_alloc(dev);
-+	if (!dev->name_node)
-+		goto out;
++static int rtnl_newaltifname(struct sk_buff *skb, struct nlmsghdr *nlh,
++			     struct netlink_ext_ack *extack)
++{
++	struct net *net = sock_net(skb->sk);
++	struct nlattr *tb[IFLA_MAX + 1];
++	struct net_device *dev;
++	struct ifinfomsg *ifm;
++	char *new_alt_ifname;
++	int err;
 +
- 	/* Init, if this function is available */
- 	if (dev->netdev_ops->ndo_init) {
- 		ret = dev->netdev_ops->ndo_init(dev);
-@@ -8767,6 +8825,8 @@ int register_netdevice(struct net_device *dev)
- 	return ret;
++	err = nlmsg_parse(nlh, sizeof(*ifm), tb, IFLA_MAX, ifla_policy, extack);
++	if (err)
++		return err;
++
++	err = rtnl_ensure_unique_netns(tb, extack, true);
++	if (err)
++		return err;
++
++	ifm = nlmsg_data(nlh);
++	if (ifm->ifi_index > 0) {
++		dev = __dev_get_by_index(net, ifm->ifi_index);
++	} else if (tb[IFLA_IFNAME]) {
++		char ifname[IFNAMSIZ];
++
++		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
++		dev = __dev_get_by_name(net, ifname);
++	} else {
++		return -EINVAL;
++	}
++
++	if (!dev)
++		return -ENODEV;
++
++	if (!tb[IFLA_ALT_IFNAME_MOD])
++		return -EINVAL;
++
++	new_alt_ifname = nla_strdup(tb[IFLA_ALT_IFNAME_MOD], GFP_KERNEL);
++	if (!new_alt_ifname)
++		return -ENOMEM;
++
++	err = netdev_name_node_alt_create(dev, new_alt_ifname);
++	if (err)
++		goto out_free_new_alt_ifname;
++
++	return 0;
++
++out_free_new_alt_ifname:
++	kfree(new_alt_ifname);
++	return err;
++}
++
++static int rtnl_delaltifname(struct sk_buff *skb, struct nlmsghdr *nlh,
++			     struct netlink_ext_ack *extack)
++{
++	struct net *net = sock_net(skb->sk);
++	struct nlattr *tb[IFLA_MAX + 1];
++	struct net_device *dev;
++	struct ifinfomsg *ifm;
++	char *del_alt_ifname;
++	int err;
++
++	err = nlmsg_parse(nlh, sizeof(*ifm), tb, IFLA_MAX, ifla_policy, extack);
++	if (err)
++		return err;
++
++	err = rtnl_ensure_unique_netns(tb, extack, true);
++	if (err)
++		return err;
++
++	ifm = nlmsg_data(nlh);
++	if (ifm->ifi_index > 0) {
++		dev = __dev_get_by_index(net, ifm->ifi_index);
++	} else if (tb[IFLA_IFNAME]) {
++		char ifname[IFNAMSIZ];
++
++		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
++		dev = __dev_get_by_name(net, ifname);
++	} else {
++		return -EINVAL;
++	}
++
++	if (!dev)
++		return -ENODEV;
++
++	if (!tb[IFLA_ALT_IFNAME_MOD])
++		return -EINVAL;
++
++	del_alt_ifname = nla_strdup(tb[IFLA_ALT_IFNAME_MOD], GFP_KERNEL);
++	if (!del_alt_ifname)
++		return -ENOMEM;
++
++	err = netdev_name_node_alt_destroy(dev, del_alt_ifname);
++	kfree(del_alt_ifname);
++
++	return err;
++}
++
+ static u16 rtnl_calcit(struct sk_buff *skb, struct nlmsghdr *nlh)
+ {
+ 	struct net *net = sock_net(skb->sk);
+@@ -5331,6 +5430,9 @@ void __init rtnetlink_init(void)
+ 	rtnl_register(PF_UNSPEC, RTM_GETROUTE, NULL, rtnl_dump_all, 0);
+ 	rtnl_register(PF_UNSPEC, RTM_GETNETCONF, NULL, rtnl_dump_all, 0);
  
- err_uninit:
-+	if (dev->name_node)
-+		netdev_name_node_free(dev->name_node);
- 	if (dev->netdev_ops->ndo_uninit)
- 		dev->netdev_ops->ndo_uninit(dev);
- 	if (dev->priv_destructor)
++	rtnl_register(PF_UNSPEC, RTM_NEWALTIFNAME, rtnl_newaltifname, NULL, 0);
++	rtnl_register(PF_UNSPEC, RTM_DELALTIFNAME, rtnl_delaltifname, NULL, 0);
++
+ 	rtnl_register(PF_BRIDGE, RTM_NEWNEIGH, rtnl_fdb_add, NULL, 0);
+ 	rtnl_register(PF_BRIDGE, RTM_DELNEIGH, rtnl_fdb_del, NULL, 0);
+ 	rtnl_register(PF_BRIDGE, RTM_GETNEIGH, rtnl_fdb_get, rtnl_fdb_dump, 0);
+diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
+index 58345ba0528e..a712b54c666c 100644
+--- a/security/selinux/nlmsgtab.c
++++ b/security/selinux/nlmsgtab.c
+@@ -83,6 +83,8 @@ static const struct nlmsg_perm nlmsg_route_perms[] =
+ 	{ RTM_NEWNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_DELNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_GETNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
++	{ RTM_NEWALTIFNAME,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
++	{ RTM_DELALTIFNAME,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ };
+ 
+ static const struct nlmsg_perm nlmsg_tcpdiag_perms[] =
+@@ -166,7 +168,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
+ 		 * structures at the top of this file with the new mappings
+ 		 * before updating the BUILD_BUG_ON() macro!
+ 		 */
+-		BUILD_BUG_ON(RTM_MAX != (RTM_NEWNEXTHOP + 3));
++		BUILD_BUG_ON(RTM_MAX != (RTM_NEWALTIFNAME + 3));
+ 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_route_perms,
+ 				 sizeof(nlmsg_route_perms));
+ 		break;
 -- 
 2.21.0
 
