@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB026DD4E
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 06:22:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17BE46DF55
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 06:35:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388191AbfGSEK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 00:10:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45732 "EHLO mail.kernel.org"
+        id S1729563AbfGSEBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 00:01:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33338 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388207AbfGSEK5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 00:10:57 -0400
+        id S1729516AbfGSEBg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 00:01:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0DF6B218BB;
-        Fri, 19 Jul 2019 04:10:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5E81F21851;
+        Fri, 19 Jul 2019 04:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563509456;
-        bh=ZM0eoelH2d1U7AX18dPkOxc2HO7hEc5HDjZjJX0il2k=;
+        s=default; t=1563508895;
+        bh=ts1M3lz2EXopxqOzc++QgTO3csnWak9R06rPforK5Rk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jKsc48odmSOuy5LNKfrLrSld6wU5EbXZJZ+pqgzpjmBQ2iYqdGeWpOF182n0ESBYX
-         IJ8qFSpUX33/JNyrO78ire6GiWS5H8LerE+NAw89P2ZBE4HiXacGBkicVWRJ5j4Sk2
-         LCk+sHmRZJM+r7R/yyF+RztTYHNNEpJWTNfL9llk=
+        b=MO3MjM0uvs4p50UQoAWiZyjvxQYoIsJY68tIpihwQX48hzkLCjpFDwBYt+ctcrE9a
+         qEys+/M6QPxTv2cWE/m6kbsYu6ExRw2dz8X5tmMtJr6HR060INFz5moAxNl5+lRhsE
+         997Ovq9J8eO8JGdBS3Tj56B3fXRrmW/5QsNlhd/4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Gerd Rausch <gerd.rausch@oracle.com>,
+        Zhu Yanjun <yanjun.zhu@oracle.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.19 098/101] cxgb4: reduce kernel stack usage in cudbg_collect_mem_region()
-Date:   Fri, 19 Jul 2019 00:07:29 -0400
-Message-Id: <20190719040732.17285-98-sashal@kernel.org>
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 143/171] rds: Accept peer connection reject messages due to incompatible version
+Date:   Thu, 18 Jul 2019 23:56:14 -0400
+Message-Id: <20190719035643.14300-143-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190719040732.17285-1-sashal@kernel.org>
-References: <20190719040732.17285-1-sashal@kernel.org>
+In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
+References: <20190719035643.14300-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,72 +45,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Gerd Rausch <gerd.rausch@oracle.com>
 
-[ Upstream commit 752c2ea2d8e7c23b0f64e2e7d4337f3604d44c9f ]
+[ Upstream commit 8c6166cfc9cd48e93d9176561e50b63cef4330d5 ]
 
-The cudbg_collect_mem_region() and cudbg_read_fw_mem() both use several
-hundred kilobytes of kernel stack space. One gets inlined into the other,
-which causes the stack usage to be combined beyond the warning limit
-when building with clang:
+Prior to
+commit d021fabf525ff ("rds: rdma: add consumer reject")
 
-drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:1057:12: error: stack frame size of 1244 bytes in function 'cudbg_collect_mem_region' [-Werror,-Wframe-larger-than=]
+function "rds_rdma_cm_event_handler_cmn" would always honor a rejected
+connection attempt by issuing a "rds_conn_drop".
 
-Restructuring cudbg_collect_mem_region() lets clang do the same
-optimization that gcc does and reuse the stack slots as it can
-see that the large variables are never used together.
+The commit mentioned above added a "break", eliminating
+the "fallthrough" case and made the "rds_conn_drop" rather conditional:
 
-A better fix might be to avoid using cudbg_meminfo on the stack
-altogether, but that requires a larger rewrite.
+Now it only happens if a "consumer defined" reject (i.e. "rdma_reject")
+carries an integer-value of "1" inside "private_data":
 
-Fixes: a1c69520f785 ("cxgb4: collect MC memory dump")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  if (!conn)
+    break;
+    err = (int *)rdma_consumer_reject_data(cm_id, event, &len);
+    if (!err || (err && ((*err) == RDS_RDMA_REJ_INCOMPAT))) {
+      pr_warn("RDS/RDMA: conn <%pI6c, %pI6c> rejected, dropping connection\n",
+              &conn->c_laddr, &conn->c_faddr);
+              conn->c_proposed_version = RDS_PROTOCOL_COMPAT_VERSION;
+              rds_conn_drop(conn);
+    }
+    rdsdebug("Connection rejected: %s\n",
+             rdma_reject_msg(cm_id, event->status));
+    break;
+    /* FALLTHROUGH */
+A number of issues are worth mentioning here:
+   #1) Previous versions of the RDS code simply rejected a connection
+       by calling "rdma_reject(cm_id, NULL, 0);"
+       So the value of the payload in "private_data" will not be "1",
+       but "0".
+
+   #2) Now the code has become dependent on host byte order and sizing.
+       If one peer is big-endian, the other is little-endian,
+       or there's a difference in sizeof(int) (e.g. ILP64 vs LP64),
+       the *err check does not work as intended.
+
+   #3) There is no check for "len" to see if the data behind *err is even valid.
+       Luckily, it appears that the "rdma_reject(cm_id, NULL, 0)" will always
+       carry 148 bytes of zeroized payload.
+       But that should probably not be relied upon here.
+
+   #4) With the added "break;",
+       we might as well drop the misleading "/* FALLTHROUGH */" comment.
+
+This commit does _not_ address issue #2, as the sender would have to
+agree on a byte order as well.
+
+Here is the sequence of messages in this observed error-scenario:
+   Host-A is pre-QoS changes (excluding the commit mentioned above)
+   Host-B is post-QoS changes (including the commit mentioned above)
+
+   #1 Host-B
+      issues a connection request via function "rds_conn_path_transition"
+      connection state transitions to "RDS_CONN_CONNECTING"
+
+   #2 Host-A
+      rejects the incompatible connection request (from #1)
+      It does so by calling "rdma_reject(cm_id, NULL, 0);"
+
+   #3 Host-B
+      receives an "RDMA_CM_EVENT_REJECTED" event (from #2)
+      But since the code is changed in the way described above,
+      it won't drop the connection here, simply because "*err == 0".
+
+   #4 Host-A
+      issues a connection request
+
+   #5 Host-B
+      receives an "RDMA_CM_EVENT_CONNECT_REQUEST" event
+      and ends up calling "rds_ib_cm_handle_connect".
+      But since the state is already in "RDS_CONN_CONNECTING"
+      (as of #1) it will end up issuing a "rdma_reject" without
+      dropping the connection:
+         if (rds_conn_state(conn) == RDS_CONN_CONNECTING) {
+             /* Wait and see - our connect may still be succeeding */
+             rds_ib_stats_inc(s_ib_connect_raced);
+         }
+         goto out;
+
+   #6 Host-A
+      receives an "RDMA_CM_EVENT_REJECTED" event (from #5),
+      drops the connection and tries again (goto #4) until it gives up.
+
+Tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ net/rds/rdma_transport.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index d97e0d7e541a..b766362031c3 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-@@ -1065,14 +1065,12 @@ static void cudbg_t4_fwcache(struct cudbg_init *pdbg_init,
- 	}
- }
- 
--static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
--				    struct cudbg_buffer *dbg_buff,
--				    struct cudbg_error *cudbg_err,
--				    u8 mem_type)
-+static unsigned long cudbg_mem_region_size(struct cudbg_init *pdbg_init,
-+					   struct cudbg_error *cudbg_err,
-+					   u8 mem_type)
- {
- 	struct adapter *padap = pdbg_init->adap;
- 	struct cudbg_meminfo mem_info;
--	unsigned long size;
- 	u8 mc_idx;
- 	int rc;
- 
-@@ -1086,7 +1084,16 @@ static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
- 	if (rc)
- 		return rc;
- 
--	size = mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
-+	return mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
-+}
-+
-+static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
-+				    struct cudbg_buffer *dbg_buff,
-+				    struct cudbg_error *cudbg_err,
-+				    u8 mem_type)
-+{
-+	unsigned long size = cudbg_mem_region_size(pdbg_init, cudbg_err, mem_type);
-+
- 	return cudbg_read_fw_mem(pdbg_init, dbg_buff, mem_type, size,
- 				 cudbg_err);
- }
+diff --git a/net/rds/rdma_transport.c b/net/rds/rdma_transport.c
+index 46bce8389066..9db455d02255 100644
+--- a/net/rds/rdma_transport.c
++++ b/net/rds/rdma_transport.c
+@@ -112,7 +112,9 @@ static int rds_rdma_cm_event_handler_cmn(struct rdma_cm_id *cm_id,
+ 		if (!conn)
+ 			break;
+ 		err = (int *)rdma_consumer_reject_data(cm_id, event, &len);
+-		if (!err || (err && ((*err) == RDS_RDMA_REJ_INCOMPAT))) {
++		if (!err ||
++		    (err && len >= sizeof(*err) &&
++		     ((*err) <= RDS_RDMA_REJ_INCOMPAT))) {
+ 			pr_warn("RDS/RDMA: conn <%pI6c, %pI6c> rejected, dropping connection\n",
+ 				&conn->c_laddr, &conn->c_faddr);
+ 			conn->c_proposed_version = RDS_PROTOCOL_COMPAT_VERSION;
+@@ -122,7 +124,6 @@ static int rds_rdma_cm_event_handler_cmn(struct rdma_cm_id *cm_id,
+ 		rdsdebug("Connection rejected: %s\n",
+ 			 rdma_reject_msg(cm_id, event->status));
+ 		break;
+-		/* FALLTHROUGH */
+ 	case RDMA_CM_EVENT_ADDR_ERROR:
+ 	case RDMA_CM_EVENT_ROUTE_ERROR:
+ 	case RDMA_CM_EVENT_CONNECT_ERROR:
 -- 
 2.20.1
 
