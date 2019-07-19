@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 863736DA62
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 06:01:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FBF6DA86
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 06:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727681AbfGSEBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 00:01:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33488 "EHLO mail.kernel.org"
+        id S1730143AbfGSECt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 00:02:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727273AbfGSEBp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jul 2019 00:01:45 -0400
+        id S1727344AbfGSECX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 00:02:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 291BB21851;
-        Fri, 19 Jul 2019 04:01:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A33C221882;
+        Fri, 19 Jul 2019 04:02:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563508905;
-        bh=V4huZNzy8HgUqUG9Hs18Y4DPLc1zQdIPvTrO6il0Jp0=;
+        s=default; t=1563508942;
+        bh=6qZTZz30NAHwEqFoGbZfRcIgZb51RzVxHwbCIXJpDnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCVa+NvSuDYvSIZZItDuyhIp90cmgKhxrHouR9TwJvrujabTZ2BqW0ICBIaYl7iZ+
-         wtVuAH61AdhNJVnOHqf/FAUVSiImqrIRyGF1LyvchP/ipBWzGXqP1g+Dl6gl6gV2l2
-         zI8XRnwOMWOuOClduApluTEQY6ilRon3N+Ps+ndA=
+        b=2d2FmylPKnp4owLBl1jVu+EGNTidX3EhT0IHdLzmDphh1skJQjuJWOhkDJML5DxWs
+         wJjHY+5OWyPgo7KuBhJWmgk0ApKCywNPnf9garHwlXukhHhtMbkHxVJHTXNAginBk7
+         VOEssIuFtrpk3yxqpnzFce/DL4zvM4L9EsV/vk8Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Aya Levin <ayal@mellanox.com>, Feras Daoud <ferasda@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 150/171] net/mlx5e: IPoIB, Add error path in mlx5_rdma_setup_rn
-Date:   Thu, 18 Jul 2019 23:56:21 -0400
-Message-Id: <20190719035643.14300-150-sashal@kernel.org>
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.2 167/171] cxgb4: reduce kernel stack usage in cudbg_collect_mem_region()
+Date:   Thu, 18 Jul 2019 23:56:38 -0400
+Message-Id: <20190719035643.14300-167-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
 References: <20190719035643.14300-1-sashal@kernel.org>
@@ -44,48 +44,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@mellanox.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit ef1ce7d7b67b46661091c7ccc0396186b7a247ef ]
+[ Upstream commit 752c2ea2d8e7c23b0f64e2e7d4337f3604d44c9f ]
 
-Check return value from mlx5e_attach_netdev, add error path on failure.
+The cudbg_collect_mem_region() and cudbg_read_fw_mem() both use several
+hundred kilobytes of kernel stack space. One gets inlined into the other,
+which causes the stack usage to be combined beyond the warning limit
+when building with clang:
 
-Fixes: 48935bbb7ae8 ("net/mlx5e: IPoIB, Add netdevice profile skeleton")
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Reviewed-by: Feras Daoud <ferasda@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:1057:12: error: stack frame size of 1244 bytes in function 'cudbg_collect_mem_region' [-Werror,-Wframe-larger-than=]
+
+Restructuring cudbg_collect_mem_region() lets clang do the same
+optimization that gcc does and reuse the stack slots as it can
+see that the large variables are never used together.
+
+A better fix might be to avoid using cudbg_meminfo on the stack
+altogether, but that requires a larger rewrite.
+
+Fixes: a1c69520f785 ("cxgb4: collect MC memory dump")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-index 9ca492b430d8..603d294757b4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-@@ -698,7 +698,9 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev, u8 port_num,
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+index a76529a7662d..c2e92786608b 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+@@ -1054,14 +1054,12 @@ static void cudbg_t4_fwcache(struct cudbg_init *pdbg_init,
+ 	}
+ }
  
- 	prof->init(mdev, netdev, prof, ipriv);
+-static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
+-				    struct cudbg_buffer *dbg_buff,
+-				    struct cudbg_error *cudbg_err,
+-				    u8 mem_type)
++static unsigned long cudbg_mem_region_size(struct cudbg_init *pdbg_init,
++					   struct cudbg_error *cudbg_err,
++					   u8 mem_type)
+ {
+ 	struct adapter *padap = pdbg_init->adap;
+ 	struct cudbg_meminfo mem_info;
+-	unsigned long size;
+ 	u8 mc_idx;
+ 	int rc;
  
--	mlx5e_attach_netdev(epriv);
-+	err = mlx5e_attach_netdev(epriv);
-+	if (err)
-+		goto detach;
- 	netif_carrier_off(netdev);
+@@ -1075,7 +1073,16 @@ static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
+ 	if (rc)
+ 		return rc;
  
- 	/* set rdma_netdev func pointers */
-@@ -714,6 +716,11 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev, u8 port_num,
- 
- 	return 0;
- 
-+detach:
-+	prof->cleanup(epriv);
-+	if (ipriv->sub_interface)
-+		return err;
-+	mlx5e_destroy_mdev_resources(mdev);
- destroy_ht:
- 	mlx5i_pkey_qpn_ht_cleanup(netdev);
- 	return err;
+-	size = mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
++	return mem_info.avail[mc_idx].limit - mem_info.avail[mc_idx].base;
++}
++
++static int cudbg_collect_mem_region(struct cudbg_init *pdbg_init,
++				    struct cudbg_buffer *dbg_buff,
++				    struct cudbg_error *cudbg_err,
++				    u8 mem_type)
++{
++	unsigned long size = cudbg_mem_region_size(pdbg_init, cudbg_err, mem_type);
++
+ 	return cudbg_read_fw_mem(pdbg_init, dbg_buff, mem_type, size,
+ 				 cudbg_err);
+ }
 -- 
 2.20.1
 
