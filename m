@@ -2,200 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A632F6E8D1
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 18:32:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590C26E964
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 18:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728525AbfGSQbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 12:31:38 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41519 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727577AbfGSQbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 12:31:37 -0400
-Received: by mail-pf1-f194.google.com with SMTP id m30so14417966pff.8
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 09:31:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HtbCQ+t1CFj8uD7m4S+qpfptRPiWvIZqGmwF1a5d5Rw=;
-        b=pO0ZRAraXTMSdb9BdxXZdaZy8P9OwCPfjajTuaUjbZ4wwEKzjbzGVv+w6BvVw2YUTt
-         4WvytQPn4S0HU+HC/7RAsy0r8MGylNTdQA/ucbtTwRl/QRkixv6IReMRJaV6n7HOFfd/
-         YuIsHWM4itLSIMVeBohvGm0o2XDZgiNc9pdSR8TSIwaBYO9oC2TrdC/SVfn/G9t8bZIZ
-         OEmEMbVUTAfw8SvokN0MFg1B5D9mntP0ZPCKeYdCsobM1SvLC/kwfx7FWHOjOCHE5VXQ
-         yuiQ6/YRws7qWL2yMDRzDI9hMZSodIB526xF8UrA5m9pU4Z1G6kw5J/gU159E2L9Ktf2
-         qmzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HtbCQ+t1CFj8uD7m4S+qpfptRPiWvIZqGmwF1a5d5Rw=;
-        b=O+2EO+XElyFYgc3m5/mu9VJqh9HnSFvRMZxTS3n2YP7QLJhUJXySuVT7ebpfb3w95t
-         hmL20DB1ISz3ySqxL9SIOj2RYmN1yaoztQO++KE0Cx03cIg7N4mOH5mWb+4xS86Xj/bI
-         nfSdjn6gIenjo+ksPYmAfBTOPodbwrFyzkAqOUwNWJg+4gp2joQCdUzSf23CsMlgS5sV
-         YEx5ZPkGz89yz0n+KRdpIjSrCg1ipSuGTQSAjsWG2NKIA4tfC//aompVeb1Y15G8dPwI
-         Oj0cQFws/QC1KqWnaYsru854hfZIqqM3XtRfx2s721Pw5QSnV9WnfGBfhgxjJoPv3+ip
-         CDHA==
-X-Gm-Message-State: APjAAAXbCYwU0k0DCkKAzAc6Br/R57cj520TVlOL3ABcZlRcx8UUoaW1
-        okiofBdqoglS9J8feO24ONI=
-X-Google-Smtp-Source: APXvYqzQ+9UO1U6QnQZHLbrg/VKrohsz/bNDqh7fz2lEv+6XVheDlsn9+ZWYjH8UNW88LNf8IJgvMw==
-X-Received: by 2002:a17:90a:ad93:: with SMTP id s19mr58713289pjq.36.1563553896878;
-        Fri, 19 Jul 2019 09:31:36 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f20sm25351898pgg.56.2019.07.19.09.31.36
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 19 Jul 2019 09:31:36 -0700 (PDT)
-Date:   Fri, 19 Jul 2019 09:31:35 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        dsahern@gmail.com, dcbw@redhat.com, mkubecek@suse.cz,
-        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next rfc 0/7] net: introduce alternative names for
- network interfaces
-Message-ID: <20190719093135.5807f41c@hermes.lan>
-In-Reply-To: <20190719110029.29466-1-jiri@resnulli.us>
-References: <20190719110029.29466-1-jiri@resnulli.us>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1727717AbfGSQp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 12:45:29 -0400
+Received: from mail.us.es ([193.147.175.20]:49376 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728449AbfGSQp3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 12:45:29 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 54A54BAEE2
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 18:45:27 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3E08A1150CE
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 18:45:27 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 3B4C91150D8; Fri, 19 Jul 2019 18:45:27 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7433F1150CE;
+        Fri, 19 Jul 2019 18:45:22 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 19 Jul 2019 18:45:22 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [47.60.47.94])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id DAA4B4265A2F;
+        Fri, 19 Jul 2019 18:45:21 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/14] Netfilter fixes for net
+Date:   Fri, 19 Jul 2019 18:45:03 +0200
+Message-Id: <20190719164517.29496-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Jul 2019 13:00:22 +0200
-Jiri Pirko <jiri@resnulli.us> wrote:
+The following patchset contains Netfilter fixes for net:
 
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
-> netdevice name length. Now when we have PF and VF representors
-> with port names like "pfXvfY", it became quite common to hit this limit:
-> 0123456789012345
-> enp131s0f1npf0vf6
-> enp131s0f1npf0vf22
-> 
-> Udev cannot rename these interfaces out-of-the-box and user needs to
-> create custom rules to handle them.
-> 
-> Also, udev has multiple schemes of netdev names. From udev code:
->  * Type of names:
->  *   b<number>                             - BCMA bus core number
->  *   c<bus_id>                             - bus id of a grouped CCW or CCW device,
->  *                                           with all leading zeros stripped [s390]
->  *   o<index>[n<phys_port_name>|d<dev_port>]
->  *                                         - on-board device index number
->  *   s<slot>[f<function>][n<phys_port_name>|d<dev_port>]
->  *                                         - hotplug slot index number
->  *   x<MAC>                                - MAC address
->  *   [P<domain>]p<bus>s<slot>[f<function>][n<phys_port_name>|d<dev_port>]
->  *                                         - PCI geographical location
->  *   [P<domain>]p<bus>s<slot>[f<function>][u<port>][..][c<config>][i<interface>]
->  *                                         - USB port number chain
->  *   v<slot>                               - VIO slot number (IBM PowerVM)
->  *   a<vendor><model>i<instance>           - Platform bus ACPI instance id
->  *   i<addr>n<phys_port_name>              - Netdevsim bus address and port name
-> 
-> One device can be often renamed by multiple patterns at the
-> same time (e.g. pci address/mac).
-> 
-> This patchset introduces alternative names for network interfaces.
-> Main goal is to:
-> 1) Overcome the IFNAMSIZ limitation
-> 2) Allow to have multiple names at the same time (multiple udev patterns)
-> 3) Allow to use alternative names as handle for commands
-> 
-> See following examples.
-> 
-> $ ip link
-> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 3: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
-> 
-> -> Add alternative names for dummy0:  
-> 
-> $ ip link altname add dummy0 name someothername
-> $ ip link altname add dummy0 name someotherveryveryveryverylongname
-> $ ip link
-> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 3: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
->     altname someothername
->     altname someotherveryveryveryverylongname
->   
-> -> Add bridge brx, add it's alternative name and use alternative names to  
->    do enslavement.
-> 
-> $ ip link add name brx type bridge
-> $ ip link altname add brx name mypersonalsuperspecialbridge
-> $ ip link set someotherveryveryveryverylongname master mypersonalsuperspecialbridge
-> $ ip link
-> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 3: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop master brx state DOWN mode DEFAULT group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
->     altname someothername
->     altname someotherveryveryveryverylongname
-> 4: brx: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
->     altname mypersonalsuperspecialbridge
-> 
-> -> Add ipv4 address to the bridge using alternative name:  
->     
-> $ ip addr add 192.168.0.1/24 dev mypersonalsuperspecialbridge
-> $ ip addr show mypersonalsuperspecialbridge     
-> 4: brx: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
->     altname mypersonalsuperspecialbridge
->     inet 192.168.0.1/24 scope global brx
->        valid_lft forever preferred_lft forever
-> 
-> -> Delete one of dummy0 alternative names:  
-> 
-> $ ip link altname del someotherveryveryveryverylongname    
-> $ ip link
-> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 3: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop master brx state DOWN mode DEFAULT group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
->     altname someothername
-> 4: brx: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether 7e:a2:d4:b8:91:7a brd ff:ff:ff:ff:ff:ff
->     altname mypersonalsuperspecialbridge
-> 
-> TODO:
-> - notifications for alternative names add/removal
-> - sanitization of add/del cmds (similar to get link)
-> - test more usecases and write selftests
-> - extend support for other netlink ifaces (ovs for example)
-> - add sysfs symlink altname->basename?
-> 
-> Jiri Pirko (7):
->   net: procfs: use index hashlist instead of name hashlist
->   net: introduce name_node struct to be used in hashlist
->   net: rtnetlink: add commands to add and delete alternative ifnames
->   net: rtnetlink: put alternative names to getlink message
->   net: rtnetlink: unify the code in __rtnl_newlink get dev with the rest
->   net: rtnetlink: introduce helper to get net_device instance by ifname
->   net: rtnetlink: add possibility to use alternative names as message
->     handle
-> 
->  include/linux/netdevice.h      |  14 ++-
->  include/uapi/linux/if.h        |   1 +
->  include/uapi/linux/if_link.h   |   3 +
->  include/uapi/linux/rtnetlink.h |   7 ++
->  net/core/dev.c                 | 152 ++++++++++++++++++++++----
->  net/core/net-procfs.c          |   4 +-
->  net/core/rtnetlink.c           | 192 +++++++++++++++++++++++++++++----
->  security/selinux/nlmsgtab.c    |   4 +-
->  8 files changed, 334 insertions(+), 43 deletions(-)
-> 
+1) Fix a deadlock when module is requested via netlink_bind()
+   in nfnetlink, from Florian Westphal.
 
-You might want to add altname/ object property in sysfs?
-I.e
-   /sys/class/net/eth0/altname/
+2) Fix ipt_rpfilter and ip6t_rpfilter with VRF, from Miaohe Lin.
+
+3) Skip master comparison in SIP helper to fix expectation clash
+   under two valid scenarios, from xiao ruizhu.
+
+4) Remove obsolete comments in nf_conntrack codebase, from
+   Yonatan Goldschmidt.
+
+5) Fix redirect extension module autoload, from Christian Hesse.
+
+6) Fix incorrect mssg option sent to client in synproxy,
+   from Fernando Fernandez.
+
+7) Fix incorrect window calculations in TCP conntrack, from
+   Florian Westphal.
+
+8) Don't bail out when updating basechain policy due to recent
+   offload works, also from Florian.
+
+9) Allow symhash to use modulus 1 as other hash extensions do,
+   from Laura.Garcia.
+
+10) Missing NAT chain module autoload for the inet family,
+    from Phil Sutter.
+
+11) Fix missing adjustment of TCP RST packet in synproxy,
+    from Fernando Fernandez.
+
+12) Skip EAGAIN path when nft_meta_bridge is built-in or
+    not selected.
+
+13) Conntrack bridge does not depend on nf_tables_bridge.
+
+14) Turn NF_TABLES_BRIDGE into tristate to fix possible
+    link break of nft_meta_bridge, from Arnd Bergmann.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 76104862cccaeaa84fdd23e39f2610a96296291c:
+
+  sky2: Disable MSI on P5W DH Deluxe (2019-07-14 13:45:54 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to dfee0e99bcff718fa14d973c41f161220fdcb7d5:
+
+  netfilter: bridge: make NF_TABLES_BRIDGE tristate (2019-07-19 18:08:14 +0200)
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      netfilter: bridge: make NF_TABLES_BRIDGE tristate
+
+Christian Hesse (1):
+      netfilter: nf_tables: fix module autoload for redir
+
+Fernando Fernandez Mancera (2):
+      netfilter: synproxy: fix erroneous tcp mss option
+      netfilter: synproxy: fix rst sequence number mismatch
+
+Florian Westphal (3):
+      netfilter: nfnetlink: avoid deadlock due to synchronous request_module
+      netfilter: conntrack: always store window size un-scaled
+      netfilter: nf_tables: don't fail when updating base chain policy
+
+Laura Garcia Liebana (1):
+      netfilter: nft_hash: fix symhash with modulus one
+
+Miaohe Lin (1):
+      netfilter: Fix rpfilter dropping vrf packets by mistake
+
+Pablo Neira Ayuso (2):
+      netfilter: nft_meta: skip EAGAIN if nft_meta_bridge is not a module
+      netfilter: bridge: NF_CONNTRACK_BRIDGE does not depend on NF_TABLES_BRIDGE
+
+Phil Sutter (1):
+      netfilter: nf_tables: Support auto-loading for inet nat
+
+Yonatan Goldschmidt (1):
+      netfilter: Update obsolete comments referring to ip_conntrack
+
+xiao ruizhu (1):
+      netfilter: nf_conntrack_sip: fix expectation clash
+
+ include/linux/netfilter/nf_conntrack_h323_asn1.h |  3 +--
+ include/net/netfilter/nf_conntrack_expect.h      | 12 ++++++++---
+ include/net/netfilter/nf_conntrack_synproxy.h    |  1 +
+ net/bridge/netfilter/Kconfig                     |  6 +++---
+ net/ipv4/netfilter/ipt_CLUSTERIP.c               |  4 ++--
+ net/ipv4/netfilter/ipt_SYNPROXY.c                |  2 ++
+ net/ipv4/netfilter/ipt_rpfilter.c                |  1 +
+ net/ipv4/netfilter/nf_nat_h323.c                 | 12 +++++------
+ net/ipv6/netfilter/ip6t_SYNPROXY.c               |  2 ++
+ net/ipv6/netfilter/ip6t_rpfilter.c               |  8 ++++++--
+ net/netfilter/Kconfig                            |  6 ++----
+ net/netfilter/ipvs/ip_vs_nfct.c                  |  2 +-
+ net/netfilter/nf_conntrack_amanda.c              |  2 +-
+ net/netfilter/nf_conntrack_broadcast.c           |  2 +-
+ net/netfilter/nf_conntrack_core.c                |  4 +---
+ net/netfilter/nf_conntrack_expect.c              | 26 +++++++++++++++++-------
+ net/netfilter/nf_conntrack_ftp.c                 |  2 +-
+ net/netfilter/nf_conntrack_h323_asn1.c           |  5 ++---
+ net/netfilter/nf_conntrack_h323_main.c           | 18 ++++++++--------
+ net/netfilter/nf_conntrack_irc.c                 |  2 +-
+ net/netfilter/nf_conntrack_netlink.c             |  4 ++--
+ net/netfilter/nf_conntrack_pptp.c                |  4 ++--
+ net/netfilter/nf_conntrack_proto_gre.c           |  2 --
+ net/netfilter/nf_conntrack_proto_icmp.c          |  2 +-
+ net/netfilter/nf_conntrack_proto_tcp.c           |  8 +++++---
+ net/netfilter/nf_conntrack_sane.c                |  2 +-
+ net/netfilter/nf_conntrack_sip.c                 | 10 ++++++---
+ net/netfilter/nf_conntrack_tftp.c                |  2 +-
+ net/netfilter/nf_nat_amanda.c                    |  2 +-
+ net/netfilter/nf_nat_core.c                      |  2 +-
+ net/netfilter/nf_nat_ftp.c                       |  2 +-
+ net/netfilter/nf_nat_irc.c                       |  2 +-
+ net/netfilter/nf_nat_sip.c                       |  8 +++++---
+ net/netfilter/nf_nat_tftp.c                      |  2 +-
+ net/netfilter/nf_synproxy_core.c                 |  8 ++++----
+ net/netfilter/nf_tables_api.c                    |  2 ++
+ net/netfilter/nfnetlink.c                        |  2 +-
+ net/netfilter/nft_chain_filter.c                 |  2 +-
+ net/netfilter/nft_chain_nat.c                    |  3 +++
+ net/netfilter/nft_ct.c                           |  2 +-
+ net/netfilter/nft_hash.c                         |  2 +-
+ net/netfilter/nft_meta.c                         |  2 +-
+ net/netfilter/nft_redir.c                        |  2 +-
+ net/netfilter/nft_synproxy.c                     |  2 ++
+ 44 files changed, 117 insertions(+), 82 deletions(-)
 
