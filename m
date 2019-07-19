@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DC3D6EA43
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 19:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 058B36EA52
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 19:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728303AbfGSRh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 13:37:26 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41648 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727577AbfGSRh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 13:37:26 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d17so31772506qtj.8
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 10:37:26 -0700 (PDT)
+        id S1728565AbfGSRpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 13:45:08 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:33363 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727528AbfGSRpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 13:45:08 -0400
+Received: by mail-lj1-f195.google.com with SMTP id h10so31573432ljg.0
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 10:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=md74l1tP+3MjgDMecOFujGhSYnRDKsU/DGj+r4fcaKA=;
-        b=o0Or+ROwXh+YLyB2aEGTFyHtfesjXiXIrpdbAQngHhqLThjapIYUAKcKkSwpSvvl0C
-         6Bb7CdHSj8RIZVo9EMGHiHAwtG17xnYj8cEcTIPN9dw1lVp8Zj98kld9AjS6rancgC95
-         h6iu/SBUsb6MNuXMSoJ35lfRyq06SMeSxnmKjahz/szhJUZbIg3Cz9QxhDwmcAfhwtsK
-         PeZrXA9EGYXyqOYkZPdiXFeSX+UTHZppUXB9BhbDxL6Wc29cBH56F5wtXszmV0r22vKE
-         EY04IV/7FDZDKevCpYxfbMtqtThoMmWe62dDtELeuw19XspEjp60gxcV8OYubnS4OKlS
-         jgOg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dNAALzOvftMNuIGo/Hvnr5KO7EC6ztWulyg3Fk0l3Jc=;
+        b=Rqn8qj5UNOnX2Y6C0MDJSj5U5Mhxhe2BkesN3t+5CZ8lNabC9OfSlASlombTRYGKw0
+         PsA3hhRhtpCkTCYx9AnAl6incofbfMtRC3tiJFGUdDY3hBZZueevEYihxD7cTRM1lX9+
+         bOLoPpS5O2j+adBG8Lfn4PtZCybxckT9UulJ9BADJYKHYLIWL1OYVtPizkyz5BI7NQA/
+         umnRkXI+6k9nVuNlayZaNJDfuI7rWGC1emyS9rsd7yIYUVTWsltG5AlSY7xGx86ApAcA
+         a0JnylRDt9S21K4pc/Om1SVH6idBbCtMTuKFGuIQ9/+WDybKTC42AWzZhUdBK0cuShAn
+         pD+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=md74l1tP+3MjgDMecOFujGhSYnRDKsU/DGj+r4fcaKA=;
-        b=KVQdo/JO3hjYFieB6ZckZJ047ZuDquHJtjrYRylNi2akULMGKedq/pf4aFu4bnjIU8
-         VSokK9LY7h0Wwy94BoHgSLUU6DVTOz6Li5bQ9JrBtVd4xBjKWJKtAVUgyfaaiogy3Mzc
-         7E6m23GLhvNDvhNe8Gtg8s+SLlFYE8F50Q1otYPQcetftmQZavKhXGfH4/Ip8ecACXM4
-         SIZX5tpUnY5WoDzAytami+SWuMzcZFR5h03F3/Rjrpp3khIlBQvcKWFESl1LTDW2btSo
-         3bpsfA/oisytKbGV1M3msOHw/QSTi6KChQetBjmtSqYZWvpnuRgNIPmy4dJCThJGq0SB
-         4ZzQ==
-X-Gm-Message-State: APjAAAXhQwnqqgTvGAOuP2XpMarQgDoqRiGyogLnGs93vqF/Kt0wQNog
-        J3pZYyMcmJdYDw+v9yk6YIUXew==
-X-Google-Smtp-Source: APXvYqxdzwTKTjLFLIHtd2+PRC5rnYBA36IJhJcYj1ZBcnYvlY4HaoSFJLg5LS84k7nO7zA0WHFzbQ==
-X-Received: by 2002:aed:3e96:: with SMTP id n22mr32894870qtf.247.1563557845634;
-        Fri, 19 Jul 2019 10:37:25 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z33sm14605101qtc.56.2019.07.19.10.37.24
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 19 Jul 2019 10:37:25 -0700 (PDT)
-Date:   Fri, 19 Jul 2019 10:37:21 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     john.fastabend@gmail.com, alexei.starovoitov@gmail.com,
-        daniel@iogearbox.net
-Cc:     edumazet@google.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH bpf v4 00/14] sockmap/tls fixes
-Message-ID: <20190719103721.558d9e7d@cakuba.netronome.com>
-In-Reply-To: <20190719172927.18181-1-jakub.kicinski@netronome.com>
-References: <20190719172927.18181-1-jakub.kicinski@netronome.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dNAALzOvftMNuIGo/Hvnr5KO7EC6ztWulyg3Fk0l3Jc=;
+        b=UPFNblTZ8zEreb1RgTDVO0zxzbGPvNHtGZUliA5aqcQeLIzafgZtuK+jFJK3UIEXVL
+         J9LZZBeruDJXXoDsNwuhMQW0WrxhJwoXJMkl8Z9znSTJvdEMSkCRPeovYoZX+H6AuRB9
+         pET7T7E+hnjRioPYGpivoZZwcPS/fUvvlUUCFAERvKoLeUBhM/oOagXTzkDp3Ov4Q4oI
+         GkavB5K1SnEXEeY9BIlRWXoLxLqfs0x3i190IZ/N7XH7QpTKAliTfpHbys298x+vgEkF
+         kENZ9BNrFOp8wW2ifzVZG63yEerp6JttDDDXjJcaJsbes6E60VrdumQsYkjo2XlP1FOK
+         /ovw==
+X-Gm-Message-State: APjAAAVslNlMBKVsTtA795dY+YDuZaE8xyYlAW2eK437XLuwpS8CO4W1
+        y5rzvnvcD+izmuwawH6jJavKHhtqJsWONo9iASJ68g==
+X-Google-Smtp-Source: APXvYqxJ8gLqkFkjRUVHt7emv8EI40XfhprvCj9W+0xBDGMiIP5V3bdoOZobK4eON5c/d0Mh7vVaar/f+htzBegmJkE=
+X-Received: by 2002:a2e:9754:: with SMTP id f20mr27952332ljj.151.1563558306044;
+ Fri, 19 Jul 2019 10:45:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <MWHPR11MB1757F23147F85B59BCF1628BAFC90@MWHPR11MB1757.namprd11.prod.outlook.com>
+ <20190718.163207.289099133864098969.davem@davemloft.net>
+In-Reply-To: <20190718.163207.289099133864098969.davem@davemloft.net>
+From:   Catherine Sullivan <csully@google.com>
+Date:   Fri, 19 Jul 2019 10:44:54 -0700
+Message-ID: <CAH_-1qwjgoi7Yve0s1NS1oEKXmxu3V5SPZMzy-Wwux-gM0Pf+Q@mail.gmail.com>
+Subject: Re: [PATCH] gve: replace kfree with kvfree
+To:     David Miller <davem@davemloft.net>
+Cc:     chuhongyuan@outlook.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Jul 2019 10:29:13 -0700, Jakub Kicinski wrote:
-> John says:
-> 
-> Resolve a series of splats discovered by syzbot and an unhash
-> TLS issue noted by Eric Dumazet.
+On Thu, Jul 18, 2019 at 4:32 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Chuhong YUAN <chuhongyuan@outlook.com>
+> Date: Wed, 17 Jul 2019 00:59:02 +0000
+>
+> > Variables allocated by kvzalloc should not be freed by kfree.
+> > Because they may be allocated by vmalloc.
+> > So we replace kfree with kvfree here.
+> >
+> > Signed-off-by: Chuhong Yuan <chuhongyuan@outlook.com>
+>
+> Applied, thanks Chuhong.
+>
+> GVE maintainers, you are upstream now and have to stay on top of review
+> of changes like this.  Otherwise I'll just review it myself and apply
+> it unless I find problems, and that may not be what you want :)
 
-Sorry for the delay, this code is quite tricky. According to my testing
-TLS SW and HW should now work, I hope I didn't regress things on the
-sockmap side.
-
-This is not solving all the issues (ugh), apart from HW needing the
-unhash/shutdown treatment, as discussed we may have a sender stuck in
-wmem wait while we free context underneath. That's a "minor" UAF for
-another day..
+Will do, thanks for the review. And thanks for the fix Chuhong.
