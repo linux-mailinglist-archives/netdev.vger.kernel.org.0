@@ -2,116 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D80F6E0FC
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 08:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D7B6E114
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 08:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726135AbfGSGaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 02:30:11 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46467 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725616AbfGSGaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 02:30:11 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c73so13707986pfb.13
-        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 23:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4qP18y5koAJicPGSDB55dMZlPCoixIAncf60hF+tGLU=;
-        b=WChxYgvZEF94PXaeF3aNcCpGcj2/xixtypvXNRt/1O3D+ZEBsVI42g/z5NSF2Fv7ty
-         It0VvY9BVI7HJLuB2qEq4a9NxO7BQexfY3wAp5JOHnqQHgmKORss7TxMPAZYcENwlJW2
-         KBAdnQ25mdTSyjErfuwM5+4ZZxif2SBBGtC24JlXO9artIimCpXNBVJ/zLscY5nEDNgr
-         1Wc4Khr1qzSBSlLYuIoO4TFhg5XHmK6fVrnVqmfmw1IgmSmkyrjHR9ahurR8jy10qqGD
-         FL7zKglAWLGPZEAAif+XDZE2Esx7l66pDVAKmF41xujA4x3uLnXWj9d92ejDyGAnzN1e
-         2A4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4qP18y5koAJicPGSDB55dMZlPCoixIAncf60hF+tGLU=;
-        b=imRWq5kLC+/+5/oJLzx+Fi8u1n+1ui1hXZyortb8G7/ZINkoTWZZ7niILe1qTyBYSh
-         wX8FLRzOl/w7BtW1fSw9iNAhO1ocewQUevAk0eMRqNHWoiuWgrmSXod5DCPLrEdeuVhW
-         vV9yf7yQ4nbG4P3fQNwCsFEkt6D6WMMMoF5O8+H0qdIW8T/3aEee61XwuzgNxyw04MU8
-         VpVQAgNnbOX8wL9iFfbsbOS0xcUJJopvfQVXW/UKAgnuK9TXMhh62rV0FLvYUpRGbYKq
-         EwT4K16t01cZVqKzkiujzkAOlLOpi5GG6VEsa7T0P1OlarVyxH1X1UvZpU5I4IAohLs1
-         ZXjQ==
-X-Gm-Message-State: APjAAAWMDdCee3jz4+mEQEmjBNVrt7vBvPOH9xE04GCK+BPVuj9/RFMh
-        nbIWJ3aa6m6mxAU5pWj3usM=
-X-Google-Smtp-Source: APXvYqzCdDefMU2SCK6eSyNPYZdZXNVOxGXSanBY+irYG9+JzHb4pU4NoL5J4B3cXrbccaxOQ6LkDA==
-X-Received: by 2002:a17:90a:9a95:: with SMTP id e21mr54449882pjp.98.1563517810151;
-        Thu, 18 Jul 2019 23:30:10 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:0:1000:1601:d7a4:903f:6d6b:ec10])
-        by smtp.gmail.com with ESMTPSA id d2sm26211177pgo.0.2019.07.18.23.30.08
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 18 Jul 2019 23:30:09 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Lorenzo Colitti <lorenzo@google.com>,
-        Remin Nguyen Van <reminv@google.com>,
-        "Alexey I . Froloff" <raorn@raorn.name>
-Subject: [PATCH] net-ipv6-ndisc: add support for RFC7710 RA Captive Portal Identifier
-Date:   Thu, 18 Jul 2019 23:30:03 -0700
-Message-Id: <20190719063003.10684-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.22.0.657.g960e92d24f-goog
+        id S1726572AbfGSGh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 02:37:58 -0400
+Received: from mail.us.es ([193.147.175.20]:49714 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726239AbfGSGh6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 02:37:58 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9A340C41B3
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 08:37:54 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8946D1150DD
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 08:37:54 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 7AB87A6A8; Fri, 19 Jul 2019 08:37:54 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3FEACDA732;
+        Fri, 19 Jul 2019 08:37:52 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 19 Jul 2019 08:37:52 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.193.83])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 065A64265A31;
+        Fri, 19 Jul 2019 08:37:51 +0200 (CEST)
+Date:   Fri, 19 Jul 2019 08:37:49 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>, wenxu <wenxu@ucloud.cn>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [net-next] netfilter: bridge: make NF_TABLES_BRIDGE
+ tristate
+Message-ID: <20190719063749.45io5pxcxrlmrqqn@salvia>
+References: <20190710080835.296696-1-arnd@arndb.de>
+ <20190718190110.akn54iwb2mui72cd@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="vq4lqf2by25ymvpi"
+Content-Disposition: inline
+In-Reply-To: <20190718190110.akn54iwb2mui72cd@salvia>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
 
-This is trivial since we already have support for the entirely
-identical (from the kernel's point of view) RDNSS and DNSSL that
-also contain opaque data that needs to be passed down to userspace.
+--vq4lqf2by25ymvpi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-As specified in RFC7710, Captive Portal option contains a URL.
-8-bit identifier of the option type as assigned by the IANA is 37.
-This option should also be treated as userland.
+On Thu, Jul 18, 2019 at 09:01:10PM +0200, Pablo Neira Ayuso wrote:
+> On Wed, Jul 10, 2019 at 10:08:20AM +0200, Arnd Bergmann wrote:
+> > The new nft_meta_bridge code fails to link as built-in when NF_TABLES
+> > is a loadable module.
+> > 
+> > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_eval':
+> > nft_meta_bridge.c:(.text+0x1e8): undefined reference to `nft_meta_get_eval'
+> > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_get_init':
+> > nft_meta_bridge.c:(.text+0x468): undefined reference to `nft_meta_get_init'
+> > nft_meta_bridge.c:(.text+0x49c): undefined reference to `nft_parse_register'
+> > nft_meta_bridge.c:(.text+0x4cc): undefined reference to `nft_validate_register_store'
+> > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_module_exit':
+> > nft_meta_bridge.c:(.exit.text+0x14): undefined reference to `nft_unregister_expr'
+> > net/bridge/netfilter/nft_meta_bridge.o: In function `nft_meta_bridge_module_init':
+> > nft_meta_bridge.c:(.init.text+0x14): undefined reference to `nft_register_expr'
+> > net/bridge/netfilter/nft_meta_bridge.o:(.rodata+0x60): undefined reference to `nft_meta_get_dump'
+> > net/bridge/netfilter/nft_meta_bridge.o:(.rodata+0x88): undefined reference to `nft_meta_set_eval'
+> > 
+> > This can happen because the NF_TABLES_BRIDGE dependency itself is just a
+> > 'bool'.  Make the symbol a 'tristate' instead so Kconfig can propagate the
+> > dependencies correctly.
+> 
+> Hm. Something breaks here. Investigating. Looks like bridge support is
+> gone after this, nft fails to register the filter chain type:
+> 
+> # nft add table bridge x
+> # nft add chain bridge x y { type filter hook input priority 0\; }
+> Error: Could not process rule: No such file or directory
 
-Hence, treat ND option 37 as userland (Captive Portal support)
+Found it. It seems this patch is needed, on top of your patch.
 
-See:
-  https://tools.ietf.org/html/rfc7710
-  https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml
+I can just squash this chunk into your original patch and push it out
+if you're OK witht this.
 
-Fixes: e35f30c131a56
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Remin Nguyen Van <reminv@google.com>
-Cc: Alexey I. Froloff <raorn@raorn.name>
----
- include/net/ndisc.h | 1 +
- net/ipv6/ndisc.c    | 1 +
- 2 files changed, 2 insertions(+)
+Thanks.
 
-diff --git a/include/net/ndisc.h b/include/net/ndisc.h
-index 366150053043..b2f715ca0567 100644
---- a/include/net/ndisc.h
-+++ b/include/net/ndisc.h
-@@ -40,6 +40,7 @@ enum {
- 	ND_OPT_RDNSS = 25,		/* RFC5006 */
- 	ND_OPT_DNSSL = 31,		/* RFC6106 */
- 	ND_OPT_6CO = 34,		/* RFC6775 */
-+	ND_OPT_CAPTIVE_PORTAL = 37,	/* RFC7710 */
- 	__ND_OPT_MAX
- };
+--vq4lqf2by25ymvpi
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
+
+diff --git a/net/netfilter/nft_chain_filter.c b/net/netfilter/nft_chain_filter.c
+index 3fd540b2c6ba..b5d5d071d765 100644
+--- a/net/netfilter/nft_chain_filter.c
++++ b/net/netfilter/nft_chain_filter.c
+@@ -193,7 +193,7 @@ static inline void nft_chain_filter_inet_init(void) {}
+ static inline void nft_chain_filter_inet_fini(void) {}
+ #endif /* CONFIG_NF_TABLES_IPV6 */
  
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 083cc1c94cd3..53caf59c591e 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -196,6 +196,7 @@ static inline int ndisc_is_useropt(const struct net_device *dev,
- {
- 	return opt->nd_opt_type == ND_OPT_RDNSS ||
- 		opt->nd_opt_type == ND_OPT_DNSSL ||
-+		opt->nd_opt_type == ND_OPT_CAPTIVE_PORTAL ||
- 		ndisc_ops_is_useropt(dev, opt->nd_opt_type);
- }
- 
--- 
-2.22.0.657.g960e92d24f-goog
+-#ifdef CONFIG_NF_TABLES_BRIDGE
++#if IS_ENABLED(CONFIG_NF_TABLES_BRIDGE)
+ static unsigned int
+ nft_do_chain_bridge(void *priv,
+ 		    struct sk_buff *skb,
 
+--vq4lqf2by25ymvpi--
