@@ -2,134 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0426D925
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 04:41:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76F056D930
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 04:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726573AbfGSCkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jul 2019 22:40:16 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51256 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726015AbfGSCkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jul 2019 22:40:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=vy3RMdEhwTMYHA1sUcTKGGV44fIglKcfIU22XM7k9Es=; b=fhXAuZHu87sBV62Fd1SaWs7Mte
-        qdEn55wQtjaGw4Le2U+lTkvs6gKUce69TmIUkeldzjD+vuCkWfGpttHkpBNiTDWcnkAi0Ox5q4haN
-        i34k86+D4UoUJfxqW+bX1NPbNPuXdcQprPA5XcAg06DVRtkUPP6wMupgtMWXjOi9Gq54=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hoIof-0004uZ-AB; Fri, 19 Jul 2019 04:40:13 +0200
-Date:   Fri, 19 Jul 2019 04:40:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 13/19] ionic: Add initial ethtool support
-Message-ID: <20190719024013.GC24765@lunn.ch>
-References: <20190708192532.27420-1-snelson@pensando.io>
- <20190708192532.27420-14-snelson@pensando.io>
- <20190709021426.GA5835@lunn.ch>
- <10c66ecf-6d67-d206-b496-6f8139f218a8@pensando.io>
- <20190718032814.GH6962@lunn.ch>
- <00a22345-4904-57b4-f40b-9ddd2e7398ec@pensando.io>
+        id S1726542AbfGSCu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 22:50:26 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:35259 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726015AbfGSCuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 22:50:25 -0400
+Received: by mail-ot1-f66.google.com with SMTP id j19so31277048otq.2
+        for <netdev@vger.kernel.org>; Thu, 18 Jul 2019 19:50:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=duLoaeFOB9tCbTP7v2bh3D2YEzrjtTXWKWwHL2VBQ0g=;
+        b=lecP9clxwCN8H6R1BSlRH+cUYK2uPmm1VHuaeOe8gOPAj7wJDgTnIBOaVUIjH/kPO1
+         hDS9bdrFwUgjgYWjsN6j4PDb6sZ8G2bOrc4taP5wrr2bTPsyQa0X84/k31NcPm4jNXDb
+         vWusz8N/54dXojqhXMADybCpuAlqsKQ6d/t2If+TUWk9KYmY2MQVy8DPMw3Ngsg6M8nN
+         puUgoSkegjSS/i/hs0RKWoKbYEJUrztdB9V+IK21NpkWPtIgBKdOmQmsbT6J9O//usY2
+         jEB3Cie3Gw0EFpVCVb6i/MqOT/+GXe2FSLqj7xh6Ly26b2JoXvVsbp/T54Bt/piMBjfk
+         vKYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=duLoaeFOB9tCbTP7v2bh3D2YEzrjtTXWKWwHL2VBQ0g=;
+        b=UbaD20fjSm+01bWnz/wVeE7Q1qEcTe1EA9RWobluMSg4glK5b2MwzKerCtsSRMDF87
+         Ix1r5Nn46VTr1XwjsOuSsHyWV/0GNuGBS4pIEZXS8V9HA6i2FJkNHuBz9neaVLPFqNaY
+         EdhbIBqnxPn1d26eTMUpBri/9N7qdXa4r1SUT8Utofp3YGWW33LQcyKyrNNHsARIL2GL
+         M0nCwcZzNG7WGinGjXZUsZTjRPFWB6KpVCUDA/qpx+Cnl4r0niJ3yh9O2/dtUeDrZRB4
+         uqMGtxh/v2/IUxx6Jnt0GluP1t8e+VOJGnvSHCah5CJPwposZlvIPio8eh8ID6yiByRG
+         HILA==
+X-Gm-Message-State: APjAAAWibXNb75MCJT6/fCTpUQl6mIeQHP87LzP33KyHNeNF1kEv1N7T
+        RdS2TmUaktJqXHKrPLNxcOJ0cHQlGGQTZXlowhkXWg==
+X-Google-Smtp-Source: APXvYqwWxrUbRRtuwZW+hoBxbUjk9/NRSSlcquabURks8/KhXKPCGHCFFwh6cUboAJolyH8i20MchUB0Jfx/Q8nwYZ8=
+X-Received: by 2002:a9d:27e2:: with SMTP id c89mr37505861otb.302.1563504624412;
+ Thu, 18 Jul 2019 19:50:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <00a22345-4904-57b4-f40b-9ddd2e7398ec@pensando.io>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190719022814.233056-1-edumazet@google.com>
+In-Reply-To: <20190719022814.233056-1-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 18 Jul 2019 22:50:07 -0400
+Message-ID: <CADVnQymE-QbN_T1Pcx=m5HuXvMvvL5Rb=5Ox-Tgqar54__4m_g@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix tcp_set_congestion_control() use from bpf hook
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Lawrence Brakmo <brakmo@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 05:12:07PM -0700, Shannon Nelson wrote:
-> On 7/17/19 8:28 PM, Andrew Lunn wrote:
-> >On Fri, Jul 12, 2019 at 10:16:31PM -0700, Shannon Nelson wrote:
-> >>On 7/8/19 7:14 PM, Andrew Lunn wrote:
-> >>>>+static int ionic_set_pauseparam(struct net_device *netdev,
-> >>>>+				struct ethtool_pauseparam *pause)
-> >>>>+{
-> >>>>+	struct lif *lif = netdev_priv(netdev);
-> >>>>+	struct ionic *ionic = lif->ionic;
-> >>>>+	struct ionic_dev *idev = &lif->ionic->idev;
-> >>>>+
-> >>>>+	u32 requested_pause;
-> >>>>+	u32 cur_autoneg;
-> >>>>+	int err;
-> >>>>+
-> >>>>+	cur_autoneg = idev->port_info->config.an_enable ? AUTONEG_ENABLE :
-> >>>>+								AUTONEG_DISABLE;
-> >>>>+	if (pause->autoneg != cur_autoneg) {
-> >>>>+		netdev_info(netdev, "Please use 'ethtool -s ...' to change autoneg\n");
-> >>>>+		return -EOPNOTSUPP;
-> >>>>+	}
-> >>>>+
-> >>>>+	/* change both at the same time */
-> >>>>+	requested_pause = PORT_PAUSE_TYPE_LINK;
-> >>>>+	if (pause->rx_pause)
-> >>>>+		requested_pause |= IONIC_PAUSE_F_RX;
-> >>>>+	if (pause->tx_pause)
-> >>>>+		requested_pause |= IONIC_PAUSE_F_TX;
-> >>>>+
-> >>>>+	if (requested_pause == idev->port_info->config.pause_type)
-> >>>>+		return 0;
-> >>>>+
-> >>>>+	idev->port_info->config.pause_type = requested_pause;
-> >>>>+
-> >>>>+	mutex_lock(&ionic->dev_cmd_lock);
-> >>>>+	ionic_dev_cmd_port_pause(idev, requested_pause);
-> >>>>+	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
-> >>>>+	mutex_unlock(&ionic->dev_cmd_lock);
-> >>>>+	if (err)
-> >>>>+		return err;
-> >>>Hi Shannon
-> >>>
-> >>>I've no idea what the firmware black box is doing, but this looks
-> >>>wrong.
-> >>>
-> >>>pause->autoneg is about if the results of auto-neg should be used or
-> >>>not. If false, just configure the MAC with the pause settings and you
-> >>>are done. If the interface is being forced, so autoneg in general is
-> >>>disabled, just configure the MAC and you are done.
-> >>>
-> >>>If pause->autoneg is true and the interface is using auto-neg as a
-> >>>whole, you pass the pause values to the PHY for it to advertise and
-> >>>trigger an auto-neg. Once autoneg has completed, and the resolved
-> >>>settings are available, the MAC is configured with the resolved
-> >>>values.
-> >>>
-> >>>Looking at this code, i don't see any difference between configuring
-> >>>the MAC or configuring the PHY. I would expect pause->autoneg to be
-> >>>part of requested_pause somehow, so the firmware knows what is should
-> >>>do.
-> >>>
-> >>>	Andrew
-> >>In this device there's actually very little the driver can do to directly
-> >>configure the mac or phy besides passing through to the firmware what the
-> >>user has requested - that happens here for the pause values, and in
-> >>ionic_set_link_ksettings() for autoneg.  The firmware is managing the port
-> >>based on these requests with the help of internally configured rules defined
-> >>in a customer setting.
-> >I get that. But the firmware needs to conform to what Linux
-> >expects. And what i see here does not conform. That is why i gave a
-> >bit of detail in my reply.
-> >
-> >What exactly does the firmware do? Once we know that, we can figure
-> >out when the driver should return -EOPNOTSUPP because of firmware
-> >limitations, and what it can configure and should return 0.
-> 
-> Because this is fairly smart FW, it handles this as expected.  I can add
-> this as another comment in the code.
+On Thu, Jul 18, 2019 at 10:28 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Neal reported incorrect use of ns_capable() from bpf hook.
+>
+> bpf_setsockopt(...TCP_CONGESTION...)
+>   -> tcp_set_congestion_control()
+>    -> ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)
+>     -> ns_capable_common()
+>      -> current_cred()
+>       -> rcu_dereference_protected(current->cred, 1)
+>
+> Accessing 'current' in bpf context makes no sense, since packets
+> are processed from softirq context.
+>
+> As Neal stated : The capability check in tcp_set_congestion_control()
+> was written assuming a system call context, and then was reused from
+> a BPF call site.
+>
+> The fix is to add a new parameter to tcp_set_congestion_control(),
+> so that the ns_capable() call is only performed under the right
+> context.
+>
+> Fixes: 91b5b21c7c16 ("bpf: Add support for changing congestion control")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Lawrence Brakmo <brakmo@fb.com>
+> Reported-by: Neal Cardwell <ncardwell@google.com>
+> ---
 
-Hi Shannon
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-Looking at the code, i don't see how it can handle this
-correctly. Please look at my comments, particularly the meaning of
-pause->autoneg and describe how the firmware does the right thing,
-given what information it is passed.
+Thanks, Eric!
 
-       Andrew
+neal
