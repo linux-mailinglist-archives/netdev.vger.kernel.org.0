@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 694D56E28B
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 10:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 856706E29D
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 10:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727389AbfGSIaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 04:30:00 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37190 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726396AbfGSI37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 04:29:59 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n9so6296139wrr.4
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 01:29:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=k1bnFro2XXdwmJgrGLhv6xKBwMHqJtL+pcbxH+NzjmM=;
-        b=ZL9x2fkPYNiqREudMuaw6mXIfASA8Hkw1y6H7QwtFfdY5Z1dBILWLTJ5mgwRlKsuPA
-         4a6yKbMripUBYBEIwV05Au0kdF8QnUWKailibOj+oe2twZCXIP2SBDOEbIJgxoZkuTwy
-         WGGz6bS/RtktncDvoJovzUwwD58B0mPgiBjhjPg13dGFDP2dy5+sjHjNrhRhTRWx3UFm
-         S5J5A2uX4gD/m1eb+YYVwoDbRQgFHk4zn23ac/jZVtAx0uGi4t8sipkDkYpfcNxlYhrM
-         dVfaRvn5/ObHBqkEJKKuQsHAUG3wT3IbUa85RL4fAnBkeQMOC3S56xjPs/BNnvqe+EAm
-         qxfw==
-X-Gm-Message-State: APjAAAUVB+oN2R427owQ8Cmqlzn35OlPTHeF7mJBLS/c76iJmm3HYEQX
-        qw6Wph0TvRgAGtaxqipeMxnrAhMQd8o=
-X-Google-Smtp-Source: APXvYqyq9acl68xOlc1ZDifwAYF0lAew9EnZOZvpXAWnTf1hg09lgAOCC1cGT8vja/tQpaOoGLEkHQ==
-X-Received: by 2002:a5d:4212:: with SMTP id n18mr53314416wrq.261.1563524997628;
-        Fri, 19 Jul 2019 01:29:57 -0700 (PDT)
-Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
-        by smtp.gmail.com with ESMTPSA id l17sm16941335wrr.94.2019.07.19.01.29.56
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 19 Jul 2019 01:29:56 -0700 (PDT)
-Date:   Fri, 19 Jul 2019 10:29:54 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 5/5] vsock/virtio: change the maximum packet size
- allowed
-Message-ID: <20190719082954.m2lw77adpp5dylxw@steredhat>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-6-sgarzare@redhat.com>
- <20190717105703-mutt-send-email-mst@kernel.org>
- <CAGxU2F5ybg1_8VhS=COMnxSKC4AcW4ZagYwNMi==d6-rNPgzsg@mail.gmail.com>
- <20190718083105-mutt-send-email-mst@kernel.org>
+        id S1726247AbfGSIh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 04:37:56 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:16954 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725794AbfGSIh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 04:37:56 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d3181630000>; Fri, 19 Jul 2019 01:37:56 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 19 Jul 2019 01:37:55 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 19 Jul 2019 01:37:55 -0700
+Received: from [10.26.11.13] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 19 Jul
+ 2019 08:37:52 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
+ <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <6a6bac84-1d29-2740-1636-d3adb26b6bcc@nvidia.com>
+ <BN8PR12MB3266960A104A7CDBB4E59192D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <bc9ab3c5-b1b9-26d4-7b73-01474328eafa@nvidia.com>
+Date:   Fri, 19 Jul 2019 09:37:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190718083105-mutt-send-email-mst@kernel.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <BN8PR12MB3266960A104A7CDBB4E59192D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563525476; bh=1RKYbMEPkBkYAvO9fUPJKXbsZ5aFdO+FGd2zGhkjPj4=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=bf64/F0tMPXpg033Cj+uCzeKcnWb+BjHUJJ7UiBLrfB42qlERv9j7sGnt94RfHo7I
+         xLt0h459xSXo1xlry7OW/LJjSmKIgWhdNywp6zLUP0XQKA1hCKXDv3xOb0YqGSQWwD
+         7qn5PlEGBWBhDFxuAHXXNfrKYlpKaZAurhdI4BNWKtk/cAQ1WGGQ3YlugAvMzBuySL
+         GN097jfb6sKEFp+5UaqOXEtHuloX3dInrbqNIUnWvz6l7qMhLomk5Ard0CLdbyCbVv
+         fMFMHXntq2wXLJKkHy/3e3KXO0e0CKpYf4305JAz4VyoWBTMMvJt+HnVnRxwtdcd+U
+         Biu4jt1VhFB8g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 08:33:40AM -0400, Michael S. Tsirkin wrote:
-> On Thu, Jul 18, 2019 at 09:52:41AM +0200, Stefano Garzarella wrote:
-> > On Wed, Jul 17, 2019 at 5:00 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Wed, Jul 17, 2019 at 01:30:30PM +0200, Stefano Garzarella wrote:
-> > > > Since now we are able to split packets, we can avoid limiting
-> > > > their sizes to VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE.
-> > > > Instead, we can use VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max
-> > > > packet size.
-> > > >
-> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > >
-> > >
-> > > OK so this is kind of like GSO where we are passing
-> > > 64K packets to the vsock and then split at the
-> > > low level.
-> > 
-> > Exactly, something like that in the Host->Guest path, instead in the
-> > Guest->Host we use the entire 64K packet.
-> > 
-> > Thanks,
-> > Stefano
+
+On 19/07/2019 08:51, Jose Abreu wrote:
+> From: Jon Hunter <jonathanh@nvidia.com>
+> Date: Jul/18/2019, 10:16:20 (UTC+00:00)
 > 
-> btw two allocations for each packet isn't great. How about
-> allocating the struct linearly with the data?
+>> Have you tried using NFS on a board with this ethernet controller?
+> 
+> I'm having some issues setting up the NFS server in order to replicate 
+> so this may take some time.
 
-Are you referring to the kzalloc() to allocate the 'struct
-virtio_vsock_pkt', followed by the kmalloc() to allocate the buffer?
+If that's the case, we may wish to consider reverting this for now as it
+is preventing our board from booting. Appears to revert cleanly on top
+of mainline.
 
-Actually they don't look great, I will try to do a single allocation.
+> Are you able to add some debug in stmmac_init_rx_buffers() to see what's 
+> the buffer address ?
 
-> And all buffers are same length for you - so you can actually
-> do alloc_pages.
+If you have a debug patch you would like me to apply and test with I
+can. However, it is best you prepare the patch as maybe I will not dump
+the appropriate addresses.
 
-Yes, also Jason suggested it and we decided to postpone since we will
-try to reuse the virtio-net where it comes for free.
+Cheers
+Jon
 
-> Allocating/freeing pages in a batch should also be considered.
-
-For the allocation of guest rx buffers we do some kind of batching (we
-refill the queue when it reaches the half), but only it this case :(
-
-I'll try to do more alloc/free batching.
-
-Thanks,
-Stefano
+-- 
+nvpublic
