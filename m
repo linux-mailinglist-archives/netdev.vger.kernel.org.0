@@ -2,92 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9188F6D885
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 03:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0430D6D88D
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 03:47:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726243AbfGSBoT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jul 2019 21:44:19 -0400
-Received: from cmccmta3.chinamobile.com ([221.176.66.81]:15176 "EHLO
-        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbfGSBoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jul 2019 21:44:18 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.1]) by rmmx-syy-dmz-app11-12011 (RichMail) with SMTP id 2eeb5d312054c02-a8005; Fri, 19 Jul 2019 09:43:49 +0800 (CST)
-X-RM-TRANSID: 2eeb5d312054c02-a8005
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from [172.20.21.101] (unknown[112.25.154.148])
-        by rmsmtp-syy-appsvr01-12001 (RichMail) with SMTP id 2ee15d31205337a-2e74a;
-        Fri, 19 Jul 2019 09:43:48 +0800 (CST)
-X-RM-TRANSID: 2ee15d31205337a-2e74a
-Content-Type: text/plain; charset=gb2312
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Subject: Re: [PATCH] openvswitch: Fix a possible memory leak on dst_cache
-From:   Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
-In-Reply-To: <9b231232-dd6e-5733-2af9-e2fb3d6ae0a4@gmail.com>
-Date:   Fri, 19 Jul 2019 09:43:47 +0800
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <F832C073-F038-40ED-B739-40799F3B859C@cmss.chinamobile.com>
-References: <1563466028-2531-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
- <9b231232-dd6e-5733-2af9-e2fb3d6ae0a4@gmail.com>
-To:     Gregory Rose <gvrose8192@gmail.com>
-X-Mailer: Apple Mail (2.3273)
+        id S1726661AbfGSBrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jul 2019 21:47:13 -0400
+Received: from mga02.intel.com ([134.134.136.20]:34298 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726135AbfGSBrM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jul 2019 21:47:12 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jul 2019 18:47:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,280,1559545200"; 
+   d="scan'208";a="158968965"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by orsmga007.jf.intel.com with ESMTP; 18 Jul 2019 18:47:12 -0700
+Received: from orsmsx159.amr.corp.intel.com (10.22.240.24) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 18 Jul 2019 18:47:11 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.44]) by
+ ORSMSX159.amr.corp.intel.com ([169.254.11.26]) with mapi id 14.03.0439.000;
+ Thu, 18 Jul 2019 18:47:11 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [Intel-wired-lan] [PATCH 1/2] e1000e: add workaround for
+ possible stalled packet
+Thread-Topic: [Intel-wired-lan] [PATCH 1/2] e1000e: add workaround for
+ possible stalled packet
+Thread-Index: AQHVPdPhmp9sws8O4UaUAixIR40qew==
+Date:   Fri, 19 Jul 2019 01:47:11 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B970D36A9@ORSMSX103.amr.corp.intel.com>
+References: <20190708045546.30160-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20190708045546.30160-1-kai.heng.feng@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> On 2019年7月19日, at 上午6:12, Gregory Rose <gvrose8192@gmail.com> wrote:
-> 
-> On 7/18/2019 9:07 AM, Haishuang Yan wrote:
->> dst_cache should be destroyed when fail to add flow actions.
->> 
->> Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
->> Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
->> ---
->>  net/openvswitch/flow_netlink.c | 1 +
->>  1 file changed, 1 insertion(+)
->> 
->> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
->> index d7559c6..1fd1cdd 100644
->> --- a/net/openvswitch/flow_netlink.c
->> +++ b/net/openvswitch/flow_netlink.c
->> @@ -2608,6 +2608,7 @@ static int validate_and_copy_set_tun(const struct nlattr *attr,
->>  			 sizeof(*ovs_tun), log);
->>  	if (IS_ERR(a)) {
->>  		dst_release((struct dst_entry *)tun_dst);
->> +		dst_cache_destroy(&tun_dst->u.tun_info.dst_cache);
->>  		return PTR_ERR(a);
->>  	}
->>  
-> 
-> Nack.
-> 
-> dst_release will decrement the ref count and will call_rcu(&dst->rcu_head, dst_destroy_rcu) if the ref count is zero.  No other net drivers call dst_destroy SFAICT.
-> 
-> Haishuang,
-> 
-> are you trying to fix some specific problem here?
-> 
-> Thanks,
-> 
-> - Greg
-> 
-> 
-
-Greg,
-
-You’re right, dst_cache would be freed in metadata_dst_free:
-
-  125
-  126         if (dst->flags & DST_METADATA)
-  127                 metadata_dst_free((struct metadata_dst *)dst);
-  128         else
-  129                 kmem_cache_free(dst->ops->kmem_cachep, dst);
-  130
-
-I thought I encountered a memory leak, but it seems not an issue, thanks for you explanation.
-
+T24gTW9uLCAyMDE5LTA3LTA4IGF0IDEyOjU1ICswODAwLCBLYWktSGVuZyBGZW5nIHdyb3RlOgo+
+IEZvcndhcmRwb3J0IGZyb20gaHR0cDovL21haWxzLmRwZGsub3JnL2FyY2hpdmVzL2Rldi8yMDE2
+LU5vdmVtYmVyLzA1MDY1Ny5odG1sCj4gCj4gVGhpcyB3b3JrcyBhcm91bmQgYSBwb3NzaWJsZSBz
+dGFsbGVkIHBhY2tldCBpc3N1ZSwgd2hpY2ggbWF5IG9jY3VyIGR1ZSB0bwo+IGNsb2NrIHJlY292
+ZXJ5IGZyb20gdGhlIFBDSCBiZWluZyB0b28gc2xvdywgd2hlbiB0aGUgTEFOIGlzIHRyYW5zaXRp
+b25pbmcKPiBmcm9tIEsxIGF0IDFHIGxpbmsgc3BlZWQuCj4gCj4gQnVnemlsbGE6IGh0dHBzOi8v
+YnVnemlsbGEua2VybmVsLm9yZy9zaG93X2J1Zy5jZ2k/aWQ9MjA0MDU3Cj4gCj4gU2lnbmVkLW9m
+Zi1ieTogS2FpLUhlbmcgRmVuZyA8a2FpLmhlbmcuZmVuZ0BjYW5vbmljYWwuY29tPgo+IC0tLQo+
+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9lMTAwMGUvaWNoOGxhbi5jIHwgMTAgKysrKysr
+KysrKwo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9lMTAwMGUvaWNoOGxhbi5oIHwgIDIg
+Ky0KPiAgMiBmaWxlcyBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpU
+ZXN0ZWQtYnk6IEFhcm9uIEJyb3duIDxhYXJvbi5mLmJyb3duQGludGVsLmNvbT4K
