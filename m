@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D8346EAF9
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 21:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F12F6EB22
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 21:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728344AbfGSTRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 15:17:47 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:35043 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727734AbfGSTRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 15:17:47 -0400
-Received: by mail-io1-f67.google.com with SMTP id m24so60683055ioo.2
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 12:17:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rYom2UNS2ShD8Awg1j+2vPvOzfMncD5P0dbl6lOVAWg=;
-        b=G7eiEZPm94DMIAj76dY/HN5osv1vTtRiNyFIRoFGh0cz1AZZu/wglBa+bMFNejRw/G
-         d/iP5O6XqvtQyeevF6eobrduN0RbEJ3J4b6YmyB6RsUG1ECX8sCSSf7SBvKcyIQHTf1b
-         3+rNoBHOK/e7lXJExw/mQqDdF6KuwKfOZ6rOA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rYom2UNS2ShD8Awg1j+2vPvOzfMncD5P0dbl6lOVAWg=;
-        b=MxlOATMW536+MC3M4Nj5pmf0tiBzjinkMH523VJ4hTR5xWfwbPFQbsNA8bNcZxO8zR
-         Nb22nrO7gdgdUxuOLIWNF1UEc0CapF0BBMB2zyML/R5RjxjktOGTclaiAdSdfkWE8y//
-         duOnOQlBJd6iUSIQHqWaRbeV5FxD6tQlWE/8oSCuuMOWKYp8Mka/aHzRDix4C3MGtTcX
-         AyFsTKGmSMFaPyIc96mctEUuKNbMH0fw4CrJNO0ebYoTp2Befyxb1vDvTMgpKsjJ06Yd
-         +senA6dfV52lTpyc0tfW/G7D0+82jA+kVtHvXzku1/crdHDaE0PRqlqjgg+4V3R8X2wN
-         zsIA==
-X-Gm-Message-State: APjAAAUf6eK86MUybej/93hYbDOZ6RGrNwNZFUyYIVqKKMmIhaTmc4yc
-        vNofSlTn4jeokK7bekpcYs3CxA==
-X-Google-Smtp-Source: APXvYqxPx/csCPoEteEKD5DXzCwYUPKKeK/r+Onk709tFFqkvFUYYCySkJXUAVM52VHyRzRmBFGkeA==
-X-Received: by 2002:a6b:6a01:: with SMTP id x1mr11902637iog.77.1563563866410;
-        Fri, 19 Jul 2019 12:17:46 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:b559:3352:82ff:93d8? ([2601:282:800:fd80:b559:3352:82ff:93d8])
-        by smtp.googlemail.com with ESMTPSA id n7sm23662470ioo.79.2019.07.19.12.17.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 19 Jul 2019 12:17:45 -0700 (PDT)
-Subject: Re: [PATCH v2] vrf: make sure skb->data contains ip header to make
- routing
-To:     Peter Kosyh <p.kosyh@gmail.com>
-Cc:     davem@davemloft.net, Shrijeet Mukherjee <shrijeet@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <213bada2-fe81-3c14-1506-11abf0f3ca22@cumulusnetworks.com>
- <20190719081148.11512-1-p.kosyh@gmail.com>
-From:   David Ahern <dsa@cumulusnetworks.com>
-Message-ID: <8874f5a2-b86f-6c85-525f-534381daa8a3@cumulusnetworks.com>
-Date:   Fri, 19 Jul 2019 13:17:44 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1728856AbfGSTdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 15:33:10 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38248 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727535AbfGSTdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 15:33:09 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6JJWH9t028873
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 12:33:08 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=oBVAlP5OdqHQ13sW6oBkZNi0/zxK4Iikfgxs4MAsi1I=;
+ b=C/RyGLYKfp9AbLOzOYCg6LW7CucNyIzK5GFWIUW0cPdBkBnACCoR4CEcqibveBY/afzi
+ iBOtyzgWW6pc1bVR1etesQRlvlfJRFTd/Nc81EjjW624zwVmrGwtv84v+dXb153EhQVz
+ sa1k4KPj7US+GriwOLIxiVW7RbWnQBKot9A= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tues59a8t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 12:33:08 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 19 Jul 2019 12:33:07 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 49A4786161E; Fri, 19 Jul 2019 12:33:02 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <rdna@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf] libbpf: fix SIGSEGV when BTF loading fails, but .BTF.ext exists
+Date:   Fri, 19 Jul 2019 12:32:42 -0700
+Message-ID: <20190719193242.2658962-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20190719081148.11512-1-p.kosyh@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-19_12:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=831 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907190209
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/19/19 2:11 AM, Peter Kosyh wrote:
-> vrf_process_v4_outbound() and vrf_process_v6_outbound() do routing
-> using ip/ipv6 addresses, but don't make sure the header is available
-> in skb->data[] (skb_headlen() is less then header size).
-> 
-> Case:
-> 
-> 1) igb driver from intel.
-> 2) Packet size is greater then 255.
-> 3) MPLS forwards to VRF device.
-> 
-> So, patch adds pskb_may_pull() calls in vrf_process_v4/v6_outbound()
-> functions.
-> 
-> Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
-> ---
->  drivers/net/vrf.c | 58 +++++++++++++++++++++++++++++++++----------------------
->  1 file changed, 35 insertions(+), 23 deletions(-)
-> 
+In case when BTF loading fails despite sanitization, but BPF object has
+.BTF.ext loaded as well, we free and null obj->btf, but not
+obj->btf_ext. This leads to an attempt to relocate .BTF.ext later on
+during bpf_object__load(), which assumes obj->btf is present. This leads
+to SIGSEGV on null pointer access. Fix bug by freeing and nulling
+obj->btf_ext as well.
 
-Reviewed-by: David Ahern <dsa@cumulusnetworks.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 794dd5064ae8..87168f21ef43 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1500,6 +1500,12 @@ static int bpf_object__sanitize_and_load_btf(struct bpf_object *obj)
+ 			   BTF_ELF_SEC, err);
+ 		btf__free(obj->btf);
+ 		obj->btf = NULL;
++		/* btf_ext can't exist without btf, so free it as well */
++		if (obj->btf_ext) {
++			btf_ext__free(obj->btf_ext);
++			obj->btf_ext = NULL;
++		}
++
+ 		if (bpf_object__is_btf_mandatory(obj))
+ 			return err;
+ 	}
+-- 
+2.17.1
+
