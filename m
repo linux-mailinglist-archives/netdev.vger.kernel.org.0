@@ -2,118 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7790E6E2DF
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 10:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5E96E2E7
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 10:52:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfGSItS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 04:49:18 -0400
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:18036 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbfGSItR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 04:49:17 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d3184130000>; Fri, 19 Jul 2019 01:49:23 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Fri, 19 Jul 2019 01:49:16 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Fri, 19 Jul 2019 01:49:16 -0700
-Received: from [10.26.11.13] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 19 Jul
- 2019 08:49:13 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
- <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
- <6a6bac84-1d29-2740-1636-d3adb26b6bcc@nvidia.com>
- <BN8PR12MB3266960A104A7CDBB4E59192D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <bc9ab3c5-b1b9-26d4-7b73-01474328eafa@nvidia.com>
- <BN8PR12MB3266989D15E017A789E14282D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <4db855e4-1d59-d30b-154c-e7a2aa1c9047@nvidia.com>
-Date:   Fri, 19 Jul 2019 09:49:10 +0100
+        id S1727390AbfGSIvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 04:51:17 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43532 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725794AbfGSIvR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 04:51:17 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id BEFDB2EED01;
+        Fri, 19 Jul 2019 08:51:16 +0000 (UTC)
+Received: from [10.72.12.179] (ovpn-12-179.pek2.redhat.com [10.72.12.179])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 29D6C5C57A;
+        Fri, 19 Jul 2019 08:51:01 +0000 (UTC)
+Subject: Re: [PATCH v4 4/5] vhost/vsock: split packets to send using multiple
+ buffers
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-5-sgarzare@redhat.com>
+ <20190717105336-mutt-send-email-mst@kernel.org>
+ <CAGxU2F45v40qAOHkm1Hk2E69gCS0UwVgS5NS+tDXXuzdF4EixA@mail.gmail.com>
+ <20190718041234-mutt-send-email-mst@kernel.org>
+ <CAGxU2F6oo7Cou7t9o=gG2=wxHMKX9xYQXNxVtDYeHq5fyEhJWg@mail.gmail.com>
+ <20190718072741-mutt-send-email-mst@kernel.org>
+ <20190719080832.7hoeus23zjyrx3cc@steredhat>
+ <fcd19719-e5a9-adad-1e6c-c84487187088@redhat.com>
+ <20190719083920.67qo2umpthz454be@steredhat>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <53da84b9-184f-1377-0582-ab7cf42ebdb6@redhat.com>
+Date:   Fri, 19 Jul 2019 16:51:00 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <BN8PR12MB3266989D15E017A789E14282D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20190719083920.67qo2umpthz454be@steredhat>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1563526163; bh=1rtA4koPsM5DyIuq49Z5hIDoo4v0wuju2f0uobkbFvs=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=BHzE0ERn/0Y8becA0P2z+EgCDdV6U/P7zo9He50UJBKNObq0HGDHD3W1fGVK7fNm+
-         WSgPua+CSW3KUXqf7xrtlQtPI+bhvPe5Y6vcUsR+c7nAyPjzfd4T5taqVxZ4ybcj0Z
-         DaiLnRvb8RI4Dc5dIAp5TjNbCDE5v4G7l1CZ+n1Wwglkc0VByQREHvr58+aH4FsRqD
-         bRVoiYFLiBKs4vPfnD7gjg333oZKM7ZAbaJpiSubZZVCsYPg2Y87C3dn9DEzDFf6pN
-         OP1/NqSo7zVMkpsG01v/5zL6Us/KWBjByqdIZN0uLNjzS8yaAHMmO9Vvs3HciYT1fD
-         f8e+jY0MFOH7w==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Fri, 19 Jul 2019 08:51:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 19/07/2019 09:44, Jose Abreu wrote:
-> From: Jon Hunter <jonathanh@nvidia.com>
-> Date: Jul/19/2019, 09:37:49 (UTC+00:00)
-> 
->>
->> On 19/07/2019 08:51, Jose Abreu wrote:
->>> From: Jon Hunter <jonathanh@nvidia.com>
->>> Date: Jul/18/2019, 10:16:20 (UTC+00:00)
+On 2019/7/19 下午4:39, Stefano Garzarella wrote:
+> On Fri, Jul 19, 2019 at 04:21:52PM +0800, Jason Wang wrote:
+>> On 2019/7/19 下午4:08, Stefano Garzarella wrote:
+>>> On Thu, Jul 18, 2019 at 07:35:46AM -0400, Michael S. Tsirkin wrote:
+>>>> On Thu, Jul 18, 2019 at 11:37:30AM +0200, Stefano Garzarella wrote:
+>>>>> On Thu, Jul 18, 2019 at 10:13 AM Michael S. Tsirkin<mst@redhat.com>  wrote:
+>>>>>> On Thu, Jul 18, 2019 at 09:50:14AM +0200, Stefano Garzarella wrote:
+>>>>>>> On Wed, Jul 17, 2019 at 4:55 PM Michael S. Tsirkin<mst@redhat.com>  wrote:
+>>>>>>>> On Wed, Jul 17, 2019 at 01:30:29PM +0200, Stefano Garzarella wrote:
+>>>>>>>>> If the packets to sent to the guest are bigger than the buffer
+>>>>>>>>> available, we can split them, using multiple buffers and fixing
+>>>>>>>>> the length in the packet header.
+>>>>>>>>> This is safe since virtio-vsock supports only stream sockets.
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: Stefano Garzarella<sgarzare@redhat.com>
+>>>>>>>> So how does it work right now? If an app
+>>>>>>>> does sendmsg with a 64K buffer and the other
+>>>>>>>> side publishes 4K buffers - does it just stall?
+>>>>>>> Before this series, the 64K (or bigger) user messages was split in 4K packets
+>>>>>>> (fixed in the code) and queued in an internal list for the TX worker.
+>>>>>>>
+>>>>>>> After this series, we will queue up to 64K packets and then it will be split in
+>>>>>>> the TX worker, depending on the size of the buffers available in the
+>>>>>>> vring. (The idea was to allow EWMA or a configuration of the buffers size, but
+>>>>>>> for now we postponed it)
+>>>>>> Got it. Using workers for xmit is IMHO a bad idea btw.
+>>>>>> Why is it done like this?
+>>>>> Honestly, I don't know the exact reasons for this design, but I suppose
+>>>>> that the idea was to have only one worker that uses the vring, and
+>>>>> multiple user threads that enqueue packets in the list.
+>>>>> This can simplify the code and we can put the user threads to sleep if
+>>>>> we don't have "credit" available (this means that the receiver doesn't
+>>>>> have space to receive the packet).
+>>>> I think you mean the reverse: even without credits you can copy from
+>>>> user and queue up data, then process it without waking up the user
+>>>> thread.
+>>> I checked the code better, but it doesn't seem to do that.
+>>> The .sendmsg callback of af_vsock, check if the transport has space
+>>> (virtio-vsock transport returns the credit available). If there is no
+>>> space, it put the thread to sleep on the 'sk_sleep(sk)' wait_queue.
 >>>
->>>> Have you tried using NFS on a board with this ethernet controller?
+>>> When the transport receives an update of credit available on the other
+>>> peer, it calls 'sk->sk_write_space(sk)' that wakes up the thread
+>>> sleeping, that will queue the new packet.
 >>>
->>> I'm having some issues setting up the NFS server in order to replicate 
->>> so this may take some time.
+>>> So, in the current implementation, the TX worker doesn't check the
+>>> credit available, it only sends the packets.
+>>>
+>>>> Does it help though? It certainly adds up work outside of
+>>>> user thread context which means it's not accounted for
+>>>> correctly.
+>>> I can try to xmit the packet directly in the user thread context, to see
+>>> the improvements.
 >>
->> If that's the case, we may wish to consider reverting this for now as it
->> is preventing our board from booting. Appears to revert cleanly on top
->> of mainline.
+>> It will then looks more like what virtio-net (and other networking device)
+>> did.
+> I'll try ASAP, the changes should not be too complicated... I hope :)
+>
 >>
->>> Are you able to add some debug in stmmac_init_rx_buffers() to see what's 
->>> the buffer address ?
+>>>> Maybe we want more VQs. Would help improve parallelism. The question
+>>>> would then become how to map sockets to VQs. With a simple hash
+>>>> it's easy to create collisions ...
+>>> Yes, more VQs can help but the map question is not simple to answer.
+>>> Maybe we can do an hash on the (cid, port) or do some kind of estimation
+>>> of queue utilization and try to balance.
+>>> Should the mapping be unique?
 >>
->> If you have a debug patch you would like me to apply and test with I
->> can. However, it is best you prepare the patch as maybe I will not dump
->> the appropriate addresses.
->>
->> Cheers
->> Jon
->>
->> -- 
->> nvpublic
-> 
-> Send me full boot log please.
+>> It sounds to me you want some kind of fair queuing? We've already had
+>> several qdiscs that do this.
+> Thanks for pointing it out!
+>
+>> So if we use the kernel networking xmit path, all those issues could be
+>> addressed.
+> One more point to AF_VSOCK + net-stack, but we have to evaluate possible
+> drawbacks in using the net-stack. (e.g. more latency due to the complexity
+> of the net-stack?)
 
-Please see: https://paste.debian.net/1092277/
 
-Cheers
-Jon
+Yes, we need benchmark the performance. But as we've noticed, current 
+vsock implementation is not efficient, and for stream socket, the 
+overhead should be minimal. The most important thing is to avoid 
+reinventing things that has already existed.
 
--- 
-nvpublic
+Thanks
+
+
+>
+> Thanks,
+> Stefano
