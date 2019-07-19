@@ -2,148 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 941966E8BF
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 18:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A8C6E8C9
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 18:29:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731023AbfGSQZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 12:25:44 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38256 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730920AbfGSQZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 12:25:44 -0400
-Received: by mail-io1-f67.google.com with SMTP id j6so27310932ioa.5;
-        Fri, 19 Jul 2019 09:25:43 -0700 (PDT)
+        id S1730900AbfGSQ3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 12:29:44 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45179 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727577AbfGSQ3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 12:29:44 -0400
+Received: by mail-pg1-f194.google.com with SMTP id o13so14677576pgp.12
+        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 09:29:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E9dRQ3FtuER9R5L/yO3M7GMUZTe4gWi4pMcABfBxn34=;
-        b=CZW8Vtrb28mPKDXHAHEPRL5aQ3Rt0Vsjlr073l2LEkar/sv2kdQPYtsJKiJ3CYy1P0
-         iigQ4z5FmwblWjS6PmUvT1I5SeS0lZHwoxYwA9MjYwm5RAKVJ+SEFqFAzFI1NONy6ZMB
-         eLjUZEA/jxAzsLki+XHYcz0bjND3En9P82WjZi/wY+rGwPTjINVXE8cwE150AoFQxcEy
-         jDOO3JEXi2maVoMIDDfBHM4FzulD672ZF3t9J03gVAmMkzis27K6aobXvztK4twOUhCD
-         9yYNEURhiGl1GXD4KzmjhL0G7WMz75xBYQh8vbdosEasnO0o61hQyH3i4i1yDnp918Ag
-         9rCA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=npaJxZXhhR2DqOaeZZ+R6c0pjHPWaBbQiz7oDQiNNVQ=;
+        b=nESoJDJQAivPsXQG5p/hv4CB3+x9DxYVGfs1bqV0jhCICwh7+226JF4DVHFqlUQlWD
+         eGis8Za79i8xkhNYOy8oVkI7qWz0PXXBOPJuhzfv/RBJsccFjoyKHKS80E3MLs0L9dxN
+         2SILnNwvaJGC5BajkiyGNQOPUy2TVzQmbvgVn/k1Ulyf7VTqn3sG8rM5vcwGzm2tHjtW
+         WNLJpTEUvsDCn9S63/r1PL4PcVijohl7uKpIcJeE3poxZGCLyeEp/JA+Amcwg4BJRK2V
+         eYP1kvbLO59xjQyTRC8CA3Jfp3ffvroniehm7ccNj5pt4o9AbiRCq/RxwK/sjP+yz/co
+         c46Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E9dRQ3FtuER9R5L/yO3M7GMUZTe4gWi4pMcABfBxn34=;
-        b=DD0t28GaQSpECoU7Umy+S4QMON/dRcAaP0MfKFYlf0kQy/78tZwgkCJkP1ufRuUuJ8
-         o9FWUWUKDat8VXCqkdfyFoTfccRguz8L3I7KQwdZ528D0ypjalUOQ+k2z/ggRuHWdS/w
-         HjY/oHmnROv7Bf3lTbcJO0s+qPmBl4aE7z/+yNIzcGMriTV4K3Vm3rkY0XrmEAhiLVju
-         KD87XKwI1C7XUs0y2PpUVbhjH1leAvXIdOusSnEsYjNU0EuRgW0PHnjVf8c8s+NtIYRo
-         pA9VtJh2Q8gsWASSQEgGzpGFtohvXIhx8iowYqOoFwuQ/pK5gf1cXhJKXxqAHzETsP/n
-         Ygfw==
-X-Gm-Message-State: APjAAAVBJ/AW8YLiHNGWJaG5ImqEWZul7YJ5/8qck4hSQG8DZXbsrTae
-        Hh7gDBdnhemWbaAflRRJr8FPkzMIWqSWHlIuPmU=
-X-Google-Smtp-Source: APXvYqzLysfnTzDFdrVPu5fDni8LuksYnckAeW4Zg0eXpeoWG7hpH0FQKAnEoRDLc3q9Tv4tzAafbgcH9TCR8DqsqRI=
-X-Received: by 2002:a5e:8b43:: with SMTP id z3mr47775196iom.287.1563553542869;
- Fri, 19 Jul 2019 09:25:42 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=npaJxZXhhR2DqOaeZZ+R6c0pjHPWaBbQiz7oDQiNNVQ=;
+        b=nb88s9HDecNR2yd4VUFGUwnyswKYCe6HyZ7qPS2Ggalmvsiy3jY1mGBjpvT78VCLB/
+         9I2+geRNWvUwk5siHEcwpzNboRczeiI3LaUO6prt6xXoOmo63Ym5mJ777BZwdxbfypne
+         Z7NS50OVy+AC+LLaTayML02FHyyysbLt53EZryKUBWoSqYr+MXjMmqqZXEwWNKc4+ehF
+         xny2eSo8/DNxzg8GFEORZCU6z/K9wAV9cwgApp4DZYhjJIs1QNlhedq2y+x/Cf3Pucc6
+         7AFNMPd7rwfw7FqiVaJHhO6rYo4mIUj9PSSlxUq5EPVEpiUyXeImAfBvfo+Tmr5jl5m4
+         qj7A==
+X-Gm-Message-State: APjAAAV6O3sg4CfrJZrS+L/+TYKOYnwBrlZ12otnv2VCykTBgJkNNWXQ
+        0eT4fZc8y2q9m7g3TGYfPjw=
+X-Google-Smtp-Source: APXvYqwMMKj/QZC3hfXvu7VM/uBwNiZh1knGJemh+TOn91SbnNPrxylDkNElzIgjn7AJ1W12iY8Oew==
+X-Received: by 2002:a17:90a:2008:: with SMTP id n8mr57870571pjc.4.1563553783705;
+        Fri, 19 Jul 2019 09:29:43 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id p27sm48903445pfq.136.2019.07.19.09.29.43
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 19 Jul 2019 09:29:43 -0700 (PDT)
+Date:   Fri, 19 Jul 2019 09:29:36 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
+        dsahern@gmail.com, dcbw@redhat.com, mkubecek@suse.cz,
+        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch net-next rfc 2/7] net: introduce name_node struct to be
+ used in hashlist
+Message-ID: <20190719092936.60c2d925@hermes.lan>
+In-Reply-To: <20190719110029.29466-3-jiri@resnulli.us>
+References: <20190719110029.29466-1-jiri@resnulli.us>
+        <20190719110029.29466-3-jiri@resnulli.us>
 MIME-Version: 1.0
-References: <20190719143407.20847-1-acme@kernel.org> <20190719143407.20847-2-acme@kernel.org>
-In-Reply-To: <20190719143407.20847-2-acme@kernel.org>
-From:   Y Song <ys114321@gmail.com>
-Date:   Fri, 19 Jul 2019 09:25:07 -0700
-Message-ID: <CAH3MdRXDz+Yn104Y3U0u-q_zW0cwSaH0QAPA8aWK9hpBc4hukw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] libbpf: Fix endianness macro usage for some compilers
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 7:35 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
->
-> From: Arnaldo Carvalho de Melo <acme@redhat.com>
->
-> Using endian.h and its endianness macros makes this code build in a
-> wider range of compilers, as some don't have those macros
-> (__BYTE_ORDER__, __ORDER_LITTLE_ENDIAN__, __ORDER_BIG_ENDIAN__),
-> so use instead endian.h's macros (__BYTE_ORDER, __LITTLE_ENDIAN,
-> __BIG_ENDIAN) which makes this code even shorter :-)
+On Fri, 19 Jul 2019 13:00:24 +0200
+Jiri Pirko <jiri@resnulli.us> wrote:
 
-gcc 4.6.0 starts to support __BYTE_ORDER__, __ORDER_LITTLE_ENDIAN__, etc.
-I guess those platforms with failing compilation have gcc < 4.6.0.
-Agree that for libbpf, which will be used outside kernel bpf selftest should
-try to compile with lower versions of gcc.
-
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Cc: Adrian Hunter <adrian.hunter@intel.com>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jiri Olsa <jolsa@kernel.org>
-> Cc: Namhyung Kim <namhyung@kernel.org>
-> Fixes: 12ef5634a855 ("libbpf: simplify endianness check")
-> Fixes: e6c64855fd7a ("libbpf: add btf__parse_elf API to load .BTF and .BTF.ext")
-> Link: https://lkml.kernel.org/n/tip-eep5n8vgwcdphw3uc058k03u@git.kernel.org
-> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> From: Jiri Pirko <jiri@mellanox.com>
+> 
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 > ---
->  tools/lib/bpf/btf.c    | 5 +++--
->  tools/lib/bpf/libbpf.c | 5 +++--
->  2 files changed, 6 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index 467224feb43b..d821107f55f9 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -1,6 +1,7 @@
->  // SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
->  /* Copyright (c) 2018 Facebook */
->
-> +#include <endian.h>
->  #include <stdio.h>
->  #include <stdlib.h>
->  #include <string.h>
-> @@ -419,9 +420,9 @@ struct btf *btf__new(__u8 *data, __u32 size)
->
->  static bool btf_check_endianness(const GElf_Ehdr *ehdr)
->  {
-> -#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-> +#if __BYTE_ORDER == __LITTLE_ENDIAN
->         return ehdr->e_ident[EI_DATA] == ELFDATA2LSB;
-> -#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-> +#elif __BYTE_ORDER == __BIG_ENDIAN
->         return ehdr->e_ident[EI_DATA] == ELFDATA2MSB;
->  #else
->  # error "Unrecognized __BYTE_ORDER__"
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 794dd5064ae8..b1dec5b1de54 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -20,6 +20,7 @@
->  #include <inttypes.h>
->  #include <string.h>
->  #include <unistd.h>
-> +#include <endian.h>
->  #include <fcntl.h>
->  #include <errno.h>
->  #include <asm/unistd.h>
-> @@ -612,10 +613,10 @@ static int bpf_object__elf_init(struct bpf_object *obj)
->
->  static int bpf_object__check_endianness(struct bpf_object *obj)
->  {
-> -#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-> +#if __BYTE_ORDER == __LITTLE_ENDIAN
->         if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2LSB)
->                 return 0;
-> -#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-> +#elif __BYTE_ORDER == __BIG_ENDIAN
->         if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
->                 return 0;
->  #else
-> --
-> 2.21.0
->
+>  include/linux/netdevice.h | 10 +++-
+>  net/core/dev.c            | 96 +++++++++++++++++++++++++++++++--------
+>  2 files changed, 86 insertions(+), 20 deletions(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 88292953aa6f..74f99f127b0e 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -918,6 +918,12 @@ struct dev_ifalias {
+>  struct devlink;
+>  struct tlsdev_ops;
+>  
+> +struct netdev_name_node {
+> +	struct hlist_node hlist;
+> +	struct net_device *dev;
+> +	char *name
+
+You probably can make this const char *
+
+Do you want to add __rcu to this list?
