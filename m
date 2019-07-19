@@ -2,94 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB7E6E61B
-	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 15:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 976EB6E624
+	for <lists+netdev@lfdr.de>; Fri, 19 Jul 2019 15:13:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728729AbfGSNMc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 19 Jul 2019 09:12:32 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39248 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726239AbfGSNMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 09:12:31 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6JD8CUY175813
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 09:12:30 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2tud5u47gn-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 09:12:30 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Fri, 19 Jul 2019 14:12:28 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 19 Jul 2019 14:12:25 +0100
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6JDCOLa48234528
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Jul 2019 13:12:24 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B600311C054;
-        Fri, 19 Jul 2019 13:12:24 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8C50811C04A;
-        Fri, 19 Jul 2019 13:12:24 +0000 (GMT)
-Received: from dyn-9-152-98-35.boeblingen.de.ibm.com (unknown [9.152.98.35])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 19 Jul 2019 13:12:24 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH bpf] tools/bpf: fix bpftool build with OUTPUT set
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-In-Reply-To: <20190718115111.643027cf@cakuba.netronome.com>
-Date:   Fri, 19 Jul 2019 15:12:24 +0200
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, lmb@cloudflare.com,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com
-Content-Transfer-Encoding: 8BIT
-References: <CACAyw9-CWRHVH3TJ=Tke2x8YiLsH47sLCijdp=V+5M836R9aAA@mail.gmail.com>
- <20190718142041.83342-1-iii@linux.ibm.com>
- <20190718115111.643027cf@cakuba.netronome.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-X-Mailer: Apple Mail (2.3445.9.1)
-X-TM-AS-GCONF: 00
-x-cbid: 19071913-0016-0000-0000-000002945E8E
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071913-0017-0000-0000-000032F23FEE
-Message-Id: <43FB794B-6200-4560-BF10-BBF4B9247913@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-19_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907190150
+        id S1728795AbfGSNNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 09:13:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52092 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726077AbfGSNNM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jul 2019 09:13:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=s0bNYtfnvp6ujyuHyrWaSnZf4UjcEcz5X0mRmNRFOiU=; b=ryTQSqL25BFk61jRxRzcWjOHyj
+        7CyVURKUDrR8XVz0iWz8DNVHHe8MLbciHd2a/lwC8JtMD7au/d0jgZ58U7o4pf9uImlwYZKhkY/rV
+        4eiwlNuV0uotnPCxK34ayEe+4Q7SsbNvlexlPVCdQFiWVqKJixSs6XmwZL+nrObwxROk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hoSh8-0006ZG-BM; Fri, 19 Jul 2019 15:13:06 +0200
+Date:   Fri, 19 Jul 2019 15:13:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     xiaofeis <xiaofeis@codeaurora.org>
+Cc:     davem@davemloft.net, vkoul@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        niklas.cassel@linaro.org, xiazha@codeaurora.org
+Subject: Re: [PATCH] qca8k: enable port flow control
+Message-ID: <20190719131306.GA24930@lunn.ch>
+References: <1563504791-43398-1-git-send-email-xiaofeis@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1563504791-43398-1-git-send-email-xiaofeis@codeaurora.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 18.07.2019 um 20:51 schrieb Jakub Kicinski <jakub.kicinski@netronome.com>:
+On Fri, Jul 19, 2019 at 10:53:11AM +0800, xiaofeis wrote:
+> Set phy device advertising to enable MAC flow control.
 > 
-> We should probably make a script with all the ways of calling make
-> should work. Otherwise we can lose track too easily.
+> Change-Id: Ibf0f554b072fc73136ec9f7ffb90c20b25a4faae
+> Signed-off-by: Xiaofei Shen <xiaofeis@codeaurora.org>
 
-Thanks for the script!
+Hi Xiaofei
 
-I’m trying to make it all pass now, and hitting a weird issue in the
-Kbuild case. The build prints "No rule to make target
-'scripts/Makefile.ubsan.o'" and proceeds with an empty BPFTOOL_VERSION,
-which causes problems later on.
+What tree is this patch against? I don't think it is net-next. It
+actually looks to be an old tree. Please rebase to David Millers
+net-next. Patches to that tree are closed at the moment, due to the
+merge window. You can post an RFC, or wait until it opens again.
 
-I've found that this is caused by sub_make_done=1 environment variable,
-and unsetting it indeed fixes the problem, since the root Makefile no
-longer uses the implicit %.o rule.
-
-However, I wonder if that would be acceptable in the final version of
-the patch, and whether there is a cleaner way to achieve the same
-effect?
-
-Best regards,
-Ilya
+Thanks
+	Andrew
