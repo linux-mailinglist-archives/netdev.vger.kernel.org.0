@@ -2,95 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8D86F01D
-	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 19:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 749836F041
+	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 19:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728759AbfGTRBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jul 2019 13:01:30 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45312 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbfGTRB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jul 2019 13:01:29 -0400
-Received: by mail-wr1-f66.google.com with SMTP id f9so35135856wre.12
-        for <netdev@vger.kernel.org>; Sat, 20 Jul 2019 10:01:28 -0700 (PDT)
+        id S1726787AbfGTRqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jul 2019 13:46:55 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42195 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726200AbfGTRqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jul 2019 13:46:54 -0400
+Received: by mail-pl1-f193.google.com with SMTP id ay6so17164093plb.9;
+        Sat, 20 Jul 2019 10:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=A297uUmkgdX8xVlQW8I51h56lDl+uO/4ErVuA7L5MSs=;
-        b=afVyEecQacS/Ze0nDT34ppZyb0RKa8+7DcFiKh4xZKJWfB7o3p186F6Kg0ZJUE3N2m
-         2jMB6Hdzosm8eaO+UHoZ8mB2p+xgbL8bgzNE0g8TTiRW0/9se3CoMg0cmJYn7fCc5Vv/
-         uU+3Pp64vADW3+LeStsxErsdU5+zDRpJd3kN+o4lH8Ix+xmpIRJr6HNBXMyt2TDRaApb
-         9txCXa/Rwc2BQy3nPFh4wc5ycJ04z0LUs3iQ41xnQ5nLgAcgcD1aZ94smHKId4NhjVuq
-         oCmiZGoTw2fqvRogBE2hhM7MPOjfY2lPZBNHNw2Bm5AC7T9QTpp2sz5mbYtqOmC6wXEB
-         k4DA==
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=L2J81KFMB9+2i2dCr/hG5bzUaIW4OMdMzoZ/0Z/JXXY=;
+        b=Km81yo78w+rlAwT/gwFYfbv28Jgs5BCE1MgsQFEdhlhCgQmjldFaKcy3u0HTBYiloX
+         L8XYW/LnaW6ORsZjO8+44qrXVhFzdUCUkEV8eURKJ+SkqB0At6u+qSYVIBIwiXjpTM/x
+         7gmIG7cv4tJFKGtaNpt1pbUjJsWKyfSX04XSoIMkikNZ7T4JXBDCPK5lP7tR6KgYGew9
+         X2ynm2oIHwy3DHRFm78hJguuTFf+gae7qCd2Iwx4GwZQb3lVfmvgExXMNB9Qz8KkCBgW
+         /aqS1YpNQwnrsMTPeWPnYC+ymVRJtmHwMME+8W+cIYYvsvRg4aiq+MCJa1SC2V0Ng/By
+         V0ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=A297uUmkgdX8xVlQW8I51h56lDl+uO/4ErVuA7L5MSs=;
-        b=YQIyQMEJQgh2V4ikiEvHa7jCVKHFdbVUfEfnrtBi8TqxSLDWQmAXG7yTFREbrc4Bia
-         IXlb5+cfy8xAZtrktS0eZ6J9aZM/AfgZbX4f8YhpwjVJ8+JHjiHI6uXGKqKK/yOfVnvu
-         1n8p/vXJV3sddKfLYaomFeF0p6VWp4fVVoY39AGeHfaBYSwLMjVbHX5jdFDXlBrJO8XL
-         Jg/E7KVhwAZ//KUcnuzJxs2NCVHkJPnRmM9JtyiM5X2Ke3AOZ3rkwRRSBEeEMf4epR//
-         GeBcB7toV+SBGday24Q8hpJs6LMKmmDfVEkYQGiE3DM3da5vxz3kVQSg9C8icjfW0XFB
-         dg2A==
-X-Gm-Message-State: APjAAAX7PITsFShS7QaRAK7DroelVcU30653aVFOm03UWKqdcWoOKB9s
-        2B1jBeuIrtoqwJS9K6G0N7x7Vzxt
-X-Google-Smtp-Source: APXvYqxLdZgRKUj469uAIQEEEKSX8fLq19c3DwX/3EnA9xkJ1jP91WmIkRkE9l7BjKr94RGey1lXJw==
-X-Received: by 2002:a05:6000:112:: with SMTP id o18mr37493436wrx.153.1563642087532;
-        Sat, 20 Jul 2019 10:01:27 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:7490:a073:b68b:c51c? ([2003:ea:8bd6:c00:7490:a073:b68b:c51c])
-        by smtp.googlemail.com with ESMTPSA id c78sm48985990wmd.16.2019.07.20.10.01.26
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=L2J81KFMB9+2i2dCr/hG5bzUaIW4OMdMzoZ/0Z/JXXY=;
+        b=otzGIJpzqIu0XDfNr0siqTNPXlKSN1j9qofRdRDoAKVjxosqKqXFJ+Ni9uMVqG7H/x
+         SU3JP9tf5CKBI/ttjN/hBpmBFgSk5G9jYsfCc0lzMsOsJg7Lf9O+ByTGaWf9P6f3MEhf
+         NA7HpfTNViy4SBzxJp+9a6qHpjo64gnxFc8p4Ns1bOtll8UVA6pmJgNQwBA1kopzWQxu
+         DTZZhmoptwOHMFQLkee+GC5hUWZnq09o3YG1Imrt6CgLnSiSVBJGbC62G/NVnjzISRUs
+         prgmibjWu8q7vyM4+ck3rMxbfkab2YAM91+u6I6Eo38m/SvhX+M9XpzsFLGPj4VdQ68P
+         aRaQ==
+X-Gm-Message-State: APjAAAURb5M1oEYKTNxDvzMVsJMbERywJGx0lWByVisXNN1ciqiYNQQh
+        N/JU3y71qFQsTkSjfr11A5A=
+X-Google-Smtp-Source: APXvYqxlbLhnEFRhjszPBPUjtGhEt/AVHw3r7MRkvZSxpV9s5/OYqIpRYH0BMPO001+CgtH0WTAmNQ==
+X-Received: by 2002:a17:902:1e6:: with SMTP id b93mr63580645plb.295.1563644814133;
+        Sat, 20 Jul 2019 10:46:54 -0700 (PDT)
+Received: from hari-Inspiron-1545 ([183.83.86.126])
+        by smtp.gmail.com with ESMTPSA id q69sm49590614pjb.0.2019.07.20.10.46.51
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jul 2019 10:01:26 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: fix RTL8168g PHY init
-To:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Thomas Voegtle <tv@lio96.de>
-Message-ID: <eeb20312-1418-24c3-6482-09c051075b9e@gmail.com>
-Date:   Sat, 20 Jul 2019 19:01:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Sat, 20 Jul 2019 10:46:53 -0700 (PDT)
+Date:   Sat, 20 Jul 2019 23:16:47 +0530
+From:   Hariprasad Kelam <hariprasad.kelam@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] rat_cs: Remove duplicate code
+Message-ID: <20190720174613.GA31062@hari-Inspiron-1545>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Voegtle <tv@lio96.de>
-This fixes a copy&paste error in the original patch. Setting the wrong
-register resulted in massive packet loss on some systems.
+Code is same if translate is true/false in case invalid packet is
+received.So remove else part.
 
-Fixes: a2928d28643e ("r8169: use paged versions of phylib MDIO access functions")
-Tested-by: Thomas Voegtle <tv@lio96.de>
-Signed-off-by: Thomas Voegtle <tv@lio96.de>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Issue identified with coccicheck
+
+Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ray_cs.c | 29 ++++++++---------------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 0637c6752..6272115b2 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3251,9 +3251,9 @@ static void rtl8168g_1_hw_phy_config(struct rtl8169_private *tp)
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index cf37268..a51bbe7 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -2108,29 +2108,16 @@ static void rx_data(struct net_device *dev, struct rcs __iomem *prcs,
+ #endif
  
- 	ret = phy_read_paged(tp->phydev, 0x0a46, 0x13);
- 	if (ret & BIT(8))
--		phy_modify_paged(tp->phydev, 0x0c41, 0x12, 0, BIT(1));
-+		phy_modify_paged(tp->phydev, 0x0c41, 0x15, 0, BIT(1));
- 	else
--		phy_modify_paged(tp->phydev, 0x0c41, 0x12, BIT(1), 0);
-+		phy_modify_paged(tp->phydev, 0x0c41, 0x15, BIT(1), 0);
- 
- 	/* Enable PHY auto speed down */
- 	phy_modify_paged(tp->phydev, 0x0a44, 0x11, 0, BIT(3) | BIT(2));
+ 	if (!sniffer) {
+-		if (translate) {
+ /* TBD length needs fixing for translated header */
+-			if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
+-			    rx_len >
+-			    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
+-			     FCS_LEN)) {
+-				pr_debug(
+-				      "ray_cs invalid packet length %d received\n",
+-				      rx_len);
+-				return;
+-			}
+-		} else { /* encapsulated ethernet */
+-
+-			if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
+-			    rx_len >
+-			    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
+-			     FCS_LEN)) {
+-				pr_debug(
+-				      "ray_cs invalid packet length %d received\n",
+-				      rx_len);
+-				return;
++		if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
++		    rx_len >
++		    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
++		     FCS_LEN)) {
++			pr_debug(
++			      "ray_cs invalid packet length %d received\n",
++			      rx_len);
++			return;
+ 			}
+-		}
+ 	}
+ 	pr_debug("ray_cs rx_data packet\n");
+ 	/* If fragmented packet, verify sizes of fragments add up */
 -- 
-2.22.0
+2.7.4
 
