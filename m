@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAFAA6EE88
-	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 11:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3FB16EE8D
+	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 11:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbfGTJLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jul 2019 05:11:30 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:34581 "EHLO
+        id S1727253AbfGTJN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jul 2019 05:13:59 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38677 "EHLO
         mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727199AbfGTJLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jul 2019 05:11:30 -0400
-Received: by mail-wr1-f65.google.com with SMTP id 31so34495021wrm.1;
-        Sat, 20 Jul 2019 02:11:28 -0700 (PDT)
+        with ESMTP id S1727194AbfGTJN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jul 2019 05:13:59 -0400
+Received: by mail-wr1-f65.google.com with SMTP id g17so34458047wrr.5;
+        Sat, 20 Jul 2019 02:13:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EpybfCHDTjlpS+cVkwuETJpShpZaO++Epoz9jlIsJA0=;
-        b=FDksJr+OZvIdeauQ4XmSo5B7FurSdX1IvlSMol4ZkyhXxa9XfRQsCGzB9psqO+ALM5
-         vnxYlnGb/LHLecouru5csLtVHPLbb0o9JkNU3YaESSrvc/kOrn3Ke3X1d4Kj3+T2ghDO
-         5G30A4S5ekq7wlR7zZfP/WkEmspD3fZJau9tSjOtijJyMOsTU3Txncw8HJ0kgH2JtCLi
-         u5jhyWcT3rzCGp6hfG7MpxiuZp+eFWp8FfXDwbfDDST9xBKZvSriAJiOB+/RorVcDyX8
-         GinEpMX6ok68hgP3BlFYfdEkuThf9N4HSgGKhnlvNzlzqOVTFLvHJSMgiVJG/rzwooeU
-         2tdA==
+        bh=YApArYzRtqaFn8OCm79T6Uy4hpgsO61ANc2zyLsyS6s=;
+        b=WN6t/E0mvmPLXGyRQGtqwKb/2uQ46vMdmIgiNXFVC0poxFhHvibm96Ze0AM6WRM0dq
+         Fe72D+SKwgRtd7jPE9NN1TDNYyymtHGdQbj9PKEakNR+5/U4BGSA7/uUZvdwTpqkMWC2
+         FQaP2SpRGqh9/Fi2BlUTQs4rvXkO2JiqT3/Kb2oEifr1El8JzSi21+SraBNvokR7j9O2
+         j/VmZf2sbC38vMzrs8R5Zjkk0+9tt2IaMJsDoNc8ZcfxkEbkT9f0yhok6qEfaKgpBPP+
+         P8itQTDiGxUGkTLXiJP+wsfDb4ieiZ2+DVjLSSX+B6cpC7ZkLZ+c1LaleNesubldxzNy
+         F9rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=EpybfCHDTjlpS+cVkwuETJpShpZaO++Epoz9jlIsJA0=;
-        b=qVfiCjrA7fesG6xnwQJzh5iRYvtUMZ7kDBgvZTHnS1FNaGlMVK4jUfekjjK9YYLxIY
-         D6ph0Ni4A8vk2TqUOsHU4b3o59oTNjlzQktHH3hr4mdqWf61q2QlfL4yrHVjXioap9vH
-         dd+YqzN8GY/ZQq9d/Y3F1aVYJKH80JgEQmBP0W0xN/FNsoAjU9BgBcfkFYo5XpcoU4c2
-         cTxWXwpECTHAfIqnbE/9tLq0o7DLqrpeGyHo3B6YxnFowaxH3vpPw464YNZpqt59jSOq
-         UP2HmYr0l3u8pSXIjUyITZk6eleYM+OVnwdRDepMrjKH41DD4b4Kg7QV2AL/YzzYmm1w
-         /52A==
-X-Gm-Message-State: APjAAAUF4sxPrkirUFmTiVFGXs9he07PIqCYgBd0Bjg6Q7v8egNn4qu4
-        JtTHvCRDAAbDyMcIrXg/8aZ8dJo+
-X-Google-Smtp-Source: APXvYqwHHwxBvJDL0wW+6EJFwWQZDpGgDVRZvrUdyumKpffFN2bBP4MNp6JRBvE4JcHScjcz9bxsGQ==
-X-Received: by 2002:adf:f888:: with SMTP id u8mr32670519wrp.238.1563613887083;
-        Sat, 20 Jul 2019 02:11:27 -0700 (PDT)
+        bh=YApArYzRtqaFn8OCm79T6Uy4hpgsO61ANc2zyLsyS6s=;
+        b=BaTynp+pxguAvKqrrZEGfoBbX+Da7C8K200yOoOO/EtoMqQa2YWNRCJEXXOggQo2WD
+         KuLZoWKqJRqiYKofT7+ZG985Zhp3SKen/ufPvgO1ACTxiocNjs+Xtqpw+oVb2pW0GRCj
+         g96eE7CDOiO//nE0h8pKihn46kFHm6oEdtiBcb3iSsWCBgE+3p/JFywwYugp7S4etaE6
+         q/OmQP2k+Tsfn5waWzkYtvK2Xgq3To8WCIxx+OxFhMDxEy1bgDM1BLNWnZpS4fIgV9sz
+         iCzGxtJ/udn/wuN/mJWZ/pPSRoqScnJTE88xT/AlPWh6wwpMw9pErhyTSp3Hd4fuibWj
+         qOlw==
+X-Gm-Message-State: APjAAAWtWWbZuQzV2DJjmy7dsmauLcizSyk9GbRvCCk03WIQpaK357/8
+        gjBz60gJCcZQuulZtJADnRjocNXd
+X-Google-Smtp-Source: APXvYqw3rNoKR7qhG14HdHTkzZhCFSYGhU8G4slXXzVdg2oXHT7W6FwX9XAHzE8M2jN3ui+bff923g==
+X-Received: by 2002:a5d:69c4:: with SMTP id s4mr30923766wrw.163.1563614036120;
+        Sat, 20 Jul 2019 02:13:56 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd6:c00:2813:fc36:e36e:dd3b? ([2003:ea:8bd6:c00:2813:fc36:e36e:dd3b])
-        by smtp.googlemail.com with ESMTPSA id p3sm28729285wmg.15.2019.07.20.02.11.25
+        by smtp.googlemail.com with ESMTPSA id r14sm30350841wrx.57.2019.07.20.02.13.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jul 2019 02:11:25 -0700 (PDT)
+        Sat, 20 Jul 2019 02:13:55 -0700 (PDT)
 Subject: Re: network problems with r8169
 To:     Thomas Voegtle <tv@lio96.de>
 Cc:     linux-kernel@vger.kernel.org,
@@ -53,8 +53,8 @@ References: <alpine.LSU.2.21.1907182032370.7080@er-systems.de>
  <2eeedff5-4911-db6e-6bfd-99b591daa7ef@gmail.com>
  <alpine.LSU.2.21.1907192310140.11569@er-systems.de>
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <9cab7996-d801-0ae5-9e82-6d24eeb8d7c7@gmail.com>
-Date:   Sat, 20 Jul 2019 11:11:16 +0200
+Message-ID: <d64eee0e-e2d1-eb6a-787d-b0e592c983ca@gmail.com>
+Date:   Sat, 20 Jul 2019 11:13:48 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
@@ -187,6 +187,9 @@ On 19.07.2019 23:12, Thomas Voegtle wrote:
 > like that:
 > 44 packets transmitted, 2 received, 95% packet loss, time 44005ms
 > 
+I remember that I once had problems with this chip version and 100Mbps.
+Could you check whether you face the same issues with 1Gbps?
+
 > 
 > Maybe important:
 > I build a kernel with no modules.
@@ -194,23 +197,8 @@ On 19.07.2019 23:12, Thomas Voegtle wrote:
 > I have to power off when I booted a kernel which doesn't work, a (soft) reboot into a older kernel (e.g. 4.9.y)  doesn't
 > fix the problem. Powering off and on does.
 > 
-
-Then, what you could do is reversing the hunks of the patch step by step.
-Or make them separate patches and bisect.
-Relevant are the hunks from point 1 and 2.
-
-1. first 5 hunks (I don't think you have to reverse them individually)
-   EEE-related
-
-2. rtl8168g_disable_aldps, rtl8168g_phy_adjust_10m_aldps, rtl8168g_1_hw_phy_config
-   all of these hunks are in the path for RTL8168g
-
-3. rtl8168h_1_hw_phy_config, rtl8168h_2_hw_phy_config, rtl8168ep_1_hw_phy_config,
-   rtl8168ep_2_hw_phy_config
-   not in the path for RTL8168g
-
 > 
 > greetings,
 > 
 >       Thomas
-Heiner
+
