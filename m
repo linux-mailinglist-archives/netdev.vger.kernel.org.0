@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90C406F077
-	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 21:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9946F09A
+	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 22:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbfGTTet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jul 2019 15:34:49 -0400
-Received: from albireo.enyo.de ([5.158.152.32]:37712 "EHLO albireo.enyo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725940AbfGTTes (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Jul 2019 15:34:48 -0400
-Received: from [172.17.203.2] (helo=deneb.enyo.de)
-        by albireo.enyo.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1hov80-0005v7-Fe; Sat, 20 Jul 2019 19:34:44 +0000
-Received: from fw by deneb.enyo.de with local (Exim 4.92)
-        (envelope-from <fw@deneb.enyo.de>)
-        id 1hov80-0004M4-AR; Sat, 20 Jul 2019 21:34:44 +0200
-From:   Florian Weimer <fw@deneb.enyo.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Sergei Trofimovich <slyfox@gentoo.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU C Library <libc-alpha@sourceware.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        linux-man <linux-man@vger.kernel.org>
-Subject: Re: linux-headers-5.2 and proper use of SIOCGSTAMP
-References: <20190720174844.4b989d34@sf> <87wogca86l.fsf@mid.deneb.enyo.de>
-        <CAK8P3a3s3OeBj1MviaJV2UR0eUhF0GKPBi1iFf_3QKQyNPkuqw@mail.gmail.com>
-Date:   Sat, 20 Jul 2019 21:34:44 +0200
-In-Reply-To: <CAK8P3a3s3OeBj1MviaJV2UR0eUhF0GKPBi1iFf_3QKQyNPkuqw@mail.gmail.com>
-        (Arnd Bergmann's message of "Sat, 20 Jul 2019 20:50:23 +0200")
-Message-ID: <87muh8a4a3.fsf@mid.deneb.enyo.de>
+        id S1726283AbfGTUZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jul 2019 16:25:06 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:48198 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbfGTUZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jul 2019 16:25:06 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hovuh-000771-C3; Sat, 20 Jul 2019 22:25:03 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2019-07-20
+Date:   Sat, 20 Jul 2019 22:24:55 +0200
+Message-Id: <20190720202456.8444-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Arnd Bergmann:
+Hi Dave,
 
-> On Sat, Jul 20, 2019 at 8:10 PM Florian Weimer <fw@deneb.enyo.de> wrote:
->>
->> * Sergei Trofimovich:
->>
->> > Should #include <linux/sockios.h> always be included by user app?
->> > Or should glibc tweak it's definition of '#include <sys/socket.h>'
->> > to make it available on both old and new version of linux headers?
->>
->> What is the reason for dropping SIOCGSTAMP from <asm/socket.h>?
->>
->> If we know that, it will be much easier to decide what to do about
->> <sys/socket.h>.
->
-> As far as I can tell, nobody thought it would be a problem to move it
-> from asm/sockios.h to linux/sockios.h, as the general rule is that one
-> should use the linux/*.h version if both exist, and that the asm/*.h
-> version only contains architecture specific definitions. The new
-> definition is the same across all architectures, so it made sense to
-> have it in the common file.
+Sorry, this really should've gone out much earlier, in partilar
+the vendor command fixes. Not much for now, more -next material
+will come later.
 
-Most of the socket-related constants are not exposed in UAPI headers,
-although userspace is expected to use them.  It seems to me that due
-to the lack of other options among the UAPI headers, <asm/socket.h>
-has been a dumping ground for various socket-related things in the
-past, whether actually architecture-specific or not.
+Please pull and let me know if there's any problem.
 
-<linux/socket.h> does not include <asm/socket.h>, so that's why we
-usually end up with including <asm/socket.h> (perhaps indirectly via
-<sys/socket.h>), which used to include <asm/sockios.h> on most (all?)
-architectures.  That in turn provided some of the SIOC* constants in
-the past, so people didn't investigate other options.
+Thanks,
+johannes
 
-I think we can change glibc to include <linux/sockios.h> in addition
-to <asm/socket.h>.  <linux/sockios.h> looks reasonably clean to me,
-much better than <asm/socket.h>.  I'm still working on the other
-breakage, and I'm severely limited by the machine resources I have
-access to.
+
+
+The following changes since commit 1a03bb532934e90c7d662f7c59f4f66ea8451fa4:
+
+  r8169: fix RTL8168g PHY init (2019-07-20 12:17:45 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-davem-2019-07-20
+
+for you to fetch changes up to d2b3fe42bc629c2d4002f652b3abdfb2e72991c7:
+
+  mac80211: don't warn about CW params when not using them (2019-07-20 21:40:32 +0200)
+
+----------------------------------------------------------------
+We have a handful of fixes:
+ * ignore bad CW parameters if we aren't using them,
+   instead of warning
+ * fix operation (and then build) with the new netlink vendor
+   command policy requirement
+ * fix a memory leak in an error path when setting beacons
+
+----------------------------------------------------------------
+Brian Norris (1):
+      mac80211: don't warn about CW params when not using them
+
+Johannes Berg (2):
+      wireless: fix nl80211 vendor commands
+      nl80211: fix VENDOR_CMD_RAW_DATA
+
+John Crispin (1):
+      nl80211: fix NL80211_HE_MAX_CAPABILITY_LEN
+
+Lorenzo Bianconi (1):
+      mac80211: fix possible memory leak in ieee80211_assign_beacon
+
+ drivers/net/wireless/ath/wil6210/cfg80211.c               |  4 ++++
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/vendor.c |  1 +
+ drivers/net/wireless/ti/wlcore/vendor_cmd.c               |  3 +++
+ include/net/cfg80211.h                                    |  2 +-
+ include/uapi/linux/nl80211.h                              |  2 +-
+ net/mac80211/cfg.c                                        |  8 ++++++--
+ net/mac80211/driver-ops.c                                 | 13 +++++++++----
+ 7 files changed, 25 insertions(+), 8 deletions(-)
+
