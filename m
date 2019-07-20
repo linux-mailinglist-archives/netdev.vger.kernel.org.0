@@ -2,49 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7326F070
-	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 21:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C406F077
+	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 21:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbfGTTSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jul 2019 15:18:14 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:51286 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbfGTTSN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jul 2019 15:18:13 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 35F0D153B099C;
-        Sat, 20 Jul 2019 12:18:13 -0700 (PDT)
-Date:   Sat, 20 Jul 2019 12:18:09 -0700 (PDT)
-Message-Id: <20190720.121809.108455857425792197.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org, tv@lio96.de
-Subject: Re: [PATCH net] r8169: fix RTL8168g PHY init
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <eeb20312-1418-24c3-6482-09c051075b9e@gmail.com>
-References: <eeb20312-1418-24c3-6482-09c051075b9e@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 20 Jul 2019 12:18:13 -0700 (PDT)
+        id S1726174AbfGTTet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jul 2019 15:34:49 -0400
+Received: from albireo.enyo.de ([5.158.152.32]:37712 "EHLO albireo.enyo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725940AbfGTTes (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Jul 2019 15:34:48 -0400
+Received: from [172.17.203.2] (helo=deneb.enyo.de)
+        by albireo.enyo.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1hov80-0005v7-Fe; Sat, 20 Jul 2019 19:34:44 +0000
+Received: from fw by deneb.enyo.de with local (Exim 4.92)
+        (envelope-from <fw@deneb.enyo.de>)
+        id 1hov80-0004M4-AR; Sat, 20 Jul 2019 21:34:44 +0200
+From:   Florian Weimer <fw@deneb.enyo.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Sergei Trofimovich <slyfox@gentoo.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU C Library <libc-alpha@sourceware.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        linux-man <linux-man@vger.kernel.org>
+Subject: Re: linux-headers-5.2 and proper use of SIOCGSTAMP
+References: <20190720174844.4b989d34@sf> <87wogca86l.fsf@mid.deneb.enyo.de>
+        <CAK8P3a3s3OeBj1MviaJV2UR0eUhF0GKPBi1iFf_3QKQyNPkuqw@mail.gmail.com>
+Date:   Sat, 20 Jul 2019 21:34:44 +0200
+In-Reply-To: <CAK8P3a3s3OeBj1MviaJV2UR0eUhF0GKPBi1iFf_3QKQyNPkuqw@mail.gmail.com>
+        (Arnd Bergmann's message of "Sat, 20 Jul 2019 20:50:23 +0200")
+Message-ID: <87muh8a4a3.fsf@mid.deneb.enyo.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Sat, 20 Jul 2019 19:01:22 +0200
+* Arnd Bergmann:
 
-> From: Thomas Voegtle <tv@lio96.de>
-> This fixes a copy&paste error in the original patch. Setting the wrong
-> register resulted in massive packet loss on some systems.
-> 
-> Fixes: a2928d28643e ("r8169: use paged versions of phylib MDIO access functions")
-> Tested-by: Thomas Voegtle <tv@lio96.de>
-> Signed-off-by: Thomas Voegtle <tv@lio96.de>
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> On Sat, Jul 20, 2019 at 8:10 PM Florian Weimer <fw@deneb.enyo.de> wrote:
+>>
+>> * Sergei Trofimovich:
+>>
+>> > Should #include <linux/sockios.h> always be included by user app?
+>> > Or should glibc tweak it's definition of '#include <sys/socket.h>'
+>> > to make it available on both old and new version of linux headers?
+>>
+>> What is the reason for dropping SIOCGSTAMP from <asm/socket.h>?
+>>
+>> If we know that, it will be much easier to decide what to do about
+>> <sys/socket.h>.
+>
+> As far as I can tell, nobody thought it would be a problem to move it
+> from asm/sockios.h to linux/sockios.h, as the general rule is that one
+> should use the linux/*.h version if both exist, and that the asm/*.h
+> version only contains architecture specific definitions. The new
+> definition is the same across all architectures, so it made sense to
+> have it in the common file.
 
-Applied.
+Most of the socket-related constants are not exposed in UAPI headers,
+although userspace is expected to use them.  It seems to me that due
+to the lack of other options among the UAPI headers, <asm/socket.h>
+has been a dumping ground for various socket-related things in the
+past, whether actually architecture-specific or not.
+
+<linux/socket.h> does not include <asm/socket.h>, so that's why we
+usually end up with including <asm/socket.h> (perhaps indirectly via
+<sys/socket.h>), which used to include <asm/sockios.h> on most (all?)
+architectures.  That in turn provided some of the SIOC* constants in
+the past, so people didn't investigate other options.
+
+I think we can change glibc to include <linux/sockios.h> in addition
+to <asm/socket.h>.  <linux/sockios.h> looks reasonably clean to me,
+much better than <asm/socket.h>.  I'm still working on the other
+breakage, and I'm severely limited by the machine resources I have
+access to.
