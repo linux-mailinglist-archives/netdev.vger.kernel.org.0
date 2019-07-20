@@ -2,169 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A136ECC5
-	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 01:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD936ED47
+	for <lists+netdev@lfdr.de>; Sat, 20 Jul 2019 04:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732985AbfGSXgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jul 2019 19:36:13 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35761 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732936AbfGSXgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 19:36:12 -0400
-Received: by mail-pf1-f194.google.com with SMTP id u14so14822579pfn.2
-        for <netdev@vger.kernel.org>; Fri, 19 Jul 2019 16:36:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=adPQzI1v5diG916E3ftdRP7KVUpoq7ni2PbSErONVno=;
-        b=G3cOINU5IIalyfSzoeJGzYHjbbTayjz7uKTmRzNWMjmloTNLmboShFlXotMdaNFDe8
-         LAdBksnVHUYSUdjAjmD3cROKn41n3SKUCER9oghvqyO+rKroqQj7uNodSK+RT3bUNB1S
-         DXoVHjQtNrBXRF4FRkraXhiN3WesLyTqJ7RQQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=adPQzI1v5diG916E3ftdRP7KVUpoq7ni2PbSErONVno=;
-        b=AzG8likF4tAinCfYzqpXGJMR+i8nHvJuk6ZSKCYnxUoC45kXXMlBcs55FhCv9ARFwI
-         mc2X+8jI6iCCKp754l+G8Gt7CQN9O59icJqC6axcI3KxKDj4HXarAQn4+16r1kCq+ixM
-         ffNGQfs6vu+G3X486N7vtMV9Q1+szYiPEYwp75bgH97QkazKOk+ztZ4n7HpGL9zGcyE3
-         D6Yt1vwNobtNZ0XkgBr20/Re/T+B7xfreSbBXSroDLHWLhF7K1WpiuDAyOmFq/58yZLf
-         gTmXeJsTvMDD09+IoK1ry4cJnyCsINbRSdCKfOhx0YyO4mbfgvv/a/GQDhJULPamC8i2
-         WDSA==
-X-Gm-Message-State: APjAAAUABMV7ol5yh/5tubHj84hxxjy7VVyTck1EfpiS9vCFTmgH+m4n
-        ETro52D9XR6qqnw7Qo2ypA8m9A==
-X-Google-Smtp-Source: APXvYqxbqPCgcMawQkjn4LpCVpIZIiiIhPeZYJ2X7r56FNvFvPhSCu3KoIIFPtYjLuP6gyd08GrXzQ==
-X-Received: by 2002:a63:e54f:: with SMTP id z15mr56615815pgj.4.1563579371281;
-        Fri, 19 Jul 2019 16:36:11 -0700 (PDT)
-Received: from google.com ([2620:15c:202:1:534:b7c0:a63c:460c])
-        by smtp.gmail.com with ESMTPSA id a21sm38313759pfi.27.2019.07.19.16.36.08
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 19 Jul 2019 16:36:09 -0700 (PDT)
-Date:   Fri, 19 Jul 2019 16:36:06 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        linux-wireless@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        linux-rockchip@lists.infradead.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        netdev@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
-        linux-mmc@vger.kernel.org, davem@davemloft.net,
-        Xinming Hu <huxinming820@gmail.com>,
-        linux-kernel@vger.kernel.org, Andreas Fenkart <afenkart@gmail.com>
-Subject: Re: [PATCH 2/2] mwifiex: Make use of the new sdio_trigger_replug()
- API to reset
-Message-ID: <20190719233605.GA66171@google.com>
-References: <20190716164209.62320-1-dianders@chromium.org>
- <20190716164209.62320-3-dianders@chromium.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190716164209.62320-3-dianders@chromium.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S2390227AbfGTCTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jul 2019 22:19:17 -0400
+Received: from bedivere.hansenpartnership.com ([66.63.167.143]:53056 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729002AbfGTCTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jul 2019 22:19:17 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 05B218EE109;
+        Fri, 19 Jul 2019 19:19:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1563589156;
+        bh=z0BDlptRINl0TYz1Ruemp+2buxW+5SV0bIk9ZQ6n5e0=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=hDPi/0twr/uhtvTNMyW41cjDy7W3wq32Zf9pSLU3lECjSIsDguI7rTiCDZrgrS28m
+         lJVANDcU0y1M4+leAVIPMJ+8rbzBxDw7n83ljBnIQEiQvjx8yBsF3UvSAREJ9zu5Vq
+         UUevmjYH9qvOEvQy+Nm5iNu7sYVvL/L7LxuLb8Ek=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id KZKJBXWlIdD4; Fri, 19 Jul 2019 19:19:15 -0700 (PDT)
+Received: from [192.168.11.4] (122x212x32x58.ap122.ftth.ucom.ne.jp [122.212.32.58])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id D14718EE0EF;
+        Fri, 19 Jul 2019 19:19:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1563589155;
+        bh=z0BDlptRINl0TYz1Ruemp+2buxW+5SV0bIk9ZQ6n5e0=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=IvmAdq30Jx7NUn/Uys0+laN2G3mJRyivOZxKsX/+9kpMDqTn9H0/HOpR23pEUnSfL
+         FGNsM3KMGKfOX3Dsh35bsYWk65pp5kG957sswyp0TR81fAAzcWgitNASbXbPSXkR5n
+         OF5kDPjqZ2XZh3bk4KWkKo7jsHgvE5qadhEHKV8A=
+Message-ID: <1563589150.1602.21.camel@HansenPartnership.com>
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Paul Moore <paul@paul-moore.com>
+Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, omosnace@redhat.com,
+        dhowells@redhat.com,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        netfilter-devel@vger.kernel.org, simo@redhat.com,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Eric Paris <eparis@parisplace.org>, sgrubb@redhat.com
+Date:   Sat, 20 Jul 2019 11:19:10 +0900
+In-Reply-To: <87muhadnfr.fsf@xmission.com>
+References: <20190529153427.GB8959@cisco>
+         <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+         <20190529222835.GD8959@cisco>
+         <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+         <20190530170913.GA16722@mail.hallyn.com>
+         <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
+         <20190708180558.5bar6ripag3sdadl@madcap2.tricolour.ca>
+         <CAHC9VhRTT7JWqNnynvK04wKerjc-3UJ6R1uPtjCAPVr_tW-7MA@mail.gmail.com>
+         <20190716220320.sotbfqplgdructg7@madcap2.tricolour.ca>
+         <CAHC9VhScHizB2r5q3T5s0P3jkYdvzBPPudDksosYFp_TO7W9-Q@mail.gmail.com>
+         <20190718005145.eshekqfr3navqqiy@madcap2.tricolour.ca>
+         <CAHC9VhTYV02ws3QcezER5cY+Xt+tExcJEO-dumTDx=FXGFh3nw@mail.gmail.com>
+         <87muhadnfr.fsf@xmission.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Doug,
-
-On Tue, Jul 16, 2019 at 09:42:09AM -0700, Doug Anderson wrote:
-> As described in the patch ("mmc: core: Add sdio_trigger_replug()
-> API"), the current mwifiex_sdio_card_reset() is broken in the cases
-> where we're running Bluetooth on a second SDIO func on the same card
-> as WiFi.  The problem goes away if we just use the
-> sdio_trigger_replug() API call.
-
-I'm unfortunately not a good evaluator of SDIO/MMC stuff, so I'll mostly
-leave that to others and assume that the "replug" description is pretty
-much all I need to know.
-
-> NOTE: Even though with this new solution there is less of a reason to
-> do our work from a workqueue (the unplug / plug mechanism we're using
-> is possible for a human to perform at any time so the stack is
-> supposed to handle it without it needing to be called from a special
-> context), we still need a workqueue because the Marvell reset function
-> could called from a context where sleeping is invalid and thus we
-> can't claim the host.  One example is Marvell's wakeup_timer_fn().
+On Fri, 2019-07-19 at 11:00 -0500, Eric W. Biederman wrote:
+> Paul Moore <paul@paul-moore.com> writes:
 > 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
+> > On Wed, Jul 17, 2019 at 8:52 PM Richard Guy Briggs <rgb@redhat.com>
+> > wrote:
+> > > On 2019-07-16 19:30, Paul Moore wrote:
+> > 
+> > ...
+> > 
+> > > > We can trust capable(CAP_AUDIT_CONTROL) for enforcing audit
+> > > > container ID policy, we can not trust
+> > > > ns_capable(CAP_AUDIT_CONTROL).
+> > > 
+> > > Ok.  So does a process in a non-init user namespace have two (or
+> > > more) sets of capabilities stored in creds, one in the
+> > > init_user_ns, and one in current_user_ns?  Or does it get
+> > > stripped of all its capabilities in init_user_ns once it has its
+> > > own set in current_user_ns?  If the former, then we can use
+> > > capable().  If the latter, we need another mechanism, as
+> > > you have suggested might be needed.
+> > 
+> > Unfortunately I think the problem is that ultimately we need to
+> > allow any container orchestrator that has been given privileges to
+> > manage the audit container ID to also grant that privilege to any
+> > of the child process/containers it manages.  I don't believe we can
+> > do that with capabilities based on the code I've looked at, and the
+> > discussions I've had, but if you find a way I would leave to hear
+> > it.
+> > > If some random unprivileged user wants to fire up a container
+> > > orchestrator/engine in his own user namespace, then audit needs
+> > > to be namespaced.  Can we safely discard this scenario for now?
+> > 
+> > I think the only time we want to allow a container orchestrator to
+> > manage the audit container ID is if it has been granted that
+> > privilege by someone who has that privilege already.  In the zero-
+> > container, or single-level of containers, case this is relatively
+> > easy, and we can accomplish it using CAP_AUDIT_CONTROL as the
+> > privilege.  If we start nesting container orchestrators it becomes
+> > more complicated as we need to be able to support granting and
+> > inheriting this privilege in a manner; this is why I suggested a
+> > new mechanism *may* be necessary.
 > 
->  drivers/net/wireless/marvell/mwifiex/sdio.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
 > 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
-> index 24c041dad9f6..f77ad2615f08 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/sdio.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
-> @@ -2218,14 +2218,6 @@ static void mwifiex_sdio_card_reset_work(struct mwifiex_adapter *adapter)
->  {
->  	struct sdio_mmc_card *card = adapter->card;
->  	struct sdio_func *func = card->func;
-> -	int ret;
-> -
-> -	mwifiex_shutdown_sw(adapter);
-
-I'm very mildly unhappy to see this driver diverge from the PCIe one
-again, but the only way it makes sense to do things the same is if there
-is such thing as a "function level reset" for SDIO (i.e., doesn't also
-kill the Bluetooth function). But it appears we don't really have such a
-thing.
-
-> -
-> -	/* power cycle the adapter */
-> -	sdio_claim_host(func);
-> -	mmc_hw_reset(func->card->host);
-> -	sdio_release_host(func);
->  
->  	/* Previous save_adapter won't be valid after this. We will cancel
-
-^^^ FTR, the "save_adapter" note was already obsolete as of
-
-  cc75c577806a mwifiex: get rid of global save_adapter and sdio_work
-
-but the clear_bit() calls were (before this patch) still useful for
-other reasons.
-
->  	 * pending work requests.
-> @@ -2233,9 +2225,9 @@ static void mwifiex_sdio_card_reset_work(struct mwifiex_adapter *adapter)
->  	clear_bit(MWIFIEX_IFACE_WORK_DEVICE_DUMP, &card->work_flags);
->  	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
-
-But now, I don't think you need these clear_bit() calls any more --
-you're totally destroying the card and its workqueue on remove(). (And
-anyway, MWIFIEX_IFACE_WORK_CARD_RESET was just cleared by your caller.)
-
->  
-> -	ret = mwifiex_reinit_sw(adapter);
-> -	if (ret)
-> -		dev_err(&func->dev, "reinit failed: %d\n", ret);
-> +	sdio_claim_host(func);
-> +	sdio_trigger_replug(func);
-> +	sdio_release_host(func);
-
-And...we're approximately back to where we were 4 years ago :)
-
-commit b4336a282db86b298b70563f8ed51782b36b772c
-Author: Andreas Fenkart <afenkart@gmail.com>
-Date:   Thu Jul 16 18:50:01 2015 +0200
-
-    mwifiex: sdio: reset adapter using mmc_hw_reset
-
-Anyway, assuming the "function reset" thing isn't workable, and you drop
-the clear_bit() stuff, I think this is fine:
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-
->  }
->  
->  /* This function read/write firmware */
-> -- 
-> 2.22.0.510.g264f2c817a-goog
+> Let me segway a bit and see if I can get this conversation out of the
+> rut it seems to have drifted into.
 > 
+> Unprivileged containers and nested containers exist today and are
+> going to become increasingly common.  Let that be a given.
+
+Agree fully.
+
+> As I recall the interesting thing for audit to log is actions by
+> privileged processes.  Audit can log more but generally configuring
+> logging by of the actions of unprivileged users is effectively a self
+> DOS.
+> 
+> So I think the initial implementation can safely ignore actions of
+> nested containers and unprivileged containers because you don't care
+> about their actions. 
+
+I don't entirely agree here:  remember there might be two consumers for
+the audit data: the physical system owner (checking up on the tenants)
+and the tenant themselves who might be watching either their sub
+tenants or their users (and who, obviously, won't get the full audit
+stream).  In either case, the tenant may or may not be privileged, and
+if they're privileged, it might be through the user_ns in which case
+the physical system owner and the kernel would see them as "not
+privileged".  So I think we are ultimately going to need the ability to
+audit unprivileged containers.
+
+I also think audit has a role to play in intrusion detection and
+forensic analysis for fully unprivileged containers running external
+services, but I don't think we have to solve that case immediately.
+
+> If we start allow running audit in a container then we need to deal
+> with all of the nesting issues but until then I don't think you folks
+> care.
+> 
+> Or am I wrong.  Do the requirements for securely auditing things from
+> the kernel care about the actions of unprivileged users?
+
+I think ultimately we have to care, but it could be three phases: first
+would be genuinely privileged containers (i.e. with real root inside,
+being our most dangerous problem) the second would be user_ns
+privileged containers (i.e. with both user_ns and an interior root
+mapping) and the third would be unprivileged containers (with or
+without user_ns but no interior root).
+
+James
+
