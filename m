@@ -2,81 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D896F3C7
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 16:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 867C06F3EA
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 17:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbfGUOx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 10:53:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54100 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726399AbfGUOx2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jul 2019 10:53:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=uq/KuE4L/8X9xcpcAVbyOyvCVSdlgHWHWJ+hXa5I46s=; b=R6+5PvMZ6HPZqj04y1qoJH7CX6
-        wXEj3JIz+te0OdiHsZf+nI7HO4H3/A0WqK+KvO8SK3avLB+Ra616cXfGTmroU1mBY5ikGNm4wh0Au
-        tmld3U9xFezOLjatf+eS2Ki/7C2sRL9F+yp6eVRqTAdRLNKyhhW51ue1Z7Y8sJE4Nh+I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hpDDJ-0006Ke-0B; Sun, 21 Jul 2019 16:53:25 +0200
-Date:   Sun, 21 Jul 2019 16:53:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Zhu Yanjun <yanjun.zhu@oracle.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCHv2 0/2] forcedeth: recv cache to make NIC work steadily
-Message-ID: <20190721145324.GD22996@lunn.ch>
-References: <1563713633-25528-1-git-send-email-yanjun.zhu@oracle.com>
+        id S1726736AbfGUPTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 11:19:31 -0400
+Received: from mail-eopbgr140089.outbound.protection.outlook.com ([40.107.14.89]:9329
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726405AbfGUPTb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Jul 2019 11:19:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U4/Y/G2rGNmvzHgZd5m+hkvrmZCAbxuWY8oA+9oATMBn+UOwjEBFFbh9iNHZWkYwuVnIt7IqZoNP527G/uVqEKJkZPDYccN2VNgugGqqHVUqOYUiVMWNN3AfhUoYQxpVFD/7wX87ffgPkwQCN1+f/6qEIJB3tEqzcPp38qsU/3CfBApugSTXSP1Ac999kVra20/LhF5rlGtXaLAHmaRXGPriKVSlE1Yq9Arg92JUDzXyzjkwImit2ZdYQCXkJsQRh6GMYiTDMzU/UWvyFEKKAAHagZezUnNzmPm4T8EwQucsRZwRTOt6jSGzUr17cStSLN7hQNnwrftgQ+Fo56OYwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bCqO7jYWCanU49q8ZabIA2YJZvWWpFpj+3oLuWqTWWo=;
+ b=hgkynkKbO6SRtQZzUN058Vqirq2futqM1SsvcTHOn1iO1hRhGIdjDTFez6HQwCrbjb0bx9FGycnOIXqVk0H+r/yzbbG+MYT7ZrOV9R2sZIvKYcVmIS9AKLqb4e387wvCgcInAsH8YuxIn2ZXqlsFVpk7LFS1ZuuLWnIWLpqNXhLR21Qibp1B7z3uURtOFkHlNq5gnfL1mnTr/fdRnM8/Dd9WaapPQFBVrw5lIVANRAKSAiDDKnp3UUzF1UcTCaCYgLXuzDDaVSytzp3YmFSEUYPk1nrPTVz76S2PRtul4IVBjQARfdqoCmivCNkvCdv/+M3FNcwDc4qURWbHXCEH/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bCqO7jYWCanU49q8ZabIA2YJZvWWpFpj+3oLuWqTWWo=;
+ b=rHnNyCO0ItjI2WxXB/oMrSbYOJ+EaWPMI7o3ueSeMZVyKY6w8F+Amoiu46WAqCuRHBj9mqGQHEVhyA1oNKB3ZhCEtVW7z9elwRMrlqNbOD0zHaSG3gbfQmrr8Z+MiWWdolCDe5WPP1ldgup+5h6h3yshk9AEiVFvXTacrZXIUUY=
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.40.84) by
+ DBBPR05MB6297.eurprd05.prod.outlook.com (20.179.40.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.16; Sun, 21 Jul 2019 15:19:25 +0000
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::2833:939d:2b5c:4a2d]) by DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::2833:939d:2b5c:4a2d%6]) with mapi id 15.20.2094.013; Sun, 21 Jul 2019
+ 15:19:25 +0000
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     David Miller <davem@davemloft.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+CC:     Tariq Toukan <tariqt@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: Re: [PATCH net-next 00/12] mlx5 TLS TX HW offload support
+Thread-Topic: [PATCH net-next 00/12] mlx5 TLS TX HW offload support
+Thread-Index: AQHVM0amZ+XSxwyRMEeKcG4BIrzTvqa8rIOAgAI+DgCAEDyqgIAA6k4AgACe1oCAACGiAIAEdsoA
+Date:   Sun, 21 Jul 2019 15:19:25 +0000
+Message-ID: <fc3fac94-c83c-b0c5-b9ce-dc497624bdb6@mellanox.com>
+References: <20190717104141.37333cc9@cakuba.netronome.com>
+ <1b27ca27-fd33-2e2c-a4c0-ba8878a940db@mellanox.com>
+ <20190718100847.52d6314b@cakuba.netronome.com>
+ <20190718.120910.1323935732125670131.davem@davemloft.net>
+In-Reply-To: <20190718.120910.1323935732125670131.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0226.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1e::22) To DBBPR05MB6283.eurprd05.prod.outlook.com
+ (2603:10a6:10:c1::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=tariqt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3b141b79-2640-45b4-bbe1-08d70deed0ea
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6297;
+x-ms-traffictypediagnostic: DBBPR05MB6297:
+x-microsoft-antispam-prvs: <DBBPR05MB62975A1E86715921467122A7AEC50@DBBPR05MB6297.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2276;
+x-forefront-prvs: 0105DAA385
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(39860400002)(346002)(376002)(189003)(199004)(6506007)(53546011)(102836004)(186003)(36756003)(386003)(305945005)(7736002)(99286004)(25786009)(53936002)(52116002)(8676002)(71200400001)(71190400001)(229853002)(478600001)(26005)(31686004)(2501003)(6246003)(76176011)(4326008)(6512007)(107886003)(446003)(31696002)(6116002)(68736007)(6486002)(66066001)(558084003)(8936002)(14454004)(2906002)(66476007)(66556008)(64756008)(66446008)(6436002)(476003)(2616005)(86362001)(11346002)(81166006)(81156014)(316002)(486006)(5660300002)(3846002)(66946007)(54906003)(110136005)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6297;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 3iB+EEfeTZnkmsMx4gj6JlR22rzAmUa04i7fT5KRw9N4jdH5OnEg+LFRZIW3N1nxMS5HUKE7QZ1JfHjyePtl93yzuSaI/TdqFjpBmklQHg6k1d7plOIiWUYiXWA/9Y8jvm1T88H+7J50ZXK9LV+evxHHVttVyEl9Jpxcg2alsYC+VPqNQrcuJTPWzEQTdBbVdY6gb8+HBWf7B4dAHkbYzaxiHgkL7sY6NvpEUltmFWLYkaoWK9JyBhbkdYVQ+77Od8H5RrpkTDzMuhDaP0iyIYQo1zD57ndB/tNpIypvJWiDvL9yvW/uYK1rdAAYcxNUO9p7DSTkGKya40YXAmYgHamC8bqqZMwFUyVRuOPGNh7zrSN1qt3U0ZsQPazWtuxu3Mu4FDMRAktapvSYlQfL6ts5mQwMhrpJtP9EUARsBoE=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3B18A353B671734F8DBFFD4AB225DA8F@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1563713633-25528-1-git-send-email-yanjun.zhu@oracle.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b141b79-2640-45b4-bbe1-08d70deed0ea
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2019 15:19:25.6735
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tariqt@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6297
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 21, 2019 at 08:53:51AM -0400, Zhu Yanjun wrote:
-> These patches are to this scenario:
-> 
-> "
-> When the host run for long time, there are a lot of memory fragments in
-> the hosts. And it is possible that kernel will compact memory fragments.
-> But normally it is difficult for NIC driver to allocate a memory from
-> kernel. From this variable stat_rx_dropped, we can confirm that NIC driver
-> can not allocate skb very frequently.
-> "
-> 
-> Since NIC driver can not allocate skb in time, this makes some important
-> tasks not be completed in time.
-> To avoid it, a recv cache is created to pre-allocate skb for NIC driver.
-> This can make the important tasks be completed in time.
-> >From Nan's tests in LAB, these patches can make NIC driver work steadily.
-> Now in production hosts, these patches are applied.
-> 
-> With these patches, one NIC port needs 125MiB reserved. This 125MiB memory
-> can not be used by others. To a host on which the communications are not
-> mandatory, it is not necessary to reserve so much memory. So this recv cache
-> is disabled by default.
-> 
-> V1->V2:
-> 1. ndelay is replaced with GFP_KERNEL function __netdev_alloc_skb.
-> 2. skb_queue_purge is used when recv cache is destroyed.
-> 3. RECV_LIST_ALLOCATE bit is removed.
-> 4. schedule_delayed_work is moved out of while loop.
-
-Hi Zhu
-
-You don't appear to of address David's comment that this is probably
-the wrong way to do this, it should be a generic solution.
-
-Also, that there should be enough atomic memory in the system
-anyway. Have you looked at what other drivers are using atomic memory?
-It could actually be you need to debug some other driver, rather than
-add hacks to forcedeth.
-
-    Andrew
+DQoNCk9uIDcvMTgvMjAxOSAxMDowOSBQTSwgRGF2aWQgTWlsbGVyIHdyb3RlOg0KPiBGcm9tOiBK
+YWt1YiBLaWNpbnNraSA8amFrdWIua2ljaW5za2lAbmV0cm9ub21lLmNvbT4NCj4gRGF0ZTogVGh1
+LCAxOCBKdWwgMjAxOSAxMDowODo0NyAtMDcwMA0KPiANCj4+IFllcywgY2VydGFpbmx5LiBJdCdz
+IGRvY3VtZW50YXRpb24gYW5kIHJlbmFtaW5nIGEgc3RhdCBiZWZvcmUgaXQgbWFrZXMNCj4+IGl0
+IGludG8gYW4gb2ZmaWNpYWwgcmVsZWFzZS4NCj4gDQo+IEFncmVlZC4NCj4gDQoNCkFjay4NCkkn
+bGwgcHJlcGFyZSBhbmQgc2VuZCB0aGlzIHdlZWsuDQoNClRhcmlxDQo=
