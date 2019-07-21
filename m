@@ -2,79 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F9E6F432
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 18:50:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD006F4A0
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 20:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726053AbfGUQu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 12:50:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54180 "EHLO vps0.lunn.ch"
+        id S1727290AbfGUS0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 14:26:16 -0400
+Received: from mail.us.es ([193.147.175.20]:41530 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725847AbfGUQu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jul 2019 12:50:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:MIME-Version
-        :Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=vnGwkk/2tZOsPzfDCnQK0OkPgR1G41+U0hRGztZYreU=; b=1ANtJJ6g6R06uk9YESOr8K89Uw
-        wLZBefm5gs6XAXphftGwSiSIQwXc5UvW9r3V59JDvjWRc68bGA5UXCA5QKZmFd4FoPx7p8g9i9B3D
-        5h7XtKxZ8CScJob+azc64cD3rWwp6063rZniF9Ffonl2695HR/CVjexxG5CDTz2RPxwU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hpF2X-0006vf-N2; Sun, 21 Jul 2019 18:50:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Chris Healy <Chris.Healy@zii.aero>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net] net: phy: sfp: hwmon: Fix scaling of RX power
-Date:   Sun, 21 Jul 2019 18:50:08 +0200
-Message-Id: <20190721165008.26597-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.11.0
+        id S1726830AbfGUS0Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Jul 2019 14:26:16 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D58D2C3304
+        for <netdev@vger.kernel.org>; Sun, 21 Jul 2019 20:26:12 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C7355909AF
+        for <netdev@vger.kernel.org>; Sun, 21 Jul 2019 20:26:12 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B9E6C6DA95; Sun, 21 Jul 2019 20:26:12 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id AEB68DA4D1;
+        Sun, 21 Jul 2019 20:26:10 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 21 Jul 2019 20:26:10 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.214.120])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 70D0E4265A32;
+        Sun, 21 Jul 2019 20:26:10 +0200 (CEST)
+Date:   Sun, 21 Jul 2019 20:26:08 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jeremy Sowden <jeremy@azazel.net>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH net] kbuild: add net/netfilter/nf_tables_offload.h to
+ header-test blacklist.
+Message-ID: <20190721182608.mmn2p6jyazqmmvix@salvia>
+References: <20190719100743.2ea14575@cakuba.netronome.com>
+ <20190721113105.19301-1-jeremy@azazel.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190721113105.19301-1-jeremy@azazel.net>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RX power read from the SFP uses units of 0.1uW. This must be
-scaled to units of uW for HWMON. This requires a divide by 10, not the
-current 100.
+On Sun, Jul 21, 2019 at 12:31:05PM +0100, Jeremy Sowden wrote:
+> net/netfilter/nf_tables_offload.h includes net/netfilter/nf_tables.h
+> which is itself on the blacklist.
+> 
+> Reported-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
 
-With this change in place, sensors(1) and ethtool -m agree:
+Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
 
-sff2-isa-0000
-Adapter: ISA adapter
-in0:          +3.23 V
-temp1:        +33.1 C
-power1:      270.00 uW
-power2:      200.00 uW
-curr1:        +0.01 A
-
-        Laser output power                        : 0.2743 mW / -5.62 dBm
-        Receiver signal average optical power     : 0.2014 mW / -6.96 dBm
-
-Reported-by: chris.healy@zii.aero
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Fixes: 1323061a018a ("net: phy: sfp: Add HWMON support for module sensors")
----
- drivers/net/phy/sfp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 2d816aadea79..e36c04c26866 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -517,7 +517,7 @@ static int sfp_hwmon_read_sensor(struct sfp *sfp, int reg, long *value)
- 
- static void sfp_hwmon_to_rx_power(long *value)
- {
--	*value = DIV_ROUND_CLOSEST(*value, 100);
-+	*value = DIV_ROUND_CLOSEST(*value, 10);
- }
- 
- static void sfp_hwmon_calibrate(struct sfp *sfp, unsigned int slope, int offset,
--- 
-2.20.1
-
+Thanks, I think it would be good later on to review all of the
+netfilter headers and make them compile via this new
+CONFIG_HEADER_TEST Kconfig knob.
