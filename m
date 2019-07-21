@@ -2,107 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0DB36F260
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 11:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ADED6F2A3
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 12:38:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726148AbfGUJNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 05:13:00 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57296 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725851AbfGUJM7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jul 2019 05:12:59 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7717BC036744;
-        Sun, 21 Jul 2019 09:12:59 +0000 (UTC)
-Received: from maya.cloud.tilaa.com (ovpn-112-24.ams2.redhat.com [10.36.112.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 33E1B60497;
-        Sun, 21 Jul 2019 09:12:59 +0000 (UTC)
-Received: from elisabeth (055-041-157-037.ip-addr.inexio.net [37.157.41.55])
-        by maya.cloud.tilaa.com (Postfix) with ESMTPSA id 365394007B;
-        Sun, 21 Jul 2019 11:12:58 +0200 (CEST)
-Date:   Sun, 21 Jul 2019 11:12:56 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Hariprasad Kelam <hariprasad.kelam@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rat_cs: Remove duplicate code
-Message-ID: <20190721111256.708f4cfa@elisabeth>
-In-Reply-To: <20190720174613.GA31062@hari-Inspiron-1545>
-References: <20190720174613.GA31062@hari-Inspiron-1545>
-Organization: Red Hat
+        id S1726203AbfGUKih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 06:38:37 -0400
+Received: from smtp10.smtpout.orange.fr ([80.12.242.132]:51705 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfGUKih (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 06:38:37 -0400
+Received: from localhost.localdomain ([92.140.204.221])
+        by mwinf5d33 with ME
+        id fNeW2000F4n7eLC03NeWau; Sun, 21 Jul 2019 12:38:35 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 21 Jul 2019 12:38:35 +0200
+X-ME-IP: 92.140.204.221
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jon.maloy@ericsson.com, ying.xue@windriver.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] tipc: Fix a typo
+Date:   Sun, 21 Jul 2019 12:38:11 +0200
+Message-Id: <20190721103811.29724-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Sun, 21 Jul 2019 09:12:59 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 20 Jul 2019 23:16:47 +0530
-Hariprasad Kelam <hariprasad.kelam@gmail.com> wrote:
+s/tipc_toprsv_listener_data_ready/tipc_topsrv_listener_data_ready/
+(r and s switched in topsrv)
 
-> Code is same if translate is true/false in case invalid packet is
-> received.So remove else part.
-> 
-> Issue identified with coccicheck
-> 
-> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
-> ---
->  drivers/net/wireless/ray_cs.c | 29 ++++++++---------------------
->  1 file changed, 8 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-> index cf37268..a51bbe7 100644
-> --- a/drivers/net/wireless/ray_cs.c
-> +++ b/drivers/net/wireless/ray_cs.c
-> @@ -2108,29 +2108,16 @@ static void rx_data(struct net_device *dev, struct rcs __iomem *prcs,
->  #endif
->  
->  	if (!sniffer) {
-> -		if (translate) {
->  /* TBD length needs fixing for translated header */
-> -			if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
-> -			    rx_len >
-> -			    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
-> -			     FCS_LEN)) {
-> -				pr_debug(
-> -				      "ray_cs invalid packet length %d received\n",
-> -				      rx_len);
-> -				return;
-> -			}
-> -		} else { /* encapsulated ethernet */
-> -
-> -			if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
-> -			    rx_len >
-> -			    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
-> -			     FCS_LEN)) {
-> -				pr_debug(
-> -				      "ray_cs invalid packet length %d received\n",
-> -				      rx_len);
-> -				return;
-> +		if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
-> +		    rx_len >
-> +		    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
-> +		     FCS_LEN)) {
-> +			pr_debug(
-> +			      "ray_cs invalid packet length %d received\n",
-> +			      rx_len);
-> +			return;
->  			}
-> -		}
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+The function name could also be removed from the comment. It does not
+bring any useful information IMHO.
+---
+ net/tipc/topsrv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-NACK. The TBD comment makes no sense anymore if you remove one of the
-branches. Believe me or not, I have one of those cards, a (yes, 22
-years old) Buslink Raytheon model 24020. That check needed (for sure)
-and needs (maybe) to be fixed.
-
-Besides, patch subject and resulting coding style are also wrong.
-
+diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
+index f345662890a6..ca8ac96d22a9 100644
+--- a/net/tipc/topsrv.c
++++ b/net/tipc/topsrv.c
+@@ -476,7 +476,7 @@ static void tipc_topsrv_accept(struct work_struct *work)
+ 	}
+ }
+ 
+-/* tipc_toprsv_listener_data_ready - interrupt callback with connection request
++/* tipc_topsrv_listener_data_ready - interrupt callback with connection request
+  * The queued job is launched into tipc_topsrv_accept()
+  */
+ static void tipc_topsrv_listener_data_ready(struct sock *sk)
 -- 
-Stefano
+2.20.1
+
