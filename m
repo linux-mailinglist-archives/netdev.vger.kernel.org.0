@@ -2,162 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 519056F372
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 15:47:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE4C6F3BC
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 16:44:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726432AbfGUNqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 09:46:22 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:44274 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726326AbfGUNqW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jul 2019 09:46:22 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x6LDk4ik006816;
-        Sun, 21 Jul 2019 16:46:04 +0300
-Date:   Sun, 21 Jul 2019 16:46:04 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-cc:     davem@davemloft.net, netdev@vger.kernel.org, dsahern@gmail.com,
-        marek@cloudflare.com
-Subject: Re: [PATCH net v3] net: neigh: fix multiple neigh timer scheduling
-In-Reply-To: <552d7c8de6a07e12f7b76791da953e81478138cd.1563134704.git.lorenzo.bianconi@redhat.com>
-Message-ID: <alpine.LFD.2.21.1907211606200.3535@ja.home.ssi.bg>
-References: <552d7c8de6a07e12f7b76791da953e81478138cd.1563134704.git.lorenzo.bianconi@redhat.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1726455AbfGUOof (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 10:44:35 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39363 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726366AbfGUOof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 10:44:35 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 21 Jul 2019 17:44:31 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x6LEiV5P025216;
+        Sun, 21 Jul 2019 17:44:31 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next] net: sched: verify that q!=NULL before setting q->flags
+Date:   Sun, 21 Jul 2019 17:44:12 +0300
+Message-Id: <20190721144412.2783-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In function int tc_new_tfilter() q pointer can be NULL when adding filter
+on a shared block. With recent change that resets TCQ_F_CAN_BYPASS after
+filter creation, following NULL pointer dereference happens in case parent
+block is shared:
 
-	Hello,
+[  212.925060] BUG: kernel NULL pointer dereference, address: 0000000000000010
+[  212.925445] #PF: supervisor write access in kernel mode
+[  212.925709] #PF: error_code(0x0002) - not-present page
+[  212.925965] PGD 8000000827923067 P4D 8000000827923067 PUD 827924067 PMD 0
+[  212.926302] Oops: 0002 [#1] SMP KASAN PTI
+[  212.926539] CPU: 18 PID: 2617 Comm: tc Tainted: G    B             5.2.0+ #512
+[  212.926938] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+[  212.927364] RIP: 0010:tc_new_tfilter+0x698/0xd40
+[  212.927633] Code: 74 0d 48 85 c0 74 08 48 89 ef e8 03 aa 62 00 48 8b 84 24 a0 00 00 00 48 8d 78 10 48 89 44 24 18 e8 4d 0c 6b ff 48 8b 44 24 18 <83> 60 10 f
+b 48 85 ed 0f 85 3d fe ff ff e9 4f fe ff ff e8 81 26 f8
+[  212.928607] RSP: 0018:ffff88884fd5f5d8 EFLAGS: 00010296
+[  212.928905] RAX: 0000000000000000 RBX: 0000000000000000 RCX: dffffc0000000000
+[  212.929201] RDX: 0000000000000007 RSI: 0000000000000004 RDI: 0000000000000297
+[  212.929402] RBP: ffff88886bedd600 R08: ffffffffb91d4b51 R09: fffffbfff7616e4d
+[  212.929609] R10: fffffbfff7616e4c R11: ffffffffbb0b7263 R12: ffff88886bc61040
+[  212.929803] R13: ffff88884fd5f950 R14: ffffc900039c5000 R15: ffff88835e927680
+[  212.929999] FS:  00007fe7c50b6480(0000) GS:ffff88886f980000(0000) knlGS:0000000000000000
+[  212.930235] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  212.930394] CR2: 0000000000000010 CR3: 000000085bd04002 CR4: 00000000001606e0
+[  212.930588] Call Trace:
+[  212.930682]  ? tc_del_tfilter+0xa40/0xa40
+[  212.930811]  ? __lock_acquire+0x5b5/0x2460
+[  212.930948]  ? find_held_lock+0x85/0xa0
+[  212.931081]  ? tc_del_tfilter+0xa40/0xa40
+[  212.931201]  rtnetlink_rcv_msg+0x4ab/0x5f0
+[  212.931332]  ? rtnl_dellink+0x490/0x490
+[  212.931454]  ? lockdep_hardirqs_on+0x260/0x260
+[  212.931589]  ? netlink_deliver_tap+0xab/0x5a0
+[  212.931717]  ? match_held_lock+0x1b/0x240
+[  212.931844]  netlink_rcv_skb+0xd0/0x200
+[  212.931958]  ? rtnl_dellink+0x490/0x490
+[  212.932079]  ? netlink_ack+0x440/0x440
+[  212.932205]  ? netlink_deliver_tap+0x161/0x5a0
+[  212.932335]  ? lock_downgrade+0x360/0x360
+[  212.932457]  ? lock_acquire+0xe5/0x210
+[  212.932579]  netlink_unicast+0x296/0x350
+[  212.932705]  ? netlink_attachskb+0x390/0x390
+[  212.932834]  ? _copy_from_iter_full+0xe0/0x3a0
+[  212.932976]  netlink_sendmsg+0x394/0x600
+[  212.937998]  ? netlink_unicast+0x350/0x350
+[  212.943033]  ? move_addr_to_kernel.part.0+0x90/0x90
+[  212.948115]  ? netlink_unicast+0x350/0x350
+[  212.953185]  sock_sendmsg+0x96/0xa0
+[  212.958099]  ___sys_sendmsg+0x482/0x520
+[  212.962881]  ? match_held_lock+0x1b/0x240
+[  212.967618]  ? copy_msghdr_from_user+0x250/0x250
+[  212.972337]  ? lock_downgrade+0x360/0x360
+[  212.976973]  ? rwlock_bug.part.0+0x60/0x60
+[  212.981548]  ? __mod_node_page_state+0x1f/0xa0
+[  212.986060]  ? match_held_lock+0x1b/0x240
+[  212.990567]  ? find_held_lock+0x85/0xa0
+[  212.994989]  ? do_user_addr_fault+0x349/0x5b0
+[  212.999387]  ? lock_downgrade+0x360/0x360
+[  213.003713]  ? find_held_lock+0x85/0xa0
+[  213.007972]  ? __fget_light+0xa1/0xf0
+[  213.012143]  ? sockfd_lookup_light+0x91/0xb0
+[  213.016165]  __sys_sendmsg+0xba/0x130
+[  213.020040]  ? __sys_sendmsg_sock+0xb0/0xb0
+[  213.023870]  ? handle_mm_fault+0x337/0x470
+[  213.027592]  ? page_fault+0x8/0x30
+[  213.031316]  ? lockdep_hardirqs_off+0xbe/0x100
+[  213.034999]  ? mark_held_locks+0x24/0x90
+[  213.038671]  ? do_syscall_64+0x1e/0xe0
+[  213.042297]  do_syscall_64+0x74/0xe0
+[  213.045828]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  213.049354] RIP: 0033:0x7fe7c527c7b8
+[  213.052792] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f
+0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 54
+[  213.060269] RSP: 002b:00007ffc3f7908a8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[  213.064144] RAX: ffffffffffffffda RBX: 000000005d34716f RCX: 00007fe7c527c7b8
+[  213.068094] RDX: 0000000000000000 RSI: 00007ffc3f790910 RDI: 0000000000000003
+[  213.072109] RBP: 0000000000000000 R08: 0000000000000001 R09: 00007fe7c5340cc0
+[  213.076113] R10: 0000000000404ec2 R11: 0000000000000246 R12: 0000000000000080
+[  213.080146] R13: 0000000000480640 R14: 0000000000000080 R15: 0000000000000000
+[  213.084147] Modules linked in: act_gact cls_flower sch_ingress nfsv3 nfs_acl nfs lockd grace fscache bridge stp llc sunrpc intel_rapl_msr intel_rapl_common
+[<1;69;32Msb_edac rdma_ucm rdma_cm x86_pkg_temp_thermal iw_cm intel_powerclamp ib_cm coretemp kvm_intel kvm irqbypass mlx5_ib ib_uverbs ib_core crct10dif_pclmul crc32_pc
+lmul crc32c_intel ghash_clmulni_intel mlx5_core intel_cstate intel_uncore iTCO_wdt igb iTCO_vendor_support mlxfw mei_me ptp ses intel_rapl_perf mei pcspkr ipmi
+_ssif i2c_i801 joydev enclosure pps_core lpc_ich ioatdma wmi dca ipmi_si ipmi_devintf ipmi_msghandler acpi_power_meter acpi_pad ast i2c_algo_bit drm_vram_helpe
+r ttm drm_kms_helper drm mpt3sas raid_class scsi_transport_sas
+[  213.112326] CR2: 0000000000000010
+[  213.117429] ---[ end trace adb58eb0a4ee6283 ]---
 
-On Sun, 14 Jul 2019, Lorenzo Bianconi wrote:
+Verify that q pointer is not NULL before setting the 'flags' field.
 
-> Neigh timer can be scheduled multiple times from userspace adding
+Fixes: 3f05e6886a59 ("net_sched: unset TCQ_F_CAN_BYPASS when adding filters")
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+---
+ net/sched/cls_api.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-	If the garbage comes from ndm_state, why we should create
-a patch that just covers the problem?:
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index d144233423c5..0c5660bd0331 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -2152,7 +2152,9 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
+ 			       RTM_NEWTFILTER, false, rtnl_held);
+ 		tfilter_put(tp, fh);
+-		q->flags &= ~TCQ_F_CAN_BYPASS;
++		/* q pointer is NULL for shared blocks */
++		if (q)
++			q->flags &= ~TCQ_F_CAN_BYPASS;
+ 	}
+ 
+ errout:
+-- 
+2.21.0
 
-State: INCOMPLETE, STALE, FAILED, 0x8400 (0x8425)
-
-	User space is trying to create entry that is both
-STALE (no timer) and INCOMPLETE (with timer). So, in the
-2nd NL message __neigh_event_send() detects timer with NUD_STALE
-bit. What if this 2nd message never comes? Such inconsistence
-between nud_state and the timer can trigger other bugs in
-other functions.
-
-	May be we just need to restrict ndm_state and to drop
-this patch, for example, by adding checks in __neigh_update():
-
-        if (!(flags & NEIGH_UPDATE_F_ADMIN) &&
-            (old & (NUD_NOARP | NUD_PERMANENT)))
-                goto out;
-+	/* State must be single bit or 0 */
-+	if (new & (new - 1))
-+		goto out;
-        if (neigh->dead) {
-
-	If needed, this check can be moved only for ndm_state
-in neigh_add().
-
-> multiple neigh entries and forcing the neigh timer scheduling passing
-> NTF_USE in the netlink requests.
-> This will result in a refcount leak and in the following dump stack:
-
-	It is a single create with multiple bits in state with following
-__neigh_event_send(). And who knows, this bug may exist even in Linux 2.2 
-and below...
-
-> [   32.465295] NEIGH: BUG, double timer add, state is 8
-> [   32.465308] CPU: 0 PID: 416 Comm: double_timer_ad Not tainted 5.2.0+ #65
-> [   32.465311] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.12.0-2.fc30 04/01/2014
-> [   32.465313] Call Trace:
-> [   32.465318]  dump_stack+0x7c/0xc0
-> [   32.465323]  __neigh_event_send+0x20c/0x880
-> [   32.465326]  ? ___neigh_create+0x846/0xfb0
-> [   32.465329]  ? neigh_lookup+0x2a9/0x410
-> [   32.465332]  ? neightbl_fill_info.constprop.0+0x800/0x800
-> [   32.465334]  neigh_add+0x4f8/0x5e0
-> [   32.465337]  ? neigh_xmit+0x620/0x620
-> [   32.465341]  ? find_held_lock+0x85/0xa0
-> [   32.465345]  rtnetlink_rcv_msg+0x204/0x570
-> [   32.465348]  ? rtnl_dellink+0x450/0x450
-> [   32.465351]  ? mark_held_locks+0x90/0x90
-> [   32.465354]  ? match_held_lock+0x1b/0x230
-> [   32.465357]  netlink_rcv_skb+0xc4/0x1d0
-> [   32.465360]  ? rtnl_dellink+0x450/0x450
-> [   32.465363]  ? netlink_ack+0x420/0x420
-> [   32.465366]  ? netlink_deliver_tap+0x115/0x560
-> [   32.465369]  ? __alloc_skb+0xc9/0x2f0
-> [   32.465372]  netlink_unicast+0x270/0x330
-> [   32.465375]  ? netlink_attachskb+0x2f0/0x2f0
-> [   32.465378]  netlink_sendmsg+0x34f/0x5a0
-> [   32.465381]  ? netlink_unicast+0x330/0x330
-> [   32.465385]  ? move_addr_to_kernel.part.0+0x20/0x20
-> [   32.465388]  ? netlink_unicast+0x330/0x330
-> [   32.465391]  sock_sendmsg+0x91/0xa0
-> [   32.465394]  ___sys_sendmsg+0x407/0x480
-> [   32.465397]  ? copy_msghdr_from_user+0x200/0x200
-> [   32.465401]  ? _raw_spin_unlock_irqrestore+0x37/0x40
-> [   32.465404]  ? lockdep_hardirqs_on+0x17d/0x250
-> [   32.465407]  ? __wake_up_common_lock+0xcb/0x110
-> [   32.465410]  ? __wake_up_common+0x230/0x230
-> [   32.465413]  ? netlink_bind+0x3e1/0x490
-> [   32.465416]  ? netlink_setsockopt+0x540/0x540
-> [   32.465420]  ? __fget_light+0x9c/0xf0
-> [   32.465423]  ? sockfd_lookup_light+0x8c/0xb0
-> [   32.465426]  __sys_sendmsg+0xa5/0x110
-> [   32.465429]  ? __ia32_sys_shutdown+0x30/0x30
-> [   32.465432]  ? __fd_install+0xe1/0x2c0
-> [   32.465435]  ? lockdep_hardirqs_off+0xb5/0x100
-> [   32.465438]  ? mark_held_locks+0x24/0x90
-> [   32.465441]  ? do_syscall_64+0xf/0x270
-> [   32.465444]  do_syscall_64+0x63/0x270
-> [   32.465448]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> Fix the issue unscheduling neigh_timer if selected entry is in 'IN_TIMER'
-> receiving a netlink request with NTF_USE flag set
-> 
-> Reported-by: Marek Majkowski <marek@cloudflare.com>
-> Fixes: 0c5c2d308906 ("neigh: Allow for user space users of the neighbour table")
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-> ---
-> Changes since v2:
-> - remove check_timer flag and run neigh_del_timer directly
-> Changes since v1:
-> - fix compilation errors defining neigh_event_send_check_timer routine
-> ---
->  net/core/neighbour.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 742cea4ce72e..0dfc97bc8760 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -1124,6 +1124,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
->  
->  			atomic_set(&neigh->probes,
->  				   NEIGH_VAR(neigh->parms, UCAST_PROBES));
-> +			neigh_del_timer(neigh);
->  			neigh->nud_state     = NUD_INCOMPLETE;
->  			neigh->updated = now;
->  			next = now + max(NEIGH_VAR(neigh->parms, RETRANS_TIME),
-> @@ -1140,6 +1141,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
->  		}
->  	} else if (neigh->nud_state & NUD_STALE) {
->  		neigh_dbg(2, "neigh %p is delayed\n", neigh);
-> +		neigh_del_timer(neigh);
->  		neigh->nud_state = NUD_DELAY;
->  		neigh->updated = jiffies;
->  		neigh_add_timer(neigh, jiffies +
-> -- 
-> 2.21.0
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
