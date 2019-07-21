@@ -2,85 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D4F6F208
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 08:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0DB36F260
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 11:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726031AbfGUGhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 02:37:52 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:42009 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbfGUGhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 02:37:52 -0400
-Received: by mail-io1-f65.google.com with SMTP id e20so36694164iob.9;
-        Sat, 20 Jul 2019 23:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=w2/QR4w2cNvOQUCkgHOxW+cRJj9M6ZE6T2QZx8BYURY=;
-        b=FaVd2GXtLCiyYaTF8VT5+5FZrP/CBEj23yu9VFy128TbAQo/REhIUbNjcbBX2VJo5J
-         TNiWx2ywU2kUwPtERgWksHjOC0nPVQcLDPr0WNLX9B2jMHjU3V4aCiiktfsLTUd5YORH
-         e8xFFb7+RwLweCytJJZSr/gxpE2EAeoGTExfCwZ5KtenBySZ9qruP2T2tK3mPVhMi6wD
-         OJA+VSFNXI/9o1tKSwlyrdZYeUCdyB1LzaZVsS37vPbOvDLRYVMejWDExOmM+xGTar3s
-         xHj+5qY5F2WTZEUwFOCKkmiHR1osCMhDn6iLWhx4IwruG7H7QoMHkpdXFE4w2WyfWip+
-         Th3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=w2/QR4w2cNvOQUCkgHOxW+cRJj9M6ZE6T2QZx8BYURY=;
-        b=REhThF0tD0kwm6+8fhSqPsJqgK5L6PINrM6ZKd/CYeMmfwmUJeTPHPxT3SC3ADUPFg
-         keQMCKFjAiorrKAW06JCBQA7PDMLa4RkCrV42oysIt3oBOB4pS8jFY0VD3tJ5rsZcXAw
-         bpEDAjcmrMkPZHBzDgQ2Ulg/DL7e9mmXuoxvet/r8O0ceusR31DH3ybwmSa2hTueAduJ
-         GRIX7ys+d9g55tPSCkO7+drcGE8Zh+XdDPZGIg2b9C/GggNZPpI711Gg0SDYa8h2J+Q6
-         yfgzyMJM6eh2DptT678F3cDOd/5Ni81YzBd9LfTwnqwV8t/bD6NGbiOoGSX9xE+fFUyy
-         fpnQ==
-X-Gm-Message-State: APjAAAWGS8PdYrw8OmUe3OSEivRFX8xb9+Flhvg8X/8l2Q9n5Q4SlOyI
-        zMHpYHW37fy3zE/rASTADms=
-X-Google-Smtp-Source: APXvYqy7XvZaGc1MHmM7yMV5xZeVoKhEvG//TjYcx31IZRJKpMiz4du6AM1cNC9BiSPUQ2Y9ymIlDA==
-X-Received: by 2002:a02:c492:: with SMTP id t18mr65823345jam.67.1563691071187;
-        Sat, 20 Jul 2019 23:37:51 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id n17sm29474573iog.63.2019.07.20.23.37.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jul 2019 23:37:50 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     kjlu@umn.edu, smccaman@umn.edu, secalert@redhat.com,
-        emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        id S1726148AbfGUJNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 05:13:00 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57296 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725851AbfGUJM7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Jul 2019 05:12:59 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7717BC036744;
+        Sun, 21 Jul 2019 09:12:59 +0000 (UTC)
+Received: from maya.cloud.tilaa.com (ovpn-112-24.ams2.redhat.com [10.36.112.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 33E1B60497;
+        Sun, 21 Jul 2019 09:12:59 +0000 (UTC)
+Received: from elisabeth (055-041-157-037.ip-addr.inexio.net [37.157.41.55])
+        by maya.cloud.tilaa.com (Postfix) with ESMTPSA id 365394007B;
+        Sun, 21 Jul 2019 11:12:58 +0200 (CEST)
+Date:   Sun, 21 Jul 2019 11:12:56 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Hariprasad Kelam <hariprasad.kelam@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] allocate_flower_entry: should check for null deref
-Date:   Sun, 21 Jul 2019 01:37:31 -0500
-Message-Id: <20190721063731.7772-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+Subject: Re: [PATCH] rat_cs: Remove duplicate code
+Message-ID: <20190721111256.708f4cfa@elisabeth>
+In-Reply-To: <20190720174613.GA31062@hari-Inspiron-1545>
+References: <20190720174613.GA31062@hari-Inspiron-1545>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Sun, 21 Jul 2019 09:12:59 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-allocate_flower_entry does not check for allocation success, but tries
-to deref the result. I only moved the spin_lock under null check, because
- the caller is checking allocation's status at line 652.
+On Sat, 20 Jul 2019 23:16:47 +0530
+Hariprasad Kelam <hariprasad.kelam@gmail.com> wrote:
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Code is same if translate is true/false in case invalid packet is
+> received.So remove else part.
+> 
+> Issue identified with coccicheck
+> 
+> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+> ---
+>  drivers/net/wireless/ray_cs.c | 29 ++++++++---------------------
+>  1 file changed, 8 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+> index cf37268..a51bbe7 100644
+> --- a/drivers/net/wireless/ray_cs.c
+> +++ b/drivers/net/wireless/ray_cs.c
+> @@ -2108,29 +2108,16 @@ static void rx_data(struct net_device *dev, struct rcs __iomem *prcs,
+>  #endif
+>  
+>  	if (!sniffer) {
+> -		if (translate) {
+>  /* TBD length needs fixing for translated header */
+> -			if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
+> -			    rx_len >
+> -			    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
+> -			     FCS_LEN)) {
+> -				pr_debug(
+> -				      "ray_cs invalid packet length %d received\n",
+> -				      rx_len);
+> -				return;
+> -			}
+> -		} else { /* encapsulated ethernet */
+> -
+> -			if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
+> -			    rx_len >
+> -			    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
+> -			     FCS_LEN)) {
+> -				pr_debug(
+> -				      "ray_cs invalid packet length %d received\n",
+> -				      rx_len);
+> -				return;
+> +		if (rx_len < (ETH_HLEN + RX_MAC_HEADER_LENGTH) ||
+> +		    rx_len >
+> +		    (dev->mtu + RX_MAC_HEADER_LENGTH + ETH_HLEN +
+> +		     FCS_LEN)) {
+> +			pr_debug(
+> +			      "ray_cs invalid packet length %d received\n",
+> +			      rx_len);
+> +			return;
+>  			}
+> -		}
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-index 312599c6b35a..e447976bdd3e 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-@@ -67,7 +67,8 @@ static struct ch_tc_pedit_fields pedits[] = {
- static struct ch_tc_flower_entry *allocate_flower_entry(void)
- {
- 	struct ch_tc_flower_entry *new = kzalloc(sizeof(*new), GFP_KERNEL);
--	spin_lock_init(&new->lock);
-+	if (new)
-+		spin_lock_init(&new->lock);
- 	return new;
- }
- 
+NACK. The TBD comment makes no sense anymore if you remove one of the
+branches. Believe me or not, I have one of those cards, a (yes, 22
+years old) Buslink Raytheon model 24020. That check needed (for sure)
+and needs (maybe) to be fixed.
+
+Besides, patch subject and resulting coding style are also wrong.
+
 -- 
-2.17.1
-
+Stefano
