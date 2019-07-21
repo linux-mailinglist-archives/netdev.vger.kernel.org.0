@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA336F4BF
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 20:45:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF0F6F4C2
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 20:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbfGUSpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 14:45:51 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33700 "EHLO
+        id S1727242AbfGUSqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 14:46:46 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33722 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726946AbfGUSpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 14:45:51 -0400
+        with ESMTP id S1726765AbfGUSqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 14:46:45 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C08EE15258BDD;
-        Sun, 21 Jul 2019 11:45:49 -0700 (PDT)
-Date:   Sun, 21 Jul 2019 11:45:49 -0700 (PDT)
-Message-Id: <20190721.114549.696172160733707996.davem@davemloft.net>
-To:     yanjun.zhu@oracle.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCHv2 0/2] forcedeth: recv cache to make NIC work steadily
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1413115259C70;
+        Sun, 21 Jul 2019 11:46:45 -0700 (PDT)
+Date:   Sun, 21 Jul 2019 11:46:44 -0700 (PDT)
+Message-Id: <20190721.114644.1830499425455144315.davem@davemloft.net>
+To:     christophe.jaillet@wanadoo.fr
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        tanhuazhong@huawei.com, lipeng321@huawei.com,
+        shenjian15@huawei.com, liuzhongzhu@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] net: hns3: typo in the name of a constant
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1563713633-25528-1-git-send-email-yanjun.zhu@oracle.com>
-References: <1563713633-25528-1-git-send-email-yanjun.zhu@oracle.com>
+In-Reply-To: <20190721130831.16330-1-christophe.jaillet@wanadoo.fr>
+References: <20190721130831.16330-1-christophe.jaillet@wanadoo.fr>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 21 Jul 2019 11:45:49 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 21 Jul 2019 11:46:45 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Date: Sun, 21 Jul 2019 15:08:31 +0200
 
-I made it abundantly clear that I am completely not supportive of
-changes like this.
+> All constant in 'enum HCLGE_MBX_OPCODE' start with HCLGE, except
+> 'HLCGE_MBX_PUSH_VLAN_INFO' (C and L switched)
+> 
+> s/HLC/HCL/
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-If anything, we need to improve the behavior of the core kernel
-allocators, and the mid-level networking interfaces which use them,
-to fix problems like this.
-
-It is absolutely not sustainable to have every driver implement
-a cache of some sort to "improve" allocation behavior.
-
-Sorry, there is no way in the world I'm applying changes like
-these.
+Applied.
