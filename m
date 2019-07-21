@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA84E6F585
-	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 22:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 285E16F590
+	for <lists+netdev@lfdr.de>; Sun, 21 Jul 2019 22:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbfGUUWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 16:22:32 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:34620 "EHLO
+        id S1727418AbfGUUaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 16:30:06 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:34674 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726429AbfGUUWc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 16:22:32 -0400
+        with ESMTP id S1725944AbfGUUaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 16:30:06 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CED26152639D5;
-        Sun, 21 Jul 2019 13:22:30 -0700 (PDT)
-Date:   Sun, 21 Jul 2019 13:22:26 -0700 (PDT)
-Message-Id: <20190721.132226.202282272152745361.davem@davemloft.net>
-To:     bpoirier@suse.com
-Cc:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        fyang@suse.com, saeedm@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] be2net: Synchronize be_update_queues with
- dev_watchdog
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8A07915265938;
+        Sun, 21 Jul 2019 13:30:05 -0700 (PDT)
+Date:   Sun, 21 Jul 2019 13:30:04 -0700 (PDT)
+Message-Id: <20190721.133004.1039855471027921342.davem@davemloft.net>
+To:     fred@fredlawl.com
+Cc:     vishal@chelsio.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bhelgaas@google.com
+Subject: Re: [PATCH] cxgb4: Prefer pcie_capability_read_word()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190718014218.16610-1-bpoirier@suse.com>
-References: <20190718014218.16610-1-bpoirier@suse.com>
+In-Reply-To: <20190718020745.8867-1-fred@fredlawl.com>
+References: <20190718020745.8867-1-fred@fredlawl.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 21 Jul 2019 13:22:31 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 21 Jul 2019 13:30:05 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Benjamin Poirier <bpoirier@suse.com>
-Date: Thu, 18 Jul 2019 10:42:18 +0900
+From: Frederick Lawler <fred@fredlawl.com>
+Date: Wed, 17 Jul 2019 21:07:36 -0500
 
-> As pointed out by Firo Yang, a netdev tx timeout may trigger just before an
-> ethtool set_channels operation is started. be_tx_timeout(), which dumps
-> some queue structures, is not written to run concurrently with
-> be_update_queues(), which frees/allocates those queues structures. Add some
-> synchronization between the two.
+> Commit 8c0d3a02c130 ("PCI: Add accessors for PCI Express Capability")
+> added accessors for the PCI Express Capability so that drivers didn't
+> need to be aware of differences between v1 and v2 of the PCI
+> Express Capability.
 > 
-> Message-id: <CH2PR18MB31898E033896F9760D36BFF288C90@CH2PR18MB3189.namprd18.prod.outlook.com>
-> Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+> Replace pci_read_config_word() and pci_write_config_word() calls with
+> pcie_capability_read_word() and pcie_capability_write_word().
+> 
+> Signed-off-by: Frederick Lawler <fred@fredlawl.com>
 
-Applied and queued up for -stable, thanks.
+Applied.
