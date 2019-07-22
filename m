@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 520E9708AD
+	by mail.lfdr.de (Postfix) with ESMTP id C5727708AE
 	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 20:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729536AbfGVSde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 14:33:34 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42215 "EHLO
+        id S1729617AbfGVSdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 14:33:35 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:43931 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727748AbfGVSdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 14:33:32 -0400
+        by vger.kernel.org with ESMTP id S1729509AbfGVSde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 14:33:34 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A2F972472;
-        Mon, 22 Jul 2019 14:33:31 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 0ABFD2489;
+        Mon, 22 Jul 2019 14:33:34 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 22 Jul 2019 14:33:31 -0400
+  by compute3.internal (MEProxy); Mon, 22 Jul 2019 14:33:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=wvHm8oTkiWUUw/F//eLkpDMPO/t78gnH6iXOHX09QM8=; b=wZSVIgeq
-        xvzYo5AFsvyrBaJNgp4c0fVA+QECX77gYSLtBIbb9cemnZWpbC6tikyBUfTGWWfx
-        qumwBH6ncdsTAvj7FD/aLYuWJnH9YnSuRoaCN0+htW7Diskzxx5vOVRXrDydE6oX
-        BmDG3VGffuZw2d5Ir4dDGVge0ZKS43d7qp3/Bt5BE69l3XgoooprpsJSrJGch6f+
-        53oBGt4h7j+/j47ahbou2epQ1qZuEJp/6q1R75JZp/hz0zpccV8XfFg8PElDs77w
-        szhWzQ0CfXxWJPz50se7Ql8woph7bIEj7fEs5GvNvhymAqiQsQS8Wza8VDWFWnnn
-        kfT2t3mliJ89Dg==
-X-ME-Sender: <xms:ewE2XTYOXCNoUoCN14bO4NsoWZbd7qA5cbeqpH2EpzkLvNIowCaU7Q>
+        fm3; bh=s5t4OlPP3JGpyDqXoD3iDJ4e7Ue64A23Mwi1MmpY2yU=; b=l2iALN7A
+        HFrYMRRjgj3SJScUxxGGA7tLNaF8S0EeV2VE0Wzz46ZC4GCJuJjtWospgpvK/U1W
+        FZsFZTIiASAPlf8lnphZDrabI6sjGjzjWTHzVr7hiKKABvS4E3cxIAU+8hwzciWA
+        plXwK2iGT3MeHkzXvZpkXytz/lgQzY9X9pdKr2uZ4yfr3Obz9+IT5GNlwGuKMta+
+        rWkYNoJB4wscudcsfEInhbVmCZl9qTqscpQ1Z8XPA0MPm+d6+/zVZ3nanjdqGTvd
+        1OOsF8aKLQdkwrkDzgB6eke7N/Rs0ZlFV3oy1USH9RmKWbQYOsA03a7T9+quJ3v+
+        wCJCqPdkCIgPFw==
+X-ME-Sender: <xms:fQE2XdaKtZlIVLPwqU1b2qEYDuKA8zArc8UNGILUQc6U8Ejq7A5Vaw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeeggdduvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeef
-X-ME-Proxy: <xmx:ewE2XejbnLt79x45rYhM6mt7EiW5v4tLmh382cH0JQ5WjgoSHbifjw>
-    <xmx:ewE2XfMtkXabHAPDVjZuPj1wXqaSt-sNCeahROVlr8zVcwcEx8oyNw>
-    <xmx:ewE2XYtHAFW5wpm2BbNkWYTSHUIArsg2ZpAbM-2porA1fFwMgXO4eQ>
-    <xmx:ewE2XXhnUbqgEKIuZZvG65P-j1NLM0HXd94AiYlut_h3r_Rt0qVMIw>
+    ufhiiigvpeeh
+X-ME-Proxy: <xmx:fQE2XW0bmVLvTsn2OpOhBP00_awrwikWp5DXqHghiw-lqwIRMqjAwQ>
+    <xmx:fQE2XQJh9adZyAJ5vDGx9QsDSClNwuYhQlnysC-J2pwGfpEqHOXISw>
+    <xmx:fQE2XTLLsLEZkQyXPGrk39u5Lfy_4mdlAvxGjscAJCVGCpnauNwIuw>
+    <xmx:fgE2Xfs_t8Gix04kfzC1ytmtr45JRSQRhassNsrltuetfrxdBYQGIg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 376D08005B;
-        Mon, 22 Jul 2019 14:33:29 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9B3C180059;
+        Mon, 22 Jul 2019 14:33:31 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, nhorman@tuxdriver.com, dsahern@gmail.com,
@@ -49,9 +49,9 @@ Cc:     davem@davemloft.net, nhorman@tuxdriver.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, toke@redhat.com, andy@greyhouse.net,
         f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH net-next 05/12] drop_monitor: Add extack support
-Date:   Mon, 22 Jul 2019 21:31:27 +0300
-Message-Id: <20190722183134.14516-6-idosch@idosch.org>
+Subject: [RFC PATCH net-next 06/12] drop_monitor: Use pre_doit / post_doit hooks
+Date:   Mon, 22 Jul 2019 21:31:28 +0300
+Message-Id: <20190722183134.14516-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190722183134.14516-1-idosch@idosch.org>
 References: <20190722183134.14516-1-idosch@idosch.org>
@@ -64,63 +64,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Add various extack messages to make drop_monitor more user friendly.
+Each operation from user space should be protected by the global drop
+monitor mutex. Use the pre_doit / post_doit hooks to take / release the
+lock instead of doing it explicitly in each function.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- net/core/drop_monitor.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/core/drop_monitor.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
 diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 9080e62245b9..1d463c0d4bc5 100644
+index 1d463c0d4bc5..099000930736 100644
 --- a/net/core/drop_monitor.c
 +++ b/net/core/drop_monitor.c
-@@ -241,7 +241,7 @@ static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi,
- 	rcu_read_unlock();
- }
+@@ -75,6 +75,20 @@ static int dm_delay = 1;
+ static unsigned long dm_hw_check_delta = 2*HZ;
+ static LIST_HEAD(hw_stats_list);
  
--static int set_all_monitor_traces(int state)
-+static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
- {
- 	int rc = 0;
- 	struct dm_hw_stat_delta *new_stat = NULL;
-@@ -250,6 +250,7 @@ static int set_all_monitor_traces(int state)
- 	mutex_lock(&net_dm_mutex);
- 
- 	if (state == trace_state) {
-+		NL_SET_ERR_MSG_MOD(extack, "Trace state already set to requested state");
- 		rc = -EAGAIN;
- 		goto out_unlock;
- 	}
-@@ -257,6 +258,7 @@ static int set_all_monitor_traces(int state)
- 	switch (state) {
- 	case TRACE_ON:
- 		if (!try_module_get(THIS_MODULE)) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to take reference on module");
- 			rc = -ENODEV;
- 			break;
- 		}
-@@ -303,6 +305,8 @@ static int set_all_monitor_traces(int state)
- static int net_dm_cmd_config(struct sk_buff *skb,
- 			struct genl_info *info)
- {
-+	NL_SET_ERR_MSG_MOD(info->extack, "Command not supported");
++static int net_dm_nl_pre_doit(const struct genl_ops *ops,
++			      struct sk_buff *skb, struct genl_info *info)
++{
++	mutex_lock(&net_dm_mutex);
 +
- 	return -EOPNOTSUPP;
- }
- 
-@@ -311,9 +315,9 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
++	return 0;
++}
++
++static void net_dm_nl_post_doit(const struct genl_ops *ops,
++				struct sk_buff *skb, struct genl_info *info)
++{
++	mutex_unlock(&net_dm_mutex);
++}
++
+ static struct sk_buff *reset_per_cpu_data(struct per_cpu_dm_data *data)
  {
- 	switch (info->genlhdr->cmd) {
- 	case NET_DM_CMD_START:
--		return set_all_monitor_traces(TRACE_ON);
-+		return set_all_monitor_traces(TRACE_ON, info->extack);
- 	case NET_DM_CMD_STOP:
--		return set_all_monitor_traces(TRACE_OFF);
-+		return set_all_monitor_traces(TRACE_OFF, info->extack);
+ 	size_t al;
+@@ -247,12 +261,9 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
+ 	struct dm_hw_stat_delta *new_stat = NULL;
+ 	struct dm_hw_stat_delta *temp;
+ 
+-	mutex_lock(&net_dm_mutex);
+-
+ 	if (state == trace_state) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Trace state already set to requested state");
+-		rc = -EAGAIN;
+-		goto out_unlock;
++		return -EAGAIN;
  	}
  
- 	return -EOPNOTSUPP;
+ 	switch (state) {
+@@ -296,9 +307,6 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
+ 	else
+ 		rc = -EINPROGRESS;
+ 
+-out_unlock:
+-	mutex_unlock(&net_dm_mutex);
+-
+ 	return rc;
+ }
+ 
+@@ -384,6 +392,8 @@ static struct genl_family net_drop_monitor_family __ro_after_init = {
+ 	.hdrsize        = 0,
+ 	.name           = "NET_DM",
+ 	.version        = 2,
++	.pre_doit	= net_dm_nl_pre_doit,
++	.post_doit	= net_dm_nl_post_doit,
+ 	.module		= THIS_MODULE,
+ 	.ops		= dropmon_ops,
+ 	.n_ops		= ARRAY_SIZE(dropmon_ops),
 -- 
 2.21.0
 
