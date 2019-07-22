@@ -2,95 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 126D96F6AC
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 01:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4DF6F7B5
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 05:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfGUXld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 19:41:33 -0400
-Received: from ozlabs.org ([203.11.71.1]:56505 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726405AbfGUXlc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jul 2019 19:41:32 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45sLqD4m03z9s00;
-        Mon, 22 Jul 2019 09:41:27 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1563752489;
-        bh=A73xrVjphB9W4z8Lkt8lJE3bTn7LWxdCbv+O6Yr0pG4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=sLF1CvDHQG40Lo3735avIZ7UUymwOhzDwwWiJBnng4gS9LS/mIGx837TgrFXcGGnM
-         7Uoq+kF/LpS9nSKjFVm1niOcmm/Qd+5aO2qUMttUd4BAcWhXo7BeopD/YMBkR0CSlH
-         M1c+qHnXS6efXCPomwu4C2nkjxLQCXXxlVmRl6iv3+y38E5nxsvcH0NvtIm6RFdIrD
-         OqkwDoUCQEKaP+OqGWQJajoEXQNGRft5Fejvk0/zKWKUUBz41qHN9F/GIC3CnqThK/
-         8hzk77nRQosTv3HIP2u3L49c0eFVgMIxdywCtFghyrBNiFcZJOSQ0sPnBXtRW40XEU
-         9/ztVpCDQRVLQ==
-Date:   Mon, 22 Jul 2019 09:41:21 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Jeremy Sowden <jeremy@azazel.net>
-Subject: linux-next: manual merge of the net tree with Linus' tree
-Message-ID: <20190722094121.432266f8@canb.auug.org.au>
+        id S1727437AbfGVDBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 23:01:00 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36915 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbfGVDBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 23:01:00 -0400
+Received: by mail-pg1-f193.google.com with SMTP id i70so6196976pgd.4
+        for <netdev@vger.kernel.org>; Sun, 21 Jul 2019 20:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=19wNIXU4xjiQS6qw4IVTQbuwCXIhgNtndWsV8EDBMNI=;
+        b=UUR4d6YKm4A8TPNIWQuHX9RVJWJEQkykpWK6udc1eL7z0qJ8T+kaYzbamN3zw3Mkxf
+         tDqIjO/kMSf4N5RVFeladKbKn8q+l5Nm2ksXcp617Hy6/CDbxNHEYuETZQ0os5cT9p9b
+         N4YOixg5f8rpAz5DrWWfj4DcDnJl6e+s/n8EFgi39nZ7N3aSryxPevEEcEv6NIjYnq4m
+         MaePITIg8pHAXo9qRoxboE1TwZI8GC9LJlCfqZCqIrT70+ftphbxwy+lsZhtmHs/1rPV
+         Asve9C3yimqvPdDl9w9FbQ10F0kLKB5aAryRFXcQWukrMiBkz4USapZYyZqigMelh1mB
+         CK0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=19wNIXU4xjiQS6qw4IVTQbuwCXIhgNtndWsV8EDBMNI=;
+        b=IJZE7aF89BJayRKnOE7+A93UJJ6gLk+ak8wvN/4J+57eaNfpaEXhYioZGZ7WsYBpsb
+         2y5Tz8WUDTi4M2T3MVSAzJV2AmbR5b8PonUUMyBU7YjO2lo8m1sYSNR8PV+2PRqfAB9U
+         UaqMB/SfLt8jyCClTBuduEmnFjS0lD+dZcdvd0xeGIRv2XVnYSp78lHJHxLYbOVEaS05
+         1YDLDL1biNmZfdTniqMUoIOvt2jdTHzeUPmddvqrVWy2qD5OME/ez/suC2IapNgk7/7J
+         gvDeMAMR16bHWzQsBkRUzYN12CZakHFbVc7lw9FxMwa5Kalnv1nQCxfWOYMeCOyH8xoT
+         ZCBA==
+X-Gm-Message-State: APjAAAUrQgOB5OkxFfYxpFWXZfeIEVqOBKoc+RUAYhXILjiZbErfFSLJ
+        bZxlI3nTraOx8vTOKU/xjh4=
+X-Google-Smtp-Source: APXvYqyNkd9HlFIxsJWYZRa13fys5dplH675NtzyIcpLT6mMthU530ZIjyh78KWabSAmDl7ucdx5QA==
+X-Received: by 2002:a63:58c:: with SMTP id 134mr72267904pgf.106.1563764459373;
+        Sun, 21 Jul 2019 20:00:59 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h16sm41084547pfo.34.2019.07.21.20.00.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 21 Jul 2019 20:00:58 -0700 (PDT)
+Date:   Mon, 22 Jul 2019 11:00:49 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Jianlin Shi <jishi@redhat.com>
+Subject: Re: [PATCH v2 net-next 03/11] net/ipv4: Plumb support for filtering
+ route dumps
+Message-ID: <20190722030049.GP18865@dhcp-12-139.nay.redhat.com>
+References: <20181016015651.22696-1-dsahern@kernel.org>
+ <20181016015651.22696-4-dsahern@kernel.org>
+ <20190719041700.GO18865@dhcp-12-139.nay.redhat.com>
+ <147df36b-75df-5e71-3d74-9454db676bce@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/mI++v1RjvmcDc/3ttdw8FCk";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <147df36b-75df-5e71-3d74-9454db676bce@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/mI++v1RjvmcDc/3ttdw8FCk
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Jul 19, 2019 at 10:55:49AM -0600, David Ahern wrote:
+> Hi:
+> 
+> On 7/18/19 10:17 PM, Hangbin Liu wrote:
+> > Hi David,
+> > 
+> > Before commit 18a8021a7be3 ("net/ipv4: Plumb support for filtering route
+> > dumps"), when we dump a non-exist table, ip cmd exits silently.
+> > 
+> > # ip -4 route list table 1
+> > # echo $?
+> > 0
+> > 
+> > After commit 18a8021a7be3 ("net/ipv4: Plumb support for filtering route
+> > dumps"). When we dump a non-exist table, as we returned -ENOENT, ip route
+> > shows:
+> > 
+> > # ip -4 route show table 1
+> > Error: ipv4: FIB table does not exist.
+> > Dump terminated
+> > # echo $?
+> > 2
+> > 
+> > For me it looks make sense to return -ENOENT if we do not have the route
+> > table. But this changes the userspace behavior. Do you think if we need to
+> > keep backward compatible or just let it do as it is right now?
+> > 
+> 
+> It is not change in userspace behavior; ip opted into the strict
+> checking. The impact is to 'ip' users.
+> 
+> A couple of people have asked about this, and I am curious as to why
+> people run a route dump for a table that does not exist and do not like
+> being told that it does not exist.
 
-Hi all,
+Hi David,
 
-Today's linux-next merge of the net tree got a conflict in:
+Thanks for the reply. We have some route function tests and the new behavior
+break the test. I just want to make sure this is expected so we can change our
+tests to match the new behavior.
 
-  include/Kbuild
-
-between commit:
-
-  67bf47452ea0 ("kbuild: update compile-test header list for v5.3-rc1")
-
-from Linus' tree and commit:
-
-  408d2bbbfd46 ("kbuild: add net/netfilter/nf_tables_offload.h to header-te=
-st blacklist.")
-
-from the net tree.
-
-I fixed it up (I used the former version) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/mI++v1RjvmcDc/3ttdw8FCk
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl00+CEACgkQAVBC80lX
-0GxtIQf+Mf3fkJ2gN6xa1NXnQ1UVRxy1Ce12sX9GKNiiLwvToegkX0P49H9QysNh
-vpfLltkMm8WXZACcol5UL2VhUF+K+8kmu3cwkRecQe2T8o505o87IcIe8DLVcmLC
-JUVkzy5I+1kULwr4KyKP5NxtkzYLqPq2N4CIoVhabJKlZL8wr+skyQrf9wdU6C6L
-7CIDSWrOdW5+SOGfurFiIMLFPYjWqUzPoDisd+a3XxbbDZmrCrgCH4yQrnaKlquQ
-mYkme4cmXZYu9C2xyxNgb1+U8QAyx+gmwtg1iKFPb7kTs7p2Ikx+lSUcH4KB3lO+
-nLlBmNVdXMfsvMBT7fqDHElEI0o6WA==
-=hQAB
------END PGP SIGNATURE-----
-
---Sig_/mI++v1RjvmcDc/3ttdw8FCk--
+Cheers
+Hangbin
