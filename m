@@ -2,68 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9196FC45
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 11:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05B346FC4D
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 11:37:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729006AbfGVJea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 05:34:30 -0400
-Received: from verein.lst.de ([213.95.11.211]:58780 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726236AbfGVJea (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jul 2019 05:34:30 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 5F1B668B20; Mon, 22 Jul 2019 11:34:28 +0200 (CEST)
-Date:   Mon, 22 Jul 2019 11:34:28 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     john.hubbard@gmail.com
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Boaz Harrosh <boaz@plexistor.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
+        id S1729025AbfGVJhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 05:37:25 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:8769 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbfGVJhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 05:37:24 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d3583da0000>; Mon, 22 Jul 2019 02:37:31 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Mon, 22 Jul 2019 02:37:23 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Mon, 22 Jul 2019 02:37:23 -0700
+Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 22 Jul
+ 2019 09:37:20 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Johannes Thumshirn <jthumshirn@suse.de>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH 2/3] net/xdp: convert put_page() to put_user_page*()
-Message-ID: <20190722093428.GC29538@lst.de>
-References: <20190722043012.22945-1-jhubbard@nvidia.com> <20190722043012.22945-3-jhubbard@nvidia.com>
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
+ <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <6a6bac84-1d29-2740-1636-d3adb26b6bcc@nvidia.com>
+ <BN8PR12MB3266960A104A7CDBB4E59192D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <bc9ab3c5-b1b9-26d4-7b73-01474328eafa@nvidia.com>
+ <BN8PR12MB3266989D15E017A789E14282D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <4db855e4-1d59-d30b-154c-e7a2aa1c9047@nvidia.com>
+ <BN8PR12MB3266FD9CF18691EDEF05A4B8D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <64e37224-6661-ddb0-4394-83a16e1ccb61@nvidia.com>
+ <BN8PR12MB3266E1FAC5B7874EFA69DD7BD3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <25512348-5b98-aeb7-a6fb-f90376e66a84@nvidia.com>
+ <BN8PR12MB32665C1A106D3DCBF89CEA54D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <49efad87-2f74-5804-af4c-33730f865c41@nvidia.com>
+Date:   Mon, 22 Jul 2019 10:37:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190722043012.22945-3-jhubbard@nvidia.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <BN8PR12MB32665C1A106D3DCBF89CEA54D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563788251; bh=UJ0seHB+XN7Jd8VCDCnDcS3jZbxUmkRZdEKXTGpmU+M=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=c83Ai06+UTmxG7QV6Zri0El0rMs4N+Vfba7mgKAH5mCYGi9gfrZ1tjJUqTYqbkp0u
+         atczBX+qG5MVadEdx/Q311ClTaGcKF5bQR1Hvufr/OtoACsQm3n0uDSc4HwkpK357S
+         A+GfgHW/n1ToDqgAjVYOjdWBpQx5zA5nSL9zvigFKMrvUr7TlarWgoVnpPthIOHnyL
+         8d35NN4TA7PxMQWlOQo28mac7ucnVl8joI/V968MYaZTVJuVsCZUb6rLCk5sGLk6Hx
+         YDoBLRZFUF0zvoqDrZqfTsmE7uN5wgwHdA54DC36AvhNi9jxsGZnvh7HPxNeJio+Md
+         f2/rfA26O0dAA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-> index 83de74ca729a..9cbbb96c2a32 100644
-> --- a/net/xdp/xdp_umem.c
-> +++ b/net/xdp/xdp_umem.c
-> @@ -171,8 +171,7 @@ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
->  	for (i = 0; i < umem->npgs; i++) {
->  		struct page *page = umem->pgs[i];
->  
-> -		set_page_dirty_lock(page);
-> -		put_page(page);
-> +		put_user_pages_dirty_lock(&page, 1);
 
-Same here, we really should avoid the need for the loop here and
-do the looping inside the helper.
+On 22/07/2019 08:23, Jose Abreu wrote:
+> From: Jon Hunter <jonathanh@nvidia.com>
+> Date: Jul/19/2019, 14:35:52 (UTC+00:00)
+> 
+>>
+>> On 19/07/2019 13:32, Jose Abreu wrote:
+>>> From: Jon Hunter <jonathanh@nvidia.com>
+>>> Date: Jul/19/2019, 13:30:10 (UTC+00:00)
+>>>
+>>>> I booted the board without using NFS and then started used dhclient to
+>>>> bring up the network interface and it appears to be working fine. I can
+>>>> even mount the NFS share fine. So it does appear to be particular to
+>>>> using NFS to mount the rootfs.
+>>>
+>>> Damn. Can you send me your .config ?
+>>
+>> Yes no problem. Attached.
+> 
+> Can you compile your image without modules (i.e. all built-in) and let 
+> me know if the error still happens ?
+
+I simply removed the /lib/modules directory from the NFS share and
+verified that I still see the same issue. So it is not loading the
+modules that is a problem.
+
+Jon
+
+-- 
+nvpublic
