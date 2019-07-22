@@ -2,111 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 871D3702E8
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 17:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 968D3702F2
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 17:01:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbfGVPAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 11:00:41 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:39053 "EHLO
+        id S1727029AbfGVPBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 11:01:44 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:43805 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbfGVPAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 11:00:41 -0400
+        with ESMTP id S1725899AbfGVPBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 11:01:44 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1Mn2Jj-1iF2Sg2Z0h-00k8ux; Mon, 22 Jul 2019 17:00:21 +0200
+ (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1M7KKA-1hmHUx1cEe-007niL; Mon, 22 Jul 2019 17:01:35 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     Pravin B Shelar <pshelar@ovn.org>,
+To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Kangjie Lu <kjlu@umn.edu>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH] ovs: datapath: hide clang frame-overflow warnings
-Date:   Mon, 22 Jul 2019 17:00:01 +0200
-Message-Id: <20190722150018.1156794-1-arnd@arndb.de>
+        Yuval Mintz <Yuval.Mintz@qlogic.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        Denis Bolotin <denis.bolotin@cavium.com>,
+        Rahul Verma <rverma@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH net-next] qed: reduce maximum stack frame size
+Date:   Mon, 22 Jul 2019 17:01:23 +0200
+Message-Id: <20190722150133.1157096-1-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:n38BZKXQeU4NCOj2u3jNETtHaDR3crTUgKISheti+Q/vGZ4iOf9
- CEdgitQaFx19lylhbtU4GNob2+pIJoGxqHzfM/c0Y510k2PvKqagKwo4wxgp/wFzvEnZRAr
- 2qeqnFJWkAh9FMW6vYDyHXBJNcfl7PNO94jSWeEaAbMwbH+nN2KT/eYVXpX++zZrxMCIB6M
- 51tSASVvAUVMs9JjoCWzg==
+X-Provags-ID: V03:K1:+XcsDpkp6TN1nsOc+u8JZ0NBGgkbBC5mUSpZhfCcYijsitfVK32
+ cInYXMWZsdNXb7YVd3/rNUTpoAbMzdvYCkXTMlL7/xEKHXO3408xrDYg7hLMzgNvFbg/XAV
+ llAN93TIde3KdxfRUlgvykuSO6j58RpVCAZrW3XPSz9NR9oyXGDFVUwJwiTxJcMgm1GjxlI
+ pdr8jd0u3zZyUe3r5wK4g==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BIxhja8daZY=:a3r2BQT8oflr6GgXt6Jes2
- W45PjZlPErn72wTTrP4kq3o2NkWZx3eYlFz/FqMAlX1sEvyBzuIWG6sZ7I79ivukuKeDqt1Av
- A86XaIJYB7L31S6LtCZVKbtFdi+PWSoyH+ZESd5Kmr5XYPBynuYAZM6xraW/LYqJvNtLWtwmg
- Rc6jbSFKK0dGq0cFDK+ep7eUzrdRSTiHNhhDXzYH+CEnRxxgAlEgV9rCUFXjNVuyjTkkVSheg
- c4/INjS1MBkLRutGKrPt0lAIqjUpMAQCk4Dpr0IGcCkEEQ7+JXlJanSpGiADdniVWM1NgEMrG
- xLvDGBpVJO8TSRVS0O5bZTeB+WmDYauLUKaLYh6S7IYg/xrdb/bLOdkdohsQA/yFc7iiQv2HO
- abpRQTVBawt6wp0uxxFjSmmUGwrQxeQ2QMg8SDDnZ1QbVLTavQTztwWawywRiwf20XEHNMIdv
- 2qLG6QrhmQ+XgbY1UZqgxWznoLOe4dIeRglEJcXBTWj0nU310DWAcsSGhIJZlUlmYBohJGer0
- HGRB8KD5gKnJEp0DAwUs0LmcD8SbfoKlWCswinBVQEUE3Fa81aVAaRY/r4BY62EG6zARO5OCO
- U90PkOFax25c9cZ6DjGbqVbx86vJRLD2r8Rpr0XyDwUHkD8UJzW1m5iBu5Xjb4VwrMsfH8Z7i
- M23qg4QUtWCPXitysMNbfZJV1LcBQ1s/KvA7UYDFJLxRZTEawnf+640BFZ59wprwt8OcDiKre
- Qj6/B5iDFVB8GZdhrAtwY8eWJWrJG2Qxng66jw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:k7SCg1PLTRo=:c/bnJbYQG+S5jDADBRCfNO
+ iws3ofk8kglStWjPh6jowKeNxOW7MZR9WBlL2S8ODWYOi5qdtmunGsbuuUzVdzdbdE9ggbU7f
+ IH90bmn1ogpzegLCkZ8LK1LHI30lrs0NwokHd3SsuXOR3hA0uZ0SkC3LvJgR6cZkzjLljvy8v
+ mJk/TROBgY7F+2KDoIsxt8TGoZBNMUSZ1F/PIuqrAHU4GR/tuN4u/g36JgOqO8nRlFFioE7m0
+ H/SUlJJzVjCxNj7PZ4fuqZ3fS4EdIJJHKK1Nasp4XLVs3+Ey/ogxktD9cEkTQuE6a7EwZEeEx
+ df2Z39whjJneDqAxtUcC2EfPDr/hHarhs1H1Q6X5ioPnRpZfkZsGO9ZsXEd8vIW4I7GpVuC4w
+ 31VV7KL7BDUZB98zUKjTg9grPefIK3FC5n+v3WRT7UVNEyNLH2bETUPaewnnUDFGKV+cFORbN
+ eu0gTvZKGGt/lHO4IYHiI5CWCw7PCOFc0l7k22y+StDHcQqvGMM+pOlnY65M2kZUGl+vFhZYf
+ buPHREiuNozQ/xhCOWuoVnzVHij1MQBiI4/uYJBnFUxr+GDeOwCdEH0IYH7FYg8tnQpsFEfn4
+ o3Yit4XEMR1+54wXMPrIVpXFXoR7/aMA2XGcn9Lq/lpj3DAwBoykJSMqX2neF0ACAyQonHTQu
+ oumLzyze9CF7R033IpTHk3R8bSVJizE4Dmcw98nAdlND0tZTBNjdtimr82dtksGRAPy3hNgzG
+ mntup3wzRmE6KYQedLKTF57bZ+Mzh2HPgJ9IWQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some functions in the datapath code are factored out so that each
-one has a stack frame smaller than 1024 bytes with gcc. However,
-when compiling with clang, the functions are inlined more aggressively
-and combined again so we get
+clang warns about an overly large stack frame in one function
+when it decides to inline all __qed_get_vport_*() functions into
+__qed_get_vport_stats():
 
-net/openvswitch/datapath.c:1124:12: error: stack frame size of 1528 bytes in function 'ovs_flow_cmd_set' [-Werror,-Wframe-larger-than=]
+drivers/net/ethernet/qlogic/qed/qed_l2.c:1889:13: error: stack frame size of 1128 bytes in function '_qed_get_vport_stats' [-Werror,-Wframe-larger-than=]
 
-Marking both get_flow_actions() and ovs_nla_init_match_and_action()
-as 'noinline_for_stack' gives us the same behavior that we see with
-gcc, and no warning. Note that this does not mean we actually use
-less stack, as the functions call each other, and we still get
-three copies of the large 'struct sw_flow_key' type on the stack.
+Use a noinline_for_stack annotation to prevent clang from inlining
+these, which keeps the maximum stack usage at around half of that
+in the worst case, similar to what we get with gcc.
 
-The comment tells us that this was previously considered safe,
-presumably since the netlink parsing functions are called with
-a known backchain that does not also use a lot of stack space.
-
-Fixes: 9cc9a5cb176c ("datapath: Avoid using stack larger than 1024.")
+Fixes: 86622ee75312 ("qed: Move statistics to L2 code")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- net/openvswitch/datapath.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_l2.c | 34 +++++++++++-------------
+ 1 file changed, 15 insertions(+), 19 deletions(-)
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 892287d06c17..d01410e52097 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1047,7 +1047,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
+index 9f36e7948222..1a5fc2ae351c 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
+@@ -1631,10 +1631,9 @@ static void __qed_get_vport_pstats_addrlen(struct qed_hwfn *p_hwfn,
+ 	}
  }
  
- /* Factor out action copy to avoid "Wframe-larger-than=1024" warning. */
--static struct sw_flow_actions *get_flow_actions(struct net *net,
-+static noinline_for_stack struct sw_flow_actions *get_flow_actions(struct net *net,
- 						const struct nlattr *a,
- 						const struct sw_flow_key *key,
- 						const struct sw_flow_mask *mask,
-@@ -1081,12 +1081,13 @@ static struct sw_flow_actions *get_flow_actions(struct net *net,
-  * we should not to return match object with dangling reference
-  * to mask.
-  * */
--static int ovs_nla_init_match_and_action(struct net *net,
--					 struct sw_flow_match *match,
--					 struct sw_flow_key *key,
--					 struct nlattr **a,
--					 struct sw_flow_actions **acts,
--					 bool log)
-+static noinline_for_stack int
-+ovs_nla_init_match_and_action(struct net *net,
-+			      struct sw_flow_match *match,
-+			      struct sw_flow_key *key,
-+			      struct nlattr **a,
-+			      struct sw_flow_actions **acts,
-+			      bool log)
+-static void __qed_get_vport_pstats(struct qed_hwfn *p_hwfn,
+-				   struct qed_ptt *p_ptt,
+-				   struct qed_eth_stats *p_stats,
+-				   u16 statistics_bin)
++static noinline_for_stack void
++__qed_get_vport_pstats(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++		       struct qed_eth_stats *p_stats, u16 statistics_bin)
  {
- 	struct sw_flow_mask mask;
- 	int error = 0;
+ 	struct eth_pstorm_per_queue_stat pstats;
+ 	u32 pstats_addr = 0, pstats_len = 0;
+@@ -1661,10 +1660,9 @@ static void __qed_get_vport_pstats(struct qed_hwfn *p_hwfn,
+ 	    HILO_64_REGPAIR(pstats.error_drop_pkts);
+ }
+ 
+-static void __qed_get_vport_tstats(struct qed_hwfn *p_hwfn,
+-				   struct qed_ptt *p_ptt,
+-				   struct qed_eth_stats *p_stats,
+-				   u16 statistics_bin)
++static noinline_for_stack void
++__qed_get_vport_tstats(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++		       struct qed_eth_stats *p_stats, u16 statistics_bin)
+ {
+ 	struct tstorm_per_port_stat tstats;
+ 	u32 tstats_addr, tstats_len;
+@@ -1709,10 +1707,9 @@ static void __qed_get_vport_ustats_addrlen(struct qed_hwfn *p_hwfn,
+ 	}
+ }
+ 
+-static void __qed_get_vport_ustats(struct qed_hwfn *p_hwfn,
+-				   struct qed_ptt *p_ptt,
+-				   struct qed_eth_stats *p_stats,
+-				   u16 statistics_bin)
++static noinline_for_stack
++void __qed_get_vport_ustats(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++			    struct qed_eth_stats *p_stats, u16 statistics_bin)
+ {
+ 	struct eth_ustorm_per_queue_stat ustats;
+ 	u32 ustats_addr = 0, ustats_len = 0;
+@@ -1751,10 +1748,9 @@ static void __qed_get_vport_mstats_addrlen(struct qed_hwfn *p_hwfn,
+ 	}
+ }
+ 
+-static void __qed_get_vport_mstats(struct qed_hwfn *p_hwfn,
+-				   struct qed_ptt *p_ptt,
+-				   struct qed_eth_stats *p_stats,
+-				   u16 statistics_bin)
++static noinline_for_stack void
++__qed_get_vport_mstats(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++		       struct qed_eth_stats *p_stats, u16 statistics_bin)
+ {
+ 	struct eth_mstorm_per_queue_stat mstats;
+ 	u32 mstats_addr = 0, mstats_len = 0;
+@@ -1780,9 +1776,9 @@ static void __qed_get_vport_mstats(struct qed_hwfn *p_hwfn,
+ 	    HILO_64_REGPAIR(mstats.tpa_coalesced_bytes);
+ }
+ 
+-static void __qed_get_vport_port_stats(struct qed_hwfn *p_hwfn,
+-				       struct qed_ptt *p_ptt,
+-				       struct qed_eth_stats *p_stats)
++static noinline_for_stack void
++__qed_get_vport_port_stats(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++			   struct qed_eth_stats *p_stats)
+ {
+ 	struct qed_eth_stats_common *p_common = &p_stats->common;
+ 	struct port_stats port_stats;
 -- 
 2.20.0
 
