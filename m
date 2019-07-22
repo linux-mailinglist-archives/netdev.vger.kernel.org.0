@@ -2,193 +2,490 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E6D6FEDB
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 13:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C786FF04
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 13:53:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729937AbfGVLj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 07:39:29 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:33534 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728969AbfGVLj3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 07:39:29 -0400
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C44B6C0BDF;
-        Mon, 22 Jul 2019 11:39:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1563795568; bh=W7SXDkD3rVsP29mxuGi2n9CEjS9lOEaPxhpAZxD2fmU=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=TOiqW11flpmZRVv3bJF6VmjeqqREM/F+Y/JwkFHYgwfUsPnRf+hcuS6sMpnzO3dE2
-         Tt4MP+NGu6R7U4fl0bNp/+Ld69m/2K4hbEbdJOrU4vFurZGrMrHpnEj/LOv1vTFaxE
-         Xyhe+kyLMhPHHjU7P2o6+tCCoxXwpZ2PBfmUR2Af1k/yhC3AIcXyG42Oqe0HfB+TFg
-         VWfghg+MFVfomuu8tzTzzeQMQgKO/PjPp80xpcH85RGyLakZmMNDftkYbO2j5UR0sP
-         4PFTsHn8iL9jDRYAB0pn9pj69a6V6jlg9MAxiogd1H/zmFy/bjdBIgU7zOd36tWxRV
-         sl7UVgFgOtQLQ==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 76FA1A00AE;
-        Mon, 22 Jul 2019 11:39:25 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 22 Jul 2019 04:39:24 -0700
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Mon, 22 Jul 2019 04:39:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BZmUUwwRs34GdXq7AWG2ugbEWfniaAM+xVLsnbbgujBCXeovtw6OQnb5Kzt6xIqMxJYFkcOsS6M7JB8eXaXC6VCg6i1zktAbfya+cF83jsJH20MWkjNOW3Rmv51Wau93ut0NUNTVFTIKlH5+gbZoxFTk4hJ9zxCVXfoeXPi2T0/K9Ljkp9fRJZZkdMFHsx7fqnvG4wwW8MCWG7/hMRkK5x5lJOLHYmEd9swnquYIDbIVkMub7GTbpMizKV0c0SK2FUffmcydgqH55bkkRHwOMNp5bdeh3esFk60bzQCtCLwzCTr5RC0M54+EqW4QFyqXHu17eJLqoqdgVMOJJqJV3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m6iMCAORZMFD0YaMo69QkaFq1D00XGCGblJXMUF9Wrc=;
- b=W78mqQhFOStng03/NbsdzzlWYF2MOLlnDWj5VibQfHpyKnOvn0tiwqTZKXZIEpOt9Zde6+D4JClRX7iOMEbyQW/8QWNt8ssH2Uk/r9eHIEELAyr/UjYsfZ0bEwKFnrRCPs9A6WCmfWWhUvP4CKip3TH0NPyiS3gRzYMoEIL3EeDzHr7B7o4BA78Ksv96Qf7Ej5TByQ70gVe7plKcoe8Rj3P2UbBd6w7t4kahHZ0I31IWa3FSP/kIa5+qdZW2IzvsYpvJnCdn/wGUU4QyZ6tWrDbkLL4ahsICR6rJgW2bkG4ZaaRjBwbCrM5fFATVESwLk7dbakAkYPEqMrfbOHbztQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=synopsys.com;dmarc=pass action=none
- header.from=synopsys.com;dkim=pass header.d=synopsys.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector1-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m6iMCAORZMFD0YaMo69QkaFq1D00XGCGblJXMUF9Wrc=;
- b=juOvjpnSqhWg6Us6wIqfL8Kzg8dFYU7JvxS0jVl1BeDvPwrfvqoiqrCyAbzGjmst02kfxw0NwZQJHr7K6p/leLh2NtuI2ENa/1EEj9dv+zNJ17ACeelgt9KgDt8AhxPw4iO/0SVTqO8ZkxTRizBfQcekH9NHeHjEg1cx7pay3bo=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.66.159) by
- BN8PR12MB3524.namprd12.prod.outlook.com (20.179.66.87) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.16; Mon, 22 Jul 2019 11:39:22 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::61ef:5598:59e0:fc9d]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::61ef:5598:59e0:fc9d%5]) with mapi id 15.20.2094.013; Mon, 22 Jul 2019
- 11:39:22 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Lars Persson <lists@bofh.nu>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jon Hunter <jonathanh@nvidia.com>
-CC:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-Subject: RE: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-Thread-Topic: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-Thread-Index: AQHVMYtq2Zx4WVoG/U2kL8GCK0bP/abPQEOAgADTx+CABnZ9AIAADuYAgAAFQOA=
-Date:   Mon, 22 Jul 2019 11:39:21 +0000
-Message-ID: <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
- <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20190722101830.GA24948@apalos>
- <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
-In-Reply-To: <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fd259319-63ac-43cd-4e9a-08d70e993d82
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(49563074)(7193020);SRVR:BN8PR12MB3524;
-x-ms-traffictypediagnostic: BN8PR12MB3524:
-x-microsoft-antispam-prvs: <BN8PR12MB352429FF0625FF58B3A40D5AD3C40@BN8PR12MB3524.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-forefront-prvs: 01068D0A20
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(396003)(39860400002)(366004)(346002)(136003)(199004)(189003)(478600001)(7696005)(66066001)(446003)(476003)(102836004)(6436002)(66616009)(66446008)(64756008)(66556008)(76176011)(66946007)(66476007)(76116006)(316002)(86362001)(52536014)(110136005)(54906003)(55016002)(26005)(11346002)(186003)(3846002)(6116002)(25786009)(2906002)(81156014)(81166006)(8936002)(71190400001)(71200400001)(229853002)(256004)(7736002)(9686003)(99936001)(8676002)(14454004)(5024004)(68736007)(53936002)(53546011)(6506007)(486006)(7416002)(33656002)(5660300002)(305945005)(4326008)(6246003)(74316002)(99286004);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3524;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: khoE1cFfBn58f3DJ+iDniBy9wlijsZkzQ87AY35BW0jG8YqjkziCHb3qgepLns/Ax3EomXZlSmasUnM2vIsN8BZUjvsH9OuwMkAG0MvYMHot8vZNy5ytOfxykE7SbW0lQhBaWiXKHgeYboH+6+xBrsLYlgZXwjW9arwxqQgyL4mF3FIuWDFmauVGLtmarEJwjANhnGn3zwOerp1OFQ4hjw4+KAUnuGiPFNa1Mj7kMTw4ai+9HQfi86rS8fPpQPG5EHie4tCJQ0OsYKlyxT/yEs3Lf4V082DrfG6xUrcM68U7gaAgy/j1is/SPo5Q7pX/o3peOP21Pob8H4sXyOye3KqVf/DufYXuu1NYTIKm83Zys6esTBvxPhDT+X+6+YVYOA/0FDMhBz180+KGbrwOas/NP0Pqln4Jw377qLyZ2Og=
-Content-Type: multipart/mixed;
-        boundary="_002_BN8PR12MB326661846D53AAEE315A7434D3C40BN8PR12MB3266namp_"
+        id S1730043AbfGVLw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 07:52:58 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38085 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730033AbfGVLwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 07:52:55 -0400
+Received: by mail-ed1-f68.google.com with SMTP id r12so5556104edo.5
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 04:52:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=sCY6V6QkHvIfKdynb8KftQyF+O4GRw7wqHUHmORD+LU=;
+        b=qRVvACCvevjRnCrJIJxuzN49+WGivB6ESayV+LF3wKAsgN8iUs30SUxpNTyrD9BW4k
+         unULOq7nVhXg+OXZcKMRb5MhBLhKHR7nUPcWrCYAFPet0hA0LAueK/LFwHtxtjz/tLn4
+         RJi2sD0Vt0+cIUWwnbdjGhZy0TaRvSTYJZxmC/Ow6hqm/JaKbytwMtbzMy5PjrIR7Ww4
+         zn/6gwzPI6p+6llzeeoi+NDVvfZoBzbeHeINOBifJPmeniNmnobDlyryDePJMViF5APS
+         jeaoVyqCg7HleYNd/Kg7LSkp9j8b6HVZtgCj2ZLLS/TOTxgCvZmQeOa0IEa/cvKWwa7o
+         eSEQ==
+X-Gm-Message-State: APjAAAVEkixYOV/2+XLFZmXdO68YQMz/Nh1wWYHmWX/njEtL4CRULyj3
+        vX1vx8DHFLwcXmYVPeIHUaWEMA==
+X-Google-Smtp-Source: APXvYqzTY8pzjGI+pHTsavQkD0rNk3oYyQjTGtZzYridikVLfkSdesSEKQCV6rukXLSFVVXtQhWgzw==
+X-Received: by 2002:a17:906:190e:: with SMTP id a14mr40798883eje.69.1563796373754;
+        Mon, 22 Jul 2019 04:52:53 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id e12sm10957281edb.72.2019.07.22.04.52.49
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 22 Jul 2019 04:52:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D3FDA181CEA; Mon, 22 Jul 2019 13:52:48 +0200 (CEST)
+Subject: [PATCH bpf-next v4 3/6] xdp: Add devmap_hash map type for looking up
+ devices by hashed index
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Yonghong Song <yhs@fb.com>
+Date:   Mon, 22 Jul 2019 13:52:48 +0200
+Message-ID: <156379636866.12332.6546616116016146789.stgit@alrua-x1>
+In-Reply-To: <156379636786.12332.17776973951938230698.stgit@alrua-x1>
+References: <156379636786.12332.17776973951938230698.stgit@alrua-x1>
+User-Agent: StGit/0.19-dirty
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd259319-63ac-43cd-4e9a-08d70e993d82
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jul 2019 11:39:21.9720
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: joabreu@synopsys.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3524
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---_002_BN8PR12MB326661846D53AAEE315A7434D3C40BN8PR12MB3266namp_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-RnJvbTogTGFycyBQZXJzc29uIDxsaXN0c0Bib2ZoLm51Pg0KRGF0ZTogSnVsLzIyLzIwMTksIDEy
-OjExOjUwIChVVEMrMDA6MDApDQoNCj4gT24gTW9uLCBKdWwgMjIsIDIwMTkgYXQgMTI6MTggUE0g
-SWxpYXMgQXBhbG9kaW1hcw0KPiA8aWxpYXMuYXBhbG9kaW1hc0BsaW5hcm8ub3JnPiB3cm90ZToN
-Cj4gPg0KPiA+IE9uIFRodSwgSnVsIDE4LCAyMDE5IGF0IDA3OjQ4OjA0QU0gKzAwMDAsIEpvc2Ug
-QWJyZXUgd3JvdGU6DQo+ID4gPiBGcm9tOiBKb24gSHVudGVyIDxqb25hdGhhbmhAbnZpZGlhLmNv
-bT4NCj4gPiA+IERhdGU6IEp1bC8xNy8yMDE5LCAxOTo1ODo1MyAoVVRDKzAwOjAwKQ0KPiA+ID4N
-Cj4gPiA+ID4gTGV0IG1lIGtub3cgaWYgeW91IGhhdmUgYW55IHRob3VnaHRzLg0KPiA+ID4NCj4g
-PiA+IENhbiB5b3UgdHJ5IGF0dGFjaGVkIHBhdGNoID8NCj4gPiA+DQo+ID4NCj4gPiBUaGUgbG9n
-IHNheXMgIHNvbWVvbmUgY2FsbHMgcGFuaWMoKSByaWdodD8NCj4gPiBDYW4gd2UgdHJ5ZSBhbmQg
-ZmlndXJlIHdlcmUgdGhhdCBoYXBwZW5zIGR1cmluZyB0aGUgc3RtbWFjIGluaXQgcGhhc2U/DQo+
-ID4NCj4gDQo+IFRoZSByZWFzb24gZm9yIHRoZSBwYW5pYyBpcyBoaWRkZW4gaW4gdGhpcyBvbmUg
-bGluZSBvZiB0aGUga2VybmVsIGxvZ3M6DQo+IEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBB
-dHRlbXB0ZWQgdG8ga2lsbCBpbml0ISBleGl0Y29kZT0weDAwMDAwMDBiDQo+IA0KPiBUaGUgaW5p
-dCBwcm9jZXNzIGlzIGtpbGxlZCBieSBTSUdTRUdWIChzaWduYWwgMTEgPSAweGIpLg0KPiANCj4g
-SSB3b3VsZCBzdWdnZXN0IHlvdSBsb29rIGZvciBkYXRhIGNvcnJ1cHRpb24gYnVncyBpbiB0aGUg
-UlggcGF0aC4gSWYNCj4gdGhlIGNvZGUgaXMgZmV0Y2hlZCBmcm9tIHRoZSBORlMgbW91bnQgdGhl
-biBhIGNvcnJ1cHQgUlggYnVmZmVyIGNhbg0KPiB0cmlnZ2VyIGEgY3Jhc2ggaW4gdXNlcnNwYWNl
-Lg0KPiANCj4gL0xhcnMNCg0KDQpKb24sIEknbSBub3QgZmFtaWxpYXIgd2l0aCBBUk0uIEFyZSB0
-aGUgYnVmZmVyIGFkZHJlc3NlcyBiZWluZyBhbGxvY2F0ZWQgDQppbiBhIGNvaGVyZW50IHJlZ2lv
-biA/IENhbiB5b3UgdHJ5IGF0dGFjaGVkIHBhdGNoIHdoaWNoIGFkZHMgZnVsbCBtZW1vcnkgDQpi
-YXJyaWVyIGJlZm9yZSB0aGUgc3luYyA/DQoNCi0tLQ0KVGhhbmtzLA0KSm9zZSBNaWd1ZWwgQWJy
-ZXUNCg==
+A common pattern when using xdp_redirect_map() is to create a device map
+where the lookup key is simply ifindex. Because device maps are arrays,
+this leaves holes in the map, and the map has to be sized to fit the
+largest ifindex, regardless of how many devices actually are actually
+needed in the map.
 
---_002_BN8PR12MB326661846D53AAEE315A7434D3C40BN8PR12MB3266namp_
-Content-Type: application/octet-stream;
-	name="0001-net-stmmac-Add-memory-barrier.patch"
-Content-Description: 0001-net-stmmac-Add-memory-barrier.patch
-Content-Disposition: attachment;
-	filename="0001-net-stmmac-Add-memory-barrier.patch"; size=1397;
-	creation-date="Mon, 22 Jul 2019 11:38:06 GMT";
-	modification-date="Mon, 22 Jul 2019 11:38:06 GMT"
-Content-Transfer-Encoding: base64
+This patch adds a second type of device map where the key is looked up
+using a hashmap, instead of being used as an array index. This allows maps
+to be densely packed, so they can be smaller.
 
-RnJvbSAxZmU0OTY0ZTgzMmUzMmUyYzU3MDZhMGVkMTc0YzlmOGUwNDE5ZWZkIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpNZXNzYWdlLUlkOiA8MWZlNDk2NGU4MzJlMzJlMmM1NzA2YTBlZDE3NGM5
-ZjhlMDQxOWVmZC4xNTYzNzk1NDg2LmdpdC5qb2FicmV1QHN5bm9wc3lzLmNvbT4KRnJvbTogSm9z
-ZSBBYnJldSA8am9hYnJldUBzeW5vcHN5cy5jb20+CkRhdGU6IE1vbiwgMjIgSnVsIDIwMTkgMTM6
-Mzc6NTEgKzAyMDAKU3ViamVjdDogW1BBVENIIG5ldF0gbmV0OiBzdG1tYWM6IEFkZCBtZW1vcnkg
-YmFycmllcgoKU2lnbmVkLW9mZi1ieTogSm9zZSBBYnJldSA8am9hYnJldUBzeW5vcHN5cy5jb20+
-CgotLS0KQ2M6IEdpdXNlcHBlIENhdmFsbGFybyA8cGVwcGUuY2F2YWxsYXJvQHN0LmNvbT4KQ2M6
-IEFsZXhhbmRyZSBUb3JndWUgPGFsZXhhbmRyZS50b3JndWVAc3QuY29tPgpDYzogSm9zZSBBYnJl
-dSA8am9hYnJldUBzeW5vcHN5cy5jb20+CkNjOiAiRGF2aWQgUy4gTWlsbGVyIiA8ZGF2ZW1AZGF2
-ZW1sb2Z0Lm5ldD4KQ2M6IE1heGltZSBDb3F1ZWxpbiA8bWNvcXVlbGluLnN0bTMyQGdtYWlsLmNv
-bT4KQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LXN0bTMyQHN0LW1kLW1haWxt
-YW4uc3Rvcm1yZXBseS5jb20KQ2M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-ZwpDYzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZwotLS0KIGRyaXZlcnMvbmV0L2V0aGVy
-bmV0L3N0bWljcm8vc3RtbWFjL3N0bW1hY19tYWluLmMgfCAzICsrKwogMSBmaWxlIGNoYW5nZWQs
-IDMgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWlj
-cm8vc3RtbWFjL3N0bW1hY19tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0
-bW1hYy9zdG1tYWNfbWFpbi5jCmluZGV4IDdhNjkyMDA5OGRkMC4uMjA3YzM3NTViY2M1IDEwMDY0
-NAotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9zdG1tYWNfbWFpbi5j
-CisrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL3N0bW1hY19tYWluLmMK
-QEAgLTM0MjUsNiArMzQyNSw5IEBAIHN0YXRpYyBpbnQgc3RtbWFjX3J4KHN0cnVjdCBzdG1tYWNf
-cHJpdiAqcHJpdiwgaW50IGxpbWl0LCB1MzIgcXVldWUpCiAJCQkJY29udGludWU7CiAJCQl9CiAK
-KwkJCS8qIEZ1bGwgbWVtb3J5IGJhcnJpZXIgKi8KKwkJCW1iKCk7CisKIAkJCWRtYV9zeW5jX3Np
-bmdsZV9mb3JfY3B1KHByaXYtPmRldmljZSwgYnVmLT5hZGRyLAogCQkJCQkJZnJhbWVfbGVuLCBE
-TUFfRlJPTV9ERVZJQ0UpOwogCQkJc2tiX2NvcHlfdG9fbGluZWFyX2RhdGEoc2tiLCBwYWdlX2Fk
-ZHJlc3MoYnVmLT5wYWdlKSwKLS0gCjIuNy40Cgo=
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+ include/linux/bpf.h        |    7 ++
+ include/linux/bpf_types.h  |    1 
+ include/trace/events/xdp.h |    3 -
+ include/uapi/linux/bpf.h   |    1 
+ kernel/bpf/devmap.c        |  194 ++++++++++++++++++++++++++++++++++++++++++++
+ kernel/bpf/verifier.c      |    2 
+ net/core/filter.c          |    9 ++
+ 7 files changed, 214 insertions(+), 3 deletions(-)
 
---_002_BN8PR12MB326661846D53AAEE315A7434D3C40BN8PR12MB3266namp_--
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index bfdb54dd2ad1..f9a506147c8a 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -713,6 +713,7 @@ struct xdp_buff;
+ struct sk_buff;
+ 
+ struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key);
++struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key);
+ void __dev_map_flush(struct bpf_map *map);
+ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+ 		    struct net_device *dev_rx);
+@@ -799,6 +800,12 @@ static inline struct net_device  *__dev_map_lookup_elem(struct bpf_map *map,
+ 	return NULL;
+ }
+ 
++static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_map *map,
++							     u32 key)
++{
++	return NULL;
++}
++
+ static inline void __dev_map_flush(struct bpf_map *map)
+ {
+ }
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index eec5aeeeaf92..36a9c2325176 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -62,6 +62,7 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY_OF_MAPS, array_of_maps_map_ops)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_HASH_OF_MAPS, htab_of_maps_map_ops)
+ #ifdef CONFIG_NET
+ BPF_MAP_TYPE(BPF_MAP_TYPE_DEVMAP, dev_map_ops)
++BPF_MAP_TYPE(BPF_MAP_TYPE_DEVMAP_HASH, dev_map_hash_ops)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_SK_STORAGE, sk_storage_map_ops)
+ #if defined(CONFIG_BPF_STREAM_PARSER)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_SOCKMAP, sock_map_ops)
+diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+index 68899fdc985b..8c8420230a10 100644
+--- a/include/trace/events/xdp.h
++++ b/include/trace/events/xdp.h
+@@ -175,7 +175,8 @@ struct _bpf_dtab_netdev {
+ #endif /* __DEVMAP_OBJ_TYPE */
+ 
+ #define devmap_ifindex(fwd, map)				\
+-	((map->map_type == BPF_MAP_TYPE_DEVMAP) ?		\
++	((map->map_type == BPF_MAP_TYPE_DEVMAP ||		\
++	  map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) ?		\
+ 	  ((struct _bpf_dtab_netdev *)fwd)->dev->ifindex : 0)
+ 
+ #define _trace_xdp_redirect_map(dev, xdp, fwd, map, idx)		\
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 6f68438aa4ed..e6767020ebba 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -134,6 +134,7 @@ enum bpf_map_type {
+ 	BPF_MAP_TYPE_QUEUE,
+ 	BPF_MAP_TYPE_STACK,
+ 	BPF_MAP_TYPE_SK_STORAGE,
++	BPF_MAP_TYPE_DEVMAP_HASH,
+ };
+ 
+ /* Note that tracing related programs such as
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index a0501266bdb8..b47a604b4936 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -37,6 +37,12 @@
+  * notifier hook walks the map we know that new dev references can not be
+  * added by the user because core infrastructure ensures dev_get_by_index()
+  * calls will fail at this point.
++ *
++ * The devmap_hash type is a map type which interprets keys as ifindexes and
++ * indexes these using a hashmap. This allows maps that use ifindex as key to be
++ * densely packed instead of having holes in the lookup array for unused
++ * ifindexes. The setup and packet enqueue/send code is shared between the two
++ * types of devmap; only the lookup and insertion is different.
+  */
+ #include <linux/bpf.h>
+ #include <net/xdp.h>
+@@ -59,6 +65,7 @@ struct xdp_bulk_queue {
+ 
+ struct bpf_dtab_netdev {
+ 	struct net_device *dev; /* must be first member, due to tracepoint */
++	struct hlist_node index_hlist;
+ 	struct bpf_dtab *dtab;
+ 	struct xdp_bulk_queue __percpu *bulkq;
+ 	struct rcu_head rcu;
+@@ -70,11 +77,29 @@ struct bpf_dtab {
+ 	struct bpf_dtab_netdev **netdev_map;
+ 	struct list_head __percpu *flush_list;
+ 	struct list_head list;
++
++	/* these are only used for DEVMAP_HASH type maps */
++	struct hlist_head *dev_index_head;
++	spinlock_t index_lock;
++	unsigned int items;
+ };
+ 
+ static DEFINE_SPINLOCK(dev_map_lock);
+ static LIST_HEAD(dev_map_list);
+ 
++static struct hlist_head *dev_map_create_hash(void)
++{
++	int i;
++	struct hlist_head *hash;
++
++	hash = kmalloc_array(NETDEV_HASHENTRIES, sizeof(*hash), GFP_KERNEL);
++	if (hash != NULL)
++		for (i = 0; i < NETDEV_HASHENTRIES; i++)
++			INIT_HLIST_HEAD(&hash[i]);
++
++	return hash;
++}
++
+ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ {
+ 	int err, cpu;
+@@ -97,6 +122,9 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 	cost = (u64) dtab->map.max_entries * sizeof(struct bpf_dtab_netdev *);
+ 	cost += sizeof(struct list_head) * num_possible_cpus();
+ 
++	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH)
++		cost += sizeof(struct hlist_head) * NETDEV_HASHENTRIES;
++
+ 	/* if map size is larger than memlock limit, reject it */
+ 	err = bpf_map_charge_init(&dtab->map.memory, cost);
+ 	if (err)
+@@ -115,8 +143,18 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 	if (!dtab->netdev_map)
+ 		goto free_percpu;
+ 
++	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
++		dtab->dev_index_head = dev_map_create_hash();
++		if (!dtab->dev_index_head)
++			goto free_map_area;
++
++		spin_lock_init(&dtab->index_lock);
++	}
++
+ 	return 0;
+ 
++free_map_area:
++	bpf_map_area_free(dtab->netdev_map);
+ free_percpu:
+ 	free_percpu(dtab->flush_list);
+ free_charge:
+@@ -198,6 +236,7 @@ static void dev_map_free(struct bpf_map *map)
+ 
+ 	free_percpu(dtab->flush_list);
+ 	bpf_map_area_free(dtab->netdev_map);
++	kfree(dtab->dev_index_head);
+ 	kfree(dtab);
+ }
+ 
+@@ -218,6 +257,70 @@ static int dev_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+ 	return 0;
+ }
+ 
++static inline struct hlist_head *dev_map_index_hash(struct bpf_dtab *dtab,
++						    int idx)
++{
++	return &dtab->dev_index_head[idx & (NETDEV_HASHENTRIES - 1)];
++}
++
++struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key)
++{
++	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
++	struct hlist_head *head = dev_map_index_hash(dtab, key);
++	struct bpf_dtab_netdev *dev;
++
++	hlist_for_each_entry_rcu(dev, head, index_hlist)
++		if (dev->idx == key)
++			return dev;
++
++	return NULL;
++}
++
++static int dev_map_hash_get_next_key(struct bpf_map *map, void *key,
++				    void *next_key)
++{
++	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
++	u32 idx, *next = next_key;
++	struct bpf_dtab_netdev *dev, *next_dev;
++	struct hlist_head *head;
++	int i = 0;
++
++	if (!key)
++		goto find_first;
++
++	idx = *(u32 *)key;
++
++	dev = __dev_map_hash_lookup_elem(map, idx);
++	if (!dev)
++		goto find_first;
++
++	next_dev = hlist_entry_safe(rcu_dereference_raw(hlist_next_rcu(&dev->index_hlist)),
++				    struct bpf_dtab_netdev, index_hlist);
++
++	if (next_dev) {
++		*next = next_dev->idx;
++		return 0;
++	}
++
++	i = idx & (NETDEV_HASHENTRIES - 1);
++	i++;
++
++ find_first:
++	for (; i < NETDEV_HASHENTRIES; i++) {
++		head = dev_map_index_hash(dtab, i);
++
++		next_dev = hlist_entry_safe(rcu_dereference_raw(hlist_first_rcu(head)),
++					    struct bpf_dtab_netdev,
++					    index_hlist);
++		if (next_dev) {
++			*next = next_dev->idx;
++			return 0;
++		}
++	}
++
++	return -ENOENT;
++}
++
+ static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags,
+ 		       bool in_napi_ctx)
+ {
+@@ -373,6 +476,15 @@ static void *dev_map_lookup_elem(struct bpf_map *map, void *key)
+ 	return dev ? &dev->ifindex : NULL;
+ }
+ 
++static void *dev_map_hash_lookup_elem(struct bpf_map *map, void *key)
++{
++	struct bpf_dtab_netdev *obj = __dev_map_hash_lookup_elem(map,
++								*(u32 *)key);
++	struct net_device *dev = obj ? obj->dev : NULL;
++
++	return dev ? &dev->ifindex : NULL;
++}
++
+ static void dev_map_flush_old(struct bpf_dtab_netdev *dev)
+ {
+ 	if (dev->dev->netdev_ops->ndo_xdp_xmit) {
+@@ -422,6 +534,28 @@ static int dev_map_delete_elem(struct bpf_map *map, void *key)
+ 	return 0;
+ }
+ 
++static int dev_map_hash_delete_elem(struct bpf_map *map, void *key)
++{
++	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
++	struct bpf_dtab_netdev *old_dev;
++	int k = *(u32 *)key;
++	unsigned long flags;
++	int ret = -ENOENT;
++
++	spin_lock_irqsave(&dtab->index_lock, flags);
++
++	old_dev = __dev_map_hash_lookup_elem(map, k);
++	if (old_dev) {
++		dtab->items--;
++		hlist_del_init_rcu(&old_dev->index_hlist);
++		call_rcu(&old_dev->rcu, __dev_map_entry_free);
++		ret = 0;
++	}
++	spin_unlock_irqrestore(&dtab->index_lock, flags);
++
++	return ret;
++}
++
+ static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
+ 						    struct bpf_dtab *dtab,
+ 						    u32 ifindex,
+@@ -502,6 +636,56 @@ static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 				     map, key, value, map_flags);
+ }
+ 
++static int __dev_map_hash_update_elem(struct net *net, struct bpf_map *map,
++				     void *key, void *value, u64 map_flags)
++{
++	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
++	struct bpf_dtab_netdev *dev, *old_dev;
++	u32 ifindex = *(u32 *)value;
++	u32 idx = *(u32 *)key;
++	unsigned long flags;
++
++	if (unlikely(map_flags > BPF_EXIST || !ifindex))
++		return -EINVAL;
++
++	old_dev = __dev_map_hash_lookup_elem(map, idx);
++	if (old_dev && (map_flags & BPF_NOEXIST))
++		return -EEXIST;
++
++	dev = __dev_map_alloc_node(net, dtab, ifindex, idx);
++	if (IS_ERR(dev))
++		return PTR_ERR(dev);
++
++	spin_lock_irqsave(&dtab->index_lock, flags);
++
++	if (old_dev) {
++		hlist_del_rcu(&old_dev->index_hlist);
++	} else {
++		if (dtab->items >= dtab->map.max_entries) {
++			spin_unlock_irqrestore(&dtab->index_lock, flags);
++			call_rcu(&dev->rcu, __dev_map_entry_free);
++			return -E2BIG;
++		}
++		dtab->items++;
++	}
++
++	hlist_add_head_rcu(&dev->index_hlist,
++			   dev_map_index_hash(dtab, idx));
++	spin_unlock_irqrestore(&dtab->index_lock, flags);
++
++	if (old_dev)
++		call_rcu(&old_dev->rcu, __dev_map_entry_free);
++
++	return 0;
++}
++
++static int dev_map_hash_update_elem(struct bpf_map *map, void *key, void *value,
++				   u64 map_flags)
++{
++	return __dev_map_hash_update_elem(current->nsproxy->net_ns,
++					 map, key, value, map_flags);
++}
++
+ const struct bpf_map_ops dev_map_ops = {
+ 	.map_alloc = dev_map_alloc,
+ 	.map_free = dev_map_free,
+@@ -512,6 +696,16 @@ const struct bpf_map_ops dev_map_ops = {
+ 	.map_check_btf = map_check_no_btf,
+ };
+ 
++const struct bpf_map_ops dev_map_hash_ops = {
++	.map_alloc = dev_map_alloc,
++	.map_free = dev_map_free,
++	.map_get_next_key = dev_map_hash_get_next_key,
++	.map_lookup_elem = dev_map_hash_lookup_elem,
++	.map_update_elem = dev_map_hash_update_elem,
++	.map_delete_elem = dev_map_hash_delete_elem,
++	.map_check_btf = map_check_no_btf,
++};
++
+ static int dev_map_notification(struct notifier_block *notifier,
+ 				ulong event, void *ptr)
+ {
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index a2e763703c30..231b9e22827c 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -3460,6 +3460,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 			goto error;
+ 		break;
+ 	case BPF_MAP_TYPE_DEVMAP:
++	case BPF_MAP_TYPE_DEVMAP_HASH:
+ 		if (func_id != BPF_FUNC_redirect_map &&
+ 		    func_id != BPF_FUNC_map_lookup_elem)
+ 			goto error;
+@@ -3542,6 +3543,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 		break;
+ 	case BPF_FUNC_redirect_map:
+ 		if (map->map_type != BPF_MAP_TYPE_DEVMAP &&
++		    map->map_type != BPF_MAP_TYPE_DEVMAP_HASH &&
+ 		    map->map_type != BPF_MAP_TYPE_CPUMAP &&
+ 		    map->map_type != BPF_MAP_TYPE_XSKMAP)
+ 			goto error;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 47f6386fb17a..619130b346af 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3517,7 +3517,8 @@ static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+ 	int err;
+ 
+ 	switch (map->map_type) {
+-	case BPF_MAP_TYPE_DEVMAP: {
++	case BPF_MAP_TYPE_DEVMAP:
++	case BPF_MAP_TYPE_DEVMAP_HASH: {
+ 		struct bpf_dtab_netdev *dst = fwd;
+ 
+ 		err = dev_map_enqueue(dst, xdp, dev_rx);
+@@ -3554,6 +3555,7 @@ void xdp_do_flush_map(void)
+ 	if (map) {
+ 		switch (map->map_type) {
+ 		case BPF_MAP_TYPE_DEVMAP:
++		case BPF_MAP_TYPE_DEVMAP_HASH:
+ 			__dev_map_flush(map);
+ 			break;
+ 		case BPF_MAP_TYPE_CPUMAP:
+@@ -3574,6 +3576,8 @@ static inline void *__xdp_map_lookup_elem(struct bpf_map *map, u32 index)
+ 	switch (map->map_type) {
+ 	case BPF_MAP_TYPE_DEVMAP:
+ 		return __dev_map_lookup_elem(map, index);
++	case BPF_MAP_TYPE_DEVMAP_HASH:
++		return __dev_map_hash_lookup_elem(map, index);
+ 	case BPF_MAP_TYPE_CPUMAP:
+ 		return __cpu_map_lookup_elem(map, index);
+ 	case BPF_MAP_TYPE_XSKMAP:
+@@ -3655,7 +3659,8 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
+ 	ri->tgt_value = NULL;
+ 	WRITE_ONCE(ri->map, NULL);
+ 
+-	if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
++	if (map->map_type == BPF_MAP_TYPE_DEVMAP ||
++	    map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+ 		struct bpf_dtab_netdev *dst = fwd;
+ 
+ 		err = dev_map_generic_redirect(dst, skb, xdp_prog);
+
