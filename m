@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 370FD70BAD
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 23:41:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ECE270BAB
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 23:41:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732855AbfGVVlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 17:41:00 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:45855 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732831AbfGVVks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 17:40:48 -0400
-Received: by mail-pf1-f194.google.com with SMTP id r1so17987741pfq.12
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 14:40:48 -0700 (PDT)
+        id S1732852AbfGVVkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 17:40:55 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46455 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732826AbfGVVkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 17:40:49 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i8so18263376pgm.13
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 14:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=7s6bVL1hdHqbTfc8XnXCdyQyDRZ/VzkkhjAOdj6sy7g=;
-        b=gNL5ZVdxOXWJgEYmzig8AXKdc2nQC/NUbpTsQtON3YybS2MflnqAXWHgVwlM4tft0i
-         IHtFHnHArQGS8DQjh+CP+IMj+Kn/ghWNdQk1eZyk5cZcU94GnKTrpJnbFLlf4wMTYg1A
-         BN3Jl8/RmCUO0Cu0EJ16ZduaJg7QqpSgjzWWPuQdWgnqrLfCmcGFNWgFOFtp4IGl1Tua
-         6r10gWHA3tE8dAeEzM2EnOX40pRGFkpPH47s3IygMg4wKmU4kU+WFCYvDUGc/lF7vYe/
-         bXMyd05D6BE09QyXy1BPP8Su3h66VtDgqGwwCEk2qmlK+8moAd8B3KjZLOcCJUf30zdl
-         ub2A==
+        bh=9AXfLJ/l7/Ljtbbyk3JNOQihMM6pJKvAj22BwT+oiTI=;
+        b=2tR5ZGb/FCkKYbzXwtsgVdvVkjFeMmlOxKIro3PAThGyPaYiykXktgjmThbblpwYu4
+         UY0560T/rT7a2B1UE1vFFvTOcF2SO98hZLztOKjS1wnF8fJofRxSL597ifv8S9WdMpN6
+         kRpEiO+rihT+SvKKNtbSjjveFKY3K1OrR4Cu8fXjUpiequ65vlPMI4nhQgMVAzYNMaOP
+         EIlCAfR3/YT0HIqrIjEGlmfx2scNPOtxg4BIvRxTikUj/vAUHunnNG8IwVydQWThMt6d
+         K+jpP8w7jsUXlKNBwhGL0EHfwMBnVFpg7BHho2daKGAQVnMUq/YSMyxpZWpEflUJT36v
+         nK+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references;
-        bh=7s6bVL1hdHqbTfc8XnXCdyQyDRZ/VzkkhjAOdj6sy7g=;
-        b=iaOFqg8X4NCwHhH/KOGqOfbfuckKeyjUIs+olPjpwSX/4jFxCUrlCUxtni6AiVBNSo
-         YSdLxJjReckO1IQUqM4vHPG9cHuvxmeeqsc7m07Wo9kbzhfFPMYzMY1PSigZ1P4ypwG3
-         wuxVxenP51ykJvo6vi0NbJaGXRlt2DpwhZYruIlTjNBT/ESqKkkQdGKBlVjV1HbmyOL8
-         9UTyzZspSrJN5Qla8ASFRxtA2jf/QW7atTxd3wgt2Yt0636+ZQdMbN/u/9lUqltnIIx3
-         tMKdfooW5go80WqUFSOTYE8znj6nywMfpOINRLI77fKJKs/x0WPSFRuHjf2OJOoRZSf1
-         xg9w==
-X-Gm-Message-State: APjAAAXXCagi5ZxefOYAiS7viLQWzY7J8T9O5IRnOOUOgjZ+aZ//2xMz
-        WbqiDlnP8T+GMIbTRWK4Xhhnzg==
-X-Google-Smtp-Source: APXvYqxdTAkmP6Elr8ovpbCxj2Ho1i0eiisTrqsMfPq7gE7zIIhufF9UclxChJPd3veooI+2lJAtLw==
-X-Received: by 2002:aa7:9aaf:: with SMTP id x15mr2358586pfi.214.1563831647979;
-        Mon, 22 Jul 2019 14:40:47 -0700 (PDT)
+        bh=9AXfLJ/l7/Ljtbbyk3JNOQihMM6pJKvAj22BwT+oiTI=;
+        b=sPtWOnsoaJNWq97PT7SUjI2oAdGgYHociEZOvthqD1jJSkFDlgzbBtClKynepjHxG9
+         H2EENBfNrIvFd9nJ3dsV/V7LNVg//bp/Da2MslrzqCPoIJaKUl/pFMZBGoqEUITAHf4G
+         QaaOHVycHCWS45lgJkddBkd/RFYVyVyVRL3C+kEJMv1ZlIlr7wxn4CUALUBVrzdxbeuz
+         evsMxxjd3OM7VuePlpj2DQ9jYzVeisHHBNnh+yKI2YNAVBCrWsGKeHBvfmY3FDJadDfO
+         ksWVi0JMCbDhKShDuI+mDjn1b3sd3PtgriWw9T3KLyhiW7S4ah+VbNwqImDmbnL+vHcL
+         KjuA==
+X-Gm-Message-State: APjAAAVDRK9hZYs9+UK+06UL7whAyB4Pb95vDfoXzkwsKjcrmRMR4x03
+        c7cq8CtFI1pjIhcLqIloWvLU+g==
+X-Google-Smtp-Source: APXvYqzgduTjcs9uAOsfVcL3eVvADD231uo4lEAek1p4VoN1u0Dx7Q0PNapUfYZ3sWFL6fPhWQqjng==
+X-Received: by 2002:a62:14c4:: with SMTP id 187mr2226767pfu.241.1563831648910;
+        Mon, 22 Jul 2019 14:40:48 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id p65sm40593714pfp.58.2019.07.22.14.40.46
+        by smtp.gmail.com with ESMTPSA id p65sm40593714pfp.58.2019.07.22.14.40.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Jul 2019 14:40:47 -0700 (PDT)
+        Mon, 22 Jul 2019 14:40:48 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     snelson@pensando.io, netdev@vger.kernel.org, davem@davemloft.net
-Subject: [PATCH v4 net-next 18/19] ionic: Add coalesce and other features
-Date:   Mon, 22 Jul 2019 14:40:22 -0700
-Message-Id: <20190722214023.9513-19-snelson@pensando.io>
+Subject: [PATCH v4 net-next 19/19] ionic: Add basic devlink interface
+Date:   Mon, 22 Jul 2019 14:40:23 -0700
+Message-Id: <20190722214023.9513-20-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190722214023.9513-1-snelson@pensando.io>
 References: <20190722214023.9513-1-snelson@pensando.io>
@@ -56,212 +56,228 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Interrupt coalescing, tunable copybreak value, and
-tx timeout.
+Add a devlink interface for access to information that isn't
+normally available through ethtool or the iplink interface.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic.h   |   2 +-
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 105 ++++++++++++++++++
- .../net/ethernet/pensando/ionic/ionic_lif.c   |  13 ++-
- .../net/ethernet/pensando/ionic/ionic_lif.h   |   1 +
- 4 files changed, 119 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/pensando/ionic/Makefile  |  2 +-
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  3 +
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   | 12 ++-
+ .../ethernet/pensando/ionic/ionic_devlink.c   | 93 +++++++++++++++++++
+ .../ethernet/pensando/ionic/ionic_devlink.h   | 14 +++
+ 5 files changed, 120 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.h
 
+diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
+index 4f3cfbf36c23..ce187c7b33a8 100644
+--- a/drivers/net/ethernet/pensando/ionic/Makefile
++++ b/drivers/net/ethernet/pensando/ionic/Makefile
+@@ -5,4 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
+ 
+ ionic-y := ionic_main.o ionic_bus_pci.o ionic_dev.o ionic_ethtool.o \
+ 	   ionic_lif.o ionic_rx_filter.o ionic_txrx.o ionic_debugfs.o \
+-	   ionic_stats.o
++	   ionic_stats.o ionic_devlink.o
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
-index 9b720187b549..cd08166f73a9 100644
+index cd08166f73a9..728dfb42a52a 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-@@ -11,7 +11,7 @@ struct lif;
+@@ -8,6 +8,7 @@ struct lif;
+ 
+ #include "ionic_if.h"
+ #include "ionic_dev.h"
++#include "ionic_devlink.h"
  
  #define DRV_NAME		"ionic"
  #define DRV_DESCRIPTION		"Pensando Ethernet NIC Driver"
--#define DRV_VERSION		"0.11.0-k"
-+#define DRV_VERSION		"0.11.0-44-k"
- 
- #define PCI_VENDOR_ID_PENSANDO			0x1dd8
- 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 742d7d47f4d8..e6b579a40b70 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -377,6 +377,75 @@ static int ionic_get_coalesce(struct net_device *netdev,
- 	return 0;
- }
- 
-+static int ionic_set_coalesce(struct net_device *netdev,
-+			      struct ethtool_coalesce *coalesce)
-+{
-+	struct lif *lif = netdev_priv(netdev);
-+	struct identity *ident = &lif->ionic->ident;
-+	struct ionic_dev *idev = &lif->ionic->idev;
-+	u32 tx_coal, rx_coal;
-+	struct qcq *qcq;
-+	unsigned int i;
-+
-+	if (coalesce->rx_max_coalesced_frames ||
-+	    coalesce->rx_coalesce_usecs_irq ||
-+	    coalesce->rx_max_coalesced_frames_irq ||
-+	    coalesce->tx_max_coalesced_frames ||
-+	    coalesce->tx_coalesce_usecs_irq ||
-+	    coalesce->tx_max_coalesced_frames_irq ||
-+	    coalesce->stats_block_coalesce_usecs ||
-+	    coalesce->use_adaptive_rx_coalesce ||
-+	    coalesce->use_adaptive_tx_coalesce ||
-+	    coalesce->pkt_rate_low ||
-+	    coalesce->rx_coalesce_usecs_low ||
-+	    coalesce->rx_max_coalesced_frames_low ||
-+	    coalesce->tx_coalesce_usecs_low ||
-+	    coalesce->tx_max_coalesced_frames_low ||
-+	    coalesce->pkt_rate_high ||
-+	    coalesce->rx_coalesce_usecs_high ||
-+	    coalesce->rx_max_coalesced_frames_high ||
-+	    coalesce->tx_coalesce_usecs_high ||
-+	    coalesce->tx_max_coalesced_frames_high ||
-+	    coalesce->rate_sample_interval)
-+		return -EINVAL;
-+
-+	if (ident->dev.intr_coal_div == 0)
-+		return -EIO;
-+
-+	/* Convert from usecs to device units */
-+	tx_coal = coalesce->tx_coalesce_usecs *
-+		  le32_to_cpu(ident->dev.intr_coal_mult) /
-+		  le32_to_cpu(ident->dev.intr_coal_div);
-+	rx_coal = coalesce->rx_coalesce_usecs *
-+		  le32_to_cpu(ident->dev.intr_coal_mult) /
-+		  le32_to_cpu(ident->dev.intr_coal_div);
-+
-+	if (tx_coal > INTR_CTRL_COAL_MAX || rx_coal > INTR_CTRL_COAL_MAX)
-+		return -ERANGE;
-+
-+	if (coalesce->tx_coalesce_usecs != lif->tx_coalesce_usecs) {
-+		for (i = 0; i < lif->nxqs; i++) {
-+			qcq = lif->txqcqs[i].qcq;
-+			ionic_intr_coal_init(idev->intr_ctrl,
-+					     qcq->intr.index,
-+					     tx_coal);
-+		}
-+		lif->tx_coalesce_usecs = coalesce->tx_coalesce_usecs;
-+	}
-+
-+	if (coalesce->rx_coalesce_usecs != lif->rx_coalesce_usecs) {
-+		for (i = 0; i < lif->nxqs; i++) {
-+			qcq = lif->rxqcqs[i].qcq;
-+			ionic_intr_coal_init(idev->intr_ctrl,
-+					     qcq->intr.index,
-+					     rx_coal);
-+		}
-+		lif->rx_coalesce_usecs = coalesce->rx_coalesce_usecs;
-+	}
-+
-+	return 0;
-+}
-+
- static void ionic_get_ringparam(struct net_device *netdev,
- 				struct ethtool_ringparam *ring)
- {
-@@ -562,6 +631,39 @@ static int ionic_set_priv_flags(struct net_device *netdev, u32 priv_flags)
- 	return 0;
- }
- 
-+static int ionic_set_tunable(struct net_device *dev,
-+			     const struct ethtool_tunable *tuna,
-+			     const void *data)
-+{
-+	struct lif *lif = netdev_priv(dev);
-+
-+	switch (tuna->id) {
-+	case ETHTOOL_RX_COPYBREAK:
-+		lif->rx_copybreak = *(u32 *)data;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ionic_get_tunable(struct net_device *netdev,
-+			     const struct ethtool_tunable *tuna, void *data)
-+{
-+	struct lif *lif = netdev_priv(netdev);
-+
-+	switch (tuna->id) {
-+	case ETHTOOL_RX_COPYBREAK:
-+		*(u32 *)data = lif->rx_copybreak;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
- static int ionic_get_module_info(struct net_device *netdev,
- 				 struct ethtool_modinfo *modinfo)
- 
-@@ -641,6 +743,7 @@ static const struct ethtool_ops ionic_ethtool_ops = {
- 	.get_link		= ethtool_op_get_link,
- 	.get_link_ksettings	= ionic_get_link_ksettings,
- 	.get_coalesce		= ionic_get_coalesce,
-+	.set_coalesce		= ionic_set_coalesce,
- 	.get_ringparam		= ionic_get_ringparam,
- 	.set_ringparam		= ionic_set_ringparam,
- 	.get_channels		= ionic_get_channels,
-@@ -655,6 +758,8 @@ static const struct ethtool_ops ionic_ethtool_ops = {
- 	.set_rxfh		= ionic_set_rxfh,
- 	.get_priv_flags		= ionic_get_priv_flags,
- 	.set_priv_flags		= ionic_set_priv_flags,
-+	.get_tunable		= ionic_get_tunable,
-+	.set_tunable		= ionic_set_tunable,
- 	.get_module_info	= ionic_get_module_info,
- 	.get_module_eeprom	= ionic_get_module_eeprom,
- 	.get_pauseparam		= ionic_get_pauseparam,
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 68a9975e34c6..8473b065763b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -744,9 +744,19 @@ static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
- 	return err;
- }
- 
-+static void ionic_tx_timeout_work(struct work_struct *ws)
-+{
-+	struct lif *lif = container_of(ws, struct lif, tx_timeout_work);
-+
-+	netdev_info(lif->netdev, "Tx Timeout recovery\n");
-+	ionic_reset_queues(lif);
-+}
-+
- static void ionic_tx_timeout(struct net_device *netdev)
- {
--	netdev_info(netdev, "%s: stubbed\n", __func__);
-+	struct lif *lif = netdev_priv(netdev);
-+
-+	schedule_work(&lif->tx_timeout_work);
- }
- 
- static int ionic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto,
-@@ -2009,6 +2019,7 @@ static int ionic_lif_init(struct lif *lif)
- 
- 	ionic_link_status_check(lif);
- 
-+	INIT_WORK(&lif->tx_timeout_work, ionic_tx_timeout_work);
- 	return 0;
- 
- err_out_notifyq_deinit:
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 0e6908f959f2..76cc519acd5a 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -180,6 +180,7 @@ struct lif {
- 	unsigned int dbid_count;
- 	struct dentry *dentry;
- 	u32 flags;
-+	struct work_struct tx_timeout_work;
+@@ -44,6 +45,8 @@ struct ionic {
+ 	DECLARE_BITMAP(intrs, INTR_CTRL_REGS_MAX);
+ 	struct work_struct nb_work;
+ 	struct notifier_block nb;
++	struct devlink *dl;
++	struct devlink_port dl_port;
  };
  
- #define lif_to_txqcq(lif, i)	((lif)->txqcqs[i].qcq)
+ struct ionic_admin_ctx {
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index 98c12b770c7f..dfc0df2c8c8f 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -10,6 +10,7 @@
+ #include "ionic_bus.h"
+ #include "ionic_lif.h"
+ #include "ionic_debugfs.h"
++#include "ionic_devlink.h"
+ 
+ /* Supported devices */
+ static const struct pci_device_id ionic_id_table[] = {
+@@ -110,7 +111,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	struct ionic *ionic;
+ 	int err;
+ 
+-	ionic = devm_kzalloc(dev, sizeof(*ionic), GFP_KERNEL);
++	ionic = ionic_devlink_alloc(dev);
+ 	if (!ionic)
+ 		return -ENOMEM;
+ 
+@@ -212,6 +213,10 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_out_deinit_lifs;
+ 	}
+ 
++	err = ionic_devlink_register(ionic);
++	if (err)
++		dev_err(dev, "Cannot register devlink: %d\n", err);
++
+ 	return 0;
+ 
+ err_out_deinit_lifs:
+@@ -237,6 +242,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	ionic_debugfs_del_dev(ionic);
+ err_out_clear_drvdata:
+ 	mutex_destroy(&ionic->dev_cmd_lock);
++	ionic_devlink_free(ionic);
+ 	pci_set_drvdata(pdev, NULL);
+ 
+ 	return err;
+@@ -247,6 +253,7 @@ static void ionic_remove(struct pci_dev *pdev)
+ 	struct ionic *ionic = pci_get_drvdata(pdev);
+ 
+ 	if (ionic) {
++		ionic_devlink_unregister(ionic);
+ 		ionic_lifs_unregister(ionic);
+ 		ionic_lifs_deinit(ionic);
+ 		ionic_lifs_free(ionic);
+@@ -261,8 +268,7 @@ static void ionic_remove(struct pci_dev *pdev)
+ 		pci_disable_device(pdev);
+ 		ionic_debugfs_del_dev(ionic);
+ 		mutex_destroy(&ionic->dev_cmd_lock);
+-
+-		devm_kfree(&pdev->dev, ionic);
++		ionic_devlink_free(ionic);
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+new file mode 100644
+index 000000000000..a30a61e51c71
+--- /dev/null
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+@@ -0,0 +1,93 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
++
++#include <linux/module.h>
++#include <linux/netdevice.h>
++
++#include "ionic.h"
++#include "ionic_bus.h"
++#include "ionic_lif.h"
++#include "ionic_devlink.h"
++
++static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
++			     struct netlink_ext_ack *extack)
++{
++	struct ionic *ionic = devlink_priv(dl);
++	struct ionic_dev *idev = &ionic->idev;
++	char buf[16];
++
++	devlink_info_driver_name_put(req, DRV_NAME);
++
++	devlink_info_version_running_put(req,
++					 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
++					 idev->dev_info.fw_version);
++
++	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_type);
++	devlink_info_version_fixed_put(req,
++				       DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
++				       buf);
++
++	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_rev);
++	devlink_info_version_fixed_put(req,
++				       DEVLINK_INFO_VERSION_GENERIC_BOARD_REV,
++				       buf);
++
++	devlink_info_serial_number_put(req, idev->dev_info.serial_num);
++
++	return 0;
++}
++
++static const struct devlink_ops ionic_dl_ops = {
++	.info_get	= ionic_dl_info_get,
++};
++
++struct ionic *ionic_devlink_alloc(struct device *dev)
++{
++	struct devlink *dl;
++	struct ionic *ionic;
++
++	dl = devlink_alloc(&ionic_dl_ops, sizeof(struct ionic));
++	if (!dl) {
++		dev_warn(dev, "devlink_alloc failed");
++		return NULL;
++	}
++
++	ionic = devlink_priv(dl);
++	ionic->dl = dl;
++
++	return ionic;
++}
++
++void ionic_devlink_free(struct ionic *ionic)
++{
++	devlink_free(ionic->dl);
++}
++
++int ionic_devlink_register(struct ionic *ionic)
++{
++	int err;
++
++	err = devlink_register(ionic->dl, ionic->dev);
++	if (err)
++		dev_warn(ionic->dev, "devlink_register failed: %d\n", err);
++
++	devlink_port_attrs_set(&ionic->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
++			       0, false, 0, NULL, 0);
++	err = devlink_port_register(ionic->dl, &ionic->dl_port, 0);
++	if (err)
++		dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
++	else
++		devlink_port_type_eth_set(&ionic->dl_port,
++					  ionic->master_lif->netdev);
++
++	return err;
++}
++
++void ionic_devlink_unregister(struct ionic *ionic)
++{
++	if (!ionic || !ionic->dl)
++		return;
++
++	devlink_port_unregister(&ionic->dl_port);
++	devlink_unregister(ionic->dl);
++}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+new file mode 100644
+index 000000000000..0690172fc57a
+--- /dev/null
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
++
++#ifndef _IONIC_DEVLINK_H_
++#define _IONIC_DEVLINK_H_
++
++#include <net/devlink.h>
++
++struct ionic *ionic_devlink_alloc(struct device *dev);
++void ionic_devlink_free(struct ionic *ionic);
++int ionic_devlink_register(struct ionic *ionic);
++void ionic_devlink_unregister(struct ionic *ionic);
++
++#endif /* _IONIC_DEVLINK_H_ */
 -- 
 2.17.1
 
