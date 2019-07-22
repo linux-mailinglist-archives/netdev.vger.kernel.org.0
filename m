@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 760B36FD90
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 12:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0526FDA0
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 12:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729421AbfGVKRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 06:17:09 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:45490 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728569AbfGVKRJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 06:17:09 -0400
-Received: by mail-qk1-f195.google.com with SMTP id s22so28165276qkj.12;
-        Mon, 22 Jul 2019 03:17:08 -0700 (PDT)
+        id S1729587AbfGVKSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 06:18:37 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39645 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729238AbfGVKSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 06:18:36 -0400
+Received: by mail-wm1-f68.google.com with SMTP id u25so24372361wmc.4
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 03:18:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+GcrJc5mWQ55cEUCcfbBZGMvLQ78HJvPwtodMDzyle8=;
+        b=G/KTQPys8CcucScPfqsgmQtz62QdZqLEo1kJwQNA+4eLiF2asiNiddgtT/h14Ix94U
+         /CdTawyAL79G+1ILA0FvrmO8i2FryDf4LH9+Yj6o4XGqgEMRSjeMmCPzYQxKNpoZorLo
+         z+SV+ac1Cei6AWdxZ6IceFB28kHbysTzIUNOHaUoxyQYbqkiAlOpN1troV3WXeI636me
+         pZqpRxgTA+gDotUsJGcbBrxF3vsWRMbB6fLgmFb0seU6n83Fjiw5lyPCsGhKFl5VBVtA
+         j6RauOuX7Z0lH14cBe9PTdWl14HxQfSyO24r5I9K866EX/AQa4BQydrhG1rhbyb9i/j+
+         VvTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7CJkKA7SZFRonSxwlZKyw8W6pgs5EdX5dwdC50uPvBs=;
-        b=IfyEGn1teOvseGqamLGm6eYMrp4kEADYmxLmuf3lwn47e7irJLZzzSadD5rA/AIBI9
-         goH41xTw+8mHRl1BZvXsR//j0Bkx/qgpjDwxg+U0Sgv/xiZjg8KtvmyTZALR9IWcaIXV
-         CkKHYuQh8zqpoaziifRWNQJj6IFlA4GCuNLjekCgFw/JORcJrYdvAW9z1V4W6KoM1wwm
-         VULx2b8vVGz68sAMPswtsad+XUrTWq6NgpiZCM1ZVw4TMgy/CGbdJbHgWLP86SU1dGvd
-         Z5pyX3CkxJbOlpaYN+NcMGuBrk11hsJl17wOl6wns3nwJxlMqgXlSlT1u12RZg1yhaEA
-         FtQA==
-X-Gm-Message-State: APjAAAXq6SoJbRtNpNdtsju6Iqd40f0IQCjpznLrKw1xRcgd1JB/roKO
-        6vLan+lWSBG81Y9PJP7R6HGzDTE7JDS31A46Yqg=
-X-Google-Smtp-Source: APXvYqy7ISax661sJxUrp3WbLhv5BC0kus4uGgZKznelHiJHcAGScOZIvY+BAP14dw/qwJzgUC+dnqfk8j1fG+ylzm4=
-X-Received: by 2002:a37:4ac3:: with SMTP id x186mr44360140qka.138.1563790627957;
- Mon, 22 Jul 2019 03:17:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+GcrJc5mWQ55cEUCcfbBZGMvLQ78HJvPwtodMDzyle8=;
+        b=CZLn2ikzBARA11NKEt9qQhrMmwcg1ofw92HOlL5jvZfYn/B2tw4td4fkpo31Hr7Ul+
+         cTtvTniuaESx97w7+EHuXcNdS3LemK+VGYyk8PeMgILL88EpfCOSrfUZ8xt419ZaALTS
+         tWkPa1VU670tanhCI+oJr8hvtVyRTdO2bwkAdtk0+sbsMYUU5tHiqJ6ESAHvBDxlXEpS
+         ytf4P5vJyjTPbb/11ER3uqauO4vbKE3WuVKRBTQx+P6ZnSn8w4y7a8dCxQf06eNfivr1
+         PZ7jYUgnjuiJLW/tteC8BZ2HkJJOQnfsyRdV3JrVMgPUMivc6cDob1+96st9rZ30PcS9
+         t/Mg==
+X-Gm-Message-State: APjAAAUwiS2F/jkw+0PYYWVyr3oyNXs8GnCPyH3opu/CRVxxSqDhYNmv
+        5MyWlUGuQH9Cg4Ke7zL4eZpSdw==
+X-Google-Smtp-Source: APXvYqwWpeo4gQ4edBUy9N5k3STiDsB6fnGJqOqO58p5YopawrIHfEaaX/V07cjOuiVOf8ftj5mijg==
+X-Received: by 2002:a7b:cc97:: with SMTP id p23mr64661606wma.120.1563790714647;
+        Mon, 22 Jul 2019 03:18:34 -0700 (PDT)
+Received: from apalos (athedsl-373703.home.otenet.gr. [79.131.11.197])
+        by smtp.gmail.com with ESMTPSA id f17sm34005987wmf.27.2019.07.22.03.18.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jul 2019 03:18:33 -0700 (PDT)
+Date:   Mon, 22 Jul 2019 13:18:30 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+Message-ID: <20190722101830.GA24948@apalos>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
+ <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <20190628123819.2785504-1-arnd@arndb.de> <20190628123819.2785504-4-arnd@arndb.de>
- <alpine.LFD.2.21.1906302308280.3788@ja.home.ssi.bg>
-In-Reply-To: <alpine.LFD.2.21.1906302308280.3788@ja.home.ssi.bg>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 22 Jul 2019 12:16:51 +0200
-Message-ID: <CAK8P3a03wShPgL85K-0W3UUc3QJWLbbs+ZVAnkKLkqg00vVehw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] ipvs: reduce kernel stack usage
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        James Smart <james.smart@broadcom.com>,
-        Dick Kennedy <dick.kennedy@broadcom.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        James Morris <jmorris@namei.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Networking <netdev@vger.kernel.org>, lvs-devel@vger.kernel.org,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam@netfilter.org, Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 30, 2019 at 10:37 PM Julian Anastasov <ja@ssi.bg> wrote:
-> On Fri, 28 Jun 2019, Arnd Bergmann wrote:
+On Thu, Jul 18, 2019 at 07:48:04AM +0000, Jose Abreu wrote:
+> From: Jon Hunter <jonathanh@nvidia.com>
+> Date: Jul/17/2019, 19:58:53 (UTC+00:00)
+> 
+> > Let me know if you have any thoughts.
+> 
+> Can you try attached patch ?
+> 
 
-> >       struct ip_vs_conn *ctl_cp = cp->control;
-> >       if (!ctl_cp) {
-> > -             IP_VS_ERR_BUF("request control DEL for uncontrolled: "
-> > -                           "%s:%d to %s:%d\n",
-> > -                           IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-> > -                           ntohs(cp->cport),
-> > -                           IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-> > -                           ntohs(cp->vport));
-> > +             pr_err("request control DEL for uncontrolled: "
-> > +                    "%pISp to %pISp\n",
+The log says  someone calls panic() right?
+Can we trye and figure were that happens during the stmmac init phase?
 
-(replying a bit late)
+Thanks
+/Ilias
 
->         ip_vs_dbg_addr() used compact form (%pI6c), so it would be
-> better to use %pISc and %pISpc everywhere in IPVS...
-
-done
-
->         Also, note that before now port was printed with %d and
-> ntohs() was used, now port should be in network order, so:
->
-> - ntohs() should be removed
-
-done
-
-> - htons() should be added, if missing. At first look, this case
-> is not present in IPVS, we have only ntohs() usage
-
-I found one case in ip_vs_ftp_in() that needs it in order to subtract one:
-
-                IP_VS_DBG(7, "protocol %s %pISpc %pISpc\n",
-                          ip_vs_proto_name(ipvsh->protocol),
--                         IP_VS_DBG_SOCKADDR(cp->af, &to, ntohs(port)),
-+                         IP_VS_DBG_SOCKADDR(cp->af, &to, port),
-                          IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr,
--                                             ntohs(cp->vport)-1));
-+                                            htons(ntohs(cp->vport)-1)));
-
-Thanks for the review, I'll send a new patch after some more
-build testing on the new version.
-
-       Arnd
