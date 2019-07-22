@@ -2,82 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4276FF05
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 13:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C13A6FF2E
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 14:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730047AbfGVLw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 07:52:59 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35665 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730034AbfGVLw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 07:52:56 -0400
-Received: by mail-ed1-f66.google.com with SMTP id w20so40326912edd.2
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 04:52:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vUDw12liv+q+PtuUpCHje4EUlhoF5OUW/8fU4VDZqm8=;
-        b=HsUN9P1Ex2FMIrRN48aq9qdCshGU0hj7v+y0Xg0/rUT0iKuoqEtbxPHjigr5EWkCs1
-         PPxF1pF3u87IQInUuIUxfrJ9HmceykArbN73bNsd6dXgzm3i4Nv0po5VwDDhPeHUHUWl
-         tO4JHZ7/872TbAA+Vbn1PdgqwbCREfjCcvmUrgSONN8c87ZTBHGE16oTUKBIOAPh/tup
-         g5h7efB70bPIMJI7IfnPRW9EM5HKUACnNyiRl45XlucjDW6ODoFpf4myd0sNt//nRdkl
-         VwReohmVpepj2m4LZ+5jYlRgWD3ZPSuzaZuiDuZpjRtLopoVDlM13HegyTG15z7VAHOL
-         gFbQ==
-X-Gm-Message-State: APjAAAVvvtCka1M00Gie/ALeJkIAMpzeV49fXdY5Ez9RtXSgmQgNEIz8
-        mvVa6P0kmFpwP8AsDT8mDeN6uQ==
-X-Google-Smtp-Source: APXvYqyl5h+STMzaqO/o2+m/uFgyD4bp0bMHWVp++zsfqo47NwnyXQyt5k+IkRpj4CvHYNMhRG8x9g==
-X-Received: by 2002:a17:906:944f:: with SMTP id z15mr53206738ejx.137.1563796374440;
-        Mon, 22 Jul 2019 04:52:54 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id i4sm8012197ejs.39.2019.07.22.04.52.51
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 22 Jul 2019 04:52:53 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3317A181CEF; Mon, 22 Jul 2019 13:52:49 +0200 (CEST)
-Subject: [PATCH bpf-next v4 5/6] tools/libbpf_probes: Add new devmap_hash type
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Date:   Mon, 22 Jul 2019 13:52:49 +0200
-Message-ID: <156379636904.12332.1075115809789333177.stgit@alrua-x1>
-In-Reply-To: <156379636786.12332.17776973951938230698.stgit@alrua-x1>
-References: <156379636786.12332.17776973951938230698.stgit@alrua-x1>
-User-Agent: StGit/0.19-dirty
+        id S1729957AbfGVMFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 08:05:44 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:17436 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728825AbfGVMFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 08:05:44 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d35a6970001>; Mon, 22 Jul 2019 05:05:43 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 22 Jul 2019 05:05:43 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 22 Jul 2019 05:05:43 -0700
+Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 22 Jul
+ 2019 12:05:40 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>, Lars Persson <lists@bofh.nu>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
+ <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20190722101830.GA24948@apalos>
+ <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
+ <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <11557fe0-0cba-cb49-0fb6-ad24792d4a53@nvidia.com>
+Date:   Mon, 22 Jul 2019 13:05:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563797144; bh=Wct+IzEygVqP6Q8TYVaAVumlDUN4cfz/yif6Gxo/tw8=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=PNibAy43DkOfCZXujQ+oIlkFaXMLgCtH1v+taBS8cGUIiU0evlUB7V9zOXN4sQOau
+         HlQ4f4dK9AZN04vDcSvwaokfFbBvcHTcgrGaBQ2jBm6uoQiDS6Fa/lqKjLCWaRnNYb
+         ZbQP59O2rdrAfbZZ5iYZozxEymBlIFVUaZb3A54R58A8Ank3/+p5eJ1IjTOOEJWqhf
+         G5QiV1aLp0nAtT9itlBMwOopzCCwzrSn7M57P/jxyOdqI+oyUDuYGo1YeNrwNsA7C0
+         AHKsFt8bngZn0DkdDvzgxQSKQyrv/4GjvvIwuxX3fJfXB7GM4SCwLoARbh5u+/SVCD
+         imJ38IlTHve3g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This adds the definition for BPF_MAP_TYPE_DEVMAP_HASH to libbpf_probes.c in
-tools/lib/bpf.
+On 22/07/2019 12:39, Jose Abreu wrote:
+> From: Lars Persson <lists@bofh.nu>
+> Date: Jul/22/2019, 12:11:50 (UTC+00:00)
+> 
+>> On Mon, Jul 22, 2019 at 12:18 PM Ilias Apalodimas
+>> <ilias.apalodimas@linaro.org> wrote:
+>>>
+>>> On Thu, Jul 18, 2019 at 07:48:04AM +0000, Jose Abreu wrote:
+>>>> From: Jon Hunter <jonathanh@nvidia.com>
+>>>> Date: Jul/17/2019, 19:58:53 (UTC+00:00)
+>>>>
+>>>>> Let me know if you have any thoughts.
+>>>>
+>>>> Can you try attached patch ?
+>>>>
+>>>
+>>> The log says  someone calls panic() right?
+>>> Can we trye and figure were that happens during the stmmac init phase?
+>>>
+>>
+>> The reason for the panic is hidden in this one line of the kernel logs:
+>> Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+>>
+>> The init process is killed by SIGSEGV (signal 11 = 0xb).
+>>
+>> I would suggest you look for data corruption bugs in the RX path. If
+>> the code is fetched from the NFS mount then a corrupt RX buffer can
+>> trigger a crash in userspace.
+>>
+>> /Lars
+> 
+> 
+> Jon, I'm not familiar with ARM. Are the buffer addresses being allocated 
+> in a coherent region ? Can you try attached patch which adds full memory 
+> barrier before the sync ?
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Acked-by: Yonghong Song <yhs@fb.com>
----
- tools/lib/bpf/libbpf_probes.c |    1 +
- 1 file changed, 1 insertion(+)
+TBH I am not sure about the buffer addresses either. The attached patch
+did not help. Same problem persists.
 
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index ace1a0708d99..4b0b0364f5fc 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -244,6 +244,7 @@ bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
- 	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
- 	case BPF_MAP_TYPE_HASH_OF_MAPS:
- 	case BPF_MAP_TYPE_DEVMAP:
-+	case BPF_MAP_TYPE_DEVMAP_HASH:
- 	case BPF_MAP_TYPE_SOCKMAP:
- 	case BPF_MAP_TYPE_CPUMAP:
- 	case BPF_MAP_TYPE_XSKMAP:
+Jon
 
+-- 
+nvpublic
