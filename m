@@ -2,59 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0526FDA0
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 12:18:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6607E6FDBD
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 12:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729587AbfGVKSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 06:18:37 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39645 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729238AbfGVKSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 06:18:36 -0400
-Received: by mail-wm1-f68.google.com with SMTP id u25so24372361wmc.4
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 03:18:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+GcrJc5mWQ55cEUCcfbBZGMvLQ78HJvPwtodMDzyle8=;
-        b=G/KTQPys8CcucScPfqsgmQtz62QdZqLEo1kJwQNA+4eLiF2asiNiddgtT/h14Ix94U
-         /CdTawyAL79G+1ILA0FvrmO8i2FryDf4LH9+Yj6o4XGqgEMRSjeMmCPzYQxKNpoZorLo
-         z+SV+ac1Cei6AWdxZ6IceFB28kHbysTzIUNOHaUoxyQYbqkiAlOpN1troV3WXeI636me
-         pZqpRxgTA+gDotUsJGcbBrxF3vsWRMbB6fLgmFb0seU6n83Fjiw5lyPCsGhKFl5VBVtA
-         j6RauOuX7Z0lH14cBe9PTdWl14HxQfSyO24r5I9K866EX/AQa4BQydrhG1rhbyb9i/j+
-         VvTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+GcrJc5mWQ55cEUCcfbBZGMvLQ78HJvPwtodMDzyle8=;
-        b=CZLn2ikzBARA11NKEt9qQhrMmwcg1ofw92HOlL5jvZfYn/B2tw4td4fkpo31Hr7Ul+
-         cTtvTniuaESx97w7+EHuXcNdS3LemK+VGYyk8PeMgILL88EpfCOSrfUZ8xt419ZaALTS
-         tWkPa1VU670tanhCI+oJr8hvtVyRTdO2bwkAdtk0+sbsMYUU5tHiqJ6ESAHvBDxlXEpS
-         ytf4P5vJyjTPbb/11ER3uqauO4vbKE3WuVKRBTQx+P6ZnSn8w4y7a8dCxQf06eNfivr1
-         PZ7jYUgnjuiJLW/tteC8BZ2HkJJOQnfsyRdV3JrVMgPUMivc6cDob1+96st9rZ30PcS9
-         t/Mg==
-X-Gm-Message-State: APjAAAUwiS2F/jkw+0PYYWVyr3oyNXs8GnCPyH3opu/CRVxxSqDhYNmv
-        5MyWlUGuQH9Cg4Ke7zL4eZpSdw==
-X-Google-Smtp-Source: APXvYqwWpeo4gQ4edBUy9N5k3STiDsB6fnGJqOqO58p5YopawrIHfEaaX/V07cjOuiVOf8ftj5mijg==
-X-Received: by 2002:a7b:cc97:: with SMTP id p23mr64661606wma.120.1563790714647;
-        Mon, 22 Jul 2019 03:18:34 -0700 (PDT)
-Received: from apalos (athedsl-373703.home.otenet.gr. [79.131.11.197])
-        by smtp.gmail.com with ESMTPSA id f17sm34005987wmf.27.2019.07.22.03.18.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Jul 2019 03:18:33 -0700 (PDT)
-Date:   Mon, 22 Jul 2019 13:18:30 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        id S1729637AbfGVK1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 06:27:42 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:13157 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbfGVK1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 06:27:42 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d358fa40000>; Mon, 22 Jul 2019 03:27:48 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 22 Jul 2019 03:27:41 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 22 Jul 2019 03:27:41 -0700
+Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 22 Jul
+ 2019 10:27:38 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-stm32@st-md-mailman.stormreply.com" 
         <linux-stm32@st-md-mailman.stormreply.com>,
         "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -62,35 +38,64 @@ Cc:     Jon Hunter <jonathanh@nvidia.com>,
         Maxime Ripard <maxime.ripard@bootlin.com>,
         Chen-Yu Tsai <wens@csie.org>,
         linux-tegra <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-Message-ID: <20190722101830.GA24948@apalos>
 References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
- <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <6a6bac84-1d29-2740-1636-d3adb26b6bcc@nvidia.com>
+ <BN8PR12MB3266960A104A7CDBB4E59192D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <bc9ab3c5-b1b9-26d4-7b73-01474328eafa@nvidia.com>
+ <BN8PR12MB3266989D15E017A789E14282D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <4db855e4-1d59-d30b-154c-e7a2aa1c9047@nvidia.com>
+ <BN8PR12MB3266FD9CF18691EDEF05A4B8D3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <64e37224-6661-ddb0-4394-83a16e1ccb61@nvidia.com>
+ <BN8PR12MB3266E1FAC5B7874EFA69DD7BD3CB0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <25512348-5b98-aeb7-a6fb-f90376e66a84@nvidia.com>
+ <BN8PR12MB32665C1A106D3DCBF89CEA54D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <49efad87-2f74-5804-af4c-33730f865c41@nvidia.com>
+ <BN8PR12MB3266362102CCB6B4DDE4BEA0D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <BN8PR12MB326667E86622C3ABD5CDE642D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <9bd0de50-cbfa-40ee-52e3-26adc1a59c43@nvidia.com>
+Date:   Mon, 22 Jul 2019 11:27:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <BN8PR12MB326667E86622C3ABD5CDE642D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563791268; bh=p3thVhzOYfkF0ilrLvyx7ZdXmJoaxjmMRBaq/ySj/0I=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=Xfcw92Bk1Os81HL717eUaqAlOCD3/2EIGWqpHLZ4xbTXACHxw5w/Slr1xqv+9xZOq
+         rIdFNn1b1YHuUhwzwoZ0UUvwD8ovc7OsN8nvLsZ3++jdhs4IdMvK0wWdyGeeV90Jco
+         HdExdy7dB/H7lOVS5wh9HxuTSN3uUFXs8TGuNxB7si5EWe11sNZmOjRU1o115iXpkE
+         nrXaMRxOXfmKawkklhw4IG1MugC58worRj59YgH3LTYt+0H9QF2Ktb0cLfyoDHm0wW
+         HUMnMscWpvz+QDAYse6UAmk+s9ABf/fvpYwoL3QBj/3JBeZCpHU2fgxW0BdMJib233
+         y7RlfCm/t3MoA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 18, 2019 at 07:48:04AM +0000, Jose Abreu wrote:
-> From: Jon Hunter <jonathanh@nvidia.com>
-> Date: Jul/17/2019, 19:58:53 (UTC+00:00)
-> 
-> > Let me know if you have any thoughts.
-> 
-> Can you try attached patch ?
-> 
 
-The log says  someone calls panic() right?
-Can we trye and figure were that happens during the stmmac init phase?
+On 22/07/2019 10:57, Jose Abreu wrote:
 
-Thanks
-/Ilias
+...
 
+> Also, please add attached patch. You'll get a compiler warning, just 
+> disregard it.
+
+Here you are ...
+
+https://paste.ubuntu.com/p/H9Mvv37vN9/
+
+Cheers
+Jon
+
+-- 
+nvpublic
