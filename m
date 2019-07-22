@@ -2,100 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B2A6FB7B
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 10:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E24006FB9F
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 10:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728414AbfGVIjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 04:39:53 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:45682 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726130AbfGVIjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 04:39:52 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1728528AbfGVIx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 04:53:29 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56386 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725989AbfGVIx2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jul 2019 04:53:28 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E9E2BC0070;
-        Mon, 22 Jul 2019 08:39:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1563784792; bh=5hkdNv+d4ulwOI3yH55Iw6BH1syqXjCwb21YV26gLjU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=MuBz0WJ31rRDWMQDsHazo4zP38yyAHMYpCgTWCGCnBq+/UCZdPTGSxxbIOApHBlqi
-         eJGhMcA6wLuv6WBfqoIP+2TbwKpnLPP8bkExyP8/0JFd7qynDHBdNCuFL/5/085hfs
-         M0H3D+0raSAcKMryfiHEmMDWgLBZY9ZPXE0jGOWZdT+rkOCUC1zMPsF+lv2zdhE38M
-         7AQ8t6zxRxnyL2NvregM1fLhQAMlCxFJUW/UvbmE4Z89yr18ch4a4ERdhN01g1fQgo
-         E/nG/Zn920b7LFfUSW23wM/5AIzQK30Ni+tRuLIDWUuU9qRGZW1BEzU6xBwQ3OrxFw
-         ayt1dGMD3Je4g==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 5FEB0A005C;
-        Mon, 22 Jul 2019 08:39:50 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
+        by mx1.redhat.com (Postfix) with ESMTPS id 69A6D30BC57D;
+        Mon, 22 Jul 2019 08:53:28 +0000 (UTC)
+Received: from localhost (ovpn-117-250.ams2.redhat.com [10.36.117.250])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A4E65DA2E;
+        Mon, 22 Jul 2019 08:53:25 +0000 (UTC)
+Date:   Mon, 22 Jul 2019 09:53:19 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/2] net: stmmac: RX Descriptors need to be clean before setting buffers
-Date:   Mon, 22 Jul 2019 10:39:30 +0200
-Message-Id: <00bfde6f589e60ba1a2d0671c8ba0fcd0964d6e7.1563784666.git.joabreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1563784666.git.joabreu@synopsys.com>
-References: <cover.1563784666.git.joabreu@synopsys.com>
-In-Reply-To: <cover.1563784666.git.joabreu@synopsys.com>
-References: <cover.1563784666.git.joabreu@synopsys.com>
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v4 3/5] vsock/virtio: fix locking in
+ virtio_transport_inc_tx_pkt()
+Message-ID: <20190722085319.GC24934@stefanha-x1.localdomain>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-4-sgarzare@redhat.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="Clx92ZfkiYIKRjnr"
+Content-Disposition: inline
+In-Reply-To: <20190717113030.163499-4-sgarzare@redhat.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Mon, 22 Jul 2019 08:53:28 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RX Descriptors are being cleaned after setting the buffers which may
-lead to buffer addresses being wiped out.
 
-Fix this by clearing earlier the RX Descriptors.
+--Clx92ZfkiYIKRjnr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+On Wed, Jul 17, 2019 at 01:30:28PM +0200, Stefano Garzarella wrote:
+> fwd_cnt and last_fwd_cnt are protected by rx_lock, so we should use
+> the same spinlock also if we are in the TX path.
+>=20
+> Move also buf_alloc under the same lock.
+>=20
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  include/linux/virtio_vsock.h            | 2 +-
+>  net/vmw_vsock/virtio_transport_common.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c7c9e5f162e6..5f1294ce0216 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1295,6 +1295,8 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 			  "(%s) dma_rx_phy=0x%08x\n", __func__,
- 			  (u32)rx_q->dma_rx_phy);
- 
-+		stmmac_clear_rx_descriptors(priv, queue);
-+
- 		for (i = 0; i < DMA_RX_SIZE; i++) {
- 			struct dma_desc *p;
- 
-@@ -1312,8 +1314,6 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 		rx_q->cur_rx = 0;
- 		rx_q->dirty_rx = (unsigned int)(i - DMA_RX_SIZE);
- 
--		stmmac_clear_rx_descriptors(priv, queue);
--
- 		/* Setup the chained descriptor addresses */
- 		if (priv->mode == STMMAC_CHAIN_MODE) {
- 			if (priv->extend_desc)
--- 
-2.7.4
+--Clx92ZfkiYIKRjnr
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl01eX8ACgkQnKSrs4Gr
+c8jE7AgAs5N6O7elzpZi4u/g75m8dfsiRpiyEG+NXL6ahFUWKw98b80S/q2RNHZR
+udZDGbmyVjnwH1pok2YnjdwcqCq515JelqAdv7CdhhzzRZdwiHGMQh8uqHYDfzGZ
+R2V0hSJAiSG21HxP+RBG6VoWCoBUeQU/vce3jkYsxT6F64tUqeqxJd/C+AcRHOKk
+dxxTmtn2NdRRs6Hofl5nW0ulYG/wxRRtN3dTf+V/FKkXLYv1197AD0+JXZnTRw2s
+159FbLvqqdFzBGt2HORUTR+7aTcBuILeDuLW8gJT6JrFF2MIw1B0VaSB0Lbv0mN6
+tuZAmnZlcurH5zz8i5XOJ5mugHY72w==
+=VeGT
+-----END PGP SIGNATURE-----
+
+--Clx92ZfkiYIKRjnr--
