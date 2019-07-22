@@ -2,162 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F28A8701A1
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 15:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B57701AE
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 15:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729877AbfGVNsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 09:48:16 -0400
-Received: from mail-eopbgr00061.outbound.protection.outlook.com ([40.107.0.61]:22454
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727805AbfGVNsP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jul 2019 09:48:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KeSbYSJul9r2fXsJYxHOx2Y8CX0KfDov2P7DPO6F6Eg=;
- b=7cfIpgVtBjN7AyCrCjKLHejB/e9EFKkvDdN59FIzvXBpSNBmQRY9IpoPley7ASSTjUiofItu9YQ33Ru9qz1MF2PzDhjbyK7zxtmsQ7Na740yGW8rvl6aLYF1FakV5QRBeeRndX/LukrOeZkPyPMS86xv7XGuw6/Q9pe3/ZWm9Rk=
-Received: from VE1PR08CA0010.eurprd08.prod.outlook.com (2603:10a6:803:104::23)
- by AM0PR08MB4947.eurprd08.prod.outlook.com (2603:10a6:208:158::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2094.16; Mon, 22 Jul
- 2019 13:48:07 +0000
-Received: from DB5EUR03FT054.eop-EUR03.prod.protection.outlook.com
- (2a01:111:f400:7e0a::201) by VE1PR08CA0010.outlook.office365.com
- (2603:10a6:803:104::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2094.12 via Frontend
- Transport; Mon, 22 Jul 2019 13:48:07 +0000
-Authentication-Results: spf=temperror (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=temperror action=none
- header.from=arm.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of arm.com: DNS Timeout)
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- DB5EUR03FT054.mail.protection.outlook.com (10.152.20.248) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.2052.18 via Frontend Transport; Mon, 22 Jul 2019 13:48:06 +0000
-Received: ("Tessian outbound cb57de15885d:v24"); Mon, 22 Jul 2019 13:48:05 +0000
-X-CheckRecipientChecked: true
-X-CR-MTA-CID: 8a87eab828ea6364
-X-CR-MTA-TID: 64aa7808
-Received: from fdba64b71de8.1 (cr-mta-lb-1.cr-mta-net [104.47.13.51])
-        by 64aa7808-outbound-1.mta.getcheckrecipient.com id BB1B8B51-976D-4802-86E4-5145A95F06A6.1;
-        Mon, 22 Jul 2019 13:48:00 +0000
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04lp2051.outbound.protection.outlook.com [104.47.13.51])
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id fdba64b71de8.1
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384);
-    Mon, 22 Jul 2019 13:48:00 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ng1OoFiOMWHWpWg7xD8r1PbS27j9K9TA/mMiWxxxAFYyzhX9JE5ub9/vUvPHwf3ufUzY4hCET52qsLtLd8BjknaVbQgFJSTPPN6HMAQB8EjU1PRXw/McyGFEwclD/EzlqV0IPV8pv66s7j15nSmG1VXKKY/xYZDin59o61Q/5fhqu7CsoOzYHKdj0yh2vtHRg1mq8/xCpHOMThvcDxRaIT5jmqQ/i4pMvDBDNNHYLJtdvqb2iUWlhNVEFXeVyhJsYQxmrYRH4xMu+LqU63sHaD0Kw6ZTFX0w+wsmm6eZrNfc/Y+efcvS7RHpWkOGX4/ultH9CVcw1+HHaWhgBPjvGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KeSbYSJul9r2fXsJYxHOx2Y8CX0KfDov2P7DPO6F6Eg=;
- b=eA0Pyucw1zcVvy6FckOWkF5PVxmWW7y5YlCwBlQdeWFrB1o0JeZy8q5oYE7TDUCTAWhkQrsna3alaP9cdQaWhTrO6XTOEg9WgLaiSjsu4aT/Xo9ksyk3L8fEIpKRtxyabrvm9z/NlF56PPso94OdJtuDVS2lntj/+3eZavupJB+4/bkeJpA87ZVh9W+d6KewLqVbwAJCSxgRbpK5VO4uKSzWIaMZsBxnfFMAaSzq8wu8Euj1upa/0lx5cbpamqSdPYFbNZ9tp1WvY0kJhLuhkFhpWu9P5KfGAgnYi1OocFgHR4FX4khq8nutCYI+VmSP1NrTvtwtqm6tOvg20M4ekQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=arm.com;dmarc=pass action=none header.from=arm.com;dkim=pass
- header.d=arm.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KeSbYSJul9r2fXsJYxHOx2Y8CX0KfDov2P7DPO6F6Eg=;
- b=7cfIpgVtBjN7AyCrCjKLHejB/e9EFKkvDdN59FIzvXBpSNBmQRY9IpoPley7ASSTjUiofItu9YQ33Ru9qz1MF2PzDhjbyK7zxtmsQ7Na740yGW8rvl6aLYF1FakV5QRBeeRndX/LukrOeZkPyPMS86xv7XGuw6/Q9pe3/ZWm9Rk=
-Received: from AM4PR0802MB2371.eurprd08.prod.outlook.com (10.172.217.23) by
- AM4PR0802MB2291.eurprd08.prod.outlook.com (10.172.217.150) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.16; Mon, 22 Jul 2019 13:47:58 +0000
-Received: from AM4PR0802MB2371.eurprd08.prod.outlook.com
- ([fe80::5d45:7f25:b478:3e8b]) by AM4PR0802MB2371.eurprd08.prod.outlook.com
- ([fe80::5d45:7f25:b478:3e8b%3]) with mapi id 15.20.2094.013; Mon, 22 Jul 2019
- 13:47:58 +0000
-From:   Szabolcs Nagy <Szabolcs.Nagy@arm.com>
-To:     Florian Weimer <fweimer@redhat.com>
-CC:     nd <nd@arm.com>, Arnd Bergmann <arnd@arndb.de>,
-        GNU C Library <libc-alpha@sourceware.org>,
-        Sergei Trofimovich <slyfox@gentoo.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        linux-man <linux-man@vger.kernel.org>
-Subject: Re: [PATCH glibc] Linux: Include <linux/sockios.h> in <bits/socket.h>
- under __USE_MISC
-Thread-Topic: [PATCH glibc] Linux: Include <linux/sockios.h> in
- <bits/socket.h> under __USE_MISC
-Thread-Index: AQHVQID/UfNITT/bfE6+ZU8LnWDrF6bWge0AgAAjSICAAAEHCYAAAOSA
-Date:   Mon, 22 Jul 2019 13:47:58 +0000
-Message-ID: <086e5147-5bc7-2817-f295-357cb9a071ae@arm.com>
-References: <87ftmys3un.fsf@oldenburg2.str.redhat.com>
- <CAK8P3a0hC4wvjwCi4=DCET3C4qARMY6c58ffjwG3b1ZPM6kr-A@mail.gmail.com>
- <2431941f-3aac-d31f-e6f5-8ed2ed7b2e5c@arm.com>
- <87lfwqqj3s.fsf@oldenburg2.str.redhat.com>
-In-Reply-To: <87lfwqqj3s.fsf@oldenburg2.str.redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-x-originating-ip: [217.140.106.55]
-x-clientproxiedby: LO2P265CA0411.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a0::15) To AM4PR0802MB2371.eurprd08.prod.outlook.com
- (2603:10a6:200:5d::23)
-Authentication-Results-Original: spf=none (sender IP is )
- smtp.mailfrom=Szabolcs.Nagy@arm.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-X-MS-Office365-Filtering-Correlation-Id: 7ddf18bd-399a-4127-29b3-08d70eab3972
-X-MS-Office365-Filtering-HT: Tenant
-X-Microsoft-Antispam-Untrusted: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0802MB2291;
-X-MS-TrafficTypeDiagnostic: AM4PR0802MB2291:|AM0PR08MB4947:
-X-Microsoft-Antispam-PRVS: <AM0PR08MB4947B50E3E6436402285C3ACEDC40@AM0PR08MB4947.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-x-ms-oob-tlc-oobclassifiers: OLM:8882;OLM:8882;
-x-forefront-prvs: 01068D0A20
-X-Forefront-Antispam-Report-Untrusted: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(136003)(366004)(346002)(39860400002)(199004)(189003)(186003)(6246003)(86362001)(476003)(26005)(53936002)(2616005)(11346002)(446003)(76176011)(2906002)(6116002)(3846002)(256004)(52116002)(81166006)(81156014)(44832011)(386003)(486006)(65826007)(53546011)(478600001)(6506007)(102836004)(25786009)(14454004)(6916009)(229853002)(31696002)(36756003)(6512007)(58126008)(316002)(54906003)(71200400001)(8936002)(71190400001)(66066001)(65956001)(31686004)(65806001)(68736007)(4744005)(99286004)(64126003)(305945005)(7736002)(66946007)(66476007)(66556008)(8676002)(66446008)(64756008)(6436002)(6486002)(5660300002)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0802MB2291;H:AM4PR0802MB2371.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: arm.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info-Original: Ro7UVNfpBJWZg2B6afFPh4h69Cy2WlWD/nNuMw0mzhIhSkmaXP8AohlemhN26KQTbaeJpNHy7vRLT5VmVAZD9xRPI1D/Iv9Oh+3irLumR2OSXvdZXAB++RC9FXbKmV2qV9IjRfFi+qcjssfMWJrI15VOmvKO+7WfXwvgpbpK8jpT0q5tKQRfm81lvOrmLD2iQHt6/3OLyJPhdKOGNFJYO7oOfjRSvCUsySjKmMzyPLVVOAf4BBHBi7L5bTydC5orq/IofQ4P6NYIbqLcj/YzSmV/e/vxHUQktidXsi3OYtTfCOXe6FlLR7twvSMrfGZdmSCCvp8Xt9WBSFCLfhObkDBdHsxd1Ge5LrnHLzytkL0l8OQn/ePGnsi18FL1d51pJgZPcKrzNBtTqYfj7uaARL1HO3/sUTBZjKLgSlBuG1Q=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3904A8F089A50B41BE225C167D471886@eurprd08.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1730328AbfGVNtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 09:49:35 -0400
+Received: from vps.xff.cz ([195.181.215.36]:34076 "EHLO vps.xff.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729765AbfGVNtf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jul 2019 09:49:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
+        t=1563803371; bh=PWmszP0mXNU9tgaWjpzjbQtOQTIiBeMp0AoXGjlt9+c=;
+        h=Date:From:To:Cc:Subject:References:X-My-GPG-KeyId:From;
+        b=D87o/8mHMW+AuDejEYTVbLgBBvD0KoT0Q++ZbJYidBmEAOZmwZ5CNyKgXehiU5AgP
+         FCA9jvcLOwareSdFsXo94Av3bx5Z55KN0Qo9Vsg58qpKtPMSshfeU/GeGWabkT9xY9
+         OK5e+5+CmtzoFt4ahF7E1/p5pTPLyrvYnyI/7ZAY=
+Date:   Mon, 22 Jul 2019 15:49:31 +0200
+From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 0/3] net: stmmac: Convert to phylink
+Message-ID: <20190722134931.nsxi7qcxgmi5mcfb@core.my.home>
+Mail-Followup-To: Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <cover.1560266175.git.joabreu@synopsys.com>
+ <20190722124240.464e73losonwb356@core.my.home>
+ <BN8PR12MB32660B12F8E2617ED42249BBD3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0802MB2291
-Original-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=Szabolcs.Nagy@arm.com; 
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT054.eop-EUR03.prod.protection.outlook.com
-X-Forefront-Antispam-Report: CIP:63.35.35.123;IPV:CAL;SCL:-1;CTRY:IE;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(376002)(346002)(39860400002)(2980300002)(199004)(189003)(6862004)(63350400001)(450100002)(47776003)(478600001)(63370400001)(186003)(8936002)(6246003)(26826003)(65956001)(66066001)(65806001)(4326008)(86362001)(26005)(81166006)(81156014)(11346002)(31696002)(8676002)(99286004)(6512007)(70206006)(102836004)(36756003)(486006)(14454004)(70586007)(446003)(50466002)(65826007)(6506007)(31686004)(53546011)(58126008)(356004)(2486003)(64126003)(23676004)(3846002)(386003)(76130400001)(2616005)(436003)(54906003)(316002)(126002)(476003)(7736002)(25786009)(305945005)(6486002)(336012)(76176011)(22756006)(5660300002)(229853002)(6116002)(4744005)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR08MB4947;H:64aa7808-outbound-1.mta.getcheckrecipient.com;FPR:;SPF:TempError;LANG:en;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;A:1;MX:1;
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 5fe834e8-8a56-4880-2320-08d70eab34b1
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(710020)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:AM0PR08MB4947;
-NoDisclaimer: True
-X-Forefront-PRVS: 01068D0A20
-X-Microsoft-Antispam-Message-Info: hgSF+j2XHOWjUVCKkd/wAn6WdFMFxfMP3lu3tp9GR+7BrwBtq7oSb4WKfmgl3u7UIS9P6xhM6iSAuLmXAY7pVLKaFk4aBFa9r5shhLlhGhO/6mNyWuqrP44lmRMxssQLFGegrYDMh7YtCPZXeO/hqghUGRu6TNbLHKL4Vqw5uHexePVUfckX8sKfnXGkbl4s8YfciNU3Rb+HrhxH0htufqOCMCuaNhaMVCM9xNb6KWaGkiBuaopXOMc1o/oO/ECdrOIJ4SN+UmpAS3zbhZaGEyU+8nNJ/VFuPvXzFyRw3+lpLjYv2qAuQ/Zr3PZYAiBZHRqqyuSn0GMpcJjYZ6dVJAdd9JKRTyeP8b+ffGbr9jgms2NuQLSBBtni6FLJsrpKnqoEiVnLzFcoSJg5ZZfLK9mOHVRWWHuCEeJNUDz9XfY=
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2019 13:48:06.1062
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ddf18bd-399a-4127-29b3-08d70eab3972
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB4947
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="x3qfmvlquhnlcpdh"
+Content-Disposition: inline
+In-Reply-To: <BN8PR12MB32660B12F8E2617ED42249BBD3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
+ <https://xff.cz/key.txt>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjIvMDcvMjAxOSAxNDo0NCwgRmxvcmlhbiBXZWltZXIgd3JvdGU6DQo+ICogU3phYm9sY3Mg
-TmFneToNCj4gDQo+PiAobm90ZTogaW4gbXVzbCB0aGVzZSBpb2N0bCBtYWNyb3MgYXJlIGluIHN5
-cy9pb2N0bC5oDQo+PiB3aGljaCBpcyBub3QgYSBwb3NpeCBoZWFkZXIgc28gbmFtZXNwYWNlIHJ1
-bGVzIGFyZQ0KPj4gbGVzcyBzdHJpY3QgdGhhbiBmb3Igc3lzL3NvY2tldC5oIGFuZCB1c2VycyB0
-ZW5kIHRvDQo+PiBpbmNsdWRlIGl0IGZvciBpb2N0bCgpKQ0KPiANCj4gPHN5cy9pb2N0bC5oPiBj
-YW4gYmUgY29uZnVzaW5nIGJlY2F1c2Ugc29tZSBvZiB0aGUgY29uc3RhbnRzIG1heSBkZXBlbmQN
-Cj4gb24gdHlwZXMgdGhhdCBhcmVuJ3QgZGVjbGFyZWQgYnkgaW5jbHVkaW5nIHRoZSBoZWFkZXIu
-ICBUaGlzIG1ha2VzIHRoZWlyDQo+IG1hY3JvcyB1bnVzYWJsZS4gIERlZmluaW5nIGlvY3RsIGNv
-bnN0YW50cyBpbiBoZWFkZXJzIHdoaWNoIGFsc28gcHJvdmlkZQ0KPiB0aGUgbWF0Y2hpbmcgdHlw
-ZXMgYXZvaWRzIHRoYXQgcHJvYmxlbSBhdCBsZWFzdCwgYWxzbyBpdCBjYW4gaW50cm9kdWNlDQo+
-IG5hbWVzcGFjZSBpc3N1ZXMuDQoNCnllYWgsIHRoZSB3YXkgd2UgZGVhbCB3aXRoIHRoYXQgaXMg
-d2UgaGFyZCBjb2RlIHRoZSBudW1iZXJzDQpzaW5jZSB0aGUgc2l6ZSBvZiBzdHJ1Y3QgaXMgYWJp
-LCB0aGV5IGNhbm5vdCBjaGFuZ2UuDQo=
+
+--x3qfmvlquhnlcpdh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jul 22, 2019 at 01:28:51PM +0000, Jose Abreu wrote:
+> From: Ond=C5=99ej Jirman <megi@xff.cz>
+> Date: Jul/22/2019, 13:42:40 (UTC+00:00)
+>=20
+> > Hello Jose,
+> >=20
+> > On Tue, Jun 11, 2019 at 05:18:44PM +0200, Jose Abreu wrote:
+> > > [ Hope this diff looks better (generated with --minimal) ]
+> > >=20
+> > > This converts stmmac to use phylink. Besides the code redution this w=
+ill
+> > > allow to gain more flexibility.
+> >=20
+> > I'm testing 5.3-rc1 and on Orange Pi 3 (uses stmmac-sun8i.c glue) compa=
+red to
+> > 5.2 it fails to detect 1000Mbps link and the driver negotiates just a 1=
+0Mbps speed.
+> >=20
+> > After going through stmmac patches since 5.2, I think it may be realted=
+ to this
+> > series, but I'm not completely sure. You'll probably have a better unde=
+rstanding
+> > of the changes. Do you have an idea what might be wrong? Please, see so=
+me logs
+> > below.
+>=20
+> Probably due to:
+> 5b0d7d7da64b ("net: stmmac: Add the missing speeds that XGMAC supports")
+>=20
+> Can you try attached patch ?
+
+Tried, and it works!
+
+dwmac-sun8i 5020000.ethernet eth0: PHY [stmmac-0:01] driver [RTL8211E Gigab=
+it Ethernet]
+dwmac-sun8i 5020000.ethernet eth0: phy: setting supported 00,00000000,00006=
+2ff advertising 00,00000000,000062ff
+dwmac-sun8i 5020000.ethernet eth0: No Safety Features support found
+dwmac-sun8i 5020000.ethernet eth0: No MAC Management Counters available
+dwmac-sun8i 5020000.ethernet eth0: PTP not supported by HW
+dwmac-sun8i 5020000.ethernet eth0: configuring for phy/rgmii link mode
+dwmac-sun8i 5020000.ethernet eth0: phylink_mac_config: mode=3Dphy/rgmii/Unk=
+nown/Unknown adv=3D00,00000000,000062ff pause=3D10 link=3D0 an=3D1
+dwmac-sun8i 5020000.ethernet eth0: phy link down rgmii/Unknown/Unknown
+dwmac-sun8i 5020000.ethernet eth0: phy link up rgmii/1Gbps/Full
+dwmac-sun8i 5020000.ethernet eth0: phylink_mac_config: mode=3Dphy/rgmii/1Gb=
+ps/Full adv=3D00,00000000,00000000 pause=3D0f link=3D1 an=3D0
+dwmac-sun8i 5020000.ethernet eth0: Link is Up - 1Gbps/Full - flow control r=
+x/tx
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+
+Tested-by: Ondrej Jirman <megi@xff.cz>
+
+thank you,
+	Ondrej
+
+>=20
+> >=20
+> > thank you and regards,
+> > 	Ondrej
+> >=20
+> > On 5.3-rc1 I see:
+> >=20
+> > [    6.116512] dwmac-sun8i 5020000.ethernet eth0: PHY [stmmac-0:01] dri=
+ver [RTL8211E Gigabit Ethernet]
+> > [    6.116522] dwmac-sun8i 5020000.ethernet eth0: phy: setting supporte=
+d 00,00000000,000062cf advertising 00,00000000,000062cf
+> > [    6.118714] dwmac-sun8i 5020000.ethernet eth0: No Safety Features su=
+pport found
+> > [    6.118725] dwmac-sun8i 5020000.ethernet eth0: No MAC Management Cou=
+nters available
+> > [    6.118730] dwmac-sun8i 5020000.ethernet eth0: PTP not supported by =
+HW
+> > [    6.118738] dwmac-sun8i 5020000.ethernet eth0: configuring for phy/r=
+gmii link mode
+> > [    6.118747] dwmac-sun8i 5020000.ethernet eth0: phylink_mac_config: m=
+ode=3Dphy/rgmii/Unknown/Unknown adv=3D00,00000000,000062cf pause=3D10 link=
+=3D0 an=3D1
+> > [    6.126099] dwmac-sun8i 5020000.ethernet eth0: phy link down rgmii/U=
+nknown/Unknown
+> > [    6.276325] random: crng init done
+> > [    6.276338] random: 7 urandom warning(s) missed due to ratelimiting
+> > [    7.543987] zram0: detected capacity change from 0 to 402653184
+> > [    7.667702] Adding 393212k swap on /dev/zram0.  Priority:10 extents:=
+1 across:393212k SS
+> >=20
+> > ... delay due to other causes ...
+> >=20
+> > [   28.640234] dwmac-sun8i 5020000.ethernet eth0: phy link up rgmii/10M=
+bps/Full
+> > [   28.640295] dwmac-sun8i 5020000.ethernet eth0: phylink_mac_config: m=
+ode=3Dphy/rgmii/10Mbps/Full adv=3D00,00000000,00000000 pause=3D0f link=3D1 =
+an=3D0
+> > [   28.640324] dwmac-sun8i 5020000.ethernet eth0: Link is Up - 10Mbps/F=
+ull - flow control rx/tx
+> >=20
+> > Settings for eth0:
+> > 	Supported ports: [ TP MII ]
+> > 	Supported link modes:   10baseT/Half 10baseT/Full=20
+> > 	                        100baseT/Half 100baseT/Full=20
+> > 	Supported pause frame use: Symmetric Receive-only
+> > 	Supports auto-negotiation: Yes
+> > 	Supported FEC modes: Not reported
+> > 	Advertised link modes:  10baseT/Half 10baseT/Full=20
+> > 	                        100baseT/Half 100baseT/Full=20
+> > 	Advertised pause frame use: Symmetric Receive-only
+> > 	Advertised auto-negotiation: Yes
+> > 	Advertised FEC modes: Not reported
+> > 	Link partner advertised link modes:  10baseT/Half 10baseT/Full=20
+> > 	Link partner advertised pause frame use: Symmetric Receive-only
+> > 	Link partner advertised auto-negotiation: Yes
+> > 	Link partner advertised FEC modes: Not reported
+> > 	Speed: 10Mb/s
+> > 	Duplex: Full
+> > 	Port: MII
+> > 	PHYAD: 1
+> > 	Transceiver: internal
+> > 	Auto-negotiation: on
+> > 	Supports Wake-on: d
+> > 	Wake-on: d
+> > 	Current message level: 0x0000003f (63)
+> > 			       drv probe link timer ifdown ifup
+> > 	Link detected: yes
+> >=20
+> > On 5.2 it looks like this:
+> >=20
+> > [    1.153596] dwmac-sun8i 5020000.ethernet: PTP uses main clock
+> > [    1.416221] dwmac-sun8i 5020000.ethernet: PTP uses main clock
+> > [    1.522735] dwmac-sun8i 5020000.ethernet: Current syscon value is no=
+t the default 58000 (expect 50000)
+> > [    1.522750] dwmac-sun8i 5020000.ethernet: No HW DMA feature register=
+ supported
+> > [    1.522753] dwmac-sun8i 5020000.ethernet: RX Checksum Offload Engine=
+ supported
+> > [    1.522755] dwmac-sun8i 5020000.ethernet: COE Type 2
+> > [    1.522758] dwmac-sun8i 5020000.ethernet: TX Checksum insertion supp=
+orted
+> > [    1.522761] dwmac-sun8i 5020000.ethernet: Normal descriptors
+> > [    1.522763] dwmac-sun8i 5020000.ethernet: Chain mode enabled
+> > [    5.352833] dwmac-sun8i 5020000.ethernet eth0: No Safety Features su=
+pport found
+> > [    5.352842] dwmac-sun8i 5020000.ethernet eth0: No MAC Management Cou=
+nters available
+> > [    5.352846] dwmac-sun8i 5020000.ethernet eth0: PTP not supported by =
+HW
+> > [   10.463072] dwmac-sun8i 5020000.ethernet eth0: Link is Up - 1Gbps/Fu=
+ll - flow control off
+> >=20
+> > Settings for eth0:
+> > 	Supported ports: [ TP MII ]
+> > 	Supported link modes:   10baseT/Half 10baseT/Full
+> > 	                        100baseT/Half 100baseT/Full
+> > 	                        1000baseT/Half 1000baseT/Full
+> > 	Supported pause frame use: Symmetric Receive-only
+> > 	Supports auto-negotiation: Yes
+> > 	Supported FEC modes: Not reported
+> > 	Advertised link modes:  10baseT/Half 10baseT/Full
+> > 	                        100baseT/Half 100baseT/Full
+> > 	                        1000baseT/Half 1000baseT/Full
+> > 	Advertised pause frame use: No
+> > 	Advertised auto-negotiation: Yes
+> > 	Advertised FEC modes: Not reported
+> > 	Link partner advertised link modes:  10baseT/Half 10baseT/Full
+> > 	                                     100baseT/Half 100baseT/Full
+> > 	                                     1000baseT/Full
+> > 	Link partner advertised pause frame use: Symmetric Receive-only
+> > 	Link partner advertised auto-negotiation: Yes
+> > 	Link partner advertised FEC modes: Not reported
+> > 	Speed: 1000Mb/s
+> > 	Duplex: Full
+> > 	Port: MII
+> > 	PHYAD: 1
+> > 	Transceiver: internal
+> > 	Auto-negotiation: on
+> > 	Supports Wake-on: d
+> > 	Wake-on: d
+> > 	Current message level: 0x0000003f (63)
+> > 			       drv probe link timer ifdown ifup
+> > 	Link detected: yes
+> >=20
+> >=20
+> > > Cc: Joao Pinto <jpinto@synopsys.com>
+> > > Cc: David S. Miller <davem@davemloft.net>
+> > > Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> > > Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> > > Cc: Russell King <linux@armlinux.org.uk>
+> > > Cc: Andrew Lunn <andrew@lunn.ch>
+> > > Cc: Florian Fainelli <f.fainelli@gmail.com>
+> > > Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> > >=20
+> > > Jose Abreu (3):
+> > >   net: stmmac: Prepare to convert to phylink
+> > >   net: stmmac: Start adding phylink support
+> > >   net: stmmac: Convert to phylink and remove phylib logic
+> > >=20
+> > >  drivers/net/ethernet/stmicro/stmmac/Kconfig   |   3 +-
+> > >  drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   7 +-
+> > >  .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  81 +---
+> > >  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 391 ++++++++--------=
+--
+> > >  .../ethernet/stmicro/stmmac/stmmac_platform.c |  21 +-
+> > >  5 files changed, 190 insertions(+), 313 deletions(-)
+> > >=20
+> > > --=20
+> > > 2.21.0
+> > >=20
+>=20
+>=20
+> ---
+> Thanks,
+> Jose Miguel Abreu
+
+
+
+--x3qfmvlquhnlcpdh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYIAB0WIQTr+93hH7kY1E0fVsH58Khzvpd37QUCXTW+6AAKCRD58Khzvpd3
+7QkKAP0f0kyseTrfqIdkpawP8zXwrwhLbaxhxqp4jJ69dcEKXAD8CTOzvbXAwEsa
+ot9X/StEXNDK6xVmeG9gW1l322ij9QI=
+=XTTm
+-----END PGP SIGNATURE-----
+
+--x3qfmvlquhnlcpdh--
