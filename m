@@ -2,167 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 088DF70B07
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 23:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A19370B0F
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 23:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730817AbfGVVKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 17:10:23 -0400
-Received: from mail-eopbgr140054.outbound.protection.outlook.com ([40.107.14.54]:19355
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727845AbfGVVKX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jul 2019 17:10:23 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DQmM33AcqVZR9ymNXZfXUbczxP4A/2zTnxDvAQoVljCztimZfbTs7nn9lUYHMqvbvTrVd4mk5baTjSKBugJC2xSzi/1vVQGfg1FY3VOiWpgfpzTEl1D/k8GyJiDOdhErxy9GRYb1Yq6SfFFVSQojol7TfehIS+1UdoK9dQqbXnhZCpOpsF4R6s0Krrs5+MmGfiQjmOsKknoa+xAMXHt4NRi+T54CnK2nY65MqUMMDdKLp1aMhFedPFdC6flElsnySUBENFl2NyECZwc844+yKGhYk6DOKlMnJm48IDJqjzUegPsAkjHAgsUb9rHZvDSL6Dx1lnAHD/dzyj84GeBKTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Tn2JNqzYzp8DjztDfkV0KlmQfeV/I2QA3KN8fa3l/jg=;
- b=Elw/kgqgz9wM+j7t9d8K+QcKVFHJG6ZVym5GmdvCZHW+/JlO2O36jmPFyxdDg4EsPrWHThDMg72JLRbpzo7XKlUVMLGKA4+iezm3N57yk06V9HmLs4e5tvD40wmHDWmZJfE5KmdKytl5XmHitRXzQt9d/n/w/0s/MUQ0cz2ZWtroeVfeGY/mS/Ri5j6hsFXS8gwL9QnoQa+41OqiMC6D3Fm0Z7Qmjoiie+ZMdVhs+V+LlZBVNjr4m2axCuDzK8FGbPDESkd5fuc8aXVK3qTCu0TZ+qXESK6WdgP8qsJfF0hmOoRNHd9wZEA6kl4RWfzcexOk5+QmULg36UQZ7UwV/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Tn2JNqzYzp8DjztDfkV0KlmQfeV/I2QA3KN8fa3l/jg=;
- b=HpzeZ869ye6l/N8UZKb/sDxGyLX54CLkxXWNJ+2RwG1SmZ8kggYGrYepTHFmhIY1IzcfpKJ3rIbALQBH0wGAsZGrpPtjQ50IiM0U0MHIFhp0267Qr36zcNFUm1BD2zHQW+YHksmGiJeUBE73BIFqa0rcIgzy8ER1lNbh0Prkp90=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2391.eurprd05.prod.outlook.com (10.168.75.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.16; Mon, 22 Jul 2019 21:10:16 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Mon, 22 Jul 2019
- 21:10:16 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "cai@lca.pw" <cai@lca.pw>, Tal Gilboa <talgi@mellanox.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] linux/dim: fix -Wunused-const-variable warnings
-Thread-Topic: [PATCH] linux/dim: fix -Wunused-const-variable warnings
-Thread-Index: AQHVQI6jkFUY13+GzUeRyX7u/3rECqbXIpgA
-Date:   Mon, 22 Jul 2019 21:10:16 +0000
-Message-ID: <4749e75cd6f2045cfcdeb5cc9f8978ab1c036300.camel@mellanox.com>
-References: <1563800923-15441-1-git-send-email-cai@lca.pw>
-In-Reply-To: <1563800923-15441-1-git-send-email-cai@lca.pw>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9a742267-8db1-4584-31c4-08d70ee8fef0
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2391;
-x-ms-traffictypediagnostic: DB6PR0501MB2391:
-x-microsoft-antispam-prvs: <DB6PR0501MB23916512C8ADBD317A5DFD37BEC40@DB6PR0501MB2391.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 01068D0A20
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(366004)(346002)(396003)(39860400002)(189003)(199004)(66946007)(66556008)(64756008)(81156014)(66446008)(66066001)(66476007)(91956017)(76116006)(86362001)(8936002)(36756003)(99286004)(256004)(25786009)(4326008)(14444005)(81166006)(478600001)(446003)(316002)(14454004)(110136005)(58126008)(54906003)(486006)(476003)(76176011)(6246003)(305945005)(26005)(5660300002)(2906002)(6436002)(53936002)(229853002)(102836004)(6506007)(11346002)(186003)(6636002)(71190400001)(71200400001)(2501003)(118296001)(8676002)(6486002)(3846002)(6512007)(7736002)(6116002)(68736007)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2391;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: sz4u36LxC8Blt0Q2g7aD2JZS72n7VmJXuw8t8AjOKq0gGaxrh9VNyV1hhe1CqCN6hLTyn6c2/PK3r1LvngNw5qUvF77uZIoQtPOJJJ/Txsu+jHYC5Wumc+8Z8P+hkLQNwI5poL2OmQ/h0i7IRiqZuCm/F2/FzzPFOLbS0vBWIM7R7qS7XN8jN3CVTyahqf3v9dbc4WP/r9L78RPl2q3u6mNCTDGMArpPHBCn4kLiXXt/BPmqsYxNwLJTAr15adm0UGvC4qDZLaqzdqGWD3/B7uydE7Y0MNrArMnuMGFBn6/Cfgm3icGBgRIdZOs5x6Op1U2aTQgoEzDs6B63e+q78V6PVvW4V2EWQekvQb9a6qORPTZnzRrtHGrAXv14YYdiRrIKeF/VIIMfP/dYmTz7UjBwNFr91j5zXrRJ7OZntmM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D6A8F1ACD9FB1D4B93175F05C87592A0@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a742267-8db1-4584-31c4-08d70ee8fef0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jul 2019 21:10:16.7170
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2391
+        id S1732364AbfGVVNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 17:13:20 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35317 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732272AbfGVVNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 17:13:20 -0400
+Received: by mail-qk1-f195.google.com with SMTP id r21so29611230qke.2
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 14:13:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BKxiGWjC+5P401jeWuqAwXoma7yfPGk4/g2Ytyh5U30=;
+        b=BFaD/7jUsYikt25fnCeLunhpd4nXxRG1xIUkQlhVAPFQXJyx/6r2vVBCFl/NMqD8+U
+         pbeanWTIc9BMwg32VoB/9EstVkIA1Quz19bbbkvvpefdgBlJXn01fqZYsfFJ2B8u6umk
+         K+PQDVU84pJTf/VW30aLeOw9iatqrmyi1M7EUzyX2bhFdOPQdmlBf9AehzVOynsPESXe
+         7kvsKl82+LmMohjq+ELusDXm62Z369AQbp87hp0WoRk2eC8qsdvxghIhHcwbTz6XPLPk
+         E1fPPylZLIDB1qiXxnwk7wQCr1VaAq+Nl0jRYC9RB+Q5Sd/U4eZpdjuXVxKCeRnDJ8rT
+         Y85w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BKxiGWjC+5P401jeWuqAwXoma7yfPGk4/g2Ytyh5U30=;
+        b=uECVyrY2wrttrFiOEs9GW/EGlNIFrfRzfdunwL94oscC4mBmJRjTIYTSl1pU41OQY9
+         xFLUguyDxBQzo4ATprstOLzyPtmSYc3WPiVMTszXk90u5555b94s4CHEzpgAtmGON4I8
+         uo7KdyuRU7ZgFbxn8m40xeEVHOifrODly1YqiHPTEZIx0szY7sLSSlx2aw+8XPocyWoL
+         MFuO86H45P7yqCVZ94aEg/JxYPB7urkv1qzcNPdQM+h7ScDnncNcjjqp/m4NNfdnKMOC
+         QsQYnFUiUeeMLsKhBek1Zn05qYq7SXnx45Gg4gu292AXutnh8pQalf8DY2vTAXIg2654
+         eMlg==
+X-Gm-Message-State: APjAAAVDv48F3E4T2P7sTl9zwuezU5RToo5NAaEmuJvUxCXy4Xircwwr
+        CSuf8twd8ywktaRDWyEzHbbL7sBLlD+3Wg==
+X-Google-Smtp-Source: APXvYqwsFCj6xytMhGmclxHIaeQskKQrC4psHIw5WW42v731oBjjDbzmgqJHveBylv4SkFw7Rlp47Q==
+X-Received: by 2002:a37:a010:: with SMTP id j16mr48945457qke.152.1563829999256;
+        Mon, 22 Jul 2019 14:13:19 -0700 (PDT)
+Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id z1sm19024894qke.122.2019.07.22.14.13.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jul 2019 14:13:18 -0700 (PDT)
+Message-ID: <1563829996.11067.4.camel@lca.pw>
+Subject: Re: [PATCH] be2net: fix adapter->big_page_size miscaculation
+From:   Qian Cai <cai@lca.pw>
+To:     David Miller <davem@davemloft.net>
+Cc:     morbo@google.com, ndesaulniers@google.com, jyknight@google.com,
+        sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        arnd@arndb.de, dhowells@redhat.com, hpa@zytor.com,
+        netdev@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, natechancellor@gmail.com,
+        Jakub Jelinek <jakub@redhat.com>
+Date:   Mon, 22 Jul 2019 17:13:16 -0400
+In-Reply-To: <1563572871.11067.2.camel@lca.pw>
+References: <CAKwvOdkCfqfpJYYX+iu2nLCUUkeDorDdVP3e7koB9NYsRwgCNw@mail.gmail.com>
+         <CAGG=3QUvdwJs1wW1w+5Mord-qFLa=_WkjTsiZuwGfcjkoEJGNQ@mail.gmail.com>
+         <75B428FC-734C-4B15-B1A7-A3FC5F9F2FE5@lca.pw>
+         <20190718.162928.124906203979938369.davem@davemloft.net>
+         <1563572871.11067.2.camel@lca.pw>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA3LTIyIGF0IDA5OjA4IC0wNDAwLCBRaWFuIENhaSB3cm90ZToNCj4gVGhl
-cmUgYXJlIGEgbG90IG9mIGNvbXBpbGF0aW9uIHdhcm5pbmdzIGR1ZSB0byB0eF9wcm9maWxlW10g
-YW5kDQo+IHJ4X3Byb2ZpbGVbXSBhcmUgb25seSB1c2VkIGluIGxpYi9kaW0vbmV0X2RpbS5jIGJ1
-dA0KPiBpbmNsdWRlL2xpbnV4L2RpbS5oDQo+IGlzIGluY2x1ZGVkIGVsc2V3aGVyZS4NCj4gDQo+
-IEluIGZpbGUgaW5jbHVkZWQgZnJvbSAuL2luY2x1ZGUvcmRtYS9pYl92ZXJicy5oOjY0LA0KPiAg
-ICAgICAgICAgICAgICAgIGZyb20gLi9pbmNsdWRlL2xpbnV4L21seDUvZGV2aWNlLmg6MzcsDQo+
-ICAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgvbWx4NS9kcml2ZXIuaDo1MSwN
-Cj4gICAgICAgICAgICAgICAgICBmcm9tDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
-L21seDUvY29yZS9wYWdlYWxsb2MuYzozNzoNCj4gLi9pbmNsdWRlL2xpbnV4L2RpbS5oOjMyNjox
-OiB3YXJuaW5nOiAndHhfcHJvZmlsZScgZGVmaW5lZCBidXQgbm90DQo+IHVzZWQNCj4gWy1XdW51
-c2VkLWNvbnN0LXZhcmlhYmxlPV0NCj4gIHR4X3Byb2ZpbGVbRElNX0NRX1BFUklPRF9OVU1fTU9E
-RVNdW05FVF9ESU1fUEFSQU1TX05VTV9QUk9GSUxFU10gPSB7DQo+ICBefn5+fn5+fn5+DQo+IC4v
-aW5jbHVkZS9saW51eC9kaW0uaDozMjA6MTogd2FybmluZzogJ3J4X3Byb2ZpbGUnIGRlZmluZWQg
-YnV0IG5vdA0KPiB1c2VkDQo+IFstV3VudXNlZC1jb25zdC12YXJpYWJsZT1dDQo+ICByeF9wcm9m
-aWxlW0RJTV9DUV9QRVJJT0RfTlVNX01PREVTXVtORVRfRElNX1BBUkFNU19OVU1fUFJPRklMRVNd
-ID0gew0KPiAgXn5+fn5+fn5+fg0KPiANCj4gRml4IHRoZW0gYnkgbW92aW5nIHR4X3Byb2ZpbGVb
-XSBhbmQgcnhfcHJvZmlsZVtdIGludG8NCj4gbGliL2RpbS9uZXRfZGltLmMNCj4gaW5zdGVhZC4N
-Cj4gDQo+IFNpZ25lZC1vZmYtYnk6IFFpYW4gQ2FpIDxjYWlAbGNhLnB3Pg0KPiAtLS0NCj4gIGlu
-Y2x1ZGUvbGludXgvZGltLmggfCAxMiAtLS0tLS0tLS0tLS0NCj4gIGxpYi9kaW0vbmV0X2RpbS5j
-ICAgfCAxMiArKysrKysrKysrKysNCj4gIDIgZmlsZXMgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygr
-KSwgMTIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9kaW0u
-aCBiL2luY2x1ZGUvbGludXgvZGltLmgNCj4gaW5kZXggZDNhMGZiZmZmMmJiLi5kNWYzYjEwZmU2
-ZTEgMTAwNjQ0DQo+IC0tLSBhL2luY2x1ZGUvbGludXgvZGltLmgNCj4gKysrIGIvaW5jbHVkZS9s
-aW51eC9kaW0uaA0KPiBAQCAtMzE2LDE4ICszMTYsNiBAQCB2b2lkIGRpbV9jYWxjX3N0YXRzKHN0
-cnVjdCBkaW1fc2FtcGxlICpzdGFydCwNCj4gc3RydWN0IGRpbV9zYW1wbGUgKmVuZCwNCj4gIAl7
-NjQsIDMyfSAgIFwNCj4gIH0NCj4gIA0KPiAtc3RhdGljIGNvbnN0IHN0cnVjdCBkaW1fY3FfbW9k
-ZXINCj4gLXJ4X3Byb2ZpbGVbRElNX0NRX1BFUklPRF9OVU1fTU9ERVNdW05FVF9ESU1fUEFSQU1T
-X05VTV9QUk9GSUxFU10gPSB7DQo+IC0JTkVUX0RJTV9SWF9FUUVfUFJPRklMRVMsDQo+IC0JTkVU
-X0RJTV9SWF9DUUVfUFJPRklMRVMsDQo+IC19Ow0KPiAtDQo+IC1zdGF0aWMgY29uc3Qgc3RydWN0
-IGRpbV9jcV9tb2Rlcg0KPiAtdHhfcHJvZmlsZVtESU1fQ1FfUEVSSU9EX05VTV9NT0RFU11bTkVU
-X0RJTV9QQVJBTVNfTlVNX1BST0ZJTEVTXSA9IHsNCj4gLQlORVRfRElNX1RYX0VRRV9QUk9GSUxF
-UywNCj4gLQlORVRfRElNX1RYX0NRRV9QUk9GSUxFUywNCj4gLX07DQo+IC0NCj4gIC8qKg0KPiAg
-ICoJbmV0X2RpbV9nZXRfcnhfbW9kZXJhdGlvbiAtIHByb3ZpZGUgYSBDUSBtb2RlcmF0aW9uIG9i
-amVjdCBmb3INCj4gdGhlIGdpdmVuIFJYIHByb2ZpbGUNCj4gICAqCUBjcV9wZXJpb2RfbW9kZTog
-Q1EgcGVyaW9kIG1vZGUNCj4gZGlmZiAtLWdpdCBhL2xpYi9kaW0vbmV0X2RpbS5jIGIvbGliL2Rp
-bS9uZXRfZGltLmMNCj4gaW5kZXggNWJjYzkwMmM1Mzg4Li5mMmE4Njc0NzIxY2YgMTAwNjQ0DQo+
-IC0tLSBhL2xpYi9kaW0vbmV0X2RpbS5jDQo+ICsrKyBiL2xpYi9kaW0vbmV0X2RpbS5jDQo+IEBA
-IC01LDYgKzUsMTggQEANCj4gIA0KPiAgI2luY2x1ZGUgPGxpbnV4L2RpbS5oPg0KPiAgDQo+ICtz
-dGF0aWMgY29uc3Qgc3RydWN0IGRpbV9jcV9tb2Rlcg0KPiArcnhfcHJvZmlsZVtESU1fQ1FfUEVS
-SU9EX05VTV9NT0RFU11bTkVUX0RJTV9QQVJBTVNfTlVNX1BST0ZJTEVTXSA9IHsNCj4gKwlORVRf
-RElNX1JYX0VRRV9QUk9GSUxFUywNCj4gKwlORVRfRElNX1JYX0NRRV9QUk9GSUxFUywNCj4gK307
-DQo+ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgZGltX2NxX21vZGVyDQo+ICt0eF9wcm9maWxl
-W0RJTV9DUV9QRVJJT0RfTlVNX01PREVTXVtORVRfRElNX1BBUkFNU19OVU1fUFJPRklMRVNdID0g
-ew0KPiArCU5FVF9ESU1fVFhfRVFFX1BST0ZJTEVTLA0KPiArCU5FVF9ESU1fVFhfQ1FFX1BST0ZJ
-TEVTLA0KPiArfTsNCj4gKw0KDQpIaSBRaWFuLA0KDQppdCB3b3J0aCBtb3ZpbmcgdGhlIHN0cnVj
-dHMgYW5kIHRoZWlyIGRlcGVuZGVuY2llcywgdGhlIHdob2xlIGJlbG93DQpjb2RlIGJsb2NrIHNo
-b3VsZCBtb3ZlIHRvIG5ldF9kaW0uYyBhbHRvZ2V0aGVyLg0KDQovKiBOZXQgRElNICovDQoNCi8q
-DQogKiBOZXQgRElNIHByb2ZpbGVzOg0KICogICAgICAgIFRoZXJlIGFyZSBkaWZmZXJlbnQgc2V0
-IG9mIHByb2ZpbGVzIGZvciBlYWNoIENRIHBlcmlvZCBtb2RlLg0KICogICAgICAgIFRoZXJlIGFy
-ZSBkaWZmZXJlbnQgc2V0IG9mIHByb2ZpbGVzIGZvciBSWC9UWCBDUXMuDQogKiAgICAgICAgRWFj
-aCBwcm9maWxlIHNpemUgbXVzdCBiZSBvZiBORVRfRElNX1BBUkFNU19OVU1fUFJPRklMRVMNCiAq
-Lw0KI2RlZmluZSBORVRfRElNX1BBUkFNU19OVU1fUFJPRklMRVMgNQ0KI2RlZmluZSBORVRfRElN
-X0RFRkFVTFRfUlhfQ1FfTU9ERVJBVElPTl9QS1RTX0ZST01fRVFFIDI1Ng0KI2RlZmluZSBORVRf
-RElNX0RFRkFVTFRfVFhfQ1FfTU9ERVJBVElPTl9QS1RTX0ZST01fRVFFIDEyOA0KI2RlZmluZSBO
-RVRfRElNX0RFRl9QUk9GSUxFX0NRRSAxDQojZGVmaW5lIE5FVF9ESU1fREVGX1BST0ZJTEVfRVFF
-IDENCg0KI2RlZmluZSBORVRfRElNX1JYX0VRRV9QUk9GSUxFUyB7IFwNCgl7MSwgICBORVRfRElN
-X0RFRkFVTFRfUlhfQ1FfTU9ERVJBVElPTl9QS1RTX0ZST01fRVFFfSwgXA0KCXs4LCAgIE5FVF9E
-SU1fREVGQVVMVF9SWF9DUV9NT0RFUkFUSU9OX1BLVFNfRlJPTV9FUUV9LCBcDQoJezY0LCAgTkVU
-X0RJTV9ERUZBVUxUX1JYX0NRX01PREVSQVRJT05fUEtUU19GUk9NX0VRRX0sIFwNCgl7MTI4LCBO
-RVRfRElNX0RFRkFVTFRfUlhfQ1FfTU9ERVJBVElPTl9QS1RTX0ZST01fRVFFfSwgXA0KCXsyNTYs
-IE5FVF9ESU1fREVGQVVMVF9SWF9DUV9NT0RFUkFUSU9OX1BLVFNfRlJPTV9FUUV9LCBcDQp9DQoN
-CiNkZWZpbmUgTkVUX0RJTV9SWF9DUUVfUFJPRklMRVMgeyBcDQoJezIsICAyNTZ9LCAgICAgICAg
-ICAgICBcDQoJezgsICAxMjh9LCAgICAgICAgICAgICBcDQoJezE2LCA2NH0sICAgICAgICAgICAg
-ICBcDQoJezMyLCA2NH0sICAgICAgICAgICAgICBcDQoJezY0LCA2NH0gICAgICAgICAgICAgICBc
-DQp9DQoNCiNkZWZpbmUgTkVUX0RJTV9UWF9FUUVfUFJPRklMRVMgeyBcDQoJezEsICAgTkVUX0RJ
-TV9ERUZBVUxUX1RYX0NRX01PREVSQVRJT05fUEtUU19GUk9NX0VRRX0sICBcDQoJezgsICAgTkVU
-X0RJTV9ERUZBVUxUX1RYX0NRX01PREVSQVRJT05fUEtUU19GUk9NX0VRRX0sICBcDQoJezMyLCAg
-TkVUX0RJTV9ERUZBVUxUX1RYX0NRX01PREVSQVRJT05fUEtUU19GUk9NX0VRRX0sICBcDQoJezY0
-LCAgTkVUX0RJTV9ERUZBVUxUX1RYX0NRX01PREVSQVRJT05fUEtUU19GUk9NX0VRRX0sICBcDQoJ
-ezEyOCwgTkVUX0RJTV9ERUZBVUxUX1RYX0NRX01PREVSQVRJT05fUEtUU19GUk9NX0VRRX0gICBc
-DQp9DQoNCiNkZWZpbmUgTkVUX0RJTV9UWF9DUUVfUFJPRklMRVMgeyBcDQoJezUsICAxMjh9LCAg
-XA0KCXs4LCAgNjR9LCAgXA0KCXsxNiwgMzJ9LCAgXA0KCXszMiwgMzJ9LCAgXA0KCXs2NCwgMzJ9
-ICAgXA0KfQ0KDQpzdGF0aWMgY29uc3Qgc3RydWN0IGRpbV9jcV9tb2Rlcg0KcnhfcHJvZmlsZVtE
-SU1fQ1FfUEVSSU9EX05VTV9NT0RFU11bTkVUX0RJTV9QQVJBTVNfTlVNX1BST0ZJTEVTXSA9IHsN
-CglORVRfRElNX1JYX0VRRV9QUk9GSUxFUywNCglORVRfRElNX1JYX0NRRV9QUk9GSUxFUywNCn07
-DQoNCnN0YXRpYyBjb25zdCBzdHJ1Y3QgZGltX2NxX21vZGVyDQp0eF9wcm9maWxlW0RJTV9DUV9Q
-RVJJT0RfTlVNX01PREVTXVtORVRfRElNX1BBUkFNU19OVU1fUFJPRklMRVNdID0gew0KCU5FVF9E
-SU1fVFhfRVFFX1BST0ZJTEVTLA0KCU5FVF9ESU1fVFhfQ1FFX1BST0ZJTEVTLA0KfTsNCg0KDQpp
-biBjYXNlIHlvdSBhcmUgZ29pbmcgdG8gc3VibWl0IGEgVjIsIGNhbiB5b3UgY2MgbmV0ZGV2IG1h
-aWxpbmcgbGlzdCBhcw0Kd2VsbCA/IA0KDQo+ICBzdHJ1Y3QgZGltX2NxX21vZGVyDQo+ICBuZXRf
-ZGltX2dldF9yeF9tb2RlcmF0aW9uKHU4IGNxX3BlcmlvZF9tb2RlLCBpbnQgaXgpDQo+ICB7DQo=
+On Fri, 2019-07-19 at 17:47 -0400, Qian Cai wrote:
+> On Thu, 2019-07-18 at 16:29 -0700, David Miller wrote:
+> > From: Qian Cai <cai@lca.pw>
+> > Date: Thu, 18 Jul 2019 19:26:47 -0400
+> > 
+> > >  
+> > >  
+> > > > On Jul 18, 2019, at 5:21 PM, Bill Wendling <morbo@google.com> wrote:
+> > > >  
+> > > > [My previous response was marked as spam...]
+> > > >  
+> > > > Top-of-tree clang says that it's const:
+> > > >  
+> > > > $ gcc a.c -O2 && ./a.out
+> > > > a is a const.
+> > > >  
+> > > > $ clang a.c -O2 && ./a.out
+> > > > a is a const.
+> > > 
+> > >  
+> > >  
+> > > I used clang-7.0.1. So, this is getting worse where both GCC and clang
+> > > will
+> > 
+> > start to suffer the
+> > > same problem.
+> > 
+> > Then rewrite the module parameter macros such that the non-constness
+> > is evident to all compilers regardless of version.
+> > 
+> > That is the place to fix this, otherwise we will just be adding hacks
+> > all over the place rather than in just one spot.
+> 
+> The problem is that when the compiler is compiling be_main.o, it has no
+> knowledge about what is going to happen in load_module().  The compiler can
+> only
+> see that a "const struct kernel_param_ops" "__param_ops_rx_frag_size" at the
+> time with
+> 
+> __param_ops_rx_frag_size.arg = &rx_frag_size
+> 
+> but only in load_module()->parse_args()->parse_one()->param_set_ushort(), it
+> changes "__param_ops_rx_frag_size.arg" which in-turn changes the value
+> of "rx_frag_size".
+
+Even for an obvious case, the compilers still go ahead optimizing a variable as
+a constant. Maybe it is best to revert the commit d66acc39c7ce ("bitops:
+Optimise get_order()") unless some compiler experts could improve the situation.
+
+#include <stdio.h>
+
+int a = 1;
+
+int main(void)
+{
+        int *p;
+
+        p = &a;
+        *p = 2;
+
+        if (__builtin_constant_p(a))
+                printf("a is a const.\n");
+
+        printf("a = %d\n", a);
+
+        return 0;
+}
+
+# gcc -O2 const.c -o const
+
+# ./const
+a is a const.
+a = 2
