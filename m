@@ -2,87 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 120316F898
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 06:40:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDDD6F8D2
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 07:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727738AbfGVEka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 00:40:30 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:32988 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727651AbfGVEka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 00:40:30 -0400
-Received: by mail-lf1-f68.google.com with SMTP id x3so25671486lfc.0
-        for <netdev@vger.kernel.org>; Sun, 21 Jul 2019 21:40:29 -0700 (PDT)
+        id S1727021AbfGVFWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 01:22:49 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33141 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbfGVFWt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 01:22:49 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n9so37982795wru.0;
+        Sun, 21 Jul 2019 22:22:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9ncs42SKDIyAXPYsF/YsHVruecC4cl/V7wjDZefhpkw=;
-        b=k2bbZ2b2oyVs0xaDgMXk4iGhoEBB5SNlDTYlq+jwwsMrg7WYd24sYe0mDHDlQSvoDX
-         vRx/T3SbjcAWD+kP5mFuzsgQ2m5N75YkNxvwp3OBsTs2n/LqG5cH18XvsLuHTHpeChRI
-         58rku89FNYqjt0vAT1GR0Om4Y1TenH7EpGIEbx1Rjn+gX6+YnEx8d5l5WmPSWmKkmcc0
-         Vy+VW7wLRHdd4wOYN58RXO07SK6yY7S7t8Es8IHlzBB6NdgENlcFfB3Hx77JdfFCB2mU
-         KMUBU0zBbQD8GI/T4Y0iRMawLQqjbap4/KZBz40ji+Kc3r6kVLxhakPmoLkXFytcFO/C
-         /vaQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ETeKDbjRetNIkG5OkDbxDTHMEmZYmQYCFw58W5ps8kI=;
+        b=k6E+Jh8+h1HvEeKmiRMrOPlkvCdfNYHFktXRuqKSesuQRBdbAQahtbwYkCBsbvlssd
+         Ki21VARXSUeW1E6NV3uN+Tr+VZ1e3HBgE+B44thY/Q8luHf5fXezsxWBaJFljn0abtYz
+         FIOdJEEOh+JInSV+K2psDpY3EUjrsi2PttQH9nGuJEiEZlAzXtK9L7uwkMm3fSiDltR4
+         OPOV8lO94YOtNpO43frxDEUPjkO19jS5Wd08jFhRFaGfsIYeaH3YkkYRdvYBgCea+Btl
+         lHF5W1JKXhA5x0WxbDMoVqy/Xuz4N/wWXTtH3zar/fTifvkH9KIyv25jVTqkXGOOBaGj
+         9SjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9ncs42SKDIyAXPYsF/YsHVruecC4cl/V7wjDZefhpkw=;
-        b=kavWFfogk1vYLGbQGbnaU16D5TK4ssWOOc+mM5ellPBzTJAXJNVYnpAUUtTUSGrbE2
-         2nocoM9S/yYO8fJzeCW579FriJttg65zPqwrO6HMnE1pOnspWDvwa1PnUDR4KRGF94sD
-         d/HlwS8Z3HH/cjjj0MddPsJXQx3xKZjkNkIgO71AtH9vFDV/WJxpLzzJwWbWggLO0EzD
-         GDTdVKTFjzH56vgpv0ounu54W9oKfRLoXQBZS9Zu+l0WsX8lid+0aS0xrkhSmrwwkqDQ
-         VqKA/kk2+RrEgfkYDYbrhTi/y/Zmr7qv8ygiRL0hWcGn6sk4xlINvwy2VTA/jlVxwilW
-         tcDQ==
-X-Gm-Message-State: APjAAAVaKWJhGIriSTJtm8G4urHcGHe5ASTVLMZS132Ui9e6xWhul+WO
-        rRjvv7tEssd5CccxhRaFOkmDmq1CmK3U0jZ0BDDyFg==
-X-Google-Smtp-Source: APXvYqwvAIdl55t6ZBi0sof5NGjfaHPKrALdFIaGt9ZEylIuJumZ5agEDn2OAQB5ZWTfVUpTC8ov8KSHgsYAMZ1msnk=
-X-Received: by 2002:a19:6602:: with SMTP id a2mr29671361lfc.25.1563770428381;
- Sun, 21 Jul 2019 21:40:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ETeKDbjRetNIkG5OkDbxDTHMEmZYmQYCFw58W5ps8kI=;
+        b=gL9X43rjPSSgaOuSyzPQE1nzNJJzgvFIImOMG9rIqmlj2M5L7mFDPcjmQTKZCYX/xB
+         I8+9AWZ/T4Jrx+5B6GAk5EiQR0Eg0nFRTavVtN8EGGkIiAKeOUFzsE1lwBHiR5HvxiGU
+         qUWFtNDfoi0Ves0o0wGmEcQPjOgkGvTeNFyRdP3CPGETGoDBqBWXnpZc3jUkrhOEDt5s
+         F72KPk3vGmwBdk5ekXzgSugg078V7L41uy7cDsIRB+X3Do+ZEdcFd4wJjhbGvOyDbmca
+         MyljOHGO7t5KAGw1/qVYD/7XKyG/AcISfq6vvOmFpo3XUOC2j5rkXOfo5g7TXUrIj2rq
+         ksFA==
+X-Gm-Message-State: APjAAAVmtepC+FEir/7f4HyuPlcL2w7ew17qDshIKr6bIceOwcbCmaWi
+        DvWP+FROgNZQ+dRQo/hgHw==
+X-Google-Smtp-Source: APXvYqwZycQryK2Tn4hJi8ISfIaaufeRjt02D9pQywPF25eDjRGRtDqC6cQS510Filgr4by3xYnYgA==
+X-Received: by 2002:a5d:6b11:: with SMTP id v17mr22844937wrw.323.1563772967184;
+        Sun, 21 Jul 2019 22:22:47 -0700 (PDT)
+Received: from avx2 ([46.53.250.207])
+        by smtp.gmail.com with ESMTPSA id z5sm27075540wmf.48.2019.07.21.22.22.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 21 Jul 2019 22:22:46 -0700 (PDT)
+Date:   Mon, 22 Jul 2019 08:22:44 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, axboe@kernel.dk, kvalo@codeaurora.org,
+        john.johansen@canonical.com, linux-arch@vger.kernel.org
+Subject: Re: [PATCH] unaligned: delete 1-byte accessors
+Message-ID: <20190722052244.GA4235@avx2>
+References: <20190721215253.GA18177@avx2>
+ <1563750513.2898.4.camel@HansenPartnership.com>
 MIME-Version: 1.0
-References: <1563534631-15897-1-git-send-email-yash.shah@sifive.com>
- <1563534631-15897-2-git-send-email-yash.shah@sifive.com> <4075b955-a187-6fd7-a2e6-deb82b5d4fb6@microchip.com>
-In-Reply-To: <4075b955-a187-6fd7-a2e6-deb82b5d4fb6@microchip.com>
-From:   Yash Shah <yash.shah@sifive.com>
-Date:   Mon, 22 Jul 2019 10:09:52 +0530
-Message-ID: <CAJ2_jOEHoh+D76VpAoVq3XnpAZEQxdQtaVX5eiKw5X4r+ypKVw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] macb: Update compatibility string for SiFive FU540-C000
-To:     Nicolas Ferre <Nicolas.Ferre@microchip.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>,
-        Sachin Ghadi <sachin.ghadi@sifive.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1563750513.2898.4.camel@HansenPartnership.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 5:36 PM <Nicolas.Ferre@microchip.com> wrote:
->
-> On 19/07/2019 at 13:10, Yash Shah wrote:
-> > Update the compatibility string for SiFive FU540-C000 as per the new
-> > string updated in the binding doc.
-> > Reference: https://lkml.org/lkml/2019/7/17/200
->
-> Maybe referring to lore.kernel.org is better:
-> https://lore.kernel.org/netdev/CAJ2_jOFEVZQat0Yprg4hem4jRrqkB72FKSeQj4p8P5KA-+rgww@mail.gmail.com/
+On Mon, Jul 22, 2019 at 08:08:33AM +0900, James Bottomley wrote:
+> On Mon, 2019-07-22 at 00:52 +0300, Alexey Dobriyan wrote:
+> > Each and every 1-byte access is aligned!
+> 
+> The design idea of this is for parsing descriptors.  We simply chunk up
+> the describing structure using get_unaligned for everything.  The
+> reason is because a lot of these structures come with reserved areas
+> which we may make use of later.  If we're using get_unaligned for
+> everything we can simply change a u8 to a u16 in the structure
+> absorbing the reserved padding.  With your change now I'd have to chase
+> down every byte access and replace it with get_unaligned instead of
+> simply changing the structure.
+> 
+> What's the significant advantage of this change that compensates for
+> the problems the above causes?
 
-Sure. Will keep that in mind for future reference.
+HW descriptors have fixed endianness, you're supposed to use
+get_unaligned_be32() and friends.
 
->
-> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
->
-> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-Thanks.
-
-- Yash
+For that matter, drivers/scsi/ has exactly 2 get_unaligned() calls one of
+which can be changed to get_unaligned_be32().
