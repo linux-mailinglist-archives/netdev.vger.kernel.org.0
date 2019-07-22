@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ACAD709F7
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 21:43:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD99709F8
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 21:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729642AbfGVTnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 15:43:08 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:39829 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728311AbfGVTnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 15:43:08 -0400
-Received: by mail-lj1-f194.google.com with SMTP id v18so38709707ljh.6
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 12:43:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yDcZGwhuKZu3iHdLJjjZrDjT2mDiJYa3/PCuflSwhmE=;
-        b=JH+WTPvGR1uJXOfkLig+2OnrW2RKgN80CBOlHfHzmzd4O+bmVrzCRVv79MtxWactpN
-         5AQJgh8/hKUCP0JLKzw9h/Ia3Zucxwt24sq0z1NWzgC9D7F9JM39IuPnlfeD8HuVZjgZ
-         df1gbXNdbJqX60F6+Y/PKNW/1fE0l4GJwD+5qqqbYRcIBhraAj8DB6QvLVW+D4BcwoSy
-         XbY47a81+I07ouFEfhrSnksjfYHY98ImOhSJYDBYtWMQ1Mjelr3fU9T1Oy9gC9xOVFkv
-         9z7hQlZHI374PYI2T6OQwIYP1EKvSEMpTqTekwepqb6IjDkwfgi3/YVva8PPoL2m8Qmh
-         Yl4g==
+        id S1732300AbfGVTnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 15:43:19 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:40288 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732126AbfGVTnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 15:43:18 -0400
+Received: by mail-ed1-f68.google.com with SMTP id k8so41611231eds.7
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 12:43:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yDcZGwhuKZu3iHdLJjjZrDjT2mDiJYa3/PCuflSwhmE=;
-        b=HF64c7SNGHX8XNGanyyV6fKyTp4fWH+z1pv0aLXS9YOqyeE1YlAjV7RHBrfr6/xeBb
-         Lx1fKsbxSzy7FYGbHT0bjgl0qjop44S2QjDAiCIy26ncaD9MVYsM7cadlznI8FoZgcIa
-         HvEaYZUlUh0maectIJ0eorynkKMdza4j9yeTw5pWDnJPnZGvadzAI8OHnxy5TTEo9DeB
-         LlofYJqW4BVLk7MEXLF3P/0+d4InAeuZMhVizSLuZr2e8hjF36UGj1rCwCKTR2uTuDxl
-         CKB8LbwUmrbfKOEmgcQLkX6//TUbqR2m45Ii4UCgFmbCjcv1hStC8EWE9CNFf+vRbT+a
-         x+zg==
-X-Gm-Message-State: APjAAAUg/SkqTGXHKvrRKPqUReJM9+OyeLsy6HlFbjhK1dL54kOYIDWX
-        VEJvU7ugKxxvbrX2NuCsYCc8bYslQMUadqW6x/U=
-X-Google-Smtp-Source: APXvYqxYj26MsmsL+EUr6K7HJeh4VOAk6pAdE7CkRMdt0FiDft3k4b/ODkmGcqVb0AGyHNqMuSc+O0XivAmJeX8kyWM=
-X-Received: by 2002:a2e:3604:: with SMTP id d4mr36892450lja.85.1563824585693;
- Mon, 22 Jul 2019 12:43:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=egr5Kh4eBg/xC7/XFAF1IBuNmDxDL9wrp7NxRy/jEvA=;
+        b=FESKKDchIuOi7vaJoXUWRbRvfcGzuCLo4eO7FvZFMA2R0nXYR2NQJKRStX+xqgDToz
+         hBLV40FBIe/kTdqwUfocYU8sQI+ifEPkaaFBGwz7ZAdSzoRL5L1gXAPGfenDMsAE4b2T
+         9qEZWpmxsUXMwz08JKA5iyAYjuRuRN0qfkpdiDx77PQBOvPts3IhqW1ad5H3rQhzY8aJ
+         HKp5WK+6iHfgTC8RjJKGjUWDqn2OM8r/1UD9OZjj82rFOpQcrhUCEf921r2b1f2YfMHN
+         Sl3x32pK1fYbU7XRHkKMqxsmT2dElaS1gVgiFbDJgFbpbwbVwH8NXHoSKl1mVQTnYPMt
+         HGhQ==
+X-Gm-Message-State: APjAAAXnVUKdCB4cX9CR8czRC/RIqTmItiz4pQFhDnLJAh4VFAs9SvYE
+        WpStvHgLWWBE2b3NT78mOEtZOg==
+X-Google-Smtp-Source: APXvYqwCSYXliF9t7T+Ke9lI/FxfgwoO9vE+rb+NY7+uHoRGm1RqGfTQaqh7VzhxMh+QowdLYDw/SA==
+X-Received: by 2002:a17:906:2111:: with SMTP id 17mr53454802ejt.75.1563824597474;
+        Mon, 22 Jul 2019 12:43:17 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id rv16sm8110436ejb.79.2019.07.22.12.43.16
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 22 Jul 2019 12:43:16 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 63CBF181CE7; Mon, 22 Jul 2019 21:43:15 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nhorman@tuxdriver.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        jakub.kicinski@netronome.com, andy@greyhouse.net,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 00/12] drop_monitor: Capture dropped packets and metadata
+In-Reply-To: <20190722183134.14516-1-idosch@idosch.org>
+References: <20190722183134.14516-1-idosch@idosch.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 22 Jul 2019 21:43:15 +0200
+Message-ID: <87imrt4zzg.fsf@toke.dk>
 MIME-Version: 1.0
-References: <1563820482-10302-1-git-send-email-cai@lca.pw> <20190722.120901.1770656295609872438.davem@davemloft.net>
-In-Reply-To: <20190722.120901.1770656295609872438.davem@davemloft.net>
-From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Date:   Mon, 22 Jul 2019 12:42:54 -0700
-Message-ID: <CALzJLG81NvsSbv7Qv11QnX3pvogeSmO-vsn1uYP13p5T14irig@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5: fix -Wtype-limits compilation warnings
-To:     David Miller <davem@davemloft.net>
-Cc:     Qian Cai <cai@lca.pw>, Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 12:09 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Qian Cai <cai@lca.pw>
-> Date: Mon, 22 Jul 2019 14:34:42 -0400
->
-> > The commit b9a7ba556207 ("net/mlx5: Use event mask based on device
-> > capabilities") introduced a few compilation warnings due to it bumps
-> > MLX5_EVENT_TYPE_MAX from 0x27 to 0x100 which is always greater than
-> > an "struct {mlx5_eqe|mlx5_nb}.type" that is an "u8".
-> >
-> > drivers/net/ethernet/mellanox/mlx5/core/eq.c: In function
-> > 'mlx5_eq_notifier_register':
-> > drivers/net/ethernet/mellanox/mlx5/core/eq.c:948:21: warning: comparison
-> > is always false due to limited range of data type [-Wtype-limits]
-> >   if (nb->event_type >= MLX5_EVENT_TYPE_MAX)
-> >                      ^~
-> > drivers/net/ethernet/mellanox/mlx5/core/eq.c: In function
-> > 'mlx5_eq_notifier_unregister':
-> > drivers/net/ethernet/mellanox/mlx5/core/eq.c:959:21: warning: comparison
-> > is always false due to limited range of data type [-Wtype-limits]
-> >   if (nb->event_type >= MLX5_EVENT_TYPE_MAX)
-> >
-> > Fix them by removing unnecessary checkings.
-> >
-> > Fixes: b9a7ba556207 ("net/mlx5: Use event mask based on device capabilities")
-> > Signed-off-by: Qian Cai <cai@lca.pw>
->
-> Saeed, I am assuming that you will take this.
+Ido Schimmel <idosch@idosch.org> writes:
 
-Yes, will take it.
-The patch LGTM, though not applying it yet so others get the chance to
-review it.
-will apply it in a couple of days.
+> From: Ido Schimmel <idosch@mellanox.com>
+>
+> So far drop monitor supported only one mode of operation in which a
+> summary of recent packet drops is periodically sent to user space as a
+> netlink event. The event only includes the drop location (program
+> counter) and number of drops in the last interval.
+>
+> While this mode of operation allows one to understand if the system is
+> dropping packets, it is not sufficient if a more detailed analysis is
+> required. Both the packet itself and related metadata are missing.
+>
+> This patchset extends drop monitor with another mode of operation where
+> the packet - potentially truncated - and metadata (e.g., drop location,
+> timestamp, netdev) are sent to user space as a netlink event. Thanks to
+> the extensible nature of netlink, more metadata can be added in the
+> future.
+>
+> To avoid performing expensive operations in the context in which
+> kfree_skb() is called, the dropped skbs are cloned and queued on per-CPU
+> skb drop list. The list is then processed in process context (using a
+> workqueue), where the netlink messages are allocated, prepared and
+> finally sent to user space.
+>
+> As a follow-up, I plan to integrate drop monitor with devlink and allow
+> the latter to call into drop monitor to report hardware drops. In the
+> future, XDP drops can be added as well, thereby making drop monitor the
+> go-to netlink channel for diagnosing all packet drops.
 
-Thanks,
-Saeed.
+I like this!
+
+Is there a mechanism for the user to filter the packets before they are
+sent to userspace? A bpf filter would be the obvious choice I guess...
+
+For integrating with XDP the trick would be to find a way to do it that
+doesn't incur any overhead when it's not enabled. Are you envisioning
+that this would be enabled separately for the different "modes" (kernel,
+hardware, XDP, etc)?
+
+-Toke
