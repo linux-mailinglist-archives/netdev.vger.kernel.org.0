@@ -2,90 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E609C70B89
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 23:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 030F670B90
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 23:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732735AbfGVVfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 17:35:39 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:45405 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729004AbfGVVfj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jul 2019 17:35:39 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45svzW6TQRz9sBZ;
-        Tue, 23 Jul 2019 07:35:35 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1563831336;
-        bh=L80NI8xzhTtIgcmhZBig5LBwXSPMVdF1dSa76Kz0qZY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=uCq5/5ckzLldaxfM3EQOng/bIaMOpcshjYbk2GoVLWLYscsTU3QjsvwxJTbdVUS+Z
-         sI9iQzl5x8t465P8Ny1jO+mH8Qg6wIE92GhoFkd2M2+G4KUDKzrYK1NkGnx7AcESHv
-         vYQXingTSwAkKcsn8GVES1Bpwl58SR2LAL/cQD4nVaL4QXra1LG9e8U/Vb1elk5s7c
-         TatZJuuW3BPvAM/83HFLZbKWXRS0PYhwKeUMmSSKyZhBxctGOCW9YCQmUZbd+wnXv8
-         vWHlaWYp7s79QZOCGKkV++zwTUSE8lGwnL9xuFNsYoxnxCP7T8eb1QwWT7e3y9RXK9
-         51dV53GgtpJDQ==
-Date:   Tue, 23 Jul 2019 07:35:18 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Maciej =?UTF-8?B?xbtlbmN6?= =?UTF-8?B?eWtvd3NraQ==?= 
-        <maze@google.com>
-Subject: linux-next: Fixes tag needs some work in the net-next tree
-Message-ID: <20190723073518.59fa66e0@canb.auug.org.au>
+        id S1732771AbfGVVh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 17:37:28 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37958 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729004AbfGVVh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 17:37:27 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f5so9454465pgu.5
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 14:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AZRXajcSIrY6PCfFrF5J30FKsx/eQiq/SiURPre+yrw=;
+        b=POxPd61QDRujw3PgL5Jhg2puRWmd1v0fOWMw446/mFBZywlsFE+QmiXF8SpzPOJ6B5
+         aDhcJaoFam0ew+H37cMDW1mIBPaD4/styVuY2luBwbzk3wYjYfdOGeWyt9PHI1b3clXg
+         tjxkmWgqtLsWufOEa652ippDpYs6Yn8jmKUBl1XzhYfQ2lXfYsHCoUhAXmN9/3bmG5gV
+         /++FtT1GKuNidducaNzEirhgPQwJwf4+PPyVxfRHo4Sjn+Dcb9SkvE+OmPGTsw6R6lOf
+         hbYjQN5DFJ69HwU3Nt493EVE4I+UlOyEAlV7bleCvx7U/bdB+ov4KDTJYnBoyw/AVBN8
+         +1uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AZRXajcSIrY6PCfFrF5J30FKsx/eQiq/SiURPre+yrw=;
+        b=k3eb1JokauF7gNNWlurHHS9Bf/Y9NUhjkT8JU676lA0cZaKYL4F+3Pi/zgUGwMy9Wi
+         udYGXqomtKvzF2rnrfftBEtf75t1weFq65V4JkTqtCV3lyoRc6xiAv6GXacO1K9tbqE8
+         QsDB+6Pptx/ETH72OlZIm8EvUIjNpWIkU8aay7AHjl8jc31lzV//iogWeBTL22Z70cjU
+         P+4JT5XIjL8OrnLE3O1KBQJFZbDgn+pEodLrQOUgOdDoaouM0ztS5ni7r5rzPrJL/R+4
+         FiGIKEQSqkM6HxIjeZ8c9bRmLATHyDD7V82GFnikWcM5Jnt0In+0OCZ2WAJh6LQgSXI/
+         6EvA==
+X-Gm-Message-State: APjAAAVpoH/x+yTq7qn+EkIzDbXwHZlLIUYnbKe8CMoqKwpHbPK5bOPN
+        IF1bVYWvlGd7BLXVYOdVTECMEqALNQpHBmWu+Gk=
+X-Google-Smtp-Source: APXvYqw5lPv7USsX6tI0wPHg2x3WKJ6W/Y9VPcQBB8L4rKmNULGQwaf2fpTiFUkjeAX+k8fbZ91T1Ss16mKwixblWVk=
+X-Received: by 2002:a63:8a43:: with SMTP id y64mr72586058pgd.104.1563831447042;
+ Mon, 22 Jul 2019 14:37:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lFBGb0vxewojfyG=A0Rc5=N";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20190721144412.2783-1-vladbu@mellanox.com>
+In-Reply-To: <20190721144412.2783-1-vladbu@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 22 Jul 2019 14:37:15 -0700
+Message-ID: <CAM_iQpXZNj4356+yRg_FqCkDrS5CN2eNgAHQsN99bhFLwRutkg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: sched: verify that q!=NULL before setting q->flags
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/lFBGb0vxewojfyG=A0Rc5=N
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sun, Jul 21, 2019 at 7:44 AM Vlad Buslov <vladbu@mellanox.com> wrote:
+>
+> In function int tc_new_tfilter() q pointer can be NULL when adding filter
+> on a shared block. With recent change that resets TCQ_F_CAN_BYPASS after
+> filter creation, following NULL pointer dereference happens in case parent
+> block is shared:
 
-Hi all,
+I completely overlooked shared filter block.
 
-In commit
-
-  66b5f1c43984 ("net-ipv6-ndisc: add support for RFC7710 RA Captive Portal =
-Identifier")
-
-Fixes tag
-
-  Fixes: e35f30c131a56
-
-has these problem(s):
-
-  - missing subject
-
-Did you mean
-
-Fixes: e35f30c131a5 ("Treat ND option 31 as userland (DNSSL support)")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/lFBGb0vxewojfyG=A0Rc5=N
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl02LBYACgkQAVBC80lX
-0Gw8Nwf/VOjsejY1Z6g6NK+bOt7as3NHUho/x9gL6y3Bxg99UraEbJjWKBvvvf7y
-wvE8Vr56Q+yw1qdixQDP+yg5LOjXpO+7lo5z921mPTd4n8kOieK61GFk1WecayiW
-wI8IyWlSUnq5DKMBCxxGnObQSKLas0Fn+oMXd+/x+39iUleGoNnvzrAQZ+SWNbL7
-bIg4mRvV9i6WLsn4J4YScvhMh+hJzru25OXktl9UJXWVH3fzqtMetCwV8X7rkgEq
-8lqKzWXP6h0I1bFab9kA2B1WSplAG6WN35UyTgDJKN0IWP8taETODT4yQOo5Ef45
-IBzFiJWaXoSgnZRcF0RCGbr+wjPwOQ==
-=BZZl
------END PGP SIGNATURE-----
-
---Sig_/lFBGb0vxewojfyG=A0Rc5=N--
+Thanks for fixing it!
