@@ -2,80 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4010C70955
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 21:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86CEB7095B
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 21:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727239AbfGVTJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 15:09:58 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:47958 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726141AbfGVTJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 15:09:58 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 66B5A15258BA8;
-        Mon, 22 Jul 2019 12:09:57 -0700 (PDT)
-Date:   Mon, 22 Jul 2019 12:09:57 -0700 (PDT)
-Message-Id: <20190722.120957.1070341687672412139.davem@davemloft.net>
-To:     tlfalcon@linux.ibm.com
-Cc:     netdev@vger.kernel.org, bjking1@us.ibm.com, pradeep@us.ibm.com,
-        jarod@redhat.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net
-Subject: Re: [PATCH net] bonding: Force slave speed check after link state
- recovery for 802.3ad
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1563315910-25634-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1563315910-25634-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1731189AbfGVTLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 15:11:03 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:2390 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726432AbfGVTLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 15:11:03 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d360a4c0000>; Mon, 22 Jul 2019 12:11:08 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 22 Jul 2019 12:11:00 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 22 Jul 2019 12:11:00 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 22 Jul
+ 2019 19:11:00 +0000
+Subject: Re: [PATCH 1/3] drivers/gpu/drm/via: convert put_page() to
+ put_user_page*()
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     Christoph Hellwig <hch@lst.de>, <john.hubbard@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, <netdev@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-mm@kvack.org>,
+        <linux-rdma@vger.kernel.org>, <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20190722043012.22945-1-jhubbard@nvidia.com>
+ <20190722043012.22945-2-jhubbard@nvidia.com> <20190722093355.GB29538@lst.de>
+ <397ff3e4-e857-037a-1aee-ff6242e024b2@nvidia.com>
+ <20190722190722.GF363@bombadil.infradead.org>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <14ac5f41-c27e-c5a7-e16a-4bd3cec0d31f@nvidia.com>
+Date:   Mon, 22 Jul 2019 12:10:59 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190722190722.GF363@bombadil.infradead.org>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 22 Jul 2019 12:09:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563822668; bh=83PVez7k7U0Zqxj86oJddwWoO6j61lIp1H42K6LCjdM=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=D7LBjEJY+k3NOupyUsz3QkjUUcPJWsBWTBbYyETUfk0uHH7d3QLbvQ+9RZH/28ZUE
+         sJfBT4O7QJ8wM9JX4nHRXKapNOpAYRi9LOgtrRHvxKHk2NLSGEB1ERlJVKKI3k/JJy
+         7S/lE/NB7MHjzQXMBBvvHctHDvo+mZLnO7Aio3aCrObQZB+awPaHKMVSROauRYPr3X
+         BJA/hGGdnsjgC4xdOAmvtDqjNiZJqnIwrrWggp9zNKGaVihgNE1edJSfqnrDSygNyO
+         Yzm74sohYm7Fi77+N0T5ApyjJHRiN3SgO4JJxNpSypLaSrrE54eHRmL/LyJAWG2MRa
+         b+Oe1FCWdve2g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
-Date: Tue, 16 Jul 2019 17:25:10 -0500
+On 7/22/19 12:07 PM, Matthew Wilcox wrote:
+> On Mon, Jul 22, 2019 at 11:53:54AM -0700, John Hubbard wrote:
+>> On 7/22/19 2:33 AM, Christoph Hellwig wrote:
+>>> On Sun, Jul 21, 2019 at 09:30:10PM -0700, john.hubbard@gmail.com wrote:
+>>>>  		for (i = 0; i < vsg->num_pages; ++i) {
+>>>>  			if (NULL != (page = vsg->pages[i])) {
+>>>>  				if (!PageReserved(page) && (DMA_FROM_DEVICE == vsg->direction))
+>>>> -					SetPageDirty(page);
+>>>> -				put_page(page);
+>>>> +					put_user_pages_dirty(&page, 1);
+>>>> +				else
+>>>> +					put_user_page(page);
+>>>>  			}
+>>>
+>>> Can't just pass a dirty argument to put_user_pages?  Also do we really
+>>
+>> Yes, and in fact that would help a lot more than the single page case,
+>> which is really just cosmetic after all.
+>>
+>>> need a separate put_user_page for the single page case?
+>>> put_user_pages_dirty?
+>>
+>> Not really. I'm still zeroing in on the ideal API for all these call sites,
+>> and I agree that the approach below is cleaner.
+> 
+> so enum { CLEAN = 0, DIRTY = 1, LOCK = 2, DIRTY_LOCK = 3 };
+> ?
+> 
 
-> The following scenario was encountered during testing of logical
-> partition mobility on pseries partitions with bonded ibmvnic
-> adapters in LACP mode.
-> 
-> 1. Driver receives a signal that the device has been
->    swapped, and it needs to reset to initialize the new
->    device.
-> 
-> 2. Driver reports loss of carrier and begins initialization.
-> 
-> 3. Bonding driver receives NETDEV_CHANGE notifier and checks
->    the slave's current speed and duplex settings. Because these
->    are unknown at the time, the bond sets its link state to
->    BOND_LINK_FAIL and handles the speed update, clearing
->    AD_PORT_LACP_ENABLE.
-> 
-> 4. Driver finishes recovery and reports that the carrier is on.
-> 
-> 5. Bond receives a new notification and checks the speed again.
->    The speeds are valid but miimon has not altered the link
->    state yet.  AD_PORT_LACP_ENABLE remains off.
-> 
-> Because the slave's link state is still BOND_LINK_FAIL,
-> no further port checks are made when it recovers. Though
-> the slave devices are operational and have valid speed
-> and duplex settings, the bond will not send LACPDU's. The
-> simplest fix I can see is to force another speed check
-> in bond_miimon_commit. This way the bond will update
-> AD_PORT_LACP_ENABLE if needed when transitioning from
-> BOND_LINK_FAIL to BOND_LINK_UP.
-> 
-> CC: Jarod Wilson <jarod@redhat.com>
-> CC: Jay Vosburgh <j.vosburgh@gmail.com>
-> CC: Veaceslav Falico <vfalico@gmail.com>
-> CC: Andy Gospodarek <andy@greyhouse.net>
-> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+Sure. In fact, I just applied something similar to bio_release_pages()
+locally, in order to reconcile Christoph's and Jerome's approaches 
+(they each needed to add a bool arg), so I'm all about the enums in the
+arg lists. :)
 
-Applied, thanks Thomas.
+I'm going to post that one shortly, let's see how it goes over. heh.
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
