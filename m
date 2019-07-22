@@ -2,110 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4DF6F7B5
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 05:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4646A6F7BB
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 05:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbfGVDBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jul 2019 23:01:00 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36915 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726106AbfGVDBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 23:01:00 -0400
-Received: by mail-pg1-f193.google.com with SMTP id i70so6196976pgd.4
-        for <netdev@vger.kernel.org>; Sun, 21 Jul 2019 20:00:59 -0700 (PDT)
+        id S1726675AbfGVDFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jul 2019 23:05:35 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:38672 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbfGVDFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jul 2019 23:05:35 -0400
+Received: by mail-io1-f68.google.com with SMTP id j6so38443856ioa.5;
+        Sun, 21 Jul 2019 20:05:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=19wNIXU4xjiQS6qw4IVTQbuwCXIhgNtndWsV8EDBMNI=;
-        b=UUR4d6YKm4A8TPNIWQuHX9RVJWJEQkykpWK6udc1eL7z0qJ8T+kaYzbamN3zw3Mkxf
-         tDqIjO/kMSf4N5RVFeladKbKn8q+l5Nm2ksXcp617Hy6/CDbxNHEYuETZQ0os5cT9p9b
-         N4YOixg5f8rpAz5DrWWfj4DcDnJl6e+s/n8EFgi39nZ7N3aSryxPevEEcEv6NIjYnq4m
-         MaePITIg8pHAXo9qRoxboE1TwZI8GC9LJlCfqZCqIrT70+ftphbxwy+lsZhtmHs/1rPV
-         Asve9C3yimqvPdDl9w9FbQ10F0kLKB5aAryRFXcQWukrMiBkz4USapZYyZqigMelh1mB
-         CK0w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3d0TsmehIUmq0qA3N9Vz5YuFrjv8Qaa0x6G/JzdD5+Q=;
+        b=PIdr/rGhuR3gElVXXEdhqxyDoPfQRzGzlzRsAzSQday/+3+zU5J3I9qZT6yMlM2fxC
+         A2ZisZVGcn44iTC+0t6mQPvcI95y5XP/aEe+4LQvNeGv1J+HYwuOdYmEqJOav62y++gS
+         zxOGTc3oSX5cc/upKn85TCm5IR5jvT3jGwbumY2ub48cdTQ6MmGd+YdDmBtSK5M6eFuB
+         Xrb8xZXXQHQ/NO/TeEABtAaz8tXI11OQrfCGbCzW0vjI7DrAO9YtPFvjkM1XFP/FeKOe
+         /dU0yTmQNTSoACdXOIIVGickG3YEmqPsuPg0aRctVXiHaOEol9vOSvh1Z+qtpOWddo68
+         H9qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=19wNIXU4xjiQS6qw4IVTQbuwCXIhgNtndWsV8EDBMNI=;
-        b=IJZE7aF89BJayRKnOE7+A93UJJ6gLk+ak8wvN/4J+57eaNfpaEXhYioZGZ7WsYBpsb
-         2y5Tz8WUDTi4M2T3MVSAzJV2AmbR5b8PonUUMyBU7YjO2lo8m1sYSNR8PV+2PRqfAB9U
-         UaqMB/SfLt8jyCClTBuduEmnFjS0lD+dZcdvd0xeGIRv2XVnYSp78lHJHxLYbOVEaS05
-         1YDLDL1biNmZfdTniqMUoIOvt2jdTHzeUPmddvqrVWy2qD5OME/ez/suC2IapNgk7/7J
-         gvDeMAMR16bHWzQsBkRUzYN12CZakHFbVc7lw9FxMwa5Kalnv1nQCxfWOYMeCOyH8xoT
-         ZCBA==
-X-Gm-Message-State: APjAAAUrQgOB5OkxFfYxpFWXZfeIEVqOBKoc+RUAYhXILjiZbErfFSLJ
-        bZxlI3nTraOx8vTOKU/xjh4=
-X-Google-Smtp-Source: APXvYqyNkd9HlFIxsJWYZRa13fys5dplH675NtzyIcpLT6mMthU530ZIjyh78KWabSAmDl7ucdx5QA==
-X-Received: by 2002:a63:58c:: with SMTP id 134mr72267904pgf.106.1563764459373;
-        Sun, 21 Jul 2019 20:00:59 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h16sm41084547pfo.34.2019.07.21.20.00.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3d0TsmehIUmq0qA3N9Vz5YuFrjv8Qaa0x6G/JzdD5+Q=;
+        b=OwwPwM93o/gfSctgktG8lwfCT87n1DiHahFe5ridOYPLMMznTKkTjMXcO7VpQRn59T
+         cJOciGpSfcRRRc1g85/FTmOpxrZsI+2Ioda7Ktm/0QWVYCdzK3KNhLx/xz6VMFk4oMV5
+         2hRTIWA+S16I6EVi1cbeeKvA4BvbxobIhKHLw6cusB/GN30IswoxrzaIp2G7q+MW/Q2o
+         vD2x3FaUEHVK6C5XU1DDX17p/g9ZxEXVjywG0YXpaU7Un1MkiTddvMC2PdZrsvV/zKei
+         jn4yADlGz3JSH+jSnfghpHvSucROHS75upLF1ikTafl/YP6yVIxeW3lmKo5EXKzFHT+j
+         uO1Q==
+X-Gm-Message-State: APjAAAVI+lVIVLo5l0J33KHmY8U0p4Us+nA8DJNSc69BCyZxcVlIAT1B
+        FPDZGs8T6N6geZxR2poZlZHvrIzGCgneQQ==
+X-Google-Smtp-Source: APXvYqzwrHss0BMfmADs2MwmQrZARNdK6NgwhQ1YV7GWuJj8TMtVG8AWad93ZKewi4L8d+CLLcB06Q==
+X-Received: by 2002:a6b:6f06:: with SMTP id k6mr53829059ioc.32.1563764734329;
+        Sun, 21 Jul 2019 20:05:34 -0700 (PDT)
+Received: from localhost.localdomain (c-73-243-191-173.hsd1.co.comcast.net. [73.243.191.173])
+        by smtp.gmail.com with ESMTPSA id i23sm27928326ioj.24.2019.07.21.20.05.32
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 21 Jul 2019 20:00:58 -0700 (PDT)
-Date:   Mon, 22 Jul 2019 11:00:49 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Jianlin Shi <jishi@redhat.com>
-Subject: Re: [PATCH v2 net-next 03/11] net/ipv4: Plumb support for filtering
- route dumps
-Message-ID: <20190722030049.GP18865@dhcp-12-139.nay.redhat.com>
-References: <20181016015651.22696-1-dsahern@kernel.org>
- <20181016015651.22696-4-dsahern@kernel.org>
- <20190719041700.GO18865@dhcp-12-139.nay.redhat.com>
- <147df36b-75df-5e71-3d74-9454db676bce@gmail.com>
+        Sun, 21 Jul 2019 20:05:33 -0700 (PDT)
+From:   Kelsey Skunberg <skunberg.kelsey@gmail.com>
+To:     iyappan@os.amperecomputing.com, keyur@os.amperecomputing.com,
+        quan@os.amperecomputing.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     bjorn@helgaas.com, rjw@rjwysocki.net, skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skunberg.kelsey@gmail.com
+Subject: [PATCH] drivers: net: xgene: Remove acpi_has_method() calls
+Date:   Sun, 21 Jul 2019 21:04:01 -0600
+Message-Id: <20190722030401.69563-1-skunberg.kelsey@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <147df36b-75df-5e71-3d74-9454db676bce@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 10:55:49AM -0600, David Ahern wrote:
-> Hi:
-> 
-> On 7/18/19 10:17 PM, Hangbin Liu wrote:
-> > Hi David,
-> > 
-> > Before commit 18a8021a7be3 ("net/ipv4: Plumb support for filtering route
-> > dumps"), when we dump a non-exist table, ip cmd exits silently.
-> > 
-> > # ip -4 route list table 1
-> > # echo $?
-> > 0
-> > 
-> > After commit 18a8021a7be3 ("net/ipv4: Plumb support for filtering route
-> > dumps"). When we dump a non-exist table, as we returned -ENOENT, ip route
-> > shows:
-> > 
-> > # ip -4 route show table 1
-> > Error: ipv4: FIB table does not exist.
-> > Dump terminated
-> > # echo $?
-> > 2
-> > 
-> > For me it looks make sense to return -ENOENT if we do not have the route
-> > table. But this changes the userspace behavior. Do you think if we need to
-> > keep backward compatible or just let it do as it is right now?
-> > 
-> 
-> It is not change in userspace behavior; ip opted into the strict
-> checking. The impact is to 'ip' users.
-> 
-> A couple of people have asked about this, and I am curious as to why
-> people run a route dump for a table that does not exist and do not like
-> being told that it does not exist.
+acpi_evaluate_object will already return an error if the needed method
+does not exist. Remove unnecessary acpi_has_method() calls and check the
+returned acpi_status for failure instead.
 
-Hi David,
+Signed-off-by: Kelsey Skunberg <skunberg.kelsey@gmail.com>
+---
+ drivers/net/ethernet/apm/xgene/xgene_enet_hw.c    |  7 +++----
+ drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c | 10 +++++-----
+ drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c |  9 ++++-----
+ 3 files changed, 12 insertions(+), 14 deletions(-)
 
-Thanks for the reply. We have some route function tests and the new behavior
-break the test. I just want to make sure this is expected so we can change our
-tests to match the new behavior.
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c b/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
+index 61a465097cb8..ef75a09069a8 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
+@@ -694,6 +694,7 @@ bool xgene_ring_mgr_init(struct xgene_enet_pdata *p)
+ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ {
+ 	struct device *dev = &pdata->pdev->dev;
++	acpi_status status;
+ 
+ 	if (!xgene_ring_mgr_init(pdata))
+ 		return -ENODEV;
+@@ -712,11 +713,9 @@ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ 		udelay(5);
+ 	} else {
+ #ifdef CONFIG_ACPI
+-		if (acpi_has_method(ACPI_HANDLE(&pdata->pdev->dev), "_RST")) {
+-			acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
++		status = acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
+ 					     "_RST", NULL, NULL);
+-		} else if (acpi_has_method(ACPI_HANDLE(&pdata->pdev->dev),
+-					 "_INI")) {
++		if (ACPI_FAILURE(status)) {
+ 			acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
+ 					     "_INI", NULL, NULL);
+ 		}
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c b/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c
+index 6453fc2ebb1f..6237a2cfd703 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c
+@@ -437,6 +437,7 @@ static void xgene_sgmac_tx_disable(struct xgene_enet_pdata *p)
+ static int xgene_enet_reset(struct xgene_enet_pdata *p)
+ {
+ 	struct device *dev = &p->pdev->dev;
++	acpi_status status;
+ 
+ 	if (!xgene_ring_mgr_init(p))
+ 		return -ENODEV;
+@@ -460,14 +461,13 @@ static int xgene_enet_reset(struct xgene_enet_pdata *p)
+ 		}
+ 	} else {
+ #ifdef CONFIG_ACPI
+-		if (acpi_has_method(ACPI_HANDLE(&p->pdev->dev), "_RST"))
+-			acpi_evaluate_object(ACPI_HANDLE(&p->pdev->dev),
+-					     "_RST", NULL, NULL);
+-		else if (acpi_has_method(ACPI_HANDLE(&p->pdev->dev), "_INI"))
++		status = acpi_evaluate_object(ACPI_HANDLE(&p->pdev->dev),
++			 		      "_RST", NULL, NULL);
++		if (ACPI_FAILURE(status)) {
+ 			acpi_evaluate_object(ACPI_HANDLE(&p->pdev->dev),
+ 					     "_INI", NULL, NULL);
++		}
+ #endif
+-	}
+ 
+ 	if (!p->port_id) {
+ 		xgene_enet_ecc_init(p);
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c b/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c
+index 133eb91c542e..fede3bfe4d68 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c
+@@ -380,6 +380,7 @@ static void xgene_xgmac_tx_disable(struct xgene_enet_pdata *pdata)
+ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ {
+ 	struct device *dev = &pdata->pdev->dev;
++	acpi_status status;
+ 
+ 	if (!xgene_ring_mgr_init(pdata))
+ 		return -ENODEV;
+@@ -393,11 +394,9 @@ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ 		udelay(5);
+ 	} else {
+ #ifdef CONFIG_ACPI
+-		if (acpi_has_method(ACPI_HANDLE(&pdata->pdev->dev), "_RST")) {
+-			acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
+-					     "_RST", NULL, NULL);
+-		} else if (acpi_has_method(ACPI_HANDLE(&pdata->pdev->dev),
+-					   "_INI")) {
++		status = acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
++				 	      "_RST", NULL, NULL);
++		if (ACPI_FAILURE(status)) {
+ 			acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
+ 					     "_INI", NULL, NULL);
+ 		}
+-- 
+2.20.1
 
-Cheers
-Hangbin
