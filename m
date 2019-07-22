@@ -2,123 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4C226FD5D
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 12:03:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 760B36FD90
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 12:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729209AbfGVKDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 06:03:15 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:41224 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726846AbfGVKDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 06:03:14 -0400
-Received: by mail-io1-f67.google.com with SMTP id j5so68422186ioj.8
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 03:03:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4b1uAwM9umv+IY8/HnGfteiZXrlo/NSOu+cIPVvp1h0=;
-        b=XglgEILo3rW9D3vL7A0pPJKvQjXuJIjm0yzulNQh37Bkvxk46652lpiq6aGUGfTvqS
-         yw0q33nv4FulOutDW8O8FtbPhemeCLLbAYWuW70qi6R2REVITVQutMEDuC8nDEwwuQy2
-         71fsmVuDZF+P22bgkOd7CkBLwBi3BR72dcaToUYSwGxNtZBS/EhMTh97Y/U+gqaXjS0f
-         cpN4sjsyi+45KjkuDxrVwCXMWuZVaruaBliF/iNo1DTN7yM+Hx5zEoTBg3uI8QtXP+Fp
-         80BlwxHoWTpLcQUd75TzDP2P3NzDsjA0DvhL8wj38b2ry2a2xMoPA2hq4TB8ye/C75XS
-         eEWA==
+        id S1729421AbfGVKRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 06:17:09 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45490 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728569AbfGVKRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 06:17:09 -0400
+Received: by mail-qk1-f195.google.com with SMTP id s22so28165276qkj.12;
+        Mon, 22 Jul 2019 03:17:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4b1uAwM9umv+IY8/HnGfteiZXrlo/NSOu+cIPVvp1h0=;
-        b=UnSVEdoyGPjpezB07URuesRzsu3WDybhMZPgT4vU4oWHRZ2voz2UYVoowPhgguRIs0
-         FGYcUcIng1UvQnicZlFalADWJRMQ2BXx/BRQbdk0KZm0lppA+SVNu4+nsdqZi/mg4h5M
-         /nJsAbYeCvYtz56Ltih+ohkM2HvUMUmWmkTm6zFWpy7EbvBi0V7mF60AxcDcJG45cU7j
-         m//MPDVr31tsSOPJoxDxqbx3OmoKXmPWi8h6QuoBpie2cpxTn2Kez5ClJjHaHCAURftN
-         UtGRjFWPY+bdt/zHiVrsm1hmnmNx+r+V1VOYinw9gG3BckuALJXyvc7EP9kQe83BuaJe
-         NHIg==
-X-Gm-Message-State: APjAAAU5pA9vjztCimN5rX/M8PhyEhIbel/ObEtzrs+6Uzp0rEHVsr89
-        8tuyOfh8Anv7W+q97czhcYSpEQ/r4RPbzaiJGBseWA==
-X-Google-Smtp-Source: APXvYqwL+M8Rgssa2ucPdgR/HDa1HVbuVJ+QRBULwshbyX+2VreyyBzq+g0gTT09x68VANTfGl21EY1W9jWIvu2wAng=
-X-Received: by 2002:a6b:b556:: with SMTP id e83mr62253077iof.94.1563789793779;
- Mon, 22 Jul 2019 03:03:13 -0700 (PDT)
+        bh=7CJkKA7SZFRonSxwlZKyw8W6pgs5EdX5dwdC50uPvBs=;
+        b=IfyEGn1teOvseGqamLGm6eYMrp4kEADYmxLmuf3lwn47e7irJLZzzSadD5rA/AIBI9
+         goH41xTw+8mHRl1BZvXsR//j0Bkx/qgpjDwxg+U0Sgv/xiZjg8KtvmyTZALR9IWcaIXV
+         CkKHYuQh8zqpoaziifRWNQJj6IFlA4GCuNLjekCgFw/JORcJrYdvAW9z1V4W6KoM1wwm
+         VULx2b8vVGz68sAMPswtsad+XUrTWq6NgpiZCM1ZVw4TMgy/CGbdJbHgWLP86SU1dGvd
+         Z5pyX3CkxJbOlpaYN+NcMGuBrk11hsJl17wOl6wns3nwJxlMqgXlSlT1u12RZg1yhaEA
+         FtQA==
+X-Gm-Message-State: APjAAAXq6SoJbRtNpNdtsju6Iqd40f0IQCjpznLrKw1xRcgd1JB/roKO
+        6vLan+lWSBG81Y9PJP7R6HGzDTE7JDS31A46Yqg=
+X-Google-Smtp-Source: APXvYqy7ISax661sJxUrp3WbLhv5BC0kus4uGgZKznelHiJHcAGScOZIvY+BAP14dw/qwJzgUC+dnqfk8j1fG+ylzm4=
+X-Received: by 2002:a37:4ac3:: with SMTP id x186mr44360140qka.138.1563790627957;
+ Mon, 22 Jul 2019 03:17:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190705191055.GT26519@linux.ibm.com> <20190706042801.GD11665@mit.edu>
- <20190706061631.GV26519@linux.ibm.com> <20190706150226.GG11665@mit.edu>
- <20190706180311.GW26519@linux.ibm.com> <20190707011655.GA22081@linux.ibm.com>
- <CACT4Y+asYe-uH9OV5R0Nkb-JKP4erYUZ68S9gYNnGg6v+fD20w@mail.gmail.com>
- <20190714184915.GK26519@linux.ibm.com> <20190715132911.GG3419@hirez.programming.kicks-ass.net>
- <CACT4Y+bmgdOExBHnLJ+jgWKWQzNK9CFT6_eTxFE3hoK=0YresQ@mail.gmail.com> <20190715134651.GI3419@hirez.programming.kicks-ass.net>
-In-Reply-To: <20190715134651.GI3419@hirez.programming.kicks-ass.net>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 22 Jul 2019 12:03:02 +0200
-Message-ID: <CACT4Y+bGgyZWbRQ7QNCHRLU0Zq2+cONSbyaycfzwvToqMwiwBQ@mail.gmail.com>
-Subject: Re: INFO: rcu detected stall in ext4_write_checks
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        David Miller <davem@davemloft.net>, eladr@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-ext4@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>
+References: <20190628123819.2785504-1-arnd@arndb.de> <20190628123819.2785504-4-arnd@arndb.de>
+ <alpine.LFD.2.21.1906302308280.3788@ja.home.ssi.bg>
+In-Reply-To: <alpine.LFD.2.21.1906302308280.3788@ja.home.ssi.bg>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 22 Jul 2019 12:16:51 +0200
+Message-ID: <CAK8P3a03wShPgL85K-0W3UUc3QJWLbbs+ZVAnkKLkqg00vVehw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ipvs: reduce kernel stack usage
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        James Smart <james.smart@broadcom.com>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        James Morris <jmorris@namei.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Networking <netdev@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 15, 2019 at 3:46 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Mon, Jul 15, 2019 at 03:33:11PM +0200, Dmitry Vyukov wrote:
-> > On Mon, Jul 15, 2019 at 3:29 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> > >
-> > > On Sun, Jul 14, 2019 at 11:49:15AM -0700, Paul E. McKenney wrote:
-> > > > On Sun, Jul 14, 2019 at 05:48:00PM +0300, Dmitry Vyukov wrote:
-> > > > > But short term I don't see any other solution than stop testing
-> > > > > sched_setattr because it does not check arguments enough to prevent
-> > > > > system misbehavior. Which is a pity because syzkaller has found some
-> > > > > bad misconfigurations that were oversight on checking side.
-> > > > > Any other suggestions?
-> > > >
-> > > > Keep the times down to a few seconds?  Of course, that might also
-> > > > fail to find interesting bugs.
-> > >
-> > > Right, if syzcaller can put a limit on the period/deadline parameters
-> > > (and make sure to not write "-1" to
-> > > /proc/sys/kernel/sched_rt_runtime_us) then per the in-kernel
-> > > access-control should not allow these things to happen.
-> >
-> > Since we are racing with emails, could you suggest a 100% safe
-> > parameters? Because I only hear people saying "safe", "sane",
-> > "well-behaving" :)
-> > If we move the check to user-space, it does not mean that we can get
-> > away without actually defining what that means.
->
-> Right, well, that's part of the problem. I think Paul just did the
-> reverse math and figured that 95% of X must not be larger than my
-> watchdog timeout and landed on 14 seconds.
->
-> I'm thinking 4 seconds (or rather 4.294967296) would be a very nice
-> number.
->
-> > Now thinking of this, if we come up with some simple criteria, could
-> > we have something like a sysctl that would allow only really "safe"
-> > parameters?
->
-> I suppose we could do that, something like:
-> sysctl_deadline_period_{min,max}. I'll have to dig back a bit on where
-> we last talked about that and what the problems where.
->
-> For one, setting the min is a lot harder, but I suppose we can start at
-> TICK_NSEC or something.
+On Sun, Jun 30, 2019 at 10:37 PM Julian Anastasov <ja@ssi.bg> wrote:
+> On Fri, 28 Jun 2019, Arnd Bergmann wrote:
 
+> >       struct ip_vs_conn *ctl_cp = cp->control;
+> >       if (!ctl_cp) {
+> > -             IP_VS_ERR_BUF("request control DEL for uncontrolled: "
+> > -                           "%s:%d to %s:%d\n",
+> > -                           IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+> > -                           ntohs(cp->cport),
+> > -                           IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
+> > -                           ntohs(cp->vport));
+> > +             pr_err("request control DEL for uncontrolled: "
+> > +                    "%pISp to %pISp\n",
 
-Now syzkaller will drop CAP_SYS_NICE for the test process:
-https://github.com/google/syzkaller/commit/f3ad68446455acbe562e0057931e6256b8b991e8
-I will close this bug report as invalid once the change reaches all
-syzbot instances, if nobody plans any other on this bug.
+(replying a bit late)
+
+>         ip_vs_dbg_addr() used compact form (%pI6c), so it would be
+> better to use %pISc and %pISpc everywhere in IPVS...
+
+done
+
+>         Also, note that before now port was printed with %d and
+> ntohs() was used, now port should be in network order, so:
+>
+> - ntohs() should be removed
+
+done
+
+> - htons() should be added, if missing. At first look, this case
+> is not present in IPVS, we have only ntohs() usage
+
+I found one case in ip_vs_ftp_in() that needs it in order to subtract one:
+
+                IP_VS_DBG(7, "protocol %s %pISpc %pISpc\n",
+                          ip_vs_proto_name(ipvsh->protocol),
+-                         IP_VS_DBG_SOCKADDR(cp->af, &to, ntohs(port)),
++                         IP_VS_DBG_SOCKADDR(cp->af, &to, port),
+                          IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr,
+-                                             ntohs(cp->vport)-1));
++                                            htons(ntohs(cp->vport)-1)));
+
+Thanks for the review, I'll send a new patch after some more
+build testing on the new version.
+
+       Arnd
