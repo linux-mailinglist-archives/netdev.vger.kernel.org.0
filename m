@@ -2,83 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C98DB6FB63
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 10:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 850E36FB68
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 10:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728509AbfGVIgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 04:36:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34850 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725989AbfGVIgp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jul 2019 04:36:45 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id AA7ED85365;
-        Mon, 22 Jul 2019 08:36:44 +0000 (UTC)
-Received: from localhost (ovpn-117-250.ams2.redhat.com [10.36.117.250])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8EC2819D71;
-        Mon, 22 Jul 2019 08:36:41 +0000 (UTC)
-Date:   Mon, 22 Jul 2019 09:36:40 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v4 2/5] vsock/virtio: reduce credit update messages
-Message-ID: <20190722083640.GB24934@stefanha-x1.localdomain>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-3-sgarzare@redhat.com>
+        id S1728530AbfGVIg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 04:36:58 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:45527 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728323AbfGVIg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 04:36:57 -0400
+Received: by mail-pf1-f195.google.com with SMTP id r1so17024113pfq.12;
+        Mon, 22 Jul 2019 01:36:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=j6w1h6MOwLx1qltjlCykcB2n5pu6k9XFgBYb35I9b94=;
+        b=IGFPYI95Yb/GP16xfTIPeMHOM4JZYhsIMYXmvzlUFQvJnz8C2K2+EZLuYeSUXn3mh8
+         DnJ27UJRGlz9Wyi1P/MH7Qo72mdobaeMo9ZMOeg2dtwt0Aqt6WEe962Cx6bVt4rSkYZY
+         GmUbpGREiGiEZzhpOsCQnOCdxsqifZ/L6Nhldq9GuFCCDGOExgLtfzJseBGlWHyzkrxH
+         uZSQkqZozxEuT8aLxtVjcCEl8p13FwH/Ts2OKFHaKXakk8Oq4oywxPiND4DhYGSpTjVC
+         hSSNUSBKr1bmbMoKUiZ1pl78Z/MoXGBxLnaDhHVg+c39xcL00UpBW8hwevZiR2kBawGB
+         WEcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=j6w1h6MOwLx1qltjlCykcB2n5pu6k9XFgBYb35I9b94=;
+        b=E/az6RSSyFS48IUhjgeJoGkg5AMjObZFWtSLHVRaoN97+wfeK3aCqom1tc18tul8qU
+         hSoBZXs3Nheen4x5ODl0z15UQua/8iZPfSmZjRMdjMonAfrGBLePEN9pIJUAz5n+C6pi
+         Tbm2Ets+76c5nxNKSGpChW4medlVbqvYLquBn6m/19meBNyP+/QiKWNtuH01rz2XZ4jk
+         q/sxyLj4ntEwF0atU57ODpppvTTwObDENlVcgjgTznqKaSWtyyKAgcQz3Qk2AsdvXwOA
+         Rc2iZNyycEdTy6BolULmeHZZo1nNy6D6ii1OzHNFHfiNTfCkYx1JhxxR5V57CjsRnBD2
+         dapw==
+X-Gm-Message-State: APjAAAW/RgHcgDFxNWRG6swmfntb/DLIWwGyPYLxt0CCOm+jSw/4pObX
+        WpZRxCG6eC68fP4x5NQpEtr7GL8f
+X-Google-Smtp-Source: APXvYqxE9h+fM7hcGw7JD2QwWIjJ8hmgwvIvIoFYZ/ar+5y04cBEhjutBjzwJdZVdcq4Aspr0xQZRA==
+X-Received: by 2002:a63:e901:: with SMTP id i1mr54098401pgh.451.1563784616653;
+        Mon, 22 Jul 2019 01:36:56 -0700 (PDT)
+Received: from [192.168.1.38] (59-120-186-245.HINET-IP.hinet.net. [59.120.186.245])
+        by smtp.gmail.com with ESMTPSA id a3sm33784096pfl.145.2019.07.22.01.36.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jul 2019 01:36:56 -0700 (PDT)
+Subject: Re: [PATCH V2 1/1] can: sja1000: f81601: add Fintek F81601 support
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, wg@grandegger.com,
+        peter_hong@fintek.com.tw
+Cc:     davem@davemloft.net, f.suligoi@asem.it,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org,
+        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+References: <1563776521-28317-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <563b0d71-3c60-d32c-cf19-73611f68d45a@pengutronix.de>
+From:   "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Message-ID: <b7c9026a-a887-bc84-3297-c319d18686c3@gmail.com>
+Date:   Mon, 22 Jul 2019 16:36:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qlTNgmc+xy1dBmNv"
-Content-Disposition: inline
-In-Reply-To: <20190717113030.163499-3-sgarzare@redhat.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Mon, 22 Jul 2019 08:36:44 +0000 (UTC)
+In-Reply-To: <563b0d71-3c60-d32c-cf19-73611f68d45a@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Marc,
 
---qlTNgmc+xy1dBmNv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Marc Kleine-Budde 於 2019/7/22 下午 04:15 寫道:
+> On 7/22/19 8:22 AM, Ji-Ze Hong (Peter Hong) wrote: >> +/* Probe F81601 based device for the SJA1000 chips and register each
+>> + * available CAN channel to SJA1000 Socket-CAN subsystem.
+>> + */
+>> +static int f81601_pci_add_card(struct pci_dev *pdev,
+>> +			       const struct pci_device_id *ent)
+>> +{
+>> +	struct sja1000_priv *priv;
+>> +	struct net_device *dev;
+>> +	struct f81601_pci_card *card;
+>> +	int err, i, count;
+>> +	u8 tmp;
+>> +
+>> +	if (pcim_enable_device(pdev) < 0) {
+> 
+> I'm missing a corresponding disable_device().
+> 
+I'm using managed pcim_enable_device(), Does it need call
+pci_disable_device() ??
 
-On Wed, Jul 17, 2019 at 01:30:27PM +0200, Stefano Garzarella wrote:
-> In order to reduce the number of credit update messages,
-> we send them only when the space available seen by the
-> transmitter is less than VIRTIO_VSOCK_MAX_PKT_BUF_SIZE.
->=20
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->  include/linux/virtio_vsock.h            |  1 +
->  net/vmw_vsock/virtio_transport_common.c | 16 +++++++++++++---
->  2 files changed, 14 insertions(+), 3 deletions(-)
-
-It's an arbitrary limit but the risk of regressions is low since the
-credit update traffic was so excessive:
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
---qlTNgmc+xy1dBmNv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl01dZgACgkQnKSrs4Gr
-c8h/oQgAuTo0CerV6R9QtoxW4hcg6Tkq8sm7tBtXxSlRDhm5cvCYY3GKnhq1R/d0
-Kg0hqcHUpqMsLT0yNza3j2F2USkvoxFm3wMgKijp5A0L15YVUQ+qZOwxVfBw9wDe
-RXeY5bMyEHE5MFFtMfGDAiNyL1umrZ0Cy2RSYdzc+JhvZEkFyvwqE/za5PmXhofP
-hF5u98zTLSjIxjxMAl7I7obkZIaJmU4A5XDUWwucqQm4wBP4QFQQqocM91RlQ7Gz
-slJK7JiLWEpd2ka1VDVK9AfgE6R0dnT6tZ1r306NaG0moJmgts9gm3ETffKce8bn
-OlHQa8PxT//6DYE3ghoFPTOpYxFqLw==
-=G3Rg
------END PGP SIGNATURE-----
-
---qlTNgmc+xy1dBmNv--
+Thanks
+-- 
+With Best Regards,
+Peter Hong
