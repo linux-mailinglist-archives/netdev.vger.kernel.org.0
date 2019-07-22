@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DD4F708B3
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 20:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C6F6708B4
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 20:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729947AbfGVSdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 14:33:46 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:53357 "EHLO
+        id S1730049AbfGVSdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 14:33:49 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:36895 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729752AbfGVSdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 14:33:44 -0400
+        by vger.kernel.org with ESMTP id S1729752AbfGVSdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 14:33:47 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id C5F8925CB;
-        Mon, 22 Jul 2019 14:33:43 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 34F3E262E;
+        Mon, 22 Jul 2019 14:33:46 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 22 Jul 2019 14:33:43 -0400
+  by compute3.internal (MEProxy); Mon, 22 Jul 2019 14:33:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=vbhZRPlrT1YX1SVBKM719cbRVBwO4eLyoC95vrmpKiM=; b=rSZfE6Am
-        6eCpffr1zB8DW+tgFzpmLcXXObLErTZABXapLjDxhqgA5+QZkgEWRWEqgCoNiBqp
-        tNQtQOsbn1b1r9lcfMF7p8i5/RLXrnsjL/LNW1pLqzreb4hmvxuJQ322fY37A7cF
-        tN29mM58aX0kFLkz9DQCXkd1ncVcmQL4m2m4ZgEltjhMTiHoAsN5RoxkJmipntsD
-        5+lR0fHeoeTrduHLglL/CFF9awZMnU0xcEZX8jUcMIY1uR1tNeYiIwlwa/smlgS/
-        on9TMCs9V6UpD1zzhkaos0hkZl7XGOk9YDZjJKNqBxi9cA0oIUMyhpVRlBWdCTa3
-        3HoKC5hvgH34Mw==
-X-ME-Sender: <xms:hwE2XawrGtymo00uiC484LFqyF_2BLX3AN76USeJAslcdOC4J-fm8g>
+        fm3; bh=R/UH9gDNGN7hIuqrgjcsu1MHdT/gxLrK1K6RVQeRPvY=; b=gzrna1hC
+        qEmkjJ1EiBpG+gwLghGlmaFPA4m1qi//pv9s9KjHm/Pp6OaYs8tTh6NmLbpNZNe1
+        iV+uM6BYqDPzYNw7xBNaVwoQio6I3VAXiNdrv5M5ZrwJzLKTWxPewydsqfWJPekM
+        Dfj7aINTd/hIkQbK85pqEkick4cNPJrx4uz3c96yrcwEtcHYTo42gmCOCgy35Jqh
+        2YdnJCw8fa3FCuSGFhsje1y36JfKZmNjZZnyj3YKdw6HWv7/0XgOSEfeBbKFS6JH
+        vrDndnUlfWFcXrlbZP8G38AO/yatZYy1awTjM2s5gM2+c3kL80vQIZg2tF20dntq
+        a5jc/U5x+KdWpQ==
+X-ME-Sender: <xms:iQE2XaNDClaTvtAntZICd8mTj1xR9xkURWLWnO2khMVxK8P_rhlMbQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeeggdduvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuffhomhgrihhnpehmohguvgdrnhgvthenucfkphepudelfedrge
-    ejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihgu
-    ohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:hwE2XeIqnL-PbK5pdHD7o09GjtoA_DrX5P8ztyTqogoQcYxD6BA88g>
-    <xmx:hwE2XbutEBz0nUTtKgBBWUylZ2tmzvILi0PViqWvjUA1ZhkDLW-Epg>
-    <xmx:hwE2XYSC5VW4LpJ9h99DnwwTFegvu_HG9qHeod8sDWbMXxmKMZ7_eQ>
-    <xmx:hwE2XbOjpIBSzdfDxYaw-5rjLew4vfGPb1JoWEgjbkLrPWuZDYeBYg>
+    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
+    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
+    ufhiiigvpeel
+X-ME-Proxy: <xmx:igE2XTkx-e9ssmRQ09KHQVyFlijZvzGMgn7Q8SvBREZ7PtjEIHOabg>
+    <xmx:igE2XdS3McXOrJt3TK_fWDlCca065yr_3k3zJCtjPFiw8r0FCn6ReQ>
+    <xmx:igE2Xa-KfsPrgqvLG2PMwLCAmVGKK0fEKYZW0vQl-EKbeO0nqXY0SA>
+    <xmx:igE2Xe9dFblhRRh5dtF0oPo6RGGrLRMC3xqaRQDF8Bnisc-BuSYBNQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 54E518005B;
-        Mon, 22 Jul 2019 14:33:41 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BCF2C8005A;
+        Mon, 22 Jul 2019 14:33:43 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, nhorman@tuxdriver.com, dsahern@gmail.com,
@@ -49,9 +49,9 @@ Cc:     davem@davemloft.net, nhorman@tuxdriver.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, toke@redhat.com, andy@greyhouse.net,
         f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH net-next 10/12] drop_monitor: Add packet alert mode
-Date:   Mon, 22 Jul 2019 21:31:32 +0300
-Message-Id: <20190722183134.14516-11-idosch@idosch.org>
+Subject: [RFC PATCH net-next 11/12] drop_monitor: Allow truncation of dropped packets
+Date:   Mon, 22 Jul 2019 21:31:33 +0300
+Message-Id: <20190722183134.14516-12-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190722183134.14516-1-idosch@idosch.org>
 References: <20190722183134.14516-1-idosch@idosch.org>
@@ -64,407 +64,83 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-So far drop monitor supported only one alert mode in which a summary of
-locations in which packets were recently dropped was sent to user space.
+When sending dropped packets to user space it is not always necessary to
+copy the entire packet as usually only the headers are of interest.
 
-This alert mode is sufficient in order to understand that packets were
-dropped, but lacks information to perform a more detailed analysis.
+Allow user to specify the truncation length and add the original length
+of the packet as additional metadata to the netlink message.
 
-Add a new alert mode in which the dropped packet itself is passed to
-user space along with metadata: The drop location (as program counter
-and resolved symbol), ingress / egress netdevice and arrival / departure
-timestamp. More metadata can be added in the future.
-
-To avoid performing expensive operations in the context in which
-kfree_skb() is invoked (can be hard IRQ), the dropped skb is cloned and
-queued on per-CPU skb drop list. Then, in process context the netlink
-message is allocated, prepared and finally sent to user space.
+By default no truncation is performed.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/uapi/linux/net_dropmon.h |  29 ++++
- net/core/drop_monitor.c          | 287 ++++++++++++++++++++++++++++++-
- 2 files changed, 308 insertions(+), 8 deletions(-)
+ include/uapi/linux/net_dropmon.h |  2 ++
+ net/core/drop_monitor.c          | 23 +++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
 diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 5edbd0a675fd..7708c8a440a1 100644
+index 7708c8a440a1..eb36b61485ef 100644
 --- a/include/uapi/linux/net_dropmon.h
 +++ b/include/uapi/linux/net_dropmon.h
-@@ -53,6 +53,7 @@ enum {
- 	NET_DM_CMD_CONFIG,
- 	NET_DM_CMD_START,
- 	NET_DM_CMD_STOP,
-+	NET_DM_CMD_PACKET_ALERT,
- 	_NET_DM_CMD_MAX,
- };
+@@ -75,6 +75,8 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_TIMESTAMP,			/* struct timespec */
+ 	NET_DM_ATTR_PAYLOAD,			/* binary */
+ 	NET_DM_ATTR_PAD,
++	NET_DM_ATTR_TRUNC_LEN,			/* u32 */
++	NET_DM_ATTR_ORIG_LEN,			/* u32 */
  
-@@ -62,4 +63,32 @@ enum {
-  * Our group identifiers
-  */
- #define NET_DM_GRP_ALERT 1
-+
-+enum net_dm_attr {
-+	NET_DM_ATTR_UNSPEC,
-+
-+	NET_DM_ATTR_ALERT_MODE,			/* u8 */
-+	NET_DM_ATTR_PC,				/* u64 */
-+	NET_DM_ATTR_SYMBOL,			/* string */
-+	NET_DM_ATTR_NETDEV_IFINDEX,		/* u32 */
-+	NET_DM_ATTR_NETDEV_NAME,		/* string */
-+	NET_DM_ATTR_TIMESTAMP,			/* struct timespec */
-+	NET_DM_ATTR_PAYLOAD,			/* binary */
-+	NET_DM_ATTR_PAD,
-+
-+	__NET_DM_ATTR_MAX,
-+	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
-+};
-+
-+/**
-+ * enum net_dm_alert_mode - Alert mode.
-+ * @NET_DM_ALERT_MODE_SUMMARY: A summary of recent drops is sent to user space.
-+ * @NET_DM_ALERT_MODE_PACKET: Each dropped packet is sent to user space along
-+ *                            with metadata.
-+ */
-+enum net_dm_alert_mode {
-+	NET_DM_ALERT_MODE_SUMMARY,
-+	NET_DM_ALERT_MODE_PACKET,
-+};
-+
- #endif
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
 diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index f441fb653567..512935fc235b 100644
+index 512935fc235b..5af1e1e8d4d0 100644
 --- a/net/core/drop_monitor.c
 +++ b/net/core/drop_monitor.c
-@@ -54,6 +54,7 @@ static DEFINE_MUTEX(net_dm_mutex);
- struct per_cpu_dm_data {
- 	spinlock_t		lock;	/* Protects 'skb' and 'send_timer' */
- 	struct sk_buff		*skb;
-+	struct sk_buff_head	drop_queue;
- 	struct work_struct	dm_alert_work;
- 	struct timer_list	send_timer;
- };
-@@ -75,6 +76,22 @@ static int dm_delay = 1;
- static unsigned long dm_hw_check_delta = 2*HZ;
+@@ -77,6 +77,7 @@ static unsigned long dm_hw_check_delta = 2*HZ;
  static LIST_HEAD(hw_stats_list);
  
-+static enum net_dm_alert_mode net_dm_alert_mode = NET_DM_ALERT_MODE_SUMMARY;
-+
-+struct net_dm_skb_cb {
-+	void *pc;
-+};
-+
-+#define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
-+
-+struct net_dm_alert_ops {
-+	void (*kfree_skb_probe)(void *ignore, struct sk_buff *skb,
-+				void *location);
-+	void (*napi_poll_probe)(void *ignore, struct napi_struct *napi,
-+				int work, int budget);
-+	void (*work_item_func)(struct work_struct *work);
-+};
-+
- static int net_dm_nl_pre_doit(const struct genl_ops *ops,
- 			      struct sk_buff *skb, struct genl_info *info)
- {
-@@ -255,10 +272,194 @@ static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi,
- 	rcu_read_unlock();
- }
+ static enum net_dm_alert_mode net_dm_alert_mode = NET_DM_ALERT_MODE_SUMMARY;
++static u32 net_dm_trunc_len;
  
-+static const struct net_dm_alert_ops net_dm_alert_summary_ops = {
-+	.kfree_skb_probe	= trace_kfree_skb_hit,
-+	.napi_poll_probe	= trace_napi_poll_hit,
-+	.work_item_func		= send_dm_alert,
-+};
-+
-+static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
-+					      struct sk_buff *skb,
-+					      void *location)
-+{
-+	struct per_cpu_dm_data *data;
-+	struct sk_buff *nskb;
-+	unsigned long flags;
-+
-+	nskb = skb_clone(skb, GFP_ATOMIC);
-+	if (!nskb)
-+		return;
-+
-+	NET_DM_SKB_CB(nskb)->pc = location;
-+	if (nskb->dev)
-+		dev_hold(nskb->dev);
-+
-+	data = this_cpu_ptr(&dm_cpu_data);
-+	spin_lock_irqsave(&data->drop_queue.lock, flags);
-+
-+	__skb_queue_tail(&data->drop_queue, nskb);
-+
-+	if (!timer_pending(&data->send_timer)) {
-+		data->send_timer.expires = jiffies + dm_delay * HZ;
-+		add_timer(&data->send_timer);
-+	}
-+
-+	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
-+}
-+
-+static void net_dm_packet_trace_napi_poll_hit(void *ignore,
-+					      struct napi_struct *napi,
-+					      int work, int budget)
-+{
-+}
-+
-+#define NET_DM_MAX_SYMBOL_LEN 40
-+
-+static size_t net_dm_packet_report_size(size_t payload_len)
-+{
-+	size_t size;
-+
-+	size = nlmsg_msg_size(GENL_HDRLEN + net_drop_monitor_family.hdrsize);
-+
-+	return NLMSG_ALIGN(size) +
-+	       /* NET_DM_ATTR_PC */
-+	       nla_total_size(sizeof(u64)) +
-+	       /* NET_DM_ATTR_SYMBOL */
-+	       nla_total_size(NET_DM_MAX_SYMBOL_LEN + 1) +
-+	       /* NET_DM_ATTR_NETDEV_IFINDEX */
+ struct net_dm_skb_cb {
+ 	void *pc;
+@@ -332,6 +333,8 @@ static size_t net_dm_packet_report_size(size_t payload_len)
+ 	       nla_total_size(IFNAMSIZ + 1) +
+ 	       /* NET_DM_ATTR_TIMESTAMP */
+ 	       nla_total_size(sizeof(struct timespec)) +
++	       /* NET_DM_ATTR_ORIG_LEN */
 +	       nla_total_size(sizeof(u32)) +
-+	       /* NET_DM_ATTR_NETDEV_NAME */
-+	       nla_total_size(IFNAMSIZ + 1) +
-+	       /* NET_DM_ATTR_TIMESTAMP */
-+	       nla_total_size(sizeof(struct timespec)) +
-+	       /* NET_DM_ATTR_PAYLOAD */
-+	       nla_total_size(payload_len);
-+}
-+
-+static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
-+				     size_t payload_len)
-+{
-+	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
-+	char buf[NET_DM_MAX_SYMBOL_LEN];
-+	struct nlattr *attr;
-+	struct timespec ts;
-+	void *hdr;
-+
-+	hdr = genlmsg_put(msg, 0, 0, &net_drop_monitor_family, 0,
-+			  NET_DM_CMD_PACKET_ALERT);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
-+	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
-+		goto nla_put_failure;
-+
-+	if (skb->dev &&
-+	    nla_put_u32(msg, NET_DM_ATTR_NETDEV_IFINDEX, skb->dev->ifindex))
-+		goto nla_put_failure;
-+
-+	if (skb->dev &&
-+	    nla_put_string(msg, NET_DM_ATTR_NETDEV_NAME, skb->dev->name))
-+		goto nla_put_failure;
-+
-+	if (ktime_to_timespec_cond(skb->tstamp, &ts) &&
-+	    nla_put(msg, NET_DM_ATTR_TIMESTAMP, sizeof(ts), &ts))
-+		goto nla_put_failure;
-+
-+	if (!payload_len)
-+		goto out;
-+
-+	attr = skb_put(msg, nla_total_size(payload_len));
-+	attr->nla_type = NET_DM_ATTR_PAYLOAD;
-+	attr->nla_len = nla_attr_size(payload_len);
-+	if (skb_copy_bits(skb, 0, nla_data(attr), payload_len))
-+		goto nla_put_failure;
-+
-+out:
-+	genlmsg_end(msg, hdr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+#define NET_DM_MAX_PACKET_SIZE (0xffff - NLA_HDRLEN - NLA_ALIGNTO)
-+
-+static void net_dm_packet_report(struct sk_buff *skb)
-+{
-+	struct sk_buff *msg;
-+	size_t payload_len;
-+	int rc;
-+
-+	/* Make sure we start copying the packet from the MAC header */
-+	if (skb->data > skb_mac_header(skb))
-+		skb_push(skb, skb->data - skb_mac_header(skb));
-+	else
-+		skb_pull(skb, skb_mac_header(skb) - skb->data);
-+
-+	/* Ensure packet fits inside a single netlink attribute */
-+	payload_len = min_t(size_t, skb->len, NET_DM_MAX_PACKET_SIZE);
-+
-+	msg = nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
-+	if (!msg)
-+		goto out;
-+
-+	rc = net_dm_packet_report_fill(msg, skb, payload_len);
-+	if (rc) {
-+		nlmsg_free(msg);
-+		goto out;
-+	}
-+
-+	genlmsg_multicast(&net_drop_monitor_family, msg, 0, 0, GFP_KERNEL);
-+
-+out:
-+	if (skb->dev)
-+		dev_put(skb->dev);
-+	consume_skb(skb);
-+}
-+
-+static void net_dm_packet_work(struct work_struct *work)
-+{
-+	struct per_cpu_dm_data *data;
-+	struct sk_buff_head list;
-+	struct sk_buff *skb;
-+	unsigned long flags;
-+
-+	data = container_of(work, struct per_cpu_dm_data, dm_alert_work);
-+
-+	__skb_queue_head_init(&list);
-+
-+	spin_lock_irqsave(&data->drop_queue.lock, flags);
-+	skb_queue_splice_tail_init(&data->drop_queue, &list);
-+	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
-+
-+	while ((skb = __skb_dequeue(&list)))
-+		net_dm_packet_report(skb);
-+}
-+
-+static const struct net_dm_alert_ops net_dm_alert_packet_ops = {
-+	.kfree_skb_probe	= net_dm_packet_trace_kfree_skb_hit,
-+	.napi_poll_probe	= net_dm_packet_trace_napi_poll_hit,
-+	.work_item_func		= net_dm_packet_work,
-+};
-+
-+static const struct net_dm_alert_ops *net_dm_alert_ops_arr[] = {
-+	[NET_DM_ALERT_MODE_SUMMARY]	= &net_dm_alert_summary_ops,
-+	[NET_DM_ALERT_MODE_PACKET]	= &net_dm_alert_packet_ops,
-+};
-+
- static int net_dm_trace_on_set(struct netlink_ext_ack *extack)
- {
-+	const struct net_dm_alert_ops *ops;
- 	int cpu, rc;
+ 	       /* NET_DM_ATTR_PAYLOAD */
+ 	       nla_total_size(payload_len);
+ }
+@@ -369,6 +372,9 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 	    nla_put(msg, NET_DM_ATTR_TIMESTAMP, sizeof(ts), &ts))
+ 		goto nla_put_failure;
  
-+	ops = net_dm_alert_ops_arr[net_dm_alert_mode];
++	if (nla_put_u32(msg, NET_DM_ATTR_ORIG_LEN, skb->len))
++		goto nla_put_failure;
 +
- 	if (!try_module_get(THIS_MODULE)) {
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to take reference on module");
- 		return -ENODEV;
-@@ -267,17 +468,17 @@ static int net_dm_trace_on_set(struct netlink_ext_ack *extack)
- 	for_each_possible_cpu(cpu) {
- 		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
+ 	if (!payload_len)
+ 		goto out;
  
--		INIT_WORK(&data->dm_alert_work, send_dm_alert);
-+		INIT_WORK(&data->dm_alert_work, ops->work_item_func);
- 		timer_setup(&data->send_timer, sched_send_work, 0);
- 	}
+@@ -404,6 +410,8 @@ static void net_dm_packet_report(struct sk_buff *skb)
  
--	rc = register_trace_kfree_skb(trace_kfree_skb_hit, NULL);
-+	rc = register_trace_kfree_skb(ops->kfree_skb_probe, NULL);
- 	if (rc) {
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to connect probe to kfree_skb() tracepoint");
- 		goto err_module_put;
- 	}
+ 	/* Ensure packet fits inside a single netlink attribute */
+ 	payload_len = min_t(size_t, skb->len, NET_DM_MAX_PACKET_SIZE);
++	if (net_dm_trunc_len)
++		payload_len = min_t(size_t, net_dm_trunc_len, payload_len);
  
--	rc = register_trace_napi_poll(trace_napi_poll_hit, NULL);
-+	rc = register_trace_napi_poll(ops->napi_poll_probe, NULL);
- 	if (rc) {
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to connect probe to napi_poll() tracepoint");
- 		goto err_unregister_trace;
-@@ -286,7 +487,7 @@ static int net_dm_trace_on_set(struct netlink_ext_ack *extack)
+ 	msg = nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
+ 	if (!msg)
+@@ -603,6 +611,16 @@ static int net_dm_alert_mode_set(struct genl_info *info)
  	return 0;
- 
- err_unregister_trace:
--	unregister_trace_kfree_skb(trace_kfree_skb_hit, NULL);
-+	unregister_trace_kfree_skb(ops->kfree_skb_probe, NULL);
- err_module_put:
- 	module_put(THIS_MODULE);
- 	return rc;
-@@ -295,10 +496,13 @@ static int net_dm_trace_on_set(struct netlink_ext_ack *extack)
- static void net_dm_trace_off_set(void)
- {
- 	struct dm_hw_stat_delta *new_stat, *temp;
-+	const struct net_dm_alert_ops *ops;
- 	int cpu;
- 
--	unregister_trace_napi_poll(trace_napi_poll_hit, NULL);
--	unregister_trace_kfree_skb(trace_kfree_skb_hit, NULL);
-+	ops = net_dm_alert_ops_arr[net_dm_alert_mode];
-+
-+	unregister_trace_napi_poll(ops->napi_poll_probe, NULL);
-+	unregister_trace_kfree_skb(ops->kfree_skb_probe, NULL);
- 
- 	tracepoint_synchronize_unregister();
- 
-@@ -307,9 +511,18 @@ static void net_dm_trace_off_set(void)
- 	 */
- 	for_each_possible_cpu(cpu) {
- 		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
-+		struct sk_buff *skb;
- 
- 		del_timer_sync(&data->send_timer);
- 		cancel_work_sync(&data->dm_alert_work);
-+		/* If we deactivated a pending timer, some packets are still
-+		 * queued and we need to free them.
-+		 */
-+		while ((skb = __skb_dequeue(&data->drop_queue))) {
-+			if (skb->dev)
-+				dev_put(skb->dev);
-+			consume_skb(skb);
-+		}
- 	}
- 
- 	list_for_each_entry_safe(new_stat, temp, &hw_stats_list, list) {
-@@ -351,12 +564,61 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
- 	return rc;
  }
  
-+static int net_dm_alert_mode_get_from_info(struct genl_info *info,
-+					   enum net_dm_alert_mode *p_alert_mode)
++static int net_dm_trunc_len_set(struct genl_info *info)
 +{
-+	u8 val;
-+
-+	val = nla_get_u8(info->attrs[NET_DM_ATTR_ALERT_MODE]);
-+
-+	switch (val) {
-+	case NET_DM_ALERT_MODE_SUMMARY: /* fall-through */
-+	case NET_DM_ALERT_MODE_PACKET:
-+		*p_alert_mode = val;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int net_dm_alert_mode_set(struct genl_info *info)
-+{
-+	struct netlink_ext_ack *extack = info->extack;
-+	enum net_dm_alert_mode alert_mode;
-+	int rc;
-+
-+	if (!info->attrs[NET_DM_ATTR_ALERT_MODE])
++	if (!info->attrs[NET_DM_ATTR_TRUNC_LEN])
 +		return 0;
 +
-+	rc = net_dm_alert_mode_get_from_info(info, &alert_mode);
-+	if (rc) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid alert mode");
-+		return -EINVAL;
-+	}
-+
-+	net_dm_alert_mode = alert_mode;
++	net_dm_trunc_len = nla_get_u32(info->attrs[NET_DM_ATTR_TRUNC_LEN]);
 +
 +	return 0;
 +}
@@ -472,61 +148,25 @@ index f441fb653567..512935fc235b 100644
  static int net_dm_cmd_config(struct sk_buff *skb,
  			struct genl_info *info)
  {
--	NL_SET_ERR_MSG_MOD(info->extack, "Command not supported");
-+	struct netlink_ext_ack *extack = info->extack;
-+	int rc;
+@@ -618,6 +636,10 @@ static int net_dm_cmd_config(struct sk_buff *skb,
+ 	if (rc)
+ 		return rc;
  
--	return -EOPNOTSUPP;
-+	if (trace_state == TRACE_ON) {
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot configure drop monitor while tracing is on");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	rc = net_dm_alert_mode_set(info);
++	rc = net_dm_trunc_len_set(info);
 +	if (rc)
 +		return rc;
 +
-+	return 0;
+ 	return 0;
  }
  
- static int net_dm_cmd_trace(struct sk_buff *skb,
-@@ -411,6 +673,11 @@ static int dropmon_net_event(struct notifier_block *ev_block,
- 	return NOTIFY_DONE;
- }
+@@ -676,6 +698,7 @@ static int dropmon_net_event(struct notifier_block *ev_block,
+ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
+ 	[NET_DM_ATTR_UNSPEC] = { .strict_start_type = NET_DM_ATTR_UNSPEC + 1 },
+ 	[NET_DM_ATTR_ALERT_MODE] = { .type = NLA_U8 },
++	[NET_DM_ATTR_TRUNC_LEN] = { .type = NLA_U32 },
+ };
  
-+static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
-+	[NET_DM_ATTR_UNSPEC] = { .strict_start_type = NET_DM_ATTR_UNSPEC + 1 },
-+	[NET_DM_ATTR_ALERT_MODE] = { .type = NLA_U8 },
-+};
-+
  static const struct genl_ops dropmon_ops[] = {
- 	{
- 		.cmd = NET_DM_CMD_CONFIG,
-@@ -434,6 +701,8 @@ static struct genl_family net_drop_monitor_family __ro_after_init = {
- 	.hdrsize        = 0,
- 	.name           = "NET_DM",
- 	.version        = 2,
-+	.maxattr	= NET_DM_ATTR_MAX,
-+	.policy		= net_dm_nl_policy,
- 	.pre_doit	= net_dm_nl_pre_doit,
- 	.post_doit	= net_dm_nl_post_doit,
- 	.module		= THIS_MODULE,
-@@ -479,6 +748,7 @@ static int __init init_net_drop_monitor(void)
- 		INIT_WORK(&data->dm_alert_work, send_dm_alert);
- 		timer_setup(&data->send_timer, sched_send_work, 0);
- 		spin_lock_init(&data->lock);
-+		skb_queue_head_init(&data->drop_queue);
- 		reset_per_cpu_data(data);
- 	}
- 
-@@ -509,6 +779,7 @@ static void exit_net_drop_monitor(void)
- 		 * to this struct and can free the skb inside it
- 		 */
- 		kfree_skb(data->skb);
-+		WARN_ON(!skb_queue_empty(&data->drop_queue));
- 	}
- 
- 	BUG_ON(genl_unregister_family(&net_drop_monitor_family));
 -- 
 2.21.0
 
