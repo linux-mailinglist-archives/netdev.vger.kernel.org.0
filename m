@@ -2,226 +2,447 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC836FA83
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 09:41:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 942F56FB15
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 10:16:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728130AbfGVHlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 03:41:53 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46799 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725888AbfGVHlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 03:41:53 -0400
-Received: by mail-pf1-f194.google.com with SMTP id c73so16957778pfb.13;
-        Mon, 22 Jul 2019 00:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bgk59hNZZxqJ+wHkif44Odgi7FpW/CEYdnQcMyiPlt4=;
-        b=D2mcfnGkowNh48/IuGfMW8WPzrt6h9BmpFV+lBdSjOWegSjyooyEPn91oei1VIOdI4
-         pu8uZsIXIPSdCS2VJQVzuGO3d1LlPdNYay78ln2JYX1r+6gOvA9BP34Vtjur+xLeFugc
-         B+r9Id9870AgDuSik6U+JFQ1AG7lf88DIb/HHlnsOqvYtM6MO2LEk3XAuqDPakv+FGNz
-         okRGhZAy+l4wKrekxWO5vEh/b3I+ySVhT6w6IVbPwtYcPg3n4m0/e3mrJSGxIdHDac6t
-         43pG9L5hQnsh+zeLJG0nX4qBP0J3D38Et4Tj0fUNUBycaAvS53RE4ON/mhxHHBOOILx4
-         yZSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bgk59hNZZxqJ+wHkif44Odgi7FpW/CEYdnQcMyiPlt4=;
-        b=rdDHhe2sVeyKnpOZkjWnCaTvmaIbW3pJ9onVg8Pi5rUPZqASRInqrLoXAHl1gNm5X/
-         n7R4x4vxYDJG60MPJ6M+pyCd4v9+y3ziCKeasE3W0hP7xdFwKKBaXsGD+hxe+svQVDUc
-         87AsdyA17Efc1rUoJu62fz6WjcCzqU0GTWKe/WGYDNM9aevwddrSCQ+R15wNULc6Exe5
-         SeuZDTsUDV4ZXYaf4bg7DOGoDexSDrvJhMpa46TzlkHsT3eG+H4g/TpLOH9fUU+5qTrF
-         /tdOa8bv4vwXsrrMTYkj6Dg00kLzc4Fg97el9PRtS+CxEakhoXj2tuvXCOt/eXo47Bih
-         +N9g==
-X-Gm-Message-State: APjAAAWSAM4GXGQUmktT5T/nYHupVExxIX90vRFEuTf4oQN8xmC7Tp/U
-        aVdE4HceIcRX0aNeZUj+EOQ=
-X-Google-Smtp-Source: APXvYqwSl/uh7SK95eO77VgmSxhQzE+J0u32oeQkDxloK2R4qZUtuWy4yljaXZQdizuxy7TXCmPd6w==
-X-Received: by 2002:a17:90b:8e:: with SMTP id bb14mr75943756pjb.19.1563781312423;
-        Mon, 22 Jul 2019 00:41:52 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id c130sm36877577pfc.184.2019.07.22.00.41.49
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 22 Jul 2019 00:41:51 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] net: usb: Merge cpu_to_le32s + memcpy to put_unaligned_le32
-Date:   Mon, 22 Jul 2019 15:41:34 +0800
-Message-Id: <20190722074133.17777-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S1728186AbfGVIQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 04:16:29 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:45799 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728152AbfGVIQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 04:16:29 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1hpTUZ-000864-VJ; Mon, 22 Jul 2019 10:16:20 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:c9d4:83d5:b99:4f4d] (unknown [IPv6:2a03:f580:87bc:d400:c9d4:83d5:b99:4f4d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5336F436056;
+        Mon, 22 Jul 2019 08:16:07 +0000 (UTC)
+Subject: Re: [PATCH V2 1/1] can: sja1000: f81601: add Fintek F81601 support
+To:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, wg@grandegger.com,
+        peter_hong@fintek.com.tw
+Cc:     davem@davemloft.net, f.suligoi@asem.it,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org,
+        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+References: <1563776521-28317-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <563b0d71-3c60-d32c-cf19-73611f68d45a@pengutronix.de>
+Date:   Mon, 22 Jul 2019 10:15:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <1563776521-28317-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="mJLZRfX9Zg8lPTEnkyw4j87Qu8VoabKir"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Merge the combo uses of cpu_to_le32s and memcpy.
-Use put_unaligned_le32 instead.
-This simplifies the code.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--mJLZRfX9Zg8lPTEnkyw4j87Qu8VoabKir
+Content-Type: multipart/mixed; boundary="0MyzbmtnTSQhU6eVIDkvcFCldXzdtm07m";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, wg@grandegger.com,
+ peter_hong@fintek.com.tw
+Cc: davem@davemloft.net, f.suligoi@asem.it, linux-kernel@vger.kernel.org,
+ linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+Message-ID: <563b0d71-3c60-d32c-cf19-73611f68d45a@pengutronix.de>
+Subject: Re: [PATCH V2 1/1] can: sja1000: f81601: add Fintek F81601 support
+References: <1563776521-28317-1-git-send-email-hpeter+linux_kernel@gmail.com>
+In-Reply-To: <1563776521-28317-1-git-send-email-hpeter+linux_kernel@gmail.com>
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/usb/asix_common.c  |  9 ++++-----
- drivers/net/usb/ax88179_178a.c | 11 ++++-------
- drivers/net/usb/lan78xx.c      | 11 ++++-------
- drivers/net/usb/smsc75xx.c     | 11 ++++-------
- drivers/net/usb/sr9800.c       |  9 ++++-----
- 5 files changed, 20 insertions(+), 31 deletions(-)
+--0MyzbmtnTSQhU6eVIDkvcFCldXzdtm07m
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index b39ee714fb01..e39f41efda3e 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -221,6 +221,7 @@ struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 	int tailroom = skb_tailroom(skb);
- 	u32 packet_len;
- 	u32 padbytes = 0xffff0000;
-+	void *ptr;
- 
- 	padlen = ((skb->len + 4) & (dev->maxpacket - 1)) ? 0 : 4;
- 
-@@ -256,13 +257,11 @@ struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 	}
- 
- 	packet_len = ((skb->len ^ 0x0000ffff) << 16) + skb->len;
--	skb_push(skb, 4);
--	cpu_to_le32s(&packet_len);
--	skb_copy_to_linear_data(skb, &packet_len, sizeof(packet_len));
-+	ptr = skb_push(skb, 4);
-+	put_unaligned_le32(packet_len, ptr);
- 
- 	if (padlen) {
--		cpu_to_le32s(&padbytes);
--		memcpy(skb_tail_pointer(skb), &padbytes, sizeof(padbytes));
-+		put_unaligned_le32(padbytes, skb_tail_pointer(skb));
- 		skb_put(skb, sizeof(padbytes));
- 	}
- 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 72d165114b67..daa54486ab09 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1421,6 +1421,7 @@ ax88179_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
- 	int frame_size = dev->maxpacket;
- 	int mss = skb_shinfo(skb)->gso_size;
- 	int headroom;
-+	void *ptr;
- 
- 	tx_hdr1 = skb->len;
- 	tx_hdr2 = mss;
-@@ -1435,13 +1436,9 @@ ax88179_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
- 		return NULL;
- 	}
- 
--	skb_push(skb, 4);
--	cpu_to_le32s(&tx_hdr2);
--	skb_copy_to_linear_data(skb, &tx_hdr2, 4);
--
--	skb_push(skb, 4);
--	cpu_to_le32s(&tx_hdr1);
--	skb_copy_to_linear_data(skb, &tx_hdr1, 4);
-+	ptr = skb_push(skb, 8);
-+	put_unaligned_le32(tx_hdr1, ptr);
-+	put_unaligned_le32(tx_hdr2, ptr + 4);
- 
- 	return skb;
- }
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index 9c33b35bd155..769bb262fbec 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -2729,6 +2729,7 @@ static struct sk_buff *lan78xx_tx_prep(struct lan78xx_net *dev,
- 				       struct sk_buff *skb, gfp_t flags)
- {
- 	u32 tx_cmd_a, tx_cmd_b;
-+	void *ptr;
- 
- 	if (skb_cow_head(skb, TX_OVERHEAD)) {
- 		dev_kfree_skb_any(skb);
-@@ -2757,13 +2758,9 @@ static struct sk_buff *lan78xx_tx_prep(struct lan78xx_net *dev,
- 		tx_cmd_b |= skb_vlan_tag_get(skb) & TX_CMD_B_VTAG_MASK_;
- 	}
- 
--	skb_push(skb, 4);
--	cpu_to_le32s(&tx_cmd_b);
--	memcpy(skb->data, &tx_cmd_b, 4);
--
--	skb_push(skb, 4);
--	cpu_to_le32s(&tx_cmd_a);
--	memcpy(skb->data, &tx_cmd_a, 4);
-+	ptr = skb_push(skb, 8);
-+	put_unaligned_le32(tx_cmd_a, ptr);
-+	put_unaligned_le32(tx_cmd_b, ptr + 4);
- 
- 	return skb;
- }
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index 7fac9db5380d..9556d431885f 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -2255,6 +2255,7 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
- 					 struct sk_buff *skb, gfp_t flags)
- {
- 	u32 tx_cmd_a, tx_cmd_b;
-+	void *ptr;
- 
- 	if (skb_cow_head(skb, SMSC75XX_TX_OVERHEAD)) {
- 		dev_kfree_skb_any(skb);
-@@ -2275,13 +2276,9 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
- 		tx_cmd_b = 0;
- 	}
- 
--	skb_push(skb, 4);
--	cpu_to_le32s(&tx_cmd_b);
--	memcpy(skb->data, &tx_cmd_b, 4);
--
--	skb_push(skb, 4);
--	cpu_to_le32s(&tx_cmd_a);
--	memcpy(skb->data, &tx_cmd_a, 4);
-+	ptr = skb_push(skb, 8);
-+	put_unaligned_le32(tx_cmd_a, ptr);
-+	put_unaligned_le32(tx_cmd_b, ptr + 4);
- 
- 	return skb;
- }
-diff --git a/drivers/net/usb/sr9800.c b/drivers/net/usb/sr9800.c
-index 35f39f23d881..c5d4a0060124 100644
---- a/drivers/net/usb/sr9800.c
-+++ b/drivers/net/usb/sr9800.c
-@@ -115,6 +115,7 @@ static struct sk_buff *sr_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 	u32 padbytes = 0xffff0000;
- 	u32 packet_len;
- 	int padlen;
-+	void *ptr;
- 
- 	padlen = ((skb->len + 4) % (dev->maxpacket - 1)) ? 0 : 4;
- 
-@@ -133,14 +134,12 @@ static struct sk_buff *sr_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 			return NULL;
- 	}
- 
--	skb_push(skb, 4);
-+	ptr = skb_push(skb, 4);
- 	packet_len = (((skb->len - 4) ^ 0x0000ffff) << 16) + (skb->len - 4);
--	cpu_to_le32s(&packet_len);
--	skb_copy_to_linear_data(skb, &packet_len, sizeof(packet_len));
-+	put_unaligned_le32(packet_len, ptr);
- 
- 	if (padlen) {
--		cpu_to_le32s(&padbytes);
--		memcpy(skb_tail_pointer(skb), &padbytes, sizeof(padbytes));
-+		put_unaligned_le32(padbytes, skb_tail_pointer(skb));
- 		skb_put(skb, sizeof(padbytes));
- 	}
- 
--- 
-2.20.1
+On 7/22/19 8:22 AM, Ji-Ze Hong (Peter Hong) wrote:
+> This patch add support for Fintek PCIE to 2 CAN controller support
+>=20
+> Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+> ---
+> Changelog:
+> v2:
+> 	1: Fix comment on the spinlock with write access.
+> 	2: Use ARRAY_SIZE instead of F81601_PCI_MAX_CHAN.
+> 	3: Check the strap pin outside the loop.
+> 	4: Fix the cleanup issue in f81601_pci_add_card().
+> 	5: Remove unused "channels" in struct f81601_pci_card.
+>=20
+>  drivers/net/can/sja1000/Kconfig  |   8 ++
+>  drivers/net/can/sja1000/Makefile |   1 +
+>  drivers/net/can/sja1000/f81601.c | 215 +++++++++++++++++++++++++++++++=
+++++++++
+>  3 files changed, 224 insertions(+)
+>  create mode 100644 drivers/net/can/sja1000/f81601.c
+>=20
+> diff --git a/drivers/net/can/sja1000/Kconfig b/drivers/net/can/sja1000/=
+Kconfig
+> index f6dc89927ece..8588323c5138 100644
+> --- a/drivers/net/can/sja1000/Kconfig
+> +++ b/drivers/net/can/sja1000/Kconfig
+> @@ -101,4 +101,12 @@ config CAN_TSCAN1
+>  	  IRQ numbers are read from jumpers JP4 and JP5,
+>  	  SJA1000 IO base addresses are chosen heuristically (first that work=
+s).
+> =20
+> +config CAN_F81601
+> +	tristate "Fintek F81601 PCIE to 2 CAN Controller"
+> +	depends on PCI
+> +	help
+> +	  This driver adds support for Fintek F81601 PCIE to 2 CAN Controller=
+=2E
+> +	  It had internal 24MHz clock source, but it can be changed by
+> +	  manufacturer. We can use modinfo to get usage for parameters.
+> +	  Visit http://www.fintek.com.tw to get more information.
+>  endif
+> diff --git a/drivers/net/can/sja1000/Makefile b/drivers/net/can/sja1000=
+/Makefile
+> index 9253aaf9e739..6f6268543bd9 100644
+> --- a/drivers/net/can/sja1000/Makefile
+> +++ b/drivers/net/can/sja1000/Makefile
+> @@ -13,3 +13,4 @@ obj-$(CONFIG_CAN_PEAK_PCMCIA) +=3D peak_pcmcia.o
+>  obj-$(CONFIG_CAN_PEAK_PCI) +=3D peak_pci.o
+>  obj-$(CONFIG_CAN_PLX_PCI) +=3D plx_pci.o
+>  obj-$(CONFIG_CAN_TSCAN1) +=3D tscan1.o
+> +obj-$(CONFIG_CAN_F81601) +=3D f81601.o
+> diff --git a/drivers/net/can/sja1000/f81601.c b/drivers/net/can/sja1000=
+/f81601.c
+> new file mode 100644
+> index 000000000000..3c378de8764d
+> --- /dev/null
+> +++ b/drivers/net/can/sja1000/f81601.c
+> @@ -0,0 +1,215 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Fintek F81601 PCIE to 2 CAN controller driver
+> + *
+> + * Copyright (C) 2019 Peter Hong <peter_hong@fintek.com.tw>
+> + * Copyright (C) 2019 Linux Foundation
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/netdevice.h>
+> +#include <linux/delay.h>
+> +#include <linux/slab.h>
+> +#include <linux/pci.h>
+> +#include <linux/can/dev.h>
+> +#include <linux/io.h>
+> +#include <linux/version.h>
+> +
+> +#include "sja1000.h"
+> +
+> +#define F81601_PCI_MAX_CHAN		2
+> +
+> +#define F81601_DECODE_REG		0x209
+> +#define F81601_IO_MODE			BIT(7)
+> +#define F81601_MEM_MODE			BIT(6)
+> +#define F81601_CFG_MODE			BIT(5)
+> +#define F81601_CAN2_INTERNAL_CLK	BIT(3)
+> +#define F81601_CAN1_INTERNAL_CLK	BIT(2)
+> +#define F81601_CAN2_EN			BIT(1)
+> +#define F81601_CAN1_EN			BIT(0)
+> +
+> +#define F81601_TRAP_REG			0x20a
+> +#define F81601_CAN2_HAS_EN		BIT(4)
+> +
+> +struct f81601_pci_card {
+> +	void __iomem *addr;
+> +	spinlock_t lock;	/* use this spin lock only for write access */
+> +	struct pci_dev *dev;
+> +	struct net_device *net_dev[F81601_PCI_MAX_CHAN];
+> +};
+> +
+> +static const struct pci_device_id f81601_pci_tbl[] =3D {
+> +	{ PCI_DEVICE(0x1c29, 0x1703) },
+> +	{},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(pci, f81601_pci_tbl);
+> +
+> +static bool internal_clk =3D 1;
 
+true
+
+> +module_param(internal_clk, bool, 0444);
+> +MODULE_PARM_DESC(internal_clk, "Use internal clock, default 1 (24MHz)"=
+);
+> +
+> +static unsigned int external_clk;
+> +module_param(external_clk, uint, 0444);
+> +MODULE_PARM_DESC(external_clk, "External Clock, must spec when interna=
+l_clk =3D 0");
+> +
+> +static u8 f81601_pci_read_reg(const struct sja1000_priv *priv, int por=
+t)
+> +{
+> +	return readb(priv->reg_base + port);
+> +}
+> +
+> +static void f81601_pci_write_reg(const struct sja1000_priv *priv, int =
+port,
+> +				 u8 val)
+> +{
+> +	struct f81601_pci_card *card =3D priv->priv;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&card->lock, flags);
+> +	writeb(val, priv->reg_base + port);
+> +	readb(priv->reg_base);
+> +	spin_unlock_irqrestore(&card->lock, flags);
+> +}
+> +
+> +static void f81601_pci_del_card(struct pci_dev *pdev)
+> +{
+> +	struct f81601_pci_card *card =3D pci_get_drvdata(pdev);
+> +	struct net_device *dev;
+> +	int i =3D 0;
+> +
+> +	for (i =3D 0; i < ARRAY_SIZE(card->net_dev); i++) {
+> +		dev =3D card->net_dev[i];
+> +		if (!dev)
+> +			continue;
+> +
+> +		dev_info(&pdev->dev, "%s: Removing %s\n", __func__, dev->name);
+> +
+> +		unregister_sja1000dev(dev);
+> +		free_sja1000dev(dev);
+> +	}
+> +
+> +	pcim_iounmap(pdev, card->addr);
+> +}
+> +
+> +/* Probe F81601 based device for the SJA1000 chips and register each
+> + * available CAN channel to SJA1000 Socket-CAN subsystem.
+> + */
+> +static int f81601_pci_add_card(struct pci_dev *pdev,
+> +			       const struct pci_device_id *ent)
+> +{
+> +	struct sja1000_priv *priv;
+> +	struct net_device *dev;
+> +	struct f81601_pci_card *card;
+> +	int err, i, count;
+> +	u8 tmp;
+> +
+> +	if (pcim_enable_device(pdev) < 0) {
+
+I'm missing a corresponding disable_device().
+
+> +		dev_err(&pdev->dev, "Failed to enable PCI device\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	dev_info(&pdev->dev, "Detected card at slot #%i\n",
+> +		 PCI_SLOT(pdev->devfn));
+> +
+> +	card =3D devm_kzalloc(&pdev->dev, sizeof(*card), GFP_KERNEL);
+> +	if (!card)
+> +		return -ENOMEM;
+> +
+> +	card->dev =3D pdev;
+> +	spin_lock_init(&card->lock);
+> +
+> +	pci_set_drvdata(pdev, card);
+> +
+> +	tmp =3D F81601_IO_MODE | F81601_MEM_MODE | F81601_CFG_MODE |
+> +		F81601_CAN2_EN | F81601_CAN1_EN;
+> +
+> +	if (internal_clk) {
+> +		tmp |=3D F81601_CAN2_INTERNAL_CLK | F81601_CAN1_INTERNAL_CLK;
+> +
+> +		dev_info(&pdev->dev,
+> +			 "F81601 running with internal clock: 24Mhz\n");
+> +	} else {
+> +		dev_info(&pdev->dev,
+> +			 "F81601 running with external clock: %dMhz\n",
+> +			 external_clk / 1000000);
+> +	}
+> +
+> +	pci_write_config_byte(pdev, F81601_DECODE_REG, tmp);
+> +
+> +	card->addr =3D pcim_iomap(pdev, 0, pci_resource_len(pdev, 0));
+> +
+> +	if (!card->addr) {
+> +		err =3D -ENOMEM;
+> +		dev_err(&pdev->dev, "%s: Failed to remap BAR\n", __func__);
+> +		goto failure_cleanup;
+> +	}
+> +
+> +	/* read CAN2_HW_EN strap pin to detect how many CANBUS do we have */
+> +	count =3D ARRAY_SIZE(card->net_dev);
+> +	pci_read_config_byte(pdev, F81601_TRAP_REG, &tmp);
+> +	if (!(tmp & F81601_CAN2_HAS_EN))
+> +		count =3D 1;
+> +
+> +	/* Detect available channels */
+> +	for (i =3D 0; i < count; i++) {
+> +		dev =3D alloc_sja1000dev(0);
+> +		if (!dev) {
+> +			err =3D -ENOMEM;
+> +			goto failure_cleanup;
+> +		}
+> +
+> +		priv =3D netdev_priv(dev);
+> +		priv->priv =3D card;
+> +		priv->irq_flags =3D IRQF_SHARED;
+> +		priv->reg_base =3D card->addr + 0x80 * i;
+> +		priv->read_reg =3D f81601_pci_read_reg;
+> +		priv->write_reg =3D f81601_pci_write_reg;
+> +
+> +		if (internal_clk)
+> +			priv->can.clock.freq =3D 24000000 / 2;
+> +		else
+> +			priv->can.clock.freq =3D external_clk / 2;
+> +
+> +		priv->ocr =3D OCR_TX0_PUSHPULL | OCR_TX1_PUSHPULL;
+> +		priv->cdr =3D CDR_CBP;
+> +
+> +		SET_NETDEV_DEV(dev, &pdev->dev);
+> +		dev->dev_id =3D i;
+> +		dev->irq =3D pdev->irq;
+> +
+> +		/* Register SJA1000 device */
+> +		err =3D register_sja1000dev(dev);
+> +		if (err) {
+> +			dev_err(&pdev->dev,
+> +				"%s: Registering device failed: %x\n", __func__,
+> +				err);
+> +			free_sja1000dev(dev);
+> +			goto failure_cleanup;
+> +		}
+> +
+> +		card->net_dev[i] =3D dev;
+> +		dev_info(&pdev->dev, "Channel #%d, %s at 0x%p, irq %d\n", i,
+> +			 dev->name, priv->reg_base, dev->irq);
+> +	}
+> +
+> +	return 0;
+> +
+> +failure_cleanup:
+> +	dev_err(&pdev->dev, "%s: failed: %d. Cleaning Up.\n", __func__, err);=
+
+> +	f81601_pci_del_card(pdev);
+> +
+> +	return err;
+> +}
+> +
+> +static struct pci_driver f81601_pci_driver =3D {
+> +	.name =3D		"f81601",
+> +	.id_table =3D	f81601_pci_tbl,
+> +	.probe =3D	f81601_pci_add_card,
+> +	.remove =3D	f81601_pci_del_card,
+> +};
+> +
+> +MODULE_DESCRIPTION("Fintek F81601 PCIE to 2 CANBUS adaptor driver");
+> +MODULE_AUTHOR("Peter Hong <peter_hong@fintek.com.tw>");
+> +MODULE_LICENSE("GPL v2");
+> +
+> +module_pci_driver(f81601_pci_driver);
+>=20
+
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--0MyzbmtnTSQhU6eVIDkvcFCldXzdtm07m--
+
+--mJLZRfX9Zg8lPTEnkyw4j87Qu8VoabKir
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl01cLUACgkQWsYho5Hk
+nSC/5wf+NlWC2Z3mmTHBa0ee/zqz8s0COHTDxt4RT/5LV1o2Y7njg1MghLLdCbem
+1jUZuL4qhN4SJXSkAOzA9Q1WhJaQgy9usb1YVoOkAxjNsb3EQ+VDzV1mrcCZ3aiI
+wlsEinT97pCovaeejyGVrAZhUs1G4Wr4dvP1os8AIdzshnI7PtmuYuSujqo9Dg7B
+4HBvQ7Spcy38VJ+jWQykI0tdANcHZUIQgYFgLjH9yWocgk7g18aJ8JY4KKec28lL
+bqz2x68JsidUhCOlWzphdYh7QJ7VqXB0Ebyx+fIRGQdnRIx+w3KGmenytjIQM5T8
+VhAIehpToasAoujj89ogqOu3PVz62Q==
+=iQLY
+-----END PGP SIGNATURE-----
+
+--mJLZRfX9Zg8lPTEnkyw4j87Qu8VoabKir--
