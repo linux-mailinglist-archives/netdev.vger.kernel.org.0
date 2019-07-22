@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC2E6F881
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 06:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8506F889
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 06:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727797AbfGVEaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 00:30:20 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:46311 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbfGVEaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 00:30:18 -0400
-Received: by mail-pl1-f196.google.com with SMTP id c2so18541295plz.13;
-        Sun, 21 Jul 2019 21:30:17 -0700 (PDT)
+        id S1727767AbfGVEaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 00:30:19 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37583 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726024AbfGVEaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 00:30:19 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b3so18574750plr.4;
+        Sun, 21 Jul 2019 21:30:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WbaMzabtgu3hCeOMPX09tru106PZHAIJnqruZQI71c8=;
-        b=p3HGgaINx4UXmNtxMRxq9ZG6NzncIA85CDVJwUAyirDvW3yCo2di+TLZl5eFlPnNmI
-         tKBmRpm/+GE33EtGsFzwMuLEx975vOoVhficjaLeRIsopct9Hcl7v/XU1KBwOEf2xMZN
-         BHRmQquzbiIcI70dnx/HawsVNNS5fDl4FFWtUv/EmNTaCRi74oUprzweRieVqW1lCakX
-         xGU3Yfp0T2yQHASWYcYkRONsVHYAjwfmIRSdrvV1yxpWlXG/IgI4pD2tDC41W7YDhh8Y
-         2xv+vtpzYgX36LzrXQsbqLPBzjZi80AqFoHhWGNEYVEtoMdLjAhgYaYrgI/kXAfMuWv+
-         Cbsw==
+        bh=D+V1JOqHKw89xuQJyKyrQPxBPg1TKqg5mmM4KBGZiv0=;
+        b=ZjncIryvRUENukVshJFmndluvLLU2arKIPK+YYicUChsIoVAk47zJe62/xRGnaP5sO
+         2dIVuxokgzVnbQHvCzkTXpkUYAmteOI1byf9i0Eh4Nry32SQ9hACfIfRqzVmd9cJiRLV
+         K9HwOtYgSWbkF9G0wSK5xDI2GGAAixptvpE4fTe363E9YhkxmADQ/Mu9XRx8bTc2aorh
+         N1o7z9m3WHPe2EsrnhH9xUt6CS36Mz9r/OpIcDwkj8s1H6FUiNK+g6MeR3C2qRQdfIdw
+         al2E1lXQJ0Y1vWlKKViZ99Kmj6ELgJUAJ+cq1tdYD2dh7ezt2sYlt89O5gvFrEpEQJG1
+         ZAOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WbaMzabtgu3hCeOMPX09tru106PZHAIJnqruZQI71c8=;
-        b=kGPUU1aVeHLEtDfKUVz2QNFlkPwZVVkEpfrl0iUtLE6lBgEfmYvhaS8zUbwRp2CnUw
-         6qPvj+6aimTmpiX6sMK/xFjs7g/CX08VmyZvfaz3eKfHoCsDBIfMcMMEYFLi8CIQ3hu6
-         ay0sUz0Bqiqz1aTmAZOrAvcafXcqOG2hVZ8+GH2pun6ooD41iyuP2CejTSxkHrLNqBxv
-         vl5tentpdHNcKokkNpSfeQHnOcOv7ogXyheYrSyGTy5cY+KH+u0yfuH+18R3Y/jCu12v
-         vqaFtrhCd5Lo4haCzxAuBsypqh3h5Ji6C4yNA5t0+PMLnDOjksdmt0fUB9e3e1NzHQ0Z
-         qjRQ==
-X-Gm-Message-State: APjAAAUlTIe3br5Cu4l0BjmGfOINuPgKSM3ELmN/F5NcDFbuop6Ym5Kd
-        iOaur0tQv5pNgjjGdeqygKQ=
-X-Google-Smtp-Source: APXvYqyKR4WrwxhhqPsiCdGlG1x0qIsswj14hIfFs7IMQOgAz1KccUwekZlyy0ZSOgH/yneXklBTJA==
-X-Received: by 2002:a17:902:ac87:: with SMTP id h7mr75701953plr.36.1563769816971;
-        Sun, 21 Jul 2019 21:30:16 -0700 (PDT)
+        bh=D+V1JOqHKw89xuQJyKyrQPxBPg1TKqg5mmM4KBGZiv0=;
+        b=GMJIw0P5FdXu0ek0WSxrDhJSr5mPvUasIBTqo69Y/u3LP7Wr/kIw/c9uCiWCUeNmX5
+         qx4Y6tijLjdRaqN1PGJ3oYZBNayJuQ5BHCgBY398BI7LSPseiKSPxiW/HMo5al1I8Irj
+         7k2jGaKZyX0SsF1f72yjfBq47rUjafvMn/2B4VeNlVk84DQh0pdBtkz/D+QkW/9Jqo5i
+         rNX+pWr4wT+52N5FeZZ9dyfavyd6ACiYx1cbtEgGuVoFgVtDEFgY/AMpTfPFkT/1c2MI
+         9oEz/gWVtGVyDIsxnrVmL1HmBCnpKgN0VHRZfzPzsYADODvIWic5rRA6Es8znQ8XhwFE
+         kZXQ==
+X-Gm-Message-State: APjAAAW4zxo5GC6SAZXbqJnpa0RVnUZ8TwTyvrXp3IfJyw9ejpAfcV7K
+        5aVGLTioIDtWv6mp+vH1iQE=
+X-Google-Smtp-Source: APXvYqxl80v/klDkLGiV/45cokVowIxuUImE7kMceTFkzRgYtQ9KqbkKZkwGuHiecTAs8feNRgDMBA==
+X-Received: by 2002:a17:902:6b86:: with SMTP id p6mr74936264plk.14.1563769818237;
+        Sun, 21 Jul 2019 21:30:18 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id t96sm34285690pjb.1.2019.07.21.21.30.15
+        by smtp.gmail.com with ESMTPSA id t96sm34285690pjb.1.2019.07.21.21.30.17
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 21 Jul 2019 21:30:16 -0700 (PDT)
+        Sun, 21 Jul 2019 21:30:17 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -70,13 +70,14 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         LKML <linux-kernel@vger.kernel.org>,
         John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH 1/3] drivers/gpu/drm/via: convert put_page() to put_user_page*()
-Date:   Sun, 21 Jul 2019 21:30:10 -0700
-Message-Id: <20190722043012.22945-2-jhubbard@nvidia.com>
+Subject: [PATCH 2/3] net/xdp: convert put_page() to put_user_page*()
+Date:   Sun, 21 Jul 2019 21:30:11 -0700
+Message-Id: <20190722043012.22945-3-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190722043012.22945-1-jhubbard@nvidia.com>
 References: <20190722043012.22945-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -93,30 +94,29 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
+Cc: Björn Töpel <bjorn.topel@intel.com>
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/gpu/drm/via/via_dmablit.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/xdp/xdp_umem.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/via/via_dmablit.c b/drivers/gpu/drm/via/via_dmablit.c
-index 062067438f1d..219827ae114f 100644
---- a/drivers/gpu/drm/via/via_dmablit.c
-+++ b/drivers/gpu/drm/via/via_dmablit.c
-@@ -189,8 +189,9 @@ via_free_sg_info(struct pci_dev *pdev, drm_via_sg_info_t *vsg)
- 		for (i = 0; i < vsg->num_pages; ++i) {
- 			if (NULL != (page = vsg->pages[i])) {
- 				if (!PageReserved(page) && (DMA_FROM_DEVICE == vsg->direction))
--					SetPageDirty(page);
--				put_page(page);
-+					put_user_pages_dirty(&page, 1);
-+				else
-+					put_user_page(page);
- 			}
- 		}
- 		/* fall through */
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 83de74ca729a..9cbbb96c2a32 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -171,8 +171,7 @@ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+ 	for (i = 0; i < umem->npgs; i++) {
+ 		struct page *page = umem->pgs[i];
+ 
+-		set_page_dirty_lock(page);
+-		put_page(page);
++		put_user_pages_dirty_lock(&page, 1);
+ 	}
+ 
+ 	kfree(umem->pgs);
 -- 
 2.22.0
 
