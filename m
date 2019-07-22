@@ -2,158 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF1F0708B5
-	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 20:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4212F708C3
+	for <lists+netdev@lfdr.de>; Mon, 22 Jul 2019 20:37:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730118AbfGVSdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 14:33:50 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:43903 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730000AbfGVSdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 14:33:49 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 968742644;
-        Mon, 22 Jul 2019 14:33:48 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 22 Jul 2019 14:33:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=D4UadlB+NqXyNIGr9Kv89/FkJnAQgLuVjqmpbezrTvM=; b=Er2DRZPq
-        UZxwTrneUajhMqP2INaGlNZ2vTCu0uSf32cBdFKy8D1J+qAHxVquXDopL10wFBek
-        VYdqwjqnJVzJzmRd081TuKPhhLetTbRcxZsVGiL26cdHqmDYuFu5+w+Qw7FvUkAb
-        Eq6zSeV6fXB6GGzE7XHDrzc5gxkE2dUFGhsHvyRtG4XZpE8e2DEBzdOcCpfVpLc8
-        FsHMLO//Por/TdnUJxPqzmDi4RHMvCwcuZlyFN20+SEJIA4eBUx6UE+joqkx1AjF
-        P36EhW3EbLQLur1rdlhDdmHpQ/SEG1/5EmISInzOUtWcyku4trw4JqXfaF6HbBYt
-        Vq1dN6rL2Rs+xQ==
-X-ME-Sender: <xms:jAE2XU5x7pgf8Epnex3apHr-fDMXmBFItY_JHDujnmdJIYbi1s9c9Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeeggdduvdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeel
-X-ME-Proxy: <xmx:jAE2XSzkYBi57svP-qqQWTMBRG5wqvhTxhPGKKBkChv8ohr42_mBTQ>
-    <xmx:jAE2XSPYOZTj8xMr5ZDF_kyZSuMJa6uo-vjdPUgX9K4z1W6v_JPlhQ>
-    <xmx:jAE2XdZ3R-4za5_lrdgvhf8P0YWhjRxSlc4U7WfRhs6HqdEComjgWA>
-    <xmx:jAE2XUWZRXUnEON-mjVXwwb4Ix4CeJjwbEkXfPzgoRAvR3AO-uEO2w>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2CD8C8005B;
-        Mon, 22 Jul 2019 14:33:46 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        jakub.kicinski@netronome.com, toke@redhat.com, andy@greyhouse.net,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH net-next 12/12] drop_monitor: Add a command to query current configuration
-Date:   Mon, 22 Jul 2019 21:31:34 +0300
-Message-Id: <20190722183134.14516-13-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190722183134.14516-1-idosch@idosch.org>
-References: <20190722183134.14516-1-idosch@idosch.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730977AbfGVSgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 14:36:36 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:37297 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730806AbfGVSgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 14:36:35 -0400
+Received: by mail-vs1-f67.google.com with SMTP id v6so26963016vsq.4
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 11:36:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=u4izuYmo+kNsiUwAXM6ygOEvVOhLNkyI5KbJVUzFn+o=;
+        b=OE9sSa6dSyW4rlvqEDZqiHHMx+zdjcFF4nHX2Nq43G5o3nY4FdO7e6I5aDPhCLSA63
+         ezt/SzN3dDHfet/eOU6H0EwFFnIcgIn8Mjfh66eKyeV5oWlAxjhxaTz0hE2HqekLlPSJ
+         v1t0e3jrQjruBL+j5X+5YBkMZzQSkFre1JrXIf1BtoMXFFST5cZ41eoq3IFLJDcmhC8t
+         1oxieSfa81Ww5oADkfMC4Cu5tYy3XVMCNC2nZ6OTdHqoW2hJVjoR5wCjqwHbAqZVVHrJ
+         GyOEtxyjdVMQIEQmZ7BdOdNO5pCQvhDFVVY1aWkta8d7V37HJuj2RG60UxVtTEfxsVrm
+         F7Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=u4izuYmo+kNsiUwAXM6ygOEvVOhLNkyI5KbJVUzFn+o=;
+        b=SYuVG941FE6x15GEILv/nhFouiPpQ/89VijhYDWd18XIrAR9pOW/cNI0lncpksqV3O
+         hZgxHyjl//tasinLicDc47xxNoFORkF9zdboQ2JOYKI1GRqwDyzYt1KEbYbD++04HKK4
+         JoqWQooD5cOWVGot6sBdtIP7poEQAGOk2+ONspx6y4AnJ9rFl2He0FsL9HplJzu7s1yD
+         oLWXYV4YDb/NiKnM6g9TOvD1UjGDAwiZV7nbDOO3RpGqg4d4+OypSfilDQlt+Mz++gts
+         UzArJSBjbYRNG1HViOiwDhL2v9YYebV7YecpJ1HEdBWfwzruuCR4EtHqQGXTdWIjTSSR
+         KNPQ==
+X-Gm-Message-State: APjAAAXUVYbcFdbExita5oqe06mKpB8nDeCB7x0zZO23JRdn+ScRsK8H
+        NDNE4DFoREp+06D+6CztnI2W6g==
+X-Google-Smtp-Source: APXvYqy8GqANbo1n0A4eT5yNcA1w8us81IfhVKmDbX5eAg+yaJE5Y3SUHdM77HMytoD0nZomDxDIug==
+X-Received: by 2002:a67:8cc7:: with SMTP id o190mr44487527vsd.24.1563820594813;
+        Mon, 22 Jul 2019 11:36:34 -0700 (PDT)
+Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 10sm15371158vkl.33.2019.07.22.11.36.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jul 2019 11:36:33 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     saeedm@mellanox.com, leonro@mellanox.com
+Cc:     yishaih@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Qian Cai <cai@lca.pw>
+Subject: [PATCH] net/mlx5: fix -Wtype-limits compilation warnings
+Date:   Mon, 22 Jul 2019 14:34:42 -0400
+Message-Id: <1563820482-10302-1-git-send-email-cai@lca.pw>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+The commit b9a7ba556207 ("net/mlx5: Use event mask based on device
+capabilities") introduced a few compilation warnings due to it bumps
+MLX5_EVENT_TYPE_MAX from 0x27 to 0x100 which is always greater than
+an "struct {mlx5_eqe|mlx5_nb}.type" that is an "u8".
 
-Users should be able to query the current configuration of drop monitor
-before they start using it. Add a command to query the existing
-configuration which currently consists of alert mode and packet
-truncation length.
+drivers/net/ethernet/mellanox/mlx5/core/eq.c: In function
+'mlx5_eq_notifier_register':
+drivers/net/ethernet/mellanox/mlx5/core/eq.c:948:21: warning: comparison
+is always false due to limited range of data type [-Wtype-limits]
+  if (nb->event_type >= MLX5_EVENT_TYPE_MAX)
+                     ^~
+drivers/net/ethernet/mellanox/mlx5/core/eq.c: In function
+'mlx5_eq_notifier_unregister':
+drivers/net/ethernet/mellanox/mlx5/core/eq.c:959:21: warning: comparison
+is always false due to limited range of data type [-Wtype-limits]
+  if (nb->event_type >= MLX5_EVENT_TYPE_MAX)
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Fix them by removing unnecessary checkings.
+
+Fixes: b9a7ba556207 ("net/mlx5: Use event mask based on device capabilities")
+Signed-off-by: Qian Cai <cai@lca.pw>
 ---
- include/uapi/linux/net_dropmon.h |  2 ++
- net/core/drop_monitor.c          | 48 ++++++++++++++++++++++++++++++++
- 2 files changed, 50 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index eb36b61485ef..cdcd23a8b72b 100644
---- a/include/uapi/linux/net_dropmon.h
-+++ b/include/uapi/linux/net_dropmon.h
-@@ -54,6 +54,8 @@ enum {
- 	NET_DM_CMD_START,
- 	NET_DM_CMD_STOP,
- 	NET_DM_CMD_PACKET_ALERT,
-+	NET_DM_CMD_CONFIG_GET,
-+	NET_DM_CMD_CONFIG_NEW,
- 	_NET_DM_CMD_MAX,
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 41f25ea2e8d9..2df9aaa421c6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -215,11 +215,7 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
+ 		 */
+ 		dma_rmb();
  
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 5af1e1e8d4d0..c753cd6c39ec 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -656,6 +656,50 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
- 	return -EOPNOTSUPP;
- }
+-		if (likely(eqe->type < MLX5_EVENT_TYPE_MAX))
+-			atomic_notifier_call_chain(&eqt->nh[eqe->type], eqe->type, eqe);
+-		else
+-			mlx5_core_warn_once(dev, "notifier_call_chain is not setup for eqe: %d\n", eqe->type);
+-
++		atomic_notifier_call_chain(&eqt->nh[eqe->type], eqe->type, eqe);
+ 		atomic_notifier_call_chain(&eqt->nh[MLX5_EVENT_TYPE_NOTIFY_ANY], eqe->type, eqe);
  
-+static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
-+{
-+	void *hdr;
-+
-+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
-+			  &net_drop_monitor_family, 0, NET_DM_CMD_CONFIG_NEW);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(msg, NET_DM_ATTR_ALERT_MODE, net_dm_alert_mode))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u32(msg, NET_DM_ATTR_TRUNC_LEN, net_dm_trunc_len))
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct sk_buff *msg;
-+	int rc;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	rc = net_dm_config_fill(msg, info);
-+	if (rc)
-+		goto err_config_fill;
-+
-+	return genlmsg_reply(msg, info);
-+
-+err_config_fill:
-+	nlmsg_free(msg);
-+	return rc;
-+}
-+
- static int dropmon_net_event(struct notifier_block *ev_block,
- 			     unsigned long event, void *ptr)
+ 		++eq->cons_index;
+@@ -945,9 +941,6 @@ int mlx5_eq_notifier_register(struct mlx5_core_dev *dev, struct mlx5_nb *nb)
  {
-@@ -718,6 +762,10 @@ static const struct genl_ops dropmon_ops[] = {
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = net_dm_cmd_trace,
- 	},
-+	{
-+		.cmd = NET_DM_CMD_CONFIG_GET,
-+		.doit = net_dm_cmd_config_get,
-+	},
- };
+ 	struct mlx5_eq_table *eqt = dev->priv.eq_table;
  
- static struct genl_family net_drop_monitor_family __ro_after_init = {
+-	if (nb->event_type >= MLX5_EVENT_TYPE_MAX)
+-		return -EINVAL;
+-
+ 	return atomic_notifier_chain_register(&eqt->nh[nb->event_type], &nb->nb);
+ }
+ EXPORT_SYMBOL(mlx5_eq_notifier_register);
+@@ -956,9 +949,6 @@ int mlx5_eq_notifier_unregister(struct mlx5_core_dev *dev, struct mlx5_nb *nb)
+ {
+ 	struct mlx5_eq_table *eqt = dev->priv.eq_table;
+ 
+-	if (nb->event_type >= MLX5_EVENT_TYPE_MAX)
+-		return -EINVAL;
+-
+ 	return atomic_notifier_chain_unregister(&eqt->nh[nb->event_type], &nb->nb);
+ }
+ EXPORT_SYMBOL(mlx5_eq_notifier_unregister);
 -- 
-2.21.0
+1.8.3.1
 
