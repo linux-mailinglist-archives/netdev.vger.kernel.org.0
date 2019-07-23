@@ -2,104 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC18B7137F
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 09:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A373D713A6
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 10:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388735AbfGWH6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 03:58:34 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:48879 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730810AbfGWH6b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 03:58:31 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6A58C21DC4;
-        Tue, 23 Jul 2019 03:58:30 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 23 Jul 2019 03:58:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=iQf/cLDGJ/A268yALw9MxqH8j12Z2BrAO5xagmSOsIA=; b=WMTZHVt+
-        KYgRL9fXeU1C17/VVm1tNhEI1UG1K5RylyvCgHWHrLDav40fnsMnVNisImCOIRFd
-        CBZ+dTeRb1Qlr07zC8KhrFashNtorWNa+Tc8GTJRlvqnOa53BIIxMxYo1lwboz6T
-        YZyAQfA+Lks6bdtomOfUIEgOR2qE4pR+Lo/cd/oihRGl5wB/OYIytDNmJ74/EYOJ
-        N2h2gU1luwh7Fb5lT2oNi7oIYkDjNZBTnvjpondtl7iwy7g0RZTFr7ZkRECyzm16
-        +HtqqJOwO5db4CTNBTiPeRPHHnTsOyz5yGvg3tIyB07EqWggzhpzCSiaJEDosnVq
-        7BhHaEZX/892HA==
-X-ME-Sender: <xms:Jr42XTxo7gV3wi1-SJ8dq6dusmt5KOa0TpZYp31udNncVbvyBGjFzQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeejgdegiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgeptd
-X-ME-Proxy: <xmx:Jr42XSZQFQW4YpQ5fpEwJBXE3PGEuHcvydBw_2fCUIF3eN5iwi8qIQ>
-    <xmx:Jr42Xfoatep7iW0g09ho0uFgg5_Z0kdhHSjzlB23wFBH4ft91YxcHg>
-    <xmx:Jr42XWS7EundR9Vtg45ciApdGGI_ZTWbYQz_sKNTcjRMf_rlhLZNoA>
-    <xmx:Jr42XXv3TELsYIxA2C-syWR_b605ANz2uuk66gakftpZe1cJDYydow>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 09035380083;
-        Tue, 23 Jul 2019 03:58:28 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 2/2] mlxsw: spectrum_router: Increase scale of IPv6 nexthop groups
-Date:   Tue, 23 Jul 2019 10:57:42 +0300
-Message-Id: <20190723075742.29029-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190723075742.29029-1-idosch@idosch.org>
-References: <20190723075742.29029-1-idosch@idosch.org>
+        id S1731938AbfGWINm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 04:13:42 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:39721 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726405AbfGWINm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 04:13:42 -0400
+Received: by mail-pl1-f195.google.com with SMTP id b7so20337507pls.6;
+        Tue, 23 Jul 2019 01:13:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=obZilEP52opY5jpftYWjHMQed1ZMJ+r+EMQoImR6PmE=;
+        b=RFrpPA5rPbTn78xatZKRi/cfsqcVUj18wS/s40wian+qMNKWu/6D4EQvS98x0FoQT/
+         siF3Bx7TVHMII85anle2of2nHe9ASQDbsO3egvG8Xuj0WpUPseDlBzK0m/DdWSmtsHI5
+         1vJ/tJOGzEofMMam+kdnorI4u2x0B57/gVaf4VoC8HMJno494F5XvTZPWdJIhLxHANVJ
+         +sA6g8n60kR/KZLIlwFQh09RnfQWWcRbnfrkK2SCa8Z7zUjtL0xBS2ZKCLEFcP64PdNH
+         ENXldH2ccLGuMqIqn/vVqcXPZE+dxHSoV6cfH71Csaijxq+yZldsfoFc1StMT5jdfzOm
+         b9Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=obZilEP52opY5jpftYWjHMQed1ZMJ+r+EMQoImR6PmE=;
+        b=c7KN+GT02vs/hHh4oA8T6ALoPnsBnvseIouKj1nUuKX7LmG8VXYNOkjmsuykzZ7ly+
+         CfhunP0c4upzK7ncW1ph5zvxYS51QNpXvzJt1UGJs73TUpNxFrTIzBS2vywhGKo/0hhq
+         3S983uDiW8vrbCPBfRdpAGcF7D7CJYJgxBbSpOpZkpcsnA+e70efebzq3+6Yv0m9lbmU
+         dLpWvK3ZICix7KPqp8Jtw46hSaaD87k/V9g0D4tQD6AJxghj6U5i5SQ4D3qsP7v6efD/
+         VhapYRvCltKvCTK0CzWiVeZQGUzAzXtD0WEIxD6+zOv9eavxpXGzB5ZMqJOzevssimbI
+         4LLQ==
+X-Gm-Message-State: APjAAAXyzjdPQVwqga7W8vhd7FlBCIyvZAQ59T+oK8MkcJcQJ0pp4Tzx
+        1JMxeujxL9NaGAm+IhkNgeY=
+X-Google-Smtp-Source: APXvYqxNj5hZA9upOU9YlIxhRkMuskCNc/+lR11pWpZ+uOCv4NNwPEWYb65Vuf9MX1sGRm06GhB95g==
+X-Received: by 2002:a17:902:1e2:: with SMTP id b89mr81314288plb.7.1563869621920;
+        Tue, 23 Jul 2019 01:13:41 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id k64sm22913758pge.65.2019.07.23.01.13.39
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 01:13:41 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] atm: Use dev_get_drvdata
+Date:   Tue, 23 Jul 2019 16:13:14 +0800
+Message-Id: <20190723081313.18552-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Instead of using to_pci_dev + pci_get_drvdata,
+use dev_get_drvdata to make code simpler.
 
-Unlike IPv4, the kernel does not consolidate IPv6 nexthop groups. To
-avoid exhausting the device's adjacency table - where nexthops are
-stored - the driver does this consolidation instead.
-
-Each nexthop group is hashed by XOR-ing the interface indexes of all the
-member nexthop devices. However, the ifindex itself is not hashed, which
-can result in identical keys used for different groups and finally an
--EBUSY error from rhashtable due to too long objects list.
-
-Improve the situation by hashing the ifindex itself.
-
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/atm/solos-pci.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index e618be7ce6c6..a330b369e899 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -2943,7 +2943,7 @@ static u32 mlxsw_sp_nexthop_group_hash_obj(const void *data, u32 len, u32 seed)
- 		val = nh_grp->count;
- 		for (i = 0; i < nh_grp->count; i++) {
- 			nh = &nh_grp->nexthops[i];
--			val ^= nh->ifindex;
-+			val ^= jhash(&nh->ifindex, sizeof(nh->ifindex), seed);
- 		}
- 		return jhash(&val, sizeof(val), seed);
- 	default:
-@@ -2961,7 +2961,7 @@ mlxsw_sp_nexthop6_group_hash(struct mlxsw_sp_fib6_entry *fib6_entry, u32 seed)
+diff --git a/drivers/atm/solos-pci.c b/drivers/atm/solos-pci.c
+index 5c4c6eeb505c..c32f7dd9879a 100644
+--- a/drivers/atm/solos-pci.c
++++ b/drivers/atm/solos-pci.c
+@@ -516,9 +516,8 @@ struct geos_gpio_attr {
+ static ssize_t geos_gpio_store(struct device *dev, struct device_attribute *attr,
+ 			       const char *buf, size_t count)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct geos_gpio_attr *gattr = container_of(attr, struct geos_gpio_attr, attr);
+-	struct solos_card *card = pci_get_drvdata(pdev);
++	struct solos_card *card = dev_get_drvdata(dev);
+ 	uint32_t data32;
  
- 	list_for_each_entry(mlxsw_sp_rt6, &fib6_entry->rt6_list, list) {
- 		dev = mlxsw_sp_rt6->rt->fib6_nh->fib_nh_dev;
--		val ^= dev->ifindex;
-+		val ^= jhash(&dev->ifindex, sizeof(dev->ifindex), seed);
- 	}
+ 	if (count != 1 && (count != 2 || buf[1] != '\n'))
+@@ -542,9 +541,8 @@ static ssize_t geos_gpio_store(struct device *dev, struct device_attribute *attr
+ static ssize_t geos_gpio_show(struct device *dev, struct device_attribute *attr,
+ 			      char *buf)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct geos_gpio_attr *gattr = container_of(attr, struct geos_gpio_attr, attr);
+-	struct solos_card *card = pci_get_drvdata(pdev);
++	struct solos_card *card = dev_get_drvdata(dev);
+ 	uint32_t data32;
  
- 	return jhash(&val, sizeof(val), seed);
+ 	data32 = ioread32(card->config_regs + GPIO_STATUS);
+@@ -556,9 +554,8 @@ static ssize_t geos_gpio_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t hardware_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct geos_gpio_attr *gattr = container_of(attr, struct geos_gpio_attr, attr);
+-	struct solos_card *card = pci_get_drvdata(pdev);
++	struct solos_card *card = dev_get_drvdata(dev);
+ 	uint32_t data32;
+ 
+ 	data32 = ioread32(card->config_regs + GPIO_STATUS);
 -- 
-2.21.0
+2.20.1
 
