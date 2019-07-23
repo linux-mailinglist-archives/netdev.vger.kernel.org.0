@@ -2,138 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 438C471B4A
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:16:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D70771B81
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:24:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390849AbfGWPQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 11:16:03 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:59536 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726819AbfGWPQB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 11:16:01 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 883192001D2;
-        Tue, 23 Jul 2019 17:15:58 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A1992000FF;
-        Tue, 23 Jul 2019 17:15:58 +0200 (CEST)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 1CEE9205DD;
-        Tue, 23 Jul 2019 17:15:58 +0200 (CEST)
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/3] arm64: dts: ls1028a: Enable eth port1 on the ls1028a QDS board
-Date:   Tue, 23 Jul 2019 18:15:55 +0300
-Message-Id: <1563894955-545-4-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1563894955-545-1-git-send-email-claudiu.manoil@nxp.com>
-References: <1563894955-545-1-git-send-email-claudiu.manoil@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728364AbfGWPYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 11:24:01 -0400
+Received: from ispman.iskranet.ru ([62.213.33.10]:33508 "EHLO
+        ispman.iskranet.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726770AbfGWPYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 11:24:01 -0400
+Received: by ispman.iskranet.ru (Postfix, from userid 8)
+        id E97668217F1; Tue, 23 Jul 2019 22:17:10 +0700 (KRAT)
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on ispman.iskranet.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=4.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.3.2
+Received: from KB016249.iskra.kb (unknown [62.213.40.60])
+        (Authenticated sender: asolokha@kb.kras.ru)
+        by ispman.iskranet.ru (Postfix) with ESMTPA id BA31C8217E2;
+        Tue, 23 Jul 2019 22:17:08 +0700 (KRAT)
+From:   Arseny Solokha <asolokha@kb.kras.ru>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Arseny Solokha <asolokha@kb.kras.ru>
+Subject: [RFC PATCH 0/2] convert gianfar to phylink
+Date:   Tue, 23 Jul 2019 22:17:00 +0700
+Message-Id: <20190723151702.14430-1-asolokha@kb.kras.ru>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS1028a has one Ethernet management interface. On the QDS board, the
-MDIO signals are multiplexed to either on-board AR8035 PHY device or
-to 4 PCIe slots allowing for SGMII cards.
-To enable the Ethernet ENETC Port 1, which can only be connected to a
-RGMII PHY, the multiplexer needs to be configured to route the MDIO to
-the AR8035 PHY.  The MDIO/MDC routing is controlled by bits 7:4 of FPGA
-board config register 0x54, and value 0 selects the on-board RGMII PHY.
-The FPGA board config registers are accessible on the i2c bus, at address
-0x66.
+The first patch in the series (almost) converts gianfar to phylink API. The
+incentive behind this effort was to get proper support for 1000Base-X and
+SGMII SFP modules.
 
-The PF3 MDIO PCIe integrated endpoint device allows for centralized access
-to the MDIO bus.  Add the corresponding devicetree node and set it to be
-the MDIO bus parent.
+There are some usages of the older phylib left, as serdes have to be
+configured and its parameters queried via a TBI interface, and I've failed
+to find a reasonably easy way to do it with phylink without much surgery.
+It's the first reason for RFC here. However, usage of the older API only
+covers two special cases of underlying hardware management and is not
+involved in link and SFP management directly.
 
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
----
- .../boot/dts/freescale/fsl-ls1028a-qds.dts    | 40 +++++++++++++++++++
- .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  6 +++
- 2 files changed, 46 insertions(+)
+The conversion was tested with various 1000Base-X connected optical modules
+and SGMII-connected copper ones.
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index de6ef39f3118..663c4b728c07 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -85,6 +85,26 @@
- 			system-clock-frequency = <25000000>;
- 		};
- 	};
-+
-+	mdio-mux {
-+		compatible = "mdio-mux-multiplexer";
-+		mux-controls = <&mux 0>;
-+		mdio-parent-bus = <&enetc_mdio_pf3>;
-+		#address-cells=<1>;
-+		#size-cells = <0>;
-+
-+		/* on-board RGMII PHY */
-+		mdio@0 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0>;
-+
-+			qds_phy1: ethernet-phy@5 {
-+				/* Atheros 8035 */
-+				reg = <5>;
-+			};
-+		};
-+	};
- };
- 
- &duart0 {
-@@ -164,6 +184,26 @@
- 			};
- 		};
- 	};
-+
-+	fpga@66 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "fsl,ls1028aqds-fpga", "fsl,fpga-qixis-i2c",
-+			     "simple-mfd";
-+		reg = <0x66>;
-+
-+		mux: mux-controller {
-+			compatible = "reg-mux";
-+			#mux-control-cells = <1>;
-+			mux-reg-masks = <0x54 0xf0>; /* 0: reg 0x54, bits 7:4 */
-+		};
-+	};
-+
-+};
-+
-+&enetc_port1 {
-+	phy-handle = <&qds_phy1>;
-+	phy-connection-type = "rgmii-id";
- };
- 
- &sai1 {
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 7975519b4f56..de71153fda00 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -536,6 +536,12 @@
- 				compatible = "fsl,enetc";
- 				reg = <0x000100 0 0 0 0>;
- 			};
-+			enetc_mdio_pf3: mdio@0,3 {
-+				compatible = "fsl,enetc-mdio";
-+				reg = <0x000300 0 0 0 0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
- 			ethernet@0,4 {
- 				compatible = "fsl,enetc-ptp";
- 				reg = <0x000400 0 0 0 0>;
+The second patch deals with an issue in the phylink proper which only
+manifests when bringing up or shutting down a network interface with SGMII
+SFP module connected, which yields in calling phy_start() or phy_stop()
+twice in a row for such modules. It doesn't look like a proper fix to me,
+though, thus the second reason for RFC.
+
+Arseny Solokha (2):
+  gianfar: convert to phylink
+  net: phylink: don't start and stop SGMII PHYs in SFP modules twice
+
+ drivers/net/ethernet/freescale/Kconfig        |   2 +-
+ drivers/net/ethernet/freescale/gianfar.c      | 409 +++++++++---------
+ drivers/net/ethernet/freescale/gianfar.h      |  26 +-
+ .../net/ethernet/freescale/gianfar_ethtool.c  |  79 ++--
+ drivers/net/phy/phylink.c                     |   6 +-
+ 5 files changed, 254 insertions(+), 268 deletions(-)
+
 -- 
-2.17.1
+2.22.0
 
