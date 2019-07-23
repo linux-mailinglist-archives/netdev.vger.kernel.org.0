@@ -2,124 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA5A1722F2
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 01:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C20D9722F6
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 01:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbfGWXY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 19:24:26 -0400
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:19509 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbfGWXYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 19:24:25 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d3797290000>; Tue, 23 Jul 2019 16:24:25 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 23 Jul 2019 16:24:24 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 23 Jul 2019 16:24:24 -0700
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 23 Jul
- 2019 23:24:24 +0000
-Subject: Re: [PATCH 3/3] net/xdp: convert put_page() to put_user_page*()
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     <john.hubbard@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Boaz Harrosh <boaz@plexistor.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Johannes Thumshirn <jthumshirn@suse.de>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Yan Zheng <zyan@redhat.com>, <netdev@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-mm@kvack.org>,
-        <linux-rdma@vger.kernel.org>, <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20190722223415.13269-1-jhubbard@nvidia.com>
- <20190722223415.13269-4-jhubbard@nvidia.com>
- <20190723002534.GA10284@iweiny-DESK2.sc.intel.com>
- <a4e9b293-11f8-6b3c-cf4d-308e3b32df34@nvidia.com>
- <20190723180612.GB29729@iweiny-DESK2.sc.intel.com>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <69540e85-b527-0252-7b29-8932660af72d@nvidia.com>
-Date:   Tue, 23 Jul 2019 16:24:23 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726797AbfGWXZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 19:25:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41800 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726438AbfGWXZF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 19:25:05 -0400
+Received: from gmail.com (unknown [104.132.1.77])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CE1AB2253D;
+        Tue, 23 Jul 2019 23:25:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563924304;
+        bh=FGNG2bsI180IX9yfVVejxvvKc6LPkLx7d3W+nSaEtYY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MmKZKEj9rYYuSx5IhPuVqW3yDLIXTJo+2Pjo8kn2rXJQRI0BajWjrOke5jXiV/Myq
+         KkhnD1MWfZQbxAaTDQvQWLNNBmhF1dZIuAcp4Ha09rkCKnFHgdoOJB121myzkHrs7P
+         Yd0vHiCvZb0zZO+CZbS9JAzOgO2NtIXCSPxE+R/o=
+Date:   Tue, 23 Jul 2019 16:25:02 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     syzbot <syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com>,
+        catalin.marinas@arm.com, davem@davemloft.net, dvyukov@google.com,
+        jack@suse.com, kirill.shutemov@linux.intel.com, koct9i@gmail.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, neilb@suse.de, netdev@vger.kernel.org,
+        rds-devel@oss.oracle.com, ross.zwisler@linux.intel.com,
+        santosh.shilimkar@oracle.com, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, willy@linux.intel.com
+Subject: Re: memory leak in rds_send_probe
+Message-ID: <20190723232500.GA71043@gmail.com>
+Mail-Followup-To: Andrew Morton <akpm@linux-foundation.org>,
+        syzbot <syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com>,
+        catalin.marinas@arm.com, davem@davemloft.net, dvyukov@google.com,
+        jack@suse.com, kirill.shutemov@linux.intel.com, koct9i@gmail.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, neilb@suse.de, netdev@vger.kernel.org,
+        rds-devel@oss.oracle.com, ross.zwisler@linux.intel.com,
+        santosh.shilimkar@oracle.com, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, willy@linux.intel.com
+References: <000000000000ad1dfe058e5b89ab@google.com>
+ <00000000000034c84a058e608d45@google.com>
+ <20190723152336.29ed51551d8c9600bb316b52@linux-foundation.org>
 MIME-Version: 1.0
-In-Reply-To: <20190723180612.GB29729@iweiny-DESK2.sc.intel.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1563924265; bh=Dc+54X4TKuVoIQ6IGOnhUFUhE0Dy4dW4jkSZ2LHVHns=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=FMl+YlnDhGCsZKKh1L0ErV+31siNAXGqpbM4Ti099eQ263WNqONoZoDhA6w28dloW
-         DANKq7E2Y7kdWPUACeMGcsz7IGCwEWqiwPgDnX3E9DHqqaxxYj9TrmIKWYGcLWA8z9
-         HaYbTpYicIHv06kxhQ58/gdGYse2x3h25DFKRTKYtQq+80JPY4IzGMpBTYSaFvHkoA
-         7F9/p/2HEcQ7syxo9toMK0sf5uUtUlNauO/KxNX+D2TkcJKNWZP3//+ZXgl5mcNywg
-         K1EWHc3E5G7xnnEUtcQBaKfZD5VJFBdwU+bLpLJtcvUt/rKIgSGElbmpHYwBZFPLKu
-         YnW6V/fpJl4Ag==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190723152336.29ed51551d8c9600bb316b52@linux-foundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/19 11:06 AM, Ira Weiny wrote:
-> On Mon, Jul 22, 2019 at 09:41:34PM -0700, John Hubbard wrote:
->> On 7/22/19 5:25 PM, Ira Weiny wrote:
->>> On Mon, Jul 22, 2019 at 03:34:15PM -0700, john.hubbard@gmail.com wrote:
-...
->> Obviously, this stuff is all subject to a certain amount of opinion, but I
->> think I'm on really solid ground as far as precedent goes. So I'm pushing
->> back on the NAK... :)
+On Tue, Jul 23, 2019 at 03:23:36PM -0700, Andrew Morton wrote:
+> On Tue, 23 Jul 2019 15:17:00 -0700 syzbot <syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com> wrote:
 > 
-> Fair enough...  However, we have discussed in the past how GUP can be a
-> confusing interface to use.
+> > syzbot has bisected this bug to:
+> > 
+> > commit af49a63e101eb62376cc1d6bd25b97eb8c691d54
+> > Author: Matthew Wilcox <willy@linux.intel.com>
+> > Date:   Sat May 21 00:03:33 2016 +0000
+> > 
+> >      radix-tree: change naming conventions in radix_tree_shrink
+> > 
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=176528c8600000
+> > start commit:   c6dd78fc Merge branch 'x86-urgent-for-linus' of git://git...
+> > git tree:       upstream
+> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=14e528c8600000
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=10e528c8600000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=8de7d700ea5ac607
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=5134cdf021c4ed5aaa5f
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145df0c8600000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=170001f4600000
+> > 
+> > Reported-by: syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com
+> > Fixes: af49a63e101e ("radix-tree: change naming conventions in  
+> > radix_tree_shrink")
+> > 
+> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 > 
-> So I'd like to see it be more directed.  Only using the __put_user_pages()
-> version allows us to ID callers easier through a grep of PUP_FLAGS_DIRTY_LOCK
-> in addition to directing users to use that interface rather than having to read
-> the GUP code to figure out that the 2 calls above are equal.  It is not a huge
-> deal but...
+> That's rather hard to believe.  af49a63e101eb6237 simply renames a
+> couple of local variables.
 > 
 
-OK, combining all the feedback to date, which is:
+It's been known for months (basically ever since bisection was added) that about
+50% of syzbot bisection results are obviously incorrect, often a commit selected
+at random.  Unfortunately, the people actually funded to work on syzbot
+apparently don't consider fixing this to be high priority issue, so we have to
+live with it for now.  Or until someone volunteers to fix it themselves; source
+is at https://github.com/google/syzkaller.
 
-* the leading double underscore is unloved,
+So for now, please don't waste much time on bisection results that look wonky.
 
-* set_page_dirty() is under investigation, but likely guilty of incitement
-  to cause bugs,
+But please do pay attention to any bisection results in reminders I've been
+sending like "Reminder: 10 open syzbot bugs in foo subsystem", since I've
+manually reviewed those to exclude the obviously wrong results...
 
-
-...we end up with this:
-
-void put_user_pages_dirty_lock(struct page **pages, unsigned long npages,
-			       bool make_dirty)
-
-...which I have a v2 patchset for, ready to send out. It makes IB all pretty 
-too. :)
-
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+- Eric
