@@ -2,134 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4355370DEB
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 02:11:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C4E970E05
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 02:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731550AbfGWALZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 20:11:25 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42852 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbfGWALY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 20:11:24 -0400
-Received: by mail-pl1-f193.google.com with SMTP id ay6so19863209plb.9
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 17:11:24 -0700 (PDT)
+        id S2387551AbfGWAUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 20:20:49 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:39654 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbfGWAUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 20:20:49 -0400
+Received: by mail-pg1-f194.google.com with SMTP id u17so18446126pgi.6;
+        Mon, 22 Jul 2019 17:20:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=je5Wda50nxKy7rvoE0el+VsOOOL0l92/WHoGwPBgaOs=;
-        b=Qml6qS8HxRaAQbVHsAobCn4olkSbsGxCh/hCvktx6cz/v1zVK0JyPra0t0aOSKk2HY
-         wGlTRgucdOVeH0E9o+E8z94lVi4RidME67v4xHAepGIrlNg7Xs62xlvkUQGBwm6KnLS6
-         4SlxXmq8249GHzDsytIRKLYtR5O7/G+ORtsaEBeSp81mvIB9bONFg5F5YOWoVBfMYiqW
-         KLsek9aHzVNZDWar/cjDvvKGKPgsMRBHeKWNe6kEM+gxTgiTuNnlLFFwwKob1rRqIFZk
-         WyAxiYksVaM8RyTtAhZZsWAKLzPxuLDFJxnuFGNR7teUUTIvQBwAN2PvugDgp/auMukF
-         J1RA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R0xhjJk9JutdUe9pYSoLFbl1Osw7dur0qzvQ5sDJY9E=;
+        b=DLw6Mr/rVhxhfjdUvim9O+CgBQPm2Zb8z5OHKhHLv4s4LP0jmuvHg5yyyCmWk3Az0v
+         m0yM2AJ44Ekw5fxspoyipnty6u15RDCGS5Jx71dL3osafHWYZGbEzXF6L484EuJs9VCH
+         bkvtf4crd/h4MUS6XxU3aanpEc0HxymY6zK5Y12axdhgJLPyW9J+W2R1AczAYVnRXtXo
+         p0AVhVpujD8ixvozmV8dTKnkDJNv4f7RaZpyIdE0Mh4H2UMF2M224qAhZANR4hNjM3OJ
+         Nb2S2mRrwdzeI7/Jb9WILe38IsJnjPHtqj9UI/hqx4GkDOVyizuoelwRTBYYwXxP3uzx
+         LgfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=je5Wda50nxKy7rvoE0el+VsOOOL0l92/WHoGwPBgaOs=;
-        b=aizHaIrDHmUy3ue/nNMhX4yYgSS5e2fGm/KgY6gMYOBOaLkpXVOetPvqXiV9mdP1ZZ
-         o1lpwllnVBQHo4Ed6Ib+t8MmasodkrmjnNMBvBusYMP14tJZWb7rRbaSaLPvJF2wjjhN
-         Jbwj8KkGeP9tsMZwvhefiFO/eko5Wl8w1QseoWTnFOBw6KmLe9slFyiedC3alYud3RK4
-         VOydc1f5miSmAbNABgjsAdK6wgKbOYAVndN1wQsRWLDW4ETKGokow9kjsUoo2ivdiaqA
-         jNr1XX0lPZDM+qlTjnhOpHdwVb0r6cy6KHdiY4UA6a7EsgylhQ6Umbf2OO0foSOtsG8d
-         AQ3Q==
-X-Gm-Message-State: APjAAAUjJogVzwjUeXf+pVl3xx2Y8qgjD0GTIHOZZBGTg40onTp2tFD2
-        caBquaZdgVUZBPFQMq78imEgz0s+qac=
-X-Google-Smtp-Source: APXvYqxK605yknRSSCE9VuQk+2DYo52WjlKCdfZC1Ujk8qLd5HIga013gxLHpZ/bHL7JJfbJU+UF1Q==
-X-Received: by 2002:a17:902:145:: with SMTP id 63mr80235325plb.55.1563840684141;
-        Mon, 22 Jul 2019 17:11:24 -0700 (PDT)
-Received: from [172.27.227.204] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id o14sm82113532pfh.153.2019.07.22.17.11.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Jul 2019 17:11:23 -0700 (PDT)
-Subject: Re: [PATCH iproute2] etf: make printing of variable JSON friendly
-To:     "Patel, Vedang" <vedang.patel@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>
-References: <1563572443-10879-1-git-send-email-vedang.patel@intel.com>
- <a7c60706-562a-429d-400f-af2ad1606ba3@gmail.com>
- <98A741A5-EAC0-408F-84C2-34E4714A2097@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0e5fc2fe-dc83-b876-40ac-3b6f3f47bb29@gmail.com>
-Date:   Mon, 22 Jul 2019 17:11:21 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        bh=R0xhjJk9JutdUe9pYSoLFbl1Osw7dur0qzvQ5sDJY9E=;
+        b=mJT8BNHkGFkT3ebjBGtdlJUtbzom6mJ1rF3LXvrveqmuV+S0e0A4yNxx12vvyS004H
+         fFK31axMYNp4B2ztO3RW6adsCOz5duTtw34b3ecul+hvQGQwmKTE6zXku/SLnlCIIdKC
+         xk7Wp3D7nlouxeRsO3A3JI7CGFirpZ3rp8u4SC0GgeGmCBykZwWVDx3TsRx2ASnQFiM5
+         hcCItziw07reFy9Fk4lvu3uS1DcKGCjToy03iAqYFeDEliOrQ5TgImlXTQ+9ieTqnNgw
+         l2vVpigHzBuJ0d5l1l2B/AEnQUF0wHprqLZoWnRG7swrcqnNcN+dL2PGbt2S6r7GCUIi
+         J6Hg==
+X-Gm-Message-State: APjAAAUqHenDfOidW4rT8tFW2Yhz1BRLvCuWMRYcMnpS1ZU872nB4AvK
+        WE1m+lOoi4WJ//ACl+XjhrSvtt33
+X-Google-Smtp-Source: APXvYqyDX2Xf+QLL0q3tlKsB+3S+otlBbmEDZ3HZgEKBCRjcW5/c1//v6EuO5z0zMMxOHf8iCbLygQ==
+X-Received: by 2002:a63:df06:: with SMTP id u6mr20822616pgg.96.1563841248110;
+        Mon, 22 Jul 2019 17:20:48 -0700 (PDT)
+Received: from ppenkov.svl.corp.google.com ([2620:15c:2c4:201:7bd4:4f27:abe4:d695])
+        by smtp.gmail.com with ESMTPSA id k64sm21718423pge.65.2019.07.22.17.20.46
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 22 Jul 2019 17:20:47 -0700 (PDT)
+From:   Petar Penkov <ppenkov.kernel@gmail.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        edumazet@google.com, lmb@cloudflare.com, sdf@google.com,
+        Petar Penkov <ppenkov@google.com>
+Subject: [bpf-next 0/6] Introduce a BPF helper to generate SYN cookies
+Date:   Mon, 22 Jul 2019 17:20:36 -0700
+Message-Id: <20190723002042.105927-1-ppenkov.kernel@gmail.com>
+X-Mailer: git-send-email 2.22.0.657.g960e92d24f-goog
 MIME-Version: 1.0
-In-Reply-To: <98A741A5-EAC0-408F-84C2-34E4714A2097@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/22/19 1:11 PM, Patel, Vedang wrote:
-> 
-> 
->> On Jul 22, 2019, at 11:21 AM, David Ahern <dsahern@gmail.com> wrote:
->>
->> On 7/19/19 3:40 PM, Vedang Patel wrote:
->>> In iproute2 txtime-assist series, it was pointed out that print_bool()
->>> should be used to print binary values. This is to make it JSON friendly.
->>>
->>> So, make the corresponding changes in ETF.
->>>
->>> Fixes: 8ccd49383cdc ("etf: Add skip_sock_check")
->>> Reported-by: Stephen Hemminger <stephen@networkplumber.org>
->>> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
->>> ---
->>> tc/q_etf.c | 12 ++++++------
->>> 1 file changed, 6 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/tc/q_etf.c b/tc/q_etf.c
->>> index c2090589bc64..307c50eed48b 100644
->>> --- a/tc/q_etf.c
->>> +++ b/tc/q_etf.c
->>> @@ -176,12 +176,12 @@ static int etf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
->>> 		     get_clock_name(qopt->clockid));
->>>
->>> 	print_uint(PRINT_ANY, "delta", "delta %d ", qopt->delta);
->>> -	print_string(PRINT_ANY, "offload", "offload %s ",
->>> -				(qopt->flags & TC_ETF_OFFLOAD_ON) ? "on" : "off");
->>> -	print_string(PRINT_ANY, "deadline_mode", "deadline_mode %s ",
->>> -				(qopt->flags & TC_ETF_DEADLINE_MODE_ON) ? "on" : "off");
->>> -	print_string(PRINT_ANY, "skip_sock_check", "skip_sock_check %s",
->>> -				(qopt->flags & TC_ETF_SKIP_SOCK_CHECK) ? "on" : "off");
->>> +	if (qopt->flags & TC_ETF_OFFLOAD_ON)
->>> +		print_bool(PRINT_ANY, "offload", "offload ", true);
->>> +	if (qopt->flags & TC_ETF_DEADLINE_MODE_ON)
->>> +		print_bool(PRINT_ANY, "deadline_mode", "deadline_mode ", true);
->>> +	if (qopt->flags & TC_ETF_SKIP_SOCK_CHECK)
->>> +		print_bool(PRINT_ANY, "skip_sock_check", "skip_sock_check", true);
->>>
->>> 	return 0;
->>> }
->>>
->>
->> This changes existing output for TC_ETF_OFFLOAD_ON and
->> TC_ETF_DEADLINE_MODE_ON which were added a year ago.
-> Yes, this is a good point. I missed that. 
-> 
-> Another idea is to use is_json_context() and call print_bool() there. But, that will still change values corresponding to the json output for the above flags from “on”/“off” to “true”/“false”. I am not sure if this is a big issue. 
-> 
-> My suggestion is to keep the code as is. what do you think?
-> 
+From: Petar Penkov <ppenkov@google.com>
 
-I think we need automated checkers for new code. ;-)
+This patch series introduces a BPF helper function that allows generating SYN
+cookies from BPF. Currently, this helper is enabled at both the TC hook and the
+XDP hook.
 
-The first 2 should not change for backward compatibility - unless there
-is agreement that this feature is too new and long term it is better to
-print as above.
+The first two patches in the series add/modify several TCP helper functions to
+allow for SKB-less operation, as is the case at the XDP hook.
 
-Then the new one should follow context of the other 2 - consistency IMHO
-takes precedence.
+The third patch introduces the bpf_tcp_gen_syncookie helper function which
+generates a SYN cookie for either XDP or TC programs. The return value of
+this function contains both the MSS value, encoded in the cookie, and the
+cookie itself.
+
+The last three patches sync tools/ and add a test. 
+
+Changes since RFC:
+1/ Cookie is returned in host order at Alexei's suggestion
+2/ If cookies are not enabled via a sysctl, the helper function returns
+   -ENOENT instead of -EINVAL at Lorenz's suggestion
+3/ Fixed documentation to properly reflect that MSS is 16 bits at
+   Lorenz's suggestion
+4/ BPF helper requires TCP length to match ->doff field, rather than to simply
+   be no more than 20 bytes at Eric and Alexei's suggestion
+5/ Packet type is looked up from the packet version field, rather than from the
+   socket. v4 packets are rejected on v6-only sockets but should work with
+   dual stack listeners at Eric's suggestion
+6/ Removed unnecessary `net` argument from helper function in patch 2 at
+   Lorenz's suggestion 
+7/ Changed test to only pass MSS option so we can convince the verifier that the
+   memory access is not out of bounds
+
+Note that 7/ below illustrates the verifier might need to be extended to allow
+passing a variable tcph->doff to the helper function like below:
+
+__u32 thlen = tcph->doff * 4;
+if (thlen < sizeof(*tcph))
+	return;
+__s64 cookie = bpf_tcp_gen_syncookie(sk, ipv4h, 20, tcph, thlen);
+
+Petar Penkov (6):
+  tcp: tcp_syn_flood_action read port from socket
+  tcp: add skb-less helpers to retrieve SYN cookie
+  bpf: add bpf_tcp_gen_syncookie helper
+  bpf: sync bpf.h to tools/
+  selftests/bpf: bpf_tcp_gen_syncookie->bpf_helpers
+  selftests/bpf: add test for bpf_tcp_gen_syncookie
+
+ include/net/tcp.h                             | 11 +++
+ include/uapi/linux/bpf.h                      | 30 ++++++-
+ net/core/filter.c                             | 73 ++++++++++++++++
+ net/ipv4/tcp_input.c                          | 84 +++++++++++++++++--
+ net/ipv4/tcp_ipv4.c                           |  8 ++
+ net/ipv6/tcp_ipv6.c                           |  8 ++
+ tools/include/uapi/linux/bpf.h                | 37 +++++++-
+ tools/testing/selftests/bpf/bpf_helpers.h     |  3 +
+ .../bpf/progs/test_tcp_check_syncookie_kern.c | 48 +++++++++--
+ .../selftests/bpf/test_tcp_check_syncookie.sh |  3 +
+ .../bpf/test_tcp_check_syncookie_user.c       | 61 ++++++++++++--
+ 11 files changed, 344 insertions(+), 22 deletions(-)
+
+-- 
+2.22.0.657.g960e92d24f-goog
 
