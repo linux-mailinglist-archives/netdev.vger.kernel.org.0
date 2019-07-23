@@ -2,175 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C47C371A7C
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 578AF71B24
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:11:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390525AbfGWOfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 10:35:11 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33463 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732631AbfGWOfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 10:35:08 -0400
-Received: by mail-wm1-f67.google.com with SMTP id h19so31267662wme.0
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 07:35:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=aNEFEm5cpefDO7sZH5Svg2UubPCFTmU+ct79w97ss2I=;
-        b=ArNAEbSFh1MhPP0oCPC3zIC6lYZ0GOs/HyfjMYRtyhI6bKyvCKnrqMR+2pEBKnROo+
-         8g7CggeWHAIHT19xgI2UHeQlP5Ml7uzS+Lavrys2kQxWlgnIkCgPZJfcdghX905n4EA/
-         /4QxtCwjYZ7dLuaWU///ocGpxx3VaBI9kInk8RL26yyyAHcPbgfzea6utQUMdl33c6hd
-         l/bFZT/mKNVF33Ip+/eMHTiyLXWdMFkBYNadSrvL9mKEki7B0eAlEJ+fGSRhgWPBa/ND
-         R/guuz5vd/CwUr1R8sgFuzCtC9TNw8Avmwy3RySP11Q6JO8WZpSIXpK6kzqK7BZCLrIJ
-         fuLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=aNEFEm5cpefDO7sZH5Svg2UubPCFTmU+ct79w97ss2I=;
-        b=AyJ3Vu2H9sdH3W+Hz6Twoi8BDs2N7hsl2Ywkc+B3TIKl42fhQg0AL1UeD9sOTd9Yvs
-         EBparZOYCp8HpHbDiksQzoH9Hu4YKUe95/Fja5x/liDii0TXgf6yMle4lsENaQkmpbXN
-         OHwT6S6ft5DiAF6UuXN+6hIphpIECuuZgxjf4rPdWx1EtBtcNIJ5cvuqEEY5F9JqurZ2
-         F6xQ2qUE8wvAsa9MulHREvN6vWjYEj7QxkKcGzLm0eBSFxcqZUmOIbOoedYSoXy4LEZS
-         yEzmUbCoKXJ2/Ub0/8Am01nD3yJoaPGkrjQD6vYMqPjF7mPOy09+wftHOKHu6i0/wqpP
-         tqig==
-X-Gm-Message-State: APjAAAWbA5IKONFoOvwOk7mzCp0uT/2zfvhvc9im5q5yFn3BHI1Yp5ZR
-        vEXiEgcaLmif+eFYpoFObDNLsaPNajc=
-X-Google-Smtp-Source: APXvYqw6ph2seCGXRLE6KIjAg0D6AJo91Gi86B2OPzGa8VXL3wJSoolCrUTLjb4cfgERvdfMnL2KlA==
-X-Received: by 2002:a1c:a848:: with SMTP id r69mr67582829wme.12.1563892504972;
-        Tue, 23 Jul 2019 07:35:04 -0700 (PDT)
-Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id l9sm36710165wmh.36.2019.07.23.07.35.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 23 Jul 2019 07:35:04 -0700 (PDT)
-From:   John Hurley <john.hurley@netronome.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, simon.horman@netronome.com,
-        jakub.kicinski@netronome.com, oss-drivers@netronome.com,
-        John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next 4/4] nfp: flower: offload MPLS set action
-Date:   Tue, 23 Jul 2019 15:34:02 +0100
-Message-Id: <1563892442-4654-5-git-send-email-john.hurley@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1563892442-4654-1-git-send-email-john.hurley@netronome.com>
-References: <1563892442-4654-1-git-send-email-john.hurley@netronome.com>
+        id S2390478AbfGWPLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 11:11:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58302 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388428AbfGWPLb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 11:11:31 -0400
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E6060227B7
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 15:11:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563894689;
+        bh=7j1bpwOtchxmNmpyJwIt/hzbvJKG5hZjfYmVjkpnc/I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rFXu+sTWkD/54l70rzbB+dUx4OauzntmqViEq/zcU2+O2D80EbxIRyrdyerywJBPR
+         GMQvKxx0TIk1MtBG6b+6ZDNsBtjkbPRapdXfPScETmsEK2q2YZ3dEN6eSPfAjq4FJT
+         VHnBzKNRB2zBoAYaJX2rLGp9Ssx4hmHZO0EFuVMY=
+Received: by mail-wr1-f53.google.com with SMTP id y4so43612572wrm.2
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 08:11:28 -0700 (PDT)
+X-Gm-Message-State: APjAAAVvs4UOXrtUaJkgB61G8AmMVFx2hkSn+JGhjz63KVR7TcWSpT0j
+        E5BsFGsz1Mn+abUYfuYxypfyMCMAIhcVxM0ZIsxoog==
+X-Google-Smtp-Source: APXvYqx2W1npMbyvmugkZS82BmvrcI+iJu+ihy6mqs7TXZ2QycMn1wC9RACywYA+kE8/OO3iaRcMH0r6tsUUtWyiHXE=
+X-Received: by 2002:adf:cf02:: with SMTP id o2mr62485122wrj.352.1563894687396;
+ Tue, 23 Jul 2019 08:11:27 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com> <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+ <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com> <CALCETrWBnH4Q43POU8cQ7YMjb9LioK28FDEQf7aHZbdf1eBZWg@mail.gmail.com>
+ <0DE7F23E-9CD2-4F03-82B5-835506B59056@fb.com> <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
+ <201907021115.DCD56BBABB@keescook> <CALCETrXTta26CTtEDnzvtd03-WOGdXcnsAogP8JjLkcj4-mHvg@mail.gmail.com>
+ <4A7A225A-6C23-4C0F-9A95-7C6C56B281ED@fb.com>
+In-Reply-To: <4A7A225A-6C23-4C0F-9A95-7C6C56B281ED@fb.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Tue, 23 Jul 2019 08:11:15 -0700
+X-Gmail-Original-Message-ID: <CALCETrX2bMnwC6_t4b_G-hzJSfMPrkK4YKs5ebcecv2LJ0rt3w@mail.gmail.com>
+Message-ID: <CALCETrX2bMnwC6_t4b_G-hzJSfMPrkK4YKs5ebcecv2LJ0rt3w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "linux-security@vger.kernel.org" <linux-security@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent additions to the kernel include a TC action module to manipulate
-MPLS headers on packets. Such actions are available to offload via the
-flow_offload intermediate representation API.
+On Mon, Jul 22, 2019 at 1:54 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> Hi Andy, Lorenz, and all,
+>
+> > On Jul 2, 2019, at 2:32 PM, Andy Lutomirski <luto@kernel.org> wrote:
+> >
+> > On Tue, Jul 2, 2019 at 2:04 PM Kees Cook <keescook@chromium.org> wrote:
+> >>
+> >> On Mon, Jul 01, 2019 at 06:59:13PM -0700, Andy Lutomirski wrote:
+> >>> I think I'm understanding your motivation.  You're not trying to make
+> >>> bpf() generically usable without privilege -- you're trying to create
+> >>> a way to allow certain users to access dangerous bpf functionality
+> >>> within some limits.
+> >>>
+> >>> That's a perfectly fine goal, but I think you're reinventing the
+> >>> wheel, and the wheel you're reinventing is quite complicated and
+> >>> already exists.  I think you should teach bpftool to be secure when
+> >>> installed setuid root or with fscaps enabled and put your policy in
+> >>> bpftool.  If you want to harden this a little bit, it would seem
+> >>> entirely reasonable to add a new CAP_BPF_ADMIN and change some, but
+> >>> not all, of the capable() checks to check CAP_BPF_ADMIN instead of the
+> >>> capabilities that they currently check.
+> >>
+> >> If finer grained controls are wanted, it does seem like the /dev/bpf
+> >> path makes the most sense. open, request abilities, use fd. The open can
+> >> be mediated by DAC and LSM. The request can be mediated by LSM. This
+> >> provides a way to add policy at the LSM level and at the tool level.
+> >> (i.e. For tool-level controls: leave LSM wide open, make /dev/bpf owned
+> >> by "bpfadmin" and bpftool becomes setuid "bpfadmin". For fine-grained
+> >> controls, leave /dev/bpf wide open and add policy to SELinux, etc.)
+> >>
+> >> With only a new CAP, you don't get the fine-grained controls. (The
+> >> "request abilities" part is the key there.)
+> >
+> > Sure you do: the effective set.  It has somewhat bizarre defaults, but
+> > I don't think that's a real problem.  Also, this wouldn't be like
+> > CAP_DAC_READ_SEARCH -- you can't accidentally use your BPF caps.
+> >
+> > I think that a /dev capability-like object isn't totally nuts, but I
+> > think we should do it well, and this patch doesn't really achieve
+> > that.  But I don't think bpf wants fine-grained controls like this at
+> > all -- as I pointed upthread, a fine-grained solution really wants
+> > different treatment for the different capable() checks, and a bunch of
+> > them won't resemble capabilities or /dev/bpf at all.
+>
+> With 5.3-rc1 out, I am back on this. :)
+>
+> How about we modify the set as:
+>   1. Introduce sys_bpf_with_cap() that takes fd of /dev/bpf.
 
-Modify the NFP driver to allow the offload of MPLS set actions to
-firmware. Set actions update the outermost MPLS header. The offload
-includes a mask to specify which fields should be set.
+I'm fine with this in principle, but:
 
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- drivers/net/ethernet/netronome/nfp/flower/action.c | 45 ++++++++++++++++++++++
- drivers/net/ethernet/netronome/nfp/flower/cmsg.h   |  8 ++++
- 2 files changed, 53 insertions(+)
+>   2. Better handling of capable() calls through bpf code. I guess the
+>      biggest problem here is is_priv in verifier.c:bpf_check().
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/action.c b/drivers/net/ethernet/netronome/nfp/flower/action.c
-index 7f288ae..ff2f419 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/action.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
-@@ -70,6 +70,37 @@ nfp_fl_pop_mpls(struct nfp_fl_pop_mpls *pop_mpls,
- 	pop_mpls->ethtype = act->mpls_pop.proto;
- }
- 
-+static void
-+nfp_fl_set_mpls(struct nfp_fl_set_mpls *set_mpls,
-+		const struct flow_action_entry *act)
-+{
-+	size_t act_size = sizeof(struct nfp_fl_set_mpls);
-+	u32 mpls_lse = 0, mpls_mask = 0;
-+
-+	set_mpls->head.jump_id = NFP_FL_ACTION_OPCODE_SET_MPLS;
-+	set_mpls->head.len_lw = act_size >> NFP_FL_LW_SIZ;
-+
-+	if (act->mpls_mangle.label != ACT_MPLS_LABEL_NOT_SET) {
-+		mpls_lse |= act->mpls_mangle.label << MPLS_LS_LABEL_SHIFT;
-+		mpls_mask |= MPLS_LS_LABEL_MASK;
-+	}
-+	if (act->mpls_mangle.tc != ACT_MPLS_TC_NOT_SET) {
-+		mpls_lse |= act->mpls_mangle.tc << MPLS_LS_TC_SHIFT;
-+		mpls_mask |= MPLS_LS_TC_MASK;
-+	}
-+	if (act->mpls_mangle.bos != ACT_MPLS_BOS_NOT_SET) {
-+		mpls_lse |= act->mpls_mangle.bos << MPLS_LS_S_SHIFT;
-+		mpls_mask |= MPLS_LS_S_MASK;
-+	}
-+	if (act->mpls_mangle.ttl) {
-+		mpls_lse |= act->mpls_mangle.ttl << MPLS_LS_TTL_SHIFT;
-+		mpls_mask |= MPLS_LS_TTL_MASK;
-+	}
-+
-+	set_mpls->lse = cpu_to_be32(mpls_lse);
-+	set_mpls->lse_mask = cpu_to_be32(mpls_mask);
-+}
-+
- static void nfp_fl_pop_vlan(struct nfp_fl_pop_vlan *pop_vlan)
- {
- 	size_t act_size = sizeof(struct nfp_fl_pop_vlan);
-@@ -917,6 +948,7 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
- 	struct nfp_fl_push_mpls *psh_m;
- 	struct nfp_fl_pop_vlan *pop_v;
- 	struct nfp_fl_pop_mpls *pop_m;
-+	struct nfp_fl_set_mpls *set_m;
- 	int err;
- 
- 	switch (act->id) {
-@@ -1050,6 +1082,19 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
- 		nfp_fl_pop_mpls(pop_m, act);
- 		*a_len += sizeof(struct nfp_fl_pop_mpls);
- 		break;
-+	case FLOW_ACTION_MPLS_MANGLE:
-+		if (*a_len +
-+		    sizeof(struct nfp_fl_set_mpls) > NFP_FL_MAX_A_SIZ) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at set MPLS");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		set_m = (struct nfp_fl_set_mpls *)&nfp_fl->action_data[*a_len];
-+		nfp_fl->meta.shortcut = cpu_to_be32(NFP_FL_SC_ACT_NULL);
-+
-+		nfp_fl_set_mpls(set_m, act);
-+		*a_len += sizeof(struct nfp_fl_set_mpls);
-+		break;
- 	default:
- 		/* Currently we do not handle any other actions. */
- 		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported action in action list");
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-index 3198ad4..3324394 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-@@ -72,6 +72,7 @@
- #define NFP_FL_ACTION_OPCODE_POP_MPLS		4
- #define NFP_FL_ACTION_OPCODE_SET_IPV4_TUNNEL	6
- #define NFP_FL_ACTION_OPCODE_SET_ETHERNET	7
-+#define NFP_FL_ACTION_OPCODE_SET_MPLS		8
- #define NFP_FL_ACTION_OPCODE_SET_IPV4_ADDRS	9
- #define NFP_FL_ACTION_OPCODE_SET_IPV4_TTL_TOS	10
- #define NFP_FL_ACTION_OPCODE_SET_IPV6_SRC	11
-@@ -245,6 +246,13 @@ struct nfp_fl_pop_mpls {
- 	__be16 ethtype;
- };
- 
-+struct nfp_fl_set_mpls {
-+	struct nfp_fl_act_head head;
-+	__be16 reserved;
-+	__be32 lse_mask;
-+	__be32 lse;
-+};
-+
- /* Metadata with L2 (1W/4B)
-  * ----------------------------------------------------------------
-  *    3                   2                   1
--- 
-2.7.4
+I think it would be good to understand exactly what /dev/bpf will
+enable one to do.  Without some care, it would just become the next
+CAP_SYS_ADMIN: if you can open it, sure, you're not root, but you can
+intercept network traffic, modify cgroup behavior, and do plenty of
+other things, any of which can probably be used to completely take
+over the system.
 
+It would also be nice to understand why you can't do what you need to
+do entirely in user code using setuid or fscaps.
+
+Finally, at risk of rehashing some old arguments, I'll point out that
+the bpf() syscall is an unusual design to begin with.  As an example,
+consider bpf_prog_attach().  Outside of bpf(), if I want to change the
+behavior of a cgroup, I would write to a file in
+/sys/kernel/cgroup/unified/whatever/, and normal DAC and MAC rules
+apply.  With bpf(), however, I just call bpf() to attach a program to
+the cgroup.  bpf() says "oh, you are capable(CAP_NET_ADMIN) -- go for
+it!".  Unless I missed something major, and I just re-read the code,
+there is no check that the caller has write or LSM permission to
+anything at all in cgroupfs, and the existing API would make it very
+awkward to impose any kind of DAC rules here.
+
+So I think it might actually be time to repay some techincal debt and
+come up with a real fix.  As a less intrusive approach, you could see
+about requiring ownership of the cgroup directory instead of
+CAP_NET_ADMIN.  As a more intrusive but perhaps better approach, you
+could invert the logic to to make it work like everything outside of
+cgroup: add pseudo-files like bpf.inet_ingress to the cgroup
+directories, and require a writable fd to *that* to a new improved
+attach API.  If a user could do:
+
+int fd = open("/sys/fs/cgroup/.../bpf.inet_attach", O_RDWR);  /* usual
+DAC and MAC policy applies */
+int bpf_fd = setup the bpf stuff;  /* no privilege required, unless
+the program is huge or needs is_priv */
+bpf(BPF_IMPROVED_ATTACH, target = fd, program = bpf_fd);
+
+there would be no capabilities or global privilege at all required for
+this.  It would just work with cgroup delegation, containers, etc.
+
+I think you could even pull off this type of API change with only
+libbpf changes.  In particular, there's this code:
+
+int bpf_prog_attach(int prog_fd, int target_fd, enum bpf_attach_type type,
+                    unsigned int flags)
+{
+        union bpf_attr attr;
+
+        memset(&attr, 0, sizeof(attr));
+        attr.target_fd     = target_fd;
+        attr.attach_bpf_fd = prog_fd;
+        attr.attach_type   = type;
+        attr.attach_flags  = flags;
+
+        return sys_bpf(BPF_PROG_ATTACH, &attr, sizeof(attr));
+}
+
+This would instead do something like:
+
+int specific_target_fd = openat(target_fd, bpf_type_to_target[type], O_RDWR);
+attr.target_fd = specific_target_fd;
+...
+
+return sys_bpf(BPF_PROG_IMPROVED_ATTACH, &attr, sizeof(attr));
+
+Would this solve your problem without needing /dev/bpf at all?
+
+--Andy
