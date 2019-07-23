@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A849971B40
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2228B71B4E
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728419AbfGWPPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 11:15:33 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35182 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727391AbfGWPPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 11:15:32 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 80F00AF81;
-        Tue, 23 Jul 2019 15:15:31 +0000 (UTC)
-From:   Takashi Iwai <tiwai@suse.de>
-To:     netdev@vger.kernel.org
-Cc:     Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Marcus Seyfarth <m.seyfarth@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH] sky2: Disable MSI on ASUS P6T
-Date:   Tue, 23 Jul 2019 17:15:25 +0200
-Message-Id: <20190723151525.6526-1-tiwai@suse.de>
-X-Mailer: git-send-email 2.16.4
+        id S1728734AbfGWPP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 11:15:59 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:50158 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726265AbfGWPP7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 11:15:59 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 35B601A0123;
+        Tue, 23 Jul 2019 17:15:57 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 28ADD1A0002;
+        Tue, 23 Jul 2019 17:15:57 +0200 (CEST)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B634B205DD;
+        Tue, 23 Jul 2019 17:15:56 +0200 (CEST)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/3] enetc: Add mdio bus driver for the PCIe MDIO endpoint
+Date:   Tue, 23 Jul 2019 18:15:52 +0300
+Message-Id: <1563894955-545-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The onboard sky2 NIC on ASUS P6T WS PRO doesn't work after PM resume
-due to the infamous IRQ problem.  Disabling MSI works around it, so
-let's add it to the blacklist.
+First patch just registers the PCIe endpoint device containing
+the MDIO registers as a standalone MDIO bus driver, to allow
+an alternative way to control the MDIO bus.  The same code used
+by the ENETC ports (eth controllers) to manage MDIO via local
+registers applies and is reused.
 
-Unfortunately the BIOS on the machine doesn't fill the standard
-DMI_SYS_* entry, so we pick up DMI_BOARD_* entries instead.
+Bindings are provided for the new MDIO node, similarly to ENETC
+port nodes bindings.
 
-BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1142496
-Reported-and-tested-by: Marcus Seyfarth <m.seyfarth@gmail.com>
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
----
- drivers/net/ethernet/marvell/sky2.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Last patch enables the ENETC port 1 and its RGMII PHY on the
+LS1028A QDS board, where the MDIO muxing configuration relies
+on the MDIO support provided in the first patch.
 
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index f518312ffe69..a01c75ede871 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4924,6 +4924,13 @@ static const struct dmi_system_id msi_blacklist[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "P5W DH Deluxe"),
- 		},
- 	},
-+	{
-+		.ident = "ASUS P6T",
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
-+			DMI_MATCH(DMI_BOARD_NAME, "P6T"),
-+		},
-+	},
- 	{}
- };
- 
+
+Claudiu Manoil (3):
+  enetc: Add mdio bus driver for the PCIe MDIO endpoint
+  dt-bindings: net: fsl: enetc: Add bindings for the central MDIO PCIe
+    endpoint
+  arm64: dts: ls1028a: Enable eth port1 on the ls1028a QDS board
+
+ .../devicetree/bindings/net/fsl-enetc.txt     | 42 ++++++++-
+ .../boot/dts/freescale/fsl-ls1028a-qds.dts    | 40 +++++++++
+ .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  6 ++
+ .../net/ethernet/freescale/enetc/enetc_mdio.c | 90 +++++++++++++++++++
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |  5 +-
+ 5 files changed, 179 insertions(+), 4 deletions(-)
+
 -- 
-2.16.4
+2.17.1
 
