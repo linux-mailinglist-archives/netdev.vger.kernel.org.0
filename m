@@ -2,82 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D295F71B89
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4714A71BCB
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730568AbfGWPZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 11:25:03 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:41311 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729840AbfGWPZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 11:25:02 -0400
-Received: from [66.61.193.110] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hpwet-00051C-Ry; Tue, 23 Jul 2019 11:24:58 -0400
-Date:   Tue, 23 Jul 2019 11:24:49 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem@davemloft.net
-Subject: Re: [PATCH net-next 1/4] sctp: check addr_size with sa_family_t size
- in __sctp_setsockopt_connectx
-Message-ID: <20190723152449.GB8419@localhost.localdomain>
-References: <cover.1563817029.git.lucien.xin@gmail.com>
- <c875aa0a5b2965636dc3da83398856627310b280.1563817029.git.lucien.xin@gmail.com>
+        id S2387765AbfGWPgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 11:36:44 -0400
+Received: from verein.lst.de ([213.95.11.211]:42749 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726432AbfGWPgo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 11:36:44 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id A348468B02; Tue, 23 Jul 2019 17:36:40 +0200 (CEST)
+Date:   Tue, 23 Jul 2019 17:36:40 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Christoph Hellwig <hch@lst.de>, john.hubbard@gmail.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] mm/gup: introduce __put_user_pages()
+Message-ID: <20190723153640.GB720@lst.de>
+References: <20190722223415.13269-1-jhubbard@nvidia.com> <20190722223415.13269-2-jhubbard@nvidia.com> <20190723055359.GC17148@lst.de> <8ab4899c-ec12-a713-cac2-d951fff2a347@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c875aa0a5b2965636dc3da83398856627310b280.1563817029.git.lucien.xin@gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <8ab4899c-ec12-a713-cac2-d951fff2a347@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 01:37:57AM +0800, Xin Long wrote:
-> Now __sctp_connect() is called by __sctp_setsockopt_connectx() and
-> sctp_inet_connect(), the latter has done addr_size check with size
-> of sa_family_t.
-> 
-> In the next patch to clean up __sctp_connect(), we will remove
-> addr_size check with size of sa_family_t from __sctp_connect()
-> for the 1st address.
-> 
-> So before doing that, __sctp_setsockopt_connectx() should do
-> this check first, as sctp_inet_connect() does.
-> 
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  net/sctp/socket.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index aa80cda..5f92e4a 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -1311,7 +1311,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
->  	pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
->  		 __func__, sk, addrs, addrs_size);
->  
-> -	if (unlikely(addrs_size <= 0))
-> +	if (unlikely(addrs_size < sizeof(sa_family_t)))
-I don't think this is what you want to check for here.  sa_family_t is
-an unsigned short, and addrs_size is the number of bytes in the addrs
-array.  The addrs array should be at least the size of one struct
-sockaddr (16 bytes iirc), and, if larger, should be a multiple of
-sizeof(struct sockaddr)
+On Mon, Jul 22, 2019 at 11:33:32PM -0700, John Hubbard wrote:
+> I'm seeing about 18 places where set_page_dirty() is used, in the call site
+> conversions so far, and about 20 places where set_page_dirty_lock() is
+> used. So without knowing how many of the former (if any) represent bugs,
+> you can see why the proposal here supports both DIRTY and DIRTY_LOCK.
 
-Neil
-
->  		return -EINVAL;
->  
->  	kaddrs = memdup_user(addrs, addrs_size);
-> -- 
-> 2.1.0
-> 
-> 
+Well, it should be fairly easy to audit.  set_page_dirty() is only
+safe if we are dealing with a file backed page where we have reference
+on the inode it hangs off.  Which should basically be never or almost
+never.
