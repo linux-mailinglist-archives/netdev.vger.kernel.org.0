@@ -2,55 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C0A71EED
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 20:18:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8172071F4B
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 20:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733073AbfGWSSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 14:18:00 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:60744 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726989AbfGWSSA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 14:18:00 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hpzMD-0003HF-HK; Tue, 23 Jul 2019 20:17:49 +0200
-Message-ID: <5f6c264c75f3ffe6c2cbcab2d174ad2c4c4c0bd6.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v2 3/3] netlink: add validation of NLA_F_NESTED
- flag
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org
-Date:   Tue, 23 Jul 2019 20:17:47 +0200
-In-Reply-To: <20190723110206.4cb1f6b1@hermes.lan> (sfid-20190723_200215_305541_DF26DFA5)
-References: <cover.1556806084.git.mkubecek@suse.cz>
-         <6b6ead21c5d8436470b82ab40355f6bd7dbbf14b.1556806084.git.mkubecek@suse.cz>
-         <20190723110206.4cb1f6b1@hermes.lan> (sfid-20190723_200215_305541_DF26DFA5)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
-MIME-Version: 1.0
+        id S2391455AbfGWS2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 14:28:53 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:34788 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731823AbfGWS2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 14:28:53 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BB15B153B8310;
+        Tue, 23 Jul 2019 11:28:52 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 11:28:50 -0700 (PDT)
+Message-Id: <20190723.112850.610952032088764951.davem@davemloft.net>
+To:     leon@kernel.org
+Cc:     dledford@redhat.com, jgg@mellanox.com, edwards@mellanox.com,
+        linux-rdma@vger.kernel.org, yishaih@mellanox.com,
+        saeedm@mellanox.com, netdev@vger.kernel.org, leonro@mellanox.com
+Subject: Re: [PATCH mlx5-next] net/mlx5: Fix modify_cq_in alignment
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190723071255.6588-1-leon@kernel.org>
+References: <20190723071255.6588-1-leon@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 23 Jul 2019 11:28:53 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-07-23 at 11:02 -0700, Stephen Hemminger wrote:
+From: Leon Romanovsky <leon@kernel.org>
+Date: Tue, 23 Jul 2019 10:12:55 +0300
+
+> From: Edward Srouji <edwards@mellanox.com>
 > 
-> There are some cases where netlink related to IPv4 does not send nested
-> flag. You risk breaking older iproute2 and other tools being used on newer
-> kernel. I.e this patch may break binary compatibility. Have you tried running
-> with this on a very old distro (like Redhat Linux 9)?
+> Fix modify_cq_in alignment to match the device specification.
+> After this fix the 'cq_umem_valid' field will be in the right offset.
+> 
+> Cc: <stable@vger.kernel.org> # 4.19
+> Fixes: bd37197554eb ("net/mlx5: Update mlx5_ifc with DEVX UID bits")
+> Signed-off-by: Edward Srouji <edwards@mellanox.com>
+> Reviewed-by: Yishai Hadas <yishaih@mellanox.com>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 
+Very confusing submission on many levels.
 
-There are *tons* of places where this (and other things) wasn't done
-right, but the validation is only added for
+Coming from a Mellanox developer using a kernel.org email address.
 
- * all attributes on _new operations_ (that old userspace couldn't have
-   been using since they're introduced after this patch)
- * _new attributes_ (dito, if the policy 'strict start' is filled)
+Targetting the mlx5-next tree, yet CC:'ing stable.
 
-johannes
-
+A networking change, for which stable submissions are handled by me by
+hand and not via CC:'ing stable.
