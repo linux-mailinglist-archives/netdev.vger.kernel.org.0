@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FB297212E
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 22:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C7372138
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 23:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391874AbfGWU6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 16:58:53 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:36686 "EHLO
+        id S2391943AbfGWVC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 17:02:56 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:36740 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389103AbfGWU6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 16:58:53 -0400
+        with ESMTP id S1729084AbfGWVC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 17:02:56 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D8728153BE46A;
-        Tue, 23 Jul 2019 13:58:52 -0700 (PDT)
-Date:   Tue, 23 Jul 2019 13:58:52 -0700 (PDT)
-Message-Id: <20190723.135852.749823613047584607.davem@davemloft.net>
-To:     andriy.shevchenko@linux.intel.com
-Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
-        sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v1] hv_sock: Use consistent types for UUIDs
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BDF0A153BF10D;
+        Tue, 23 Jul 2019 14:02:55 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 14:02:55 -0700 (PDT)
+Message-Id: <20190723.140255.1785812525450069326.davem@davemloft.net>
+To:     ruxandra.radulescu@nxp.com
+Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com,
+        vladimir.oltean@nxp.com
+Subject: Re: [PATCH net-next] dpaa2-eth: Don't use netif_receive_skb_list
+ for TCP frames
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190723163943.65991-1-andriy.shevchenko@linux.intel.com>
-References: <20190723163943.65991-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <1563902923-26178-1-git-send-email-ruxandra.radulescu@nxp.com>
+References: <1563902923-26178-1-git-send-email-ruxandra.radulescu@nxp.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 23 Jul 2019 13:58:53 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 23 Jul 2019 14:02:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date: Tue, 23 Jul 2019 19:39:43 +0300
+From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Date: Tue, 23 Jul 2019 20:28:43 +0300
 
-> The rest of Hyper-V code is using new types for UUID handling.
-> Convert hv_sock as well.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Using Rx skb bulking for all frames may negatively impact the
+> performance in some TCP termination scenarios, as it effectively
+> bypasses GRO.
 
-Applied to net-next.
+"may"?
+
+Please provide numbers so that we know exactly whether it actually
+hurts performance one way or another.
+
+Thank you.
