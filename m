@@ -2,61 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42C1171989
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:40:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF76E719C8
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390355AbfGWNkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 09:40:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59312 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390251AbfGWNkq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 09:40:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=WT3oDovkoe1bfd1iWcc8ualJNMhBVWi0I2gGsRsRw5Y=; b=roktKFKgOalv46lwcSCeBJOVe0
-        7nL/GlBlNk6uA5Nnp85pRtUg1HozlzNczDECrhxg+a+zgapXw3U6EbzY7ieDqCs2PMXLShiJ1AdDy
-        eBT9rWtMjv/5dSy5jZuRTbWxYTYc+B/LiOqVe6tmw7azDaN6OsK8hN6G42AXRxNZZzbQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hpv1x-0001ER-T9; Tue, 23 Jul 2019 15:40:37 +0200
-Date:   Tue, 23 Jul 2019 15:40:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: avoid some redundant vtu
- load/purge operations
-Message-ID: <20190723134037.GA2381@lunn.ch>
-References: <20190722233713.31396-1-rasmus.villemoes@prevas.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190722233713.31396-1-rasmus.villemoes@prevas.dk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1730877AbfGWNxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 09:53:12 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40896 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725907AbfGWNxM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 09:53:12 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 66646AEB8;
+        Tue, 23 Jul 2019 13:53:11 +0000 (UTC)
+From:   Oliver Neukum <oneukum@suse.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCHv2] libertas: add terminating entry to fw_table
+Date:   Tue, 23 Jul 2019 15:52:56 +0200
+Message-Id: <20190723135256.22475-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 11:37:26PM +0000, Rasmus Villemoes wrote:
-> We have an ERPS (Ethernet Ring Protection Switching) setup involving
-> mv88e6250 switches which we're in the process of switching to a BSP
-> based on the mainline driver. Breaking any link in the ring works as
-> expected, with the ring reconfiguring itself quickly and traffic
-> continuing with almost no noticable drops. However, when plugging back
-> the cable, we see 5+ second stalls.
+In case no firmware was found, the system would happily read
+and try to load garbage. Terminate the table properly.
 
-Hi Rasmus
+V2: change style issues
 
-I would prefer Vivien reviews this patch. But he is away at the
-moment. Are you O.K. to wait a few days?
+Fixes: ce84bb69f50e6 ("libertas USB: convert to asynchronous firmware loading")
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: syzbot+8a8f48672560c8ca59dd@syzkaller.appspotmail.com
+---
+ drivers/net/wireless/marvell/libertas/if_usb.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-	Andrew
+diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+index afac2481909b..fedafdc8b989 100644
+--- a/drivers/net/wireless/marvell/libertas/if_usb.c
++++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+@@ -50,7 +50,10 @@ static const struct lbs_fw_table fw_table[] = {
+ 	{ MODEL_8388, "libertas/usb8388_v5.bin", NULL },
+ 	{ MODEL_8388, "libertas/usb8388.bin", NULL },
+ 	{ MODEL_8388, "usb8388.bin", NULL },
+-	{ MODEL_8682, "libertas/usb8682.bin", NULL }
++	{ MODEL_8682, "libertas/usb8682.bin", NULL },
++
++	/* terminating entry - keep at end */
++	{ MODEL_8388, NULL, NULL }
+ };
+ 
+ static const struct usb_device_id if_usb_table[] = {
+-- 
+2.16.4
+
