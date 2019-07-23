@@ -2,90 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B1A71B39
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A849971B40
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 17:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390805AbfGWPOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 11:14:48 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:41108 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390789AbfGWPOq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 11:14:46 -0400
-Received: from [66.61.193.110] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hpwUv-0004qL-B6; Tue, 23 Jul 2019 11:14:39 -0400
-Date:   Tue, 23 Jul 2019 11:14:31 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        jakub.kicinski@netronome.com, toke@redhat.com, andy@greyhouse.net,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 10/12] drop_monitor: Add packet alert mode
-Message-ID: <20190723151431.GA8419@localhost.localdomain>
-References: <20190722183134.14516-1-idosch@idosch.org>
- <20190722183134.14516-11-idosch@idosch.org>
- <20190723124340.GA10377@hmswarspite.think-freely.org>
- <20190723141625.GA8972@splinter>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190723141625.GA8972@splinter>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+        id S1728419AbfGWPPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 11:15:33 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35182 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727391AbfGWPPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 11:15:32 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 80F00AF81;
+        Tue, 23 Jul 2019 15:15:31 +0000 (UTC)
+From:   Takashi Iwai <tiwai@suse.de>
+To:     netdev@vger.kernel.org
+Cc:     Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Marcus Seyfarth <m.seyfarth@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH] sky2: Disable MSI on ASUS P6T
+Date:   Tue, 23 Jul 2019 17:15:25 +0200
+Message-Id: <20190723151525.6526-1-tiwai@suse.de>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 05:16:25PM +0300, Ido Schimmel wrote:
-> On Tue, Jul 23, 2019 at 08:43:40AM -0400, Neil Horman wrote:
-> > On Mon, Jul 22, 2019 at 09:31:32PM +0300, Ido Schimmel wrote:
-> > > +static void net_dm_packet_work(struct work_struct *work)
-> > > +{
-> > > +	struct per_cpu_dm_data *data;
-> > > +	struct sk_buff_head list;
-> > > +	struct sk_buff *skb;
-> > > +	unsigned long flags;
-> > > +
-> > > +	data = container_of(work, struct per_cpu_dm_data, dm_alert_work);
-> > > +
-> > > +	__skb_queue_head_init(&list);
-> > > +
-> > > +	spin_lock_irqsave(&data->drop_queue.lock, flags);
-> > > +	skb_queue_splice_tail_init(&data->drop_queue, &list);
-> > > +	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
-> > > +
-> > These functions are all executed in a per-cpu context.  While theres nothing
-> > wrong with using a spinlock here, I think you can get away with just doing
-> > local_irqsave and local_irq_restore.
-> 
-> Hi Neil,
-> 
-> Thanks a lot for reviewing. I might be missing something, but please
-> note that this function is executed from a workqueue and therefore the
-> CPU it is running on does not have to be the same CPU to which 'data'
-> belongs to. If so, I'm not sure how I can avoid taking the spinlock, as
-> otherwise two different CPUs can modify the list concurrently.
-> 
-Ah, my bad, I was under the impression that the schedule_work call for
-that particular work queue was actually a call to schedule_work_on,
-which would have affined it to a specific cpu.  That said, looking at
-it, I think using schedule_work_on was my initial intent, as the work
-queue is registered per cpu.  And converting it to schedule_work_on
-would allow you to reduce the spin_lock to a faster local_irqsave
+The onboard sky2 NIC on ASUS P6T WS PRO doesn't work after PM resume
+due to the infamous IRQ problem.  Disabling MSI works around it, so
+let's add it to the blacklist.
 
-Otherwise though, this looks really good to me
-Neil
+Unfortunately the BIOS on the machine doesn't fill the standard
+DMI_SYS_* entry, so we pick up DMI_BOARD_* entries instead.
 
-> > 
-> > Neil
-> > 
-> > > +	while ((skb = __skb_dequeue(&list)))
-> > > +		net_dm_packet_report(skb);
-> > > +}
-> 
+BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1142496
+Reported-and-tested-by: Marcus Seyfarth <m.seyfarth@gmail.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ drivers/net/ethernet/marvell/sky2.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+index f518312ffe69..a01c75ede871 100644
+--- a/drivers/net/ethernet/marvell/sky2.c
++++ b/drivers/net/ethernet/marvell/sky2.c
+@@ -4924,6 +4924,13 @@ static const struct dmi_system_id msi_blacklist[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "P5W DH Deluxe"),
+ 		},
+ 	},
++	{
++		.ident = "ASUS P6T",
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
++			DMI_MATCH(DMI_BOARD_NAME, "P6T"),
++		},
++	},
+ 	{}
+ };
+ 
+-- 
+2.16.4
+
