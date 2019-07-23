@@ -2,77 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C2072253
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 00:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FA8972258
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 00:25:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387576AbfGWWXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 18:23:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39342 "EHLO mail.kernel.org"
+        id S2392501AbfGWWZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 18:25:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60662 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727821AbfGWWXi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 18:23:38 -0400
-Received: from akpm3.svl.corp.google.com (unknown [104.133.8.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 02FCA2184B;
-        Tue, 23 Jul 2019 22:23:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563920617;
-        bh=uBsA8GDHuhAVNuUiMbR5RWdtNhGExXIqRYqiBQBznVM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wmqoLBNEU59749cAIdtDiPO8nvp7PxJQI9ewxTcc+L1Xd7lnuJv+9qwibx5sHtUan
-         RqW9eXOhlRopxUm3/OKqHcynaQp6bLqrndRcXz9mJUp66kNSAOb3fR67OaD5nAJOWF
-         /LBHk+b1AjIHOOVAj4oRNERceeD1w80KpDyBeD10=
-Date:   Tue, 23 Jul 2019 15:23:36 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     syzbot <syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com>
-Cc:     catalin.marinas@arm.com, davem@davemloft.net, dvyukov@google.com,
-        jack@suse.com, kirill.shutemov@linux.intel.com, koct9i@gmail.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, neilb@suse.de, netdev@vger.kernel.org,
-        rds-devel@oss.oracle.com, ross.zwisler@linux.intel.com,
-        santosh.shilimkar@oracle.com, syzkaller-bugs@googlegroups.com,
-        torvalds@linux-foundation.org, willy@linux.intel.com
-Subject: Re: memory leak in rds_send_probe
-Message-Id: <20190723152336.29ed51551d8c9600bb316b52@linux-foundation.org>
-In-Reply-To: <00000000000034c84a058e608d45@google.com>
-References: <000000000000ad1dfe058e5b89ab@google.com>
-        <00000000000034c84a058e608d45@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729617AbfGWWY6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 18:24:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=JBjWPZFWOr2ZDHDrYZ3UsWyBFtkPoXj28/OnBpUt3GQ=; b=jf5frP/e/9v9AkZbCfEO1L6WHG
+        stJcK+9H+bc3VfDJ5aFprTTmZFD7CoLUusKuhuF6EPbqfVtpw152T6zfk5purm9QXR0LU46OaYxzu
+        VLIWYChioB4lOP9a2ZTjH6ma77mxIHPt7PK5Wx0eAX/A4Mt4/urbLGxvC+8oqHXfEgQY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hq3DK-0003xn-Oo; Wed, 24 Jul 2019 00:24:54 +0200
+Date:   Wed, 24 Jul 2019 00:24:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        alexandru.marginean@nxp.com, linux-kernel@vger.kernel.org,
+        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net-next 1/3] enetc: Add mdio bus driver for the PCIe
+ MDIO endpoint
+Message-ID: <20190723222454.GE13517@lunn.ch>
+References: <1563894955-545-1-git-send-email-claudiu.manoil@nxp.com>
+ <1563894955-545-2-git-send-email-claudiu.manoil@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1563894955-545-2-git-send-email-claudiu.manoil@nxp.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Jul 2019 15:17:00 -0700 syzbot <syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com> wrote:
+> +	bus = mdiobus_alloc_size(sizeof(u32 *));
+> +	if (!bus)
+> +		return -ENOMEM;
+> +
 
-> syzbot has bisected this bug to:
-> 
-> commit af49a63e101eb62376cc1d6bd25b97eb8c691d54
-> Author: Matthew Wilcox <willy@linux.intel.com>
-> Date:   Sat May 21 00:03:33 2016 +0000
-> 
->      radix-tree: change naming conventions in radix_tree_shrink
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=176528c8600000
-> start commit:   c6dd78fc Merge branch 'x86-urgent-for-linus' of git://git...
-> git tree:       upstream
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=14e528c8600000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10e528c8600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=8de7d700ea5ac607
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5134cdf021c4ed5aaa5f
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145df0c8600000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=170001f4600000
-> 
-> Reported-by: syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com
-> Fixes: af49a63e101e ("radix-tree: change naming conventions in  
-> radix_tree_shrink")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> +	bus->priv = pci_iomap_range(pdev, 0, ENETC_MDIO_REG_OFFSET, 0);
 
-That's rather hard to believe.  af49a63e101eb6237 simply renames a
-couple of local variables.
+This got me confused for a while. You allocate space for a u32
+pointer. bus->priv will point to this space. However, you are not
+using this space, you {ab}use the pointer to directly hold the return
+from pci_iomap_range(). This works, but sparse is probably unhappy,
+and you are wasting the space the u32 pointer takes.
 
+    Andrew
