@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5058471905
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B336E71907
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390129AbfGWNTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 09:19:02 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35594 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729452AbfGWNTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 09:19:02 -0400
-Received: by mail-pg1-f194.google.com with SMTP id s1so13120424pgr.2;
-        Tue, 23 Jul 2019 06:19:02 -0700 (PDT)
+        id S2390160AbfGWNTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 09:19:37 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37989 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729452AbfGWNTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 09:19:35 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y15so19146746pfn.5;
+        Tue, 23 Jul 2019 06:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=G0OHvpn9KxSxV5y/U5974HpDcDjPL8m07jP42qrzX7s=;
-        b=vT3IX5BxhDK7e8acYOQ7tJUxVtlXCvmEeBshliOAivdZk7f9yZGB0fidUZCIX8gUER
-         8GSy1A75VK/4auwecgqnMFpG2pHAOC3CpSbaLxSx9MWY++OIlytbceahXO/7DFOBxvOh
-         drXyreaSGoGEdCqXL33QvAax+wWLd6bLQUbRmo+1ashiW9Y+JtMkClPMFaXwAjjIcwMF
-         /0jg0f1aMu69LOYaA5zo5TYuR0/WGeLJKxlFvpp8xeRMM6QCmKcWQwNBdffUFb2ahB3/
-         C+4K91WkrN1PsGscb+o+TYePm3GCxzfqsY/VHwzU7Xn+efUQzScg4v9Fwv+BHO2zDy9p
-         SqyA==
+        bh=xLbjkGnyqbbz4BH8MubMCB3MNb9jNkxMOv80SlkHi3o=;
+        b=AhiBI4iv1tUnVtDISYXZHLp1hXgvEMBiYIvBAyKpCA4C/THfUHD+dp9CSz5ar46+DB
+         ELKVNaOPdbOI1m4zyWMjD+d/Gy+zJBVOtm/SsBOOPfJR8dHqlKPZwLZqb+iMCS+9B/xu
+         Q3KcRZ3SebAjoviHfqb+jrn8cnUqgALh6SjBeSMtFxDPie4ugn7h9a3xJgjfnZT1P/em
+         IAFxlgH8Q4yUPZqLxLqTnUlVhORetlm+s2cuXpbZI4Hl+CzYOAbx/g/mYAy0S7lLB8fJ
+         JAAcHxRCHT3dHzI1CERv7ePUoZJBs8AaIycuONGPR8g150TUIAqYD62I4hOsCV5BlRcH
+         MCLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=G0OHvpn9KxSxV5y/U5974HpDcDjPL8m07jP42qrzX7s=;
-        b=iImQK4XmWNC1JCEtwYI4wPIcu2zqsgFDmzCBIfLEr8E7G5jOW3hCRUCJOo+/PQJC6s
-         JluKhXT139YPsw8BUAsORrrvaWpaFDUWv5X1ie9nKJ1V5rhTjbeS9kyNa00TzbOGpbWS
-         SfbnmjfPB4mf+n40nWnempkQ59w3RvnfLyWx7FWZUMBzmXL+/jHAj2yPGP6iT1rUE02S
-         A3fVccmPSAVMN+5nrYhTw8ozA27HwCkXS6/ACjQrFNi74GPNJRUF1t9eHFjVfJwWsuau
-         WnEbfVxmTIEsaS42q5PfnLgXo8IFTCUQzk1VUB1jAJNK1gnGUIYN/oI3IskHRV8SrqX4
-         y8pQ==
-X-Gm-Message-State: APjAAAUh30PejT9rgTaE6tM20PVJCc8eJIm3CJdifgwTAEtgPYFH8qUN
-        4VBFT3Ph+vMHW9L2RJ/K8qOueRJ9PFI=
-X-Google-Smtp-Source: APXvYqydVkKXYIvl3zIGtatRAC5rPNrHs6jF8eRo3QRGADF945D/q5cKpi6g3ca93ucR67KvVhyamw==
-X-Received: by 2002:a17:90a:bf08:: with SMTP id c8mr82204836pjs.75.1563887941739;
-        Tue, 23 Jul 2019 06:19:01 -0700 (PDT)
+        bh=xLbjkGnyqbbz4BH8MubMCB3MNb9jNkxMOv80SlkHi3o=;
+        b=ZG2RKoaJ9NEAg2CwthLo8wmqcvJXHGr6LA0oAPc1cPCWycYco/BTOJ9sK18qIGQ6hd
+         th5/aZcaNJ/N2aYW13vis03YwrhOxUmTnIYNv6czAmFabYH01AKhiFdLEZzk1mkjD0p5
+         4Co4DdkgcnDvlCf/IlI9D78GX98AslSvBF37JEW3CAc1XEvDLbNo9V/4aHOMs6Fs+xw0
+         ivX+fNiZCnv6IUId0kcayS6dR5Pg2WzsRBwYQcLPRZUzxSjgdjXYlml/RVRyxFlxzzrm
+         UGFByWGNxcbQL0AbGrBk9K/4O2RJRTRQDYumvtJQEirf6z4yTygzGvomYuMU+x0Xl9zJ
+         SS4w==
+X-Gm-Message-State: APjAAAVnD0wpOmP8AwmMExjDeebgqY+8HGPnWffT5Vifq08OJxbncUlb
+        qpBCgFyS/Z446VtQzOpqVQ4=
+X-Google-Smtp-Source: APXvYqwbkP4ZEi+noY1JRzhuAhZ5pSU+yFtdOhCmNQkZws8Ff3OMGzTYggzXv8013Bgb6kHmi4lJlA==
+X-Received: by 2002:a17:90a:cb18:: with SMTP id z24mr31356951pjt.108.1563887975020;
+        Tue, 23 Jul 2019 06:19:35 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id v185sm49660280pfb.14.2019.07.23.06.18.59
+        by smtp.gmail.com with ESMTPSA id c130sm41862623pfc.184.2019.07.23.06.19.31
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 06:19:01 -0700 (PDT)
+        Tue, 23 Jul 2019 06:19:34 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] net: atheros: Use dev_get_drvdata
-Date:   Tue, 23 Jul 2019 21:18:56 +0800
-Message-Id: <20190723131856.31932-1-hslester96@gmail.com>
+Cc:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] net: broadcom: Use dev_get_drvdata
+Date:   Tue, 23 Jul 2019 21:19:29 +0800
+Message-Id: <20190723131929.31987-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -66,101 +69,83 @@ use dev_get_drvdata to make code simpler.
 
 Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/net/ethernet/atheros/alx/main.c         | 6 ++----
- drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 8 +++-----
- drivers/net/ethernet/atheros/atlx/atl1.c        | 8 +++-----
- 3 files changed, 8 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2.c      | 6 ++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 ++----
+ drivers/net/ethernet/broadcom/tg3.c       | 6 ++----
+ 3 files changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
-index e3538ba7d0e7..af41a41c27f0 100644
---- a/drivers/net/ethernet/atheros/alx/main.c
-+++ b/drivers/net/ethernet/atheros/alx/main.c
-@@ -1879,8 +1879,7 @@ static void alx_remove(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index dfdd14eadd57..fbc196b480b6 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8673,8 +8673,7 @@ bnx2_remove_one(struct pci_dev *pdev)
+ static int
+ bnx2_suspend(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnx2 *bp = netdev_priv(dev);
+ 
+ 	if (netif_running(dev)) {
+@@ -8693,8 +8692,7 @@ bnx2_suspend(struct device *device)
+ static int
+ bnx2_resume(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnx2 *bp = netdev_priv(dev);
+ 
+ 	if (!netif_running(dev))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 7134d2c3eb1c..1aad59b8a413 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10920,8 +10920,7 @@ static void bnxt_shutdown(struct pci_dev *pdev)
  #ifdef CONFIG_PM_SLEEP
- static int alx_suspend(struct device *dev)
+ static int bnxt_suspend(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct alx_priv *alx = pci_get_drvdata(pdev);
-+	struct alx_priv *alx = dev_get_drvdata(dev);
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnxt *bp = netdev_priv(dev);
+ 	int rc = 0;
  
- 	if (!netif_running(alx->dev))
- 		return 0;
-@@ -1891,8 +1890,7 @@ static int alx_suspend(struct device *dev)
+@@ -10937,8 +10936,7 @@ static int bnxt_suspend(struct device *device)
  
- static int alx_resume(struct device *dev)
+ static int bnxt_resume(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct alx_priv *alx = pci_get_drvdata(pdev);
-+	struct alx_priv *alx = dev_get_drvdata(dev);
- 	struct alx_hw *hw = &alx->hw;
- 	int err;
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnxt *bp = netdev_priv(dev);
+ 	int rc = 0;
  
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index be7f9cebb675..2fd6bf6cb8f7 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -2422,8 +2422,7 @@ static int atl1c_close(struct net_device *netdev)
- 
- static int atl1c_suspend(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1c_adapter *adapter = netdev_priv(netdev);
- 	struct atl1c_hw *hw = &adapter->hw;
- 	u32 wufc = adapter->wol;
-@@ -2437,7 +2436,7 @@ static int atl1c_suspend(struct device *dev)
- 
- 	if (wufc)
- 		if (atl1c_phy_to_ps_link(hw) != 0)
--			dev_dbg(&pdev->dev, "phy power saving failed");
-+			dev_dbg(dev, "phy power saving failed");
- 
- 	atl1c_power_saving(hw, wufc);
- 
-@@ -2447,8 +2446,7 @@ static int atl1c_suspend(struct device *dev)
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 4c404d2213f9..77f3511b97de 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -18041,8 +18041,7 @@ static void tg3_remove_one(struct pci_dev *pdev)
  #ifdef CONFIG_PM_SLEEP
- static int atl1c_resume(struct device *dev)
+ static int tg3_suspend(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1c_adapter *adapter = netdev_priv(netdev);
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct tg3 *tp = netdev_priv(dev);
+ 	int err = 0;
  
- 	AT_WRITE_REG(&adapter->hw, REG_WOL_CTRL, 0);
-diff --git a/drivers/net/ethernet/atheros/atlx/atl1.c b/drivers/net/ethernet/atheros/atlx/atl1.c
-index b5c6dc914720..8b9df5f8795b 100644
---- a/drivers/net/ethernet/atheros/atlx/atl1.c
-+++ b/drivers/net/ethernet/atheros/atlx/atl1.c
-@@ -2754,8 +2754,7 @@ static int atl1_close(struct net_device *netdev)
- #ifdef CONFIG_PM_SLEEP
- static int atl1_suspend(struct device *dev)
+@@ -18098,8 +18097,7 @@ static int tg3_suspend(struct device *device)
+ 
+ static int tg3_resume(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1_adapter *adapter = netdev_priv(netdev);
- 	struct atl1_hw *hw = &adapter->hw;
- 	u32 ctrl = 0;
-@@ -2780,7 +2779,7 @@ static int atl1_suspend(struct device *dev)
- 		val = atl1_get_speed_and_duplex(hw, &speed, &duplex);
- 		if (val) {
- 			if (netif_msg_ifdown(adapter))
--				dev_printk(KERN_DEBUG, &pdev->dev,
-+				dev_printk(KERN_DEBUG, dev,
- 					"error getting speed/duplex\n");
- 			goto disable_wol;
- 		}
-@@ -2837,8 +2836,7 @@ static int atl1_suspend(struct device *dev)
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct tg3 *tp = netdev_priv(dev);
+ 	int err = 0;
  
- static int atl1_resume(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1_adapter *adapter = netdev_priv(netdev);
- 
- 	iowrite32(0, adapter->hw.hw_addr + REG_WOL_CTRL);
 -- 
 2.20.1
 
