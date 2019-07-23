@@ -2,98 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F58371EA3
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 20:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF1871EAE
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 20:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387448AbfGWSEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 14:04:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42520 "EHLO mail.kernel.org"
+        id S2387594AbfGWSGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 14:06:14 -0400
+Received: from mga12.intel.com ([192.55.52.136]:23143 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726514AbfGWSEp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 14:04:45 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 417F6218A6;
-        Tue, 23 Jul 2019 18:04:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563905084;
-        bh=ltY0X7AhyIkc9DC3sJ8HWbcfutSdGHSj0qiUfSlF6wY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=motm2ZdJDBDETTD+iMvCjb7n9MiX4nT1cvT7qLx29y4fpuXsRo4hocFFASK11lerO
-         05lIBg7O/wjoO3bBj0pcZgM4VaxBuroqr25qrZRjwDbwgHrAngAWNngltbsH2UtZEV
-         GCGcpmbVTJJ8uAZ4o9WE6CUeLqnFqIcZcs2gl4s0=
-Date:   Tue, 23 Jul 2019 21:04:36 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Tal Gilboa <talgi@mellanox.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 1/2] linux/dim: Fix overflow in dim calculation
-Message-ID: <20190723180436.GT5125@mtr-leonro.mtl.com>
-References: <20190723072248.6844-1-leon@kernel.org>
- <20190723072248.6844-2-leon@kernel.org>
- <4f4bc2958dc1512087f19db64e8e43f1247cf2dd.camel@mellanox.com>
+        id S1729734AbfGWSGO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 14:06:14 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Jul 2019 11:06:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,299,1559545200"; 
+   d="scan'208";a="177367161"
+Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
+  by FMSMGA003.fm.intel.com with ESMTP; 23 Jul 2019 11:06:13 -0700
+Date:   Tue, 23 Jul 2019 11:06:13 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     john.hubbard@gmail.com, Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] net/xdp: convert put_page() to put_user_page*()
+Message-ID: <20190723180612.GB29729@iweiny-DESK2.sc.intel.com>
+References: <20190722223415.13269-1-jhubbard@nvidia.com>
+ <20190722223415.13269-4-jhubbard@nvidia.com>
+ <20190723002534.GA10284@iweiny-DESK2.sc.intel.com>
+ <a4e9b293-11f8-6b3c-cf4d-308e3b32df34@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <4f4bc2958dc1512087f19db64e8e43f1247cf2dd.camel@mellanox.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a4e9b293-11f8-6b3c-cf4d-308e3b32df34@nvidia.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 05:22:43PM +0000, Saeed Mahameed wrote:
-> On Tue, 2019-07-23 at 10:22 +0300, Leon Romanovsky wrote:
-> > From: Yamin Friedman <yaminf@mellanox.com>
-> >
-> > While using net_dim, a dim_sample was used without ever initializing
-> > the
-> > comps value. Added use of DIV_ROUND_DOWN_ULL() to prevent potential
-> > overflow, it should not be a problem to save the final result in an
-> > int
-> > because after the division by epms the value should not be larger
-> > than a
-> > few thousand.
-> >
-> > [ 1040.127124] UBSAN: Undefined behaviour in lib/dim/dim.c:78:23
-> > [ 1040.130118] signed integer overflow:
-> > [ 1040.131643] 134718714 * 100 cannot be represented in type 'int'
-> >
-> > Fixes: 398c2b05bbee ("linux/dim: Add completions count to
-> > dim_sample")
-> > Signed-off-by: Yamin Friedman <yaminf@mellanox.com>
-> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> > ---
-> >  drivers/net/ethernet/broadcom/bcmsysport.c        | 2 +-
-> >  drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 2 +-
-> >  drivers/net/ethernet/broadcom/genet/bcmgenet.c    | 2 +-
-> >  drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c | 4 ++--
-> >  lib/dim/dim.c                                     | 4 ++--
-> >  5 files changed, 7 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c
-> > b/drivers/net/ethernet/broadcom/bcmsysport.c
-> > index b9c5cea8db16..9483553ce444 100644
-> > --- a/drivers/net/ethernet/broadcom/bcmsysport.c
-> > +++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-> > @@ -992,7 +992,7 @@ static int bcm_sysport_poll(struct napi_struct
-> > *napi, int budget)
-> >  {
-> >  	struct bcm_sysport_priv *priv =
-> >  		container_of(napi, struct bcm_sysport_priv, napi);
-> > -	struct dim_sample dim_sample;
-> > +	struct dim_sample dim_sample = {};
->
-> net_dim implementation doesn't care about sample->comp_ctr, so this is
-> unnecessary for the sake of fixing the rdma overflow issue, but it
-> doens't hurt anyone to have this change in this patch.
+On Mon, Jul 22, 2019 at 09:41:34PM -0700, John Hubbard wrote:
+> On 7/22/19 5:25 PM, Ira Weiny wrote:
+> > On Mon, Jul 22, 2019 at 03:34:15PM -0700, john.hubbard@gmail.com wrote:
+> > > From: John Hubbard <jhubbard@nvidia.com>
+> > > 
+> > > For pages that were retained via get_user_pages*(), release those pages
+> > > via the new put_user_page*() routines, instead of via put_page() or
+> > > release_pages().
+> > > 
+> > > This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+> > > ("mm: introduce put_user_page*(), placeholder versions").
+> > > 
+> > > Cc: Björn Töpel <bjorn.topel@intel.com>
+> > > Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > Cc: David S. Miller <davem@davemloft.net>
+> > > Cc: netdev@vger.kernel.org
+> > > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> > > ---
+> > >   net/xdp/xdp_umem.c | 9 +--------
+> > >   1 file changed, 1 insertion(+), 8 deletions(-)
+> > > 
+> > > diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> > > index 83de74ca729a..0325a17915de 100644
+> > > --- a/net/xdp/xdp_umem.c
+> > > +++ b/net/xdp/xdp_umem.c
+> > > @@ -166,14 +166,7 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
+> > >   static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+> > >   {
+> > > -	unsigned int i;
+> > > -
+> > > -	for (i = 0; i < umem->npgs; i++) {
+> > > -		struct page *page = umem->pgs[i];
+> > > -
+> > > -		set_page_dirty_lock(page);
+> > > -		put_page(page);
+> > > -	}
+> > > +	put_user_pages_dirty_lock(umem->pgs, umem->npgs);
+> > 
+> > What is the difference between this and
+> > 
+> > __put_user_pages(umem->pgs, umem->npgs, PUP_FLAGS_DIRTY_LOCK);
+> > 
+> > ?
+> 
+> No difference.
+> 
+> > 
+> > I'm a bit concerned with adding another form of the same interface.  We should
+> > either have 1 call with flags (enum in this case) or multiple calls.  Given the
+> > previous discussion lets move in the direction of having the enum but don't
+> > introduce another caller of the "old" interface.
+> 
+> I disagree that this is a "problem". There is no maintenance pitfall here; there
+> are merely two ways to call the put_user_page*() API. Both are correct, and
+> neither one will get you into trouble.
+> 
+> Not only that, but there is ample precedent for this approach in other
+> kernel APIs.
+> 
+> > 
+> > So I think on this patch NAK from me.
+> > 
+> > I also don't like having a __* call in the exported interface but there is a
+> > __get_user_pages_fast() call so I guess there is precedent.  :-/
+> > 
+> 
+> I thought about this carefully, and looked at other APIs. And I noticed that
+> things like __get_user_pages*() are how it's often done:
+> 
+> * The leading underscores are often used for the more elaborate form of the
+> call (as oppposed to decorating the core function name with "_flags", for
+> example).
+> 
+> * There are often calls in which you can either call the simpler form, or the
+> form with flags and additional options, and yes, you'll get the same result.
+> 
+> Obviously, this stuff is all subject to a certain amount of opinion, but I
+> think I'm on really solid ground as far as precedent goes. So I'm pushing
+> back on the NAK... :)
 
-Yes, this is why we decided to change all drivers and not mlx5 only.
+Fair enough...  However, we have discussed in the past how GUP can be a
+confusing interface to use.
 
-Thanks
+So I'd like to see it be more directed.  Only using the __put_user_pages()
+version allows us to ID callers easier through a grep of PUP_FLAGS_DIRTY_LOCK
+in addition to directing users to use that interface rather than having to read
+the GUP code to figure out that the 2 calls above are equal.  It is not a huge
+deal but...
+
+Ira
+
+> 
+> thanks,
+> -- 
+> John Hubbard
+> NVIDIA
+> 
