@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB06571FDE
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 21:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 505AA72028
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 21:36:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391694AbfGWTEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 15:04:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33130 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729511AbfGWTEX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 15:04:23 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 34A90218F0;
-        Tue, 23 Jul 2019 19:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563908662;
-        bh=qBdiWSKWIjCsHen6DnbxUXpe6f7Z76IfupBI004rDYA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C556rVfU9yA8awMISWDNFXvi69SukXOZ/51Z7wszIOrAmvkAKrA6vrLUlfGyp809s
-         noXnBRk//Ep/8rZoqEB2ATyLRt3aaVNL75nn/VSwqcDovIuiR9SxsQLOmbEseMqEXO
-         3ajYdU82gtgjVyI1emhn/2TfPOUBI7IS1RfkUgUw=
-Date:   Tue, 23 Jul 2019 22:04:14 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     dledford@redhat.com, jgg@mellanox.com, edwards@mellanox.com,
-        linux-rdma@vger.kernel.org, yishaih@mellanox.com,
-        saeedm@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH mlx5-next] net/mlx5: Fix modify_cq_in alignment
-Message-ID: <20190723190414.GU5125@mtr-leonro.mtl.com>
-References: <20190723071255.6588-1-leon@kernel.org>
- <20190723.112850.610952032088764951.davem@davemloft.net>
+        id S2388808AbfGWTgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 15:36:03 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34371 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725468AbfGWTgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 15:36:03 -0400
+Received: by mail-wm1-f68.google.com with SMTP id w9so31813302wmd.1
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 12:36:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=HnWyeIg8cplH1KLgxVMcxlFG4peGAYs8DxqRy//LOQ4=;
+        b=lskDqCcWpEM8J2J1xfrtg11zMkLgxUcOho/R62VN7kMwDPp8AIoV1UgLDHI0cQgBYv
+         dVzCOw4qIi5wi89VQGgUEYBTFptjqlVC4h2UZ0vaZSxvermsDbJ3dmSDg9DyQfkBaSzJ
+         VO6b0fhZaV/oX/SyrB84ABDXwuy1cATw2xTeQNX9MMzb6H0hH4lHWzTFVlQPvx704mcp
+         nRd1Ztp1IMsn1RwAOMdSSbe9vkUl5r1uwZvEwRWDIRNcanovPwzFJuiyXac8YWJ+nPRC
+         ZSnSEZdUKULeA2QGeRRIwgvMajBLgLBVJbxDEoGegCj/4ATaouDRl6IjgCMz4t52Ws0O
+         i2eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HnWyeIg8cplH1KLgxVMcxlFG4peGAYs8DxqRy//LOQ4=;
+        b=myNR2Bmt6PZhruxlIgpLpvc9R+vV3YO0ojm3xkFjVorQ8PZAldUbf8rxlrFnRu9FKp
+         K0Ys1fMpmyKdwQH4iYiy+CpurS0V/fvgFOVMx54jiKRe7WvWPPq+FfCGtLeSzcjj4Pcv
+         wyZveY0nAAgc/ErsUewSq8Pp7WyW+PM/Rns8lOQrdx594UWRL53duP8e7WrB/T+tqxoC
+         UVOPlrw2EJ/tTOLl5cWCVVlJYId/UnCQ5NNlDfOWMf0clWW47WxWmQQ7ay/irjhpAH+C
+         vGypUA9FaSSDdeuAgT9n6KUyn6uI03jLZwhVVYS2kuCfOAVheC/GGzX7LSWvx1iLVevB
+         SyHg==
+X-Gm-Message-State: APjAAAX1YSrg59Wta4iWUpS1n4w8LETSAs0G2eqvS5skIJ5SkqgPreiM
+        RClrB/hBuq1TPwluAgu8eOg=
+X-Google-Smtp-Source: APXvYqxiog4TEDoXQUws1sOxeVG4xJpNhudwfZitL+/WQtTTCJOmgR8VNKMgubvsN9RMACRhZXilNQ==
+X-Received: by 2002:a05:600c:2111:: with SMTP id u17mr49552240wml.64.1563910561515;
+        Tue, 23 Jul 2019 12:36:01 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id n9sm83253991wrp.54.2019.07.23.12.36.00
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 12:36:01 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 21:36:00 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
+        alexanderk@mellanox.com, mlxsw@mellanox.com
+Subject: Re: [patch iproute2 1/2] tc: action: fix crash caused by incorrect
+ *argv check
+Message-ID: <20190723193600.GA2315@nanopsycho.orion>
+References: <20190723112538.10977-1-jiri@resnulli.us>
+ <20190723105401.4975396d@hermes.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190723.112850.610952032088764951.davem@davemloft.net>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190723105401.4975396d@hermes.lan>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 11:28:50AM -0700, David Miller wrote:
-> From: Leon Romanovsky <leon@kernel.org>
-> Date: Tue, 23 Jul 2019 10:12:55 +0300
+Tue, Jul 23, 2019 at 07:54:01PM CEST, stephen@networkplumber.org wrote:
+>On Tue, 23 Jul 2019 13:25:37 +0200
+>Jiri Pirko <jiri@resnulli.us> wrote:
 >
-> > From: Edward Srouji <edwards@mellanox.com>
-> >
-> > Fix modify_cq_in alignment to match the device specification.
-> > After this fix the 'cq_umem_valid' field will be in the right offset.
-> >
-> > Cc: <stable@vger.kernel.org> # 4.19
-> > Fixes: bd37197554eb ("net/mlx5: Update mlx5_ifc with DEVX UID bits")
-> > Signed-off-by: Edward Srouji <edwards@mellanox.com>
-> > Reviewed-by: Yishai Hadas <yishaih@mellanox.com>
-> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+>> From: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> One cannot depend on *argv being null in case of no arg is left on the
+>> command line. For example in batch mode, this is not always true. Check
+>> argc instead to prevent crash.
+>> 
+>> Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
+>> Fixes: fd8b3d2c1b9b ("actions: Add support for user cookies")
+>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 >
-> Very confusing submission on many levels.
->
-> Coming from a Mellanox developer using a kernel.org email address.
+>Actually makeargs does NULL terminate the last arg so what input
+>to batchmode is breaking this?
 
-It works for us and was proven internally as the best way to have
-setup which always works.
+Interesting, there must be another but out there then.
 
->
-> Targetting the mlx5-next tree, yet CC:'ing stable.
-
-This patch was found by RDMA team, needed by RDMA but changes are located
-in code accessible by mlx5_core part. This is why mlx5-next.
-
->
-> A networking change, for which stable submissions are handled by me by
-> hand and not via CC:'ing stable.
-
-The intention was to have this patch in shared mlx5 branch, which is
-picked by RDMA too. This "Cc: stable@..." together with merge through
-RDMA will ensure that such patch will be part of stable automatically.
-
-I can remove "Cc: ..." line if you think that it is inappropriate to
-have such line in patch in mlx5-next.
-
-Thanks
+My input is:
+filter add dev testdummy parent ffff: protocol all prio 11000 flower action drop
+filter add dev testdummy parent ffff: protocol ipv4 prio 1 flower dst_mac 11:22:33:44:55:66 action drop
