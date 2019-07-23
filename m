@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBCBA70F96
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 05:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1B670F8F
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 05:08:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387891AbfGWDIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 23:08:43 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36394 "EHLO
+        id S2387911AbfGWDIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 23:08:47 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36414 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387879AbfGWDIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 23:08:42 -0400
+        with ESMTP id S2387875AbfGWDIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 23:08:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=HeORrwa9si66ZvlpwCeBZYgy7/TGUvA9hOEOdycgqq0=; b=ZL+QTXSxv+/Qdz2k2OodAI8ey5
-        iJrPDMcrZ/Q7gm3lxFApKTJNcC4k4WnpiJQxhe5YZTiDRQiGTtnWNH76fQ1d3iDb+C0h3BH6xNdGM
-        fLvL7oYU9WPdp8LKuVZJpTVxa4CnOreJU3ZkcLVNnKLEDDl9p4rV8kSciOhmXi+siBUTK8J038wUZ
-        cv5yLPA5zrHP8tNPmWK4mm7lrtpJF7XnP7S8a/alhEu7clNYPx3H2ez5NWY6mnSfcRnuOI4fWyRqN
-        kgXdMgounF4kld04PnMClkKEQ5xofRibRJXgfDk8XA3dGBhK29KDBqU3q89wBg4UZRUf29vehUs5h
-        5xmdcexg==;
+        bh=2wZyzvwDZegSCVDrIR3rrGx2i2TBHBQBrDtpZIXYsQg=; b=gLzNw3+vJ18tlc2Z1lQ2LVW7ZZ
+        Jk1eVVD9LBQSisfHKC1dvuru2M2E8nPNIvabYI/UXdGXNUAi+sc5M+IRJBq1t8KfoA+NLKIq/WiWO
+        elBwk7izY3vmAdySPt0JRkwCtfhcYXAVVw0lDUGPryKZems9xeDMQ1v117CL/io4zf6NSvi+c4c9/
+        KHo2TseHzrt9XTbLfoasfCgCgnJKWB3ONTiZyrSYRRexIFtE//oNDR3fCuEqrTp/EqsSCaEUB4CyK
+        pgHCUkrIyCDfr4/VOB6ICSPLQOlbZz09b5GOpoTq63Lkv/prUslRoew97S9Ggr/pkehxL071j01Ox
+        IXZ0vUNw==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hplAJ-00036s-Hr; Tue, 23 Jul 2019 03:08:35 +0000
+        id 1hplAJ-00036w-Jb; Tue, 23 Jul 2019 03:08:35 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     davem@davemloft.net
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>, hch@lst.de,
         netdev@vger.kernel.org
-Subject: [PATCH v3 5/7] net: Rename skb_frag page to bv_page
-Date:   Mon, 22 Jul 2019 20:08:29 -0700
-Message-Id: <20190723030831.11879-6-willy@infradead.org>
+Subject: [PATCH v3 6/7] net: Rename skb_frag_t size to bv_len
+Date:   Mon, 22 Jul 2019 20:08:30 -0700
+Message-Id: <20190723030831.11879-7-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190723030831.11879-1-willy@infradead.org>
 References: <20190723030831.11879-1-willy@infradead.org>
@@ -44,78 +44,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-One step closer to turning the skb_frag_t into a bio_vec.
+Improved compatibility with bvec
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/skbuff.h | 12 +++++-------
- net/core/skbuff.c      |  2 +-
- 2 files changed, 6 insertions(+), 8 deletions(-)
+ include/linux/skbuff.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b9dc8b4f24b1..8076e2ba8349 100644
+index 8076e2ba8349..e849e411d1f3 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -311,9 +311,7 @@ extern int sysctl_max_skb_frags;
- typedef struct skb_frag_struct skb_frag_t;
+@@ -312,7 +312,7 @@ typedef struct skb_frag_struct skb_frag_t;
  
  struct skb_frag_struct {
--	struct {
--		struct page *p;
--	} page;
-+	struct page *bv_page;
- 	__u32 size;
+ 	struct page *bv_page;
+-	__u32 size;
++	unsigned int bv_len;
  	__u32 page_offset;
  };
-@@ -374,7 +372,7 @@ static inline bool skb_frag_must_loop(struct page *p)
-  *	skb_frag_foreach_page - loop over pages in a fragment
-  *
-  *	@f:		skb frag to operate on
-- *	@f_off:		offset from start of f->page.p
-+ *	@f_off:		offset from start of f->bv_page
-  *	@f_len:		length from f_off to loop over
-  *	@p:		(temp var) current page
-  *	@p_off:		(temp var) offset from start of current page,
-@@ -2084,7 +2082,7 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
- 	 * that not all callers have unique ownership of the page but rely
- 	 * on page_is_pfmemalloc doing the right thing(tm).
- 	 */
--	frag->page.p		  = page;
-+	frag->bv_page		  = page;
- 	frag->page_offset	  = off;
- 	skb_frag_size_set(frag, size);
  
-@@ -2872,7 +2870,7 @@ static inline void skb_propagate_pfmemalloc(struct page *page,
+@@ -322,7 +322,7 @@ struct skb_frag_struct {
   */
- static inline struct page *skb_frag_page(const skb_frag_t *frag)
+ static inline unsigned int skb_frag_size(const skb_frag_t *frag)
  {
--	return frag->page.p;
-+	return frag->bv_page;
+-	return frag->size;
++	return frag->bv_len;
  }
  
  /**
-@@ -2958,7 +2956,7 @@ static inline void *skb_frag_address_safe(const skb_frag_t *frag)
+@@ -332,7 +332,7 @@ static inline unsigned int skb_frag_size(const skb_frag_t *frag)
   */
- static inline void __skb_frag_set_page(skb_frag_t *frag, struct page *page)
+ static inline void skb_frag_size_set(skb_frag_t *frag, unsigned int size)
  {
--	frag->page.p = page;
-+	frag->bv_page = page;
+-	frag->size = size;
++	frag->bv_len = size;
  }
  
  /**
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e32081709a0d..0acaf55fc482 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3364,7 +3364,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
+@@ -342,7 +342,7 @@ static inline void skb_frag_size_set(skb_frag_t *frag, unsigned int size)
+  */
+ static inline void skb_frag_size_add(skb_frag_t *frag, int delta)
+ {
+-	frag->size += delta;
++	frag->bv_len += delta;
+ }
  
- 		} else {
- 			__skb_frag_ref(fragfrom);
--			fragto->page = fragfrom->page;
-+			fragto->bv_page = fragfrom->bv_page;
- 			fragto->page_offset = fragfrom->page_offset;
- 			skb_frag_size_set(fragto, todo);
+ /**
+@@ -352,7 +352,7 @@ static inline void skb_frag_size_add(skb_frag_t *frag, int delta)
+  */
+ static inline void skb_frag_size_sub(skb_frag_t *frag, int delta)
+ {
+-	frag->size -= delta;
++	frag->bv_len -= delta;
+ }
  
+ /**
 -- 
 2.20.1
 
