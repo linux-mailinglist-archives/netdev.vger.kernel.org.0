@@ -2,144 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5CF5713CB
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 10:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A49713E7
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 10:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731092AbfGWITk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 04:19:40 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57563 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730211AbfGWITj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 04:19:39 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 56608220C9;
-        Tue, 23 Jul 2019 04:19:38 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 23 Jul 2019 04:19:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=bw0CAxcIgdQtiJTK/lSTOMxVSw/sbW63SJyul6K+T2g=; b=YaKs902q
-        URu0J5hjjDIa/qu7qfQZuSWCOIM9MvzC3kgC8/NygdnOofq6VjSgSwuye4BCScdY
-        bBjyQGxD4bPNGLs92g/Cn+dzwVkdL0/pc37auSnI2VbZiLg9jErNcFtgja9GcKMt
-        zRnBPkaJ4EoSnEnma3kgd8CsGCRt5jrCr2Hay+ZOzWSMJKqMLYZCYJHl8wZNJncd
-        AEbt++XPpxx5yYs/HpNCEqPIYV/j/DeFW/qmnQ8Mae6VMHTzMpPbpsGIl2eQgun+
-        EKM3RlpPVUVhKgC/eehZEZJNpBhB+JqaL65cV2LyhAIkHlnvMPHgPukZsfi/OQxd
-        pgGHwrXK4B6sQQ==
-X-ME-Sender: <xms:GsM2XSEYExz8VsLa1D8EKgw6vIeJxR4B1U1SHhHJImAuseBCBicBEQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeekgddtvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepud
-X-ME-Proxy: <xmx:GsM2XW1P1bzKI9ox08zdJlfrH-Iar-vaOacIR0_qfDMK8PgwMOVn4Q>
-    <xmx:GsM2XfM3nxlaLlTtcfwbwDdgvy9OCid5WL1AAqzVbByDCoo2IwTW2Q>
-    <xmx:GsM2XUBZ3k_cUsUySAy6PE-3-sDlb6YLLXPTtgM_Gm4DtCNpBwaoSQ>
-    <xmx:GsM2XXRUhfboNIbN-mW8VgrpsToXToG3_EzOVO7EKzShqU1SA8nUcQ>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 14008380084;
-        Tue, 23 Jul 2019 04:19:36 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, ssuryaextr@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 2/2] selftests: forwarding: gre_multipath: Fix flower filters
-Date:   Tue, 23 Jul 2019 11:19:26 +0300
-Message-Id: <20190723081926.30647-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190723081926.30647-1-idosch@idosch.org>
-References: <20190723081926.30647-1-idosch@idosch.org>
+        id S1733210AbfGWIYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 04:24:11 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34162 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733199AbfGWIYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 04:24:10 -0400
+Received: by mail-lf1-f67.google.com with SMTP id b29so21468787lfq.1
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 01:24:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z4oiDNheB7tcp4OlfdwdNJixiwjQ7CN/OqrZSF2BQl4=;
+        b=ia1JfK+7eINBofKtKO04fnLG2c/ORhlen9wzZsM3f9jtvacXw9wzVipd/IKpZyIvt1
+         lHiZytrgcytx8wNSN/KWkpGTYd2Pc+5F6WztnIV747hg4bWIFwcLpBrgxDIQPi9bxm9k
+         yaKEWcLo7Avc1KZD51rYRu3VdD8EC4p5AMW4LA4gJyumXz3WtvcQJO/qcDAmSCxTsQvb
+         NJ00x/3dUoIP8iWdxEHFbjRzvM1VietYOAkDZd/S2iPkneOyqH6ZyCMENQyxWanGeVlv
+         gmGyqfEwS9tNOy4P5+KQlY4JIBwPnHXOAayXHOoVjd0w5Ea5vTo5b5AamT0F0Q+RTEeK
+         Kuhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z4oiDNheB7tcp4OlfdwdNJixiwjQ7CN/OqrZSF2BQl4=;
+        b=BEY8QSvZD6AuhkWzT4AnHSdt7QkhQY1Jzne3cxI/uMrifp+03MiqrWCVD7h8XT88TO
+         40uAP4+zrSi29Le50Necgk0Yz/kNV23O2quzwejwGj3lxqVFGfgxb4J8Xkza5WClucic
+         uuGYJxZPA+1sqFQ5DWWSFS3DT1Qf0up1cFUfXnzRmEiwwfumUdBpQ56kxNjfED5kvBjp
+         pSlzajP4NfZ3hoJ+6NCBVj1AcxiIeTJnTIfvdEu6oWO2xa58ItRAzMy0jCsLXa/r2F/L
+         HD2DI04gExN7vZRQ9AsOKXIJMTxbsWTSuiHgEKZT36sLLBNimZjO8Raf5gXeBPhJMMhU
+         tssg==
+X-Gm-Message-State: APjAAAWKzX9RHXik3NRmeVeM5WE3xJAAfJsw3SAbLieBjGaWl6ZotVyx
+        URlS3gFsTMJxZb/ars8gKgTqxVr39fP1F6LRqz0+dQ==
+X-Google-Smtp-Source: APXvYqxRHlls9XsJdn6N1L6aNp6XRxRHchgvWi1x+4y2L86sh1FPQdZY43ccO4gdutnunaw+n+p1U04JRza21fs1hSg=
+X-Received: by 2002:a19:6a01:: with SMTP id u1mr34253339lfu.141.1563870248944;
+ Tue, 23 Jul 2019 01:24:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190722191304.164929-1-arnd@arndb.de>
+In-Reply-To: <20190722191304.164929-1-arnd@arndb.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 23 Jul 2019 10:23:57 +0200
+Message-ID: <CACRpkdZMRmF_CEhXJYyeNEThwHc-ihEReLgU2pvJWjWiBnNFWw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] [net-next] net: remove netx ethernet driver
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Mon, Jul 22, 2019 at 9:13 PM Arnd Bergmann <arnd@arndb.de> wrote:
 
-The TC filters used in the test do not work with veth devices because the
-outer Ethertype is 802.1Q and not IPv4. The test passes with mlxsw
-netdevs since the hardware always looks at "The first Ethertype that
-does not point to either: VLAN, CNTAG or configurable Ethertype".
+> The ARM netx platform got removed in 5.3, so this driver
+> is now useless.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Fix this by matching on the VLAN ID instead, but on the ingress side.
-The reason why this is not performed at egress is explained in the
-commit cited below.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Fixes: 541ad323db3a ("selftests: forwarding: gre_multipath: Update next-hop statistics match criteria")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-Tested-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- .../selftests/net/forwarding/gre_multipath.sh | 24 +++++++++----------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+I thought I sent a patch like this yesterday but it apparently
+never left the mailserver as I can't find it in the archives.
 
-diff --git a/tools/testing/selftests/net/forwarding/gre_multipath.sh b/tools/testing/selftests/net/forwarding/gre_multipath.sh
-index 37d7297e1cf8..a8d8e8b3dc81 100755
---- a/tools/testing/selftests/net/forwarding/gre_multipath.sh
-+++ b/tools/testing/selftests/net/forwarding/gre_multipath.sh
-@@ -93,18 +93,10 @@ sw1_create()
- 	ip route add vrf v$ol1 192.0.2.16/28 \
- 	   nexthop dev g1a \
- 	   nexthop dev g1b
--
--	tc qdisc add dev $ul1 clsact
--	tc filter add dev $ul1 egress pref 111 prot ipv4 \
--	   flower dst_ip 192.0.2.66 action pass
--	tc filter add dev $ul1 egress pref 222 prot ipv4 \
--	   flower dst_ip 192.0.2.82 action pass
- }
- 
- sw1_destroy()
- {
--	tc qdisc del dev $ul1 clsact
--
- 	ip route del vrf v$ol1 192.0.2.16/28
- 
- 	ip route del vrf v$ol1 192.0.2.82/32 via 192.0.2.146
-@@ -139,10 +131,18 @@ sw2_create()
- 	ip route add vrf v$ol2 192.0.2.0/28 \
- 	   nexthop dev g2a \
- 	   nexthop dev g2b
-+
-+	tc qdisc add dev $ul2 clsact
-+	tc filter add dev $ul2 ingress pref 111 prot 802.1Q \
-+	   flower vlan_id 111 action pass
-+	tc filter add dev $ul2 ingress pref 222 prot 802.1Q \
-+	   flower vlan_id 222 action pass
- }
- 
- sw2_destroy()
- {
-+	tc qdisc del dev $ul2 clsact
-+
- 	ip route del vrf v$ol2 192.0.2.0/28
- 
- 	ip route del vrf v$ol2 192.0.2.81/32 via 192.0.2.145
-@@ -215,15 +215,15 @@ multipath4_test()
- 	   nexthop dev g1a weight $weight1 \
- 	   nexthop dev g1b weight $weight2
- 
--	local t0_111=$(tc_rule_stats_get $ul1 111 egress)
--	local t0_222=$(tc_rule_stats_get $ul1 222 egress)
-+	local t0_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t0_222=$(tc_rule_stats_get $ul2 222 ingress)
- 
- 	ip vrf exec v$h1 \
- 	   $MZ $h1 -q -p 64 -A 192.0.2.1 -B 192.0.2.18 \
- 	       -d 1msec -t udp "sp=1024,dp=0-32768"
- 
--	local t1_111=$(tc_rule_stats_get $ul1 111 egress)
--	local t1_222=$(tc_rule_stats_get $ul1 222 egress)
-+	local t1_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t1_222=$(tc_rule_stats_get $ul2 222 ingress)
- 
- 	local d111=$((t1_111 - t0_111))
- 	local d222=$((t1_222 - t0_222))
--- 
-2.21.0
-
+Linus Walleij
