@@ -2,328 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 577CA711F9
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 08:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E74D71217
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 08:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732590AbfGWGiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 02:38:09 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:55400 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732378AbfGWGiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 02:38:08 -0400
-Received: by mail-io1-f69.google.com with SMTP id f22so46127722ioh.22
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 23:38:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=aL3tMcwrH2bL1/qPLH2B5fpmBvj9WpSeCI7o4aW8USc=;
-        b=Cb8OeW5D0juisrvriwxNb06xipjvDQh3MsXG68A1o2lqSMaMY2Xu4lIhcLWKxQ/nhA
-         h+5mWX8tLDumWRe1/okrgQqPtR3jA9APIVAOkrh7qipv8ylECHP0+jzLuHH7kLc21cHu
-         l8YCthOni99rRAIt8pBcV7me93496dHMH1H8WkC+PmoSqGqbBitdH3lIz76fA4SxnhI4
-         /KIdUIuuWJvE3v1Gys0AcO6bLZuiIPmGP8bkj3SP6RtNJbAV8mY5XDUvMoIGxvz1D20w
-         uFdxh9aWNc81C4hQ/+1dZvWcyWzyUSP/GBgrleQP+DrejRGWiRfRGl1DFCpzPJ09iGkt
-         xMNg==
-X-Gm-Message-State: APjAAAX8g03/ax9bdRJ3WrWsuj8N91mg1onj6C2jxCLM4ou9zixluz44
-        VKEridJvCSo5q+w4e9oNbq7rWsbBFZmeyTwvpMvw88NcEE5a
-X-Google-Smtp-Source: APXvYqzI8OhEYS84AvC6wy+HyzyUov7wbBHy2y5gBkTMGe8o+EwrHZLwr3tCSazPuGAkqOnzIohJH5fyIOD/9EdUJgbmhg7Wobs1
+        id S1732352AbfGWGrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 02:47:04 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:54159 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729552AbfGWGrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 02:47:04 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9937F1B68;
+        Tue, 23 Jul 2019 02:47:03 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 23 Jul 2019 02:47:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; bh=Pvm6a3akhSiREaVFZjMlHJTj/hfGaOe8D6Hc039sH
+        no=; b=LRVH9ymgXihu5zmhsBgr/a5ycd0LQEEEYrWYPehUnDPAfOsQPDl4mfsr2
+        8m7qeCgm9/d989gBQw533HUFucdz4721W15Z3eqpyu9wKWZ5Djlo5LCOdH3jlJaL
+        PbMohg3fXULZo0i9SIl3HEqP7MGjdc4ms8SHPQNJtP8UHM2AHc8eOIF2/Y0p7YMT
+        yIbKwUxVIf6w3ogVtryJhxWsrO96JLr7kHIuak85r5MGfSl/kyIqCFJBfztsOjhI
+        UWiSQ8FZ9nRe6L81HF7nQmvm8BYUmBetj0gKm5nqLISZPVXOOqdKwb67mw774jLz
+        dNZud2q/JFVR9QtoVhAMVvXzlqiTg==
+X-ME-Sender: <xms:Za02XWyxPe-GYQB0Rld0fb9xEcLkHqCEGH8LTQVEOoMFkvH3hPfIXQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeejgdefvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjfgesthekredttderudenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrih
+    hnpehgihhthhhusgdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgr
+    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluh
+    hsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:Za02XSC-Che6WnPt61MtrsNw9ajA-IlZd1FCayGFzkdnrbcUf6CIxg>
+    <xmx:Za02Xa1XK9hPXulxCPFjk8RKAJwYW0Fv7IGjY98DuJUg6GJVtdazig>
+    <xmx:Za02Xb3EW6tkk6fTYIMH5PILo5RGU4PN-wxZWBTJ3Y4c291TSRE1Jg>
+    <xmx:Z602Xc3wPoNgLxMjHgHftkUKGliCpBgsFvwp8lWb5_Kw5EvfGgrnrA>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 167D280061;
+        Tue, 23 Jul 2019 02:47:00 -0400 (EDT)
+Date:   Tue, 23 Jul 2019 09:46:59 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 00/12] drop_monitor: Capture dropped packets
+ and metadata
+Message-ID: <20190723064659.GA16069@splinter>
+References: <20190722183134.14516-1-idosch@idosch.org>
+ <87imrt4zzg.fsf@toke.dk>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8412:: with SMTP id h18mr70561071ioj.268.1563863887424;
- Mon, 22 Jul 2019 23:38:07 -0700 (PDT)
-Date:   Mon, 22 Jul 2019 23:38:07 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007cb5e7058e536fbe@google.com>
-Subject: bpf-next boot error: WARNING: workqueue cpumask: online intersect >
- possible intersect (2)
-From:   syzbot <syzbot+88c042e36cde4bcbd19b@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87imrt4zzg.fsf@toke.dk>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Jul 22, 2019 at 09:43:15PM +0200, Toke Høiland-Jørgensen wrote:
+> Is there a mechanism for the user to filter the packets before they are
+> sent to userspace? A bpf filter would be the obvious choice I guess...
 
-syzbot found the following crash on:
+Hi Toke,
 
-HEAD commit:    66b5f1c4 net-ipv6-ndisc: add support for RFC7710 RA Captiv..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15513e78600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9aec8cb13b5f7389
-dashboard link: https://syzkaller.appspot.com/bug?extid=88c042e36cde4bcbd19b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Yes, it's on my TODO list to write an eBPF program that only lets
+"unique" packets to be enqueued on the netlink socket. Where "unique" is
+defined as {5-tuple, PC}. The rest of the copies will be counted in an
+eBPF map, which is just a hash table keyed by {5-tuple, PC}.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+I think it would be good to have the program as part of the bcc
+repository [1]. What do you think?
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+88c042e36cde4bcbd19b@syzkaller.appspotmail.com
+> For integrating with XDP the trick would be to find a way to do it that
+> doesn't incur any overhead when it's not enabled. Are you envisioning
+> that this would be enabled separately for the different "modes" (kernel,
+> hardware, XDP, etc)?
 
-smpboot: CPU0: Intel(R) Xeon(R) CPU @ 2.30GHz (family: 0x6, model: 0x3f,  
-stepping: 0x0)
-Performance Events: unsupported p6 CPU model 63 no PMU driver, software  
-events only.
-rcu: Hierarchical SRCU implementation.
-NMI watchdog: Perf NMI watchdog permanently disabled
-smp: Bringing up secondary CPUs ...
-x86: Booting SMP configuration:
-.... node  #0, CPUs:      #1
-MDS CPU bug present and SMT on, data leak possible. See  
-https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for  
-more details.
-smp: Brought up 2 nodes, 2 CPUs
-smpboot: Max logical packages: 1
-smpboot: Total of 2 processors activated (9200.00 BogoMIPS)
-devtmpfs: initialized
-clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns:  
-19112604462750000 ns
-futex hash table entries: 512 (order: 4, 65536 bytes, vmalloc)
-xor: automatically using best checksumming function   avx
-PM: RTC time: 00:21:51, date: 2019-07-23
-NET: Registered protocol family 16
-audit: initializing netlink subsys (disabled)
-cpuidle: using governor menu
-ACPI: bus type PCI registered
-dca service started, version 1.12.1
-PCI: Using configuration type 1 for base access
-WARNING: workqueue cpumask: online intersect > possible intersect
-HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
-HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages
-cryptd: max_cpu_qlen set to 1000
-raid6: avx2x4   gen() 12057 MB/s
-raid6: avx2x4   xor()  6485 MB/s
-raid6: avx2x2   gen()  5976 MB/s
-raid6: avx2x2   xor()  3848 MB/s
-raid6: avx2x1   gen()   921 MB/s
-raid6: avx2x1   xor()  2173 MB/s
-raid6: sse2x4   gen()  6202 MB/s
-raid6: sse2x4   xor()  3397 MB/s
-raid6: sse2x2   gen()  3875 MB/s
-raid6: sse2x2   xor()  1961 MB/s
-raid6: sse2x1   gen()   789 MB/s
-raid6: sse2x1   xor()   964 MB/s
-raid6: using algorithm avx2x4 gen() 12057 MB/s
-raid6: .... xor() 6485 MB/s, rmw enabled
-raid6: using avx2x2 recovery algorithm
-ACPI: Added _OSI(Module Device)
-ACPI: Added _OSI(Processor Device)
-ACPI: Added _OSI(3.0 _SCP Extensions)
-ACPI: Added _OSI(Processor Aggregator Device)
-ACPI: Added _OSI(Linux-Dell-Video)
-ACPI: Added _OSI(Linux-Lenovo-NV-HDMI-Audio)
-ACPI: Added _OSI(Linux-HPI-Hybrid-Graphics)
-ACPI: 2 ACPI AML tables successfully acquired and loaded
-ACPI: Interpreter enabled
-ACPI: (supports S0 S3 S4 S5)
-ACPI: Using IOAPIC for interrupt routing
-PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and  
-report a bug
-ACPI: Enabled 16 GPEs in block 00 to 0F
-ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
-acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI HPX-Type3]
-acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended  
-PCI configuration space under this bridge.
-PCI host bridge to bus 0000:00
-pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-pci_bus 0000:00: root bus resource [mem 0xc0000000-0xfebfffff window]
-pci_bus 0000:00: root bus resource [bus 00-ff]
-pci 0000:00:00.0: [8086:1237] type 00 class 0x060000
-pci 0000:00:01.0: [8086:7110] type 00 class 0x060100
-pci 0000:00:01.3: [8086:7113] type 00 class 0x068000
-pci 0000:00:01.3: quirk: [io  0xb000-0xb03f] claimed by PIIX4 ACPI
-pci 0000:00:03.0: [1af4:1004] type 00 class 0x000000
-pci 0000:00:03.0: reg 0x10: [io  0xc000-0xc03f]
-pci 0000:00:03.0: reg 0x14: [mem 0xfebfe000-0xfebfe07f]
-pci 0000:00:04.0: [1af4:1000] type 00 class 0x020000
-pci 0000:00:04.0: reg 0x10: [io  0xc040-0xc07f]
-pci 0000:00:04.0: reg 0x14: [mem 0xfebff000-0xfebff07f]
-ACPI: PCI Interrupt Link [LNKA] (IRQs 5 *10 11)
-ACPI: PCI Interrupt Link [LNKB] (IRQs 5 *10 11)
-ACPI: PCI Interrupt Link [LNKC] (IRQs 5 10 *11)
-ACPI: PCI Interrupt Link [LNKD] (IRQs 5 10 *11)
-ACPI: PCI Interrupt Link [LNKS] (IRQs *9)
-vgaarb: loaded
-SCSI subsystem initialized
-ACPI: bus type USB registered
-usbcore: registered new interface driver usbfs
-usbcore: registered new interface driver hub
-usbcore: registered new device driver usb
-mc: Linux media interface: v0.10
-videodev: Linux video capture interface: v2.00
-pps_core: LinuxPPS API ver. 1 registered
-pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti  
-<giometti@linux.it>
-PTP clock support registered
-EDAC MC: Ver: 3.0.0
-Advanced Linux Sound Architecture Driver Initialized.
-PCI: Using ACPI for IRQ routing
-Bluetooth: Core ver 2.22
-NET: Registered protocol family 31
-Bluetooth: HCI device and connection manager initialized
-Bluetooth: HCI socket layer initialized
-Bluetooth: L2CAP socket layer initialized
-Bluetooth: SCO socket layer initialized
-NET: Registered protocol family 8
-NET: Registered protocol family 20
-NetLabel: Initializing
-NetLabel:  domain hash size = 128
-NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
-NetLabel:  unlabeled traffic allowed by default
-nfc: nfc_init: NFC Core ver 0.1
-NET: Registered protocol family 39
-clocksource: Switched to clocksource kvm-clock
-VFS: Disk quotas dquot_6.6.0
-VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-FS-Cache: Loaded
-*** VALIDATE hugetlbfs ***
-CacheFiles: Loaded
-TOMOYO: 2.6.0
-Mandatory Access Control activated.
-AppArmor: AppArmor Filesystem Enabled
-pnp: PnP ACPI init
-pnp: PnP ACPI: found 7 devices
-thermal_sys: Registered thermal governor 'step_wise'
-thermal_sys: Registered thermal governor 'user_space'
-clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns:  
-2085701024 ns
-pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
-pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
-pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
-pci_bus 0000:00: resource 7 [mem 0xc0000000-0xfebfffff window]
-NET: Registered protocol family 2
-tcp_listen_portaddr_hash hash table entries: 4096 (order: 6, 294912 bytes,  
-vmalloc)
-TCP established hash table entries: 65536 (order: 7, 524288 bytes, vmalloc)
-TCP bind hash table entries: 65536 (order: 10, 4194304 bytes, vmalloc)
-TCP: Hash tables configured (established 65536 bind 65536)
-UDP hash table entries: 4096 (order: 7, 655360 bytes, vmalloc)
-UDP-Lite hash table entries: 4096 (order: 7, 655360 bytes, vmalloc)
-NET: Registered protocol family 1
-RPC: Registered named UNIX socket transport module.
-RPC: Registered udp transport module.
-RPC: Registered tcp transport module.
-RPC: Registered tcp NFSv4.1 backchannel transport module.
-NET: Registered protocol family 44
-pci 0000:00:00.0: Limiting direct PCI/PCI transfers
-PCI: CLS 0 bytes, default 64
-PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-software IO TLB: mapped [mem 0xaa800000-0xae800000] (64MB)
-RAPL PMU: API unit is 2^-32 Joules, 0 fixed counters, 10737418240 ms ovfl  
-timer
-kvm: already loaded the other module
-clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x212735223b2,  
-max_idle_ns: 440795277976 ns
-clocksource: Switched to clocksource tsc
-mce: Machine check injector initialized
-check: Scanning for low memory corruption every 60 seconds
-Initialise system trusted keyrings
-workingset: timestamp_bits=40 max_order=21 bucket_order=0
-zbud: loaded
-DLM installed
-squashfs: version 4.0 (2009/01/31) Phillip Lougher
-FS-Cache: Netfs 'nfs' registered for caching
-NFS: Registering the id_resolver key type
-Key type id_resolver registered
-Key type id_legacy registered
-nfs4filelayout_init: NFSv4 File Layout Driver Registering...
-Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
-ntfs: driver 2.1.32 [Flags: R/W].
-fuse: init (API version 7.31)
-JFS: nTxBlock = 8192, nTxLock = 65536
-SGI XFS with ACLs, security attributes, realtime, no debug enabled
-9p: Installing v9fs 9p2000 file system support
-FS-Cache: Netfs '9p' registered for caching
-gfs2: GFS2 installed
-FS-Cache: Netfs 'ceph' registered for caching
-ceph: loaded (mds proto 32)
-NET: Registered protocol family 38
-async_tx: api initialized (async)
-Key type asymmetric registered
-Asymmetric key parser 'x509' registered
-Asymmetric key parser 'pkcs8' registered
-Key type pkcs7_test registered
-Asymmetric key parser 'tpm_parser' registered
-Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
-io scheduler mq-deadline registered
-io scheduler kyber registered
-io scheduler bfq registered
-input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
-ACPI: Power Button [PWRF]
-input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
-ACPI: Sleep Button [SLPF]
-ioatdma: Intel(R) QuickData Technology Driver 5.00
-PCI Interrupt Link [LNKC] enabled at IRQ 11
-virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
-PCI Interrupt Link [LNKD] enabled at IRQ 10
-virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
-HDLC line discipline maxframe=4096
-N_HDLC line discipline registered.
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
-00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
-00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
-Non-volatile memory driver v1.3
-Linux agpgart interface v0.103
-[drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
-[drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
-[drm] Driver supports precise vblank timestamp query.
-[drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
-usbcore: registered new interface driver udl
-brd: module loaded
-loop: module loaded
-zram: Added device: zram0
-null: module loaded
-nfcsim 0.2 initialized
-Loading iSCSI transport class v2.0-870.
-scsi host0: Virtio SCSI HBA
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-kobject: 'sd' (00000000062140f2): kobject_uevent_env
-kobject: 'sd' (00000000062140f2): fill_kobj_path: path  
-= '/bus/scsi/drivers/sd'
-kobject: 'sr' (00000000ef64c50b): kobject_add_internal: parent: 'drivers',  
-set: 'drivers'
-kobject: 'sr' (00000000ef64c50b): kobject_uevent_env
-kobject: 'sr' (00000000ef64c50b): fill_kobj_path: path  
-= '/bus/scsi/drivers/sr'
-kobject: 'scsi_generic' (00000000007b57bc): kobject_add_internal:  
-parent: 'class', set: 'class'
-kobject: 'scsi_generic' (00000000007b57bc): kobject_uevent_env
-kobject: 'scsi_generic' (00000000007b57bc): fill_kobj_path: path  
-= '/class/scsi_generic'
-kobject: 'nvme-wq' (00000000b79e19cd): kobject_add_internal:  
-parent: 'workqueue', set: 'devices'
-kobject: 'nvme-wq' (00000000b79e19cd): kobject_uevent_env
-kobject: 'nvme-wq' (00000000b79e19cd): kobject_uevent_env: uevent_suppress  
-caused the event to drop!
-kobject: 'nvme-wq' (00000000b79e19cd): kobject_uevent_env
-kobject: 'nvme-wq' (00000000b79e19cd): fill_kobj_path: path  
-= '/devices/virtual/workqueue/nvme-wq'
-kobject: 'nvme-reset-wq' (0000000070597663): kobject_add_internal:  
-parent: 'workqueue', set: 'devices'
-kobject: 'nvme-reset-wq' (0000000070597663): kobject_uevent_env
-kobject: 'nvme-reset-wq' (0000000070597663): kobject_uevent_env:  
-uevent_suppress caused the event to drop!
-kobject: 'nvme-reset-wq' (0000000070597663): kobject_uevent_env
-kobject: 'nvme-reset-wq' (0000000070597663): fill_kobj_path: path  
-= '/devices/virtual/workqueue/nvme-reset-wq'
-kobject: 'nvme-delete-wq' (00000000c9ed28dd): kobject_add_internal:  
-parent: 'workqueue', set: 'devices'
-kobject: 'nvme-delete-wq' (00000000c9ed28dd): kobject_uevent_env
-kobject: 'nvme-delete-wq' (00000000c9ed28dd): kobject_uevent_env:  
-uevent_suppress caused the event to drop!
-kobject: 'nvme-delete-wq' (00000000c9ed28dd): kobject_uevent_env
-kobject: 'nvme-delete-wq' (00000000c9ed28dd): fill_kobj_path: path  
-= '/devices/virtual/workqueue/nvme-delete-wq'
+Yes. Drop monitor have commands to enable and disable tracing, but they
+don't carry any attributes at the moment. My plan is to add an attribute
+(e.g., 'NET_DM_ATTR_DROP_TYPE') that will specify the type of drops
+you're interested in - SW/HW/XDP. If the attribute is not specified,
+then current behavior is maintained and all the drop types are traced.
+But if you're only interested in SW drops, then overhead for the rest
+should be zero.
 
+For HW drops I'm going to have devlink call into drop monitor. The
+function call will just be a NOP in case user is not interested in HW
+drops. I'm not sure if for XDP you want to register a probe on a
+tracepoint or call into drop monitor. If you want to use the former,
+then you can just have drop monitor unregister its probe from the
+tracepoint, which is what drop monitor is currently doing with the
+kfree_skb() tracepoint.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Thanks!
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+[1] https://github.com/iovisor/bcc/tree/master/examples/networking
