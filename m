@@ -2,110 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1698722EC
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 01:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5645B722ED
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 01:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbfGWXXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 19:23:22 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37159 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbfGWXXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 19:23:22 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 19so19893885pfa.4
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 16:23:21 -0700 (PDT)
+        id S1726689AbfGWXXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 19:23:36 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41517 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726438AbfGWXXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 19:23:36 -0400
+Received: by mail-pf1-f196.google.com with SMTP id m30so19903426pff.8
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 16:23:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=/LqedSmA2FqcZGzTM87ZxMai4HBeD/f1hnGIeHRb82A=;
-        b=rAmz9qkYWGJIeAxhjqwocXj/yjo3N0q5gej1cdd6VSKAUYC5WRD3cyfFKuAQbyJnah
-         TYubMAiy+dQS6wKbY92HsXCPMYtY7+I9tXPpF9FyC+zucGqy3QxZ1mp+XFuOMhWVceVf
-         F795fG887kfRJW8sjaWi4N8BYh7tfIUacVaY+4qtnDpOo4TRcL0JlLGu3+4MQidOOoV4
-         /FoN3an+8n4TJuAMAcUpY3G8azwPge5WTFq7XvG3otqLGkkTelrm7umY8rZcMH1X01cf
-         np2Ooh0qBQ+e1C5RXK2Ds0cbFcz7mlLxF2n5K+qpW0gpI0iUKvAxO+BoHo+3vrbazLJM
-         /YmQ==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=iGk1ZQJK7n76nekLJVVrGKKED66IUtHbRBl1iCiE550=;
+        b=FJgnflKGuWwE09vJB0hVmFbdcNP511PS9l8Jigd18767qcM1Cf1GynVo6SpgpzcF8L
+         PjhE9YJ7hoTjhTLgNP0xnLeWzpCQa0PKFrKP85jSN/JgTZmzMqT+B2OkBHRATyvynpA+
+         P4UHOmbSvDh8TbR9kylNeg+Z6ohZKEdhZkngFl2hRDPsIC42B29a86Gl79y3p/HX8Wx/
+         i4/H22KtnYrfL9S+d/padU8E34aVx0nqIoMw+RPZru5kTYZTVBsXeO5AZPJuRO4DflgU
+         FKcJXMU7cBlZMi7BZUh98GlajMOPPczVpd31O1aFGAP1kTK30n/NckqCYk+RZ0D7rS8K
+         DxIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=/LqedSmA2FqcZGzTM87ZxMai4HBeD/f1hnGIeHRb82A=;
-        b=K9p7Ae+zfIkrtW/kvUkjiWU6OiNj8GMuOEFUvXGHzUkMmRfhkMPzwKEx9kq8M6uXys
-         TeBaYeZI7Os8HvVazxR3WT6gbhn43A39LUm/NwMdSfvjCRWp/svFjhO8k2gpRohI+CMx
-         uRBLH6CXJVhsWk7b30k4qA58DMOYdTvWm8naf2Ug+TnxWwHClAC7FhkEq7/7uwELq3Tn
-         fxHPBeEXskqHRLRWXnmZVvu1QMH185hunSNBjngWml+xUt0GtqrhtvrR9Xl2Q5XXZWgZ
-         3ssRI4Skahr49B7NylWzxXsD+o5Z5AX76MpaeoWYTa1PWM71prT5Msrr6tI/24Mw4tIk
-         /TIw==
-X-Gm-Message-State: APjAAAX7GEisDIixPTAlUN5Cjz20hGsoi6nbDwV135mWlnYvBjkHCZND
-        VImLJ87RJGX31ByiDzdq97WjuTjlhyHvRw==
-X-Google-Smtp-Source: APXvYqxxMJYGNR9jWMKMZbITaXm5+ok7KHwKjjhtSEC+0t1B1mvL8d4Oc5sVBIIFc+9Po6ow/LdN9w==
-X-Received: by 2002:a62:6454:: with SMTP id y81mr7856903pfb.13.1563924201178;
-        Tue, 23 Jul 2019 16:23:21 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id d17sm45951230pgl.66.2019.07.23.16.23.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Jul 2019 16:23:20 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 02/19] ionic: Add hardware init and device
- commands
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20190722214023.9513-3-snelson@pensando.io>
- <20190723.141833.384334163321137202.davem@davemloft.net>
- <59e45fd2-3c62-58cf-cf63-935d17703d2c@pensando.io>
- <20190723.160538.2065000079755912945.davem@davemloft.net>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <4dd2bbcb-07ea-b45a-3067-a4353d3ff81a@pensando.io>
-Date:   Tue, 23 Jul 2019 16:23:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iGk1ZQJK7n76nekLJVVrGKKED66IUtHbRBl1iCiE550=;
+        b=lM/72kXggQU6XjKpGxP1vmyFzBrCzXxvyEJkg4ay0lnCFqq9m0Ii5gD+2pUx+KrxVP
+         wItSFrl9J+99dl+eCxB1oHEUAGZ6yWyxkpYUOl+PkxhQaeT0xGOzZLCRaXcKFAKr0fXc
+         6b/eMuyg6gq/XT9eUf8sBXtVcNI/X+ITZjAijmIpSt8BltX39IYqIEcCONs4WsX9T2Ms
+         NbYQqXsGjt16BBLSz4w1VodzLS1rZZiOfUEM29bnSrjLfYi2SAMQk3eRZWtGIfcoflZy
+         392MXm37FBFK5wnKHgblr5jxGekpSOjATbUjY3pUKmI27gag4/l0nBVnQHL7UcAZ2x+p
+         iKbA==
+X-Gm-Message-State: APjAAAUddtwvyoFUbwzLfpez1+9zc3DBtqIY/pbY4qDGUQZI4BNCkS6n
+        Ab7Fs0thmbtin8wynknvVqY=
+X-Google-Smtp-Source: APXvYqx2N+y2HrXDn51GSQvi56fYbPwRhnjz2Phej7l80cjt3h6FzWGHnfKwqYTrMdcP4MpWKwCxYA==
+X-Received: by 2002:a17:90a:8688:: with SMTP id p8mr85775874pjn.57.1563924215452;
+        Tue, 23 Jul 2019 16:23:35 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j5sm37548126pgp.59.2019.07.23.16.23.35
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 16:23:35 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 16:23:28 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     "Patel, Vedang" <vedang.patel@intel.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>
+Subject: Re: [PATCH iproute2] etf: make printing of variable JSON friendly
+Message-ID: <20190723162328.5182a843@hermes.lan>
+In-Reply-To: <8BC34CA3-C500-4188-BDBA-4B2B7E9F1EE2@intel.com>
+References: <1563572443-10879-1-git-send-email-vedang.patel@intel.com>
+        <a7c60706-562a-429d-400f-af2ad1606ba3@gmail.com>
+        <98A741A5-EAC0-408F-84C2-34E4714A2097@intel.com>
+        <0e5fc2fe-dc83-b876-40ac-3b6f3f47bb29@gmail.com>
+        <8BC34CA3-C500-4188-BDBA-4B2B7E9F1EE2@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20190723.160538.2065000079755912945.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/19 4:05 PM, David Miller wrote:
-> From: Shannon Nelson <snelson@pensando.io>
-> Date: Tue, 23 Jul 2019 15:50:22 -0700
->
->> On 7/23/19 2:18 PM, David Miller wrote:
->>> From: Shannon Nelson <snelson@pensando.io>
->>> Date: Mon, 22 Jul 2019 14:40:06 -0700
->>>
->>>> +void ionic_init_devinfo(struct ionic_dev *idev)
->>>> +{
->>>> + idev->dev_info.asic_type = ioread8(&idev->dev_info_regs->asic_type);
->>>> + idev->dev_info.asic_rev = ioread8(&idev->dev_info_regs->asic_rev);
->>>> +
->>>> +	memcpy_fromio(idev->dev_info.fw_version,
->>>> +		      idev->dev_info_regs->fw_version,
->>>> +		      IONIC_DEVINFO_FWVERS_BUFLEN);
->>>> +
->>>> +	memcpy_fromio(idev->dev_info.serial_num,
->>>> +		      idev->dev_info_regs->serial_num,
->>>> +		      IONIC_DEVINFO_SERIAL_BUFLEN);
->>>    ...
->>>> +	sig = ioread32(&idev->dev_info_regs->signature);
->>> I think if you are going to use the io{read,write}{8,16,32,64}()
->>> interfaces then you should use io{read,write}{8,16,32,64}_rep()
->>> instead of memcpy_{to,from}io().
->>>
->> Sure.
-> Note, I could be wrong.  Please test.
->
-> I think the operation of the two things might be different.
+On Tue, 23 Jul 2019 21:34:46 +0000
+"Patel, Vedang" <vedang.patel@intel.com> wrote:
 
-It seems to me that memcpy() usually just does the right thing in most 
-cases, so that's what I went with.  Looking into some of the 
-definitions, and at how I used memcpy_...(), I think there are some 
-appropriate ways to use ioread32_rep() in a couple of my cases, and 
-another case or two where the memcpy variant may not make much 
-difference with ioread8_rep().  It's also possible that sparse may have 
-an opinion.  I'll look at them.
-
-sln
-
+> > On Jul 22, 2019, at 5:11 PM, David Ahern <dsahern@gmail.com> wrote:
+> >=20
+> > On 7/22/19 1:11 PM, Patel, Vedang wrote: =20
+> >>=20
+> >>  =20
+> >>> On Jul 22, 2019, at 11:21 AM, David Ahern <dsahern@gmail.com> wrote:
+> >>>=20
+> >>> On 7/19/19 3:40 PM, Vedang Patel wrote: =20
+> >>>> In iproute2 txtime-assist series, it was pointed out that print_bool=
+()
+> >>>> should be used to print binary values. This is to make it JSON frien=
+dly.
+> >>>>=20
+> >>>> So, make the corresponding changes in ETF.
+> >>>>=20
+> >>>> Fixes: 8ccd49383cdc ("etf: Add skip_sock_check")
+> >>>> Reported-by: Stephen Hemminger <stephen@networkplumber.org>
+> >>>> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+> >>>> ---
+> >>>> tc/q_etf.c | 12 ++++++------
+> >>>> 1 file changed, 6 insertions(+), 6 deletions(-)
+> >>>>=20
+> >>>> diff --git a/tc/q_etf.c b/tc/q_etf.c
+> >>>> index c2090589bc64..307c50eed48b 100644
+> >>>> --- a/tc/q_etf.c
+> >>>> +++ b/tc/q_etf.c
+> >>>> @@ -176,12 +176,12 @@ static int etf_print_opt(struct qdisc_util *qu=
+, FILE *f, struct rtattr *opt)
+> >>>> 		     get_clock_name(qopt->clockid));
+> >>>>=20
+> >>>> 	print_uint(PRINT_ANY, "delta", "delta %d ", qopt->delta);
+> >>>> -	print_string(PRINT_ANY, "offload", "offload %s ",
+> >>>> -				(qopt->flags & TC_ETF_OFFLOAD_ON) ? "on" : "off");
+> >>>> -	print_string(PRINT_ANY, "deadline_mode", "deadline_mode %s ",
+> >>>> -				(qopt->flags & TC_ETF_DEADLINE_MODE_ON) ? "on" : "off");
+> >>>> -	print_string(PRINT_ANY, "skip_sock_check", "skip_sock_check %s",
+> >>>> -				(qopt->flags & TC_ETF_SKIP_SOCK_CHECK) ? "on" : "off");
+> >>>> +	if (qopt->flags & TC_ETF_OFFLOAD_ON)
+> >>>> +		print_bool(PRINT_ANY, "offload", "offload ", true);
+> >>>> +	if (qopt->flags & TC_ETF_DEADLINE_MODE_ON)
+> >>>> +		print_bool(PRINT_ANY, "deadline_mode", "deadline_mode ", true);
+> >>>> +	if (qopt->flags & TC_ETF_SKIP_SOCK_CHECK)
+> >>>> +		print_bool(PRINT_ANY, "skip_sock_check", "skip_sock_check", true);
+> >>>>=20
+> >>>> 	return 0;
+> >>>> }
+> >>>>  =20
+> >>>=20
+> >>> This changes existing output for TC_ETF_OFFLOAD_ON and
+> >>> TC_ETF_DEADLINE_MODE_ON which were added a year ago. =20
+> >> Yes, this is a good point. I missed that.=20
+> >>=20
+> >> Another idea is to use is_json_context() and call print_bool() there. =
+But, that will still change values corresponding to the json output for the=
+ above flags from =E2=80=9Con=E2=80=9D/=E2=80=9Coff=E2=80=9D to =E2=80=9Ctr=
+ue=E2=80=9D/=E2=80=9Cfalse=E2=80=9D. I am not sure if this is a big issue.=
+=20
+> >>=20
+> >> My suggestion is to keep the code as is. what do you think?
+> >>  =20
+> >=20
+> > I think we need automated checkers for new code. ;-)
+> >=20
+> > The first 2 should not change for backward compatibility - unless there
+> > is agreement that this feature is too new and long term it is better to
+> > print as above.
+> >=20
+> > Then the new one should follow context of the other 2 - consistency IMHO
+> > takes precedence. =20
+> Thanks for the inputs.=20
+>=20
+> Let=E2=80=99s keep whatever is currently present upstream and you can ign=
+ore this patch.
+>=20
+> Thanks,
+> Vedang
+Agreed. At this point consistency is better.
+Maybe at some future point, all the JSON will be reviewed and fixed (yes it=
+ would be a breaking flag day).
+But for now inconsistent usage across ip, tc, and devlink is a fact of life.
