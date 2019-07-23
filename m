@@ -2,150 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B336E71907
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 476017190A
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:19:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390160AbfGWNTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 09:19:37 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37989 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729452AbfGWNTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 09:19:35 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y15so19146746pfn.5;
-        Tue, 23 Jul 2019 06:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xLbjkGnyqbbz4BH8MubMCB3MNb9jNkxMOv80SlkHi3o=;
-        b=AhiBI4iv1tUnVtDISYXZHLp1hXgvEMBiYIvBAyKpCA4C/THfUHD+dp9CSz5ar46+DB
-         ELKVNaOPdbOI1m4zyWMjD+d/Gy+zJBVOtm/SsBOOPfJR8dHqlKPZwLZqb+iMCS+9B/xu
-         Q3KcRZ3SebAjoviHfqb+jrn8cnUqgALh6SjBeSMtFxDPie4ugn7h9a3xJgjfnZT1P/em
-         IAFxlgH8Q4yUPZqLxLqTnUlVhORetlm+s2cuXpbZI4Hl+CzYOAbx/g/mYAy0S7lLB8fJ
-         JAAcHxRCHT3dHzI1CERv7ePUoZJBs8AaIycuONGPR8g150TUIAqYD62I4hOsCV5BlRcH
-         MCLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xLbjkGnyqbbz4BH8MubMCB3MNb9jNkxMOv80SlkHi3o=;
-        b=ZG2RKoaJ9NEAg2CwthLo8wmqcvJXHGr6LA0oAPc1cPCWycYco/BTOJ9sK18qIGQ6hd
-         th5/aZcaNJ/N2aYW13vis03YwrhOxUmTnIYNv6czAmFabYH01AKhiFdLEZzk1mkjD0p5
-         4Co4DdkgcnDvlCf/IlI9D78GX98AslSvBF37JEW3CAc1XEvDLbNo9V/4aHOMs6Fs+xw0
-         ivX+fNiZCnv6IUId0kcayS6dR5Pg2WzsRBwYQcLPRZUzxSjgdjXYlml/RVRyxFlxzzrm
-         UGFByWGNxcbQL0AbGrBk9K/4O2RJRTRQDYumvtJQEirf6z4yTygzGvomYuMU+x0Xl9zJ
-         SS4w==
-X-Gm-Message-State: APjAAAVnD0wpOmP8AwmMExjDeebgqY+8HGPnWffT5Vifq08OJxbncUlb
-        qpBCgFyS/Z446VtQzOpqVQ4=
-X-Google-Smtp-Source: APXvYqwbkP4ZEi+noY1JRzhuAhZ5pSU+yFtdOhCmNQkZws8Ff3OMGzTYggzXv8013Bgb6kHmi4lJlA==
-X-Received: by 2002:a17:90a:cb18:: with SMTP id z24mr31356951pjt.108.1563887975020;
-        Tue, 23 Jul 2019 06:19:35 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id c130sm41862623pfc.184.2019.07.23.06.19.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 06:19:34 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] net: broadcom: Use dev_get_drvdata
-Date:   Tue, 23 Jul 2019 21:19:29 +0800
-Message-Id: <20190723131929.31987-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S2390144AbfGWNTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 09:19:34 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33513 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729452AbfGWNTe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 09:19:34 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EC6C981F19;
+        Tue, 23 Jul 2019 13:19:33 +0000 (UTC)
+Received: from [10.72.12.26] (ovpn-12-26.pek2.redhat.com [10.72.12.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F409660BEC;
+        Tue, 23 Jul 2019 13:19:28 +0000 (UTC)
+Subject: Re: [PATCH 5/6] vhost: mark dirty pages during map uninit
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190723075718.6275-1-jasowang@redhat.com>
+ <20190723075718.6275-6-jasowang@redhat.com>
+ <20190723041702-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a670cd0d-581d-1aba-41bd-c643c19f9604@redhat.com>
+Date:   Tue, 23 Jul 2019 21:19:33 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190723041702-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Tue, 23 Jul 2019 13:19:34 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of using to_pci_dev + pci_get_drvdata,
-use dev_get_drvdata to make code simpler.
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/broadcom/bnx2.c      | 6 ++----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 ++----
- drivers/net/ethernet/broadcom/tg3.c       | 6 ++----
- 3 files changed, 6 insertions(+), 12 deletions(-)
+On 2019/7/23 下午5:17, Michael S. Tsirkin wrote:
+> On Tue, Jul 23, 2019 at 03:57:17AM -0400, Jason Wang wrote:
+>> We don't mark dirty pages if the map was teared down outside MMU
+>> notifier. This will lead untracked dirty pages. Fixing by marking
+>> dirty pages during map uninit.
+>>
+>> Reported-by: Michael S. Tsirkin<mst@redhat.com>
+>> Fixes: 7f466032dc9e ("vhost: access vq metadata through kernel virtual address")
+>> Signed-off-by: Jason Wang<jasowang@redhat.com>
+>> ---
+>>   drivers/vhost/vhost.c | 22 ++++++++++++++++------
+>>   1 file changed, 16 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> index 89c9f08b5146..5b8821d00fe4 100644
+>> --- a/drivers/vhost/vhost.c
+>> +++ b/drivers/vhost/vhost.c
+>> @@ -306,6 +306,18 @@ static void vhost_map_unprefetch(struct vhost_map *map)
+>>   	kfree(map);
+>>   }
+>>   
+>> +static void vhost_set_map_dirty(struct vhost_virtqueue *vq,
+>> +				struct vhost_map *map, int index)
+>> +{
+>> +	struct vhost_uaddr *uaddr = &vq->uaddrs[index];
+>> +	int i;
+>> +
+>> +	if (uaddr->write) {
+>> +		for (i = 0; i < map->npages; i++)
+>> +			set_page_dirty(map->pages[i]);
+>> +	}
+>> +}
+>> +
+>>   static void vhost_uninit_vq_maps(struct vhost_virtqueue *vq)
+>>   {
+>>   	struct vhost_map *map[VHOST_NUM_ADDRS];
+>> @@ -315,8 +327,10 @@ static void vhost_uninit_vq_maps(struct vhost_virtqueue *vq)
+>>   	for (i = 0; i < VHOST_NUM_ADDRS; i++) {
+>>   		map[i] = rcu_dereference_protected(vq->maps[i],
+>>   				  lockdep_is_held(&vq->mmu_lock));
+>> -		if (map[i])
+>> +		if (map[i]) {
+>> +			vhost_set_map_dirty(vq, map[i], i);
+>>   			rcu_assign_pointer(vq->maps[i], NULL);
+>> +		}
+>>   	}
+>>   	spin_unlock(&vq->mmu_lock);
+>>   
+>> @@ -354,7 +368,6 @@ static void vhost_invalidate_vq_start(struct vhost_virtqueue *vq,
+>>   {
+>>   	struct vhost_uaddr *uaddr = &vq->uaddrs[index];
+>>   	struct vhost_map *map;
+>> -	int i;
+>>   
+>>   	if (!vhost_map_range_overlap(uaddr, start, end))
+>>   		return;
+>> @@ -365,10 +378,7 @@ static void vhost_invalidate_vq_start(struct vhost_virtqueue *vq,
+>>   	map = rcu_dereference_protected(vq->maps[index],
+>>   					lockdep_is_held(&vq->mmu_lock));
+>>   	if (map) {
+>> -		if (uaddr->write) {
+>> -			for (i = 0; i < map->npages; i++)
+>> -				set_page_dirty(map->pages[i]);
+>> -		}
+>> +		vhost_set_map_dirty(vq, map, index);
+>>   		rcu_assign_pointer(vq->maps[index], NULL);
+>>   	}
+>>   	spin_unlock(&vq->mmu_lock);
+> OK and the reason it's safe is because the invalidate counter
+> got incremented so we know page will not get mapped again.
+>
+> But we*do*  need to wait for page not to be mapped.
+> And if that means waiting for VQ processing to finish,
+> then I worry that is a very log time.
+>
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
-index dfdd14eadd57..fbc196b480b6 100644
---- a/drivers/net/ethernet/broadcom/bnx2.c
-+++ b/drivers/net/ethernet/broadcom/bnx2.c
-@@ -8673,8 +8673,7 @@ bnx2_remove_one(struct pci_dev *pdev)
- static int
- bnx2_suspend(struct device *device)
- {
--	struct pci_dev *pdev = to_pci_dev(device);
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct bnx2 *bp = netdev_priv(dev);
- 
- 	if (netif_running(dev)) {
-@@ -8693,8 +8692,7 @@ bnx2_suspend(struct device *device)
- static int
- bnx2_resume(struct device *device)
- {
--	struct pci_dev *pdev = to_pci_dev(device);
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct bnx2 *bp = netdev_priv(dev);
- 
- 	if (!netif_running(dev))
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 7134d2c3eb1c..1aad59b8a413 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10920,8 +10920,7 @@ static void bnxt_shutdown(struct pci_dev *pdev)
- #ifdef CONFIG_PM_SLEEP
- static int bnxt_suspend(struct device *device)
- {
--	struct pci_dev *pdev = to_pci_dev(device);
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct bnxt *bp = netdev_priv(dev);
- 	int rc = 0;
- 
-@@ -10937,8 +10936,7 @@ static int bnxt_suspend(struct device *device)
- 
- static int bnxt_resume(struct device *device)
- {
--	struct pci_dev *pdev = to_pci_dev(device);
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct bnxt *bp = netdev_priv(dev);
- 	int rc = 0;
- 
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index 4c404d2213f9..77f3511b97de 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -18041,8 +18041,7 @@ static void tg3_remove_one(struct pci_dev *pdev)
- #ifdef CONFIG_PM_SLEEP
- static int tg3_suspend(struct device *device)
- {
--	struct pci_dev *pdev = to_pci_dev(device);
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct tg3 *tp = netdev_priv(dev);
- 	int err = 0;
- 
-@@ -18098,8 +18097,7 @@ static int tg3_suspend(struct device *device)
- 
- static int tg3_resume(struct device *device)
- {
--	struct pci_dev *pdev = to_pci_dev(device);
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct tg3 *tp = netdev_priv(dev);
- 	int err = 0;
- 
--- 
-2.20.1
+I'm not sure I get you here. If we don't have such map, we will fall 
+back to normal uaccess helper. And in the memory accessor, the rcu 
+critical section is pretty small.
+
+Thanks
+
+
 
