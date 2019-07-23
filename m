@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B792871DD3
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 19:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EDDA71DD9
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 19:37:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391137AbfGWRhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 13:37:07 -0400
+        id S2391164AbfGWRhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 13:37:17 -0400
 Received: from mga17.intel.com ([192.55.52.151]:49104 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388454AbfGWRhH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732983AbfGWRhH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 23 Jul 2019 13:37:07 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,17 +17,21 @@ Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Jul 2019 10:37:00 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,299,1559545200"; 
-   d="scan'208";a="197203605"
+   d="scan'208";a="197203610"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga002.fm.intel.com with ESMTP; 23 Jul 2019 10:37:00 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 0/6][pull request] 1GbE Intel Wired LAN Driver Updates 2019-07-23
-Date:   Tue, 23 Jul 2019 10:36:44 -0700
-Message-Id: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 1/6] igc: Remove the polarity field from a PHY information structure
+Date:   Tue, 23 Jul 2019 10:36:45 -0700
+Message-Id: <20190723173650.23276-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
+References: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,42 +39,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to igc and e1000e client drivers only.
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-Sasha provides a couple of cleanups to remove code that is not needed
-and reduce structure sizes.  Updated the MAC reset flow to use the
-device reset flow instead of a port reset flow.  Added addition device
-id's that will be supported.
+Polarity and cable length fields is not applicable for the i225 device.
+This patch comes to clean up PHY information structure.
 
-Kai-Heng Feng provides a workaround for a possible stalled packet issue
-in our ICH devices due to a clock recovery from the PCH being too slow.
-Also provided a fix where the MAC & PHY may become de-sync'd causing a
-miss detection of link up events.
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_hw.h | 6 ------
+ 1 file changed, 6 deletions(-)
 
-The following are changes since commit d5c3a62d0bb9b763e9378fe8f4cd79502e16cce8:
-  Merge branch 'Convert-skb_frag_t-to-bio_vec'
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
-
-Kai-Heng Feng (2):
-  e1000e: add workaround for possible stalled packet
-  e1000e: disable force K1-off feature
-
-Sasha Neftin (4):
-  igc: Remove the polarity field from a PHY information structure
-  igc: Remove the unused field from a device specification structure
-  igc: Update the MAC reset flow
-  igc: Add more SKUs for i225 device
-
- drivers/net/ethernet/intel/e1000e/hw.h       |  1 +
- drivers/net/ethernet/intel/e1000e/ich8lan.c  | 13 +++++++++++++
- drivers/net/ethernet/intel/e1000e/ich8lan.h  |  2 +-
- drivers/net/ethernet/intel/igc/igc_base.c    |  5 ++++-
- drivers/net/ethernet/intel/igc/igc_defines.h |  2 +-
- drivers/net/ethernet/intel/igc/igc_hw.h      | 14 +++-----------
- drivers/net/ethernet/intel/igc/igc_main.c    |  3 +++
- 7 files changed, 26 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
+index 1039a224ac80..f689f0a02b5d 100644
+--- a/drivers/net/ethernet/intel/igc/igc_hw.h
++++ b/drivers/net/ethernet/intel/igc/igc_hw.h
+@@ -151,16 +151,10 @@ struct igc_phy_info {
+ 
+ 	u16 autoneg_advertised;
+ 	u16 autoneg_mask;
+-	u16 cable_length;
+-	u16 max_cable_length;
+-	u16 min_cable_length;
+-	u16 pair_length[4];
+ 
+ 	u8 mdix;
+ 
+-	bool disable_polarity_correction;
+ 	bool is_mdix;
+-	bool polarity_correction;
+ 	bool reset_disable;
+ 	bool speed_downgraded;
+ 	bool autoneg_wait_to_complete;
 -- 
 2.21.0
 
