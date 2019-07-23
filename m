@@ -2,97 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A5B7102B
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 05:41:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E068A7102C
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 05:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730564AbfGWDln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 23:41:43 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45041 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727251AbfGWDln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 23:41:43 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t14so20002267plr.11
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 20:41:43 -0700 (PDT)
+        id S1730361AbfGWDnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 23:43:12 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38500 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726606AbfGWDnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jul 2019 23:43:12 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y15so18390580pfn.5
+        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 20:43:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f83zJaD9M577kuvJ3vToD6RGlHvSJBHpbv6acwBXPA8=;
-        b=N57Dz0can4yBJbn1OIvYcBphg4truGZJKrCXztggQoJg7qi/bGf6xqhlUaIeaXRAZL
-         r9WmhKL2YeYbTUv6SZ0HcEGW4hnfWJsaNwRvNRIkgYpb8cAwmJDdInuHVRMJjK4HaVwj
-         zY5S3tJtfbKM7eSBKoitOKHwsHCE8q3/d9eWU/uP7GVWZUs6TqbQXTlSCrEuIwlyHXsx
-         cLgExwG8tfqeqC7cSEYxKtK5finJGe76xT3OBnG7aa3ztAUksLx9U+AoDXEWjQDrpzl1
-         UD0iMif1HWHA8wVkRyzu3Ckf0nfRFvbI5njL8cMjMAkPVdyTHeiptv5pxS8bxu4YsUlO
-         tgVQ==
+        h=from:to:subject:date:message-id;
+        bh=7IsuEEyOhwTDq0iuccX9QFOhk+ECbXHwEKOsR5YJ4sc=;
+        b=Ryz/WY9+yXqz2hqAtR4gqcZ+VMDxXxXkHI0T6f7cJPInZO0evjjXiYnQyB+57nhpat
+         GbHFLRi+NVJ5Rz394byQfLCoh0VzUzH3Wkv5PsvW5VBg9UbD5nY9VFvDKTr9Vd80Gkwb
+         wSg0gqh2kasls3NPWwypn17tqap8TQaisweMZ9M1ch0GX55h2htKdUytCsR/wgx2S3g3
+         BbGe0vuEsG4mfSkqM5Bkp8gq4ecNk/yRysS8GVrrkxZ72PttgO9x2HMeEGDiCJW7wLhI
+         jJ4aZFCvDx7wUNsjxt0z1iiAbeBnMn+PG1EYovwrGiREe3/zMJ/9TzmetqCS9sm7SVlG
+         qEBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f83zJaD9M577kuvJ3vToD6RGlHvSJBHpbv6acwBXPA8=;
-        b=UtDJ0aQQ1A5Uy3DaSGRx7zc3T5FzJ14GQcQETWrfbGmnGB3dRJa7+9osQbdEqYvSeP
-         T5rZ6u2v9b4mSaHR8V+zn6WMsDkaN8oJqepJs9OvQQ3LCDfrYKjWV5KQQT2capS4ai9M
-         r+9M2U3J2rmJX8XiPIrNklsUrFDgNhqVc6Hgc5DKeceBC9RHzevfGLIM+8AIwVfUtR6v
-         2ZB/c9kFpZqyk7RfwfoSXRWVNkEzfW9A17dBQwjsBwy0YdTBfZSdy5x+wxXpE22P6dtd
-         p9sPj7R26b/3/pdL/EypDVCYhn2NGrzb3mmgXG447UckLS8wMbmwTS/TvK7xDu9Cu8XS
-         2QvA==
-X-Gm-Message-State: APjAAAXUyx1U0jWjeHPv9iSWzunatA+EpBOGGhAua2uD9E9uLQGnMEBM
-        wvo8ynKYxO7i/uOmwmwdeBE1K6WVfXA=
-X-Google-Smtp-Source: APXvYqwNtG6swYsOJXCPAIhf4dqtCXVGGjg9tCw73ohUfkbRnz1v34qE6SF3tnZnsaFvfQpmbVAnKg==
-X-Received: by 2002:a17:902:a417:: with SMTP id p23mr77312038plq.136.1563853302563;
-        Mon, 22 Jul 2019 20:41:42 -0700 (PDT)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id n98sm41857273pjc.26.2019.07.22.20.41.41
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=7IsuEEyOhwTDq0iuccX9QFOhk+ECbXHwEKOsR5YJ4sc=;
+        b=mT1WKEoKPkNn2ioOf6rWS9bvQKJOULMKt2zIDRxhh39yQD1fe8+wkDgOBwV1lEkcvU
+         auc6i4nH5S5h6YM7eaA7wMySOPLH/PJzkyzzX6ykwvBbHNl/xK0FA80bW5evf8xk90b5
+         kqnyLbVa8v27rD99xB9BTuqIYoK/e7DYNnhLvdEXcoBjHxjFe+DkHabxNwi/oE9HiGVP
+         QkCg1SZhN4We8x+KwWplW/qAgCf6zXH0s2dMpS1yeKGIoI23CW56QUqUKXivQIaNJ9uU
+         Vu40/3m6cn7j/ZsiwHpPhigfDUU58Cbx9lOlQOp91yMaEEm49pDdyLxHlXNGJD0x2m3Y
+         8EHw==
+X-Gm-Message-State: APjAAAUvuSbt/D7I8QJQxiMPnBhVjO9TdC0IY8vC+9U7LsPAUth4iEI1
+        rLKniAtL4vIUxjWjp3WwoQY04MaDGjE=
+X-Google-Smtp-Source: APXvYqwxKjUX0Bi+PKMc2UR1m4zguIhGqR2Rf5QFgxuulwd/XU10B8RNwdtkST8T3iK2VJfuq/EKfg==
+X-Received: by 2002:a62:8344:: with SMTP id h65mr3567530pfe.85.1563853391014;
+        Mon, 22 Jul 2019 20:43:11 -0700 (PDT)
+Received: from localhost.localdomain (76-14-106-55.rk.wavecable.com. [76.14.106.55])
+        by smtp.gmail.com with ESMTPSA id y10sm42364985pfm.66.2019.07.22.20.43.10
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 22 Jul 2019 20:41:41 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
+        Mon, 22 Jul 2019 20:43:10 -0700 (PDT)
+From:   Rosen Penev <rosenp@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+622bdabb128acc33427d@syzkaller.appspotmail.com,
-        syzbot+6eaef7158b19e3fec3a0@syzkaller.appspotmail.com,
-        syzbot+9399c158fcc09b21d0d2@syzkaller.appspotmail.com,
-        syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com,
-        Ralf Baechle <ralf@linux-mips.org>
-Subject: [Patch net] netrom: hold sock when setting skb->destructor
-Date:   Mon, 22 Jul 2019 20:41:22 -0700
-Message-Id: <20190723034122.23166-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH] net-next: ag71xx: Rearrange ag711xx struct to remove holes
+Date:   Mon, 22 Jul 2019 20:43:09 -0700
+Message-Id: <20190723034309.16492-1-rosenp@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sock_efree() releases the sock refcnt, if we don't hold this refcnt
-when setting skb->destructor to it, the refcnt would not be balanced.
-This leads to several bug reports from syzbot.
+Removed ____cacheline_aligned attribute to ring structs. This actually
+causes holes in the ag71xx struc as well as lower performance.
 
-I have checked other users of sock_efree(), all of them hold the
-sock refcnt.
+Rearranged struct members to fall within respective cachelines. The RX
+ring struct now does not share a cacheline with the TX ring. The NAPI
+atruct now takes up its own cachelines and does not share.
 
-Fixes: c8c8218ec5af ("netrom: fix a memory leak in nr_rx_frame()")
-Reported-and-tested-by: <syzbot+622bdabb128acc33427d@syzkaller.appspotmail.com>
-Reported-and-tested-by: <syzbot+6eaef7158b19e3fec3a0@syzkaller.appspotmail.com>
-Reported-and-tested-by: <syzbot+9399c158fcc09b21d0d2@syzkaller.appspotmail.com>
-Reported-and-tested-by: <syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+According to pahole -C ag71xx -c 32
+
+Before:
+
+struct ag71xx {
+	/* size: 384, cachelines: 12, members: 22 */
+	/* sum members: 375, holes: 2, sum holes: 9 */
+
+After:
+
+struct ag71xx {
+	/* size: 376, cachelines: 12, members: 22 */
+	/* last cacheline: 24 bytes */
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
 ---
- net/netrom/af_netrom.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/atheros/ag71xx.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
-index 96740d389377..c4f54ad2b98a 100644
---- a/net/netrom/af_netrom.c
-+++ b/net/netrom/af_netrom.c
-@@ -967,6 +967,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+index 8f450a03a885..4699feb4ee31 100644
+--- a/drivers/net/ethernet/atheros/ag71xx.c
++++ b/drivers/net/ethernet/atheros/ag71xx.c
+@@ -295,17 +295,16 @@ struct ag71xx {
+ 	/* Critical data related to the per-packet data path are clustered
+ 	 * early in this structure to help improve the D-cache footprint.
+ 	 */
+-	struct ag71xx_ring rx_ring ____cacheline_aligned;
+-	struct ag71xx_ring tx_ring ____cacheline_aligned;
++	struct ag71xx_ring rx_ring;
++	struct ag71xx_ring tx_ring;
  
- 	window = skb->data[20];
+ 	u16 rx_buf_size;
+-	u8 rx_buf_offset;
++	u16 rx_buf_offset;
  
-+	sock_hold(make);
- 	skb->sk             = make;
- 	skb->destructor     = sock_efree;
- 	make->sk_state	    = TCP_ESTABLISHED;
++	const struct ag71xx_dcfg *dcfg;
+ 	struct net_device *ndev;
+ 	struct platform_device *pdev;
+ 	struct napi_struct napi;
+-	u32 msg_enable;
+-	const struct ag71xx_dcfg *dcfg;
+ 
+ 	/* From this point onwards we're not looking at per-packet fields. */
+ 	void __iomem *mac_base;
+@@ -313,20 +312,18 @@ struct ag71xx {
+ 	struct ag71xx_desc *stop_desc;
+ 	dma_addr_t stop_desc_dma;
+ 
+-	int phy_if_mode;
+-
+-	struct delayed_work restart_work;
+-	struct timer_list oom_timer;
+-
+-	struct reset_control *mac_reset;
+-
+ 	u32 fifodata[3];
+ 	int mac_idx;
++	int phy_if_mode;
++	u32 msg_enable;
+ 
+ 	struct reset_control *mdio_reset;
+ 	struct mii_bus *mii_bus;
+ 	struct clk *clk_mdio;
+ 	struct clk *clk_eth;
++	struct reset_control *mac_reset;
++	struct delayed_work restart_work;
++	struct timer_list oom_timer;
+ };
+ 
+ static int ag71xx_desc_empty(struct ag71xx_desc *desc)
 -- 
-2.21.0
+2.17.1
 
