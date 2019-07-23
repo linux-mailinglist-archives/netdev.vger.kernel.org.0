@@ -2,131 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 920D3721BC
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 23:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0736B721C1
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 23:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403929AbfGWVjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 17:39:40 -0400
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:11845 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728154AbfGWVjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 17:39:40 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d377e960000>; Tue, 23 Jul 2019 14:39:35 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Tue, 23 Jul 2019 14:39:37 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Tue, 23 Jul 2019 14:39:37 -0700
-Received: from [10.26.11.185] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 23 Jul
- 2019 21:39:32 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Lars Persson <lists@bofh.nu>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
- <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20190722101830.GA24948@apalos>
- <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
- <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
- <11557fe0-0cba-cb49-0fb6-ad24792d4a53@nvidia.com>
- <BN8PR12MB3266664ECA192E02C06061EED3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
- <BYAPR12MB3269A725AFDDA21E92946558D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <ab14f31f-2045-b1be-d31f-2a81b8527dac@nvidia.com>
- <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <6c769226-bdd9-6fe0-b96b-5a0d800fed24@arm.com>
- <8756d681-e167-fe4a-c6f0-47ae2dcbb100@nvidia.com>
- <3255edfa-4465-204b-4751-8d40c8fb1382@arm.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <ae11deb4-abec-f0f9-312d-b11d72bc74cd@nvidia.com>
-Date:   Tue, 23 Jul 2019 22:39:29 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <3255edfa-4465-204b-4751-8d40c8fb1382@arm.com>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1563917975; bh=3lTWQ4Ol+M8dbc5nZy7wEdkUC8P1FuGjPhA49g8j8zk=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=jvibVR/sKGrwa2X/qvAjnZwSbm2bNfciQjLdTf4vyefptsIWI8zsUowixYZ6tB9Nw
-         Zlr9Yf1gr0DQJXt+6R6C0hyozvsu2WvdsxMKBhuXhnbwSb0R3ax3RQpxhKCKQ5vhzl
-         VuhHWs8kZ5kB3D9acg6XfuQfHc/HPqve+4e6kkrdXG2dieduHRwBah8yWM1QwmG0XN
-         k17/J7Fa3caqZkgKym+i/gpuFwuw3F9bG7+7prK7J7P10qK3bv2yWLHppIQPmJCOxs
-         csTZdSV19F6ZS7wjvM86WuqApUCoHIJIhufWWHBg/gd9OMXU0zwVvSKBmC/J/f4jTi
-         w8VKyH/YrF9Zw==
+        id S1728697AbfGWVki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 17:40:38 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:37224 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727025AbfGWVki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 17:40:38 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A483B153C23F2;
+        Tue, 23 Jul 2019 14:40:37 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 14:40:37 -0700 (PDT)
+Message-Id: <20190723.144037.1902813339837548393.davem@davemloft.net>
+To:     snelson@pensando.io
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 18/19] ionic: Add coalesce and other
+ features
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190722214023.9513-19-snelson@pensando.io>
+References: <20190722214023.9513-1-snelson@pensando.io>
+        <20190722214023.9513-19-snelson@pensando.io>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 23 Jul 2019 14:40:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Shannon Nelson <snelson@pensando.io>
+Date: Mon, 22 Jul 2019 14:40:22 -0700
 
-On 23/07/2019 14:19, Robin Murphy wrote:
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> index 742d7d47f4d8..e6b579a40b70 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> @@ -377,6 +377,75 @@ static int ionic_get_coalesce(struct net_device *netdev,
+>  	return 0;
+>  }
+>  
+> +static int ionic_set_coalesce(struct net_device *netdev,
+> +			      struct ethtool_coalesce *coalesce)
+> +{
+> +	struct lif *lif = netdev_priv(netdev);
+> +	struct identity *ident = &lif->ionic->ident;
+> +	struct ionic_dev *idev = &lif->ionic->idev;
+> +	u32 tx_coal, rx_coal;
+> +	struct qcq *qcq;
+> +	unsigned int i;
 
-...
+Reverse christmas tree please.
 
->>> Do you know if the SMMU interrupts are working correctly? If not, it's
->>> possible that an incorrect address or mapping direction could lead to
->>> the DMA transaction just being silently terminated without any fault
->>> indication, which generally presents as inexplicable weirdness (I've
->>> certainly seen that on another platform with the mix of an unsupported
->>> interrupt controller and an 'imperfect' ethernet driver).
->>
->> If I simply remove the iommu node for the ethernet controller, then I
->> see lots of ...
->>
->> [=C2=A0=C2=A0=C2=A0 6.296121] arm-smmu 12000000.iommu: Unexpected global=
- fault, this
->> could be serious
->> [=C2=A0=C2=A0=C2=A0 6.296125] arm-smmu 12000000.iommu:=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GFSR 0x00000002,
->> GFSYNR0 0x00000000, GFSYNR1 0x00000014, GFSYNR2 0x00000000
->>
->> So I assume that this is triggering the SMMU interrupt correctly.
->=20
-> According to tegra186.dtsi it appears you're using the MMU-500 combined
-> interrupt, so if global faults are being delivered then context faults
-> *should* also, but I'd be inclined to try a quick hack of the relevant
-> stmmac_desc_ops::set_addr callback to write some bogus unmapped address
-> just to make sure arm_smmu_context_fault() then screams as expected, and
-> we're not missing anything else.
-
-I hacked the driver and forced the address to zero for a test and
-in doing so I see ...
-
-[   10.440072] arm-smmu 12000000.iommu: Unhandled context fault: fsr=3D0x40=
-2, iova=3D0x00000000, fsynr=3D0x1c0011, cbfrsynra=3D0x14, cb=3D0
-
-So looks like the interrupts are working AFAICT.
-
-Cheers
-Jon
-
---=20
-nvpublic
