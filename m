@@ -2,83 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F547160B
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 12:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C467171616
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 12:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388773AbfGWK2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 06:28:04 -0400
-Received: from mail-ot1-f53.google.com ([209.85.210.53]:33697 "EHLO
-        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388667AbfGWK2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 06:28:04 -0400
-Received: by mail-ot1-f53.google.com with SMTP id q20so43448716otl.0
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 03:28:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DzjZ9xrgJ3e/N9oCtEjwrojn4zWHBMXyeNDwUYtXGpA=;
-        b=IMAR6fvAspFpE2VY2zN47kWU83tie4A+Smh5I1eVnhIRNNrh9o5KpPCjY2/S4IT1xX
-         MwoSHeg6j1eHNGeezJD7/3o8HH8XQa0EgZ6QAVMVdkrrGfyOpI8mKdF6jQsXtwje9h5d
-         eZwYSm3O7jWCVbxabKaIZYM58itmDAl3XtWrw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DzjZ9xrgJ3e/N9oCtEjwrojn4zWHBMXyeNDwUYtXGpA=;
-        b=THC8niKQxCeYQRuYnz/q3HWTFw2JYqm0o8i1S0t/lLSFTrE64HhP6Bpfh8YY3NHgSs
-         dbEWK8tMBifmoPfV/Wr9ouO2Mmq0CQzjROQIhgSC8ccoTuljPpnDDQJVlgpoxLpxnuB5
-         ANeQN2m1rDHokL38F06MQZ7kWgY3uce1MmYn9GXZ4+ntSaYn6UCad2PsdR2ME205pP6x
-         PVS5vdLib1wZ9oWZi/eRboK0iumXiBQ8N0S3XnxpCIMYxOK1tntsn6XuLq6zjONtM+xf
-         vbKSI1eEF9BoUjz8QzOTQS05JOKIGFikW0xzAmSXN2liJQGuDZ/v0ZOvFpq58n9gNXTZ
-         niCg==
-X-Gm-Message-State: APjAAAXf5/Pay3NfgWg0ilXBzRuR33Bq8Tk6TIW3Vq3A7ictgw70sz4v
-        VAEiTXDDi+nDd8enosz6bKkyMnWOxloMeB3mQQKzcA==
-X-Google-Smtp-Source: APXvYqzEpVRw6OPxSjOoqAs6BN44GaYDcArZCOF2x1AMWSijh7TcvOBEmzzr2EMth26lY0YWk4E1HNUjbRO2AGoyfPQ=
-X-Received: by 2002:a9d:28:: with SMTP id 37mr53996317ota.289.1563877683237;
- Tue, 23 Jul 2019 03:28:03 -0700 (PDT)
+        id S2389013AbfGWK3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 06:29:32 -0400
+Received: from foss.arm.com ([217.140.110.172]:52346 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388997AbfGWK3c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 06:29:32 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 40CC0337;
+        Tue, 23 Jul 2019 03:29:31 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4B15A3F71A;
+        Tue, 23 Jul 2019 03:29:29 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Lars Persson <lists@bofh.nu>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <29dcc161-f7c8-026e-c3cc-5adb04df128c@nvidia.com>
+ <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20190722101830.GA24948@apalos>
+ <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
+ <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <11557fe0-0cba-cb49-0fb6-ad24792d4a53@nvidia.com>
+ <BN8PR12MB3266664ECA192E02C06061EED3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <BYAPR12MB3269A725AFDDA21E92946558D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <ab14f31f-2045-b1be-d31f-2a81b8527dac@nvidia.com>
+ <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <6c769226-bdd9-6fe0-b96b-5a0d800fed24@arm.com>
+Date:   Tue, 23 Jul 2019 11:29:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190723002042.105927-1-ppenkov.kernel@gmail.com>
-In-Reply-To: <20190723002042.105927-1-ppenkov.kernel@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 23 Jul 2019 11:27:51 +0100
-Message-ID: <CACAyw9_6jp6PauEcCSVvc+JJA1VvZgNsYZtuvu5=vf4b0rxkvw@mail.gmail.com>
-Subject: Re: [bpf-next 0/6] Introduce a BPF helper to generate SYN cookies
-To:     Petar Penkov <ppenkov.kernel@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Jul 2019 at 01:20, Petar Penkov <ppenkov.kernel@gmail.com> wrote:
->
-> From: Petar Penkov <ppenkov@google.com>
->
-> This patch series introduces a BPF helper function that allows generating SYN
-> cookies from BPF. Currently, this helper is enabled at both the TC hook and the
-> XDP hook.
->
-> The first two patches in the series add/modify several TCP helper functions to
-> allow for SKB-less operation, as is the case at the XDP hook.
->
-> The third patch introduces the bpf_tcp_gen_syncookie helper function which
-> generates a SYN cookie for either XDP or TC programs. The return value of
-> this function contains both the MSS value, encoded in the cookie, and the
-> cookie itself.
->
-> The last three patches sync tools/ and add a test.
+On 23/07/2019 11:07, Jose Abreu wrote:
+> From: Jon Hunter <jonathanh@nvidia.com>
+> Date: Jul/23/2019, 11:01:24 (UTC+00:00)
+> 
+>> This appears to be a winner and by disabling the SMMU for the ethernet
+>> controller and reverting commit 954a03be033c7cef80ddc232e7cbdb17df735663
+>> this worked! So yes appears to be related to the SMMU being enabled. We
+>> had to enable the SMMU for ethernet recently due to commit
+>> 954a03be033c7cef80ddc232e7cbdb17df735663.
+> 
+> Finally :)
+> 
+> However, from "git show 954a03be033c7cef80ddc232e7cbdb17df735663":
+> 
+> +         There are few reasons to allow unmatched stream bypass, and
+> +         even fewer good ones.  If saying YES here breaks your board
+> +         you should work on fixing your board.
+> 
+> So, how can we fix this ? Is your ethernet DT node marked as
+> "dma-coherent;" ?
 
-Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
+The first thing to try would be booting the failing setup with 
+"iommu.passthrough=1" (or using CONFIG_IOMMU_DEFAULT_PASSTHROUGH) - if 
+that makes things seem OK, then the problem is likely related to address 
+translation; if not, then it's probably time to start looking at nasties 
+like coherency and ordering, although in principle I wouldn't expect the 
+SMMU to have too much impact there.
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+Do you know if the SMMU interrupts are working correctly? If not, it's 
+possible that an incorrect address or mapping direction could lead to 
+the DMA transaction just being silently terminated without any fault 
+indication, which generally presents as inexplicable weirdness (I've 
+certainly seen that on another platform with the mix of an unsupported 
+interrupt controller and an 'imperfect' ethernet driver).
 
-www.cloudflare.com
+Just to confirm, has the original patch been tested with 
+CONFIG_DMA_API_DEBUG to rule out any high-level mishaps?
+
+Robin.
