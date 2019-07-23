@@ -2,232 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B3167109D
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 06:31:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5E8710B0
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 06:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731953AbfGWEbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 00:31:32 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9034 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731738AbfGWEb3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 00:31:29 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6N4RMCE024499
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 21:31:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=8vj66Wz8kgcLrZwsVt5kr7RmD0+Uo9WYRoNH7EAXwQE=;
- b=XUrWuTBIZh9sdIqMPt5bVWhHfZVnEvF3CWn8WayCBzBxzMYKllk4lHJzsF9MTNvgBBAR
- Egw/OOKaU8JpnDd9Qe/SirBVjp1bcG5O6+W8Ru/OsetK4L4qV8aB0HoKXQTaoslL+mMG
- /9BTbsE1buke/ymWwPojmGrG/gKDObEoirw= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0b-00082601.pphosted.com with ESMTP id 2twg5ytbj5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 22 Jul 2019 21:31:28 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Mon, 22 Jul 2019 21:31:27 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id C92B08614ED; Mon, 22 Jul 2019 21:31:26 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 5/5] selftests/bpf: remove perf buffer helpers
-Date:   Mon, 22 Jul 2019 21:31:12 -0700
-Message-ID: <20190723043112.3145810-6-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190723043112.3145810-1-andriin@fb.com>
-References: <20190723043112.3145810-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1732570AbfGWEnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 00:43:05 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:7889 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730761AbfGWEnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 00:43:04 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d3690560000>; Mon, 22 Jul 2019 21:43:02 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 22 Jul 2019 21:43:02 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 22 Jul 2019 21:43:02 -0700
+Received: from [10.2.164.38] (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 23 Jul
+ 2019 04:43:01 +0000
+Subject: Re: [PATCH 3/3] net/xdp: convert put_page() to put_user_page*()
+To:     Ira Weiny <ira.weiny@intel.com>, <john.hubbard@gmail.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, <netdev@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-mm@kvack.org>,
+        <linux-rdma@vger.kernel.org>, <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20190722223415.13269-1-jhubbard@nvidia.com>
+ <20190722223415.13269-4-jhubbard@nvidia.com>
+ <20190723002534.GA10284@iweiny-DESK2.sc.intel.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <a4e9b293-11f8-6b3c-cf4d-308e3b32df34@nvidia.com>
+Date:   Mon, 22 Jul 2019 21:41:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-23_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=25 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=948 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907230039
-X-FB-Internal: deliver
+In-Reply-To: <20190723002534.GA10284@iweiny-DESK2.sc.intel.com>
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563856982; bh=6Lt/z2MUaW0HLuGN6nPZXpx+R7NECtbBk4FafHzD+OU=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=Qa3lZLE8Kf/RL8KhFgPo9Jkt7HFiKw1Is4rV87XoFGEKvWzwvIu+hxfTzr2uraY59
+         XErNMpPf1Qu2zCNLtYfVRqCa3/zsPozeqvDkM44qxxIpWE47R8YoLoPjAb9uunMk0+
+         2+b5UcPkOzZtt+IdgVMrvpTMyr/Pdu3kowZiYCl3u00yAyQSmsitBmCoJle4OhJXpe
+         bMuJ8grmilp9xNLC2hggYcxZ/uAvyWeQge9toK1cze9EOdK1UUkTm+VI05DdS87kNs
+         cGOrzWdia2G/F74bOT0v75OXAOE8VdSB9dSxGpUKwW6BkxObVy2erx/jSiG+ZKKb1I
+         5O4vdoqzeZX4g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-libbpf's perf_buffer API supersedes trace_helper.h's helpers.
-Remove those helpers after all existing users were already moved to
-perf_buffer API.
+On 7/22/19 5:25 PM, Ira Weiny wrote:
+> On Mon, Jul 22, 2019 at 03:34:15PM -0700, john.hubbard@gmail.com wrote:
+>> From: John Hubbard <jhubbard@nvidia.com>
+>>
+>> For pages that were retained via get_user_pages*(), release those pages
+>> via the new put_user_page*() routines, instead of via put_page() or
+>> release_pages().
+>>
+>> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+>> ("mm: introduce put_user_page*(), placeholder versions").
+>>
+>> Cc: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+>> Cc: David S. Miller <davem@davemloft.net>
+>> Cc: netdev@vger.kernel.org
+>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+>> ---
+>>   net/xdp/xdp_umem.c | 9 +--------
+>>   1 file changed, 1 insertion(+), 8 deletions(-)
+>>
+>> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+>> index 83de74ca729a..0325a17915de 100644
+>> --- a/net/xdp/xdp_umem.c
+>> +++ b/net/xdp/xdp_umem.c
+>> @@ -166,14 +166,7 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
+>>  =20
+>>   static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+>>   {
+>> -	unsigned int i;
+>> -
+>> -	for (i =3D 0; i < umem->npgs; i++) {
+>> -		struct page *page =3D umem->pgs[i];
+>> -
+>> -		set_page_dirty_lock(page);
+>> -		put_page(page);
+>> -	}
+>> +	put_user_pages_dirty_lock(umem->pgs, umem->npgs);
+>=20
+> What is the difference between this and
+>=20
+> __put_user_pages(umem->pgs, umem->npgs, PUP_FLAGS_DIRTY_LOCK);
+>=20
+> ?
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/trace_helpers.c | 125 --------------------
- tools/testing/selftests/bpf/trace_helpers.h |   9 --
- 2 files changed, 134 deletions(-)
+No difference.
 
-diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/selftests/bpf/trace_helpers.c
-index b47f205f0310..7f989b3e4e22 100644
---- a/tools/testing/selftests/bpf/trace_helpers.c
-+++ b/tools/testing/selftests/bpf/trace_helpers.c
-@@ -86,128 +86,3 @@ long ksym_get_addr(const char *name)
- 
- 	return 0;
- }
--
--static int page_size;
--static int page_cnt = 8;
--static struct perf_event_mmap_page *header;
--
--int perf_event_mmap_header(int fd, struct perf_event_mmap_page **header)
--{
--	void *base;
--	int mmap_size;
--
--	page_size = getpagesize();
--	mmap_size = page_size * (page_cnt + 1);
--
--	base = mmap(NULL, mmap_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
--	if (base == MAP_FAILED) {
--		printf("mmap err\n");
--		return -1;
--	}
--
--	*header = base;
--	return 0;
--}
--
--int perf_event_mmap(int fd)
--{
--	return perf_event_mmap_header(fd, &header);
--}
--
--static int perf_event_poll(int fd)
--{
--	struct pollfd pfd = { .fd = fd, .events = POLLIN };
--
--	return poll(&pfd, 1, 1000);
--}
--
--struct perf_event_sample {
--	struct perf_event_header header;
--	__u32 size;
--	char data[];
--};
--
--static enum bpf_perf_event_ret
--bpf_perf_event_print(struct perf_event_header *hdr, void *private_data)
--{
--	struct perf_event_sample *e = (struct perf_event_sample *)hdr;
--	perf_event_print_fn fn = private_data;
--	int ret;
--
--	if (e->header.type == PERF_RECORD_SAMPLE) {
--		ret = fn(e->data, e->size);
--		if (ret != LIBBPF_PERF_EVENT_CONT)
--			return ret;
--	} else if (e->header.type == PERF_RECORD_LOST) {
--		struct {
--			struct perf_event_header header;
--			__u64 id;
--			__u64 lost;
--		} *lost = (void *) e;
--		printf("lost %lld events\n", lost->lost);
--	} else {
--		printf("unknown event type=%d size=%d\n",
--		       e->header.type, e->header.size);
--	}
--
--	return LIBBPF_PERF_EVENT_CONT;
--}
--
--int perf_event_poller(int fd, perf_event_print_fn output_fn)
--{
--	enum bpf_perf_event_ret ret;
--	void *buf = NULL;
--	size_t len = 0;
--
--	for (;;) {
--		perf_event_poll(fd);
--		ret = bpf_perf_event_read_simple(header, page_cnt * page_size,
--						 page_size, &buf, &len,
--						 bpf_perf_event_print,
--						 output_fn);
--		if (ret != LIBBPF_PERF_EVENT_CONT)
--			break;
--	}
--	free(buf);
--
--	return ret;
--}
--
--int perf_event_poller_multi(int *fds, struct perf_event_mmap_page **headers,
--			    int num_fds, perf_event_print_fn output_fn)
--{
--	enum bpf_perf_event_ret ret;
--	struct pollfd *pfds;
--	void *buf = NULL;
--	size_t len = 0;
--	int i;
--
--	pfds = calloc(num_fds, sizeof(*pfds));
--	if (!pfds)
--		return LIBBPF_PERF_EVENT_ERROR;
--
--	for (i = 0; i < num_fds; i++) {
--		pfds[i].fd = fds[i];
--		pfds[i].events = POLLIN;
--	}
--
--	for (;;) {
--		poll(pfds, num_fds, 1000);
--		for (i = 0; i < num_fds; i++) {
--			if (!pfds[i].revents)
--				continue;
--
--			ret = bpf_perf_event_read_simple(headers[i],
--							 page_cnt * page_size,
--							 page_size, &buf, &len,
--							 bpf_perf_event_print,
--							 output_fn);
--			if (ret != LIBBPF_PERF_EVENT_CONT)
--				break;
--		}
--	}
--	free(buf);
--	free(pfds);
--
--	return ret;
--}
-diff --git a/tools/testing/selftests/bpf/trace_helpers.h b/tools/testing/selftests/bpf/trace_helpers.h
-index 18924f23db1b..aa4dcfe18050 100644
---- a/tools/testing/selftests/bpf/trace_helpers.h
-+++ b/tools/testing/selftests/bpf/trace_helpers.h
-@@ -3,7 +3,6 @@
- #define __TRACE_HELPER_H
- 
- #include <libbpf.h>
--#include <linux/perf_event.h>
- 
- struct ksym {
- 	long addr;
-@@ -14,12 +13,4 @@ int load_kallsyms(void);
- struct ksym *ksym_search(long key);
- long ksym_get_addr(const char *name);
- 
--typedef enum bpf_perf_event_ret (*perf_event_print_fn)(void *data, int size);
--
--int perf_event_mmap(int fd);
--int perf_event_mmap_header(int fd, struct perf_event_mmap_page **header);
--/* return LIBBPF_PERF_EVENT_DONE or LIBBPF_PERF_EVENT_ERROR */
--int perf_event_poller(int fd, perf_event_print_fn output_fn);
--int perf_event_poller_multi(int *fds, struct perf_event_mmap_page **headers,
--			    int num_fds, perf_event_print_fn output_fn);
- #endif
--- 
-2.17.1
+>=20
+> I'm a bit concerned with adding another form of the same interface.  We s=
+hould
+> either have 1 call with flags (enum in this case) or multiple calls.  Giv=
+en the
+> previous discussion lets move in the direction of having the enum but don=
+'t
+> introduce another caller of the "old" interface.
+
+I disagree that this is a "problem". There is no maintenance pitfall here; =
+there
+are merely two ways to call the put_user_page*() API. Both are correct, and
+neither one will get you into trouble.
+
+Not only that, but there is ample precedent for this approach in other
+kernel APIs.
+
+>=20
+> So I think on this patch NAK from me.
+>=20
+> I also don't like having a __* call in the exported interface but there i=
+s a
+> __get_user_pages_fast() call so I guess there is precedent.  :-/
+>=20
+
+I thought about this carefully, and looked at other APIs. And I noticed tha=
+t
+things like __get_user_pages*() are how it's often done:
+
+* The leading underscores are often used for the more elaborate form of the
+call (as oppposed to decorating the core function name with "_flags", for
+example).
+
+* There are often calls in which you can either call the simpler form, or t=
+he
+form with flags and additional options, and yes, you'll get the same result=
+.
+
+Obviously, this stuff is all subject to a certain amount of opinion, but I
+think I'm on really solid ground as far as precedent goes. So I'm pushing
+back on the NAK... :)
+
+thanks,
+--=20
+John Hubbard
+NVIDIA
 
