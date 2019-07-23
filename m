@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B59C871A13
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:16:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324EC71A12
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390524AbfGWOQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 10:16:31 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46316 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbfGWOQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 10:16:30 -0400
-Received: by mail-pg1-f196.google.com with SMTP id k189so468294pgk.13;
-        Tue, 23 Jul 2019 07:16:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vnMp4KQz5A+KQDSXbk5N3b4UMi/Pfkv+7tT/nF0GEF0=;
-        b=lVziAEHMQ5C5tS+95c5MdMdXA7umqy9khg7ApB8F/o4zEhNHi+cHu/GTSOnmgB4WAz
-         pq556e+4IcQ3NPrwnnevxiFu/rCOCLETNhX8Z/FDElzdXAxmhlZmUlGs+WhUjj7ad7za
-         9CF2OlvkJ5s150aw4pVd0uN3UQYTKcLn4VSEezIeXH9LJqpxiPFglmLtmk0K2ieFiNQa
-         Jo3i1iKVF/gva/CFRGTiwS3z0K6VjR71+AuC708lUFqjJTXJ8d3at8/5CxRv0VALIb57
-         SN4wgvIXE1V4WudvP8BT3/d+K6ae7DR5huI33T2uICKGQgbi4hMJ8X3+HairVndBob7l
-         7IqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vnMp4KQz5A+KQDSXbk5N3b4UMi/Pfkv+7tT/nF0GEF0=;
-        b=PmmCObzLhPST1IEptWJRRvdiLtm8V7/tmfP7HbkVGdVZbWtRMCtqPauhcvQ5E5nseC
-         2XDfO37B7i0Z4q/AAOfQ8VF7OuingzZbTua8o0QcByka5K3RAkk2+YTNP4+iuSSjjURG
-         YSOGyhw0CDhaU2QS36AHXOuHVT5vXpFP9yCOi2huGGOvrCiH84E09D2fHyBMn8KcjSWs
-         jsUgW6OKjWGqqQSiIep+W9cpta1z7tdoTnmLA7blD59+bkbIyn9SsAJQEDIdeVWDngZ9
-         3QQg0LTAAQRR0hfwTTvNgt6HnBJJME43ZkdmftronDxHGZF/jIjUDcM8HCbsOx9Rnqhn
-         ExXw==
-X-Gm-Message-State: APjAAAWzPi6xDRHQsrym5Slv6hknr1aEMEU1TBtfiy3fgP1aYx2fNvUD
-        B80XN1i9/ERGri7rOIQQ++0=
-X-Google-Smtp-Source: APXvYqxxoi6imH4gkqFil+us4JdezGtYIycjUbaLAvzxc5zK9SSNRiLSYowqscOtebT+Z39Bh2KCCg==
-X-Received: by 2002:aa7:82da:: with SMTP id f26mr6071283pfn.82.1563891390353;
-        Tue, 23 Jul 2019 07:16:30 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id h6sm40857737pfb.20.2019.07.23.07.16.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 07:16:29 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] igb: Use dev_get_drvdata where possible
-Date:   Tue, 23 Jul 2019 22:16:24 +0800
-Message-Id: <20190723141624.5911-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S2390540AbfGWOQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 10:16:34 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:39629 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726201AbfGWOQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 10:16:33 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 051F82766;
+        Tue, 23 Jul 2019 10:16:29 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 23 Jul 2019 10:16:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=2rm5Ca
+        KDnw7oUdMARQxvYBTdZoUSnzOX03A7LqdRLaE=; b=qU80VL7jfme7LHFiUA/vmx
+        vnZQEEni/ZUPegjQCIxfAXAKGrnPmFVvsAHppsPAasixuwJmNkJdmp8aR41Ctt8M
+        zy2Kj9ZJQMTwBqtG56ezANryKQMRWJDdznlIz0cVjlE+uICCE8csLnn7KLuAi/fn
+        TPgjbepOIOyAuoDkmMjRhOZct/G5dVSslkrfaaC5WeVkDNlXP7nQpkVOfLD3h0mz
+        74z57UA0AzecxhJix9BrywcgAoRKEapFnAUyiS2OaVKKcYISW4M96q7AzS68BNNF
+        2jrsu0AxxnbalWj1x9rZ5LKd+Bir7Z+8kF/blpFM8sjOAmTU7bO1oN4bXloZy01g
+        ==
+X-ME-Sender: <xms:vBY3XV4FmcukVrO6Ccz65-dRIYtIZ9Vb22rgnJtOdn9POtDa1djzbg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeekgdejhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:vBY3XZMFCzUforrEFJkW6qOi8bRMUweIFmJfjWPnG5SnxTYZaRyJpg>
+    <xmx:vBY3XSfnwwvPOTx59RobOxaE1oAfPWYTBb0MoLUXU_keNtw5aPweRA>
+    <xmx:vBY3XbcWB00jCzPLgwnsVnEDF_g-yjU5ScwNK-YE9f6FDefmrBmXAg>
+    <xmx:vBY3XRBVKsaeujX70hGFc_hHBYSg0A3JPO00WGWAYTuFaVyUk3dZdg>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A61518005C;
+        Tue, 23 Jul 2019 10:16:27 -0400 (EDT)
+Date:   Tue, 23 Jul 2019 17:16:25 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        jakub.kicinski@netronome.com, toke@redhat.com, andy@greyhouse.net,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 10/12] drop_monitor: Add packet alert mode
+Message-ID: <20190723141625.GA8972@splinter>
+References: <20190722183134.14516-1-idosch@idosch.org>
+ <20190722183134.14516-11-idosch@idosch.org>
+ <20190723124340.GA10377@hmswarspite.think-freely.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190723124340.GA10377@hmswarspite.think-freely.org>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of using to_pci_dev + pci_get_drvdata,
-use dev_get_drvdata to make code simpler.
+On Tue, Jul 23, 2019 at 08:43:40AM -0400, Neil Horman wrote:
+> On Mon, Jul 22, 2019 at 09:31:32PM +0300, Ido Schimmel wrote:
+> > +static void net_dm_packet_work(struct work_struct *work)
+> > +{
+> > +	struct per_cpu_dm_data *data;
+> > +	struct sk_buff_head list;
+> > +	struct sk_buff *skb;
+> > +	unsigned long flags;
+> > +
+> > +	data = container_of(work, struct per_cpu_dm_data, dm_alert_work);
+> > +
+> > +	__skb_queue_head_init(&list);
+> > +
+> > +	spin_lock_irqsave(&data->drop_queue.lock, flags);
+> > +	skb_queue_splice_tail_init(&data->drop_queue, &list);
+> > +	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
+> > +
+> These functions are all executed in a per-cpu context.  While theres nothing
+> wrong with using a spinlock here, I think you can get away with just doing
+> local_irqsave and local_irq_restore.
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Hi Neil,
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b4df3e319467..145f58ee0451 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -8879,8 +8879,7 @@ static int __maybe_unused igb_resume(struct device *dev)
- 
- static int __maybe_unused igb_runtime_idle(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct igb_adapter *adapter = netdev_priv(netdev);
- 
- 	if (!igb_has_link(adapter))
--- 
-2.20.1
+Thanks a lot for reviewing. I might be missing something, but please
+note that this function is executed from a workqueue and therefore the
+CPU it is running on does not have to be the same CPU to which 'data'
+belongs to. If so, I'm not sure how I can avoid taking the spinlock, as
+otherwise two different CPUs can modify the list concurrently.
 
+> 
+> Neil
+> 
+> > +	while ((skb = __skb_dequeue(&list)))
+> > +		net_dm_packet_report(skb);
+> > +}
