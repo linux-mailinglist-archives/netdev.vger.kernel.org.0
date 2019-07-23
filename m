@@ -2,167 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E2A719D6
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A00A719F4
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729391AbfGWN7F convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Jul 2019 09:59:05 -0400
-Received: from mail.online.net ([62.210.16.11]:55138 "EHLO mail.online.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725907AbfGWN7F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 09:59:05 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.online.net (Postfix) with ESMTP id 9C911117E2223;
-        Tue, 23 Jul 2019 15:59:03 +0200 (CEST)
-Received: from mail.online.net ([127.0.0.1])
-        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id RFE9_CbL0Ffi; Tue, 23 Jul 2019 15:59:03 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.online.net (Postfix) with ESMTP id 5603E117E2222;
-        Tue, 23 Jul 2019 15:59:03 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mail.online.net
-Received: from mail.online.net ([127.0.0.1])
-        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id S7IxM3iqWNGr; Tue, 23 Jul 2019 15:59:03 +0200 (CEST)
-Received: from [10.33.104.14] (unknown [195.154.229.35])
-        by mail.online.net (Postfix) with ESMTPSA id 3D3B4117E21FF;
-        Tue, 23 Jul 2019 15:59:03 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH v1] tun: mark small packets as owned by the tap sock
-From:   Alexis Bauvin <abauvin@scaleway.com>
-In-Reply-To: <359225ef-9bc2-220b-ec93-cf671b705e65@redhat.com>
-Date:   Tue, 23 Jul 2019 15:59:02 +0200
-Cc:     stephen@networkplumber.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <2E138B89-32C5-41C9-8158-D4E06A019F75@scaleway.com>
-References: <20190723130151.36745-1-abauvin@scaleway.com>
- <359225ef-9bc2-220b-ec93-cf671b705e65@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-X-Mailer: Apple Mail (2.3445.9.1)
+        id S2390425AbfGWOJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 10:09:15 -0400
+Received: from mail-eopbgr140110.outbound.protection.outlook.com ([40.107.14.110]:56002
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726201AbfGWOJO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 10:09:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ck39ZsMjZnfmRo5lSbZS9UYnrR/ff5blJRPotL+RS5xhkLLsiNXdJhLPLgxa2FsommcqSoPvWgaRLNdBeCzzLKUpaXZNVg13XO3cM/hc9TvauAE2iwX+BKSuEaDhtU5MC5wz/6yzGNO9oAIlcg93XnyA4fgbcR02PXfdXSQHVnb9NOjv6xbdrOKS/SiDlOC849D+PVgF8WVxqCcebifCELLnOwJl1WTu6WIzItivbR7AAh6vlEz8DD6VYQfbC+FodIMKdRlaJ3DmNjRUN+/nsBVY8eBfsGtfIThquePkCNPPjg29OntlvF8/rwe0DFSOKF85d16G683mUB+Ui7p3yA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E3oDFnRYzCD4BuuF2tYpjxmJ19fxAaUg+pHx7Ppme+M=;
+ b=n2mT9sEvhqG59vcXKqgPYBR2qO9p2OPSbUdWJHyKGdipL4CAiwq0Qk6wL53wMaZJvcf4Sx4GeyGVuQR8zlCht+n6Vn4FEnRXgZzPLLAHICJjPOh8tWc87WMrgsEmR9GERPUP9fAyc7c26PKVdDJls+/CWGhE4jAhV91GJSwyBzCIyyGouWf3VDQs3rLn5VWH7BjEN0keu55vWQE4GLMfERIo+geKmZf03VnOdirjyKCCxBBctuVHBVWxfrjoAO4AgtP6aOr+saBjq7IwUH4Yjzu+OUh80Mngi+C218ktOYCIb65jU2HVcfmHVstRwKAXWzGf0jd5BVApcOH+4QwBmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=prevas.se;dmarc=pass action=none
+ header.from=prevas.dk;dkim=pass header.d=prevas.dk;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E3oDFnRYzCD4BuuF2tYpjxmJ19fxAaUg+pHx7Ppme+M=;
+ b=Bnas+BVDR6iTnSch6CzGlddLrzC4rEFgdlavBt4UWVLc6tQydeOYj/b/MhJVop/ee1FS5LDHYDUTfZwBrxFUHoP5/fQBbaYWvPREa6OFg7ghlF9QT5Rhoa+LUF+CfGoPkgYs/ONuSIPQnwjMD9Z4SaYQo/eQ+zhxtQrYfLAQ2JA=
+Received: from AM0PR10MB3476.EURPRD10.PROD.OUTLOOK.COM (10.186.175.83) by
+ AM0PR10MB2900.EURPRD10.PROD.OUTLOOK.COM (10.255.28.149) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2115.10; Tue, 23 Jul 2019 14:09:10 +0000
+Received: from AM0PR10MB3476.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9451:861a:85cc:daa0]) by AM0PR10MB3476.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9451:861a:85cc:daa0%2]) with mapi id 15.20.2094.017; Tue, 23 Jul 2019
+ 14:09:10 +0000
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: avoid some redundant vtu
+ load/purge operations
+Thread-Topic: [PATCH net-next] net: dsa: mv88e6xxx: avoid some redundant vtu
+ load/purge operations
+Thread-Index: AQHVQOZrz5Mh4qk+xE+98wWJgclwEabYNp6AgAAH9oA=
+Date:   Tue, 23 Jul 2019 14:09:10 +0000
+Message-ID: <956f9821-199d-074d-9508-2bdcd12cf4bf@prevas.dk>
+References: <20190722233713.31396-1-rasmus.villemoes@prevas.dk>
+ <20190723134037.GA2381@lunn.ch>
+In-Reply-To: <20190723134037.GA2381@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1PR0902CA0020.eurprd09.prod.outlook.com
+ (2603:10a6:3:e5::30) To AM0PR10MB3476.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:15e::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [81.216.59.226]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8516a62e-36f6-483b-4ce0-08d70f77552b
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:AM0PR10MB2900;
+x-ms-traffictypediagnostic: AM0PR10MB2900:
+x-microsoft-antispam-prvs: <AM0PR10MB2900D0A71B45AC5D442DB8E88AC70@AM0PR10MB2900.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 0107098B6C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(136003)(376002)(39840400004)(366004)(396003)(199004)(189003)(31686004)(54906003)(66066001)(11346002)(446003)(229853002)(4326008)(476003)(2616005)(26005)(6916009)(186003)(508600001)(71190400001)(71200400001)(256004)(305945005)(7736002)(42882007)(52116002)(14454004)(6116002)(3846002)(316002)(76176011)(386003)(6506007)(102836004)(36756003)(66946007)(8976002)(6512007)(44832011)(31696002)(486006)(6246003)(2906002)(68736007)(6436002)(81156014)(81166006)(66446008)(53936002)(99286004)(25786009)(4744005)(6486002)(8936002)(66556008)(5660300002)(64756008)(8676002)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:AM0PR10MB2900;H:AM0PR10MB3476.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: prevas.se does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 1l0Q+AZBJbLOt6Tv10i+IPsLAjk+NPv9jJ7qX6pJbtw+p3VdDiyvW2nzEf2n0j8KvmlPAidTAw6Y8Mjzm/BxtxaF9SKE3nvppZAY7EWild+u2AluyWgKxMkDapF7+WzIAsmZeC5/N3p6EPgTp/UskSYmzX0lis9vf+324keuZ3y4YtU6CYrkoGs2qWg683YXxWXw6oz4I1PIjakFlLKA8dVlaO1+XE4Ho6NfNrBs1IbydRLsWNVzakRiWR3h8IlJ7bcptlqlbr4NTXTLJEZU3c5ueRViG6yKnSdFbMMN2kGOZKLKG18VSDGuBxP6gxohqGTjKgtSgxbtN4odRAk2DENWO960mIGnad1awNW4LlXCbTEJQb25rJTWx7Lp+anNOMzKno9rzPFFQ3oBaPCxLlJcWq3ySr6rrp+wZ3T4s8o=
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <191625002D586F499931A603205244AC@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8516a62e-36f6-483b-4ce0-08d70f77552b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2019 14:09:10.2502
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rasmus.Villemoes@prevas.dk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2900
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 23/07/2019 15.40, Andrew Lunn wrote:
+> On Mon, Jul 22, 2019 at 11:37:26PM +0000, Rasmus Villemoes wrote:
+>> We have an ERPS (Ethernet Ring Protection Switching) setup involving
+>> mv88e6250 switches which we're in the process of switching to a BSP
+>> based on the mainline driver. Breaking any link in the ring works as
+>> expected, with the ring reconfiguring itself quickly and traffic
+>> continuing with almost no noticable drops. However, when plugging back
+>> the cable, we see 5+ second stalls.
+>=20
+> Hi Rasmus
+>=20
+> I would prefer Vivien reviews this patch. But he is away at the
+> moment. Are you O.K. to wait a few days?
 
-> Le 23 juil. 2019 à 15:53, Jason Wang <jasowang@redhat.com> a écrit :
-> On 2019/7/23 下午9:01, Alexis Bauvin wrote:
->> Small packets going out of a tap device go through an optimized code
->> path that uses build_skb() rather than sock_alloc_send_pskb(). The
->> latter calls skb_set_owner_w(), but the small packet code path does not.
->> 
->> The net effect is that small packets are not owned by the userland
->> application's socket (e.g. QEMU), while large packets are.
->> This can be seen with a TCP session, where packets are not owned when
->> the window size is small enough (around PAGE_SIZE), while they are once
->> the window grows (note that this requires the host to support virtio
->> tso for the guest to offload segmentation).
->> All this leads to inconsistent behaviour in the kernel, especially on
->> netfilter modules that uses sk->socket (e.g. xt_owner).
->> 
->> Signed-off-by: Alexis Bauvin <abauvin@scaleway.com>
->> Fixes: 66ccbc9c87c2 ("tap: use build_skb() for small packet")
->> ---
->>  drivers/net/tun.c | 71 ++++++++++++++++++++++++-----------------------
->>  1 file changed, 37 insertions(+), 34 deletions(-)
->> 
->> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> index 3d443597bd04..ac56b6a29eb2 100644
->> --- a/drivers/net/tun.c
->> +++ b/drivers/net/tun.c
->> @@ -1656,6 +1656,7 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
->>  {
->>  	struct page_frag *alloc_frag = &current->task_frag;
->>  	struct bpf_prog *xdp_prog;
->> +	struct sk_buff *skb;
->>  	int buflen = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->>  	char *buf;
->>  	size_t copied;
->> @@ -1686,44 +1687,46 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
->>  	 */
->>  	if (hdr->gso_type || !xdp_prog) {
->>  		*skb_xdp = 1;
->> -		return __tun_build_skb(alloc_frag, buf, buflen, len, pad);
->> -	}
->> -
->> -	*skb_xdp = 0;
->> +	} else {
->> +		*skb_xdp = 0;
->>  -	local_bh_disable();
->> -	rcu_read_lock();
->> -	xdp_prog = rcu_dereference(tun->xdp_prog);
->> -	if (xdp_prog) {
->> -		struct xdp_buff xdp;
->> -		u32 act;
->> -
->> -		xdp.data_hard_start = buf;
->> -		xdp.data = buf + pad;
->> -		xdp_set_data_meta_invalid(&xdp);
->> -		xdp.data_end = xdp.data + len;
->> -		xdp.rxq = &tfile->xdp_rxq;
->> -
->> -		act = bpf_prog_run_xdp(xdp_prog, &xdp);
->> -		if (act == XDP_REDIRECT || act == XDP_TX) {
->> -			get_page(alloc_frag->page);
->> -			alloc_frag->offset += buflen;
->> +		local_bh_disable();
->> +		rcu_read_lock();
->> +		xdp_prog = rcu_dereference(tun->xdp_prog);
->> +		if (xdp_prog) {
->> +			struct xdp_buff xdp;
->> +			u32 act;
->> +
->> +			xdp.data_hard_start = buf;
->> +			xdp.data = buf + pad;
->> +			xdp_set_data_meta_invalid(&xdp);
->> +			xdp.data_end = xdp.data + len;
->> +			xdp.rxq = &tfile->xdp_rxq;
->> +
->> +			act = bpf_prog_run_xdp(xdp_prog, &xdp);
->> +			if (act == XDP_REDIRECT || act == XDP_TX) {
->> +				get_page(alloc_frag->page);
->> +				alloc_frag->offset += buflen;
->> +			}
->> +			err = tun_xdp_act(tun, xdp_prog, &xdp, act);
->> +			if (err < 0)
->> +				goto err_xdp;
->> +			if (err == XDP_REDIRECT)
->> +				xdp_do_flush_map();
->> +			if (err != XDP_PASS)
->> +				goto out;
->> +
->> +			pad = xdp.data - xdp.data_hard_start;
->> +			len = xdp.data_end - xdp.data;
->>  		}
->> -		err = tun_xdp_act(tun, xdp_prog, &xdp, act);
->> -		if (err < 0)
->> -			goto err_xdp;
->> -		if (err == XDP_REDIRECT)
->> -			xdp_do_flush_map();
->> -		if (err != XDP_PASS)
->> -			goto out;
->> -
->> -		pad = xdp.data - xdp.data_hard_start;
->> -		len = xdp.data_end - xdp.data;
->> +		rcu_read_unlock();
->> +		local_bh_enable();
->>  	}
->> -	rcu_read_unlock();
->> -	local_bh_enable();
->>  -	return __tun_build_skb(alloc_frag, buf, buflen, len, pad);
->> +	skb = __tun_build_skb(alloc_frag, buf, buflen, len, pad);
->> +	if (skb)
->> +		skb_set_owner_w(skb, tfile->socket.sk);
->> +	return skb;
->>    err_xdp:
->>  	put_page(alloc_frag->page);
-> 
-> 
-> To reduce the change set, anyhow you can move the skb_set_owner_w() to __tun_build_skb()?
-> 
-> Thanks
+Sure, no rush.
 
-Sure, doing and sending v2
+Rasmus
