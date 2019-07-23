@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2BC371DF1
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 19:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44B4871E09
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 19:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388682AbfGWRrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 13:47:36 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36237 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732899AbfGWRrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 13:47:35 -0400
-Received: by mail-pg1-f194.google.com with SMTP id l21so19780103pgm.3
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 10:47:35 -0700 (PDT)
+        id S2388511AbfGWRyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 13:54:10 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:47006 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731661AbfGWRyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 13:54:10 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c73so19506719pfb.13
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 10:54:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TnEydTCCD8Aa8sGo6Qf1yOa8TUO59CkWZAKjDk0hiK0=;
-        b=C/KAbJ0FzAhJHlxfHLKxd2QAugjP2OcGC9dre2wWsHQXf0PA1Tb9hRxAq0HRpOGQdJ
-         EQKPWdtdvm9bn4C5KW/JjMg8GEPDicZtw9UA8Vr1qX1rX5H4YvKO2fUGR7oFptb59m9/
-         3haKAhtrTM30fr/u3LiG810jpwb9UJJD6KpGUFrRr+F42Wby9t8NhWkl8yFMEOpo69m/
-         yS+/gAYSv6Y6+myx95z/BHTJDYdjQT6M2kkg9SJxb1XvyI9dYRffDg9mkqy+Y90lq7Yk
-         z9sXYZUvvL9qWk3kHBNoiM6VZ2YIBZX2jSxS/pnPN326giGkEiP/z5uyCAUY2y7ZonlP
-         y+mA==
+        bh=Xg18Wmcda2NQTY3JiovoNWKyppM8RU1ptP6rzatQkgY=;
+        b=tr8ftqIN0pNicDIeNPmyElDXnXHA95F2FUV5c5mLRGDZNerd6+CIInh8bWEOt01yCu
+         bgZmIjcj3Pg6svrTWnVFF6uwc7yTgAW0661BPVxQ3rBMJQQp9a56SoZaVxa+5n+Wja6H
+         olnH8xPDslI+LgSlWVsURyVxb7J3+gX72qdZ2R4T2fLS/1SmL7YGOpJ6A/eo+mVSb1Q2
+         nNFSAOrLADmZnCdKAtWgpb85ZwG0iWerDPm3zzOzDhYnzvsLXYeQtGGCNS7saVmIwbc0
+         mZgVdI7FU5P4rfujzY1o2gCVHV/YAJDsGwskntCM/VWXG4Cj8Y5JB3hHLC9b1VSFeiL6
+         O2tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TnEydTCCD8Aa8sGo6Qf1yOa8TUO59CkWZAKjDk0hiK0=;
-        b=QW5Xh8DB3VFJt/HgiUMJttuHoJXmPwW5+Qdpd3Ku75EaT4G4gFx8uuUTF4bbnvtbNB
-         sYFIVTV4L9ZtRi67t5ibR08a/qL0yxmCPaFBSOQR+bjq3INF4ehbtqfkc3OP3vtgdLV8
-         qwDTfvxnwYIUuz7ryqbi7u5JlWjQHs+jNYp5KQhl4b65s6hLKc/jpSCe2ViiuTZ3svav
-         GsTSLEynoYXRnkuEmynTleUnQwnTqeI86CObeD/9AUDllVzm/HsM790CylGEs6YWy+W+
-         8db8qU10Xeyx75E2vE8/Us91sYz4x9/swh6yXuoQpiqd7gR3HHXAAIgv/elLz0fTxuQW
-         cdgw==
-X-Gm-Message-State: APjAAAWqAoy19nBoQOHDu4iVsdptuC5ZmyS6Re2o5qcS3F64wAFDWiYJ
-        Jmf4mQK21kHXuYgC38QWLeU=
-X-Google-Smtp-Source: APXvYqxJsmRHLo2G0Inj70tPK2c+7v4tziQmvh1dualur1lfd2TvHpXsRGffMyIXuW+ZwQ1xrUUWZA==
-X-Received: by 2002:a17:90a:bf08:: with SMTP id c8mr83315552pjs.75.1563904055154;
-        Tue, 23 Jul 2019 10:47:35 -0700 (PDT)
+        bh=Xg18Wmcda2NQTY3JiovoNWKyppM8RU1ptP6rzatQkgY=;
+        b=mTLXL9lRk8UsCoBrh33z+ocvINNuDBi/dbgYoAfWmvRYiDx6YEexRHN+femmgr6YlH
+         2y36PJlHFW4WkDGqwK8Q9MTrOuvyXn/6xHluBsgJ21F6qw5Ta/+l4G8umvCN+5a2OLiH
+         jPpgkluL2YotGmiogpzrskQbTa3LvbAuaBUYKEB/MuWWgIJ0NOQw4wjuF0vqQ/jpbdQi
+         NEd/2kR+SZymT5FV4tTCCBGrWMoK3OcIZXmPuCCmMd/S7g593vsEA7R9me1xPRs8UKLF
+         N/qOP2PavcXomSrJShVnd3dYGlh8MmjWENbI0UlT3azrOlnkojDYkfvYmDUHCUcfC5OC
+         Mv+Q==
+X-Gm-Message-State: APjAAAV2ivempT1SNXyO7bTH+jHIzbtj45N20sLF4f4clc/XgeDPCBXf
+        hTi4S50Iocv9g44yCw+Z/GA=
+X-Google-Smtp-Source: APXvYqwKJO4SEs1ZHhPct09jy3lm7BIpldeakDhri7IUN8T79zbQqhF9BUc21tqhTHmbUSJ+o+7bjg==
+X-Received: by 2002:a62:2aca:: with SMTP id q193mr7142223pfq.209.1563904449382;
+        Tue, 23 Jul 2019 10:54:09 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id w22sm47116962pfi.175.2019.07.23.10.47.34
+        by smtp.gmail.com with ESMTPSA id q22sm39271506pgh.49.2019.07.23.10.54.09
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 10:47:34 -0700 (PDT)
-Date:   Tue, 23 Jul 2019 10:47:32 -0700
+        Tue, 23 Jul 2019 10:54:09 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 10:54:01 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
         alexanderk@mellanox.com, mlxsw@mellanox.com
 Subject: Re: [patch iproute2 1/2] tc: action: fix crash caused by incorrect
  *argv check
-Message-ID: <20190723104732.69c18297@hermes.lan>
+Message-ID: <20190723105401.4975396d@hermes.lan>
 In-Reply-To: <20190723112538.10977-1-jiri@resnulli.us>
 References: <20190723112538.10977-1-jiri@resnulli.us>
 MIME-Version: 1.0
@@ -74,22 +74,6 @@ Jiri Pirko <jiri@resnulli.us> wrote:
 > Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
 > Fixes: fd8b3d2c1b9b ("actions: Add support for user cookies")
 > Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  tc/m_action.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tc/m_action.c b/tc/m_action.c
-> index ab6bc0ad28ff..0f9c3a27795d 100644
-> --- a/tc/m_action.c
-> +++ b/tc/m_action.c
-> @@ -222,7 +222,7 @@ done0:
->  				goto bad_val;
->  			}
->  
-> -			if (*argv && strcmp(*argv, "cookie") == 0) {
-> +			if (argc && strcmp(*argv, "cookie") == 0) {
->  				size_t slen;
->  
->  				NEXT_ARG();
 
-Ok, but we should also fix batch mode to null last argv
+Actually makeargs does NULL terminate the last arg so what input
+to batchmode is breaking this?
