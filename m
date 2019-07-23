@@ -2,105 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 336D171A2A
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E949B71A48
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388075AbfGWOXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 10:23:06 -0400
-Received: from mail.online.net ([62.210.16.11]:36664 "EHLO mail.online.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731271AbfGWOXG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 10:23:06 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.online.net (Postfix) with ESMTP id 5754A117E8638;
-        Tue, 23 Jul 2019 16:23:04 +0200 (CEST)
-Received: from mail.online.net ([127.0.0.1])
-        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id CYzHCIbUH6kF; Tue, 23 Jul 2019 16:23:04 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.online.net (Postfix) with ESMTP id 2671D117E873D;
-        Tue, 23 Jul 2019 16:23:04 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mail.online.net
-Received: from mail.online.net ([127.0.0.1])
-        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id QT6JU_pV3gI0; Tue, 23 Jul 2019 16:23:04 +0200 (CEST)
-Received: from legolas.infra.online.net (unknown [195.154.229.35])
-        by mail.online.net (Postfix) with ESMTPSA id 00F6D117E860E;
-        Tue, 23 Jul 2019 16:23:03 +0200 (CEST)
-From:   Alexis Bauvin <abauvin@scaleway.com>
-To:     stephen@networkplumber.org, davem@davemloft.net,
-        jasowang@redhat.com
-Cc:     netdev@vger.kernel.org, abauvin@scaleway.com
-Subject: [PATCH v2] tun: mark small packets as owned by the tap sock
-Date:   Tue, 23 Jul 2019 16:23:01 +0200
-Message-Id: <20190723142301.39568-1-abauvin@scaleway.com>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        id S1730456AbfGWO02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 10:26:28 -0400
+Received: from mail-io1-f44.google.com ([209.85.166.44]:40732 "EHLO
+        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729666AbfGWO01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 10:26:27 -0400
+Received: by mail-io1-f44.google.com with SMTP id h6so82186773iom.7
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 07:26:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=IozzUXfRfCiIIEHSqnlEhUJa2Kj66jKRA7sPvJWeaG0=;
+        b=V81oySZKMVJ+49oFjY12tt5T5XujO9YLQQnyD+Hy/UNeZwM9Wl3OeO8YRdqD4heI3f
+         lIv5R3ss0I5TXK5HDXADJ5iD6IQ+N3kDKICHWtFrQbsHSpFTrE+5jbUqgHIJPODQmY+6
+         CYwrO+ofCYuLWDozWBceVRgM3srppK2O0ny0BMkH2OrHhMgm6JiVkZbA4JaNj7rN7zMn
+         VYnIO5w/eKWfLJ+eSFKI4SybXNxzUV7xUIbu4OCQzWR6DA7N6YHnCEIq8+yc/TO1QsDR
+         Qeg+3fyV3E0ARoEuaQttN2xTrImacdy+fwaRDy4jmUyRDTO19TjlZUmPpKqHC6cYfRar
+         n6fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=IozzUXfRfCiIIEHSqnlEhUJa2Kj66jKRA7sPvJWeaG0=;
+        b=U8IknnsDab/JSdsKXWVUVnNSbpYOCL9OiPCHF384QZbn98VUSQ8M4/P1yRxlEG0VwQ
+         Epk2lHXdnmf3SaKGbutwmldlSk2Am5amvsTXKFMM27O+QtlyKAL1NWlM7wP45U11qmFQ
+         MWnH7KQuDfsU/DmlT8/HuhpLQhcPs43menp8dD6A8G5MK43xYCAST6kmcvtuoJnWx5oW
+         NycHvk9uxc4UlBZdAE1aZkoS31kV3tlLgn7CFD/j7dVApk445c8ww8uzYitvXhRUnpH2
+         7L3MEhKfibT5UpDfw+FKpRd8nvdeWheEPXT6kQAqhhIBtEeYfKlyMEnmWJ0fy0cT50ti
+         GlXQ==
+X-Gm-Message-State: APjAAAXtlXWzSz8HAHBaRcUJ+GILqItYmSAGIa9egQ2qfF0E+xAnjV0y
+        Udu5Dvcm9D6ODSPPx3M0ESSGmt/OAQiAl2QuBJ0=
+X-Google-Smtp-Source: APXvYqw3PcSzYIvvo+Hm0KxG4wf9V5j1kp+m/0nC3DA/7QxTY0banjsuFe/gKQTzqzNbMjoKFBRJqgNFtYZkiT7GWw8=
+X-Received: by 2002:a05:6638:149:: with SMTP id y9mr79808145jao.76.1563891986513;
+ Tue, 23 Jul 2019 07:26:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAEyr1FS-8uBEMBS+7U4K8wBLJgPZD0Lxa4FyzuvYZ0RGhTH8fA@mail.gmail.com>
+In-Reply-To: <CAEyr1FS-8uBEMBS+7U4K8wBLJgPZD0Lxa4FyzuvYZ0RGhTH8fA@mail.gmail.com>
+From:   Anand Raj Manickam <anandrm@gmail.com>
+Date:   Tue, 23 Jul 2019 16:26:14 +0200
+Message-ID: <CAEyr1FSGYCxKqN0_L+42Kuw3hXEVQkV2J6f9hrHZWFOnZ7PzOg@mail.gmail.com>
+Subject: Re: b53 DSA : vlan tagging broken ?
+To:     f.fainelli@gmail.com, netdev@vger.kernel.org, andrew@lunn.ch
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- v1 -> v2: Move skb_set_owner_w to __tun_build_skb to reduce patch size
+The issue is resolved by enabling vlan_filtering for the bridge and
+fix the phy-mode to "rgmii" from "rgmii-txid" in the dts file.
 
-Small packets going out of a tap device go through an optimized code
-path that uses build_skb() rather than sock_alloc_send_pskb(). The
-latter calls skb_set_owner_w(), but the small packet code path does not.
 
-The net effect is that small packets are not owned by the userland
-application's socket (e.g. QEMU), while large packets are.
-This can be seen with a TCP session, where packets are not owned when
-the window size is small enough (around PAGE_SIZE), while they are once
-the window grows (note that this requires the host to support virtio
-tso for the guest to offload segmentation).
-All this leads to inconsistent behaviour in the kernel, especially on
-netfilter modules that uses sk->socket (e.g. xt_owner).
-
-Signed-off-by: Alexis Bauvin <abauvin@scaleway.com>
-Fixes: 66ccbc9c87c2 ("tap: use build_skb() for small packet")
----
- drivers/net/tun.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 3d443597bd04..db16d7a13e00 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1599,7 +1599,8 @@ static bool tun_can_build_skb(struct tun_struct *tun, struct tun_file *tfile,
- 	return true;
- }
- 
--static struct sk_buff *__tun_build_skb(struct page_frag *alloc_frag, char *buf,
-+static struct sk_buff *__tun_build_skb(struct tun_file *tfile,
-+				       struct page_frag *alloc_frag, char *buf,
- 				       int buflen, int len, int pad)
- {
- 	struct sk_buff *skb = build_skb(buf, buflen);
-@@ -1609,6 +1610,7 @@ static struct sk_buff *__tun_build_skb(struct page_frag *alloc_frag, char *buf,
- 
- 	skb_reserve(skb, pad);
- 	skb_put(skb, len);
-+	skb_set_owner_w(skb, tfile->socket.sk);
- 
- 	get_page(alloc_frag->page);
- 	alloc_frag->offset += buflen;
-@@ -1686,7 +1688,8 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
- 	 */
- 	if (hdr->gso_type || !xdp_prog) {
- 		*skb_xdp = 1;
--		return __tun_build_skb(alloc_frag, buf, buflen, len, pad);
-+		return __tun_build_skb(tfile, alloc_frag, buf, buflen, len,
-+				       pad);
- 	}
- 
- 	*skb_xdp = 0;
-@@ -1723,7 +1726,7 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
- 	rcu_read_unlock();
- 	local_bh_enable();
- 
--	return __tun_build_skb(alloc_frag, buf, buflen, len, pad);
-+	return __tun_build_skb(tfile, alloc_frag, buf, buflen, len, pad);
- 
- err_xdp:
- 	put_page(alloc_frag->page);
--- 
-
+On Mon, Jul 22, 2019 at 6:57 PM Anand Raj Manickam <anandrm@gmail.com> wrote:
+>
+> Hi ,
+> I had working DSA with 4.9.184 kernel, with BCM53125, rev 4 hardware .
+> It had 2 bridges with
+> br0            8000.00       no              lan1
+>                                                         lan2
+>                                                         lan3
+>                                                         eth0.101
+>
+> br1            8000.01     no             eth0.102
+>                                                     wan
+> # bridge vlan
+> port    vlan ids
+> wan      102 PVID Egress Untagged
+> wan      102 PVID Egress Untagged
+> lan3     101 PVID Egress Untagged
+> lan3     101 PVID Egress Untagged
+> lan2     101 PVID Egress Untagged
+> lan2     101 PVID Egress Untagged
+> lan1     101 PVID Egress Untagged
+> lan1     101 PVID Egress Untagged
+> eth0.102  102 PVID
+> eth0.102
+> br1     1 PVID Egress Untagged
+> eth0.101  101 PVID
+> eth0.101
+> br0     1 PVID Egress Untagged
+>
+> I upgrade the kernel to 5.2 . The behavior is broken. I had to rip the
+> config and check what was broken from the init scripts.
+> the bridge vlan commands failed to add , as the newer kernel requires
+> the vlan interfaces to be up .
+> https://lkml.org/lkml/2018/5/22/887  - i had the same behaviour as this thread .
+> I re added them manually  , so the we have the same bridge to vlan
+> mapping as the previous kernel .
+> but the ingress packets for WAN where going to LAN(bridge) and the
+> egress packets where on WAN(bridge)  but the packets never leaves the
+> interface .
+>
+> I test this with a simple config :
+>  ip link add link eth0 name eth0.101 type vlan id 101
+>  ip link add link eth0 name eth0.102 type vlan id 102
+>  ip link set eth0.101 up
+>  ip link set eth0.102 up
+>  ip link add br0 type bridge
+>   ip link add br1 type bridge
+>   ip link set lan1 master br1
+>   ip link set lan2 master br1
+>   ip link set lan3 master br1
+>   ip link set wan master br0
+>   bridge vlan add vid 101 dev lan1 pvid untagged
+>   bridge vlan add vid 101 dev lan2 pvid untagged
+>   bridge vlan add vid 101 dev lan3 pvid untagged
+>   bridge vlan add vid 102 dev wan pvid untagged
+>   bridge vlan del vid 1 dev wan
+>   bridge vlan del vid 1 dev lan1
+>   bridge vlan del vid 1 dev lan2
+>   bridge vlan del vid 1 dev lan3
+>   ip link set eth0.101 master br1
+>   ip link set eth0.102 master br0
+>   bridge vlan del vid 1 dev eth0.102
+>  bridge vlan del vid 1 dev eth0.101
+>   bridge vlan add vid 102 dev eth0.102 pvid
+>   bridge vlan add vid 101 dev eth0.101 pvid
+>   ifconfig br0 up
+>   ifconfig br1 up
+>   ifconfig wan up
+>   ifconfig lan1 up
+>   ifconfig lan2 up
+>   ifconfig lan3 up
+>
+> I donot see any packets with a tag on eth0
+> ~# bridge vlan
+> port    vlan ids
+> wan      102 PVID Egress Untagged
+> lan3     101 PVID Egress Untagged
+> lan2     101 PVID Egress Untagged
+> lan1     101 PVID Egress Untagged
+> eth0.101         101 PVID
+> eth0.102         102 PVID
+> br0      1 PVID Egress Untagged
+> br1      1 PVID Egress Untagged
+>
+> These are the loaded modules:
+> # lsmod
+> Module                  Size  Used by
+> b53_mdio               16384  0
+> b53_mmap               16384  0
+> b53_common             28672  2 b53_mdio,b53_mmap
+> tag_8021q              16384  0
+> dsa_core               32768  9 b53_mdio,b53_common,b53_mmap,tag_8021q
+> phylink                20480  2 b53_common,dsa_core
+>
+> if i re config
+> #bridge vlan add vid 102 dev wan pvid untagged
+> #bridge vlan add vid 102 dev eth0.102 pvid
+> Then i see the tags for ingress packets . but no packets are
+> transmitted out on the wire , but the stats in ifconfig show as
+> transmitted .
+> # ifconfig br0
+> br0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+>         inet 10.17.33.137  netmask 255.255.255.0  broadcast 10.17.33.255
+>         inet6 fe80::3ef8:4aff:fe9c:5a04  prefixlen 64  scopeid 0x20<link>
+>         ether 3c:f8:4a:9c:5a:04  txqueuelen 1000  (Ethernet)
+>         RX packets 616  bytes 32351 (31.5 KiB)
+>         RX errors 0  dropped 0  overruns 0  frame 0
+>         TX packets 679  bytes 30286 (29.5 KiB)
+>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+>
+> #ifconfig eth0
+> eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+>         inet6 fe80::d6:5ff:fec2:93af  prefixlen 64  scopeid 0x20<link>
+>         ether 02:d6:05:c2:93:af  txqueuelen 1000  (Ethernet)
+>         RX packets 58017  bytes 4004093 (3.8 MiB)
+>         RX errors 0  dropped 0  overruns 0  frame 0
+>         TX packets 4322  bytes 301365 (294.3 KiB)
+>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+>         device interrupt 56
+>
+> Can some shed some light on this config .
+> -Anand
