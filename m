@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 572AA71662
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 12:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 063D47166F
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 12:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733227AbfGWKnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 06:43:21 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35790 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726920AbfGWKnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 06:43:21 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w24so20465772plp.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 03:43:20 -0700 (PDT)
+        id S2389213AbfGWKpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 06:45:11 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34642 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389188AbfGWKpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 06:45:03 -0400
+Received: by mail-pl1-f195.google.com with SMTP id i2so20479747plt.1;
+        Tue, 23 Jul 2019 03:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9qJHZmG7k47DbsZM/zOH4hhB24JCD7grBB3fphjPHIs=;
-        b=qLLdQO5y/nqkInhrZMcwYFgy740wD4XczPjfC3PqHn2XEj6hQ7RWsWn8yBkT5+RPmM
-         wxBya0+RCkdNBMajFcBe4UrEIuagEQG3LikkrP0AOT/G3qUgpaDqIO2E1x03TYvScwEJ
-         m1C1nWcoWK/Ig1xuHZYmQR+81ALkrAEJ3vxgFhOa4LgvuZBSqDNyiyyzPaHE5+2rjUeE
-         HFfDl9RbEUL1GH+OeHb3XFw5FfdkugwZnupogwRg6xRiVwRcxt5wuDuqgTtX2rw1pSVV
-         uqW1dCA8/jHu9KiAJ+EP0Aq+afeuGp1zfT0nOA4mr5HfcXzS4Crdzw8uigRoD4Yweap7
-         qNdA==
+        bh=tLr9+dN/788cYU44X9e1swSeL2hknE+Vg2zg7+VyNDI=;
+        b=J/eG3eqsBHV6rPMWCho+F/vhFO3t+zS6ukU3B76ICvgReFf14ic/ypbZmjkJGQvG6C
+         bvZ6EN8q/edMiWVM7GmnNnlGb92YslkGpsJ84m20Oiv+2peeEvTh6X7mRa9IdsRvHw8x
+         8jUGThWlUR6TWHS2bTJd/R26LOmRYNw59HTPBTtz1dIiV22UdkMsPOxroXRUQXktJz8O
+         sWOwPWRWxYmrkvGb437xmLhTfBoyRWBPPmnl1Ob2xafeLTlZY/fiA9tawLX6dA1XicuY
+         /pp/1Wn5Dx8XDyY3luzUVQEYJ6pmVXmhBig+9upD2l1D/cbN8qXSE603upJHm7O5H4YV
+         Edzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9qJHZmG7k47DbsZM/zOH4hhB24JCD7grBB3fphjPHIs=;
-        b=FtbKE/NkbM0se14BwFGa1Du/LXXmv2XCm/lzXKZdqFgHhzdUbgffLh/qhuO7OQBcSr
-         8K9FZdYR3lR41hOJiXlI6Fp6lCcd+bpTQW4fMDXc5GK7EProaMO6Wf//q7/Oo2Omh9nE
-         dF6LLBWNTHFFYrWxNfFGpGcujebP2jqxgR4uha3ZyBtcYBM2oNU83tTHxPS4/M6LO0Uy
-         SYk8epU2qAl0go6tk2e0mrtbEMNOA0A8hceB9HpCvb6fLHrUql7NlCRWi4OY9IiOQjwY
-         J1o3l5Cbwf/ZZZHB2Ve8uLJtqpvL5WsmMTqxvjVV+e47OfnJEBIrGDvUqAPrPWoX4rxX
-         LE9Q==
-X-Gm-Message-State: APjAAAUsLitQDvTjnFSN35wo/lrG7/SJ9VnPo3bALlpNFTJNsruig8wH
-        6DudkK8KIMmcTUKx1uZtNgY=
-X-Google-Smtp-Source: APXvYqzxSQ1GLjRRRWp5tnmL69SF3jY8gBJ6ahGheTgTsxORt3ZDyNxO7tEqhaJtVlnmXDbWigcTBQ==
-X-Received: by 2002:a17:902:23:: with SMTP id 32mr80029674pla.34.1563878600447;
-        Tue, 23 Jul 2019 03:43:20 -0700 (PDT)
+        bh=tLr9+dN/788cYU44X9e1swSeL2hknE+Vg2zg7+VyNDI=;
+        b=Z/mTcZZNJ3VblliAaRm0lxSlq4v24Kupo21ua9blW8S+nkHcKL4JtUE7ZAfZsXKNxD
+         9CknuXmIuvtxfAC+XJ0735OfI202yj6LM3yr1EmoLfCvYNoHhkvs4mRooDWhWF1L0dwz
+         EWCMaIIwroPiUGN0PtkkMwjV6tZdKMgNv3hdhb2q9AHmkt6a9DCGf/BfzQry5fpeYuAK
+         uexOuBDUYCdElFV2WpZ/NfEOCZUjcoo+OAgGYqzrx4mpebA+/7TI3pGDRtvDr5mIdEFm
+         lWHeHoOsq7cF9LuxZTHs1XfZXx2RRVOcwwWbWfH36z38CDcYRHP7HSzrZaEC0XSfUOpq
+         3LDg==
+X-Gm-Message-State: APjAAAXluTOEZkjLSZz+hdmBhxEesgWx69t0jxlblNOvFdw75gAXVXcl
+        t8h4sMN7xbuLmGkF7jM+mSN7KrbK
+X-Google-Smtp-Source: APXvYqwp2NR7lU0gvHB/ueXGroAMNzr/fcJ3cU7HRdWuer3b4zvJ8osGftOmVzjVlHD08+BizdYGwA==
+X-Received: by 2002:a17:902:1101:: with SMTP id d1mr35553096pla.212.1563878702598;
+        Tue, 23 Jul 2019 03:45:02 -0700 (PDT)
 Received: from localhost.localdomain ([122.163.0.39])
-        by smtp.gmail.com with ESMTPSA id u23sm43661364pfn.140.2019.07.23.03.43.17
+        by smtp.gmail.com with ESMTPSA id s5sm16795876pfm.97.2019.07.23.03.44.59
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 03:43:19 -0700 (PDT)
+        Tue, 23 Jul 2019 03:45:01 -0700 (PDT)
 From:   Nishka Dasgupta <nishkadg.linux@gmail.com>
-To:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
+To:     olteanv@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Cc:     Nishka Dasgupta <nishkadg.linux@gmail.com>
-Subject: [PATCH] net: dsa: mv88e6xxx: chip: Add of_node_put() before return
-Date:   Tue, 23 Jul 2019 16:13:07 +0530
-Message-Id: <20190723104307.8068-1-nishkadg.linux@gmail.com>
+Subject: [PATCH] net: dsa: sja1105: sja1105_main: Add of_node_put()
+Date:   Tue, 23 Jul 2019 16:14:48 +0530
+Message-Id: <20190723104448.8125-1-nishkadg.linux@gmail.com>
 X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -59,29 +60,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Each iteration of for_each_available_child_of_node puts the previous
-node, but in the case of a return from the middle of the loop, there is
-no put, thus causing a memory leak. Hence add an of_node_put before the
-return.
+Each iteration of for_each_child_of_node puts the previous node, but in
+the case of a return from the middle of the loop, there is no put, thus
+causing a memory leak. Hence add an of_node_put before the return.
 Issue found with Coccinelle.
 
 Signed-off-by: Nishka Dasgupta <nishkadg.linux@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/sja1105/sja1105_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 6b17cd961d06..c97dea4599a8 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2721,6 +2721,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 			err = mv88e6xxx_mdio_register(chip, child, true);
- 			if (err) {
- 				mv88e6xxx_mdios_unregister(chip);
-+				of_node_put(child);
- 				return err;
- 			}
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 32bf3a7cc3b6..6ed5f1e35789 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -625,6 +625,7 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
+ 		if (of_property_read_u32(child, "reg", &index) < 0) {
+ 			dev_err(dev, "Port number not defined in device tree "
+ 				"(property \"reg\")\n");
++			of_node_put(child);
+ 			return -ENODEV;
  		}
+ 
+@@ -634,6 +635,7 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
+ 			dev_err(dev, "Failed to read phy-mode or "
+ 				"phy-interface-type property for port %d\n",
+ 				index);
++			of_node_put(child);
+ 			return -ENODEV;
+ 		}
+ 		ports[index].phy_mode = phy_mode;
+@@ -643,6 +645,7 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
+ 			if (!of_phy_is_fixed_link(child)) {
+ 				dev_err(dev, "phy-handle or fixed-link "
+ 					"properties missing!\n");
++				of_node_put(child);
+ 				return -ENODEV;
+ 			}
+ 			/* phy-handle is missing, but fixed-link isn't.
 -- 
 2.19.1
 
