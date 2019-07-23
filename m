@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D25718FB
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:16:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3C671902
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 15:18:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390106AbfGWNQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 09:16:26 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52092 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727311AbfGWNQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 09:16:26 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id F07623082AF2;
-        Tue, 23 Jul 2019 13:16:25 +0000 (UTC)
-Received: from [10.72.12.26] (ovpn-12-26.pek2.redhat.com [10.72.12.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E01A35D9C5;
-        Tue, 23 Jul 2019 13:16:16 +0000 (UTC)
-Subject: Re: [PATCH 6/6] vhost: don't do synchronize_rcu() in
- vhost_uninit_vq_maps()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190723075718.6275-1-jasowang@redhat.com>
- <20190723075718.6275-7-jasowang@redhat.com>
- <20190723041144-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f2074bc7-6d67-14fa-4f58-91e9c5a9cc12@redhat.com>
-Date:   Tue, 23 Jul 2019 21:16:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389916AbfGWNSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 09:18:51 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40761 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729452AbfGWNSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 09:18:50 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w10so19433534pgj.7;
+        Tue, 23 Jul 2019 06:18:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mGrUry5yVvS7MoLiPpSpAf48bCAzpftIlN4T3gevYyQ=;
+        b=KA+s5PHvnmXv8ukQ6fEddY/y27w/X062erKiS+dcvMG6NTkk/HN7baRy6Vwl0i0PqO
+         QAKj/UrxIyhYNbgONFRI88Ix7LRbMPVOrz4FrHGQfgrcu5pzJDnuie2TZuk5XFkR5h4B
+         dq0T5emzhb2sx+pnmM5C0gGHiX5oQLc14/b5IIzSw/23JWp+MD0MHeNG67IscZeDLZV7
+         nKg7bZnaUyhGjCv4aZ2w1dvcWoM3aS5v0McbNovuC9YJZsfoo7WX292IySkDCZV0Au/f
+         itOwPyfrRNvYPeIgf12WGk2//XmXy3Ahe8EN77Fd3eRjGRG/hdhZrC/l6sWiozkBtUIy
+         jGpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mGrUry5yVvS7MoLiPpSpAf48bCAzpftIlN4T3gevYyQ=;
+        b=K9YWG4IM/zGgxVMN2CniIPQAfvHObv6b3hZfmiyxFIcqIcf9LIgn7A1JhdG0XYqWr6
+         29cye48tFZOalkwPXSTjewzWrq0VSMf2fao5X8mwJsN5gGikovS8ex8EVppVIGlxXtLG
+         wheZX+4Yb54E7ukgC1B8O01AioBMar50rwfFT3zgjJyFnwbJ1FQL+7g64cfAC8FLRG02
+         kGXR2z0vUrFvwKJE2v1ok0x9JKWmra6jgnpxc6lfSJxZA1x/Y5J2vVp4AnNjUgMj9/HQ
+         2u8euVzViqr8y9ezKstpFm5L6cprWaX6vTs2A0+oQ+RH492cim9+9IiqOXag6RYohIgV
+         tmNw==
+X-Gm-Message-State: APjAAAWubUuoTQz8hV5CY8qMlEBivlK/JaQTEiZfuKfZhVt9Azg0eKtA
+        yt9JNRnXW7HnXs5QzAVca+Q=
+X-Google-Smtp-Source: APXvYqy463zSTD+FF4e8zHz2xWSL9r4i5O28KcN1ZxIZmnJE3IyAoSEGsVqhcA9Y+kXl04P8HJUItw==
+X-Received: by 2002:a17:90a:1b4c:: with SMTP id q70mr80056485pjq.69.1563887930136;
+        Tue, 23 Jul 2019 06:18:50 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id y11sm47048285pfb.119.2019.07.23.06.18.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 06:18:49 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Steffen Klassert <klassert@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] net: 3com: 3c59x: Use dev_get_drvdata
+Date:   Tue, 23 Jul 2019 21:18:44 +0800
+Message-Id: <20190723131844.31878-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190723041144-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 23 Jul 2019 13:16:26 +0000 (UTC)
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Instead of using to_pci_dev + pci_get_drvdata,
+use dev_get_drvdata to make code simpler.
 
-On 2019/7/23 下午5:16, Michael S. Tsirkin wrote:
-> On Tue, Jul 23, 2019 at 03:57:18AM -0400, Jason Wang wrote:
->> There's no need for RCU synchronization in vhost_uninit_vq_maps()
->> since we've already serialized with readers (memory accessors). This
->> also avoid the possible userspace DOS through ioctl() because of the
->> possible high latency caused by synchronize_rcu().
->>
->> Reported-by: Michael S. Tsirkin <mst@redhat.com>
->> Fixes: 7f466032dc9e ("vhost: access vq metadata through kernel virtual address")
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> I agree synchronize_rcu in both mmu notifiers and ioctl
-> is a problem we must fix.
->
->> ---
->>   drivers/vhost/vhost.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
->> index 5b8821d00fe4..a17df1f4069a 100644
->> --- a/drivers/vhost/vhost.c
->> +++ b/drivers/vhost/vhost.c
->> @@ -334,7 +334,9 @@ static void vhost_uninit_vq_maps(struct vhost_virtqueue *vq)
->>   	}
->>   	spin_unlock(&vq->mmu_lock);
->>   
->> -	synchronize_rcu();
->> +	/* No need for synchronize_rcu() or kfree_rcu() since we are
->> +	 * serialized with memory accessors (e.g vq mutex held).
->> +	 */
->>   
->>   	for (i = 0; i < VHOST_NUM_ADDRS; i++)
->>   		if (map[i])
->> -- 
->> 2.18.1
-> .. however we can not RCU with no synchronization in sight.
-> Sometimes there are hacks like using a lock/unlock
-> pair instead of sync, but here no one bothers.
->
-> specifically notifiers call reset vq maps which calls
-> uninit vq maps which is not under any lock.
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+---
+ drivers/net/ethernet/3com/3c59x.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
+index 147051404194..8f897828869f 100644
+--- a/drivers/net/ethernet/3com/3c59x.c
++++ b/drivers/net/ethernet/3com/3c59x.c
+@@ -847,8 +847,7 @@ static void poll_vortex(struct net_device *dev)
+ 
+ static int vortex_suspend(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct net_device *ndev = pci_get_drvdata(pdev);
++	struct net_device *ndev = dev_get_drvdata(dev);
+ 
+ 	if (!ndev || !netif_running(ndev))
+ 		return 0;
+@@ -861,8 +860,7 @@ static int vortex_suspend(struct device *dev)
+ 
+ static int vortex_resume(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct net_device *ndev = pci_get_drvdata(pdev);
++	struct net_device *ndev = dev_get_drvdata(dev);
+ 	int err;
+ 
+ 	if (!ndev || !netif_running(ndev))
+-- 
+2.20.1
 
-Notifier did this:
-
-         if (map) {
-                 if (uaddr->write) {
-                         for (i = 0; i < map->npages; i++)
-set_page_dirty(map->pages[i]);
-}
-                 rcu_assign_pointer(vq->maps[index], NULL);
-}
-spin_unlock(&vq->mmu_lock);
-
-         if (map) {
-synchronize_rcu();
-vhost_map_unprefetch(map);
-         }
-
-So it indeed have a synchronize_rcu() there.
-
-Thanks
-
-
->
-> You will get use after free when map is then accessed.
->
-> If you always have a lock then just take that lock
-> and no need for RCU.
->
