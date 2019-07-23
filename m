@@ -2,84 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFCA471DD8
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 19:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A281C71DE0
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 19:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391161AbfGWRhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 13:37:13 -0400
-Received: from mga17.intel.com ([192.55.52.151]:49109 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391149AbfGWRhI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 13:37:08 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Jul 2019 10:37:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,299,1559545200"; 
-   d="scan'208";a="197203642"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga002.fm.intel.com with ESMTP; 23 Jul 2019 10:37:02 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 6/6] e1000e: disable force K1-off feature
-Date:   Tue, 23 Jul 2019 10:36:50 -0700
-Message-Id: <20190723173650.23276-7-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
-References: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
+        id S2391154AbfGWRjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 13:39:03 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32930 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388568AbfGWRjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 13:39:03 -0400
+Received: by mail-qt1-f193.google.com with SMTP id r6so38505693qtt.0;
+        Tue, 23 Jul 2019 10:39:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EuACWTx6/VsexzsqTVb15VQ3sSXyBNMO7OIyxtO9bbA=;
+        b=mvXBrzDvijQy+ixZaXTbMDldl8awDToFlznF/XrAtAL1z9lOKTBQVZdbpVnn24BgGN
+         m7Br1RXmHB3qWsUfQ2379A7IWEMntsumIF1MhiotXW1galje5Rcn84WxeAY9Qek+m0sv
+         zY37GWyQI8701y544+hD8cd4w01sXqOb6nI2nXCAdVCUeqsqdAl9IgEbxduSaO5hv7fk
+         Vv8LlxQERLKYgN5X9x+x714PnJI/s3DKlJaIiXDVRWqbIthB9Omm0IRyWOdYcSER1EXl
+         eMbPEkqRt6rBTl1vuh3Q7nhQ4wbKEXkejGiIfhuQw5yM1dqIMG1o0d0hOtfJHt2sEkhJ
+         xkWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EuACWTx6/VsexzsqTVb15VQ3sSXyBNMO7OIyxtO9bbA=;
+        b=Rd7PgHN7vAQDwNlhSrH1t9WGNBeksgQYEqrg3BBau309M2n49bn7YF8fYJi7lcVRCH
+         9CEqCgpVs/kUGszoF+pbCW+7qsghK0+Exo02r1AMSO+SAEaHIPGZIEBDs0BzkPLN8eNa
+         fg3NTc+oRHL6wAphSlvTBu1qZNSvlEIjAdKWC6EutlafDoheeayEB14WtKvlRAvjiWKu
+         8tJJd1QYtVL2YkAV1zrWInxRQSRGKacjRhc+i8Wa80Dr/uSVKa0LyZY8wp00ceKMPHGH
+         DWtSPyZri2a1SsHVEYl04MouzOwysE5GsCI1VhXGqHkrfHFtU92vImL+MRohje8f/UIh
+         kZfw==
+X-Gm-Message-State: APjAAAXm+a+Nr6W1QSgufXiAmooJCPbmIuMptAPzdVekJvWKdc/BZHld
+        BqOH3cYcCjwM+s0Rz0tonnMT4xR3cq7dLfiZejc=
+X-Google-Smtp-Source: APXvYqzC5XlTNHwrs/+7G6QIJdWnkB9m5ioF5tiMZY9dVQ98oJ8agj7U8FIVGPXt++EUv/cNb35lYBIvXQ66rAfqvrI=
+X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr55687828qvh.78.1563903542315;
+ Tue, 23 Jul 2019 10:39:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190723043112.3145810-1-andriin@fb.com> <20190723043112.3145810-2-andriin@fb.com>
+ <EBDB05E7-C10F-479F-B2A7-62D59EE4887E@fb.com>
+In-Reply-To: <EBDB05E7-C10F-479F-B2A7-62D59EE4887E@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 23 Jul 2019 10:38:51 -0700
+Message-ID: <CAEf4BzYKFTgsf982SEZotZ5+UgP+ErieKXSUoKyj5_gCKrHxTg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] selftests/bpf: convert test_get_stack_raw_tp
+ to perf_buffer API
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+On Tue, Jul 23, 2019 at 2:25 AM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Jul 22, 2019, at 9:31 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Convert test_get_stack_raw_tp test to new perf_buffer API.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> > .../bpf/prog_tests/get_stack_raw_tp.c         | 78 ++++++++++---------
+> > .../bpf/progs/test_get_stack_rawtp.c          |  2 +-
+> > 2 files changed, 44 insertions(+), 36 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+> > index c2a0a9d5591b..473889e1b219 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+> > @@ -1,8 +1,15 @@
+> > // SPDX-License-Identifier: GPL-2.0
+> > +#define _GNU_SOURCE
+> > +#include <pthread.h>
+> > +#include <sched.h>
+> > +#include <sys/socket.h>
+> > #include <test_progs.h>
+> >
+> > #define MAX_CNT_RAWTP 10ull
+> > #define MAX_STACK_RAWTP       100
+> > +
+> > +static int duration = 0;
+> > +
+>
+> Are we using "duration" at all?
 
-MAC-PHY desync may occur causing miss detection of link up event.
-Disabling K1-off feature can work around the problem.
+Yes, unfortunately in test_progs CHECK macro expects "duration"
+variable to be defined. It's very annoying and I'm going to work on
+cleaning up and streamlining how we do selftests in bpf, so hopefully
+we'll get rid of some of those "artifacts". But for now, yeah,
+duration has to be defined somewhere.
 
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=204057
+>
+> > struct get_stack_trace_t {
+> >       int pid;
+> >       int kern_stack_size;
+> > @@ -13,7 +20,7 @@ struct get_stack_trace_t {
+> >       struct bpf_stack_build_id user_stack_buildid[MAX_STACK_RAWTP];
+> > };
+> >
+> > -static int get_stack_print_output(void *data, int size)
+> > +static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
+> > {
+> >       bool good_kern_stack = false, good_user_stack = false;
+> >       const char *nonjit_func = "___bpf_prog_run";
+> > @@ -65,75 +72,76 @@ static int get_stack_print_output(void *data, int size)
+> >               if (e->user_stack_size > 0 && e->user_stack_buildid_size > 0)
+> >                       good_user_stack = true;
+> >       }
+> > -     if (!good_kern_stack || !good_user_stack)
+> > -             return LIBBPF_PERF_EVENT_ERROR;
+> >
+> > -     if (cnt == MAX_CNT_RAWTP)
+> > -             return LIBBPF_PERF_EVENT_DONE;
+> > -
+> > -     return LIBBPF_PERF_EVENT_CONT;
+> > +     if (!good_kern_stack)
+> > +         CHECK(!good_kern_stack, "bad_kern_stack", "bad\n");
+>
+> Two "bad" is a little weird. How about "kern stack", "bad"?
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/e1000e/hw.h      | 1 +
- drivers/net/ethernet/intel/e1000e/ich8lan.c | 3 +++
- 2 files changed, 4 insertions(+)
+Heh :) I'll add something more human-readable, like "failed to get
+kernel stack".
 
-diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-index eff75bd8a8f0..e3c71fd093ee 100644
---- a/drivers/net/ethernet/intel/e1000e/hw.h
-+++ b/drivers/net/ethernet/intel/e1000e/hw.h
-@@ -662,6 +662,7 @@ struct e1000_dev_spec_ich8lan {
- 	bool kmrn_lock_loss_workaround_enabled;
- 	struct e1000_shadow_ram shadow_ram[E1000_ICH8_SHADOW_RAM_WORDS];
- 	bool nvm_k1_enabled;
-+	bool disable_k1_off;
- 	bool eee_disable;
- 	u16 eee_lp_ability;
- 	enum e1000_ulp_state ulp_state;
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index a1fab77b2096..6a9a4014f4b7 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1538,6 +1538,9 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
- 				fextnvm6 &= ~E1000_FEXTNVM6_K1_OFF_ENABLE;
- 		}
- 
-+		if (hw->dev_spec.ich8lan.disable_k1_off == true)
-+			fextnvm6 &= ~E1000_FEXTNVM6_K1_OFF_ENABLE;
-+
- 		ew32(FEXTNVM6, fextnvm6);
- 	}
- 
--- 
-2.21.0
+>
+> > +     if (!good_user_stack)
+> > +         CHECK(!good_user_stack, "bad_user_stack", "bad\n");
+> > }
+> >
+> > void test_get_stack_raw_tp(void)
+> > {
 
+[...]
