@@ -2,233 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59757721A7
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 23:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4449F7219A
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 23:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403952AbfGWVfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 17:35:17 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33008 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2403946AbfGWVfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 17:35:17 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6NLW8S6028909
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 14:35:15 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=aYTQ+zUgQJAdgomjovg3XpG481pbk+qgmf0N4tXpo40=;
- b=NI8y3rsD26SwEKlLfyHOFIuINK+/g47Q45EKncnO4uWdv6XrtXRZCGMIXcrMyhai9RkL
- pI/L11NBeCY55q2PfcYjqIXziQYlTyIXRNggHmhoKiqIBfA4xJo6Jwg1GTi1mgjEo1ef
- Zyt+KU1328gQ8vkbyEMN/wUUygK56imX0wc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2tx613h33g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 14:35:15 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 23 Jul 2019 14:35:08 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 5E0248615A2; Tue, 23 Jul 2019 14:35:06 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <songliubraving@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 5/5] selftests/bpf: remove perf buffer helpers
-Date:   Tue, 23 Jul 2019 14:34:45 -0700
-Message-ID: <20190723213445.1732339-6-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190723213445.1732339-1-andriin@fb.com>
-References: <20190723213445.1732339-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S2392139AbfGWVeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 17:34:50 -0400
+Received: from mga05.intel.com ([192.55.52.43]:1738 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729084AbfGWVes (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 17:34:48 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Jul 2019 14:34:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,300,1559545200"; 
+   d="scan'208";a="160345835"
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by orsmga007.jf.intel.com with ESMTP; 23 Jul 2019 14:34:47 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.6]) by
+ ORSMSX108.amr.corp.intel.com ([169.254.2.65]) with mapi id 14.03.0439.000;
+ Tue, 23 Jul 2019 14:34:46 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>
+Subject: Re: [PATCH iproute2] etf: make printing of variable JSON friendly
+Thread-Topic: [PATCH iproute2] etf: make printing of variable JSON friendly
+Thread-Index: AQHVPnqjzjEUTHyXSkOLocBekrLjQ6bXbP6AgAAexoCAAELvgIABZpMA
+Date:   Tue, 23 Jul 2019 21:34:46 +0000
+Message-ID: <8BC34CA3-C500-4188-BDBA-4B2B7E9F1EE2@intel.com>
+References: <1563572443-10879-1-git-send-email-vedang.patel@intel.com>
+ <a7c60706-562a-429d-400f-af2ad1606ba3@gmail.com>
+ <98A741A5-EAC0-408F-84C2-34E4714A2097@intel.com>
+ <0e5fc2fe-dc83-b876-40ac-3b6f3f47bb29@gmail.com>
+In-Reply-To: <0e5fc2fe-dc83-b876-40ac-3b6f3f47bb29@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.14.171]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EB5685E615122A4DA9CEE635BDB58091@intel.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-23_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=25 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=986 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907230217
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-libbpf's perf_buffer API supersedes trace_helper.h's helpers.
-Remove those helpers after all existing users were already moved to
-perf_buffer API.
-
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- tools/testing/selftests/bpf/trace_helpers.c | 125 --------------------
- tools/testing/selftests/bpf/trace_helpers.h |   9 --
- 2 files changed, 134 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/selftests/bpf/trace_helpers.c
-index b47f205f0310..7f989b3e4e22 100644
---- a/tools/testing/selftests/bpf/trace_helpers.c
-+++ b/tools/testing/selftests/bpf/trace_helpers.c
-@@ -86,128 +86,3 @@ long ksym_get_addr(const char *name)
- 
- 	return 0;
- }
--
--static int page_size;
--static int page_cnt = 8;
--static struct perf_event_mmap_page *header;
--
--int perf_event_mmap_header(int fd, struct perf_event_mmap_page **header)
--{
--	void *base;
--	int mmap_size;
--
--	page_size = getpagesize();
--	mmap_size = page_size * (page_cnt + 1);
--
--	base = mmap(NULL, mmap_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
--	if (base == MAP_FAILED) {
--		printf("mmap err\n");
--		return -1;
--	}
--
--	*header = base;
--	return 0;
--}
--
--int perf_event_mmap(int fd)
--{
--	return perf_event_mmap_header(fd, &header);
--}
--
--static int perf_event_poll(int fd)
--{
--	struct pollfd pfd = { .fd = fd, .events = POLLIN };
--
--	return poll(&pfd, 1, 1000);
--}
--
--struct perf_event_sample {
--	struct perf_event_header header;
--	__u32 size;
--	char data[];
--};
--
--static enum bpf_perf_event_ret
--bpf_perf_event_print(struct perf_event_header *hdr, void *private_data)
--{
--	struct perf_event_sample *e = (struct perf_event_sample *)hdr;
--	perf_event_print_fn fn = private_data;
--	int ret;
--
--	if (e->header.type == PERF_RECORD_SAMPLE) {
--		ret = fn(e->data, e->size);
--		if (ret != LIBBPF_PERF_EVENT_CONT)
--			return ret;
--	} else if (e->header.type == PERF_RECORD_LOST) {
--		struct {
--			struct perf_event_header header;
--			__u64 id;
--			__u64 lost;
--		} *lost = (void *) e;
--		printf("lost %lld events\n", lost->lost);
--	} else {
--		printf("unknown event type=%d size=%d\n",
--		       e->header.type, e->header.size);
--	}
--
--	return LIBBPF_PERF_EVENT_CONT;
--}
--
--int perf_event_poller(int fd, perf_event_print_fn output_fn)
--{
--	enum bpf_perf_event_ret ret;
--	void *buf = NULL;
--	size_t len = 0;
--
--	for (;;) {
--		perf_event_poll(fd);
--		ret = bpf_perf_event_read_simple(header, page_cnt * page_size,
--						 page_size, &buf, &len,
--						 bpf_perf_event_print,
--						 output_fn);
--		if (ret != LIBBPF_PERF_EVENT_CONT)
--			break;
--	}
--	free(buf);
--
--	return ret;
--}
--
--int perf_event_poller_multi(int *fds, struct perf_event_mmap_page **headers,
--			    int num_fds, perf_event_print_fn output_fn)
--{
--	enum bpf_perf_event_ret ret;
--	struct pollfd *pfds;
--	void *buf = NULL;
--	size_t len = 0;
--	int i;
--
--	pfds = calloc(num_fds, sizeof(*pfds));
--	if (!pfds)
--		return LIBBPF_PERF_EVENT_ERROR;
--
--	for (i = 0; i < num_fds; i++) {
--		pfds[i].fd = fds[i];
--		pfds[i].events = POLLIN;
--	}
--
--	for (;;) {
--		poll(pfds, num_fds, 1000);
--		for (i = 0; i < num_fds; i++) {
--			if (!pfds[i].revents)
--				continue;
--
--			ret = bpf_perf_event_read_simple(headers[i],
--							 page_cnt * page_size,
--							 page_size, &buf, &len,
--							 bpf_perf_event_print,
--							 output_fn);
--			if (ret != LIBBPF_PERF_EVENT_CONT)
--				break;
--		}
--	}
--	free(buf);
--	free(pfds);
--
--	return ret;
--}
-diff --git a/tools/testing/selftests/bpf/trace_helpers.h b/tools/testing/selftests/bpf/trace_helpers.h
-index 18924f23db1b..aa4dcfe18050 100644
---- a/tools/testing/selftests/bpf/trace_helpers.h
-+++ b/tools/testing/selftests/bpf/trace_helpers.h
-@@ -3,7 +3,6 @@
- #define __TRACE_HELPER_H
- 
- #include <libbpf.h>
--#include <linux/perf_event.h>
- 
- struct ksym {
- 	long addr;
-@@ -14,12 +13,4 @@ int load_kallsyms(void);
- struct ksym *ksym_search(long key);
- long ksym_get_addr(const char *name);
- 
--typedef enum bpf_perf_event_ret (*perf_event_print_fn)(void *data, int size);
--
--int perf_event_mmap(int fd);
--int perf_event_mmap_header(int fd, struct perf_event_mmap_page **header);
--/* return LIBBPF_PERF_EVENT_DONE or LIBBPF_PERF_EVENT_ERROR */
--int perf_event_poller(int fd, perf_event_print_fn output_fn);
--int perf_event_poller_multi(int *fds, struct perf_event_mmap_page **headers,
--			    int num_fds, perf_event_print_fn output_fn);
- #endif
--- 
-2.17.1
-
+DQoNCj4gT24gSnVsIDIyLCAyMDE5LCBhdCA1OjExIFBNLCBEYXZpZCBBaGVybiA8ZHNhaGVybkBn
+bWFpbC5jb20+IHdyb3RlOg0KPiANCj4gT24gNy8yMi8xOSAxOjExIFBNLCBQYXRlbCwgVmVkYW5n
+IHdyb3RlOg0KPj4gDQo+PiANCj4+PiBPbiBKdWwgMjIsIDIwMTksIGF0IDExOjIxIEFNLCBEYXZp
+ZCBBaGVybiA8ZHNhaGVybkBnbWFpbC5jb20+IHdyb3RlOg0KPj4+IA0KPj4+IE9uIDcvMTkvMTkg
+Mzo0MCBQTSwgVmVkYW5nIFBhdGVsIHdyb3RlOg0KPj4+PiBJbiBpcHJvdXRlMiB0eHRpbWUtYXNz
+aXN0IHNlcmllcywgaXQgd2FzIHBvaW50ZWQgb3V0IHRoYXQgcHJpbnRfYm9vbCgpDQo+Pj4+IHNo
+b3VsZCBiZSB1c2VkIHRvIHByaW50IGJpbmFyeSB2YWx1ZXMuIFRoaXMgaXMgdG8gbWFrZSBpdCBK
+U09OIGZyaWVuZGx5Lg0KPj4+PiANCj4+Pj4gU28sIG1ha2UgdGhlIGNvcnJlc3BvbmRpbmcgY2hh
+bmdlcyBpbiBFVEYuDQo+Pj4+IA0KPj4+PiBGaXhlczogOGNjZDQ5MzgzY2RjICgiZXRmOiBBZGQg
+c2tpcF9zb2NrX2NoZWNrIikNCj4+Pj4gUmVwb3J0ZWQtYnk6IFN0ZXBoZW4gSGVtbWluZ2VyIDxz
+dGVwaGVuQG5ldHdvcmtwbHVtYmVyLm9yZz4NCj4+Pj4gU2lnbmVkLW9mZi1ieTogVmVkYW5nIFBh
+dGVsIDx2ZWRhbmcucGF0ZWxAaW50ZWwuY29tPg0KPj4+PiAtLS0NCj4+Pj4gdGMvcV9ldGYuYyB8
+IDEyICsrKysrKy0tLS0tLQ0KPj4+PiAxIGZpbGUgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCA2
+IGRlbGV0aW9ucygtKQ0KPj4+PiANCj4+Pj4gZGlmZiAtLWdpdCBhL3RjL3FfZXRmLmMgYi90Yy9x
+X2V0Zi5jDQo+Pj4+IGluZGV4IGMyMDkwNTg5YmM2NC4uMzA3YzUwZWVkNDhiIDEwMDY0NA0KPj4+
+PiAtLS0gYS90Yy9xX2V0Zi5jDQo+Pj4+ICsrKyBiL3RjL3FfZXRmLmMNCj4+Pj4gQEAgLTE3Niwx
+MiArMTc2LDEyIEBAIHN0YXRpYyBpbnQgZXRmX3ByaW50X29wdChzdHJ1Y3QgcWRpc2NfdXRpbCAq
+cXUsIEZJTEUgKmYsIHN0cnVjdCBydGF0dHIgKm9wdCkNCj4+Pj4gCQkgICAgIGdldF9jbG9ja19u
+YW1lKHFvcHQtPmNsb2NraWQpKTsNCj4+Pj4gDQo+Pj4+IAlwcmludF91aW50KFBSSU5UX0FOWSwg
+ImRlbHRhIiwgImRlbHRhICVkICIsIHFvcHQtPmRlbHRhKTsNCj4+Pj4gLQlwcmludF9zdHJpbmco
+UFJJTlRfQU5ZLCAib2ZmbG9hZCIsICJvZmZsb2FkICVzICIsDQo+Pj4+IC0JCQkJKHFvcHQtPmZs
+YWdzICYgVENfRVRGX09GRkxPQURfT04pID8gIm9uIiA6ICJvZmYiKTsNCj4+Pj4gLQlwcmludF9z
+dHJpbmcoUFJJTlRfQU5ZLCAiZGVhZGxpbmVfbW9kZSIsICJkZWFkbGluZV9tb2RlICVzICIsDQo+
+Pj4+IC0JCQkJKHFvcHQtPmZsYWdzICYgVENfRVRGX0RFQURMSU5FX01PREVfT04pID8gIm9uIiA6
+ICJvZmYiKTsNCj4+Pj4gLQlwcmludF9zdHJpbmcoUFJJTlRfQU5ZLCAic2tpcF9zb2NrX2NoZWNr
+IiwgInNraXBfc29ja19jaGVjayAlcyIsDQo+Pj4+IC0JCQkJKHFvcHQtPmZsYWdzICYgVENfRVRG
+X1NLSVBfU09DS19DSEVDSykgPyAib24iIDogIm9mZiIpOw0KPj4+PiArCWlmIChxb3B0LT5mbGFn
+cyAmIFRDX0VURl9PRkZMT0FEX09OKQ0KPj4+PiArCQlwcmludF9ib29sKFBSSU5UX0FOWSwgIm9m
+ZmxvYWQiLCAib2ZmbG9hZCAiLCB0cnVlKTsNCj4+Pj4gKwlpZiAocW9wdC0+ZmxhZ3MgJiBUQ19F
+VEZfREVBRExJTkVfTU9ERV9PTikNCj4+Pj4gKwkJcHJpbnRfYm9vbChQUklOVF9BTlksICJkZWFk
+bGluZV9tb2RlIiwgImRlYWRsaW5lX21vZGUgIiwgdHJ1ZSk7DQo+Pj4+ICsJaWYgKHFvcHQtPmZs
+YWdzICYgVENfRVRGX1NLSVBfU09DS19DSEVDSykNCj4+Pj4gKwkJcHJpbnRfYm9vbChQUklOVF9B
+TlksICJza2lwX3NvY2tfY2hlY2siLCAic2tpcF9zb2NrX2NoZWNrIiwgdHJ1ZSk7DQo+Pj4+IA0K
+Pj4+PiAJcmV0dXJuIDA7DQo+Pj4+IH0NCj4+Pj4gDQo+Pj4gDQo+Pj4gVGhpcyBjaGFuZ2VzIGV4
+aXN0aW5nIG91dHB1dCBmb3IgVENfRVRGX09GRkxPQURfT04gYW5kDQo+Pj4gVENfRVRGX0RFQURM
+SU5FX01PREVfT04gd2hpY2ggd2VyZSBhZGRlZCBhIHllYXIgYWdvLg0KPj4gWWVzLCB0aGlzIGlz
+IGEgZ29vZCBwb2ludC4gSSBtaXNzZWQgdGhhdC4gDQo+PiANCj4+IEFub3RoZXIgaWRlYSBpcyB0
+byB1c2UgaXNfanNvbl9jb250ZXh0KCkgYW5kIGNhbGwgcHJpbnRfYm9vbCgpIHRoZXJlLiBCdXQs
+IHRoYXQgd2lsbCBzdGlsbCBjaGFuZ2UgdmFsdWVzIGNvcnJlc3BvbmRpbmcgdG8gdGhlIGpzb24g
+b3V0cHV0IGZvciB0aGUgYWJvdmUgZmxhZ3MgZnJvbSDigJxvbuKAnS/igJxvZmbigJ0gdG8g4oCc
+dHJ1ZeKAnS/igJxmYWxzZeKAnS4gSSBhbSBub3Qgc3VyZSBpZiB0aGlzIGlzIGEgYmlnIGlzc3Vl
+LiANCj4+IA0KPj4gTXkgc3VnZ2VzdGlvbiBpcyB0byBrZWVwIHRoZSBjb2RlIGFzIGlzLiB3aGF0
+IGRvIHlvdSB0aGluaz8NCj4+IA0KPiANCj4gSSB0aGluayB3ZSBuZWVkIGF1dG9tYXRlZCBjaGVj
+a2VycyBmb3IgbmV3IGNvZGUuIDstKQ0KPiANCj4gVGhlIGZpcnN0IDIgc2hvdWxkIG5vdCBjaGFu
+Z2UgZm9yIGJhY2t3YXJkIGNvbXBhdGliaWxpdHkgLSB1bmxlc3MgdGhlcmUNCj4gaXMgYWdyZWVt
+ZW50IHRoYXQgdGhpcyBmZWF0dXJlIGlzIHRvbyBuZXcgYW5kIGxvbmcgdGVybSBpdCBpcyBiZXR0
+ZXIgdG8NCj4gcHJpbnQgYXMgYWJvdmUuDQo+IA0KPiBUaGVuIHRoZSBuZXcgb25lIHNob3VsZCBm
+b2xsb3cgY29udGV4dCBvZiB0aGUgb3RoZXIgMiAtIGNvbnNpc3RlbmN5IElNSE8NCj4gdGFrZXMg
+cHJlY2VkZW5jZS4NClRoYW5rcyBmb3IgdGhlIGlucHV0cy4gDQoNCkxldOKAmXMga2VlcCB3aGF0
+ZXZlciBpcyBjdXJyZW50bHkgcHJlc2VudCB1cHN0cmVhbSBhbmQgeW91IGNhbiBpZ25vcmUgdGhp
+cyBwYXRjaC4NCg0KVGhhbmtzLA0KVmVkYW5n
