@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 324EC71A12
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:16:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0684971A16
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 16:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390540AbfGWOQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 10:16:34 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:39629 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726201AbfGWOQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 10:16:33 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 051F82766;
-        Tue, 23 Jul 2019 10:16:29 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 23 Jul 2019 10:16:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=2rm5Ca
-        KDnw7oUdMARQxvYBTdZoUSnzOX03A7LqdRLaE=; b=qU80VL7jfme7LHFiUA/vmx
-        vnZQEEni/ZUPegjQCIxfAXAKGrnPmFVvsAHppsPAasixuwJmNkJdmp8aR41Ctt8M
-        zy2Kj9ZJQMTwBqtG56ezANryKQMRWJDdznlIz0cVjlE+uICCE8csLnn7KLuAi/fn
-        TPgjbepOIOyAuoDkmMjRhOZct/G5dVSslkrfaaC5WeVkDNlXP7nQpkVOfLD3h0mz
-        74z57UA0AzecxhJix9BrywcgAoRKEapFnAUyiS2OaVKKcYISW4M96q7AzS68BNNF
-        2jrsu0AxxnbalWj1x9rZ5LKd+Bir7Z+8kF/blpFM8sjOAmTU7bO1oN4bXloZy01g
-        ==
-X-ME-Sender: <xms:vBY3XV4FmcukVrO6Ccz65-dRIYtIZ9Vb22rgnJtOdn9POtDa1djzbg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeekgdejhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
-    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:vBY3XZMFCzUforrEFJkW6qOi8bRMUweIFmJfjWPnG5SnxTYZaRyJpg>
-    <xmx:vBY3XSfnwwvPOTx59RobOxaE1oAfPWYTBb0MoLUXU_keNtw5aPweRA>
-    <xmx:vBY3XbcWB00jCzPLgwnsVnEDF_g-yjU5ScwNK-YE9f6FDefmrBmXAg>
-    <xmx:vBY3XRBVKsaeujX70hGFc_hHBYSg0A3JPO00WGWAYTuFaVyUk3dZdg>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A61518005C;
-        Tue, 23 Jul 2019 10:16:27 -0400 (EDT)
-Date:   Tue, 23 Jul 2019 17:16:25 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        jakub.kicinski@netronome.com, toke@redhat.com, andy@greyhouse.net,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 10/12] drop_monitor: Add packet alert mode
-Message-ID: <20190723141625.GA8972@splinter>
-References: <20190722183134.14516-1-idosch@idosch.org>
- <20190722183134.14516-11-idosch@idosch.org>
- <20190723124340.GA10377@hmswarspite.think-freely.org>
+        id S2390466AbfGWOQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 10:16:48 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:44895 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbfGWOQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 10:16:48 -0400
+Received: by mail-pg1-f195.google.com with SMTP id i18so19510624pgl.11;
+        Tue, 23 Jul 2019 07:16:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jL79MKKpyd6Fku1WytrYtvGRkeN4L/bqteh5RYd+ObI=;
+        b=gaGGrty7Q38mV3cX5qdpZRqoa9g3twpyGCn2idTeWJ1MPlaA2Bo2yASaEFUJs5Gcpq
+         Lso3HMOOntihZxxUT7E/qzQIPcfMSO6ocQc92vuj3rNIXJ937eFXY4yMuFTfUkkOOL+J
+         3ZMQjA9WlsvxB2cTKdjd/XOEo6ijTei4BIieQL5IbgdapF431Fe20NcSHiOXJRC8Dkk2
+         hgt+xN55eU+lYmHFWwxxLXbM7LT537iVo2FvFVPxa09FaKmPW4umz3JvxP3FBgVOVjYg
+         WkUv5jsJHvBZ3lARk9R7j5Ly/7/pkhflCG8D/jg25DdIW+J3iXdcajU7m98RAhh/VCPj
+         fP9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jL79MKKpyd6Fku1WytrYtvGRkeN4L/bqteh5RYd+ObI=;
+        b=p/06HhIq2jfnljKBuPTjuC6iaeHqaT98q8XibLR+pV8p1SJfM6Z/mXYC+ctoRHrN/5
+         OQK87tB9ZVhAx21Y07hpJ84wuSSOyOwlOsTriXbu8UqZQQmF4ISQeCRkoRbH2AQm/G9t
+         SZLME4uVPN3MLacwi/DfOd9DyaKJ8WnN7/Dq79c/qesFMnWLpCGWPFn1+52ffAM7yHRH
+         oWKMPogztnTLaO6flpuLG79DWZu5nn/P6QuOT6SMZOh4WPASHsT3TB26jcpLGjtv/Azl
+         Bad6mQ7Ecrff/Z32yHAjPMJFzBnr8LRMqrHpJX8r8XGgv/f6BnLwZMPuhWjMLjdtm01F
+         +4LA==
+X-Gm-Message-State: APjAAAV4DtxrX/N9eMRm8DfHsFuk6+vhzRM33MwvnYYSeA52DIg0PIG/
+        QS4hbyupCHCv1XEv1nmxu93GxqR6PeA=
+X-Google-Smtp-Source: APXvYqxCIeivB9x4n+SUGOjA1ek9EQNIwM0d2lDaEwdJ5juxWCHfY6wHgBXP1veP4lMOCE+ToTKWJw==
+X-Received: by 2002:a62:303:: with SMTP id 3mr5994321pfd.118.1563891407675;
+        Tue, 23 Jul 2019 07:16:47 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id c98sm42072593pje.1.2019.07.23.07.16.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 07:16:47 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Guo-Fu Tseng <cooldavid@cooldavid.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] net: jme: Use dev_get_drvdata
+Date:   Tue, 23 Jul 2019 22:16:42 +0800
+Message-Id: <20190723141642.5968-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190723124340.GA10377@hmswarspite.think-freely.org>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 08:43:40AM -0400, Neil Horman wrote:
-> On Mon, Jul 22, 2019 at 09:31:32PM +0300, Ido Schimmel wrote:
-> > +static void net_dm_packet_work(struct work_struct *work)
-> > +{
-> > +	struct per_cpu_dm_data *data;
-> > +	struct sk_buff_head list;
-> > +	struct sk_buff *skb;
-> > +	unsigned long flags;
-> > +
-> > +	data = container_of(work, struct per_cpu_dm_data, dm_alert_work);
-> > +
-> > +	__skb_queue_head_init(&list);
-> > +
-> > +	spin_lock_irqsave(&data->drop_queue.lock, flags);
-> > +	skb_queue_splice_tail_init(&data->drop_queue, &list);
-> > +	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
-> > +
-> These functions are all executed in a per-cpu context.  While theres nothing
-> wrong with using a spinlock here, I think you can get away with just doing
-> local_irqsave and local_irq_restore.
+Instead of using to_pci_dev + pci_get_drvdata,
+use dev_get_drvdata to make code simpler.
 
-Hi Neil,
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+---
+ drivers/net/ethernet/jme.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Thanks a lot for reviewing. I might be missing something, but please
-note that this function is executed from a workqueue and therefore the
-CPU it is running on does not have to be the same CPU to which 'data'
-belongs to. If so, I'm not sure how I can avoid taking the spinlock, as
-otherwise two different CPUs can modify the list concurrently.
+diff --git a/drivers/net/ethernet/jme.c b/drivers/net/ethernet/jme.c
+index 0b668357db4d..db7e10e23310 100644
+--- a/drivers/net/ethernet/jme.c
++++ b/drivers/net/ethernet/jme.c
+@@ -3193,8 +3193,7 @@ jme_shutdown(struct pci_dev *pdev)
+ static int
+ jme_suspend(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct jme_adapter *jme = netdev_priv(netdev);
+ 
+ 	if (!netif_running(netdev))
+@@ -3236,8 +3235,7 @@ jme_suspend(struct device *dev)
+ static int
+ jme_resume(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct jme_adapter *jme = netdev_priv(netdev);
+ 
+ 	if (!netif_running(netdev))
+-- 
+2.20.1
 
-> 
-> Neil
-> 
-> > +	while ((skb = __skb_dequeue(&list)))
-> > +		net_dm_packet_report(skb);
-> > +}
