@@ -2,125 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC6370E1D
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 02:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1813570E4E
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 02:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731813AbfGWAZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jul 2019 20:25:37 -0400
-Received: from mga04.intel.com ([192.55.52.120]:52276 "EHLO mga04.intel.com"
+        id S1729536AbfGWAto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jul 2019 20:49:44 -0400
+Received: from ozlabs.org ([203.11.71.1]:32883 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727627AbfGWAZh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jul 2019 20:25:37 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Jul 2019 17:25:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,297,1559545200"; 
-   d="scan'208";a="180568074"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by orsmga002.jf.intel.com with ESMTP; 22 Jul 2019 17:25:34 -0700
-Date:   Mon, 22 Jul 2019 17:25:34 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     john.hubbard@gmail.com
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Boaz Harrosh <boaz@plexistor.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Johannes Thumshirn <jthumshirn@suse.de>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH 3/3] net/xdp: convert put_page() to put_user_page*()
-Message-ID: <20190723002534.GA10284@iweiny-DESK2.sc.intel.com>
-References: <20190722223415.13269-1-jhubbard@nvidia.com>
- <20190722223415.13269-4-jhubbard@nvidia.com>
+        id S1728264AbfGWAto (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jul 2019 20:49:44 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45t0HS63rMz9s3Z;
+        Tue, 23 Jul 2019 10:49:40 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1563842981;
+        bh=jBu0G6LyfdLlQ4QDdrcU7I+Un+OaoeNp8y0aT+nDIuc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EW0D7T3i9Jefogo6s3HH7TtQsS6HV/Gj2/9IY35QrYgsE/O6TQkEAKF5GFA08XWBC
+         WLx/D/Tl3OvSS4uJF+4powZVWfgozGVTzXOsb1PNtvAVH2DsbqxqLYWK91u5hhEJQ6
+         Bon2CD+CWfKnuMhnuM5fQ5o+SQqUbkwcwf5LZFyp4gZJZRCJOs7zc/P5Uxn+zcP3Ot
+         HnGd8VCrVmjBIVNPWx2LFf/U/SfQWBvUwM9MxV4SXnRscQuYZw9MQbSiJ++GXshTmQ
+         WaXXJGjnw3L/rXkPMWqoJKWNH2hpa5LTLLD+1JtfY4bMK+nJOfEJSabZhZKpnSnwaR
+         LtSywj7P4D3MA==
+Date:   Tue, 23 Jul 2019 10:49:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <zenczykowski@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: Fixes tag needs some work in the net-next tree
+Message-ID: <20190723104940.0adf5524@canb.auug.org.au>
+In-Reply-To: <CANP3RGcqGrPnt9eOiAKRbxWVuBkRHRQdWPnANKwrYvtVnTqaSQ@mail.gmail.com>
+References: <20190723073518.59fa66e0@canb.auug.org.au>
+        <CANP3RGcqGrPnt9eOiAKRbxWVuBkRHRQdWPnANKwrYvtVnTqaSQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190722223415.13269-4-jhubbard@nvidia.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+Content-Type: multipart/signed; boundary="Sig_/Zt2g9Tv+QL2CPzT=BHt.MT9";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 03:34:15PM -0700, john.hubbard@gmail.com wrote:
-> From: John Hubbard <jhubbard@nvidia.com>
-> 
-> For pages that were retained via get_user_pages*(), release those pages
-> via the new put_user_page*() routines, instead of via put_page() or
-> release_pages().
-> 
-> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
-> ("mm: introduce put_user_page*(), placeholder versions").
-> 
-> Cc: Björn Töpel <bjorn.topel@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  net/xdp/xdp_umem.c | 9 +--------
->  1 file changed, 1 insertion(+), 8 deletions(-)
-> 
-> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-> index 83de74ca729a..0325a17915de 100644
-> --- a/net/xdp/xdp_umem.c
-> +++ b/net/xdp/xdp_umem.c
-> @@ -166,14 +166,7 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
->  
->  static void xdp_umem_unpin_pages(struct xdp_umem *umem)
->  {
-> -	unsigned int i;
-> -
-> -	for (i = 0; i < umem->npgs; i++) {
-> -		struct page *page = umem->pgs[i];
-> -
-> -		set_page_dirty_lock(page);
-> -		put_page(page);
-> -	}
-> +	put_user_pages_dirty_lock(umem->pgs, umem->npgs);
+--Sig_/Zt2g9Tv+QL2CPzT=BHt.MT9
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-What is the difference between this and
+Hi Maciej,
 
-__put_user_pages(umem->pgs, umem->npgs, PUP_FLAGS_DIRTY_LOCK);
+On Tue, 23 Jul 2019 09:46:29 +0900 Maciej =C5=BBenczykowski <zenczykowski@g=
+mail.com> wrote:
+>
+> I'm afraid I'm currently travelling and due to an unplanned and f'ed up
+> office move I've lost (access to?) my dev workstation so I can't respin
+> this.  Might be too late either way?
 
-?
+Yeah, Dave doesn't rebase his trees, so just take this as a lesson for
+next time. :-)
 
-I'm a bit concerned with adding another form of the same interface.  We should
-either have 1 call with flags (enum in this case) or multiple calls.  Given the
-previous discussion lets move in the direction of having the enum but don't
-introduce another caller of the "old" interface.
+--=20
+Cheers,
+Stephen Rothwell
 
-So I think on this patch NAK from me.
+--Sig_/Zt2g9Tv+QL2CPzT=BHt.MT9
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-I also don't like having a __* call in the exported interface but there is a
-__get_user_pages_fast() call so I guess there is precedent.  :-/
+-----BEGIN PGP SIGNATURE-----
 
-Ira
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl02WaQACgkQAVBC80lX
+0GxIbgf/frRFMoWj8sD3HB2d4J8J+lqC1BgzDcqAgvm9mazSlYtq6bG70LCEFJ0Q
+KRnpYclsvCnWb0AmsWWrgso9ZSW2CiMC6Hh/NHy43M7KSNpoMw/xUfTza0qr06og
+wBB3aJnTJPqMpTrZngLwCtVyYwWwoVtlPtuOR9lHAPjBkiw3LsVo9CJP5ERGeWQc
+ifpS2qNSOxJY19RiB2rNlVAOrOvIdG+qfuDS7x8iw9tcFnoiGCza+hlo0leXJWBI
+G1KwVf62s12JNHtV/F8Ve6OL3xXKVuZRH0hKomGGtwERWp+xeorzwVAWxLRupp5B
+7VPouMYStir2gp9jtb9H1J1mZozNCQ==
+=A0ss
+-----END PGP SIGNATURE-----
 
->  
->  	kfree(umem->pgs);
->  	umem->pgs = NULL;
-> -- 
-> 2.22.0
-> 
+--Sig_/Zt2g9Tv+QL2CPzT=BHt.MT9--
