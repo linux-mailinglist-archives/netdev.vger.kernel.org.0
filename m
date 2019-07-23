@@ -2,131 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B05171529
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 11:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F78571534
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 11:30:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729571AbfGWJ2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 05:28:13 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41860 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726930AbfGWJ2N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 05:28:13 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 718A4308421A;
-        Tue, 23 Jul 2019 09:28:12 +0000 (UTC)
-Received: from ovpn-117-106.ams2.redhat.com (ovpn-117-106.ams2.redhat.com [10.36.117.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8B1F15D9C5;
-        Tue, 23 Jul 2019 09:28:09 +0000 (UTC)
-Message-ID: <d797ed8522bd37f2f01002b26a06ee146ebe2b90.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 3/3] netlink: add validation of NLA_F_NESTED
- flag
-From:   Thomas Haller <thaller@redhat.com>
-To:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org
-Date:   Tue, 23 Jul 2019 11:28:03 +0200
-In-Reply-To: <20190723090908.GA2204@unicorn.suse.cz>
-References: <cover.1556806084.git.mkubecek@suse.cz>
-         <6b6ead21c5d8436470b82ab40355f6bd7dbbf14b.1556806084.git.mkubecek@suse.cz>
-         <0fc58a4883f6656208b9250876e53d723919e342.camel@redhat.com>
-         <20190723090908.GA2204@unicorn.suse.cz>
-Organization: Red Hat
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-uB+G14xSU2RvYRVTrtZV"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1729032AbfGWJaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 05:30:18 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21158 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726284AbfGWJaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 05:30:18 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6N9RRBh026922;
+        Tue, 23 Jul 2019 02:29:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=4AuXQKAUAth/DwIlIkDLBwpDiegU/dpAc0QkMTVCfCA=;
+ b=K+hqSF1nEe6Ycg5zhVkcToLjw8SFu/D1aN13pVcvB09vvwanvIrWqP8fJAS2pqvZcBUN
+ 36/16QCNp8jYkX6+wC09/vFcZILyW+LZAB2HFQ8zLRfFX1/jmBrDaM72Ef1wEN2ndSIv
+ 1LM9+ozIGmIQrsZVrWrGIUpuZcZ2mUIfeFI= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2twkjpt8b4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 23 Jul 2019 02:29:57 -0700
+Received: from prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) by
+ prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 23 Jul 2019 02:29:57 -0700
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 23 Jul 2019 02:29:56 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Tue, 23 Jul 2019 02:29:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e2Q5eJN2eviHkOFZHjWNZiiW0HFl2QUPJKXy2SngoC2ZbfzEp30gThuG0t+uN3Bvwl08VmToEroPuDQcNpnZIdK9D3KBHXaCOHxS33DJP0O+/5hEj6ogb//yJ1BFUFxpSioapYy8+RqqmN1e71oHiqS8kQSlt36V1pYPGgzLYlgZ0WeaAgFFFOf5Vk0eNUqmdZ70KUvKuWpbnHsGA/Sp2aG0Wyj++MFwu7S3QpBI2HmpOyT0T0mei00J8yJ8Yhwt1c/XFuaLTzeoLzov9pg5TwxM7MX1PaaE0mh3WC1ggvh6HtN8L7UmBHgHoDFpPBu8JYuufn7COUdmKl21XoxKaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4AuXQKAUAth/DwIlIkDLBwpDiegU/dpAc0QkMTVCfCA=;
+ b=CZ9tgwhG+PF5rZcHFDbkrXIGjA6H61QmjzUN4sa6cGzcQUR0V11actcHP9KC1I0xeRY5EZ5FYtujAoJoQs61hMly3H3uNut9Bc654zYzQP6VUfM56yuaNg9wVPgATBD4TGeS+OcKRv7cjUjD+eQmCeFyPtwpsuewTvGqPf5kxDEtGhR20PNwb4E4RT1o+OrjtSDaL5rjYijExzZ+sUyyVOPax3Il8yuQa9jZPYGbYwk8uRn5+/9i6MrrUtaPqAv9w+apkXiGs6ICQCgtQTcEkpw0oWJwsP/tHQaUuckg5yqPkxpm3oDo5HSPzn6kSbvCyQA0gbnpn9Q7vXlEJNGmow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
+ header.d=fb.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4AuXQKAUAth/DwIlIkDLBwpDiegU/dpAc0QkMTVCfCA=;
+ b=bMxfaqBUvhriq+NGG39BTaz4Sna3vl/b3RWTH4gXaVuuYpTcqRmp5donZe12mAnpf8yMTN1p8OT9hlcgydCwiXmVcmqis0pv9dZm1hR2toXdiW5SjMgNM4KUvjYIoSw0ZET2z/u+F12KznNZHr+1BtZEr5F/4b871J0R9/qbwkA=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1741.namprd15.prod.outlook.com (10.174.254.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.16; Tue, 23 Jul 2019 09:29:55 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::4066:b41c:4397:27b7]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::4066:b41c:4397:27b7%7]) with mapi id 15.20.2094.013; Tue, 23 Jul 2019
+ 09:29:55 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 4/5] samples/bpf: switch trace_output sample to
+ perf_buffer API
+Thread-Topic: [PATCH bpf-next 4/5] samples/bpf: switch trace_output sample to
+ perf_buffer API
+Thread-Index: AQHVQQ+P2DRiHPGPVku0H+VtRgd3labX8D8A
+Date:   Tue, 23 Jul 2019 09:29:55 +0000
+Message-ID: <3ED4F7C4-CE2D-41D6-B26D-FFD1EDB23157@fb.com>
+References: <20190723043112.3145810-1-andriin@fb.com>
+ <20190723043112.3145810-5-andriin@fb.com>
+In-Reply-To: <20190723043112.3145810-5-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3445.104.11)
+x-originating-ip: [2620:10d:c090:180::1:2cda]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 080e2833-8938-474e-9c53-08d70f50529e
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1741;
+x-ms-traffictypediagnostic: MWHPR15MB1741:
+x-microsoft-antispam-prvs: <MWHPR15MB17415C0A7F13B3D15F38DFDFB3C70@MWHPR15MB1741.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:79;
+x-forefront-prvs: 0107098B6C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(366004)(376002)(346002)(396003)(189003)(199004)(478600001)(68736007)(6486002)(53936002)(33656002)(446003)(6436002)(76176011)(316002)(37006003)(81166006)(2616005)(186003)(6862004)(25786009)(57306001)(6512007)(50226002)(81156014)(8936002)(99286004)(46003)(54906003)(11346002)(476003)(4326008)(229853002)(6636002)(71200400001)(71190400001)(36756003)(6506007)(7736002)(53546011)(6246003)(66476007)(102836004)(66946007)(66556008)(64756008)(2906002)(305945005)(66446008)(76116006)(8676002)(14444005)(256004)(5660300002)(6116002)(86362001)(14454004)(486006);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1741;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: I6hYKwI1L2GuL4McDK1couU/Xmq1FLcmSx4gm3R3aYwGprLk5A7p9nfIeIpx4wY2KOeDMYZMtCnrDsJ3dQNeegYPeNIlNU4HFSPV5/AYUU8n47YAk51dUHqK4RNHjPPcFwqgvek51/QoHAZsF4gRnJ/laXAoNN5Yd8bnNoXarLjLXeCyHo6kboqrX7d/Rg1qeUwowAlta5ubyCOQxzA/Oaw1VqLEnn0UA6Q5yiPwbk17Koz0IgLRWxZItV6I3pJ/haEtsSfLo69uIdPRef96ILVR5M8wnzm3j0foNkQw9Xc8VaemDYHXGP7LVjHAjYDyJx4eyEzzQW+M5hOyM4OXDoeMI90IwTbMvK5/Y4ItGdqLcjuTJVslsfMT5wvofsmAYRBrdNpt2ibwjXQM1KfnYChtV4+7w3T1U6WVE2w/eEs=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <45DF4C9B6B520C46A74390972E06AF64@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Tue, 23 Jul 2019 09:28:12 +0000 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 080e2833-8938-474e-9c53-08d70f50529e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2019 09:29:55.2479
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1741
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-23_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907230089
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-uB+G14xSU2RvYRVTrtZV
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2019-07-23 at 11:09 +0200, Michal Kubecek wrote:
-> On Tue, Jul 23, 2019 at 10:57:54AM +0200, Thomas Haller wrote:
-> > Does this flag and strict validation really provide any value?
-> > Commonly a netlink message is a plain TLV blob, and the meaning
-> > depends entirely on the policy.
-> >=20
-> > What I mean is that for example
-> >=20
-> >   NLA_PUT_U32 (msg, ATTR_IFINDEX, (uint32_t) ifindex)
-> >   NLA_PUT_STRING (msg, ATTR_IFNAME, "net")
-> >=20
-> > results in a 4 bytes payload that does not encode whether the data
-> > is
-> > a number or a string.
-> >=20
-> > Why is it valuable in this case to encode additional type
-> > information
-> > inside the message, when it's commonly not done and also not
-> > necessary?
+> On Jul 22, 2019, at 9:31 PM, Andrii Nakryiko <andriin@fb.com> wrote:
 >=20
-> One big advantage of having nested attributes explicitly marked is
-> that
-> it allows parsers not aware of the semantics to recognize nested
-> attributes and parse their inner structure.
+> Convert trace_output sample to libbpf's perf_buffer API.
 >=20
-> This is very important e.g. for debugging purposes as without the
-> flag,
-> wireshark can only recurse into nested attributes if it understands
-> the
-> protocol and knows they are nested, otherwise it displays them only
-> as
-> an opaque blob (which is what happens for most netlink based
-> protocols).
-> Another example is mnl_nlmsg_fprintf() function from libmnl which is
-> also a valuable debugging aid but without NLA_F_NESTED flags it
-> cannot
-> show message structure properly.
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Hi,
+Acked-by: Song Liu <songliubraving@fb.com>
 
-I don't question the use of the flag. I question whether it's necessary
-for kernel to strictly require the sending side to aid debuggability.
-
-"e.g. for debugging purposes" makes it sound like it would be important
-for something else. I wonder what else.
-
-
-Anyway. What you elaborate makes sense!! Thanks
-
-
-My main point was to raise awareness that this is a problem for libnl3.
-
-
-best,
-Thomas
-
---=-uB+G14xSU2RvYRVTrtZV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEESep8Zw4IUOdBlRT2KcI2bk38VygFAl020yMACgkQKcI2bk38
-Vygegg//bjBYvpsSC7cGBhu9f7Eysloqq9pL8gVujgicZwpVU/vtK3MlieaUEoYU
-Dm04WNKYXh7cIiD6k0BBvKnyG9wB3xEUr90PvvFn7Q5hUqLipO4boZ4fvNy5R9qA
-bfteE9nfcwuz65XxIHgjZGnKoR8Xf3N4F9SuLNJIs0hyJLBeEyjjrcHDw0vwnvDF
-z838zDyY9QnOlNYrpFKjeanRv+Wk3sdvKAfuXEcs8v/JV+wj6N7K+WM04Tx1x1XW
-pC+Pw4JTj3mqO3wRWzyDJKkVQcwf1MJlhJEpHRXNQlINJ0OUNacretzySMA7Q1uG
-6sChzfMK9mt3KjjyN17qZYlAz4PxqXarl9Q+j6nix5zRDsXy6xsjTigAZIH0j9zN
-DPh9Q8htI4Re1m6GXhwaNthpHJgjyMRhWVJ5FJRRtnUHsMRUBREiDmSsoAEZe7ac
-BXVffSYtfaT78NaIubqUT3D5Ab0pJPNPqjf15779nI/UAyCByXZFnCo3fJYnC1JC
-6Yv7hlJY9KneSSmbJ/Iz0D0VMJQi9FhoboMLCvAD0yJO0MS6X8q9ozWRSFeIsNJ8
-CeO9/JKIORS7cyQb8s6DnkUrGIW121lxCmzzHWViZXBQ+VXe2jc2gWzKK0NY8N0F
-EegOD736E/ZkOlEQBBR7QJ63tkc97q1xAg14hRL2rQWH2FH3z5I=
-=poN7
------END PGP SIGNATURE-----
-
---=-uB+G14xSU2RvYRVTrtZV--
+> ---
+> samples/bpf/trace_output_user.c | 43 +++++++++++----------------------
+> 1 file changed, 14 insertions(+), 29 deletions(-)
+>=20
+> diff --git a/samples/bpf/trace_output_user.c b/samples/bpf/trace_output_u=
+ser.c
+> index 2dd1d39b152a..8ee47699a870 100644
+> --- a/samples/bpf/trace_output_user.c
+> +++ b/samples/bpf/trace_output_user.c
+> @@ -18,9 +18,6 @@
+> #include <libbpf.h>
+> #include "bpf_load.h"
+> #include "perf-sys.h"
+> -#include "trace_helpers.h"
+> -
+> -static int pmu_fd;
+>=20
+> static __u64 time_get_ns(void)
+> {
+> @@ -31,12 +28,12 @@ static __u64 time_get_ns(void)
+> }
+>=20
+> static __u64 start_time;
+> +static __u64 cnt;
+>=20
+> #define MAX_CNT 100000ll
+>=20
+> -static int print_bpf_output(void *data, int size)
+> +static void print_bpf_output(void *ctx, int cpu, void *data, __u32 size)
+> {
+> -	static __u64 cnt;
+> 	struct {
+> 		__u64 pid;
+> 		__u64 cookie;
+> @@ -45,7 +42,7 @@ static int print_bpf_output(void *data, int size)
+> 	if (e->cookie !=3D 0x12345678) {
+> 		printf("BUG pid %llx cookie %llx sized %d\n",
+> 		       e->pid, e->cookie, size);
+> -		return LIBBPF_PERF_EVENT_ERROR;
+> +		return;
+> 	}
+>=20
+> 	cnt++;
+> @@ -53,30 +50,14 @@ static int print_bpf_output(void *data, int size)
+> 	if (cnt =3D=3D MAX_CNT) {
+> 		printf("recv %lld events per sec\n",
+> 		       MAX_CNT * 1000000000ll / (time_get_ns() - start_time));
+> -		return LIBBPF_PERF_EVENT_DONE;
+> +		return;
+> 	}
+> -
+> -	return LIBBPF_PERF_EVENT_CONT;
+> -}
+> -
+> -static void test_bpf_perf_event(void)
+> -{
+> -	struct perf_event_attr attr =3D {
+> -		.sample_type =3D PERF_SAMPLE_RAW,
+> -		.type =3D PERF_TYPE_SOFTWARE,
+> -		.config =3D PERF_COUNT_SW_BPF_OUTPUT,
+> -	};
+> -	int key =3D 0;
+> -
+> -	pmu_fd =3D sys_perf_event_open(&attr, -1/*pid*/, 0/*cpu*/, -1/*group_fd=
+*/, 0);
+> -
+> -	assert(pmu_fd >=3D 0);
+> -	assert(bpf_map_update_elem(map_fd[0], &key, &pmu_fd, BPF_ANY) =3D=3D 0)=
+;
+> -	ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
+> }
+>=20
+> int main(int argc, char **argv)
+> {
+> +	struct perf_buffer_opts pb_opts =3D {};
+> +	struct perf_buffer *pb;
+> 	char filename[256];
+> 	FILE *f;
+> 	int ret;
+> @@ -88,16 +69,20 @@ int main(int argc, char **argv)
+> 		return 1;
+> 	}
+>=20
+> -	test_bpf_perf_event();
+> -
+> -	if (perf_event_mmap(pmu_fd) < 0)
+> +	pb_opts.sample_cb =3D print_bpf_output;
+> +	pb =3D perf_buffer__new(map_fd[0], 8, &pb_opts);
+> +	ret =3D libbpf_get_error(pb);
+> +	if (ret) {
+> +		printf("failed to setup perf_buffer: %d\n", ret);
+> 		return 1;
+> +	}
+>=20
+> 	f =3D popen("taskset 1 dd if=3D/dev/zero of=3D/dev/null", "r");
+> 	(void) f;
+>=20
+> 	start_time =3D time_get_ns();
+> -	ret =3D perf_event_poller(pmu_fd, print_bpf_output);
+> +	while ((ret =3D perf_buffer__poll(pb, 1000)) >=3D 0 && cnt < MAX_CNT) {
+> +	}
+> 	kill(0, SIGINT);
+> 	return ret;
+> }
+> --=20
+> 2.17.1
+>=20
 
