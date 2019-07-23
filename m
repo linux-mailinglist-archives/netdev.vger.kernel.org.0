@@ -2,107 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E74D71217
-	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 08:47:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A56397125A
+	for <lists+netdev@lfdr.de>; Tue, 23 Jul 2019 09:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732352AbfGWGrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 02:47:04 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:54159 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729552AbfGWGrE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 02:47:04 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9937F1B68;
-        Tue, 23 Jul 2019 02:47:03 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 23 Jul 2019 02:47:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=Pvm6a3akhSiREaVFZjMlHJTj/hfGaOe8D6Hc039sH
-        no=; b=LRVH9ymgXihu5zmhsBgr/a5ycd0LQEEEYrWYPehUnDPAfOsQPDl4mfsr2
-        8m7qeCgm9/d989gBQw533HUFucdz4721W15Z3eqpyu9wKWZ5Djlo5LCOdH3jlJaL
-        PbMohg3fXULZo0i9SIl3HEqP7MGjdc4ms8SHPQNJtP8UHM2AHc8eOIF2/Y0p7YMT
-        yIbKwUxVIf6w3ogVtryJhxWsrO96JLr7kHIuak85r5MGfSl/kyIqCFJBfztsOjhI
-        UWiSQ8FZ9nRe6L81HF7nQmvm8BYUmBetj0gKm5nqLISZPVXOOqdKwb67mw774jLz
-        dNZud2q/JFVR9QtoVhAMVvXzlqiTg==
-X-ME-Sender: <xms:Za02XWyxPe-GYQB0Rld0fb9xEcLkHqCEGH8LTQVEOoMFkvH3hPfIXQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeejgdefvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggugfgjfgesthekredttderudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrih
-    hnpehgihhthhhusgdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgr
-    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluh
-    hsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:Za02XSC-Che6WnPt61MtrsNw9ajA-IlZd1FCayGFzkdnrbcUf6CIxg>
-    <xmx:Za02Xa1XK9hPXulxCPFjk8RKAJwYW0Fv7IGjY98DuJUg6GJVtdazig>
-    <xmx:Za02Xb3EW6tkk6fTYIMH5PILo5RGU4PN-wxZWBTJ3Y4c291TSRE1Jg>
-    <xmx:Z602Xc3wPoNgLxMjHgHftkUKGliCpBgsFvwp8lWb5_Kw5EvfGgrnrA>
+        id S2388251AbfGWHNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 03:13:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47156 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732685AbfGWHNC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 03:13:02 -0400
 Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 167D280061;
-        Tue, 23 Jul 2019 02:47:00 -0400 (EDT)
-Date:   Tue, 23 Jul 2019 09:46:59 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 00/12] drop_monitor: Capture dropped packets
- and metadata
-Message-ID: <20190723064659.GA16069@splinter>
-References: <20190722183134.14516-1-idosch@idosch.org>
- <87imrt4zzg.fsf@toke.dk>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6E4B72238C;
+        Tue, 23 Jul 2019 07:13:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563865981;
+        bh=/AeZYX+JUna3ZCh05UfteU3NUn8L0WgCT1Lwr+ICNrQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=z+xNKoUVIlNdv2D5IaEK37LRzlxrQJVSXHIYklLzrmaF9+DDfFgmPxArZj/7K38Kk
+         KJ03eP5esud2Pofl7zjPvdfk2bujnq+8IX4sDhJDOTpdc2dLsrGqnSIJGZ+a6a3r1P
+         XA1qveE1yTjyrjAL19691BFGb7c79VhTgBUBnzws=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Edward Srouji <edwards@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@mellanox.com>
+Subject: [PATCH mlx5-next] net/mlx5: Fix modify_cq_in alignment
+Date:   Tue, 23 Jul 2019 10:12:55 +0300
+Message-Id: <20190723071255.6588-1-leon@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87imrt4zzg.fsf@toke.dk>
-User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 09:43:15PM +0200, Toke Høiland-Jørgensen wrote:
-> Is there a mechanism for the user to filter the packets before they are
-> sent to userspace? A bpf filter would be the obvious choice I guess...
+From: Edward Srouji <edwards@mellanox.com>
 
-Hi Toke,
+Fix modify_cq_in alignment to match the device specification.
+After this fix the 'cq_umem_valid' field will be in the right offset.
 
-Yes, it's on my TODO list to write an eBPF program that only lets
-"unique" packets to be enqueued on the netlink socket. Where "unique" is
-defined as {5-tuple, PC}. The rest of the copies will be counted in an
-eBPF map, which is just a hash table keyed by {5-tuple, PC}.
+Cc: <stable@vger.kernel.org> # 4.19
+Fixes: bd37197554eb ("net/mlx5: Update mlx5_ifc with DEVX UID bits")
+Signed-off-by: Edward Srouji <edwards@mellanox.com>
+Reviewed-by: Yishai Hadas <yishaih@mellanox.com>
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-I think it would be good to have the program as part of the bcc
-repository [1]. What do you think?
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index b3d5752657d9..ec571fd7fcf8 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -5975,10 +5975,12 @@ struct mlx5_ifc_modify_cq_in_bits {
 
-> For integrating with XDP the trick would be to find a way to do it that
-> doesn't incur any overhead when it's not enabled. Are you envisioning
-> that this would be enabled separately for the different "modes" (kernel,
-> hardware, XDP, etc)?
+ 	struct mlx5_ifc_cqc_bits cq_context;
 
-Yes. Drop monitor have commands to enable and disable tracing, but they
-don't carry any attributes at the moment. My plan is to add an attribute
-(e.g., 'NET_DM_ATTR_DROP_TYPE') that will specify the type of drops
-you're interested in - SW/HW/XDP. If the attribute is not specified,
-then current behavior is maintained and all the drop types are traced.
-But if you're only interested in SW drops, then overhead for the rest
-should be zero.
+-	u8         reserved_at_280[0x40];
++	u8         reserved_at_280[0x60];
 
-For HW drops I'm going to have devlink call into drop monitor. The
-function call will just be a NOP in case user is not interested in HW
-drops. I'm not sure if for XDP you want to register a probe on a
-tracepoint or call into drop monitor. If you want to use the former,
-then you can just have drop monitor unregister its probe from the
-tracepoint, which is what drop monitor is currently doing with the
-kfree_skb() tracepoint.
+ 	u8         cq_umem_valid[0x1];
+-	u8         reserved_at_2c1[0x5bf];
++	u8         reserved_at_2e1[0x1f];
++
++	u8         reserved_at_300[0x580];
 
-Thanks!
+ 	u8         pas[0][0x40];
+ };
+--
+2.20.1
 
-[1] https://github.com/iovisor/bcc/tree/master/examples/networking
