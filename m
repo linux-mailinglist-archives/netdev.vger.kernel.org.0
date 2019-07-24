@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A217723E2
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5541723F1
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:46:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728541AbfGXBmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 21:42:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55584 "EHLO mail.kernel.org"
+        id S1728648AbfGXBqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 21:46:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57320 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728523AbfGXBmj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 21:42:39 -0400
+        id S1726393AbfGXBqv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 21:46:51 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AB47F2238C;
-        Wed, 24 Jul 2019 01:42:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1450B2238C;
+        Wed, 24 Jul 2019 01:46:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563932558;
-        bh=PWWvvoDYGJhCU6icN3vhpl50qWw7l2eWPVbXo9ps/4w=;
+        s=default; t=1563932809;
+        bh=0AqaP1Rbyp61gsqhHLWd0hzRa6Ksy7/WdIGmVuaCjuU=;
         h=Date:From:To:Cc:Subject:From;
-        b=jmRfGLz8fP+YAqscR4J+JdFW8let9SeGnUIhUckoSZekt8Tw8MLgP1L7RMZKnCtG8
-         At/qCwShfU2ttxX/KL8a6750xr96jvizagOsLlHPsturWDqpt6t5rszfiQyCOR8p/x
-         QcSfZdZzqZMKp9P32W+68Yqiy9kVsUexn16QTgIA=
-Date:   Tue, 23 Jul 2019 18:42:36 -0700
+        b=n5WDQAGcDCYSjqId0NKjK63XBdDoxcaGmH6Wse19efL4PZvKdiD0rKAZfWCbHz8kr
+         RSYgflMFjildocjIAfQRQt21GqiYtyVtGrY/EEEwsZaWmUv+FTZsjlNjt3QRIquTnN
+         LgpcJgFw7NT8dz9ZzTpjxDRcqf33ctVgxzZVZ5Xs=
+Date:   Tue, 23 Jul 2019 18:46:47 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+To:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Su Yanjun <suyj.fnst@cn.fujitsu.com>
+        Junwei Hu <hujunwei4@huawei.com>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 26 open syzbot bugs in "net/xfrm" subsystem
-Message-ID: <20190724014236.GE643@sol.localdomain>
+Subject: Reminder: 14 open syzbot bugs in "net/tipc" subsystem
+Message-ID: <20190724014647.GI643@sol.localdomain>
 Mail-Followup-To: netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        tipc-discussion@lists.sourceforge.net,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Su Yanjun <suyj.fnst@cn.fujitsu.com>, linux-kernel@vger.kernel.org,
+        Junwei Hu <hujunwei4@huawei.com>, linux-kernel@vger.kernel.org,
         syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
@@ -53,576 +54,364 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 26 of them as possibly being bugs in the "net/xfrm" subsystem.  I've
+marked 14 of them as possibly being bugs in the "net/tipc" subsystem.  I've
 listed these reports below, sorted by an algorithm that tries to list first the
 reports most likely to be still valid, important, and actionable.
 
-Of these 26 bugs, 1 was seen in mainline in the last week.
+Of these 14 bugs, 2 were seen in mainline in the last week.
 
-Of these 26 bugs, 4 were bisected to commits from the following person:
+Of these 14 bugs, 8 were bisected to commits from the following people:
 
-	Su Yanjun <suyj.fnst@cn.fujitsu.com>
+	Jon Maloy <jon.maloy@ericsson.com>
+	Junwei Hu <hujunwei4@huawei.com>
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/xfrm" subsystem, please let me
+If you believe I misattributed a bug to the "net/tipc" subsystem, please let me
 know, and if possible forward the report to the correct people or mailing list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              WARNING in __vunmap
+Title:              INFO: task hung in genl_rcv_msg
 Last occurred:      2 days ago
-Reported:           157 days ago
+Reported:           281 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=8c0c68130548c7ec737d9ccc018a7589a768c0a9
-Original thread:    https://lkml.kernel.org/lkml/00000000000092839d0581fd74ad@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=c63df3ff405c4b7463fecacfb4157f11efa50c95
+Original thread:    https://lkml.kernel.org/lkml/0000000000007f82d805783fe8ce@google.com/T/#u
 
-Unfortunately, this bug does not have a reproducer.
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 928df1880e24bcd47d6359ff86df24db3dfba3c3
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 15 15:48:51 2018 +0000
+
+	  tipc: obsolete TIPC_ZONE_SCOPE
 
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
+    Reported-by: syzbot+c3b90a95b2d6bd4f29b1@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/00000000000092839d0581fd74ad@google.com
+https://lkml.kernel.org/r/0000000000007f82d805783fe8ce@google.com
 
 --------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in _decode_session4
-Last occurred:      480 days ago
-Reported:           480 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=341e1a2a55b389e54cc07624ed40eb3ecca577db
-Original thread:    https://lkml.kernel.org/lkml/001a113fe6d081698f0568a5dcac@google.com/T/#u
+Title:              INFO: task hung in netdev_run_todo
+Last occurred:      0 days ago
+Reported:           526 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=2503c576cabb08d41812e732b390141f01a59545
+Original thread:    https://groups.google.com/d/msgid/syzkaller-bugs/089e0826d4d4bdb7c5056500fb67%40google.com
 
 This bug has a C reproducer.
 
+For some reason the original report email for this bug is missing from the LKML
+archive at lore.kernel.org, so my script couldn't check whether anyone has
+replied to it or not.  The Google Groups link above should still work, though. 
+Also try searching for the bug title.
+
+--------------------------------------------------------------------------------
+Title:              KMSAN: uninit-value in __tipc_nl_bearer_enable
+Last occurred:      2 days ago
+Reported:           217 days ago
+Branches:           Mainline (with KMSAN patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=bf95da1c68b889380395af19f1953e91b772d3ea
+Original thread:    https://lkml.kernel.org/lkml/00000000000062b6fd057d4b7dc2@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+a7db9083ed4017ba4423@syzkaller.appspotmail.com
+    Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/001a113fe6d081698f0568a5dcac@google.com
+https://lkml.kernel.org/r/00000000000062b6fd057d4b7dc2@google.com
 
 --------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in _decode_session6
-Last occurred:      252 days ago
-Reported:           320 days ago
+Title:              BUG: using smp_processor_id() in preemptible [ADDR] code: syz-executor
+Last occurred:      0 days ago
+Reported:           24 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=ecf3e152769bdad66c297986d83561adea6ae155
-Original thread:    https://lkml.kernel.org/lkml/0000000000008d5a360575368e31@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=dc6352b92862eb79373fe03fdf9af5928753e057
+Original thread:    https://lkml.kernel.org/lkml/000000000000a40746058c784ef3@google.com/T/#u
 
 This bug has a C reproducer.
 
-No one replied to the original thread for this bug.
+This bug was bisected to:
 
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+e8c1d30881266e47eb33@syzkaller.appspotmail.com
+	commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 22 19:42:52 2018 +0000
 
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000008d5a360575368e31@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Write in xfrm_policy_flush
-Last occurred:      26 days ago
-Reported:           26 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=9018a3b2d6605dec5a0e145825918d2b5826d227
-Original thread:    https://lkml.kernel.org/lkml/0000000000007d52ea058c489235@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
+	  tipc: obtain node identity from interface by default
 
 No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+2daeb7ae5e8245095f65@syzkaller.appspotmail.com
+    Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000007d52ea058c489235@google.com
+https://lkml.kernel.org/r/000000000000a40746058c784ef3@google.com
 
 --------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in xfrm_state_find
-Last occurred:      198 days ago
-Reported:           403 days ago
-Branches:           Mainline (with KMSAN patches)
-Dashboard link:     https://syzkaller.appspot.com/bug?id=4d9dc4ec10e0d7b004645eadc3e99bbc2af67a74
-Original thread:    https://lkml.kernel.org/lkml/0000000000001f31eb056ea92fcb@google.com/T/#u
+Title:              WARNING: locking bug in __queue_work
+Last occurred:      52 days ago
+Reported:           223 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=31b84e77557158a1031ca8c9476230bb186fb88c
+Original thread:    https://lkml.kernel.org/lkml/0000000000000655c0057cd141f1@google.com/T/#u
 
 This bug has a C reproducer.
 
-The original thread for this bug received 1 reply, 403 days ago.
+This bug was bisected to:
 
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+131cd4c6d21724b99a26@syzkaller.appspotmail.com
+	commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 22 19:42:52 2018 +0000
 
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000001f31eb056ea92fcb@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in xfrm_sk_policy_lookup (2)
-Last occurred:      23 days ago
-Reported:           91 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=23b4b8906a588cf0a27f879e53827067bfc5f197
-Original thread:    https://lkml.kernel.org/lkml/000000000000282a870587350077@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
+	  tipc: obtain node identity from interface by default
 
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+edb62c973ff9f07e408d@syzkaller.appspotmail.com
+    Reported-by: syzbot+6174a6c5eba4b3cdd606@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000282a870587350077@google.com
+https://lkml.kernel.org/r/0000000000000655c0057cd141f1@google.com
 
 --------------------------------------------------------------------------------
-Title:              general protection fault in get_work_pool
-Last occurred:      104 days ago
-Reported:           507 days ago
+Title:              BUG: unable to handle kernel paging request in free_block (5)
+Last occurred:      96 days ago
+Reported:           96 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=849bd5710811bd19cad5b2f32ae863cfd6fe1c58
-Original thread:    https://lkml.kernel.org/lkml/001a1149c7ba03500d05667a1d4f@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=df52ab115e885a8e9b7b6a1359133890cd206e8b
+Original thread:    https://lkml.kernel.org/lkml/000000000000c770710586c6fc92@google.com/T/#u
 
-This bug has a C reproducer.
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 22 19:42:52 2018 +0000
+
+	  tipc: obtain node identity from interface by default
 
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+880087058dbc131a2703@syzkaller.appspotmail.com
+    Reported-by: syzbot+438a5abd4f53adb1c073@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/001a1149c7ba03500d05667a1d4f@google.com
+https://lkml.kernel.org/r/000000000000c770710586c6fc92@google.com
 
 --------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in _decode_session6
-Last occurred:      267 days ago
-Reported:           471 days ago
-Branches:           Mainline (with KMSAN patches)
-Dashboard link:     https://syzkaller.appspot.com/bug?id=7202296b7d7edf5d61e8c1f2c113d36ecd493a6a
-Original thread:    https://lkml.kernel.org/lkml/000000000000311cdd0569510cc7@google.com/T/#u
+Title:              KASAN: slab-out-of-bounds Read in ip_append_data
+Last occurred:      76 days ago
+Reported:           75 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=9babddf656b2f42a6902e1074f1c7b52934e3996
+Original thread:    https://lkml.kernel.org/lkml/0000000000004fd863058877c251@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 22 19:42:52 2018 +0000
+
+	  tipc: obtain node identity from interface by default
+
+No one has replied to the original thread for this bug yet.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+b8031b06e100c1c5292c@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000004fd863058877c251@google.com
+
+--------------------------------------------------------------------------------
+Title:              INFO: task hung in ctrl_getfamily
+Last occurred:      43 days ago
+Reported:           224 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=8c04c0b0e814e1a2c5ae60f8b6ece3701bf561da
+Original thread:    https://lkml.kernel.org/lkml/000000000000eb3fa9057cbc2f06@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 928df1880e24bcd47d6359ff86df24db3dfba3c3
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 15 15:48:51 2018 +0000
+
+	  tipc: obsolete TIPC_ZONE_SCOPE
+
+The original thread for this bug received 1 reply, 224 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+36edb5cac286af8e3385@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000eb3fa9057cbc2f06@google.com
+
+--------------------------------------------------------------------------------
+Title:              WARNING: locking bug in rhashtable_walk_enter
+Last occurred:      62 days ago
+Reported:           66 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=4565b3753fc286b7f5b61f21735bd4690d43288e
+Original thread:    https://lkml.kernel.org/lkml/000000000000ac9447058924709c@google.com/T/#u
 
 This bug has a C reproducer.
 
-No one replied to the original thread for this bug.
+This bug was bisected to:
+
+	commit 7e27e8d6130c5e88fac9ddec4249f7f2337fe7f8
+	Author: Junwei Hu <hujunwei4@huawei.com>
+	Date:   Thu May 16 02:51:15 2019 +0000
+
+	  tipc: switch order of device registration to fix a crash
+
+The original thread for this bug has received 1 reply, 62 days ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+2974b85346f85b586f4d@syzkaller.appspotmail.com
+    Reported-by: syzbot+6440134c13554d3abfb0@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000311cdd0569510cc7@google.com
+https://lkml.kernel.org/r/000000000000ac9447058924709c@google.com
 
 --------------------------------------------------------------------------------
-Title:              KASAN: slab-out-of-bounds Read in _decode_session6 (2)
-Last occurred:      245 days ago
-Reported:           266 days ago
+Title:              inconsistent lock state in icmp_send
+Last occurred:      223 days ago
+Reported:           223 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=24b68e26f36aefc69e86e97dc731558c6965115a
+Original thread:    https://lkml.kernel.org/lkml/0000000000000a9cca057cd141bd@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+	Author: Jon Maloy <jon.maloy@ericsson.com>
+	Date:   Thu Mar 22 19:42:52 2018 +0000
+
+	  tipc: obtain node identity from interface by default
+
+The original thread for this bug received 1 reply, 120 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+251ec6887ada6eac4921@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000000a9cca057cd141bd@google.com
+
+--------------------------------------------------------------------------------
+Title:              general protection fault in __bfs (2)
+Last occurred:      133 days ago
+Reported:           182 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=afc5098c1a0cb7cda8aa7fdb402153ff24fcf31c
-Original thread:    https://lkml.kernel.org/lkml/000000000000c4ba820579737025@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=b962be759f1c186a76fe71ba99eda6e23708dcd9
+Original thread:    https://lkml.kernel.org/lkml/00000000000086d87305801011c4@google.com/T/#u
 
 This bug has a C reproducer.
 
 syzbot has bisected this bug, but I think the bisection result is incorrect.
 
-The original thread for this bug received 1 reply, 124 days ago.
+The original thread for this bug received 2 replies; the last was 117 days ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+240f9766d6be3d69431e@syzkaller.appspotmail.com
+    Reported-by: syzbot+c58fa3b1231d2ea0c4d3@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000c4ba820579737025@google.com
+https://lkml.kernel.org/r/00000000000086d87305801011c4@google.com
 
 --------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in _decode_session4
-Last occurred:      194 days ago
-Reported:           450 days ago
-Branches:           Mainline (with KMSAN patches)
-Dashboard link:     https://syzkaller.appspot.com/bug?id=31621ad0bdf6fd9c055769fb33f56423d7c6545b
-Original thread:    https://lkml.kernel.org/lkml/000000000000e4758d056aff4604@google.com/T/#u
+Title:              BUG: unable to handle kernel paging request in iptunnel_xmit
+Last occurred:      43 days ago
+Reported:           214 days ago
+Branches:           net and net-next
+Dashboard link:     https://syzkaller.appspot.com/bug?id=113e10a43ca787acf7e08ba103a2ea66b25e6942
+Original thread:    https://lkml.kernel.org/lkml/0000000000005afe60057d842aa4@google.com/T/#u
 
-This bug has a C reproducer.
+Unfortunately, this bug does not have a reproducer.
 
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+e7fec512bc2eb4ae0781@syzkaller.appspotmail.com
+    Reported-by: syzbot+61816a2458fec4918227@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000e4758d056aff4604@google.com
+https://lkml.kernel.org/r/0000000000005afe60057d842aa4@google.com
 
 --------------------------------------------------------------------------------
-Title:              WARNING in xfrm_policy_insert
-Last occurred:      239 days ago
-Reported:           524 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=17486feafe3890260729f5fe75a25f8d865bdd5d
-Original thread:    https://lkml.kernel.org/lkml/001a11405628bb07410565279f4a@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+5cfc132a76d844973259@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/001a11405628bb07410565279f4a@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: stack-out-of-bounds Read in xfrm_state_find (5)
-Last occurred:      175 days ago
-Reported:           477 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=44fa54548362cb84e26da7c1bbd356c86c54f36d
-Original thread:    https://lkml.kernel.org/lkml/000000000000a5390a0568d7508a@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+d90468452f685a0b28eb@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000a5390a0568d7508a@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Write in __xfrm_policy_unlink (2)
-Last occurred:      22 days ago
-Reported:           68 days ago
-Branches:           net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=ceba0c97b0c5a5803c8fa3a7c100edbca4faa06f
-Original thread:    https://lkml.kernel.org/lkml/000000000000cd5fdf0588fed11c@google.com/T/#u
+Title:              general protection fault in rhashtable_walk_enter
+Last occurred:      65 days ago
+Reported:           65 days ago
+Branches:           linux-next
+Dashboard link:     https://syzkaller.appspot.com/bug?id=985a51f1f2468ff0c313dd41765f55d6b885b8d7
+Original thread:    https://lkml.kernel.org/lkml/0000000000000d60e405893a38f0@google.com/T/#u
 
 Unfortunately, this bug does not have a reproducer.
 
 No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+0025447b4cb6f208558f@syzkaller.appspotmail.com
+    Reported-by: syzbot+153641db1759e576ec8e@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000cd5fdf0588fed11c@google.com
+https://lkml.kernel.org/r/0000000000000d60e405893a38f0@google.com
 
 --------------------------------------------------------------------------------
-Title:              INFO: rcu detected stall in pppol2tp_sendmsg
-Last occurred:      26 days ago
-Reported:           315 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=a7452f862c05dd695baf590d4f164bd089e636d8
-Original thread:    https://lkml.kernel.org/lkml/000000000000b8e87005759244ec@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+0925ea3f5745e9005733@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000b8e87005759244ec@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING in xfrm_policy_fini
-Last occurred:      81 days ago
-Reported:           337 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=c92d61bdd289b3550d8dbd6a970c2f34995a22b4
-Original thread:    https://lkml.kernel.org/lkml/000000000000c5745b0573d62311@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+9bce6db6c82f06b85d8b@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000c5745b0573d62311@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: suspicious RCU usage in xfrm_get_sadinfo
-Last occurred:      125 days ago
-Reported:           126 days ago
-Branches:           linux-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=106319f5d94ac049166744eee79e455ce4d0435c
-Original thread:    https://lkml.kernel.org/lkml/0000000000009c1aca058474a076@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-	commit f10e0010fae8174dc20bdc872bcaa85baa925cb7
-	Author: Su Yanjun <suyj.fnst@cn.fujitsu.com>
-	Date:   Thu Mar 7 01:54:08 2019 +0000
-
-	  net: xfrm: Add '_rcu' tag for rcu protected pointer in netns_xfrm
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+2792672c6a63f1dc867c@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009c1aca058474a076@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: suspicious RCU usage in xfrm_get_spdinfo
-Last occurred:      124 days ago
-Reported:           126 days ago
-Branches:           linux-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=4db14afc80049c484903a7cf4d36d9cb1618469f
-Original thread:    https://lkml.kernel.org/lkml/0000000000008a14a5058474a025@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-	commit f10e0010fae8174dc20bdc872bcaa85baa925cb7
-	Author: Su Yanjun <suyj.fnst@cn.fujitsu.com>
-	Date:   Thu Mar 7 01:54:08 2019 +0000
-
-	  net: xfrm: Add '_rcu' tag for rcu protected pointer in netns_xfrm
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+bfb3cbc2e9467b566c8b@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000008a14a5058474a025@google.com
-
---------------------------------------------------------------------------------
-Title:              INFO: rcu detected stall in igmp_ifc_timer_expire
-Last occurred:      59 days ago
-Reported:           204 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=330ce4f7626354cc6444c457c9a5e82d8a8c5055
-Original thread:    https://lkml.kernel.org/lkml/000000000000a26437057e4915ff@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+041483004a7f45f1f20a@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000a26437057e4915ff@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: suspicious RCU usage in xfrm_alloc_userspi
-Last occurred:      124 days ago
-Reported:           126 days ago
-Branches:           linux-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=cf86490d75109a7648fc749a4c9a8d59fabe398d
-Original thread:    https://lkml.kernel.org/lkml/0000000000007783a2058474a0b9@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-	commit f10e0010fae8174dc20bdc872bcaa85baa925cb7
-	Author: Su Yanjun <suyj.fnst@cn.fujitsu.com>
-	Date:   Thu Mar 7 01:54:08 2019 +0000
-
-	  net: xfrm: Add '_rcu' tag for rcu protected pointer in netns_xfrm
-
-The original thread for this bug received 2 replies; the last was 126 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+59752237f7ab21c3f3c3@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000007783a2058474a0b9@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: suspicious RCU usage in xfrm_get_policy
-Last occurred:      126 days ago
-Reported:           126 days ago
-Branches:           linux-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=02bde0600a225e8efa31bdce2e7f1b822542fef1
-Original thread:    https://lkml.kernel.org/lkml/0000000000009ed0ce058474a0c1@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-This bug was bisected to:
-
-	commit f10e0010fae8174dc20bdc872bcaa85baa925cb7
-	Author: Su Yanjun <suyj.fnst@cn.fujitsu.com>
-	Date:   Thu Mar 7 01:54:08 2019 +0000
-
-	  net: xfrm: Add '_rcu' tag for rcu protected pointer in netns_xfrm
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+670c11fba80a72c50a6a@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009ed0ce058474a0c1@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in __vunmap
-Last occurred:      158 days ago
-Reported:           157 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=7151fc2080bde02d5f074c3e7fde2684cd514d11
-Original thread:    https://lkml.kernel.org/lkml/0000000000009a0bd40581fd747b@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+39d3a56f2f717d237007@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009a0bd40581fd747b@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in xfrm_init_replay
-Last occurred:      494 days ago
-Reported:           494 days ago
-Branches:           net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=63c86d9f895ad63bb85474b7d0cb04940da24395
-Original thread:    https://lkml.kernel.org/lkml/001a113ea6d880f10e05679064d3@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+f14c1ee2dbd16782dcc2@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/001a113ea6d880f10e05679064d3@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in xfrm_lookup_with_ifid
-Last occurred:      100 days ago
-Reported:           134 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=c6085af89fc64682ed88b083355c296e2f530a90
-Original thread:    https://lkml.kernel.org/lkml/000000000000973c550583cb8562@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+2a7531cd068ddc9932f9@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000973c550583cb8562@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in __xfrm_policy_check
-Last occurred:      147 days ago
-Reported:           147 days ago
+Title:              INFO: task hung in tipc_bcast_stop
+Last occurred:      167 days ago
+Reported:           167 days ago
 Branches:           net
-Dashboard link:     https://syzkaller.appspot.com/bug?id=7ebcd3969f71317db080af582c18c5456c674662
-Original thread:    https://lkml.kernel.org/lkml/000000000000f41ad40582cc632d@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=1c273aa0d7bf70e88a6db38595bd6e8eef35de69
+Original thread:    https://lkml.kernel.org/lkml/000000000000c24a5e05813c798b@google.com/T/#u
 
 Unfortunately, this bug does not have a reproducer.
 
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+4ea28a8b817ee28bf324@syzkaller.appspotmail.com
+    Reported-by: syzbot+8118fd903ae608d128e1@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000f41ad40582cc632d@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in xfrmi_rcv_cb
-Last occurred:      145 days ago
-Reported:           313 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=970bf3d270407aea29acd9fe1676d99371f07e5a
-Original thread:    https://lkml.kernel.org/lkml/000000000000defd200575c0b7dd@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+af91688fec2b033aa620@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000defd200575c0b7dd@google.com
-
---------------------------------------------------------------------------------
-Title:              INFO: rcu detected stall in inet_dgram_connect
-Last occurred:      175 days ago
-Reported:           204 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=efb40f930f737583bc3d4c047300e52d2dbac017
-Original thread:    https://lkml.kernel.org/lkml/0000000000009f9349057e4915b4@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+94683b47a87718b5dff7@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009f9349057e4915b4@google.com
+https://lkml.kernel.org/r/000000000000c24a5e05813c798b@google.com
 
