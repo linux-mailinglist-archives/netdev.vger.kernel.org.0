@@ -2,107 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B60D72865
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 08:39:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F5A72878
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 08:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726062AbfGXGjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 02:39:10 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46442 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725887AbfGXGjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 02:39:09 -0400
-Received: by mail-wr1-f68.google.com with SMTP id z1so45554366wru.13;
-        Tue, 23 Jul 2019 23:39:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=/y6MHQMi0uRYJAaIjnjQQh3pn0f7uiR3QmjPcFFx2Lc=;
-        b=cCaCMDu3U+xeDIVPHhXHIcg0BSKgwue1aGbyObTDGMEw/pE0NpFrPGMBWSvxwMEnG+
-         vM00ad5W9L1lMPL+5UdYLuzLDgGk+f74M0EnX+Rk3m/rLvBs9/JGhSM8CVX5hDt7MFcF
-         C6nw6M7dUmtH70sZIlpS+uE9VUBEJjaFWyZGk6D1haR8X9KNUWMKx3PcjpHp/H7qKLfQ
-         r2oeusSwRerYDxapkYV938NeS+Nm8wgBlmXtA7n8epBNqaoIarLcMVut+t2jsCOZ7etr
-         RBsMSCC5iyzm4+PBt4sdRn1mThXOWyiRDi9aY7dT90xhmIGl5/QEM+F1zFzj/iKjJD8P
-         oP3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/y6MHQMi0uRYJAaIjnjQQh3pn0f7uiR3QmjPcFFx2Lc=;
-        b=myyCWNiI77jzgFmhZbbakidXmYn0myt0X2Bumle0GtBClFayvFRfQAjYVz4gtrLCl2
-         vxLU5PmK8C2uBkXNyHs4SjaEeyWRm/ysX1zJlkpzi8BwZY2Q9iayOUFpdu/zSV9LOtHZ
-         nd3QIJZQId/N4ygj8eofGlpL65EASXH3B3hTremf3VbTe9Cq2WQqfAoK6pLQgiYqYeTC
-         ie+u2riH1MhkGvSmH5lcWVurSTyRxa6Z001rUapllO/pNFiH7Uw4SjtrmP2+iRTl9m9S
-         54Vaym6NMb4s7KqJlBwYsm23e7WHCHL6WzZAmH+wq/xKfEtu+2pmLo+jsqTyvsalwpfq
-         +Yxw==
-X-Gm-Message-State: APjAAAXw9xZiFXYcxKBjl2T7iBNYLcjB7LhKYqkyhpx/mf7O8VlFdB3a
-        GxqWa8SerYMNwzQCFAS7eDc=
-X-Google-Smtp-Source: APXvYqxFY3S/zD4Km/ZPveZ0YEEBG9PHJ5COp5MPaK6V0jO3f0sD2R6AHHFoxa8H2IrGHkxmyMIMFA==
-X-Received: by 2002:adf:f888:: with SMTP id u8mr55728658wrp.238.1563950347445;
-        Tue, 23 Jul 2019 23:39:07 -0700 (PDT)
-Received: from [192.168.8.147] (200.150.22.93.rev.sfr.net. [93.22.150.200])
-        by smtp.gmail.com with ESMTPSA id x20sm100561441wrg.10.2019.07.23.23.39.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Jul 2019 23:39:06 -0700 (PDT)
-Subject: Re: Reminder: 99 open syzbot bugs in net subsystem
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Ilya Maximets <i.maximets@samsung.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <20190724013813.GB643@sol.localdomain>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <63f12327-dd4b-5210-4de2-705af6bc4ba4@gmail.com>
-Date:   Wed, 24 Jul 2019 08:39:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726178AbfGXGr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 02:47:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725878AbfGXGr5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 02:47:57 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D65A821743;
+        Wed, 24 Jul 2019 06:47:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563950876;
+        bh=51p6sj9EACBV/HaJVhSnzJqh0RByt7lvzLHqxRSkm1Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zxrsT7E6iAz0Hi5ft7Px1t+JEbuXOMqq791LZnmBbp0XRhH6ht6pxbMrjQ8uTbGbj
+         d6AFFhuiZqzKjUZ3AOpd2WcTo+F9dssYYFJp2EMpc1PuSCYZ8ojBHrg32+bvPEkNPq
+         hIx2Yr5NrylsU3kqc+jpA61CiP/K7eYR+P8uK4Mk=
+Date:   Wed, 24 Jul 2019 08:47:54 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
+Message-ID: <20190724064754.GC22447@kroah.com>
+References: <20190509161109.10499-1-dmurphy@ti.com>
+ <dbb7bdef-820d-5dcc-d7b5-a82bc1b076fb@ti.com>
+ <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
+ <93530d94-ec65-de82-448e-f2460dd39fb9@ti.com>
+ <0f6c41c8-0071-ed3a-9e65-caf02a0fbefe@ti.com>
+ <6fa79302-ad32-7f43-f9d5-af70aa789284@ti.com>
+ <f236a88a-485c-9002-1e4a-9a5ad0e1c81f@ti.com>
+ <437b6371-8488-a0ff-fa68-d1fb5a81bb8b@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20190724013813.GB643@sol.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <437b6371-8488-a0ff-fa68-d1fb5a81bb8b@ti.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/24/19 3:38 AM, Eric Biggers wrote:
-> [This email was generated by a script.  Let me know if you have any suggestions
-> to make it better, or if you want it re-generated with the latest status.]
+On Tue, Jul 23, 2019 at 10:14:14AM -0500, Dan Murphy wrote:
+> Hello
 > 
-> Of the currently open syzbot reports against the upstream kernel, I've manually
-> marked 99 of them as possibly being bugs in the net subsystem.  This category
-> only includes the networking bugs that I couldn't assign to a more specific
-> component (bpf, xfrm, bluetooth, tls, tipc, sctp, wireless, etc.).  I've listed
-> these reports below, sorted by an algorithm that tries to list first the reports
-> most likely to be still valid, important, and actionable.
-> 
-> Of these 99 bugs, 17 were seen in mainline in the last week.
-> 
-> Of these 99 bugs, 4 were bisected to commits from the following people:
-> 
-> 	Florian Westphal <fw@strlen.de>
-> 	Ilya Maximets <i.maximets@samsung.com>
-> 	Eric Dumazet <edumazet@google.com>
-> 	David Ahern <dsahern@gmail.com>
-> 
-> If you believe a bug is no longer valid, please close the syzbot report by
-> sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
-> original thread, as explained at https://goo.gl/tpsmEJ#status
-> 
-> If you believe I misattributed a bug to the net subsystem, please let me know,
-> and if possible forward the report to the correct people or mailing list.
->
+> On 7/10/19 7:08 AM, Dan Murphy wrote:
+> > Hello
+> > 
+> > On 6/17/19 10:09 AM, Dan Murphy wrote:
+> > > Marc
+> > > 
+> > > On 6/10/19 11:35 AM, Dan Murphy wrote:
+> > > > Bump
+> > > > 
+> > > > On 6/6/19 8:16 AM, Dan Murphy wrote:
+> > > > > Marc
+> > > > > 
+> > > > > Bump
+> > > > > 
+> > > > > On 5/31/19 6:51 AM, Dan Murphy wrote:
+> > > > > > Marc
+> > > > > > 
+> > > > > > On 5/15/19 3:54 PM, Dan Murphy wrote:
+> > > > > > > Marc
+> > > > > > > 
+> > > > > > > On 5/9/19 11:11 AM, Dan Murphy wrote:
+> > > > > > > > Create a m_can platform framework that peripheral
+> > > > > > > > devices can register to and use common code and register sets.
+> > > > > > > > The peripheral devices may provide read/write and configuration
+> > > > > > > > support of the IP.
+> > > > > > > > 
+> > > > > > > > Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+> > > > > > > > Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> > > > > > > > ---
+> > > > > > > > 
+> > > > > > > > v12 - Update the m_can_read/write functions to
+> > > > > > > > create a backtrace if the callback
+> > > > > > > > pointer is NULL. - https://lore.kernel.org/patchwork/patch/1052302/
+> > > > > > > > 
+> > > > > > > Is this able to be merged now?
+> > > > > > 
+> > > > > > ping
+> > > 
+> > > Wondering if there is anything else we need to do?
+> > > 
+> > > The part has officially shipped and we had hoped to have driver
+> > > support in Linux as part of the announcement.
+> > > 
+> > Is this being sent in a PR for 5.3?
+> > 
+> > Dan
+> > 
+> Adding Greg to this thread as I have no idea what is going on with this. 
 
-Some of the bugs have been fixed already, before syzbot found them.
+Why me?  What am I supposed to do here?  I see no patches at all to do
+anything with :(
 
-Why force human to be gentle to bots and actually replying to them ?
+thanks,
 
-I usually simply wait that syzbot is finding the bug does not repro anymore,
-but now if you send these emails, we will have even more pressure on us.
-
-
+greg "not a miracle worker" k-h
