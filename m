@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36FC1724CA
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B61724CE
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:40:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbfGXCjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:39:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45754 "EHLO mail.kernel.org"
+        id S1726029AbfGXCkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:40:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725681AbfGXCjd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:39:33 -0400
+        id S1725681AbfGXCkA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:40:00 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3C0DC21670;
-        Wed, 24 Jul 2019 02:39:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 55AC421670;
+        Wed, 24 Jul 2019 02:39:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563935972;
-        bh=dp2HGJFxujWNJ+C8jmTiY+zoNZJfhaU9DcphheQR3tQ=;
+        s=default; t=1563935999;
+        bh=hLvybNoCvvqkPSUQw4JaTjtNcSygGBB6nzr+hUwg/ZQ=;
         h=Date:From:To:Cc:Subject:From;
-        b=Tq/SfKa1jUk8e1lch4mQcTuSI129Y3kal1wSn0GlSahKJrmzp5Zryc6s/A2yY9mNi
-         +T4pCfe21vtKn/Whkq2cFtc3kMKwD/s/DHEACHeqIeWlL08sbz0PrT4WzlST0cqjjb
-         HgLOni/X0CRARxjGH0L/SycgWy3Ec1Jf8qutisGs=
-Date:   Tue, 23 Jul 2019 19:39:30 -0700
+        b=tO0xt6PjBhRj7KCUh9jQgX4RvObndqzN4vTXleL7eLpMhRs0zUeO0YaWyp9M0WGIF
+         sOQ25agXI11AC7loIfcgFFHJbkxRDuhUsMrTrqlv5D7fHJA1S6Mg+3LCnSp6iiuaBB
+         1zfeHzd+o5llOMQgzFU+lApXEAmGPzFdEt3HM2yo=
+Date:   Tue, 23 Jul 2019 19:39:57 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
 To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 3 open syzbot bugs in "net/llc" subsystem
-Message-ID: <20190724023930.GA643@sol.localdomain>
+Subject: Reminder: 3 open syzbot bugs in "net/kcm" subsystem
+Message-ID: <20190724023957.GB643@sol.localdomain>
 Mail-Followup-To: netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
@@ -45,78 +45,80 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 3 of them as possibly being bugs in the "net/llc" subsystem.  I've listed
+marked 3 of them as possibly being bugs in the "net/kcm" subsystem.  I've listed
 these reports below, sorted by an algorithm that tries to list first the reports
 most likely to be still valid, important, and actionable.
 
-Of these 3 bugs, 3 were seen in mainline in the last week.
+Of these 3 bugs, 1 was seen in mainline in the last week.
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/llc" subsystem, please let me
+If you believe I misattributed a bug to the "net/kcm" subsystem, please let me
 know, and if possible forward the report to the correct people or mailing list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              memory leak in llc_conn_ac_send_sabme_cmd_p_set_x
+Title:              KMSAN: uninit-value in ip_tunnel_xmit (2)
 Last occurred:      0 days ago
-Reported:           63 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=1c2132cc5a2f0d05091adc4f2ed088020522f73a
-Original thread:    https://lkml.kernel.org/lkml/0000000000005974af0589660739@google.com/T/#u
+Reported:           347 days ago
+Branches:           Mainline (with KMSAN patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=b0e069ac9b03eab43b106c22fcc8bd778a7ccfb5
+Original thread:    https://lkml.kernel.org/lkml/0000000000005012b605731594e3@google.com/T/#u
 
 This bug has a C reproducer.
 
-No one has replied to the original thread for this bug yet.
+The original thread for this bug received 1 reply, 347 days ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6b825a6494a04cc0e3f7@syzkaller.appspotmail.com
+    Reported-by: syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000005974af0589660739@google.com
+https://lkml.kernel.org/r/0000000000005012b605731594e3@google.com
 
 --------------------------------------------------------------------------------
-Title:              memory leak in llc_ui_sendmsg
-Last occurred:      1 day ago
-Reported:           63 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=4e8b3190d51a3b721b554f103da5399613748ea0
-Original thread:    https://lkml.kernel.org/lkml/0000000000009382e7058965fc65@google.com/T/#u
+Title:              general protection fault in skb_unlink
+Last occurred:      182 days ago
+Reported:           418 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=2d6d1853e26eb3b70cd558298ebf0c98157fcccf
+Original thread:    https://lkml.kernel.org/lkml/000000000000fdc15c056d7c13ae@google.com/T/#u
 
 This bug has a C reproducer.
 
-No one has replied to the original thread for this bug yet.
+No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+31c16aa4202dace3812e@syzkaller.appspotmail.com
+    Reported-by: syzbot+278279efdd2730dd14bf@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009382e7058965fc65@google.com
+https://lkml.kernel.org/r/000000000000fdc15c056d7c13ae@google.com
 
 --------------------------------------------------------------------------------
-Title:              memory leak in llc_ui_create (2)
-Last occurred:      6 days ago
-Reported:           32 days ago
+Title:              general protection fault in requeue_rx_msgs
+Last occurred:      419 days ago
+Reported:           418 days ago
 Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=ecc7f04cd94b5c062c000865d43bfb682d718b8e
-Original thread:    https://lkml.kernel.org/lkml/000000000000058a0f058bd50068@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=da9b672629747f28e76eca9949696c410cb75d7b
+Original thread:    https://lkml.kernel.org/lkml/0000000000000482ce056d7c1436@google.com/T/#u
 
-This bug has a C reproducer.
+This bug has a syzkaller reproducer only.
 
-No one has replied to the original thread for this bug yet.
+syzbot has bisected this bug, but I think the bisection result is incorrect.
+
+The original thread for this bug received 1 reply, 418 days ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6bf095f9becf5efef645@syzkaller.appspotmail.com
+    Reported-by: syzbot+554266c04a41d1f9754d@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000058a0f058bd50068@google.com
+https://lkml.kernel.org/r/0000000000000482ce056d7c1436@google.com
 
