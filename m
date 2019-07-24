@@ -2,108 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C04D7328D
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 17:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF4C73292
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 17:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387566AbfGXPPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 11:15:46 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41023 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387503AbfGXPPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 11:15:46 -0400
-Received: by mail-wr1-f67.google.com with SMTP id c2so44203324wrm.8
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 08:15:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5JJ6D0lhyG/lALCSbovEZ0BrJf6z/4H/u4qF2hwfeO4=;
-        b=NXx8bDuFD3Vgwdve81IOL2NFshYgOcmhi/LeEcj7mIph0NreLvy/rrMV28SVuENVp1
-         L9wH1jw3yvuXLCzEQKOrv2U5grD8ybRTLZ8EdzZxKkCGSA6Uy6z/T34UaquA3AhBXc0e
-         AbPThO+g+pVYDaYKsmtGl1SLWkfOU96a+zcs1S0ZRfdMi4mV3e1CDGVOlUPPzTMMg+fU
-         LkYo0fzgDhAex3MZtCJfdxN2Xfr9TcM+QoNRzVhpjGU4Lnz1zSkoAEHczlOJlCihXB77
-         rO5PQuPJaiI2v18IXIusawvgZu+Og4iBkyv19bYh73arqCjE1+/xclz3NPI9TCGRjBKl
-         Ke9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5JJ6D0lhyG/lALCSbovEZ0BrJf6z/4H/u4qF2hwfeO4=;
-        b=poe9kBeZZSh5AxwhjxQR919eQTFwDdxaOVHkSY0rngJkfw43PLhi/1BrBplODYXrgG
-         KS2DGeNuW1+1PpYp6P7iKVl+hw6Mv+xH4mpWeLdo66bOu4AtiA49Snu8pvJVcclhXIA5
-         /bQdn7ChJLh8BQWlr3OmInOKjZXRcQG+tE7MBpD1Q0ZMYKLGSpG7PyD6sxl02lkauwJE
-         v//A9WSVSJXMF8WxAiXShhSpC56qiCVMliGVAHQkINKIVKUFs+dmGQQ00sjZQ4U8hzO3
-         lFIAcwKbSImpSNsWDwd1Uo+P2TNW7knmmlq0gNX1HSckctGNTDP9pU10evmdcxQvnmU0
-         2B6A==
-X-Gm-Message-State: APjAAAXKbhLkQDjq+ckS8Rr2pEK7TjWzYzdW4tCiCD87CrPahl8oZnaB
-        kH8G5VlJMAYbhAPg98O2gSM=
-X-Google-Smtp-Source: APXvYqwWuSjtF8Cc1YjHaL16ugHyzdhFNQBgdG+A4V3cSD/Ys8DF0kK6vNYUuuQjDVzgEnvsaCgF9Q==
-X-Received: by 2002:adf:e343:: with SMTP id n3mr48804222wrj.103.1563981343711;
-        Wed, 24 Jul 2019 08:15:43 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id f12sm50645639wrg.5.2019.07.24.08.15.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 08:15:43 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 17:15:40 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        toke@redhat.com, andy@greyhouse.net, f.fainelli@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 00/12] drop_monitor: Capture dropped packets
- and metadata
-Message-ID: <20190724151540.GE2225@nanopsycho>
-References: <20190722183134.14516-1-idosch@idosch.org>
+        id S2387569AbfGXPSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 11:18:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34626 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387503AbfGXPSL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 11:18:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=HhOq85evkFM/y15ZM/uScRYpMDK7uIWdehOeEOZxwf4=; b=aD9gCEO/FuimjgYQZxJxnzZ4v1
+        SEPBl3v97IkgN4q2SfajCnLPZCPyb9eAUvSJCSsM/ceXh7w22MSJIGZYynurXwVFVmUsi6Qkb6gy4
+        numZoJbK/AWNh/CnvIzhqder6Q5qnPPyuV1qWrQqWUAjRrDjAC982P5hwYPoiIoAFa8U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hqJ1n-000061-9c; Wed, 24 Jul 2019 17:18:03 +0200
+Date:   Wed, 24 Jul 2019 17:18:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/4] enetc: Clean up local mdio bus allocation
+Message-ID: <20190724151803.GR25635@lunn.ch>
+References: <1563979301-596-1-git-send-email-claudiu.manoil@nxp.com>
+ <1563979301-596-2-git-send-email-claudiu.manoil@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190722183134.14516-1-idosch@idosch.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <1563979301-596-2-git-send-email-claudiu.manoil@nxp.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 22, 2019 at 08:31:22PM CEST, idosch@idosch.org wrote:
->From: Ido Schimmel <idosch@mellanox.com>
->
->So far drop monitor supported only one mode of operation in which a
->summary of recent packet drops is periodically sent to user space as a
->netlink event. The event only includes the drop location (program
->counter) and number of drops in the last interval.
->
->While this mode of operation allows one to understand if the system is
->dropping packets, it is not sufficient if a more detailed analysis is
->required. Both the packet itself and related metadata are missing.
->
->This patchset extends drop monitor with another mode of operation where
->the packet - potentially truncated - and metadata (e.g., drop location,
->timestamp, netdev) are sent to user space as a netlink event. Thanks to
->the extensible nature of netlink, more metadata can be added in the
->future.
->
->To avoid performing expensive operations in the context in which
->kfree_skb() is called, the dropped skbs are cloned and queued on per-CPU
->skb drop list. The list is then processed in process context (using a
->workqueue), where the netlink messages are allocated, prepared and
->finally sent to user space.
->
->As a follow-up, I plan to integrate drop monitor with devlink and allow
->the latter to call into drop monitor to report hardware drops. In the
->future, XDP drops can be added as well, thereby making drop monitor the
->go-to netlink channel for diagnosing all packet drops.
->
->Example usage with patched dropwatch [1] can be found here [2]. Example
->dissection of drop monitor netlink events with patched wireshark [3] can
->be found here [4]. I will submit both changes upstream after the kernel
->changes are accepted.
->
->Patches #1-#6 are just cleanups with no functional changes intended.
->
->Patches #7-#8 perform small refactoring before the actual changes are
->introduced in the last four patches.
+On Wed, Jul 24, 2019 at 05:41:38PM +0300, Claudiu Manoil wrote:
+> Though it works, this is not how it should have been.
+> What's needed is a pointer to the mdio registers.
+> Store it properly inside bus->priv allocated space.
+> Use devm_* variant to further clean up the init error /
+> remove paths.
+> 
+> Fixes following sparse warning:
+>  warning: incorrect type in assignment (different address spaces)
+>     expected void *priv
+>     got struct enetc_mdio_regs [noderef] <asn:2>*[assigned] regs
+> 
+> Fixes: ebfcb23d62ab ("enetc: Add ENETC PF level external MDIO support")
+> 
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> ---
+> v1 - added this patch
+> 
+>  .../net/ethernet/freescale/enetc/enetc_mdio.c | 31 +++++++------------
+>  1 file changed, 12 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+> index 77b9cd10ba2b..1e3cd21c13ee 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+> @@ -15,7 +15,8 @@ struct enetc_mdio_regs {
+>  	u32	mdio_addr;	/* MDIO address */
+>  };
+>  
+> -#define bus_to_enetc_regs(bus)	(struct enetc_mdio_regs __iomem *)((bus)->priv)
+> +#define bus_to_enetc_regs(bus)	(*(struct enetc_mdio_regs __iomem **) \
+> +				((bus)->priv))
+>  
+>  #define ENETC_MDIO_REG_OFFSET	0x1c00
+>  #define ENETC_MDC_DIV		258
+> @@ -146,12 +147,12 @@ static int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+>  int enetc_mdio_probe(struct enetc_pf *pf)
+>  {
+>  	struct device *dev = &pf->si->pdev->dev;
+> -	struct enetc_mdio_regs __iomem *regs;
+> +	struct enetc_mdio_regs __iomem **regsp;
+>  	struct device_node *np;
+>  	struct mii_bus *bus;
+> -	int ret;
+> +	int err;
+>  
+> -	bus = mdiobus_alloc_size(sizeof(regs));
+> +	bus = devm_mdiobus_alloc_size(dev, sizeof(*regsp));
+>  	if (!bus)
+>  		return -ENOMEM;
+>  
+> @@ -159,41 +160,33 @@ int enetc_mdio_probe(struct enetc_pf *pf)
+>  	bus->read = enetc_mdio_read;
+>  	bus->write = enetc_mdio_write;
+>  	bus->parent = dev;
+> +	regsp = bus->priv;
+>  	snprintf(bus->id, MII_BUS_ID_SIZE, "%s", dev_name(dev));
+>  
+>  	/* store the enetc mdio base address for this bus */
+> -	regs = pf->si->hw.port + ENETC_MDIO_REG_OFFSET;
+> -	bus->priv = regs;
+> +	*regsp = pf->si->hw.port + ENETC_MDIO_REG_OFFSET;
 
-In general, this looks very good to me. Thanks!
+This is all very odd and different to every other driver.
+
+If i get the code write, there are 4 registers, each u32 in size,
+starting at pf->si->hw.port + ENETC_MDIO_REG_OFFSET?
+
+There are macros like enetc_port_wr() and enetc_global_wr(). It think
+it would be much cleaner to add a macro enet_mdio_wr() which takes
+hw, off, val.
+
+#define enet_mdio_wr(hw, off, val) enet_port_wr(hw, off + ENETC_MDIO_REG_OFFSET, val)
+
+struct enetc_mdio_priv {
+       struct enetc_hw *hw;
+}
+
+	struct enetc_mdio_priv *mdio_priv;
+
+	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
+
+	mdio_priv = bus->priv;
+	mdio_priv->hw = pf->si->hw;
+
+
+static int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum,
+                            u16 value)
+{
+	struct enetc_mdio_priv *mdio_priv = bus->priv;
+...
+	enet_mdio_wr(priv->hw, ENETC_MDIO_CFG, mdio_cfg);
+}
+			    	
+All the horrible casts go away, the driver is structured like every
+other driver, sparse is probably happy, etc.
+
+      Andrew
