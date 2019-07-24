@@ -2,116 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A91B4728F6
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 09:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A51EB72916
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 09:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfGXHVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 03:21:25 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34538 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbfGXHVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 03:21:25 -0400
-Received: by mail-wr1-f68.google.com with SMTP id 31so45763210wrm.1;
-        Wed, 24 Jul 2019 00:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nm3bCHJrt6Bj7/j5tsZ8s5l28Yo/EjdUqE850Jtwxxs=;
-        b=ryiIEjokkXOl9ZPl3NuqzVFUOxVwmO/GB9+yljRQG7E1lHWUkQdwbXEIxmPMCXveFd
-         e6UjTJZVyKKOATOoeTvXGxH4kXdXFXuAJ7BeqReAna38Iaz3S6om0hoTGkJq14NW0Qet
-         iWZXUbKDKNxXAZJt/aAgisOw2cLdl/DAeP59GCChkLC3iYl/UZ8UfLbGErZE8Tiu1Gjc
-         XxkfGXHrXJ2lYraTvYo0YX1MbkrI+f73s33f9gWSYgD14+QX6Dm76Rnt8P+Uj6S6TRyj
-         G30uyT4WhW14rcqSoFPgpMCGyl9UGoW8vzIpD1X8kqY4lkz6aZs+a8gxb7V1MyyAYolJ
-         SFvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nm3bCHJrt6Bj7/j5tsZ8s5l28Yo/EjdUqE850Jtwxxs=;
-        b=uYWMdvPCE0pnfn2WRtTyduIVvdjvXX/D7Ly4Ulud1jhtoDgZD6jT/HWw7gh4gOqCBD
-         QsZlhCRpNjaHqxwDqlZwyXL8jRRRrTfs0UpoAhpYgoKOR9GHdFoW4w8/DIkkTgkq+fgX
-         64rK7IPVHSRcNo4cW62YYuGARwPcwtbkJp1eJIrHckBV0RiamZX+x7tclXHZpNz7UrEc
-         zpyvolGGxAGnYu0Bfx2GWp1zCjASnEdvxvdzJfA+5ZGTHUimrWbu4cei45vCsHA+5UwO
-         s0mm/YzwcnY+8yTE81uW8WFb2XJNlPDANBO1Fzpd5KV36SKx2HjMdLLxvZBocvnRWOIU
-         I/MA==
-X-Gm-Message-State: APjAAAWcEL2R4kttwKOTJPBrWYe8kriTaaOvfBll3zTfCatXnTmCp/Ln
-        DXQUtdEyKgR7LDkrtHDk2OqKc3VZAyOTXsAmVSS5WMay
-X-Google-Smtp-Source: APXvYqzLcufz6oTE57Ecr9QsG8JbkwC6GPYoLXAuiiEcjz5DEILutLTTsNTIxUGoZkfCUCLdU+FUEqgDcAZFXFuLgsw=
-X-Received: by 2002:a5d:494d:: with SMTP id r13mr10790622wrs.152.1563952883202;
- Wed, 24 Jul 2019 00:21:23 -0700 (PDT)
+        id S1725887AbfGXHg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 03:36:26 -0400
+Received: from ispman.iskranet.ru ([62.213.33.10]:44364 "EHLO
+        ispman.iskranet.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725776AbfGXHgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 03:36:25 -0400
+Received: by ispman.iskranet.ru (Postfix, from userid 8)
+        id 5719B8217FA; Wed, 24 Jul 2019 14:36:21 +0700 (KRAT)
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on ispman.iskranet.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=4.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.3.2
+Received: from KB016249 (unknown [62.213.40.60])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ispman.iskranet.ru (Postfix) with ESMTPS id 323A88217F8;
+        Wed, 24 Jul 2019 14:36:19 +0700 (KRAT)
+From:   Arseny Solokha <asolokha@kb.kras.ru>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH 1/2] gianfar: convert to phylink
+References: <20190723151702.14430-1-asolokha@kb.kras.ru>
+        <20190723151702.14430-2-asolokha@kb.kras.ru>
+        <VI1PR04MB48809AFBB9DF01001AA5E2CA96C70@VI1PR04MB4880.eurprd04.prod.outlook.com>
+Date:   Wed, 24 Jul 2019 14:36:17 +0700
+In-Reply-To: <VI1PR04MB48809AFBB9DF01001AA5E2CA96C70@VI1PR04MB4880.eurprd04.prod.outlook.com>
+        (Claudiu Manoil's message of "Tue, 23 Jul 2019 16:07:34 +0000")
+Message-ID: <87muh33mvi.fsf@kb.kras.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
 MIME-Version: 1.0
-References: <cover.1563817029.git.lucien.xin@gmail.com> <c875aa0a5b2965636dc3da83398856627310b280.1563817029.git.lucien.xin@gmail.com>
- <20190723152449.GB8419@localhost.localdomain>
-In-Reply-To: <20190723152449.GB8419@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 24 Jul 2019 15:21:12 +0800
-Message-ID: <CADvbK_eiS26aMZcPrj2oNvZh_42phWiY71M7=UNvjEeB-B9bDQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/4] sctp: check addr_size with sa_family_t size
- in __sctp_setsockopt_connectx
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 11:25 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+>>-----Original Message-----
+>>From: Arseny Solokha <asolokha@kb.kras.ru>
+>>Sent: Tuesday, July 23, 2019 6:17 PM
+>>To: Claudiu Manoil <claudiu.manoil@nxp.com>; Ioana Ciornei
+>><ioana.ciornei@nxp.com>; Russell King <linux@armlinux.org.uk>; Andrew Lunn
+>><andrew@lunn.ch>
+>>Cc: netdev@vger.kernel.org; Arseny Solokha <asolokha@kb.kras.ru>
+>>Subject: [RFC PATCH 1/2] gianfar: convert to phylink
+>>
+>>Convert gianfar to use the phylink API for better SFP modules support.
+>>
+>>The driver still uses phylib for serdes configuration over the TBI
+>>interface, as there seems to be no functionally equivalent API present
+>>in phylink (yet). phylib usage is basically confined in two functions.
+>>
 >
-> On Tue, Jul 23, 2019 at 01:37:57AM +0800, Xin Long wrote:
-> > Now __sctp_connect() is called by __sctp_setsockopt_connectx() and
-> > sctp_inet_connect(), the latter has done addr_size check with size
-> > of sa_family_t.
-> >
-> > In the next patch to clean up __sctp_connect(), we will remove
-> > addr_size check with size of sa_family_t from __sctp_connect()
-> > for the 1st address.
-> >
-> > So before doing that, __sctp_setsockopt_connectx() should do
-> > this check first, as sctp_inet_connect() does.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  net/sctp/socket.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > index aa80cda..5f92e4a 100644
-> > --- a/net/sctp/socket.c
-> > +++ b/net/sctp/socket.c
-> > @@ -1311,7 +1311,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
-> >       pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
-> >                __func__, sk, addrs, addrs_size);
-> >
-> > -     if (unlikely(addrs_size <= 0))
-> > +     if (unlikely(addrs_size < sizeof(sa_family_t)))
-> I don't think this is what you want to check for here.  sa_family_t is
-> an unsigned short, and addrs_size is the number of bytes in the addrs
-> array.  The addrs array should be at least the size of one struct
-> sockaddr (16 bytes iirc), and, if larger, should be a multiple of
-> sizeof(struct sockaddr)
-sizeof(struct sockaddr) is not the right value to check either.
+> Thanks for your patch.  Phylink in gianfar... that would be something!
+> At first glance a lot of code has changed with this patch or got relocated.
+> To make it easier to swallow, I think a few cleanup patches could be
+> separated before migrating to phylink.  Like for instance getting rid of the
+> old* link state variables, which I think are an artifact from early phylib usage.
+> Nonetheless good to see this implemented, I'll have a closer look asap.
 
-The proper check will be done later in __sctp_connect():
+Hi,
 
-        af = sctp_get_af_specific(daddr->sa.sa_family);
-        if (!af || af->sockaddr_len > addrs_size)
-                return -EINVAL;
+meanwhile I'll have to post v2 of this patch because it has some issues which
+initially escaped my attention. For now I'm pasting the diff against v1 here for
+reference:
 
-So the check 'addrs_size < sizeof(sa_family_t)' in this patch is
-just to make sure daddr->sa.sa_family is accessible. the same
-check is also done in sctp_inet_connect().
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -1666,7 +1666,7 @@ static int gfar_suspend(struct device *dev)
+ 		gfar_start_wol_filer(priv);
+ 
+ 	} else {
+-		phylink_stop(phy->phylink);
++		phylink_stop(priv->phylink);
+ 	}
+ 
+ 	priv->speed = SPEED_UNKNOWN;
+@@ -3699,9 +3699,6 @@ static void gfar_mac_config(struct phylink_config *config, unsigned int mode,
+ 	if (unlikely(test_bit(GFAR_RESETTING, &priv->state)))
+ 		return;
+ 
+-	if (unlikely(phylink_autoneg_inband(mode)))
+-		return;
+-
+ 	maccfg1 = gfar_read(&regs->maccfg1);
+ 	maccfg2 = gfar_read(&regs->maccfg2);
+ 	ecntrl = gfar_read(&regs->ecntrl);
 
->
-> Neil
->
-> >               return -EINVAL;
-> >
-> >       kaddrs = memdup_user(addrs, addrs_size);
-> > --
-> > 2.1.0
-> >
-> >
+The first hunk here fixes a typo which broke build with PM enabled. The second
+one removes an early return from gfar_mac_config() which I believe is really
+bogus and also breaks coalesce parameters calculation for SGMII and 1000Base-X
+attached PHYs.
+
+I'd like to submit a real v2 after the patches gets actual review, though.
+
+Thanks,
+Arseny
