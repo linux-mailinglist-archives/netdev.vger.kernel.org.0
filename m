@@ -2,27 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B23572F65
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4F872F66
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbfGXND0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 09:03:26 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:43819 "EHLO
+        id S1727287AbfGXND1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 09:03:27 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:44445 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbfGXND0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:26 -0400
+        with ESMTP id S1726830AbfGXND1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:27 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1hqGvU-0006gK-PE; Wed, 24 Jul 2019 15:03:24 +0200
+        id 1hqGvV-0006gK-KX; Wed, 24 Jul 2019 15:03:25 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can 2019-07-24
-Date:   Wed, 24 Jul 2019 15:03:15 +0200
-Message-Id: <20190724130322.31702-1-mkl@pengutronix.de>
+        kernel@pengutronix.de,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Willem de Bruijn <willemb@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 1/7] can: dev: call netif_carrier_off() in register_candev()
+Date:   Wed, 24 Jul 2019 15:03:16 +0200
+Message-Id: <20190724130322.31702-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190724130322.31702-1-mkl@pengutronix.de>
+References: <20190724130322.31702-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
@@ -34,76 +39,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello David,
+From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 
-this is a pull reqeust of 7 patches for net/master.
+CONFIG_CAN_LEDS is deprecated. When trying to use the generic netdev
+trigger as suggested, there's a small inconsistency with the link
+property: The LED is on initially, stays on when the device is brought
+up, and then turns off (as expected) when the device is brought down.
 
-The first patch is by Rasmus Villemoes add a missing netif_carrier_off() to
-register_candev() so that generic netdev trigger based LEDs are initially off.
+Make sure the LED always reflects the state of the CAN device.
 
-Nikita Yushchenko's patch for the rcar_canfd driver fixes a possible IRQ storm
-on high load.
-
-The patch by Weitao Hou for the mcp251x driver add missing error checking to
-the work queue allocation.
-
-Both Wen Yang's and Joakim Zhang's patch for the flexcan driver fix a problem
-with the stop-mode.
-
-Stephane Grosjean contributes a patch for the peak_usb driver to fix a
-potential double kfree_skb().
-
-The last patch is by YueHaibing and fixes the error path in can-gw's
-cgw_module_init() function.
-
-regards,
-Marc
-
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ drivers/net/can/dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The following changes since commit d86afb89305de205b0d2f20c2160adf039e9508d:
-
-  net: thunderx: Use fwnode_get_mac_address() (2019-07-23 14:09:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.3-20190724
-
-for you to fetch changes up to b7a14297f102b6e2ce6f16feffebbb9bde1e9b55:
-
-  can: gw: Fix error path of cgw_module_init (2019-07-24 11:19:03 +0200)
-
-----------------------------------------------------------------
-linux-can-fixes-for-5.3-20190724
-
-----------------------------------------------------------------
-Joakim Zhang (1):
-      can: flexcan: fix stop mode acknowledgment
-
-Nikita Yushchenko (1):
-      can: rcar_canfd: fix possible IRQ storm on high load
-
-Rasmus Villemoes (1):
-      can: dev: call netif_carrier_off() in register_candev()
-
-Stephane Grosjean (1):
-      can: peak_usb: fix potential double kfree_skb()
-
-Weitao Hou (1):
-      can: mcp251x: add error check when wq alloc failed
-
-Wen Yang (1):
-      can: flexcan: fix an use-after-free in flexcan_setup_stop_mode()
-
-YueHaibing (1):
-      can: gw: Fix error path of cgw_module_init
-
- drivers/net/can/dev.c                        |  2 ++
- drivers/net/can/flexcan.c                    | 39 ++++++++++++++++++----
- drivers/net/can/rcar/rcar_canfd.c            |  9 ++---
- drivers/net/can/spi/mcp251x.c                | 49 +++++++++++++---------------
- drivers/net/can/usb/peak_usb/pcan_usb_core.c |  8 ++---
- net/can/gw.c                                 | 48 ++++++++++++++++++---------
- 6 files changed, 98 insertions(+), 57 deletions(-)
-
+diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
+index b6b93a2d93a5..483d270664cc 100644
+--- a/drivers/net/can/dev.c
++++ b/drivers/net/can/dev.c
+@@ -1249,6 +1249,8 @@ int register_candev(struct net_device *dev)
+ 		return -EINVAL;
+ 
+ 	dev->rtnl_link_ops = &can_link_ops;
++	netif_carrier_off(dev);
++
+ 	return register_netdev(dev);
+ }
+ EXPORT_SYMBOL_GPL(register_candev);
+-- 
+2.20.1
 
