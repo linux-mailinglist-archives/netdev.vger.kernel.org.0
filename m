@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27534724D0
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0898E724DC
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725863AbfGXCkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:40:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45982 "EHLO mail.kernel.org"
+        id S1726024AbfGXCob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:44:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46566 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725372AbfGXCkv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:40:51 -0400
+        id S1725776AbfGXCoa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:44:30 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7CC8221670;
-        Wed, 24 Jul 2019 02:40:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 542DA20828;
+        Wed, 24 Jul 2019 02:44:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563936050;
-        bh=u7Cvk6jVXMSAqvcWR0hk7Zxrt4Xl1PZUl8KaPJQEA/I=;
+        s=default; t=1563936269;
+        bh=otF0m5YFhRfZ2LQNcGhr+Exepj6iQf16VoZOqyMzPag=;
         h=Date:From:To:Cc:Subject:From;
-        b=iNRFe2zorSoa4JIguI6SlZX6QIJDREtPLTeE1n0RC/F7OF+tWdB81694/f5nmMLr9
-         5/J+a4klB+6SrQs7VJJim9wwMTTLBWYSlKHFhXwWs3ACF7b+JiW6buw3L6My8f9hjw
-         TUOTOahx8rx/8w1kTRoSnVFFaLNq4EVLLnSiYG48=
-Date:   Tue, 23 Jul 2019 19:40:49 -0700
+        b=QQaWMfeU0RI3fiEQHD9mKME89ksu8wtqJmUEUgKJ4FCxgoXRsJKk/RYeZaDvgJW7t
+         g474b/DMKq7oRamYy+EUG17PoZujElylMNtw+vEsg/hMk68WEfvIFbqLW9X6qb9xn2
+         penUoO6quE8bFHFbiE6Xp4ESBiZEuIAfiRFGi1ng=
+Date:   Tue, 23 Jul 2019 19:44:27 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
+To:     linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 3 open syzbot bugs in "net/ax25" subsystem
-Message-ID: <20190724024049.GC643@sol.localdomain>
-Mail-Followup-To: linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
+Subject: Reminder: 2 open syzbot bugs in "net/rxrpc" subsystem
+Message-ID: <20190724024427.GG643@sol.localdomain>
+Mail-Followup-To: linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -48,76 +49,71 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 3 of them as possibly being bugs in the "net/ax25" subsystem.  I've
+marked 2 of them as possibly being bugs in the "net/rxrpc" subsystem.  I've
 listed these reports below, sorted by an algorithm that tries to list first the
 reports most likely to be still valid, important, and actionable.
+
+Of these 2 bugs, 1 was seen in mainline in the last week.
+
+Of these 2 bugs, 1 was bisected to a commit from the following person:
+
+	David Howells <dhowells@redhat.com>
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/ax25" subsystem, please let me
+If you believe I misattributed a bug to the "net/rxrpc" subsystem, please let me
 know, and if possible forward the report to the correct people or mailing list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              general protection fault in ax25_send_frame
-Last occurred:      0 days ago
-Reported:           204 days ago
+Title:              kernel BUG at net/rxrpc/local_object.c:LINE!
+Last occurred:      2 days ago
+Reported:           25 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=1cdd5b120f129364fc8e9b2b027826cf99fa696e
-Original thread:    https://lkml.kernel.org/lkml/0000000000009ea37c057e58d787@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+e0b81535a27b8be39502@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009ea37c057e58d787@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: stack-out-of-bounds Write in ax25_getname
-Last occurred:      90 days ago
-Reported:           206 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=fb195f91dc044978c1b186f1288b1eff61edcc20
-Original thread:    https://lkml.kernel.org/lkml/000000000000ed4120057e2df0c6@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=53b6555b27af2cae74e2fbdac6cadc73f9cb18aa
+Original thread:    https://lkml.kernel.org/lkml/0000000000004c2416058c594b30@google.com/T/#u
 
 This bug has a syzkaller reproducer only.
 
-No one replied to the original thread for this bug.
+This bug was bisected to:
+
+	commit 46894a13599a977ac35411b536fb3e0b2feefa95
+	Author: David Howells <dhowells@redhat.com>
+	Date:   Thu Oct 4 08:32:28 2018 +0000
+
+	  rxrpc: Use IPv4 addresses throught the IPv6
+
+The original thread for this bug has received 3 replies; the last was 18 days
+ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6a29097222b4d3b8617c@syzkaller.appspotmail.com
+    Reported-by: syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000ed4120057e2df0c6@google.com
+https://lkml.kernel.org/r/0000000000004c2416058c594b30@google.com
 
 --------------------------------------------------------------------------------
-Title:              inconsistent lock state in ax25_std_heartbeat_expiry
-Last occurred:      122 days ago
-Reported:           120 days ago
-Branches:           net
-Dashboard link:     https://syzkaller.appspot.com/bug?id=9086a8eac930890b2730d6441093bd478e32913f
-Original thread:    https://lkml.kernel.org/lkml/0000000000001b07250584efbee3@google.com/T/#u
+Title:              WARNING: locking bug in flush_workqueue_prep_pwqs
+Last occurred:      30 days ago
+Reported:           158 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=4ae48f9c43f87ccf9f2f270b14d5b9284dadd05c
+Original thread:    https://lkml.kernel.org/lkml/0000000000005c7e6f0581f1b86a@google.com/T/#u
 
 Unfortunately, this bug does not have a reproducer.
 
-The original thread for this bug received 2 replies; the last was 119 days ago.
+No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+e350b81e95a6a214da8a@syzkaller.appspotmail.com
+    Reported-by: syzbot+0c4264acb66ea0484d11@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000001b07250584efbee3@google.com
+https://lkml.kernel.org/r/0000000000005c7e6f0581f1b86a@google.com
 
