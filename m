@@ -2,61 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A272723B4
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CC80723B7
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728069AbfGXBa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 21:30:58 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:56858 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727398AbfGXBa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 21:30:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=N+8BhM7aTLz6GyAe7hTi6zVDHMkceW2amlsc99Za87Y=; b=e/0L1jQtz8rHDDcAIDoIEUvAQ
-        O3RvnCEEFWN0Th5pYZdBPgquckQHGecAUcnVGoDoDNb5VJK2oQyRbSWCju6Al10Jf2rer9jUT5enx
-        frPMrZLvWGJoDerNOYkjxSk8uJCFVxica1sw58SxljCHymQfqdTn8Sm2NLP55sa/rrD59TFR0DPvs
-        8RhJrAphEWUbZZp+M7dsTR6VKzViz1GS3q9AJgj2dzdQ4P5w33MRLHn+aaZlkDUY2IunQlCFkJuRM
-        3SmCVmjYaGDcDBWFPE11QhJj6lBEUfJvmRVjGgJk2SSnUvVogUV+wYHHHnyaQLp61pa3lCGTNe0tr
-        2bJPFYVdA==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hq67L-0006l7-TX; Wed, 24 Jul 2019 01:30:55 +0000
-Date:   Tue, 23 Jul 2019 18:30:55 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "hch@lst.de" <hch@lst.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 6/7] net: Rename skb_frag_t size to bv_len
-Message-ID: <20190724013055.GR363@bombadil.infradead.org>
-References: <20190712134345.19767-1-willy@infradead.org>
- <20190712134345.19767-7-willy@infradead.org>
- <267e43638c85447a5251ce9ca33356da4a8aa3f3.camel@mellanox.com>
+        id S1728234AbfGXBbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 21:31:43 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:5085 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725837AbfGXBbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 21:31:43 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d37b5040000>; Tue, 23 Jul 2019 18:31:48 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 23 Jul 2019 18:31:41 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 23 Jul 2019 18:31:41 -0700
+Received: from [10.110.48.28] (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 24 Jul
+ 2019 01:31:40 +0000
+Subject: Re: [PATCH v2 1/3] mm/gup: add make_dirty arg to
+ put_user_pages_dirty_lock()
+To:     <john.hubbard@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
+CC:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, <netdev@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-mm@kvack.org>,
+        <linux-rdma@vger.kernel.org>, <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>
+References: <20190724012606.25844-1-jhubbard@nvidia.com>
+ <20190724012606.25844-2-jhubbard@nvidia.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <5c303c80-57fd-d278-44d5-942597051c9b@nvidia.com>
+Date:   Tue, 23 Jul 2019 18:31:40 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <267e43638c85447a5251ce9ca33356da4a8aa3f3.camel@mellanox.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190724012606.25844-2-jhubbard@nvidia.com>
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1563931908; bh=81R/Z2rovzmAa3O7DCJ8y2Mm5lAz4O2B1wbIdVhO0d8=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=L8+8TSTfHtIkC1xowWnZPPItlJoP+leFf6ucvU5E2owqzMuOQ9jIZ8vvOAmRE48gG
+         nJc2BkzeiefBvFmLrdVIpofi+FqWCxnLVVCD8Km+TEsxK75nMF86BzzMDvJhOtd4Sv
+         tv/oBJtf5JB77EfsmMmPFfjUqHdF8FrA9NTbWBGktbrAYnfNv/v7rTGnTIY6IQINWA
+         7KWjSbQNfLlkpCFtMta3TS57pn2JgRvHM6UCjTP01IAnW414t4BHJWGwnR2xyxPuNo
+         ve66cppddE8vW2LUpVK1xyY3WfDsi+6f6NZZzv7rod362wLBdY3VFm9CgxAGyrUul/
+         iXE/3sT5XunbA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 10:33:59PM +0000, Saeed Mahameed wrote:
-> >  struct skb_frag_struct {
-> >  	struct page *bv_page;
-> > -	__u32 size;
-> > +	unsigned int bv_len;
-> >  	__u32 page_offset;
+On 7/23/19 6:26 PM, john.hubbard@gmail.com wrote:
+> From: John Hubbard <jhubbard@nvidia.com>
+...
+> +		 * 2) This code sees the page as clean, so it calls
+> +		 * set_page_dirty(). The page stays dirty, despite being
+> +		 * written back, so it gets written back again in the
+> +		 * next writeback cycle. This is harmless.
+> +		 */
+> +		if (!PageDirty(page))
+> +			set_page_dirty_lock(page);
+> +		break;
+
+ahem, the above "break" should not be there, it's an artifact, sorry about 
+that. Will correct on the next iteration.
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
+
+
+> +		put_user_page(page);
+> +	}
+>  }
+>  EXPORT_SYMBOL(put_user_pages_dirty_lock);
+>  
 > 
-> Why do you keep page_offset name and type as is ? it will make the last
-> patch much cleaner if you change it to "unsigned int bv_offset".
-
-We don't have an accessor for page_offset, so there are about 280
-occurrences of '>page_offset' in drivers/net/
-
-Feel free to be the hero who does that cleanup.
