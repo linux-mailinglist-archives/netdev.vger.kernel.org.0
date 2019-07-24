@@ -2,97 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82FF174035
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10BB774038
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:41:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728545AbfGXUj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 16:39:59 -0400
-Received: from mail-eopbgr10057.outbound.protection.outlook.com ([40.107.1.57]:34724
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726939AbfGXUj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 16:39:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T8e4CWbpEKXwwELGdVivfvzFoq81HcfnQf1MTfJFiwUQFP39EUoadvZfoG94Dw8aTx/cNRQnzJC4BmJV4wBqvcy2uAqKGB7kY7RVizepP8+WFhboS3eiqJr1CTtpl4SZpgs6ZmhcD2ATa7wDqMUsxTdzZueniYAUHFf2O4DzcmYnSZ/HfMiFk9P+Wf7XwNFV7cWgu+WgExUTqkvxwzqHS4ywP82Yxl8sEURcKhIXVNvuySc8/AO0rL1bnm87p2JA1wNat5s1xnwel0CPob4ihlUsrJ+lGsEbvz5flrnL006q3JByqthvxr8CvV0zKm/CKpQ8Sn49FQr961qw3U9hTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CziKWvPbce7RiAqIOQp6VMZQT8qNlIt8NufLZCNCrF4=;
- b=UFOFUd33B5/W/8S1IQ+gVE6cmRrJXFmkJKX50isogxYu0gkzbRe9kL+qF+R2laMgAE0QYBw0nPJYqou99WE8rHca158qiCBoWjr7sQuQa1IOs28lxSWnaoOlwKJoCsoQNLDdRcVtqEo7Ir2qUwgEFME7VvVR+vLMQPyQ/1TVvHuuRqjY1u0zWuFUD5FS1erH3fTSaOlEIYokO6ibWQAVRFYeNMPiRgWrddBVNHvpLN147suIqeLMVPFCi226v9wPhkZj+ZKrdxbzUHNpT/DA9qHNsQhHnlX2L7ORb9b9rWt2pHBXb5dwCVsFtak2cyFXtwfNoveuooHZEApjB+20Og==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CziKWvPbce7RiAqIOQp6VMZQT8qNlIt8NufLZCNCrF4=;
- b=qra+DccyN7i7PRAsE/QuBHmKpGpgR0fE8dc7Mzvu0VDO3FWN/1OCGV4Z6x3KUU2PyFcV3USLMfwK7WW5lMtVETsWJDVWNQhtcPKBEOYYeE3UjtCIkECqFkuizXCE+46nqaiTRu/7Ro5bu/E8fUX8UaPC6/1tUoZk+yW8uMDX/Q4=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2838.eurprd05.prod.outlook.com (10.172.226.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.16; Wed, 24 Jul 2019 20:39:53 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Wed, 24 Jul 2019
- 20:39:53 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/2] mlx4/en_netdev: update vlan features with
- tunnel offloads
-Thread-Topic: [PATCH net-next 1/2] mlx4/en_netdev: update vlan features with
- tunnel offloads
-Thread-Index: AQHVQiip5Uqq5nD8f0m9Isk3aDyinabaO48A
-Date:   Wed, 24 Jul 2019 20:39:53 +0000
-Message-ID: <4cb45c2e4515a122b38d54a0b9d8f03c854401ea.camel@mellanox.com>
-References: <cover.1563976690.git.dcaratti@redhat.com>
-         <c3ccd45ee8742fb1a35fcfd41955907329e8112b.1563976690.git.dcaratti@redhat.com>
-In-Reply-To: <c3ccd45ee8742fb1a35fcfd41955907329e8112b.1563976690.git.dcaratti@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 237ad9e0-339e-4eb9-0458-08d710771503
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2838;
-x-ms-traffictypediagnostic: DB6PR0501MB2838:
-x-microsoft-antispam-prvs: <DB6PR0501MB2838496028EEAFF962B2E87CBEC60@DB6PR0501MB2838.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2887;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(39860400002)(136003)(376002)(189003)(199004)(6246003)(2616005)(6512007)(53936002)(305945005)(476003)(8676002)(64756008)(2906002)(25786009)(71190400001)(186003)(99286004)(71200400001)(81166006)(3846002)(8936002)(446003)(6506007)(58126008)(6436002)(36756003)(256004)(229853002)(6116002)(2501003)(91956017)(102836004)(7736002)(478600001)(316002)(11346002)(66066001)(68736007)(118296001)(66946007)(81156014)(6486002)(66476007)(66446008)(14454004)(4744005)(110136005)(66556008)(486006)(26005)(5660300002)(76116006)(76176011)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2838;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ZZdGDsGUrLDuGhCDRCX4ZHcJRF/hSmpFazafL90YDui0/p7QyxfCHIQj4V4RVmXW6XnIIFqGK6voP+1+towS5VMkA7wf5tJUipCFe3ZW+DnHahTffuRw0GCOD9cgkniA4Ggxym/nLkyMX6+ly9J47iUMPAQXtWzuoi506EujNwdnDE2p72R/76Z+5+0FlB4eW3jHzSidh+FfE85pDHU2s0w/xy+zdad7nHnC7df0m/n538bAiLsbLqQgQTELLBTib2NrOWUJJnRWFoEBlD1JRI1yLUsceagCthX7q6IIzcUIHV+yq28F+zikFnrWwDX5bfWa5CFkKfFcd95SzaFYtVfrKo5drUtJv3q1fzN9wDDYUs1/hmEF4ZTQsa5UFQ59gCRsM3/GgwuYNtyPPpMpMZznBlBnZ3xAYqd5Gc3bQu0=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B7C2F6F9487B2D45832FEBD3665C3717@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727658AbfGXUly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 16:41:54 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:60051 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbfGXUlx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 16:41:53 -0400
+Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hqO4x-0005Uu-LD; Wed, 24 Jul 2019 16:41:47 -0400
+Date:   Wed, 24 Jul 2019 16:41:12 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, davem <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/4] sctp: check addr_size with sa_family_t size
+ in __sctp_setsockopt_connectx
+Message-ID: <20190724204112.GE7212@hmswarspite.think-freely.org>
+References: <cover.1563817029.git.lucien.xin@gmail.com>
+ <c875aa0a5b2965636dc3da83398856627310b280.1563817029.git.lucien.xin@gmail.com>
+ <20190723152449.GB8419@localhost.localdomain>
+ <CADvbK_eiS26aMZcPrj2oNvZh_42phWiY71M7=UNvjEeB-B9bDQ@mail.gmail.com>
+ <20190724112235.GA7212@hmswarspite.think-freely.org>
+ <20190724123650.GD6204@localhost.localdomain>
+ <20190724124907.GA8640@localhost.localdomain>
+ <20190724184456.GC7212@hmswarspite.think-freely.org>
+ <20190724190543.GH6204@localhost.localdomain>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 237ad9e0-339e-4eb9-0458-08d710771503
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 20:39:53.4267
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2838
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190724190543.GH6204@localhost.localdomain>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA3LTI0IGF0IDE2OjAyICswMjAwLCBEYXZpZGUgQ2FyYXR0aSB3cm90ZToN
-Cj4gQ29ubmVjdFgtMyBQcm8gY2FuIG9mZmxvYWQgdHJhbnNtaXNzaW9uIG9mIFZMQU4gcGFja2V0
-cyB3aXRoIFZYTEFODQo+IGluc2lkZToNCj4gZW5hYmxlIHR1bm5lbCBvZmZsb2FkcyBpbiBkZXYt
-PnZsYW5fZmVhdHVyZXMsIGxpa2UgaXQncyBkb25lIHdpdGgNCj4gb3RoZXINCj4gTklDIGRyaXZl
-cnMgKGUuZy4gYmUybmV0IGFuZCBpeGdiZSkuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBEYXZpZGUg
-Q2FyYXR0aSA8ZGNhcmF0dGlAcmVkaGF0LmNvbT4NCg0KDQpMR1RNDQpSZXZpZXdlZC1ieTogU2Fl
-ZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQo=
+On Wed, Jul 24, 2019 at 04:05:43PM -0300, Marcelo Ricardo Leitner wrote:
+> On Wed, Jul 24, 2019 at 02:44:56PM -0400, Neil Horman wrote:
+> > On Wed, Jul 24, 2019 at 09:49:07AM -0300, Marcelo Ricardo Leitner wrote:
+> > > On Wed, Jul 24, 2019 at 09:36:50AM -0300, Marcelo Ricardo Leitner wrote:
+> > > > On Wed, Jul 24, 2019 at 07:22:35AM -0400, Neil Horman wrote:
+> > > > > On Wed, Jul 24, 2019 at 03:21:12PM +0800, Xin Long wrote:
+> > > > > > On Tue, Jul 23, 2019 at 11:25 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > > > >
+> > > > > > > On Tue, Jul 23, 2019 at 01:37:57AM +0800, Xin Long wrote:
+> > > > > > > > Now __sctp_connect() is called by __sctp_setsockopt_connectx() and
+> > > > > > > > sctp_inet_connect(), the latter has done addr_size check with size
+> > > > > > > > of sa_family_t.
+> > > > > > > >
+> > > > > > > > In the next patch to clean up __sctp_connect(), we will remove
+> > > > > > > > addr_size check with size of sa_family_t from __sctp_connect()
+> > > > > > > > for the 1st address.
+> > > > > > > >
+> > > > > > > > So before doing that, __sctp_setsockopt_connectx() should do
+> > > > > > > > this check first, as sctp_inet_connect() does.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > > > > > > ---
+> > > > > > > >  net/sctp/socket.c | 2 +-
+> > > > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > > > >
+> > > > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> > > > > > > > index aa80cda..5f92e4a 100644
+> > > > > > > > --- a/net/sctp/socket.c
+> > > > > > > > +++ b/net/sctp/socket.c
+> > > > > > > > @@ -1311,7 +1311,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
+> > > > > > > >       pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
+> > > > > > > >                __func__, sk, addrs, addrs_size);
+> > > > > > > >
+> > > > > > > > -     if (unlikely(addrs_size <= 0))
+> > > > > > > > +     if (unlikely(addrs_size < sizeof(sa_family_t)))
+> > > > > > > I don't think this is what you want to check for here.  sa_family_t is
+> > > > > > > an unsigned short, and addrs_size is the number of bytes in the addrs
+> > > > > > > array.  The addrs array should be at least the size of one struct
+> > > > > > > sockaddr (16 bytes iirc), and, if larger, should be a multiple of
+> > > > > > > sizeof(struct sockaddr)
+> > > > > > sizeof(struct sockaddr) is not the right value to check either.
+> > > > > > 
+> > > > > > The proper check will be done later in __sctp_connect():
+> > > > > > 
+> > > > > >         af = sctp_get_af_specific(daddr->sa.sa_family);
+> > > > > >         if (!af || af->sockaddr_len > addrs_size)
+> > > > > >                 return -EINVAL;
+> > > > > > 
+> > > > > > So the check 'addrs_size < sizeof(sa_family_t)' in this patch is
+> > > > > > just to make sure daddr->sa.sa_family is accessible. the same
+> > > > > > check is also done in sctp_inet_connect().
+> > > > > > 
+> > > > > That doesn't make much sense, if the proper check is done in __sctp_connect with
+> > > > > the size of the families sockaddr_len, then we don't need this check at all, we
+> > > > > can just let memdup_user take the fault on copy_to_user and return -EFAULT.  If
+> > > > > we get that from memdup_user, we know its not accessible, and can bail out.
+> > > > > 
+> > > > > About the only thing we need to check for here is that addr_len isn't some
+> > > > > absurdly high value (i.e. a negative value), so that we avoid trying to kmalloc
+> > > > > upwards of 2G in memdup_user.  Your change does that just fine, but its no
+> > > > > better or worse than checking for <=0
+> > > > 
+> > > > One can argue that such check against absurdly high values is random
+> > > > and not effective, as 2G can be somewhat reasonable on 8GB systems but
+> > > > certainly isn't on 512MB ones. On that, kmemdup_user() will also fail
+> > > > gracefully as it uses GFP_USER and __GFP_NOWARN.
+> > > > 
+> > > > The original check is more for protecting for sane usage of the
+> > > > variable, which is an int, and a negative value is questionable. We
+> > > > could cast, yes, but.. was that really the intent of the application?
+> > > > Probably not.
+> > > 
+> > > Though that said, I'm okay with the new check here: a quick sanity
+> > > check that can avoid expensive calls to kmalloc(), while more refined
+> > > check is done later on.
+> > > 
+> > I agree a sanity check makes sense, just to avoid allocating a huge value
+> > (even 2G is absurd on many systems), however, I'm not super comfortable with
+> > checking for the value being less than 16 (sizeof(sa_family_t)).  The zero check
+> 
+> 16 bits you mean then, per
+> include/uapi/linux/socket.h
+> typedef unsigned short __kernel_sa_family_t;
+> include/linux/socket.h
+> typedef __kernel_sa_family_t    sa_family_t;
+> 
+> > is fairly obvious given the signed nature of the lengh field, this check makes
+> > me wonder what exactly we are checking for.
+> 
+> A minimum viable buffer without doing more extensive tests. Beyond
+> sa_family, we need to parse sa_family and then that's left for later.
+> Perhaps a comment helps, something like
+> 	/* Check if we have at least the family type in there */
+> ?
+> 
+Yeah, I'd be ok with something like that, or perhaps:
+
+/* Check if we have at least the family value in buffer, so get_af_specific can
+ * do a proper size check in __sctp_connect
+ */
+
+Neil
+
+>   Marcelo
+> 
+> > 
+> > Neil
+> > 
+> > > > 
+> > > > > 
+> > > > > Neil
+> > > > > 
+> > > > > > >
+> > > > > > > Neil
+> > > > > > >
+> > > > > > > >               return -EINVAL;
+> > > > > > > >
+> > > > > > > >       kaddrs = memdup_user(addrs, addrs_size);
+> > > > > > > > --
+> > > > > > > > 2.1.0
+> > > > > > > >
+> > > > > > > >
+> > > > > > 
+> > > 
+> 
