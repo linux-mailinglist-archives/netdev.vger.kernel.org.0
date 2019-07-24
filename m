@@ -2,250 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9189373788
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:12:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4979E7378B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:12:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728860AbfGXTM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 15:12:28 -0400
-Received: from mail-eopbgr60056.outbound.protection.outlook.com ([40.107.6.56]:49442
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726115AbfGXTM2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 15:12:28 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gtX4UKhGBphvZx9yPtLcz6ktrIUS59ptCJ6AfT2BsTfQ20IDkRCNDttFItM0ahk7MM2RKRJ9TgyHRr0zM6OEwrGaTdDsbPSt1krVCTp7TwkGkb9INfGTyNDJiAPiCOR22kCEBctCCz2VTdSajar74+HaijD83W4wj14fDkmSf1wF2194eX2o1HM8JxYQ+VYG9WRDR5NFZ/6nbrFH21ioLe7e4+2OpYBqQORu2VCCKzHXJJdWAvji3QvK9TXl+XMRCg3FLnwjoMYm4WhHFMwFnr66AlFErKa3GXUZv2IuDgB9Xp8zaa+Ou6eThFRH33QMS9Q4Fq+IymMkHGFhoag+aw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ByOHJWcHtIq5i0OmSdpYYIAzHRVM4yGRo1nwADPfRG8=;
- b=Jc3nMoU6AS8uT5fOVCXTt5dywaHsus3GF8yxSg3MAMo+BljSgM12yln776OA13Sa6t76R3zFJ/G3vEVG9Rmfjk+iKyM0QDlbhG3oeJcHome4PDWYl/4KWw8aHhvi6sBdqxbRIk9VkTftuHMkLpK4Jy8rxnqJwyFP2ZfB4d2SvbxY8kEgTTed5l5Bead5+jOU5wK3ULZfDmjjOEnQz4tomdiHNUR0oiPAakszKt7ETE68fK6xCmLyDmXTC/rJN/YCuGEv6JFH1gFwSe7VsMX2FjaxI2HcHVp8F1KDa3jxzD0UqGm1pVg5RLz/VmQajmVNST7k0IHusXqdxDBqrlPmZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ByOHJWcHtIq5i0OmSdpYYIAzHRVM4yGRo1nwADPfRG8=;
- b=EeDlKNLICv0C49TS8OZEHPGmOA+VW962wwzo9qmv5TOwjFdoA+MnHp6eudiEsNNDcvHXHUYtLRyo3jmxOrvSa+iu2wsf6JcmuNBohHuWZ4Jtkkeya79kkWNbCituSnXZGNgmWc37Noa7/pqU+4S8i+W+H3f6VBmJNuW9TJQfDfs=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2437.eurprd05.prod.outlook.com (10.168.75.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.16; Wed, 24 Jul 2019 19:12:19 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Wed, 24 Jul 2019
- 19:12:19 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "lipeng321@huawei.com" <lipeng321@huawei.com>,
-        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "liuyonglong@huawei.com" <liuyonglong@huawei.com>
-Subject: Re: [PATCH net-next 07/11] net: hns3: adds debug messages to identify
- eth down cause
-Thread-Topic: [PATCH net-next 07/11] net: hns3: adds debug messages to
- identify eth down cause
-Thread-Index: AQHVQc7zCe+NYHPG9Uy99SJMowXJu6baI8sA
-Date:   Wed, 24 Jul 2019 19:12:18 +0000
-Message-ID: <ffd942e7d7442549a3a6d469709b7f7405928afe.camel@mellanox.com>
-References: <1563938327-9865-1-git-send-email-tanhuazhong@huawei.com>
-         <1563938327-9865-8-git-send-email-tanhuazhong@huawei.com>
-In-Reply-To: <1563938327-9865-8-git-send-email-tanhuazhong@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 03fd4fad-9145-4cbf-115f-08d7106ad90b
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2437;
-x-ms-traffictypediagnostic: DB6PR0501MB2437:
-x-microsoft-antispam-prvs: <DB6PR0501MB2437DD70062FE5449F663205BEC60@DB6PR0501MB2437.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:486;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(136003)(366004)(396003)(39860400002)(189003)(199004)(256004)(6506007)(14444005)(7736002)(36756003)(26005)(102836004)(71190400001)(478600001)(305945005)(186003)(99286004)(229853002)(8676002)(25786009)(2501003)(6246003)(71200400001)(76176011)(4326008)(6512007)(53936002)(446003)(8936002)(110136005)(6116002)(66066001)(54906003)(68736007)(6486002)(14454004)(15650500001)(2906002)(66446008)(64756008)(486006)(3846002)(2616005)(6436002)(476003)(86362001)(11346002)(316002)(81166006)(5024004)(118296001)(76116006)(58126008)(5660300002)(66946007)(91956017)(66476007)(66556008)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2437;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: VaUN8WCSV1Efov+7YCIMJVyqHC+ROjnJDU0JI093b2fjr/g0RYcsEa/2i1rAitGg8VPyIW9PannTJUgpqyhKJS4nYzJpEO2XgZm5mPpffNaQN3MPCUvG1jjk2sviAGdzLIqs5ChhtQxZ1IKoC9iDmI+Z86DJR7KIp+NCAdaWBSprOY1VN5CaRaKOFS05jJpN7348whr82qgYlcI5kyp6I21NPA/rlWH24kTi5MEBkin7ZJaHCGyg6t6NEwT6kLX52dR9pc7ZnMr6g0g/WrYlOoHK5ZzGFOZYif60pHwTEWnMrpCPgz2Hc9gNS1IvuTSRQW1wh0jqU+LYOAurXwbnr3+RHIda7PTAQxg5uTk/6fbOK5A2WvOF3Nos3kT6Jh+Kv79gkZMeJWjtfLLKuI7Lqs9naFuRFVIYmpzGQUpbGzA=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <18601EC15C5FF44E8281F1725874522D@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728957AbfGXTMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 15:12:48 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40012 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727296AbfGXTMr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:12:47 -0400
+Received: by mail-qt1-f196.google.com with SMTP id a15so46592087qtn.7;
+        Wed, 24 Jul 2019 12:12:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=sWrvJaJ/yveyvxBgUqdzR0ukNShINv26slcEjanWUKc=;
+        b=NZDpiROtn4NVrhtiv+untt+6HSHArE0gv/XzAAK32dPNuHL6p6pwhA4/1XNu5eo8i/
+         1wQ0n3iG40mr6/uR5oRzmtpdafOBic0iJac5zlSFidt04L0WZuSnuEo47coEIAbIpjCI
+         7cQXowuBREMPfRqgAN8aBXasIRljaIFDes+SJ0mYvmza3dO9VOt0Juml2C0Ff+Ax3SAv
+         ww+1mmqCw+KdpxE/PC6KnUm7M13IUW3NkCyMN/kLkIWZGy7GektsFh8/DIdHwtG5zzdU
+         cAermlEB3jX6R++KcFxHOxQA+9wVoPkALW4BSyLolFvDP/Myie1zy4HpjjbUOQmoWpqj
+         0lDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sWrvJaJ/yveyvxBgUqdzR0ukNShINv26slcEjanWUKc=;
+        b=NDji167rgMr++AYuVFy9nxnGGuK2IJROtyO6jqDnYAdFrxJzE98nA51JB7anAspR7A
+         BoteDPkZks4DvhIBqzdM3p0RD227jXIz7/rWCaZccBISoUe0cWFHbPEdqmU974fwJuiD
+         o+HGG2XwXgXfKs/f6ASYk0GxrABQblACk9jP5p7fPmjA+ANcvzuFCi7bGX8fOHEsSycF
+         u/ROYeVt/zqdLLXv5YUZmbtc1rRSI27k5BczpI31UgJcpKPSD9Rz1twnz43y3t2YLmfJ
+         omiTUJ5lFwEuGY3gc4mCjI9Ze1Ec5ty8Y7HtoRx5cLn88mJ6VA8LlMG0IZnK5A5BR0nB
+         Cemg==
+X-Gm-Message-State: APjAAAWUEuJkOPm+Lac3d7wqvh6fJYbZY1mrXeg9iWK2aDDyN837+zuk
+        shy8qd+AqCh7+Ap3gEBhw90=
+X-Google-Smtp-Source: APXvYqzTw/3f7iY9k7Cgw5ERFlPdEmikR+RNAl7WXZuaLdPoEX38M4315Px5aFCj6TjquyL1zafhTg==
+X-Received: by 2002:a0c:aede:: with SMTP id n30mr60197779qvd.152.1563995566650;
+        Wed, 24 Jul 2019 12:12:46 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.49.45])
+        by smtp.gmail.com with ESMTPSA id b23sm28960693qte.19.2019.07.24.12.12.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 24 Jul 2019 12:12:45 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 574C3C1BD5; Wed, 24 Jul 2019 16:12:43 -0300 (-03)
+Date:   Wed, 24 Jul 2019 16:12:43 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, davem <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/4] sctp: check addr_size with sa_family_t size
+ in __sctp_setsockopt_connectx
+Message-ID: <20190724191243.GA4063@localhost.localdomain>
+References: <cover.1563817029.git.lucien.xin@gmail.com>
+ <c875aa0a5b2965636dc3da83398856627310b280.1563817029.git.lucien.xin@gmail.com>
+ <20190723152449.GB8419@localhost.localdomain>
+ <CADvbK_eiS26aMZcPrj2oNvZh_42phWiY71M7=UNvjEeB-B9bDQ@mail.gmail.com>
+ <20190724112235.GA7212@hmswarspite.think-freely.org>
+ <20190724123650.GD6204@localhost.localdomain>
+ <20190724124907.GA8640@localhost.localdomain>
+ <20190724184456.GC7212@hmswarspite.think-freely.org>
+ <20190724190543.GH6204@localhost.localdomain>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 03fd4fad-9145-4cbf-115f-08d7106ad90b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 19:12:18.8964
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2437
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190724190543.GH6204@localhost.localdomain>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA3LTI0IGF0IDExOjE4ICswODAwLCBIdWF6aG9uZyBUYW4gd3JvdGU6DQo+
-IEZyb206IFlvbmdsb25nIExpdSA8bGl1eW9uZ2xvbmdAaHVhd2VpLmNvbT4NCj4gDQo+IFNvbWUg
-dGltZXMganVzdCBzZWUgdGhlIGV0aCBpbnRlcmZhY2UgaGF2ZSBiZWVuIGRvd24vdXAgdmlhDQo+
-IGRtZXNnLCBidXQgY2FuIG5vdCBrbm93IHdoeSB0aGUgZXRoIGRvd24uIFNvIGFkZHMgc29tZSBk
-ZWJ1Zw0KPiBtZXNzYWdlcyB0byBpZGVudGlmeSB0aGUgY2F1c2UgZm9yIHRoaXMuDQo+IA0KDQpJ
-IHJlYWxseSBkb24ndCBsaWtlIHRoaXMuIHlvdXIgZGVmYXVsdCBtc2cgbHZsIGhhcyBORVRJRl9N
-U0dfSUZET1dODQp0dXJuZWQgb24gLi4gZHVtcGluZyBldmVyeSBzaW5nbGUgb3BlcmF0aW9uIHRo
-YXQgaGFwcGVucyBvbiB5b3VyIGRldmljZQ0KYnkgZGVmYXVsdCB0byBrZXJuZWwgbG9nIGlzIHRv
-byBtdWNoICEgDQoNCldlIHNob3VsZCByZWFsbHkgY29uc2lkZXIgdXNpbmcgdHJhY2UgYnVmZmVy
-cyB3aXRoIHdlbGwgZGVmaW5lZA0Kc3RydWN0dXJlcyBmb3IgdmVuZG9yIHNwZWNpZmljIGV2ZW50
-cy4gc28gd2UgY2FuIHVzZSBicGYgZmlsdGVycyBhbmQNCnN0YXRlIG9mIHRoZSBhcnQgdG9vbHMg
-Zm9yIG5ldGRldiBkZWJ1Z2dpbmcuDQoNCj4gU2lnbmVkLW9mZi1ieTogWW9uZ2xvbmcgTGl1IDxs
-aXV5b25nbG9uZ0BodWF3ZWkuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBQZW5nIExpIDxsaXBlbmcz
-MjFAaHVhd2VpLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogSHVhemhvbmcgVGFuIDx0YW5odWF6aG9u
-Z0BodWF3ZWkuY29tPg0KPiAtLS0NCj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2hpc2lsaWNvbi9o
-bnMzL2huczNfZW5ldC5jICAgIHwgMjQNCj4gKysrKysrKysrKysrKysrKysrKysNCj4gIGRyaXZl
-cnMvbmV0L2V0aGVybmV0L2hpc2lsaWNvbi9obnMzL2huczNfZXRodG9vbC5jIHwgMjYNCj4gKysr
-KysrKysrKysrKysrKysrKysrKw0KPiAgLi4uL25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5zMy9o
-bnMzcGYvaGNsZ2VfZGNiLmMgfCAxNCArKysrKysrKysrKysNCj4gIDMgZmlsZXMgY2hhbmdlZCwg
-NjQgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L2hpc2lsaWNvbi9obnMzL2huczNfZW5ldC5jDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlz
-aWxpY29uL2huczMvaG5zM19lbmV0LmMNCj4gaW5kZXggNGQ1OGM1My4uY2ZmNWQ1OSAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmMN
-Cj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmMN
-Cj4gQEAgLTQ1OSw2ICs0NTksMTAgQEAgc3RhdGljIGludCBobnMzX25pY19uZXRfb3BlbihzdHJ1
-Y3QgbmV0X2RldmljZQ0KPiAqbmV0ZGV2KQ0KPiAgCQloLT5hZV9hbGdvLT5vcHMtPnNldF90aW1l
-cl90YXNrKHByaXYtPmFlX2hhbmRsZSwgdHJ1ZSk7DQo+ICANCj4gIAlobnMzX2NvbmZpZ194cHMo
-cHJpdik7DQo+ICsNCj4gKwlpZiAobmV0aWZfbXNnX2lmdXAoaCkpDQo+ICsJCW5ldGRldl9pbmZv
-KG5ldGRldiwgIm5ldCBvcGVuXG4iKTsNCj4gKw0KPiAgCXJldHVybiAwOw0KPiAgfQ0KPiAgDQo+
-IEBAIC01MTksNiArNTIzLDkgQEAgc3RhdGljIGludCBobnMzX25pY19uZXRfc3RvcChzdHJ1Y3Qg
-bmV0X2RldmljZQ0KPiAqbmV0ZGV2KQ0KPiAgCWlmICh0ZXN0X2FuZF9zZXRfYml0KEhOUzNfTklD
-X1NUQVRFX0RPV04sICZwcml2LT5zdGF0ZSkpDQo+ICAJCXJldHVybiAwOw0KPiAgDQo+ICsJaWYg
-KG5ldGlmX21zZ19pZmRvd24oaCkpDQo+ICsJCW5ldGRldl9pbmZvKG5ldGRldiwgIm5ldCBzdG9w
-XG4iKTsNCj4gKw0KPiAgCWlmIChoLT5hZV9hbGdvLT5vcHMtPnNldF90aW1lcl90YXNrKQ0KPiAg
-CQloLT5hZV9hbGdvLT5vcHMtPnNldF90aW1lcl90YXNrKHByaXYtPmFlX2hhbmRsZSwNCj4gZmFs
-c2UpOw0KPiAgDQo+IEBAIC0xNTUwLDYgKzE1NTcsOSBAQCBzdGF0aWMgaW50IGhuczNfc2V0dXBf
-dGMoc3RydWN0IG5ldF9kZXZpY2UNCj4gKm5ldGRldiwgdm9pZCAqdHlwZV9kYXRhKQ0KPiAgCWgg
-PSBobnMzX2dldF9oYW5kbGUobmV0ZGV2KTsNCj4gIAlraW5mbyA9ICZoLT5raW5mbzsNCj4gIA0K
-PiArCWlmIChuZXRpZl9tc2dfaWZkb3duKGgpKQ0KPiArCQluZXRkZXZfaW5mbyhuZXRkZXYsICJz
-ZXR1cCB0YzogbnVtX3RjPSVkXG4iLCB0Yyk7DQo+ICsNCj4gIAlyZXR1cm4gKGtpbmZvLT5kY2Jf
-b3BzICYmIGtpbmZvLT5kY2Jfb3BzLT5zZXR1cF90YykgPw0KPiAgCQlraW5mby0+ZGNiX29wcy0+
-c2V0dXBfdGMoaCwgdGMsIHByaW9fdGMpIDogLUVPUE5PVFNVUFA7DQo+ICB9DQo+IEBAIC0xNTkz
-LDYgKzE2MDMsMTEgQEAgc3RhdGljIGludCBobnMzX25kb19zZXRfdmZfdmxhbihzdHJ1Y3QNCj4g
-bmV0X2RldmljZSAqbmV0ZGV2LCBpbnQgdmYsIHUxNiB2bGFuLA0KPiAgCXN0cnVjdCBobmFlM19o
-YW5kbGUgKmggPSBobnMzX2dldF9oYW5kbGUobmV0ZGV2KTsNCj4gIAlpbnQgcmV0ID0gLUVJTzsN
-Cj4gIA0KPiArCWlmIChuZXRpZl9tc2dfaWZkb3duKGgpKQ0KDQp3aHkgbXNnX2lmZG93biA/IGxv
-b2tzIGxpa2UgbmV0aWZfbXNnX2RydiBpcyBtb3JlIGFwcHJvcHJpYXRlLCBmb3IgbWFueQ0Kb2Yg
-dGhlIGNhc2VzIGluIHRoaXMgcGF0Y2guDQoNCj4gKwkJbmV0ZGV2X2luZm8obmV0ZGV2LA0KPiAr
-CQkJICAgICJzZXQgdmYgdmxhbjogdmY9JWQsIHZsYW49JWQsIHFvcz0lZCwNCj4gdmxhbl9wcm90
-bz0lZFxuIiwNCj4gKwkJCSAgICB2ZiwgdmxhbiwgcW9zLCB2bGFuX3Byb3RvKTsNCj4gKw0KPiAg
-CWlmIChoLT5hZV9hbGdvLT5vcHMtPnNldF92Zl92bGFuX2ZpbHRlcikNCj4gIAkJcmV0ID0gaC0+
-YWVfYWxnby0+b3BzLT5zZXRfdmZfdmxhbl9maWx0ZXIoaCwgdmYsIHZsYW4sDQo+ICAJCQkJCQkJ
-ICBxb3MsDQo+IHZsYW5fcHJvdG8pOw0KPiBAQCAtMTYxMSw2ICsxNjI2LDEwIEBAIHN0YXRpYyBp
-bnQgaG5zM19uaWNfY2hhbmdlX210dShzdHJ1Y3QNCj4gbmV0X2RldmljZSAqbmV0ZGV2LCBpbnQg
-bmV3X210dSkNCj4gIAlpZiAoIWgtPmFlX2FsZ28tPm9wcy0+c2V0X210dSkNCj4gIAkJcmV0dXJu
-IC1FT1BOT1RTVVBQOw0KPiAgDQo+ICsJaWYgKG5ldGlmX21zZ19pZmRvd24oaCkpDQo+ICsJCW5l
-dGRldl9pbmZvKG5ldGRldiwgImNoYW5nZSBtdHUgZnJvbSAlZCB0byAlZFxuIiwNCj4gKwkJCSAg
-ICBuZXRkZXYtPm10dSwgbmV3X210dSk7DQo+ICsNCj4gIAlyZXQgPSBoLT5hZV9hbGdvLT5vcHMt
-PnNldF9tdHUoaCwgbmV3X210dSk7DQo+ICAJaWYgKHJldCkNCj4gIAkJbmV0ZGV2X2VycihuZXRk
-ZXYsICJmYWlsZWQgdG8gY2hhbmdlIE1UVSBpbiBoYXJkd2FyZQ0KPiAlZFxuIiwNCj4gQEAgLTQz
-OTUsNiArNDQxNCwxMSBAQCBpbnQgaG5zM19zZXRfY2hhbm5lbHMoc3RydWN0IG5ldF9kZXZpY2UN
-Cj4gKm5ldGRldiwNCj4gIAlpZiAoa2luZm8tPnJzc19zaXplID09IG5ld190cXBfbnVtKQ0KPiAg
-CQlyZXR1cm4gMDsNCj4gIA0KPiArCWlmIChuZXRpZl9tc2dfaWZkb3duKGgpKQ0KPiArCQluZXRk
-ZXZfaW5mbyhuZXRkZXYsDQo+ICsJCQkgICAgInNldCBjaGFubmVsczogdHFwX251bT0lZCwgcnhm
-aD0lZFxuIiwNCj4gKwkJCSAgICBuZXdfdHFwX251bSwgcnhmaF9jb25maWd1cmVkKTsNCj4gKw0K
-PiAgCXJldCA9IGhuczNfcmVzZXRfbm90aWZ5KGgsIEhOQUUzX0RPV05fQ0xJRU5UKTsNCj4gIAlp
-ZiAocmV0KQ0KPiAgCQlyZXR1cm4gcmV0Ow0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19ldGh0b29sLmMNCj4gYi9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9oaXNpbGljb24vaG5zMy9obnMzX2V0aHRvb2wuYw0KPiBpbmRleCBlNzFjOTJiLi5lZGI5
-ODQ1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5zMy9o
-bnMzX2V0aHRvb2wuYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5z
-My9obnMzX2V0aHRvb2wuYw0KPiBAQCAtMzExLDYgKzMxMSw5IEBAIHN0YXRpYyB2b2lkIGhuczNf
-c2VsZl90ZXN0KHN0cnVjdCBuZXRfZGV2aWNlDQo+ICpuZGV2LA0KPiAgCWlmIChldGhfdGVzdC0+
-ZmxhZ3MgIT0gRVRIX1RFU1RfRkxfT0ZGTElORSkNCj4gIAkJcmV0dXJuOw0KPiAgDQo+ICsJaWYg
-KG5ldGlmX21zZ19pZmRvd24oaCkpDQo+ICsJCW5ldGRldl9pbmZvKG5kZXYsICJzZWxmIHRlc3Qg
-c3RhcnRcbiIpOw0KPiArDQo+ICAJc3RfcGFyYW1bSE5BRTNfTE9PUF9BUFBdWzBdID0gSE5BRTNf
-TE9PUF9BUFA7DQo+ICAJc3RfcGFyYW1bSE5BRTNfTE9PUF9BUFBdWzFdID0NCj4gIAkJCWgtPmZs
-YWdzICYgSE5BRTNfU1VQUE9SVF9BUFBfTE9PUEJBQ0s7DQo+IEBAIC0zNzQsNiArMzc3LDkgQEAg
-c3RhdGljIHZvaWQgaG5zM19zZWxmX3Rlc3Qoc3RydWN0IG5ldF9kZXZpY2UNCj4gKm5kZXYsDQo+
-ICANCj4gIAlpZiAoaWZfcnVubmluZykNCj4gIAkJbmRldi0+bmV0ZGV2X29wcy0+bmRvX29wZW4o
-bmRldik7DQo+ICsNCj4gKwlpZiAobmV0aWZfbXNnX2lmZG93bihoKSkNCj4gKwkJbmV0ZGV2X2lu
-Zm8obmRldiwgInNlbGYgdGVzdCBlbmRcbiIpOw0KPiAgfQ0KPiAgDQo+ICBzdGF0aWMgaW50IGhu
-czNfZ2V0X3NzZXRfY291bnQoc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiwgaW50DQo+IHN0cmlu
-Z3NldCkNCj4gQEAgLTYwNCw2ICs2MTAsMTEgQEAgc3RhdGljIGludCBobnMzX3NldF9wYXVzZXBh
-cmFtKHN0cnVjdCBuZXRfZGV2aWNlDQo+ICpuZXRkZXYsDQo+ICB7DQo+ICAJc3RydWN0IGhuYWUz
-X2hhbmRsZSAqaCA9IGhuczNfZ2V0X2hhbmRsZShuZXRkZXYpOw0KPiAgDQo+ICsJaWYgKG5ldGlm
-X21zZ19pZmRvd24oaCkpDQo+ICsJCW5ldGRldl9pbmZvKG5ldGRldiwNCj4gKwkJCSAgICAic2V0
-IHBhdXNlcGFyYW06IGF1dG9uZWc9JWQsIHJ4OiVkLA0KPiB0eDolZFxuIiwNCj4gKwkJCSAgICBw
-YXJhbS0+YXV0b25lZywgcGFyYW0tPnJ4X3BhdXNlLCBwYXJhbS0NCj4gPnR4X3BhdXNlKTsNCj4g
-Kw0KPiAgCWlmIChoLT5hZV9hbGdvLT5vcHMtPnNldF9wYXVzZXBhcmFtKQ0KPiAgCQlyZXR1cm4g
-aC0+YWVfYWxnby0+b3BzLT5zZXRfcGF1c2VwYXJhbShoLCBwYXJhbS0NCj4gPmF1dG9uZWcsDQo+
-ICAJCQkJCQkgICAgICAgcGFyYW0tPnJ4X3BhdXNlLA0KPiBAQCAtNzQzLDYgKzc1NCwxMyBAQCBz
-dGF0aWMgaW50IGhuczNfc2V0X2xpbmtfa3NldHRpbmdzKHN0cnVjdA0KPiBuZXRfZGV2aWNlICpu
-ZXRkZXYsDQo+ICAJaWYgKGNtZC0+YmFzZS5zcGVlZCA9PSBTUEVFRF8xMDAwICYmIGNtZC0+YmFz
-ZS5kdXBsZXggPT0NCj4gRFVQTEVYX0hBTEYpDQo+ICAJCXJldHVybiAtRUlOVkFMOw0KPiAgDQo+
-ICsJaWYgKG5ldGlmX21zZ19pZmRvd24oaGFuZGxlKSkNCj4gKwkJbmV0ZGV2X2luZm8obmV0ZGV2
-LA0KPiArCQkJICAgICJzZXQgbGluayglcyk6IGF1dG9uZWc9JWQsIHNwZWVkPSVkLA0KPiBkdXBs
-ZXg9JWRcbiIsDQo+ICsJCQkgICAgbmV0ZGV2LT5waHlkZXYgPyAicGh5IiA6ICJtYWMiLA0KPiAr
-CQkJICAgIGNtZC0+YmFzZS5hdXRvbmVnLCBjbWQtPmJhc2Uuc3BlZWQsDQo+ICsJCQkgICAgY21k
-LT5iYXNlLmR1cGxleCk7DQo+ICsNCj4gIAkvKiBPbmx5IHN1cHBvcnQga3NldHRpbmdzX3NldCBm
-b3IgbmV0ZGV2IHdpdGggcGh5IGF0dGFjaGVkIGZvcg0KPiBub3cgKi8NCj4gIAlpZiAobmV0ZGV2
-LT5waHlkZXYpDQo+ICAJCXJldHVybiBwaHlfZXRodG9vbF9rc2V0dGluZ3Nfc2V0KG5ldGRldi0+
-cGh5ZGV2LCBjbWQpOw0KPiBAQCAtOTg0LDYgKzEwMDIsMTAgQEAgc3RhdGljIGludCBobnMzX253
-YXlfcmVzZXQoc3RydWN0IG5ldF9kZXZpY2UNCj4gKm5ldGRldikNCj4gIAkJcmV0dXJuIC1FSU5W
-QUw7DQo+ICAJfQ0KPiAgDQo+ICsJaWYgKG5ldGlmX21zZ19pZmRvd24oaGFuZGxlKSkNCj4gKwkJ
-bmV0ZGV2X2luZm8obmV0ZGV2LCAibndheSByZXNldCAodXNpbmcgJXMpXG4iLA0KPiArCQkJICAg
-IHBoeSA/ICJwaHkiIDogIm1hYyIpOw0KPiArDQo+ICAJaWYgKHBoeSkNCj4gIAkJcmV0dXJuIGdl
-bnBoeV9yZXN0YXJ0X2FuZWcocGh5KTsNCj4gIA0KPiBAQCAtMTMwOCw2ICsxMzMwLDEwIEBAIHN0
-YXRpYyBpbnQgaG5zM19zZXRfZmVjcGFyYW0oc3RydWN0IG5ldF9kZXZpY2UNCj4gKm5ldGRldiwN
-Cj4gIAlpZiAoIW9wcy0+c2V0X2ZlYykNCj4gIAkJcmV0dXJuIC1FT1BOT1RTVVBQOw0KPiAgCWZl
-Y19tb2RlID0gZXRoX3RvX2xvY19mZWMoZmVjLT5mZWMpOw0KPiArDQo+ICsJaWYgKG5ldGlmX21z
-Z19pZmRvd24oaGFuZGxlKSkNCj4gKwkJbmV0ZGV2X2luZm8obmV0ZGV2LCAic2V0IGZlY3BhcmFt
-OiBtb2RlPSVkXG4iLA0KPiBmZWNfbW9kZSk7DQo+ICsNCj4gIAlyZXR1cm4gb3BzLT5zZXRfZmVj
-KGhhbmRsZSwgZmVjX21vZGUpOw0KPiAgfQ0KPiAgDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9oaXNpbGljb24vaG5zMy9obnMzcGYvaGNsZ2VfZGNiLmMNCj4gYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5zMy9obnMzcGYvaGNsZ2VfZGNiLmMNCj4gaW5kZXgg
-YmFjNGNlMS4uMTMzZTdjNiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlz
-aWxpY29uL2huczMvaG5zM3BmL2hjbGdlX2RjYi5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVy
-bmV0L2hpc2lsaWNvbi9obnMzL2huczNwZi9oY2xnZV9kY2IuYw0KPiBAQCAtMjAxLDYgKzIwMSw3
-IEBAIHN0YXRpYyBpbnQgaGNsZ2VfY2xpZW50X3NldHVwX3RjKHN0cnVjdCBoY2xnZV9kZXYNCj4g
-KmhkZXYpDQo+ICBzdGF0aWMgaW50IGhjbGdlX2llZWVfc2V0ZXRzKHN0cnVjdCBobmFlM19oYW5k
-bGUgKmgsIHN0cnVjdCBpZWVlX2V0cw0KPiAqZXRzKQ0KPiAgew0KPiAgCXN0cnVjdCBoY2xnZV92
-cG9ydCAqdnBvcnQgPSBoY2xnZV9nZXRfdnBvcnQoaCk7DQo+ICsJc3RydWN0IG5ldF9kZXZpY2Ug
-Km5ldGRldiA9IGgtPmtpbmZvLm5ldGRldjsNCj4gIAlzdHJ1Y3QgaGNsZ2VfZGV2ICpoZGV2ID0g
-dnBvcnQtPmJhY2s7DQo+ICAJYm9vbCBtYXBfY2hhbmdlZCA9IGZhbHNlOw0KPiAgCXU4IG51bV90
-YyA9IDA7DQo+IEBAIC0yMTUsNiArMjE2LDkgQEAgc3RhdGljIGludCBoY2xnZV9pZWVlX3NldGV0
-cyhzdHJ1Y3QgaG5hZTNfaGFuZGxlDQo+ICpoLCBzdHJ1Y3QgaWVlZV9ldHMgKmV0cykNCj4gIAkJ
-cmV0dXJuIHJldDsNCj4gIA0KPiAgCWlmIChtYXBfY2hhbmdlZCkgew0KPiArCQlpZiAobmV0aWZf
-bXNnX2lmZG93bihoKSkNCj4gKwkJCW5ldGRldl9pbmZvKG5ldGRldiwgInNldCBldHNcbiIpOw0K
-PiArDQo+ICAJCXJldCA9IGhjbGdlX25vdGlmeV9jbGllbnQoaGRldiwgSE5BRTNfRE9XTl9DTElF
-TlQpOw0KPiAgCQlpZiAocmV0KQ0KPiAgCQkJcmV0dXJuIHJldDsNCj4gQEAgLTMwMCw2ICszMDQs
-NyBAQCBzdGF0aWMgaW50IGhjbGdlX2llZWVfZ2V0cGZjKHN0cnVjdCBobmFlM19oYW5kbGUNCj4g
-KmgsIHN0cnVjdCBpZWVlX3BmYyAqcGZjKQ0KPiAgc3RhdGljIGludCBoY2xnZV9pZWVlX3NldHBm
-YyhzdHJ1Y3QgaG5hZTNfaGFuZGxlICpoLCBzdHJ1Y3QgaWVlZV9wZmMNCj4gKnBmYykNCj4gIHsN
-Cj4gIAlzdHJ1Y3QgaGNsZ2VfdnBvcnQgKnZwb3J0ID0gaGNsZ2VfZ2V0X3Zwb3J0KGgpOw0KPiAr
-CXN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYgPSBoLT5raW5mby5uZXRkZXY7DQo+ICAJc3RydWN0
-IGhjbGdlX2RldiAqaGRldiA9IHZwb3J0LT5iYWNrOw0KPiAgCXU4IGksIGosIHBmY19tYXAsICpw
-cmlvX3RjOw0KPiAgDQo+IEBAIC0zMjUsNiArMzMwLDExIEBAIHN0YXRpYyBpbnQgaGNsZ2VfaWVl
-ZV9zZXRwZmMoc3RydWN0IGhuYWUzX2hhbmRsZQ0KPiAqaCwgc3RydWN0IGllZWVfcGZjICpwZmMp
-DQo+ICAJaGRldi0+dG1faW5mby5od19wZmNfbWFwID0gcGZjX21hcDsNCj4gIAloZGV2LT50bV9p
-bmZvLnBmY19lbiA9IHBmYy0+cGZjX2VuOw0KPiAgDQo+ICsJaWYgKG5ldGlmX21zZ19pZmRvd24o
-aCkpDQo+ICsJCW5ldGRldl9pbmZvKG5ldGRldiwNCj4gKwkJCSAgICAic2V0IHBmYzogcGZjX2Vu
-PSVkLCBwZmNfbWFwPSVkLA0KPiBudW1fdGM9JWRcbiIsDQo+ICsJCQkgICAgcGZjLT5wZmNfZW4s
-IHBmY19tYXAsIGhkZXYtDQo+ID50bV9pbmZvLm51bV90Yyk7DQo+ICsNCj4gIAloY2xnZV90bV9w
-ZmNfaW5mb191cGRhdGUoaGRldik7DQo+ICANCj4gIAlyZXR1cm4gaGNsZ2VfcGF1c2Vfc2V0dXBf
-aHcoaGRldiwgZmFsc2UpOw0KPiBAQCAtMzQ1LDggKzM1NSwxMiBAQCBzdGF0aWMgdTggaGNsZ2Vf
-Z2V0ZGNieChzdHJ1Y3QgaG5hZTNfaGFuZGxlICpoKQ0KPiAgc3RhdGljIHU4IGhjbGdlX3NldGRj
-Yngoc3RydWN0IGhuYWUzX2hhbmRsZSAqaCwgdTggbW9kZSkNCj4gIHsNCj4gIAlzdHJ1Y3QgaGNs
-Z2VfdnBvcnQgKnZwb3J0ID0gaGNsZ2VfZ2V0X3Zwb3J0KGgpOw0KPiArCXN0cnVjdCBuZXRfZGV2
-aWNlICpuZXRkZXYgPSBoLT5raW5mby5uZXRkZXY7DQo+ICAJc3RydWN0IGhjbGdlX2RldiAqaGRl
-diA9IHZwb3J0LT5iYWNrOw0KPiAgDQo+ICsJaWYgKG5ldGlmX21zZ19kcnYoaCkpDQo+ICsJCW5l
-dGRldl9pbmZvKG5ldGRldiwgInNldCBkY2J4OiBtb2RlPSVkXG4iLCBtb2RlKTsNCj4gKw0KPiAg
-CS8qIE5vIHN1cHBvcnQgZm9yIExMRF9NQU5BR0VEIG1vZGVzIG9yIENFRSAqLw0KPiAgCWlmICgo
-bW9kZSAmIERDQl9DQVBfRENCWF9MTERfTUFOQUdFRCkgfHwNCj4gIAkgICAgKG1vZGUgJiBEQ0Jf
-Q0FQX0RDQlhfVkVSX0NFRSkgfHwNCg==
+On Wed, Jul 24, 2019 at 04:05:43PM -0300, Marcelo Ricardo Leitner wrote:
+> On Wed, Jul 24, 2019 at 02:44:56PM -0400, Neil Horman wrote:
+> > On Wed, Jul 24, 2019 at 09:49:07AM -0300, Marcelo Ricardo Leitner wrote:
+> > > On Wed, Jul 24, 2019 at 09:36:50AM -0300, Marcelo Ricardo Leitner wrote:
+> > > > On Wed, Jul 24, 2019 at 07:22:35AM -0400, Neil Horman wrote:
+> > > > > On Wed, Jul 24, 2019 at 03:21:12PM +0800, Xin Long wrote:
+> > > > > > On Tue, Jul 23, 2019 at 11:25 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > > > >
+> > > > > > > On Tue, Jul 23, 2019 at 01:37:57AM +0800, Xin Long wrote:
+> > > > > > > > Now __sctp_connect() is called by __sctp_setsockopt_connectx() and
+> > > > > > > > sctp_inet_connect(), the latter has done addr_size check with size
+> > > > > > > > of sa_family_t.
+> > > > > > > >
+> > > > > > > > In the next patch to clean up __sctp_connect(), we will remove
+> > > > > > > > addr_size check with size of sa_family_t from __sctp_connect()
+> > > > > > > > for the 1st address.
+> > > > > > > >
+> > > > > > > > So before doing that, __sctp_setsockopt_connectx() should do
+> > > > > > > > this check first, as sctp_inet_connect() does.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > > > > > > ---
+> > > > > > > >  net/sctp/socket.c | 2 +-
+> > > > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > > > >
+> > > > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> > > > > > > > index aa80cda..5f92e4a 100644
+> > > > > > > > --- a/net/sctp/socket.c
+> > > > > > > > +++ b/net/sctp/socket.c
+> > > > > > > > @@ -1311,7 +1311,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
+> > > > > > > >       pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
+> > > > > > > >                __func__, sk, addrs, addrs_size);
+> > > > > > > >
+> > > > > > > > -     if (unlikely(addrs_size <= 0))
+> > > > > > > > +     if (unlikely(addrs_size < sizeof(sa_family_t)))
+> > > > > > > I don't think this is what you want to check for here.  sa_family_t is
+> > > > > > > an unsigned short, and addrs_size is the number of bytes in the addrs
+> > > > > > > array.  The addrs array should be at least the size of one struct
+> > > > > > > sockaddr (16 bytes iirc), and, if larger, should be a multiple of
+> > > > > > > sizeof(struct sockaddr)
+> > > > > > sizeof(struct sockaddr) is not the right value to check either.
+> > > > > > 
+> > > > > > The proper check will be done later in __sctp_connect():
+> > > > > > 
+> > > > > >         af = sctp_get_af_specific(daddr->sa.sa_family);
+> > > > > >         if (!af || af->sockaddr_len > addrs_size)
+> > > > > >                 return -EINVAL;
+> > > > > > 
+> > > > > > So the check 'addrs_size < sizeof(sa_family_t)' in this patch is
+> > > > > > just to make sure daddr->sa.sa_family is accessible. the same
+> > > > > > check is also done in sctp_inet_connect().
+> > > > > > 
+> > > > > That doesn't make much sense, if the proper check is done in __sctp_connect with
+> > > > > the size of the families sockaddr_len, then we don't need this check at all, we
+> > > > > can just let memdup_user take the fault on copy_to_user and return -EFAULT.  If
+> > > > > we get that from memdup_user, we know its not accessible, and can bail out.
+> > > > > 
+> > > > > About the only thing we need to check for here is that addr_len isn't some
+> > > > > absurdly high value (i.e. a negative value), so that we avoid trying to kmalloc
+> > > > > upwards of 2G in memdup_user.  Your change does that just fine, but its no
+> > > > > better or worse than checking for <=0
+> > > > 
+> > > > One can argue that such check against absurdly high values is random
+> > > > and not effective, as 2G can be somewhat reasonable on 8GB systems but
+> > > > certainly isn't on 512MB ones. On that, kmemdup_user() will also fail
+> > > > gracefully as it uses GFP_USER and __GFP_NOWARN.
+> > > > 
+> > > > The original check is more for protecting for sane usage of the
+> > > > variable, which is an int, and a negative value is questionable. We
+> > > > could cast, yes, but.. was that really the intent of the application?
+> > > > Probably not.
+> > > 
+> > > Though that said, I'm okay with the new check here: a quick sanity
+> > > check that can avoid expensive calls to kmalloc(), while more refined
+> > > check is done later on.
+> > > 
+> > I agree a sanity check makes sense, just to avoid allocating a huge value
+> > (even 2G is absurd on many systems), however, I'm not super comfortable with
+> > checking for the value being less than 16 (sizeof(sa_family_t)).  The zero check
+> 
+> 16 bits you mean then, per
+> include/uapi/linux/socket.h
+> typedef unsigned short __kernel_sa_family_t;
+> include/linux/socket.h
+> typedef __kernel_sa_family_t    sa_family_t;
+> 
+> > is fairly obvious given the signed nature of the lengh field, this check makes
+> > me wonder what exactly we are checking for.
+> 
+> A minimum viable buffer without doing more extensive tests. Beyond
+> sa_family, we need to parse sa_family and then that's left for later.
+> Perhaps a comment helps, something like
+> 	/* Check if we have at least the family type in there */
+> ?
+
+Hm, then this could be
+-     if (unlikely(addrs_size <= 0))
++     if (unlikely(addrs_size < sizeof(struct sockaddr_in)))
+(ipv4)
+As it can't be smaller than that, always.
+
+> 
+>   Marcelo
+> 
+> > 
+> > Neil
+> > 
+> > > > 
+> > > > > 
+> > > > > Neil
+> > > > > 
+> > > > > > >
+> > > > > > > Neil
+> > > > > > >
+> > > > > > > >               return -EINVAL;
+> > > > > > > >
+> > > > > > > >       kaddrs = memdup_user(addrs, addrs_size);
+> > > > > > > > --
+> > > > > > > > 2.1.0
+> > > > > > > >
+> > > > > > > >
+> > > > > > 
+> > > 
+> 
