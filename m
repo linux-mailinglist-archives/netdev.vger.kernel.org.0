@@ -2,37 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A55F4724C7
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36FC1724CA
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:39:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbfGXCjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:39:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45516 "EHLO mail.kernel.org"
+        id S1726282AbfGXCjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:39:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725821AbfGXCjD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:39:03 -0400
+        id S1725681AbfGXCjd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:39:33 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3729521670;
-        Wed, 24 Jul 2019 02:39:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3C0DC21670;
+        Wed, 24 Jul 2019 02:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563935942;
-        bh=RA1TnD+FfvHQAbM8YaV15WgVdPoD5QSCIQz4unRK+vw=;
+        s=default; t=1563935972;
+        bh=dp2HGJFxujWNJ+C8jmTiY+zoNZJfhaU9DcphheQR3tQ=;
         h=Date:From:To:Cc:Subject:From;
-        b=ntFNMrHfm+vQwgpboNJvdUXOgaeD9OHzJqZg1JyKS9r0Xi9nWOQWb+76ZVBEDfLJF
-         ysZA9gCp1SAmBGpn+Nj5+Lk9W1LHHsx7ZEwhx+8M7Jo4eMZX6jK4yEJFmJmRsXzuaC
-         rvILkgXAT52FBggSA1lJdZjlNyvU4cVUTTtKCxT8=
-Date:   Tue, 23 Jul 2019 19:39:00 -0700
+        b=Tq/SfKa1jUk8e1lch4mQcTuSI129Y3kal1wSn0GlSahKJrmzp5Zryc6s/A2yY9mNi
+         +T4pCfe21vtKn/Whkq2cFtc3kMKwD/s/DHEACHeqIeWlL08sbz0PrT4WzlST0cqjjb
+         HgLOni/X0CRARxjGH0L/SycgWy3Ec1Jf8qutisGs=
+Date:   Tue, 23 Jul 2019 19:39:30 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 3 open syzbot bugs in "net/rose" subsystem
-Message-ID: <20190724023900.GZ643@sol.localdomain>
-Mail-Followup-To: linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
+Subject: Reminder: 3 open syzbot bugs in "net/llc" subsystem
+Message-ID: <20190724023930.GA643@sol.localdomain>
+Mail-Followup-To: netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
@@ -48,78 +45,78 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 3 of them as possibly being bugs in the "net/rose" subsystem.  I've
-listed these reports below, sorted by an algorithm that tries to list first the
-reports most likely to be still valid, important, and actionable.
+marked 3 of them as possibly being bugs in the "net/llc" subsystem.  I've listed
+these reports below, sorted by an algorithm that tries to list first the reports
+most likely to be still valid, important, and actionable.
 
-Of these 3 bugs, 1 was seen in mainline in the last week.
+Of these 3 bugs, 3 were seen in mainline in the last week.
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/rose" subsystem, please let me
+If you believe I misattributed a bug to the "net/llc" subsystem, please let me
 know, and if possible forward the report to the correct people or mailing list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              general protection fault in rose_send_frame
-Last occurred:      2 days ago
-Reported:           194 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=f46c94afb217ab49c75350adbd467d86ae2b59a6
-Original thread:    https://lkml.kernel.org/lkml/00000000000089904d057f1e0ae0@google.com/T/#u
+Title:              memory leak in llc_conn_ac_send_sabme_cmd_p_set_x
+Last occurred:      0 days ago
+Reported:           63 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=1c2132cc5a2f0d05091adc4f2ed088020522f73a
+Original thread:    https://lkml.kernel.org/lkml/0000000000005974af0589660739@google.com/T/#u
 
 This bug has a C reproducer.
 
-No one replied to the original thread for this bug.
+No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+7078ae989d857fe17988@syzkaller.appspotmail.com
+    Reported-by: syzbot+6b825a6494a04cc0e3f7@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/00000000000089904d057f1e0ae0@google.com
+https://lkml.kernel.org/r/0000000000005974af0589660739@google.com
 
 --------------------------------------------------------------------------------
-Title:              INFO: rcu detected stall in rose_loopback_timer (2)
-Last occurred:      46 days ago
-Reported:           44 days ago
-Branches:           net
-Dashboard link:     https://syzkaller.appspot.com/bug?id=42c06438fe5956ab9978486a1898ca2f23b1fc1f
-Original thread:    https://lkml.kernel.org/lkml/000000000000cf98fa058adf3615@google.com/T/#u
+Title:              memory leak in llc_ui_sendmsg
+Last occurred:      1 day ago
+Reported:           63 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=4e8b3190d51a3b721b554f103da5399613748ea0
+Original thread:    https://lkml.kernel.org/lkml/0000000000009382e7058965fc65@google.com/T/#u
 
-Unfortunately, this bug does not have a reproducer.
+This bug has a C reproducer.
 
 No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+d37efb0ca1b82682326e@syzkaller.appspotmail.com
+    Reported-by: syzbot+31c16aa4202dace3812e@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000cf98fa058adf3615@google.com
+https://lkml.kernel.org/r/0000000000009382e7058965fc65@google.com
 
 --------------------------------------------------------------------------------
-Title:              INFO: rcu detected stall in rose_connect
-Last occurred:      52 days ago
-Reported:           49 days ago
-Branches:           net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=0b258dc8ece5bb93dfb5a137ae25a6db300d5892
-Original thread:    https://lkml.kernel.org/lkml/00000000000017b026058a785790@google.com/T/#u
+Title:              memory leak in llc_ui_create (2)
+Last occurred:      6 days ago
+Reported:           32 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=ecc7f04cd94b5c062c000865d43bfb682d718b8e
+Original thread:    https://lkml.kernel.org/lkml/000000000000058a0f058bd50068@google.com/T/#u
 
-Unfortunately, this bug does not have a reproducer.
+This bug has a C reproducer.
 
 No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+af81c7a21a31b18bec0e@syzkaller.appspotmail.com
+    Reported-by: syzbot+6bf095f9becf5efef645@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/00000000000017b026058a785790@google.com
+https://lkml.kernel.org/r/000000000000058a0f058bd50068@google.com
 
