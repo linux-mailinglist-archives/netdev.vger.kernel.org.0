@@ -2,172 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C46A72CF5
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3530B72D2F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:14:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727401AbfGXLKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:10:55 -0400
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:17320 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726622AbfGXLKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:10:55 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d383cc40000>; Wed, 24 Jul 2019 04:11:00 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 24 Jul 2019 04:10:52 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 24 Jul 2019 04:10:52 -0700
-Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 24 Jul
- 2019 11:10:49 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     David Miller <davem@davemloft.net>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "lists@bofh.nu" <lists@bofh.nu>,
-        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "maxime.ripard@bootlin.com" <maxime.ripard@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "wens@csie.org" <wens@csie.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <6c769226-bdd9-6fe0-b96b-5a0d800fed24@arm.com>
- <8756d681-e167-fe4a-c6f0-47ae2dcbb100@nvidia.com>
- <20190723.115112.1824255524103179323.davem@davemloft.net>
- <20190724085427.GA10736@apalos>
- <BYAPR12MB3269AA9955844E317B62A239D3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
- <20190724095310.GA12991@apalos>
- <BYAPR12MB3269C5766F553438ECFF2C9BD3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <33de62bf-2f8a-bf00-9260-418b12bed24c@nvidia.com>
-Date:   Wed, 24 Jul 2019 12:10:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <BYAPR12MB3269C5766F553438ECFF2C9BD3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
+        id S1727402AbfGXLOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:14:45 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:57014 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726514AbfGXLOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:14:44 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 021706058E; Wed, 24 Jul 2019 11:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563966883;
+        bh=WNP4i+Xm1K+QKneKcjzQw8TLaJsuxelXCn8BDxP0KmE=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Cs8P7ecjL4qJAglKJWQFu89m2H/UTaMYu6NK0Y/pMEWyAohi5PmtVKTmtT/VkkQaZ
+         cPIgvBvqwG/f7duTlIPKTdWo5MhKougu1o3yCMRbcoU7d0y1FFNIhGghOZ1IaU1R//
+         9CdGSZ8c0FPy0Q1qtAWghzEGJuNLuMktaIeMUDbs=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 892B46030E;
+        Wed, 24 Jul 2019 11:14:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563966880;
+        bh=WNP4i+Xm1K+QKneKcjzQw8TLaJsuxelXCn8BDxP0KmE=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=nwxpTwkKRsUFRsdwd8oWca0fKhpYtNdgckvbtR5XsbOdiF791fp6/T37Y8wOjdDAQ
+         Iq+bGMIQnwFIwZHVDV8dkehN/WsE3ylck1JHlxexpC/ygH0WHZdjTaOGT4ibwjkV6h
+         gzgZRM7YQ1bo+fkgUchmZdLFbE5/TJdkF4HiXm5s=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 892B46030E
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1563966660; bh=Rd3s87PWTxvnYZDm32XKlVqMxyQmHTjUvYTIn9E2GdE=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=A9pBSxGWuy2GC9k8bwNeejbqKml4rdL0et8wl6KsFX/w7biU18Wagu2lUNr4W/Vju
-         FmBQhsZdiMoAssyGVzohphS5zI2M0wTA3iZjbZZOTZOIUVJ3rLhq69q3xCoSQdyCxh
-         wWJAmRiiILDZAAVgsuOHPDv2umR5hrSnm2nc9r8iziM0MLBP1HRxfCnik3ahXp76Hu
-         l8kNYrWIvT8f4Sbp32ZHA1xdCNqDPWuP5BAMwDezQmCJ6Koiy6NFWmxZERuTgjO2BA
-         EilEwspYhjBaZUYk+tYHOPgr+rgk3/ujaEFPfsTSzmAIwwwunqlDqyNFuf1+u5QIbS
-         SlF5AJkJB4Vlw==
+Subject: Re: [PATCH] wlcore/wl18xx: Add invert-irq OF property for physically
+ inverted IRQ
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190607172958.20745-1-erosca@de.adit-jv.com>
+References: <20190607172958.20745-1-erosca@de.adit-jv.com>
+To:     Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Spyridon Papageorgiou <spapageorgiou@de.adit-jv.com>,
+        Joshua Frkuska <joshua_frkuska@mentor.com>,
+        "George G . Davis" <george_davis@mentor.com>,
+        Andrey Gusakov <andrey.gusakov@cogentembedded.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190724111443.021706058E@smtp.codeaurora.org>
+Date:   Wed, 24 Jul 2019 11:14:41 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
 
-On 24/07/2019 11:04, Jose Abreu wrote:
-
-...
-
-> Jon, I was able to replicate (at some level) your setup:
+> The wl1837mod datasheet [1] says about the WL_IRQ pin:
 > 
-> # dmesg | grep -i arm-smmu
-> [    1.337322] arm-smmu 70040000.iommu: probing hardware 
-> configuration...
-> [    1.337330] arm-smmu 70040000.iommu: SMMUv2 with:
-> [    1.337338] arm-smmu 70040000.iommu:         stage 1 translation
-> [    1.337346] arm-smmu 70040000.iommu:         stage 2 translation
-> [    1.337354] arm-smmu 70040000.iommu:         nested translation
-> [    1.337363] arm-smmu 70040000.iommu:         stream matching with 128 
-> register groups
-> [    1.337374] arm-smmu 70040000.iommu:         1 context banks (0 
-> stage-2 only)
-> [    1.337383] arm-smmu 70040000.iommu:         Supported page sizes: 
-> 0x61311000
-> [    1.337393] arm-smmu 70040000.iommu:         Stage-1: 48-bit VA -> 
-> 48-bit IPA
-> [    1.337402] arm-smmu 70040000.iommu:         Stage-2: 48-bit IPA -> 
-> 48-bit PA
+>  ---8<---
+> SDIO available, interrupt out. Active high. [..]
+> Set to rising edge (active high) on powerup.
+>  ---8<---
 > 
-> # dmesg | grep -i stmmac
-> [    1.344106] stmmaceth 70000000.ethernet: Adding to iommu group 0
-> [    1.344233] stmmaceth 70000000.ethernet: no reset control found
-> [    1.348276] stmmaceth 70000000.ethernet: User ID: 0x10, Synopsys ID: 
-> 0x51
-> [    1.348285] stmmaceth 70000000.ethernet:     DWMAC4/5
-> [    1.348293] stmmaceth 70000000.ethernet: DMA HW capability register 
-> supported
-> [    1.348302] stmmaceth 70000000.ethernet: RX Checksum Offload Engine 
-> supported
-> [    1.348311] stmmaceth 70000000.ethernet: TX Checksum insertion 
-> supported
-> [    1.348320] stmmaceth 70000000.ethernet: TSO supported
-> [    1.348328] stmmaceth 70000000.ethernet: Enable RX Mitigation via HW 
-> Watchdog Timer
-> [    1.348337] stmmaceth 70000000.ethernet: TSO feature enabled
-> [    1.348409] libphy: stmmac: probed
-> [ 4159.140990] stmmaceth 70000000.ethernet eth0: PHY [stmmac-0:01] 
-> driver [Generic PHY]
-> [ 4159.141005] stmmaceth 70000000.ethernet eth0: phy: setting supported 
-> 00,00000000,000062ff advertising 00,00000000,000062ff
-> [ 4159.142359] stmmaceth 70000000.ethernet eth0: No Safety Features 
-> support found
-> [ 4159.142369] stmmaceth 70000000.ethernet eth0: IEEE 1588-2008 Advanced 
-> Timestamp supported
-> [ 4159.142429] stmmaceth 70000000.ethernet eth0: registered PTP clock
-> [ 4159.142439] stmmaceth 70000000.ethernet eth0: configuring for 
-> phy/gmii link mode
-> [ 4159.142452] stmmaceth 70000000.ethernet eth0: phylink_mac_config: 
-> mode=phy/gmii/Unknown/Unknown adv=00,00000000,000062ff pause=10 link=0 
-> an=1
-> [ 4159.142466] stmmaceth 70000000.ethernet eth0: phy link up 
-> gmii/1Gbps/Full
-> [ 4159.142475] stmmaceth 70000000.ethernet eth0: phylink_mac_config: 
-> mode=phy/gmii/1Gbps/Full adv=00,00000000,00000000 pause=0f link=1 an=0
-> [ 4159.142481] stmmaceth 70000000.ethernet eth0: Link is Up - 1Gbps/Full 
-> - flow control rx/tx
+> That's the reason of seeing the interrupt configured as:
+>  - IRQ_TYPE_EDGE_RISING on HiKey 960/970
+>  - IRQ_TYPE_LEVEL_HIGH on a number of i.MX6 platforms
 > 
-> The only missing point is the NFS boot that I can't replicate with this 
-> setup. But I did some sanity checks:
+> We assert that all those platforms have the WL_IRQ pin connected
+> to the SoC _directly_ (confirmed on HiKey 970 [2]).
 > 
-> Remote Enpoint:
-> # dd if=/dev/urandom of=output.dat bs=128M count=1
-> # nc -c 192.168.0.2 1234 < output.dat
-> # md5sum output.dat 
-> fde9e0818281836e4fc0edfede2b8762  output.dat
+> That's not the case for R-Car Kingfisher extension target, which carries
+> a WL1837MODGIMOCT IC. There is an SN74LV1T04DBVR inverter present
+> between the WLAN_IRQ pin of the WL18* chip and the SoC, effectively
+> reversing the requirement quoted from [1]. IOW, in Kingfisher DTS
+> configuration we would need to use IRQ_TYPE_EDGE_FALLING or
+> IRQ_TYPE_LEVEL_LOW.
 > 
-> DUT:
-> # nc -l -c -p 1234 > output.dat
-> # md5sum output.dat 
-> fde9e0818281836e4fc0edfede2b8762  output.dat
+> Unfortunately, v4.2-rc1 commit bd763482c82ea2 ("wl18xx: wlan_irq:
+> support platform dependent interrupt types") made a special case out
+> of these interrupt types. After this commit, it is impossible to provide
+> an IRQ configuration via DTS which would describe an inverter present
+> between the WL18* chip and the SoC, generating the need for workarounds
+> like [3].
+> 
+> Create a boolean OF property, called "invert-irq" to specify that
+> the WLAN_IRQ pin of WL18* is connected to the SoC via an inverter.
+> 
+> This solution has been successfully tested on R-Car H3ULCB-KF-M06 using
+> the DTS configuration [4] combined with the "invert-irq" property.
+> 
+> [1] http://www.ti.com/lit/ds/symlink/wl1837mod.pdf
+> [2] https://www.96boards.org/documentation/consumer/hikey/hikey970/hardware-docs/
+> [3] https://github.com/CogentEmbedded/meta-rcar/blob/289fbd4f8354/meta-rcar-gen3-adas/recipes-kernel/linux/linux-renesas/0024-wl18xx-do-not-invert-IRQ-on-WLxxxx-side.patch
+> [4] https://patchwork.kernel.org/patch/10895879/
+>     ("arm64: dts: ulcb-kf: Add support for TI WL1837")
+> 
+> Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
 
-On my setup, if I do not use NFS to mount the rootfs, but then manually
-mount the NFS share after booting, I do not see any problems reading or
-writing to files on the share. So I am not sure if it is some sort of
-race that is occurring when mounting the NFS share on boot. It is 100%
-reproducible when using NFS for the root file-system.
+Based on the discussion I'm dropping this. Please resend once there's a
+conclusion.
 
-I am using the Jetson TX2 devkit [0] to test this.
-
-Cheers
-Jon
-
-[0] https://developer.nvidia.com/embedded/jetson-tx2-developer-kit
+Patch set to Changes Requested.
 
 -- 
-nvpublic
+https://patchwork.kernel.org/patch/10982491/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
