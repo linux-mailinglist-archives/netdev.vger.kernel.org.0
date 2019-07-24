@@ -2,115 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E44B7252A
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 05:14:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDF5872548
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 05:21:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbfGXDN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 23:13:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725848AbfGXDN5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 23:13:57 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 831122253D;
-        Wed, 24 Jul 2019 03:13:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563938035;
-        bh=AXiCpbshNYcz7VQFZBfLifrrHxAILqoy+ggfj5ZCmDk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YYqG5d7XafM9NmvZ4tQSMuyhPB6Om9BauPTfY7VtmNBKE9oXbBMLR94LluniH220H
-         d8TfVk5IaFIPml09gcFbL9EEjjwHx0tHWW6EXhnI9IqFiPKSjcqSo2gGXK5Njn+sxY
-         COIS9ZxjWXe9b6ABW3LDtSeAxjhnfnJ6gIVZsLL0=
-Date:   Tue, 23 Jul 2019 20:13:54 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: Reminder: 3 open syzbot bugs in vhost subsystem
-Message-ID: <20190724031354.GV643@sol.localdomain>
-Mail-Followup-To: Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <20190724023835.GY643@sol.localdomain>
- <fabf96ac-e472-c7fd-07ff-486fe03e6433@redhat.com>
+        id S1726535AbfGXDVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 23:21:02 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:50724 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726024AbfGXDVB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 23:21:01 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 9593E3AC6869A30AF5AD;
+        Wed, 24 Jul 2019 11:20:52 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 24 Jul 2019 11:20:42 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 00/11] net: hns3: some code optimizations & bugfixes & features
+Date:   Wed, 24 Jul 2019 11:18:36 +0800
+Message-ID: <1563938327-9865-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fabf96ac-e472-c7fd-07ff-486fe03e6433@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 11:05:14AM +0800, Jason Wang wrote:
-> > --------------------------------------------------------------------------------
-> > Title:              KASAN: use-after-free Write in tlb_finish_mmu
-> > Last occurred:      5 days ago
-> > Reported:           4 days ago
-> > Branches:           Mainline
-> > Dashboard link:     https://syzkaller.appspot.com/bug?id=d57b94f89e48c85ef7d95acc208209ea4bdc10de
-> > Original thread:    https://lkml.kernel.org/lkml/00000000000045e7a1058e02458a@google.com/T/#u
-> > 
-> > This bug has a syzkaller reproducer only.
-> > 
-> > This bug was bisected to:
-> > 
-> > 	commit 7f466032dc9e5a61217f22ea34b2df932786bbfc
-> > 	Author: Jason Wang <jasowang@redhat.com>
-> > 	Date:   Fri May 24 08:12:18 2019 +0000
-> > 
-> > 	  vhost: access vq metadata through kernel virtual address
-> > 
-> > No one has replied to the original thread for this bug yet.
-> > 
-> > If you fix this bug, please add the following tag to the commit:
-> >      Reported-by: syzbot+8267e9af795434ffadad@syzkaller.appspotmail.com
-> > 
-> > If you send any email or patch for this bug, please reply to the original
-> > thread.  For the git send-email command to use, or tips on how to reply if the
-> > thread isn't in your mailbox, see the "Reply instructions" at
-> > https://lkml.kernel.org/r/00000000000045e7a1058e02458a@google.com
-> > 
-> > --------------------------------------------------------------------------------
-> > Title:              KASAN: use-after-free Read in finish_task_switch (2)
-> > Last occurred:      5 days ago
-> > Reported:           4 days ago
-> > Branches:           Mainline
-> > Dashboard link:     https://syzkaller.appspot.com/bug?id=9a98fcad6c8bd31f5c3afbdc6c75de9f082c0ffa
-> > Original thread:    https://lkml.kernel.org/lkml/000000000000490679058e0245ee@google.com/T/#u
-> > 
-> > This bug has a syzkaller reproducer only.
-> > 
-> > This bug was bisected to:
-> > 
-> > 	commit 7f466032dc9e5a61217f22ea34b2df932786bbfc
-> > 	Author: Jason Wang <jasowang@redhat.com>
-> > 	Date:   Fri May 24 08:12:18 2019 +0000
-> > 
-> > 	  vhost: access vq metadata through kernel virtual address
-> > 
-> > No one has replied to the original thread for this bug yet.
-> 
-> 
-> Hi:
-> 
-> We believe above two bugs are duplicated with the report "WARNING in
-> __mmdrop". Can I just dup them with
-> 
-> #syz dup "WARNING in __mmdrop"
-> 
-> (If yes, just wonder how syzbot differ bugs, technically, several different
-> bug can hit the same warning).
-> 
+This patch-set includes code optimizations, bugfixes and features for
+the HNS3 ethernet controller driver.
 
-Yes, please mark them as duplicates; see https://goo.gl/tpsmEJ#status for
-correct syntax.  You need to send the command to the syzbot email address
-specific to each bug.  Easiest way is to reply to the original threads.
+[patch 1/11] checks reset status before setting channel.
 
-- Eric
+[patch 2/11] adds a NULL pointer checking.
+
+[patch 3/11] removes reset level upgrading when current reset fails.
+
+[patch 4/11] fixes a bug related to IRQ vector number initialization.
+
+[patch 5/11] fixes a GFP flags errors when holding spin_lock.
+
+[patch 6/11] modifies firmware version format.
+
+[patch 7/11] adds some print information.
+
+[patch 8/11 - 9/11] adds two code optimizations about interrupt handler
+and work task.
+
+[patch 10/11] adds support for using order 1 pages with a 4K buffer.
+
+[patch 11/11] adds a detection about the reason of IMP errors.
+
+Guangbin Huang (1):
+  net: hns3: add a check for get_reset_level
+
+Huazhong Tan (1):
+  net: hns3: remove upgrade reset level when reset fail
+
+Jian Shen (1):
+  net: hns3: add reset checking before set channels
+
+Weihang Li (1):
+  net: hns3: add support for handling IMP error
+
+Yonglong Liu (2):
+  net: hns3: fix mis-counting IRQ vector numbers issue
+  net: hns3: adds debug messages to identify eth down cause
+
+Yufeng Mo (2):
+  net: hns3: change GFP flag during lock period
+  net: hns3: modify firmware version display format
+
+Yunsheng Lin (3):
+  net: hns3: add interrupt affinity support for misc interrupt
+  net: hns3: make hclge_service use delayed workqueue
+  net: hns3: Add support for using order 1 pages with a 4K buffer
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  10 ++
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  39 ++++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  15 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  41 ++++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  10 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c |  14 ++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c |  37 ++++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |   4 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 165 ++++++++++++++-------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  16 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  11 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  12 +-
+ 12 files changed, 298 insertions(+), 76 deletions(-)
+
+-- 
+2.7.4
+
