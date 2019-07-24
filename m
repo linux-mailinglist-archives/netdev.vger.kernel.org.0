@@ -2,388 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B20A73F72
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82FF174035
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:40:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729337AbfGXUcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 16:32:54 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62470 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388300AbfGXT2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:28:25 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6OJNa4l027866
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=y0dMsmqlib41qe6KpI3aNjDfU2z6Gp23Uf8MEcOzcXM=;
- b=ielsGNogB8eTnnrJRUiNh/+cGDebNh9OnQ8EnuDC91kSBiqgb5DSEqdmZCcTdW+3DyBr
- H3+Ens4tAJyijCGARzb7ku+uIB8GI4Ppl5aYgoJazrWYvslvUtKPvBuvFvHFbl5xjQDg
- wM7w6C+avZwygVAsF3qIy4H1AZ62fbkCCMA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2txtq5rrkq-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:24 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 24 Jul 2019 12:28:21 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id E8C228615F8; Wed, 24 Jul 2019 12:28:19 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <yhs@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 10/10] selftests/bpf: add CO-RE relocs ints tests
-Date:   Wed, 24 Jul 2019 12:27:42 -0700
-Message-ID: <20190724192742.1419254-11-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190724192742.1419254-1-andriin@fb.com>
-References: <20190724192742.1419254-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1728545AbfGXUj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 16:39:59 -0400
+Received: from mail-eopbgr10057.outbound.protection.outlook.com ([40.107.1.57]:34724
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726939AbfGXUj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 16:39:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T8e4CWbpEKXwwELGdVivfvzFoq81HcfnQf1MTfJFiwUQFP39EUoadvZfoG94Dw8aTx/cNRQnzJC4BmJV4wBqvcy2uAqKGB7kY7RVizepP8+WFhboS3eiqJr1CTtpl4SZpgs6ZmhcD2ATa7wDqMUsxTdzZueniYAUHFf2O4DzcmYnSZ/HfMiFk9P+Wf7XwNFV7cWgu+WgExUTqkvxwzqHS4ywP82Yxl8sEURcKhIXVNvuySc8/AO0rL1bnm87p2JA1wNat5s1xnwel0CPob4ihlUsrJ+lGsEbvz5flrnL006q3JByqthvxr8CvV0zKm/CKpQ8Sn49FQr961qw3U9hTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CziKWvPbce7RiAqIOQp6VMZQT8qNlIt8NufLZCNCrF4=;
+ b=UFOFUd33B5/W/8S1IQ+gVE6cmRrJXFmkJKX50isogxYu0gkzbRe9kL+qF+R2laMgAE0QYBw0nPJYqou99WE8rHca158qiCBoWjr7sQuQa1IOs28lxSWnaoOlwKJoCsoQNLDdRcVtqEo7Ir2qUwgEFME7VvVR+vLMQPyQ/1TVvHuuRqjY1u0zWuFUD5FS1erH3fTSaOlEIYokO6ibWQAVRFYeNMPiRgWrddBVNHvpLN147suIqeLMVPFCi226v9wPhkZj+ZKrdxbzUHNpT/DA9qHNsQhHnlX2L7ORb9b9rWt2pHBXb5dwCVsFtak2cyFXtwfNoveuooHZEApjB+20Og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CziKWvPbce7RiAqIOQp6VMZQT8qNlIt8NufLZCNCrF4=;
+ b=qra+DccyN7i7PRAsE/QuBHmKpGpgR0fE8dc7Mzvu0VDO3FWN/1OCGV4Z6x3KUU2PyFcV3USLMfwK7WW5lMtVETsWJDVWNQhtcPKBEOYYeE3UjtCIkECqFkuizXCE+46nqaiTRu/7Ro5bu/E8fUX8UaPC6/1tUoZk+yW8uMDX/Q4=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2838.eurprd05.prod.outlook.com (10.172.226.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.16; Wed, 24 Jul 2019 20:39:53 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Wed, 24 Jul 2019
+ 20:39:53 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/2] mlx4/en_netdev: update vlan features with
+ tunnel offloads
+Thread-Topic: [PATCH net-next 1/2] mlx4/en_netdev: update vlan features with
+ tunnel offloads
+Thread-Index: AQHVQiip5Uqq5nD8f0m9Isk3aDyinabaO48A
+Date:   Wed, 24 Jul 2019 20:39:53 +0000
+Message-ID: <4cb45c2e4515a122b38d54a0b9d8f03c854401ea.camel@mellanox.com>
+References: <cover.1563976690.git.dcaratti@redhat.com>
+         <c3ccd45ee8742fb1a35fcfd41955907329e8112b.1563976690.git.dcaratti@redhat.com>
+In-Reply-To: <c3ccd45ee8742fb1a35fcfd41955907329e8112b.1563976690.git.dcaratti@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 237ad9e0-339e-4eb9-0458-08d710771503
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2838;
+x-ms-traffictypediagnostic: DB6PR0501MB2838:
+x-microsoft-antispam-prvs: <DB6PR0501MB2838496028EEAFF962B2E87CBEC60@DB6PR0501MB2838.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2887;
+x-forefront-prvs: 0108A997B2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(39860400002)(136003)(376002)(189003)(199004)(6246003)(2616005)(6512007)(53936002)(305945005)(476003)(8676002)(64756008)(2906002)(25786009)(71190400001)(186003)(99286004)(71200400001)(81166006)(3846002)(8936002)(446003)(6506007)(58126008)(6436002)(36756003)(256004)(229853002)(6116002)(2501003)(91956017)(102836004)(7736002)(478600001)(316002)(11346002)(66066001)(68736007)(118296001)(66946007)(81156014)(6486002)(66476007)(66446008)(14454004)(4744005)(110136005)(66556008)(486006)(26005)(5660300002)(76116006)(76176011)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2838;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: ZZdGDsGUrLDuGhCDRCX4ZHcJRF/hSmpFazafL90YDui0/p7QyxfCHIQj4V4RVmXW6XnIIFqGK6voP+1+towS5VMkA7wf5tJUipCFe3ZW+DnHahTffuRw0GCOD9cgkniA4Ggxym/nLkyMX6+ly9J47iUMPAQXtWzuoi506EujNwdnDE2p72R/76Z+5+0FlB4eW3jHzSidh+FfE85pDHU2s0w/xy+zdad7nHnC7df0m/n538bAiLsbLqQgQTELLBTib2NrOWUJJnRWFoEBlD1JRI1yLUsceagCthX7q6IIzcUIHV+yq28F+zikFnrWwDX5bfWa5CFkKfFcd95SzaFYtVfrKo5drUtJv3q1fzN9wDDYUs1/hmEF4ZTQsa5UFQ59gCRsM3/GgwuYNtyPPpMpMZznBlBnZ3xAYqd5Gc3bQu0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B7C2F6F9487B2D45832FEBD3665C3717@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-24_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=67 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907240207
-X-FB-Internal: deliver
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 237ad9e0-339e-4eb9-0458-08d710771503
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 20:39:53.4267
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2838
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add various tests validating handling compatible/incompatible integer
-types.
-
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/core_reloc.c     |  40 +++++++
- .../bpf/progs/btf__core_reloc_ints.c          |   3 +
- .../bpf/progs/btf__core_reloc_ints___bool.c   |   3 +
- .../btf__core_reloc_ints___err_bitfield.c     |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_16.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_32.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_64.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_8.c   |   3 +
- .../btf__core_reloc_ints___reverse_sign.c     |   3 +
- .../selftests/bpf/progs/core_reloc_types.h    | 101 ++++++++++++++++++
- .../bpf/progs/test_core_reloc_ints.c          |  48 +++++++++
- 11 files changed, 213 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 9cb969de487b..da6254d54c08 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -145,6 +145,35 @@
- 	.output_len = sizeof(struct core_reloc_ptr_as_arr),		\
- }
- 
-+#define INTS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
-+	.u8_field = 1,							\
-+	.s8_field = 2,							\
-+	.u16_field = 3,							\
-+	.s16_field = 4,							\
-+	.u32_field = 5,							\
-+	.s32_field = 6,							\
-+	.u64_field = 7,							\
-+	.s64_field = 8,							\
-+}
-+
-+#define INTS_CASE_COMMON(name)						\
-+	.case_name = #name,						\
-+	.bpf_obj_file = "test_core_reloc_ints.o",			\
-+	.btf_src_file = "btf__core_reloc_" #name ".o"
-+
-+#define INTS_CASE(name) {						\
-+	INTS_CASE_COMMON(name),						\
-+	.input = INTS_DATA(core_reloc_##name),				\
-+	.input_len = sizeof(struct core_reloc_##name),			\
-+	.output = INTS_DATA(core_reloc_ints),				\
-+	.output_len = sizeof(struct core_reloc_ints),			\
-+}
-+
-+#define INTS_ERR_CASE(name) {						\
-+	INTS_CASE_COMMON(name),						\
-+	.fails = true,							\
-+}
-+
- struct core_reloc_test_case {
- 	const char *case_name;
- 	const char *bpf_obj_file;
-@@ -220,6 +249,17 @@ static struct core_reloc_test_case test_cases[] = {
- 	/* handling "ptr is an array" semantics */
- 	PTR_AS_ARR_CASE(ptr_as_arr),
- 	PTR_AS_ARR_CASE(ptr_as_arr___diff_sz),
-+
-+	/* int signedness/sizing/bitfield handling */
-+	INTS_CASE(ints),
-+	INTS_CASE(ints___bool),
-+	INTS_CASE(ints___reverse_sign),
-+
-+	INTS_ERR_CASE(ints___err_bitfield),
-+	INTS_ERR_CASE(ints___err_wrong_sz_8),
-+	INTS_ERR_CASE(ints___err_wrong_sz_16),
-+	INTS_ERR_CASE(ints___err_wrong_sz_32),
-+	INTS_ERR_CASE(ints___err_wrong_sz_64),
- };
- 
- struct data {
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
-new file mode 100644
-index 000000000000..7d0f041042c5
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
-new file mode 100644
-index 000000000000..f9359450186e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___bool x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
-new file mode 100644
-index 000000000000..50369e8320a0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_bitfield x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
-new file mode 100644
-index 000000000000..823bac13d641
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_16 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
-new file mode 100644
-index 000000000000..b44f3be18535
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_32 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
-new file mode 100644
-index 000000000000..9a3dd2099c0f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_64 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
-new file mode 100644
-index 000000000000..9f11ef5f6e88
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_8 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
-new file mode 100644
-index 000000000000..aafb1c5819d7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___reverse_sign x) {}
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index c17c9279deae..5f3ebd4f6dc3 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -1,3 +1,6 @@
-+#include <stdint.h>
-+#include <stdbool.h>
-+
- /*
-  * FLAVORS
-  */
-@@ -539,3 +542,101 @@ struct core_reloc_ptr_as_arr___diff_sz {
- 	char __some_more_padding;
- 	int a;
- };
-+
-+/*
-+ * INTS
-+ */
-+struct core_reloc_ints {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+/* signed/unsigned types swap */
-+struct core_reloc_ints___reverse_sign {
-+	int8_t		u8_field;
-+	uint8_t		s8_field;
-+	int16_t		u16_field;
-+	uint16_t	s16_field;
-+	int32_t		u32_field;
-+	uint32_t	s32_field;
-+	int64_t		u64_field;
-+	uint64_t	s64_field;
-+};
-+
-+struct core_reloc_ints___bool {
-+	bool		u8_field; /* bool instead of uint8 */
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_bitfield {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field: 32; /* bitfields are not supported */
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_8 {
-+	uint16_t	u8_field; /* not 8-bit anymore */
-+	int16_t		s8_field; /* not 8-bit anymore */
-+
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_16 {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+
-+	uint32_t	u16_field; /* not 16-bit anymore */
-+	int32_t		s16_field; /* not 16-bit anymore */
-+
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_32 {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+
-+	uint64_t	u32_field; /* not 32-bit anymore */
-+	int64_t		s32_field; /* not 32-bit anymore */
-+
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_64 {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+
-+	uint32_t	u64_field; /* not 64-bit anymore */
-+	int32_t		s64_field; /* not 64-bit anymore */
-+};
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_ints.c b/tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
-new file mode 100644
-index 000000000000..2eecbefdfd2f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/bpf.h>
-+#include <stdint.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+static volatile struct data {
-+	char in[256];
-+	char out[256];
-+} data;
-+
-+struct core_reloc_ints {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+#define CORE_READ(dst, src)					\
-+	bpf_probe_read((void *)dst, sizeof(*dst),		\
-+		       __builtin_preserve_access_index(src))
-+
-+SEC("raw_tracepoint/sys_enter")
-+int test_core_mods(void *ctx)
-+{
-+	struct core_reloc_ints *in = (void *)&data.in;
-+	struct core_reloc_ints *out = (void *)&data.out;
-+
-+	if (CORE_READ(&out->u8_field, &in->u8_field) ||
-+	    CORE_READ(&out->s8_field, &in->s8_field) ||
-+	    CORE_READ(&out->u16_field, &in->u16_field) ||
-+	    CORE_READ(&out->s16_field, &in->s16_field) ||
-+	    CORE_READ(&out->u32_field, &in->u32_field) ||
-+	    CORE_READ(&out->s32_field, &in->s32_field) ||
-+	    CORE_READ(&out->u64_field, &in->u64_field) ||
-+	    CORE_READ(&out->s64_field, &in->s64_field))
-+		return 1;
-+
-+	return 0;
-+}
-+
--- 
-2.17.1
-
+T24gV2VkLCAyMDE5LTA3LTI0IGF0IDE2OjAyICswMjAwLCBEYXZpZGUgQ2FyYXR0aSB3cm90ZToN
+Cj4gQ29ubmVjdFgtMyBQcm8gY2FuIG9mZmxvYWQgdHJhbnNtaXNzaW9uIG9mIFZMQU4gcGFja2V0
+cyB3aXRoIFZYTEFODQo+IGluc2lkZToNCj4gZW5hYmxlIHR1bm5lbCBvZmZsb2FkcyBpbiBkZXYt
+PnZsYW5fZmVhdHVyZXMsIGxpa2UgaXQncyBkb25lIHdpdGgNCj4gb3RoZXINCj4gTklDIGRyaXZl
+cnMgKGUuZy4gYmUybmV0IGFuZCBpeGdiZSkuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBEYXZpZGUg
+Q2FyYXR0aSA8ZGNhcmF0dGlAcmVkaGF0LmNvbT4NCg0KDQpMR1RNDQpSZXZpZXdlZC1ieTogU2Fl
+ZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQo=
