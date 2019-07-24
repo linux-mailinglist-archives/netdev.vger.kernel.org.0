@@ -2,40 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F390724A2
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:29:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 674F3724A7
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:29:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728848AbfGXC3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:29:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42438 "EHLO mail.kernel.org"
+        id S2387555AbfGXC3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:29:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725681AbfGXC3A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:29:00 -0400
+        id S1728381AbfGXC3d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:29:33 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9AA7F20665;
-        Wed, 24 Jul 2019 02:28:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1B6FD20665;
+        Wed, 24 Jul 2019 02:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563935338;
-        bh=YFxpVKPPNiGJYJlgqEl+OCUvAdR75SitDK1C9yX2N4E=;
+        s=default; t=1563935372;
+        bh=xyGI4uCYWEr2lO836/ICxA9AvTBNnIvsvCU3AJm+6ow=;
         h=Date:From:To:Cc:Subject:From;
-        b=ge3ftlk8tlZKJEsyIiRUbQ3V3K/l5lBIFuic+E0pFY18TTerGpElPzA55JTwq2MCM
-         1x24kfJ/aHXJm2Nn+DoEiRG1cHZEep82fGfPkjrQBds+tqkAaowkiAowNEH7hkQuIZ
-         oQg2nc+1gaU81GlP9I5NtUrgzAU1NzS8LqG5QDzU=
-Date:   Tue, 23 Jul 2019 19:28:57 -0700
+        b=siMBMDy9vo2/jHG7hKJgJJAIF63RyFm5VmvVvih+a/uIdcP8nC6sxn+s/R8bRDxPF
+         V0ZcIyiWwdZ6588JvXLI6kYcLdxcg3RNQ+33M/0NiISfDFNlWMon+r4oz18dS7xQ7m
+         W/shP0qUi5OExLMrQIK98gXpw2aA3rkCbl87m8IY=
+Date:   Tue, 23 Jul 2019 19:29:30 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+To:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 5 open syzbot bugs in "net/x25" subsystem
-Message-ID: <20190724022857.GQ643@sol.localdomain>
-Mail-Followup-To: linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+Subject: Reminder: 5 open syzbot bugs in "net/smc" subsystem
+Message-ID: <20190724022930.GR643@sol.localdomain>
+Mail-Followup-To: linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -46,117 +51,132 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 5 of them as possibly being bugs in the "net/x25" subsystem.  I've listed
+marked 5 of them as possibly being bugs in the "net/smc" subsystem.  I've listed
 these reports below, sorted by an algorithm that tries to list first the reports
 most likely to be still valid, important, and actionable.
+
+Of these 5 bugs, 4 were seen in mainline in the last week.
+
+Of these 5 bugs, 1 was bisected to a commit from the following person:
+
+	Ursula Braun <ubraun@linux.ibm.com>
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/x25" subsystem, please let me
+If you believe I misattributed a bug to the "net/smc" subsystem, please let me
 know, and if possible forward the report to the correct people or mailing list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              KASAN: null-ptr-deref Read in x25_connect
+Title:              WARNING in smc_unhash_sk (2)
 Last occurred:      0 days ago
-Reported:           42 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=5b0ecf0386f56be7fe7210a14d0f62df765c0c39
-Original thread:    https://lkml.kernel.org/lkml/0000000000007ce6f5058b0715ea@google.com/T/#u
+Reported:           101 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=f650845a184aed6947c0dd0f4d99d561335a7c31
+Original thread:    https://lkml.kernel.org/lkml/000000000000ac48ed05866bbc2c@google.com/T/#u
 
-Unfortunately, this bug does not have a reproducer.
+This bug has a C reproducer.
 
-The original thread for this bug has received 2 replies; the last was 42 days
-ago.
+This bug was bisected to:
+
+	commit 50717a37db032ce783f50685a73bb2ac68471a5a
+	Author: Ursula Braun <ubraun@linux.ibm.com>
+	Date:   Fri Apr 12 10:57:23 2019 +0000
+
+	  net/smc: nonblocking connect rework
+
+No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+777a2aab6ffd397407b5@syzkaller.appspotmail.com
+    Reported-by: syzbot+bd8cc73d665590a1fcad@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000007ce6f5058b0715ea@google.com
+https://lkml.kernel.org/r/000000000000ac48ed05866bbc2c@google.com
 
 --------------------------------------------------------------------------------
-Title:              general protection fault in x25_connect
-Last occurred:      23 days ago
-Reported:           42 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=65f107a71a1cb5637149cd163a2919dd622f0d30
-Original thread:    https://lkml.kernel.org/lkml/000000000000800bf0058b07151d@google.com/T/#u
+Title:              WARNING: ODEBUG bug in __sk_destruct
+Last occurred:      0 days ago
+Reported:           450 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=591666b46bf0d9e2fbb8dbb386982d12ba804648
+Original thread:    https://lkml.kernel.org/lkml/000000000000451f9d056aff4397@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+92209502e7aab127c75f@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000451f9d056aff4397@google.com
+
+--------------------------------------------------------------------------------
+Title:              memory leak in new_inode_pseudo (2)
+Last occurred:      1 day ago
+Reported:           7 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=911dac8eb1de0c09979e8e0054cb6cbe198cd5bb
+Original thread:    https://lkml.kernel.org/lkml/000000000000111cbe058dc7754d@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one has replied to the original thread for this bug yet.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+e682cca30bc101a4d9d9@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread.  For the git send-email command to use, or tips on how to reply if the
+thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000111cbe058dc7754d@google.com
+
+--------------------------------------------------------------------------------
+Title:              WARNING in debug_check_no_obj_freed
+Last occurred:      0 days ago
+Reported:           33 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=83687867d4a435fce7c6045b34425b1cfb3bf2d6
+Original thread:    https://lkml.kernel.org/lkml/00000000000090ae7a058bc12946@google.com/T/#u
+
+This bug has a C reproducer.
+
+syzbot has bisected this bug, but I think the bisection result is incorrect.
+
+No one has replied to the original thread for this bug yet.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+b972214bb803a343f4fe@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/00000000000090ae7a058bc12946@google.com
+
+--------------------------------------------------------------------------------
+Title:              BUG: workqueue leaked lock or atomic in smc_tx_work
+Last occurred:      27 days ago
+Reported:           29 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=dd71ec2acfdd198626ec8e914f70afc70cf35c72
+Original thread:    https://lkml.kernel.org/lkml/0000000000006a28b5058c0d7e17@google.com/T/#u
 
 Unfortunately, this bug does not have a reproducer.
 
 No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+2fde26e61fda58e5f88b@syzkaller.appspotmail.com
+    Reported-by: syzbot+8759e3927fd85a7c520a@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000800bf0058b07151d@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in refcount_sub_and_test_checked
-Last occurred:      59 days ago
-Reported:           113 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=909a75efeca0594a7dd4356d84f147891407cda8
-Original thread:    https://lkml.kernel.org/lkml/0000000000008424a205857b74ef@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+31b6a0f5d6d5c3b75948@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000008424a205857b74ef@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in x25_write_internal
-Last occurred:      154 days ago
-Reported:           202 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=4f2fbe41c46efe42fad560f74913604ca8011d2d
-Original thread:    https://lkml.kernel.org/lkml/0000000000006ee231057e779375@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+426b913e690764e50c83@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000006ee231057e779375@google.com
-
---------------------------------------------------------------------------------
-Title:              INFO: rcu detected stall in x25_connect
-Last occurred:      152 days ago
-Reported:           204 days ago
-Branches:           net and net-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=56a3e28b7cbfd2255f7b8c6483e7f7f9523a1a47
-Original thread:    https://lkml.kernel.org/lkml/0000000000009b5ae5057e4cd7d1@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+564c57b4bf1df3ce1c94@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009b5ae5057e4cd7d1@google.com
+https://lkml.kernel.org/r/0000000000006a28b5058c0d7e17@google.com
 
