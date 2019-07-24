@@ -2,99 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF2A74070
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7685874072
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387539AbfGXUw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 16:52:26 -0400
-Received: from mga07.intel.com ([134.134.136.100]:49762 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726458AbfGXUw0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 16:52:26 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jul 2019 13:52:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,304,1559545200"; 
-   d="asc'?scan'208";a="368915315"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Jul 2019 13:52:24 -0700
-Message-ID: <8134ff55ff4b2c190adc48503dafdfde018fc84d.camel@intel.com>
-Subject: Re: [net-next 6/6] e1000e: disable force K1-off feature
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     David Miller <davem@davemloft.net>
-Cc:     kai.heng.feng@canonical.com, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, aaron.f.brown@intel.com
-Date:   Wed, 24 Jul 2019 13:52:16 -0700
-In-Reply-To: <20190723.140444.1126474066269131522.davem@davemloft.net>
-References: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
-         <20190723173650.23276-7-jeffrey.t.kirsher@intel.com>
-         <20190723.140444.1126474066269131522.davem@davemloft.net>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-e+Wr+5sy43BnqLbqi93W"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1727826AbfGXUxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 16:53:12 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:43048 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726458AbfGXUxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 16:53:12 -0400
+Received: by mail-qk1-f194.google.com with SMTP id m14so9149646qka.10;
+        Wed, 24 Jul 2019 13:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K5EpkRFFvgeAt0nL+hNBcZ+U2NkFxnbvcSf3cki+3DA=;
+        b=PO7hinLFq3VFv+ooVfZfkXHUFKFsUauDMz7qczK0IejHr9Xbvef73lKFG7PUClE09N
+         jpXXO3hwY78SrylxapqREKIH/tXYzqVOzetb7kOm1IkAO2/P4aM3VZcGmZQJUiGj0V2E
+         T6HuDnb5PWbJoDEFvOEqXAVtHNDgEowEluhoZG9zgOlxJXzi4XIlufKYFvm4Y/itVCzv
+         cYPTDkin1sJujrBFaeoFQmCZ9bwanBSYl8ZhtuQJFJ71kiyyi/JnRCKnonYCvABMCemR
+         HFE+RfiZ1P8u3MAxWc7bvaIBjFF6Zh8RY3dQxrm5KSYLKJZpfdIZP8IQyKqtM6uQW/pj
+         3O5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K5EpkRFFvgeAt0nL+hNBcZ+U2NkFxnbvcSf3cki+3DA=;
+        b=JVievqKYKMMpRmcOWEh9Tb5/SjFeN9o/WIdq+jSQUfzZWNWiX8/ypqHRBwJJ+PnkUg
+         HVYP8WJ5A8jDp4/uSwr1MQzg/SJNKRLsPgv+ftI7t3YW+ht11ATKcF4QRHILm49VBR5g
+         EeFW0NjTfqZ0jLs3yfCMRzZ73bUflvkEMEDDPqVFYJURepDjTGFUCzY5LE0QjLw0KxL8
+         LFVmfyykwI6IQDsONNnfhKSkACu1Axi+vNgkIZLXiCQ2xp1iBO4UMyUj3zWTZjemoHvY
+         mdiQ7Vf0sd5SKCWWqZKTVdpItTLvcyrJxhmtuao+C3kOSlNiu5w1UEskpg+oAj4yf0tC
+         veOQ==
+X-Gm-Message-State: APjAAAWkelVgbfqrp7yLbpwG49zWSc7qN8cTQyRSs9ACNK864WgbIKhz
+        KBe/sTJvEEYZ7KH65ETnxsc/RNQBXkufncFsOHpsR5Su
+X-Google-Smtp-Source: APXvYqycjV23O2jrVhScZbVxlyvDRHLnHUWOh7urEY5E8B0lZkIFywjV65DeQv3X/fGC4vS0gF9Ab++9zBMlilHwQeM=
+X-Received: by 2002:a37:6d85:: with SMTP id i127mr55779207qkc.74.1564001591445;
+ Wed, 24 Jul 2019 13:53:11 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190724165803.87470-1-brianvv@google.com> <20190724165803.87470-2-brianvv@google.com>
+In-Reply-To: <20190724165803.87470-2-brianvv@google.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Wed, 24 Jul 2019 13:53:00 -0700
+Message-ID: <CAPhsuW5dXr4X9O3JtOVe=K+9yXzUY=WQuSgvhNWDKbJ57bnFAg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/6] bpf: add bpf_map_value_size and
+ bp_map_copy_value helper functions
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 24, 2019 at 10:10 AM Brian Vazquez <brianvv@google.com> wrote:
+>
+> Move reusable code from map_lookup_elem to helper functions to avoid code
+> duplication in kernel/bpf/syscall.c
+>
+> Suggested-by: Stanislav Fomichev <sdf@google.com>
+> Signed-off-by: Brian Vazquez <brianvv@google.com>
 
---=-e+Wr+5sy43BnqLbqi93W
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Song Liu <songliubraving@fb.com>
 
-On Tue, 2019-07-23 at 14:04 -0700, David Miller wrote:
-> From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Date: Tue, 23 Jul 2019 10:36:50 -0700
->=20
-> > diff --git a/drivers/net/ethernet/intel/e1000e/hw.h
-> > b/drivers/net/ethernet/intel/e1000e/hw.h
-> > index eff75bd8a8f0..e3c71fd093ee 100644
-> > --- a/drivers/net/ethernet/intel/e1000e/hw.h
-> > +++ b/drivers/net/ethernet/intel/e1000e/hw.h
-> > @@ -662,6 +662,7 @@ struct e1000_dev_spec_ich8lan {
-> >  	bool kmrn_lock_loss_workaround_enabled;
-> >  	struct e1000_shadow_ram
-> > shadow_ram[E1000_ICH8_SHADOW_RAM_WORDS];
-> >  	bool nvm_k1_enabled;
-> > +	bool disable_k1_off;
-> >  	bool eee_disable;
->=20
-> I don't see any code actually setting this boolean, how does it work?
+Some very minor nits though.
 
-So either this patch is missing a bit of code OR this is not needed for
-the Linux driver.  Either way this patch needs changes or needs to be
-dropped, so I am dropping this patch from the series until I get
-further information from the client driver team.
+> ---
+>  kernel/bpf/syscall.c | 134 +++++++++++++++++++++++--------------------
+>  1 file changed, 73 insertions(+), 61 deletions(-)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 5d141f16f6fa9..86cdc2f7bb56e 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -126,6 +126,76 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+>         return map;
+>  }
+>
+> +static u32 bpf_map_value_size(struct bpf_map *map)
+> +{
+> +       if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
+> +           map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH ||
+> +           map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY ||
+> +           map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
+> +               return round_up(map->value_size, 8) * num_possible_cpus();
+> +       else if (IS_FD_MAP(map))
+> +               return sizeof(u32);
+> +       else
+> +               return  map->value_size;
+                  ^ extra space after return
 
-I will be re-submitting this series, minus this patch.
+> +}
+> +
+> +static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
+> +                             __u64 flags)
+> +{
+> +       void *ptr;
+> +       int err;
+> +
+> +       if (bpf_map_is_dev_bound(map))
+> +               return  bpf_map_offload_lookup_elem(map, key, value);
+                  ^ another extra space after return, did replace? :-)
 
---=-e+Wr+5sy43BnqLbqi93W
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl04xQAACgkQ5W/vlVpL
-7c6nDg/+JQsuf4MWO3fG0N+UFqb+g8AmGIxZSRREyh7N33a9WUEwL+AAM9mNJnbB
-y7PL6SNVIP5deWP4aOyRvU6J9rFC/K2i6W8ioONUmsko0ukZKMf6AothiXtBxxbR
-rRkfWCGQqjMwQWjoGkiW87NdpoCA62UwEcTMzWfAqaq9ijpXZCCKVmWokZEBGL8a
-GhdBA17lh3nFdM7CeTJC+aWvwEM6OUjJJGBIcNjhYNmgX2m13B3uZOti/dSUbKUH
-0zlhJmPbSZdId9qG6Jnz8b9wUyoTGC++lOmVX7hlwwgUwaz0VC2G/tBuM+veDZS8
-9Nvaumyw79vv4LjpJySZf3S71dEvgD+nhSQg+0/0TsT17hkI0W26xHgLdWd0hR/Y
-4pYHKI35H4TtQgCP8//5F2bixK8Lp+43nemLsZi6i2N9RmdX6Ak5qb2cvPUBpvz7
-x8gvXOsoT2/zkejN9sV0R4Vil0PjqfgMBYPy9jswDQ7S0B5vFMuZF55hBn+B3fZr
-QC8Z3DosT9sa2zK0AIc1Mi3ycYUadBJRQ3ZT3yAxRYNc2Ms2ltT17S5noF3djR2X
-Nn6ffK2ez9wnQ0S9KkDe5SesFZkwKyMHsKgkgKUEbJWOfNzCiECEFbbatpBlTToA
-q15EfBjbHUKS2MSAQzX/1r4rSUkcMrOLWu1PPnJDxJFGNIllV6c=
-=Gyva
------END PGP SIGNATURE-----
-
---=-e+Wr+5sy43BnqLbqi93W--
-
+Thanks,
+Song
