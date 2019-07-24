@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B77727D8
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 08:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF87727DA
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 08:06:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726473AbfGXGF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 02:05:59 -0400
-Received: from mail-pg1-f170.google.com ([209.85.215.170]:36080 "EHLO
-        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbfGXGF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 02:05:58 -0400
-Received: by mail-pg1-f170.google.com with SMTP id l21so20636013pgm.3;
-        Tue, 23 Jul 2019 23:05:58 -0700 (PDT)
+        id S1726496AbfGXGGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 02:06:09 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37318 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725900AbfGXGGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 02:06:09 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i70so9894896pgd.4;
+        Tue, 23 Jul 2019 23:06:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GQ0cq+TpDXtlccGpzH8eM8cMXDQ1q6n1ou1LuVaWJBU=;
-        b=uHu/Dy2jmJVKer+AWzj3JGFNjbmhklRD/f9iGM4cV3tRNd/dCvl2FhYuFY+naMGpmi
-         Oay1UiRMi59Iyl475QqaKV745IGjZ3b65T9GoGMhwqYkq6QnA21wUZ0y96Q5XKYBsEcR
-         BfyWP2eaB5Sy2jE8YZnrC49zgGQAhVTKJW5CzXFOF6hKdSXGlGPj0jRUczUTb2BVWxpJ
-         EhKlQIJAk8dCMFVg0FWBIH96eYcywSi4BMFOKlBAvAZlKhR8/QQYGdUCpn+lVM5aKQrp
-         xrPKwF08vr23aEFDYh9XloA8fLO8rdhdRGoxexoWoaSUhVqr3bpEaNt5g/Aedf5yLKy/
-         IFFw==
+        bh=pq4pval6Wp1QkS3biIpuGAltYsbeNivQszcRkiFp4zo=;
+        b=JnNaBaNZHHAUYSzCoyjvfNsUKCd4vpHspe8dDhdFDWibnjkRLoigm5WGp5WnafoHEb
+         AOA13KfCAEqGAtfykmW4Z7UPjBtd4zeqWU7mE4hOMoSz2LWdByShjnBG5QVkjzba1qiH
+         f1op6rthGv4OHN7+K+CihZPsAp52IsdUNIGVrIN1ghrsY6k9mEuh3GRaMy6Li53KheWu
+         y9FKlQ6V1XDW1i+7SiWSxdUvxRbeAOekfJ+hbSVLBh7C272Es89WlOM5WhHMByjRDD3x
+         azXTLR3SVkBYa6+bwRez2mQ43xbcMlc4LQXTsjSiefrQXygmdwCcD1XKjHQHoD8Z/MFR
+         YP0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GQ0cq+TpDXtlccGpzH8eM8cMXDQ1q6n1ou1LuVaWJBU=;
-        b=B8FnciZ1GQew7ux7tDzsHsL7gd4nA21dXfzO3kElWF1k7EXlQyfEwMHbhjBkm+hXiN
-         QvsIleeQ7uc8/bTRkPeW/pTWCF1l00zxSl5IHewGHJSwO/EBMvkJd0E16lcrRe8qERj6
-         /NLrYKI0s82ehInje7XTg4NTmIGElBomb0GSly9sS6dTdyhfr8qyVX70rGR/Y3iplq6s
-         oLolsUjWEdKtdyiGa6DY3Y9bV2zn8jYrY4zT3qW5BXU1TceC6/LMkDlU7ZK3ljAN9YfT
-         SmJnT9+qDoHA8infYKG+n4wiFWVPwiJxx+TUsVsxhcg3FBf0cobBiPU6glolHaDHTEXA
-         b9Bg==
-X-Gm-Message-State: APjAAAXQw4rgjY19qbIiCft28EQVqNpzivCi/UMDETwukv0MFDYRjj1h
-        G9andsydM6N6R9woX/7d0a0=
-X-Google-Smtp-Source: APXvYqynNCnJq0e1oX3fc+FxUOTCXW6vBY+dMdfdjNIIopLYVsDkQYIb0kSNssosUcBQsZM7P8HdFA==
-X-Received: by 2002:a17:90a:bf0e:: with SMTP id c14mr82133882pjs.55.1563948358002;
-        Tue, 23 Jul 2019 23:05:58 -0700 (PDT)
+        bh=pq4pval6Wp1QkS3biIpuGAltYsbeNivQszcRkiFp4zo=;
+        b=U6HETgH5ODaLj3Yx6Ac1wILc/fo8V/y107WbqBWtwJVoOrIAT+6Q40QbEqtUVA8tQ9
+         XFi4rvBYJSEkbQN0m2/Lq2tVFB2gYaA0pQHKbVJ3OU07VGMuuu5ie99EV23yTIzictCR
+         rwpjOmVGdsEujvkGm38WM47aHptU7sM90tGsiBTCYotN6dgtpQSkPBne3iAc6A2np7CN
+         HUsCdzJMQj+BBcrAf4OVWoUfAvvCmeiiA3rO4XQji9EuJYfFV6ZkBX26bMLrplPIEiAG
+         lDUGqIRgGOZ0SHZgx80GO2oqEZu5Th9YF0Q5aCS2Od4LcOesoIcCsoz8u7ik9BC7STbk
+         H1fA==
+X-Gm-Message-State: APjAAAXhueBvK4L55r0jdelZq0vGBFfazEhf2CXTzXV79fALQvP3GosW
+        YSt0M0Z2UKd/1uKIU74QDFI=
+X-Google-Smtp-Source: APXvYqzPK2qW0gDNBtql5f3grFJl0Up4lkJVzQt+E+g9iPQkZQhnYpWFfECV2Vb+/VWYcMU689Hopw==
+X-Received: by 2002:a17:90a:b394:: with SMTP id e20mr85180401pjr.76.1563948368000;
+        Tue, 23 Jul 2019 23:06:08 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id r75sm61250447pfc.18.2019.07.23.23.05.55
+        by smtp.gmail.com with ESMTPSA id s11sm43041629pgv.13.2019.07.23.23.06.04
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 23:05:57 -0700 (PDT)
+        Tue, 23 Jul 2019 23:06:07 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net-next v2 2/8] net: atheros: Use dev_get_drvdata
-Date:   Wed, 24 Jul 2019 14:05:53 +0800
-Message-Id: <20190724060553.24007-1-hslester96@gmail.com>
+Cc:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH net-next v2 3/8] net: broadcom: Use dev_get_drvdata
+Date:   Wed, 24 Jul 2019 14:06:02 +0800
+Message-Id: <20190724060602.24061-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,119 +73,110 @@ Changes in v2:
   - Change pci_set_drvdata to dev_set_drvdata
     to keep consistency.
 
- drivers/net/ethernet/atheros/alx/main.c         |  8 +++-----
- drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 10 ++++------
- drivers/net/ethernet/atheros/atlx/atl1.c        |  8 +++-----
- 3 files changed, 10 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2.c      | 8 +++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 +++-----
+ drivers/net/ethernet/broadcom/tg3.c       | 8 +++-----
+ 3 files changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
-index e3538ba7d0e7..73a20b106892 100644
---- a/drivers/net/ethernet/atheros/alx/main.c
-+++ b/drivers/net/ethernet/atheros/alx/main.c
-@@ -1749,7 +1749,7 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	alx->msg_enable = NETIF_MSG_LINK | NETIF_MSG_HW | NETIF_MSG_IFUP |
- 			  NETIF_MSG_TX_ERR | NETIF_MSG_RX_ERR | NETIF_MSG_WOL;
- 	hw = &alx->hw;
--	pci_set_drvdata(pdev, alx);
-+	dev_set_drvdata(&pdev->dev, alx);
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index dfdd14eadd57..da538a7bac14 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8586,7 +8586,7 @@ bnx2_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	hw->hw_addr = pci_ioremap_bar(pdev, 0);
- 	if (!hw->hw_addr) {
-@@ -1879,8 +1879,7 @@ static void alx_remove(struct pci_dev *pdev)
+ 	bp = netdev_priv(dev);
+ 
+-	pci_set_drvdata(pdev, dev);
++	dev_set_drvdata(&pdev->dev, dev);
+ 
+ 	/*
+ 	 * In-flight DMA from 1st kernel could continue going in kdump kernel.
+@@ -8673,8 +8673,7 @@ bnx2_remove_one(struct pci_dev *pdev)
+ static int
+ bnx2_suspend(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnx2 *bp = netdev_priv(dev);
+ 
+ 	if (netif_running(dev)) {
+@@ -8693,8 +8692,7 @@ bnx2_suspend(struct device *device)
+ static int
+ bnx2_resume(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnx2 *bp = netdev_priv(dev);
+ 
+ 	if (!netif_running(dev))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 7134d2c3eb1c..956015acd97f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10662,7 +10662,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	dev->netdev_ops = &bnxt_netdev_ops;
+ 	dev->watchdog_timeo = BNXT_TX_TIMEOUT;
+ 	dev->ethtool_ops = &bnxt_ethtool_ops;
+-	pci_set_drvdata(pdev, dev);
++	dev_set_drvdata(&pdev->dev, dev);
+ 
+ 	rc = bnxt_alloc_hwrm_resources(bp);
+ 	if (rc)
+@@ -10920,8 +10920,7 @@ static void bnxt_shutdown(struct pci_dev *pdev)
  #ifdef CONFIG_PM_SLEEP
- static int alx_suspend(struct device *dev)
+ static int bnxt_suspend(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct alx_priv *alx = pci_get_drvdata(pdev);
-+	struct alx_priv *alx = dev_get_drvdata(dev);
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnxt *bp = netdev_priv(dev);
+ 	int rc = 0;
  
- 	if (!netif_running(alx->dev))
- 		return 0;
-@@ -1891,8 +1890,7 @@ static int alx_suspend(struct device *dev)
+@@ -10937,8 +10936,7 @@ static int bnxt_suspend(struct device *device)
  
- static int alx_resume(struct device *dev)
+ static int bnxt_resume(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct alx_priv *alx = pci_get_drvdata(pdev);
-+	struct alx_priv *alx = dev_get_drvdata(dev);
- 	struct alx_hw *hw = &alx->hw;
- 	int err;
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct bnxt *bp = netdev_priv(dev);
+ 	int rc = 0;
  
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index be7f9cebb675..16481eb5c422 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -2422,8 +2422,7 @@ static int atl1c_close(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 4c404d2213f9..282031dc89b3 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -17918,7 +17918,7 @@ static int tg3_init_one(struct pci_dev *pdev,
  
- static int atl1c_suspend(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1c_adapter *adapter = netdev_priv(netdev);
- 	struct atl1c_hw *hw = &adapter->hw;
- 	u32 wufc = adapter->wol;
-@@ -2437,7 +2436,7 @@ static int atl1c_suspend(struct device *dev)
+ 	tg3_init_coal(tp);
  
- 	if (wufc)
- 		if (atl1c_phy_to_ps_link(hw) != 0)
--			dev_dbg(&pdev->dev, "phy power saving failed");
-+			dev_dbg(dev, "phy power saving failed");
+-	pci_set_drvdata(pdev, dev);
++	dev_set_drvdata(&pdev->dev, dev);
  
- 	atl1c_power_saving(hw, wufc);
- 
-@@ -2447,8 +2446,7 @@ static int atl1c_suspend(struct device *dev)
+ 	if (tg3_asic_rev(tp) == ASIC_REV_5719 ||
+ 	    tg3_asic_rev(tp) == ASIC_REV_5720 ||
+@@ -18041,8 +18041,7 @@ static void tg3_remove_one(struct pci_dev *pdev)
  #ifdef CONFIG_PM_SLEEP
- static int atl1c_resume(struct device *dev)
+ static int tg3_suspend(struct device *device)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1c_adapter *adapter = netdev_priv(netdev);
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct tg3 *tp = netdev_priv(dev);
+ 	int err = 0;
  
- 	AT_WRITE_REG(&adapter->hw, REG_WOL_CTRL, 0);
-@@ -2503,7 +2501,7 @@ static const struct net_device_ops atl1c_netdev_ops = {
- static int atl1c_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
+@@ -18098,8 +18097,7 @@ static int tg3_suspend(struct device *device)
+ 
+ static int tg3_resume(struct device *device)
  {
- 	SET_NETDEV_DEV(netdev, &pdev->dev);
--	pci_set_drvdata(pdev, netdev);
-+	dev_set_drvdata(&pdev->dev, netdev);
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device);
+ 	struct tg3 *tp = netdev_priv(dev);
+ 	int err = 0;
  
- 	netdev->netdev_ops = &atl1c_netdev_ops;
- 	netdev->watchdog_timeo = AT_TX_WATCHDOG;
-diff --git a/drivers/net/ethernet/atheros/atlx/atl1.c b/drivers/net/ethernet/atheros/atlx/atl1.c
-index b5c6dc914720..8b9df5f8795b 100644
---- a/drivers/net/ethernet/atheros/atlx/atl1.c
-+++ b/drivers/net/ethernet/atheros/atlx/atl1.c
-@@ -2754,8 +2754,7 @@ static int atl1_close(struct net_device *netdev)
- #ifdef CONFIG_PM_SLEEP
- static int atl1_suspend(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1_adapter *adapter = netdev_priv(netdev);
- 	struct atl1_hw *hw = &adapter->hw;
- 	u32 ctrl = 0;
-@@ -2780,7 +2779,7 @@ static int atl1_suspend(struct device *dev)
- 		val = atl1_get_speed_and_duplex(hw, &speed, &duplex);
- 		if (val) {
- 			if (netif_msg_ifdown(adapter))
--				dev_printk(KERN_DEBUG, &pdev->dev,
-+				dev_printk(KERN_DEBUG, dev,
- 					"error getting speed/duplex\n");
- 			goto disable_wol;
- 		}
-@@ -2837,8 +2836,7 @@ static int atl1_suspend(struct device *dev)
- 
- static int atl1_resume(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct atl1_adapter *adapter = netdev_priv(netdev);
- 
- 	iowrite32(0, adapter->hw.hw_addr + REG_WOL_CTRL);
 -- 
 2.20.1
 
