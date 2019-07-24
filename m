@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A23740D0
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 23:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C0AF740D4
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 23:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387773AbfGXV0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 17:26:24 -0400
-Received: from mga18.intel.com ([134.134.136.126]:63560 "EHLO mga18.intel.com"
+        id S2387460AbfGXV0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 17:26:33 -0400
+Received: from mga18.intel.com ([134.134.136.126]:63563 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726087AbfGXV0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 17:26:24 -0400
+        id S2387808AbfGXV0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 17:26:25 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jul 2019 14:26:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,304,1559545200"; 
-   d="scan'208";a="160700659"
+   d="scan'208";a="160700662"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga007.jf.intel.com with ESMTP; 24 Jul 2019 14:26:23 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -26,9 +26,9 @@ Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 2/5] igc: Remove the unused field from a device specification structure
-Date:   Wed, 24 Jul 2019 14:26:10 -0700
-Message-Id: <20190724212613.1580-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 3/5] igc: Update the MAC reset flow
+Date:   Wed, 24 Jul 2019 14:26:11 -0700
+Message-Id: <20190724212613.1580-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190724212613.1580-1-jeffrey.t.kirsher@intel.com>
 References: <20190724212613.1580-1-jeffrey.t.kirsher@intel.com>
@@ -41,32 +41,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sasha Neftin <sasha.neftin@intel.com>
 
-This patch comes to clean up the device specification structure.
+Use Device Reset flow instead of Port Reset flow.
+This flow performs a reset of the entire controller device,
+resulting in a state nearly approximating the state
+following a power-up reset or internal PCIe reset,
+except for system PCI configuration.
 
 Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_hw.h | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_base.c    | 2 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
-index f689f0a02b5d..9a338fbf671c 100644
---- a/drivers/net/ethernet/intel/igc/igc_hw.h
-+++ b/drivers/net/ethernet/intel/igc/igc_hw.h
-@@ -184,12 +184,7 @@ struct igc_fc_info {
- };
+diff --git a/drivers/net/ethernet/intel/igc/igc_base.c b/drivers/net/ethernet/intel/igc/igc_base.c
+index 59258d791106..46206b3dabfb 100644
+--- a/drivers/net/ethernet/intel/igc/igc_base.c
++++ b/drivers/net/ethernet/intel/igc/igc_base.c
+@@ -40,7 +40,7 @@ static s32 igc_reset_hw_base(struct igc_hw *hw)
+ 	ctrl = rd32(IGC_CTRL);
  
- struct igc_dev_spec_base {
--	bool global_device_reset;
--	bool eee_disable;
- 	bool clear_semaphore_once;
--	bool module_plugged;
--	u8 media_port;
--	bool mas_capable;
- };
+ 	hw_dbg("Issuing a global reset to MAC\n");
+-	wr32(IGC_CTRL, ctrl | IGC_CTRL_RST);
++	wr32(IGC_CTRL, ctrl | IGC_CTRL_DEV_RST);
  
- struct igc_hw {
+ 	ret_val = igc_get_auto_rd_done(hw);
+ 	if (ret_val) {
+diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
+index fc0ccfe38a20..11b99acf4abe 100644
+--- a/drivers/net/ethernet/intel/igc/igc_defines.h
++++ b/drivers/net/ethernet/intel/igc/igc_defines.h
+@@ -54,7 +54,7 @@
+ #define IGC_ERR_SWFW_SYNC		13
+ 
+ /* Device Control */
+-#define IGC_CTRL_RST		0x04000000  /* Global reset */
++#define IGC_CTRL_DEV_RST	0x20000000  /* Device reset */
+ 
+ #define IGC_CTRL_PHY_RST	0x80000000  /* PHY Reset */
+ #define IGC_CTRL_SLU		0x00000040  /* Set link up (Force Link) */
 -- 
 2.21.0
 
