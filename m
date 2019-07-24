@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1B272B51
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CC672B6A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:31:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfGXJ0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 05:26:18 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:47867 "EHLO
+        id S1726877AbfGXJba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 05:31:30 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:53377 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfGXJ0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:26:18 -0400
+        with ESMTP id S1726793AbfGXJba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:31:30 -0400
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1hqDXK-00084b-Nk; Wed, 24 Jul 2019 11:26:14 +0200
+        id 1hqDcN-0000KL-LW; Wed, 24 Jul 2019 11:31:27 +0200
 Received: from [IPv6:2003:c7:729:c703:c9d4:83d5:b99:4f4d] (unknown [IPv6:2003:c7:729:c703:c9d4:83d5:b99:4f4d])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 988C1437B92;
-        Wed, 24 Jul 2019 09:26:12 +0000 (UTC)
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 54338437BA4;
+        Wed, 24 Jul 2019 09:31:26 +0000 (UTC)
+To:     =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
 References: <93540cba-184a-a9c5-f9d2-b1779a69a36f@pengutronix.de>
- <3b3a3c9f-41ac-74a0-4238-ba01799accb6@hartkopp.net>
+ <AM6PR03MB4006F834B65943E49F485FA6D6C60@AM6PR03MB4006.eurprd03.prod.outlook.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
@@ -92,15 +93,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
 Subject: Re: pull-request: can-next 2019-07-24
-Message-ID: <7939ec79-a54b-fc7c-1e75-a9f5c8a5c19b@pengutronix.de>
-Date:   Wed, 24 Jul 2019 11:26:08 +0200
+Message-ID: <67ed4f04-ff9c-2924-6928-a453fdbb82cc@pengutronix.de>
+Date:   Wed, 24 Jul 2019 11:31:21 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <3b3a3c9f-41ac-74a0-4238-ba01799accb6@hartkopp.net>
+In-Reply-To: <AM6PR03MB4006F834B65943E49F485FA6D6C60@AM6PR03MB4006.eurprd03.prod.outlook.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="Npb9id7f28sWMllPGMaCZxIXBSBjBryx5"
+ boundary="oTuJRwd8PHLSlkXGfMoKzzmSJ5Gnef7nr"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -111,42 +112,36 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Npb9id7f28sWMllPGMaCZxIXBSBjBryx5
-Content-Type: multipart/mixed; boundary="ZsQKJ23xh0xztjMTmn40Q325OCSI09xXK";
+--oTuJRwd8PHLSlkXGfMoKzzmSJ5Gnef7nr
+Content-Type: multipart/mixed; boundary="kghNMmVKFdA1joiupcmkcC56KkUYc0BJq";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org
-Cc: davem@davemloft.net, kernel@pengutronix.de, linux-can@vger.kernel.org
-Message-ID: <7939ec79-a54b-fc7c-1e75-a9f5c8a5c19b@pengutronix.de>
+To: =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc: "kernel@pengutronix.de" <kernel@pengutronix.de>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Message-ID: <67ed4f04-ff9c-2924-6928-a453fdbb82cc@pengutronix.de>
 Subject: Re: pull-request: can-next 2019-07-24
 References: <93540cba-184a-a9c5-f9d2-b1779a69a36f@pengutronix.de>
- <3b3a3c9f-41ac-74a0-4238-ba01799accb6@hartkopp.net>
-In-Reply-To: <3b3a3c9f-41ac-74a0-4238-ba01799accb6@hartkopp.net>
+ <AM6PR03MB4006F834B65943E49F485FA6D6C60@AM6PR03MB4006.eurprd03.prod.outlook.com>
+In-Reply-To: <AM6PR03MB4006F834B65943E49F485FA6D6C60@AM6PR03MB4006.eurprd03.prod.outlook.com>
 
---ZsQKJ23xh0xztjMTmn40Q325OCSI09xXK
+--kghNMmVKFdA1joiupcmkcC56KkUYc0BJq
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 7/24/19 11:22 AM, Oliver Hartkopp wrote:
-> why didn't you include the CAN FD support for the can-gw?
+On 7/24/19 11:24 AM, St=C3=A9phane Grosjean wrote:
+> I hope you're fine.
 
-I wanted to have a look at the patches. But the other patches are
-already reviewed.
+Yes, the summer holidays of our $CUSTOMERS gave me a bit more time for CA=
+N.
 
-I'll do another pull-request this week.
+> Did you see the attached patch I've sent earlier this month?
+Yes, it will be included in "linux-can-fixes-for-5.3-20190724".
 
-> [PATCH 1/2] can: gw: use struct canfd_frame as internal data structure
-> https://marc.info/?l=3Dlinux-can&m=3D156388681922741&w=3D2
->=20
-> [PATCH 2/2] can: gw: add support for CAN FD frames
-> https://marc.info/?l=3Dlinux-can&m=3D156388682022742&w=3D2
->=20
-> The patches have already been sent in January as RFC and I did extensiv=
-e=20
-> testing since then.
-
-Good.
+https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git/log/?h=3D=
+linux-can-fixes-for-5.3-20190724
 
 regards,
 Marc
@@ -158,23 +153,23 @@ Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
 Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
---ZsQKJ23xh0xztjMTmn40Q325OCSI09xXK--
+--kghNMmVKFdA1joiupcmkcC56KkUYc0BJq--
 
---Npb9id7f28sWMllPGMaCZxIXBSBjBryx5
+--oTuJRwd8PHLSlkXGfMoKzzmSJ5Gnef7nr
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl04JDAACgkQWsYho5Hk
-nSCw6Qf9FSR8dP6fMn4FSJK4pn5E+ImlfhW4w/xdse4aLJOfPBMRc3B1PKSnEzds
-Mx5W4vIgrnQ+SQh9EgxpBovX/TO8CrRk5uUTfT8VCQz2SokFVohTLdO53aTn8+So
-iUoySki3lJmtkc4unkX7xP8glyg9JEujqUSihhdlKrkVf5GYeRVJxg4NxGzrxr6c
-TMiEvbB95zEzFdhptusuO7KhBzD29ATZI2rT1rVnEA8/Wi0GlU/3mZB+3SrQS1uC
-01twAROmJs79cKkamgroIjC42hR0M0R6PbAaYhuBltKJjG6c3zUTft6SB69aLVL6
-0qU1g+2mcBX3597GAX9emqdBdTUUhA==
-=7uo8
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl04JWoACgkQWsYho5Hk
+nSD+NQf/UWiQqehxUO5Isfu4LKrS877a8N5nBVPszq8Iki4JU4WSGRtkpC0cVDLk
+RA0k2WaYH7R/CvHC/nCE/q7P1If/oCApUkjMsBth1H36URpQ1W4dPZ7u8k8QWdQ2
+hAwnxu/kDH6J+5MHc3Dd1O7J0pECJ7vmlSsq+cWYxNbFXvFiLp+NE4LJwDrFPBpE
++FDiNoZ3YyHYFepbusTQxyS6FhXEYBBA4E1CP4+PLU7TY9jFmyWR/6vaOGOg71fB
+ahiP5ZmZKw6AnChmeYgnZxY3qO6Op+BES6XegBnia15ATpFKSxRA2Jidhu2aIjmU
+XUiV+uXSVTy1z+vvf5rRJQCfxB7oKg==
+=dsz6
 -----END PGP SIGNATURE-----
 
---Npb9id7f28sWMllPGMaCZxIXBSBjBryx5--
+--oTuJRwd8PHLSlkXGfMoKzzmSJ5Gnef7nr--
