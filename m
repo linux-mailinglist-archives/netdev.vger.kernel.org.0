@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5F472545
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 05:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08AC872541
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 05:21:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726585AbfGXDVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 23:21:04 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:50728 "EHLO huawei.com"
+        id S1726622AbfGXDVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 23:21:06 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:50726 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726461AbfGXDVB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 23:21:01 -0400
+        id S1726492AbfGXDVF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 23:21:05 -0400
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 9EDD0AF284D8CD6EC3E7;
+        by Forcepoint Email with ESMTP id 99F5DAC77036F7CB971C;
         Wed, 24 Jul 2019 11:20:52 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
@@ -22,11 +22,10 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 08/11] net: hns3: add interrupt affinity support for misc interrupt
-Date:   Wed, 24 Jul 2019 11:18:44 +0800
-Message-ID: <1563938327-9865-9-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 09/11] net: hns3: make hclge_service use delayed workqueue
+Date:   Wed, 24 Jul 2019 11:18:45 +0800
+Message-ID: <1563938327-9865-10-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1563938327-9865-1-git-send-email-tanhuazhong@huawei.com>
 References: <1563938327-9865-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,157 +40,159 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yunsheng Lin <linyunsheng@huawei.com>
 
-The misc interrupt is used to schedule the reset and mailbox
-subtask, and a 1 sec timer is used to schedule the service
-subtask, which does periodic work.
+Use delayed work instead of using timers to trigger the
+hclge_serive.
 
-This patch sets the above three subtask's affinity using the
-misc interrupt' affinity.
-
-Also this patch setups a affinity notify for misc interrupt to
-allow user to change the above three subtask's affinity.
+Simplify the code with one less middle function and in order
+to support misc irq affinity.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
+Reviewed-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 59 ++++++++++++++++++++--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  4 ++
- 2 files changed, 59 insertions(+), 4 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 60 ++++++++--------------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  3 +-
+ 2 files changed, 22 insertions(+), 41 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index f345095..fe45986 100644
+index fe45986..45acbc9 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1270,6 +1270,12 @@ static int hclge_configure(struct hclge_dev *hdev)
- 
- 	hclge_init_kdump_kernel_config(hdev);
- 
-+	/* Set the init affinity based on pci func number */
-+	i = cpumask_weight(cpumask_of_node(dev_to_node(&hdev->pdev->dev)));
-+	i = i ? PCI_FUNC(hdev->pdev->devfn) % i : 0;
-+	cpumask_set_cpu(cpumask_local_spread(i, dev_to_node(&hdev->pdev->dev)),
-+			&hdev->affinity_mask);
-+
- 	return ret;
- }
- 
-@@ -2502,14 +2508,16 @@ static void hclge_mbx_task_schedule(struct hclge_dev *hdev)
+@@ -2524,9 +2524,13 @@ static void hclge_task_schedule(struct hclge_dev *hdev)
  {
- 	if (!test_bit(HCLGE_STATE_CMD_DISABLE, &hdev->state) &&
- 	    !test_and_set_bit(HCLGE_STATE_MBX_SERVICE_SCHED, &hdev->state))
--		schedule_work(&hdev->mbx_service_task);
-+		queue_work_on(cpumask_first(&hdev->affinity_mask), system_wq,
-+			      &hdev->mbx_service_task);
- }
- 
- static void hclge_reset_task_schedule(struct hclge_dev *hdev)
- {
- 	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state) &&
- 	    !test_and_set_bit(HCLGE_STATE_RST_SERVICE_SCHED, &hdev->state))
--		schedule_work(&hdev->rst_service_task);
-+		queue_work_on(cpumask_first(&hdev->affinity_mask), system_wq,
-+			      &hdev->rst_service_task);
- }
- 
- static void hclge_task_schedule(struct hclge_dev *hdev)
-@@ -2517,7 +2525,8 @@ static void hclge_task_schedule(struct hclge_dev *hdev)
  	if (!test_bit(HCLGE_STATE_DOWN, &hdev->state) &&
  	    !test_bit(HCLGE_STATE_REMOVING, &hdev->state) &&
- 	    !test_and_set_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state))
--		(void)schedule_work(&hdev->service_task);
-+		queue_work_on(cpumask_first(&hdev->affinity_mask), system_wq,
-+			      &hdev->service_task);
+-	    !test_and_set_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state))
+-		queue_work_on(cpumask_first(&hdev->affinity_mask), system_wq,
+-			      &hdev->service_task);
++	    !test_and_set_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state)) {
++		hdev->hw_stats.stats_timer++;
++		hdev->fd_arfs_expire_timer++;
++		mod_delayed_work_on(cpumask_first(&hdev->affinity_mask),
++				    system_wq, &hdev->service_task,
++				    round_jiffies_relative(HZ));
++	}
  }
  
  static int hclge_get_mac_link_status(struct hclge_dev *hdev)
-@@ -2921,6 +2930,39 @@ static void hclge_get_misc_vector(struct hclge_dev *hdev)
- 	hdev->num_msi_used += 1;
+@@ -2741,25 +2745,6 @@ static int hclge_get_status(struct hnae3_handle *handle)
+ 	return hdev->hw.mac.link;
  }
  
-+static void hclge_irq_affinity_notify(struct irq_affinity_notify *notify,
-+				      const cpumask_t *mask)
-+{
-+	struct hclge_dev *hdev = container_of(notify, struct hclge_dev,
-+					      affinity_notify);
-+
-+	cpumask_copy(&hdev->affinity_mask, mask);
-+	del_timer_sync(&hdev->service_timer);
-+	hdev->service_timer.expires = jiffies + HZ;
-+	add_timer_on(&hdev->service_timer, cpumask_first(&hdev->affinity_mask));
-+}
-+
-+static void hclge_irq_affinity_release(struct kref *ref)
-+{
-+}
-+
-+static void hclge_misc_affinity_setup(struct hclge_dev *hdev)
-+{
-+	irq_set_affinity_hint(hdev->misc_vector.vector_irq,
-+			      &hdev->affinity_mask);
-+
-+	hdev->affinity_notify.notify = hclge_irq_affinity_notify;
-+	hdev->affinity_notify.release = hclge_irq_affinity_release;
-+	irq_set_affinity_notifier(hdev->misc_vector.vector_irq,
-+				  &hdev->affinity_notify);
-+}
-+
-+static void hclge_misc_affinity_teardown(struct hclge_dev *hdev)
-+{
-+	irq_set_affinity_notifier(hdev->misc_vector.vector_irq, NULL);
-+	irq_set_affinity_hint(hdev->misc_vector.vector_irq, NULL);
-+}
-+
- static int hclge_misc_irq_init(struct hclge_dev *hdev)
+-static void hclge_service_timer(struct timer_list *t)
+-{
+-	struct hclge_dev *hdev = from_timer(hdev, t, service_timer);
+-
+-	mod_timer(&hdev->service_timer, jiffies + HZ);
+-	hdev->hw_stats.stats_timer++;
+-	hdev->fd_arfs_expire_timer++;
+-	hclge_task_schedule(hdev);
+-}
+-
+-static void hclge_service_complete(struct hclge_dev *hdev)
+-{
+-	WARN_ON(!test_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state));
+-
+-	/* Flush memory before next watchdog */
+-	smp_mb__before_atomic();
+-	clear_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state);
+-}
+-
+ static u32 hclge_check_event_cause(struct hclge_dev *hdev, u32 *clearval)
  {
- 	int ret;
-@@ -6151,7 +6193,10 @@ static void hclge_set_timer_task(struct hnae3_handle *handle, bool enable)
+ 	u32 rst_src_reg, cmdq_src_reg, msix_src_reg;
+@@ -2937,9 +2922,6 @@ static void hclge_irq_affinity_notify(struct irq_affinity_notify *notify,
+ 					      affinity_notify);
+ 
+ 	cpumask_copy(&hdev->affinity_mask, mask);
+-	del_timer_sync(&hdev->service_timer);
+-	hdev->service_timer.expires = jiffies + HZ;
+-	add_timer_on(&hdev->service_timer, cpumask_first(&hdev->affinity_mask));
+ }
+ 
+ static void hclge_irq_affinity_release(struct kref *ref)
+@@ -3639,7 +3621,9 @@ static void hclge_update_vport_alive(struct hclge_dev *hdev)
+ static void hclge_service_task(struct work_struct *work)
+ {
+ 	struct hclge_dev *hdev =
+-		container_of(work, struct hclge_dev, service_task);
++		container_of(work, struct hclge_dev, service_task.work);
++
++	clear_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state);
+ 
+ 	if (hdev->hw_stats.stats_timer >= HCLGE_STATS_TIMER_INTERVAL) {
+ 		hclge_update_stats_for_all(hdev);
+@@ -3654,7 +3638,8 @@ static void hclge_service_task(struct work_struct *work)
+ 		hclge_rfs_filter_expire(hdev);
+ 		hdev->fd_arfs_expire_timer = 0;
+ 	}
+-	hclge_service_complete(hdev);
++
++	hclge_task_schedule(hdev);
+ }
+ 
+ struct hclge_vport *hclge_get_vport(struct hnae3_handle *handle)
+@@ -6193,13 +6178,13 @@ static void hclge_set_timer_task(struct hnae3_handle *handle, bool enable)
  	struct hclge_dev *hdev = vport->back;
  
  	if (enable) {
--		mod_timer(&hdev->service_timer, jiffies + HZ);
-+		del_timer_sync(&hdev->service_timer);
-+		hdev->service_timer.expires = jiffies + HZ;
-+		add_timer_on(&hdev->service_timer,
-+			     cpumask_first(&hdev->affinity_mask));
+-		del_timer_sync(&hdev->service_timer);
+-		hdev->service_timer.expires = jiffies + HZ;
+-		add_timer_on(&hdev->service_timer,
+-			     cpumask_first(&hdev->affinity_mask));
++		hclge_task_schedule(hdev);
  	} else {
- 		del_timer_sync(&hdev->service_timer);
- 		cancel_work_sync(&hdev->service_task);
-@@ -8809,6 +8854,11 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+-		del_timer_sync(&hdev->service_timer);
+-		cancel_work_sync(&hdev->service_task);
++		/* Set the DOWN flag here to disable the service to be
++		 * scheduled again
++		 */
++		set_bit(HCLGE_STATE_DOWN, &hdev->state);
++		cancel_delayed_work_sync(&hdev->service_task);
+ 		clear_bit(HCLGE_STATE_SERVICE_SCHED, &hdev->state);
+ 	}
+ }
+@@ -8638,12 +8623,10 @@ static void hclge_state_uninit(struct hclge_dev *hdev)
+ 	set_bit(HCLGE_STATE_DOWN, &hdev->state);
+ 	set_bit(HCLGE_STATE_REMOVING, &hdev->state);
+ 
+-	if (hdev->service_timer.function)
+-		del_timer_sync(&hdev->service_timer);
+ 	if (hdev->reset_timer.function)
+ 		del_timer_sync(&hdev->reset_timer);
+-	if (hdev->service_task.func)
+-		cancel_work_sync(&hdev->service_task);
++	if (hdev->service_task.work.func)
++		cancel_delayed_work_sync(&hdev->service_task);
+ 	if (hdev->rst_service_task.func)
+ 		cancel_work_sync(&hdev->rst_service_task);
+ 	if (hdev->mbx_service_task.func)
+@@ -8848,9 +8831,8 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 
+ 	hclge_dcb_ops_set(hdev);
+ 
+-	timer_setup(&hdev->service_timer, hclge_service_timer, 0);
+ 	timer_setup(&hdev->reset_timer, hclge_reset_timer, 0);
+-	INIT_WORK(&hdev->service_task, hclge_service_task);
++	INIT_DELAYED_WORK(&hdev->service_task, hclge_service_task);
  	INIT_WORK(&hdev->rst_service_task, hclge_reset_service_task);
  	INIT_WORK(&hdev->mbx_service_task, hclge_mailbox_service_task);
  
-+	/* Setup affinity after service timer setup because add_timer_on
-+	 * is called in affinity notify.
-+	 */
-+	hclge_misc_affinity_setup(hdev);
-+
- 	hclge_clear_all_event_cause(hdev);
- 	hclge_clear_resetting_state(hdev);
- 
-@@ -8970,6 +9020,7 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	struct hclge_dev *hdev = ae_dev->priv;
- 	struct hclge_mac *mac = &hdev->hw.mac;
- 
-+	hclge_misc_affinity_teardown(hdev);
- 	hclge_state_uninit(hdev);
- 
- 	if (mac->phydev)
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 6a12285..14df23c 100644
+index 14df23c..688e425 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -864,6 +864,10 @@ struct hclge_dev {
+@@ -806,9 +806,8 @@ struct hclge_dev {
+ 	u16 adminq_work_limit; /* Num of admin receive queue desc to process */
+ 	unsigned long service_timer_period;
+ 	unsigned long service_timer_previous;
+-	struct timer_list service_timer;
+ 	struct timer_list reset_timer;
+-	struct work_struct service_task;
++	struct delayed_work service_task;
+ 	struct work_struct rst_service_task;
+ 	struct work_struct mbx_service_task;
  
- 	DECLARE_KFIFO(mac_tnl_log, struct hclge_mac_tnl_stats,
- 		      HCLGE_MAC_TNL_LOG_SIZE);
-+
-+	/* affinity mask and notify for misc interrupt */
-+	cpumask_t affinity_mask;
-+	struct irq_affinity_notify affinity_notify;
- };
- 
- /* VPort level vlan tag configuration for TX direction */
 -- 
 2.7.4
 
