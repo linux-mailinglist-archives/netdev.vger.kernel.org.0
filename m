@@ -2,140 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DB973422
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F097342E
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:48:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387503AbfGXQpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 12:45:13 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:34050 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726997AbfGXQpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 12:45:12 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ACD5CB40071;
-        Wed, 24 Jul 2019 16:45:10 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 24 Jul
- 2019 09:44:59 -0700
-Subject: Re: [PATCH net-next 03/10] sfc: Use dev_get_drvdata where possible
-To:     Chuhong Yuan <hslester96@gmail.com>
-CC:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        "Martin Habets" <mhabets@solarflare.com>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190724112658.13241-1-hslester96@gmail.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <0fb1dc63-0dce-dfeb-ef74-7883a7b63538@solarflare.com>
-Date:   Wed, 24 Jul 2019 17:44:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2387730AbfGXQs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 12:48:27 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:48937 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387551AbfGXQsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 12:48:25 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7CEF21B52;
+        Wed, 24 Jul 2019 12:48:24 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 24 Jul 2019 12:48:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=N8XBSp
+        cn1o6ObMkZcAZBtxueL9hPgfrdRzH2GqT5roc=; b=zixQy8pltzELc0g3ftqs4F
+        G1pAXVTF7s9RoKW2hh5CQbXR9rWMpqTWfTQ1+U6JZFHUT5FDCsTw03jqHNuQ4vrh
+        lZOQbXPsTb8B9WhbgW/4c2o+eA9mey7x4NHpkoNsqo/+jktcrccrbqEj8yfROGjQ
+        LLInbNkP0HqIW8zTmDWkUM6kEWzq3x6JYRmHPFbu5cgzGBMOT7kN00/Zwz4mZGo7
+        zQlBNcHD/UPWXDmJ5+Xz47MkB/rlSG6MybmeI2OusIpmq5xqaFKdzlK/rJ7rEwJa
+        CBOpCoOBbSDZQUinz5ek9Sj9MS0r9dhtGOXydaQsXVujLCvtI/8/ORQmcaCtk6Ug
+        ==
+X-ME-Sender: <xms:1os4Xc3S4eFUffv_fvx8Bg_gJLuyTN2koLzrFAdR79XkXSqArgBizQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrkedtgddutddtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:1os4XRd0_R8Nz1dT6wtBE9jqVxMzLwOQtpiZ6Q2yIYtkC7vnjm9Vyw>
+    <xmx:1os4XVpT7JFWZXwRoXdCPxo1uCUlHAlO-eFFq4Yopqw-4fTsLm7_mw>
+    <xmx:1os4XTVsFEJwuEdOVac_Uuf5HRPh5Ye3NaD6uIPdTrFtbfE_N_wVEQ>
+    <xmx:2Is4XR--pFjmc3tIvKVcZvUEHMuSohWrF6RKqcZ5yF6jLEZzFEXsIQ>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0EF15380084;
+        Wed, 24 Jul 2019 12:48:21 -0400 (EDT)
+Date:   Wed, 24 Jul 2019 19:48:20 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 00/12] drop_monitor: Capture dropped packets
+ and metadata
+Message-ID: <20190724164820.GA20252@splinter>
+References: <20190722183134.14516-1-idosch@idosch.org>
+ <87imrt4zzg.fsf@toke.dk>
+ <20190723064659.GA16069@splinter>
+ <875znt3pxu.fsf@toke.dk>
+ <20190723151423.GA10342@splinter>
+ <20190724125851.GD2225@nanopsycho>
 MIME-Version: 1.0
-In-Reply-To: <20190724112658.13241-1-hslester96@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24792.002
-X-TM-AS-Result: No-9.411600-4.000000-10
-X-TMASE-MatchedRID: zGP2F0O7j/s6yy6RAAEPc78kYs0sFfJn69aS+7/zbj+qvcIF1TcLYMiT
-        Wug2C4DNl1M7KT9/aqA65JDztUKj+SHhSBQfglfsA9lly13c/gHYuVu0X/rOkMAkyHiYDAQb+9R
-        qUr/gzAy2ElsrxSFwyOw7fJE49lGn1Lt7MpzUCiTF30Jee57vxg+jS+LRpl81iiKPXbEds+5owd
-        s9EtnpIuLxYrk8G4y1kZOl7WKIImrvXOvQVlExsFZ0V5tYhzdWxEHRux+uk8geb2CAVWgJwCnW6
-        Vd+hzzp4q2OQB0NF5ugw7WrK1XGkTjxgahWxB1n0SvbaTk+J3J+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.411600-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24792.002
-X-MDID: 1563986711-iSl_NlxktAMj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190724125851.GD2225@nanopsycho>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/07/2019 12:26, Chuhong Yuan wrote:
-> Instead of using to_pci_dev + pci_get_drvdata,
-> use dev_get_drvdata to make code simpler.
->
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-Acked-by: Edward Cree <ecree@solarflare.com>
+On Wed, Jul 24, 2019 at 02:58:51PM +0200, Jiri Pirko wrote:
+> Shouldn't the queue len be configurable?
 
-> ---
->  drivers/net/ethernet/sfc/ef10.c |  4 ++--
->  drivers/net/ethernet/sfc/efx.c  | 10 +++++-----
->  2 files changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-> index 16d6952c312a..0ec13f520e90 100644
-> --- a/drivers/net/ethernet/sfc/ef10.c
-> +++ b/drivers/net/ethernet/sfc/ef10.c
-> @@ -508,7 +508,7 @@ static ssize_t efx_ef10_show_link_control_flag(struct device *dev,
->  					       struct device_attribute *attr,
->  					       char *buf)
->  {
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  
->  	return sprintf(buf, "%d\n",
->  		       ((efx->mcdi->fn_flags) &
-> @@ -520,7 +520,7 @@ static ssize_t efx_ef10_show_primary_flag(struct device *dev,
->  					  struct device_attribute *attr,
->  					  char *buf)
->  {
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  
->  	return sprintf(buf, "%d\n",
->  		       ((efx->mcdi->fn_flags) &
-> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-> index ab58b837df47..2fef7402233e 100644
-> --- a/drivers/net/ethernet/sfc/efx.c
-> +++ b/drivers/net/ethernet/sfc/efx.c
-> @@ -2517,7 +2517,7 @@ static struct notifier_block efx_netdev_notifier = {
->  static ssize_t
->  show_phy_type(struct device *dev, struct device_attribute *attr, char *buf)
->  {
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  	return sprintf(buf, "%d\n", efx->phy_type);
->  }
->  static DEVICE_ATTR(phy_type, 0444, show_phy_type, NULL);
-> @@ -2526,7 +2526,7 @@ static DEVICE_ATTR(phy_type, 0444, show_phy_type, NULL);
->  static ssize_t show_mcdi_log(struct device *dev, struct device_attribute *attr,
->  			     char *buf)
->  {
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
->  
->  	return scnprintf(buf, PAGE_SIZE, "%d\n", mcdi->logging_enabled);
-> @@ -2534,7 +2534,7 @@ static ssize_t show_mcdi_log(struct device *dev, struct device_attribute *attr,
->  static ssize_t set_mcdi_log(struct device *dev, struct device_attribute *attr,
->  			    const char *buf, size_t count)
->  {
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
->  	bool enable = count > 0 && *buf != '0';
->  
-> @@ -3654,7 +3654,7 @@ static int efx_pci_sriov_configure(struct pci_dev *dev, int num_vfs)
->  
->  static int efx_pm_freeze(struct device *dev)
->  {
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  
->  	rtnl_lock();
->  
-> @@ -3675,7 +3675,7 @@ static int efx_pm_freeze(struct device *dev)
->  static int efx_pm_thaw(struct device *dev)
->  {
->  	int rc;
-> -	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-> +	struct efx_nic *efx = dev_get_drvdata(dev);
->  
->  	rtnl_lock();
->  
-
+Yes, it will be configurable in v1. I will use a sane limit as default.
