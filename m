@@ -2,87 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB8873738
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E44BF73748
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728821AbfGXTDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 15:03:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45594 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727777AbfGXTDJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 15:03:09 -0400
-Received: from gmail.com (unknown [104.132.1.77])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 076BB22ADB;
-        Wed, 24 Jul 2019 19:03:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563994988;
-        bh=W7Y9oN9/ybRA+889iyJc8Sp46nGRbSZs546N0y4ccAw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P/sgd1WEfA1UzlKSlOlf5voa5IZ7DiREeZ6+nCqBiUNNj0aKJB2qaE1zen4VO+9MD
-         g40O+XGAtxBTh28lguakyP8uQ4bme4YGIAtcT8dvQZa4WjSMcW8R5HWJxYZWHbQUcg
-         HR6eOoDIC35HHu52qFp5VlYGni/vEq//lKPNVIzE=
-Date:   Wed, 24 Jul 2019 12:03:06 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        netdev <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>,
-        i.maximets@samsung.com, David Ahern <dsahern@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: Reminder: 99 open syzbot bugs in net subsystem
-Message-ID: <20190724190305.GG213255@gmail.com>
-Mail-Followup-To: Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>, netdev <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>, i.maximets@samsung.com,
-        David Ahern <dsahern@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <20190724013813.GB643@sol.localdomain>
- <63f12327-dd4b-5210-4de2-705af6bc4ba4@gmail.com>
- <20190724163014.GC673@sol.localdomain>
- <20190724.111225.2257475150626507655.davem@davemloft.net>
- <20190724183710.GF213255@gmail.com>
- <CANn89iKZcdk-YfqZ-F1toHDLW3Etf5oPR78bXOq0FbjwWyiSMQ@mail.gmail.com>
+        id S1727387AbfGXTFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 15:05:48 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:39987 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbfGXTFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:05:48 -0400
+Received: by mail-qt1-f196.google.com with SMTP id a15so46568674qtn.7;
+        Wed, 24 Jul 2019 12:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=U1BY5u1Dhbf0nVijwCOksJyWDz8otzZNHxVFWbabBgc=;
+        b=U/RH3OA/sTAlxlAsSh2j8mw+RjPttJjCf7Sur21d7XJwnq7HhyZEcKoFZVn2wkEiMN
+         DmHfIs8Ur8wf4rzpgeaSbBDNdVfuKBQX0G2rDhkRn6IgZbyji68j9djwJd5b/S8pwMfB
+         cV2dNthjateQVCWQl3FCnlSoVhLQMmgO1yTtO+zlHrvCTIGxezmdulpshnExjOsEG35Q
+         foTsjS35SnpqHo+lomvFPd3hTL434YMjF/DZCLJbb19vHMnYrmZJHmEszk0+sCHb1vKu
+         EXY22NBPJuRPL9bgf7K2KTXBfaNKFvpPsDqgIdkYXiIB/SWRVhtA3+dHPU0p9cSK6XmF
+         yL5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=U1BY5u1Dhbf0nVijwCOksJyWDz8otzZNHxVFWbabBgc=;
+        b=ckW5jTPSV5J7Xdyat7Hm9oCS/qGlE7yNX3ZWmV/25n2T2bXSHBWQI6/IVFgy+mM8dj
+         RCGkbrobbFsT01h3e5n5AnIf0+pygndyQPYcwTUDhhYOz4w3ixu/i7UvTgKUcSXlJvFA
+         pn1QlVjjxFeLAfJunf6himiVUD8SqRI6tosm2T2ob5yRFaQLQbsPngbP6lYAqWTlY1vv
+         r4Kt4mpiWt9jdvs9HGn200WeCFTS0cv0ZtfIS+m38Z81DwjmpweS/gv+kezWhif2vG6O
+         jH1IWTz0u6+TDy2Xi9WTYc0pqvp43lxOOY+eMChCIlhSwJBAc/W6EkYRQX9HKXd13Rrj
+         qS+w==
+X-Gm-Message-State: APjAAAVyk9zwBppwBMMbpr1TKZXua9/EG1sTuk7UfCt2XZRzVxazC2kI
+        RGIQC1HA14YCfb7J6Z42fLonbo4hloM=
+X-Google-Smtp-Source: APXvYqzzvlHN45l8HuOcRUXa7bWr+B/CA1c8e+GnKCcpdaWE4a4llL30kn3vO8Suo2CnfoxknHQb6Q==
+X-Received: by 2002:a0c:fa8b:: with SMTP id o11mr60455734qvn.6.1563995147069;
+        Wed, 24 Jul 2019 12:05:47 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:2135:7c3d:d61c:7f11:969d])
+        by smtp.gmail.com with ESMTPSA id b23sm28947286qte.19.2019.07.24.12.05.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 24 Jul 2019 12:05:46 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id C54C9C1BD5; Wed, 24 Jul 2019 16:05:43 -0300 (-03)
+Date:   Wed, 24 Jul 2019 16:05:43 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, davem <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/4] sctp: check addr_size with sa_family_t size
+ in __sctp_setsockopt_connectx
+Message-ID: <20190724190543.GH6204@localhost.localdomain>
+References: <cover.1563817029.git.lucien.xin@gmail.com>
+ <c875aa0a5b2965636dc3da83398856627310b280.1563817029.git.lucien.xin@gmail.com>
+ <20190723152449.GB8419@localhost.localdomain>
+ <CADvbK_eiS26aMZcPrj2oNvZh_42phWiY71M7=UNvjEeB-B9bDQ@mail.gmail.com>
+ <20190724112235.GA7212@hmswarspite.think-freely.org>
+ <20190724123650.GD6204@localhost.localdomain>
+ <20190724124907.GA8640@localhost.localdomain>
+ <20190724184456.GC7212@hmswarspite.think-freely.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iKZcdk-YfqZ-F1toHDLW3Etf5oPR78bXOq0FbjwWyiSMQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190724184456.GC7212@hmswarspite.think-freely.org>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 08:52:54PM +0200, 'Eric Dumazet' via syzkaller-bugs wrote:
-> On Wed, Jul 24, 2019 at 8:37 PM Eric Biggers <ebiggers@kernel.org> wrote:
-> 
-> > A huge number of valid open bugs are not being fixed, which is a fact.  We can
-> > argue about what words to use to describe this situation, but it doesn't change
-> > the situation itself.
-> >
-> > What is your proposed solution?
-> 
-> syzbot sends emails, plenty  of them, with many wrong bisection
-> results, increasing the noise.
-> 
-> If nobody is interested, I am not sure sending copies of them
-> repeatedly will be of any help.
-> 
-> Maybe a simple monthly reminder with one URL to go to the list of bugs
-> would be less intrusive.
-> 
+On Wed, Jul 24, 2019 at 02:44:56PM -0400, Neil Horman wrote:
+> On Wed, Jul 24, 2019 at 09:49:07AM -0300, Marcelo Ricardo Leitner wrote:
+> > On Wed, Jul 24, 2019 at 09:36:50AM -0300, Marcelo Ricardo Leitner wrote:
+> > > On Wed, Jul 24, 2019 at 07:22:35AM -0400, Neil Horman wrote:
+> > > > On Wed, Jul 24, 2019 at 03:21:12PM +0800, Xin Long wrote:
+> > > > > On Tue, Jul 23, 2019 at 11:25 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > > >
+> > > > > > On Tue, Jul 23, 2019 at 01:37:57AM +0800, Xin Long wrote:
+> > > > > > > Now __sctp_connect() is called by __sctp_setsockopt_connectx() and
+> > > > > > > sctp_inet_connect(), the latter has done addr_size check with size
+> > > > > > > of sa_family_t.
+> > > > > > >
+> > > > > > > In the next patch to clean up __sctp_connect(), we will remove
+> > > > > > > addr_size check with size of sa_family_t from __sctp_connect()
+> > > > > > > for the 1st address.
+> > > > > > >
+> > > > > > > So before doing that, __sctp_setsockopt_connectx() should do
+> > > > > > > this check first, as sctp_inet_connect() does.
+> > > > > > >
+> > > > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > > > > > ---
+> > > > > > >  net/sctp/socket.c | 2 +-
+> > > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > > >
+> > > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> > > > > > > index aa80cda..5f92e4a 100644
+> > > > > > > --- a/net/sctp/socket.c
+> > > > > > > +++ b/net/sctp/socket.c
+> > > > > > > @@ -1311,7 +1311,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
+> > > > > > >       pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
+> > > > > > >                __func__, sk, addrs, addrs_size);
+> > > > > > >
+> > > > > > > -     if (unlikely(addrs_size <= 0))
+> > > > > > > +     if (unlikely(addrs_size < sizeof(sa_family_t)))
+> > > > > > I don't think this is what you want to check for here.  sa_family_t is
+> > > > > > an unsigned short, and addrs_size is the number of bytes in the addrs
+> > > > > > array.  The addrs array should be at least the size of one struct
+> > > > > > sockaddr (16 bytes iirc), and, if larger, should be a multiple of
+> > > > > > sizeof(struct sockaddr)
+> > > > > sizeof(struct sockaddr) is not the right value to check either.
+> > > > > 
+> > > > > The proper check will be done later in __sctp_connect():
+> > > > > 
+> > > > >         af = sctp_get_af_specific(daddr->sa.sa_family);
+> > > > >         if (!af || af->sockaddr_len > addrs_size)
+> > > > >                 return -EINVAL;
+> > > > > 
+> > > > > So the check 'addrs_size < sizeof(sa_family_t)' in this patch is
+> > > > > just to make sure daddr->sa.sa_family is accessible. the same
+> > > > > check is also done in sctp_inet_connect().
+> > > > > 
+> > > > That doesn't make much sense, if the proper check is done in __sctp_connect with
+> > > > the size of the families sockaddr_len, then we don't need this check at all, we
+> > > > can just let memdup_user take the fault on copy_to_user and return -EFAULT.  If
+> > > > we get that from memdup_user, we know its not accessible, and can bail out.
+> > > > 
+> > > > About the only thing we need to check for here is that addr_len isn't some
+> > > > absurdly high value (i.e. a negative value), so that we avoid trying to kmalloc
+> > > > upwards of 2G in memdup_user.  Your change does that just fine, but its no
+> > > > better or worse than checking for <=0
+> > > 
+> > > One can argue that such check against absurdly high values is random
+> > > and not effective, as 2G can be somewhat reasonable on 8GB systems but
+> > > certainly isn't on 512MB ones. On that, kmemdup_user() will also fail
+> > > gracefully as it uses GFP_USER and __GFP_NOWARN.
+> > > 
+> > > The original check is more for protecting for sane usage of the
+> > > variable, which is an int, and a negative value is questionable. We
+> > > could cast, yes, but.. was that really the intent of the application?
+> > > Probably not.
+> > 
+> > Though that said, I'm okay with the new check here: a quick sanity
+> > check that can avoid expensive calls to kmalloc(), while more refined
+> > check is done later on.
+> > 
+> I agree a sanity check makes sense, just to avoid allocating a huge value
+> (even 2G is absurd on many systems), however, I'm not super comfortable with
+> checking for the value being less than 16 (sizeof(sa_family_t)).  The zero check
 
-The bogus bisection results is a known issue (which I'm trying to convince
-Dmitry is important enough to fix...), which is why I manually reviewed all of
-them and discarded out all the obviously incorrect ones.  My reminders only
-include manually reviewed bisection results.  Obviously there will still be some
-looked plausible but are actualy wrong, but I suspect the accuracy is around
-80-90% rather than the 40-50% of the raw syzbot bisection results.
+16 bits you mean then, per
+include/uapi/linux/socket.h
+typedef unsigned short __kernel_sa_family_t;
+include/linux/socket.h
+typedef __kernel_sa_family_t    sa_family_t;
 
-- Eric
+> is fairly obvious given the signed nature of the lengh field, this check makes
+> me wonder what exactly we are checking for.
+
+A minimum viable buffer without doing more extensive tests. Beyond
+sa_family, we need to parse sa_family and then that's left for later.
+Perhaps a comment helps, something like
+	/* Check if we have at least the family type in there */
+?
+
+  Marcelo
+
+> 
+> Neil
+> 
+> > > 
+> > > > 
+> > > > Neil
+> > > > 
+> > > > > >
+> > > > > > Neil
+> > > > > >
+> > > > > > >               return -EINVAL;
+> > > > > > >
+> > > > > > >       kaddrs = memdup_user(addrs, addrs_size);
+> > > > > > > --
+> > > > > > > 2.1.0
+> > > > > > >
+> > > > > > >
+> > > > > 
+> > 
