@@ -2,86 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F6D72991
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 10:10:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E233772997
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 10:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725999AbfGXIKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 04:10:47 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:46781 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725870AbfGXIKr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 04:10:47 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 2FCB52038;
-        Wed, 24 Jul 2019 04:10:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 24 Jul 2019 04:10:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=YQgodIuz3FH/EvWX8gPqzd/YXYWhKR9FGARlFyLtZ
-        Ms=; b=MyuRsQtBEQ/Zj/LdIU7JZD/35oLrZR7zGZsGYo9sPPnOwAsbOL+9ELbR+
-        Je6U0ocM/+ILzO8kUasY96MhxCADhj29hJwYzO5mawEsUSWfq0t7eAINj1nFmx2y
-        IrMBhoenL03H7p7b47nCvHeFzlRazffr+zpjec6lEjWwonvqOFLv+wcFSYlWvnlH
-        iege10TVcEOEAdWg579KPhpFYy7x71Kx9xrqJV1EiHR1pjKPngQc6cw1MGHHW2SM
-        QxF3jFHiMMRljonTWkGr1uIAmWX9zTpFYVkMpgLvcHVq6SUVbpZ93x80KhAIli/F
-        n8zeNLVlDWUMJPv4BJXCvwwnjIHFg==
-X-ME-Sender: <xms:hBI4XQuQKzgUGs45kwCXZnNCbBh6sPfMUku7zwQb_oNUQTwCa6LmKQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrjeelgdduvdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjggfsehtkeertddtredunecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepud
-    elfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgt
-    hhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:hBI4XS05fbNaqooY27ctWodDm1tjnMECYGSs9rF7p6NXloziXZsjHw>
-    <xmx:hBI4Xe1ddkjKkIbDnKdqpWT6-Mf_AReFTwifPybDaUMDuHxMzAM5FA>
-    <xmx:hBI4XX3fFuVNWP9CU0cIEkcBBB7yh9VfTyqhIyRcOoPEdv5wlZSeYw>
-    <xmx:hhI4XXwVF2FsZ5_72HHBq5W_ORJXL2EqJZOK2yvHraQ2euis9_ZHUA>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 20634380079;
-        Wed, 24 Jul 2019 04:10:43 -0400 (EDT)
-Date:   Wed, 24 Jul 2019 11:10:42 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 00/12] drop_monitor: Capture dropped packets
- and metadata
-Message-ID: <20190724081042.GB15878@splinter>
-References: <20190722183134.14516-1-idosch@idosch.org>
- <87imrt4zzg.fsf@toke.dk>
- <20190723064659.GA16069@splinter>
- <875znt3pxu.fsf@toke.dk>
- <20190723151423.GA10342@splinter>
- <87ftmw3f9m.fsf@toke.dk>
+        id S1726256AbfGXINR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 04:13:17 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:39115 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726207AbfGXINP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 04:13:15 -0400
+Received: by mail-ed1-f66.google.com with SMTP id m10so46297404edv.6
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 01:13:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:cc;
+        bh=+rNRJY68IIsD9nh+g9TvsIleBslPfLPXnzcgzuZEN48=;
+        b=I3P1lO6M7mukJ8KziuxO4lwxZaCAEl58oUX+PO1XCwcZyQwz3JtUDGwgufNide1IPU
+         Q7YNLXYcjqeHdQKGY8/cvpw/sv2h35skgV1k8YlZlW62GNfBPPbi2nnAOeqYJbShHm3v
+         2F0rU4+6x5NgLoN7doN5wb9j0sy1IHdQNCfp9aGSubZjGl9sAGRLy9lZnO6NzIlopx6V
+         RUIjlm5lSh9geksn3AT3RAcweH/lhkcgrj0rPndv/4XXANjOlLSnFo2VDcab+7jus4fg
+         +zCdTioMfVUew0SNjSjaVkFZh4eQItDnlcrwolp7ZBtE4vMSr3/VpMqgYcWfJkk1GGDg
+         bsmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:cc;
+        bh=+rNRJY68IIsD9nh+g9TvsIleBslPfLPXnzcgzuZEN48=;
+        b=DNxbIsf1R4uRZxFg2RpSxtN8l1CHXtUmm9sncmivUGyMbBgkGdJDsm79vbeskwL+vf
+         3Ky2tkMLJgbbAOgGmhnLC859w2RVVScD+EoZGpmCFFyl2lHnep0yWbohKNAfoOTa0wm7
+         flAVIFJxaNZVlJ8F3qGxtJAnqf4s0zds8iBqvMHbQn+8J6uuguGh88WlkHHHeNfbm4Kq
+         JyCSnLiTrEcRDQiz+SKlF0X5DtRoVxRvoquHnmpeaXDjSIbbuGqZGUuefWbicOgLcsqb
+         ArMEWKnKM8ZA6lE7h43mqQFcMQi5g7b3QVQDMO1ZyFhYzfmvfCb22YmHcw6mcaz7Ctrp
+         nPkw==
+X-Gm-Message-State: APjAAAVmPNeHN/zp0sefL8Z0UGblxAnSArGPDACoA6yg+BZXGW0bkiOo
+        5fLXMxKN6aGS1iiCX/qhgSsRcD0rrULGXdh1P7A=
+X-Received: by 2002:a05:6402:896:: with SMTP id e22mt65279497edy.202.1563955993753;
+ Wed, 24 Jul 2019 01:13:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87ftmw3f9m.fsf@toke.dk>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+References: <20190724060512.23899-1-hslester96@gmail.com>
+In-Reply-To: <20190724060512.23899-1-hslester96@gmail.com>
+From:   Chuhong Yuan <hslester96@gmail.com>
+Date:   Wed, 24 Jul 2019 16:13:03 +0800
+Message-ID: <CANhBUQ0gYF+cF1EjfSA-WVvAKipQHWgkasXN91mphHYsZV+uMQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/8] Use dev_get_drvdata where possible
+Cc:     Steffen Klassert <klassert@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Rasesh Mody <rmody@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Guo-Fu Tseng <cooldavid@cooldavid.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 06:08:21PM +0200, Toke Høiland-Jørgensen wrote:
-> Also, presumably the queue will have to change from a struct
-> sk_buff_head to something that can hold XDP frames and whatever devlink
-> puts there as well, right?
+On Wed, Jul 24, 2019 at 2:05 PM Chuhong Yuan <hslester96@gmail.com> wrote:
+>
+> These patches use dev_get_drvdata instead of
+> using to_pci_dev + pci_get_drvdata to make
+> code simpler where possible.
+>
+> Changelog:
+>
+> v1 -> v2:
+> - Change pci_set_drvdata to dev_set_drvdata
+>   to keep consistency.
+>
 
-Good point!
+Hi all,
+I checked the cases which mentioned the consistency
+of get/set_drvdata usages.
+The cases' commit IDs are
+488d040e3a3452a0dceef5d3ec4f61942262f57f
+b77c98780e682fe780d899b91543769d4cf94585
 
-For HW drops we get an SKB and relevant metadata from devlink about why
-the packet was dropped etc. I plan to store a pointer to this metadata
-in the SKB control block.
+After checking, I think that the consistency problem
+refers to inconsistency between probe and remove.
+But the changes of these patches are not related
+to probe and remove.
 
-Let me see how the implementation goes. Even if use sk_buff_head for
-now, I will make sure that converting to a more generalized data
-structure is straightforward.
+So I think the previously sent and applied v1 patches
+which do not change pci_set_drvdata to dev_set_drvdata
+are okay.
+Therefore there may be no need to use these v2 patches.
+
+Regards,
+Chuhong
+
+
+> Chuhong Yuan (8):
+>   net: 3com: 3c59x: Use dev_get_drvdata
+>   net: atheros: Use dev_get_drvdata
+>   net: broadcom: Use dev_get_drvdata
+>   e1000e: Use dev_get_drvdata where possible
+>   fm10k: Use dev_get_drvdata
+>   i40e: Use dev_get_drvdata
+>   igb: Use dev_get_drvdata where possible
+>   net: jme: Use dev_get_drvdata
+>
+>  drivers/net/ethernet/3com/3c59x.c               |  8 +++-----
+>  drivers/net/ethernet/atheros/alx/main.c         |  8 +++-----
+>  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 10 ++++------
+>  drivers/net/ethernet/atheros/atlx/atl1.c        |  8 +++-----
+>  drivers/net/ethernet/broadcom/bnx2.c            |  8 +++-----
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c       |  8 +++-----
+>  drivers/net/ethernet/broadcom/tg3.c             |  8 +++-----
+>  drivers/net/ethernet/intel/e1000e/netdev.c      |  9 ++++-----
+>  drivers/net/ethernet/intel/fm10k/fm10k_pci.c    |  6 +++---
+>  drivers/net/ethernet/intel/i40e/i40e_main.c     | 10 ++++------
+>  drivers/net/ethernet/intel/igb/igb_main.c       |  5 ++---
+>  drivers/net/ethernet/jme.c                      |  8 +++-----
+>  12 files changed, 38 insertions(+), 58 deletions(-)
+>
+> --
+> 2.20.1
+>
