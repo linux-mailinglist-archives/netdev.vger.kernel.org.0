@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE434723C6
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A61723CE
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728344AbfGXBic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 21:38:32 -0400
-Received: from sonic310-20.consmr.mail.bf2.yahoo.com ([74.6.135.194]:46532
-        "EHLO sonic310-20.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727363AbfGXBic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 21:38:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bellsouth.net; s=s2048; t=1563932311; bh=ZZ/rHLttVErLzhD+sRD5MjWIH47JtNuuSC4WjFRRv+A=; h=To:From:Subject:Date:From:Subject; b=a6IehIXCMNGm63CjbVwL8xJ4Gwc0ypw9E7dzMAnLEUkcVRxAbBNQD/O2hY60ZpNSLkvD7bJtKfGOzuhRbsNjKTaa3fRTp++PthbHxo+Ysd8f8aslTrAjyBUVE/rDzValzGGM4ezGuVZ1lXkOa32ys+L6xCaQPeODAxk8ZiiNNhNAFwwNK32bpQPN3uxgK8qpVKEc7GqdHjrR39ZsruSIq1dxZAt3xCCk0HMP10J5LFrvmHf8Mzh3X14r78xXbbX4VH7i9nts5iym4fGqlElDyr/SrrRTthciTX4V/zqt9Sj4csST/tHClCmf+tH9/TGfFW5c17ERaIMor5sUzpZxyg==
-X-YMail-OSG: LLgm9bsVM1nZ7a4HtPsSMxr9xORsJq4377e4VB.AxvNL44DWjb17IAUaaRfxIdW
- JjUCw09o.diG40.otgKwPLNv9rw9y83BCUPdQgl8iKtVe.PD4ra2RkdC2Aw9eSW.7fyMh745FPwd
- uVzPE4vLCId1BaYRUuNpV9BHVveBZPql6y6ajRjuiXu2kpWfGp9GmmE__J9hqka7sa17Civ266LC
- lUre8xajtdgvpdsOZiCGjrzaYTAoPM3mMztKo.mYQamr3e2W2Qu2or7bIsmdA.j3fFuLSzXuJloH
- KHx034DM3aATvzgeIYxwqzrlvWCxMUDfr1B80Ma6drttTXFpLpt93O8mBwRHxYsVwP4BQxWRveyQ
- afGVbm_u_fRa0zgY.k8xpVHJdFfQ7PAWP8k4Gco5wgWo1zCpZtwK6qMW.KODZX03WmWLVIYcvujC
- KyRJqQqa6EeC2wKSPYb79aytCIfalv5OmZUQcfEGw20mO4t0Mxw0hsoaZB7gN1wlRWkl73Hx9NlY
- MmLr1u4iiOQB4w2IeYLgff9Sm98Ln2IzhvGs6xDWBnyDBGYSv4ZtT6_Joto_pGNaqXecqbj6dXoX
- hNTMXNBGll6pbb6Ooa6Th9gLnOqFXwMdtggH7xc87bDaYTqjhrrL4Z7sq68NCoXgMJt2UCnB0V8y
- DUybpXXfYoBpwozUzr1bv.dDCQ41LhkJhlHDBwpFjb32o_GJovaVrkTDo3u7VpqzqyKp8CL3b0tQ
- NQChvXmCcs.7B1K5dst2hS.5hpyFbrXaG1W0vx090exPHU6.mTX2gxWq9T2xa5eo.Js1bFjOGmEE
- cYbsPf6ePygEiIc3L2L4Q0XEQq.oWjPaJJgwzAjvETuQbY3s.GsfflH0TMTChAe1dIo_Mzdv92P3
- dOm0D05Prg1WbNojSJd6tRMYVEu3mQ3.b0Wa_QSQRwBcIjPtqTEKzh6rfmWH.fLjlbeGvFMwclMG
- 8ZRs1AqN8znirTfDc5M1Ba52V3EKZVYi7Xg1wfiVmzaqDY30dI4_3ZLG3zwX0Bfj5o_tybo27wQ0
- gArSW_kmA7ozZ2MVIbm.yp97U.zbSX16ZmzxfpIHp9lk3HMBHxukV2Y3GxoNaRMO.kQLWvwI92gY
- QE9YNcpYSLLO2KZN.n5Gi3vWvTPT7Rlqg7ce9XFrxpFCV7fTPsYWeE0uCz_enECPjDeKGcKPc.4N
- b_eSyFY6RYg8bFXnfvobagB_hVtk9XsfzQ2O3syr.fL9BYDMf2Kdo
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Wed, 24 Jul 2019 01:38:31 +0000
-Received: by smtp416.mail.bf1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID 511b965a51e2e355237b85287e65231a;
-          Wed, 24 Jul 2019 01:38:26 +0000 (UTC)
-To:     netdev@vger.kernel.org
-From:   Bob Gleitsmann <rjgleits@bellsouth.net>
-Subject: kernel v5.3.0-rc1
-Message-ID: <ed5c39e4-e364-ccca-0a9e-8d0b4d648bfd@bellsouth.net>
-Date:   Tue, 23 Jul 2019 21:38:25 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728385AbfGXBkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 21:40:02 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:53833 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728375AbfGXBkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 21:40:01 -0400
+Received: by mail-io1-f71.google.com with SMTP id h3so49318611iob.20
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 18:40:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=w92/D4APly1S0dijjuo/84NrUKS2JIroIh/+k83Y0Yg=;
+        b=p4wCfbvXBqClhAMHyCl5tkSVRGJdWVlMaDlaRn2z4y+f5E3LhDJRilkM+tIkERGiwG
+         NwgalQ0kgzqM4oKZnPOfc8iiMyBMIiLuIVslQveaPfxTzLOmWgN4jd3f/ipF7EA7DTiV
+         W9GmPaMxvzRLM2KKOSpO0TJFcVIVWMPzbTMoKqoCVd0PsHxPPQ+Sgk/YPYDgLD2qnu2O
+         fd4Xo4CV5d9PRqMSr9iHZm4Aa8L3efAvQm5RMwFlZ1/tteT5VaGJOm8jBSC3jHTJ9Svp
+         XALH3xvZ0Hjh0WRDGUthpzoadkOIzDYaeoqZix1DvQ5QJQnaXB/KpBN1d7ZA8OI0G3oU
+         iSmg==
+X-Gm-Message-State: APjAAAUoYlAYmCpMFpYN5xJNTVhMDmOoj8HJgZETN2FRhDXkY9qJqabt
+        1q2to/f7isG4TdBPwfjhDpRmihzMI/8OmZPlVJNCeJizDm9b
+X-Google-Smtp-Source: APXvYqxZV7f2M7mWAmPB7Zk6w2/BTeh9n6/BKLJgP5HdF+ftj8Txa1VpP1wlpVLNOViX/+n9pFrEH7CBKE5ifAlRW9n+RxMquc0l
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+X-Received: by 2002:a05:6638:691:: with SMTP id i17mr82704018jab.70.1563932401090;
+ Tue, 23 Jul 2019 18:40:01 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 18:40:01 -0700
+In-Reply-To: <5d3744ff777cc_436d2adb6bf105c41c@john-XPS-13-9370.notmuch>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000384ae4058e636360@google.com>
+Subject: Re: kernel panic: stack is corrupted in pointer
+From:   syzbot <syzbot+79f5f028005a77ecb6bb@syzkaller.appspotmail.com>
+To:     airlied@linux.ie, alexander.deucher@amd.com,
+        amd-gfx@lists.freedesktop.org, ast@kernel.org, bpf@vger.kernel.org,
+        christian.koenig@amd.com, daniel@iogearbox.net,
+        david1.zhou@amd.com, dri-devel@lists.freedesktop.org,
+        dvyukov@google.com, john.fastabend@gmail.com, leo.liu@amd.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -50,22 +52,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello,
 
+syzbot has tested the proposed patch and the reproducer did not trigger  
+crash:
 
-I had problems with network functionality in kernel v5.3.0-rc1. I was
-not able to ping local devices with ip address or internet points by
-name. I have been testing git kernels for a while and this is the first
-time this has happened, i.e., it didn't happen with v5.2.0. One
-interesting thing is that simply rebooting with a good kernel doesn't
-fix the problem. The machine has to be powered off and restarted.
+Reported-and-tested-by:  
+syzbot+79f5f028005a77ecb6bb@syzkaller.appspotmail.com
 
-It was clear that network names were not being resolved.
+Tested on:
 
-I can provide more details and try different things to help track down
-the problem. I'm using x86-64 system, gentoo linux, r8169 PHY.
+commit:         decb705e libbpf: fix using uninitialized ioctl results
+git tree:       bpf
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87305c3ca9c25c70
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-
-Best Wishes,
-
-
-Bob Gleitsmann
-
+Note: testing is done by a robot and is best-effort only.
