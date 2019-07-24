@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FBA72D73
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 921F272D7A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727548AbfGXL1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:27:12 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:41680 "EHLO
+        id S1727590AbfGXL12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:27:28 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46247 "EHLO
         mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726300AbfGXL1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:27:12 -0400
-Received: by mail-pg1-f195.google.com with SMTP id x15so10741760pgg.8;
-        Wed, 24 Jul 2019 04:27:12 -0700 (PDT)
+        with ESMTP id S1727564AbfGXL11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:27:27 -0400
+Received: by mail-pg1-f195.google.com with SMTP id k189so2046102pgk.13;
+        Wed, 24 Jul 2019 04:27:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/OHyg+mW86vtE5E624Kaljg5itGZDkjiTyXIxt8GjT0=;
-        b=IUxjny5bzsg0GFzArn9NrEWhBuMRxaIFuGc5WWoMglJOgtVB6gZdJ7j/lOfZS5wuXy
-         uUNSYSNaVX6t4T0YourQagJzNMHuDEKnTIeD1tc2y1ccfaxZ0AXpJcmfysT6w2Bvgqs/
-         XqrveQDEeogIAgT7vbw9Rt++8VxfJEJ7MhXWXDseinuZlE2PuxyjZyaYm5duuobFIw09
-         z9oEp1Cc14VPI3MCBbu43k1U1O2VsCup2t8B1V0xjKrl/6lxBiHLeYZNU4k18ewNLWat
-         zahJgZT8xk7kssuHB4bhwvPNmMHsuscb8DqIOn70vl9t7RM5nE4uBpqoOVHNBf1w/kdJ
-         tfRA==
+        bh=b4DxcTaeexPnaVFulxgnZmsQIq5RlnqnEKxY7Kh+oe0=;
+        b=qwp0r4F7dH0xpc0WddOmAfplVDQ5zK5P8BbLITgy9s9y2FpC3kCMw26YiSktTcRBxy
+         hExWUt3KxE8WdBpaW+5Ur8bI0HOwoIeonJZURRk/LmkbCEzPfDB0G0T9pUFlak2tAyEG
+         jLMfExcEcekrvrTdLe2Yi1CLtET55E3yRp3bxPiMgsNcE57yHzOFs2qLmWOxREL4SWN9
+         PiroeMRXnhNjFHOMhM8RzqwQSpLABK8nlAoVedkUal/+KP8j9o+uaIyPzEBz7kj3ItId
+         SCELkl8uGEi2hEISgQY4J7Qm2wLQcSRgKSnzP4YOdZc9rhbv9TSzhqAc/HK+qD1PX3+2
+         tgVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/OHyg+mW86vtE5E624Kaljg5itGZDkjiTyXIxt8GjT0=;
-        b=Go/QMetoVE3HPl7iq5KDaz4TGg/AwlGzPwsiTqpoWQ6w2Zox5RKwkpGABbY4l+AR6O
-         LNTro2hxOhWkKOumnEzXEIJ0GU6Ci2kWVdd33vwX3jWCfTajypIKciG8UxHk7asCT6LC
-         J+7cH87XM4pu+9uDmzbOTX4byvtw3V9ZDV26mZd9fcAzAcHmx8ig6khRivFn3T0XMcC8
-         bsMhNyEfTTyXF7gx+g1hUIfT2PR3c2FURzb+tTDh3US1xqQAk55pLWnIuDo8I+Xy7R6H
-         25dU7bpk84QvtUWjwq77gWcMMttQ+nxjkOXc3P1AKsE9PSGRrmY0mxW3pbH/OFg2EOuM
-         bU9g==
-X-Gm-Message-State: APjAAAVxaiKPpsG2suFJn8vgpImOaOqypJO0RVLWT1A5h82dngj8BgpL
-        7hy5FH8LyDwoUJM2+EYifmA=
-X-Google-Smtp-Source: APXvYqwbGDAda63tr9hohztN44pArw2VtiEByJ+COC6iPWrHTiz1JsaOKt+NK0H5Afwb1GkNPuA81A==
-X-Received: by 2002:a17:90a:1b0c:: with SMTP id q12mr87931324pjq.76.1563967632066;
-        Wed, 24 Jul 2019 04:27:12 -0700 (PDT)
+        bh=b4DxcTaeexPnaVFulxgnZmsQIq5RlnqnEKxY7Kh+oe0=;
+        b=Xho/bkursl96M6VB1bHdUqk4oyx6mzGdVQjuh/gmAAGw8ErG5D/2szQwkt/OyWnP7n
+         +RC+O2sY6dF8lCyJQb4W905JD6T9tXx6U/ycBTwkGiDE3bW7hX+I/oZkwH1UAqekSmUr
+         PWTKrSjFuO1cIh7hbMXgGDmiWghkBepIigEwmTQAjtnSwP6yFgdrwkhKJSClYmStIm+K
+         Aj1skb7A/QSc6tQuh1rJVOoOXhBQKQjvpAf0jOxD26hNnheClrLGkyP6nOtVBTUzM2NP
+         p55wTIztcy4zFGUAvlzvIRWqBXrDYT5tHHi4l8UZAyHuabopgEvNfGcX6C0jI5GWm0Gj
+         IlNA==
+X-Gm-Message-State: APjAAAXn0bMuWJ1TXv0wrqth0+6azLwZQfM19lwCO4q8+PBPH3UPE/60
+        J86genya+hHdDYOfEswe/uMvhs2cuBE=
+X-Google-Smtp-Source: APXvYqycfVcHScdr7+gEN4ivvTtR92ARiffYrtKhWntNt1vy16afr/6LUDhxMyD86Rp7SPmxuO0qxw==
+X-Received: by 2002:a17:90a:4f0e:: with SMTP id p14mr84329540pjh.40.1563967647157;
+        Wed, 24 Jul 2019 04:27:27 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id g18sm82714938pgm.9.2019.07.24.04.27.09
+        by smtp.gmail.com with ESMTPSA id f20sm50411675pgg.56.2019.07.24.04.27.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 04:27:11 -0700 (PDT)
+        Wed, 24 Jul 2019 04:27:26 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net-next 04/10] sfc-falcon: Use dev_get_drvdata where possible
-Date:   Wed, 24 Jul 2019 19:27:06 +0800
-Message-Id: <20190724112706.13295-1-hslester96@gmail.com>
+Cc:     Jiri Slaby <jirislaby@gmail.com>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        Maya Erez <merez@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wil6210@qti.qualcomm.com,
+        Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH net-next 05/10] ath: Use dev_get_drvdata where possible
+Date:   Wed, 24 Jul 2019 19:27:20 +0800
+Message-Id: <20190724112720.13349-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,63 +72,69 @@ use dev_get_drvdata to make code simpler.
 
 Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/net/ethernet/sfc/falcon/efx.c           | 6 +++---
- drivers/net/ethernet/sfc/falcon/falcon_boards.c | 4 ++--
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/wireless/ath/ath5k/pci.c        | 3 +--
+ drivers/net/wireless/ath/ath9k/pci.c        | 5 ++---
+ drivers/net/wireless/ath/wil6210/pcie_bus.c | 6 ++----
+ 3 files changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
-index 9b15c39ac670..eecc348b1c32 100644
---- a/drivers/net/ethernet/sfc/falcon/efx.c
-+++ b/drivers/net/ethernet/sfc/falcon/efx.c
-@@ -2256,7 +2256,7 @@ static struct notifier_block ef4_netdev_notifier = {
- static ssize_t
- show_phy_type(struct device *dev, struct device_attribute *attr, char *buf)
+diff --git a/drivers/net/wireless/ath/ath5k/pci.c b/drivers/net/wireless/ath/ath5k/pci.c
+index c6156cc38940..e1378e203611 100644
+--- a/drivers/net/wireless/ath/ath5k/pci.c
++++ b/drivers/net/wireless/ath/ath5k/pci.c
+@@ -301,8 +301,7 @@ ath5k_pci_remove(struct pci_dev *pdev)
+ #ifdef CONFIG_PM_SLEEP
+ static int ath5k_pci_suspend(struct device *dev)
  {
--	struct ef4_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-+	struct ef4_nic *efx = dev_get_drvdata(dev);
- 	return sprintf(buf, "%d\n", efx->phy_type);
- }
- static DEVICE_ATTR(phy_type, 0444, show_phy_type, NULL);
-@@ -2999,7 +2999,7 @@ static int ef4_pci_probe(struct pci_dev *pci_dev,
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
++	struct ieee80211_hw *hw = dev_get_drvdata(dev);
+ 	struct ath5k_hw *ah = hw->priv;
  
- static int ef4_pm_freeze(struct device *dev)
+ 	ath5k_led_off(ah);
+diff --git a/drivers/net/wireless/ath/ath9k/pci.c b/drivers/net/wireless/ath/ath9k/pci.c
+index 92b2dd396436..f3461b193c7a 100644
+--- a/drivers/net/wireless/ath/ath9k/pci.c
++++ b/drivers/net/wireless/ath/ath9k/pci.c
+@@ -1021,13 +1021,12 @@ static void ath_pci_remove(struct pci_dev *pdev)
+ 
+ static int ath_pci_suspend(struct device *device)
  {
--	struct ef4_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-+	struct ef4_nic *efx = dev_get_drvdata(dev);
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
++	struct ieee80211_hw *hw = dev_get_drvdata(device);
+ 	struct ath_softc *sc = hw->priv;
+ 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
  
- 	rtnl_lock();
+ 	if (test_bit(ATH_OP_WOW_ENABLED, &common->op_flags)) {
+-		dev_info(&pdev->dev, "WOW is enabled, bypassing PCI suspend\n");
++		dev_info(device, "WOW is enabled, bypassing PCI suspend\n");
+ 		return 0;
+ 	}
  
-@@ -3020,7 +3020,7 @@ static int ef4_pm_freeze(struct device *dev)
- static int ef4_pm_thaw(struct device *dev)
+diff --git a/drivers/net/wireless/ath/wil6210/pcie_bus.c b/drivers/net/wireless/ath/wil6210/pcie_bus.c
+index 9f5a914abc18..1b0625987d76 100644
+--- a/drivers/net/wireless/ath/wil6210/pcie_bus.c
++++ b/drivers/net/wireless/ath/wil6210/pcie_bus.c
+@@ -631,8 +631,7 @@ static int __maybe_unused wil6210_pm_resume(struct device *dev)
+ 
+ static int __maybe_unused wil6210_pm_runtime_idle(struct device *dev)
  {
- 	int rc;
--	struct ef4_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-+	struct ef4_nic *efx = dev_get_drvdata(dev);
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct wil6210_priv *wil = pci_get_drvdata(pdev);
++	struct wil6210_priv *wil = dev_get_drvdata(dev);
  
- 	rtnl_lock();
+ 	wil_dbg_pm(wil, "Runtime idle\n");
  
-diff --git a/drivers/net/ethernet/sfc/falcon/falcon_boards.c b/drivers/net/ethernet/sfc/falcon/falcon_boards.c
-index 839189dab98e..2d85d1386ed9 100644
---- a/drivers/net/ethernet/sfc/falcon/falcon_boards.c
-+++ b/drivers/net/ethernet/sfc/falcon/falcon_boards.c
-@@ -357,7 +357,7 @@ static int sfe4001_poweron(struct ef4_nic *efx)
- static ssize_t show_phy_flash_cfg(struct device *dev,
- 				  struct device_attribute *attr, char *buf)
+@@ -646,8 +645,7 @@ static int __maybe_unused wil6210_pm_runtime_resume(struct device *dev)
+ 
+ static int __maybe_unused wil6210_pm_runtime_suspend(struct device *dev)
  {
--	struct ef4_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-+	struct ef4_nic *efx = dev_get_drvdata(dev);
- 	return sprintf(buf, "%d\n", !!(efx->phy_mode & PHY_MODE_SPECIAL));
- }
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct wil6210_priv *wil = pci_get_drvdata(pdev);
++	struct wil6210_priv *wil = dev_get_drvdata(dev);
  
-@@ -365,7 +365,7 @@ static ssize_t set_phy_flash_cfg(struct device *dev,
- 				 struct device_attribute *attr,
- 				 const char *buf, size_t count)
- {
--	struct ef4_nic *efx = pci_get_drvdata(to_pci_dev(dev));
-+	struct ef4_nic *efx = dev_get_drvdata(dev);
- 	enum ef4_phy_mode old_mode, new_mode;
- 	int err;
- 
+ 	if (test_bit(wil_status_suspended, wil->status)) {
+ 		wil_dbg_pm(wil, "trying to suspend while suspended\n");
 -- 
 2.20.1
 
