@@ -2,153 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDEBD72ACD
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 10:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4355272AEF
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbfGXI5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 04:57:01 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35229 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbfGXI5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 04:57:01 -0400
-Received: by mail-wr1-f65.google.com with SMTP id y4so46063087wrm.2;
-        Wed, 24 Jul 2019 01:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nS11U7aQYbR6FrVLZkmgGzedl7yGkGWQ5Fg3AiFJx50=;
-        b=aK7rHmIRnnPnTg3ntYCBn9NyiVtMIT7A64kixmaBRA/gox+o5LYGXplpw37OdbJXqJ
-         GJBrZBojsznBd/7xMa2QaRo1w3+77FDro8GJcRHNRquOxZm0ZafM/TyhNEHZjLhAtSLu
-         vahNDA+jF0m1b4upnuxaIvJx/pb2egfoKfWCr0Db82NN2Ddglspe958Krd8kBG+05e2a
-         tAoUbrT91Zp57QfDPnbMsNgEuLBLsy40996WKGSgkMfS4hkFANjgIx6yz5vdOqDThZof
-         KCfIjZNw3HoCDSvtGlp/QVMN73SudqPJuYJ8OZpGcuPdnfytl09zRdcH/rDW16Lb6t3k
-         dAYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nS11U7aQYbR6FrVLZkmgGzedl7yGkGWQ5Fg3AiFJx50=;
-        b=UXQsqhMOh3/iRlilKV1hBCE6VEI7eE6nTIE3hZ0lV0z/+HYUeJsChqcRuK6WJnVW+7
-         rTTq1FDB9piKQjoARw1DsITOBJVUglIyIb30F3T9f/pqiPlRRDumXdRcwQbVW73fOd9B
-         qmTmHdkqO5SC0FhZyYrk+cXc/li63rtaECqy1TUeDoWfN7qg5B9eKAMKa/vLziD1Qffp
-         ca2E9vQGM4NlIpZ1JNq24E6kWNwy5HqWVkrOk+HbeSWhbknFy59S+lnActW1FSTrAYWO
-         4tDcA3a6r6a4AM2AX5d6iFK4YI+j+E+KNsy7rKDrqzI+tmK/CGxvnfjBhShIymLOQh5P
-         xPCg==
-X-Gm-Message-State: APjAAAUGUByIbt+xNj+y+HMcoQvRyTU7E9LIn1GUFU49xYHtHX6j9H0j
-        YHqtP1kyH3D1HCSRpQM25MQ=
-X-Google-Smtp-Source: APXvYqzVkHjQ4fYrwflU5EfZZ7N6g3BUBLzJHgZ4PHqokfI3W6tGoyr4GYhF5mfDCiyDpCJkTp8wvA==
-X-Received: by 2002:a5d:52c5:: with SMTP id r5mr67154185wrv.146.1563958618470;
-        Wed, 24 Jul 2019 01:56:58 -0700 (PDT)
-Received: from [192.168.8.147] (200.150.22.93.rev.sfr.net. [93.22.150.200])
-        by smtp.gmail.com with ESMTPSA id v124sm48139208wmf.23.2019.07.24.01.56.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 01:56:57 -0700 (PDT)
-Subject: Re: [RFC] performance regression with commit-id<adb03115f459> ("net:
- get rid of an signed integer overflow in ip_idents_reserve()")
-To:     Zhangshaokun <zhangshaokun@hisilicon.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "guoyang (C)" <guoyang2@huawei.com>,
-        "zhudacai@hisilicon.com" <zhudacai@hisilicon.com>
-References: <051e93d4-0206-7416-e639-376b8d2eb98b@hisilicon.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <3d77a08a-22e9-16e8-4091-c5ba4851ff13@gmail.com>
-Date:   Wed, 24 Jul 2019 10:56:55 +0200
+        id S1726661AbfGXJAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 05:00:34 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:39237 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726074AbfGXJAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:00:34 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1hqD8Q-00052Q-Uu; Wed, 24 Jul 2019 11:00:31 +0200
+Received: from [IPv6:2003:c7:729:c703:c9d4:83d5:b99:4f4d] (unknown [IPv6:2003:c7:729:c703:c9d4:83d5:b99:4f4d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F20BD437B37;
+        Wed, 24 Jul 2019 09:00:28 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: pull-request: can-next 2019-07-24
+Message-ID: <93540cba-184a-a9c5-f9d2-b1779a69a36f@pengutronix.de>
+Date:   Wed, 24 Jul 2019 11:00:24 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <051e93d4-0206-7416-e639-376b8d2eb98b@hisilicon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="mcwcQRZcymoRCEPFj9qin1ccxdXCla9Fm"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--mcwcQRZcymoRCEPFj9qin1ccxdXCla9Fm
+Content-Type: multipart/mixed; boundary="Ny076OquJ5tQUUcfzJ1ODEqRkRFUVdKW8";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org
+Cc: davem@davemloft.net, kernel@pengutronix.de, linux-can@vger.kernel.org
+Message-ID: <93540cba-184a-a9c5-f9d2-b1779a69a36f@pengutronix.de>
+Subject: pull-request: can-next 2019-07-24
+
+--Ny076OquJ5tQUUcfzJ1ODEqRkRFUVdKW8
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+
+Hello David,
+
+this is a pull request for net-next/master consisting of 26 patches.
+
+The first two patches are by me. One adds missing files of the CAN
+subsystem to the MAINTAINERS file, while the other sorts the
+Makefile/Kconfig of the sja1000 drivers sub directory. In the next patch
+Ji-Ze Hong (Peter Hong) provides a driver for the "Fintek PCIE to 2 CAN"
+controller, based on the the sja1000 IP core.
+
+Gustavo A. R. Silva's patch for the kvaser_usb driver introduces the use
+of struct_size() instead of open coding it. Henning Colliander's patch
+adds a driver for the "Kvaser PCIEcan" devices.
+
+Another patch by Gustavo A. R. Silva marks expected switch fall-throughs
+properly.
+
+Dan Murphy provides 5 patches for the m_can. After cleanups a framework
+is introduced so that the driver can be used from memory mapped IO as
+well as SPI attached devices. Finally he adds a driver for the tcan4x5x
+which uses this framework.
+
+A series of 5 patches by Appana Durga Kedareswara rao for the xilinx_can
+driver, first clean up,then add support for CANFD. Colin Ian King
+contributes another cleanup for the xilinx_can driver.
+
+Robert P. J. Day's patch corrects the brief history of the CAN protocol
+given in the Kconfig menu entry.
+
+2 patches by Dong Aisheng for the flexcan driver provide PE clock source
+select support and dt-bindings description.
+2 patches by Sean Nyekjaer for the flexcan driver provide add CAN
+wakeup-source property and dt-bindings description.
+
+Jeroen Hofstee's patch converts the ti_hecc driver to make use of the
+rx-offload helper fixing a number of outstanding bugs.
+
+The first patch of Oliver Hartkopp removes the now obsolete empty
+ioctl() handler for the CAN protocols. The second patch adds SPDX
+license identifiers for CAN subsystem.
+
+regards,
+Marc
+
+---
+
+The following changes since commit 3e3bb69589e482e0783f28d4cd1d8e56fda0bc=
+bb:
+
+  tc-testing: added tdc tests for [b|p]fifo qdisc (2019-07-23 14:08:15 -0=
+700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git ta=
+gs/linux-can-next-for-5.4-20190724
+
+for you to fetch changes up to fba76a58452694b9b13c07e48839fa84c75f57af:
+
+  can: Add SPDX license identifiers for CAN subsystem (2019-07-24 10:31:5=
+5 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.4-20190724
+
+----------------------------------------------------------------
+Aisheng Dong (1):
+      can: flexcan: implement can Runtime PM
+
+Appana Durga Kedareswara rao (5):
+      can: xilinx_can: Fix style issues
+      can: xilinx_can: Fix kernel doc warnings
+      can: xilinx_can: Fix flags field initialization for axi can and can=
+ps
+      can: xilinx_can: Add cantype parameter in xcan_devtype_data struct
+      can: xilinx_can: Add support for CANFD FD frames
+
+Colin Ian King (1):
+      can: xilinx_can: clean up indentation issue
+
+Dan Murphy (5):
+      can: m_can: Fix checkpatch issues on existing code
+      can: m_can: Create a m_can platform framework
+      can: m_can: Rename m_can_priv to m_can_classdev
+      dt-bindings: can: tcan4x5x: Add DT bindings for TCAN4x5X driver
+      can: tcan4x5x: Add tcan4x5x driver to the kernel
+
+Dong Aisheng (2):
+      dt-bindings: can: flexcan: add PE clock source property to device t=
+ree
+      can: flexcan: add support for PE clock source select
+
+Gustavo A. R. Silva (2):
+      can: kvaser_usb: Use struct_size() in alloc_candev()
+      can: mark expected switch fall-throughs
+
+Henning Colliander (1):
+      can: kvaser_pciefd: Add driver for Kvaser PCIEcan devices
+
+Jeroen Hofstee (1):
+      can: ti_hecc: use timestamp based rx-offloading
+
+Ji-Ze Hong (Peter Hong) (1):
+      can: sja1000: f81601: add Fintek F81601 support
+
+Marc Kleine-Budde (2):
+      MAINTAINERS: can: add missing files to CAN NETWORK DRIVERS and CAN =
+NETWORK LAYER
+      can: sja1000: Makefile/Kconfig: sort alphabetically
+
+Oliver Hartkopp (2):
+      can: remove obsolete empty ioctl() handler
+      can: Add SPDX license identifiers for CAN subsystem
+
+Robert P. J. Day (1):
+      can: Kconfig: correct history of the CAN protocol
+
+Sean Nyekjaer (2):
+      dt-bindings: can: flexcan: add can wakeup property
+      can: flexcan: add support for DT property 'wakeup-source'
+
+ .../devicetree/bindings/net/can/fsl-flexcan.txt    |   10 +
+ .../devicetree/bindings/net/can/tcan4x5x.txt       |   37 +
+ MAINTAINERS                                        |    5 +
+ drivers/net/can/Kconfig                            |   13 +
+ drivers/net/can/Makefile                           |    1 +
+ drivers/net/can/at91_can.c                         |    6 +-
+ drivers/net/can/flexcan.c                          |  136 +-
+ drivers/net/can/kvaser_pciefd.c                    | 1912 ++++++++++++++=
+++++++
+ drivers/net/can/m_can/Kconfig                      |   22 +-
+ drivers/net/can/m_can/Makefile                     |    2 +
+ drivers/net/can/m_can/m_can.c                      | 1079 +++++------
+ drivers/net/can/m_can/m_can.h                      |  110 ++
+ drivers/net/can/m_can/m_can_platform.c             |  202 +++
+ drivers/net/can/m_can/tcan4x5x.c                   |  532 ++++++
+ drivers/net/can/peak_canfd/peak_pciefd_main.c      |    2 +-
+ drivers/net/can/sja1000/Kconfig                    |   79 +-
+ drivers/net/can/sja1000/Makefile                   |   11 +-
+ drivers/net/can/sja1000/f81601.c                   |  212 +++
+ drivers/net/can/spi/mcp251x.c                      |    3 +-
+ drivers/net/can/ti_hecc.c                          |  191 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c   |    3 +-
+ drivers/net/can/usb/peak_usb/pcan_usb.c            |    2 +-
+ drivers/net/can/xilinx_can.c                       |  293 ++-
+ include/linux/can/core.h                           |    3 +-
+ include/linux/can/skb.h                            |    2 +-
+ net/can/Kconfig                                    |   11 +-
+ net/can/af_can.c                                   |   10 +-
+ net/can/af_can.h                                   |    1 +
+ net/can/bcm.c                                      |    3 +-
+ net/can/gw.c                                       |    1 +
+ net/can/proc.c                                     |    1 +
+ net/can/raw.c                                      |    3 +-
+ 32 files changed, 4098 insertions(+), 800 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/can/tcan4x5x.tx=
+t
+ create mode 100644 drivers/net/can/kvaser_pciefd.c
+ create mode 100644 drivers/net/can/m_can/m_can.h
+ create mode 100644 drivers/net/can/m_can/m_can_platform.c
+ create mode 100644 drivers/net/can/m_can/tcan4x5x.c
+ create mode 100644 drivers/net/can/sja1000/f81601.c
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |-
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
-On 7/24/19 10:38 AM, Zhangshaokun wrote:
-> Hi,
-> 
-> I've observed an significant performance regression with the following commit-id <adb03115f459>
-> ("net: get rid of an signed integer overflow in ip_idents_reserve()").
-
-Yes this UBSAN false positive has been painful
 
 
 
-> 
-> Here are my test scenes:
-> ----Server----
-> Cmd: iperf3 -s xxx.xxx.xxxx.xxx -p 10000 -i 0 -A 0
-> Kenel: 4.19.34
-> Server number: 32
-> Port: 10000 – 10032
-> CPU affinity: 0 – 32
-> CPU architecture: aarch64
-> NUMA node0 CPU(s): 0-23
-> NUMA node1 CPU(s): 24-47
-> 
-> ----Client----
-> Cmd: iperf3 -u -c xxx.xxx.xxxx.xxx -p 10000 -l 16 -b 0 -t 0 -i 0 -A 8
-> Kenel: 4.19.34
-> Client number: 32
-> Port: 10000 – 10032
-> CPU affinity: 0 – 32
-> CPU architecture: aarch64
-> NUMA node0 CPU(s): 0-23
-> NUMA node1 CPU(s): 24-47
-> 
-> Firstly, With patch <adb03115f459> ("net: get rid of an signed integer overflow in ip_idents_reserve()") ,
-> client’s cpu is 100%, and function ip_idents_reserve() cpu usage is very high, but the result is not good.
-> 03:08:32 AM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil
-> 03:08:33 AM      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-> 03:08:33 AM      eth1      0.00 3461296.00      0.00 196049.97      0.00      0.00      0.00      0.00
-> 03:08:33 AM        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-> 
-> Secondly, revert that patch, use atomic_add_return() instead, the result is better, as below:
-> 03:23:24 AM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil
-> 03:23:25 AM        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-> 03:23:25 AM      eth1      0.00 12834590.00      0.00 726959.20      0.00      0.00      0.00      0.00
-> 03:23:25 AM      eth0      7.00     11.00      0.40      2.95      0.00      0.00      0.00      0.00
-> 
-> Thirdly, atomic is not used in ip_idents_reserve() completely ,while each cpu core allocates its own ID segment,
-> Such as: cpu core0 allocate ID 0 – 1023, cpu core1 allocate 1024 – 2047, …,etc
-> the result is the best:
 
-Not sure what you mean.
+--Ny076OquJ5tQUUcfzJ1ODEqRkRFUVdKW8--
 
-Less entropy in IPv4 ID is not going to help when fragments _are_ needed.
+--mcwcQRZcymoRCEPFj9qin1ccxdXCla9Fm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Send 40,000 datagrams of 2000 bytes each, add delays, reorders, and boom, most of the packets will be lost.
+-----BEGIN PGP SIGNATURE-----
 
-This is not because your use case does not need proper IP ID that we can mess with them.
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl04HigACgkQWsYho5Hk
+nSBEdQf/f1itwIrD0OxlTvEXBspSy9dVCFphyt2sWUe3VU5wOd8HD65QzEGJde7I
+Ny/BBbyNpeXcyUKtBcCsDGH0IRodm+kxXhdFEb0QiT5UTLXgMvYQSqnIvqx8CwWb
+Ux5fGMwv77vqtdVfwGYTpj55gIuB2ufWRZylioq9TEp0AYqE+YWKA3OEAYb0D6MT
+FVxorSCqEXi6FxNlslc+OeeyjIP/7NqiIG8bxfxonheZUbkp9uoJo1wzq4cEOgb2
+yaOTGb+w3RA5tud5Kj+Rm7rYys6DER5T9z2s/L6R3+DuR3T53iqNRddxZid0M5jo
+CYfK5OpmfCetszPH9Pdl7bKo7mn9Mw==
+=Wgs/
+-----END PGP SIGNATURE-----
 
-If you need to send packets very fast,  maybe use AF_PACKET ?
-
-> 03:27:06 AM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil
-> 03:27:07 AM        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-> 03:27:07 AM      eth1      0.00 14275505.00      0.00 808573.53      0.00      0.00      0.00      0.00
-> 03:27:07 AM      eth0      0.00      2.00      0.00      0.18      0.00      0.00      0.00      0.00
-> 
-> Because atomic operation performance is bottleneck when cpu core number increase, Can we revert the patch or
-> use ID segment for each cpu core instead?
-
-
-This has been discussed in the past.
-
-https://lore.kernel.org/lkml/b0160f4b-b996-b0ee-405a-3d5f1866272e@gmail.com/
-
-We can revert now UBSAN has been fixed.
-
-Or even use Peter patch : https://lore.kernel.org/lkml/20181101172739.GA3196@hirez.programming.kicks-ass.net/
-
-However, you will still hit badly a shared cache line, not matter what.
-
-Some arches are known to have terrible LL/SC implementation :/
-
+--mcwcQRZcymoRCEPFj9qin1ccxdXCla9Fm--
