@@ -2,93 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 743AE73643
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 20:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27FC873648
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 20:04:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfGXSDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 14:03:08 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:37689 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbfGXSDI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 14:03:08 -0400
-Received: by mail-qk1-f193.google.com with SMTP id d15so34408945qkl.4
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 11:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9/KLvkv4tip+BqrrzM/6HDFgUbGfXypU4li8j41EUxc=;
-        b=esEh6rrgYf14wnGGIbDla4wDwBmGMy4ALT1k7GP0pan1hFhG/NPRnMV10gyP+L2mmv
-         Q3wIgWS4zOYhJJakbA9zl24LkwCjDze6hJdSPr7Iqi40A4wfTlhDXRBg3PechvjawMsX
-         QWklx88u8Gd5B0KQCzqXWyEbEN58kH4DUCf2Hbb+SPemaCZGbw6T7HBmA/26QC7oa7zD
-         pViwbc+l/PTSCAi/bar2E/wHaFmeYbH5kaoEGqbk3J2XXszPqX5wiWksyTWqMEgfEtjA
-         b8mblbfOnI58mTMmJnOHSYezsmXmxLTSMNbKCU1hnlb/GyTylitZdoPO3RfXgEp6KR5s
-         vulQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9/KLvkv4tip+BqrrzM/6HDFgUbGfXypU4li8j41EUxc=;
-        b=BvTFDKPkQxLiEGKLG00FWEqpSI6VZvjZ5vw1HD9vS9VCuSQma63nHec9SgaSxDSEHh
-         6jVgsRbYflPzGcozTLWd6miizuPg6Jpu/XEg3LWZJ+8Qd0g4DMs92v28dE0Ei40a5nMA
-         oSTfi22XoZ443NaaOppg1QJY8HcnHwj2fruUpLUUlEbn1IDPf2LUM4LAMq3lC+PK2Yeh
-         87+Jgh1U4a4Zx4i0YsuCIcsCWoEQcRle3cAH9ONB1T5j7V54ySNosp82Pvejpe0XtE79
-         ExOk47Vc+xZ62NueIQ5iR7SaplV6DYpfYPFa8GqZAgu2Dm7cUDRH+XXJTtob2zZWrIO2
-         9TzA==
-X-Gm-Message-State: APjAAAWa/Acb4/1+vFbbY0yeI7lVrTPvrh/4l4w29lnTlLpNhGvpnUYZ
-        X8eTwk/DdVoumqSmhCPYgIr0lA==
-X-Google-Smtp-Source: APXvYqx229ri36+pxYdmwBP3zHhjw3694U9CSYJ+GncJcid6tc44DELfnF2bvtGKG8wy43PfHt1vzA==
-X-Received: by 2002:a37:5942:: with SMTP id n63mr52443957qkb.69.1563991387585;
-        Wed, 24 Jul 2019 11:03:07 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z4sm24574212qtd.60.2019.07.24.11.03.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 11:03:06 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net, alexei.starovoitov@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, davejwatson@fb.com,
-        borisp@mellanox.com, aviadye@mellanox.com
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        simon.horman@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH net-next] net/tls: add myself as a co-maintainer
-Date:   Wed, 24 Jul 2019 11:02:48 -0700
-Message-Id: <20190724180248.6480-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
+        id S1726903AbfGXSEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 14:04:37 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35226 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725944AbfGXSEh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 14:04:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UpzgCoPq0Wu6UDjrL//LrXChGIZ8cQyw8Fm5gnrCxag=; b=uSCiCyQURATsR/8rSFcWw4XWAi
+        SFtoSKMVeIDa2RmJc1V6rmyvW0kYyCPDOGcHOCEFtupgRlAqo6wTLZEh5RcntlIn+sspActh0D7CD
+        NIq3MQlbePLbM/hYbTyIJHrJoEsr79jvr7L8959e3/hdG9X/lzK5p3siuZhy8dLeLbXA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hqLcs-0001VX-3i; Wed, 24 Jul 2019 20:04:30 +0200
+Date:   Wed, 24 Jul 2019 20:04:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [RFC] dt-bindings: net: phy: Add subnode for LED configuration
+Message-ID: <20190724180430.GB28488@lunn.ch>
+References: <20190722223741.113347-1-mka@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190722223741.113347-1-mka@chromium.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've been spending quite a bit of time fixing and
-preventing bit rot in the core TLS code. TLS seems
-to only be growing in importance, I'd like to help
-ensuring the quality of our implementation.
+On Mon, Jul 22, 2019 at 03:37:41PM -0700, Matthias Kaehlcke wrote:
+> The LED behavior of some Ethernet PHYs is configurable. Add an
+> optional 'leds' subnode with a child node for each LED to be
+> configured. The binding aims to be compatible with the common
+> LED binding (see devicetree/bindings/leds/common.txt).
+> 
+> A LED can be configured to be 'on' when a link with a certain speed
+> is active, or to blink on RX/TX activity. For the configuration to
+> be effective it needs to be supported by the hardware and the
+> corresponding PHY driver.
+> 
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+> This RFC is a follow up of the discussion on "[PATCH v2 6/7]
+> dt-bindings: net: realtek: Add property to configure LED mode"
+> (https://lore.kernel.org/patchwork/patch/1097185/).
+> 
+> For now posting as RFC to get a basic agreement on the bindings
+> before proceding with the implementation in phylib and a specific
+> driver.
+> ---
+>  Documentation/devicetree/bindings/net/phy.txt | 33 +++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/phy.txt b/Documentation/devicetree/bindings/net/phy.txt
+> index 9b9e5b1765dd..ad495d3abbbb 100644
+> --- a/Documentation/devicetree/bindings/net/phy.txt
+> +++ b/Documentation/devicetree/bindings/net/phy.txt
+> @@ -46,6 +46,25 @@ Optional Properties:
+>    Mark the corresponding energy efficient ethernet mode as broken and
+>    request the ethernet to stop advertising it.
+>  
+> +- leds: A sub-node which is a container of only LED nodes. Each child
+> +    node represents a PHY LED.
+> +
+> +  Required properties for LED child nodes:
+> +  - reg: The ID number of the LED, typically corresponds to a hardware ID.
+> +
+> +  Optional properties for child nodes:
+> +  - label: The label for this LED. If omitted, the label is taken from the node
+> +    name (excluding the unit address). It has to uniquely identify a device,
+> +    i.e. no other LED class device can be assigned the same label.
 
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Acked-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Simon Horman <simon.horman@netronome.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+Hi Matthias
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 783569e3c4b4..3ff2e6ab3cf4 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11282,6 +11282,7 @@ M:	Aviad Yehezkel <aviadye@mellanox.com>
- M:	Dave Watson <davejwatson@fb.com>
- M:	John Fastabend <john.fastabend@gmail.com>
- M:	Daniel Borkmann <daniel@iogearbox.net>
-+M:	Jakub Kicinski <jakub.kicinski@netronome.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	net/tls/*
--- 
-2.21.0
+I've thought about label a bit more. 
 
+> +			label = "ethphy0:left:green";
+
+We need to be careful with names here. systemd etc renames
+interfaces. ethphy0 could in fact be connected to enp3s0, or eth0
+might get renamed to eth1, etc. So i think we should avoid things like
+ethphy0. Also, i'm not sure we actually need a label, at least not to
+start with.Do we have any way to expose it to the user?
+
+If we do ever make it part of the generic LED framework, we can then
+use the label. At that point, i would probably combine the label with
+the interface name in a dynamic way to avoid issues like this.
+
+    Andrew
