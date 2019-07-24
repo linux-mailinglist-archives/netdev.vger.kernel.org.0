@@ -2,132 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DF7D7414D
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 00:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3BA74157
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 00:23:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728251AbfGXWP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 18:15:57 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:36445 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbfGXWP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 18:15:57 -0400
-Received: by mail-lj1-f194.google.com with SMTP id i21so46033965ljj.3;
-        Wed, 24 Jul 2019 15:15:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UBF6bNBt/PemNw217in5S9v8lFOv59SFC9xNcgdoU6Y=;
-        b=s+uv8qpFxE+t54WGQJxNv5PYL7LjIriR64oc1BJyj1009oNYg6lzg+rMYzQQOCEQ/4
-         QMO4FRyZCOuroPUbx/6MBgHUdMdnEQwtfxh2xCc2q4kRbiUdpUyvMegZrChhGGNgJUAy
-         Avf8nJfUygtP6hrUCLBQbNyAPWmEHblYOzgfDrxZOYT4sb7wUIbwDdogK+r6+C7bntd1
-         +4WqbjfwD6gUnOOpW6Dx9tKsZJRXETh89NSOLtFpz6P4uu6xdSRhH1vM8s0lTRrSfEjw
-         GorBm5VsmBWs/7Jx2ZCSLyDT5+kidDNLZJ2dWq9ruL3lc9uDai+Qh4U0qR+mrnSPTidp
-         qRfw==
+        id S1727640AbfGXWXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 18:23:47 -0400
+Received: from mail-wr1-f47.google.com ([209.85.221.47]:39245 "EHLO
+        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726796AbfGXWXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 18:23:46 -0400
+Received: by mail-wr1-f47.google.com with SMTP id x4so48534863wrt.6
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 15:23:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UBF6bNBt/PemNw217in5S9v8lFOv59SFC9xNcgdoU6Y=;
-        b=fUGyCmD8sMc7BsJPqMr1azO6Hv/2CBZ0CGdOKUeys9APJZBHraNOk1H5mWgFieXks9
-         M9O8YAaS0WtjcoZISEEKTKHLd3dPAFF+M+Csq+/9w03roWcJeaOoJkRaGExL5aM+nGo8
-         J2RgQR+UWcuNre9PAoFPLZKZPoayfKc/qYnVEDJD5wdjCqyt404IFz+Zrn38E1SJ3Ilj
-         gLafZRl4rwCIizadG/5PabG7gs5ex1okVSZqjcl15up/9IjjaAPSvlw20ghgYQaQyx4r
-         yZFX7iQb24eDwlC9hKrRdk6L7Ay+jrlh4B/GqfAR5P6FL/Sfio9OWRCE3Vojw5TJ0gDT
-         6IIA==
-X-Gm-Message-State: APjAAAXPaesB7+s8PpzShWpa6Xr4H84lwzIKA8DoQJRLeqop+Vv4Xr9/
-        2yepAZmDetNvoW49A/X5K9/L8HnN+tUIBKnSJRs=
-X-Google-Smtp-Source: APXvYqwM9LPq8IoQDhPWPLNNHxpyCL3AuIe6TPRs7D3NajHezX5f401oHxVeqFYuSFlyCQnR0SrW8LZ2qREKv7Tmk+o=
-X-Received: by 2002:a2e:9a82:: with SMTP id p2mr45445949lji.64.1564006555385;
- Wed, 24 Jul 2019 15:15:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nSFzxl5a0gAsvwK9ZdGSfdw1YCPx8TONxoQNDuNuVhg=;
+        b=tEQTORV4ungCKgyRD/kp5GRy4UqLdRB+z+wWbPO4FldBSPd/7DBv4QJWeaBrVMAPkX
+         HH1/ueyCcg1Lw1Bk4SXhI9rv6YF1H42sCkWcCrO/aj4gd3YkTecamh/S4Hjst/FLOQVk
+         TjzYBbEpsmwOe8jkfJ4HL3KhP/TUxVJ71j36riTAK1W0ddBEZZoc+T83uqBCAsKLK3dP
+         jgCem52oKl7vmHMaIMBZhOAvFd5iAxT2qvB6qlNYfSGU6ynsYjI8Ai1KmpMSLSMgr+hF
+         /4k8Ls2mJCiQ30mQguYlzDRH6es4yjX3qySWvkKyCEU0GaLQVl3uc6//ot1aaMNRKqSW
+         fNxQ==
+X-Gm-Message-State: APjAAAVEY4doVYP0QIDhy9bk6QqIrWArmV3eK9wTBr/EcnanRo84ONNP
+        lROQPBiLoA6weFl9yKxRYSSXYYUtDV4=
+X-Google-Smtp-Source: APXvYqxhnI6f9cRxIHyiuHsk0KyvkiicNC0i9cFZLEDmmc9xOjN3B4TljiASuGYcv2DCcjjhqyxYxg==
+X-Received: by 2002:adf:f84a:: with SMTP id d10mr83412460wrq.319.1564007024355;
+        Wed, 24 Jul 2019 15:23:44 -0700 (PDT)
+Received: from mcroce-redhat.redhat.com (host21-50-dynamic.21-87-r.retail.telecomitalia.it. [87.21.50.21])
+        by smtp.gmail.com with ESMTPSA id f7sm46444550wrv.38.2019.07.24.15.23.43
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 24 Jul 2019 15:23:43 -0700 (PDT)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH iproute2] iplink: document the 'link change' subcommand
+Date:   Wed, 24 Jul 2019 21:12:18 +0200
+Message-Id: <20190724191218.11757-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190724165803.87470-1-brianvv@google.com> <CAPhsuW7PU1PP91e8vD2diwhBAwGJHWu6wAKOoBThT86f4r5OJw@mail.gmail.com>
-In-Reply-To: <CAPhsuW7PU1PP91e8vD2diwhBAwGJHWu6wAKOoBThT86f4r5OJw@mail.gmail.com>
-From:   Brian Vazquez <brianvv.kernel@gmail.com>
-Date:   Wed, 24 Jul 2019 15:15:44 -0700
-Message-ID: <CABCgpaU3xxX6CMMxD+1knApivtc2jLBHysDXw-0E9bQEL0qC3A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/6] bpf: add BPF_MAP_DUMP command to dump more
- than one entry per call
-To:     Song Liu <liu.song.a23@gmail.com>
-Cc:     Brian Vazquez <brianvv@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 12:20 PM Song Liu <liu.song.a23@gmail.com> wrote:
->
-> On Wed, Jul 24, 2019 at 10:09 AM Brian Vazquez <brianvv@google.com> wrote:
-> >
-> > This introduces a new command to retrieve multiple number of entries
-> > from a bpf map.
-> >
-> > This new command can be executed from the existing BPF syscall as
-> > follows:
-> >
-> > err =  bpf(BPF_MAP_DUMP, union bpf_attr *attr, u32 size)
-> > using attr->dump.map_fd, attr->dump.prev_key, attr->dump.buf,
-> > attr->dump.buf_len
-> > returns zero or negative error, and populates buf and buf_len on
-> > succees
-> >
-> > This implementation is wrapping the existing bpf methods:
-> > map_get_next_key and map_lookup_elem
-> >
-> > Note that this implementation can be extended later to do dump and
-> > delete by extending map_lookup_and_delete_elem (currently it only works
-> > for bpf queue/stack maps) and either use a new flag in map_dump or a new
-> > command map_dump_and_delete.
-> >
-> > Results show that even with a 1-elem_size buffer, it runs ~40 faster
->
-> Why is the new command 40% faster with 1-elem_size buffer?
+ip link can set parameters both via the 'set' and 'change' keyword.
+In fact, 'change' is an alias for 'set'.
+Document this in the help and manpage.
 
-The test is using a really simple map structure: uint64_t key,val.
-Which makes the lookup_elem logic faster since it doesn't spend too
-much time copying the value. My conclusion with the 40% was that this
-new implementation only needs 1 syscall per elem compare to the 2
-syscalls that we needed with previous implementation so in this
-particular case the number of ops that we are doing is almost halved.
-I did one experiment increasing the value_size (448*64B) and it was
-only 14% faster with 1-elem_size buffer.
+Fixes: 1d93483985f0 ("iplink: use netlink for link configuration")
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+---
+ ip/iplink.c           | 4 ++--
+ man/man8/ip-link.8.in | 7 ++++++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-> > than the current implementation, improvements of ~85% are reported when
-> > the buffer size is increased, although, after the buffer size is around
-> > 5% of the total number of entries there's no huge difference in
-> > increasing it.
-> >
-> > Tested:
-> > Tried different size buffers to handle case where the bulk is bigger, or
-> > the elements to retrieve are less than the existing ones, all runs read
-> > a map of 100K entries. Below are the results(in ns) from the different
-> > runs:
-> >
-> > buf_len_1:       69038725 entry-by-entry: 112384424 improvement
-> > 38.569134
-> > buf_len_2:       40897447 entry-by-entry: 111030546 improvement
-> > 63.165590
-> > buf_len_230:     13652714 entry-by-entry: 111694058 improvement
-> > 87.776687
-> > buf_len_5000:    13576271 entry-by-entry: 111101169 improvement
-> > 87.780263
-> > buf_len_73000:   14694343 entry-by-entry: 111740162 improvement
-> > 86.849542
-> > buf_len_100000:  13745969 entry-by-entry: 114151991 improvement
-> > 87.958187
-> > buf_len_234567:  14329834 entry-by-entry: 114427589 improvement
-> > 87.476941
->
-> It took me a while to figure out the meaning of 87.476941. It is probably
-> a good idea to say 87.5% instead.
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 212a0885..be237c93 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -64,12 +64,12 @@ void iplink_usage(void)
+ 			"\n"
+ 			"	ip link delete { DEVICE | dev DEVICE | group DEVGROUP } type TYPE [ ARGS ]\n"
+ 			"\n"
+-			"	ip link set { DEVICE | dev DEVICE | group DEVGROUP }\n"
++			"	ip link { set | change } { DEVICE | dev DEVICE | group DEVGROUP }\n"
+ 			"			[ { up | down } ]\n"
+ 			"			[ type TYPE ARGS ]\n");
+ 	} else
+ 		fprintf(stderr,
+-			"Usage: ip link set DEVICE [ { up | down } ]\n");
++			"Usage: ip link { set | change } DEVICE [ { up | down } ]\n");
+ 
+ 	fprintf(stderr,
+ 		"		[ arp { on | off } ]\n"
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index 883d8807..d4be1a0e 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -1802,7 +1802,8 @@ deleted since it is the default group.
+ .BI type " TYPE "
+ specifies the type of the device.
+ 
+-.SS ip link set - change device attributes
++.SS ip link set
++.SS ip link change - change device attributes
+ 
+ .PP
+ .B Warning:
+@@ -1815,6 +1816,10 @@ can move the system to an unpredictable state. The solution
+ is to avoid changing several parameters with one
+ .B ip link set
+ call.
++.B set
++and
++.B change
++are synonyms and have identical syntax and behavior.
+ 
+ .TP
+ .BI dev " DEVICE "
+-- 
+2.21.0
 
-right, will change it in next version.
