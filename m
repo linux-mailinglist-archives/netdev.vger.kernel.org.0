@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 341337242F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D4872444
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728850AbfGXCDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:03:01 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:58356 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728776AbfGXCDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 22:03:01 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6O1wZCE029592;
-        Wed, 24 Jul 2019 02:02:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2018-07-02; bh=aPJ/gz+1htaF0JhpGjhp8e3/McToimuUgnVMZqHte9s=;
- b=Je6bXjfvhms99P77tbjOa/GUP3fCbw+7/Jpcme25tvf+ziqD7j//GF+yZWuPOW+bPSou
- T507xOemfOsA12Rz1jBR01Z4mwJFdAIh8VUMFDueI5M8ZzS6d8EZBA0pub8og66qm4s6
- j7labDK7Ph+mSL7gnwObln3ayUujWHZgha8wIxg/dEZ7YOSzINjWbXLhKGKymEEjc7vW
- kXtNeFjZIsRwrsAWlRPN+C5IONGL/0FAwmfqmRYdX/BJs2gVLG4dgxFJw5A1XQPiiEDU
- OOEWKi26aD60jxZRcWIR6D1owq6Etx/g4CzqgJQjJM3xKwAQK6A8tLVPdaP3OL3WJ7/s lA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 2tx61bt601-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Jul 2019 02:02:24 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6O1vO96057801;
-        Wed, 24 Jul 2019 02:02:23 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2tx60xk9hy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Jul 2019 02:02:23 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6O22LdJ003994;
-        Wed, 24 Jul 2019 02:02:21 GMT
-Received: from [31.133.156.81] (/31.133.156.81)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 23 Jul 2019 19:02:21 -0700
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH] rpcrdma_decode_msg: check xdr_inline_decode result
-From:   Chuck Lever <chuck.lever@oracle.com>
-X-Mailer: iPad Mail (16F203)
-In-Reply-To: <20190724015115.3493-1-navid.emamdoost@gmail.com>
-Date:   Tue, 23 Jul 2019 22:02:09 -0400
-Cc:     emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
-        secalert@redhat.com,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <AE745E5F-63A8-4377-98E8-512828179FC0@oracle.com>
-References: <20190724015115.3493-1-navid.emamdoost@gmail.com>
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9327 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1906280000 definitions=main-1907240020
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9327 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1907240020
+        id S1728907AbfGXCMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:12:02 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37146 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726544AbfGXCMC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:12:02 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C02D43365B;
+        Wed, 24 Jul 2019 02:12:01 +0000 (UTC)
+Received: from [10.72.12.167] (ovpn-12-167.pek2.redhat.com [10.72.12.167])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DE00060BEC;
+        Wed, 24 Jul 2019 02:11:59 +0000 (UTC)
+Subject: Re: [PATCH v2] tun: mark small packets as owned by the tap sock
+To:     Alexis Bauvin <abauvin@scaleway.com>, stephen@networkplumber.org,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20190723142301.39568-1-abauvin@scaleway.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <78872b4b-1748-83c8-7115-1f2527f8b572@redhat.com>
+Date:   Wed, 24 Jul 2019 10:11:58 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190723142301.39568-1-abauvin@scaleway.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Wed, 24 Jul 2019 02:12:02 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 2019/7/23 下午10:23, Alexis Bauvin wrote:
+> - v1 -> v2: Move skb_set_owner_w to __tun_build_skb to reduce patch size
+>
+> Small packets going out of a tap device go through an optimized code
+> path that uses build_skb() rather than sock_alloc_send_pskb(). The
+> latter calls skb_set_owner_w(), but the small packet code path does not.
+>
+> The net effect is that small packets are not owned by the userland
+> application's socket (e.g. QEMU), while large packets are.
+> This can be seen with a TCP session, where packets are not owned when
+> the window size is small enough (around PAGE_SIZE), while they are once
+> the window grows (note that this requires the host to support virtio
+> tso for the guest to offload segmentation).
+> All this leads to inconsistent behaviour in the kernel, especially on
+> netfilter modules that uses sk->socket (e.g. xt_owner).
+>
+> Signed-off-by: Alexis Bauvin <abauvin@scaleway.com>
+> Fixes: 66ccbc9c87c2 ("tap: use build_skb() for small packet")
 
-> On Jul 23, 2019, at 9:51 PM, Navid Emamdoost <navid.emamdoost@gmail.com> w=
-rote:
->=20
-> xdr_inline_decode may return NULL, so the check is necessary. The base
-> pointer will be dereferenced later in rpcrdma_inline_fixup.
 
-NACK. When xdr_inline_decode is passed a zero =E2=80=9Clength=E2=80=9D argum=
-ent, it can never return NULL.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
 
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 > ---
-> net/sunrpc/xprtrdma/rpc_rdma.c | 3 +++
-> 1 file changed, 3 insertions(+)
->=20
-> diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma=
-.c
-> index 4345e6912392..d0479efe0e72 100644
-> --- a/net/sunrpc/xprtrdma/rpc_rdma.c
-> +++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-> @@ -1160,6 +1160,9 @@ rpcrdma_decode_msg(struct rpcrdma_xprt *r_xprt, stru=
-ct rpcrdma_rep *rep,
->=20
->    /* Build the RPC reply's Payload stream in rqst->rq_rcv_buf */
->    base =3D (char *)xdr_inline_decode(xdr, 0);
-> +    if (!base)
-> +        return -EIO;
-> +
->    rpclen =3D xdr_stream_remaining(xdr);
->    r_xprt->rx_stats.fixup_copy_count +=3D
->        rpcrdma_inline_fixup(rqst, base, rpclen, writelist & 3);
-> --=20
-> 2.17.1
->=20
-
+>   drivers/net/tun.c | 9 ++++++---
+>   1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 3d443597bd04..db16d7a13e00 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1599,7 +1599,8 @@ static bool tun_can_build_skb(struct tun_struct *tun, struct tun_file *tfile,
+>   	return true;
+>   }
+>   
+> -static struct sk_buff *__tun_build_skb(struct page_frag *alloc_frag, char *buf,
+> +static struct sk_buff *__tun_build_skb(struct tun_file *tfile,
+> +				       struct page_frag *alloc_frag, char *buf,
+>   				       int buflen, int len, int pad)
+>   {
+>   	struct sk_buff *skb = build_skb(buf, buflen);
+> @@ -1609,6 +1610,7 @@ static struct sk_buff *__tun_build_skb(struct page_frag *alloc_frag, char *buf,
+>   
+>   	skb_reserve(skb, pad);
+>   	skb_put(skb, len);
+> +	skb_set_owner_w(skb, tfile->socket.sk);
+>   
+>   	get_page(alloc_frag->page);
+>   	alloc_frag->offset += buflen;
+> @@ -1686,7 +1688,8 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+>   	 */
+>   	if (hdr->gso_type || !xdp_prog) {
+>   		*skb_xdp = 1;
+> -		return __tun_build_skb(alloc_frag, buf, buflen, len, pad);
+> +		return __tun_build_skb(tfile, alloc_frag, buf, buflen, len,
+> +				       pad);
+>   	}
+>   
+>   	*skb_xdp = 0;
+> @@ -1723,7 +1726,7 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+>   	rcu_read_unlock();
+>   	local_bh_enable();
+>   
+> -	return __tun_build_skb(alloc_frag, buf, buflen, len, pad);
+> +	return __tun_build_skb(tfile, alloc_frag, buf, buflen, len, pad);
+>   
+>   err_xdp:
+>   	put_page(alloc_frag->page);
