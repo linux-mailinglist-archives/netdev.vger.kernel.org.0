@@ -2,116 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 766B97425E
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 01:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB9C74260
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 01:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388880AbfGXXwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 19:52:42 -0400
-Received: from mail-eopbgr40046.outbound.protection.outlook.com ([40.107.4.46]:36771
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726431AbfGXXwm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 19:52:42 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i52sCDfdpF5tAGQjuO1Q2VqQf+vWNq3OB3fINIncmsqTHdMTrxN6n1yvdFN88mgEG7wTBlZQi7t63/jFvDLDEFEmCO4c6JKEa0LUUhW6zgQbB5m+Yk/8FJihdjpZgjGPbZe6sVES09k4HI9ZusBTD76U3R8pUnDbiIuAvYqRFpGmYSkzGA1jyGrz/JTtUMRLGDGi3+eXsaltlcWGUIIYxwKK5PpmGIjhu7RnfOJxPgj8d/EtHKKraoh+oF2gRLXpIzN2lXHBSUjtkW3Pq0NmEQF4YE3V5AcxZu/baDdg4SqmL7emIHwmG5ywzB02zR4NB0xMvEBD1CasmX9XvwsFCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hRheVUz3Ej54t4rUQp18tc8wSIs0JjTnGB9UhTUQo5I=;
- b=XyKBi+qiNvqxrDCabBr8fLmR7zp8MVT1blMN2sgK85SHI/l9jCh/pOJG+iy+l3jP1tNUqAtNAR91/iY3xj1eH7+LWaXKBtYCL0EkT+oAey71dzhzjL2oHu53Ldz7IuYNY1hrPik4G1h3DhnyAe3U+DMbZX68jFdxeiicYg4l9fkdW0hwx9sUQu+dbAdvritkKb8zfLOl2saAvsuFjtY9qSxxcoyr+zZOoUwpu18n4auAHEL+w3YDwLVZq146fZV4UKq6YNPTrwc1rM5w1UUQypZIkPYzClh3ETiJPBgulnv220pOa0278gik+ObP67hXleaa/pHtfJ83DWG1pSD76A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hRheVUz3Ej54t4rUQp18tc8wSIs0JjTnGB9UhTUQo5I=;
- b=sPTQBa6+eWTVJZ29pLxcNs5TlgY/R8a59I6zomntjVwS9DA/8OTzgtOuI6FjALLTHNoioP+8yV6F+vQ0gMOEtO7FBABKsfoIgRzasZcOP9iG/tJkxIDTWVxE8PLWNJCeotcewTGwlgRnAQMlZ2Yv6MuBas3fitfbQgwPFJYQlpM=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2662.eurprd05.prod.outlook.com (10.172.230.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.15; Wed, 24 Jul 2019 23:52:37 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Wed, 24 Jul 2019
- 23:52:37 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "snelson@pensando.io" <snelson@pensando.io>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH v4 net-next 10/19] ionic: Add management of rx filters
-Thread-Topic: [PATCH v4 net-next 10/19] ionic: Add management of rx filters
-Thread-Index: AQHVQNY3gRbc1AvSvEuoJvtZxyGdzabadA6A
-Date:   Wed, 24 Jul 2019 23:52:37 +0000
-Message-ID: <e8b4002b415a2174280472b98640dda45d32d11b.camel@mellanox.com>
-References: <20190722214023.9513-1-snelson@pensando.io>
-         <20190722214023.9513-11-snelson@pensando.io>
-In-Reply-To: <20190722214023.9513-11-snelson@pensando.io>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 457b097b-1918-4ac5-4bb3-08d7109201c4
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB6PR0501MB2662;
-x-ms-traffictypediagnostic: DB6PR0501MB2662:
-x-microsoft-antispam-prvs: <DB6PR0501MB2662E07552A4109B941E6811BEC60@DB6PR0501MB2662.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(136003)(39860400002)(376002)(366004)(199004)(189003)(11346002)(6512007)(14454004)(5660300002)(71200400001)(8676002)(7736002)(478600001)(25786009)(71190400001)(305945005)(99286004)(3846002)(6116002)(118296001)(486006)(2501003)(2906002)(14444005)(446003)(2201001)(186003)(6506007)(36756003)(476003)(2616005)(76176011)(81156014)(26005)(110136005)(58126008)(6486002)(102836004)(86362001)(229853002)(316002)(81166006)(66066001)(8936002)(6436002)(66946007)(256004)(64756008)(66556008)(6246003)(66476007)(66446008)(76116006)(53936002)(68736007)(91956017);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2662;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 3o7wxwE7F1Vbrka2l7SHfR+LZfTD88TyDBHt7+l1wqEK5C2uQcWN2lq1gjy4qzVhoeCGEBfZO6Y/has5LEur2AiZb+2/S49KDmrywdy5Sxwk8+RL/bdyZYuLKo04/VSexV73mx4R5wR6vsjhja6KxMyCRqPo0S3YStoRHFSOc13lk2AnTG4GEmk24ChHUSIcDpwfSdvUpbFhqdeKi9kDhmXU8fU1pE/VBBZI4a1/boyUCdwdct9aVBi3JDsK4ID2n0rNLdZbQOHQlcTdbpDDVj6I5zgJ0AV2Jre4aDNRT5/WdhEHufwPY57/a/2Rq6HpiJ9Lq1E2BlsmBGhEzhj7IByQhFr3pbUqek8iajxeEhKTmfjnxk6iw+mEUAKxqH43ShvMi2NLwN6mmsY7b9oucdFzaJaGIvNGELb1P03vIEg=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A4D62BBDB26D20469631444780DAF85A@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2388891AbfGXXw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 19:52:57 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46752 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727624AbfGXXw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 19:52:56 -0400
+Received: by mail-pl1-f193.google.com with SMTP id c2so22588105plz.13
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 16:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=X7CPKA/7VNTFh6d9AkXcUKh1Nf/gOxE8Xsvsg0BefTU=;
+        b=aLwAtQ4dSBxFn0VOec3Dd3bN+FmY4qhQwiRMTOeyDb2WeTSDZ2bMMIVP2MF6cNWzXJ
+         60jUqrYya1QirTludUaQJ6xD4/MxiEGGC+hJ/LNzmUwBvKfBmiNkO/QXNgDjcWGqFPaw
+         GbzHgFAE3kAaWke895d6JiMDrrO1SrpYyGID48yu2szNkhbbZVzqae4f8B73AU5tNCIH
+         vBZuMvD7eVvHzwyBGhtVzaWfNdDco0GcOnZRG0TmoMVgj4vVyMoWoEHQNP9SKJ+dV/1q
+         mXRUQa2zL2b9a/HoW3ob+qgxX0L/xNpMd7Uz4MRFzjKzfoNfWPgZvXBmcyo/yU3Aqb9p
+         b/7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=X7CPKA/7VNTFh6d9AkXcUKh1Nf/gOxE8Xsvsg0BefTU=;
+        b=efmkR/puc7QM4vqBLO06YmQwzYMQPr28s1M0OVvJCQd2mr/91cKpNDoSI4MxbNit2K
+         pii4U8EyteGj6C2vE9lkVGg/wQctyhzrfG4Q4XvdieI9tJbxxPRW4PzrkN9jPPaeQuyB
+         6vve1wJDX7F9zbgnlTw6ravfCk12t60Vj3sXQqAE0RMWJw0G8f2fnXWIrVRy/sgyw47S
+         mENhxmNTX5qvGMBOc5pqHmJzsKzaOY9wzJ0w5EG9ppnA6qXdEm3s+c2kCGpAekzeQx4E
+         n1fWdFYie748WmhffXNb6jjwrnINAm9DU2hbNEpkQCOQ74IQNnLhNATXnKG0A4/4apRO
+         yEAA==
+X-Gm-Message-State: APjAAAVAtYlVoVFWik7x24F/mSCNw8e/f6zv+yVRl3u8pXdVS7t9Sqbp
+        wUPSfr7qzis+XS/8a849myE=
+X-Google-Smtp-Source: APXvYqyV/4Z7Ybdj80lk+JO+W9hKdBlP8iaZIP7tWy9aCibs12CKEm88mwlwuwfsugVZc2CiQEKz0Q==
+X-Received: by 2002:a17:902:a514:: with SMTP id s20mr83544886plq.162.1564012375838;
+        Wed, 24 Jul 2019 16:52:55 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id s43sm61451855pjb.10.2019.07.24.16.52.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 24 Jul 2019 16:52:55 -0700 (PDT)
+Date:   Wed, 24 Jul 2019 16:52:54 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>
+Subject: Re: [PATCH bpf-next 5/7] sefltests/bpf: support
+ FLOW_DISSECTOR_F_PARSE_1ST_FRAG
+Message-ID: <20190724235254.GB3500@mini-arch>
+References: <20190724170018.96659-1-sdf@google.com>
+ <20190724170018.96659-6-sdf@google.com>
+ <CAPhsuW6Z2Bx66ZDOV-9jW+hsxKbZJxY-YFgP0rL_4QipAuptQA@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 457b097b-1918-4ac5-4bb3-08d7109201c4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 23:52:37.6026
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2662
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW6Z2Bx66ZDOV-9jW+hsxKbZJxY-YFgP0rL_4QipAuptQA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA3LTIyIGF0IDE0OjQwIC0wNzAwLCBTaGFubm9uIE5lbHNvbiB3cm90ZToN
-Cj4gU2V0IHVwIHRoZSBpbmZyYXN0cnVjdHVyZSBmb3IgbWFuYWdpbmcgUnggZmlsdGVycy4gIFdl
-IGNhbid0IGFzayB0aGUNCj4gaGFyZHdhcmUgZm9yIHdoYXQgZmlsdGVycyBpdCBoYXMsIHNvIHdl
-IGtlZXAgYSBsb2NhbCBsaXN0IG9mIGZpbHRlcnMNCj4gdGhhdCB3ZSd2ZSBwdXNoZWQgaW50byB0
-aGUgSFcuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBTaGFubm9uIE5lbHNvbiA8c25lbHNvbkBwZW5z
-YW5kby5pbz4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9wZW5zYW5kby9pb25pYy9N
-YWtlZmlsZSAgfCAgIDQgKy0NCj4gIC4uLi9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9u
-aWNfbGlmLmMgICB8ICAgNiArDQo+ICAuLi4vbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lv
-bmljX2xpZi5oICAgfCAgIDIgKw0KPiAgLi4uL2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmlj
-X3J4X2ZpbHRlci5jIHwgMTQzDQo+ICsrKysrKysrKysrKysrKysrKw0KPiAgLi4uL2V0aGVybmV0
-L3BlbnNhbmRvL2lvbmljL2lvbmljX3J4X2ZpbHRlci5oIHwgIDM1ICsrKysrDQo+ICA1IGZpbGVz
-IGNoYW5nZWQsIDE4OCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiAgY3JlYXRlIG1v
-ZGUgMTAwNjQ0DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmljX3J4
-X2ZpbHRlci5jDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQv
-cGVuc2FuZG8vaW9uaWMvaW9uaWNfcnhfZmlsdGVyLmgNCj4gDQo+IA0KDQpbLi4uXQ0KDQo+ICsj
-ZGVmaW5lIFJYUV9JTkRFWF9BTlkJCSgweEZGRkYpDQo+ICtzdHJ1Y3QgcnhfZmlsdGVyIHsNCj4g
-Kwl1MzIgZmxvd19pZDsNCj4gKwl1MzIgZmlsdGVyX2lkOw0KPiArCXUxNiByeHFfaW5kZXg7DQo+
-ICsJc3RydWN0IHJ4X2ZpbHRlcl9hZGRfY21kIGNtZDsNCj4gKwlzdHJ1Y3QgaGxpc3Rfbm9kZSBi
-eV9oYXNoOw0KPiArCXN0cnVjdCBobGlzdF9ub2RlIGJ5X2lkOw0KPiArfTsNCj4gKw0KPiArI2Rl
-ZmluZSBSWF9GSUxURVJfSEFTSF9CSVRTCTEwDQo+ICsjZGVmaW5lIFJYX0ZJTFRFUl9ITElTVFMJ
-QklUKFJYX0ZJTFRFUl9IQVNIX0JJVFMpDQo+ICsjZGVmaW5lIFJYX0ZJTFRFUl9ITElTVFNfTUFT
-SwkoUlhfRklMVEVSX0hMSVNUUyAtIDEpDQo+ICtzdHJ1Y3QgcnhfZmlsdGVycyB7DQo+ICsJc3Bp
-bmxvY2tfdCBsb2NrOwkJCQkvKiBmaWx0ZXIgbGlzdCBsb2NrDQo+ICovDQo+ICsJc3RydWN0IGhs
-aXN0X2hlYWQgYnlfaGFzaFtSWF9GSUxURVJfSExJU1RTXTsJLyogYnkgc2tiDQo+IGhhc2ggKi8N
-Cj4gKwlzdHJ1Y3QgaGxpc3RfaGVhZCBieV9pZFtSWF9GSUxURVJfSExJU1RTXTsJLyogYnkNCj4g
-ZmlsdGVyX2lkICovDQo+ICt9Ow0KPiArDQo+IA0KDQpGb2xsb3dpbmcgRGF2ZSdzIGNvbW1lbnQg
-b24gdGhpcywgeW91IHVzZSB0b28gZ2VuZXJpYyBzdHJ1Y3QgYW5kIG1hY3JvDQovZGVmaW5lIG5h
-bWVzLCBpIHN0cm9uZ2x5IHJlY29tbWVuZCB0byBhZGQgYSB1bmlxdWUgcHJlZml4IHRvIHRoaXMN
-CmRyaXZlci4NCg==
+On 07/24, Song Liu wrote:
+> On Wed, Jul 24, 2019 at 10:11 AM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > bpf_flow.c: exit early unless FLOW_DISSECTOR_F_PARSE_1ST_FRAG is passed
+> > in flags. Also, set ip_proto earlier, this makes sure we have correct
+> > value with fragmented packets.
+> >
+> > Add selftest cases to test ipv4/ipv6 fragments and skip eth_get_headlen
+> > tests that don't have FLOW_DISSECTOR_F_PARSE_1ST_FRAG flag.
+> >
+> > eth_get_headlen calls flow dissector with
+> > FLOW_DISSECTOR_F_PARSE_1ST_FRAG flag so we can't run tests that
+> > have different set of input flags against it.
+> >
+> > Cc: Willem de Bruijn <willemb@google.com>
+> > Cc: Petar Penkov <ppenkov@google.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  .../selftests/bpf/prog_tests/flow_dissector.c | 129 ++++++++++++++++++
+> >  tools/testing/selftests/bpf/progs/bpf_flow.c  |  28 +++-
+> >  2 files changed, 151 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> > index c938283ac232..966cb3b06870 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> > @@ -5,6 +5,10 @@
+> >  #include <linux/if_tun.h>
+> >  #include <sys/uio.h>
+> >
+> > +#ifndef IP_MF
+> > +#define IP_MF 0x2000
+> > +#endif
+> > +
+> >  #define CHECK_FLOW_KEYS(desc, got, expected)                           \
+> >         CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) != 0,           \
+> >               desc,                                                     \
+> > @@ -49,6 +53,18 @@ struct ipv6_pkt {
+> >         struct tcphdr tcp;
+> >  } __packed;
+> >
+> > +struct ipv6_frag_pkt {
+> > +       struct ethhdr eth;
+> > +       struct ipv6hdr iph;
+> > +       struct frag_hdr {
+> > +               __u8 nexthdr;
+> > +               __u8 reserved;
+> > +               __be16 frag_off;
+> > +               __be32 identification;
+> > +       } ipf;
+> > +       struct tcphdr tcp;
+> > +} __packed;
+> > +
+> >  struct dvlan_ipv6_pkt {
+> >         struct ethhdr eth;
+> >         __u16 vlan_tci;
+> > @@ -65,9 +81,11 @@ struct test {
+> >                 struct ipv4_pkt ipv4;
+> >                 struct svlan_ipv4_pkt svlan_ipv4;
+> >                 struct ipv6_pkt ipv6;
+> > +               struct ipv6_frag_pkt ipv6_frag;
+> >                 struct dvlan_ipv6_pkt dvlan_ipv6;
+> >         } pkt;
+> >         struct bpf_flow_keys keys;
+> > +       __u32 flags;
+> >  };
+> >
+> >  #define VLAN_HLEN      4
+> > @@ -143,6 +161,102 @@ struct test tests[] = {
+> >                         .n_proto = __bpf_constant_htons(ETH_P_IPV6),
+> >                 },
+> >         },
+> > +       {
+> > +               .name = "ipv4-frag",
+> > +               .pkt.ipv4 = {
+> > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IP),
+> > +                       .iph.ihl = 5,
+> > +                       .iph.protocol = IPPROTO_TCP,
+> > +                       .iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
+> > +                       .iph.frag_off = __bpf_constant_htons(IP_MF),
+> > +                       .tcp.doff = 5,
+> > +                       .tcp.source = 80,
+> > +                       .tcp.dest = 8080,
+> > +               },
+> > +               .keys = {
+> > +                       .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
+> > +                       .nhoff = ETH_HLEN,
+> > +                       .thoff = ETH_HLEN + sizeof(struct iphdr),
+> > +                       .addr_proto = ETH_P_IP,
+> > +                       .ip_proto = IPPROTO_TCP,
+> > +                       .n_proto = __bpf_constant_htons(ETH_P_IP),
+> > +                       .is_frag = true,
+> > +                       .is_first_frag = true,
+> > +                       .sport = 80,
+> > +                       .dport = 8080,
+> > +               },
+> > +               .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
+> > +       },
+> > +       {
+> > +               .name = "ipv4-no-frag",
+> > +               .pkt.ipv4 = {
+> > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IP),
+> > +                       .iph.ihl = 5,
+> > +                       .iph.protocol = IPPROTO_TCP,
+> > +                       .iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
+> > +                       .iph.frag_off = __bpf_constant_htons(IP_MF),
+> > +                       .tcp.doff = 5,
+> > +                       .tcp.source = 80,
+> > +                       .tcp.dest = 8080,
+> > +               },
+> > +               .keys = {
+> > +                       .nhoff = ETH_HLEN,
+> > +                       .thoff = ETH_HLEN + sizeof(struct iphdr),
+> > +                       .addr_proto = ETH_P_IP,
+> > +                       .ip_proto = IPPROTO_TCP,
+> > +                       .n_proto = __bpf_constant_htons(ETH_P_IP),
+> > +                       .is_frag = true,
+> > +                       .is_first_frag = true,
+> > +               },
+> > +       },
+> > +       {
+> > +               .name = "ipv6-frag",
+> > +               .pkt.ipv6_frag = {
+> > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IPV6),
+> > +                       .iph.nexthdr = IPPROTO_FRAGMENT,
+> > +                       .iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
+> > +                       .ipf.nexthdr = IPPROTO_TCP,
+> > +                       .tcp.doff = 5,
+> > +                       .tcp.source = 80,
+> > +                       .tcp.dest = 8080,
+> > +               },
+> > +               .keys = {
+> > +                       .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
+> > +                       .nhoff = ETH_HLEN,
+> > +                       .thoff = ETH_HLEN + sizeof(struct ipv6hdr) +
+> > +                               sizeof(struct frag_hdr),
+> > +                       .addr_proto = ETH_P_IPV6,
+> > +                       .ip_proto = IPPROTO_TCP,
+> > +                       .n_proto = __bpf_constant_htons(ETH_P_IPV6),
+> > +                       .is_frag = true,
+> > +                       .is_first_frag = true,
+> > +                       .sport = 80,
+> > +                       .dport = 8080,
+> > +               },
+> > +               .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
+> > +       },
+> > +       {
+> > +               .name = "ipv6-no-frag",
+> > +               .pkt.ipv6_frag = {
+> > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IPV6),
+> > +                       .iph.nexthdr = IPPROTO_FRAGMENT,
+> > +                       .iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
+> > +                       .ipf.nexthdr = IPPROTO_TCP,
+> > +                       .tcp.doff = 5,
+> > +                       .tcp.source = 80,
+> > +                       .tcp.dest = 8080,
+> > +               },
+> > +               .keys = {
+> > +                       .nhoff = ETH_HLEN,
+> > +                       .thoff = ETH_HLEN + sizeof(struct ipv6hdr) +
+> > +                               sizeof(struct frag_hdr),
+> > +                       .addr_proto = ETH_P_IPV6,
+> > +                       .ip_proto = IPPROTO_TCP,
+> > +                       .n_proto = __bpf_constant_htons(ETH_P_IPV6),
+> > +                       .is_frag = true,
+> > +                       .is_first_frag = true,
+> > +               },
+> > +       },
+> >  };
+> >
+> >  static int create_tap(const char *ifname)
+> > @@ -225,6 +339,13 @@ void test_flow_dissector(void)
+> >                         .data_size_in = sizeof(tests[i].pkt),
+> >                         .data_out = &flow_keys,
+> >                 };
+> > +               static struct bpf_flow_keys ctx = {};
+> > +
+> > +               if (tests[i].flags) {
+> > +                       tattr.ctx_in = &ctx;
+> > +                       tattr.ctx_size_in = sizeof(ctx);
+> > +                       ctx.flags = tests[i].flags;
+> > +               }
+> >
+> >                 err = bpf_prog_test_run_xattr(&tattr);
+> >                 CHECK_ATTR(tattr.data_size_out != sizeof(flow_keys) ||
+> > @@ -255,6 +376,14 @@ void test_flow_dissector(void)
+> >                 struct bpf_prog_test_run_attr tattr = {};
+> >                 __u32 key = 0;
+> >
+> > +               /* Don't run tests that are not marked as
+> > +                * FLOW_DISSECTOR_F_PARSE_1ST_FRAG; eth_get_headlen
+> > +                * sets this flag.
+> > +                */
+> > +
+> > +               if (tests[i].flags != FLOW_DISSECTOR_F_PARSE_1ST_FRAG)
+> > +                       continue;
+> 
+> Maybe test flags & FLOW_DISSECTOR_F_PARSE_1ST_FRAG == 0 instead?
+> It is not necessary now, but might be useful in the future.
+I'm not sure about this one. We want flags here to match flags
+from eth_get_headlen:
+
+	const unsigned int flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
+	...
+	if (!skb_flow_dissect_flow_keys_basic(..., flags))
+
+Otherwise the test might break unexpectedly. So I'd rather manually
+adjust a test here if eth_get_headlen flags change.
+
+Maybe I should clarify the comment to signify that dependency? Because
+currently it might be read as if we only care about
+FLOW_DISSECTOR_F_PARSE_1ST_FRAG, but we really care about all flags
+in eth_get_headlen; it just happens that it only has one right now.
