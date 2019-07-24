@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76690737AC
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E538A737AA
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728980AbfGXTSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 15:18:08 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:37801 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728936AbfGXTSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:18:08 -0400
-Received: by mail-io1-f69.google.com with SMTP id v3so52127526ios.4
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:18:07 -0700 (PDT)
+        id S1727090AbfGXTS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 15:18:27 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:52103 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728972AbfGXTSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:18:09 -0400
+Received: by mail-io1-f71.google.com with SMTP id c5so51750290iom.18
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:18:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=lEMu0m22wDaJRk+5rv2rzVQSS4vLiX5zmKGJxpdYVqg=;
-        b=ABLcisQBaLq/p0UKU5sYvZrYIM0nGAmixLkN1oO8FSOhX0z4EUYDmJBRqsMaaTM34O
-         CXvGwY8mamJMtZFbg3DZe2f+xGu6SlubyGsRUCUQROVzftTB3ZL9+KhVHuGn8heZii8x
-         uziiYN6Y5kmiZWP78Kh/hSdyeSi+eBZjn/mCKk2ncFJPhvd3b3sdf7FBTv93sUdOA9sV
-         uspsyRG4SI8WK7asn+U6HmixmghcldUOjzzgjyXlBHu+5e9mIHrcmumnPhFXm8IAryNZ
-         cpiSZwM0txsZdkLfujSWlF0UCb6eln2kVGoCgIhU8Yty+rgIsqCMTi3QoM3bDGbUiqTo
-         KZLw==
-X-Gm-Message-State: APjAAAXWzTTnYgyNCUGa1z1YrMPY7EI2J7YILwoM80m8a2QMwlLvXHTx
-        3y0TrNWTNJrNmzZumnzna2nRR9guD2OxQxS4O0G/WxS8diNZ
-X-Google-Smtp-Source: APXvYqwG2P3HT9WZ8m28jVM4+fieLe0Zr6/Bvp8CSOYWAOYsfrq2fAuYKR+wgZ8hjLzmMs+aq4jtu33k8Ge71UKd3o4u26XdVyCZ
+        bh=+12BGyfj5tbWX5WuoPOq9y3PhelyQ+8mPqbDPnhEVzo=;
+        b=OkgJ9i/fspKybpuWul9VTvRrU/9BfsrzD7TiwAfjuiye0mRb5Dxrk8+8zNvf5AHVbo
+         3aQNMIsQQBsiW22AAnB2n4Iug2BzQEe0VnMJIbD5WjopV9EI3vbtXeoR/RxLSBhmoUew
+         oL8YCDx2DDiESOOuAXyp21NcsxOuw21bNqdCUkfCREkycHK4Vu8yBKKGyGaaPGr8xybP
+         9HIH5xSZAnX+PMKQKTBjEpXSY7ueT/vf2E1NqzKFQCscvqofYXcAVRehHgBl7GTw0qAL
+         SI6kG9au69h3EyyGDjGLLFao4mllGfVc6wO6D/sDY1RUz95ArWMnxGR43dQmSYqNa7TH
+         S/Pg==
+X-Gm-Message-State: APjAAAVniMzPA14CTrYGafvFIIXDaaF71kRhBC/xZNNtGyVo81/bjWHw
+        a2v2eTeThjqgBkqXW7XZU0GdiV69CitNFzK6287fTU79SEbm
+X-Google-Smtp-Source: APXvYqzrveDnVjWnhpRCtNoBbE6aQKt12eCs95S1sUGbzWHPCDnySGIySR0fc/DvrPbVKh2/fY3zZXKGAAKFP9BkQi2Ea14TJJKw
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9515:: with SMTP id r21mr44673640ioj.257.1563995886993;
- Wed, 24 Jul 2019 12:18:06 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 12:18:06 -0700
+X-Received: by 2002:a6b:b497:: with SMTP id d145mr54785605iof.17.1563995888091;
+ Wed, 24 Jul 2019 12:18:08 -0700 (PDT)
+Date:   Wed, 24 Jul 2019 12:18:08 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000464b54058e722b54@google.com>
-Subject: BUG: spinlock recursion in release_sock
-From:   syzbot <syzbot+e67cf584b5e6b35a8ffa@syzkaller.appspotmail.com>
-To:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <00000000000057102e058e722bba@google.com>
+Subject: INFO: task hung in perf_event_free_task
+From:   syzbot <syzbot+7692cea7450c97fa2a0a@syzkaller.appspotmail.com>
+To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        jolsa@redhat.com, kafai@fb.com, linux-kernel@vger.kernel.org,
+        mingo@redhat.com, namhyung@kernel.org, netdev@vger.kernel.org,
+        peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,94 +51,108 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    9e6dfe80 Add linux-next specific files for 20190724
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11c1271fa00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6cbb8fc2cf2842d7
-dashboard link: https://syzkaller.appspot.com/bug?extid=e67cf584b5e6b35a8ffa
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13680594600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15b34144600000
+HEAD commit:    c6dd78fc Merge branch 'x86-urgent-for-linus' of git://git...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b33b58600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7937b718ddac333b
+dashboard link: https://syzkaller.appspot.com/bug?extid=7692cea7450c97fa2a0a
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e888cc600000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e67cf584b5e6b35a8ffa@syzkaller.appspotmail.com
+Reported-by: syzbot+7692cea7450c97fa2a0a@syzkaller.appspotmail.com
 
-BUG: spinlock recursion on CPU#0, syz-executor596/9231
-  lock: 0xffff8880a16c2d08, .magic: dead4ead, .owner:  
-syz-executor596/9231, .owner_cpu: 0
-CPU: 0 PID: 9231 Comm: syz-executor596 Not tainted 5.3.0-rc1-next-20190724  
-#50
+INFO: task syz-executor.0:9658 blocked for more than 143 seconds.
+       Not tainted 5.2.0+ #37
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.0  D25992  9658   7837 0x00004006
+Call Trace:
+  context_switch kernel/sched/core.c:3254 [inline]
+  __schedule+0x8b7/0xcd0 kernel/sched/core.c:3880
+  schedule+0x12f/0x1d0 kernel/sched/core.c:3944
+  perf_event_free_task+0x52a/0x630 kernel/events/core.c:11606
+  copy_process+0x39bb/0x5a00 kernel/fork.c:2283
+  _do_fork+0x179/0x630 kernel/fork.c:2369
+  __do_sys_clone kernel/fork.c:2524 [inline]
+  __se_sys_clone kernel/fork.c:2505 [inline]
+  __x64_sys_clone+0x247/0x2b0 kernel/fork.c:2505
+  do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: dd fe ff ff cc cc cc cc cc cc cc cc cc cc cc cc cc 64 48 8b 0c 25 f8  
+ff ff ff 48 3b 61 10 76 68 48 83 ec 28 48 89 6c 24 20 48 <8d> 6c 24 20 48  
+8b 44 24 30 48 89 04 24 48 8b 4c 24 38 48 89 4c 24
+RSP: 002b:00007f2b371d8c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
+RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 0000000000459829
+RDX: 9999999999999999 RSI: 0000000000000000 RDI: 0000002102001ffe
+RBP: 000000000075bf20 R08: ffffffffffffffff R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2b371d96d4
+R13: 00000000004bfce6 R14: 00000000004d17f8 R15: 00000000ffffffff
+
+Showing all locks held in the system:
+1 lock held by khungtaskd/1056:
+  #0: 000000004ef21d86 (rcu_read_lock){....}, at: rcu_lock_acquire+0x4/0x30  
+include/linux/rcupdate.h:207
+1 lock held by rsyslogd/7708:
+  #0: 000000001dbc8cee (&f->f_pos_lock){+.+.}, at: __fdget_pos+0x243/0x2e0  
+fs/file.c:801
+2 locks held by getty/7798:
+  #0: 00000000ad2eb6b3 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 0000000067bda1b9 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+2 locks held by getty/7799:
+  #0: 00000000e86f0102 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 00000000f10c3522 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+2 locks held by getty/7800:
+  #0: 00000000f4a9ed02 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 00000000759669da (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+2 locks held by getty/7801:
+  #0: 00000000c998e0d2 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 000000007c9ea7de (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+2 locks held by getty/7802:
+  #0: 00000000398be820 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 00000000deef3632 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+2 locks held by getty/7803:
+  #0: 00000000fa979d44 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 000000003715a25d (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+2 locks held by getty/7804:
+  #0: 000000009d01c162 (&tty->ldisc_sem){++++}, at:  
+tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:272
+  #1: 0000000010022d29 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x2ee/0x1c80 drivers/tty/n_tty.c:2156
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 PID: 1056 Comm: khungtaskd Not tainted 5.2.0+ #37
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
 Call Trace:
-  <IRQ>
   __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  spin_dump.cold+0x81/0xe6 kernel/locking/spinlock_debug.c:67
-  spin_bug kernel/locking/spinlock_debug.c:75 [inline]
-  debug_spin_lock_before kernel/locking/spinlock_debug.c:84 [inline]
-  do_raw_spin_lock+0x252/0x2e0 kernel/locking/spinlock_debug.c:112
-  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
-  _raw_spin_lock_bh+0x3b/0x50 kernel/locking/spinlock.c:175
-  spin_lock_bh include/linux/spinlock.h:343 [inline]
-  release_sock+0x20/0x1c0 net/core/sock.c:2932
-  wait_on_pending_writer+0x20f/0x420 net/tls/tls_main.c:91
-  tls_sk_proto_cleanup+0x2c5/0x3e0 net/tls/tls_main.c:295
-  tls_sk_proto_unhash+0x90/0x3f0 net/tls/tls_main.c:330
-  tcp_set_state+0x5b9/0x7d0 net/ipv4/tcp.c:2235
-  tcp_done+0xe2/0x320 net/ipv4/tcp.c:3824
-  tcp_reset+0x132/0x500 net/ipv4/tcp_input.c:4080
-  tcp_validate_incoming+0xa2d/0x1660 net/ipv4/tcp_input.c:5440
-  tcp_rcv_established+0x6b5/0x1e70 net/ipv4/tcp_input.c:5648
-  tcp_v6_do_rcv+0x41e/0x12c0 net/ipv6/tcp_ipv6.c:1356
-  tcp_v6_rcv+0x31f1/0x3500 net/ipv6/tcp_ipv6.c:1588
-  ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
-  ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
-  NF_HOOK include/linux/netfilter.h:305 [inline]
-  NF_HOOK include/linux/netfilter.h:299 [inline]
-  ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
-  dst_input include/net/dst.h:442 [inline]
-  ip6_rcv_finish+0x1de/0x2f0 net/ipv6/ip6_input.c:76
-  NF_HOOK include/linux/netfilter.h:305 [inline]
-  NF_HOOK include/linux/netfilter.h:299 [inline]
-  ipv6_rcv+0x10e/0x420 net/ipv6/ip6_input.c:272
-  __netif_receive_skb_one_core+0x113/0x1a0 net/core/dev.c:4999
-  __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5113
-  process_backlog+0x206/0x750 net/core/dev.c:5924
-  napi_poll net/core/dev.c:6347 [inline]
-  net_rx_action+0x508/0x10c0 net/core/dev.c:6413
-  __do_softirq+0x262/0x98c kernel/softirq.c:292
-  do_softirq_own_stack+0x2a/0x40 arch/x86/entry/entry_64.S:1080
-  </IRQ>
-  do_softirq.part.0+0x11a/0x170 kernel/softirq.c:337
-  do_softirq kernel/softirq.c:329 [inline]
-  __local_bh_enable_ip+0x211/0x270 kernel/softirq.c:189
-  local_bh_enable include/linux/bottom_half.h:32 [inline]
-  inet_csk_listen_stop+0x1e0/0x850 net/ipv4/inet_connection_sock.c:993
-  tcp_close+0xd5b/0x10e0 net/ipv4/tcp.c:2338
-  inet_release+0xed/0x200 net/ipv4/af_inet.c:427
-  inet6_release+0x53/0x80 net/ipv6/af_inet6.c:470
-  __sock_release+0xce/0x280 net/socket.c:590
-  sock_close+0x1e/0x30 net/socket.c:1268
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:163
-  prepare_exit_to_usermode arch/x86/entry/common.c:194 [inline]
-  syscall_return_slowpath arch/x86/entry/common.c:274 [inline]
-  do_syscall_64+0x65f/0x760 arch/x86/entry/common.c:300
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x406581
-Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 24 1a 00 00 c3 48  
-83 ec 08 e8 6a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48  
-89 c2 e8 b3 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00007ffd1ccb84a0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000406581
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
-RBP: 00000000006dcc20 R08: 0000000000000140 R09: 0000000000000140
-R10: 00007ffd1ccb84d0 R11: 0000000000000293 R12: 00007ffd1ccb8500
-R13: 00000000006dcc2c R14: 000000000000002d R15: 0000000000000007
+  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+  nmi_cpu_backtrace+0xb0/0x1a0 lib/nmi_backtrace.c:101
+  nmi_trigger_cpumask_backtrace+0x14c/0x240 lib/nmi_backtrace.c:62
+  arch_trigger_cpumask_backtrace+0x10/0x20 arch/x86/kernel/apic/hw_nmi.c:38
+  trigger_all_cpu_backtrace+0x17/0x20 include/linux/nmi.h:146
+  check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
+  watchdog+0xbcc/0xbe0 kernel/hung_task.c:289
+  kthread+0x332/0x350 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1 skipped: idling at native_safe_halt+0xe/0x10  
+arch/x86/include/asm/irqflags.h:60
 
 
 ---
