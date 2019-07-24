@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2149972DE9
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE9772DF5
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727619AbfGXLn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:43:27 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:43996 "EHLO
+        id S1727819AbfGXLoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:44:18 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:46238 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbfGXLn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:43:27 -0400
+        with ESMTP id S1727714AbfGXLoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:44:17 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id ED3A36043F; Wed, 24 Jul 2019 11:43:26 +0000 (UTC)
+        id C579D60388; Wed, 24 Jul 2019 11:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563968607;
-        bh=byFzy6X7pbJq+TN7J3RSRYSWZPSaIMEFe5+Gacdf8+8=;
+        s=default; t=1563968655;
+        bh=S6OXrvtDsyi8I8F59uMGPY5IQ3eyM6OF3WhhwoJvzoo=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=jMbf6RhSVdlKS5cdyy1s9CEHQLtp3BnhmMZ0/4niIoSR0WbvOKaciXFZGi2YtI+v/
-         HQQzQrLNe/S0at8eg9V4LGOyr0Bh9XmWD3lGA0O/nGUWE89JJ2B66GzrBUKf4vThDg
-         FboysX+zxHu9ytLSwzEb/FvjW5aOKYWLmHQYsbr4=
+        b=BC57CTXDFCqIg+o+viuTT8ydQbh2/+UtLg4pQNsCd+jyYmVgRwzz32rPtcvN/U1JW
+         IGTd0gT6qtZ37NGLczaoIT0xbENopMwtKItNzyqd03HBFrZ8JG4h6mnsRe/f1S5XZS
+         4lQWDVqHLwUci2DDDEvj+oY6kg7bwe4/4LSyfkto=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,64 +30,71 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D725C6021C;
-        Wed, 24 Jul 2019 11:43:24 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 93EBE60FF3;
+        Wed, 24 Jul 2019 11:44:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563968606;
-        bh=byFzy6X7pbJq+TN7J3RSRYSWZPSaIMEFe5+Gacdf8+8=;
+        s=default; t=1563968651;
+        bh=S6OXrvtDsyi8I8F59uMGPY5IQ3eyM6OF3WhhwoJvzoo=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=LNAY3xDmVfM3fN9HTzMB6M09awe6/uE/AYEm4IHvwcM8jIkgldz6wnR5HnAjGlQAj
-         cP4UqAAOovPXH/fkY3eZPt4mNFRe+z5tDSs2y5+LqfqU1nRttobjm0wOb44sl/MHPX
-         qN3GxJX7jSDVpwFLOQeyFJv66ULdmgdWZy9MmsNM=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D725C6021C
+        b=TcHlutVETrL2jorSylVgYgvu/0HZrximyJ4Uty+NCQOP5JKjb8tGlmWvfbIpeB7TH
+         OMtaI8H1PbL0A9naSaQpbUOb6znBWjc7DOKZHXpHbzZ/b9XAedIR3N+QZYkE0AhyPq
+         n5HN/iNwK4Eh9u3Er0pLTxnwc+OTp5VJo5jIadHQ=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 93EBE60FF3
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] rt2x00: no need to check return value of
- debugfs_create functions
+Subject: Re: [PATCH v2] rtl8xxxu: Fix wifi low signal strength issue of
+ RTL8723BU
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190703113956.GA26652@kroah.com>
-References: <20190703113956.GA26652@kroah.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Stanislaw Gruszka <sgruszka@redhat.com>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+In-Reply-To: <20190704105528.74028-1-chiu@endlessm.com>
+References: <20190704105528.74028-1-chiu@endlessm.com>
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     jes.sorensen@gmail.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190724114326.ED3A36043F@smtp.codeaurora.org>
-Date:   Wed, 24 Jul 2019 11:43:26 +0000 (UTC)
+Message-Id: <20190724114415.C579D60388@smtp.codeaurora.org>
+Date:   Wed, 24 Jul 2019 11:44:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+Chris Chiu <chiu@endlessm.com> wrote:
 
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic should
-> never do something different based on this.
+> The WiFi tx power of RTL8723BU is extremely low after booting. So
+> the WiFi scan gives very limited AP list and it always fails to
+> connect to the selected AP. This module only supports 1x1 antenna
+> and the antenna is switched to bluetooth due to some incorrect
+> register settings.
 > 
-> Because we don't need to save the individual debugfs files and
-> directories, remove the local storage of them and just remove the entire
-> debugfs directory in a single call, making things a lot simpler.
+> Compare with the vendor driver https://github.com/lwfinger/rtl8723bu,
+> we realized that the 8723bu's enable_rf() does the same thing as
+> rtw_btcoex_HAL_Initialize() in vendor driver. And it by default
+> sets the antenna path to BTC_ANT_PATH_BT which we verified it's
+> the cause of the wifi weak tx power. The vendor driver will set
+> the antenna path to BTC_ANT_PATH_PTA in the consequent btcoexist
+> mechanism, by the function halbtc8723b1ant_PsTdma.
 > 
-> Cc: Stanislaw Gruszka <sgruszka@redhat.com>
-> Cc: Helmut Schaa <helmut.schaa@googlemail.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Acked-by: Stanislaw Gruszka <sgruszka@redhat.com>
+> This commit hand over the antenna control to PTA(Packet Traffic
+> Arbitration), which compares the weight of bluetooth/wifi traffic
+> then determine whether to continue current wifi traffic or not.
+> After PTA take control, The wifi signal will be back to normal and
+> the bluetooth scan can also work at the same time. However, the
+> btcoexist still needs to be handled under different circumstances.
+> If there's a BT connection established, the wifi still fails to
+> connect until BT disconnected.
+> 
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-1dc244064c47 rt2x00: no need to check return value of debugfs_create functions
+18e714687bea rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
 
 -- 
-https://patchwork.kernel.org/patch/11029367/
+https://patchwork.kernel.org/patch/11031397/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
