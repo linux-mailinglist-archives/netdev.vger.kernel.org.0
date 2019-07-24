@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 580377301D
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D32277301F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:44:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbfGXNoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 09:44:22 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:45882 "EHLO
+        id S1726842AbfGXNoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 09:44:25 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:41312 "EHLO
         mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbfGXNoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:44:22 -0400
+        with ESMTP id S1725944AbfGXNoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:44:24 -0400
 Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 45txQr0Hlfz1rK4n;
-        Wed, 24 Jul 2019 15:44:16 +0200 (CEST)
+        by mail-out.m-online.net (Postfix) with ESMTP id 45txQt3LjVz1s4qB;
+        Wed, 24 Jul 2019 15:44:17 +0200 (CEST)
 Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 45txQm0vrsz1qqkn;
-        Wed, 24 Jul 2019 15:44:16 +0200 (CEST)
+        by mail.m-online.net (Postfix) with ESMTP id 45txQn47BKz1qqkt;
+        Wed, 24 Jul 2019 15:44:17 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at mnet-online.de
 Received: from mail.mnet-online.de ([192.168.8.182])
         by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id OSH_-v-zRmQd; Wed, 24 Jul 2019 15:44:14 +0200 (CEST)
-X-Auth-Info: Z/CTF0xDZy7TlVTzDhjHRB3T7q4GVKGl/JpXvTxF6rc=
+        with ESMTP id z7DKvprgIk6z; Wed, 24 Jul 2019 15:44:16 +0200 (CEST)
+X-Auth-Info: E6D+IVqYZEXnu2uwFY/KuPsz+CLXYirpki6t9Y424Ck=
 Received: from kurokawa.lan (ip-86-49-35-8.net.upcbroadband.cz [86.49.35.8])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Wed, 24 Jul 2019 15:44:14 +0200 (CEST)
+        Wed, 24 Jul 2019 15:44:16 +0200 (CEST)
 From:   Marek Vasut <marex@denx.de>
 To:     netdev@vger.kernel.org
 Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Tristram Ha <Tristram.Ha@microchip.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH 0/3] net: dsa: ksz: Add Microchip KSZ87xx support
-Date:   Wed, 24 Jul 2019 15:40:45 +0200
-Message-Id: <20190724134048.31029-1-marex@denx.de>
+        Woojung Huh <woojung.huh@microchip.com>,
+        devicetree@vger.kernel.org
+Subject: [PATCH 1/3] dt-bindings: net: dsa: ksz: document Microchip KSZ87xx family switches
+Date:   Wed, 24 Jul 2019 15:40:46 +0200
+Message-Id: <20190724134048.31029-2-marex@denx.de>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190724134048.31029-1-marex@denx.de>
+References: <20190724134048.31029-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -46,40 +50,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for Microchip KSZ87xx switches, which are
-slightly simpler compared to KSZ9xxx .
+Document Microchip KSZ87xx family switches. These include
+KSZ8765 - 5 port switch
+KSZ8794 - 4 port switch
+KSZ8795 - 5 port switch
 
 Signed-off-by: Marek Vasut <marex@denx.de>
 Cc: Andrew Lunn <andrew@lunn.ch>
 Cc: David S. Miller <davem@davemloft.net>
 Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>
 Cc: Tristram Ha <Tristram.Ha@microchip.com>
 Cc: Vivien Didelot <vivien.didelot@gmail.com>
 Cc: Woojung Huh <woojung.huh@microchip.com>
+Cc: devicetree@vger.kernel.org
+---
+ Documentation/devicetree/bindings/net/dsa/ksz.txt | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Marek Vasut (1):
-  dt-bindings: net: dsa: ksz: document Microchip KSZ87xx family switches
-
-Tristram Ha (2):
-  net: dsa: ksz: Add KSZ8795 tag code
-  net: dsa: ksz: Add Microchip KSZ8795 DSA driver
-
- .../devicetree/bindings/net/dsa/ksz.txt       |    3 +
- drivers/net/dsa/microchip/Kconfig             |   18 +
- drivers/net/dsa/microchip/Makefile            |    2 +
- drivers/net/dsa/microchip/ksz8795.c           | 1360 +++++++++++++++++
- drivers/net/dsa/microchip/ksz8795_reg.h       | 1004 ++++++++++++
- drivers/net/dsa/microchip/ksz8795_spi.c       |  104 ++
- drivers/net/dsa/microchip/ksz_common.h        |   28 +
- drivers/net/dsa/microchip/ksz_priv.h          |    1 +
- include/net/dsa.h                             |    2 +
- net/dsa/Kconfig                               |    7 +
- net/dsa/tag_ksz.c                             |   62 +
- 11 files changed, 2591 insertions(+)
- create mode 100644 drivers/net/dsa/microchip/ksz8795.c
- create mode 100644 drivers/net/dsa/microchip/ksz8795_reg.h
- create mode 100644 drivers/net/dsa/microchip/ksz8795_spi.c
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/ksz.txt b/Documentation/devicetree/bindings/net/dsa/ksz.txt
+index 4ac21cef370e..5e8429b6f9ca 100644
+--- a/Documentation/devicetree/bindings/net/dsa/ksz.txt
++++ b/Documentation/devicetree/bindings/net/dsa/ksz.txt
+@@ -5,6 +5,9 @@ Required properties:
+ 
+ - compatible: For external switch chips, compatible string must be exactly one
+   of the following:
++  - "microchip,ksz8765"
++  - "microchip,ksz8794"
++  - "microchip,ksz8795"
+   - "microchip,ksz9477"
+   - "microchip,ksz9897"
+   - "microchip,ksz9896"
 -- 
 2.20.1
 
