@@ -2,93 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CF7724AE
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E80A724B2
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbfGXCaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:30:24 -0400
-Received: from mga14.intel.com ([192.55.52.115]:42413 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728191AbfGXCaW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:30:22 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Jul 2019 19:30:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,300,1559545200"; 
-   d="asc'?scan'208";a="253455319"
-Received: from kitaracr-mobl.amr.corp.intel.com ([10.254.89.138])
-  by orsmga001.jf.intel.com with ESMTP; 23 Jul 2019 19:30:22 -0700
-Message-ID: <08bfd370e195b648b9cb4a9d9e31fb4189a374c1.camel@intel.com>
-Subject: Re: [net-next 6/6] e1000e: disable force K1-off feature
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     kai.heng.feng@canonical.com, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, aaron.f.brown@intel.com
-Date:   Tue, 23 Jul 2019 19:30:21 -0700
-In-Reply-To: <20190723.140444.1126474066269131522.davem@davemloft.net>
-References: <20190723173650.23276-1-jeffrey.t.kirsher@intel.com>
-         <20190723173650.23276-7-jeffrey.t.kirsher@intel.com>
-         <20190723.140444.1126474066269131522.davem@davemloft.net>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-xpt2Y6BLXD7NOaG2WRaL"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1727643AbfGXCdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:33:02 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:5960 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726130AbfGXCdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 22:33:01 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x6O2UBJO014221;
+        Tue, 23 Jul 2019 19:32:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=l0l+AxcD/epRqZ2+VSZos8NSS06wgQclXMyKs6ciDYo=;
+ b=yFQntE+n5AQFTyqzPojQH/tEIZau2U3VusCsP2BPx55VI7m6uxOIHHmiBU/ZqkixbPya
+ W9cdfbcCyY3ModrQTwdlXEbdGwkZDXvl1E/BglCjQRGyc7nR8ACfK10H3zvO/2vB+6z3
+ YgmYDqFQF6KGlaByP0IdsDpXuTVBSTeVEa1hQqbEzO1oLVsdVt2QERLoazOyNf5GTdM8
+ r2UnfRCN92OePurhMhrKnIWFXr5Oxla4Bl2bgcEeLqUk2JB5Bn80TKvwijBCnDQMR1ty
+ XBiOZPdhEtL2IhQNhPof+UJ9saVJxnpMeUmlqOIeBttv1CHNl/N72zDXq+56NFh06J0a 4g== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2tx61ra50p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 23 Jul 2019 19:32:59 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 23 Jul
+ 2019 19:32:58 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Tue, 23 Jul 2019 19:32:58 -0700
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 4232E3F703F;
+        Tue, 23 Jul 2019 19:32:58 -0700 (PDT)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x6O2WwcQ024832;
+        Tue, 23 Jul 2019 19:32:58 -0700
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x6O2WvMB024831;
+        Tue, 23 Jul 2019 19:32:57 -0700
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <manishc@marvell.com>,
+        <mkalderon@marvell.com>
+Subject: [PATCH net 1/1] bnx2x: Disable multi-cos feature.
+Date:   Tue, 23 Jul 2019 19:32:41 -0700
+Message-ID: <20190724023241.24794-1-skalluru@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-07-24_01:2019-07-23,2019-07-24 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit 3968d38917eb ("bnx2x: Fix Multi-Cos.") which enabled multi-cos
+feature after prolonged time in driver added some regression causing
+numerous issues (sudden reboots, tx timeout etc.) reported by customers.
+We plan to backout this commit and submit proper fix once we have root
+cause of issues reported with this feature enabled.
 
---=-xpt2Y6BLXD7NOaG2WRaL
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Fixes: 3968d38917eb ("bnx2x: Fix Multi-Cos.")
+Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-On Tue, 2019-07-23 at 14:04 -0700, David Miller wrote:
-> From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Date: Tue, 23 Jul 2019 10:36:50 -0700
->=20
-> > diff --git a/drivers/net/ethernet/intel/e1000e/hw.h
-> > b/drivers/net/ethernet/intel/e1000e/hw.h
-> > index eff75bd8a8f0..e3c71fd093ee 100644
-> > --- a/drivers/net/ethernet/intel/e1000e/hw.h
-> > +++ b/drivers/net/ethernet/intel/e1000e/hw.h
-> > @@ -662,6 +662,7 @@ struct e1000_dev_spec_ich8lan {
-> >  	bool kmrn_lock_loss_workaround_enabled;
-> >  	struct e1000_shadow_ram shadow_ram[E1000_ICH8_SHADOW_RAM_WORDS];
-> >  	bool nvm_k1_enabled;
-> > +	bool disable_k1_off;
-> >  	bool eee_disable;
->=20
-> I don't see any code actually setting this boolean, how does it work?
-
-I am trying to find the answer Dave.  The original author of the code
-change is no longer with Intel and the notes point to this being set via
-the NVM, but I am confirming with the client engineers.
-
---=-xpt2Y6BLXD7NOaG2WRaL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl03wr0ACgkQ5W/vlVpL
-7c4TBQ//ToFfY0qsuIxX6GGQjtnGDyNGNK3vjQKla8wfw9bepp4VSxk4+WtnygG4
-yyPK78gfjL2K+wsgCbEYBQwBl9+ITcHielXyM3wK8nbGWVQuJbRE7RnAlOCBJhG5
-CNWtkaZtAhycgF60+rvEewo1eoOjigsaE7lh1eemrpr0yy4InDuim13/B1GPxy2n
-Oo+hGRPIfdsWf+IXSpIrakiHrL2HWdhWAtsOxWayS7FSf1oOScc2JTshXskJiCNI
-ZlBExMqKv24KvxRWOEKr7rh3bHByX3OY83WF70LA+wEZxsGkRjRQhOiPQP5Mp2kw
-FZ8K8TIYj7Kp96IAh8nrKFgW9gNzpb6qO2cH8hnrRV6D5jAY4jIrOSyFGJUwLxNN
-E8pxmLAhnYXiO+af8iFUNj8fcMZNRJEbWMjIhmb6CdRyNxPUh07glxShTX1VZv2i
-iVl/MEu2DFqW7upd7gyGc9P6ddoYIS/rg6gwsOpU8ORODxpa2zyx5SbDH6lXqVql
-sFhA/BDfQyJ/ecQZRhlXHXa6f3oGrsIkQkgn76P1l9c2FoAOifldYOGByz/A50EJ
-Z0zwiCwZT78WwoPTfpEyltVktwxrj0DGergFwjW8MqC+xs3MVZ0fojT7ZnmeC9bw
-rKb7S7vt96nrSxAUze5uuzPRLO/RMdXKvbkl7De9Sm2zR+Gk09M=
-=iANw
------END PGP SIGNATURE-----
-
---=-xpt2Y6BLXD7NOaG2WRaL--
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index e2be5a6..e47ea92 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -1934,8 +1934,7 @@ u16 bnx2x_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 	}
+ 
+ 	/* select a non-FCoE queue */
+-	return netdev_pick_tx(dev, skb, NULL) %
+-	       (BNX2X_NUM_ETH_QUEUES(bp) * bp->max_cos);
++	return netdev_pick_tx(dev, skb, NULL) % (BNX2X_NUM_ETH_QUEUES(bp));
+ }
+ 
+ void bnx2x_set_num_queues(struct bnx2x *bp)
+-- 
+1.8.3.1
 
