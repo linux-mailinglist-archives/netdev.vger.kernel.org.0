@@ -2,89 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E80A724B2
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:33:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83339724BD
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:35:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727643AbfGXCdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:33:02 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:5960 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726130AbfGXCdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 22:33:01 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x6O2UBJO014221;
-        Tue, 23 Jul 2019 19:32:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=l0l+AxcD/epRqZ2+VSZos8NSS06wgQclXMyKs6ciDYo=;
- b=yFQntE+n5AQFTyqzPojQH/tEIZau2U3VusCsP2BPx55VI7m6uxOIHHmiBU/ZqkixbPya
- W9cdfbcCyY3ModrQTwdlXEbdGwkZDXvl1E/BglCjQRGyc7nR8ACfK10H3zvO/2vB+6z3
- YgmYDqFQF6KGlaByP0IdsDpXuTVBSTeVEa1hQqbEzO1oLVsdVt2QERLoazOyNf5GTdM8
- r2UnfRCN92OePurhMhrKnIWFXr5Oxla4Bl2bgcEeLqUk2JB5Bn80TKvwijBCnDQMR1ty
- XBiOZPdhEtL2IhQNhPof+UJ9saVJxnpMeUmlqOIeBttv1CHNl/N72zDXq+56NFh06J0a 4g== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tx61ra50p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 23 Jul 2019 19:32:59 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 23 Jul
- 2019 19:32:58 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Tue, 23 Jul 2019 19:32:58 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 4232E3F703F;
-        Tue, 23 Jul 2019 19:32:58 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x6O2WwcQ024832;
-        Tue, 23 Jul 2019 19:32:58 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x6O2WvMB024831;
-        Tue, 23 Jul 2019 19:32:57 -0700
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <manishc@marvell.com>,
-        <mkalderon@marvell.com>
-Subject: [PATCH net 1/1] bnx2x: Disable multi-cos feature.
-Date:   Tue, 23 Jul 2019 19:32:41 -0700
-Message-ID: <20190724023241.24794-1-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1726550AbfGXCez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:34:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44474 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725861AbfGXCez (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:34:55 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B9E4227BF;
+        Wed, 24 Jul 2019 02:34:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563935693;
+        bh=de+IB35aJ8YXt1atbBHJSF8MOiOuDUmHPwZn8dakJCI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=CwiofahFiYRXaPs8PpUbS+6nIjlTYVIoMFgKFC6r22RxAsDs3JXrvoNeWWoVFgE9x
+         k5cj790rl+WwNq4LMJgjj1Z60x+u3Gqcccy+7l+q1Wmb2MEJUV/rk4dQuls60R5F3v
+         zwXkualeTbe/7KbPOnjQY0yHd3C2bMfW+d2nDMTo=
+Date:   Tue, 23 Jul 2019 19:34:52 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>
+Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Reminder: 4 open syzbot bugs in "net/rds" subsystem
+Message-ID: <20190724023452.GW643@sol.localdomain>
+Mail-Followup-To: netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
- definitions=2019-07-24_01:2019-07-23,2019-07-24 signatures=0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 3968d38917eb ("bnx2x: Fix Multi-Cos.") which enabled multi-cos
-feature after prolonged time in driver added some regression causing
-numerous issues (sudden reboots, tx timeout etc.) reported by customers.
-We plan to backout this commit and submit proper fix once we have root
-cause of issues reported with this feature enabled.
+[This email was generated by a script.  Let me know if you have any suggestions
+to make it better, or if you want it re-generated with the latest status.]
 
-Fixes: 3968d38917eb ("bnx2x: Fix Multi-Cos.")
-Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Of the currently open syzbot reports against the upstream kernel, I've manually
+marked 4 of them as possibly being bugs in the "net/rds" subsystem.  I've listed
+these reports below, sorted by an algorithm that tries to list first the reports
+most likely to be still valid, important, and actionable.
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index e2be5a6..e47ea92 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -1934,8 +1934,7 @@ u16 bnx2x_select_queue(struct net_device *dev, struct sk_buff *skb,
- 	}
- 
- 	/* select a non-FCoE queue */
--	return netdev_pick_tx(dev, skb, NULL) %
--	       (BNX2X_NUM_ETH_QUEUES(bp) * bp->max_cos);
-+	return netdev_pick_tx(dev, skb, NULL) % (BNX2X_NUM_ETH_QUEUES(bp));
- }
- 
- void bnx2x_set_num_queues(struct bnx2x *bp)
--- 
-1.8.3.1
+Of these 4 bugs, 1 was seen in mainline in the last week.
+
+Of these 4 bugs, 1 was bisected to a commit from the following person:
+
+	Dennis Dalessandro <dennis.dalessandro@intel.com>
+
+If you believe a bug is no longer valid, please close the syzbot report by
+sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
+original thread, as explained at https://goo.gl/tpsmEJ#status
+
+If you believe I misattributed a bug to the "net/rds" subsystem, please let me
+know, and if possible forward the report to the correct people or mailing list.
+
+Here are the bugs:
+
+--------------------------------------------------------------------------------
+Title:              general protection fault in rds_recv_rcvbuf_delta
+Last occurred:      26 days ago
+Reported:           253 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=e1d2492507fca6102dbce03c16b40a21130c8dbf
+Original thread:    https://lkml.kernel.org/lkml/000000000000445dd9057a7149f1@google.com/T/#u
+
+This bug has a C reproducer.
+
+This bug was bisected to:
+
+	commit b534875d5ab348fb9193692589e2ee82ae768e3a
+	Author: Dennis Dalessandro <dennis.dalessandro@intel.com>
+	Date:   Wed Jan 6 18:02:59 2016 +0000
+
+	  IB/rdmavt: Add device specific info prints
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+4b4f8163c2e246df3c4c@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000445dd9057a7149f1@google.com
+
+--------------------------------------------------------------------------------
+Title:              memory leak in rds_send_probe
+Last occurred:      0 days ago
+Reported:           0 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=39b72114839a6dbd66c1d2104522698a813f9ae2
+Original thread:    https://lkml.kernel.org/lkml/000000000000ad1dfe058e5b89ab@google.com/T/#u
+
+This bug has a C reproducer.
+
+syzbot has bisected this bug, but I think the bisection result is incorrect.
+
+The original thread for this bug has received 4 replies; the last was 3 hours
+ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread, which had activity only 3 hours ago.  For the git send-email command to
+use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
+instructions" at https://lkml.kernel.org/r/000000000000ad1dfe058e5b89ab@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: use-after-free Read in rds_cong_queue_updates (2)
+Last occurred:      112 days ago
+Reported:           365 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=6f435350bd496374955b3aeba9e313d16db4b30b
+Original thread:    https://lkml.kernel.org/lkml/000000000000cdb5450571adfe40@google.com/T/#u
+
+Unfortunately, this bug does not have a reproducer.
+
+The original thread for this bug received 1 reply, 365 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+470ae97a39f16146af45@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000cdb5450571adfe40@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: slab-out-of-bounds Read in rds_cong_queue_updates (2)
+Last occurred:      110 days ago
+Reported:           377 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=58c0193d54290dfe8266db64b482b0e796f0d611
+Original thread:    https://lkml.kernel.org/lkml/0000000000005274c40570be9f48@google.com/T/#u
+
+Unfortunately, this bug does not have a reproducer.
+
+The original thread for this bug received 1 reply, 377 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+0570fef57a5e020bdc87@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000005274c40570be9f48@google.com
 
