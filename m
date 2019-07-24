@@ -2,355 +2,634 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7CB73828
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AF3B7386F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 21:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728599AbfGXT02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 15:26:28 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:52944 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728638AbfGXT0X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 15:26:23 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 871A760255;
-        Wed, 24 Jul 2019 21:26:19 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="Q8ZvLSZr";
-        dkim-atps=neutral
-Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id 3A9981D25D3E;
-        Wed, 24 Jul 2019 21:26:19 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 3A9981D25D3E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1563996379;
-        bh=EXNETTW7qK/WSAltzbLuKahp3WLFxEkf0NmhMfikTX8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q8ZvLSZrheygipXjvH0sRTx3hURRnqBm/xkAd80YS2PjpOTHzrNGoctvJR6mYfftR
-         w41V/flhxThrK3RYE9VoUOaz+5yUc/9crMLlrTQZjWdYtPEiVuLr07wpJXZKzB90vK
-         S4BeTbWO891BbRIcWv75l0u0Oyvo0sTCJSNa71ZaL2D4/RdRO7p/fdqEIjcnfupDXo
-         zDbxgILtGPR5LDgS/cQDJ2tSCNVE3CcU3yDIyusDqdVKlRvHwQBAKVn48MlzRs2a4E
-         D5wbnyCT7QL4wdGZS0i+urJrRHsZ21flSV0speYGSJFoAGAUUZcPEU5LAKE3Kh8u3Q
-         EzershJpPpjDw==
-From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-To:     netdev@vger.kernel.org
-Cc:     frank-w@public-files.de, sean.wang@mediatek.com,
-        f.fainelli@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        john@phrozen.org, linux-mediatek@lists.infradead.org,
-        linux-mips@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH net-next 3/3] net: dsa: mt7530: Add support for port 5
-Date:   Wed, 24 Jul 2019 21:25:49 +0200
-Message-Id: <20190724192549.24615-4-opensource@vdorst.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190724192549.24615-1-opensource@vdorst.com>
-References: <20190724192549.24615-1-opensource@vdorst.com>
+        id S2388352AbfGXT3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 15:29:22 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:20120 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388224AbfGXT2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:28:19 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6OJOvjM024481
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=facebook; bh=LwSQD8qxrLa4e/wyHYvaReAbGpaQ6TgAC89n4/JfuWU=;
+ b=kreRuFJtECN06c40b8Lx/QWlOLrxAn/yN16CBG0SsaQ9aDznGZbRrvE3dCZdlBiVDjzr
+ TvgSMgZmgRVQ3NtBqJ+0AZNXcMJdIxX009WSaC7FOWDivzJCe7R4SfXIxsDNGEkCBV+H
+ apH+30vpcxwrDiznXXVHzeNMoOrYbaE8h1I= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2txr5nhc7w-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:18 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 24 Jul 2019 12:28:14 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id B40BC8615F8; Wed, 24 Jul 2019 12:28:09 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <yhs@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next 05/10] selftests/bpf: add CO-RE relocs nesting tests
+Date:   Wed, 24 Jul 2019 12:27:37 -0700
+Message-ID: <20190724192742.1419254-6-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190724192742.1419254-1-andriin@fb.com>
+References: <20190724192742.1419254-1-andriin@fb.com>
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-24_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=67 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1907240207
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support for port 5.
+Add a bunch of test validating correct handling of nested
+structs/unions.
 
-Port 5 can muxed/interface to:
-- internal 5th GMAC of the switch; can be used as 2nd CPU port or as
-  extra port with an external phy for a 6th ethernet port.
-- internal PHY of port 0 or 4; Used in most applications so that port 0
-  or 4 is the WAN port and interfaces with the 2nd GMAC of the SOC.
-
-Signed-off-by: René van Dorst <opensource@vdorst.com>
-
-rfc->v1:
-* Removed unnecessary info print suggested by Andrew Lunn
-* Added support for MII mode for port 5
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/dsa/mt7530.c | 145 ++++++++++++++++++++++++++++++++++++---
- drivers/net/dsa/mt7530.h |  28 ++++++++
- 2 files changed, 165 insertions(+), 8 deletions(-)
+ .../selftests/bpf/prog_tests/core_reloc.c     |  39 +++
+ .../bpf/progs/btf__core_reloc_nesting.c       |   3 +
+ .../btf__core_reloc_nesting___anon_embed.c    |   3 +
+ ...f__core_reloc_nesting___dup_compat_types.c |   5 +
+ ...core_reloc_nesting___err_array_container.c |   3 +
+ ...tf__core_reloc_nesting___err_array_field.c |   3 +
+ ...e_reloc_nesting___err_dup_incompat_types.c |   4 +
+ ...re_reloc_nesting___err_missing_container.c |   3 +
+ ...__core_reloc_nesting___err_missing_field.c |   3 +
+ ..._reloc_nesting___err_nonstruct_container.c |   3 +
+ ...e_reloc_nesting___err_partial_match_dups.c |   4 +
+ .../btf__core_reloc_nesting___err_too_deep.c  |   3 +
+ .../btf__core_reloc_nesting___extra_nesting.c |   3 +
+ ..._core_reloc_nesting___struct_union_mixup.c |   3 +
+ .../selftests/bpf/progs/core_reloc_types.h    | 293 ++++++++++++++++++
+ .../bpf/progs/test_core_reloc_nesting.c       |  48 +++
+ 16 files changed, 423 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 73a2204bf81a..785ce825aeb1 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -633,6 +633,75 @@ mt7530_get_sset_count(struct dsa_switch *ds, int port, int sset)
- 	return ARRAY_SIZE(mt7530_mib);
+diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+index c553c5f07ec3..8e19a6c38446 100644
+--- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
++++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+@@ -28,6 +28,29 @@
+ 	.fails = true,							\
  }
  
-+static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	u8 tx_delay = 0;
-+	int val;
-+
-+	mutex_lock(&priv->reg_mutex);
-+
-+	val = mt7530_read(priv, MT7530_MHWTRAP);
-+
-+	val |= MHWTRAP_MANUAL | MHWTRAP_P5_MAC_SEL | MHWTRAP_P5_DIS;
-+	val &= ~MHWTRAP_P5_RGMII_MODE & ~MHWTRAP_PHY0_SEL;
-+
-+	switch (priv->p5_intf_sel) {
-+	case P5_INTF_SEL_PHY_P0:
-+		/* MT7530_P5_MODE_GPHY_P0: 2nd GMAC -> P5 -> P0 */
-+		val |= MHWTRAP_PHY0_SEL;
-+		/* fall through */
-+	case P5_INTF_SEL_PHY_P4:
-+		/* MT7530_P5_MODE_GPHY_P4: 2nd GMAC -> P5 -> P4 */
-+		val &= ~MHWTRAP_P5_MAC_SEL & ~MHWTRAP_P5_DIS;
-+
-+		/* Setup the MAC by default for the cpu port */
-+		mt7530_write(priv, MT7530_PMCR_P(5), 0x56300);
-+		break;
-+	case P5_INTF_SEL_GMAC5:
-+		/* MT7530_P5_MODE_GMAC: P5 -> External phy or 2nd GMAC */
-+		val &= ~MHWTRAP_P5_DIS;
-+		break;
-+	case P5_DISABLED:
-+		interface = PHY_INTERFACE_MODE_NA;
-+		break;
-+	default:
-+		dev_err(ds->dev, "Unsupported p5_intf_sel %d\n",
-+			priv->p5_intf_sel);
-+		goto unlock_exit;
-+	}
-+
-+	/* Setup RGMII settings */
-+	if (phy_interface_mode_is_rgmii(interface)) {
-+		val |= MHWTRAP_P5_RGMII_MODE;
-+
-+		/* P5 RGMII RX Clock Control: delay setting for 1000M */
-+		mt7530_write(priv, MT7530_P5RGMIIRXCR, CSR_RGMII_EDGE_ALIGN);
-+
-+		/* Don't set delay in DSA mode */
-+		if (!dsa_is_dsa_port(priv->ds, 5) &&
-+		    (interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-+		    interface == PHY_INTERFACE_MODE_RGMII_ID))
-+			tx_delay = 4; /* n * 0.5 ns */
-+
-+		/* P5 RGMII TX Clock Control: delay x */
-+		mt7530_write(priv, MT7530_P5RGMIITXCR,
-+			     CSR_RGMII_TXC_CFG(0x10 + tx_delay));
-+
-+		/* reduce P5 RGMII Tx driving, 8mA */
-+		mt7530_write(priv, MT7530_IO_DRV_CR,
-+			     P5_IO_CLK_DRV(1) | P5_IO_DATA_DRV(1));
-+	}
-+
-+	mt7530_write(priv, MT7530_MHWTRAP, val);
-+
-+	dev_info(ds->dev, "Setup P5, HWTRAP=0x%x, intf_sel=%s, phy-mode=%s\n",
-+		 val, p5_intf_modes(priv->p5_intf_sel), phy_modes(interface));
-+
-+unlock_exit:
-+	mutex_unlock(&priv->reg_mutex);
++#define NESTING_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
++	.a = { .a = { .a = 42 } },					\
++	.b = { .b = { .b = 0xc001 } },					\
 +}
 +
- static int
- mt7530_cpu_port_enable(struct mt7530_priv *priv,
- 		       int port)
-@@ -1167,6 +1236,10 @@ mt7530_setup(struct dsa_switch *ds)
- 	u32 id, val;
- 	struct device_node *dn;
- 	struct mt7530_dummy_poll p;
-+	phy_interface_t interface;
-+	struct device_node *mac_np;
-+	struct device_node *phy_node;
-+	const __be32 *_id;
- 
- 	/* The parent node of master netdev which holds the common system
- 	 * controller also is the container for two GMACs nodes representing
-@@ -1254,6 +1327,40 @@ mt7530_setup(struct dsa_switch *ds)
- 			mt7530_port_disable(ds, i);
- 	}
- 
-+	/* Setup port 5 */
-+	priv->p5_intf_sel = P5_DISABLED;
-+	interface = PHY_INTERFACE_MODE_NA;
++#define NESTING_CASE_COMMON(name)					\
++	.case_name = #name,						\
++	.bpf_obj_file = "test_core_reloc_nesting.o",			\
++	.btf_src_file = "btf__core_reloc_" #name ".o"
 +
-+	if (!dsa_is_unused_port(ds, 5)) {
-+		priv->p5_intf_sel = P5_INTF_SEL_GMAC5;
-+		interface = of_get_phy_mode(ds->ports[5].dn);
-+	} else {
-+		/* Scan the ethernet nodes. Look for GMAC1, Lookup used phy */
-+		for_each_child_of_node(dn, mac_np) {
-+			if (!of_device_is_compatible(mac_np,
-+						     "mediatek,eth-mac"))
-+				continue;
-+			_id = of_get_property(mac_np, "reg", NULL);
-+			if (be32_to_cpup(_id)  != 1)
-+				continue;
++#define NESTING_CASE(name) {						\
++	NESTING_CASE_COMMON(name),					\
++	.input = NESTING_DATA(core_reloc_##name),			\
++	.input_len = sizeof(struct core_reloc_##name),			\
++	.output = NESTING_DATA(core_reloc_nesting),			\
++	.output_len = sizeof(struct core_reloc_nesting)			\
++}
 +
-+			interface = of_get_phy_mode(mac_np);
-+			phy_node = of_parse_phandle(mac_np, "phy-handle", 0);
++#define NESTING_ERR_CASE(name) {					\
++	NESTING_CASE_COMMON(name),					\
++	.fails = true,							\
++}
 +
-+			if (phy_node->parent == priv->dev->of_node->parent) {
-+				_id = of_get_property(phy_node, "reg", NULL);
-+				id = be32_to_cpup(_id);
-+				if (id == 0)
-+					priv->p5_intf_sel = P5_INTF_SEL_PHY_P0;
-+				if (id == 4)
-+					priv->p5_intf_sel = P5_INTF_SEL_PHY_P4;
-+			}
-+			break;
-+		}
-+	}
+ struct core_reloc_test_case {
+ 	const char *case_name;
+ 	const char *bpf_obj_file;
+@@ -57,6 +80,22 @@ static struct core_reloc_test_case test_cases[] = {
+ 	FLAVORS_CASE(flavors),
+ 
+ 	FLAVORS_ERR_CASE(flavors__err_wrong_name),
 +
-+	mt7530_setup_port5(ds, interface);
++	/* various struct/enum nesting and resolution scenarios */
++	NESTING_CASE(nesting),
++	NESTING_CASE(nesting___anon_embed),
++	NESTING_CASE(nesting___struct_union_mixup),
++	NESTING_CASE(nesting___extra_nesting),
++	NESTING_CASE(nesting___dup_compat_types),
 +
- 	/* Flush the FDB table */
- 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
- 	if (ret < 0)
-@@ -1267,7 +1374,7 @@ static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
- 				      const struct phylink_link_state *state)
- {
- 	struct mt7530_priv *priv = ds->priv;
--	u32 mcr_cur, mcr_new;
-+	u32 mcr_cur, mcr_new = 0;
- 
- 	switch (port) {
- 	case 0: /* Internal phy */
-@@ -1278,7 +1385,19 @@ static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
- 		if (state->interface != PHY_INTERFACE_MODE_GMII)
- 			return;
- 		break;
--	/* case 5: Port 5 is not supported! */
-+	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
-+		if (!phy_interface_mode_is_rgmii(state->interface) &&
-+		    state->interface != PHY_INTERFACE_MODE_MII &&
-+		    state->interface != PHY_INTERFACE_MODE_GMII)
-+			return;
-+		if (priv->p5_intf_sel != P5_INTF_SEL_GMAC5) {
-+			priv->p5_intf_sel = P5_INTF_SEL_GMAC5;
-+			mt7530_setup_port5(ds, state->interface);
-+		}
-+		/* We are connected to external phy */
-+		if (dsa_is_user_port(ds, 5))
-+			mcr_new |= PMCR_EXT_PHY;
-+		break;
- 	case 6: /* 1st cpu port */
- 		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
- 		    state->interface != PHY_INTERFACE_MODE_TRGMII)
-@@ -1304,7 +1423,7 @@ static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
- 	}
- 
- 	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
--	mcr_new = mcr_cur;
-+	mcr_new |= mcr_cur;
- 	mcr_new &= ~(PMCR_FORCE_SPEED_1000 | PMCR_FORCE_SPEED_100 |
- 		     PMCR_FORCE_FDX | PMCR_TX_FC_EN | PMCR_RX_FC_EN);
- 	mcr_new |= PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
-@@ -1365,7 +1484,13 @@ static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
- 		    state->interface != PHY_INTERFACE_MODE_GMII)
- 			goto unsupported;
- 		break;
--	/* case 5: Port 5 not supported! */
-+	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    !phy_interface_mode_is_rgmii(state->interface) &&
-+		    state->interface != PHY_INTERFACE_MODE_MII &&
-+		    state->interface != PHY_INTERFACE_MODE_GMII)
-+			goto unsupported;
-+		break;
- 	case 6: /* 1st cpu port */
- 		if (state->interface != PHY_INTERFACE_MODE_NA &&
- 		    state->interface != PHY_INTERFACE_MODE_RGMII &&
-@@ -1381,15 +1506,19 @@ static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
- 	phylink_set_port_modes(mask);
- 	phylink_set(mask, Autoneg);
- 
--	if (state->interface != PHY_INTERFACE_MODE_TRGMII) {
-+	if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
-+		phylink_set(mask, 1000baseT_Full);
-+	} else {
- 		phylink_set(mask, 10baseT_Half);
- 		phylink_set(mask, 10baseT_Full);
- 		phylink_set(mask, 100baseT_Half);
- 		phylink_set(mask, 100baseT_Full);
--		phylink_set(mask, 1000baseT_Half);
--	}
- 
--	phylink_set(mask, 1000baseT_Full);
-+		if (state->interface != PHY_INTERFACE_MODE_MII) {
-+			phylink_set(mask, 1000baseT_Half);
-+			phylink_set(mask, 1000baseT_Full);
-+		}
-+	}
- 
- 	phylink_set(mask, Pause);
- 	phylink_set(mask, Asym_Pause);
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 107dd04acede..0f7276a2270a 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -186,6 +186,7 @@ enum mt7530_vlan_port_attr {
- /* Register for port MAC control register */
- #define MT7530_PMCR_P(x)		(0x3000 + ((x) * 0x100))
- #define  PMCR_IFG_XMIT(x)		(((x) & 0x3) << 18)
-+#define  PMCR_EXT_PHY			BIT(17)
- #define  PMCR_MAC_MODE			BIT(16)
- #define  PMCR_FORCE_MODE		BIT(15)
- #define  PMCR_TX_EN			BIT(14)
-@@ -245,6 +246,7 @@ enum mt7530_vlan_port_attr {
- 
- /* Register for hw trap modification */
- #define MT7530_MHWTRAP			0x7804
-+#define  MHWTRAP_PHY0_SEL		BIT(20)
- #define  MHWTRAP_MANUAL			BIT(16)
- #define  MHWTRAP_P5_MAC_SEL		BIT(13)
- #define  MHWTRAP_P6_DIS			BIT(8)
-@@ -402,6 +404,30 @@ struct mt7530_port {
- 	u16 pvid;
++	NESTING_ERR_CASE(nesting___err_missing_field),
++	NESTING_ERR_CASE(nesting___err_array_field),
++	NESTING_ERR_CASE(nesting___err_missing_container),
++	NESTING_ERR_CASE(nesting___err_nonstruct_container),
++	NESTING_ERR_CASE(nesting___err_array_container),
++	NESTING_ERR_CASE(nesting___err_dup_incompat_types),
++	NESTING_ERR_CASE(nesting___err_partial_match_dups),
++	NESTING_ERR_CASE(nesting___err_too_deep),
  };
  
-+/* Port 5 interface select definitions */
-+enum p5_interface_select {
-+	P5_DISABLED = 0,
-+	P5_INTF_SEL_PHY_P0,
-+	P5_INTF_SEL_PHY_P4,
-+	P5_INTF_SEL_GMAC5,
+ struct data {
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
+new file mode 100644
+index 000000000000..4480fcc0f183
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
+new file mode 100644
+index 000000000000..13e108f76ece
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___anon_embed x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
+new file mode 100644
+index 000000000000..76b54fda5fbb
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
+@@ -0,0 +1,5 @@
++#include "core_reloc_types.h"
++
++void f1(struct core_reloc_nesting___dup_compat_types x) {}
++void f2(struct core_reloc_nesting___dup_compat_types__2 x) {}
++void f3(struct core_reloc_nesting___dup_compat_types__3 x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
+new file mode 100644
+index 000000000000..975fb95db810
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___err_array_container x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
+new file mode 100644
+index 000000000000..ad66c67e7980
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___err_array_field x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
+new file mode 100644
+index 000000000000..35c5f8da6812
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
+@@ -0,0 +1,4 @@
++#include "core_reloc_types.h"
++
++void f1(struct core_reloc_nesting___err_dup_incompat_types__1 x) {}
++void f2(struct core_reloc_nesting___err_dup_incompat_types__2 x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
+new file mode 100644
+index 000000000000..142e332041db
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___err_missing_container x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
+new file mode 100644
+index 000000000000..efcae167fab9
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___err_missing_field x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
+new file mode 100644
+index 000000000000..97aaaedd8ada
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___err_nonstruct_container x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
+new file mode 100644
+index 000000000000..ffde35086e90
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
+@@ -0,0 +1,4 @@
++#include "core_reloc_types.h"
++
++void f1(struct core_reloc_nesting___err_partial_match_dups__a x) {}
++void f2(struct core_reloc_nesting___err_partial_match_dups__b x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
+new file mode 100644
+index 000000000000..39a2fadd8e95
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___err_too_deep x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
+new file mode 100644
+index 000000000000..a09d9dfb20df
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___extra_nesting x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
+new file mode 100644
+index 000000000000..3d8a1a74012f
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_nesting___struct_union_mixup x) {}
+diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
+index 33b0c6a61912..340ee2bcd463 100644
+--- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
++++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
+@@ -13,3 +13,296 @@ struct core_reloc_flavors__err_wrong_name {
+ 	int b;
+ 	int c;
+ };
++
++/*
++ * NESTING
++ */
++/* original set up, used to record relocations in BPF program */
++struct core_reloc_nesting_substruct {
++	int a;
 +};
 +
-+static const char *p5_intf_modes(unsigned int p5_interface)
++union core_reloc_nesting_subunion {
++	int b;
++};
++
++struct core_reloc_nesting {
++	union {
++		struct core_reloc_nesting_substruct a;
++	} a;
++	struct {
++		union core_reloc_nesting_subunion b;
++	} b;
++};
++
++/* inlined anonymous struct/union instead of named structs in original */
++struct core_reloc_nesting___anon_embed {
++	int __just_for_padding;
++	union {
++		struct {
++			int a;
++		} a;
++	} a;
++	struct {
++		union {
++			int b;
++		} b;
++	} b;
++};
++
++/* different mix of nested structs/unions than in original */
++struct core_reloc_nesting___struct_union_mixup {
++	int __a;
++	struct {
++		int __a;
++		union {
++			char __a;
++			int a;
++		} a;
++	} a;
++	int __b;
++	union {
++		int __b;
++		union {
++			char __b;
++			int b;
++		} b;
++	} b;
++};
++
++/* extra anon structs/unions, but still valid a.a.a and b.b.b accessors */
++struct core_reloc_nesting___extra_nesting {
++	int __padding;
++	struct {
++		struct {
++			struct {
++				struct {
++					union {
++						int a;
++					} a;
++				};
++			};
++		} a;
++		int __some_more;
++		struct {
++			union {
++				union {
++					union {
++						struct {
++							int b;
++						};
++					} b;
++				};
++			} b;
++		};
++	};
++};
++
++/* three flavors of same struct with different structure but same layout for
++ * a.a.a and b.b.b, thus successfully resolved and relocatable */
++struct core_reloc_nesting___dup_compat_types {
++	char __just_for_padding;
++	/* 3 more bytes of padding */
++	struct {
++		struct {
++			int a; /* offset 4 */
++		} a;
++	} a;
++	long long __more_padding;
++	struct {
++		struct {
++			int b; /* offset 16 */
++		} b;
++	} b;
++};
++
++struct core_reloc_nesting___dup_compat_types__2 {
++	int __aligned_padding;
++	struct {
++		int __trickier_noop[0];
++		struct {
++			char __some_more_noops[0];
++			int a; /* offset 4 */
++		} a;
++	} a;
++	int __more_padding;
++	struct {
++		struct {
++			struct {
++				int __critical_padding;
++				int b; /* offset 16 */
++			} b;
++			int __does_not_matter;
++		};
++	} b;
++	int __more_irrelevant_stuff;
++};
++
++struct core_reloc_nesting___dup_compat_types__3 {
++	char __correct_padding[4];
++	struct {
++		struct {
++			int a; /* offset 4 */
++		} a;
++	} a;
++	/* 8 byte padding due to next struct's alignment */
++	struct {
++		struct {
++			int b;
++		} b;
++	} b __attribute__((aligned(16)));
++};
++
++/* b.b.b field is missing */
++struct core_reloc_nesting___err_missing_field {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++	struct {
++		struct {
++			int x;
++		} b;
++	} b;
++};
++
++/* b.b.b field is an array of integers instead of plain int */
++struct core_reloc_nesting___err_array_field {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++	struct {
++		struct {
++			int b[1];
++		} b;
++	} b;
++};
++
++/* middle b container is missing */
++struct core_reloc_nesting___err_missing_container {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++	struct {
++		int x;
++	} b;
++};
++
++/* middle b container is referenced through pointer instead of being embedded */
++struct core_reloc_nesting___err_nonstruct_container {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++	struct {
++		struct {
++			int b;
++		} *b;
++	} b;
++};
++
++/* middle b container is an array of structs instead of plain struct */
++struct core_reloc_nesting___err_array_container {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++	struct {
++		struct {
++			int b;
++		} b[1];
++	} b;
++};
++
++/* two flavors of same struct with incompatible layout for b.b.b */
++struct core_reloc_nesting___err_dup_incompat_types__1 {
++	struct {
++		struct {
++			int a; /* offset 0 */
++		} a;
++	} a;
++	struct {
++		struct {
++			int b; /* offset 4 */
++		} b;
++	} b;
++};
++
++struct core_reloc_nesting___err_dup_incompat_types__2 {
++	struct {
++		struct {
++			int a; /* offset 0 */
++		} a;
++	} a;
++	int __extra_padding;
++	struct {
++		struct {
++			int b; /* offset 8 (!) */
++		} b;
++	} b;
++};
++
++/* two flavors of same struct having one of a.a.a and b.b.b, but not both */
++struct core_reloc_nesting___err_partial_match_dups__a {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++};
++
++struct core_reloc_nesting___err_partial_match_dups__b {
++	struct {
++		struct {
++			int b;
++		} b;
++	} b;
++};
++
++struct core_reloc_nesting___err_too_deep {
++	struct {
++		struct {
++			int a;
++		} a;
++	} a;
++	/* 65 levels of nestedness for b.b.b */
++	struct {
++		struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++			struct { struct { struct { struct { struct {
++				/* this one is one too much */
++				struct {
++					int b;
++				};
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++			}; }; }; }; };
++		} b;
++	} b;
++};
+diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c b/tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
+new file mode 100644
+index 000000000000..04a539030c5d
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
+@@ -0,0 +1,48 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2019 Facebook
++
++#include <linux/bpf.h>
++#include <stdint.h>
++#include "bpf_helpers.h"
++
++char _license[] SEC("license") = "GPL";
++
++static volatile struct data {
++	char in[256];
++	char out[256];
++} data;
++
++struct core_reloc_nesting_substruct {
++	int a;
++};
++
++union core_reloc_nesting_subunion {
++	int b;
++};
++
++/* int a.a.a and b.b.b accesses */
++struct core_reloc_nesting {
++	union {
++		struct core_reloc_nesting_substruct a;
++	} a;
++	struct {
++		union core_reloc_nesting_subunion b;
++	} b;
++};
++
++SEC("raw_tracepoint/sys_enter")
++int test_core_nesting(void *ctx)
 +{
-+	switch (p5_interface) {
-+	case P5_DISABLED:
-+		return "DISABLED";
-+	case P5_INTF_SEL_PHY_P0:
-+		return "PHY P0";
-+	case P5_INTF_SEL_PHY_P4:
-+		return "PHY P4";
-+	case P5_INTF_SEL_GMAC5:
-+		return "GMAC5";
-+	default:
-+		return "unknown";
-+	}
++	struct core_reloc_nesting *in = (void *)&data.in;
++	struct core_reloc_nesting *out = (void *)&data.out;
++
++	if (bpf_probe_read(&out->a.a.a, sizeof(in->a.a.a),
++			   __builtin_preserve_access_index(&in->a.a.a)))
++		return 1;
++	if (bpf_probe_read(&out->b.b.b, sizeof(in->b.b.b),
++			   __builtin_preserve_access_index(&in->b.b.b)))
++		return 1;
++
++	return 0;
 +}
 +
- /* struct mt7530_priv -	This is the main data structure for holding the state
-  *			of the driver
-  * @dev:		The device pointer
-@@ -418,6 +444,7 @@ struct mt7530_port {
-  * @reg_mutex:		The lock for protecting among process accessing
-  *			registers
-  * @p6_interface	Holding the current port 6 interface
-+ * @p5_intf_sel:	Holding the current port 5 interface select
-  */
- struct mt7530_priv {
- 	struct device		*dev;
-@@ -431,6 +458,7 @@ struct mt7530_priv {
- 	unsigned int		id;
- 	bool			mcm;
- 	phy_interface_t		p6_interface;
-+	unsigned int		p5_intf_sel;
- 
- 	struct mt7530_port	ports[MT7530_NUM_PORTS];
- 	/* protect among processes for registers access*/
 -- 
-2.20.1
+2.17.1
 
