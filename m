@@ -2,94 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C91457235E
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 02:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ADC47236A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 02:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbfGXAT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 20:19:58 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41097 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726633AbfGXAT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 20:19:58 -0400
-Received: by mail-pg1-f193.google.com with SMTP id x15so9882612pgg.8
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 17:19:57 -0700 (PDT)
+        id S1727800AbfGXAZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 20:25:04 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37996 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727787AbfGXAZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 20:25:04 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f5so11408451pgu.5
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 17:25:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=EoD6FxInBFoe7XH1LbskC7Xx5qCfh/OPWUO7hTqS2Kg=;
-        b=iGsmuZxGZVPiI3r3VlLwKGSzWvbJrax9/LqX4rpzHY0NNGH8ebU+YJw83BKsRNLCfA
-         /H7MZdhX3BE4EWDWZrQNkCZBM4TdEpn+MzcWfnNAvdaDVVPiGsM1vERLMxhG+3beWNFa
-         7qovYA2j3L634uzYXFFMhzIjQpoHfGHBzLP2VFYJFXTy3DgDiQ+GSoh6xuTukJLFUkZd
-         93GcbyKOABrj8vewapjW9T4wZsXrugDDPV6u9mu/DHOFbmL/W0+BLpEJuXkaU2UTdREc
-         BaLq6yMOe0PTfnDU5x2X3B8LaPicW+k1/wkyaOq0xwg2F2lPXV57oymXncuPffFI/djw
-         pQLg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=pDRTvrmvqKsP84q842BSckSaJERLMu+M91wwntsowaI=;
+        b=0Mf7m0t4Px9ZcnBgX/Fu64NEJ1zMAGoltW8yJU86wiFw8ZgQDjGPb0hYkZdOPRChD5
+         M6d8opmGT8odu1UFJpqrEEONQ1VaxPSjbKOhmGUhzboNOM6okRWExI7aEufwnfDTSgWZ
+         jNS9urERtii3sMa7TbZUyHoBDZLLzdbx2DfM8TvGBFo6Z6nPQwcNLU9maQh55XWJu4cb
+         v7CvCWRfl0oH6EP9NP6h680GhvtJyRiGyw4Zsv+VShKIoSxNoP+xMPL8SZA5mquG0ers
+         FOTBCF873bToZ7JOnUG+xBiT2QOMB/y1gtoUX180tlPFoJlFShbFle78pQgXmqOeXH2t
+         tHiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=EoD6FxInBFoe7XH1LbskC7Xx5qCfh/OPWUO7hTqS2Kg=;
-        b=hf+3s8Qkr6xEOCcodaXCwv+U3cDeqeh02vkyGc4CylUySNnR1wOXYKek+wO/shDFS/
-         muvubjk8Th882XENDHj3z6Vy5Ye4M4J7G9oM4aW1Rj8veY7ecLFygpD8vRuyE2Cy+EbD
-         Pk8TMAL3gR58J8Dq6Q82LGzsiW0iWz0kEwr2tTVXbuLb8pJGyEK3HhSbnRb0RrGGtq8t
-         7ucXXFYQrbVxY/AzOsjrQa5yYMWxarz96ysePXVeglXlkE98Esgr7mJRL2/IxanKlcCd
-         38yZmYatbPWHoeXTFeXsztTVOey+qZkWOrF5f6pbCSR9IOnWGXwUosbsgP8z5JvXGAjx
-         h4xg==
-X-Gm-Message-State: APjAAAVBZB3xSCfvnjAVmhSbq7yp6AD86WgKwqnwGZ1YLRV/zHS4aNZx
-        8aoeDrqgKUlRLHsqQGqCSpCqdZ1xQNcRYQ==
-X-Google-Smtp-Source: APXvYqxpmBlF+BTk9bxhXFpBdY8slr7PhvMYmG1JxkYfVcXS7GL2aOzu75Iy7VpWGmvVZoOdetnYoQ==
-X-Received: by 2002:a17:90a:17ab:: with SMTP id q40mr86220709pja.106.1563927596887;
-        Tue, 23 Jul 2019 17:19:56 -0700 (PDT)
+        bh=pDRTvrmvqKsP84q842BSckSaJERLMu+M91wwntsowaI=;
+        b=JEsUJem2DfQtDMMGxdMgxpafFw5oCfCCiHQPxBhOOoWYsNBteNfxeGCUvaeV1/5Sbd
+         AqtQUAPagnzn5R8b+Jhf+hS+yvofLBkGAp++uEN5LYt8TYgDsOnTD9V78XA33DpdLghm
+         kT5Sd1SMzr+k3FtieER84gQsBsgvZWRfxmDOGuY1WgZ8w7jJc55rrDlRSmiT6djCkQKO
+         gZNxmhN/k72Y+gUmxH0tAtPOAsk8Zjpjur5qDaH7NfSJV/oLT0/6d+trst2pioVjEqwt
+         0oGivbBRMeJnEDjVAw1jujKT3fvweoI0uVo9IDXO/0jvj5lzlsc4Q+J4b3f4bt+ka1BF
+         mKkA==
+X-Gm-Message-State: APjAAAVwq0n6y4meZYczdVb8KfqV8AN6ZsgzkOnXYmCWqzeW3qkcieL3
+        DmrZxl/uRGpzatkyE/5UrVGdXA==
+X-Google-Smtp-Source: APXvYqxptN/4Mq35kPJ/mGubH8R1QC4KQedHJnnAwCqF6JmaFOY3m94O92JGl5BFVCv1f+BjUqsgxg==
+X-Received: by 2002:a65:6846:: with SMTP id q6mr39980105pgt.150.1563927903657;
+        Tue, 23 Jul 2019 17:25:03 -0700 (PDT)
 Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id f64sm46394064pfa.115.2019.07.23.17.19.55
+        by smtp.gmail.com with ESMTPSA id a25sm18337377pfo.60.2019.07.23.17.25.02
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Jul 2019 17:19:56 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 11/19] ionic: Add Rx filter and rx_mode ndo
- support
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20190722214023.9513-12-snelson@pensando.io>
- <20190723.143326.197667027838462669.davem@davemloft.net>
- <e0c8417c-75bf-837f-01b5-60df302dafa7@pensando.io>
- <20190723.160628.20093803405793483.davem@davemloft.net>
+        Tue, 23 Jul 2019 17:25:03 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next 02/19] ionic: Add hardware init and device
+ commands
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+References: <20190722214023.9513-1-snelson@pensando.io>
+ <20190722214023.9513-3-snelson@pensando.io>
+ <a402ea5d2badda79cf205e790d3eb967f2cb7084.camel@mellanox.com>
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <5e3d5b42-2787-9fcf-1cd5-fb3063dfabc9@pensando.io>
-Date:   Tue, 23 Jul 2019 17:19:54 -0700
+Message-ID: <10005fdb-51e8-42fc-3a7c-ea7c0dddb584@pensando.io>
+Date:   Tue, 23 Jul 2019 17:25:00 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
  Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190723.160628.20093803405793483.davem@davemloft.net>
+In-Reply-To: <a402ea5d2badda79cf205e790d3eb967f2cb7084.camel@mellanox.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/19 4:06 PM, David Miller wrote:
-> From: Shannon Nelson <snelson@pensando.io>
-> Date: Tue, 23 Jul 2019 15:50:43 -0700
+On 7/23/19 4:47 PM, Saeed Mahameed wrote:
+> On Mon, 2019-07-22 at 14:40 -0700, Shannon Nelson wrote:
+>> The ionic device has a small set of PCI registers, including a
+>> device control and data space, and a large set of message
+>> commands.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> ---
+>>   drivers/net/ethernet/pensando/ionic/Makefile  |    2 +-
+>>   drivers/net/ethernet/pensando/ionic/ionic.h   |   20 +
+>>   .../net/ethernet/pensando/ionic/ionic_bus.h   |    1 +
+>>   .../ethernet/pensando/ionic/ionic_bus_pci.c   |  140 +-
+>>   .../ethernet/pensando/ionic/ionic_debugfs.c   |   67 +
+>>   .../ethernet/pensando/ionic/ionic_debugfs.h   |   28 +
+>>   .../net/ethernet/pensando/ionic/ionic_dev.c   |  132 +
+>>   .../net/ethernet/pensando/ionic/ionic_dev.h   |  144 +
+>>   .../net/ethernet/pensando/ionic/ionic_if.h    | 2552
+>> +++++++++++++++++
+>>   .../net/ethernet/pensando/ionic/ionic_main.c  |  296 ++
+>>   .../net/ethernet/pensando/ionic/ionic_regs.h  |  133 +
+>>   11 files changed, 3512 insertions(+), 3 deletions(-)
+>>   create mode 100644
+>> drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+>>   create mode 100644
+>> drivers/net/ethernet/pensando/ionic/ionic_debugfs.h
+>>   create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.c
+>>   create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>>   create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_if.h
+>>   create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_regs.h
+>>
+> [...]
+>   
+>>   static void ionic_remove(struct pci_dev *pdev)
+>>   {
+>>   	struct ionic *ionic = pci_get_drvdata(pdev);
+>>   
+>> -	devm_kfree(&pdev->dev, ionic);
+>> +	if (ionic) {
+> nit, in case you are doing another re-spin  maybe early return here:
+> if (!ionic)
+>       return;
+> //do stuff
+
+Sure
+
 >
->> On 7/23/19 2:33 PM, David Miller wrote:
->>> Generally interface address changes are expected to be synchronous.
->> Yeah, this bothers me a bit as well, but the address change calls come
->> in under spin_lock_bh(), and I'm reluctant to make an AdminQ call
->> under the _bh that could block for a few seconds.
-> So it's not about memory allocation but rather the fact that the device
-> might take a while to complete?
+>> +		ionic_reset(ionic);
+>> +		ionic_dev_teardown(ionic);
+>> +		ionic_unmap_bars(ionic);
+>> +		pci_release_regions(pdev);
+>> +		pci_clear_master(pdev);
+>> +		pci_disable_sriov(pdev);
+>> +		pci_disable_device(pdev);
+>> +		ionic_debugfs_del_dev(ionic);
+>> +		mutex_destroy(&ionic->dev_cmd_lock);
+>> +
+>> +		devm_kfree(&pdev->dev, ionic);
+>> +	}
+>>   }
+>>
+> [...]
+>
+>>   
+>> +
+>> +/* Devcmd Interface */
+>> +u8 ionic_dev_cmd_status(struct ionic_dev *idev)
+>> +{
+>> +	return ioread8(&idev->dev_cmd_regs->comp.comp.status);
+>> +}
+>> +
+>> +bool ionic_dev_cmd_done(struct ionic_dev *idev)
+>> +{
+>> +	return ioread32(&idev->dev_cmd_regs->done) & DEV_CMD_DONE;
+>> +}
+>> +
+>> +void ionic_dev_cmd_comp(struct ionic_dev *idev, union dev_cmd_comp
+>> *comp)
+>> +{
+>> +	memcpy_fromio(comp, &idev->dev_cmd_regs->comp, sizeof(*comp));
+>> +}
+>> +
+>> +void ionic_dev_cmd_go(struct ionic_dev *idev, union dev_cmd *cmd)
+>> +{
+>> +	memcpy_toio(&idev->dev_cmd_regs->cmd, cmd, sizeof(*cmd));
+>> +	iowrite32(0, &idev->dev_cmd_regs->done);
+>> +	iowrite32(1, &idev->dev_cmd_regs->doorbell);
+>> +}
+>> +
+>> +/* Device commands */
+>> +void ionic_dev_cmd_identify(struct ionic_dev *idev, u8 ver)
+>> +{
+>> +	union dev_cmd cmd = {
+>> +		.identify.opcode = CMD_OPCODE_IDENTIFY,
+>> +		.identify.ver = ver,
+>> +	};
+>> +
+>> +	ionic_dev_cmd_go(idev, &cmd);
+>> +}
+>> +
+>> +void ionic_dev_cmd_init(struct ionic_dev *idev)
+>> +{
+>> +	union dev_cmd cmd = {
+>> +		.init.opcode = CMD_OPCODE_INIT,
+>> +		.init.type = 0,
+>> +	};
+>> +
+>> +	ionic_dev_cmd_go(idev, &cmd);
+>> +}
+>> +
+>> +void ionic_dev_cmd_reset(struct ionic_dev *idev)
+>> +{
+>> +	union dev_cmd cmd = {
+>> +		.reset.opcode = CMD_OPCODE_RESET,
+>> +	};
+>> +
+>> +	ionic_dev_cmd_go(idev, &cmd);
+>> +}
+> [...]
+>
+>> +int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long
+>> max_seconds)
+>> +{
+>> +	struct ionic_dev *idev = &ionic->idev;
+>> +	unsigned long max_wait, start_time, duration;
+>> +	int opcode;
+>> +	int done;
+>> +	int err;
+>> +
+>> +	WARN_ON(in_interrupt());
+>> +
+>> +	/* Wait for dev cmd to complete, retrying if we get EAGAIN,
+>> +	 * but don't wait any longer than max_seconds.
+>> +	 */
+>> +	max_wait = jiffies + (max_seconds * HZ);
+>> +try_again:
+>> +	start_time = jiffies;
+>> +	do {
+>> +		done = ionic_dev_cmd_done(idev);
+> READ_ONCE required here ? to read from coherent memory modified
+> by the device and read by the driver ?
 
-Memory allocation may or may not be involved, but yes, mainly we're 
-doing another spin_lock on a firmware command that waits for an ACK or 
-ERROR answer, and in extreme cases could possibly timeout on a dead 
-firmware.  I know that i40e and ice do much the same thing, and I 
-believe mlx5 as well, for the same reasons.  I suspect others do as well.
+Good idea, I'll add that in.
 
-> Can you start the operation synchronously yet complete it async?
+>
+>> +		if (done)
+>> +			break;
+>> +		msleep(20);
+>> +	} while (!done && time_before(jiffies, max_wait));
+> so your command interface is busy polling based, i am relating here to
+> Dave's comment regarding async command completion, is it possible to
+> have interrupt (MSIX?) based command completion in this hw ?
 
-This could be possible, but would likely require a bunch more messy 
-logic to track async AdminQ requests, that otherwise is unnecessary.
+As I wrote elsewhere, this is only the low-level dev_cmd that does 
+polling; the adminq does a wait that is completed by an MSI-x handler.
 
 sln
 
