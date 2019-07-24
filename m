@@ -2,58 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8327741A7
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 00:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB1A741AA
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 00:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729557AbfGXWrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 18:47:07 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:53120 "EHLO
+        id S2387816AbfGXWrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 18:47:40 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53134 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728048AbfGXWrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 18:47:07 -0400
+        with ESMTP id S1727498AbfGXWrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 18:47:40 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 18C311543C8D5;
-        Wed, 24 Jul 2019 15:47:06 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 15:47:05 -0700 (PDT)
-Message-Id: <20190724.154705.141831380224703229.davem@davemloft.net>
-To:     arnd@arndb.de
-Cc:     tariqt@mellanox.com, ereza@mellanox.com, jackm@dev.mellanox.co.il,
-        eli@mellanox.co.il, moshe@mellanox.com, jiri@mellanox.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH net-next] [net-next] mlx4: avoid large stack usage in
- mlx4_init_hca()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 218E11543C8D7;
+        Wed, 24 Jul 2019 15:47:40 -0700 (PDT)
+Date:   Wed, 24 Jul 2019 15:47:39 -0700 (PDT)
+Message-Id: <20190724.154739.72147269285837223.davem@davemloft.net>
+To:     wsa+renesas@sang-engineering.com
+Cc:     linux-i2c@vger.kernel.org, linux-net-drivers@solarflare.com,
+        ecree@solarflare.com, mhabets@solarflare.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sfc: falcon: convert to i2c_new_dummy_device
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190722150204.1157315-1-arnd@arndb.de>
-References: <20190722150204.1157315-1-arnd@arndb.de>
+In-Reply-To: <20190722172635.4535-1-wsa+renesas@sang-engineering.com>
+References: <20190722172635.4535-1-wsa+renesas@sang-engineering.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 24 Jul 2019 15:47:06 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 24 Jul 2019 15:47:40 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Mon, 22 Jul 2019 17:01:55 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Date: Mon, 22 Jul 2019 19:26:35 +0200
 
-> The mlx4_dev_cap and mlx4_init_hca_param are really too large
-> to be put on the kernel stack, as shown by this clang warning:
+> Move from i2c_new_dummy() to i2c_new_dummy_device(). So, we now get an
+> ERRPTR which we use in error handling.
 > 
-> drivers/net/ethernet/mellanox/mlx4/main.c:3304:12: error: stack frame size of 1088 bytes in function 'mlx4_load_one' [-Werror,-Wframe-larger-than=]
-> 
-> With gcc, the problem is the same, but it does not warn because
-> it does not inline this function, and therefore stays just below
-> the warning limit, while clang is just above it.
-> 
-> Use kzalloc for dynamic allocation instead of putting them
-> on stack. This gets the combined stack frame down to 424 bytes.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Applied.
+Solarflare folks, please review/test.
+
+Thank you.
