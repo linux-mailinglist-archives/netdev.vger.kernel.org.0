@@ -2,107 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E464474108
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 23:48:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F0F57410C
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 23:49:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbfGXVsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 17:48:37 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64132 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726870AbfGXVsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 17:48:36 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6OLmGsI024535
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 14:48:35 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=vIYOJ8GFUHIG0Z6RRTPyodtUTdV1z6zUK00ElCW6/EE=;
- b=eLFTHQoVgkta5/hakWnl739UtWnjnqnOH8Bo6CAFbdYW/ULG1wCM61IDp70bMh6Lds3i
- MPLPiNJNf0MIWQxvIhtgPW53YINznUfAVbRIdK1I4jr5JegKltvPpuYRa8gbOX5+zSg4
- gK5IrcT/b7wb6hAd5/AHVgVug3mblS745Q8= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2txs429seu-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 14:48:35 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 24 Jul 2019 14:48:33 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id C8F228615C6; Wed, 24 Jul 2019 14:48:32 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf] libbpf: silence GCC8 warning about string truncation
-Date:   Wed, 24 Jul 2019 14:47:53 -0700
-Message-ID: <20190724214753.1816451-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S2388456AbfGXVt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 17:49:26 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:34416 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387517AbfGXVtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 17:49:24 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 191686C0072;
+        Wed, 24 Jul 2019 21:49:23 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 24 Jul
+ 2019 14:49:19 -0700
+Subject: Re: [RFC PATCH net-next 0/3] net: batched receive in GRO path
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>
+References: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
+ <c80a9e7846bf903728327a1ca2c3bdcc078057a2.camel@redhat.com>
+ <677040f4-05d1-e664-d24a-5ee2d2edcdbd@solarflare.com>
+ <1735314f-3c6a-45fc-0270-b90cc4d5d6ba@gmail.com>
+ <4516a34a-5a88-88ef-e761-7512dff4f3ce@solarflare.com>
+ <38ff0ce0-7e26-1683-90f0-adc9c0ac9abe@gmail.com>
+ <927da9ee-c2fc-8556-fbeb-e26ea1c98d1e@solarflare.com>
+ <d7ca6e7a-b80e-12e8-9050-c25b8b92bf26@gmail.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <a30137b4-1b01-df6e-c771-c5ddd1cfc490@solarflare.com>
+Date:   Wed, 24 Jul 2019 22:49:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-24_08:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907240232
-X-FB-Internal: deliver
+In-Reply-To: <d7ca6e7a-b80e-12e8-9050-c25b8b92bf26@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24792.002
+X-TM-AS-Result: No-1.193700-4.000000-10
+X-TMASE-MatchedRID: 8+bhjh9TQnHmLzc6AOD8DfHkpkyUphL9jIW07F8rFN/DQHsHQgjORD9D
+        1N9xZ1/uafo8fdAv8snbDN6NSGrgx/C0efWAZXQdA9lly13c/gGMeFePU0tuMFLDlDlwWhcNjL4
+        B9OUMY3WK8CLgrr3ye/fTd3Re7mQ63dpCt+02H6wvLP1C8DIeOudppbZRNp/IGsYFEOAsQ4jgcJ
+        c1hBF7dkb1kKOfXoc7AvAS+4MtyNGfrFd6kw/dZyD3NF+wUeO92oQN+Q/21gSA6UrbM3j3qb7It
+        ozLGgGlgGzqIeUiWyVUo0GMV1nFMP9IzD24yv0faEIbyoxb4rJfrNvzYhXvjNeM7+ynemuGi836
+        2cmVmYCvAt00xEbNkV+24nCsUSFNjaPj0W1qn0TKayT/BQTiGh7uR6YYccjuvSZj/CFUC5q5u2n
+        a0+bP0/7Bt8u0/kaNm7Fem/DfFB68TlkL1HNe4ETQ+Q5GfbR/QvLcPlsXjlydukAkCxaa0k3oBZ
+        kjZklkBsRAh8WmTAcG2WAWHb2qekrMHC7kmmSWc5S6hNczuvhDDKa3G4nrLQ==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.193700-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24792.002
+X-MDID: 1564004963-HG61dfVPYY18
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Despite a proper NULL-termination after strncpy(..., ..., IFNAMSIZ - 1),
-GCC8 still complains about *expected* string truncation:
+On 12/07/2019 17:48, Eric Dumazet wrote:
+>> but the rest is the stuff we're polling for for low latency.
+>> I'm putting a gro_normal_list() call after the trace_napi_poll() in
+>>  napi_busy_loop() and testing that, let's see how it goes...
+One thing that's causing me some uncertainty: busy_poll_stop() does a
+ napi->poll(), which can potentially gro_normal_one() something.  But
+ when I tried to put a gro_normal_list() just after that, I ran into
+ list corruption because it could race against the one in
+ napi_complete_done().  I'm not entirely sure how, my current theory
+ goes something like:
+- clear_bit(IN_BUSY_POLL)
+- task switch, start napi poll
+- get as far as starting gro_normal_list()
+- task switch back to busy_poll_stop()
+- local_bh_disable()
+- do a napi poll
+- start gro_normal_list()
+- list corruption ensues as we have two instances of
+  netif_receive_skb_list_internal() trying to consume the same list
+But I may be wildly mistaken.
+Questions that arise from that:
+1) Is it safe to potentially be adding to the rx_list (gro_normal_one(),
+   which in theory can end up calling gro_normal_list() as well) within
+   busy_poll_stop()?  I haven't ever seen a splat from that, but it seems
+   every bit as possible as what I have been seeing.
+2) Why does busy_poll_stop() not do its local_bh_disable() *before*
+   clearing napi state bits, which (if I'm understanding correctly) would
+   ensure an ordinary napi poll can't race with the one in busy_poll_stop()?
 
-  xsk.c:330:2: error: 'strncpy' output may be truncated copying 15 bytes
-  from a string of length 15 [-Werror=stringop-truncation]
-    strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+Apart from that I have indeed established that with the patches as posted
+ busy-polling latency is awful, but adding a gro_normal_list() into
+ napi_busy_loop() fixes that, as expected.
 
-This patch gets rid of the issue altogether by using memcpy instead.
-There is no performance regression, as strncpy will still copy and fill
-all of the bytes anyway.
-
-v1->v2:
-- rebase against bpf tree.
-
-Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- tools/lib/bpf/xsk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index e02025bbe36d..680e63066cf3 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -326,7 +326,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
- 		return -errno;
- 
- 	ifr.ifr_data = (void *)&channels;
--	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
-+	memcpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
- 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
- 	err = ioctl(fd, SIOCETHTOOL, &ifr);
- 	if (err && errno != EOPNOTSUPP) {
-@@ -516,7 +516,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 		err = -errno;
- 		goto out_socket;
- 	}
--	strncpy(xsk->ifname, ifname, IFNAMSIZ - 1);
-+	memcpy(xsk->ifname, ifname, IFNAMSIZ - 1);
- 	xsk->ifname[IFNAMSIZ - 1] = '\0';
- 
- 	err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
--- 
-2.17.1
-
+-Ed
