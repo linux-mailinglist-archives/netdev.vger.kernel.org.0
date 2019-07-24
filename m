@@ -2,113 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6161C74106
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 23:48:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E464474108
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 23:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726849AbfGXVr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 17:47:59 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34265 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbfGXVr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 17:47:59 -0400
-Received: by mail-wr1-f67.google.com with SMTP id 31so48555182wrm.1
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 14:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=Vlda9c7KETvEGQsxjXjGpWIbBtg5qtO61aZYGqevnio=;
-        b=GUXM3ArOvBVEWJdL6pgvL3DfV17PRDOW+oqx+fKU232DKRxvpHsrbpUC9GYeIN4q4a
-         6IqWnEFJLqDz37tKpIzeradkLok928luTI7YUf9TYiS7GRIPenm+eaKvR/z721AWypZM
-         BKBTn5DLhJIyBjC6P9BndFZ3itZ4G3jCMopUSORmIc5807FhSZXD1eYFEo9zQ+4AF49R
-         W99QpxM5b6bHrhKhOQuqbfvYnMCYv83B7xaY75KA0QUbYg93Wd/kVhPVHDvYlVGYXpru
-         SJFDziOrFrpJyIahkjRtXBBQOaHCKsH5iFiZ49Phgk/ZtM5ED4r0nkifwmc77YfI06SP
-         OQlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=Vlda9c7KETvEGQsxjXjGpWIbBtg5qtO61aZYGqevnio=;
-        b=hQ1YH1kiotAB57518do1/1HzNBHAJp8rjsZz68uq0a/sMXoZlTtLs/q8QI11Y679zW
-         qCu8um2DVYbqA58SrHT/f8+u2yM/3rX/z5evTJa2l0aKT3sSft81rbdv5YwQhGNRtUom
-         mHXYoNnRnZ2i5N2yccpY0WZzAH3XBdtzI5MxezBcR63eXhyaaZWM2mES0hU1d3UIGGLT
-         11qx4E+k2Qb5YZxmsI+jzBgXQ6G+m4z+xsP2yqosd/niOVCm+jgCI/rbYeBORIN4suHJ
-         FDmg/02w6ZbDae09cCbe2lXHQ62abUkWZQfbSR6EYcVeCH/gCSTpiRLeGEkP0nimYLyJ
-         EeOw==
-X-Gm-Message-State: APjAAAUXyQRI5AyySS4B47Fsz9Kc1kN2DpcfCHUWwdm3RXJ3GLSPN8wP
-        F7Y1O81azCxMbRQX1WUmblH9KSvv
-X-Google-Smtp-Source: APXvYqwdAXylPi+y1fktiKIscVlrf7xtrn0z7NJT3xblEStYYHHpC6ycU8IWHxNdKHIvCkVcrNFN6g==
-X-Received: by 2002:a5d:4e45:: with SMTP id r5mr91570956wrt.206.1564004876880;
-        Wed, 24 Jul 2019 14:47:56 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:60e4:dd99:f7ec:c519? (p200300EA8F43420060E4DD99F7ECC519.dip0.t-ipconnect.de. [2003:ea:8f43:4200:60e4:dd99:f7ec:c519])
-        by smtp.googlemail.com with ESMTPSA id z6sm41960104wrw.2.2019.07.24.14.47.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 14:47:56 -0700 (PDT)
-To:     David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH RFC net-next] net: use helper skb_ensure_writable in
- skb_checksum_help and skb_crc32c_csum_help
-Message-ID: <d5791755-5b1e-6dc6-fa9d-da3bb0353847@gmail.com>
-Date:   Wed, 24 Jul 2019 23:47:49 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726973AbfGXVsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 17:48:37 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64132 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726870AbfGXVsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 17:48:36 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6OLmGsI024535
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 14:48:35 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=vIYOJ8GFUHIG0Z6RRTPyodtUTdV1z6zUK00ElCW6/EE=;
+ b=eLFTHQoVgkta5/hakWnl739UtWnjnqnOH8Bo6CAFbdYW/ULG1wCM61IDp70bMh6Lds3i
+ MPLPiNJNf0MIWQxvIhtgPW53YINznUfAVbRIdK1I4jr5JegKltvPpuYRa8gbOX5+zSg4
+ gK5IrcT/b7wb6hAd5/AHVgVug3mblS745Q8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2txs429seu-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 14:48:35 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 24 Jul 2019 14:48:33 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id C8F228615C6; Wed, 24 Jul 2019 14:48:32 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v2 bpf] libbpf: silence GCC8 warning about string truncation
+Date:   Wed, 24 Jul 2019 14:47:53 -0700
+Message-ID: <20190724214753.1816451-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-24_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1907240232
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of open-coding making the checksum writable we can use an
-appropriate helper. skb_ensure_writable is a candidate, however we
-might also use skb_header_unclone. Hints welcome.
+Despite a proper NULL-termination after strncpy(..., ..., IFNAMSIZ - 1),
+GCC8 still complains about *expected* string truncation:
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+  xsk.c:330:2: error: 'strncpy' output may be truncated copying 15 bytes
+  from a string of length 15 [-Werror=stringop-truncation]
+    strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+
+This patch gets rid of the issue altogether by using memcpy instead.
+There is no performance regression, as strncpy will still copy and fill
+all of the bytes anyway.
+
+v1->v2:
+- rebase against bpf tree.
+
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Acked-by: Song Liu <songliubraving@fb.com>
 ---
- net/core/dev.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+ tools/lib/bpf/xsk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index fc676b261..90516a800 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2939,12 +2939,9 @@ int skb_checksum_help(struct sk_buff *skb)
- 	offset += skb->csum_offset;
- 	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index e02025bbe36d..680e63066cf3 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -326,7 +326,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 		return -errno;
  
--	if (skb_cloned(skb) &&
--	    !skb_clone_writable(skb, offset + sizeof(__sum16))) {
--		ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
--		if (ret)
--			goto out;
--	}
-+	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
-+	if (ret)
-+		goto out;
- 
- 	*(__sum16 *)(skb->data + offset) = csum_fold(csum) ?: CSUM_MANGLED_0;
- out_set_summed:
-@@ -2979,12 +2976,11 @@ int skb_crc32c_csum_help(struct sk_buff *skb)
- 		ret = -EINVAL;
- 		goto out;
+ 	ifr.ifr_data = (void *)&channels;
+-	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
++	memcpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+ 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+ 	err = ioctl(fd, SIOCETHTOOL, &ifr);
+ 	if (err && errno != EOPNOTSUPP) {
+@@ -516,7 +516,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 		err = -errno;
+ 		goto out_socket;
  	}
--	if (skb_cloned(skb) &&
--	    !skb_clone_writable(skb, offset + sizeof(__le32))) {
--		ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
--		if (ret)
--			goto out;
--	}
-+
-+	ret = skb_ensure_writable(skb, offset + sizeof(__le32));
-+	if (ret)
-+		goto out;
-+
- 	crc32c_csum = cpu_to_le32(~__skb_checksum(skb, start,
- 						  skb->len - start, ~(__u32)0,
- 						  crc32c_csum_stub));
+-	strncpy(xsk->ifname, ifname, IFNAMSIZ - 1);
++	memcpy(xsk->ifname, ifname, IFNAMSIZ - 1);
+ 	xsk->ifname[IFNAMSIZ - 1] = '\0';
+ 
+ 	err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
 -- 
-2.22.0
+2.17.1
 
