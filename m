@@ -2,54 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 719FC736DF
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 20:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20421736E7
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 20:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbfGXSqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 14:46:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49874 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726578AbfGXSqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 14:46:31 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A7A761540A472;
-        Wed, 24 Jul 2019 11:46:30 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 11:46:30 -0700 (PDT)
-Message-Id: <20190724.114630.265658125734027818.davem@davemloft.net>
-To:     willy@infradead.org
-Cc:     David.Laight@aculab.com, hch@lst.de, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 6/7] net: Rename skb_frag_t size to bv_len
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190724114120.GT363@bombadil.infradead.org>
-References: <20190723030831.11879-7-willy@infradead.org>
-        <b47b0b19e5594b97af62352dc0dbffcc@AcuMS.aculab.com>
-        <20190724114120.GT363@bombadil.infradead.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 24 Jul 2019 11:46:30 -0700 (PDT)
+        id S2387601AbfGXSsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 14:48:01 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:54546 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbfGXSsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 14:48:00 -0400
+Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hqMIu-0002FF-UV; Wed, 24 Jul 2019 14:47:58 -0400
+Date:   Wed, 24 Jul 2019 14:47:29 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH net-next 0/4] sctp: clean up __sctp_connect function
+Message-ID: <20190724184729.GD7212@hmswarspite.think-freely.org>
+References: <cover.1563817029.git.lucien.xin@gmail.com>
+ <20190724142512.GG6204@localhost.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190724142512.GG6204@localhost.localdomain>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox <willy@infradead.org>
-Date: Wed, 24 Jul 2019 04:41:21 -0700
-
-> On Wed, Jul 24, 2019 at 10:49:03AM +0000, David Laight wrote:
->> This is 'just plain stupid'.
->> The 'bv_' prefix of the members of 'struct bvec' is there so that 'grep'
->> (etc) can be used to find the uses of the members.
->> 
->> In a 'struct skb_frag_struct' a sensible prefix might be 'sf_'.
->> 
->> OTOH it might be sensible to use (or embed) a 'struct bvec'
->> instead of 'skb_frag_struct'.
+On Wed, Jul 24, 2019 at 11:25:12AM -0300, Marcelo Ricardo Leitner wrote:
+> On Tue, Jul 23, 2019 at 01:37:56AM +0800, Xin Long wrote:
+> > This patchset is to factor out some common code for
+> > sctp_sendmsg_new_asoc() and __sctp_connect() into 2
+> > new functioins.
+> > 
+> > Xin Long (4):
+> >   sctp: check addr_size with sa_family_t size in
+> >     __sctp_setsockopt_connectx
+> >   sctp: clean up __sctp_connect
+> >   sctp: factor out sctp_connect_new_asoc
+> >   sctp: factor out sctp_connect_add_peer
 > 
-> Maybe you should read patch 7/7.  Or 0/7.
+> Nice cleanup! These patches LGTM. Hopefully for Neil as well.
+> 
+> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> 
 
-+1
+Yes, agreed, this all looks good, but I would like to resolve the addr_length
+check issue before I ack it.
+Neil
+
