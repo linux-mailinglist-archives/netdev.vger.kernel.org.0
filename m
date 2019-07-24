@@ -2,80 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05D6373482
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 19:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0D473485
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 19:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbfGXRC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 13:02:27 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:44848 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbfGXRC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 13:02:27 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i18so21531294pgl.11;
-        Wed, 24 Jul 2019 10:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=XdfjyZYov5e+yFyCZFSdjA9ozf2so8hFh6lGGKUEDEA=;
-        b=HnS9bv3Ioyt94j0IXtTI344vge8EaVaV6iR43tbNyXlhm2NZzPWCS4LAZZeB7NYi3u
-         +Qy8/sPlcUerqwhHQdGvnVTp1in3kWgOfg6BzxAQclmb5u+8j7/O6SsmUyUHnJpIN5Se
-         aYGSpzNlOvfbKIaXCvbCfmyhVnDmJ5EX78zjbzShvZ+MK+2jVR54u1V5x1/tVKJOViYw
-         c/uPLaCim4zlh6GpBFgFqV3FN1Sv4IwS86WyjIeNUhkMs9+emHQW3Tr/4MP94p6y+8xC
-         gDQ6zzPA2w/DqvdxSvv29S+Ls4/8bupaYP0zm2dra33Au7Q2W25eFj+hrbNw4hYowP4A
-         u1Mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=XdfjyZYov5e+yFyCZFSdjA9ozf2so8hFh6lGGKUEDEA=;
-        b=RaMY7XqQI7y44aYHz72+G7BZsdOd+fzK3+c/Ffd+UT73+VPWww/YliSI35PLNwOwLt
-         SR5HPRRxqF7HCFxADHWd2Ltyp/yHBTthxx3qo8ROW/vxfsmup+oHztqGncsqpDInSri3
-         fydhWJRqQGTQ/PU32U6cbdvVVj67bVaJZ2wudIiNrBqJvaZ04WZ4oFQYoycWb+56mZyA
-         f0SeEozocgNG8ifYgFhyfivtFubnItJwN9wMkVjxJ+2ivz40GdDd1CG+wKxcXI9a92wM
-         Ikm5UAbuX+reZRFCM2GftXbhfWjEzuP7VmbG1UhdvntBX7tC3C74KlXcIOfUpS/yXkzM
-         topQ==
-X-Gm-Message-State: APjAAAWSbKQZ9PtvPiNYn0WR9OLoBXeLFUCQ8bQy9ZdGgtZ8uAL7I8Rt
-        pcsjxWsZdtlmxOd9exIN+zpmAPYbyFS1aynitD8YmRwNsG4=
-X-Google-Smtp-Source: APXvYqyZVouTVE7j+s/aVmMN+YF1ttTVD2pQY1TtIfurMx0pXKz9VvHRAPtYXVAXlK587EtQYoZ26HMgFx0/o1N0Lxc=
-X-Received: by 2002:a63:5811:: with SMTP id m17mr11803696pgb.237.1563987745677;
- Wed, 24 Jul 2019 10:02:25 -0700 (PDT)
+        id S1727156AbfGXRCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 13:02:44 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:38673 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726802AbfGXRCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 13:02:44 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 764242399;
+        Wed, 24 Jul 2019 13:02:43 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 24 Jul 2019 13:02:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=+fXNsL
+        LPuU+CsO2vmRn5FiVuirmwjgG0SED2xeEvO5U=; b=MYujN5khkczTBOydmSios8
+        nVkqZuVO8qiWb7SSzXuDWJhehB217S6b5EecvD32zPKUETMgBb9nxGpicGg45E6n
+        fjd9H8GqXp++PLeo8FVhSl+JF/CGoVq5aKY6Sdog4YWMMySc99UOLFlhK8fDahQL
+        96JFb+98XAKCF5CRNdrspw3N4oZHA6WxLPE15CvSKNCELUlZASNEdKX+WIUknMhb
+        ySKyuK+af6urZnkTNwJHoOmQlq9ucJKi5VMUyYkeafyGYPsB193/u8FFK7Gx5oRN
+        XC5C/cE50QkDKGIhNTMf1ljX5gZ+G3OTpORWGeFzkbQ5aKUzA16VcQnyUXy66SlA
+        ==
+X-ME-Sender: <xms:L484XQQrkhLedqsSA4B_DZfcxXZjdwtL1YebTJfqdCFIAA2_GHUg6Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrkedtgddutdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:L484XcovBSrQeUnGruvWWLP9Po9aigzKNr3KdSjLQ5FKo7dVb8ySQQ>
+    <xmx:L484XYEaCJvkdCNPAJa5xLoIvdh2nlP6vI_6JHU_-GeYuJyI_NXgKw>
+    <xmx:L484XaXIPwRHlaYMo0W_U-ZY25FjYa5EhnmsjVqTadvVTInvgz27Jg>
+    <xmx:M484XVwzoBBMfitT2iRV16r93YzoSuXh6RsJIvzKn1wMBBY3RHzQcg>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id BD67738008A;
+        Wed, 24 Jul 2019 13:02:38 -0400 (EDT)
+Date:   Wed, 24 Jul 2019 20:02:37 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        toke@redhat.com, andy@greyhouse.net, f.fainelli@gmail.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 08/12] drop_monitor: Initialize timer and
+ work item upon tracing enable
+Message-ID: <20190724170237.GD20252@splinter>
+References: <20190722183134.14516-1-idosch@idosch.org>
+ <20190722183134.14516-9-idosch@idosch.org>
+ <20190724090120.GA2225@nanopsycho>
 MIME-Version: 1.0
-References: <20190724014723.GJ643@sol.localdomain>
-In-Reply-To: <20190724014723.GJ643@sol.localdomain>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 24 Jul 2019 10:02:14 -0700
-Message-ID: <CAM_iQpWFjifODv+cWPSEk7RZ5xz8mg-oGuxkfTJMC7W-vPVwFA@mail.gmail.com>
-Subject: Re: Reminder: 13 open syzbot bugs in "net/netrom" subsystem
-To:     linux-hams <linux-hams@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190724090120.GA2225@nanopsycho>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 6:47 PM Eric Biggers <ebiggers@kernel.org> wrote:
->
-> [This email was generated by a script.  Let me know if you have any suggestions
-> to make it better, or if you want it re-generated with the latest status.]
->
-> Of the currently open syzbot reports against the upstream kernel, I've manually
-> marked 13 of them as possibly being bugs in the "net/netrom" subsystem.  I've
-> listed these reports below, sorted by an algorithm that tries to list first the
-> reports most likely to be still valid, important, and actionable.
->
-> Of these 13 bugs, 8 were seen in mainline in the last week.
->
-> Of these 13 bugs, 4 were bisected to commits from the following person:
->
->         Cong Wang <xiyou.wangcong@gmail.com>
+On Wed, Jul 24, 2019 at 11:01:20AM +0200, Jiri Pirko wrote:
+> Mon, Jul 22, 2019 at 08:31:30PM CEST, idosch@idosch.org wrote:
+> > static int net_dm_trace_on_set(struct netlink_ext_ack *extack)
+> > {
+> >-	int rc;
+> >+	int cpu, rc;
+> > 
+> > 	if (!try_module_get(THIS_MODULE)) {
+> > 		NL_SET_ERR_MSG_MOD(extack, "Failed to take reference on module");
+> > 		return -ENODEV;
+> > 	}
+> > 
+> >+	for_each_possible_cpu(cpu) {
+> >+		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
+> >+
+> >+		INIT_WORK(&data->dm_alert_work, send_dm_alert);
+> >+		timer_setup(&data->send_timer, sched_send_work, 0);
+> 
+> So don't you want to remove this initialization from
+> init_net_drop_monitor?
 
-These 4 should be fixed by this pending patch:
-http://patchwork.ozlabs.org/patch/1135398/
-
-Thanks.
+It's actually needed because it calls reset_per_cpu_data(), which might
+trigger the timer on memory allocation error. I'll try to see if I can
+get rid of it. If not, I'll add a comment so that people won't be
+tempted to remove it.
