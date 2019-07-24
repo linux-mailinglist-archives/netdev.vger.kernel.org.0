@@ -2,116 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E11B73E20
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:22:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B96673E3A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392347AbfGXUWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 16:22:40 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:36977 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391061AbfGXUWi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 16:22:38 -0400
-Received: by mail-io1-f66.google.com with SMTP id q22so92347090iog.4
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 13:22:37 -0700 (PDT)
+        id S2392913AbfGXUXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 16:23:20 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46583 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392907AbfGXUXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 16:23:18 -0400
+Received: by mail-pl1-f193.google.com with SMTP id c2so22405025plz.13
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 13:23:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W7b98j1DYhcpfb7OdCLFp27JFdB3a34V6jagTpBUbfA=;
-        b=emPr0+o12gzDRDVdDGCZkDSc1awT8Sv7j4Y3PHnjX6+BEM8Ev916Ml6Ya5Ixn59rnj
-         bYHRVD4vJpGgnK8uA8ZfT2527Pza1HUFVITP04fOwvVSTVtDbOhp0XyRD+J1U8RCZ7+q
-         cQkjHaLlnu1CLlhPM31Ij364/ILIXnU5UveYQ=
+        d=pensando.io; s=google;
+        h=subject:from:to:references:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=tE9sDoaxWP7ENUklMu9B5KmrSaJsUYEMHDJidBaTQAM=;
+        b=pORCmtHgruaAh7jFtr6E4ZzUrb001kmlY/XmlhkpMHTVJPEgfTlK3OZx6oUnMQQt8g
+         Yrek0PP6Cr4oSkithzkQ5gjBIg4ykENdwWyBFt64cFI/+K7L9/7iqfFbVhaGIanPFfpi
+         ORYgLlchkMRWEXrqq+/hLRi++u8PtPoKZonc7cXLEAxXvM5OjhGMO6Qyg3AEwUTyA4NG
+         R1Bs1mXtoJJNAo0rOqVoVZIMJQI9P23Xvcu4Azu9t4lqPQTfw3VZs1lojV+ithM078sX
+         obyw5e/uSkO7b5BLoukJOazXT9dcs3tuEC8F2xVzy4WRMCCcR4TlN32hlaZ3zSFuZPQG
+         sn6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W7b98j1DYhcpfb7OdCLFp27JFdB3a34V6jagTpBUbfA=;
-        b=mKISXgLuZPACkqHzhcqpUwpA7kfR0k4qq2I/NrMJYvZ5h0babJdU9C2vPmETput7mk
-         5C41WfW6iB7O8GLW6EhVm43aWO9yf4w8Hw8pthGIqnxlKduXyrLt18bA3e7Yk6P8ZvQw
-         C9LlySRj3JCg3M8DJrw9PBRP2sv4RuKFdsNpJsFWo2uLGXwPJuoM72GBr36oQyDs1StF
-         mLlU3t2z21YQ1oAkjfthdVjPWwkuTBWAVSqfm2KDcSX9qb6PIL+pTBeq3S4NDJEeOpri
-         6BbZxpeeK8V39reSWSBwXVgNLexkm+0UD4e3/vhR0A+RssUQI8wSM+9eBYieqAoP/Avv
-         WAcA==
-X-Gm-Message-State: APjAAAU95yUMoZarK7u6Zro0n/dmB+b3TxgQ9KKU8X5Egw6aoOXG6axP
-        9iclV5hIJgCmVZlKy6GOTmPqOaVfkfc=
-X-Google-Smtp-Source: APXvYqzVtmXjx1Hw6uJhqWjVuNG2++qY3dreWKTvqFtydjsgeOzeaO9K7zhd55luDv4I/kOXjV/aVw==
-X-Received: by 2002:a5d:9752:: with SMTP id c18mr8505501ioo.22.1563999757188;
-        Wed, 24 Jul 2019 13:22:37 -0700 (PDT)
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com. [209.85.166.52])
-        by smtp.gmail.com with ESMTPSA id t14sm39614584ioi.60.2019.07.24.13.22.35
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 13:22:35 -0700 (PDT)
-Received: by mail-io1-f52.google.com with SMTP id k20so92327467ios.10
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 13:22:35 -0700 (PDT)
-X-Received: by 2002:a5d:8ccc:: with SMTP id k12mr78564964iot.141.1563999754524;
- Wed, 24 Jul 2019 13:22:34 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=tE9sDoaxWP7ENUklMu9B5KmrSaJsUYEMHDJidBaTQAM=;
+        b=oHTF9ifuwLd0M/3wzM2f2fI9qyziLpNKJNae4f4ddjy6iHt1+vN94AOZ/9nzhC6omE
+         Mp9VtDmrWrlR6Wb86OFEwRSxvAFBwfBTjK/q9BwdyYPQAEBa18e1qU/E9wgI3pH2VPEZ
+         9CxOWFrAyUVbGZFPCW5lNm1PwhjIq4X7FuwVX6+ws2Qi3eUNUDFU4krKh0vpz0oOt43i
+         ZKu+20zYIcGzEzDaPA8N5Z42V3rdG0ZE25tCo63Pmm8fpoKByrO51bMiyEyKZtO/esld
+         mv6dQUqIDqIlDh6M6oXJZ7aDen3/MqbhnhAIz3WzNtNWFXJNB3BKh52jWHKTdjnMHFQU
+         fXBQ==
+X-Gm-Message-State: APjAAAWj8SaHLp68rpKVJpmeL30URi0rCdg76fI32UDkgxJJesdL8C4M
+        fPOgMD1PWgWGokEYgHfxTw3GKg==
+X-Google-Smtp-Source: APXvYqx6Zs5baeICfbzLAtdQ49/DGHuAfHj3JA1NQt8KTe+lj2CNpe8x42nM7AJg87DyyLwBjOCUKw==
+X-Received: by 2002:a17:902:54f:: with SMTP id 73mr85929854plf.246.1563999797553;
+        Wed, 24 Jul 2019 13:23:17 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id 3sm50811034pfg.186.2019.07.24.13.23.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Jul 2019 13:23:17 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next 02/19] ionic: Add hardware init and device
+ commands
+From:   Shannon Nelson <snelson@pensando.io>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+References: <20190722214023.9513-1-snelson@pensando.io>
+ <20190722214023.9513-3-snelson@pensando.io>
+ <a402ea5d2badda79cf205e790d3eb967f2cb7084.camel@mellanox.com>
+ <10005fdb-51e8-42fc-3a7c-ea7c0dddb584@pensando.io>
+Message-ID: <7df1a5fb-9c88-a077-c54e-25ea1a12427e@pensando.io>
+Date:   Wed, 24 Jul 2019 13:23:15 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190722193939.125578-3-dianders@chromium.org> <20190724113508.47A356021C@smtp.codeaurora.org>
-In-Reply-To: <20190724113508.47A356021C@smtp.codeaurora.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 24 Jul 2019 13:22:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WAsrBV9PzUz1qPzQru+AkOYZ5hsaWdhNYRTNqUfDeOmQ@mail.gmail.com>
-Message-ID: <CAD=FV=WAsrBV9PzUz1qPzQru+AkOYZ5hsaWdhNYRTNqUfDeOmQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] mwifiex: Make use of the new sdio_trigger_replug()
- API to reset
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Andreas Fenkart <afenkart@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        netdev <netdev@vger.kernel.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Xinming Hu <huxinming820@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <10005fdb-51e8-42fc-3a7c-ea7c0dddb584@pensando.io>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 7/23/19 5:25 PM, Shannon Nelson wrote:
+> On 7/23/19 4:47 PM, Saeed Mahameed wrote:
+>> On Mon, 2019-07-22 at 14:40 -0700, Shannon Nelson wrote:
 
-On Wed, Jul 24, 2019 at 4:35 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>> +
+>> +    /* Wait for dev cmd to complete, retrying if we get EAGAIN,
+>> +     * but don't wait any longer than max_seconds.
+>> +     */
+>> +    max_wait = jiffies + (max_seconds * HZ);
+>> +try_again:
+>> +    start_time = jiffies;
+>> +    do {
+>> +        done = ionic_dev_cmd_done(idev);
+>> READ_ONCE required here ? to read from coherent memory modified
+>> by the device and read by the driver ?
 >
-> Douglas Anderson <dianders@chromium.org> wrote:
->
-> > As described in the patch ("mmc: core: Add sdio_trigger_replug()
-> > API"), the current mwifiex_sdio_card_reset() is broken in the cases
-> > where we're running Bluetooth on a second SDIO func on the same card
-> > as WiFi.  The problem goes away if we just use the
-> > sdio_trigger_replug() API call.
-> >
-> > NOTE: Even though with this new solution there is less of a reason to
-> > do our work from a workqueue (the unplug / plug mechanism we're using
-> > is possible for a human to perform at any time so the stack is
-> > supposed to handle it without it needing to be called from a special
-> > context), we still need a workqueue because the Marvell reset function
-> > could called from a context where sleeping is invalid and thus we
-> > can't claim the host.  One example is Marvell's wakeup_timer_fn().
-> >
-> > Cc: Andreas Fenkart <afenkart@gmail.com>
-> > Cc: Brian Norris <briannorris@chromium.org>
-> > Fixes: b4336a282db8 ("mwifiex: sdio: reset adapter using mmc_hw_reset")
-> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > Reviewed-by: Brian Norris <briannorris@chromium.org>
->
-> I assume this is going via some other tree so I'm dropping this from my
-> queue. If I should apply this please resend once the dependency is in
-> wireless-drivers-next.
->
-> Patch set to Not Applicable.
+> Good idea, I'll add that in.
 
-Thanks.  For now I'll assume that Ulf will pick it up if/when he is
-happy with patch #1 in this series.  Would you be willing to provide
-your Ack on this patch to make it clear to Ulf you're OK with that?
+Looking closer at this, it is more for coordinating memory reads between 
+threads and irq handlers.  This is polling a PCI register, which is 
+already marked as volatile and in at least some definitions (e.g. x86) 
+has a barrier.
 
--Doug
+sln
+
