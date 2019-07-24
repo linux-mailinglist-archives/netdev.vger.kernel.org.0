@@ -2,58 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0401473069
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 392D0730D6
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:04:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728270AbfGXN7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 09:59:06 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:41014 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbfGXN7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:59:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=RAl0a6XDBiz9KDbwHW5cZpAX7aqNsCFK4D5fjNEt504=; b=G3KNP7bVg9plKS5fOyhdPIFM9
-        FCUqbYqDja3G744oXtV3DyJdNz9NpPJ/LkXGIVx0fG4F8s4cPNePyGW5UPiGQr096HX+TNnt4N6v+
-        oceg3Cj5KycotFytiEFIpsdxTLiz4WsZRygEt7keJcijolBO0BdW7FzYS/ZVDlaFPwMU8ZuZqJF5R
-        UmUbnSVYgGWDqhfFUS+vBoOTYmeG3aM/fLjdxWdn73OcJxKyJPDQN3jIH5z1uxUMfXsHep6eiSYLF
-        yOCteZLHTcXEOx8p9Sa3r3plfNMIzHxXe+cGiIAVMkItva8kHok7oClOufqb4OeZRC03MLXMuFMTD
-        hPsQ7dARw==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hqHnL-00052P-7I; Wed, 24 Jul 2019 13:59:03 +0000
-Date:   Wed, 24 Jul 2019 06:59:03 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Qian Cai <cai@lca.pw>
-Cc:     davem@davemloft.net, jeffrey.t.kirsher@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] net/ixgbevf: fix a compilation error of skb_frag_t
-Message-ID: <20190724135903.GU363@bombadil.infradead.org>
-References: <1563975157-30691-1-git-send-email-cai@lca.pw>
+        id S1728372AbfGXOD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 10:03:57 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42500 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726472AbfGXOD5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 10:03:57 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 128363086202;
+        Wed, 24 Jul 2019 14:03:57 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.40.205.88])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0783D19C67;
+        Wed, 24 Jul 2019 14:03:55 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Tariq Toukan <tariqt@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2]  mlx4/en_netdev: allow offloading VXLAN over VLAN
+Date:   Wed, 24 Jul 2019 16:02:52 +0200
+Message-Id: <cover.1563976690.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1563975157-30691-1-git-send-email-cai@lca.pw>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 24 Jul 2019 14:03:57 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 09:32:37AM -0400, Qian Cai wrote:
->  	for (f = 0; f < skb_shinfo(skb)->nr_frags; f++)
-> -		count += TXD_USE_COUNT(skb_shinfo(skb)->frags[f].size);
-> +		count += TXD_USE_COUNT(skb_shinfo(skb)->frags[f].bv_len);
->  #else
+When VXLAN offload is enabled on ConnectX-3 Pro devices, the NIC can
+segment correctly also VXLAN packet with a VLAN tag: this series ensures
+that a VLAN created on top of a mlx4_en NIC inherits the tunnel offload
+capabilities.
 
-No, this is the wrong fix.  Use the fine accessor instead:
+Davide Caratti (2):
+  mlx4/en_netdev: update vlan features with tunnel offloads
+  mlx4/en_netdev: call notifiers when hw_enc_features change
 
-+		count += TXD_USE_COUNT(skb_frag_size(&skb_shinfo(skb)->frags[f]));
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 60 ++++++++++++-------
+ 1 file changed, 37 insertions(+), 23 deletions(-)
 
-although now there's a line length problem.  Most drivers do:
+-- 
+2.20.1
 
-		skb_frag_t frag = &skb_shinfo(skb)->frags[f];
-		count += TXD_USE_COUNT(skb_frag_size(frag));
