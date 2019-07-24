@@ -2,211 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F5E72B37
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 439F972B3D
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726585AbfGXJNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 05:13:38 -0400
-Received: from mail-eopbgr140093.outbound.protection.outlook.com ([40.107.14.93]:19781
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S1726807AbfGXJQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 05:16:11 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2714 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725999AbfGXJNh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 05:13:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JrJisL6phg6AdFkDXcsefW6EJwKToBH6WinkSo9b4g62dgOaQAlgChJZrdDSSR01UJuK22ZhsGsxkYU2pbIhgU42ExZqNiOBdluxOJ7vZadTbnJGwMGsEsX2yZ8C2vf/Z8aoi0diJu1Ghk59Jsa5mcghWLxeEV8sY14aMpJVDydcXrK2ybnJLm+xro+ZI2jMPifzrH6U5fzHLT3YEEQg57lt/nhm6ctZwvq6TECtyien+e5812hZfrSQLx2+dUOs+rHvt1Bs/rV9vtbdTXYNQPajTq86vv2ZQfAV/1Iw5DxvDZqFBg/U7v627JfZ9eKSSFt79jkX+qOKdF+4pxfClQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+1pIX+8NerxS/QgEascF7MQDhRbiFP+di7q09Hgfv6c=;
- b=EO06GPd02Pj29LXN2xXuVxdy42o+TrQAM8IVVn7QFMaEwtxy7BpnIzQ/G4J0r2Bo+lKXjfOjsfMIhGW/9vseSSyXoytfoQAdGeC6bHyqUdRr3SH/uLggm7VLHRpGbXJ8NZP4IoH+o+KAtTgrb9WULISAvFGc+SoZaJdY72Kd8MqIsH90qdJYeHGgw4Osmir/xiTzMhJOgRF+A53y6gaMrCPI9M59jEfIpvnvPOvuCl5FcXGFasmpMPo3CxoMeelG3QKqhxlrSxSS7oLtlz8rQBGZeB1MLyusudzKjEsmRQhc9kTPjYnibVP/UVApkRL60dkbt7Tnah17Ne5rPlQhtQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=victronenergy.com;dmarc=pass action=none
- header.from=victronenergy.com;dkim=pass header.d=victronenergy.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+1pIX+8NerxS/QgEascF7MQDhRbiFP+di7q09Hgfv6c=;
- b=ckih0CMzhRbUPknbNPK1OidgOfdAZUyYxe2+GpqSk5LA4LOb2eE9hqKJYaGJaEE/bO+HSmLvofrJHOBNGpHxNziMQFaeChTmIhOL2louhYebWX5fJ+2z9QUy8JzbwGz8/044rhsw0FGE9OE56SeIPX0d9Wwdfzn9tgNl4po1WFw=
-Received: from VI1PR0702MB3661.eurprd07.prod.outlook.com (52.134.1.159) by
- VI1PR0702MB3757.eurprd07.prod.outlook.com (52.134.7.148) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.9; Wed, 24 Jul 2019 09:13:30 +0000
-Received: from VI1PR0702MB3661.eurprd07.prod.outlook.com
- ([fe80::b168:9c5f:9e05:92c6]) by VI1PR0702MB3661.eurprd07.prod.outlook.com
- ([fe80::b168:9c5f:9e05:92c6%5]) with mapi id 15.20.2094.009; Wed, 24 Jul 2019
- 09:13:30 +0000
-From:   Jeroen Hofstee <jhofstee@victronenergy.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     Anant Gole <anantgole@ti.com>, AnilKumar Ch <anilkumar@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] can: ti_hecc: use timestamp based rx-offloading
-Thread-Topic: [PATCH] can: ti_hecc: use timestamp based rx-offloading
-Thread-Index: AQHU/oOQxrziEdIHYkKLtad3jyL4gabZ9dQAgAANP4A=
-Date:   Wed, 24 Jul 2019 09:13:30 +0000
-Message-ID: <ea314ae5-f063-394a-6105-2f5ab4614e1d@victronenergy.com>
-References: <1556539376-20932-1-git-send-email-jhofstee@victronenergy.com>
- <5881cb80-883b-a96b-2939-973150cfc196@pengutronix.de>
-In-Reply-To: <5881cb80-883b-a96b-2939-973150cfc196@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-x-originating-ip: [2001:1c01:3b04:4900::5]
-x-clientproxiedby: AM0PR06CA0032.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::45) To VI1PR0702MB3661.eurprd07.prod.outlook.com
- (2603:10a6:803:3::31)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jhofstee@victronenergy.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1dc20f6a-e65e-4a7f-224b-08d7101731ba
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR0702MB3757;
-x-ms-traffictypediagnostic: VI1PR0702MB3757:
-x-ms-exchange-purlcount: 6
-x-microsoft-antispam-prvs: <VI1PR0702MB3757CDA1F1E428D31E34EAA7C0C60@VI1PR0702MB3757.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(39850400004)(136003)(366004)(346002)(396003)(189003)(199004)(55674003)(81166006)(66946007)(81156014)(476003)(66556008)(5660300002)(14454004)(66446008)(66476007)(8676002)(6306002)(4326008)(8936002)(64756008)(53376002)(6246003)(68736007)(71200400001)(71190400001)(6512007)(53936002)(36756003)(7736002)(76176011)(305945005)(65956001)(110136005)(229853002)(316002)(58126008)(65806001)(54906003)(256004)(102836004)(6436002)(2906002)(2501003)(14444005)(65826007)(31686004)(446003)(478600001)(186003)(386003)(6506007)(6116002)(46003)(25786009)(11346002)(99286004)(53546011)(52116002)(486006)(6486002)(31696002)(966005)(86362001)(2616005)(64126003)(2004002);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR0702MB3757;H:VI1PR0702MB3661.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: victronenergy.com does not
- designate permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: yFSor5dII//g7PozAjD6F+YOUYbXsiBWiV56lsM1BMBeOv9TnYJ1dBr3lZqW07+PXLHeBERxe8Liain04A6mVkqUpJhAoP2qfIDY9odsfeaQkmfhsOSMa6RzVl0n+dVnmQ/7jTkenRhJbKGyPxeJmajBrOPQ4CLFoac6blwuESPnfojh9vJ9uATU2/KTYKjBiePZUBfvk00O30XTUqQrOcjNFli5fXroWrue/+uarrsS55EFoL2eRBNXpLtfyayKEu8AQEFrXkx+EGt6qMsJNW5EuacDIpW6Egqf+p9OXlNrrO/Ame6gkVX6UuhYEHlD+QbzrJzI0nD9xH2liv/RStXv3xGVKsRfFPmrwGGOdlCXHGYfkcEHExB88Zv+oyGjkCDxCjSNH8ikSpVNPjI/EHi96POwIV1/eZxbEQpIxCY=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <368B2A57D103B44DABA3D02E15BC8EFD@eurprd07.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726183AbfGXJQL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 05:16:11 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id D893945EBED8D4B0178C;
+        Wed, 24 Jul 2019 17:16:06 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Wed, 24 Jul 2019
+ 17:15:56 +0800
+Subject: Re: [PATCH 4.4 stable net] net: tcp: Fix use-after-free in
+ tcp_write_xmit
+To:     <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20190724091715.137033-1-maowenan@huawei.com>
+CC:     stable <stable@vger.kernel.org>,
+        "Wangkefeng (Maro)" <wangkefeng.wang@huawei.com>,
+        "weiyongjun (A)" <weiyongjun1@huawei.com>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <a106c5ed-d2be-7ac2-eda9-dca852925fc5@huawei.com>
+Date:   Wed, 24 Jul 2019 17:15:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-X-OriginatorOrg: victronenergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1dc20f6a-e65e-4a7f-224b-08d7101731ba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 09:13:30.3227
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 60b95f08-3558-4e94-b0f8-d690c498e225
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JHofstee@victronenergy.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0702MB3757
+In-Reply-To: <20190724091715.137033-1-maowenan@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gTWFyYywNCg0KT24gNy8yNC8xOSAxMDoyNiBBTSwgTWFyYyBLbGVpbmUtQnVkZGUgd3Jv
-dGU6DQo+IE9uIDQvMjkvMTkgMjowMyBQTSwgSmVyb2VuIEhvZnN0ZWUgd3JvdGU6DQo+PiBBcyBh
-bHJlYWR5IG1lbnRpb25lZCBpbiBbMV0gYW5kIGluY2x1ZGVkIGluIFsyXSwgdGhlcmUgaXMgYW4g
-b2ZmIGJ5IG9uZQ0KPj4gaXNzdWUgc2luY2UgdGhlIGhpZ2ggYmFuayBpcyBhbHJlYWR5IGVuYWJs
-ZWQgd2hlbiB0aGUgX25leHRfIG1haWxib3ggdG8NCj4+IGJlIHJlYWQgaGFzIGluZGV4IDEyLCBz
-byB0aGUgbWFpbGJveCBiZWluZyByZWFkIHdhcyAxMy4gVGhlIG1lc3NhZ2UgY2FuDQo+PiB0aGVy
-ZWZvcmUgZ28gaW50byBtYWlsYm94IDMxIGFuZCB0aGUgZHJpdmVyIHdpbGwgYmUgcmVwb2xsZWQg
-dW50aWwgdGhlDQo+PiBtYWlsYm94IDEyIGV2ZW50dWFsbHkgcmVjZWl2ZXMgYSBtc2cuIE9yIHRo
-ZSBtZXNzYWdlIG1pZ2h0IGVuZCB1cCBpbiB0aGUNCj4+IDEydGggbWFpbGJveCwgYnV0IHRoZW4g
-aXQgd291bGQgYmVjb21lIGRpc2FibGVkIGFmdGVyIHJlYWRpbmcgaXQgYW5kIG9ubHkNCj4+IGJl
-IGVuYWJsZWQgYWdhaW4gaW4gdGhlIG5leHQgInJvdW5kIiBhZnRlciBtYWlsYm94IDEzIHdhcyBy
-ZWFkLCB3aGljaCBjYW4NCj4+IGNhdXNlIG91dCBvZiBvcmRlciBtZXNzYWdlcywgc2luY2UgdGhl
-IGxvd2VyIHByaW9yaXR5IG1haWxib3hlcyBjYW4NCj4+IGFjY2VwdCBtZXNzYWdlcyBpbiB0aGUg
-bWVhbnRpbWUuDQo+Pg0KPj4gQXMgbWVudGlvbmVkIGluIFszXSB0aGVyZSBpcyBhIGhhcmR3YXJl
-IHJhY2UgY29uZGl0aW9uIHdoZW4gY2hhbmdpbmcgdGhlDQo+PiBDQU5NRSByZWdpc3RlciB3aGls
-ZSBtZXNzYWdlcyBhcmUgYmVpbmcgcmVjZWl2ZWQuIEV2ZW4gd2hlbiBpbmNsdWRpbmcgYQ0KPj4g
-YnVzeSBwb2xsIG9uIHJlY2VwdGlvbiwgbGlrZSBpbiBbMl0gdGhlcmUgYXJlIHN0aWxsIG92ZXJm
-bG93cyBhbmQgb3V0IG9mDQo+PiBvcmRlciBtZXNzYWdlcyBhdCB0aW1lcywgYnV0IGxlc3MgdGhl
-biB3aXRob3V0IHRoZSBidXN5IGxvb3AgcG9sbGluZy4NCj4+IFVubGlrZSB3aGF0IHRoZSBwYXRj
-aCBzdWdnZXN0cywgdGhlIHBvbGxpbmcgdGltZSBpcyBub3QgaW4gdGhlIG1pY3Jvc2Vjb25kDQo+
-PiByYW5nZSwgYnV0IHRha2VzIGFzIGxvbmcgYXMgYSBjdXJyZW50IENBTiBidXMgcmVjZXB0aW9u
-IG5lZWRzIHRvIGZpbmlzaCwNCj4+IHNvIHR5cGljYWxseSBtb3JlIGluIHRoZSBmcmFjdGlvbiBv
-ZiBtaWxsaXNlY29uZCByYW5nZS4gU2luY2UgdGhlIHRpbWVvdXQNCj4+IGlzIGluIGppZmZpZXMg
-aXQgd29uJ3QgdGltZW91dC4NCj4+DQo+PiBFdmVuIHdpdGggdGhlc2UgYWRkaXRpb25hbCBmaXhl
-cyB0aGUgZHJpdmVyIGlzIHN0aWxsIG5vdCBhYmxlIHRvIHByb3ZpZGUgYQ0KPj4gcHJvcGVyIEZJ
-Rk8gd2hpY2ggZG9lc24ndCBkcm9wIHBhY2thZ2VzLiBTbyBjaGFuZ2UgdGhlIGRyaXZlciB0byB1
-c2UNCj4+IHJ4LW9mZmxvYWQgYW5kIGJhc2Ugb3JkZXIgb24gdGltZXN0YW1wIGluc3RlYWQgb2Yg
-bWVzc2FnZSBib3ggbnVtYmVycy4gQXMNCj4+IGEgc2lkZSBhZmZlY3QsIHRoaXMgYWxzbyBmaXhl
-cyBbNF0gYW5kIFs1XS4NCj4+DQo+PiBCZWZvcmUgdGhpcyBjaGFuZ2UgbWVzc2FnZXMgd2l0aCBh
-IHNpbmdsZSBieXRlIGNvdW50ZXIgd2VyZSBkcm9wcGVkIC8NCj4+IHJlY2VpdmVkIG91dCBvZiBv
-cmRlciBhdCBhIGJpdHJhdGUgb2YgMjUwa2JpdC9zIG9uIGFuIGFtMzUxNy4gV2l0aCB0aGlzDQo+
-PiBwYXRjaCB0aGF0IG5vIGxvbmdlciBvY2N1cnMgdXAgdG8gYW5kIGluY2x1ZGluZyAxTWJpdC9z
-Lg0KPj4NCj4+IFsxXSBodHRwczovL2xpbnV4LWNhbi52Z2VyLmtlcm5lbC5uYXJraXZlLmNvbS96
-Z085aW5WaS9wYXRjaC1jYW4tdGktaGVjYy1maXgtcngtd3Jvbmctc2VxdWVuY2UtaXNzdWUjcG9z
-dDYNCj4+IFsyXSBodHRwOi8vYXJhZ28tcHJvamVjdC5vcmcvZ2l0L3Byb2plY3RzLz9wPWxpbnV4
-LW9tYXAzLmdpdDthPWNvbW1pdDtoPTAyMzQ2ODkyNzc3ZjA3MjQ1ZGU0ZDVhZjY5MjUxM2ViZDg1
-MmRjYjINCj4+IFszXSBodHRwczovL2xpbnV4LWNhbi52Z2VyLmtlcm5lbC5uYXJraXZlLmNvbS96
-Z085aW5WaS9wYXRjaC1jYW4tdGktaGVjYy1maXgtcngtd3Jvbmctc2VxdWVuY2UtaXNzdWUjcG9z
-dDUNCj4+IFs0XSBodHRwczovL3BhdGNod29yay5vemxhYnMub3JnL3BhdGNoLzg5NTk1Ni8NCj4+
-IFs1XSBodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9uZXRkZXYvbXNnNDk0OTcxLmh0bWwN
-Cj4+DQo+PiBDYzogQW5hbnQgR29sZSA8YW5hbnRnb2xlQHRpLmNvbT4NCj4+IENjOiBBbmlsS3Vt
-YXIgQ2ggPGFuaWxrdW1hckB0aS5jb20+DQo+PiBTaWduZWQtb2ZmLWJ5OiBKZXJvZW4gSG9mc3Rl
-ZSA8amhvZnN0ZWVAdmljdHJvbmVuZXJneS5jb20+DQo+PiAtLS0NCj4+ICAgZHJpdmVycy9uZXQv
-Y2FuL3RpX2hlY2MuYyB8IDE4OSArKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tDQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCA1MyBpbnNlcnRpb25zKCspLCAxMzYgZGVs
-ZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2Nhbi90aV9oZWNjLmMg
-Yi9kcml2ZXJzL25ldC9jYW4vdGlfaGVjYy5jDQo+PiBpbmRleCBkYjZlYTkzLi5mZTdmZmZmIDEw
-MDY0NA0KPj4gLS0tIGEvZHJpdmVycy9uZXQvY2FuL3RpX2hlY2MuYw0KPj4gKysrIGIvZHJpdmVy
-cy9uZXQvY2FuL3RpX2hlY2MuYw0KPj4gQEAgLTUsNiArNSw3IEBADQo+PiAgICAqIHNwZWNzIGZv
-ciB0aGUgc2FtZSBpcyBhdmFpbGFibGUgYXQgPGh0dHA6Ly93d3cudGkuY29tPg0KPj4gICAgKg0K
-Pj4gICAgKiBDb3B5cmlnaHQgKEMpIDIwMDkgVGV4YXMgSW5zdHJ1bWVudHMgSW5jb3Jwb3JhdGVk
-IC0gaHR0cDovL3d3dy50aS5jb20vDQo+PiArICogQ29weXJpZ2h0IChDKSAyMDE5IEplcm9lbiBI
-b2ZzdGVlIDxqaG9mc3RlZUB2aWN0cm9uZW5lcmd5LmNvbT4NCj4+ICAgICoNCj4+ICAgICogVGhp
-cyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9v
-cg0KPj4gICAgKiBtb2RpZnkgaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQ
-dWJsaWMgTGljZW5zZSBhcw0KPj4gQEAgLTM0LDYgKzM1LDcgQEANCj4+ICAgI2luY2x1ZGUgPGxp
-bnV4L2Nhbi9kZXYuaD4NCj4+ICAgI2luY2x1ZGUgPGxpbnV4L2Nhbi9lcnJvci5oPg0KPj4gICAj
-aW5jbHVkZSA8bGludXgvY2FuL2xlZC5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9jYW4vcngtb2Zm
-bG9hZC5oPg0KPj4gICANCj4+ICAgI2RlZmluZSBEUlZfTkFNRSAidGlfaGVjYyINCj4+ICAgI2Rl
-ZmluZSBIRUNDX01PRFVMRV9WRVJTSU9OICAgICAiMC43Ig0KPj4gQEAgLTYzLDI5ICs2NSwxNiBA
-QCBNT0RVTEVfVkVSU0lPTihIRUNDX01PRFVMRV9WRVJTSU9OKTsNCj4+ICAgI2RlZmluZSBIRUND
-X1RYX1BSSU9fTUFTSwkoTUFYX1RYX1BSSU8gPDwgSEVDQ19NQl9UWF9TSElGVCkNCj4+ICAgI2Rl
-ZmluZSBIRUNDX1RYX01CX01BU0sJCShIRUNDX01BWF9UWF9NQk9YIC0gMSkNCj4+ICAgI2RlZmlu
-ZSBIRUNDX1RYX01BU0sJCSgoSEVDQ19NQVhfVFhfTUJPWCAtIDEpIHwgSEVDQ19UWF9QUklPX01B
-U0spDQo+PiAtI2RlZmluZSBIRUNDX1RYX01CT1hfTUFTSwkofihCSVQoSEVDQ19NQVhfVFhfTUJP
-WCkgLSAxKSkNCj4+IC0jZGVmaW5lIEhFQ0NfREVGX05BUElfV0VJR0hUCUhFQ0NfTUFYX1JYX01C
-T1gNCj4+ICAgDQo+PiAgIC8qDQo+PiAtICogSW1wb3J0YW50IE5vdGU6IFJYIG1haWxib3ggY29u
-ZmlndXJhdGlvbg0KPj4gLSAqIFJYIG1haWxib3hlcyBhcmUgZnVydGhlciBsb2dpY2FsbHkgc3Bs
-aXQgaW50byB0d28gLSBtYWluIGFuZCBidWZmZXINCj4+IC0gKiBtYWlsYm94ZXMuIFRoZSBnb2Fs
-IGlzIHRvIGdldCBhbGwgcGFja2V0cyBpbnRvIG1haW4gbWFpbGJveGVzIGFzDQo+PiAtICogZHJp
-dmVuIGJ5IG1haWxib3ggbnVtYmVyIGFuZCByZWNlaXZlIHByaW9yaXR5IChoaWdoZXIgdG8gbG93
-ZXIpIGFuZA0KPj4gLSAqIGJ1ZmZlciBtYWlsYm94ZXMgYXJlIHVzZWQgdG8gcmVjZWl2ZSBwa3Rz
-IHdoaWxlIG1haW4gbWFpbGJveGVzIGFyZSBiZWluZw0KPj4gLSAqIHByb2Nlc3NlZC4gVGhpcyBl
-bnN1cmVzIGluLW9yZGVyIHBhY2tldCByZWNlcHRpb24uDQo+PiAtICoNCj4+IC0gKiBIZXJlIGFy
-ZSB0aGUgcmVjb21tZW5kZWQgdmFsdWVzIGZvciBidWZmZXIgbWFpbGJveC4gTm90ZSB0aGF0IFJY
-IG1haWxib3hlcw0KPj4gLSAqIHN0YXJ0IGFmdGVyIFRYIG1haWxib3hlczoNCj4+IC0gKg0KPj4g
-LSAqIEhFQ0NfTUFYX1JYX01CT1gJCUhFQ0NfUlhfQlVGRkVSX01CT1gJTm8gb2YgYnVmZmVyIG1h
-aWxib3hlcw0KPj4gLSAqIDI4CQkJCTEyCQkJOA0KPj4gLSAqIDE2CQkJCTIwCQkJNA0KPj4gKyAq
-IFJYIG1haWxib3ggY29uZmlndXJhdGlvbg0KPj4gKyAqIFRoZSByZW1haW5pbmcgbWFpbGJveGVz
-IGFyZSB1c2VkIGZvciByZWNlcHRpb24gYW5kIGFyZSBkZWxpdmVyZWQgYmFzZWQgb24NCj4+ICsg
-KiB0aGVpciB0aW1lc3RhbXAsIHRvIGF2b2lkIGEgaGFyZHdhcmUgcmFjZSB3aGVuIENBTk1FIGlz
-IGNoYW5nZWQgd2hpbGUNCj4+ICsgKiBDQU4tYnVzIHRyYWZmaXggaXMgYmVpbmcgcmVjZWl2ZWQu
-DQo+PiAgICAqLw0KPj4gICANCj4+ICAgI2RlZmluZSBIRUNDX01BWF9SWF9NQk9YCShIRUNDX01B
-WF9NQUlMQk9YRVMgLSBIRUNDX01BWF9UWF9NQk9YKQ0KPj4gLSNkZWZpbmUgSEVDQ19SWF9CVUZG
-RVJfTUJPWAkxMiAvKiBhcyBwZXIgdGFibGUgYWJvdmUgKi8NCj4+ICAgI2RlZmluZSBIRUNDX1JY
-X0ZJUlNUX01CT1gJKEhFQ0NfTUFYX01BSUxCT1hFUyAtIDEpDQo+PiAtI2RlZmluZSBIRUNDX1JY
-X0hJR0hfTUJPWF9NQVNLCSh+KEJJVChIRUNDX1JYX0JVRkZFUl9NQk9YKSAtIDEpKQ0KPj4gICAN
-Cj4+ICAgLyogVEkgSEVDQyBtb2R1bGUgcmVnaXN0ZXJzICovDQo+PiAgICNkZWZpbmUgSEVDQ19D
-QU5NRQkJMHgwCS8qIE1haWxib3ggZW5hYmxlICovDQo+PiBAQCAtMTIzLDYgKzExMiw4IEBAIE1P
-RFVMRV9WRVJTSU9OKEhFQ0NfTU9EVUxFX1ZFUlNJT04pOw0KPj4gICAjZGVmaW5lIEhFQ0NfQ0FO
-TURMCQkweDgNCj4+ICAgI2RlZmluZSBIRUNDX0NBTk1ESAkJMHhDDQo+PiAgIA0KPj4gKyNkZWZp
-bmUgSEVDQ19DQU5NT1RTCQkweDEwMA0KPiBJdCdzIGFjdHVhbGx5IDB4ODANCj4NCj4+ICsNCj4+
-ICAgI2RlZmluZSBIRUNDX1NFVF9SRUcJCTB4RkZGRkZGRkYNCj4+ICAgI2RlZmluZSBIRUNDX0NB
-TklEX01BU0sJCTB4M0ZGCS8qIDE4IGJpdHMgbWFzayBmb3IgZXh0ZW5kZWQgaWQncyAqLw0KPj4g
-ICAjZGVmaW5lIEhFQ0NfQ0NFX1dBSVRfQ09VTlQgICAgIDEwMAkvKiBXYWl0IGZvciB+MSBzZWMg
-Zm9yIENDRSBiaXQgKi8NCj4+IEBAIC0xOTMsNyArMTg0LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVj
-dCBjYW5fYml0dGltaW5nX2NvbnN0IHRpX2hlY2NfYml0dGltaW5nX2NvbnN0ID0gew0KPj4gICAN
-Cj4+ICAgc3RydWN0IHRpX2hlY2NfcHJpdiB7DQo+PiAgIAlzdHJ1Y3QgY2FuX3ByaXYgY2FuOwkv
-KiBNVVNUIGJlIGZpcnN0IG1lbWJlci9maWVsZCAqLw0KPj4gLQlzdHJ1Y3QgbmFwaV9zdHJ1Y3Qg
-bmFwaTsNCj4+ICsJc3RydWN0IGNhbl9yeF9vZmZsb2FkIG9mZmxvYWQ7DQo+PiAgIAlzdHJ1Y3Qg
-bmV0X2RldmljZSAqbmRldjsNCj4+ICAgCXN0cnVjdCBjbGsgKmNsazsNCj4+ICAgCXZvaWQgX19p
-b21lbSAqYmFzZTsNCj4+IEBAIC0yMDMsNyArMTk0LDYgQEAgc3RydWN0IHRpX2hlY2NfcHJpdiB7
-DQo+PiAgIAlzcGlubG9ja190IG1ieF9sb2NrOyAvKiBDQU5NRSByZWdpc3RlciBuZWVkcyBwcm90
-ZWN0aW9uICovDQo+PiAgIAl1MzIgdHhfaGVhZDsNCj4+ICAgCXUzMiB0eF90YWlsOw0KPj4gLQl1
-MzIgcnhfbmV4dDsNCj4+ICAgCXN0cnVjdCByZWd1bGF0b3IgKnJlZ194Y2VpdmVyOw0KPj4gICB9
-Ow0KPj4gICANCj4+IEBAIC0yNjUsNiArMjU1LDExIEBAIHN0YXRpYyBpbmxpbmUgdTMyIGhlY2Nf
-Z2V0X2JpdChzdHJ1Y3QgdGlfaGVjY19wcml2ICpwcml2LCBpbnQgcmVnLCB1MzIgYml0X21hc2sp
-DQo+PiAgIAlyZXR1cm4gKGhlY2NfcmVhZChwcml2LCByZWcpICYgYml0X21hc2spID8gMSA6IDA7
-DQo+PiAgIH0NCj4+ICAgDQo+PiArc3RhdGljIGlubGluZSB1MzIgaGVjY19yZWFkX3N0YW1wKHN0
-cnVjdCB0aV9oZWNjX3ByaXYgKnByaXYsIHUzMiBtYnhubykNCj4+ICt7DQo+PiArCXJldHVybiBf
-X3Jhd19yZWFkbChwcml2LT5oZWNjX3JhbSArIDB4ODAgKyA0ICogbWJ4bm8pOw0KPiBJJ3ZlIGNo
-YW5nZWQgdGhpcyBmdW5jdGlvbiB0byB1c2UgSEVDQ19DQU5NT1RTLg0KPg0KDQpUaGF0IGlzIGNv
-cnJlY3QuIEZvciBjb21wbGV0ZW5lc3MgdGhlIEhFQ0NfQ0FOTU9UUyB3YXNuJ3QNCmV2ZW4gdXNl
-ZCBpbiB0aGUgb3JpZ2luYWwgcGF0Y2gsIHNvIHRoZXJlIGlzIG5vIGZ1bmN0aW9uYWwgZGlmZmVy
-ZW5jZS4NCg0KVGhhbmtzLA0KDQpKZXJvZW4NCg0KDQo=
+Add stable@vger.kernel.org.
+
+On 2019/7/24 17:17, Mao Wenan wrote:
+> There is one report about tcp_write_xmit use-after-free with version 4.4.136:
+> 
+> BUG: KASAN: use-after-free in tcp_skb_pcount include/net/tcp.h:796 [inline]
+> BUG: KASAN: use-after-free in tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
+> BUG: KASAN: use-after-free in tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
+> Read of size 2 at addr ffff8801d6fc87b0 by task syz-executor408/4195
+> 
+> CPU: 0 PID: 4195 Comm: syz-executor408 Not tainted 4.4.136-gfb7e319 #59
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>  0000000000000000 7d8f38ecc03be946 ffff8801d73b7710 ffffffff81e0edad
+>  ffffea00075bf200 ffff8801d6fc87b0 0000000000000000 ffff8801d6fc87b0
+>  dffffc0000000000 ffff8801d73b7748 ffffffff815159b6 ffff8801d6fc87b0
+> Call Trace:
+>  [<ffffffff81e0edad>] __dump_stack lib/dump_stack.c:15 [inline]
+>  [<ffffffff81e0edad>] dump_stack+0xc1/0x124 lib/dump_stack.c:51
+>  [<ffffffff815159b6>] print_address_description+0x6c/0x216 mm/kasan/report.c:252
+>  [<ffffffff81515cd5>] kasan_report_error mm/kasan/report.c:351 [inline]
+>  [<ffffffff81515cd5>] kasan_report.cold.7+0x175/0x2f7 mm/kasan/report.c:408
+>  [<ffffffff814f9784>] __asan_report_load2_noabort+0x14/0x20 mm/kasan/report.c:427
+>  [<ffffffff83286582>] tcp_skb_pcount include/net/tcp.h:796 [inline]
+>  [<ffffffff83286582>] tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
+>  [<ffffffff83286582>] tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
+>  [<ffffffff83287a40>] __tcp_push_pending_frames+0xa0/0x290 net/ipv4/tcp_output.c:2307
+>  [<ffffffff8328e966>] tcp_send_fin+0x176/0xab0 net/ipv4/tcp_output.c:2883
+>  [<ffffffff8324c0d0>] tcp_close+0xca0/0xf70 net/ipv4/tcp.c:2112
+>  [<ffffffff832f8d0f>] inet_release+0xff/0x1d0 net/ipv4/af_inet.c:435
+>  [<ffffffff82f1a156>] sock_release+0x96/0x1c0 net/socket.c:586
+>  [<ffffffff82f1a296>] sock_close+0x16/0x20 net/socket.c:1037
+>  [<ffffffff81522da5>] __fput+0x235/0x6f0 fs/file_table.c:208
+>  [<ffffffff815232e5>] ____fput+0x15/0x20 fs/file_table.c:244
+>  [<ffffffff8118bd7f>] task_work_run+0x10f/0x190 kernel/task_work.c:115
+>  [<ffffffff81135285>] exit_task_work include/linux/task_work.h:21 [inline]
+>  [<ffffffff81135285>] do_exit+0x9e5/0x26b0 kernel/exit.c:759
+>  [<ffffffff8113b1d1>] do_group_exit+0x111/0x330 kernel/exit.c:889
+>  [<ffffffff8115e5cc>] get_signal+0x4ec/0x14b0 kernel/signal.c:2321
+>  [<ffffffff8100e02b>] do_signal+0x8b/0x1d30 arch/x86/kernel/signal.c:712
+>  [<ffffffff8100360a>] exit_to_usermode_loop+0x11a/0x160 arch/x86/entry/common.c:248
+>  [<ffffffff81006535>] prepare_exit_to_usermode arch/x86/entry/common.c:283 [inline]
+>  [<ffffffff81006535>] syscall_return_slowpath+0x1b5/0x1f0 arch/x86/entry/common.c:348
+>  [<ffffffff838c29b5>] int_ret_from_sys_call+0x25/0xa3
+> 
+> Allocated by task 4194:
+>  [<ffffffff810341d6>] save_stack_trace+0x26/0x50 arch/x86/kernel/stacktrace.c:63
+>  [<ffffffff814f8873>] save_stack+0x43/0xd0 mm/kasan/kasan.c:512
+>  [<ffffffff814f8b57>] set_track mm/kasan/kasan.c:524 [inline]
+>  [<ffffffff814f8b57>] kasan_kmalloc+0xc7/0xe0 mm/kasan/kasan.c:616
+>  [<ffffffff814f9122>] kasan_slab_alloc+0x12/0x20 mm/kasan/kasan.c:554
+>  [<ffffffff814f4c1e>] slab_post_alloc_hook mm/slub.c:1349 [inline]
+>  [<ffffffff814f4c1e>] slab_alloc_node mm/slub.c:2615 [inline]
+>  [<ffffffff814f4c1e>] slab_alloc mm/slub.c:2623 [inline]
+>  [<ffffffff814f4c1e>] kmem_cache_alloc+0xbe/0x2a0 mm/slub.c:2628
+>  [<ffffffff82f380a6>] kmem_cache_alloc_node include/linux/slab.h:350 [inline]
+>  [<ffffffff82f380a6>] __alloc_skb+0xe6/0x600 net/core/skbuff.c:218
+>  [<ffffffff832466c3>] alloc_skb_fclone include/linux/skbuff.h:856 [inline]
+>  [<ffffffff832466c3>] sk_stream_alloc_skb+0xa3/0x5d0 net/ipv4/tcp.c:833
+>  [<ffffffff83249164>] tcp_sendmsg+0xd34/0x2b00 net/ipv4/tcp.c:1178
+>  [<ffffffff83300ef3>] inet_sendmsg+0x203/0x4d0 net/ipv4/af_inet.c:755
+>  [<ffffffff82f1e1fc>] sock_sendmsg_nosec net/socket.c:625 [inline]
+>  [<ffffffff82f1e1fc>] sock_sendmsg+0xcc/0x110 net/socket.c:635
+>  [<ffffffff82f1eedc>] SYSC_sendto+0x21c/0x370 net/socket.c:1665
+>  [<ffffffff82f21560>] SyS_sendto+0x40/0x50 net/socket.c:1633
+>  [<ffffffff838c2825>] entry_SYSCALL_64_fastpath+0x22/0x9e
+> 
+> Freed by task 4194:
+>  [<ffffffff810341d6>] save_stack_trace+0x26/0x50 arch/x86/kernel/stacktrace.c:63
+>  [<ffffffff814f8873>] save_stack+0x43/0xd0 mm/kasan/kasan.c:512
+>  [<ffffffff814f91a2>] set_track mm/kasan/kasan.c:524 [inline]
+>  [<ffffffff814f91a2>] kasan_slab_free+0x72/0xc0 mm/kasan/kasan.c:589
+>  [<ffffffff814f632e>] slab_free_hook mm/slub.c:1383 [inline]
+>  [<ffffffff814f632e>] slab_free_freelist_hook mm/slub.c:1405 [inline]
+>  [<ffffffff814f632e>] slab_free mm/slub.c:2859 [inline]
+>  [<ffffffff814f632e>] kmem_cache_free+0xbe/0x340 mm/slub.c:2881
+>  [<ffffffff82f3527f>] kfree_skbmem+0xcf/0x100 net/core/skbuff.c:635
+>  [<ffffffff82f372fd>] __kfree_skb+0x1d/0x20 net/core/skbuff.c:676
+>  [<ffffffff83288834>] sk_wmem_free_skb include/net/sock.h:1447 [inline]
+>  [<ffffffff83288834>] tcp_write_queue_purge include/net/tcp.h:1460 [inline]
+>  [<ffffffff83288834>] tcp_connect_init net/ipv4/tcp_output.c:3122 [inline]
+>  [<ffffffff83288834>] tcp_connect+0xb24/0x30c0 net/ipv4/tcp_output.c:3261
+>  [<ffffffff8329b991>] tcp_v4_connect+0xf31/0x1890 net/ipv4/tcp_ipv4.c:246
+>  [<ffffffff832f9ca9>] __inet_stream_connect+0x2a9/0xc30 net/ipv4/af_inet.c:615
+>  [<ffffffff832fa685>] inet_stream_connect+0x55/0xa0 net/ipv4/af_inet.c:676
+>  [<ffffffff82f1eb78>] SYSC_connect+0x1b8/0x300 net/socket.c:1557
+>  [<ffffffff82f214b4>] SyS_connect+0x24/0x30 net/socket.c:1538
+>  [<ffffffff838c2825>] entry_SYSCALL_64_fastpath+0x22/0x9e
+> 
+> Syzkaller reproducer():
+> r0 = socket$packet(0x11, 0x3, 0x300)
+> r1 = socket$inet_tcp(0x2, 0x1, 0x0)
+> bind$inet(r1, &(0x7f0000000300)={0x2, 0x4e21, @multicast1}, 0x10)
+> connect$inet(r1, &(0x7f0000000140)={0x2, 0x1000004e21, @loopback}, 0x10)
+> recvmmsg(r1, &(0x7f0000001e40)=[{{0x0, 0x0, &(0x7f0000000100)=[{&(0x7f00000005c0)=""/88, 0x58}], 0x1}}], 0x1, 0x40000000, 0x0)
+> sendto$inet(r1, &(0x7f0000000000)="e2f7ad5b661c761edf", 0x9, 0x8080, 0x0, 0x0)
+> r2 = fcntl$dupfd(r1, 0x0, r0)
+> connect$unix(r2, &(0x7f00000001c0)=@file={0x0, './file0\x00'}, 0x6e)
+> 
+> C repro link: https://syzkaller.appspot.com/text?tag=ReproC&x=14db474f800000
+> 
+> This is because when tcp_connect_init call tcp_write_queue_purge, it will
+> kfree all the skb in the write_queue, but the sk->sk_send_head forget to set NULL,
+> then tcp_write_xmit try to send skb, which has freed in tcp_write_queue_purge, UAF happens.
+> 
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
+>  include/net/tcp.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index bf8a0dae977a..8f8aace28cf8 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -1457,6 +1457,7 @@ static inline void tcp_write_queue_purge(struct sock *sk)
+>  
+>  	while ((skb = __skb_dequeue(&sk->sk_write_queue)) != NULL)
+>  		sk_wmem_free_skb(sk, skb);
+> +	sk->sk_send_head = NULL;
+>  	sk_mem_reclaim(sk);
+>  	tcp_clear_all_retrans_hints(tcp_sk(sk));
+>  	inet_csk(sk)->icsk_backoff = 0;
+> 
+
