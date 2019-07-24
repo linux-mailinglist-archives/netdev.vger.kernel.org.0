@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AD0A72F6C
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5C1772F73
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727467AbfGXNDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 09:03:35 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:57761 "EHLO
+        id S2387436AbfGXNDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 09:03:37 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:51051 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbfGXNDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:33 -0400
+        with ESMTP id S1727348AbfGXNDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:34 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1hqGva-0006gK-Nu; Wed, 24 Jul 2019 15:03:30 +0200
+        id 1hqGvb-0006gK-C9; Wed, 24 Jul 2019 15:03:31 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Wen Yang <wen.yang99@zte.com.cn>,
-        linux-stable <stable@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4/7] can: flexcan: fix an use-after-free in flexcan_setup_stop_mode()
-Date:   Wed, 24 Jul 2019 15:03:19 +0200
-Message-Id: <20190724130322.31702-5-mkl@pengutronix.de>
+        kernel@pengutronix.de, Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-stable <stable@vger.kernel.org>
+Subject: [PATCH 5/7] can: flexcan: fix stop mode acknowledgment
+Date:   Wed, 24 Jul 2019 15:03:20 +0200
+Message-Id: <20190724130322.31702-6-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190724130322.31702-1-mkl@pengutronix.de>
 References: <20190724130322.31702-1-mkl@pengutronix.de>
@@ -38,47 +38,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Yang <wen.yang99@zte.com.cn>
+From: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-The gpr_np variable is still being used in dev_dbg() after the
-of_node_put() call, which may result in use-after-free.
+To enter stop mode, the CPU should manually assert a global Stop Mode
+request and check the acknowledgment asserted by FlexCAN. The CPU must
+only consider the FlexCAN in stop mode when both request and
+acknowledgment conditions are satisfied.
 
 Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
-Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 Cc: linux-stable <stable@vger.kernel.org> # >= v5.0
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/flexcan.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/can/flexcan.c | 31 +++++++++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index f2fe344593d5..33ce45d51e15 100644
+index 33ce45d51e15..fcec8bcb53d6 100644
 --- a/drivers/net/can/flexcan.c
 +++ b/drivers/net/can/flexcan.c
-@@ -1437,10 +1437,10 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
- 
- 	priv = netdev_priv(dev);
- 	priv->stm.gpr = syscon_node_to_regmap(gpr_np);
--	of_node_put(gpr_np);
- 	if (IS_ERR(priv->stm.gpr)) {
- 		dev_dbg(&pdev->dev, "could not find gpr regmap\n");
--		return PTR_ERR(priv->stm.gpr);
-+		ret = PTR_ERR(priv->stm.gpr);
-+		goto out_put_node;
- 	}
- 
- 	priv->stm.req_gpr = out_val[1];
-@@ -1455,7 +1455,9 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
- 
- 	device_set_wakeup_capable(&pdev->dev, true);
- 
--	return 0;
-+out_put_node:
-+	of_node_put(gpr_np);
-+	return ret;
+@@ -400,9 +400,10 @@ static void flexcan_enable_wakeup_irq(struct flexcan_priv *priv, bool enable)
+ 	priv->write(reg_mcr, &regs->mcr);
  }
  
- static const struct of_device_id flexcan_of_match[] = {
+-static inline void flexcan_enter_stop_mode(struct flexcan_priv *priv)
++static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
+ {
+ 	struct flexcan_regs __iomem *regs = priv->regs;
++	unsigned int ackval;
+ 	u32 reg_mcr;
+ 
+ 	reg_mcr = priv->read(&regs->mcr);
+@@ -412,20 +413,37 @@ static inline void flexcan_enter_stop_mode(struct flexcan_priv *priv)
+ 	/* enable stop request */
+ 	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+ 			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
++
++	/* get stop acknowledgment */
++	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
++				     ackval, ackval & (1 << priv->stm.ack_bit),
++				     0, FLEXCAN_TIMEOUT_US))
++		return -ETIMEDOUT;
++
++	return 0;
+ }
+ 
+-static inline void flexcan_exit_stop_mode(struct flexcan_priv *priv)
++static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
+ {
+ 	struct flexcan_regs __iomem *regs = priv->regs;
++	unsigned int ackval;
+ 	u32 reg_mcr;
+ 
+ 	/* remove stop request */
+ 	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+ 			   1 << priv->stm.req_bit, 0);
+ 
++	/* get stop acknowledgment */
++	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
++				     ackval, !(ackval & (1 << priv->stm.ack_bit)),
++				     0, FLEXCAN_TIMEOUT_US))
++		return -ETIMEDOUT;
++
+ 	reg_mcr = priv->read(&regs->mcr);
+ 	reg_mcr &= ~FLEXCAN_MCR_SLF_WAK;
+ 	priv->write(reg_mcr, &regs->mcr);
++
++	return 0;
+ }
+ 
+ static inline void flexcan_error_irq_enable(const struct flexcan_priv *priv)
+@@ -1614,7 +1632,9 @@ static int __maybe_unused flexcan_suspend(struct device *device)
+ 		 */
+ 		if (device_may_wakeup(device)) {
+ 			enable_irq_wake(dev->irq);
+-			flexcan_enter_stop_mode(priv);
++			err = flexcan_enter_stop_mode(priv);
++			if (err)
++				return err;
+ 		} else {
+ 			err = flexcan_chip_disable(priv);
+ 			if (err)
+@@ -1664,10 +1684,13 @@ static int __maybe_unused flexcan_noirq_resume(struct device *device)
+ {
+ 	struct net_device *dev = dev_get_drvdata(device);
+ 	struct flexcan_priv *priv = netdev_priv(dev);
++	int err;
+ 
+ 	if (netif_running(dev) && device_may_wakeup(device)) {
+ 		flexcan_enable_wakeup_irq(priv, false);
+-		flexcan_exit_stop_mode(priv);
++		err = flexcan_exit_stop_mode(priv);
++		if (err)
++			return err;
+ 	}
+ 
+ 	return 0;
 -- 
 2.20.1
 
