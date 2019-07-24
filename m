@@ -2,98 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4196772B80
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:35:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF80372B9A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbfGXJfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 05:35:18 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34485 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726351AbfGXJfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:35:17 -0400
-Received: by mail-pf1-f195.google.com with SMTP id b13so20660086pfo.1;
-        Wed, 24 Jul 2019 02:35:17 -0700 (PDT)
+        id S1726941AbfGXJnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 05:43:15 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41367 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726704AbfGXJnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:43:15 -0400
+Received: by mail-pg1-f196.google.com with SMTP id x15so10600504pgg.8;
+        Wed, 24 Jul 2019 02:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=RMdZENf34klfFRm97gWv/3oVVvhtQ9/kvSp7CedAKBE=;
-        b=hppg7Ef34MOf6m4sm9VwXNec86F5mOQj2J2ss65F/jwkHw1pHv46tX/7cRHxTcegZk
-         He5INWuFp85pPh/IeqYSthdegR8CcNpzxUHKlED5wUrxRaY6WKB2lIrcEWIWNWEZFU+W
-         aRHjmeBQs0OPRO0NNXUZ4VyozflJG+s/Is0LUAKNLIFNC0K3eArSmbOmrD8EbN/+E7PT
-         daN2iMZTg241BeBbeFB/ZnPRoYxpkcQyK5JCvR6JN1uKnNwjf1TupjJmi4ei6QkFz/sp
-         2+j66A6ZcOd4sv6TWIp3yq0e0tb2nLDp9tcQUILa4cUigxC6wETRf5ytN5gNpWqLFmSv
-         sFbA==
+        bh=iR/rCzIi399aRKhJN0gwqymimR1s0rrYFixqzZ944Cc=;
+        b=G4L08l+wMcbZdgsUmXCEsJdyn8PGqwrko5Wx6BSSo+NtApUJqete7vvQcxJaFqVG2/
+         /yWeRAwqd0zam4RYqhqQmV1uP3NGB757vb3ZjMVs3irXTdc+oGT+ogVEXVY324c/MTOK
+         g6ggFvSMVodXYU3NCV2EGyHVow5FOCkhZikXp+mz91fHl2tS2l650FyHsJPLpIr27QiH
+         2PUUgu8KJypFd12Pq72H48XImKkTxRqd1r2zMUY0AVZHVhj/174M+DH4bA5+xSXjuaBH
+         Au2GtRzHDbhrSz3hwaA8AT36Ux4D+e0O27pmv0BOo/+sF2FTMXflBOA7bsemf5l6u2eg
+         w3Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=RMdZENf34klfFRm97gWv/3oVVvhtQ9/kvSp7CedAKBE=;
-        b=DicaIhDt4voCC/7zIWOU10q2J091l/+oYQPlTl0E5CF41oWZwsdRW+b2OLp0fbMpuJ
-         jUIo3GkVUZE5yA8iJOe5918ZbKolOv4RrapOm+0sPFUCFt2EMcVrbVaqlVOWqYYZBGXE
-         pVJm/Sdf0RcQ2WabsUOabalVNHiEWy2FlLTvr2jNNXnkamktgxHMrmhLjSRDpFvcUM5G
-         FMiuATfAoxj/UX7l1ROOFImjep6cXylBTBbPsMpnlfd8OqxyNSLovmo0nhmOwH7bMK4p
-         4NLWuNnOTskiWWMybEGzkfmOrngXPzjOSclsE4UJnffRLgea+kBlLlxaEiZ1m/PpJsgm
-         ACtQ==
-X-Gm-Message-State: APjAAAUPRFYk8oRGK+ytM60AyIt1YnmT+ZsY4VkN9d0TFLH6F6SJD+EU
-        jAOGw6IAyWYMdGzTRV5rvO0=
-X-Google-Smtp-Source: APXvYqxKZ4RHMHG+5q6pFR8zpsFxDWmUYA2anIVvMagFONXq3/Mn8XIDqlF0Q/oyuHHQkumb6EeQrg==
-X-Received: by 2002:a62:ac11:: with SMTP id v17mr10407107pfe.236.1563960917124;
-        Wed, 24 Jul 2019 02:35:17 -0700 (PDT)
+        bh=iR/rCzIi399aRKhJN0gwqymimR1s0rrYFixqzZ944Cc=;
+        b=PoBFddTebabCul3CFXgNM1M4PL21lepADvnxVSAow4vje8pSlA7or0Xg5KpYv4NU89
+         WWtXEo+ST5IcWhmtT33Mmo6pfGbbAJVts5LX73fd3LKX6qTU6MPFSVecoe8Lk0ShZLr0
+         Lr0NXD+KaxlzIHEPd3I73N2p/qmuQHI/DTEoxmlEBldfX+cxN77Q/gkEt2kL4g1lKMTx
+         3Ql1/ebKKUBkaavQUyM8/9fvG/IHSyLrFcmsmpnEvCVjNuE2ej+S3CB/6WsjCIfSC6+C
+         h20lSnHLBBF3LQPqqT1Tm861vS1sEmrw7R0Wxotnovdof5W+sJfT2cUgX6+u7UMQ6udt
+         /hfA==
+X-Gm-Message-State: APjAAAWPHPk7BYlxEQVeey3IltN2QgCMHkOy91PtqH9KWMWLXgiNKrpu
+        CZDYEU/ImSHvEAnDSADYEtNIjFeYdzo=
+X-Google-Smtp-Source: APXvYqxhzYr7NV2FggQ7OCSMgRgws55e+2f5hgDhCfoQ8LXK75v0BzE4vCZy2mERL0MWIjZSFYWABg==
+X-Received: by 2002:aa7:82da:: with SMTP id f26mr10488550pfn.82.1563961394272;
+        Wed, 24 Jul 2019 02:43:14 -0700 (PDT)
 Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
-        by smtp.gmail.com with ESMTPSA id 14sm44191863pfy.40.2019.07.24.02.35.14
+        by smtp.gmail.com with ESMTPSA id 22sm53099526pfu.179.2019.07.24.02.43.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 02:35:16 -0700 (PDT)
+        Wed, 24 Jul 2019 02:43:13 -0700 (PDT)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+To:     idryomov@gmail.com, jlayton@kernel.org, sage@redhat.com,
         davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: key: af_key: Fix possible null-pointer dereferences in pfkey_send_policy_notify()
-Date:   Wed, 24 Jul 2019 17:35:09 +0800
-Message-Id: <20190724093509.1676-1-baijiaju1990@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: ceph: Fix a possible null-pointer dereference in ceph_crypto_key_destroy()
+Date:   Wed, 24 Jul 2019 17:43:06 +0800
+Message-Id: <20190724094306.1866-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In pfkey_send_policy_notify(), there is an if statement on line 3081 to
-check whether xp is NULL:
-    if (xp && xp->type != XFRM_POLICY_TYPE_MAIN)
+In set_secret(), key->tfm is assigned to NULL on line 55, and then
+ceph_crypto_key_destroy(key) is executed.
 
-When xp is NULL, it is used by key_notify_policy() on line 3090:
-    key_notify_policy(xp, ...)
-        pfkey_xfrm_policy2msg_prep(xp) -- line 2211
-            pfkey_xfrm_policy2msg_size(xp) -- line 2046
-                for (i=0; i<xp->xfrm_nr; i++) -- line 2026
-                t = xp->xfrm_vec + i; -- line 2027
-    key_notify_policy(xp, ...)
-        xp_net(xp) -- line 2231
-            return read_pnet(&xp->xp_net); -- line 534
+ceph_crypto_key_destroy(key)
+    crypto_free_sync_skcipher(key->tfm)
+        crypto_skcipher_tfm(tfm)
+            return &tfm->base;
 
-Thus, possible null-pointer dereferences may occur.
+Thus, a possible null-pointer dereference may occur.
 
-To fix these bugs, xp is checked before calling key_notify_policy().
+To fix this bug, key->tfm is checked before calling
+crypto_free_sync_skcipher().
 
-These bugs are found by a static analysis tool STCheck written by us.
+This bug is found by a static analysis tool STCheck written by us.
 
 Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- net/key/af_key.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ceph/crypto.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index b67ed3a8486c..ced54144d5fd 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -3087,6 +3087,8 @@ static int pfkey_send_policy_notify(struct xfrm_policy *xp, int dir, const struc
- 	case XFRM_MSG_DELPOLICY:
- 	case XFRM_MSG_NEWPOLICY:
- 	case XFRM_MSG_UPDPOLICY:
-+		if (!xp)
-+			break;
- 		return key_notify_policy(xp, dir, c);
- 	case XFRM_MSG_FLUSHPOLICY:
- 		if (c->data.type != XFRM_POLICY_TYPE_MAIN)
+diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
+index 5d6724cee38f..ac28463bcfd8 100644
+--- a/net/ceph/crypto.c
++++ b/net/ceph/crypto.c
+@@ -136,7 +136,8 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
+ 	if (key) {
+ 		kfree(key->key);
+ 		key->key = NULL;
+-		crypto_free_sync_skcipher(key->tfm);
++		if (key->tfm)
++			crypto_free_sync_skcipher(key->tfm);
+ 		key->tfm = NULL;
+ 	}
+ }
 -- 
 2.17.0
 
