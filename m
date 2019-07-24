@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B49D7265E
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 06:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E98977264F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 06:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726828AbfGXE0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 00:26:51 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35428 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726351AbfGXEZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 00:25:30 -0400
-Received: by mail-pg1-f194.google.com with SMTP id s1so14201142pgr.2;
-        Tue, 23 Jul 2019 21:25:30 -0700 (PDT)
+        id S1726807AbfGXE0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 00:26:32 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40826 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726410AbfGXEZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 00:25:32 -0400
+Received: by mail-pl1-f196.google.com with SMTP id a93so21418454pla.7;
+        Tue, 23 Jul 2019 21:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sE4MQj+XhMD6UPTZi8xJ0bNX4cYnp7r/5/gkEQk0tas=;
-        b=N74tfFByAZggYZcsUYTvgYBqmp8bGoZSPNbPePQDgI9xHOKtDI+JBR5Z/IiOFQ1dt4
-         oWVFdgGyfImD0LwBldj16IkrMRl7/f0OT/Q4l6ls05QNNVgjJIUWu+aeK2CLI7WrmOO1
-         TCwZxwbVGwL+85kP8X47MDnZlnY5CwsAaw+XO6UEjqntQs8fO4Oc87gAiS/1YP6rdwM3
-         9NVpw94/A/DYK3lq7v7X4QjwLe8vgVS0TAdSk8ZgDg7r0yVNM7SKDo6TuP97iAlISt79
-         gTDmZw4nL2v0p7bxSBy6D4Zi0oq/Mz2I8pSvkTef9m0MiEMvo0WtG93wFrP09qcMFi9e
-         QIZA==
+        bh=BJP8QYXxp7VfUt7Eaw5PwJTw08pU7M/uVeuocSBpfVU=;
+        b=JkQ04mWEAa/01zFb0tlIM6Uj/lB55wPCkF6GMvnL5gHq24gOeLxpu2syudv1ZeubVR
+         o/2/SbGfs0MBuqHwUIG/UqiIYwjvwRdM1smByZv+PMbXD0dTKJlqPSntSI4p9XbD0/EP
+         dCEFzTMQ+3jKQsrfKqZebfyOsyegrsrPG3hntSrqUGy/c3DI5jDFIn00D4+KacGWHwyg
+         5+f61ycblG2ySUuAZOjASXUKEg6G7NHj0n1tTzQ86l9qr5EKD1HA2V/yosWmHzLAWWAj
+         WxbUEPr8ZwbT/LJAb0AztRPHVuEiMh11F1nlDvqA1UHHjZuRTFB0keSEGorINX0fFgb2
+         sO/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sE4MQj+XhMD6UPTZi8xJ0bNX4cYnp7r/5/gkEQk0tas=;
-        b=iqYADaZtIG7BUtRGDNhhm0cJujxU1dDY8swrKM2zvEA+pV9PZUyC5R9+W9Zc7/SvzK
-         KsJTuu1xjy4PKSIbhtNPPLRu7O5fzLyQsHcaAeUM1hudtJwVplcis7Ror9LYadTQuBog
-         3BWfZgNLA+XhFgSyo+d35y6qoHKbfU/7QUPY0FEDu+rZ6svYQwExjfHa1Va64Bu0Eutx
-         /3FQqE0bSo90WH7Z5mljWp6sLeBrZO8cQNMsWpSPKF3rDyZfFCVkkbZEv3aisrSNNkZL
-         bjI9+aWI7EKqvXzKhGjv/OH6iltPHQHdPD9CfaFbV2+RfrLdPbIAWFyZ+HSCeXuRQFaR
-         RkPw==
-X-Gm-Message-State: APjAAAU10qn9GNfZkl9QGRVAa/uRfjmas9wonDo9j7v0BdG9Jkxu+PgT
-        XeVYF6LWoH+8tZTC3nv6BHU=
-X-Google-Smtp-Source: APXvYqxW3prZwkWHWgnoMEubD7xNwrSIeIAF1uZdix4e6/fDDx4fF84KKWNkiOUj/KQ81cpzXumLMA==
-X-Received: by 2002:a62:4d85:: with SMTP id a127mr9256862pfb.148.1563942329748;
-        Tue, 23 Jul 2019 21:25:29 -0700 (PDT)
+        bh=BJP8QYXxp7VfUt7Eaw5PwJTw08pU7M/uVeuocSBpfVU=;
+        b=thFSL7sx+r4akzxXmiEiA2LrLmSrS9j5zLA+uw2lkNI3L4Apc86cvdqIuxGvixua93
+         duDNYw+/Pc4iL2C/Ad6rfKQb+Q2NI8gA5V3CXQuwE3YthEp4BjHaFNg6T78UtRiPCFJ6
+         1Dfc5u6MWa4n7AEiL8VqokdDjh2Aef8J2fCRVlD5L9n1zAWTw4PmeFdotycXAOOIpkal
+         mRU1KFYM1+783i7E4MdDyY/U15XwuMzcDCsjWQ6/6mcm9+8pDqowRpeaQIBFsTB8pkzn
+         ewxnhyrH9DpyBMwQUs7EI1IowHQ8dLePK9c9GKhQ1n5dZdg1YltIO7DnhNTnycfw2aP5
+         sy4A==
+X-Gm-Message-State: APjAAAU7VCyAr9Bo2cxQSduPNOD1zAXPdJmX6NL2jGq7peXohtXEdC01
+        2m72QEVJRJAYucQEIXGTr4Y=
+X-Google-Smtp-Source: APXvYqwp+g/SqY8cK+RhyrKnPd9NNEiEh2F/BoaBOdfDPn2MZtzIjgPt3GPtA4VFQfpQXahpL/YYYg==
+X-Received: by 2002:a17:902:ac85:: with SMTP id h5mr84794603plr.198.1563942331371;
+        Tue, 23 Jul 2019 21:25:31 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id a15sm34153364pgw.3.2019.07.23.21.25.28
+        by smtp.gmail.com with ESMTPSA id a15sm34153364pgw.3.2019.07.23.21.25.29
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 21:25:29 -0700 (PDT)
+        Tue, 23 Jul 2019 21:25:30 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -73,10 +73,12 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Johannes Thumshirn <jthumshirn@suse.de>,
         Ming Lei <ming.lei@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
-        Boaz Harrosh <boaz@plexistor.com>
-Subject: [PATCH 06/12] fs/nfs: convert put_page() to put_user_page*()
-Date:   Tue, 23 Jul 2019 21:25:12 -0700
-Message-Id: <20190724042518.14363-7-jhubbard@nvidia.com>
+        Boaz Harrosh <boaz@plexistor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: [PATCH 07/12] vhost-scsi: convert put_page() to put_user_page*()
+Date:   Tue, 23 Jul 2019 21:25:13 -0700
+Message-Id: <20190724042518.14363-8-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190724042518.14363-1-jhubbard@nvidia.com>
 References: <20190724042518.14363-1-jhubbard@nvidia.com>
@@ -92,18 +94,21 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Jérôme Glisse <jglisse@redhat.com>
 
 For pages that were retained via get_user_pages*(), release those pages
-via the new put_user_page*() routines, instead of via put_page() or
-release_pages().
+via the new put_user_page*() routines, instead of via put_page().
 
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
+Changes from Jérôme's original patch:
+
+* Changed a WARN_ON to a BUG_ON.
+
 Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+Cc: virtualization@lists.linux-foundation.org
 Cc: linux-fsdevel@vger.kernel.org
 Cc: linux-block@vger.kernel.org
 Cc: linux-mm@kvack.org
-Cc: linux-nfs@vger.kernel.org
 Cc: Jan Kara <jack@suse.cz>
 Cc: Dan Williams <dan.j.williams@intel.com>
 Cc: Alexander Viro <viro@zeniv.linux.org.uk>
@@ -115,40 +120,56 @@ Cc: Dave Chinner <david@fromorbit.com>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Matthew Wilcox <willy@infradead.org>
 Cc: Boaz Harrosh <boaz@plexistor.com>
-Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
-Cc: Anna Schumaker <anna.schumaker@netapp.com>
+Cc: Miklos Szeredi <miklos@szeredi.hu>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>
 ---
- fs/nfs/direct.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/vhost/scsi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-index 0cb442406168..35f30fe2900f 100644
---- a/fs/nfs/direct.c
-+++ b/fs/nfs/direct.c
-@@ -512,7 +512,10 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
- 			pos += req_len;
- 			dreq->bytes_left -= req_len;
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index a9caf1bc3c3e..282565ab5e3f 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -329,11 +329,11 @@ static void vhost_scsi_release_cmd(struct se_cmd *se_cmd)
+ 
+ 	if (tv_cmd->tvc_sgl_count) {
+ 		for (i = 0; i < tv_cmd->tvc_sgl_count; i++)
+-			put_page(sg_page(&tv_cmd->tvc_sgl[i]));
++			put_user_page(sg_page(&tv_cmd->tvc_sgl[i]));
+ 	}
+ 	if (tv_cmd->tvc_prot_sgl_count) {
+ 		for (i = 0; i < tv_cmd->tvc_prot_sgl_count; i++)
+-			put_page(sg_page(&tv_cmd->tvc_prot_sgl[i]));
++			put_user_page(sg_page(&tv_cmd->tvc_prot_sgl[i]));
+ 	}
+ 
+ 	vhost_scsi_put_inflight(tv_cmd->inflight);
+@@ -630,6 +630,13 @@ vhost_scsi_map_to_sgl(struct vhost_scsi_cmd *cmd,
+ 	size_t offset;
+ 	unsigned int npages = 0;
+ 
++	/*
++	 * Here in all cases we should have an IOVEC which use GUP. If that is
++	 * not the case then we will wrongly call put_user_page() and the page
++	 * refcount will go wrong (this is in vhost_scsi_release_cmd())
++	 */
++	WARN_ON(!iov_iter_get_pages_use_gup(iter));
++
+ 	bytes = iov_iter_get_pages(iter, pages, LONG_MAX,
+ 				VHOST_SCSI_PREALLOC_UPAGES, &offset);
+ 	/* No pages were pinned */
+@@ -681,7 +688,7 @@ vhost_scsi_iov_to_sgl(struct vhost_scsi_cmd *cmd, bool write,
+ 			while (p < sg) {
+ 				struct page *page = sg_page(p++);
+ 				if (page)
+-					put_page(page);
++					put_user_page(page);
+ 			}
+ 			return ret;
  		}
--		nfs_direct_release_pages(pagevec, npages);
-+		if (iov_iter_get_pages_use_gup(iter))
-+			put_user_pages(pagevec, npages);
-+		else
-+			nfs_direct_release_pages(pagevec, npages);
- 		kvfree(pagevec);
- 		if (result < 0)
- 			break;
-@@ -935,7 +938,10 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
- 			pos += req_len;
- 			dreq->bytes_left -= req_len;
- 		}
--		nfs_direct_release_pages(pagevec, npages);
-+		if (iov_iter_get_pages_use_gup(iter))
-+			put_user_pages(pagevec, npages);
-+		else
-+			nfs_direct_release_pages(pagevec, npages);
- 		kvfree(pagevec);
- 		if (result < 0)
- 			break;
 -- 
 2.22.0
 
