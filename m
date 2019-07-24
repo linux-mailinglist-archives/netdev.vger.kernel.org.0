@@ -2,124 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 339AF733F3
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 553E873412
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:39:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfGXQaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 12:30:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47086 "EHLO mail.kernel.org"
+        id S2387519AbfGXQjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 12:39:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34874 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725826AbfGXQaR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 12:30:17 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AC44A21871;
-        Wed, 24 Jul 2019 16:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563985816;
-        bh=aXnST1Zy+5dz8CWNsZfcAqojaBnHYTD1OJuzvi9y2o4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sxl6AmiyJogEutNkMx10bst2DtY9JXT9gevPqUof4Qqo6HT+y160gFdVne+tUl+/C
-         8V5Cjhpk8lxry7d5JIRYedRvu2W5dfAv7kaKt3gVkoEbpo3Cix1mZSwcTtlmtHZDKI
-         hjuujCEhJIvlBksjwJOOhFW6fQhlXigF4uZem8M0=
-Date:   Wed, 24 Jul 2019 09:30:14 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Ilya Maximets <i.maximets@samsung.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: Reminder: 99 open syzbot bugs in net subsystem
-Message-ID: <20190724163014.GC673@sol.localdomain>
-Mail-Followup-To: Eric Dumazet <eric.dumazet@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Ilya Maximets <i.maximets@samsung.com>,
-        Eric Dumazet <edumazet@google.com>, David Ahern <dsahern@gmail.com>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <20190724013813.GB643@sol.localdomain>
- <63f12327-dd4b-5210-4de2-705af6bc4ba4@gmail.com>
+        id S2387474AbfGXQjM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 12:39:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=wArjT2MpImAqGdQUdIABnoJnGCq4fg+a4RGyelO4sI0=; b=1nfk9Ah7W9jraNjNJyLYk5qygW
+        c9Is3PaSspG/UF2r8LD3z1th+dBaZFXBAS8ftFOF9l0fbKVOPLzk2ihr9UuPdG3XhlVck4uPxHxkL
+        4EfXWn/h2ZoD9K6g5WQiAB4HTbsDrPvyERusX4xONbN/aKjx+fwRzVl/EkQhsO3z805I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hqKIE-0000gj-4j; Wed, 24 Jul 2019 18:39:06 +0200
+Date:   Wed, 24 Jul 2019 18:39:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v1 1/4] enetc: Clean up local mdio bus allocation
+Message-ID: <20190724163906.GT25635@lunn.ch>
+References: <1563979301-596-1-git-send-email-claudiu.manoil@nxp.com>
+ <1563979301-596-2-git-send-email-claudiu.manoil@nxp.com>
+ <20190724151803.GR25635@lunn.ch>
+ <VI1PR04MB4880CD977A5D58DA0A7EE56696C60@VI1PR04MB4880.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <63f12327-dd4b-5210-4de2-705af6bc4ba4@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <VI1PR04MB4880CD977A5D58DA0A7EE56696C60@VI1PR04MB4880.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 08:39:05AM +0200, Eric Dumazet wrote:
-> 
-> 
-> On 7/24/19 3:38 AM, Eric Biggers wrote:
-> > [This email was generated by a script.  Let me know if you have any suggestions
-> > to make it better, or if you want it re-generated with the latest status.]
-> > 
-> > Of the currently open syzbot reports against the upstream kernel, I've manually
-> > marked 99 of them as possibly being bugs in the net subsystem.  This category
-> > only includes the networking bugs that I couldn't assign to a more specific
-> > component (bpf, xfrm, bluetooth, tls, tipc, sctp, wireless, etc.).  I've listed
-> > these reports below, sorted by an algorithm that tries to list first the reports
-> > most likely to be still valid, important, and actionable.
-> > 
-> > Of these 99 bugs, 17 were seen in mainline in the last week.
-> > 
-> > Of these 99 bugs, 4 were bisected to commits from the following people:
-> > 
-> > 	Florian Westphal <fw@strlen.de>
-> > 	Ilya Maximets <i.maximets@samsung.com>
-> > 	Eric Dumazet <edumazet@google.com>
-> > 	David Ahern <dsahern@gmail.com>
-> > 
-> > If you believe a bug is no longer valid, please close the syzbot report by
-> > sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
-> > original thread, as explained at https://goo.gl/tpsmEJ#status
-> > 
-> > If you believe I misattributed a bug to the net subsystem, please let me know,
-> > and if possible forward the report to the correct people or mailing list.
+> >All the horrible casts go away, the driver is structured like every
+> >other driver, sparse is probably happy, etc.
 > >
 > 
-> Some of the bugs have been fixed already, before syzbot found them.
-> 
-> Why force human to be gentle to bots and actually replying to them ?
-> 
-> I usually simply wait that syzbot is finding the bug does not repro anymore,
-> but now if you send these emails, we will have even more pressure on us.
-> 
+> This looks more like a matter cosmetic preferences.  I mean, I didn't
+> notice anything "horrible" in the code so far.
 
-First, based on experience, I'd guess about 30-45 of these are still valid.  17
-were seen in mainline in the last week, but some others are valid too.  The ones
-most likely to still be valid are at the beginning of the list.  So let's try
-not use the presence of outdated bugs as an excuse not to fix current bugs.
+#define bus_to_enetc_regs(bus)  (struct enetc_mdio_regs __iomem *)((bus)->priv)
 
-Second, all these bug reports are still open, regardless of whether reminders
-are sent or not.  I think you're really suggesting that possibly outdated bug
-reports should be automatically invalidated by syzbot.
+You should not need a cast here, bus->priv is a void *. But bus->priv
+is being abused to hold a __iomem pointer.
 
-syzbot already does that for bugs with no reproducer.  However, that still
-leaves a lot of outdated bugs with reproducers.
+enetc_wr_reg(&regs->mdio_cfg, mdio_cfg);
 
-Since the kernel community is basically in continuous bug bankruptcy and lots of
-syzbot reports are being ignored anyway, I'm in favor of making the invalidation
-criteria more aggressive, so we can best focus people's efforts.  I understand
-that Dmitry has been against this though, since a significant fraction of bugs
-that syzbot stopped hitting for some reason actually turn out to be still valid.
+This is also rather odd, passing the address of something to an IO
+operator? I also don't know the C standard well enough to know if it
+is guaranteed that:
 
-But we probably have no choice.  So I suggest we agree on new criteria for
-invalidating bugs.  I'd suggest assigning a timeout to each bug, based on
-attributes like "seen in mainline?", "reproducer type", "bisected?", "does it
-look like a 'bad' crash (e.g. use-after-free)"; similar to the algorithm I'm
-using to sort the bugs when sorting these reminders.  I.e., bugs most likely to
-still be valid, important, and actionable get longest timeouts.
+struct enetc_mdio_regs {
+        u32     mdio_cfg;       /* MDIO configuration and status */
+        u32     mdio_ctl;       /* MDIO control */
+        u32     mdio_data;      /* MDIO data */
+        u32     mdio_addr;      /* MDIO address */
+};
 
-Then if no crash or activity was seen in the timeout, the bug is closed.
+actually works. On a 64bit system is the compiler allowed to put in
+padding to keep the u32 64 bit aligned?
 
-Any thoughts from anyone?
+> I actually find it more
+> ugly to define a new structure with only one element inside, like:
+> struct enetc_mdio_priv {
+>        struct enetc_hw *hw;
+> }
 
-- Eric
+One advantage of this is that struct enetc_hw correctly has all the
+__iomem attributes. All the casts to __iomem go away, and sparse is
+happy.
+
+> Anyway, if others already did this in the kernel, what can I do?
+
+Clean it up. Make the code more readable and easy to maintain.
+
+      Andrew
