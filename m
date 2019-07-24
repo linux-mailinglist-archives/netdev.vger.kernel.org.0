@@ -2,35 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32234724F1
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:52:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5593724F3
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbfGXCwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:52:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47640 "EHLO mail.kernel.org"
+        id S1726364AbfGXCwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:52:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725827AbfGXCwF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:52:05 -0400
+        id S1725827AbfGXCwf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:52:35 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CE088229F3;
-        Wed, 24 Jul 2019 02:52:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 27F892253D;
+        Wed, 24 Jul 2019 02:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563936723;
-        bh=T8i1a63ZU74uaijDVVV+tpAFmFCPhxQSvVad5zI7d5I=;
+        s=default; t=1563936754;
+        bh=/GvI7a0xWcKOYjJIwmdjPjVkfTHbx5dcodTV315L1XE=;
         h=Date:From:To:Cc:Subject:From;
-        b=wtvSAlhbtqu+QncLz4wkDz2ia3RiXnptMZK/nnJs0piZgo1EFyNIt6A6z7noVWrK1
-         X8Jm313xgvCQF3GXItwaYaaUe3hDwblJv3CnwpvAew6fsgJ4PpuP6kA01lgabUTP/m
-         WivSTtXkN2PN3bDas1nIGYi1DMLMl6Wcnlr9nmPw=
-Date:   Tue, 23 Jul 2019 19:52:02 -0700
+        b=fryLv9ogkE+mxRdWGoh8W1UnH40oFAiw9vPJ+EEQnP9dceGtffVXQxOpy56cJU8KJ
+         pVGjyB9NpmC8yreWTM3cWrMwhPcvpNHt4mkmaVi4jrPwyk+g9WjSviMDzUYXkhuXIs
+         oWel4q5R9noFGZ7JJzPWp/x0d2aZsuOylaSGMpQE=
+Date:   Tue, 23 Jul 2019 19:52:32 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org
+To:     netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 1 open syzbot bug in "net/ppp" subsystem
-Message-ID: <20190724025202.GO643@sol.localdomain>
-Mail-Followup-To: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+Subject: Reminder: 1 open syzbot bug in "net/pfkey" subsystem
+Message-ID: <20190724025232.GP643@sol.localdomain>
+Mail-Followup-To: netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -44,35 +50,35 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 1 of them as possibly being a bug in the "net/ppp" subsystem.
+marked 1 of them as possibly being a bug in the "net/pfkey" subsystem.
 
 If you believe this bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed this bug to the "net/ppp" subsystem, please let
+If you believe I misattributed this bug to the "net/pfkey" subsystem, please let
 me know, and if possible forward the report to the correct people or mailing
 list.
 
 Here is the bug:
 
 --------------------------------------------------------------------------------
-Title:              memory leak in pppoe_sendmsg
-Last occurred:      6 days ago
-Reported:           53 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=68fe3119847862315e52aa14961144b5a909bc23
-Original thread:    https://lkml.kernel.org/lkml/000000000000d981f1058a26e1a8@google.com/T/#u
+Title:              WARNING in pfkey_sock_destruct
+Last occurred:      168 days ago
+Reported:           300 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=6dc52e859d5ccc5fdce168973ab63b97ac7e41ba
+Original thread:    https://lkml.kernel.org/lkml/0000000000002b8eb70576c15840@google.com/T/#u
 
-This bug has a C reproducer.
+Unfortunately, this bug does not have a reproducer.
 
-No one has replied to the original thread for this bug yet.
+No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6bdfd184eac7709e5cc9@syzkaller.appspotmail.com
+    Reported-by: syzbot+4acf0d9092f91bb60431@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000d981f1058a26e1a8@google.com
+https://lkml.kernel.org/r/0000000000002b8eb70576c15840@google.com
 
