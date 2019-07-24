@@ -2,209 +2,360 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCBBB7311D
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62A227312F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:09:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728373AbfGXOHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 10:07:47 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52857 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbfGXOHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 10:07:47 -0400
-Received: by mail-wm1-f68.google.com with SMTP id s3so41970905wms.2;
-        Wed, 24 Jul 2019 07:07:44 -0700 (PDT)
+        id S2387426AbfGXOJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 10:09:44 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:44338 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726287AbfGXOJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 10:09:43 -0400
+Received: by mail-qk1-f194.google.com with SMTP id d79so33788164qke.11;
+        Wed, 24 Jul 2019 07:09:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=xqT523zLyX/bJP9CuRkC2BVuJj/iwqDDCMSCHLkAsAc=;
-        b=EaV8MZ2djXJqSlFJjwsdmPUP7aze3h5ePefgEBGCwuqaLlZdobTAuByonNgHsK0ExO
-         wpSJsmhZ5fnptPcxMH5oe/KQFz/JPisQuLRnI5R8Xdvopy2LHxAkffQ/el78bYrojDZb
-         kIvyXZ9OnKRJrMUEOe56oCQuQXH4y0+2WQyZNbTmamqW1z7Sux9Xocs4rR+0zMPX8YJs
-         Yn+UuGQNnspbZ9n674pEzJMNJkdhKiKc1Cvnb0olKWn7RxFS6n3RQWKj5rTV1Ic/mou9
-         RqyJmQHqPMa3WU0rQkcSn8WykIb1HNQnEpj49XQnPRbD7qU3lxH9H9cgXyUanC0jlLtU
-         kz9Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mymZsatmiZj2HO1rrAnVH77ZT9rCEUe6Woe+bb611d8=;
+        b=LG/wguG5BSWNMDO4csWKUQ+zclt6MI1ZVC2PMK48Q01fpCUhxnLzF+SB4Zr8uCCDKw
+         itoH7kHCcaFYsFnQJdy0gMhH3NVuk8cStO7HnA4PRVWHi5PuHBSbGi+vJsyD39UWf3zO
+         KOgG5f/dv6wQBhFai8FMKTDrxubgWNtmUxWp3AA8dAeijmMafCMWvopXiN1sQ9VSQ64E
+         U5gROYczSh5jHdGKhYkm9m0Ex2osA/i1EI+nUMk5XsG+jpVBGfUwUhm742G/y5NOwYTu
+         HPEZPurKxyjxbWJXIBAOM39hx2Qh4wRxUzLUR5SXl6YCMy+2R9DTIHPXv9fQuT3pAkKh
+         jJ8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xqT523zLyX/bJP9CuRkC2BVuJj/iwqDDCMSCHLkAsAc=;
-        b=Uz+sat8QJPrldQPPzwKlpibpzUEky/Su18ENrbZUEB+oF4g2+co0XVRD8VzBVN3uEb
-         yFbcPq37wgbH37FuV/lo+eYaOmY+Qee7T31J/X5Fnm8yOg6fDHu3AzC2GvW75wO0tk0E
-         Gw2giJeLMh4K59NvpDnw+w6YR15CjdtXsijYDor1yL6PJB2GHl2c7F9Rlt3J9GNyWJRx
-         8KIGdbDXDzqnCZW81OSVpjgoBl+tYY6AwAFBxUxiWrc7a8nyRkRojs4Z7qkYT+n5WI6p
-         wb3M/rFHx7yEPwGaL0soh6hEqeUlv6SrujUM2oUBbnH7WcssmMpcmKIognGZ6utzL+dr
-         9m0g==
-X-Gm-Message-State: APjAAAU0Vg3V0bsAh6wqUoKEs+hxyz7dfjhUMF5BdTdy+51F0Pn66paH
-        NnDsY1cKeJYrtXgcQYRTyWWeE9eV
-X-Google-Smtp-Source: APXvYqyCNQzat1BeB39JNIXjyYI3LLwyVh3vsC5lsyrL7PEBO+qhsZr2rsB0IkoAopaaKm4RDxFp2g==
-X-Received: by 2002:a1c:2015:: with SMTP id g21mr73215299wmg.33.1563977263774;
-        Wed, 24 Jul 2019 07:07:43 -0700 (PDT)
-Received: from [192.168.8.147] (192.169.185.81.rev.sfr.net. [81.185.169.192])
-        by smtp.gmail.com with ESMTPSA id o20sm117045721wrh.8.2019.07.24.07.07.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 07:07:42 -0700 (PDT)
-Subject: Re: [PATCH 4.4 stable net] net: tcp: Fix use-after-free in
- tcp_write_xmit
-To:     maowenan <maowenan@huawei.com>, davem@davemloft.net,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190724091715.137033-1-maowenan@huawei.com>
- <2e09f4d1-8a47-27e9-60f9-63d3b19a98ec@gmail.com>
- <13ffa2fe-d064-9786-bc52-e4281d26ed1d@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <44f0ba0d-fd19-d44b-9c5c-686e2f8ef988@gmail.com>
-Date:   Wed, 24 Jul 2019 16:07:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mymZsatmiZj2HO1rrAnVH77ZT9rCEUe6Woe+bb611d8=;
+        b=rREnfVfG9/RzlRFEUHvBcYkgj6MXHjXA/uDvo2V2BCczRL/vzqCvLGOh2NrsyCkiVn
+         ZinE8fG4JhwYs27JsQO+CF/DfBx8pMgISP9/LAYti2Y+0A41b7s30DB5OEaHf8rbwPzX
+         5amCCOKPeMFspOI/HbLuT+i6+eUwsCLCBVvMCdaDbEjppZ/owwcJJ54aiBpwroV1eUUd
+         HYiEn+tka/KOCilCjPaIKsAU7cpyYr4Cv6HPfB6hfKtInP+vl2kIvfN0MLyu8iXg+6X7
+         LQckjvVxJ6ka9fk5ouv2sB0C0+b4DhyHOk8EgvcmYJgu69YjKJegVwUgDm2JE1mvUaGZ
+         vQCw==
+X-Gm-Message-State: APjAAAWp8nPpBneFjHeDQTbQI1TDJBwdNhybDYkj/+Fr9whTaqDFifg+
+        F9tqkTtxylgujIpz5lo4wSc=
+X-Google-Smtp-Source: APXvYqx3nGgL15xJdBo3POltz3ca97eG5mgkZEjoFEZmzdFuKkW481p8s/PAH2XonPU2iwwdktKT+w==
+X-Received: by 2002:a37:9a4a:: with SMTP id c71mr21830405qke.258.1563977382336;
+        Wed, 24 Jul 2019 07:09:42 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.49.45])
+        by smtp.gmail.com with ESMTPSA id c20sm14679798qkk.69.2019.07.24.07.09.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 24 Jul 2019 07:09:41 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id E8D27C0AAD; Wed, 24 Jul 2019 11:09:38 -0300 (-03)
+Date:   Wed, 24 Jul 2019 11:09:38 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
+Subject: Re: [PATCH net-next 2/4] sctp: clean up __sctp_connect
+Message-ID: <20190724140938.GF6204@localhost.localdomain>
+References: <cover.1563817029.git.lucien.xin@gmail.com>
+ <0a87c3c2c48b10a930205d413a160854032eaa4a.1563817029.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <13ffa2fe-d064-9786-bc52-e4281d26ed1d@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0a87c3c2c48b10a930205d413a160854032eaa4a.1563817029.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/24/19 12:46 PM, maowenan wrote:
+On Tue, Jul 23, 2019 at 01:37:58AM +0800, Xin Long wrote:
+> __sctp_connect is doing quit similar things as sctp_sendmsg_new_asoc.
+> To factor out common functions, this patch is to clean up their code
+> to make them look more similar:
 > 
+>   1. create the asoc and add a peer with the 1st addr.
+>   2. add peers with the other addrs into this asoc one by one.
 > 
-> On 2019/7/24 17:45, Eric Dumazet wrote:
->>
->>
->> On 7/24/19 11:17 AM, Mao Wenan wrote:
->>> There is one report about tcp_write_xmit use-after-free with version 4.4.136:
->>>
->>> BUG: KASAN: use-after-free in tcp_skb_pcount include/net/tcp.h:796 [inline]
->>> BUG: KASAN: use-after-free in tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
->>> BUG: KASAN: use-after-free in tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
->>> Read of size 2 at addr ffff8801d6fc87b0 by task syz-executor408/4195
->>>
->>> CPU: 0 PID: 4195 Comm: syz-executor408 Not tainted 4.4.136-gfb7e319 #59
->>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->>>  0000000000000000 7d8f38ecc03be946 ffff8801d73b7710 ffffffff81e0edad
->>>  ffffea00075bf200 ffff8801d6fc87b0 0000000000000000 ffff8801d6fc87b0
->>>  dffffc0000000000 ffff8801d73b7748 ffffffff815159b6 ffff8801d6fc87b0
->>> Call Trace:
->>>  [<ffffffff81e0edad>] __dump_stack lib/dump_stack.c:15 [inline]
->>>  [<ffffffff81e0edad>] dump_stack+0xc1/0x124 lib/dump_stack.c:51
->>>  [<ffffffff815159b6>] print_address_description+0x6c/0x216 mm/kasan/report.c:252
->>>  [<ffffffff81515cd5>] kasan_report_error mm/kasan/report.c:351 [inline]
->>>  [<ffffffff81515cd5>] kasan_report.cold.7+0x175/0x2f7 mm/kasan/report.c:408
->>>  [<ffffffff814f9784>] __asan_report_load2_noabort+0x14/0x20 mm/kasan/report.c:427
->>>  [<ffffffff83286582>] tcp_skb_pcount include/net/tcp.h:796 [inline]
->>>  [<ffffffff83286582>] tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
->>>  [<ffffffff83286582>] tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
->>>  [<ffffffff83287a40>] __tcp_push_pending_frames+0xa0/0x290 net/ipv4/tcp_output.c:2307
->>>  [<ffffffff8328e966>] tcp_send_fin+0x176/0xab0 net/ipv4/tcp_output.c:2883
->>>  [<ffffffff8324c0d0>] tcp_close+0xca0/0xf70 net/ipv4/tcp.c:2112
->>>  [<ffffffff832f8d0f>] inet_release+0xff/0x1d0 net/ipv4/af_inet.c:435
->>>  [<ffffffff82f1a156>] sock_release+0x96/0x1c0 net/socket.c:586
->>>  [<ffffffff82f1a296>] sock_close+0x16/0x20 net/socket.c:1037
->>>  [<ffffffff81522da5>] __fput+0x235/0x6f0 fs/file_table.c:208
->>>  [<ffffffff815232e5>] ____fput+0x15/0x20 fs/file_table.c:244
->>>  [<ffffffff8118bd7f>] task_work_run+0x10f/0x190 kernel/task_work.c:115
->>>  [<ffffffff81135285>] exit_task_work include/linux/task_work.h:21 [inline]
->>>  [<ffffffff81135285>] do_exit+0x9e5/0x26b0 kernel/exit.c:759
->>>  [<ffffffff8113b1d1>] do_group_exit+0x111/0x330 kernel/exit.c:889
->>>  [<ffffffff8115e5cc>] get_signal+0x4ec/0x14b0 kernel/signal.c:2321
->>>  [<ffffffff8100e02b>] do_signal+0x8b/0x1d30 arch/x86/kernel/signal.c:712
->>>  [<ffffffff8100360a>] exit_to_usermode_loop+0x11a/0x160 arch/x86/entry/common.c:248
->>>  [<ffffffff81006535>] prepare_exit_to_usermode arch/x86/entry/common.c:283 [inline]
->>>  [<ffffffff81006535>] syscall_return_slowpath+0x1b5/0x1f0 arch/x86/entry/common.c:348
->>>  [<ffffffff838c29b5>] int_ret_from_sys_call+0x25/0xa3
->>>
->>> Allocated by task 4194:
->>>  [<ffffffff810341d6>] save_stack_trace+0x26/0x50 arch/x86/kernel/stacktrace.c:63
->>>  [<ffffffff814f8873>] save_stack+0x43/0xd0 mm/kasan/kasan.c:512
->>>  [<ffffffff814f8b57>] set_track mm/kasan/kasan.c:524 [inline]
->>>  [<ffffffff814f8b57>] kasan_kmalloc+0xc7/0xe0 mm/kasan/kasan.c:616
->>>  [<ffffffff814f9122>] kasan_slab_alloc+0x12/0x20 mm/kasan/kasan.c:554
->>>  [<ffffffff814f4c1e>] slab_post_alloc_hook mm/slub.c:1349 [inline]
->>>  [<ffffffff814f4c1e>] slab_alloc_node mm/slub.c:2615 [inline]
->>>  [<ffffffff814f4c1e>] slab_alloc mm/slub.c:2623 [inline]
->>>  [<ffffffff814f4c1e>] kmem_cache_alloc+0xbe/0x2a0 mm/slub.c:2628
->>>  [<ffffffff82f380a6>] kmem_cache_alloc_node include/linux/slab.h:350 [inline]
->>>  [<ffffffff82f380a6>] __alloc_skb+0xe6/0x600 net/core/skbuff.c:218
->>>  [<ffffffff832466c3>] alloc_skb_fclone include/linux/skbuff.h:856 [inline]
->>>  [<ffffffff832466c3>] sk_stream_alloc_skb+0xa3/0x5d0 net/ipv4/tcp.c:833
->>>  [<ffffffff83249164>] tcp_sendmsg+0xd34/0x2b00 net/ipv4/tcp.c:1178
->>>  [<ffffffff83300ef3>] inet_sendmsg+0x203/0x4d0 net/ipv4/af_inet.c:755
->>>  [<ffffffff82f1e1fc>] sock_sendmsg_nosec net/socket.c:625 [inline]
->>>  [<ffffffff82f1e1fc>] sock_sendmsg+0xcc/0x110 net/socket.c:635
->>>  [<ffffffff82f1eedc>] SYSC_sendto+0x21c/0x370 net/socket.c:1665
->>>  [<ffffffff82f21560>] SyS_sendto+0x40/0x50 net/socket.c:1633
->>>  [<ffffffff838c2825>] entry_SYSCALL_64_fastpath+0x22/0x9e
->>>
->>> Freed by task 4194:
->>>  [<ffffffff810341d6>] save_stack_trace+0x26/0x50 arch/x86/kernel/stacktrace.c:63
->>>  [<ffffffff814f8873>] save_stack+0x43/0xd0 mm/kasan/kasan.c:512
->>>  [<ffffffff814f91a2>] set_track mm/kasan/kasan.c:524 [inline]
->>>  [<ffffffff814f91a2>] kasan_slab_free+0x72/0xc0 mm/kasan/kasan.c:589
->>>  [<ffffffff814f632e>] slab_free_hook mm/slub.c:1383 [inline]
->>>  [<ffffffff814f632e>] slab_free_freelist_hook mm/slub.c:1405 [inline]
->>>  [<ffffffff814f632e>] slab_free mm/slub.c:2859 [inline]
->>>  [<ffffffff814f632e>] kmem_cache_free+0xbe/0x340 mm/slub.c:2881
->>>  [<ffffffff82f3527f>] kfree_skbmem+0xcf/0x100 net/core/skbuff.c:635
->>>  [<ffffffff82f372fd>] __kfree_skb+0x1d/0x20 net/core/skbuff.c:676
->>>  [<ffffffff83288834>] sk_wmem_free_skb include/net/sock.h:1447 [inline]
->>>  [<ffffffff83288834>] tcp_write_queue_purge include/net/tcp.h:1460 [inline]
->>>  [<ffffffff83288834>] tcp_connect_init net/ipv4/tcp_output.c:3122 [inline]
->>>  [<ffffffff83288834>] tcp_connect+0xb24/0x30c0 net/ipv4/tcp_output.c:3261
->>>  [<ffffffff8329b991>] tcp_v4_connect+0xf31/0x1890 net/ipv4/tcp_ipv4.c:246
->>>  [<ffffffff832f9ca9>] __inet_stream_connect+0x2a9/0xc30 net/ipv4/af_inet.c:615
->>>  [<ffffffff832fa685>] inet_stream_connect+0x55/0xa0 net/ipv4/af_inet.c:676
->>>  [<ffffffff82f1eb78>] SYSC_connect+0x1b8/0x300 net/socket.c:1557
->>>  [<ffffffff82f214b4>] SyS_connect+0x24/0x30 net/socket.c:1538
->>>  [<ffffffff838c2825>] entry_SYSCALL_64_fastpath+0x22/0x9e
->>>
->>> Syzkaller reproducer():
->>> r0 = socket$packet(0x11, 0x3, 0x300)
->>> r1 = socket$inet_tcp(0x2, 0x1, 0x0)
->>> bind$inet(r1, &(0x7f0000000300)={0x2, 0x4e21, @multicast1}, 0x10)
->>> connect$inet(r1, &(0x7f0000000140)={0x2, 0x1000004e21, @loopback}, 0x10)
->>> recvmmsg(r1, &(0x7f0000001e40)=[{{0x0, 0x0, &(0x7f0000000100)=[{&(0x7f00000005c0)=""/88, 0x58}], 0x1}}], 0x1, 0x40000000, 0x0)
->>> sendto$inet(r1, &(0x7f0000000000)="e2f7ad5b661c761edf", 0x9, 0x8080, 0x0, 0x0)
->>> r2 = fcntl$dupfd(r1, 0x0, r0)
->>> connect$unix(r2, &(0x7f00000001c0)=@file={0x0, './file0\x00'}, 0x6e)
->>>
->>> C repro link: https://syzkaller.appspot.com/text?tag=ReproC&x=14db474f800000
->>>
->>> This is because when tcp_connect_init call tcp_write_queue_purge, it will
->>> kfree all the skb in the write_queue, but the sk->sk_send_head forget to set NULL,
->>> then tcp_write_xmit try to send skb, which has freed in tcp_write_queue_purge, UAF happens.
->>>
->>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
->>> ---
->>>  include/net/tcp.h | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/include/net/tcp.h b/include/net/tcp.h
->>> index bf8a0dae977a..8f8aace28cf8 100644
->>> --- a/include/net/tcp.h
->>> +++ b/include/net/tcp.h
->>> @@ -1457,6 +1457,7 @@ static inline void tcp_write_queue_purge(struct sock *sk)
->>>  
->>>  	while ((skb = __skb_dequeue(&sk->sk_write_queue)) != NULL)
->>>  		sk_wmem_free_skb(sk, skb);
->>> +	sk->sk_send_head = NULL;
->>>  	sk_mem_reclaim(sk);
->>>  	tcp_clear_all_retrans_hints(tcp_sk(sk));
->>>  	inet_csk(sk)->icsk_backoff = 0;
->>>
->>
->> This is strange, because tcp_init_send_head() is called from tcp_disconnect()
->> which is the syzkaller way to trigger this kind of bugs.
->>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/sctp/socket.c | 211 +++++++++++++++++++-----------------------------------
+>  1 file changed, 75 insertions(+), 136 deletions(-)
 > 
-> syzkaller reproduce program duplicate one socket that have multiple skb in write queue,
-> and new socket have purged skb but original socket still try to send skb. In this program,
-> it does not call tcp_disconnect?
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 5f92e4a..49837e9 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -1049,154 +1049,108 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+>   * Common routine for handling connect() and sctp_connectx().
+>   * Connect will come in with just a single address.
+>   */
+> -static int __sctp_connect(struct sock *sk,
+> -			  struct sockaddr *kaddrs,
+> -			  int addrs_size, int flags,
+> -			  sctp_assoc_t *assoc_id)
+> +static int __sctp_connect(struct sock *sk, struct sockaddr *kaddrs,
+> +			  int addrs_size, int flags, sctp_assoc_t *assoc_id)
+>  {
+> -	struct net *net = sock_net(sk);
+> -	struct sctp_sock *sp;
+> -	struct sctp_endpoint *ep;
+> -	struct sctp_association *asoc = NULL;
+> -	struct sctp_association *asoc2;
+> +	struct sctp_association *old, *asoc;
+> +	struct sctp_sock *sp = sctp_sk(sk);
+> +	struct sctp_endpoint *ep = sp->ep;
+>  	struct sctp_transport *transport;
+> -	union sctp_addr to;
+> +	struct net *net = sock_net(sk);
+> +	int addrcnt, walk_size, err;
+> +	void *addr_buf = kaddrs;
+> +	union sctp_addr *daddr;
+>  	enum sctp_scope scope;
+> +	struct sctp_af *af;
+>  	long timeo;
+> -	int err = 0;
+> -	int addrcnt = 0;
+> -	int walk_size = 0;
+> -	union sctp_addr *sa_addr = NULL;
+> -	void *addr_buf;
+> -	unsigned short port;
+>  
+> -	sp = sctp_sk(sk);
+> -	ep = sp->ep;
+> -
+> -	/* connect() cannot be done on a socket that is already in ESTABLISHED
+> -	 * state - UDP-style peeled off socket or a TCP-style socket that
+> -	 * is already connected.
+> -	 * It cannot be done even on a TCP-style listening socket.
+> -	 */
+>  	if (sctp_sstate(sk, ESTABLISHED) || sctp_sstate(sk, CLOSING) ||
+> -	    (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING))) {
+> -		err = -EISCONN;
+> -		goto out_free;
+> +	    (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING)))
+> +		return -EISCONN;
+> +
+> +	daddr = addr_buf;
+> +	af = sctp_get_af_specific(daddr->sa.sa_family);
+> +	if (!af || af->sockaddr_len > addrs_size)
+> +		return -EINVAL;
+> +
+> +	err = sctp_verify_addr(sk, daddr, af->sockaddr_len);
+> +	if (err)
+> +		return err;
+> +
+> +	asoc = sctp_endpoint_lookup_assoc(ep, daddr, &transport);
+> +	if (asoc)
+> +		return asoc->state >= SCTP_STATE_ESTABLISHED ? -EISCONN
+> +							     : -EALREADY;
+> +
+> +	if (sctp_endpoint_is_peeled_off(ep, daddr))
+> +		return -EADDRNOTAVAIL;
+> +
+> +	if (!ep->base.bind_addr.port) {
+> +		if (sctp_autobind(sk))
+> +			return -EAGAIN;
+> +	} else {
+> +		if (ep->base.bind_addr.port < inet_prot_sock(net) &&
+> +		    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+> +			return -EACCES;
+>  	}
+>  
+> -	/* Walk through the addrs buffer and count the number of addresses. */
+> -	addr_buf = kaddrs;
+> -	while (walk_size < addrs_size) {
+> -		struct sctp_af *af;
+> +	scope = sctp_scope(daddr);
+> +	asoc = sctp_association_new(ep, sk, scope, GFP_KERNEL);
+> +	if (!asoc)
+> +		return -ENOMEM;
+>  
+> -		if (walk_size + sizeof(sa_family_t) > addrs_size) {
+> -			err = -EINVAL;
+> -			goto out_free;
+> -		}
+> +	err = sctp_assoc_set_bind_addr_from_ep(asoc, scope, GFP_KERNEL);
+> +	if (err < 0)
+> +		goto out_free;
+>  
+> -		sa_addr = addr_buf;
+> -		af = sctp_get_af_specific(sa_addr->sa.sa_family);
+> +	transport = sctp_assoc_add_peer(asoc, daddr, GFP_KERNEL, SCTP_UNKNOWN);
+> +	if (!transport) {
+> +		err = -ENOMEM;
+> +		goto out_free;
+> +	}
+>  
+> -		/* If the address family is not supported or if this address
+> -		 * causes the address buffer to overflow return EINVAL.
+> -		 */
+> -		if (!af || (walk_size + af->sockaddr_len) > addrs_size) {
+> -			err = -EINVAL;
+> +	addr_buf += af->sockaddr_len;
+> +	walk_size = af->sockaddr_len;
+> +	addrcnt = 1;
 
+This variable can be removed (in a follow-up patch). It's only
+incremented and never used other than that.
 
-It does call tcp_disconnect(), by one of the connect() call.
-
+> +	while (walk_size < addrs_size) {
+> +		err = -EINVAL;
+> +		if (walk_size + sizeof(sa_family_t) > addrs_size)
+>  			goto out_free;
+> -		}
+> -
+> -		port = ntohs(sa_addr->v4.sin_port);
+>  
+> -		/* Save current address so we can work with it */
+> -		memcpy(&to, sa_addr, af->sockaddr_len);
+> +		daddr = addr_buf;
+> +		af = sctp_get_af_specific(daddr->sa.sa_family);
+> +		if (!af || af->sockaddr_len + walk_size > addrs_size)
+> +			goto out_free;
+>  
+> -		err = sctp_verify_addr(sk, &to, af->sockaddr_len);
+> -		if (err)
+> +		if (asoc->peer.port != ntohs(daddr->v4.sin_port))
+>  			goto out_free;
+>  
+> -		/* Make sure the destination port is correctly set
+> -		 * in all addresses.
+> -		 */
+> -		if (asoc && asoc->peer.port && asoc->peer.port != port) {
+> -			err = -EINVAL;
+> +		err = sctp_verify_addr(sk, daddr, af->sockaddr_len);
+> +		if (err)
+>  			goto out_free;
+> -		}
+>  
+> -		/* Check if there already is a matching association on the
+> -		 * endpoint (other than the one created here).
+> -		 */
+> -		asoc2 = sctp_endpoint_lookup_assoc(ep, &to, &transport);
+> -		if (asoc2 && asoc2 != asoc) {
+> -			if (asoc2->state >= SCTP_STATE_ESTABLISHED)
+> -				err = -EISCONN;
+> -			else
+> -				err = -EALREADY;
+> +		old = sctp_endpoint_lookup_assoc(ep, daddr, &transport);
+> +		if (old && old != asoc) {
+> +			err = old->state >= SCTP_STATE_ESTABLISHED ? -EISCONN
+> +								   : -EALREADY;
+>  			goto out_free;
+>  		}
+>  
+> -		/* If we could not find a matching association on the endpoint,
+> -		 * make sure that there is no peeled-off association matching
+> -		 * the peer address even on another socket.
+> -		 */
+> -		if (sctp_endpoint_is_peeled_off(ep, &to)) {
+> +		if (sctp_endpoint_is_peeled_off(ep, daddr)) {
+>  			err = -EADDRNOTAVAIL;
+>  			goto out_free;
+>  		}
+>  
+> -		if (!asoc) {
+> -			/* If a bind() or sctp_bindx() is not called prior to
+> -			 * an sctp_connectx() call, the system picks an
+> -			 * ephemeral port and will choose an address set
+> -			 * equivalent to binding with a wildcard address.
+> -			 */
+> -			if (!ep->base.bind_addr.port) {
+> -				if (sctp_autobind(sk)) {
+> -					err = -EAGAIN;
+> -					goto out_free;
+> -				}
+> -			} else {
+> -				/*
+> -				 * If an unprivileged user inherits a 1-many
+> -				 * style socket with open associations on a
+> -				 * privileged port, it MAY be permitted to
+> -				 * accept new associations, but it SHOULD NOT
+> -				 * be permitted to open new associations.
+> -				 */
+> -				if (ep->base.bind_addr.port <
+> -				    inet_prot_sock(net) &&
+> -				    !ns_capable(net->user_ns,
+> -				    CAP_NET_BIND_SERVICE)) {
+> -					err = -EACCES;
+> -					goto out_free;
+> -				}
+> -			}
+> -
+> -			scope = sctp_scope(&to);
+> -			asoc = sctp_association_new(ep, sk, scope, GFP_KERNEL);
+> -			if (!asoc) {
+> -				err = -ENOMEM;
+> -				goto out_free;
+> -			}
+> -
+> -			err = sctp_assoc_set_bind_addr_from_ep(asoc, scope,
+> -							      GFP_KERNEL);
+> -			if (err < 0) {
+> -				goto out_free;
+> -			}
+> -
+> -		}
+> -
+> -		/* Prime the peer's transport structures.  */
+> -		transport = sctp_assoc_add_peer(asoc, &to, GFP_KERNEL,
+> +		transport = sctp_assoc_add_peer(asoc, daddr, GFP_KERNEL,
+>  						SCTP_UNKNOWN);
+>  		if (!transport) {
+>  			err = -ENOMEM;
+>  			goto out_free;
+>  		}
+>  
+> -		addrcnt++;
+> -		addr_buf += af->sockaddr_len;
+> +		addr_buf  += af->sockaddr_len;
+>  		walk_size += af->sockaddr_len;
+> +		addrcnt++;
+>  	}
+>  
+>  	/* In case the user of sctp_connectx() wants an association
+> @@ -1209,39 +1163,24 @@ static int __sctp_connect(struct sock *sk,
+>  	}
+>  
+>  	err = sctp_primitive_ASSOCIATE(net, asoc, NULL);
+> -	if (err < 0) {
+> +	if (err < 0)
+>  		goto out_free;
+> -	}
+>  
+>  	/* Initialize sk's dport and daddr for getpeername() */
+>  	inet_sk(sk)->inet_dport = htons(asoc->peer.port);
+> -	sp->pf->to_sk_daddr(sa_addr, sk);
+> +	sp->pf->to_sk_daddr(daddr, sk);
+>  	sk->sk_err = 0;
+>  
+> -	timeo = sock_sndtimeo(sk, flags & O_NONBLOCK);
+> -
+>  	if (assoc_id)
+>  		*assoc_id = asoc->assoc_id;
+>  
+> -	err = sctp_wait_for_connect(asoc, &timeo);
+> -	/* Note: the asoc may be freed after the return of
+> -	 * sctp_wait_for_connect.
+> -	 */
+> -
+> -	/* Don't free association on exit. */
+> -	asoc = NULL;
+> +	timeo = sock_sndtimeo(sk, flags & O_NONBLOCK);
+> +	return sctp_wait_for_connect(asoc, &timeo);
+>  
+>  out_free:
+>  	pr_debug("%s: took out_free path with asoc:%p kaddrs:%p err:%d\n",
+>  		 __func__, asoc, kaddrs, err);
+> -
+> -	if (asoc) {
+> -		/* sctp_primitive_ASSOCIATE may have added this association
+> -		 * To the hash table, try to unhash it, just in case, its a noop
+> -		 * if it wasn't hashed so we're safe
+> -		 */
+> -		sctp_association_free(asoc);
+> -	}
+> +	sctp_association_free(asoc);
+>  	return err;
+>  }
+>  
+> -- 
+> 2.1.0
+> 
