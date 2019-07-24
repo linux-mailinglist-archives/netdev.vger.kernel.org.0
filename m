@@ -2,172 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D46B174174
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 00:33:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 463CB74179
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 00:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729384AbfGXWdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 18:33:24 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:35705 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728130AbfGXWdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 18:33:22 -0400
-Received: by mail-qk1-f193.google.com with SMTP id r21so35056140qke.2;
-        Wed, 24 Jul 2019 15:33:21 -0700 (PDT)
+        id S1729415AbfGXWd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 18:33:58 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:40020 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726692AbfGXWd6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 18:33:58 -0400
+Received: by mail-ed1-f67.google.com with SMTP id k8so48440476eds.7;
+        Wed, 24 Jul 2019 15:33:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FeqBqcoUn/yFI9xWOlx5uPvHYLRND0UFM276km+KrdU=;
-        b=RDuCzKRRijQIBgEgz2UJ3mi3CXgoDfGliWY9PJtqaIvRnO3zndthnYKqEo3Z5oi06F
-         yoXrycD8hqle+RzyOw3UjGPEclogaUduIzNDLxWXf10PxtoGTyXgWgLeWmvqptRlQujG
-         MJkjwki2Mtd48vtuCezZ2WOSzO6z+JGKUbAZKodyPoYLZsqQ0ma/U2kCBBqlKVcZo/DN
-         5qKjRYwV6xefciskQQ9kKG69ASHefMdEk4M+8dnVX0GwokHX673Hjn0CIpADU8+tkiEM
-         AYfjeXdptSzPjpwBmxlXX7Fh4opYzpzmBbOZnLsJwVHofq8nDi16s7AjOnVg592Ddd6s
-         gBBg==
+        bh=ZUFDCZihyOAMtDKIntxfmltlyorITur9aOSpLJwBVKE=;
+        b=ZCyHnpB+wQnxW/kXXzJ5cRZfjRumGcIpmII4Dj48Z+kdowGWJBF9j/26HL6AtqSJcm
+         T1zuq4Q+6vcpQDYCT79O3YVFR1dRP9h+S2T21Qn+rQ/WPPDJsxF9gB6GYZp1hAQ/CiF9
+         Qdgj8LZ75C1g6nc7bdzJmUUwq/YOlmVUG3ZZGUwQiJSYwqB2+GzHq3buC/ya8EUPB6zd
+         /Gk3BqGlW53CY1S17keIxaHOmy2ysh8o2ARWmC2cXoHNUVqHSyZh/MKY0atrMTDGPYcu
+         80kzi+mcJksxOLverKynUSYJFCpvNsNXFixAlCorFjXS5adceFraL0heXqXq1L+z/gXZ
+         Vz/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FeqBqcoUn/yFI9xWOlx5uPvHYLRND0UFM276km+KrdU=;
-        b=ateNhQHiJ2ZK6m4Tq57xYBM9xUmxkYxw66qVOZfH/v3I9L7imRPhoqFxvRxfyuQPfZ
-         4q4P57gsMhWrWSgsJ7EA3VdvXMKTtwbPkIVzBI88lYjAkGOe1O2KGDjEAN1VKKszjAAk
-         5QYDLKnbNwHwzWWzeN001A2RC2vnORG8pVe0FNYNTsZ18qes9juIBPnBuQQsrpvBLUuT
-         E/HGke4moh49SG6ydepS9Fy9KLp1c3Yfzt2ncysEEw2o0saJh2Eh9ZtQlz1n3nafCNDf
-         Txj4o3qu+B9jNZkMswVosireWeaZHa0uCK/LoVEgq36IGIVWrRVemFFzAqdF8fVVAck9
-         brxg==
-X-Gm-Message-State: APjAAAV+1DOFfdJsT5AP1iInTiolqtqlBvhdvW9wcb4ocWfck//CejT1
-        /dbhppYYRmztqjGmWfPt8d2NR45P2GBPHHm8NXs=
-X-Google-Smtp-Source: APXvYqxwVmd0vRVRr/dySy4C5PI+D5WtMygzNsfgmMF7vd6ORiOD3OUdY6DsZF/8EKqiiiIXv1+E2yTBZkqeFGxIn8o=
-X-Received: by 2002:a37:a854:: with SMTP id r81mr56799075qke.378.1564007601197;
- Wed, 24 Jul 2019 15:33:21 -0700 (PDT)
+        bh=ZUFDCZihyOAMtDKIntxfmltlyorITur9aOSpLJwBVKE=;
+        b=We7/LwGC1M0NXlU1IvejizoVcAkAcYRnqvTLJ+U8PhmZZGO1kSHS7bR7Vw6XiL05Yl
+         9mIZTy3atqeqZH5LlV8Y2Pm4uskqQ5t35aCC4TjH46syWh2ezuDa7KiJ2tz/paepj2vc
+         FGvBmARP/OhiGGs13YSy6YlN2g5iu5nP8kZ4TCdM3YGCtN5cnlz/6tAUFadvubT7jgeI
+         Ps6vePHf1s+o4AhmRiEMBuqI9XA6gnX174No3ITostgm4gRpETwjatpj/hzk96eQmp/Z
+         8iP9iqA6mb1nYndsxmZ3fuGHZNoZCRF8uPda2eATgecPriMJO/BrUT/RGflUVhFLLbD6
+         AuCw==
+X-Gm-Message-State: APjAAAU/+O4WulnZUo8VqSk0uCRDjoLJKgy7juk3+HY0gw+F8enHe8fq
+        5YnJyVDMv7hYyyYObT7/OK1svco525g6oZHLczE=
+X-Google-Smtp-Source: APXvYqzLdObF7V5Na8mrkqM+zbDlECvPoE0A3EfMK3AN+hkYRlMqFXuccmvphAEx5TbsYWR3qyM84NH/spp5rmkJx3s=
+X-Received: by 2002:a50:b1db:: with SMTP id n27mr74572676edd.62.1564007636192;
+ Wed, 24 Jul 2019 15:33:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190724170018.96659-1-sdf@google.com> <20190724170018.96659-4-sdf@google.com>
-In-Reply-To: <20190724170018.96659-4-sdf@google.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Wed, 24 Jul 2019 15:33:09 -0700
-Message-ID: <CAPhsuW7n8tT83HmwU1YzAFiAmkt8h8uq+4fvxd9891y6=9o-ZA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/7] bpf/flow_dissector: support flags in BPF_PROG_TEST_RUN
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20190724165803.87470-1-brianvv@google.com> <20190724165803.87470-3-brianvv@google.com>
+ <CAF=yD-+a=t_YizdJpb_Q+zxR7iP-V-EarNsp9tjnFTRBjOtFvA@mail.gmail.com> <CABCgpaWCLJtDx8kHNiQZneqYZkZ3fzRGnipT5__kmwMhu01g=w@mail.gmail.com>
+In-Reply-To: <CABCgpaWCLJtDx8kHNiQZneqYZkZ3fzRGnipT5__kmwMhu01g=w@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 24 Jul 2019 18:33:20 -0400
+Message-ID: <CAF=yD-L6RpnxptBtcpVGzP4UoPLRxr2JiQGyRCoTca4jHioPXw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/6] bpf: add BPF_MAP_DUMP command to dump more
+ than one entry per call
+To:     Brian Vazquez <brianvv.kernel@gmail.com>
+Cc:     Brian Vazquez <brianvv@google.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
         Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>
+        Petar Penkov <ppenkov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 10:11 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > Because maps can be called from userspace and kernel code, this function
+> > > can have a scenario where the next_key was found but by the time we
+> > > try to retrieve the value the element is not there, in this case the
+> > > function continues and tries to get a new next_key value, skipping the
+> > > deleted key. If at some point the function find itself trap in a loop,
+> > > it will return -EINTR.
+> >
+> > Good to point this out! I don't think that unbounded continue;
+> > statements until an interrupt happens is sufficient. Please bound the
+> > number of retries to a low number.
 >
-> This will allow us to write tests for those flags.
->
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Petar Penkov <ppenkov@google.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> And what would it be a good number? Maybe 3 attempts?
 
-Acked-by: Song Liu <songliubraving@fb.com>
+3 sounds good to me.
 
-> ---
->  net/bpf/test_run.c | 39 +++++++++++++++++++++++++++++++++++----
->  1 file changed, 35 insertions(+), 4 deletions(-)
->
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 4e41d15a1098..444a7baed791 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -377,6 +377,22 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
->         return ret;
->  }
->
-> +static int verify_user_bpf_flow_keys(struct bpf_flow_keys *ctx)
-> +{
-> +       /* make sure the fields we don't use are zeroed */
-> +       if (!range_is_zero(ctx, 0, offsetof(struct bpf_flow_keys, flags)))
-> +               return -EINVAL;
-> +
-> +       /* flags is allowed */
-> +
-> +       if (!range_is_zero(ctx, offsetof(struct bpf_flow_keys, flags) +
-> +                          FIELD_SIZEOF(struct bpf_flow_keys, flags),
-> +                          sizeof(struct bpf_flow_keys)))
-> +               return -EINVAL;
-> +
-> +       return 0;
-> +}
-> +
->  int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
->                                      const union bpf_attr *kattr,
->                                      union bpf_attr __user *uattr)
-> @@ -384,9 +400,11 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
->         u32 size = kattr->test.data_size_in;
->         struct bpf_flow_dissector ctx = {};
->         u32 repeat = kattr->test.repeat;
-> +       struct bpf_flow_keys *user_ctx;
->         struct bpf_flow_keys flow_keys;
->         u64 time_start, time_spent = 0;
->         const struct ethhdr *eth;
-> +       unsigned int flags = 0;
->         u32 retval, duration;
->         void *data;
->         int ret;
-> @@ -395,9 +413,6 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
->         if (prog->type != BPF_PROG_TYPE_FLOW_DISSECTOR)
->                 return -EINVAL;
->
-> -       if (kattr->test.ctx_in || kattr->test.ctx_out)
-> -               return -EINVAL;
-> -
->         if (size < ETH_HLEN)
->                 return -EINVAL;
->
-> @@ -410,6 +425,18 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
->         if (!repeat)
->                 repeat = 1;
->
-> +       user_ctx = bpf_ctx_init(kattr, sizeof(struct bpf_flow_keys));
-> +       if (IS_ERR(user_ctx)) {
-> +               kfree(data);
-> +               return PTR_ERR(user_ctx);
-> +       }
-> +       if (user_ctx) {
-> +               ret = verify_user_bpf_flow_keys(user_ctx);
-> +               if (ret)
-> +                       goto out;
-> +               flags = user_ctx->flags;
-> +       }
-> +
->         ctx.flow_keys = &flow_keys;
->         ctx.data = data;
->         ctx.data_end = (__u8 *)data + size;
-> @@ -419,7 +446,7 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
->         time_start = ktime_get_ns();
->         for (i = 0; i < repeat; i++) {
->                 retval = bpf_flow_dissect(prog, &ctx, eth->h_proto, ETH_HLEN,
-> -                                         size, 0);
-> +                                         size, flags);
->
->                 if (signal_pending(current)) {
->                         preempt_enable();
-> @@ -450,8 +477,12 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
->
->         ret = bpf_test_finish(kattr, uattr, &flow_keys, sizeof(flow_keys),
->                               retval, duration);
-> +       if (!ret)
-> +               ret = bpf_ctx_finish(kattr, uattr, user_ctx,
-> +                                    sizeof(struct bpf_flow_keys));
->
->  out:
->         kfree(data);
-> +       kfree(user_ctx);
+> And in that case what error should be reported?
 
-nit: it is not really necessary now, but maybe put kfree(user_ctx)
-before kfree(data).
+One that's unambiguous and somewhat intuitive for the given issue.
+Perhaps EBUSY?
 
->         return ret;
->  }
-> --
-> 2.22.0.657.g960e92d24f-goog
+> > > The function will try to fit as much as possible in the buf provided and
+> > > will return -EINVAL if buf_len is smaller than elem_size.
+> > >
+> > > QUEUE and STACK maps are not supported.
+> > >
+> > > Note that map_dump doesn't guarantee that reading the entire table is
+> > > consistent since this function is always racing with kernel and user code
+> > > but the same behaviour is found when the entire table is walked using
+> > > the current interfaces: map_get_next_key + map_lookup_elem.
+> >
+> > > It is also important to note that with  a locked map, the lock is grabbed
+> > > for 1 entry at the time, meaning that the returned buf might or might not
+> > > be consistent.
+> >
+> > Would it be informative to signal to the caller if the read was
+> > complete and consistent (because the entire table was read while the
+> > lock was held)?
 >
+> Mmm.. not sure how we could signal that to the caller.  But I don't
+> think there's a way to know it was consistent
+
+Okay, that makes for a simple answer :) No need to try to add a signal, then.
