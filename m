@@ -2,108 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E603D72334
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 01:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04B317233F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 02:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727335AbfGWXyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 19:54:33 -0400
-Received: from mail-eopbgr60050.outbound.protection.outlook.com ([40.107.6.50]:36576
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726862AbfGWXyd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 19:54:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PcSiRdKbRLNvShBM3AnXvYfpsJD9f4Iqjzv20KU1eRx4HxheANSjhTab6GOSHQQ3bP4vcqX61AEhW+j0T3cZoIZhm3Ineh7830G6O360zxAyUh/b6cxoEHM5N0B0t0em+pEJe1KcOZI3Ol4XAvMCCZ5r+gaIEtWZg7rAh6rpCCOwYw0UpdXxMQ+iDjKmT59QzKKP7vBo3Zhmu1WufiGPD/FPefwcShpTKg1u1jEhCf+Hw+pwLWLrwKYGLhNkEGgTPC9NuMbtrL0Hy46P1a6mEGUcqMtvoWLcUYvbbdzTABGEh8lGskXDd0PSibE13kc85Bdhuz4yA8QmAp3iL4lDUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ilYVIweH+FlEWyEuX8DPkyf5M2Of556PZPUMNU25coQ=;
- b=VS5Wfy2jsxZNkWFDBN1+3xlE191Esq7mz+UJEn1VoEYAqcSOG0bj3q4lTLExKal/UWGroxZts1vrRi8XbflKLXoXBb/RfeeVttrqHnIHm5ClsgMp4VOYxrroY7vwYKL3a2yr45hG80Nfo+upF2Q1EyWKJjZuHbNnDBpMHHpYYim/ou4nPQoeYmsY3vKvY0WSo7saaHonLkmAoe/xgisutO+4OuA4Y5MlA0Zw2CrvWpibG9GzXbEKGyUg1fsyM6UtwkYx7zasGmG994A0a/J+6M6q1LgL9KPUk+wv2JlZWCeH93BMhL1rkvrqm8iXOVHyHaeDPqGf9toU/T3I1Ahd6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ilYVIweH+FlEWyEuX8DPkyf5M2Of556PZPUMNU25coQ=;
- b=f1OGU+0/48aC6MHcwzdFGumiY7eAqJpNHbDSIZ+1XQQHxxqui4SmKTrAfbgAe/pJMkLZwNTbkgtQqoaay52kmPSiuUtusDYgbQt77xjDCzOyD8cPArEPG4J6YkZ74Ta7uz2v2rV+S3aoRvp7fNgtu5aTKj7TUTRGgAilY+w0NTU=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2327.eurprd05.prod.outlook.com (10.168.55.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.17; Tue, 23 Jul 2019 23:54:29 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Tue, 23 Jul 2019
- 23:54:29 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "snelson@pensando.io" <snelson@pensando.io>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 net-next 11/19] ionic: Add Rx filter and rx_mode ndo
- support
-Thread-Topic: [PATCH v4 net-next 11/19] ionic: Add Rx filter and rx_mode ndo
- support
-Thread-Index: AQHVQNYh0hIXTEJm+k+NKGK2L/AMCqbYutkAgAAVmICAAARmAIAADWiA
-Date:   Tue, 23 Jul 2019 23:54:29 +0000
-Message-ID: <ba8349adaea24d955be3e98abf9ade59b0a9f580.camel@mellanox.com>
-References: <20190722214023.9513-12-snelson@pensando.io>
-         <20190723.143326.197667027838462669.davem@davemloft.net>
-         <e0c8417c-75bf-837f-01b5-60df302dafa7@pensando.io>
-         <20190723.160628.20093803405793483.davem@davemloft.net>
-In-Reply-To: <20190723.160628.20093803405793483.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7b4d0b20-4a04-4b67-7d99-08d70fc919f2
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2327;
-x-ms-traffictypediagnostic: DB6PR0501MB2327:
-x-microsoft-antispam-prvs: <DB6PR0501MB232704939AB6332AF686B0A3BEC70@DB6PR0501MB2327.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0107098B6C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(376002)(346002)(39860400002)(136003)(189003)(199004)(71200400001)(71190400001)(6436002)(53936002)(6486002)(66066001)(486006)(118296001)(2906002)(6512007)(8936002)(102836004)(68736007)(2501003)(6116002)(25786009)(6506007)(53546011)(76176011)(2616005)(478600001)(81166006)(99286004)(64756008)(26005)(14454004)(186003)(11346002)(66476007)(305945005)(58126008)(316002)(8676002)(4326008)(7736002)(256004)(4744005)(6246003)(3846002)(229853002)(76116006)(36756003)(5660300002)(86362001)(66556008)(66446008)(110136005)(66946007)(476003)(91956017)(14444005)(81156014)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2327;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: aiB4RP+VfHkhD8/2plrXmF/fbKUG5AxZCdefsX5QcS9il5F57MWRmsNfSNOgDj5+Jv1+QwntWr50E3p9l3yu0aFDSaG3jDy6H8Fzuhcx7VGtp6lKHO/gbRodJX+lozgIIMeGv1fC8ROMWk/EKXmI9gjJbfivKTe6rHzo+S8eeBoLPQfez350H+UNHQyUVwYsFEabqppA8pW8wmkauRCMWirUt1Rg36sdhfWGr04AASYGHCit6xNrS46bKg9bxVI3yZJmir41GZ3IQ/lk9mU1OdU2wCuykHCkZNA0cHbJIw3r9Js6RW1xIYxjlw6bdt2G0Fq68PVFLYntqvvCwaSoC6qGb3wZ1M/DrX1L/IfXxNGVIBILoucWwd2zfOCVh5xIrCmn+nFmvlHXEZo0p03QJAf9e7+xhRUOZ1muailoQkE=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9686E58695F586448FFF113D31822FB2@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b4d0b20-4a04-4b67-7d99-08d70fc919f2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2019 23:54:29.2680
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2327
+        id S1727456AbfGXAHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 20:07:31 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:53844 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbfGXAHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 20:07:30 -0400
+Received: by mail-pf1-f202.google.com with SMTP id 191so27276383pfy.20
+        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 17:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=NxZhietoTxqmHe7rhjQcGEBlG21hpAW5k0nWsJXcXr4=;
+        b=wOarilnMKZx4cITmPTK6cSjWrdOahcgXqFP1HIM05QQIGN6xajWlMfEHips/l2h3KT
+         Y2RBWVJc5NsEq9qvzKsW9H4x/RQjAkwa832tcCNtSOZdO3CLIlwLWEOkJb9Qy1Ad/J40
+         JL7RA1tZxgECFkzQiLNw3wvfd7BxXBv32uXA9nbLJWXZQmcFrUrsta5sAJb1V1CWvdJd
+         qFD2Lgnp3WeQA/xf6Th58gpZ8sJ7dybG5/CQz9Viv29TPw9zT6wAYkMDlSUKqB40nYFg
+         LZ3KGqny1zAKazPvmql1ZdJinKfsXFcRmJvWsw0A9ay54eIvPbrNUuov7ZwLH2yAm3cz
+         +3xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=NxZhietoTxqmHe7rhjQcGEBlG21hpAW5k0nWsJXcXr4=;
+        b=fnUDIBsstL5wID/LpjWfsVuCLC96VW5F1sqfCJBQt3re2DqEieg8NLipGk+Q6awFvH
+         uww4GNWyYTjr3Xbc0Curl+anbsYcaGky3NP4yybDgC4gRcDsTzRads1W5DZqo34iaqsY
+         T8INIz1tzEINqlER9ZN9CJwPR97NxTcP1Fv4jk8/qH6Dptp1d3ZGHrjrL0iapzQsk6+F
+         S2ou4P/6zzewrerqNTR0udM3FzW36XHsOpCJHuHvT1zUmkNqj1+0gybdQF0iY0mxGU2U
+         UWfSe9zfzugefyzSk6sF5dzWf3XA9UVIw8rN5ILwUQwYaeblkjAYfIl0huGanz5Hdpq1
+         9z6A==
+X-Gm-Message-State: APjAAAVDNO/Q1qsvLHeEsKL6KdOQ/zlLFtgEpCNO1SFeFUdSS+o5zI9v
+        addHLsvV5FL6Y8EwYIie2RdcpmNZIdvQg1ihMF/UmVDk3huiIe+fJOkwkxk5XkGjZj50JUmgnEY
+        puHUSv6IRHIVpzSU7dbsguD0TZH3MIiCAMNuJbWt5QfELfws7pYxqAXkQ+BXP/H27Idpma8J6
+X-Google-Smtp-Source: APXvYqxqwVH+wUgI7kJKRoRGynBiBbLyVCYeeu36YD5QY4xlH72vjCuk/pzuVz7PHeu8kqdqm6wepAHHcP9fZ9aH
+X-Received: by 2002:a65:6846:: with SMTP id q6mr39921085pgt.150.1563926849500;
+ Tue, 23 Jul 2019 17:07:29 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 17:07:23 -0700
+Message-Id: <20190724000725.15634-1-allanzhang@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.709.g102302147b-goog
+Subject: [PATCH bpf-next v10 0/2] bpf: Allow bpf_skb_event_output for more
+ prog types
+From:   Allan Zhang <allanzhang@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org, songliubraving@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com
+Cc:     ast@kernel.org, Allan Zhang <allanzhang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA3LTIzIGF0IDE2OjA2IC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206IFNoYW5ub24gTmVsc29uIDxzbmVsc29uQHBlbnNhbmRvLmlvPg0KPiBEYXRlOiBUdWUs
-IDIzIEp1bCAyMDE5IDE1OjUwOjQzIC0wNzAwDQo+IA0KPiA+IE9uIDcvMjMvMTkgMjozMyBQTSwg
-RGF2aWQgTWlsbGVyIHdyb3RlOg0KPiA+ID4gR2VuZXJhbGx5IGludGVyZmFjZSBhZGRyZXNzIGNo
-YW5nZXMgYXJlIGV4cGVjdGVkIHRvIGJlDQo+ID4gPiBzeW5jaHJvbm91cy4NCj4gPiBZZWFoLCB0
-aGlzIGJvdGhlcnMgbWUgYSBiaXQgYXMgd2VsbCwgYnV0IHRoZSBhZGRyZXNzIGNoYW5nZSBjYWxs
-cw0KPiA+IGNvbWUNCj4gPiBpbiB1bmRlciBzcGluX2xvY2tfYmgoKSwgYW5kIEknbSByZWx1Y3Rh
-bnQgdG8gbWFrZSBhbiBBZG1pblEgY2FsbA0KPiA+IHVuZGVyIHRoZSBfYmggdGhhdCBjb3VsZCBi
-bG9jayBmb3IgYSBmZXcgc2Vjb25kcy4NCj4gDQo+IFNvIGl0J3Mgbm90IGFib3V0IG1lbW9yeSBh
-bGxvY2F0aW9uIGJ1dCByYXRoZXIgdGhlIGZhY3QgdGhhdCB0aGUNCj4gZGV2aWNlDQo+IG1pZ2h0
-IHRha2UgYSB3aGlsZSB0byBjb21wbGV0ZT8NCj4gDQo+IENhbiB5b3Ugc3RhcnQgdGhlIG9wZXJh
-dGlvbiBzeW5jaHJvbm91c2x5IHlldCBjb21wbGV0ZSBpdCBhc3luYz8NCg0KVGhlIGRyaXZlciBp
-cyBkb2luZyBidXN5IHBvbGxpbmcgb24gY29tbWFuZCBjb21wbGV0aW9uLCBkb2luZyBvbmx5IGJ1
-c3kNCnBvbGxpbmcgb24gY29tcGxldGlvbiBzdGF0dXMgaW4gdGhlIGRlZmVycmVkIHdvcmsgd2ls
-bCBub3QgYmUgbXVjaA0KZGlmZmVyZW50IHRoYW4gd2hhdCB0aGV5IGhhdmUgbm93Li4gDQoNCmFz
-eW5jIGNvbXBsZXRpb24gd2lsbCBvbmx5IG1ha2Ugc2luY2UgaWYgdGhlIGhhcmR3YXJlIHN1cHBv
-cnRzDQppbnRlcnJ1cHQgYmFzZWQgKE1TSS14KSBjb21tYW5kIGNvbXBsZXRpb24uDQo=
+Software event output is only enabled by a few prog types right now (TC,
+LWT out, XDP, sockops). Many other skb based prog types need
+bpf_skb_event_output to produce software event.
+
+More prog types are enabled to access bpf_skb_event_output in this
+patch.
+
+v10 changes:
+Resubmit (v9 is submitted when bpf branch is closed).
+
+v9 changes:
+add "Acked-by" field.
+
+v8 changes:
+No actual change, just cc to netdev@vger.kernel.org and
+bpf@vger.kernel.org.
+v7 patches are acked by Song Liu.
+
+v7 changes:
+Reformat from hints by scripts/checkpatch.pl, including Song's comment
+on signed-off-by name to captical case in cover letter.
+3 of hints are ignored:
+1. new file mode.
+2. SPDX-License-Identifier for event_output.c since all files under
+   this dir have no such line.
+3. "Macros ... enclosed in parentheses" for macro in event_output.c
+   due to code's nature.
+
+Change patch 02 subject "bpf:..." to "selftests/bpf:..."
+
+v6 changes:
+Fix Signed-off-by, fix fixup map creation.
+
+v5 changes:
+Fix typos, reformat comments in event_output.c, move revision history to
+cover letter.
+
+v4 changes:
+Reformating log message.
+
+v3 changes:
+Reformating log message.
+
+v2 changes:
+Reformating log message.
+
+Allan Zhang (2):
+  bpf: Allow bpf_skb_event_output for a few prog types
+  selftests/bpf: Add selftests for bpf_perf_event_output
+
+ net/core/filter.c                             |  6 ++
+ tools/testing/selftests/bpf/test_verifier.c   | 12 ++-
+ .../selftests/bpf/verifier/event_output.c     | 94 +++++++++++++++++++
+ 3 files changed, 111 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/verifier/event_output.c
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
