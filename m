@@ -2,43 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 802B7724ED
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D24C9724EF
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726148AbfGXCvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:51:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47474 "EHLO mail.kernel.org"
+        id S1726339AbfGXCvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:51:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47580 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725827AbfGXCvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:51:10 -0400
+        id S1725827AbfGXCvl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:51:41 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06C33229F3;
-        Wed, 24 Jul 2019 02:51:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0F46D229F3;
+        Wed, 24 Jul 2019 02:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563936669;
-        bh=58GvADylPQ9DbBziu9oSNZ/UR9579iHMOg2RDGDnwqw=;
+        s=default; t=1563936700;
+        bh=fUquMv1WeuK4iH/1nBiu5hVqhvkBKuU6BdiiQubXYhM=;
         h=Date:From:To:Cc:Subject:From;
-        b=Ntaqi3vurk28SUcUUFpVXaq7Yq++lilbOtifesJz/yTBeeTOuSZC9uPoc6etauNQe
-         ZgcEojF97wEHJ+WQwv28c++Hf9Yb3fuJ8qBe5UpCnIYRqxmI1QN6Wl2Tqgw1VLRNx0
-         S8UVlwc9NqzndoUusjemaiR4JMtZaLQsNON9M/ng=
-Date:   Tue, 23 Jul 2019 19:51:07 -0700
+        b=eBBkzWJL3PlsENz/UfzZfUBmLv6jVvNv429EH51O0pGWP+Mn9q04j6yNljfMTP8OJ
+         K8cYsr2LzOc1g4OaugCZzi+OmZ8HNHLetIwj6dPLmpF27/goi2o9U9f9ZROW0iAxwo
+         MeNFtNbD0wbBjggNu2OtCb6+9lH01JN9v+P+/KZI=
+Date:   Tue, 23 Jul 2019 19:51:38 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 1 open syzbot bug in "net/sunrpc" subsystem
-Message-ID: <20190724025107.GM643@sol.localdomain>
-Mail-Followup-To: linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
+Subject: Reminder: 1 open syzbot bug in "net/strparser" subsystem
+Message-ID: <20190724025138.GN643@sol.localdomain>
+Mail-Followup-To: netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
@@ -54,35 +45,35 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 1 of them as possibly being a bug in the "net/sunrpc" subsystem.
+marked 1 of them as possibly being a bug in the "net/strparser" subsystem.
 
 If you believe this bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed this bug to the "net/sunrpc" subsystem, please
+If you believe I misattributed this bug to the "net/strparser" subsystem, please
 let me know, and if possible forward the report to the correct people or mailing
 list.
 
 Here is the bug:
 
 --------------------------------------------------------------------------------
-Title:              linux-next test error: WARNING in remove_proc_entry
-Last occurred:      69 days ago
-Reported:           71 days ago
-Branches:           linux-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=0b23d0049d5af6699d68ff17e2db121569b78fd4
-Original thread:    https://lkml.kernel.org/lkml/00000000000055d6590588bf90bf@google.com/T/#u
+Title:              WARNING in strp_done (2)
+Last occurred:      163 days ago
+Reported:           174 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=95997d9e84b5e2f966ac13c3ccf01670e77ca4f6
+Original thread:    https://lkml.kernel.org/lkml/0000000000007c36aa0580b16b56@google.com/T/#u
 
-Unfortunately, this bug does not have a reproducer.
+This bug has a syzkaller reproducer only.
 
-No one has replied to the original thread for this bug yet.
+No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+4887e9dd9042fae2a9c2@syzkaller.appspotmail.com
+    Reported-by: syzbot+ea38a133bb90dd367b6e@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/00000000000055d6590588bf90bf@google.com
+https://lkml.kernel.org/r/0000000000007c36aa0580b16b56@google.com
 
