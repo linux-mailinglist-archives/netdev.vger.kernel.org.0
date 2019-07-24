@@ -2,140 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF77D731F5
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEC0F73239
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728325AbfGXOls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 10:41:48 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:41228 "EHLO inva021.nxp.com"
+        id S2387435AbfGXOwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 10:52:36 -0400
+Received: from node.akkea.ca ([192.155.83.177]:58462 "EHLO node.akkea.ca"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725870AbfGXOlr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 10:41:47 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B46B0200348;
-        Wed, 24 Jul 2019 16:41:44 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A786520033E;
-        Wed, 24 Jul 2019 16:41:44 +0200 (CEST)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 41CC6205D8;
-        Wed, 24 Jul 2019 16:41:44 +0200 (CEST)
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     andrew@lunn.ch, Rob Herring <robh+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, alexandru.marginean@nxp.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 4/4] arm64: dts: fsl: ls1028a: Enable eth port1 on the ls1028a QDS board
-Date:   Wed, 24 Jul 2019 17:41:41 +0300
-Message-Id: <1563979301-596-5-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1563979301-596-1-git-send-email-claudiu.manoil@nxp.com>
-References: <1563979301-596-1-git-send-email-claudiu.manoil@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726422AbfGXOwg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 10:52:36 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by node.akkea.ca (Postfix) with ESMTP id 9FD424E2010;
+        Wed, 24 Jul 2019 14:52:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
+        t=1563979955; bh=+2e6JvgeBJMYL6tuzdR0QNS5B6RGy+3p+M0wb5aTC+8=;
+        h=From:To:Cc:Subject:Date;
+        b=waFQTHr1Yg8fj0ck5KBtd4B4akQsnqM2x9n84mzsuLcH0v2FN7IjE/JHFAvmUvNKn
+         khj++FFvgxLJMfKELQkB4N9ypDMZ8jOZvZnXazaauhtlvjhFvS4lCsGUZa6r+cTzGY
+         QTZuLQ7csi1bmHmINYI75ZAcKM16FL4hckGkPqFc=
+X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
+Received: from node.akkea.ca ([127.0.0.1])
+        by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id pm5yXsXOHYYl; Wed, 24 Jul 2019 14:52:35 +0000 (UTC)
+Received: from midas.localdomain (S0106788a2041785e.gv.shawcable.net [70.66.86.75])
+        by node.akkea.ca (Postfix) with ESMTPSA id D8A874E2003;
+        Wed, 24 Jul 2019 14:52:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
+        t=1563979955; bh=+2e6JvgeBJMYL6tuzdR0QNS5B6RGy+3p+M0wb5aTC+8=;
+        h=From:To:Cc:Subject:Date;
+        b=waFQTHr1Yg8fj0ck5KBtd4B4akQsnqM2x9n84mzsuLcH0v2FN7IjE/JHFAvmUvNKn
+         khj++FFvgxLJMfKELQkB4N9ypDMZ8jOZvZnXazaauhtlvjhFvS4lCsGUZa6r+cTzGY
+         QTZuLQ7csi1bmHmINYI75ZAcKM16FL4hckGkPqFc=
+From:   "Angus Ainslie (Purism)" <angus@akkea.ca>
+To:     kernel@puri.sm
+Cc:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>
+Subject: [PATCH 0/2] Add the BroadMobi BM818 card
+Date:   Wed, 24 Jul 2019 07:52:25 -0700
+Message-Id: <20190724145227.27169-1-angus@akkea.ca>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS1028a has one Ethernet management interface. On the QDS board, the
-MDIO signals are multiplexed to either on-board AR8035 PHY device or
-to 4 PCIe slots allowing for SGMII cards.
-To enable the Ethernet ENETC Port 1, which can only be connected to a
-RGMII PHY, the multiplexer needs to be configured to route the MDIO to
-the AR8035 PHY.  The MDIO/MDC routing is controlled by bits 7:4 of FPGA
-board config register 0x54, and value 0 selects the on-board RGMII PHY.
-The FPGA board config registers are accessible on the i2c bus, at address
-0x66.
+Add qmi_wwan and option support for the BroadMobi BM818
 
-The PF3 MDIO PCIe integrated endpoint device allows for centralized access
-to the MDIO bus.  Add the corresponding devicetree node and set it to be
-the MDIO bus parent.
+Bob Ham (2):
+  usb: serial: option: Add the BroadMobi BM818 card
+  net: usb: qmi_wwan: Add the BroadMobi BM818 card
 
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
----
-v1 - none
+ drivers/net/usb/qmi_wwan.c  | 1 +
+ drivers/usb/serial/option.c | 2 ++
+ 2 files changed, 3 insertions(+)
 
- .../boot/dts/freescale/fsl-ls1028a-qds.dts    | 40 +++++++++++++++++++
- .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  6 +++
- 2 files changed, 46 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index de6ef39f3118..663c4b728c07 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -85,6 +85,26 @@
- 			system-clock-frequency = <25000000>;
- 		};
- 	};
-+
-+	mdio-mux {
-+		compatible = "mdio-mux-multiplexer";
-+		mux-controls = <&mux 0>;
-+		mdio-parent-bus = <&enetc_mdio_pf3>;
-+		#address-cells=<1>;
-+		#size-cells = <0>;
-+
-+		/* on-board RGMII PHY */
-+		mdio@0 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0>;
-+
-+			qds_phy1: ethernet-phy@5 {
-+				/* Atheros 8035 */
-+				reg = <5>;
-+			};
-+		};
-+	};
- };
- 
- &duart0 {
-@@ -164,6 +184,26 @@
- 			};
- 		};
- 	};
-+
-+	fpga@66 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "fsl,ls1028aqds-fpga", "fsl,fpga-qixis-i2c",
-+			     "simple-mfd";
-+		reg = <0x66>;
-+
-+		mux: mux-controller {
-+			compatible = "reg-mux";
-+			#mux-control-cells = <1>;
-+			mux-reg-masks = <0x54 0xf0>; /* 0: reg 0x54, bits 7:4 */
-+		};
-+	};
-+
-+};
-+
-+&enetc_port1 {
-+	phy-handle = <&qds_phy1>;
-+	phy-connection-type = "rgmii-id";
- };
- 
- &sai1 {
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 7975519b4f56..de71153fda00 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -536,6 +536,12 @@
- 				compatible = "fsl,enetc";
- 				reg = <0x000100 0 0 0 0>;
- 			};
-+			enetc_mdio_pf3: mdio@0,3 {
-+				compatible = "fsl,enetc-mdio";
-+				reg = <0x000300 0 0 0 0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
- 			ethernet@0,4 {
- 				compatible = "fsl,enetc-ptp";
- 				reg = <0x000400 0 0 0 0>;
 -- 
 2.17.1
 
