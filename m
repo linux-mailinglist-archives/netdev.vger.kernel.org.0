@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75E537262F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 06:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3AE672634
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 06:26:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726671AbfGXEZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 00:25:54 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:33377 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfGXEZh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 00:25:37 -0400
-Received: by mail-pl1-f194.google.com with SMTP id c14so21403885plo.0;
-        Tue, 23 Jul 2019 21:25:36 -0700 (PDT)
+        id S1726693AbfGXEZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 00:25:56 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37491 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726508AbfGXEZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 00:25:38 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i70so9766797pgd.4;
+        Tue, 23 Jul 2019 21:25:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ConQbG+Oem1Q8xZVMGorLyFV++CtkhuR2d2QhctIH1U=;
-        b=rzlDdGXtnPNF/N6VGSj5OlnkKQVNzuJZSX88h3k0QaSU7x9XxY6d4zWea62ZR3fNtS
-         gNMZr45iIvfH5HQRUOMwyNN/jLIH836GcUp8Lf+aNFxxaV9vdrr625gCfyA8XZW5PN/Q
-         pwujb2Pq5pgz78btiFjK3sxUmpLDWtYh/fYuVQy1tXkvqQxjANX5Mpn0h7bykgaCkfn1
-         tCFvQq5xWW5YoxVJrXQ4tXX8LNF75ePai0HBYrs+WY7yUOWhn6yI6XBVflq1lgPq7qJv
-         MiEt1P/meAHMnJy5EKWXyM1HfNJ7Mhgk5eJlB+ONmrDSnY2e4Df2D52oQWcyMMCO39pJ
-         Eo+g==
+        bh=02PLAmxEK74OFGQcxHpfkZPpYQRAkLSlGOrHVK7lAMw=;
+        b=ePnIO78ePHju7ebrVW+7E2J/vpPNCVR6NpW8CfFYZY8+SSmWHWKTO0NxnamQnOd1xO
+         1OGkt7YIiEVXHuQP8H6qf68cFYAXKIBbDAmLkkhsEsKXGaZ+gv+hELN1BEUzOzwBMd5C
+         7+HvBq9DyjWP27jxx3AYMLHiRTGVA6MLCEKX2iEJB87gzmXSiGwi7V4lsrRtpgVdiW2p
+         S3MHstLpNUFBNRlULB+VzXVBuGOOpmhbNeL8feVmi88K1eJfS5jDJOTI4suhlSh6IsAx
+         VQkyNWZZC80jbTtz6ZOUtfZ39jWAkyRwTKuVKYxnomrnDfjnpzs8p0BXzMO9GjL2eB9Q
+         8kCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ConQbG+Oem1Q8xZVMGorLyFV++CtkhuR2d2QhctIH1U=;
-        b=gqq0hC8pLvpViSGHgy+tAyVN/mm+fRNg+vzn50fDt9BmPpFApXwp5FHuFt+Za9nX9y
-         X21X64CPz2ZYFs1DnLNoJ64aXkp3zvIYLm9t7KYrzIagPwG3Lv1GFQchZ3iowL9bg8P7
-         eTc+qmgj5PArB3EDuImgpFg4p0+OootFwXovyoiivicH95JvGqhyTsRhMbkX824O6bOs
-         Y1EDaVrZ9rBFTnux2Mui27ZM+IeehIXnXHrimHAEY6uY5W3wCGyjln7KNf5ZLG9VzDGJ
-         2HJbm/fqdarLXaHThhhzRYSrfMasmpk+4m13RlLbW2uMNjspcGUkmysgSoNlwC1y/iEG
-         yLCw==
-X-Gm-Message-State: APjAAAWjz9QfEhD2hP8DaeEAwp0/0woWdKGAk9B0L+OcZDvARY1O44zK
-        6Z7AOGZQB2zKOFln9R51UX8=
-X-Google-Smtp-Source: APXvYqyQhtv0FnqZ/I/TW3TWJg4eP/mju41WYZg75l/6hWymbmp//VEgOy1EsZaAb3L+vlqi+tLiHg==
-X-Received: by 2002:a17:902:6b44:: with SMTP id g4mr83239156plt.152.1563942335854;
-        Tue, 23 Jul 2019 21:25:35 -0700 (PDT)
+        bh=02PLAmxEK74OFGQcxHpfkZPpYQRAkLSlGOrHVK7lAMw=;
+        b=Onb1IXn1PeMaVNURX9sRo4cVT8jwP/khTUV18K+D2qS9Gho1T/5cTtSiMHYALdI/7W
+         I3Cm0nD5NJyTNMfT/Nzb85ShpUKzlRGUofhygOoyuqIVvM7fJGtLvZz/38EEL9IJks2O
+         bqa2VRRKiHPQK4AXaJ62+sEueTk1D2Vt8ggi3bQBY8QMtjRCmmh7c7fnllf5D52j9Bo5
+         lHqCablp/4ZTghJsYu+JqAUtouoKraZr201xNyD8tVTdLBjAu4VOHiDTFexWquh3vjZe
+         V3CqaAlwA+/W8T3mPIvWtVYdfcqvhVLe9+CR4zUjE0d4QzKS9Mlozl1Gq/cXEg6JHG5e
+         V5BQ==
+X-Gm-Message-State: APjAAAVFON0PTnfiGI2kN3XCj7NrTun4q5s9xSFrk8gpOt1Mn+smVsBt
+        28p32owEvausVNTgifpiC1g=
+X-Google-Smtp-Source: APXvYqzqsCqiqq73YLTFw/re4Wrx/oAutFm/LKqajLsW6nTmQ7iAK5rTUPq3/lEGra2dE5Y0hbuJJw==
+X-Received: by 2002:a62:cdc3:: with SMTP id o186mr9322982pfg.168.1563942337240;
+        Tue, 23 Jul 2019 21:25:37 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id a15sm34153364pgw.3.2019.07.23.21.25.34
+        by smtp.gmail.com with ESMTPSA id a15sm34153364pgw.3.2019.07.23.21.25.35
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 21:25:35 -0700 (PDT)
+        Tue, 23 Jul 2019 21:25:36 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -73,12 +73,10 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Johannes Thumshirn <jthumshirn@suse.de>,
         Ming Lei <ming.lei@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
-        Boaz Harrosh <boaz@plexistor.com>,
-        "Yan, Zheng" <zyan@redhat.com>, Sage Weil <sage@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 10/12] fs/ceph: convert put_page() to put_user_page*()
-Date:   Tue, 23 Jul 2019 21:25:16 -0700
-Message-Id: <20190724042518.14363-11-jhubbard@nvidia.com>
+        Boaz Harrosh <boaz@plexistor.com>
+Subject: [PATCH 11/12] 9p/net: convert put_page() to put_user_page*()
+Date:   Tue, 23 Jul 2019 21:25:17 -0700
+Message-Id: <20190724042518.14363-12-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190724042518.14363-1-jhubbard@nvidia.com>
 References: <20190724042518.14363-1-jhubbard@nvidia.com>
@@ -99,16 +97,12 @@ via the new put_user_page*() routines, instead of via put_page().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Changes from Jérôme's original patch:
-
-* Use the enhanced put_user_pages_dirty_lock().
-
 Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 Cc: linux-fsdevel@vger.kernel.org
 Cc: linux-block@vger.kernel.org
 Cc: linux-mm@kvack.org
-Cc: ceph-devel@vger.kernel.org
+Cc: v9fs-developer@lists.sourceforge.net
 Cc: Jan Kara <jack@suse.cz>
 Cc: Dan Williams <dan.j.williams@intel.com>
 Cc: Alexander Viro <viro@zeniv.linux.org.uk>
@@ -120,176 +114,123 @@ Cc: Dave Chinner <david@fromorbit.com>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Matthew Wilcox <willy@infradead.org>
 Cc: Boaz Harrosh <boaz@plexistor.com>
-Cc: "Yan, Zheng" <zyan@redhat.com>
-Cc: Sage Weil <sage@redhat.com>
-Cc: Ilya Dryomov <idryomov@gmail.com>
+Cc: Eric Van Hensbergen <ericvh@gmail.com>
+Cc: Latchesar Ionkov <lucho@ionkov.net>
+Cc: Dominique Martinet <asmadeus@codewreck.org>
 ---
- fs/ceph/file.c | 62 ++++++++++++++++++++++++++++++++++++++------------
- 1 file changed, 48 insertions(+), 14 deletions(-)
+ net/9p/trans_common.c | 14 ++++++++++----
+ net/9p/trans_common.h |  3 ++-
+ net/9p/trans_virtio.c | 18 +++++++++++++-----
+ 3 files changed, 25 insertions(+), 10 deletions(-)
 
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index 685a03cc4b77..c628a1f96978 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -158,18 +158,26 @@ static ssize_t iter_get_bvecs_alloc(struct iov_iter *iter, size_t maxsize,
- 	return bytes;
- }
- 
--static void put_bvecs(struct bio_vec *bvecs, int num_bvecs, bool should_dirty)
-+static void put_bvecs(struct bio_vec *bv, int num_bvecs, bool should_dirty,
-+		      bool from_gup)
+diff --git a/net/9p/trans_common.c b/net/9p/trans_common.c
+index 3dff68f05fb9..e5c359c369a6 100644
+--- a/net/9p/trans_common.c
++++ b/net/9p/trans_common.c
+@@ -19,12 +19,18 @@
+ /**
+  *  p9_release_pages - Release pages after the transaction.
+  */
+-void p9_release_pages(struct page **pages, int nr_pages)
++void p9_release_pages(struct page **pages, int nr_pages, bool from_gup)
  {
  	int i;
  
-+
- 	for (i = 0; i < num_bvecs; i++) {
--		if (bvecs[i].bv_page) {
-+		if (!bv[i].bv_page)
-+			continue;
-+
-+		if (from_gup) {
-+			put_user_pages_dirty_lock(&bv[i].bv_page, 1,
-+						  should_dirty);
-+		} else {
- 			if (should_dirty)
--				set_page_dirty_lock(bvecs[i].bv_page);
--			put_page(bvecs[i].bv_page);
-+				set_page_dirty_lock(bv[i].bv_page);
-+			put_page(bv[i].bv_page);
- 		}
- 	}
--	kvfree(bvecs);
-+	kvfree(bv);
+-	for (i = 0; i < nr_pages; i++)
+-		if (pages[i])
+-			put_page(pages[i]);
++	if (from_gup) {
++		for (i = 0; i < nr_pages; i++)
++			if (pages[i])
++				put_user_page(pages[i]);
++	} else {
++		for (i = 0; i < nr_pages; i++)
++			if (pages[i])
++				put_page(pages[i]);
++	}
  }
+ EXPORT_SYMBOL(p9_release_pages);
+diff --git a/net/9p/trans_common.h b/net/9p/trans_common.h
+index c43babb3f635..dcf025867314 100644
+--- a/net/9p/trans_common.h
++++ b/net/9p/trans_common.h
+@@ -12,4 +12,5 @@
+  *
+  */
  
- /*
-@@ -730,6 +738,7 @@ struct ceph_aio_work {
- };
- 
- static void ceph_aio_retry_work(struct work_struct *work);
-+static void ceph_aio_from_gup_retry_work(struct work_struct *work);
- 
- static void ceph_aio_complete(struct inode *inode,
- 			      struct ceph_aio_request *aio_req)
-@@ -774,7 +783,7 @@ static void ceph_aio_complete(struct inode *inode,
- 	kfree(aio_req);
- }
- 
--static void ceph_aio_complete_req(struct ceph_osd_request *req)
-+static void _ceph_aio_complete_req(struct ceph_osd_request *req, bool from_gup)
+-void p9_release_pages(struct page **, int);
++void p9_release_pages(struct page **pages, int nr_pages, bool from_gup);
++
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index a3cd90a74012..3714ca5ecdc2 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -306,11 +306,14 @@ static int p9_get_mapped_pages(struct virtio_chan *chan,
+ 			       struct iov_iter *data,
+ 			       int count,
+ 			       size_t *offs,
+-			       int *need_drop)
++			       int *need_drop,
++			       bool *from_gup)
  {
- 	int rc = req->r_result;
- 	struct inode *inode = req->r_inode;
-@@ -793,7 +802,9 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
+ 	int nr_pages;
+ 	int err;
  
- 		aio_work = kmalloc(sizeof(*aio_work), GFP_NOFS);
- 		if (aio_work) {
--			INIT_WORK(&aio_work->work, ceph_aio_retry_work);
-+			INIT_WORK(&aio_work->work, from_gup ?
-+				  ceph_aio_from_gup_retry_work :
-+				  ceph_aio_retry_work);
- 			aio_work->req = req;
- 			queue_work(ceph_inode_to_client(inode)->inode_wq,
- 				   &aio_work->work);
-@@ -830,7 +841,7 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
- 	}
- 
- 	put_bvecs(osd_data->bvec_pos.bvecs, osd_data->num_bvecs,
--		  aio_req->should_dirty);
-+		  aio_req->should_dirty, from_gup);
- 	ceph_osdc_put_request(req);
- 
- 	if (rc < 0)
-@@ -840,7 +851,17 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
- 	return;
- }
- 
--static void ceph_aio_retry_work(struct work_struct *work)
-+static void ceph_aio_complete_req(struct ceph_osd_request *req)
-+{
-+	_ceph_aio_complete_req(req, false);
-+}
++	*from_gup = false;
 +
-+static void ceph_aio_from_gup_complete_req(struct ceph_osd_request *req)
-+{
-+	_ceph_aio_complete_req(req, true);
-+}
-+
-+static void _ceph_aio_retry_work(struct work_struct *work, bool from_gup)
- {
- 	struct ceph_aio_work *aio_work =
- 		container_of(work, struct ceph_aio_work, work);
-@@ -891,7 +912,8 @@ static void ceph_aio_retry_work(struct work_struct *work)
+ 	if (!iov_iter_count(data))
+ 		return 0;
  
- 	ceph_osdc_put_request(orig_req);
+@@ -332,6 +335,7 @@ static int p9_get_mapped_pages(struct virtio_chan *chan,
+ 		*need_drop = 1;
+ 		nr_pages = DIV_ROUND_UP(n + *offs, PAGE_SIZE);
+ 		atomic_add(nr_pages, &vp_pinned);
++		*from_gup = iov_iter_get_pages_use_gup(data);
+ 		return n;
+ 	} else {
+ 		/* kernel buffer, no need to pin pages */
+@@ -397,13 +401,15 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 	size_t offs;
+ 	int need_drop = 0;
+ 	int kicked = 0;
++	bool in_from_gup, out_from_gup;
  
--	req->r_callback = ceph_aio_complete_req;
-+	req->r_callback = from_gup ? ceph_aio_from_gup_complete_req :
-+			  ceph_aio_complete_req;
- 	req->r_inode = inode;
- 	req->r_priv = aio_req;
+ 	p9_debug(P9_DEBUG_TRANS, "virtio request\n");
  
-@@ -899,13 +921,23 @@ static void ceph_aio_retry_work(struct work_struct *work)
- out:
- 	if (ret < 0) {
- 		req->r_result = ret;
--		ceph_aio_complete_req(req);
-+		_ceph_aio_complete_req(req, from_gup);
- 	}
- 
- 	ceph_put_snap_context(snapc);
- 	kfree(aio_work);
- }
- 
-+static void ceph_aio_retry_work(struct work_struct *work)
-+{
-+	_ceph_aio_retry_work(work, false);
-+}
-+
-+static void ceph_aio_from_gup_retry_work(struct work_struct *work)
-+{
-+	_ceph_aio_retry_work(work, true);
-+}
-+
- static ssize_t
- ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 		       struct ceph_snap_context *snapc,
-@@ -927,6 +959,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 	loff_t pos = iocb->ki_pos;
- 	bool write = iov_iter_rw(iter) == WRITE;
- 	bool should_dirty = !write && iter_is_iovec(iter);
-+	bool from_gup = iov_iter_get_pages_use_gup(iter);
- 
- 	if (write && ceph_snap(file_inode(file)) != CEPH_NOSNAP)
- 		return -EROFS;
-@@ -1023,7 +1056,8 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 			aio_req->num_reqs++;
- 			atomic_inc(&aio_req->pending_reqs);
- 
--			req->r_callback = ceph_aio_complete_req;
-+			req->r_callback = !from_gup ? ceph_aio_complete_req :
-+					  ceph_aio_from_gup_complete_req;
- 			req->r_inode = inode;
- 			req->r_priv = aio_req;
- 			list_add_tail(&req->r_private_item, &aio_req->osd_reqs);
-@@ -1054,7 +1088,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 				len = ret;
+ 	if (uodata) {
+ 		__le32 sz;
+ 		int n = p9_get_mapped_pages(chan, &out_pages, uodata,
+-					    outlen, &offs, &need_drop);
++					    outlen, &offs, &need_drop,
++					    &out_from_gup);
+ 		if (n < 0) {
+ 			err = n;
+ 			goto err_out;
+@@ -422,7 +428,8 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 		memcpy(&req->tc.sdata[0], &sz, sizeof(sz));
+ 	} else if (uidata) {
+ 		int n = p9_get_mapped_pages(chan, &in_pages, uidata,
+-					    inlen, &offs, &need_drop);
++					    inlen, &offs, &need_drop,
++					    &in_from_gup);
+ 		if (n < 0) {
+ 			err = n;
+ 			goto err_out;
+@@ -504,11 +511,12 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ err_out:
+ 	if (need_drop) {
+ 		if (in_pages) {
+-			p9_release_pages(in_pages, in_nr_pages);
++			p9_release_pages(in_pages, in_nr_pages, in_from_gup);
+ 			atomic_sub(in_nr_pages, &vp_pinned);
  		}
- 
--		put_bvecs(bvecs, num_pages, should_dirty);
-+		put_bvecs(bvecs, num_pages, should_dirty, from_gup);
- 		ceph_osdc_put_request(req);
- 		if (ret < 0)
- 			break;
-@@ -1093,7 +1127,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 							      req, false);
- 			if (ret < 0) {
- 				req->r_result = ret;
--				ceph_aio_complete_req(req);
-+				_ceph_aio_complete_req(req, from_gup);
- 			}
+ 		if (out_pages) {
+-			p9_release_pages(out_pages, out_nr_pages);
++			p9_release_pages(out_pages, out_nr_pages,
++					 out_from_gup);
+ 			atomic_sub(out_nr_pages, &vp_pinned);
  		}
- 		return -EIOCBQUEUED;
+ 		/* wakeup anybody waiting for slots to pin pages */
 -- 
 2.22.0
 
