@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FCD1723F4
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65826723F6
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728666AbfGXBr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 21:47:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57514 "EHLO mail.kernel.org"
+        id S1728710AbfGXBsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 21:48:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57648 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725837AbfGXBr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 21:47:26 -0400
+        id S1728005AbfGXBsC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 21:48:02 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9596C2238C;
-        Wed, 24 Jul 2019 01:47:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 48F012238C;
+        Wed, 24 Jul 2019 01:48:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563932844;
-        bh=ynXoIaTP+bD7G3EbIql5+OoN47Gr1b+pL9lULzU8ovw=;
+        s=default; t=1563932880;
+        bh=swVgtFN+N+57MIxtPbpUxhThwcqA6m1zMkmEwNud0b8=;
         h=Date:From:To:Cc:Subject:From;
-        b=I1a1E4Nojt/c/9tpoMi6pd/HkJJnZbc8L+g2nlTtDJb01/PqkVFJ72Y0WBC3yET76
-         T9ooPDhZrxRPpWHQfByfU29vzA0wQx5S0EIe2gdPJ4XtKhHXXZlcO1fYNhJj7DGih4
-         RzwVrWYL7Qi9NGqx73w0LRlhrBIKM3jo2cy23Qrk=
-Date:   Tue, 23 Jul 2019 18:47:23 -0700
+        b=wJ6qqVEAlW18jHfiBc9NaHLahLMuGG8Fle+Af3Lsvodt1jN/iXkCpn0POf7ynFKpU
+         XCKrHLyzfKHaYyeGHDgVB+BVhx98fG7t0OuXFUXdy3W2irlEEEStsqZgzJuK9B66O+
+         3rQI6bNLkt+LGYG70UXke4+qyqDsmwmTTEEPcgLk=
+Date:   Tue, 23 Jul 2019 18:47:58 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>
+To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 13 open syzbot bugs in "net/netrom" subsystem
-Message-ID: <20190724014723.GJ643@sol.localdomain>
-Mail-Followup-To: linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
+Subject: Reminder: 11 open syzbot bugs in "net/wireless" subsystem
+Message-ID: <20190724014758.GK643@sol.localdomain>
+Mail-Followup-To: linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,315 +48,262 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 13 of them as possibly being bugs in the "net/netrom" subsystem.  I've
+marked 11 of them as possibly being bugs in the "net/wireless" subsystem.  I've
 listed these reports below, sorted by an algorithm that tries to list first the
 reports most likely to be still valid, important, and actionable.
 
-Of these 13 bugs, 8 were seen in mainline in the last week.
-
-Of these 13 bugs, 4 were bisected to commits from the following person:
-
-	Cong Wang <xiyou.wangcong@gmail.com>
+Of these 11 bugs, 9 were seen in mainline in the last week.
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/netrom" subsystem, please let
+If you believe I misattributed a bug to the "net/wireless" subsystem, please let
 me know, and if possible forward the report to the correct people or mailing
 list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in nr_insert_socket
+Title:              general protection fault in ath6kl_usb_alloc_urb_from_pipe
 Last occurred:      0 days ago
-Reported:           5 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=44bc727f1e55f249c97e876dd9163484c889b3ad
-Original thread:    https://lkml.kernel.org/lkml/00000000000035f65d058df39aed@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-	commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-	Author: Cong Wang <xiyou.wangcong@gmail.com>
-	Date:   Thu Jun 27 21:30:58 2019 +0000
-
-	  netrom: fix a memory leak in nr_rx_frame()
-
-The original thread for this bug has received 1 reply, 5 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+9399c158fcc09b21d0d2@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread, which had activity only 5 days ago.  For the git send-email command to
-use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
-instructions" at https://lkml.kernel.org/r/00000000000035f65d058df39aed@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: refcount bug in nr_rx_frame
-Last occurred:      0 days ago
-Reported:           5 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=4ffee6ac0fb5068b34959147b4d492bad89e98ab
-Original thread:    https://lkml.kernel.org/lkml/000000000000222512058df13ac9@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-	commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-	Author: Cong Wang <xiyou.wangcong@gmail.com>
-	Date:   Thu Jun 27 21:30:58 2019 +0000
-
-	  netrom: fix a memory leak in nr_rx_frame()
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+622bdabb128acc33427d@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread.  For the git send-email command to use, or tips on how to reply if the
-thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000222512058df13ac9@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in lock_sock_nested
-Last occurred:      3 days ago
-Reported:           202 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=6c137905024f86513297b035845acecb55fa9dab
-Original thread:    https://lkml.kernel.org/lkml/0000000000007a5aad057e7748c9@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+500c69d1e21d970e461b@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000007a5aad057e7748c9@google.com
-
---------------------------------------------------------------------------------
-Title:              memory leak in nr_create
-Last occurred:      1 day ago
-Reported:           57 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=24be997a573ef9d497d6d7302518779b75d8119a
-Original thread:    https://lkml.kernel.org/lkml/0000000000009412c60589e804d8@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+10f1194569953b72f1ae@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009412c60589e804d8@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: held lock freed in nr_release
-Last occurred:      0 days ago
-Reported:           6 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=5c3fd3a41060d8d775822814f4651f86a68eb0aa
-Original thread:    https://lkml.kernel.org/lkml/00000000000015d943058ddcb1b3@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-	commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-	Author: Cong Wang <xiyou.wangcong@gmail.com>
-	Date:   Thu Jun 27 21:30:58 2019 +0000
-
-	  netrom: fix a memory leak in nr_rx_frame()
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+a34e5f3d0300163f0c87@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread.  For the git send-email command to use, or tips on how to reply if the
-thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/00000000000015d943058ddcb1b3@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in nr_release
-Last occurred:      1 day ago
-Reported:           45 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=5332f4a9ce674d6378f0bd91af752d2be80f3aba
-Original thread:    https://lkml.kernel.org/lkml/0000000000007e8b70058acbd60f@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6eaef7158b19e3fec3a0@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000007e8b70058acbd60f@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: refcount bug in nr_insert_socket
-Last occurred:      0 days ago
-Reported:           14 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=521a764b3fc8145496efa50600dfe2a67e49b90b
-Original thread:    https://lkml.kernel.org/lkml/0000000000000595ea058d411c35@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+ec1fd464d849d91c3665@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread.  For the git send-email command to use, or tips on how to reply if the
-thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000000595ea058d411c35@google.com
-
---------------------------------------------------------------------------------
-Title:              general protection fault in prepare_to_wait
-Last occurred:      18 days ago
-Reported:           201 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=c670fb9da2ce08f7b5101baa9426083b39ee9f90
-Original thread:    https://lkml.kernel.org/lkml/000000000000fa6a2c057e8b7064@google.com/T/#u
+Reported:           102 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=cd8b9cfe50a0bf36ee19eda2d7e2e06843dfbeaf
+Original thread:    https://lkml.kernel.org/lkml/0000000000008e825105865615e3@google.com/T/#u
 
 This bug has a C reproducer.
 
 No one replied to the original thread for this bug.
 
+This looks like a bug in a net/wireless USB driver.
+
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+55f9d3e51d49e20b2ce5@syzkaller.appspotmail.com
+    Reported-by: syzbot+ead4037ec793e025e66f@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000fa6a2c057e8b7064@google.com
+https://lkml.kernel.org/r/0000000000008e825105865615e3@google.com
 
 --------------------------------------------------------------------------------
-Title:              WARNING: held lock freed! (2)
-Last occurred:      18 days ago
-Reported:           15 days ago
-Branches:           net
-Dashboard link:     https://syzkaller.appspot.com/bug?id=e19c72fff579b255a707a12853df187bdfc81ea3
-Original thread:    https://lkml.kernel.org/lkml/000000000000c3810f058d30910b@google.com/T/#u
+Title:              WARNING: ODEBUG bug in rsi_probe
+Last occurred:      0 days ago
+Reported:           100 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=3b35267abf182bd98ba95c0943bc0f957e021101
+Original thread:    https://lkml.kernel.org/lkml/00000000000024bbd7058682eda1@google.com/T/#u
 
 This bug has a C reproducer.
 
-This bug was bisected to:
+No one replied to the original thread for this bug.
 
-	commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-	Author: Cong Wang <xiyou.wangcong@gmail.com>
-	Date:   Thu Jun 27 21:30:58 2019 +0000
-
-	  netrom: fix a memory leak in nr_rx_frame()
-
-No one has replied to the original thread for this bug yet.
+This looks like a bug in a net/wireless USB driver.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+e54ed2cb16c6da22c549@syzkaller.appspotmail.com
+    Reported-by: syzbot+1d1597a5aa3679c65b9f@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000c3810f058d30910b@google.com
+https://lkml.kernel.org/r/00000000000024bbd7058682eda1@google.com
 
 --------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Write in nr_insert_socket
-Last occurred:      1 day ago
-Reported:           0 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=e2f70927690b76d55da8d228e55832274d7c0bd0
-Original thread:    https://lkml.kernel.org/lkml/0000000000006241fe058e5b9490@google.com/T/#u
+Title:              INFO: trying to register non-static key in del_timer_sync (2)
+Last occurred:      0 days ago
+Reported:           102 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=26525f643f454dd7be0078423e3cdb0d57744959
+Original thread:    https://lkml.kernel.org/lkml/000000000000927a7b0586561537@google.com/T/#u
 
-Unfortunately, this bug does not have a reproducer.
+This bug has a C reproducer.
 
-The original thread for this bug has received 1 reply, 9 hours ago.
+The original thread for this bug received 5 replies; the last was 41 days ago.
+
+This looks like a bug in a net/wireless USB driver.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+5e54e8e637bc970bbd2b@syzkaller.appspotmail.com
+    Reported-by: syzbot+dc4127f950da51639216@syzkaller.appspotmail.com
 
-If you send any email or patch for this bug, please reply to the original
-thread, which had activity only 9 hours ago.  For the git send-email command to
-use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
-instructions" at https://lkml.kernel.org/r/0000000000006241fe058e5b9490@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in nr_rx_frame (2)
-Last occurred:      4 days ago
-Reported:           0 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=35d6bc3fe6f43d63357b5d70379d196aa420d6b7
-Original thread:    https://lkml.kernel.org/lkml/000000000000e42667058e554371@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-The original thread for this bug has received 1 reply, 16 hours ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+701728447042217b67c1@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread, which had activity only 16 hours ago.  For the git send-email command to
-use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
-instructions" at https://lkml.kernel.org/r/000000000000e42667058e554371@google.com
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000927a7b0586561537@google.com
 
 --------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in refcount_inc_not_zero_checked (2)
-Last occurred:      97 days ago
-Reported:           129 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=b0192a79bb2d222d3e723d7db60dfb5e0ec0e570
-Original thread:    https://lkml.kernel.org/lkml/000000000000eea12405843bc43c@google.com/T/#u
+Title:              WARNING in zd_mac_clear
+Last occurred:      0 days ago
+Reported:           102 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=46e5ae5074764b5f0eed428a8c4989d9efbe9146
+Original thread:    https://lkml.kernel.org/lkml/00000000000075a7a6058653d977@google.com/T/#u
 
-This bug has a syzkaller reproducer only.
+This bug has a C reproducer.
 
 No one replied to the original thread for this bug.
 
+This looks like a bug in a net/wireless USB driver.
+
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+eff6b596cc8194e2f029@syzkaller.appspotmail.com
+    Reported-by: syzbot+74c65761783d66a9c97c@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000eea12405843bc43c@google.com
+https://lkml.kernel.org/r/00000000000075a7a6058653d977@google.com
 
 --------------------------------------------------------------------------------
-Title:              memory leak in nr_loopback_queue
-Last occurred:      55 days ago
+Title:              KASAN: invalid-free in rsi_91x_deinit
+Last occurred:      0 days ago
+Reported:           91 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=426fbebc1eac728afa08e52b1bcf8171c9413e29
+Original thread:    https://lkml.kernel.org/lkml/0000000000005ae4cd058731d407@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one replied to the original thread for this bug.
+
+This looks like a bug in a net/wireless USB driver.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+7c72edfb407b2bd866ce@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000005ae4cd058731d407@google.com
+
+--------------------------------------------------------------------------------
+Title:              KMSAN: uninit-value in rt2500usb_bbp_read
+Last occurred:      0 days ago
+Reported:           47 days ago
+Branches:           Mainline (with KMSAN patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=f35d123de7d393019c1ed4d4e60dc66596ed62cd
+Original thread:    https://lkml.kernel.org/lkml/000000000000cf6a70058aa48695@google.com/T/#u
+
+This bug has a C reproducer.
+
+The original thread for this bug has received 1 reply, 47 days ago.
+
+This looks like a bug in a net/wireless USB driver.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+a106a5b084a6890d2607@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000cf6a70058aa48695@google.com
+
+--------------------------------------------------------------------------------
+Title:              WARNING in submit_rx_urb/usb_submit_urb
+Last occurred:      0 days ago
 Reported:           55 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=20e5b6ff68ec36b9ba8ac5225e560a3a563f343a
-Original thread:    https://lkml.kernel.org/lkml/000000000000a7f012058a0c7a65@google.com/T/#u
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=97fff2c33c48264fba4d185f5f0f0961bdcd2ae2
+Original thread:    https://lkml.kernel.org/lkml/0000000000004da71e058a06318b@google.com/T/#u
 
-This bug has a syzkaller reproducer only.
+This bug has a C reproducer.
 
-No one has replied to the original thread for this bug yet.
+The original thread for this bug has received 1 reply, 55 days ago.
+
+This looks like a bug in a net/wireless USB driver.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+470d1a4a7b7a7c225881@syzkaller.appspotmail.com
+    Reported-by: syzbot+c2a1fa67c02faa0de723@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000a7f012058a0c7a65@google.com
+https://lkml.kernel.org/r/0000000000004da71e058a06318b@google.com
+
+--------------------------------------------------------------------------------
+Title:              WARNING in ar5523_submit_rx_cmd/usb_submit_urb
+Last occurred:      0 days ago
+Reported:           50 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=d4cdc65d1db112b294b568e0cff47bca7cd3edbd
+Original thread:    https://lkml.kernel.org/lkml/000000000000f4900f058a69d6c5@google.com/T/#u
+
+This bug has a C reproducer.
+
+The original thread for this bug has received 1 reply, 50 days ago.
+
+This looks like a bug in a net/wireless USB driver.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+6101b0c732dea13ea55b@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000f4900f058a69d6c5@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
+Last occurred:      3 days ago
+Reported:           78 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=a7d7aec13ac4d6981c15814acb900348d340dd70
+Original thread:    https://lkml.kernel.org/lkml/00000000000001de810588363aaf@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+The original thread for this bug has received 4 replies; the last was 29 days
+ago.
+
+This looks like a bug in a net/wireless USB driver.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/00000000000001de810588363aaf@google.com
+
+--------------------------------------------------------------------------------
+Title:              WARNING in i2400mu_bus_bm_wait_for_ack/usb_submit_urb
+Last occurred:      0 days ago
+Reported:           13 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=78aca5360820e5e91ba12dec842dabeb5349b431
+Original thread:    https://lkml.kernel.org/lkml/0000000000009b6e7f058d51adba@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one has replied to the original thread for this bug yet.
+
+This looks like a bug in a net/wireless USB driver.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+7886801de1cc3958a0d1@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread.  For the git send-email command to use, or tips on how to reply if the
+thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000009b6e7f058d51adba@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: global-out-of-bounds Read in load_next_firmware_from_table
+Last occurred:      18 days ago
+Reported:           14 days ago
+Branches:           Mainline (with usb-fuzzer patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=9e4fafb6fbc53782278754488801c0bbe1fd2a85
+Original thread:    https://lkml.kernel.org/lkml/000000000000df0913058d3ead47@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one has replied to the original thread for this bug yet.
+
+This looks like a bug in a net/wireless USB driver.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+98156c174c5a2cad9f8f@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread.  For the git send-email command to use, or tips on how to reply if the
+thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000df0913058d3ead47@google.com
 
