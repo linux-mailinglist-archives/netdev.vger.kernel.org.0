@@ -2,154 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A7273399
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 339AF733F3
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728359AbfGXQWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 12:22:36 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34157 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726004AbfGXQWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 12:22:36 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n9so15255859pgc.1;
-        Wed, 24 Jul 2019 09:22:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=8HMIhpVktcQhLcnMlnSaMxrwzTT+wDaUZPtys8u8fmw=;
-        b=Nb+QKuyfZCPgjcPcKYb70rJP06rSomXYL96XBqGn5uwG+aPhQOUW7JWY+ULGJSxE4c
-         NI3ItO2Y9gXpAQK0whGKfKhodO1Iz+bnSeIixWjDbzJwNo1f264USDdHmE/g034mNcUe
-         Le9IOlBtvAykhqNIZeC3VigzQBzk+VHJZDHZr2E3rI9pL4iwvxexiMfVrAs99zMQZgFY
-         MfncWSTWtjEUVs5K3FBLnhcPIxe/BprBx2BbAZvVh8wkhzK5ivmICs08vuvpnqKaGhgA
-         O6+icuuP33Hlu1OHPvh8+kHqExvi57GSYzoO2dSODYlwt5J/4RJVaX7IiOlxYvb588D+
-         8ihQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=8HMIhpVktcQhLcnMlnSaMxrwzTT+wDaUZPtys8u8fmw=;
-        b=qcvSd5hMAVzHl87hxdcdxnKlfimcDImOB1NNPm1gYlJVxPeEKSI+s2KBvFVJ3Oh3M9
-         zvwNXd1fcZPmb0Mvk6exQ1TBqLb189D5pzcjrxHVHm217l3FMlCMJ5lW3F3ItZcdGXey
-         P8tu2HVPwKZ91ZkRzI5AoU04a//GnYU7e7a4YMKy5/GvPM1Ygl5aU53HENwJM8SaSOJu
-         oDDKsGpi1mfIZKRJ+Xm1D7clvL72q31Vl/F3A+Mn+qrbL7FuIcbiWYyNLEi0Eesyl3Y0
-         FFkkAFn424uEK4ESKX0KhfCF2+jUZBhH74r+ggItFieVtUAXGy7Ux+xRL8KMarOBAylH
-         KWMw==
-X-Gm-Message-State: APjAAAXtv/vsVPhcsfvf/QLYffLCgcbfzUWPAMUckQiERTb11X/JwU+g
-        IMpx+nyCvW3MmYC+aP0GuWg=
-X-Google-Smtp-Source: APXvYqws5GAAL0AstDH8/4fyQ3x/GSONd0VZXKS14G9KUgQ4IflPjwyD4xUKd8HXv4SFO3MhmvN10A==
-X-Received: by 2002:a63:8c0e:: with SMTP id m14mr66910923pgd.219.1563985355520;
-        Wed, 24 Jul 2019 09:22:35 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id b3sm61556650pfp.65.2019.07.24.09.22.33
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 09:22:34 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 09:22:26 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     syzbot <syzbot+79f5f028005a77ecb6bb@syzkaller.appspotmail.com>,
-        bpf <bpf@vger.kernel.org>, David Airlie <airlied@linux.ie>,
-        alexander.deucher@amd.com, amd-gfx@lists.freedesktop.org,
-        Alexei Starovoitov <ast@kernel.org>, christian.koenig@amd.com,
-        Daniel Borkmann <daniel@iogearbox.net>, david1.zhou@amd.com,
-        DRI <dri-devel@lists.freedesktop.org>, leo.liu@amd.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Marco Elver <elver@google.com>
-Message-ID: <5d3885c2e2e20_73c32aebc43b65c08@john-XPS-13-9370.notmuch>
-In-Reply-To: <CACT4Y+ZbPmRB9T9ZzhE79VnKKD3+ieHeLpaDGRkcQ72nADKH_g@mail.gmail.com>
-References: <0000000000001a51c4058ddcb1b6@google.com>
- <CACT4Y+ZGwKP+f4esJdx60AywO9b3Y5Bxb4zLtH6EEkaHpP6Zag@mail.gmail.com>
- <5d37433a832d_3aba2ae4f6ec05bc3a@john-XPS-13-9370.notmuch>
- <CACT4Y+ZbPmRB9T9ZzhE79VnKKD3+ieHeLpaDGRkcQ72nADKH_g@mail.gmail.com>
-Subject: Re: kernel panic: stack is corrupted in pointer
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1726736AbfGXQaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 12:30:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47086 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725826AbfGXQaR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 12:30:17 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC44A21871;
+        Wed, 24 Jul 2019 16:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563985816;
+        bh=aXnST1Zy+5dz8CWNsZfcAqojaBnHYTD1OJuzvi9y2o4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sxl6AmiyJogEutNkMx10bst2DtY9JXT9gevPqUof4Qqo6HT+y160gFdVne+tUl+/C
+         8V5Cjhpk8lxry7d5JIRYedRvu2W5dfAv7kaKt3gVkoEbpo3Cix1mZSwcTtlmtHZDKI
+         hjuujCEhJIvlBksjwJOOhFW6fQhlXigF4uZem8M0=
+Date:   Wed, 24 Jul 2019 09:30:14 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Ilya Maximets <i.maximets@samsung.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: Reminder: 99 open syzbot bugs in net subsystem
+Message-ID: <20190724163014.GC673@sol.localdomain>
+Mail-Followup-To: Eric Dumazet <eric.dumazet@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Ilya Maximets <i.maximets@samsung.com>,
+        Eric Dumazet <edumazet@google.com>, David Ahern <dsahern@gmail.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <20190724013813.GB643@sol.localdomain>
+ <63f12327-dd4b-5210-4de2-705af6bc4ba4@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63f12327-dd4b-5210-4de2-705af6bc4ba4@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry Vyukov wrote:
-> On Tue, Jul 23, 2019 at 7:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Wed, Jul 24, 2019 at 08:39:05AM +0200, Eric Dumazet wrote:
+> 
+> 
+> On 7/24/19 3:38 AM, Eric Biggers wrote:
+> > [This email was generated by a script.  Let me know if you have any suggestions
+> > to make it better, or if you want it re-generated with the latest status.]
+> > 
+> > Of the currently open syzbot reports against the upstream kernel, I've manually
+> > marked 99 of them as possibly being bugs in the net subsystem.  This category
+> > only includes the networking bugs that I couldn't assign to a more specific
+> > component (bpf, xfrm, bluetooth, tls, tipc, sctp, wireless, etc.).  I've listed
+> > these reports below, sorted by an algorithm that tries to list first the reports
+> > most likely to be still valid, important, and actionable.
+> > 
+> > Of these 99 bugs, 17 were seen in mainline in the last week.
+> > 
+> > Of these 99 bugs, 4 were bisected to commits from the following people:
+> > 
+> > 	Florian Westphal <fw@strlen.de>
+> > 	Ilya Maximets <i.maximets@samsung.com>
+> > 	Eric Dumazet <edumazet@google.com>
+> > 	David Ahern <dsahern@gmail.com>
+> > 
+> > If you believe a bug is no longer valid, please close the syzbot report by
+> > sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
+> > original thread, as explained at https://goo.gl/tpsmEJ#status
+> > 
+> > If you believe I misattributed a bug to the net subsystem, please let me know,
+> > and if possible forward the report to the correct people or mailing list.
 > >
-> > Dmitry Vyukov wrote:
-> > > On Wed, Jul 17, 2019 at 10:58 AM syzbot
-> > > <syzbot+79f5f028005a77ecb6bb@syzkaller.appspotmail.com> wrote:
-> > > >
-> > > > Hello,
-> > > >
-> > > > syzbot found the following crash on:
-> > > >
-> > > > HEAD commit:    1438cde7 Add linux-next specific files for 20190716
-> > > > git tree:       linux-next
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=13988058600000
-> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=3430a151e1452331
-> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=79f5f028005a77ecb6bb
-> > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=111fc8afa00000
-> > >
-> > > From the repro it looks like the same bpf stack overflow bug. +John
-> > > We need to dup them onto some canonical report for this bug, or this
-> > > becomes unmanageable.
-> >
-> > Fixes in bpf tree should fix this. Hopefully, we will squash this once fixes
-> > percolate up.
-> >
-> > #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
 > 
-> Cool! What is the fix?
-
-It took a series of patches here,
-
-https://www.spinics.net/lists/netdev/msg586986.html
-
-The fix commits from bpf tree are,
-
-(git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git) 
-
-318892ac068397f40ff81d9155898da01493b1d2
-ac78fc148d8249dbf382c2127456dd08ec5b161c
-f87e62d45e51b12d48d2cb46b5cde8f83b866bc4
-313ab004805cf52a42673b15852b3842474ccd87
-32857cf57f920cdc03b5095f08febec94cf9c36b
-45a4521dcbd92e71c9e53031b40e34211d3b4feb
-2bb90e5cc90e1d09f631aeab041a9cf913a5bbe5
-0e858739c2d2eedeeac1d35bfa0ec3cc2a7190d8
-95fa145479fbc0a0c1fd3274ceb42ec03c042a4a
-
-The last commit fixes this paticular syzbot issue,
-
-commit 95fa145479fbc0a0c1fd3274ceb42ec03c042a4a
-Author: John Fastabend <john.fastabend@gmail.com>
-Date:   Fri Jul 19 10:29:22 2019 -0700
-
-    bpf: sockmap/tls, close can race with map free
-
-The other commits address some other issues found while testing.
-
-> We don't need to wait for the fix to percolate up (and then down
-> too!). syzbot gracefully handles when a patch is not yet present
-> everywhere (it happens all the time).
-
-Great. By the way the above should fix many of the outstanding
-reports against bpf sockmap and tls side. I'll have to walk through
-each one individually to double check though. I guess we can mark
-them as dup reports and syzbot should sort it out?
-
+> Some of the bugs have been fixed already, before syzbot found them.
 > 
-> Btw, this was due to a stack overflow, right? Or something else?
-
-Right, stack overflow due to race in updating sock ops where build a
-circular call chain.
-
-> We are trying to make KASAN configuration detect stack overflows too,
-> so that it does not cause havoc next time. But it turns out to be
-> non-trivial and our current attempt seems to fail:
-> https://groups.google.com/forum/#!topic/kasan-dev/IhYv7QYhLfY
+> Why force human to be gentle to bots and actually replying to them ?
 > 
+> I usually simply wait that syzbot is finding the bug does not repro anymore,
+> but now if you send these emails, we will have even more pressure on us.
 > 
+
+First, based on experience, I'd guess about 30-45 of these are still valid.  17
+were seen in mainline in the last week, but some others are valid too.  The ones
+most likely to still be valid are at the beginning of the list.  So let's try
+not use the presence of outdated bugs as an excuse not to fix current bugs.
+
+Second, all these bug reports are still open, regardless of whether reminders
+are sent or not.  I think you're really suggesting that possibly outdated bug
+reports should be automatically invalidated by syzbot.
+
+syzbot already does that for bugs with no reproducer.  However, that still
+leaves a lot of outdated bugs with reproducers.
+
+Since the kernel community is basically in continuous bug bankruptcy and lots of
+syzbot reports are being ignored anyway, I'm in favor of making the invalidation
+criteria more aggressive, so we can best focus people's efforts.  I understand
+that Dmitry has been against this though, since a significant fraction of bugs
+that syzbot stopped hitting for some reason actually turn out to be still valid.
+
+But we probably have no choice.  So I suggest we agree on new criteria for
+invalidating bugs.  I'd suggest assigning a timeout to each bug, based on
+attributes like "seen in mainline?", "reproducer type", "bisected?", "does it
+look like a 'bad' crash (e.g. use-after-free)"; similar to the algorithm I'm
+using to sort the bugs when sorting these reminders.  I.e., bugs most likely to
+still be valid, important, and actionable get longest timeouts.
+
+Then if no crash or activity was seen in the timeout, the bug is closed.
+
+Any thoughts from anyone?
+
+- Eric
