@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C91E72D7D
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA5872D81
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:27:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbfGXL1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:27:36 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38914 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727439AbfGXL1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:27:36 -0400
-Received: by mail-pg1-f195.google.com with SMTP id u17so21086362pgi.6;
-        Wed, 24 Jul 2019 04:27:35 -0700 (PDT)
+        id S1727653AbfGXL1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:27:45 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44837 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727368AbfGXL1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:27:45 -0400
+Received: by mail-pg1-f194.google.com with SMTP id i18so21089079pgl.11;
+        Wed, 24 Jul 2019 04:27:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=bcioE0DGUFJw/yrsZdFFy4R7kTbvkLIl7gGiYNHkNrA=;
-        b=pkh9CKX/LAVggmd8KSgSJjcyP2axsA3oZ2hQZpHmxZVNe+vBattVZxJ4ps6NppX0Mz
-         3Fc915iJip0j6Y00C9hhA6RaJFFTkl3SxssWvzSTmUwYb0BRCQNlwzRxT78xUNRlYSdm
-         e3EwWyFQKqNG+Biri4T+kV73TUbCY4wbX1DcVw4miw9gQ57yKYWzQfZX7CRIMxdfvCSz
-         kD7S0WWpEUsaaIPCjJGk9KsmyMy3YOj1KLlT68hqST9SR76wt90gSGE5oKTLug7MZo4H
-         pqIZhjT3N3g+Kr3ELPaiVUXkOSsa5nV+Ji0WAcR8XOwWsr+T8Qc4pkda1t+hXig6uVzo
-         vB3g==
+        bh=7IR+uM+j5koIPBW7Xm8FY732aVxv1FIX3BlElSJL8Ys=;
+        b=WYT46Etclh2BRTLLlTCKaJz2sGvVnXzruG+odXhQVXIP3TB/nCW4zE4muSr1Ooypxw
+         VkfEtU3W2UqgH5se/CJ4OsknHNDvrtuJxSwgYdOinDJytVvuMgLJiMJTJtNklC8DWQ2s
+         eomxXn/7JAVADbtY4+KdUmRcJLcQrgQOxvrNYyobdEFddBO9I6jCrmH2T1eS/3pcBN6W
+         taK5i//Ks7WA1vjzmLT3ep1VJc28sPR6CYvMchwkqeC3cQehnCUqRlCG+yzikuUNlEko
+         pCQxAJ1TN8hUZBLF3CBNeYfqitid28xNF6o2gpKtOSB44RsakGKvM85XU53l1lIS7bfz
+         ahyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=bcioE0DGUFJw/yrsZdFFy4R7kTbvkLIl7gGiYNHkNrA=;
-        b=VH7tQrUPQUs6Mg1v2z7e906FM124WgNW6NnVnvvTdfiU2koOLP9Rfo7WDXD/zThjxC
-         6J3v3RAaEdOgGdrRb0GT/HeMjuCFHP7GEevQMktkjjqq1ZW6CbGqubF+PEgDt06NMyvP
-         5q6ZRCWFX5ADsx88AWAtVcbpmJoSaFVzG6Kk/mhKcAu/22Od9Wk2xwQY+pUbJSQA/Rhr
-         k1MtqONuF4DGGDvCtA+ML+lcSB7K5tjvN/dAbyvOeApTFjp9uoPwLs3xMzNKiaLgBORA
-         EMkkbnmsNcJ1NXIxGW7aYqjeA0XvmbGkTlBgI3K6bIj5qMOFYSM6aEyGTv/UxHebncg5
-         hIAQ==
-X-Gm-Message-State: APjAAAXPiLl7qfz6qsX6GX34x10nA70BRpevmaq4zRwrqLdswAzgL848
-        4by4b8ca33Az6tpLYTpkkO0=
-X-Google-Smtp-Source: APXvYqyRE+phszV3MvNPj/mXY/s4lkPP/dJzypRRSnJ6Byzz1CJE39bNZqH40JFjXAu91V3hMs+qOw==
-X-Received: by 2002:a63:4846:: with SMTP id x6mr44830409pgk.332.1563967655646;
-        Wed, 24 Jul 2019 04:27:35 -0700 (PDT)
+        bh=7IR+uM+j5koIPBW7Xm8FY732aVxv1FIX3BlElSJL8Ys=;
+        b=FB0Ji0A46OOGX0kzASb+K0Y65UltBGYtwOfDfPtuSQoK23xMr+fgU2jFHvhB8djKTA
+         X05Pk3x+Z8fri0vBxZrxY9bmn2JKFb3d98ruTHEPGTrbT6sRhPvzATr48NZc0wTF9pim
+         MqBSYqkT5uXvksLBWEQyMnIfxK8TDYd2cqJvSwKIs1B8Y8Ow7i9hYWchugwzgdvGRlbq
+         UV3KaWzMTnrHs9HzM9JadOtGm8WzrU2nOaxLWicSLqFBYzLZU4PwmEan2ceu1H6pPQqU
+         Vcr2nqXM8gLe4XGWmecduvD8lcUFaURFjg3iJarp1OGggrQlFXh+aLJIZRRr51KiU+5E
+         cexA==
+X-Gm-Message-State: APjAAAUbx7w0uKPdQRN0BVx2fvR7ceJe8WX8xR43KYwU1R7+taW3QS6x
+        a72+sKCDztN8GvbF4G90VDM=
+X-Google-Smtp-Source: APXvYqz6sN2JwpXp26sb8CBgIE5le7DadChkZCVYYMfhfmyDHN/y5tSMhuPY4RW4VWNSDY6xfLPZAQ==
+X-Received: by 2002:a63:2744:: with SMTP id n65mr67926788pgn.277.1563967664643;
+        Wed, 24 Jul 2019 04:27:44 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id l1sm60883684pfl.9.2019.07.24.04.27.33
+        by smtp.gmail.com with ESMTPSA id v185sm52804086pfb.14.2019.07.24.04.27.41
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 04:27:35 -0700 (PDT)
+        Wed, 24 Jul 2019 04:27:44 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Stanislaw Gruszka <sgruszka@redhat.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net-next 06/10] iwlegacy: Use dev_get_drvdata where possible
-Date:   Wed, 24 Jul 2019 19:27:30 +0800
-Message-Id: <20190724112730.13403-1-hslester96@gmail.com>
+Subject: [PATCH net-next 07/10] iwlwifi: Use dev_get_drvdata where possible
+Date:   Wed, 24 Jul 2019 19:27:38 +0800
+Message-Id: <20190724112738.13457-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,23 +70,53 @@ use dev_get_drvdata to make code simpler.
 
 Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/net/wireless/intel/iwlegacy/common.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/common.c b/drivers/net/wireless/intel/iwlegacy/common.c
-index 4a88e35d58d7..73f7bbf742bc 100644
---- a/drivers/net/wireless/intel/iwlegacy/common.c
-+++ b/drivers/net/wireless/intel/iwlegacy/common.c
-@@ -4942,8 +4942,7 @@ EXPORT_SYMBOL(il_add_beacon_time);
- static int
- il_pci_suspend(struct device *device)
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index ea2a03d4bf55..fe76e1540d39 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -1248,8 +1248,7 @@ int iwl_pci_fw_exit_d0i3(struct iwl_trans *trans)
+ #ifdef CONFIG_IWLWIFI_PCIE_RTPM
+ static int iwl_pci_runtime_suspend(struct device *device)
  {
 -	struct pci_dev *pdev = to_pci_dev(device);
--	struct il_priv *il = pci_get_drvdata(pdev);
-+	struct il_priv *il = dev_get_drvdata(device);
+-	struct iwl_trans *trans = pci_get_drvdata(pdev);
++	struct iwl_trans *trans = dev_get_drvdata(device);
+ 	int ret;
  
- 	/*
- 	 * This function is called when system goes into suspend state
+ 	IWL_DEBUG_RPM(trans, "entering runtime suspend\n");
+@@ -1269,8 +1268,7 @@ static int iwl_pci_runtime_suspend(struct device *device)
+ 
+ static int iwl_pci_runtime_resume(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct iwl_trans *trans = pci_get_drvdata(pdev);
++	struct iwl_trans *trans = dev_get_drvdata(device);
+ 	enum iwl_d3_status d3_status;
+ 
+ 	IWL_DEBUG_RPM(trans, "exiting runtime suspend (resume)\n");
+@@ -1285,8 +1283,7 @@ static int iwl_pci_runtime_resume(struct device *device)
+ 
+ static int iwl_pci_system_prepare(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct iwl_trans *trans = pci_get_drvdata(pdev);
++	struct iwl_trans *trans = dev_get_drvdata(device);
+ 
+ 	IWL_DEBUG_RPM(trans, "preparing for system suspend\n");
+ 
+@@ -1308,8 +1305,7 @@ static int iwl_pci_system_prepare(struct device *device)
+ 
+ static void iwl_pci_system_complete(struct device *device)
+ {
+-	struct pci_dev *pdev = to_pci_dev(device);
+-	struct iwl_trans *trans = pci_get_drvdata(pdev);
++	struct iwl_trans *trans = dev_get_drvdata(device);
+ 
+ 	IWL_DEBUG_RPM(trans, "completing system suspend\n");
+ 
 -- 
 2.20.1
 
