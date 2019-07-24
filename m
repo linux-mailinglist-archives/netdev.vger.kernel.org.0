@@ -2,144 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF4C73292
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 17:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 029F0732BF
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 17:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387569AbfGXPSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 11:18:11 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34626 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387503AbfGXPSL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 11:18:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=HhOq85evkFM/y15ZM/uScRYpMDK7uIWdehOeEOZxwf4=; b=aD9gCEO/FuimjgYQZxJxnzZ4v1
-        SEPBl3v97IkgN4q2SfajCnLPZCPyb9eAUvSJCSsM/ceXh7w22MSJIGZYynurXwVFVmUsi6Qkb6gy4
-        numZoJbK/AWNh/CnvIzhqder6Q5qnPPyuV1qWrQqWUAjRrDjAC982P5hwYPoiIoAFa8U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hqJ1n-000061-9c; Wed, 24 Jul 2019 17:18:03 +0200
-Date:   Wed, 24 Jul 2019 17:18:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/4] enetc: Clean up local mdio bus allocation
-Message-ID: <20190724151803.GR25635@lunn.ch>
-References: <1563979301-596-1-git-send-email-claudiu.manoil@nxp.com>
- <1563979301-596-2-git-send-email-claudiu.manoil@nxp.com>
+        id S1728429AbfGXP35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 11:29:57 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41656 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727477AbfGXP34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 11:29:56 -0400
+Received: by mail-pf1-f196.google.com with SMTP id m30so21144839pff.8;
+        Wed, 24 Jul 2019 08:29:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MZyKGz2Q8KY/7X0/vC/wmGNz/wuI/1hX+eXaejNddm8=;
+        b=bT37riDxkXg7hPbTdAqFW9vRzkWfcC9zzkBWurgyJHeq+46NHoAWdWrXqbitVSQkxs
+         cgvSFX7PhTrXXYdZ2+fgPp0uJl2KNBST2FfhgH+UDNAoO9nIBtyyAKO8VAAyoR0TS76Z
+         lu57I6quZLQ0Ddt7JBK8kO81J5YmES6l1zQLPuWI7WFCom0CH/EMVEkyVQK19QclcD+2
+         s/4BbK8esMg0968QDJvceqXSTb1YmlC4O57P4rFS3SGIpfdUfiM98FWO1rMeXFu/CBiL
+         0Ly7ol8Z5r8+ehEr7iQkC/8y/U0oloDAvD0uJLZrhnu2kPnq5+6O2K/eq4oQC2OEoWmn
+         f8/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MZyKGz2Q8KY/7X0/vC/wmGNz/wuI/1hX+eXaejNddm8=;
+        b=ExusHJj2INY2baQgPAi2NEE2eUHs8+v725FcMXNKC4DET1PGJOTmaNxWhU85fTIOau
+         WcnG4WNnTSjYaFP1Dq3Q1MGzb5hxq9eLAIt0reZe6/zR1ytnQ+6fYMihs95LEOGs6UeR
+         jlyGQ8WPg3NOOpfXUFB6uAAaKZMkN9OtMLsDJ2IJ0tc0Gvi5TZn+FJk9O1UNueCQRmA/
+         aHk96ylEOjhml+6IUdYvZQX91dIN4e9PvyVJE1oJj2eosIGdr9x65YYHNSYGGAtwhm+A
+         dHSFXc4oDC4LBiedHsOCGC12rNfKUgLDLZwcuwoCtYx/zMp/beOhfsUpGQi8fwGS9/5G
+         i80A==
+X-Gm-Message-State: APjAAAWb1C2oSVLAi3YR1tBHFRF2N9iXgQx489h9RI1Cr5wjiDy9fypJ
+        9C0STK00TomLNeqUIhA9ds4=
+X-Google-Smtp-Source: APXvYqwuJGPxuWZefaf8Mi+AQwRdAYZaYczj2Ib+PrReI8r5VVpgBLb+D88GfvimxK4pGTs7Z8+I+A==
+X-Received: by 2002:aa7:9591:: with SMTP id z17mr12046815pfj.215.1563982196241;
+        Wed, 24 Jul 2019 08:29:56 -0700 (PDT)
+Received: from masabert (i118-21-156-233.s30.a048.ap.plala.or.jp. [118.21.156.233])
+        by smtp.gmail.com with ESMTPSA id u7sm31466731pfm.96.2019.07.24.08.29.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Jul 2019 08:29:55 -0700 (PDT)
+Received: by masabert (Postfix, from userid 1000)
+        id 45C53201374; Thu, 25 Jul 2019 00:29:53 +0900 (JST)
+From:   Masanari Iida <standby24x7@gmail.com>
+To:     shuah@kernel.org, linux-kernel@vger.kernel.org, jiri@mellanox.com,
+        idosch@mellanox.com, linux-kselftest@vger.kernel.org,
+        rdunlap@infradead.org, netdev@vger.kernel.org
+Cc:     Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH net-next] selftests: mlxsw: Fix typo in qos_mc_aware.sh
+Date:   Thu, 25 Jul 2019 00:29:51 +0900
+Message-Id: <20190724152951.4618-1-standby24x7@gmail.com>
+X-Mailer: git-send-email 2.22.0.545.g9c9b961d7eb1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1563979301-596-2-git-send-email-claudiu.manoil@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 05:41:38PM +0300, Claudiu Manoil wrote:
-> Though it works, this is not how it should have been.
-> What's needed is a pointer to the mdio registers.
-> Store it properly inside bus->priv allocated space.
-> Use devm_* variant to further clean up the init error /
-> remove paths.
-> 
-> Fixes following sparse warning:
->  warning: incorrect type in assignment (different address spaces)
->     expected void *priv
->     got struct enetc_mdio_regs [noderef] <asn:2>*[assigned] regs
-> 
-> Fixes: ebfcb23d62ab ("enetc: Add ENETC PF level external MDIO support")
-> 
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> ---
-> v1 - added this patch
-> 
->  .../net/ethernet/freescale/enetc/enetc_mdio.c | 31 +++++++------------
->  1 file changed, 12 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
-> index 77b9cd10ba2b..1e3cd21c13ee 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
-> @@ -15,7 +15,8 @@ struct enetc_mdio_regs {
->  	u32	mdio_addr;	/* MDIO address */
->  };
->  
-> -#define bus_to_enetc_regs(bus)	(struct enetc_mdio_regs __iomem *)((bus)->priv)
-> +#define bus_to_enetc_regs(bus)	(*(struct enetc_mdio_regs __iomem **) \
-> +				((bus)->priv))
->  
->  #define ENETC_MDIO_REG_OFFSET	0x1c00
->  #define ENETC_MDC_DIV		258
-> @@ -146,12 +147,12 @@ static int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
->  int enetc_mdio_probe(struct enetc_pf *pf)
->  {
->  	struct device *dev = &pf->si->pdev->dev;
-> -	struct enetc_mdio_regs __iomem *regs;
-> +	struct enetc_mdio_regs __iomem **regsp;
->  	struct device_node *np;
->  	struct mii_bus *bus;
-> -	int ret;
-> +	int err;
->  
-> -	bus = mdiobus_alloc_size(sizeof(regs));
-> +	bus = devm_mdiobus_alloc_size(dev, sizeof(*regsp));
->  	if (!bus)
->  		return -ENOMEM;
->  
-> @@ -159,41 +160,33 @@ int enetc_mdio_probe(struct enetc_pf *pf)
->  	bus->read = enetc_mdio_read;
->  	bus->write = enetc_mdio_write;
->  	bus->parent = dev;
-> +	regsp = bus->priv;
->  	snprintf(bus->id, MII_BUS_ID_SIZE, "%s", dev_name(dev));
->  
->  	/* store the enetc mdio base address for this bus */
-> -	regs = pf->si->hw.port + ENETC_MDIO_REG_OFFSET;
-> -	bus->priv = regs;
-> +	*regsp = pf->si->hw.port + ENETC_MDIO_REG_OFFSET;
+This patch fix some spelling typo in qos_mc_aware.sh
 
-This is all very odd and different to every other driver.
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+---
+ tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-If i get the code write, there are 4 registers, each u32 in size,
-starting at pf->si->hw.port + ENETC_MDIO_REG_OFFSET?
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh b/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh
+index 71231ad2dbfb..47315fe48d5a 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh
+@@ -262,7 +262,7 @@ test_mc_aware()
+ 
+ 	stop_traffic
+ 
+-	log_test "UC performace under MC overload"
++	log_test "UC performance under MC overload"
+ 
+ 	echo "UC-only throughput  $(humanize $ucth1)"
+ 	echo "UC+MC throughput    $(humanize $ucth2)"
+@@ -316,7 +316,7 @@ test_uc_aware()
+ 
+ 	stop_traffic
+ 
+-	log_test "MC performace under UC overload"
++	log_test "MC performance under UC overload"
+ 	echo "    ingress UC throughput $(humanize ${uc_ir})"
+ 	echo "    egress UC throughput  $(humanize ${uc_er})"
+ 	echo "    sent $attempts BC ARPs, got $passes responses"
+-- 
+2.22.0.545.g9c9b961d7eb1
 
-There are macros like enetc_port_wr() and enetc_global_wr(). It think
-it would be much cleaner to add a macro enet_mdio_wr() which takes
-hw, off, val.
-
-#define enet_mdio_wr(hw, off, val) enet_port_wr(hw, off + ENETC_MDIO_REG_OFFSET, val)
-
-struct enetc_mdio_priv {
-       struct enetc_hw *hw;
-}
-
-	struct enetc_mdio_priv *mdio_priv;
-
-	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
-
-	mdio_priv = bus->priv;
-	mdio_priv->hw = pf->si->hw;
-
-
-static int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum,
-                            u16 value)
-{
-	struct enetc_mdio_priv *mdio_priv = bus->priv;
-...
-	enet_mdio_wr(priv->hw, ENETC_MDIO_CFG, mdio_cfg);
-}
-			    	
-All the horrible casts go away, the driver is structured like every
-other driver, sparse is probably happy, etc.
-
-      Andrew
