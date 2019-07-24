@@ -2,66 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0157D72F61
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B23572F65
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727203AbfGXNBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 09:01:44 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2751 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726312AbfGXNBo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 09:01:44 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id C5B3B6749C1C740FA9AE;
-        Wed, 24 Jul 2019 21:01:40 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Wed, 24 Jul 2019
- 21:01:33 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <manishc@marvell.com>, <GR-Linux-NIC-Dev@marvell.com>,
-        <gregkh@linuxfoundation.org>, <bpoirier@suse.com>
-CC:     <linux-kernel@vger.kernel.org>, <devel@driverdev.osuosl.org>,
-        <netdev@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] qlge: Fix build error without CONFIG_ETHERNET
-Date:   Wed, 24 Jul 2019 21:01:26 +0800
-Message-ID: <20190724130126.53532-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726901AbfGXND0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 09:03:26 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:43819 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726312AbfGXND0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:26 -0400
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1hqGvU-0006gK-PE; Wed, 24 Jul 2019 15:03:24 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2019-07-24
+Date:   Wed, 24 Jul 2019 15:03:15 +0200
+Message-Id: <20190724130322.31702-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now if CONFIG_ETHERNET is not set, QLGE driver
-building fails:
+Hello David,
 
-drivers/staging/qlge/qlge_main.o: In function `qlge_remove':
-drivers/staging/qlge/qlge_main.c:4831: undefined reference to `unregister_netdev'
+this is a pull reqeust of 7 patches for net/master.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 955315b0dc8c ("qlge: Move drivers/net/ethernet/qlogic/qlge/ to drivers/staging/qlge/")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+The first patch is by Rasmus Villemoes add a missing netif_carrier_off() to
+register_candev() so that generic netdev trigger based LEDs are initially off.
+
+Nikita Yushchenko's patch for the rcar_canfd driver fixes a possible IRQ storm
+on high load.
+
+The patch by Weitao Hou for the mcp251x driver add missing error checking to
+the work queue allocation.
+
+Both Wen Yang's and Joakim Zhang's patch for the flexcan driver fix a problem
+with the stop-mode.
+
+Stephane Grosjean contributes a patch for the peak_usb driver to fix a
+potential double kfree_skb().
+
+The last patch is by YueHaibing and fixes the error path in can-gw's
+cgw_module_init() function.
+
+regards,
+Marc
+
 ---
- drivers/staging/qlge/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
-index ae9ed2c..a3cb25a3 100644
---- a/drivers/staging/qlge/Kconfig
-+++ b/drivers/staging/qlge/Kconfig
-@@ -2,7 +2,7 @@
- 
- config QLGE
- 	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
--	depends on PCI
-+	depends on ETHERNET && PCI
- 	help
- 	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
- 
--- 
-2.7.4
+The following changes since commit d86afb89305de205b0d2f20c2160adf039e9508d:
+
+  net: thunderx: Use fwnode_get_mac_address() (2019-07-23 14:09:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.3-20190724
+
+for you to fetch changes up to b7a14297f102b6e2ce6f16feffebbb9bde1e9b55:
+
+  can: gw: Fix error path of cgw_module_init (2019-07-24 11:19:03 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.3-20190724
+
+----------------------------------------------------------------
+Joakim Zhang (1):
+      can: flexcan: fix stop mode acknowledgment
+
+Nikita Yushchenko (1):
+      can: rcar_canfd: fix possible IRQ storm on high load
+
+Rasmus Villemoes (1):
+      can: dev: call netif_carrier_off() in register_candev()
+
+Stephane Grosjean (1):
+      can: peak_usb: fix potential double kfree_skb()
+
+Weitao Hou (1):
+      can: mcp251x: add error check when wq alloc failed
+
+Wen Yang (1):
+      can: flexcan: fix an use-after-free in flexcan_setup_stop_mode()
+
+YueHaibing (1):
+      can: gw: Fix error path of cgw_module_init
+
+ drivers/net/can/dev.c                        |  2 ++
+ drivers/net/can/flexcan.c                    | 39 ++++++++++++++++++----
+ drivers/net/can/rcar/rcar_canfd.c            |  9 ++---
+ drivers/net/can/spi/mcp251x.c                | 49 +++++++++++++---------------
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c |  8 ++---
+ net/can/gw.c                                 | 48 ++++++++++++++++++---------
+ 6 files changed, 98 insertions(+), 57 deletions(-)
 
 
