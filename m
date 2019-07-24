@@ -2,94 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF80372B9A
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A5E72BA5
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 11:43:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726941AbfGXJnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 05:43:15 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41367 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbfGXJnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:43:15 -0400
-Received: by mail-pg1-f196.google.com with SMTP id x15so10600504pgg.8;
-        Wed, 24 Jul 2019 02:43:14 -0700 (PDT)
+        id S1727085AbfGXJns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 05:43:48 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:42598 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725944AbfGXJns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 05:43:48 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 56AF1C1C88;
+        Wed, 24 Jul 2019 09:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1563961427; bh=nsGQjw4xzg93aCMW1JaUJ/Dkct937RNQGjWQGCBBtrw=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=gIsP1Ft2lolpCF46gVqHVxWiCYl8rE4DPyaqCL23EU3G46YbcF5Ed/GvixzQZhg16
+         NF5EhupgnBWmLFftQ32ACJJqN3xMrGRUYfyL/gRPGsTcsWcx62cLi1xafJ8/G+QfsG
+         nFhGd4CI+aUKpxS4ox7owRgFGtPrz3gxTWe3uqmU94u/SJ6dc8bvtocIoXoP0trG7l
+         wEqqpClcMgsCKw8/RAJVCd+GCbj0IbXKzIKQXjo8k6NJdqrZp7LHApjlfV0o4RGRWO
+         5a4THDA+J8RU3EI4M2l7tYmnYRu1R9+k8RZWkdqyiG4xs5kycVXy5SicBtBYr3Hocl
+         3m2tCrg5Pv7vw==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id E9A0AA0093;
+        Wed, 24 Jul 2019 09:43:43 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ us01wehtc1.internal.synopsys.com (10.12.239.235) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 24 Jul 2019 02:43:31 -0700
+Received: from NAM05-DM3-obe.outbound.protection.outlook.com (10.13.134.195)
+ by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Wed, 24 Jul 2019 02:43:31 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VR8h98ihHYxAc9AELg507KZqCpobLQZHIUjnzQT6eUt2zz/8FgDuElAkvBa3RRDqkqUcJLpjruYRAaiUFq6s+QyJEBlskRxFD/y1DVZ7y+v0nvg4dpgQM5KsajhC4PPdN1TpnOYdpCAqwNhMROJQ3qTj6AsnYPIom9GDJqDYKpdcrdmqwzMXeoun2GP4Lft3pJTmyfp2SplSV5GVBjGyeKxWgaQIWuaTTJNLNFudc4JEmLp6uixLPEEOq1i1g9s9yaebTL/Q389EcBY6AoLE99fCv/xehOKdJPE5Jjes8y1QmIZZ06Pxq4s4mUafFFvZ1UfBQrKSz+bOB+0omCx+yg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zgNEFvzUi99+JtKtlM9mU45xe4d7SqyZyIxMW5bcWyA=;
+ b=AOdHjRAR+Y6xb3kQNS7tLB5kbVswtTQuNhx4VEA0S1PRvHj9Ym5d6U2jqQT586IGAhyCKX4qkUCrgQ0XUE0Jj+uRAf2JsesLVfew7t3EQPPLE55eOAVf6jzCN4qG+olaJI8KcKZ7SWUINNXoHMgDVpATBuUYhESyYZgcwvH7eSGaep+aIMadHENulypjTJr+wfAOzYdSzizfdUp5eppqncGM9ndYfBoBEv2szxu/F9W+7GJuc10iE3pHPRvXwb65Rci3+xUJh73YqxpcSl0t2T2T0wFVSVbonJAWP5iEWYVbIOSjtccHetiSpyYxCQ4RuHfgIV1QcIo8PZfyHxoZgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=synopsys.com;dmarc=pass action=none
+ header.from=synopsys.com;dkim=pass header.d=synopsys.com;arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=iR/rCzIi399aRKhJN0gwqymimR1s0rrYFixqzZ944Cc=;
-        b=G4L08l+wMcbZdgsUmXCEsJdyn8PGqwrko5Wx6BSSo+NtApUJqete7vvQcxJaFqVG2/
-         /yWeRAwqd0zam4RYqhqQmV1uP3NGB757vb3ZjMVs3irXTdc+oGT+ogVEXVY324c/MTOK
-         g6ggFvSMVodXYU3NCV2EGyHVow5FOCkhZikXp+mz91fHl2tS2l650FyHsJPLpIr27QiH
-         2PUUgu8KJypFd12Pq72H48XImKkTxRqd1r2zMUY0AVZHVhj/174M+DH4bA5+xSXjuaBH
-         Au2GtRzHDbhrSz3hwaA8AT36Ux4D+e0O27pmv0BOo/+sF2FTMXflBOA7bsemf5l6u2eg
-         w3Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=iR/rCzIi399aRKhJN0gwqymimR1s0rrYFixqzZ944Cc=;
-        b=PoBFddTebabCul3CFXgNM1M4PL21lepADvnxVSAow4vje8pSlA7or0Xg5KpYv4NU89
-         WWtXEo+ST5IcWhmtT33Mmo6pfGbbAJVts5LX73fd3LKX6qTU6MPFSVecoe8Lk0ShZLr0
-         Lr0NXD+KaxlzIHEPd3I73N2p/qmuQHI/DTEoxmlEBldfX+cxN77Q/gkEt2kL4g1lKMTx
-         3Ql1/ebKKUBkaavQUyM8/9fvG/IHSyLrFcmsmpnEvCVjNuE2ej+S3CB/6WsjCIfSC6+C
-         h20lSnHLBBF3LQPqqT1Tm861vS1sEmrw7R0Wxotnovdof5W+sJfT2cUgX6+u7UMQ6udt
-         /hfA==
-X-Gm-Message-State: APjAAAWPHPk7BYlxEQVeey3IltN2QgCMHkOy91PtqH9KWMWLXgiNKrpu
-        CZDYEU/ImSHvEAnDSADYEtNIjFeYdzo=
-X-Google-Smtp-Source: APXvYqxhzYr7NV2FggQ7OCSMgRgws55e+2f5hgDhCfoQ8LXK75v0BzE4vCZy2mERL0MWIjZSFYWABg==
-X-Received: by 2002:aa7:82da:: with SMTP id f26mr10488550pfn.82.1563961394272;
-        Wed, 24 Jul 2019 02:43:14 -0700 (PDT)
-Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
-        by smtp.gmail.com with ESMTPSA id 22sm53099526pfu.179.2019.07.24.02.43.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 02:43:13 -0700 (PDT)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     idryomov@gmail.com, jlayton@kernel.org, sage@redhat.com,
-        davem@davemloft.net
-Cc:     ceph-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: ceph: Fix a possible null-pointer dereference in ceph_crypto_key_destroy()
-Date:   Wed, 24 Jul 2019 17:43:06 +0800
-Message-Id: <20190724094306.1866-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.0
+ d=synopsys.onmicrosoft.com; s=selector1-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zgNEFvzUi99+JtKtlM9mU45xe4d7SqyZyIxMW5bcWyA=;
+ b=DPfJ1eGstYI3pW/0Ki4wfN+NI9qThNJ7zLSQRoMBaFJoURjzucP47omeYOHHhlHxcl/AJIMgqh1wKM9Ai6EGKxA4POhQM+h3JPgFAHfNkCfRChHL5gFg6FbkWnJb2BPBQdyJNPQs5InZIOnchq2rXS2710IDHUKPhi+ln2qeM1A=
+Received: from BYAPR12MB3269.namprd12.prod.outlook.com (20.179.93.146) by
+ BYAPR12MB3048.namprd12.prod.outlook.com (20.178.53.221) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.16; Wed, 24 Jul 2019 09:43:29 +0000
+Received: from BYAPR12MB3269.namprd12.prod.outlook.com
+ ([fe80::f5b8:ac6e:ea68:cb1c]) by BYAPR12MB3269.namprd12.prod.outlook.com
+ ([fe80::f5b8:ac6e:ea68:cb1c%4]) with mapi id 15.20.2094.013; Wed, 24 Jul 2019
+ 09:43:29 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        David Miller <davem@davemloft.net>
+CC:     "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        "lists@bofh.nu" <lists@bofh.nu>,
+        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "maxime.ripard@bootlin.com" <maxime.ripard@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "wens@csie.org" <wens@csie.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+Thread-Topic: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+Thread-Index: AQHVMYtq2Zx4WVoG/U2kL8GCK0bP/abPQEOAgADTx+CABnZ9AIAADuYAgAAFQOCAAAnIAIAABLTAgAFMy7CAAB4gAIAAAO7wgAAG6gCAABvPAIAAcGAAgADrmoCAAA0XIA==
+Date:   Wed, 24 Jul 2019 09:43:29 +0000
+Message-ID: <BYAPR12MB3269AA9955844E317B62A239D3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+References: <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <6c769226-bdd9-6fe0-b96b-5a0d800fed24@arm.com>
+ <8756d681-e167-fe4a-c6f0-47ae2dcbb100@nvidia.com>
+ <20190723.115112.1824255524103179323.davem@davemloft.net>
+ <20190724085427.GA10736@apalos>
+In-Reply-To: <20190724085427.GA10736@apalos>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 125300b3-56e5-4fef-aa9b-08d7101b6265
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR12MB3048;
+x-ms-traffictypediagnostic: BYAPR12MB3048:
+x-microsoft-antispam-prvs: <BYAPR12MB30481B709FD62FE61A0FA4ABD3C60@BYAPR12MB3048.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0108A997B2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(366004)(376002)(346002)(136003)(396003)(199004)(189003)(316002)(229853002)(486006)(186003)(25786009)(305945005)(54906003)(7736002)(81166006)(81156014)(9686003)(8676002)(110136005)(6116002)(3846002)(33656002)(52536014)(66066001)(4326008)(74316002)(476003)(53936002)(256004)(14444005)(11346002)(478600001)(446003)(5660300002)(6246003)(71200400001)(26005)(8936002)(14454004)(71190400001)(7416002)(86362001)(55016002)(2906002)(99286004)(102836004)(76116006)(66946007)(64756008)(66556008)(66476007)(66446008)(6506007)(76176011)(6436002)(68736007)(7696005);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR12MB3048;H:BYAPR12MB3269.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Ft7v7HCjUoHGcFPsuefpcEXJg89UCUXy85K/Lk+ZS1aHOyoiW1omMWRIIlLtgyFPBDW1f0fFMH6OHnaIPQNinvpiIzbKZUWBi2WFw+V1RifomCQHRjOgsDKnkYLKkM4u7oc4gO4z3SQ1VRjVyXCu+4bvg8w7FpbGIbApjrHQahCI57E2zJJLkPdd2JG7sii/TceBR4Kf0Du3nI9kOkPdMnP76BI5fTd1K1jnxj8Hfgayhll0OI1n9mI0HOm587ZeewC4/FBYOuwN+wH/ydjPYQqMhyZ0Fz2OCR4aEN2kokLV2rkgPgIped/DmzcL8B9KcALlpro+Ra04ler38VvWdeiBmnYhPCo+vZVSMyvCViDR9FQyr1xbg/V7ehdp8yLqtIkpmVE+IHNlkLfwRTlRXatRPOiXCrtBCoQ9trI+/F4=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 125300b3-56e5-4fef-aa9b-08d7101b6265
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 09:43:29.6686
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: joabreu@synopsys.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3048
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In set_secret(), key->tfm is assigned to NULL on line 55, and then
-ceph_crypto_key_destroy(key) is executed.
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date: Jul/24/2019, 09:54:27 (UTC+00:00)
 
-ceph_crypto_key_destroy(key)
-    crypto_free_sync_skcipher(key->tfm)
-        crypto_skcipher_tfm(tfm)
-            return &tfm->base;
+> Hi David,=20
+>=20
+> > From: Jon Hunter <jonathanh@nvidia.com>
+> > Date: Tue, 23 Jul 2019 13:09:00 +0100
+> >=20
+> > > Setting "iommu.passthrough=3D1" works for me. However, I am not sure =
+where
+> > > to go from here, so any ideas you have would be great.
+> >=20
+> > Then definitely we are accessing outside of a valid IOMMU mapping due
+> > to the page pool support changes.
+>=20
+> Yes. On the netsec driver i did test with and without SMMU to make sure i=
+ am not
+> breaking anything.
+> Since we map the whole page on the API i think some offset on the driver =
+causes
+> that. In any case i'll have another look on page_pool to make sure we are=
+ not
+> missing anything.=20
 
-Thus, a possible null-pointer dereference may occur.
+Ilias, can it be due to this:
 
-To fix this bug, key->tfm is checked before calling
-crypto_free_sync_skcipher().
+stmmac_main.c:
+	pp_params.order =3D DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
 
-This bug is found by a static analysis tool STCheck written by us.
+page_pool.c:
+	dma =3D dma_map_page_attrs(pool->p.dev, page, 0,
+				 (PAGE_SIZE << pool->p.order),
+				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+"order", will be at least 1 and then mapping the page can cause overlap=20
+?
+
 ---
- net/ceph/crypto.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
-index 5d6724cee38f..ac28463bcfd8 100644
---- a/net/ceph/crypto.c
-+++ b/net/ceph/crypto.c
-@@ -136,7 +136,8 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
- 	if (key) {
- 		kfree(key->key);
- 		key->key = NULL;
--		crypto_free_sync_skcipher(key->tfm);
-+		if (key->tfm)
-+			crypto_free_sync_skcipher(key->tfm);
- 		key->tfm = NULL;
- 	}
- }
--- 
-2.17.0
-
+Thanks,
+Jose Miguel Abreu
