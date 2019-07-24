@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2D4724C0
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C1D724C3
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:38:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726314AbfGXCfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:35:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44698 "EHLO mail.kernel.org"
+        id S1726174AbfGXCih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:38:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726214AbfGXCfl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:35:41 -0400
+        id S1725827AbfGXCih (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:38:37 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C3256227BF;
-        Wed, 24 Jul 2019 02:35:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7181C21670;
+        Wed, 24 Jul 2019 02:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563935739;
-        bh=683ZhvMf9vccgiVqig62wK/+4tB3XrHjbaGa7n/gn9w=;
+        s=default; t=1563935916;
+        bh=SJ8HOYXskGJcQbN0HHR9MJbtHEEl5bWT/UwWTI+ZXC4=;
         h=Date:From:To:Cc:Subject:From;
-        b=uTfNE9Eog9aGIb+U2mOLVEGfVIC/m/TvyX+rjXMh/c0ZonFwILpr/HPNoNUOZv9tD
-         ObrkvXoVH3LTZykzQTcfgmcSu+HVxQVnqklnd5P8UDJIDVqlOs9A7PVzd2TF1FxsDi
-         AAm4dOcRwPaEEl5obGirUI2WyIr5yU2LyJ0vaTYU=
-Date:   Tue, 23 Jul 2019 19:35:38 -0700
+        b=pwn6tftdEp9TkO88UQkPfWmYR1owz0Pz4WD6WBt9OaYLEQyNhcsslA3cWjIAL5pml
+         DCiqJGBP6ao9Kfhp2d7RiZaWc6ldHIKDC4EGV0jRJ1gKzPtMKLTL4fYeigZ0JZ6f40
+         JOq4VwGYbnyk46SnZbYzpRrIrL4AeN6ugwYBqiHU=
+Date:   Tue, 23 Jul 2019 19:38:35 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org, Arvid Brodin <arvid.brodin@alten.se>,
-        "David S. Miller" <davem@davemloft.net>
+To:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 4 open syzbot bugs in "net/hsr" subsystem
-Message-ID: <20190724023538.GX643@sol.localdomain>
-Mail-Followup-To: netdev@vger.kernel.org,
-        Arvid Brodin <arvid.brodin@alten.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Reminder: 3 open syzbot bugs in vhost subsystem
+Message-ID: <20190724023835.GY643@sol.localdomain>
+Mail-Followup-To: kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -47,102 +50,99 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 4 of them as possibly being bugs in the "net/hsr" subsystem.  I've listed
+marked 3 of them as possibly being bugs in the vhost subsystem.  I've listed
 these reports below, sorted by an algorithm that tries to list first the reports
 most likely to be still valid, important, and actionable.
 
-Of these 4 bugs, 3 were seen in mainline in the last week.
+Of these 3 bugs, 2 were seen in mainline in the last week.
+
+Of these 3 bugs, 2 were bisected to commits from the following person:
+
+	Jason Wang <jasowang@redhat.com>
 
 If you believe a bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/hsr" subsystem, please let me
-know, and if possible forward the report to the correct people or mailing list.
+If you believe I misattributed a bug to the vhost subsystem, please let me know,
+and if possible forward the report to the correct people or mailing list.
 
 Here are the bugs:
 
 --------------------------------------------------------------------------------
-Title:              WARNING in hsr_addr_subst_dest
-Last occurred:      0 days ago
-Reported:           202 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=924b5574f42ebeddc94fad06f2fa329b199d58d3
-Original thread:    https://lkml.kernel.org/lkml/0000000000001b1a1d057e776c92@google.com/T/#u
-
-This bug has a C reproducer.
-
-syzbot has bisected this bug, but I think the bisection result is incorrect.
-
-The original thread for this bug received 2 replies; the last was 133 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+b92e4f1472a54e1c7dec@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000001b1a1d057e776c92@google.com
-
---------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in hsr_register_frame_in
+Title:              KASAN: use-after-free Write in tlb_finish_mmu
 Last occurred:      5 days ago
-Reported:           162 days ago
-Branches:           Mainline (with KMSAN patches)
-Dashboard link:     https://syzkaller.appspot.com/bug?id=2ad30d6cef7180728e401174df99d001bae578fe
-Original thread:    https://lkml.kernel.org/lkml/0000000000003bb1540581a55575@google.com/T/#u
+Reported:           4 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=d57b94f89e48c85ef7d95acc208209ea4bdc10de
+Original thread:    https://lkml.kernel.org/lkml/00000000000045e7a1058e02458a@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 7f466032dc9e5a61217f22ea34b2df932786bbfc
+	Author: Jason Wang <jasowang@redhat.com>
+	Date:   Fri May 24 08:12:18 2019 +0000
+
+	  vhost: access vq metadata through kernel virtual address
+
+No one has replied to the original thread for this bug yet.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+8267e9af795434ffadad@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread.  For the git send-email command to use, or tips on how to reply if the
+thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/00000000000045e7a1058e02458a@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: use-after-free Read in finish_task_switch (2)
+Last occurred:      5 days ago
+Reported:           4 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=9a98fcad6c8bd31f5c3afbdc6c75de9f082c0ffa
+Original thread:    https://lkml.kernel.org/lkml/000000000000490679058e0245ee@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+This bug was bisected to:
+
+	commit 7f466032dc9e5a61217f22ea34b2df932786bbfc
+	Author: Jason Wang <jasowang@redhat.com>
+	Date:   Fri May 24 08:12:18 2019 +0000
+
+	  vhost: access vq metadata through kernel virtual address
+
+No one has replied to the original thread for this bug yet.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+7f067c796eee2acbc57a@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread.  For the git send-email command to use, or tips on how to reply if the
+thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000490679058e0245ee@google.com
+
+--------------------------------------------------------------------------------
+Title:              memory leak in vhost_net_ioctl
+Last occurred:      22 days ago
+Reported:           48 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=12ba349d7e26ccfe95317bc376e812ebbae2ee0f
+Original thread:    https://lkml.kernel.org/lkml/000000000000188da1058a9c25e3@google.com/T/#u
 
 This bug has a C reproducer.
 
-No one replied to the original thread for this bug.
+The original thread for this bug has received 4 replies; the last was 39 days
+ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+b8152ab439b9c5174ffd@syzkaller.appspotmail.com
+    Reported-by: syzbot+0789f0c7e45efd7bb643@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000003bb1540581a55575@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING in hsr_forward_skb
-Last occurred:      0 days ago
-Reported:           202 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=13de4605e86ebcf39093017dc255aa0fd6c2f12d
-Original thread:    https://lkml.kernel.org/lkml/0000000000009f94c1057e772431@google.com/T/#u
-
-This bug has a C reproducer.
-
-syzbot has bisected this bug, but I think the bisection result is incorrect.
-
-The original thread for this bug received 4 replies; the last was 132 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+fdce8f2a8903f3ba0e6b@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009f94c1057e772431@google.com
-
---------------------------------------------------------------------------------
-Title:              BUG: corrupted list in hsr_prune_nodes
-Last occurred:      100 days ago
-Reported:           100 days ago
-Branches:           bpf-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=583fd57905151af7bc057ec47208d4873e953db7
-Original thread:    https://lkml.kernel.org/lkml/000000000000ca5ede0586804c42@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+99ad9e40137a83c70ee3@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000ca5ede0586804c42@google.com
+https://lkml.kernel.org/r/000000000000188da1058a9c25e3@google.com
 
