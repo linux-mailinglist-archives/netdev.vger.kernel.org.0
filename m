@@ -2,99 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DAF2732ED
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 17:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40ED0732F9
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 17:44:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387696AbfGXPjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 11:39:09 -0400
-Received: from mail-eopbgr30045.outbound.protection.outlook.com ([40.107.3.45]:27911
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725870AbfGXPjI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 11:39:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Iv1yjZmrPbJG0vNy+dmYncECZofourr5Ok9CYy5Jzx5wVQUihZMhejh/0QOA+cF9kVM8gUGpEjretEKrqny+PTQX9ALZhdamzQIcZLzN7z3dfdy7LP/+hiU4xRugJMRQ++rmmZRnfoSsiQwtaJrXr28UdZKUfsruioPxy2odRq0yDzRL1xAG9jm6Smqt0+6oEhxpKNz0C6XWVtuGCFlk6ugK50yasqRXqavnhnIkyPFiXKoaeYWY5RXEFQ9D53XapR/gwuBwQzkt7Bjt2RyAa51aEXFmjj3gKNxAwUG/yDhVPnnNwMMN1viOiJmjC4CX1Os0EcUIXb6Kz3+O5egI6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TJtin+o6wuBXJt4WB9kBJNcxV77h3TF6Yx+mu5+Uvvo=;
- b=hz1ozqNJ0qmvnhpz4T9zSTEysC9s4zTqB2ceKne2H/ExgjTNUaN3pEfqlKsLbUNkjGRUniQ53ypCoKAFjmbWfYiC7WY2S9KGdk16eXt/s8y5Rr0KLAo+zyXoit8PmBCavmb5zogUkHMPmMEae3Ds0nUE0hWzu+ImqKR2rCjd6AXB4ag6ec/KBSHHiXUQHaBfoWrrF6ta979+iSgJLRcinPjRXAS4jEO8JgLnnbon+3GyiujZsasTkRiB+hlI5DAVYMug5h+2oCu49b0OZKmZiGoEow5AyoEehPGpCHn8TXSg9tSJ3x5TtZSyiLJYgsyYql7QD+XO7/h/LD3mwmegaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TJtin+o6wuBXJt4WB9kBJNcxV77h3TF6Yx+mu5+Uvvo=;
- b=Qg1oO97xYCPiZFcdyevcOv26/0ntrbGSMzYLoRQdv+tWoE5ZU8WoF+/8Xj5tPVS3JvV0VGW7ZNoipHgWaOodFHvMyQHS8QFF1zMRVZL24qlkRjsz0PCKyE+c337pwqIiGfjSf/ipcuTGLScRpmEQZWt2kEPuAtni5S3rHqlHQZk=
-Received: from VI1PR05MB5344.eurprd05.prod.outlook.com (20.178.9.81) by
- VI1PR05MB4287.eurprd05.prod.outlook.com (52.133.12.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.16; Wed, 24 Jul 2019 15:39:05 +0000
-Received: from VI1PR05MB5344.eurprd05.prod.outlook.com
- ([fe80::406f:2c4e:37cf:adbc]) by VI1PR05MB5344.eurprd05.prod.outlook.com
- ([fe80::406f:2c4e:37cf:adbc%7]) with mapi id 15.20.2094.013; Wed, 24 Jul 2019
- 15:39:05 +0000
-From:   Ido Schimmel <idosch@mellanox.com>
-To:     Masanari Iida <standby24x7@gmail.com>
-CC:     "shuah@kernel.org" <shuah@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] selftests: mlxsw: Fix typo in qos_mc_aware.sh
-Thread-Topic: [PATCH net-next] selftests: mlxsw: Fix typo in qos_mc_aware.sh
-Thread-Index: AQHVQjSnpdNa8x6TMUWgIlMliwWOj6bZ52wA
-Date:   Wed, 24 Jul 2019 15:39:04 +0000
-Message-ID: <20190724153902.GA18809@splinter>
-References: <20190724152951.4618-1-standby24x7@gmail.com>
-In-Reply-To: <20190724152951.4618-1-standby24x7@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR2P264CA0005.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::17)
- To VI1PR05MB5344.eurprd05.prod.outlook.com (2603:10a6:803:a5::17)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=idosch@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 51f0f3d5-1d16-4a28-2144-08d7104d0f12
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4287;
-x-ms-traffictypediagnostic: VI1PR05MB4287:
-x-microsoft-antispam-prvs: <VI1PR05MB4287776A54EE8BE5DBB4527DBFC60@VI1PR05MB4287.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:669;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(4636009)(136003)(39860400002)(396003)(366004)(376002)(346002)(189003)(199004)(2906002)(486006)(25786009)(33656002)(305945005)(7736002)(1411001)(76176011)(54906003)(5660300002)(256004)(478600001)(99286004)(52116002)(66446008)(558084003)(66946007)(64756008)(66556008)(66476007)(186003)(6512007)(66066001)(9686003)(4326008)(6436002)(1076003)(476003)(71200400001)(33716001)(8676002)(71190400001)(102836004)(386003)(86362001)(6506007)(26005)(229853002)(8936002)(68736007)(81166006)(14454004)(316002)(6116002)(6486002)(11346002)(3846002)(6246003)(53936002)(446003)(81156014)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4287;H:VI1PR05MB5344.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: MwVmIJXMg0r885PVXEkxxX6S+p8PA4nhMULwR/zQ2xPWn8IYqK1HmNW3/1Uo2fn96YNc4MlI7odwahP9wV9Md6tR/b2uWRG3oMgUD62Y88roqWiHYK/OpdNCw5hGjGXOV38+Hx8Av8tYc8r9oz9mxpSgUkRIyPLwVhymI7Al47T/acYQkvbQ8sf339sAYggKOcfsx/7wL0EglwKZWJDOyrPQeD1/3jdH4f3p+ssmMVGolQmw4GvrihGQr5eS4Wq3z2s0yBmmLAETWsrL6EV74ARi+eBH+QQL5c9OVK/ODg2ubSgVYanJfchnh6A2gSpY5gFFQlKtMMXsI6cgso2F0TK1OPI8ArIaXmD243zuA6VG3io1sYE5xY5HNFvCmo8/58MdQZQTUIO3G9/H1Y1TRlzxTaehjtl9kB4U44rQcOc=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <40791E250C96C7409D0DAA47BAA6A948@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728336AbfGXPow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 11:44:52 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36092 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728051AbfGXPow (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 11:44:52 -0400
+Received: by mail-pg1-f193.google.com with SMTP id l21so21428833pgm.3;
+        Wed, 24 Jul 2019 08:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BZV2OjLCkki70WlOWWuVHAiyKZZrtSyMSuszIqWROFY=;
+        b=jaddU6+Yp5ArGjc1K6ididv1JsBAZI3vN8s9mDlCMC/bTf4+jjkSGRP0+MRXmnxske
+         ZKY6SIATaqdwXPK4WQes3MiQWbf/ls795lr1cKKYne1hbyYTn9Thl7r9oSWZEhFZJuLc
+         zo8X078KoAI0ArmvaF2+JLSe9izSX7A2gWuF5x/O1ZKjDmBWNNU8Xp8gH6q489Dxzo6c
+         uIs3CK2OgV0ef8m9zcavQ49nTZuuT7MJymEokMZU0Xnkezeew0Hx4jVV7WhnPQKtYqkQ
+         aptPOW4yl0/0w5zrJBAh0df9SbbH1+M1jahOfNe2jXWDo58C3OENeDP2E5IH8oTmERuu
+         y/5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BZV2OjLCkki70WlOWWuVHAiyKZZrtSyMSuszIqWROFY=;
+        b=EtqTUgug/CgyF7eKYCCWj5KkaZKZSRTtAP36/fxrQ7AkxOmB8sp6OZyXB5TOChWNaP
+         o92MWy4zp29JFRKjCNA7kSYcg+jFG9M4DCNMFIr2lbhGLno8hHuPzbCU0rDXW+PRMsfF
+         MhON2Io7L0IZRTWin93SsWaCb4PJY998E/S8APOk/9pkz7CBBRjnVFwf6LFJEx0V26Di
+         Dq39P1AytV0G2iBxZAfSKooy/ofRc4xLwFGtafQbA2omKFPduunyTTe8T6i+K8pVq1nq
+         2Tpuj+pb20T8IY1l0NBI4ko93myx+aGs09syA3v9+HuLsOMqZwo/wpLO/r60dM4a1wb7
+         YOEA==
+X-Gm-Message-State: APjAAAVjyYpygInAGmQxtjEqT2njCBnSR/4JueijO1tfisDBN0sN554u
+        +rcwH/f5dO4r1+PNyu5HRWht4uaO
+X-Google-Smtp-Source: APXvYqwH3Y/wUMv1LE+IPpYLYtjyg7bFZSFpQ19tltDJMe4iz25Aox+JJwL3ntXl4Spx0QXc7qmSCQ==
+X-Received: by 2002:a17:90a:d58c:: with SMTP id v12mr86698269pju.7.1563983091046;
+        Wed, 24 Jul 2019 08:44:51 -0700 (PDT)
+Received: from gmail.com ([66.170.99.2])
+        by smtp.gmail.com with ESMTPSA id a3sm55566210pje.3.2019.07.24.08.44.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Jul 2019 08:44:50 -0700 (PDT)
+Date:   Wed, 24 Jul 2019 08:44:46 -0700
+From:   William Tu <u9012063@gmail.com>
+To:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ip6_gre: reload ipv6h in prepare_ip6gre_xmit_ipv6
+Message-ID: <20190724154446.GA13067@gmail.com>
+References: <1563969642-11843-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51f0f3d5-1d16-4a28-2144-08d7104d0f12
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 15:39:04.9376
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: idosch@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4287
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1563969642-11843-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 25, 2019 at 12:29:51AM +0900, Masanari Iida wrote:
-> This patch fix some spelling typo in qos_mc_aware.sh
->=20
-> Signed-off-by: Masanari Iida <standby24x7@gmail.com>
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
+On Wed, Jul 24, 2019 at 08:00:42PM +0800, Haishuang Yan wrote:
+> Since ip6_tnl_parse_tlv_enc_lim() can call pskb_may_pull()
+> which may change skb->data, so we need to re-load ipv6h at
+> the right place.
+> 
+> Fixes: 898b29798e36 ("ip6_gre: Refactor ip6gre xmit codes")
+> Cc: William Tu <u9012063@gmail.com>
+> Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
 
-Reviewed-by: Ido Schimmel <idosch@mellanox.com>
+LGTM, thanks for the fix
+Acked-by: William Tu <u9012063@gmail.com>
+
+> ---
+>  net/ipv6/ip6_gre.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+> index c2049c7..dd2d0b96 100644
+> --- a/net/ipv6/ip6_gre.c
+> +++ b/net/ipv6/ip6_gre.c
+> @@ -660,12 +660,13 @@ static int prepare_ip6gre_xmit_ipv6(struct sk_buff *skb,
+>  				    struct flowi6 *fl6, __u8 *dsfield,
+>  				    int *encap_limit)
+>  {
+> -	struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+> +	struct ipv6hdr *ipv6h;
+>  	struct ip6_tnl *t = netdev_priv(dev);
+>  	__u16 offset;
+>  
+>  	offset = ip6_tnl_parse_tlv_enc_lim(skb, skb_network_header(skb));
+>  	/* ip6_tnl_parse_tlv_enc_lim() might have reallocated skb->head */
+> +	ipv6h = ipv6_hdr(skb);
+>  
+>  	if (offset > 0) {
+>  		struct ipv6_tlv_tnl_enc_lim *tel;
+> -- 
+> 1.8.3.1
+> 
+> 
+> 
