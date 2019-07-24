@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8337173F80
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BAF773F5B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 22:32:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388536AbfGXUdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 16:33:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64008 "EHLO
+        id S2388337AbfGXT3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 15:29:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24732 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387849AbfGXT2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:28:10 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6OJQsZh027345
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:09 -0700
+        by vger.kernel.org with ESMTP id S2387564AbfGXT2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 15:28:20 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6OJQkVN002951
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:18 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=uzUFN9p7VAg7P9HIvFDTSB3LnCMuS4z39HDojfKE3QE=;
- b=ndSG+WtwdUFeZS0AB9sX3PrEyEQAYKCFZ1sfOahpCyp+Rc8M8hDTBuKDrKbfAru0HEbt
- /Gx9X1C4o+zFrMnkihlsqFvSthWx9E+K1yr3XNaGYHvYR1zpzlCFxsudJOMvWr7E23ZY
- GhcFiX67WMMnBAZiPI+g5mVqoRgdPQ1/7Lk= 
+ content-type; s=facebook; bh=xbaCwKGAjqB6i+ptM9sDk9gnLFPD5fELZkO3qUMbfC0=;
+ b=pNaE9+4Aui71xgk5JAAFPPfHF0LlgDN6MktRgMKbGr1ExwzcTjGJSnKF5+h7YshWyelb
+ hDbmLFnr0mIwVJ+NbgrRKlNRnwECOWofxa9DGdJPhSxGupY4bwsEEVr33pbI6s7Opw9O
+ 8na1fBCKzitlpmQL4BRVG8JJ4kRB2ynw0k4= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2txuhm8gq9-1
+        by mx0b-00082601.pphosted.com with ESMTP id 2txu1ugp70-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:09 -0700
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 12:28:18 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 24 Jul 2019 12:28:08 -0700
+ 15.1.1713.5; Wed, 24 Jul 2019 12:28:16 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id A82A28615F8; Wed, 24 Jul 2019 12:28:07 -0700 (PDT)
+        id D1C8E8615F8; Wed, 24 Jul 2019 12:28:15 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 04/10] selftests/bpf: add CO-RE relocs struct flavors tests
-Date:   Wed, 24 Jul 2019 12:27:36 -0700
-Message-ID: <20190724192742.1419254-5-andriin@fb.com>
+Subject: [PATCH bpf-next 08/10] selftests/bpf: add CO-RE relocs modifiers/typedef tests
+Date:   Wed, 24 Jul 2019 12:27:40 -0700
+Message-ID: <20190724192742.1419254-9-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190724192742.1419254-1-andriin@fb.com>
 References: <20190724192742.1419254-1-andriin@fb.com>
@@ -60,118 +60,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests verifying that BPF program can use various struct/union
-"flavors" to extract data from the same target struct/union.
+Add tests validating correct handling of various combinations of
+typedefs and const/volatile/restrict modifiers.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- .../selftests/bpf/prog_tests/core_reloc.c     | 34 ++++++++++
- .../bpf/progs/btf__core_reloc_flavors.c       |  3 +
- .../btf__core_reloc_flavors__err_wrong_name.c |  3 +
- .../selftests/bpf/progs/core_reloc_types.h    | 15 +++++
- .../bpf/progs/test_core_reloc_flavors.c       | 65 +++++++++++++++++++
- 5 files changed, 120 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
- create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
+ .../selftests/bpf/prog_tests/core_reloc.c     | 27 +++++++
+ .../bpf/progs/btf__core_reloc_mods.c          |  3 +
+ .../progs/btf__core_reloc_mods___mod_swap.c   |  3 +
+ .../progs/btf__core_reloc_mods___typedefs.c   |  3 +
+ .../selftests/bpf/progs/core_reloc_types.h    | 72 +++++++++++++++++++
+ .../bpf/progs/test_core_reloc_mods.c          | 68 ++++++++++++++++++
+ 6 files changed, 176 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index b8d6ea578b20..c553c5f07ec3 100644
+index 05746ead48d9..f2c7ed67a81c 100644
 --- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
 +++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -1,5 +1,32 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include "progs/core_reloc_types.h"
-+
-+#define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
-+
-+#define FLAVORS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
-+	.a = 42,							\
-+	.b = 0xc001,							\
-+	.c = 0xbeef,							\
-+}
-+
-+#define FLAVORS_CASE_COMMON(name)					\
-+	.case_name = #name,						\
-+	.bpf_obj_file = "test_core_reloc_flavors.o",			\
-+	.btf_src_file = "btf__core_reloc_" #name ".o"			\
-+
-+#define FLAVORS_CASE(name) {						\
-+	FLAVORS_CASE_COMMON(name),					\
-+	.input = FLAVORS_DATA(core_reloc_##name),			\
-+	.input_len = sizeof(struct core_reloc_##name),			\
-+	.output = FLAVORS_DATA(core_reloc_flavors),			\
-+	.output_len = sizeof(struct core_reloc_flavors),		\
-+}
-+
-+#define FLAVORS_ERR_CASE(name) {					\
-+	FLAVORS_CASE_COMMON(name),					\
-+	.fails = true,							\
-+}
+@@ -107,6 +107,28 @@
+ 	.fails = true,							\
+ }
  
++#define MODS_CASE(name) {						\
++	.case_name = #name,						\
++	.bpf_obj_file = "test_core_reloc_mods.o",			\
++	.btf_src_file = "btf__core_reloc_" #name ".o",			\
++	.input = STRUCT_TO_CHAR_PTR(core_reloc_##name) {		\
++		.a = 1,							\
++		.b = 2,							\
++		.c = (void *)3,						\
++		.d = (void *)4,						\
++		.e = { [2] = 5 },					\
++		.f = { [1] = 6 },					\
++		.g = { .x = 7 },					\
++		.h = { .y = 8 },					\
++	},								\
++	.input_len = sizeof(struct core_reloc_##name),			\
++	.output = STRUCT_TO_CHAR_PTR(core_reloc_mods_output) {		\
++		.a = 1, .b = 2, .c = 3, .d = 4,				\
++		.e = 5, .f = 6, .g = 7, .h = 8,				\
++	},								\
++	.output_len = sizeof(struct core_reloc_mods_output),		\
++}
++
  struct core_reloc_test_case {
  	const char *case_name;
-@@ -23,6 +50,13 @@ static struct core_reloc_test_case test_cases[] = {
- 		.output = "\1", /* true */
- 		.output_len = 1,
- 	},
+ 	const char *bpf_obj_file;
+@@ -173,6 +195,11 @@ static struct core_reloc_test_case test_cases[] = {
+ 	PRIMITIVES_ERR_CASE(primitives___err_non_enum),
+ 	PRIMITIVES_ERR_CASE(primitives___err_non_int),
+ 	PRIMITIVES_ERR_CASE(primitives___err_non_ptr),
 +
-+	/* validate BPF program can use multiple flavors to match against
-+	 * single target BTF type
-+	 */
-+	FLAVORS_CASE(flavors),
-+
-+	FLAVORS_ERR_CASE(flavors__err_wrong_name),
++	/* const/volatile/restrict and typedefs scenarios */
++	MODS_CASE(mods),
++	MODS_CASE(mods___mod_swap),
++	MODS_CASE(mods___typedefs),
  };
  
  struct data {
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
 new file mode 100644
-index 000000000000..b74455b91227
+index 000000000000..124197a2e813
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
 @@ -0,0 +1,3 @@
 +#include "core_reloc_types.h"
 +
-+void f(struct core_reloc_flavors x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
++void f(struct core_reloc_mods x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
 new file mode 100644
-index 000000000000..7b6035f86ee6
+index 000000000000..f8a6592ca75f
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
 @@ -0,0 +1,3 @@
 +#include "core_reloc_types.h"
 +
-+void f(struct core_reloc_flavors__err_wrong_name x) {}
++void f(struct core_reloc_mods___mod_swap x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
+new file mode 100644
+index 000000000000..5c0d73687247
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_mods___typedefs x) {}
 diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-new file mode 100644
-index 000000000000..33b0c6a61912
---- /dev/null
+index 7526a5f5755b..3401e8342e57 100644
+--- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
 +++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -0,0 +1,15 @@
+@@ -454,3 +454,75 @@ struct core_reloc_primitives___err_non_ptr {
+ 	int d; /* int instead of ptr */
+ 	int (*f)(const char *);
+ };
++
 +/*
-+ * FLAVORS
++ * MODS
 + */
-+struct core_reloc_flavors {
-+	int a;
-+	int b;
-+	int c;
++struct core_reloc_mods_output {
++	int a, b, c, d, e, f, g, h;
 +};
 +
-+/* this is not a flavor, as it doesn't have triple underscore */
-+struct core_reloc_flavors__err_wrong_name {
-+	int a;
-+	int b;
-+	int c;
++typedef const int int_t;
++typedef const char *char_ptr_t;
++typedef const int arr_t[7];
++
++struct core_reloc_mods_substruct {
++	int x;
++	int y;
 +};
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c b/tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
++
++typedef struct {
++	int x;
++	int y;
++} core_reloc_mods_substruct_t;
++
++struct core_reloc_mods {
++	int a;
++	int_t b;
++	char *c;
++	char_ptr_t d;
++	int e[3];
++	arr_t f;
++	struct core_reloc_mods_substruct g;
++	core_reloc_mods_substruct_t h;
++};
++
++/* a/b, c/d, e/f, and g/h pairs are swapped */
++struct core_reloc_mods___mod_swap {
++	int b;
++	int_t a;
++	char *d;
++	char_ptr_t c;
++	int f[3];
++	arr_t e;
++	struct {
++		int y;
++		int x;
++	} h;
++	core_reloc_mods_substruct_t g;
++};
++
++typedef int int1_t;
++typedef int1_t int2_t;
++typedef int2_t int3_t;
++
++typedef int arr1_t[5];
++typedef arr1_t arr2_t;
++typedef arr2_t arr3_t;
++typedef arr3_t arr4_t;
++
++typedef const char * const volatile restrict fancy_char_ptr_t;
++
++typedef core_reloc_mods_substruct_t core_reloc_mods_substruct_tt;
++
++/* we need more typedefs */
++struct core_reloc_mods___typedefs {
++	core_reloc_mods_substruct_tt g;
++	core_reloc_mods_substruct_tt h;
++	arr4_t f;
++	arr4_t e;
++	fancy_char_ptr_t d;
++	fancy_char_ptr_t c;
++	int3_t b;
++	int3_t a;
++};
+diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_mods.c b/tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
 new file mode 100644
-index 000000000000..92660344518d
+index 000000000000..eaf436922cb3
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
-@@ -0,0 +1,65 @@
++++ b/tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
+@@ -0,0 +1,68 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (c) 2019 Facebook
 +
@@ -186,52 +249,55 @@ index 000000000000..92660344518d
 +	char out[256];
 +} data;
 +
-+struct core_reloc_flavors {
-+	int a;
-+	int b;
-+	int c;
++struct core_reloc_mods_output {
++	int a, b, c, d, e, f, g, h;
 +};
 +
-+/* local flavor with reversed layout */
-+struct core_reloc_flavors___reversed {
-+	int c;
-+	int b;
-+	int a;
++typedef const int int_t;
++typedef const char *char_ptr_t;
++typedef const int arr_t[7];
++
++struct core_reloc_mods_substruct {
++	int x;
++	int y;
 +};
 +
-+/* local flavor with nested/overlapping layout */
-+struct core_reloc_flavors___weird {
-+	struct {
-+		int b;
-+	};
-+	/* a and c overlap in local flavor, but this should still work
-+	 * correctly with target original flavor
-+	 */
-+	union {
-+		int a;
-+		int c;
-+	};
++typedef struct {
++	int x;
++	int y;
++} core_reloc_mods_substruct_t;
++
++struct core_reloc_mods {
++	int a;
++	int_t b;
++	char *c;
++	char_ptr_t d;
++	int e[3];
++	/* BUG: doesn't work if using `arr_t f;` */
++	int f[7];
++	struct core_reloc_mods_substruct g;
++	/* BUG: doesn't work if using `core_reloc_mods_substruct_t h;` */
++	struct core_reloc_mods_substruct h;
 +};
++
++#define CORE_READ(dst, src)					\
++	bpf_probe_read((void *)dst, sizeof(*dst),		\
++		       __builtin_preserve_access_index(src))
 +
 +SEC("raw_tracepoint/sys_enter")
-+int test_core_nesting(void *ctx)
++int test_core_mods(void *ctx)
 +{
-+	struct core_reloc_flavors *in_orig = (void *)&data.in;
-+	struct core_reloc_flavors___reversed *in_rev = (void *)&data.in;
-+	struct core_reloc_flavors___weird *in_weird = (void *)&data.in;
-+	struct core_reloc_flavors *out = (void *)&data.out;
++	struct core_reloc_mods *in = (void *)&data.in;
++	struct core_reloc_mods_output *out = (void *)&data.out;
 +
-+	/* read a using weird layout */
-+	if (bpf_probe_read(&out->a, sizeof(in_weird->a),
-+			   __builtin_preserve_access_index(&in_weird->a)))
-+		return 1;
-+	/* read b using reversed layout */
-+	if (bpf_probe_read(&out->b, sizeof(in_rev->b),
-+			   __builtin_preserve_access_index(&in_rev->b)))
-+		return 1;
-+	/* read c using original layout */
-+	if (bpf_probe_read(&out->c, sizeof(in_orig->c),
-+			   __builtin_preserve_access_index(&in_orig->c)))
++	if (CORE_READ(&out->a, &in->a) ||
++	    CORE_READ(&out->b, &in->b) ||
++	    CORE_READ(&out->c, &in->c) ||
++	    CORE_READ(&out->d, &in->d) ||
++	    CORE_READ(&out->e, &in->e[2]) ||
++	    CORE_READ(&out->f, &in->f[1]) ||
++	    CORE_READ(&out->g, &in->g.x) ||
++	    CORE_READ(&out->h, &in->h.y))
 +		return 1;
 +
 +	return 0;
