@@ -2,125 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D676D72C74
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 12:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3415472C7B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 12:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbfGXKj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 06:39:56 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:41142 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726300AbfGXKj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 06:39:56 -0400
-Received: by mail-pf1-f193.google.com with SMTP id m30so20754890pff.8;
-        Wed, 24 Jul 2019 03:39:55 -0700 (PDT)
+        id S1726901AbfGXKop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 06:44:45 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40299 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726070AbfGXKoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 06:44:44 -0400
+Received: by mail-wr1-f68.google.com with SMTP id r1so46413480wrl.7;
+        Wed, 24 Jul 2019 03:44:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=wO4O/Gvif+MADZGPdW4dqB529LtcQYyXiVt50YTB8sQ=;
-        b=L4Cn/0ZMJQOyjLGxVaYXm152UsTOpbzYiYWqFq9i917amlQjuDqAGIDml7mnGbbS18
-         hr2goSQqpjPH+wib0GQ1sPE4/MmxAPeSOzHpdZYyxwWeORTnnZtFuHpqArXYlnhHuB0/
-         AU3Nr3KjBpWkKtCMlJBtl6PXylB84eX4sKomMC0Q9hXUa2/UWO3gGU5WPtpwKvnC2V5t
-         pVXYu7f3G3tabd0agHqv02mcBr2ywbWKxqDIlnQQDricK/1cnQIMKCRjmpxJHxkmrDtV
-         m3/5YUtHLMA8fuCdjIphE7TmX/xOXeZMiE/ukZmvmKj6fmdN3Byo7VO/vWb+k2JHHmgw
-         gEBQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=VSyy1S/fbTjJgED/rizgeHH0wlDygBVpXbt87CoVbz8=;
+        b=FwoT2uMjqovfPMxfybogj6bljs2dJd6Sxf97lq1CI3Mh5MZ00uC8omSpb4BdqKQuc0
+         878597O4AbPRNnDMU/X9FzYlnISdPcEhwN5/+WwlLhC2I4UtRU64V70dLiXfJENtEIpj
+         ppRUoPi8YXE9zN8B3CoeAK/gQ15rUqkJwj0R/JXnMLJmt25zNcRwmmCJuFFU4J0ctSqo
+         SX0ekSwZhmXPCAWSdZ5DmWmQ/lAaTgzLJfSwJS4IBmIybs5jnehcF/2Oh5mI2xoKH/fh
+         UO222WQ8zwXmaKM/gRqecmB9jj/cfas9iI8o1oaIt/GMTWioO8AD6OHjL352LNIe3qSV
+         dvLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wO4O/Gvif+MADZGPdW4dqB529LtcQYyXiVt50YTB8sQ=;
-        b=SX3KLZ46c8nU9x49ebt3HiSclf584+41RXH47ewLzhefhK5yrJh1tVmb6PvoBQPV5l
-         WlYj7ll5F8sgR4u837uyw+gs+QLRisH1Qqz6Qwc/Aa6eOJNatPZzKQFfXNmCqeQBBBVm
-         WJgowtvtaLwQcP8rQKMSegBVYUivRVfDQCj5QeyFVs8G1UoE9wWu+6A4WaCQd6/IX3Pt
-         YAw/6FU2u2N4wv+0k1BG3iT/KHiDmz+1wrGrGBQtucbUIeBM2SsrKO/ofw4jqFPh7V5y
-         pzfzLReR1ahGHGXwt4+plpqmsnRzbEsp85yboxSJ9du7rrFOHgCq6AZDFsw8I6f1bDz7
-         ZPGg==
-X-Gm-Message-State: APjAAAVj0i+VdsviT++HgBJZAKbewrv1S6JXiSuj+StELYe4vfeTifzy
-        jJ7DPMivAH6vJJKs4/R6Zr3TqYxdqcA=
-X-Google-Smtp-Source: APXvYqyB5tVuEHxgF/eAqyCET+wGzXScctFnZx1o/V16PJa1fLsTcB4Ztr+LWCuALB5012je06dYuA==
-X-Received: by 2002:a62:1515:: with SMTP id 21mr10953193pfv.100.1563964795549;
-        Wed, 24 Jul 2019 03:39:55 -0700 (PDT)
-Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
-        by smtp.gmail.com with ESMTPSA id i7sm36393739pjk.24.2019.07.24.03.39.53
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VSyy1S/fbTjJgED/rizgeHH0wlDygBVpXbt87CoVbz8=;
+        b=sPWsbfE/ag/6kaQgB9yMDopDAtAbD21IlNcV0+2RbNK1aDLeTqS4BPWZLQ8PnpOJUP
+         OnREu0K8ORuL5+SKCLt/GSbYZ4HP6SCNf5wJ+81ZjWWJRNM725Tc1VRVJYyT/HPIA++k
+         XPd/FW9096GW4ns1Pp+PHSyhQIvsmhJMMwsjnbar5H74amkOI9PHx3l5sV0KUoknJ95O
+         q1TpGBoU2XnTUdGeEzKqbFL2SzgUkrEL7MCNMZ0su4twRhHbW8Zlqofsex3rrhCer9YY
+         QdYdh34j0iTGmHu8BqZzbmQS6bz3TClTT6My22m81rbIR2WHhFFJZOYmr/uO8XNEvA9k
+         4D1A==
+X-Gm-Message-State: APjAAAX3s748WS3pMuZNgGtgJIz6M7AiaflOqNrK+zhq1U29+vfFc3l1
+        cjNJ0JBAp2YuWS5H3+GepX2rYyb5
+X-Google-Smtp-Source: APXvYqxXXNMN+FRll/IVvThY400TUGFN0IKK5+L+rww2fQyr5h8Zu0qzrUwKJjy+kWc6heDBbZHI4Q==
+X-Received: by 2002:adf:f206:: with SMTP id p6mr14542181wro.216.1563965082957;
+        Wed, 24 Jul 2019 03:44:42 -0700 (PDT)
+Received: from [192.168.8.147] (200.150.22.93.rev.sfr.net. [93.22.150.200])
+        by smtp.gmail.com with ESMTPSA id k17sm51932217wrq.83.2019.07.24.03.44.41
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 03:39:55 -0700 (PDT)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        davem@davemloft.net
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: 9p: Fix possible null-pointer dereferences in p9_cm_event_handler()
-Date:   Wed, 24 Jul 2019 18:39:48 +0800
-Message-Id: <20190724103948.5834-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.0
+        Wed, 24 Jul 2019 03:44:42 -0700 (PDT)
+Subject: Re: [PATCH 4.4 stable net] net: tcp: Fix use-after-free in
+ tcp_write_xmit
+To:     maowenan <maowenan@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190724091715.137033-1-maowenan@huawei.com>
+ <badce2b6-b75e-db01-39c8-d68a0161c101@gmail.com>
+ <8e02f190-ec3a-6308-8c59-e5ae9ca39f5d@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <2e56c0bf-556c-c16f-c767-ea1d49acb19c@gmail.com>
+Date:   Wed, 24 Jul 2019 12:44:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <8e02f190-ec3a-6308-8c59-e5ae9ca39f5d@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In p9_cm_event_handler(), there is an if statement on 260 to check
-whether rdma is NULL, which indicates that rdma can be NULL.
-If so, using rdma->xxx may cause a possible null-pointer dereference.
 
-To fix these bugs, rdma is checked before being used.
 
-These bugs are found by a static analysis tool STCheck written by us.
+On 7/24/19 12:36 PM, maowenan wrote:
+> Actually, I have tested 4.4.184, UAF still happen.
+> 
+>
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- net/9p/trans_rdma.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+Thanks for testing.
 
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index bac8dad5dd69..eba3c5fc2731 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -242,18 +242,24 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
- 	struct p9_trans_rdma *rdma = c->trans;
- 	switch (event->event) {
- 	case RDMA_CM_EVENT_ADDR_RESOLVED:
--		BUG_ON(rdma->state != P9_RDMA_INIT);
--		rdma->state = P9_RDMA_ADDR_RESOLVED;
-+		if (rdma) {
-+			BUG_ON(rdma->state != P9_RDMA_INIT);
-+			rdma->state = P9_RDMA_ADDR_RESOLVED;
-+		}
- 		break;
- 
- 	case RDMA_CM_EVENT_ROUTE_RESOLVED:
--		BUG_ON(rdma->state != P9_RDMA_ADDR_RESOLVED);
--		rdma->state = P9_RDMA_ROUTE_RESOLVED;
-+		if (rdma) {
-+			BUG_ON(rdma->state != P9_RDMA_ADDR_RESOLVED);
-+			rdma->state = P9_RDMA_ROUTE_RESOLVED;
-+		}
- 		break;
- 
- 	case RDMA_CM_EVENT_ESTABLISHED:
--		BUG_ON(rdma->state != P9_RDMA_ROUTE_RESOLVED);
--		rdma->state = P9_RDMA_CONNECTED;
-+		if (rdma) {
-+			BUG_ON(rdma->state != P9_RDMA_ROUTE_RESOLVED);
-+			rdma->state = P9_RDMA_CONNECTED;
-+		}
- 		break;
- 
- 	case RDMA_CM_EVENT_DISCONNECTED:
-@@ -277,12 +283,14 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
- 	case RDMA_CM_EVENT_ADDR_ERROR:
- 	case RDMA_CM_EVENT_UNREACHABLE:
- 		c->status = Disconnected;
--		rdma_disconnect(rdma->cm_id);
-+		if (rdma)
-+			rdma_disconnect(rdma->cm_id);
- 		break;
- 	default:
- 		BUG();
- 	}
--	complete(&rdma->cm_done);
-+	if (rdma)
-+		complete(&rdma->cm_done);
- 	return 0;
- }
- 
--- 
-2.17.0
+Acked-by: Eric Dumazet <edumazet@google.com>
+
 
