@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7FE172D83
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D115A72D86
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727705AbfGXL1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:27:53 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:43694 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727378AbfGXL1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:27:52 -0400
-Received: by mail-pf1-f196.google.com with SMTP id i189so20808151pfg.10;
-        Wed, 24 Jul 2019 04:27:52 -0700 (PDT)
+        id S1727735AbfGXL2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:28:01 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39261 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727378AbfGXL2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:28:00 -0400
+Received: by mail-pf1-f193.google.com with SMTP id f17so16812834pfn.6;
+        Wed, 24 Jul 2019 04:28:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Iund/UB9gNsEMyB6ZwMB2lOVuWc9Eufb+ac0l5cR60E=;
-        b=at5NcK2seyInJhe4u9iZiFKeIfzZQWhTWl+QhvVQcV7D9M//dLJUrKYzGFxjC0HXTi
-         k4nZxcMQbMrdMEsuDie5/nVQhir0mPkiPOCqm+KYVPmhAVw2z0arLEZJBUR8lTgmlXbc
-         kY2cjErIl28ZGU+CcVLQpH0ATIvHRoAuw8dkdemCUpCdN1cwmaojPUsw5/NISm761tzb
-         a5rGOa8w3lqNtW12CHlo0YkMWwEQBRGcFHLTMQP3PAfZKwpI6PksHQ1b3fqBqPf1mg00
-         7flTBtzDR9yjiXPEziOMiwgECAzhLpJRLU85M2jLM9DrweIx8LS/8MqdS2b2Mnsu9aFZ
-         AuEg==
+        bh=RUZd1L/tbuG5frd+itzwjf88FkNkecv/3GnnUpUlJiE=;
+        b=GWconWTCQVo9h09maZtvF0R68K/35Cbtr5RXbwCJZAL7DZSwg7Rfy0ZksTPyMS+Z/M
+         Nz5JOTnFXc/ORVg5cJgFXFRF+cs/Aldn2dSsl6k+9kZIMmGSA6f0nKSA7/0b3vH+b5xe
+         03PuCT1XFSbhgbGnE1IxMql7pUAHkfbkOBygfn1VVVa7MguyVATIpivcr/aOye3WsTjm
+         1rpVlklwkGp3fBVhzN/ULYLqpYGVAkiuMrCpxq1OgvfFQpalQwuvI3q9ljYm0sZMlOE9
+         dR4EGTY6WEe9jC3m+3h4Cl427UaJS1KlOzQFCrGiXuDxTI4WOXxIFL0He8oGt+OEPwoj
+         YURA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Iund/UB9gNsEMyB6ZwMB2lOVuWc9Eufb+ac0l5cR60E=;
-        b=rPRmI7LLWGAirx8v8+QMjVJ2BTl0OMV9P6TZrIuaMVM9YU6dwInd8Y00DgIalF24ki
-         R/zgs/21KLDBdAfY2kONuSkWz0lJh9o+Y7nxAqtQkx22+qjy1uUff4heTNvbKBOxeWsb
-         55CDq6KZ8pT3WewTFZVmlR+nCLTfAsg8hWTZqT/jUiVpSJETUwYs6tNoAlW6eNVHl3x4
-         bt4YXUriDvjpJdPgtR5uyUswaJAiZ2Pjjnr0xyJwOcLryap8Yiyx51+FFbwgjcgAE9uA
-         +AQcWnv/bmOQLVZdqbeUK6GUmj/yi+GLdCTQWIm9W8lmZoPQTnlUbvl0uOaBK7L3i0Ia
-         rvOA==
-X-Gm-Message-State: APjAAAUkYgIKBSC1AfOxLsUjblsdccbXhBlEFRGLxYUUbxDIdo+a9kGL
-        Oo63n2LTIi7iHXF2RumO3rA=
-X-Google-Smtp-Source: APXvYqzw5Y+tX9XJPPEn3RACN7m9XmWz0i+yjVNwBS+UWPXJPSUIz0iS40yEgEuMqNKxHJVvO23Wmw==
-X-Received: by 2002:a17:90a:8c92:: with SMTP id b18mr85600256pjo.97.1563967672272;
-        Wed, 24 Jul 2019 04:27:52 -0700 (PDT)
+        bh=RUZd1L/tbuG5frd+itzwjf88FkNkecv/3GnnUpUlJiE=;
+        b=nbCbu61mY/D4Sj0EieyHY1sakKhTxbn1MLPkpuQcw/vOk6T/x5kU14qPps0rGV4lA3
+         edQ7QldS2l9IlrddePAKY1GvWtuDa+uR+JTMUDGuxpAlMcuePKChPTKWM4vU+fsojtNC
+         5dHdApXjg9lyXw7D0uHk5C7EiRHzn8/qCs4I9tVQzO783trMpF7aub5ko9TNbzwQXENt
+         da1Mw40dXtkqYMfx6LA6YuDel/E638l/FbPWZ+1RPCJJRCpjebtcxEyl8O6d+rq1cQNE
+         NUIlz60rO7MOIgLySSnWisvgh/YPeKGBet9N5O64np1r6dbWxElFb+ehucgUfY6WsP2y
+         YZ4Q==
+X-Gm-Message-State: APjAAAXGAaekZbfiCzUdjDaVMaF0xF/JVMWnXwL5GoIACPhs+eHHqCQI
+        jdHpFWp/eIETQ3y4o8UWCYGwRrpGwfU=
+X-Google-Smtp-Source: APXvYqxo0lOBXSCRpv9wkIh28rqDgDAlKJ3W9UaDu+8quoBa8sWPbh6npjASONC4F6ZmSB66I29bCg==
+X-Received: by 2002:a17:90a:37e9:: with SMTP id v96mr85412477pjb.10.1563967680108;
+        Wed, 24 Jul 2019 04:28:00 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id x9sm54902521pfn.177.2019.07.24.04.27.48
+        by smtp.gmail.com with ESMTPSA id d17sm48731195pgl.66.2019.07.24.04.27.56
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 04:27:51 -0700 (PDT)
+        Wed, 24 Jul 2019 04:27:59 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        Xinming Hu <huxinming820@gmail.com>,
+Cc:     Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Avinash Patil <avinashp@quantenna.com>,
+        Sergey Matyukevich <smatyukevich@quantenna.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net-next 08/10] mwifiex: pcie: Use dev_get_drvdata
-Date:   Wed, 24 Jul 2019 19:27:45 +0800
-Message-Id: <20190724112745.13511-1-hslester96@gmail.com>
+Subject: [PATCH net-next 09/10] qtnfmac_pcie: Use dev_get_drvdata
+Date:   Wed, 24 Jul 2019 19:27:53 +0800
+Message-Id: <20190724112753.13566-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,37 +69,31 @@ use dev_get_drvdata to make code simpler.
 
 Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/net/wireless/marvell/mwifiex/pcie.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index b54f73e3d508..eff06d59e9df 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -150,10 +150,8 @@ static bool mwifiex_pcie_ok_to_access_hw(struct mwifiex_adapter *adapter)
- static int mwifiex_pcie_suspend(struct device *dev)
- {
- 	struct mwifiex_adapter *adapter;
--	struct pcie_service_card *card;
--	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct pcie_service_card *card = dev_get_drvdata(dev);
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c b/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c
+index e4e9344b6982..8ae318b5fe54 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c
+@@ -430,7 +430,7 @@ static int qtnf_pcie_suspend(struct device *dev)
+ 	struct qtnf_pcie_bus_priv *priv;
+ 	struct qtnf_bus *bus;
  
--	card = pci_get_drvdata(pdev);
+-	bus = pci_get_drvdata(to_pci_dev(dev));
++	bus = dev_get_drvdata(dev);
+ 	if (!bus)
+ 		return -EFAULT;
  
- 	/* Might still be loading firmware */
- 	wait_for_completion(&card->fw_done);
-@@ -195,10 +193,8 @@ static int mwifiex_pcie_suspend(struct device *dev)
- static int mwifiex_pcie_resume(struct device *dev)
- {
- 	struct mwifiex_adapter *adapter;
--	struct pcie_service_card *card;
--	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct pcie_service_card *card = dev_get_drvdata(dev);
+@@ -443,7 +443,7 @@ static int qtnf_pcie_resume(struct device *dev)
+ 	struct qtnf_pcie_bus_priv *priv;
+ 	struct qtnf_bus *bus;
  
--	card = pci_get_drvdata(pdev);
+-	bus = pci_get_drvdata(to_pci_dev(dev));
++	bus = dev_get_drvdata(dev);
+ 	if (!bus)
+ 		return -EFAULT;
  
- 	if (!card->adapter) {
- 		dev_err(dev, "adapter structure is not valid\n");
 -- 
 2.20.1
 
