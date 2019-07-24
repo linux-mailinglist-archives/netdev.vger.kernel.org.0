@@ -2,34 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AFB8724DF
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 802B7724ED
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbfGXCpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:45:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46766 "EHLO mail.kernel.org"
+        id S1726148AbfGXCvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:51:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725776AbfGXCpf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:45:35 -0400
+        id S1725827AbfGXCvK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:51:10 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2D6D20828;
-        Wed, 24 Jul 2019 02:45:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 06C33229F3;
+        Wed, 24 Jul 2019 02:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563936334;
-        bh=FM5WJ2YozE39AY96Ha2UJA4Or7QT4hTxQlKQwzRGuvQ=;
+        s=default; t=1563936669;
+        bh=58GvADylPQ9DbBziu9oSNZ/UR9579iHMOg2RDGDnwqw=;
         h=Date:From:To:Cc:Subject:From;
-        b=fZYCZE1PZkDy8RzcDb7zw6i84fsfhAQ2ocwKRBtO07Glu0mk5T+Vg3BofIYYQP9NE
-         S/e1Bnl8bT63SG5M811vQIJ/Z358VECqRImXyrcVLCCDKTMvOIJ6tqFyUuazhY55OZ
-         bsu33/gbhUqDta90YLxY7IJi0s8t/1CuOa5IuVIU=
-Date:   Tue, 23 Jul 2019 19:45:32 -0700
+        b=Ntaqi3vurk28SUcUUFpVXaq7Yq++lilbOtifesJz/yTBeeTOuSZC9uPoc6etauNQe
+         ZgcEojF97wEHJ+WQwv28c++Hf9Yb3fuJ8qBe5UpCnIYRqxmI1QN6Wl2Tqgw1VLRNx0
+         S8UVlwc9NqzndoUusjemaiR4JMtZaLQsNON9M/ng=
+Date:   Tue, 23 Jul 2019 19:51:07 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 2 open syzbot bugs in "net/l2tp" subsystem
-Message-ID: <20190724024532.GH643@sol.localdomain>
-Mail-Followup-To: netdev@vger.kernel.org,
+Subject: Reminder: 1 open syzbot bug in "net/sunrpc" subsystem
+Message-ID: <20190724025107.GM643@sol.localdomain>
+Mail-Followup-To: linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
@@ -45,60 +54,35 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 2 of them as possibly being bugs in the "net/l2tp" subsystem.  I've
-listed these reports below, sorted by an algorithm that tries to list first the
-reports most likely to be still valid, important, and actionable.
+marked 1 of them as possibly being a bug in the "net/sunrpc" subsystem.
 
-Of these 2 bugs, 1 was seen in mainline in the last week.
-
-If you believe a bug is no longer valid, please close the syzbot report by
+If you believe this bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug to the "net/l2tp" subsystem, please let me
-know, and if possible forward the report to the correct people or mailing list.
+If you believe I misattributed this bug to the "net/sunrpc" subsystem, please
+let me know, and if possible forward the report to the correct people or mailing
+list.
 
-Here are the bugs:
+Here is the bug:
 
 --------------------------------------------------------------------------------
-Title:              WARNING: locking bug in inet_autobind
-Last occurred:      1 day ago
-Reported:           68 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=a7d678fba80c34b5770cc1b5638b8a2709ae9f3f
-Original thread:    https://lkml.kernel.org/lkml/00000000000033a0120588fac894@google.com/T/#u
+Title:              linux-next test error: WARNING in remove_proc_entry
+Last occurred:      69 days ago
+Reported:           71 days ago
+Branches:           linux-next
+Dashboard link:     https://syzkaller.appspot.com/bug?id=0b23d0049d5af6699d68ff17e2db121569b78fd4
+Original thread:    https://lkml.kernel.org/lkml/00000000000055d6590588bf90bf@google.com/T/#u
 
-This bug has a syzkaller reproducer only.
-
-syzbot has bisected this bug, but I think the bisection result is incorrect.
+Unfortunately, this bug does not have a reproducer.
 
 No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com
+    Reported-by: syzbot+4887e9dd9042fae2a9c2@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/00000000000033a0120588fac894@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING: locking bug in do_ipv6_setsockopt
-Last occurred:      4 days ago
-Reported:           62 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=6a970baf20aa5a64455be86fb920f468def703c6
-Original thread:    https://lkml.kernel.org/lkml/000000000000f7707805897c071f@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+f28170ca1ee366e97283@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000f7707805897c071f@google.com
+https://lkml.kernel.org/r/00000000000055d6590588bf90bf@google.com
 
