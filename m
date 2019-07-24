@@ -2,81 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 084E8726C0
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 06:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79425726E0
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 06:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726178AbfGXEhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 00:37:42 -0400
-Received: from mga09.intel.com ([134.134.136.24]:13122 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725883AbfGXEhm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 00:37:42 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Jul 2019 21:37:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,300,1559545200"; 
-   d="scan'208";a="163732690"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 23 Jul 2019 21:37:39 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hq922-000Frk-Bd; Wed, 24 Jul 2019 12:37:38 +0800
-Date:   Wed, 24 Jul 2019 12:37:15 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: fix semicolon.cocci warnings
-Message-ID: <20190724043714.s3mdrehckrvksvob@1905cc33b6dd>
-References: <201907241208.upolDRPG%lkp@intel.com>
+        id S1726120AbfGXEpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 00:45:44 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43417 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725810AbfGXEpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 00:45:43 -0400
+Received: by mail-pf1-f196.google.com with SMTP id i189so20258683pfg.10;
+        Tue, 23 Jul 2019 21:45:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a82RGTEXPGUxT9wrhIl0SGm+IUg23fG0znFClaoZF2M=;
+        b=Kd6PSC/URd7UIKcw58+fxXgQ892se8NpHm4OEg6NafKMnFMjvCAiIWdHCoPlLPqc8L
+         aJ2qPkFGF7rV4DRVYtDw+kzTyKz++lpvKqFQcAl7iCYllE6k6lUQW6B8w5u+byvfT5Fa
+         Q+WPYT0yXJJOYRou8VbShLD+Gu3cc60uHbegYi/Y7R4SDcQBKGF+uJ9+OtewKzKdHYa4
+         mDkxAnsVFsH5foR59Pl19TCg37A2eC/JUZHs5kG/6JwxZW5fVI4ecC6e+3X2Ighkd2ts
+         XemnURq3vKLirIn4/+d6ODT0qlTyYo8BgEmwVl9sISBYhC7Lqlq4LZICijaj0IvIIAaT
+         a7IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a82RGTEXPGUxT9wrhIl0SGm+IUg23fG0znFClaoZF2M=;
+        b=FRE7a5aR//GVD+LMfnaWDexQH/FwXBnzPOBvwAI+11t+Dg9fluuayZGU7zQDcKnXJV
+         6aixU8fQ2HD5oRE+p1FtxGzP6eJZlv+KBKzxoVZeRJLhQgC++q0swsp0Zs12Z9j2SRMI
+         BuQ0IAatLMxsJ1BMgBgUu7WSqmTiSawfiW3YKKt5r/7Sd7wnPX1QpiitehUPlGkzcYNZ
+         OIJcHsH+lpzeZwvNz4qlCRfpGld7HFR28VJL0lFKJLT2r/IpP0+sZxbhoOi2omgMaMTH
+         g3zQdpIokcJbhl7HK8aFrevWdLyxsLFOLv18uJdVxrcL5r9o1HYJ3OL23luOp/Ilr4iY
+         Umxg==
+X-Gm-Message-State: APjAAAUs6LbTQPxGLoExDJ1RihAYNWP4213TTnr8wpq0e/nNPO0oXG/b
+        KKTx05BXxwzbNATJTMiy0hc=
+X-Google-Smtp-Source: APXvYqxX+DOW07WMhb+fJsFbx0LQzjFWgiNXaRMsjDo7bpqayKueY9DMdaxKoauo3MlhyMuoWNYR+w==
+X-Received: by 2002:a63:1749:: with SMTP id 9mr27042805pgx.0.1563943543120;
+        Tue, 23 Jul 2019 21:45:43 -0700 (PDT)
+Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id b30sm65685861pfr.117.2019.07.23.21.45.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 21:45:42 -0700 (PDT)
+From:   john.hubbard@gmail.com
+X-Google-Original-From: jhubbard@nvidia.com
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH v3 0/3] mm/gup: add make_dirty arg to put_user_pages_dirty_lock()
+Date:   Tue, 23 Jul 2019 21:45:34 -0700
+Message-Id: <20190724044537.10458-1-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201907241208.upolDRPG%lkp@intel.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=UTF-8
+X-NVConfidentiality: public
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kbuild test robot <lkp@intel.com>
+From: John Hubbard <jhubbard@nvidia.com>
 
-drivers/target/iscsi/cxgbit/cxgbit_target.c:1451:47-48: Unneeded semicolon
+Hi,
 
+I apologize for the extra emails (v2 was sent pretty recently), but I
+didn't want to leave a known-broken version sitting out there, creating
+problems.
 
- Remove unneeded semicolon.
+Changes since v2:
 
-Generated by: scripts/coccinelle/misc/semicolon.cocci
+* Critical bug fix: remove a stray "break;" from the new routine.
 
-Fixes: d7840976e391 ("net: Use skb accessors in network drivers")
-CC: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
+Changes since v1:
 
-tree:   https://kernel.googlesource.com/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   3e3bb69589e482e0783f28d4cd1d8e56fda0bcbb
-commit: d7840976e3915669382c62ddd1700960f348328e [7/33] net: Use skb accessors in network drivers
+* Instead of providing __put_user_pages(), add an argument to
+  put_user_pages_dirty_lock(), and delete put_user_pages_dirty().
+  This is based on the following points:
 
- cxgbit_target.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+    1. Lots of call sites become simpler if a bool is passed
+    into put_user_page*(), instead of making the call site
+    choose which put_user_page*() variant to call.
 
---- a/drivers/target/iscsi/cxgbit/cxgbit_target.c
-+++ b/drivers/target/iscsi/cxgbit/cxgbit_target.c
-@@ -1448,7 +1448,7 @@ cxgbit_lro_skb_merge(struct cxgbit_sock
- 		hpdu_cb->frags++;
- 		hpdu_cb->hfrag_idx = hfrag_idx;
- 
--		len = skb_frag_size(&hssi->frags[hfrag_idx]);;
-+		len = skb_frag_size(&hssi->frags[hfrag_idx]);
- 		hskb->len += len;
- 		hskb->data_len += len;
- 		hskb->truesize += len;
+    2. Christoph Hellwig's observation that set_page_dirty_lock()
+    is usually correct, and set_page_dirty() is usually a
+    bug, or at least questionable, within a put_user_page*()
+    calling chain.
+
+* Added the Infiniband driver back to the patch series, because it is
+  a caller of put_user_pages_dirty_lock().
+
+Unchanged parts from the v1 cover letter (except for the diffstat):
+
+Notes about the remaining patches to come:
+
+There are about 50+ patches in my tree [2], and I'll be sending out the
+remaining ones in a few more groups:
+
+    * The block/bio related changes (Jerome mostly wrote those, but I've
+      had to move stuff around extensively, and add a little code)
+
+    * mm/ changes
+
+    * other subsystem patches
+
+    * an RFC that shows the current state of the tracking patch set. That
+      can only be applied after all call sites are converted, but it's
+      good to get an early look at it.
+
+This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+("mm: introduce put_user_page*(), placeholder versions").
+
+John Hubbard (3):
+  mm/gup: add make_dirty arg to put_user_pages_dirty_lock()
+  drivers/gpu/drm/via: convert put_page() to put_user_page*()
+  net/xdp: convert put_page() to put_user_page*()
+
+ drivers/gpu/drm/via/via_dmablit.c          |  10 +-
+ drivers/infiniband/core/umem.c             |   5 +-
+ drivers/infiniband/hw/hfi1/user_pages.c    |   5 +-
+ drivers/infiniband/hw/qib/qib_user_pages.c |   5 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c   |   5 +-
+ drivers/infiniband/sw/siw/siw_mem.c        |   8 +-
+ include/linux/mm.h                         |   5 +-
+ mm/gup.c                                   | 115 +++++++++------------
+ net/xdp/xdp_umem.c                         |   9 +-
+ 9 files changed, 61 insertions(+), 106 deletions(-)
+
+-- 
+2.22.0
+
