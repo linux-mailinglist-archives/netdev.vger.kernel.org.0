@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE88373191
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C10A731CF
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 16:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387454AbfGXOZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 10:25:17 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37622 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726316AbfGXOZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 10:25:17 -0400
-Received: by mail-qk1-f194.google.com with SMTP id d15so33854187qkl.4;
-        Wed, 24 Jul 2019 07:25:16 -0700 (PDT)
+        id S1728241AbfGXOhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 10:37:42 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:44868 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725870AbfGXOhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 10:37:42 -0400
+Received: by mail-ed1-f65.google.com with SMTP id k8so47313387edr.11;
+        Wed, 24 Jul 2019 07:37:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JucAj4L4ERbLHKaxczBpVI8Yq6S7ncxo8NCKhGzQdOM=;
-        b=ouGkK0xNUIsus3JvZMzu0yqWevc/3D9xYgiaDQ/xlGsSznX5qxer2kCE/lS8Zs6uGK
-         DNno9yI1QkGZSLuVVhjv6qe3hARZy6uCVR8R9trPJWg3wBEXCDKpxaVltFclu3SmEGf6
-         CU/N/UAdz2x7VaFJEGvAYHjwDoC9DD1rtkWCx4lSHVK85Wih+JXkdlPkMyooElqKETnv
-         xOKK2v50DzSwJMVrW/1KWDVigo9cKWu1LWJglgenp92rdU4aFl6jwuPEaFbpTAV8YwVD
-         keN/5pHuMcBoiQVS0R8z2BjoeEhgWSEyGQCl2Pyij/HA+R5TkemNATpcQVceXU+Xzlaw
-         jM7Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TWTT6YD5xmmHLQ8NqWxp5VF2vzE1ezaxf9lnh1XS2/w=;
+        b=CA+jpzga4i8X7wUqQh3D2NsxFNLhZs4qlXqRH6J20hyHLc7tr/bRzvILcNcs8TxIT1
+         vKwRTH5QYASlKQ681RU/pBhw81k+9XoByq9x6c5jqdG6HcoMqVQ8mL4yJt/dGkmto9WO
+         y4+IHa1XI3Mg4pqqKkMmAPjxzOcmSuyfJOO/QNbk8GFPo3r8QGLuKsdMkGaSO3wyKTZb
+         WQwSHAamnTvCF/hEs3t/OVqmH5z/8f4ENxUZroRz8IafJe53/EValYRW97LQUhMKnfDS
+         ZM7UZ+H3debMoNEO8aPSWAWFqkQdpqWjRzErQ7U0/iEl/jemFWj0KvZSUyOlOJmgjB//
+         vvPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JucAj4L4ERbLHKaxczBpVI8Yq6S7ncxo8NCKhGzQdOM=;
-        b=ACk/E87xi+UWl1qdfyjiQUNRbaZmNxbNbNsaslrchGY581G/vB7H1PhVmRKlO43uMH
-         nLBYwViT46afLFxb+Sz/DrXHT81U0QMRDQk7EUAiQssGF3QBW/axfnRbAd5cuHdp5z63
-         oaatsD2T6yb/aYyKXA1bD7i3YcHhmS+HRkHX/9qPX7b10VE5h94GuDVkIWXRD0Egg74t
-         ce9UtgPhLvRsOtBSVHIOt4WYPA5xlXjs3niEnRZksDJ66+UgR0T0Qhn3J/P9raOPHNZt
-         cFEw+20LvpHJpx9WwxQCjw/99/Ai01sE0A0/aEVVHlO4IaedSm3Rvv9fewMitewA1eQt
-         y91g==
-X-Gm-Message-State: APjAAAWU6NvJeZm+g9NXcW63SkgY1UhkV5CBD7rAeJUOAAbnC1OrO1m4
-        bRtNE2LD6EzgzzSVzqw0bII=
-X-Google-Smtp-Source: APXvYqyNJSC9XNTSChs30bNAW5VjsflpRw66jCyxm+M64jfJQO//XE9LzEthmfxYt5cZvLZWdOpf7A==
-X-Received: by 2002:a05:620a:710:: with SMTP id 16mr13832752qkc.382.1563978316045;
-        Wed, 24 Jul 2019 07:25:16 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.45])
-        by smtp.gmail.com with ESMTPSA id x206sm21661792qkb.127.2019.07.24.07.25.14
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TWTT6YD5xmmHLQ8NqWxp5VF2vzE1ezaxf9lnh1XS2/w=;
+        b=nf9IcrQSCSjjjsKR7VYhuJ3o7SzkqmnKw1RZ9L8EXqP3h/WGyczlm9Mbu2KVBorLLO
+         mDkNcHojXWzcMJCzChPYZahZuJhpHTrm85/m82jFo9T8qthU0ZUSR64HGzHIeysYxzjx
+         3Hp42pAWgIdmqx+QQPLSn2PWvtrRkrmoQxzRa+PR4TCq98HO1YH30+vsePQNCrTf4SSu
+         Dk2tsiF9Q0i05dRv8PKSnieV9ZdbgK69wtuoNV/0g6gc2Ws+iUUP3DYtwe1ToCMlm+G+
+         34Kra9hcTPhC9W9xHPTGUdX572c6j177hjodvHVk+OpEe3haO1am/v6xHj8dL61ZdWpa
+         jjXQ==
+X-Gm-Message-State: APjAAAX1iAWwme58A8Abp1bcusvWB41BTRV+wGnepOYnfuAVNl2LHs/e
+        6rRIxDA7IYrr2N2RnA+JqQ==
+X-Google-Smtp-Source: APXvYqxC/jZNJyEw4Ahjdq75WHaL0LyYNComFoAz8fwPe58jYKm0eNtQsy23cTgEfzNUw5n9mhp9Gw==
+X-Received: by 2002:a17:906:5042:: with SMTP id e2mr61790141ejk.220.1563979060071;
+        Wed, 24 Jul 2019 07:37:40 -0700 (PDT)
+Received: from presler.lan (a95-94-77-68.cpe.netcabo.pt. [95.94.77.68])
+        by smtp.gmail.com with ESMTPSA id ns22sm9281459ejb.9.2019.07.24.07.37.38
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 07:25:15 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id D8E20C0AAD; Wed, 24 Jul 2019 11:25:12 -0300 (-03)
-Date:   Wed, 24 Jul 2019 11:25:12 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next 0/4] sctp: clean up __sctp_connect function
-Message-ID: <20190724142512.GG6204@localhost.localdomain>
-References: <cover.1563817029.git.lucien.xin@gmail.com>
+        Wed, 24 Jul 2019 07:37:39 -0700 (PDT)
+From:   Rui Salvaterra <rsalvaterra@gmail.com>
+To:     pablo@netfilter.org, davem@davemloft.net,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Rui Salvaterra <rsalvaterra@gmail.com>
+Subject: [PATCH] netfilter: trivial: remove extraneous space from message
+Date:   Wed, 24 Jul 2019 15:37:33 +0100
+Message-Id: <20190724143733.17433-1-rsalvaterra@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1563817029.git.lucien.xin@gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 01:37:56AM +0800, Xin Long wrote:
-> This patchset is to factor out some common code for
-> sctp_sendmsg_new_asoc() and __sctp_connect() into 2
-> new functioins.
-> 
-> Xin Long (4):
->   sctp: check addr_size with sa_family_t size in
->     __sctp_setsockopt_connectx
->   sctp: clean up __sctp_connect
->   sctp: factor out sctp_connect_new_asoc
->   sctp: factor out sctp_connect_add_peer
+Pure ocd, but this one has been bugging me for a while.
 
-Nice cleanup! These patches LGTM. Hopefully for Neil as well.
+Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
+---
+ net/netfilter/nf_conntrack_helper.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+diff --git a/net/netfilter/nf_conntrack_helper.c b/net/netfilter/nf_conntrack_helper.c
+index 8d729e7c36ff..209123f35b4a 100644
+--- a/net/netfilter/nf_conntrack_helper.c
++++ b/net/netfilter/nf_conntrack_helper.c
+@@ -218,7 +218,7 @@ nf_ct_lookup_helper(struct nf_conn *ct, struct net *net)
+ 			return NULL;
+ 		pr_info("nf_conntrack: default automatic helper assignment "
+ 			"has been turned off for security reasons and CT-based "
+-			" firewall rule not found. Use the iptables CT target "
++			"firewall rule not found. Use the iptables CT target "
+ 			"to attach helpers instead.\n");
+ 		net->ct.auto_assign_helper_warned = 1;
+ 		return NULL;
+-- 
+2.22.0
+
