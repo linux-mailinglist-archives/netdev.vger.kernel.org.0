@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3766572DE8
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2149972DE9
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727625AbfGXLnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:43:01 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:43770 "EHLO
+        id S1727619AbfGXLn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:43:27 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:43996 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbfGXLnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:43:01 -0400
+        with ESMTP id S1727412AbfGXLn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:43:27 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id DEC966044E; Wed, 24 Jul 2019 11:42:59 +0000 (UTC)
+        id ED3A36043F; Wed, 24 Jul 2019 11:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563968579;
-        bh=cq7gOfy4KYJkJG7NJ3YoUs/IippuTKs2V00UjCfwjTA=;
+        s=default; t=1563968607;
+        bh=byFzy6X7pbJq+TN7J3RSRYSWZPSaIMEFe5+Gacdf8+8=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=MtHIojECPGjQAcTqXKX6UQsb2FSkANEVQRNb384kwCWM0W7QKlkc7lEB9CMTlyNEp
-         2z+u8pSUcajn9asWHKYVPXh4+k2DNp0yngXqVoeaWEEwn2tYCur9HDMLFQRAvCqwmZ
-         9MCQ6ffaDzjlx44WzNeG36ASK7ToTvXkR5zr4HM0=
+        b=jMbf6RhSVdlKS5cdyy1s9CEHQLtp3BnhmMZ0/4niIoSR0WbvOKaciXFZGi2YtI+v/
+         HQQzQrLNe/S0at8eg9V4LGOyr0Bh9XmWD3lGA0O/nGUWE89JJ2B66GzrBUKf4vThDg
+         FboysX+zxHu9ytLSwzEb/FvjW5aOKYWLmHQYsbr4=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,58 +30,64 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DF10B6030E;
-        Wed, 24 Jul 2019 11:42:57 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D725C6021C;
+        Wed, 24 Jul 2019 11:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1563968579;
-        bh=cq7gOfy4KYJkJG7NJ3YoUs/IippuTKs2V00UjCfwjTA=;
+        s=default; t=1563968606;
+        bh=byFzy6X7pbJq+TN7J3RSRYSWZPSaIMEFe5+Gacdf8+8=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=mp8jspkiLSP9402W53WkwQUjmJkv17CBlyEHUZrk+5EUxu3G+ZqI4v2vXf3Xgoc5o
-         8aqUOktuvDT0qfJf/hYQALynSUbyfZXQdY3U+VsOeMp1qUC8gR7NNigP0cjHtwp9Kj
-         QGZiZ4rsdWLt/A5J5jjCI5hNbB/8cPuJtB500Oks=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DF10B6030E
+        b=LNAY3xDmVfM3fN9HTzMB6M09awe6/uE/AYEm4IHvwcM8jIkgldz6wnR5HnAjGlQAj
+         cP4UqAAOovPXH/fkY3eZPt4mNFRe+z5tDSs2y5+LqfqU1nRttobjm0wOb44sl/MHPX
+         qN3GxJX7jSDVpwFLOQeyFJv66ULdmgdWZy9MmsNM=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D725C6021C
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 2/2] rt2x00usb: remove unnecessary rx flag checks
+Subject: Re: [PATCH v2] rt2x00: no need to check return value of
+ debugfs_create functions
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190701105314.9707-2-smoch@web.de>
-References: <20190701105314.9707-2-smoch@web.de>
-To:     Soeren Moch <smoch@web.de>
+In-Reply-To: <20190703113956.GA26652@kroah.com>
+References: <20190703113956.GA26652@kroah.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Stanislaw Gruszka <sgruszka@redhat.com>,
-        Soeren Moch <smoch@web.de>,
         Helmut Schaa <helmut.schaa@googlemail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190724114259.DEC966044E@smtp.codeaurora.org>
-Date:   Wed, 24 Jul 2019 11:42:59 +0000 (UTC)
+Message-Id: <20190724114326.ED3A36043F@smtp.codeaurora.org>
+Date:   Wed, 24 Jul 2019 11:43:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Soeren Moch <smoch@web.de> wrote:
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-> In contrast to the TX path, there is no need to separately read the transfer
-> status from the device after receiving RX data. Consequently, there is no
-> real STATUS_PENDING RX processing queue entry state.
-> Remove the unnecessary ENTRY_DATA_STATUS_PENDING flag checks from the RX path.
-> Also remove the misleading comment about reading RX status from device.
+> When calling debugfs functions, there is no need to ever check the
+> return value.  The function can work or not, but the code logic should
+> never do something different based on this.
 > 
-> Suggested-by: Stanislaw Gruszka <sgruszka@redhat.com>
-> Signed-off-by: Soeren Moch <smoch@web.de>
+> Because we don't need to save the individual debugfs files and
+> directories, remove the local storage of them and just remove the entire
+> debugfs directory in a single call, making things a lot simpler.
+> 
+> Cc: Stanislaw Gruszka <sgruszka@redhat.com>
+> Cc: Helmut Schaa <helmut.schaa@googlemail.com>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Acked-by: Stanislaw Gruszka <sgruszka@redhat.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-3b902fa811cf rt2x00usb: remove unnecessary rx flag checks
+1dc244064c47 rt2x00: no need to check return value of debugfs_create functions
 
 -- 
-https://patchwork.kernel.org/patch/11025559/
+https://patchwork.kernel.org/patch/11029367/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
