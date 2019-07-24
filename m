@@ -2,401 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 186F972418
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 03:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 341337242F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728776AbfGXB4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 21:56:33 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:54087 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727994AbfGXB4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 21:56:33 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id A56EC46579;
-        Wed, 24 Jul 2019 11:56:27 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from:received:received:received; s=mail_dkim; t=
-        1563933387; bh=zVSoHHrwvJqIRHGtSTgFlOFqG2fzcMht6hHVUB7FH/c=; b=P
-        w3W0k+66G6a6x383epeCUCcIapSdTZqaRjJ2aNVc7rPblnduoVQHkE8rE4eAl2IM
-        0qWf+xdDV2wqos2owBFDLFDpJ9pepk3/X3xsE8lUTJ0pJTfVwMrvkS0tJFPy9uPA
-        gUk0EXQBr2irLhBC7qX5/1ASHuJP5D8+3bIIEdZGxg=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id o-8nHiWWyHGe; Wed, 24 Jul 2019 11:56:27 +1000 (AEST)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 896A64657B;
-        Wed, 24 Jul 2019 11:56:27 +1000 (AEST)
-Received: from localhost.localdomain (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id B70B346579;
-        Wed, 24 Jul 2019 11:56:25 +1000 (AEST)
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net-next 2/2] tipc: fix changeover issues due to large packet
-Date:   Wed, 24 Jul 2019 08:56:12 +0700
-Message-Id: <20190724015612.2518-3-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
-In-Reply-To: <20190724015612.2518-1-tuong.t.lien@dektech.com.au>
-References: <20190724015612.2518-1-tuong.t.lien@dektech.com.au>
+        id S1728850AbfGXCDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:03:01 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:58356 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728776AbfGXCDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 22:03:01 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6O1wZCE029592;
+        Wed, 24 Jul 2019 02:02:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2018-07-02; bh=aPJ/gz+1htaF0JhpGjhp8e3/McToimuUgnVMZqHte9s=;
+ b=Je6bXjfvhms99P77tbjOa/GUP3fCbw+7/Jpcme25tvf+ziqD7j//GF+yZWuPOW+bPSou
+ T507xOemfOsA12Rz1jBR01Z4mwJFdAIh8VUMFDueI5M8ZzS6d8EZBA0pub8og66qm4s6
+ j7labDK7Ph+mSL7gnwObln3ayUujWHZgha8wIxg/dEZ7YOSzINjWbXLhKGKymEEjc7vW
+ kXtNeFjZIsRwrsAWlRPN+C5IONGL/0FAwmfqmRYdX/BJs2gVLG4dgxFJw5A1XQPiiEDU
+ OOEWKi26aD60jxZRcWIR6D1owq6Etx/g4CzqgJQjJM3xKwAQK6A8tLVPdaP3OL3WJ7/s lA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2tx61bt601-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 24 Jul 2019 02:02:24 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6O1vO96057801;
+        Wed, 24 Jul 2019 02:02:23 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 2tx60xk9hy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 24 Jul 2019 02:02:23 +0000
+Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x6O22LdJ003994;
+        Wed, 24 Jul 2019 02:02:21 GMT
+Received: from [31.133.156.81] (/31.133.156.81)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 23 Jul 2019 19:02:21 -0700
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH] rpcrdma_decode_msg: check xdr_inline_decode result
+From:   Chuck Lever <chuck.lever@oracle.com>
+X-Mailer: iPad Mail (16F203)
+In-Reply-To: <20190724015115.3493-1-navid.emamdoost@gmail.com>
+Date:   Tue, 23 Jul 2019 22:02:09 -0400
+Cc:     emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
+        secalert@redhat.com,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <AE745E5F-63A8-4377-98E8-512828179FC0@oracle.com>
+References: <20190724015115.3493-1-navid.emamdoost@gmail.com>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9327 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1907240020
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9327 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1907240020
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In conjunction with changing the interfaces' MTU (e.g. especially in
-the case of a bonding) where the TIPC links are brought up and down
-in a short time, a couple of issues were detected with the current link
-changeover mechanism:
 
-1) When one link is up but immediately forced down again, the failover
-procedure will be carried out in order to failover all the messages in
-the link's transmq queue onto the other working link. The link and node
-state is also set to FAILINGOVER as part of the process. The message
-will be transmited in form of a FAILOVER_MSG, so its size is plus of 40
-bytes (= the message header size). There is no problem if the original
-message size is not larger than the link's MTU - 40, and indeed this is
-the max size of a normal payload messages. However, in the situation
-above, because the link has just been up, the messages in the link's
-transmq are almost SYNCH_MSGs which had been generated by the link
-synching procedure, then their size might reach the max value already!
-When the FAILOVER_MSG is built on the top of such a SYNCH_MSG, its size
-will exceed the link's MTU. As a result, the messages are dropped
-silently and the failover procedure will never end up, the link will
-not be able to exit the FAILINGOVER state, so cannot be re-established.
 
-2) The same scenario above can happen more easily in case the MTU of
-the links is set differently or when changing. In that case, as long as
-a large message in the failure link's transmq queue was built and
-fragmented with its link's MTU > the other link's one, the issue will
-happen (there is no need of a link synching in advance).
+> On Jul 23, 2019, at 9:51 PM, Navid Emamdoost <navid.emamdoost@gmail.com> w=
+rote:
+>=20
+> xdr_inline_decode may return NULL, so the check is necessary. The base
+> pointer will be dereferenced later in rpcrdma_inline_fixup.
 
-3) The link synching procedure also faces with the same issue but since
-the link synching is only started upon receipt of a SYNCH_MSG, dropping
-the message will not result in a state deadlock, but it is not expected
-as design.
+NACK. When xdr_inline_decode is passed a zero =E2=80=9Clength=E2=80=9D argum=
+ent, it can never return NULL.
 
-The 1) & 3) issues are resolved by the last commit that only a dummy
-SYNCH_MSG (i.e. without data) is generated at the link synching, so the
-size of a FAILOVER_MSG if any then will never exceed the link's MTU.
 
-For the 2) issue, the only solution is trying to fragment the messages
-in the failure link's transmq queue according to the working link's MTU
-so they can be failovered then. A new function is made to accomplish
-this, it will still be a TUNNEL PROTOCOL/FAILOVER MSG but if the
-original message size is too large, it will be fragmented & reassembled
-at the receiving side.
-
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- net/tipc/link.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++++---------
- net/tipc/msg.c  | 59 ++++++++++++++++++++++++++++++++++++
- net/tipc/msg.h  | 18 ++++++++++-
- 3 files changed, 155 insertions(+), 15 deletions(-)
-
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index e215b4ba6a4b..2c274777b2dd 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -180,6 +180,7 @@ struct tipc_link {
- 
- 	/* Fragmentation/reassembly */
- 	struct sk_buff *reasm_buf;
-+	struct sk_buff *reasm_tnlmsg;
- 
- 	/* Broadcast */
- 	u16 ackers;
-@@ -897,8 +898,10 @@ void tipc_link_reset(struct tipc_link *l)
- 	l->backlog[TIPC_CRITICAL_IMPORTANCE].len = 0;
- 	l->backlog[TIPC_SYSTEM_IMPORTANCE].len = 0;
- 	kfree_skb(l->reasm_buf);
-+	kfree_skb(l->reasm_tnlmsg);
- 	kfree_skb(l->failover_reasm_skb);
- 	l->reasm_buf = NULL;
-+	l->reasm_tnlmsg = NULL;
- 	l->failover_reasm_skb = NULL;
- 	l->rcv_unacked = 0;
- 	l->snd_nxt = 1;
-@@ -940,6 +943,9 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buff_head *list,
- 	int rc = 0;
- 
- 	if (unlikely(msg_size(hdr) > mtu)) {
-+		pr_warn("Too large msg, purging xmit list %d %d %d %d %d!\n",
-+			skb_queue_len(list), msg_user(hdr),
-+			msg_type(hdr), msg_size(hdr), mtu);
- 		skb_queue_purge(list);
- 		return -EMSGSIZE;
- 	}
-@@ -1233,6 +1239,7 @@ static int tipc_link_tnl_rcv(struct tipc_link *l, struct sk_buff *skb,
- 			     struct sk_buff_head *inputq)
- {
- 	struct sk_buff **reasm_skb = &l->failover_reasm_skb;
-+	struct sk_buff **reasm_tnlmsg = &l->reasm_tnlmsg;
- 	struct sk_buff_head *fdefq = &l->failover_deferdq;
- 	struct tipc_msg *hdr = buf_msg(skb);
- 	struct sk_buff *iskb;
-@@ -1240,40 +1247,56 @@ static int tipc_link_tnl_rcv(struct tipc_link *l, struct sk_buff *skb,
- 	int rc = 0;
- 	u16 seqno;
- 
--	/* SYNCH_MSG */
--	if (msg_type(hdr) == SYNCH_MSG)
--		goto drop;
-+	if (msg_type(hdr) == SYNCH_MSG) {
-+		kfree_skb(skb);
-+		return 0;
-+	}
- 
--	/* FAILOVER_MSG */
--	if (!tipc_msg_extract(skb, &iskb, &ipos)) {
--		pr_warn_ratelimited("Cannot extract FAILOVER_MSG, defq: %d\n",
--				    skb_queue_len(fdefq));
--		return rc;
-+	/* Not a fragment? */
-+	if (likely(!msg_nof_fragms(hdr))) {
-+		if (unlikely(!tipc_msg_extract(skb, &iskb, &ipos))) {
-+			pr_warn_ratelimited("Unable to extract msg, defq: %d\n",
-+					    skb_queue_len(fdefq));
-+			return 0;
-+		}
-+		kfree_skb(skb);
-+	} else {
-+		/* Set fragment type for buf_append */
-+		if (msg_fragm_no(hdr) == 1)
-+			msg_set_type(hdr, FIRST_FRAGMENT);
-+		else if (msg_fragm_no(hdr) < msg_nof_fragms(hdr))
-+			msg_set_type(hdr, FRAGMENT);
-+		else
-+			msg_set_type(hdr, LAST_FRAGMENT);
-+
-+		if (!tipc_buf_append(reasm_tnlmsg, &skb)) {
-+			/* Successful but non-complete reassembly? */
-+			if (*reasm_tnlmsg || link_is_bc_rcvlink(l))
-+				return 0;
-+			pr_warn_ratelimited("Unable to reassemble tunnel msg\n");
-+			return tipc_link_fsm_evt(l, LINK_FAILURE_EVT);
-+		}
-+		iskb = skb;
- 	}
- 
- 	do {
- 		seqno = buf_seqno(iskb);
--
- 		if (unlikely(less(seqno, l->drop_point))) {
- 			kfree_skb(iskb);
- 			continue;
- 		}
--
- 		if (unlikely(seqno != l->drop_point)) {
- 			__tipc_skb_queue_sorted(fdefq, seqno, iskb);
- 			continue;
- 		}
- 
- 		l->drop_point++;
--
- 		if (!tipc_data_input(l, iskb, inputq))
- 			rc |= tipc_link_input(l, iskb, inputq, reasm_skb);
- 		if (unlikely(rc))
- 			break;
- 	} while ((iskb = __tipc_skb_dequeue(fdefq, l->drop_point)));
- 
--drop:
--	kfree_skb(skb);
- 	return rc;
- }
- 
-@@ -1663,15 +1686,18 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 	struct sk_buff *skb, *tnlskb;
- 	struct tipc_msg *hdr, tnlhdr;
- 	struct sk_buff_head *queue = &l->transmq;
--	struct sk_buff_head tmpxq, tnlq;
-+	struct sk_buff_head tmpxq, tnlq, frags;
- 	u16 pktlen, pktcnt, seqno = l->snd_nxt;
-+	bool pktcnt_need_update = false;
- 	u16 syncpt;
-+	int rc;
- 
- 	if (!tnl)
- 		return;
- 
- 	skb_queue_head_init(&tnlq);
- 	skb_queue_head_init(&tmpxq);
-+	skb_queue_head_init(&frags);
- 
- 	/* At least one packet required for safe algorithm => add dummy */
- 	skb = tipc_msg_create(TIPC_LOW_IMPORTANCE, TIPC_DIRECT_MSG,
-@@ -1727,6 +1753,39 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 		if (queue == &l->backlogq)
- 			msg_set_seqno(hdr, seqno++);
- 		pktlen = msg_size(hdr);
-+
-+		/* Tunnel link MTU is not large enough? This could be
-+		 * due to:
-+		 * 1) Link MTU has just changed or set differently;
-+		 * 2) Or FAILOVER on the top of a SYNCH message
-+		 *
-+		 * The 2nd case should not happen if peer supports
-+		 * TIPC_TUNNEL_ENHANCED
-+		 */
-+		if (pktlen > tnl->mtu - INT_H_SIZE) {
-+			if (mtyp == FAILOVER_MSG &&
-+			    (tnl->peer_caps & TIPC_TUNNEL_ENHANCED)) {
-+				rc = tipc_msg_fragment(skb, &tnlhdr, tnl->mtu,
-+						       &frags);
-+				if (rc) {
-+					pr_warn("%sunable to frag msg: rc %d\n",
-+						link_co_err, rc);
-+					return;
-+				}
-+				pktcnt += skb_queue_len(&frags) - 1;
-+				pktcnt_need_update = true;
-+				skb_queue_splice_tail_init(&frags, &tnlq);
-+				continue;
-+			}
-+			/* Unluckily, peer doesn't have TIPC_TUNNEL_ENHANCED
-+			 * => Just warn it and return!
-+			 */
-+			pr_warn_ratelimited("%stoo large msg <%d, %d>: %d!\n",
-+					    link_co_err, msg_user(hdr),
-+					    msg_type(hdr), msg_size(hdr));
-+			return;
-+		}
-+
- 		msg_set_size(&tnlhdr, pktlen + INT_H_SIZE);
- 		tnlskb = tipc_buf_acquire(pktlen + INT_H_SIZE, GFP_ATOMIC);
- 		if (!tnlskb) {
-@@ -1742,6 +1801,12 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 		goto tnl;
- 	}
- 
-+	if (pktcnt_need_update)
-+		skb_queue_walk(&tnlq, skb) {
-+			hdr = buf_msg(skb);
-+			msg_set_msgcnt(hdr, pktcnt);
-+		}
-+
- 	tipc_link_xmit(tnl, &tnlq, xmitq);
- 
- 	if (mtyp == FAILOVER_MSG) {
-diff --git a/net/tipc/msg.c b/net/tipc/msg.c
-index f48e5857210f..e6d49cdc61b4 100644
---- a/net/tipc/msg.c
-+++ b/net/tipc/msg.c
-@@ -244,6 +244,65 @@ bool tipc_msg_validate(struct sk_buff **_skb)
- }
- 
- /**
-+ * tipc_msg_fragment - build a fragment skb list for TIPC message
-+ *
-+ * @skb: TIPC message skb
-+ * @hdr: internal msg header to be put on the top of the fragments
-+ * @pktmax: max size of a fragment incl. the header
-+ * @frags: returned fragment skb list
-+ *
-+ * Returns 0 if the fragmentation is successful, otherwise: -EINVAL
-+ * or -ENOMEM
-+ */
-+int tipc_msg_fragment(struct sk_buff *skb, const struct tipc_msg *hdr,
-+		      int pktmax, struct sk_buff_head *frags)
-+{
-+	int pktno, nof_fragms, dsz, dmax, eat;
-+	struct tipc_msg *_hdr;
-+	struct sk_buff *_skb;
-+	u8 *data;
-+
-+	/* Non-linear buffer? */
-+	if (skb_linearize(skb))
-+		return -ENOMEM;
-+
-+	data = (u8 *)skb->data;
-+	dsz = msg_size(buf_msg(skb));
-+	dmax = pktmax - INT_H_SIZE;
-+	if (dsz <= dmax || !dmax)
-+		return -EINVAL;
-+
-+	nof_fragms = dsz / dmax + 1;
-+	for (pktno = 1; pktno <= nof_fragms; pktno++) {
-+		if (pktno < nof_fragms)
-+			eat = dmax;
-+		else
-+			eat = dsz % dmax;
-+		/* Allocate a new fragment */
-+		_skb = tipc_buf_acquire(INT_H_SIZE + eat, GFP_ATOMIC);
-+		if (!_skb)
-+			goto error;
-+		skb_orphan(_skb);
-+		__skb_queue_tail(frags, _skb);
-+		/* Copy header & data to the fragment */
-+		skb_copy_to_linear_data(_skb, hdr, INT_H_SIZE);
-+		skb_copy_to_linear_data_offset(_skb, INT_H_SIZE, data, eat);
-+		data += eat;
-+		/* Update the fragment's header */
-+		_hdr = buf_msg(_skb);
-+		msg_set_fragm_no(_hdr, pktno);
-+		msg_set_nof_fragms(_hdr, nof_fragms);
-+		msg_set_size(_hdr, INT_H_SIZE + eat);
-+	}
-+	return 0;
-+
-+error:
-+	__skb_queue_purge(frags);
-+	__skb_queue_head_init(frags);
-+	return -ENOMEM;
-+}
-+
-+/**
-  * tipc_msg_build - create buffer chain containing specified header and data
-  * @mhdr: Message header, to be prepended to data
-  * @m: User message
-diff --git a/net/tipc/msg.h b/net/tipc/msg.h
-index fca042cdff88..1c8c8dd32a4e 100644
---- a/net/tipc/msg.h
-+++ b/net/tipc/msg.h
-@@ -721,12 +721,26 @@ static inline void msg_set_last_bcast(struct tipc_msg *m, u32 n)
- 	msg_set_bits(m, 4, 16, 0xffff, n);
- }
- 
-+static inline u32 msg_nof_fragms(struct tipc_msg *m)
-+{
-+	return msg_bits(m, 4, 0, 0xffff);
-+}
-+
-+static inline void msg_set_nof_fragms(struct tipc_msg *m, u32 n)
-+{
-+	msg_set_bits(m, 4, 0, 0xffff, n);
-+}
-+
-+static inline u32 msg_fragm_no(struct tipc_msg *m)
-+{
-+	return msg_bits(m, 4, 16, 0xffff);
-+}
-+
- static inline void msg_set_fragm_no(struct tipc_msg *m, u32 n)
- {
- 	msg_set_bits(m, 4, 16, 0xffff, n);
- }
- 
--
- static inline u16 msg_next_sent(struct tipc_msg *m)
- {
- 	return msg_bits(m, 4, 0, 0xffff);
-@@ -1045,6 +1059,8 @@ bool tipc_msg_bundle(struct sk_buff *skb, struct tipc_msg *msg, u32 mtu);
- bool tipc_msg_make_bundle(struct sk_buff **skb, struct tipc_msg *msg,
- 			  u32 mtu, u32 dnode);
- bool tipc_msg_extract(struct sk_buff *skb, struct sk_buff **iskb, int *pos);
-+int tipc_msg_fragment(struct sk_buff *skb, const struct tipc_msg *hdr,
-+		      int pktmax, struct sk_buff_head *frags);
- int tipc_msg_build(struct tipc_msg *mhdr, struct msghdr *m,
- 		   int offset, int dsz, int mtu, struct sk_buff_head *list);
- bool tipc_msg_lookup_dest(struct net *net, struct sk_buff *skb, int *err);
--- 
-2.13.7
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> ---
+> net/sunrpc/xprtrdma/rpc_rdma.c | 3 +++
+> 1 file changed, 3 insertions(+)
+>=20
+> diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma=
+.c
+> index 4345e6912392..d0479efe0e72 100644
+> --- a/net/sunrpc/xprtrdma/rpc_rdma.c
+> +++ b/net/sunrpc/xprtrdma/rpc_rdma.c
+> @@ -1160,6 +1160,9 @@ rpcrdma_decode_msg(struct rpcrdma_xprt *r_xprt, stru=
+ct rpcrdma_rep *rep,
+>=20
+>    /* Build the RPC reply's Payload stream in rqst->rq_rcv_buf */
+>    base =3D (char *)xdr_inline_decode(xdr, 0);
+> +    if (!base)
+> +        return -EIO;
+> +
+>    rpclen =3D xdr_stream_remaining(xdr);
+>    r_xprt->rx_stats.fixup_copy_count +=3D
+>        rpcrdma_inline_fixup(rqst, base, rpclen, writelist & 3);
+> --=20
+> 2.17.1
+>=20
 
