@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D24C9724EF
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32234724F1
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 04:52:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbfGXCvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 22:51:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47580 "EHLO mail.kernel.org"
+        id S1726379AbfGXCwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 22:52:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47640 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725827AbfGXCvl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jul 2019 22:51:41 -0400
+        id S1725827AbfGXCwF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 22:52:05 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0F46D229F3;
-        Wed, 24 Jul 2019 02:51:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CE088229F3;
+        Wed, 24 Jul 2019 02:52:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563936700;
-        bh=fUquMv1WeuK4iH/1nBiu5hVqhvkBKuU6BdiiQubXYhM=;
+        s=default; t=1563936723;
+        bh=T8i1a63ZU74uaijDVVV+tpAFmFCPhxQSvVad5zI7d5I=;
         h=Date:From:To:Cc:Subject:From;
-        b=eBBkzWJL3PlsENz/UfzZfUBmLv6jVvNv429EH51O0pGWP+Mn9q04j6yNljfMTP8OJ
-         K8cYsr2LzOc1g4OaugCZzi+OmZ8HNHLetIwj6dPLmpF27/goi2o9U9f9ZROW0iAxwo
-         MeNFtNbD0wbBjggNu2OtCb6+9lH01JN9v+P+/KZI=
-Date:   Tue, 23 Jul 2019 19:51:38 -0700
+        b=wtvSAlhbtqu+QncLz4wkDz2ia3RiXnptMZK/nnJs0piZgo1EFyNIt6A6z7noVWrK1
+         X8Jm313xgvCQF3GXItwaYaaUe3hDwblJv3CnwpvAew6fsgJ4PpuP6kA01lgabUTP/m
+         WivSTtXkN2PN3bDas1nIGYi1DMLMl6Wcnlr9nmPw=
+Date:   Tue, 23 Jul 2019 19:52:02 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 1 open syzbot bug in "net/strparser" subsystem
-Message-ID: <20190724025138.GN643@sol.localdomain>
-Mail-Followup-To: netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Reminder: 1 open syzbot bug in "net/ppp" subsystem
+Message-ID: <20190724025202.GO643@sol.localdomain>
+Mail-Followup-To: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -45,35 +44,35 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 1 of them as possibly being a bug in the "net/strparser" subsystem.
+marked 1 of them as possibly being a bug in the "net/ppp" subsystem.
 
 If you believe this bug is no longer valid, please close the syzbot report by
 sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
 original thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed this bug to the "net/strparser" subsystem, please
-let me know, and if possible forward the report to the correct people or mailing
+If you believe I misattributed this bug to the "net/ppp" subsystem, please let
+me know, and if possible forward the report to the correct people or mailing
 list.
 
 Here is the bug:
 
 --------------------------------------------------------------------------------
-Title:              WARNING in strp_done (2)
-Last occurred:      163 days ago
-Reported:           174 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=95997d9e84b5e2f966ac13c3ccf01670e77ca4f6
-Original thread:    https://lkml.kernel.org/lkml/0000000000007c36aa0580b16b56@google.com/T/#u
+Title:              memory leak in pppoe_sendmsg
+Last occurred:      6 days ago
+Reported:           53 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=68fe3119847862315e52aa14961144b5a909bc23
+Original thread:    https://lkml.kernel.org/lkml/000000000000d981f1058a26e1a8@google.com/T/#u
 
-This bug has a syzkaller reproducer only.
+This bug has a C reproducer.
 
-No one replied to the original thread for this bug.
+No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+ea38a133bb90dd367b6e@syzkaller.appspotmail.com
+    Reported-by: syzbot+6bdfd184eac7709e5cc9@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000007c36aa0580b16b56@google.com
+https://lkml.kernel.org/r/000000000000d981f1058a26e1a8@google.com
 
