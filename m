@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A8473458
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E627346C
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 18:59:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728321AbfGXQ6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 12:58:19 -0400
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:42980 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbfGXQ6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 12:58:19 -0400
-Received: by mail-pg1-f202.google.com with SMTP id q10so5500096pgi.9
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 09:58:18 -0700 (PDT)
+        id S1728405AbfGXQ6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 12:58:31 -0400
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:34906 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726282AbfGXQ63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 12:58:29 -0400
+Received: by mail-qk1-f201.google.com with SMTP id 5so39930660qki.2
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 09:58:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=6m5pZYRwQ/VLImDzwYssdUybUrVH4MZ+xdF6UGNAnzQ=;
-        b=FQTT+XyX/59gFXT1uGFwGXtgUyjKf4iPsM32Sk9G7dinmYGnLj5i3YxJQtU8tzbl3K
-         fwhzXeFXWn0VIXqHMCinq/2BuSH08UCWzLV1RhNs2sLV3K6hH4jBQs/6fNwFi/g+EKXR
-         edlGI5m6uMpv4ChVdLz3GNY/yAFrgF63w7bCSpQpduHIbJ8i4GKo67HwDYWtHVc30uH2
-         cHuLWQEAtdudgD5RySbzOO2htsNdMFjzNb5sD0lRZwmVsGSKHhc+cjH/B0sFOU6XO4MB
-         0uVmd0DQzCI7Nlg93wUgjZRchVV0sPjtemJxHS6WjwuQVp1T4K0c/o2K1wYsWPyE4XZD
-         OPxw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=aJbPYrkSLi1J83pO68ABpJTFWg54SVdLxJdC1FsJCN0=;
+        b=kAKMDoDjy/GQB+zG684OCW6wlWx3U7guijvEtLmQG1ZO+fg+9B4lwuuHZ1YCxFYbey
+         aIILqCEbkhNMH/1BsaX8Cxra7NcE87v+SsbjD5OpcBIbmmWlRz3uXMB8+C45RrrUOw9h
+         xvhQNp4wx4gnPQZooqPeuiaeCNaLX3GT0rnAX4NteS3vrzGcdqIfpUxooLnXV3Z9m9HE
+         jIjNzyssLbdVIfwJJ/JdhgFI7pcegQgx94lyB5+p3zkgH3rbyskSznAv/K0kwwmiAYgW
+         K4/jqLxEv81Y0oEZXKVf8AxZ+dEGvNEjviOpTqygmzBCY5wRY4ccqdr4SUdcY3UI0ork
+         IcWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=6m5pZYRwQ/VLImDzwYssdUybUrVH4MZ+xdF6UGNAnzQ=;
-        b=ozccNynn+hI6qGzChh3uidagLbpojxDxB3fILvm4hQeNVc1T6dy6dxXd6RRpGqB3DI
-         pLerh4/jtJaSuS4ZkddRGPmncldgs2C/dAkDMEI7igxYudD0mwBHpBGlyUDSvIyvIvKu
-         /thnpuVxyUAxCsKNxAsAQtEB0zluXXBqUOmT1P1P2az3CrPPYnEig9O/LX1nUAHGi4E5
-         EJ79A2sfoxjp/lb0T3rIRT6qSb2/63fGClW331hJDbkxsDPqPWo0WeA7XV1JFgoexDbk
-         U90GpRk9yt7n8zEqqgQsb96pOv8QcolHSvgTues3nqQXMrMIxdv2QDIIiefZQ7S5pUyv
-         3VCQ==
-X-Gm-Message-State: APjAAAXXy/t3fGaxtkRuxkDdsHK/B1DHzJGKdyJtNc8AA+82klRpahT1
-        nslTQHMY4O3+Nurl5rg85toZYb/a7TdW
-X-Google-Smtp-Source: APXvYqz+p+xcj+020H6PKH7tPE0RHUStQ5VIaTQ18W/SgvXCVq97XWVBm/0xcPcAITrs8Or7z49zx7jJypgy
-X-Received: by 2002:a63:a35e:: with SMTP id v30mr23431447pgn.129.1563987497938;
- Wed, 24 Jul 2019 09:58:17 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 09:57:57 -0700
-Message-Id: <20190724165803.87470-1-brianvv@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=aJbPYrkSLi1J83pO68ABpJTFWg54SVdLxJdC1FsJCN0=;
+        b=YqFUWkD1uswZ13tafzlU+2X9GjYkCLpuycd6uvX91O1y4UYNbtRZPhm5HAZb9rQuG+
+         WOeHGsmsq1Gfar3yAVsYLyXyVVszaQWHI99zztWCBEXXAparOX2OQPLEOzNDyvyUDTZi
+         9whrbfivA95vrTkWApyvlwVqdFhWq/rdMb1Tb2P6NOtAuDjUfxknSmAZqexx5yiAdmEd
+         e/j1emhqaBPOeDNHkNAy3wHgOLNCn1yYGE4qXd1YDhtwUskRMcXPQLcungtPYeu2Ohj4
+         2s8dJL2eT7Z+Y3mfKfriZBLKxJNF73XH44Urkihzyg4Ofx8f/qqA57bIydPk5nXfA3tA
+         RaMQ==
+X-Gm-Message-State: APjAAAVYws7F81Zxl0kt56cFw64Pyqu/OPqN0SGJWP9u3pWik6/b5Ojn
+        cWZ0p25eq+vepbrZ2NvPKKD2XmLST2Mv
+X-Google-Smtp-Source: APXvYqxgMXcuo8TFQqJKT944SW2wJ4aNvRsr895+1Vy1k+9oaPw7OAsiO1NiJ9psa1RBVkritBGPVRb87m7d
+X-Received: by 2002:a0c:afbd:: with SMTP id s58mr60379022qvc.217.1563987508719;
+ Wed, 24 Jul 2019 09:58:28 -0700 (PDT)
+Date:   Wed, 24 Jul 2019 09:57:58 -0700
+In-Reply-To: <20190724165803.87470-1-brianvv@google.com>
+Message-Id: <20190724165803.87470-2-brianvv@google.com>
 Mime-Version: 1.0
+References: <20190724165803.87470-1-brianvv@google.com>
 X-Mailer: git-send-email 2.22.0.657.g960e92d24f-goog
-Subject: [PATCH bpf-next 0/6] bpf: add BPF_MAP_DUMP command to dump more than
- one entry per call
+Subject: [PATCH bpf-next 1/6] bpf: add bpf_map_value_size and
+ bp_map_copy_value helper functions
 From:   Brian Vazquez <brianvv@google.com>
 To:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -60,93 +64,180 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This introduces a new command to retrieve multiple number of entries
-from a bpf map.
+Move reusable code from map_lookup_elem to helper functions to avoid code
+duplication in kernel/bpf/syscall.c
 
-This new command can be executed from the existing BPF syscall as
-follows:
+Suggested-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+---
+ kernel/bpf/syscall.c | 134 +++++++++++++++++++++++--------------------
+ 1 file changed, 73 insertions(+), 61 deletions(-)
 
-err =  bpf(BPF_MAP_DUMP, union bpf_attr *attr, u32 size)
-using attr->dump.map_fd, attr->dump.prev_key, attr->dump.buf,
-attr->dump.buf_len
-returns zero or negative error, and populates buf and buf_len on
-succees
-
-This implementation is wrapping the existing bpf methods:
-map_get_next_key and map_lookup_elem
-
-Note that this implementation can be extended later to do dump and
-delete by extending map_lookup_and_delete_elem (currently it only works
-for bpf queue/stack maps) and either use a new flag in map_dump or a new
-command map_dump_and_delete. 
-
-Results show that even with a 1-elem_size buffer, it runs ~40 faster
-than the current implementation, improvements of ~85% are reported when
-the buffer size is increased, although, after the buffer size is around
-5% of the total number of entries there's no huge difference in
-increasing it.
-
-Tested:
-Tried different size buffers to handle case where the bulk is bigger, or
-the elements to retrieve are less than the existing ones, all runs read
-a map of 100K entries. Below are the results(in ns) from the different
-runs:
-
-buf_len_1:       69038725 entry-by-entry: 112384424 improvement
-38.569134
-buf_len_2:       40897447 entry-by-entry: 111030546 improvement
-63.165590
-buf_len_230:     13652714 entry-by-entry: 111694058 improvement
-87.776687
-buf_len_5000:    13576271 entry-by-entry: 111101169 improvement
-87.780263
-buf_len_73000:   14694343 entry-by-entry: 111740162 improvement
-86.849542
-buf_len_100000:  13745969 entry-by-entry: 114151991 improvement
-87.958187
-buf_len_234567:  14329834 entry-by-entry: 114427589 improvement
-87.476941
-
-The series of patches are split as follows:
-
-- First patch move some map_lookup_elem logic into 2 fucntions to
-deduplicate code: bpf_map_value_size and bpf_map_copy_value
-- Second patch introduce map_dump function
-- Third patch syncs tools linux headers
-- Fourth patch adds libbpf support
-- Last two patches adds tests
-
-RFC Changelog:
-
-- remove wrong usage of attr.flags
-- move map_fd to remove hole after it
-
-v3:
-- add explanation of the API in the commit message
-- fix masked errors and return them to user
-- copy last_key from return buf into prev_key if it was provided
-- run perf test with kpti and retpoline mitigations
-
-v2:
-- use proper bpf-next tag
-
-Brian Vazquez (6):
-  bpf: add bpf_map_value_size and bp_map_copy_value helper functions
-  bpf: add BPF_MAP_DUMP command to dump more than one entry per call
-  bpf: keep bpf.h in sync with tools/
-  libbpf: support BPF_MAP_DUMP command
-  selftests/bpf: test BPF_MAP_DUMP command on a bpf hashmap
-  selftests/bpf: add test to measure performance of BPF_MAP_DUMP
-
- include/uapi/linux/bpf.h                |   9 +
- kernel/bpf/syscall.c                    | 251 ++++++++++++++++++------
- tools/include/uapi/linux/bpf.h          |   9 +
- tools/lib/bpf/bpf.c                     |  28 +++
- tools/lib/bpf/bpf.h                     |   4 +
- tools/lib/bpf/libbpf.map                |   2 +
- tools/testing/selftests/bpf/test_maps.c | 148 +++++++++++++-
- 7 files changed, 388 insertions(+), 63 deletions(-)
-
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 5d141f16f6fa9..86cdc2f7bb56e 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -126,6 +126,76 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+ 	return map;
+ }
+ 
++static u32 bpf_map_value_size(struct bpf_map *map)
++{
++	if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
++	    map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH ||
++	    map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY ||
++	    map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
++		return round_up(map->value_size, 8) * num_possible_cpus();
++	else if (IS_FD_MAP(map))
++		return sizeof(u32);
++	else
++		return  map->value_size;
++}
++
++static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
++			      __u64 flags)
++{
++	void *ptr;
++	int err;
++
++	if (bpf_map_is_dev_bound(map))
++		return  bpf_map_offload_lookup_elem(map, key, value);
++
++	preempt_disable();
++	this_cpu_inc(bpf_prog_active);
++	if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
++	    map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH) {
++		err = bpf_percpu_hash_copy(map, key, value);
++	} else if (map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY) {
++		err = bpf_percpu_array_copy(map, key, value);
++	} else if (map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE) {
++		err = bpf_percpu_cgroup_storage_copy(map, key, value);
++	} else if (map->map_type == BPF_MAP_TYPE_STACK_TRACE) {
++		err = bpf_stackmap_copy(map, key, value);
++	} else if (IS_FD_ARRAY(map)) {
++		err = bpf_fd_array_map_lookup_elem(map, key, value);
++	} else if (IS_FD_HASH(map)) {
++		err = bpf_fd_htab_map_lookup_elem(map, key, value);
++	} else if (map->map_type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
++		err = bpf_fd_reuseport_array_lookup_elem(map, key, value);
++	} else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
++		   map->map_type == BPF_MAP_TYPE_STACK) {
++		err = map->ops->map_peek_elem(map, value);
++	} else {
++		rcu_read_lock();
++		if (map->ops->map_lookup_elem_sys_only)
++			ptr = map->ops->map_lookup_elem_sys_only(map, key);
++		else
++			ptr = map->ops->map_lookup_elem(map, key);
++		if (IS_ERR(ptr)) {
++			err = PTR_ERR(ptr);
++		} else if (!ptr) {
++			err = -ENOENT;
++		} else {
++			err = 0;
++			if (flags & BPF_F_LOCK)
++				/* lock 'ptr' and copy everything but lock */
++				copy_map_value_locked(map, value, ptr, true);
++			else
++				copy_map_value(map, value, ptr);
++			/* mask lock, since value wasn't zero inited */
++			check_and_init_map_lock(map, value);
++		}
++		rcu_read_unlock();
++	}
++	this_cpu_dec(bpf_prog_active);
++	preempt_enable();
++
++	return err;
++}
++
+ void *bpf_map_area_alloc(size_t size, int numa_node)
+ {
+ 	/* We really just want to fail instead of triggering OOM killer
+@@ -729,7 +799,7 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 	void __user *uvalue = u64_to_user_ptr(attr->value);
+ 	int ufd = attr->map_fd;
+ 	struct bpf_map *map;
+-	void *key, *value, *ptr;
++	void *key, *value;
+ 	u32 value_size;
+ 	struct fd f;
+ 	int err;
+@@ -761,72 +831,14 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 		goto err_put;
+ 	}
+ 
+-	if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
+-	    map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH ||
+-	    map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY ||
+-	    map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
+-		value_size = round_up(map->value_size, 8) * num_possible_cpus();
+-	else if (IS_FD_MAP(map))
+-		value_size = sizeof(u32);
+-	else
+-		value_size = map->value_size;
++	value_size = bpf_map_value_size(map);
+ 
+ 	err = -ENOMEM;
+ 	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
+ 	if (!value)
+ 		goto free_key;
+ 
+-	if (bpf_map_is_dev_bound(map)) {
+-		err = bpf_map_offload_lookup_elem(map, key, value);
+-		goto done;
+-	}
+-
+-	preempt_disable();
+-	this_cpu_inc(bpf_prog_active);
+-	if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
+-	    map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH) {
+-		err = bpf_percpu_hash_copy(map, key, value);
+-	} else if (map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY) {
+-		err = bpf_percpu_array_copy(map, key, value);
+-	} else if (map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE) {
+-		err = bpf_percpu_cgroup_storage_copy(map, key, value);
+-	} else if (map->map_type == BPF_MAP_TYPE_STACK_TRACE) {
+-		err = bpf_stackmap_copy(map, key, value);
+-	} else if (IS_FD_ARRAY(map)) {
+-		err = bpf_fd_array_map_lookup_elem(map, key, value);
+-	} else if (IS_FD_HASH(map)) {
+-		err = bpf_fd_htab_map_lookup_elem(map, key, value);
+-	} else if (map->map_type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
+-		err = bpf_fd_reuseport_array_lookup_elem(map, key, value);
+-	} else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+-		   map->map_type == BPF_MAP_TYPE_STACK) {
+-		err = map->ops->map_peek_elem(map, value);
+-	} else {
+-		rcu_read_lock();
+-		if (map->ops->map_lookup_elem_sys_only)
+-			ptr = map->ops->map_lookup_elem_sys_only(map, key);
+-		else
+-			ptr = map->ops->map_lookup_elem(map, key);
+-		if (IS_ERR(ptr)) {
+-			err = PTR_ERR(ptr);
+-		} else if (!ptr) {
+-			err = -ENOENT;
+-		} else {
+-			err = 0;
+-			if (attr->flags & BPF_F_LOCK)
+-				/* lock 'ptr' and copy everything but lock */
+-				copy_map_value_locked(map, value, ptr, true);
+-			else
+-				copy_map_value(map, value, ptr);
+-			/* mask lock, since value wasn't zero inited */
+-			check_and_init_map_lock(map, value);
+-		}
+-		rcu_read_unlock();
+-	}
+-	this_cpu_dec(bpf_prog_active);
+-	preempt_enable();
+-
+-done:
++	err = bpf_map_copy_value(map, key, value, attr->flags);
+ 	if (err)
+ 		goto free_value;
+ 
 -- 
 2.22.0.657.g960e92d24f-goog
 
