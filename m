@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B68D727E7
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 08:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F02B5727ED
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 08:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbfGXGGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 02:06:39 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41921 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbfGXGGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 02:06:38 -0400
-Received: by mail-pg1-f193.google.com with SMTP id x15so10292574pgg.8;
-        Tue, 23 Jul 2019 23:06:38 -0700 (PDT)
+        id S1726655AbfGXGGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 02:06:47 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43045 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725900AbfGXGGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 02:06:46 -0400
+Received: by mail-pl1-f196.google.com with SMTP id 4so14574395pld.10;
+        Tue, 23 Jul 2019 23:06:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+1HMfJjTxMmt6yq++N5V1yBpZofp5uwv8IyU21fY09c=;
-        b=JdS7ifxwE5qDaTMSddnrdpqo9R9gPEQj/gz1fqKljkmbd2SaAplf3F0DSQKVQEO4FS
-         QAK4ELOErHgMoo2VKVENGOz9dzr4hHEApog1mJWsE0Bn58E0kOVyhNSf+M3rNiEkdJRc
-         fkNctifv/t8AvuNwjL88aNZbbTJT09gAPeprHC28MywLmXm0Aty32f7lQP/b5HdJk79g
-         jNpn9GkZ3p7kCNuI28jLl2wP6qv6fMZQeLx/vegsNS9LJ+3Gvh65hQUJuvezhf8LoWvv
-         6k/h5/9USe7Y6iLNRmS2H1/fLPtb5CN7Ygea19y1sEhER5TlS65gRL/3/FXBaYjxEznW
-         07mg==
+        bh=3nezsYKelUkWXu/WuGZ4bisaP+vEJX1eIGb2BGpr5fM=;
+        b=KGSRuqNwdw3I5D6WthFGXLlumNPsFAdIb9aHb13ZA1o7zMKRfMt8T25tR2bR4KgOxN
+         RWIFoK0UR6eel68uSKRYdtskX4E4J/kaPBAJlaGXQZoPBJgbthKSCx9/KQfanKt0qm/l
+         JjrdPWSo3bveOsvv5V7CkEtJ5Ndr+1OqW+6yvWxD2zwBvkg+kfLpEuTqp41xzNBQnI26
+         Ab41Bt6iIizdz32iX6MEUZFYzEKGQ23ESOFwaW1HTobW1gGRV/DSqCvSdczN2/iQiVNQ
+         JMgVRHXTfTxIWVuqfK15xpODn7pbuhrHgPgSwtcNMsjNhV2HKAyFVg4aOcszcPMEL+KO
+         EwyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+1HMfJjTxMmt6yq++N5V1yBpZofp5uwv8IyU21fY09c=;
-        b=p9OUDrHduXtqS4zVmIwBz2eMksk4j4tYw1i3NFv1ve3Y2T7EABPpPvyyT7bHpKpNji
-         D21d6O+hHoLiSWy07fwKLQxUmp78d3loe1Rhnd123dythsHc5QQ/A1b5RDvlhjLQBMYY
-         YibujAccT7YlI02WM383h5EiVQnptyt29f2n5Vg0v7OkqAuNQMnu7bxdCmJhl1foMrXl
-         AdQCyvyBYxtnmydCJu2tOYHSTxuvaXvAgMxeuacj/Lf8G4BhIWfQ/fsD+j3hW/wRsDdy
-         bc7ohkrH4HUsotmOaIeL13rxn305RGopK2VV5S2pYtiDsOYGkn0L90EgyO5W7vavwFy3
-         3u5w==
-X-Gm-Message-State: APjAAAUpGAL1PofnOEeNKBdwlOntyQaMA5wZhm1E2EbRPeuertoRlRqr
-        uzb+PEJ0ASP0iqCwscBrB9/3ijkO19M=
-X-Google-Smtp-Source: APXvYqzOXgXuZYtmgP1MoJxtOZOC9ioO4gK6RyHz2B7lwyoIGdQG/TTs7Wpl4gfJbhuIGrYlQYXzfA==
-X-Received: by 2002:a17:90a:258b:: with SMTP id k11mr82378025pje.110.1563948398256;
-        Tue, 23 Jul 2019 23:06:38 -0700 (PDT)
+        bh=3nezsYKelUkWXu/WuGZ4bisaP+vEJX1eIGb2BGpr5fM=;
+        b=qi5K2p3e0z3NscwXRPtbhq9C8Uz39Q377Xys/7rVf4DP6Erumm27K3sJcfV0egtfzI
+         2/+QN5dDzx4deXvzV4dbMnhJFmBq6VwAMbzqoFivcW3KW23lFGTbiD7oQCHt6Mkq5afO
+         1Jeg5qn23e6+ctW1D+U0I4PYanYikbtl6W7Y/J10ujj+09P0mg17nnfLxiK0YM6ZtX19
+         SVHzx8SYvC9pY4NPOeCXCmtexiSL/zknK3m5P89CnbZBKPA1dsgx77upi0qBZ1hPJNxr
+         33l5Yr+ZijGMIN/ukCpFrxVkFX0xP5k/wL5KJ5xfOiHbMXFw0sJ42986YiUCtwE3OM//
+         Cg/w==
+X-Gm-Message-State: APjAAAXCgLV1jj3ytrGlqA5TtU4N27C044sYQpyBB9wh19pHVno3W50g
+        CaWjE2ntQg134Xs8A4cLgek=
+X-Google-Smtp-Source: APXvYqx3fYd3copU8UnUOGA9iWwp5fl7LA8+KIQrIpRsa/hnVcXh2VbFjrBdC6KRbdCg2antv58Pdg==
+X-Received: by 2002:a17:902:2983:: with SMTP id h3mr84740917plb.45.1563948405996;
+        Tue, 23 Jul 2019 23:06:45 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id c23sm31909568pgj.62.2019.07.23.23.06.35
+        by smtp.gmail.com with ESMTPSA id z63sm11682896pfb.98.2019.07.23.23.06.43
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 23 Jul 2019 23:06:37 -0700 (PDT)
+        Tue, 23 Jul 2019 23:06:45 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+Cc:     Guo-Fu Tseng <cooldavid@cooldavid.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net-next v2 7/8] igb: Use dev_get_drvdata where possible
-Date:   Wed, 24 Jul 2019 14:06:33 +0800
-Message-Id: <20190724060633.24280-1-hslester96@gmail.com>
+Subject: [PATCH net-next v2 8/8] net: jme: Use dev_get_drvdata
+Date:   Wed, 24 Jul 2019 14:06:41 +0800
+Message-Id: <20190724060641.24334-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,32 +69,42 @@ Changes in v2:
   - Change pci_set_drvdata to dev_set_drvdata
     to keep consistency.
 
- drivers/net/ethernet/intel/igb/igb_main.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/jme.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b4df3e319467..ed301428c0ce 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3048,7 +3048,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/net/ethernet/jme.c b/drivers/net/ethernet/jme.c
+index 0b668357db4d..6815bd18a477 100644
+--- a/drivers/net/ethernet/jme.c
++++ b/drivers/net/ethernet/jme.c
+@@ -3000,7 +3000,7 @@ jme_init_one(struct pci_dev *pdev,
+ 	netdev->max_mtu = MAX_ETHERNET_JUMBO_PACKET_SIZE - ETH_HLEN;
  
  	SET_NETDEV_DEV(netdev, &pdev->dev);
- 
 -	pci_set_drvdata(pdev, netdev);
 +	dev_set_drvdata(&pdev->dev, netdev);
- 	adapter = netdev_priv(netdev);
- 	adapter->netdev = netdev;
- 	adapter->pdev = pdev;
-@@ -8879,8 +8879,7 @@ static int __maybe_unused igb_resume(struct device *dev)
  
- static int __maybe_unused igb_runtime_idle(struct device *dev)
+ 	/*
+ 	 * init adapter info
+@@ -3193,8 +3193,7 @@ jme_shutdown(struct pci_dev *pdev)
+ static int
+ jme_suspend(struct device *dev)
  {
 -	struct pci_dev *pdev = to_pci_dev(dev);
 -	struct net_device *netdev = pci_get_drvdata(pdev);
 +	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct igb_adapter *adapter = netdev_priv(netdev);
+ 	struct jme_adapter *jme = netdev_priv(netdev);
  
- 	if (!igb_has_link(adapter))
+ 	if (!netif_running(netdev))
+@@ -3236,8 +3235,7 @@ jme_suspend(struct device *dev)
+ static int
+ jme_resume(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct jme_adapter *jme = netdev_priv(netdev);
+ 
+ 	if (!netif_running(netdev))
 -- 
 2.20.1
 
