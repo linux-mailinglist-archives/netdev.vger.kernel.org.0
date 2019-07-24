@@ -2,143 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B016272DBA
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4270072DBC
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 13:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727322AbfGXLgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 07:36:21 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37578 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726514AbfGXLgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:36:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TUAIyN+terahhzrvCO5pS7HYDyySl5Lg5EMJzSnqo/Q=; b=W6iYOzGFvjLAIAqxBGW42xp4v
-        uvC/iZEajp3i5RM+DhDr2sOfEbvu4kPisd63QTvPoKpNXexId6k9HvrHauyq86c5NsR6Jefkga4hZ
-        68l0QMmcpLYcA291QwW7kZMTI8gngJDUVA64m5j9sruU4ia8uJlgbr3lAbCV1og1pAmRTg9fkIPNt
-        iePMKiLfj1I8rKRdeu6vQ6WT7oDnQ3K+8s7MXdoVJ0aIA2Zr0YtICw8sUYtGkxZoW6XG7f8s6PUI2
-        Wn+LWcEU+NcRM5TbnhnqLJGJ6e22XD592CypDLcD9t8TXFxqnMHoAixyj0JP3HlanmG3D4rfMF9J+
-        a8jrvXq5Q==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hqFZE-00037o-NB; Wed, 24 Jul 2019 11:36:20 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH] Build fixes for skb_frag_size conversion
-Date:   Wed, 24 Jul 2019 04:36:15 -0700
-Message-Id: <20190724113615.11961-1-willy@infradead.org>
-X-Mailer: git-send-email 2.21.0
+        id S1727488AbfGXLgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 07:36:39 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:41250 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727409AbfGXLgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 07:36:38 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id C7D7A60364; Wed, 24 Jul 2019 11:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563968197;
+        bh=Ufe3beDRc5autfXs2AmNn6jFacIvLtRr7SRHOZm8Ag8=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=D9EZULmSRU90YlnGibDqA8ttXc7JVsQ0xuZRj83+wGQtJSB0iyqY3qGEJbXU2WaP2
+         5GRz5PceSxFvsBkl2+gqDzs0y1nlLNPkbD0fcz/SeNnB3UAcaL9KA5+ZFZPU69Kpvp
+         WwWuHMLgZsQBlUQvbgrpeDi75vghW/ziQdC/ghAg=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3BD8F60314;
+        Wed, 24 Jul 2019 11:36:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563968197;
+        bh=Ufe3beDRc5autfXs2AmNn6jFacIvLtRr7SRHOZm8Ag8=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=Rm5x9vsrKKPGcWIWbm6e0iHhGfoJH2zUUF3pKrcj1M1uYsHUsYrwI7NFYj9/GQmlG
+         fOFJlqR3QN6tTOCFlD8+qlRA7RYxLBvgdXDuDq0Hpe53aoRnEiX1zlQ66w/UiHYkqZ
+         PDgsEy1ZSOgWlAmGAsQ6kWPfmxhmyqrZpOk9Sj8E=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3BD8F60314
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] drivers: net: wireless: rsi: return explicit error values
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1561645802-1279-1-git-send-email-info@metux.net>
+References: <1561645802-1279-1-git-send-email-info@metux.net>
+To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, amitkarwar@gmail.com,
+        siva8118@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190724113637.C7D7A60364@smtp.codeaurora.org>
+Date:   Wed, 24 Jul 2019 11:36:37 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+"Enrico Weigelt, metux IT consult" <info@metux.net> wrote:
 
-I missed a few places.  One is in some ifdeffed code which will probably
-never be re-enabled; the others are in drivers which can't currently be
-compiled on x86.
+> From: Enrico Weigelt <info@metux.net>
+> 
+> Explicitly return constants instead of variable (and rely on
+> it to be explicitly initialized), if the value is supposed
+> to be fixed anyways. Align it with the rest of the driver,
+> which does it the same way.
+> 
+> Signed-off-by: Enrico Weigelt <info@metux.net>
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
----
- drivers/atm/he.c                               | 7 +++----
- drivers/net/ethernet/aeroflex/greth.c          | 2 +-
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c    | 3 ++-
- drivers/staging/octeon/ethernet-tx.c           | 2 +-
- drivers/target/iscsi/cxgbit/cxgbit_target.c    | 2 +-
- 6 files changed, 9 insertions(+), 9 deletions(-)
+I'll fix the title prefix to only have "rsi:", no need to have the full
+directory path there.
 
-diff --git a/drivers/atm/he.c b/drivers/atm/he.c
-index 211607986134..70b00ae4ec38 100644
---- a/drivers/atm/he.c
-+++ b/drivers/atm/he.c
-@@ -2580,10 +2580,9 @@ he_send(struct atm_vcc *vcc, struct sk_buff *skb)
- 			slot = 0;
- 		}
- 
--		tpd->iovec[slot].addr = dma_map_single(&he_dev->pci_dev->dev,
--			(void *) page_address(frag->page) + frag->page_offset,
--				frag->size, DMA_TO_DEVICE);
--		tpd->iovec[slot].len = frag->size;
-+		tpd->iovec[slot].addr = skb_frag_dma_map(&he_dev->pci_dev->dev,
-+				frag, 0, skb_frag_size(frag), DMA_TO_DEVICE);
-+		tpd->iovec[slot].len = skb_frag_size(frag);
- 		++slot;
- 
- 	}
-diff --git a/drivers/net/ethernet/aeroflex/greth.c b/drivers/net/ethernet/aeroflex/greth.c
-index 010a2f48aea5..2a9f8643629c 100644
---- a/drivers/net/ethernet/aeroflex/greth.c
-+++ b/drivers/net/ethernet/aeroflex/greth.c
-@@ -110,7 +110,7 @@ static void greth_print_tx_packet(struct sk_buff *skb)
- 
- 		print_hex_dump(KERN_DEBUG, "TX: ", DUMP_PREFIX_OFFSET, 16, 1,
- 			       skb_frag_address(&skb_shinfo(skb)->frags[i]),
--			       skb_shinfo(skb)->frags[i].size, true);
-+			       skb_frag_size(&skb_shinfo(skb)->frags[i]), true);
- 	}
- }
- 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index f38c3fa7d705..9c4d1afa34e5 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -1958,7 +1958,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	/* populate the rest of SGT entries */
- 	for (i = 0; i < nr_frags; i++) {
- 		frag = &skb_shinfo(skb)->frags[i];
--		frag_len = frag->size;
-+		frag_len = skb_frag_size(frag);
- 		WARN_ON(!skb_frag_page(frag));
- 		addr = skb_frag_dma_map(dev, frag, 0,
- 					frag_len, dma_dir);
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 00991df44ed6..e529d86468b8 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -787,7 +787,8 @@ static inline int mtk_cal_txd_req(struct sk_buff *skb)
- 	if (skb_is_gso(skb)) {
- 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
- 			frag = &skb_shinfo(skb)->frags[i];
--			nfrags += DIV_ROUND_UP(frag->size, MTK_TX_DMA_BUF_LEN);
-+			nfrags += DIV_ROUND_UP(skb_frag_size(frag),
-+						MTK_TX_DMA_BUF_LEN);
- 		}
- 	} else {
- 		nfrags += skb_shinfo(skb)->nr_frags;
-diff --git a/drivers/staging/octeon/ethernet-tx.c b/drivers/staging/octeon/ethernet-tx.c
-index cc12c78f73f1..46a6fcf1414d 100644
---- a/drivers/staging/octeon/ethernet-tx.c
-+++ b/drivers/staging/octeon/ethernet-tx.c
-@@ -284,7 +284,7 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 			hw_buffer.s.addr =
- 				XKPHYS_TO_PHYS((u64)skb_frag_address(fs));
--			hw_buffer.s.size = fs->size;
-+			hw_buffer.s.size = skb_drag_size(fs);
- 			CVM_OCT_SKB_CB(skb)[i + 1] = hw_buffer.u64;
- 		}
- 		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)CVM_OCT_SKB_CB(skb));
-diff --git a/drivers/target/iscsi/cxgbit/cxgbit_target.c b/drivers/target/iscsi/cxgbit/cxgbit_target.c
-index 93212b9fd310..c25315431ad0 100644
---- a/drivers/target/iscsi/cxgbit/cxgbit_target.c
-+++ b/drivers/target/iscsi/cxgbit/cxgbit_target.c
-@@ -1448,7 +1448,7 @@ cxgbit_lro_skb_merge(struct cxgbit_sock *csk, struct sk_buff *skb, u8 pdu_idx)
- 		hpdu_cb->frags++;
- 		hpdu_cb->hfrag_idx = hfrag_idx;
- 
--		len = skb_frag_size(&hssi->frags[hfrag_idx]);;
-+		len = skb_frag_size(&hssi->frags[hfrag_idx]);
- 		hskb->len += len;
- 		hskb->data_len += len;
- 		hskb->truesize += len;
 -- 
-2.20.1
+https://patchwork.kernel.org/patch/11019801/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
