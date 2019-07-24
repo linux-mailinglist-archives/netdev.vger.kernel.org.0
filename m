@@ -2,29 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF00972F69
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AD0A72F6C
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 15:03:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbfGXNDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 09:03:30 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:46531 "EHLO
+        id S1727467AbfGXNDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 09:03:35 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57761 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727294AbfGXND3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:29 -0400
+        with ESMTP id S1726312AbfGXNDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 09:03:33 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1hqGvX-0006gK-5K; Wed, 24 Jul 2019 15:03:27 +0200
+        id 1hqGva-0006gK-Nu; Wed, 24 Jul 2019 15:03:30 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Weitao Hou <houweitaoo@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Sean Nyekjaer <sean@geanix.com>,
+        kernel@pengutronix.de, Wen Yang <wen.yang99@zte.com.cn>,
+        linux-stable <stable@vger.kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 3/7] can: mcp251x: add error check when wq alloc failed
-Date:   Wed, 24 Jul 2019 15:03:18 +0200
-Message-Id: <20190724130322.31702-4-mkl@pengutronix.de>
+Subject: [PATCH 4/7] can: flexcan: fix an use-after-free in flexcan_setup_stop_mode()
+Date:   Wed, 24 Jul 2019 15:03:19 +0200
+Message-Id: <20190724130322.31702-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190724130322.31702-1-mkl@pengutronix.de>
 References: <20190724130322.31702-1-mkl@pengutronix.de>
@@ -39,102 +38,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Weitao Hou <houweitaoo@gmail.com>
+From: Wen Yang <wen.yang99@zte.com.cn>
 
-add error check when workqueue alloc failed, and remove redundant code
-to make it clear.
+The gpr_np variable is still being used in dev_dbg() after the
+of_node_put() call, which may result in use-after-free.
 
-Fixes: e0000163e30e ("can: Driver for the Microchip MCP251x SPI CAN controllers")
-Signed-off-by: Weitao Hou <houweitaoo@gmail.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
+Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Cc: linux-stable <stable@vger.kernel.org> # >= v5.0
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/spi/mcp251x.c | 49 ++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 27 deletions(-)
+ drivers/net/can/flexcan.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-index 44e99e3d7134..2aec934fab0c 100644
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -664,17 +664,6 @@ static int mcp251x_power_enable(struct regulator *reg, int enable)
- 		return regulator_disable(reg);
- }
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index f2fe344593d5..33ce45d51e15 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1437,10 +1437,10 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
  
--static void mcp251x_open_clean(struct net_device *net)
--{
--	struct mcp251x_priv *priv = netdev_priv(net);
--	struct spi_device *spi = priv->spi;
--
--	free_irq(spi->irq, priv);
--	mcp251x_hw_sleep(spi);
--	mcp251x_power_enable(priv->transceiver, 0);
--	close_candev(net);
--}
--
- static int mcp251x_stop(struct net_device *net)
- {
- 	struct mcp251x_priv *priv = netdev_priv(net);
-@@ -940,37 +929,43 @@ static int mcp251x_open(struct net_device *net)
- 				   flags | IRQF_ONESHOT, DEVICE_NAME, priv);
- 	if (ret) {
- 		dev_err(&spi->dev, "failed to acquire irq %d\n", spi->irq);
--		mcp251x_power_enable(priv->transceiver, 0);
--		close_candev(net);
--		goto open_unlock;
-+		goto out_close;
+ 	priv = netdev_priv(dev);
+ 	priv->stm.gpr = syscon_node_to_regmap(gpr_np);
+-	of_node_put(gpr_np);
+ 	if (IS_ERR(priv->stm.gpr)) {
+ 		dev_dbg(&pdev->dev, "could not find gpr regmap\n");
+-		return PTR_ERR(priv->stm.gpr);
++		ret = PTR_ERR(priv->stm.gpr);
++		goto out_put_node;
  	}
  
- 	priv->wq = alloc_workqueue("mcp251x_wq", WQ_FREEZABLE | WQ_MEM_RECLAIM,
- 				   0);
-+	if (!priv->wq) {
-+		ret = -ENOMEM;
-+		goto out_clean;
-+	}
- 	INIT_WORK(&priv->tx_work, mcp251x_tx_work_handler);
- 	INIT_WORK(&priv->restart_work, mcp251x_restart_work_handler);
+ 	priv->stm.req_gpr = out_val[1];
+@@ -1455,7 +1455,9 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
  
- 	ret = mcp251x_hw_reset(spi);
--	if (ret) {
--		mcp251x_open_clean(net);
--		goto open_unlock;
--	}
-+	if (ret)
-+		goto out_free_wq;
- 	ret = mcp251x_setup(net, spi);
--	if (ret) {
--		mcp251x_open_clean(net);
--		goto open_unlock;
--	}
-+	if (ret)
-+		goto out_free_wq;
- 	ret = mcp251x_set_normal_mode(spi);
--	if (ret) {
--		mcp251x_open_clean(net);
--		goto open_unlock;
--	}
-+	if (ret)
-+		goto out_free_wq;
+ 	device_set_wakeup_capable(&pdev->dev, true);
  
- 	can_led_event(net, CAN_LED_EVENT_OPEN);
- 
- 	netif_wake_queue(net);
-+	mutex_unlock(&priv->mcp_lock);
- 
--open_unlock:
-+	return 0;
-+
-+out_free_wq:
-+	destroy_workqueue(priv->wq);
-+out_clean:
-+	free_irq(spi->irq, priv);
-+	mcp251x_hw_sleep(spi);
-+out_close:
-+	mcp251x_power_enable(priv->transceiver, 0);
-+	close_candev(net);
- 	mutex_unlock(&priv->mcp_lock);
- 	return ret;
+-	return 0;
++out_put_node:
++	of_node_put(gpr_np);
++	return ret;
  }
+ 
+ static const struct of_device_id flexcan_of_match[] = {
 -- 
 2.20.1
 
