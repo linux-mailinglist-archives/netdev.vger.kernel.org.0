@@ -2,127 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E233772997
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 10:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE0F729B3
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 10:15:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbfGXINR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 04:13:17 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39115 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbfGXINP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 04:13:15 -0400
-Received: by mail-ed1-f66.google.com with SMTP id m10so46297404edv.6
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 01:13:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:cc;
-        bh=+rNRJY68IIsD9nh+g9TvsIleBslPfLPXnzcgzuZEN48=;
-        b=I3P1lO6M7mukJ8KziuxO4lwxZaCAEl58oUX+PO1XCwcZyQwz3JtUDGwgufNide1IPU
-         Q7YNLXYcjqeHdQKGY8/cvpw/sv2h35skgV1k8YlZlW62GNfBPPbi2nnAOeqYJbShHm3v
-         2F0rU4+6x5NgLoN7doN5wb9j0sy1IHdQNCfp9aGSubZjGl9sAGRLy9lZnO6NzIlopx6V
-         RUIjlm5lSh9geksn3AT3RAcweH/lhkcgrj0rPndv/4XXANjOlLSnFo2VDcab+7jus4fg
-         +zCdTioMfVUew0SNjSjaVkFZh4eQItDnlcrwolp7ZBtE4vMSr3/VpMqgYcWfJkk1GGDg
-         bsmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:cc;
-        bh=+rNRJY68IIsD9nh+g9TvsIleBslPfLPXnzcgzuZEN48=;
-        b=DNxbIsf1R4uRZxFg2RpSxtN8l1CHXtUmm9sncmivUGyMbBgkGdJDsm79vbeskwL+vf
-         3Ky2tkMLJgbbAOgGmhnLC859w2RVVScD+EoZGpmCFFyl2lHnep0yWbohKNAfoOTa0wm7
-         flAVIFJxaNZVlJ8F3qGxtJAnqf4s0zds8iBqvMHbQn+8J6uuguGh88WlkHHHeNfbm4Kq
-         JyCSnLiTrEcRDQiz+SKlF0X5DtRoVxRvoquHnmpeaXDjSIbbuGqZGUuefWbicOgLcsqb
-         ArMEWKnKM8ZA6lE7h43mqQFcMQi5g7b3QVQDMO1ZyFhYzfmvfCb22YmHcw6mcaz7Ctrp
-         nPkw==
-X-Gm-Message-State: APjAAAVmPNeHN/zp0sefL8Z0UGblxAnSArGPDACoA6yg+BZXGW0bkiOo
-        5fLXMxKN6aGS1iiCX/qhgSsRcD0rrULGXdh1P7A=
-X-Received: by 2002:a05:6402:896:: with SMTP id e22mt65279497edy.202.1563955993753;
- Wed, 24 Jul 2019 01:13:13 -0700 (PDT)
+        id S1726086AbfGXIPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 04:15:36 -0400
+Received: from mail-eopbgr140085.outbound.protection.outlook.com ([40.107.14.85]:4769
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725878AbfGXIPg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 04:15:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ci6ms7VP5g1BEwnoBvQgRJvgI13Icr1KkvIVLy7bUGJG8Qp8GfH39Pd69l9YFutK+HCkWRxR6otXuOYYg6Spbvl4DZra72UByiQRT+qh/yg2Pl1c8tfaI2+WiytGgWt9Rpbxsdt+t/A68+HekLN99p7m7/f7tlYEFSnOPJxqqHoQjEzxhRNyAHA2XqljEZGWHCYEBF8Ubp279zDDewOVRydpzgxKmnj7s/8jCp//lVOZreRd1yNy3EwlFJceq6nVRTB+Ca3ZQrWAHNuu0z/hddrcUHxY6ruEKDInWqZoHns6RKyMySLxasdjfY1TUJdrkVYK8FhBKDvl6g+9m3V/qw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XemzRzbsUtnu5Yci51ux4oxyHOgybhFhX5ZhKpxjqoI=;
+ b=D5J+Ys/iUNcG/9I19DrarD0PuCcgEDRXxqff+DI4eDC0RfRpCb+e2t1KmS3cgco7lA0wEXjS04rGYC5az3UnKtpiVEYvLWpkKxo/IEaP79rZ2+8ph1e5sxualRlcARW2ZAdv+V/v1XdWV+rK53l4nY8CVGeQiPGymocEVMv5pMyNhmqxblnMI84xKod5hlulswa3pvauTO5tFXElIvYueTXlGjegAPOnjFfZNWF8N1+/WwhRAggoi6jTWeIZh2SZP7QEYVMe+D5+0PbN3Jcb4+//Cxu0dxsruUNHnTQ0Oc2dxi7VnIKxec4aztLkqB/yUUHK9y/+112DB6YLfWmfpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=nxp.com;dmarc=pass action=none header.from=nxp.com;dkim=pass
+ header.d=nxp.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XemzRzbsUtnu5Yci51ux4oxyHOgybhFhX5ZhKpxjqoI=;
+ b=n7Tz3VmagaC+U7NObvkm3Bwhemp6CbV0BoQkT6qPvf+yfdMrFbcgGwusnp95LV37C1tbQf5vtdHoBNf2mrN3TKx3CA2nCVJuNHdPwd4+AzzHxMxgHUC0EKre3d7RqpmyculC//EQirQKvc3B5S7D/5SHVF87bNQ3t+4vNzp7lfI=
+Received: from AM0PR04MB4994.eurprd04.prod.outlook.com (20.176.215.215) by
+ AM0PR04MB4020.eurprd04.prod.outlook.com (52.134.90.29) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.17; Wed, 24 Jul 2019 08:15:30 +0000
+Received: from AM0PR04MB4994.eurprd04.prod.outlook.com
+ ([fe80::41a7:61ce:8705:d82d]) by AM0PR04MB4994.eurprd04.prod.outlook.com
+ ([fe80::41a7:61ce:8705:d82d%2]) with mapi id 15.20.2094.017; Wed, 24 Jul 2019
+ 08:15:30 +0000
+From:   Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Edward Cree <ecree@solarflare.com>
+Subject: RE: [PATCH net-next] dpaa2-eth: Don't use netif_receive_skb_list for
+ TCP frames
+Thread-Topic: [PATCH net-next] dpaa2-eth: Don't use netif_receive_skb_list for
+ TCP frames
+Thread-Index: AQHVQXwUMRr/5Ct9vECiPXgDk60+H6bYsQaAgAC38NA=
+Date:   Wed, 24 Jul 2019 08:15:30 +0000
+Message-ID: <AM0PR04MB499429A871F6037E483CFDFA94C60@AM0PR04MB4994.eurprd04.prod.outlook.com>
+References: <1563902923-26178-1-git-send-email-ruxandra.radulescu@nxp.com>
+ <20190723.140255.1785812525450069326.davem@davemloft.net>
+In-Reply-To: <20190723.140255.1785812525450069326.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ruxandra.radulescu@nxp.com; 
+x-originating-ip: [213.233.88.236]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1c9d0f1c-1655-462d-0795-08d7100f17a4
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR04MB4020;
+x-ms-traffictypediagnostic: AM0PR04MB4020:
+x-microsoft-antispam-prvs: <AM0PR04MB4020728E5721C7C1AD13E0FC94C60@AM0PR04MB4020.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3968;
+x-forefront-prvs: 0108A997B2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(376002)(366004)(346002)(39860400002)(13464003)(199004)(189003)(52314003)(6116002)(81166006)(81156014)(53936002)(14454004)(55016002)(6246003)(9686003)(6436002)(86362001)(7736002)(305945005)(6916009)(8676002)(478600001)(25786009)(99286004)(3846002)(33656002)(316002)(54906003)(76116006)(26005)(74316002)(66946007)(64756008)(52536014)(66556008)(66446008)(14444005)(8936002)(256004)(11346002)(66066001)(102836004)(446003)(186003)(476003)(7696005)(486006)(76176011)(4326008)(68736007)(6506007)(71200400001)(71190400001)(2906002)(53546011)(229853002)(5660300002)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB4020;H:AM0PR04MB4994.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: NH8FwPoU2KIsUqcbAAoVq/+tibIk9eINlhhwTAqacki94XSnYLNWjh2FfRXrnvzRnCyVTorTJlwW/240JaoV5NNEBQEtrUo1AfoUxzqnuXRDYq8z6VJUvccepLd/kSIHucSLJpZegKGXQzkDgz6vYxNzPnsLBqeGiNGyCM6Red/gEEMlT3OWTel0d6N5fCT+wJ7PsNmHg/q2auN+wGPnJGBuHn0DLP5YNoawEnt08pkfHtLvPeq9sE2pqJl76EXrGJgjecIggmXJSbWgtPbux2EYkpcOm/WyV1Yyop3EwjGr30Kwwh0gDXQg/NMfCXCNbKxKjdF8IrlGXYILYjbHrCMY/G4pxq3CtFLgxpQ8cVlDfbsn/z5zWZrSY5LROCwGaM+t4x5G0iqqKHtjwM6aYdJEv1qo5JdT6EMgLybKJbE=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190724060512.23899-1-hslester96@gmail.com>
-In-Reply-To: <20190724060512.23899-1-hslester96@gmail.com>
-From:   Chuhong Yuan <hslester96@gmail.com>
-Date:   Wed, 24 Jul 2019 16:13:03 +0800
-Message-ID: <CANhBUQ0gYF+cF1EjfSA-WVvAKipQHWgkasXN91mphHYsZV+uMQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/8] Use dev_get_drvdata where possible
-Cc:     Steffen Klassert <klassert@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Rasesh Mody <rmody@marvell.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Guo-Fu Tseng <cooldavid@cooldavid.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c9d0f1c-1655-462d-0795-08d7100f17a4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 08:15:30.1865
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ruxandra.radulescu@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4020
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 2:05 PM Chuhong Yuan <hslester96@gmail.com> wrote:
->
-> These patches use dev_get_drvdata instead of
-> using to_pci_dev + pci_get_drvdata to make
-> code simpler where possible.
->
-> Changelog:
->
-> v1 -> v2:
-> - Change pci_set_drvdata to dev_set_drvdata
->   to keep consistency.
->
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Wednesday, July 24, 2019 12:03 AM
+> To: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+> Cc: netdev@vger.kernel.org; Ioana Ciornei <ioana.ciornei@nxp.com>; Vladim=
+ir
+> Oltean <vladimir.oltean@nxp.com>
+> Subject: Re: [PATCH net-next] dpaa2-eth: Don't use netif_receive_skb_list=
+ for
+> TCP frames
+>=20
+> From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+> Date: Tue, 23 Jul 2019 20:28:43 +0300
+>=20
+> > Using Rx skb bulking for all frames may negatively impact the
+> > performance in some TCP termination scenarios, as it effectively
+> > bypasses GRO.
+>=20
+> "may"?
+>=20
+> Please provide numbers so that we know exactly whether it actually
+> hurts performance one way or another.
 
-Hi all,
-I checked the cases which mentioned the consistency
-of get/set_drvdata usages.
-The cases' commit IDs are
-488d040e3a3452a0dceef5d3ec4f61942262f57f
-b77c98780e682fe780d899b91543769d4cf94585
+We observed the worst degradation running netperf TCP_STREAM on a
+setup with two 16cores LX2160A boards connected back-to-back, one
+stream per cpu:
+With netif_receive_skb_list() on all packets, we get a total bandwidth
+of 41.6Gbps, with rx cpu load of 97%; after applying current patch, bw
+increases to 45.8Gbps with rx cpu at 64%, which is similar to what we
+got before using netif_receive_skb_list() in the first place.
 
-After checking, I think that the consistency problem
-refers to inconsistency between probe and remove.
-But the changes of these patches are not related
-to probe and remove.
+On other platforms/setups the impact is lower, in some cases there is
+no difference in throughput, only higher cpu load when skb batching
+is used for TCP packets.
 
-So I think the previously sent and applied v1 patches
-which do not change pci_set_drvdata to dev_set_drvdata
-are okay.
-Therefore there may be no need to use these v2 patches.
+Anyway, based on feedback so far I guess the best path forward is to
+withdraw this patch and wait for Edward's GRO batching work to be
+accepted. I can help test those patches if needed.
 
-Regards,
-Chuhong
+Thanks,
+Ioana
 
 
-> Chuhong Yuan (8):
->   net: 3com: 3c59x: Use dev_get_drvdata
->   net: atheros: Use dev_get_drvdata
->   net: broadcom: Use dev_get_drvdata
->   e1000e: Use dev_get_drvdata where possible
->   fm10k: Use dev_get_drvdata
->   i40e: Use dev_get_drvdata
->   igb: Use dev_get_drvdata where possible
->   net: jme: Use dev_get_drvdata
->
->  drivers/net/ethernet/3com/3c59x.c               |  8 +++-----
->  drivers/net/ethernet/atheros/alx/main.c         |  8 +++-----
->  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 10 ++++------
->  drivers/net/ethernet/atheros/atlx/atl1.c        |  8 +++-----
->  drivers/net/ethernet/broadcom/bnx2.c            |  8 +++-----
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c       |  8 +++-----
->  drivers/net/ethernet/broadcom/tg3.c             |  8 +++-----
->  drivers/net/ethernet/intel/e1000e/netdev.c      |  9 ++++-----
->  drivers/net/ethernet/intel/fm10k/fm10k_pci.c    |  6 +++---
->  drivers/net/ethernet/intel/i40e/i40e_main.c     | 10 ++++------
->  drivers/net/ethernet/intel/igb/igb_main.c       |  5 ++---
->  drivers/net/ethernet/jme.c                      |  8 +++-----
->  12 files changed, 38 insertions(+), 58 deletions(-)
->
-> --
-> 2.20.1
->
