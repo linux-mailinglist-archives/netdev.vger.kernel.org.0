@@ -2,153 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9E772513
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 05:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E44B7252A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 05:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbfGXDFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jul 2019 23:05:25 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:45584 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726086AbfGXDFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jul 2019 23:05:24 -0400
-Received: by mail-io1-f71.google.com with SMTP id e20so49135454ioe.12
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 20:05:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:cc:content-transfer-encoding;
-        bh=ODt/ouqpKRqLqHVtBLcr7ymBFq10TqFzC1XMm6vFK94=;
-        b=YQ5ujKnMY0UuWc0f7gYXgpEqffTVVdhM/m5aHG+RWn5YJtU2cD1B2/LEHJxL8dtyZi
-         tCA74EmdvLuxRQmiz0OuXUnNy3/3+NRTG7aVvK8a1RbPylf8aO0LGzwYdPxihm4Ez50O
-         2lg2bquxLKXTZcFiR0PVgdfHY/WJBRNNVgzbUhFs7iwa750ZhG1eTrXPutjEICExTOPk
-         tgflFJahdkwGX3wzjb3bK6e7C456/MfJlbLBYy2nSRf+ljJzRnoWekhdi724QouCIpcl
-         I+jaYyZPTPZodXQSdVijiwiNjh3GMHBB2fpLH7rS3CMB3UiiUB+d93LnQyJ3vsLtuS7t
-         nIYA==
-X-Gm-Message-State: APjAAAXKQGjnr0JRIzHzQTjPYMaIfNcPqxXRm7rU7j9UNvSQyXwTdNgk
-        ezD8D5BCliMtWQ1Ip9BoxH2nWvjKq70JfnM0VwTgwpUe9Cbe
-X-Google-Smtp-Source: APXvYqyCFjqyZAB6wzwpubj69Pd3NcJcNZAIxpwvLEdVNaSEwgeL1ip3AikVctoGTqGSETCb8QasINrc09096zG/M/c9NCFXucfi
-MIME-Version: 1.0
-X-Received: by 2002:a5e:9319:: with SMTP id k25mr53084069iom.137.1563937523964;
- Tue, 23 Jul 2019 20:05:23 -0700 (PDT)
-Date:   Tue, 23 Jul 2019 20:05:23 -0700
-In-Reply-To: <fabf96ac-e472-c7fd-07ff-486fe03e6433@redhat.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000912425058e6494cb@google.com>
-Subject: Re: Re: Reminder: 3 open syzbot bugs in vhost subsystem
-From:   syzbot <syzbot+@syzkaller.appspotmail.com>
+        id S1726339AbfGXDN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jul 2019 23:13:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54344 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725848AbfGXDN5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jul 2019 23:13:57 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 831122253D;
+        Wed, 24 Jul 2019 03:13:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563938035;
+        bh=AXiCpbshNYcz7VQFZBfLifrrHxAILqoy+ggfj5ZCmDk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YYqG5d7XafM9NmvZ4tQSMuyhPB6Om9BauPTfY7VtmNBKE9oXbBMLR94LluniH220H
+         d8TfVk5IaFIPml09gcFbL9EEjjwHx0tHWW6EXhnI9IqFiPKSjcqSo2gGXK5Njn+sxY
+         COIS9ZxjWXe9b6ABW3LDtSeAxjhnfnJ6gIVZsLL0=
+Date:   Tue, 23 Jul 2019 20:13:54 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
 To:     Jason Wang <jasowang@redhat.com>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-Content-Transfer-Encoding: base64
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: Reminder: 3 open syzbot bugs in vhost subsystem
+Message-ID: <20190724031354.GV643@sol.localdomain>
+Mail-Followup-To: Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+References: <20190724023835.GY643@sol.localdomain>
+ <fabf96ac-e472-c7fd-07ff-486fe03e6433@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fabf96ac-e472-c7fd-07ff-486fe03e6433@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IE9uIDIwMTkvNy8yNCDkuIrljYgxMDozOCwgRXJpYyBCaWdnZXJzIHdyb3RlOg0KPj4gW1Ro
-aXMgZW1haWwgd2FzIGdlbmVyYXRlZCBieSBhIHNjcmlwdC4gIExldCBtZSBrbm93IGlmIHlvdSBo
-YXZlIGFueSAgDQo+PiBzdWdnZXN0aW9ucw0KPj4gdG8gbWFrZSBpdCBiZXR0ZXIsIG9yIGlmIHlv
-dSB3YW50IGl0IHJlLWdlbmVyYXRlZCB3aXRoIHRoZSBsYXRlc3QgIA0KPj4gc3RhdHVzLl0NCg0K
-Pj4gT2YgdGhlIGN1cnJlbnRseSBvcGVuIHN5emJvdCByZXBvcnRzIGFnYWluc3QgdGhlIHVwc3Ry
-ZWFtIGtlcm5lbCwgSSd2ZSAgDQo+PiBtYW51YWxseQ0KPj4gbWFya2VkIDMgb2YgdGhlbSBhcyBw
-b3NzaWJseSBiZWluZyBidWdzIGluIHRoZSB2aG9zdCBzdWJzeXN0ZW0uICBJJ3ZlICANCj4+IGxp
-c3RlZA0KPj4gdGhlc2UgcmVwb3J0cyBiZWxvdywgc29ydGVkIGJ5IGFuIGFsZ29yaXRobSB0aGF0
-IHRyaWVzIHRvIGxpc3QgZmlyc3QgdGhlICANCj4+IHJlcG9ydHMNCj4+IG1vc3QgbGlrZWx5IHRv
-IGJlIHN0aWxsIHZhbGlkLCBpbXBvcnRhbnQsIGFuZCBhY3Rpb25hYmxlLg0KDQo+PiBPZiB0aGVz
-ZSAzIGJ1Z3MsIDIgd2VyZSBzZWVuIGluIG1haW5saW5lIGluIHRoZSBsYXN0IHdlZWsuDQoNCj4+
-IE9mIHRoZXNlIDMgYnVncywgMiB3ZXJlIGJpc2VjdGVkIHRvIGNvbW1pdHMgZnJvbSB0aGUgZm9s
-bG93aW5nIHBlcnNvbjoNCg0KPj4gCUphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQoN
-Cj4+IElmIHlvdSBiZWxpZXZlIGEgYnVnIGlzIG5vIGxvbmdlciB2YWxpZCwgcGxlYXNlIGNsb3Nl
-IHRoZSBzeXpib3QgcmVwb3J0ICANCj4+IGJ5DQo+PiBzZW5kaW5nIGEgJyNzeXogZml4JywgJyNz
-eXogZHVwJywgb3IgJyNzeXogaW52YWxpZCcgY29tbWFuZCBpbiByZXBseSB0byAgDQo+PiB0aGUN
-Cj4+IG9yaWdpbmFsIHRocmVhZCwgYXMgZXhwbGFpbmVkIGF0IGh0dHBzOi8vZ29vLmdsL3Rwc21F
-SiNzdGF0dXMNCg0KPj4gSWYgeW91IGJlbGlldmUgSSBtaXNhdHRyaWJ1dGVkIGEgYnVnIHRvIHRo
-ZSB2aG9zdCBzdWJzeXN0ZW0sIHBsZWFzZSBsZXQgIA0KPj4gbWUga25vdywNCj4+IGFuZCBpZiBw
-b3NzaWJsZSBmb3J3YXJkIHRoZSByZXBvcnQgdG8gdGhlIGNvcnJlY3QgcGVvcGxlIG9yIG1haWxp
-bmcgbGlzdC4NCg0KPj4gSGVyZSBhcmUgdGhlIGJ1Z3M6DQoNCj4+IC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tDQo+PiBUaXRsZTogICAgICAgICAgICAgIEtBU0FOOiB1c2UtYWZ0ZXItZnJlZSBXcml0
-ZSBpbiB0bGJfZmluaXNoX21tdQ0KPj4gTGFzdCBvY2N1cnJlZDogICAgICA1IGRheXMgYWdvDQo+
-PiBSZXBvcnRlZDogICAgICAgICAgIDQgZGF5cyBhZ28NCj4+IEJyYW5jaGVzOiAgICAgICAgICAg
-TWFpbmxpbmUNCj4+IERhc2hib2FyZCBsaW5rOiAgICAgIA0KPj4gaHR0cHM6Ly9zeXprYWxsZXIu
-YXBwc3BvdC5jb20vYnVnP2lkPWQ1N2I5NGY4OWU0OGM4NWVmN2Q5NWFjYzIwODIwOWVhNGJkYzEw
-ZGUNCj4+IE9yaWdpbmFsIHRocmVhZDogICAgIA0KPj4gaHR0cHM6Ly9sa21sLmtlcm5lbC5vcmcv
-bGttbC8wMDAwMDAwMDAwMDA0NWU3YTEwNThlMDI0NThhQGdvb2dsZS5jb20vVC8jdQ0KDQo+PiBU
-aGlzIGJ1ZyBoYXMgYSBzeXprYWxsZXIgcmVwcm9kdWNlciBvbmx5Lg0KDQo+PiBUaGlzIGJ1ZyB3
-YXMgYmlzZWN0ZWQgdG86DQoNCj4+IAljb21taXQgN2Y0NjYwMzJkYzllNWE2MTIxN2YyMmVhMzRi
-MmRmOTMyNzg2YmJmYw0KPj4gCUF1dGhvcjogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNv
-bT4NCj4+IAlEYXRlOiAgIEZyaSBNYXkgMjQgMDg6MTI6MTggMjAxOSArMDAwMA0KDQo+PiAJwqDC
-oHZob3N0OiBhY2Nlc3MgdnEgbWV0YWRhdGEgdGhyb3VnaCBrZXJuZWwgdmlydHVhbCBhZGRyZXNz
-DQoNCj4+IE5vIG9uZSBoYXMgcmVwbGllZCB0byB0aGUgb3JpZ2luYWwgdGhyZWFkIGZvciB0aGlz
-IGJ1ZyB5ZXQuDQoNCj4+IElmIHlvdSBmaXggdGhpcyBidWcsIHBsZWFzZSBhZGQgdGhlIGZvbGxv
-d2luZyB0YWcgdG8gdGhlIGNvbW1pdDoNCj4+ICAgICAgIFJlcG9ydGVkLWJ5OiBzeXpib3QrODI2
-N2U5YWY3OTU0MzRmZmFkYWRAc3l6a2FsbGVyLmFwcHNwb3RtYWlsLmNvbQ0KDQo+PiBJZiB5b3Ug
-c2VuZCBhbnkgZW1haWwgb3IgcGF0Y2ggZm9yIHRoaXMgYnVnLCBwbGVhc2UgcmVwbHkgdG8gdGhl
-IG9yaWdpbmFsDQo+PiB0aHJlYWQuICBGb3IgdGhlIGdpdCBzZW5kLWVtYWlsIGNvbW1hbmQgdG8g
-dXNlLCBvciB0aXBzIG9uIGhvdyB0byByZXBseSAgDQo+PiBpZiB0aGUNCj4+IHRocmVhZCBpc24n
-dCBpbiB5b3VyIG1haWxib3gsIHNlZSB0aGUgIlJlcGx5IGluc3RydWN0aW9ucyIgYXQNCj4+IGh0
-dHBzOi8vbGttbC5rZXJuZWwub3JnL3IvMDAwMDAwMDAwMDAwNDVlN2ExMDU4ZTAyNDU4YUBnb29n
-bGUuY29tDQoNCj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+PiBUaXRsZTogICAgICAgICAg
-ICAgIEtBU0FOOiB1c2UtYWZ0ZXItZnJlZSBSZWFkIGluIGZpbmlzaF90YXNrX3N3aXRjaCAoMikN
-Cj4+IExhc3Qgb2NjdXJyZWQ6ICAgICAgNSBkYXlzIGFnbw0KPj4gUmVwb3J0ZWQ6ICAgICAgICAg
-ICA0IGRheXMgYWdvDQo+PiBCcmFuY2hlczogICAgICAgICAgIE1haW5saW5lDQo+PiBEYXNoYm9h
-cmQgbGluazogICAgICANCj4+IGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL2J1Zz9pZD05
-YTk4ZmNhZDZjOGJkMzFmNWMzYWZiZGM2Yzc1ZGU5ZjA4MmMwZmZhDQo+PiBPcmlnaW5hbCB0aHJl
-YWQ6ICAgICANCj4+IGh0dHBzOi8vbGttbC5rZXJuZWwub3JnL2xrbWwvMDAwMDAwMDAwMDAwNDkw
-Njc5MDU4ZTAyNDVlZUBnb29nbGUuY29tL1QvI3UNCg0KPj4gVGhpcyBidWcgaGFzIGEgc3l6a2Fs
-bGVyIHJlcHJvZHVjZXIgb25seS4NCg0KPj4gVGhpcyBidWcgd2FzIGJpc2VjdGVkIHRvOg0KDQo+
-PiAJY29tbWl0IDdmNDY2MDMyZGM5ZTVhNjEyMTdmMjJlYTM0YjJkZjkzMjc4NmJiZmMNCj4+IAlB
-dXRob3I6IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+PiAJRGF0ZTogICBGcmkg
-TWF5IDI0IDA4OjEyOjE4IDIwMTkgKzAwMDANCg0KPj4gCcKgwqB2aG9zdDogYWNjZXNzIHZxIG1l
-dGFkYXRhIHRocm91Z2gga2VybmVsIHZpcnR1YWwgYWRkcmVzcw0KDQo+PiBObyBvbmUgaGFzIHJl
-cGxpZWQgdG8gdGhlIG9yaWdpbmFsIHRocmVhZCBmb3IgdGhpcyBidWcgeWV0Lg0KDQoNCj4gSGk6
-DQoNCj4gV2UgYmVsaWV2ZSBhYm92ZSB0d28gYnVncyBhcmUgZHVwbGljYXRlZCB3aXRoIHRoZSBy
-ZXBvcnQgIldBUk5JTkcgaW4NCj4gX19tbWRyb3AiLiBDYW4gSSBqdXN0IGR1cCB0aGVtIHdpdGgN
-Cg0KPiAjc3l6IGR1cCAiV0FSTklORyBpbiBfX21tZHJvcCINCg0KSSBzZWUgdGhlIGNvbW1hbmQg
-YnV0IGNhbid0IGZpbmQgdGhlIGNvcnJlc3BvbmRpbmcgYnVnLg0KUGxlYXNlIHJlc2VuZCB0aGUg
-ZW1haWwgdG8gc3l6Ym90K0hBU0hAc3l6a2FsbGVyLmFwcHNwb3RtYWlsLmNvbSBhZGRyZXNzDQp0
-aGF0IGlzIHRoZSBzZW5kZXIgb2YgdGhlIGJ1ZyByZXBvcnQgKGFsc28gcHJlc2VudCBpbiB0aGUg
-UmVwb3J0ZWQtYnkgdGFnKS4NCg0KDQo+IChJZiB5ZXMsIGp1c3Qgd29uZGVyIGhvdyBzeXpib3Qg
-ZGlmZmVyIGJ1Z3MsIHRlY2huaWNhbGx5LCBzZXZlcmFsDQo+IGRpZmZlcmVudCBidWcgY2FuIGhp
-dCB0aGUgc2FtZSB3YXJuaW5nKS4NCg0KDQoNCj4+IElmIHlvdSBmaXggdGhpcyBidWcsIHBsZWFz
-ZSBhZGQgdGhlIGZvbGxvd2luZyB0YWcgdG8gdGhlIGNvbW1pdDoNCj4+ICAgICAgIFJlcG9ydGVk
-LWJ5OiBzeXpib3QrN2YwNjdjNzk2ZWVlMmFjYmM1N2FAc3l6a2FsbGVyLmFwcHNwb3RtYWlsLmNv
-bQ0KDQo+PiBJZiB5b3Ugc2VuZCBhbnkgZW1haWwgb3IgcGF0Y2ggZm9yIHRoaXMgYnVnLCBwbGVh
-c2UgcmVwbHkgdG8gdGhlIG9yaWdpbmFsDQo+PiB0aHJlYWQuICBGb3IgdGhlIGdpdCBzZW5kLWVt
-YWlsIGNvbW1hbmQgdG8gdXNlLCBvciB0aXBzIG9uIGhvdyB0byByZXBseSAgDQo+PiBpZiB0aGUN
-Cj4+IHRocmVhZCBpc24ndCBpbiB5b3VyIG1haWxib3gsIHNlZSB0aGUgIlJlcGx5IGluc3RydWN0
-aW9ucyIgYXQNCj4+IGh0dHBzOi8vbGttbC5rZXJuZWwub3JnL3IvMDAwMDAwMDAwMDAwNDkwNjc5
-MDU4ZTAyNDVlZUBnb29nbGUuY29tDQoNCj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+PiBU
-aXRsZTogICAgICAgICAgICAgIG1lbW9yeSBsZWFrIGluIHZob3N0X25ldF9pb2N0bA0KPj4gTGFz
-dCBvY2N1cnJlZDogICAgICAyMiBkYXlzIGFnbw0KPj4gUmVwb3J0ZWQ6ICAgICAgICAgICA0OCBk
-YXlzIGFnbw0KPj4gQnJhbmNoZXM6ICAgICAgICAgICBNYWlubGluZQ0KPj4gRGFzaGJvYXJkIGxp
-bms6ICAgICAgDQo+PiBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS9idWc/aWQ9MTJiYTM0
-OWQ3ZTI2Y2NmZTk1MzE3YmMzNzZlODEyZWJiYWUyZWUwZg0KPj4gT3JpZ2luYWwgdGhyZWFkOiAg
-ICAgDQo+PiBodHRwczovL2xrbWwua2VybmVsLm9yZy9sa21sLzAwMDAwMDAwMDAwMDE4OGRhMTA1
-OGE5YzI1ZTNAZ29vZ2xlLmNvbS9ULyN1DQoNCj4+IFRoaXMgYnVnIGhhcyBhIEMgcmVwcm9kdWNl
-ci4NCg0KPj4gVGhlIG9yaWdpbmFsIHRocmVhZCBmb3IgdGhpcyBidWcgaGFzIHJlY2VpdmVkIDQg
-cmVwbGllczsgdGhlIGxhc3Qgd2FzIDM5ICANCj4+IGRheXMNCj4+IGFnby4NCg0KPj4gSWYgeW91
-IGZpeCB0aGlzIGJ1ZywgcGxlYXNlIGFkZCB0aGUgZm9sbG93aW5nIHRhZyB0byB0aGUgY29tbWl0
-Og0KPj4gICAgICAgUmVwb3J0ZWQtYnk6IHN5emJvdCswNzg5ZjBjN2U0NWVmZDdiYjY0M0BzeXpr
-YWxsZXIuYXBwc3BvdG1haWwuY29tDQoNCg0KPiBJIGRvIHJlbWVtYmVyIGl0IGNhbiBub3QgYmUg
-cmVwcm9kdWNlZCB1cHN0cmVhbSwgbGV0IG1lIGRvdWJsZSBjaGVjayBhbmQNCj4gY2xvc2UgdGhp
-cyBvbmUuDQoNCj4gVGhhbmtzDQoNCg0KDQo+PiBJZiB5b3Ugc2VuZCBhbnkgZW1haWwgb3IgcGF0
-Y2ggZm9yIHRoaXMgYnVnLCBwbGVhc2UgY29uc2lkZXIgcmVwbHlpbmcgdG8gIA0KPj4gdGhlDQo+
-PiBvcmlnaW5hbCB0aHJlYWQuICBGb3IgdGhlIGdpdCBzZW5kLWVtYWlsIGNvbW1hbmQgdG8gdXNl
-LCBvciB0aXBzIG9uIGhvdyAgDQo+PiB0byByZXBseQ0KPj4gaWYgdGhlIHRocmVhZCBpc24ndCBp
-biB5b3VyIG1haWxib3gsIHNlZSB0aGUgIlJlcGx5IGluc3RydWN0aW9ucyIgYXQNCj4+IGh0dHBz
-Oi8vbGttbC5rZXJuZWwub3JnL3IvMDAwMDAwMDAwMDAwMTg4ZGExMDU4YTljMjVlM0Bnb29nbGUu
-Y29tDQoNCg0KPiAtLQ0KPiBZb3UgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGJlY2F1c2UgeW91IGFy
-ZSBzdWJzY3JpYmVkIHRvIHRoZSBHb29nbGUgIA0KPiBHcm91cHMgInN5emthbGxlci1idWdzIiBn
-cm91cC4NCj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGdyb3VwIGFuZCBzdG9wIHJlY2Vpdmlu
-ZyBlbWFpbHMgZnJvbSBpdCwgc2VuZCBhbiAgDQo+IGVtYWlsIHRvIHN5emthbGxlci1idWdzK3Vu
-c3Vic2NyaWJlQGdvb2dsZWdyb3Vwcy5jb20uDQo+IFRvIHZpZXcgdGhpcyBkaXNjdXNzaW9uIG9u
-IHRoZSB3ZWIgdmlzaXQgIA0KPiBodHRwczovL2dyb3Vwcy5nb29nbGUuY29tL2QvbXNnaWQvc3l6
-a2FsbGVyLWJ1Z3MvZmFiZjk2YWMtZTQ3Mi1jN2ZkLTA3ZmYtNDg2ZmUwM2U2NDMzJTQwcmVkaGF0
-LmNvbS4NCg==
+On Wed, Jul 24, 2019 at 11:05:14AM +0800, Jason Wang wrote:
+> > --------------------------------------------------------------------------------
+> > Title:              KASAN: use-after-free Write in tlb_finish_mmu
+> > Last occurred:      5 days ago
+> > Reported:           4 days ago
+> > Branches:           Mainline
+> > Dashboard link:     https://syzkaller.appspot.com/bug?id=d57b94f89e48c85ef7d95acc208209ea4bdc10de
+> > Original thread:    https://lkml.kernel.org/lkml/00000000000045e7a1058e02458a@google.com/T/#u
+> > 
+> > This bug has a syzkaller reproducer only.
+> > 
+> > This bug was bisected to:
+> > 
+> > 	commit 7f466032dc9e5a61217f22ea34b2df932786bbfc
+> > 	Author: Jason Wang <jasowang@redhat.com>
+> > 	Date:   Fri May 24 08:12:18 2019 +0000
+> > 
+> > 	  vhost: access vq metadata through kernel virtual address
+> > 
+> > No one has replied to the original thread for this bug yet.
+> > 
+> > If you fix this bug, please add the following tag to the commit:
+> >      Reported-by: syzbot+8267e9af795434ffadad@syzkaller.appspotmail.com
+> > 
+> > If you send any email or patch for this bug, please reply to the original
+> > thread.  For the git send-email command to use, or tips on how to reply if the
+> > thread isn't in your mailbox, see the "Reply instructions" at
+> > https://lkml.kernel.org/r/00000000000045e7a1058e02458a@google.com
+> > 
+> > --------------------------------------------------------------------------------
+> > Title:              KASAN: use-after-free Read in finish_task_switch (2)
+> > Last occurred:      5 days ago
+> > Reported:           4 days ago
+> > Branches:           Mainline
+> > Dashboard link:     https://syzkaller.appspot.com/bug?id=9a98fcad6c8bd31f5c3afbdc6c75de9f082c0ffa
+> > Original thread:    https://lkml.kernel.org/lkml/000000000000490679058e0245ee@google.com/T/#u
+> > 
+> > This bug has a syzkaller reproducer only.
+> > 
+> > This bug was bisected to:
+> > 
+> > 	commit 7f466032dc9e5a61217f22ea34b2df932786bbfc
+> > 	Author: Jason Wang <jasowang@redhat.com>
+> > 	Date:   Fri May 24 08:12:18 2019 +0000
+> > 
+> > 	  vhost: access vq metadata through kernel virtual address
+> > 
+> > No one has replied to the original thread for this bug yet.
+> 
+> 
+> Hi:
+> 
+> We believe above two bugs are duplicated with the report "WARNING in
+> __mmdrop". Can I just dup them with
+> 
+> #syz dup "WARNING in __mmdrop"
+> 
+> (If yes, just wonder how syzbot differ bugs, technically, several different
+> bug can hit the same warning).
+> 
+
+Yes, please mark them as duplicates; see https://goo.gl/tpsmEJ#status for
+correct syntax.  You need to send the command to the syzbot email address
+specific to each bug.  Easiest way is to reply to the original threads.
+
+- Eric
