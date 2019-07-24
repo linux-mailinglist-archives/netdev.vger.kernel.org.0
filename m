@@ -2,103 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 337F27362F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 19:59:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743AE73643
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 20:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726390AbfGXR7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 13:59:00 -0400
-Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:33763
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725851AbfGXR7A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 13:59:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=glWs94uGclyJYnnEfoDNKV3Su2BErVbFwlcxQAUf6lZgc4r8ZoNt1LpuRSNmYUuvx3/ePKUnTHmt5K07ir2flk60fWWYzuIBBCAzWhvgPIh7S0Ghr+EIt2fxB6wwuvar71Ow/1PKWPOfKVOd7ZvUCziUR3R1Xp3LK69EUufNgjc2BD4/iS9kF+jxIw9SX/CXE98uxArP0K507JVppAHYJ4g0bsrvWUi7pVwKOs0/SwFRnfXa+O1Q1b4lVYm6DcbIGJthqRBqMJsUlHPvnOjNMCIwCiKv4zuYSV6LbANSjkM262A/X6B8Z5dsJHgRRBQbkd6uvZTuFuXerefYzrypVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4r5jlW+fg5rU2e6wHY1ko6/a8XR7w6Nw8JXv5lWkoK8=;
- b=QYwWIfxeamnNs2KapllrNSzTf4ktO+iYBa/xzRrBEtlzXwuu3CE9stgRavWDM3Cv05PRwZL0ozQGNYzzq6sCvfcAFBTeazLDFadosFEERzMF8fzondvTaUYm5tCv8clJOKsa/6AZ1IapiWGJuCTOXVsCAq1O4YqhTJoNTpNSqp9gHiSP7oj1eNrNr3AQOcTyoi+LQjTGE9lj/mD6OkhNWEJA8hpGOk6T0b0K7PDe2D9fp1ZZiWqCyjN39WXotlbsg3wSo6qpkcx98reeNVO7AeFqAERhh+/X+hIDqoveipP9wUJb+tmzkc4zjPR4era0dmhK9agftdF1HOpGVOKb5A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4r5jlW+fg5rU2e6wHY1ko6/a8XR7w6Nw8JXv5lWkoK8=;
- b=Sr6fN1AptBHMP8GERcaXW3h/qYGMZ5gtGB+3k5xMjI3IUqBpxUSQSt2AWzmUIeB6SNQsPHmh0cUxxzD1fDhDcpgychE8l/j8duqHACO1XdsBNe8SS8LtZfNptz6gqFo7Ye9VnZcOEboswsSfDQXOVVBixvJKXKXCsZDOE+SZxZ4=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2695.eurprd05.prod.outlook.com (10.172.225.140) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.17; Wed, 24 Jul 2019 17:58:55 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Wed, 24 Jul 2019
- 17:58:55 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "willy@infradead.org" <willy@infradead.org>
-CC:     "hch@lst.de" <hch@lst.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 6/7] net: Rename skb_frag_t size to bv_len
-Thread-Topic: [PATCH v3 6/7] net: Rename skb_frag_t size to bv_len
-Thread-Index: AQHVOLgCN3n4tiD8MUS+X3bLyy1Lk6bY2/6AgAAxcYCAARQJgA==
-Date:   Wed, 24 Jul 2019 17:58:55 +0000
-Message-ID: <60387845de777559c0067fcf892966f7ec68010b.camel@mellanox.com>
-References: <20190712134345.19767-1-willy@infradead.org>
-         <20190712134345.19767-7-willy@infradead.org>
-         <267e43638c85447a5251ce9ca33356da4a8aa3f3.camel@mellanox.com>
-         <20190724013055.GR363@bombadil.infradead.org>
-In-Reply-To: <20190724013055.GR363@bombadil.infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fd07d46a-7913-4388-be52-08d710609873
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2695;
-x-ms-traffictypediagnostic: DB6PR0501MB2695:
-x-microsoft-antispam-prvs: <DB6PR0501MB26957A9521A5214968F5E9D2BEC60@DB6PR0501MB2695.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(376002)(136003)(366004)(396003)(199004)(189003)(446003)(102836004)(8936002)(2616005)(256004)(11346002)(5660300002)(2351001)(476003)(86362001)(118296001)(186003)(66556008)(26005)(66446008)(66946007)(76116006)(66476007)(6506007)(2906002)(36756003)(66066001)(71200400001)(71190400001)(64756008)(229853002)(2501003)(68736007)(486006)(76176011)(4326008)(6436002)(6512007)(5640700003)(25786009)(3846002)(6246003)(6116002)(81166006)(6486002)(53936002)(81156014)(1730700003)(316002)(91956017)(6916009)(54906003)(14454004)(305945005)(99286004)(7736002)(478600001)(58126008)(4744005)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2695;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: OBEaij/FbJGPGJfq1Ccmw5sadSoseLRrRW8RJ2pKiEgqPQGA4JpiFCmH6cklyE2CewxfQXn05y9whHKGE4AICMu+1XHfPlO7k4dio/wsGH5d4g0nubUQjeyWOOFCBGtOLTDEDW4CxLQsOi6wQ3s3MxIGAErwdWkw7CiBjT0w1waTpy9vSdFHMXiGwsKKomSLYb85c/pse2aze8MSve/fc+ijYwrAStz/1/KyP34AQSn6oGlnK2vKZSxOeKOtwmWgO16gP+uS/0GCE9HM2/JedHRdOe4+OHNdaJX8ZjkCHbGm/VLEyoqHCnR0+/TfhQDEyc5gN08tqxGk0QjAewlYva4gAt1Z8NTQSkLoiMRNhobMLGAIZP6JrOyUQtflwhY0DElafi36X14JREWPxs8kEod71t0VS1maHOkoTmvuX/s=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2041DF64C79BA8458503096BE275FB52@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726347AbfGXSDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 14:03:08 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37689 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725944AbfGXSDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 14:03:08 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d15so34408945qkl.4
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 11:03:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9/KLvkv4tip+BqrrzM/6HDFgUbGfXypU4li8j41EUxc=;
+        b=esEh6rrgYf14wnGGIbDla4wDwBmGMy4ALT1k7GP0pan1hFhG/NPRnMV10gyP+L2mmv
+         Q3wIgWS4zOYhJJakbA9zl24LkwCjDze6hJdSPr7Iqi40A4wfTlhDXRBg3PechvjawMsX
+         QWklx88u8Gd5B0KQCzqXWyEbEN58kH4DUCf2Hbb+SPemaCZGbw6T7HBmA/26QC7oa7zD
+         pViwbc+l/PTSCAi/bar2E/wHaFmeYbH5kaoEGqbk3J2XXszPqX5wiWksyTWqMEgfEtjA
+         b8mblbfOnI58mTMmJnOHSYezsmXmxLTSMNbKCU1hnlb/GyTylitZdoPO3RfXgEp6KR5s
+         vulQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9/KLvkv4tip+BqrrzM/6HDFgUbGfXypU4li8j41EUxc=;
+        b=BvTFDKPkQxLiEGKLG00FWEqpSI6VZvjZ5vw1HD9vS9VCuSQma63nHec9SgaSxDSEHh
+         6jVgsRbYflPzGcozTLWd6miizuPg6Jpu/XEg3LWZJ+8Qd0g4DMs92v28dE0Ei40a5nMA
+         oSTfi22XoZ443NaaOppg1QJY8HcnHwj2fruUpLUUlEbn1IDPf2LUM4LAMq3lC+PK2Yeh
+         87+Jgh1U4a4Zx4i0YsuCIcsCWoEQcRle3cAH9ONB1T5j7V54ySNosp82Pvejpe0XtE79
+         ExOk47Vc+xZ62NueIQ5iR7SaplV6DYpfYPFa8GqZAgu2Dm7cUDRH+XXJTtob2zZWrIO2
+         9TzA==
+X-Gm-Message-State: APjAAAWa/Acb4/1+vFbbY0yeI7lVrTPvrh/4l4w29lnTlLpNhGvpnUYZ
+        X8eTwk/DdVoumqSmhCPYgIr0lA==
+X-Google-Smtp-Source: APXvYqx229ri36+pxYdmwBP3zHhjw3694U9CSYJ+GncJcid6tc44DELfnF2bvtGKG8wy43PfHt1vzA==
+X-Received: by 2002:a37:5942:: with SMTP id n63mr52443957qkb.69.1563991387585;
+        Wed, 24 Jul 2019 11:03:07 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z4sm24574212qtd.60.2019.07.24.11.03.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Jul 2019 11:03:06 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net, alexei.starovoitov@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, davejwatson@fb.com,
+        borisp@mellanox.com, aviadye@mellanox.com
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        simon.horman@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH net-next] net/tls: add myself as a co-maintainer
+Date:   Wed, 24 Jul 2019 11:02:48 -0700
+Message-Id: <20190724180248.6480-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd07d46a-7913-4388-be52-08d710609873
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 17:58:55.4842
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2695
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA3LTIzIGF0IDE4OjMwIC0wNzAwLCBNYXR0aGV3IFdpbGNveCB3cm90ZToN
-Cj4gT24gVHVlLCBKdWwgMjMsIDIwMTkgYXQgMTA6MzM6NTlQTSArMDAwMCwgU2FlZWQgTWFoYW1l
-ZWQgd3JvdGU6DQo+ID4gPiAgc3RydWN0IHNrYl9mcmFnX3N0cnVjdCB7DQo+ID4gPiAgCXN0cnVj
-dCBwYWdlICpidl9wYWdlOw0KPiA+ID4gLQlfX3UzMiBzaXplOw0KPiA+ID4gKwl1bnNpZ25lZCBp
-bnQgYnZfbGVuOw0KPiA+ID4gIAlfX3UzMiBwYWdlX29mZnNldDsNCj4gPiANCj4gPiBXaHkgZG8g
-eW91IGtlZXAgcGFnZV9vZmZzZXQgbmFtZSBhbmQgdHlwZSBhcyBpcyA/IGl0IHdpbGwgbWFrZSB0
-aGUNCj4gPiBsYXN0DQo+ID4gcGF0Y2ggbXVjaCBjbGVhbmVyIGlmIHlvdSBjaGFuZ2UgaXQgdG8g
-InVuc2lnbmVkIGludCBidl9vZmZzZXQiLg0KPiANCj4gV2UgZG9uJ3QgaGF2ZSBhbiBhY2Nlc3Nv
-ciBmb3IgcGFnZV9vZmZzZXQsIHNvIHRoZXJlIGFyZSBhYm91dCAyODANCj4gb2NjdXJyZW5jZXMg
-b2YgJz5wYWdlX29mZnNldCcgaW4gZHJpdmVycy9uZXQvDQo+IA0KDQpJIHVuZGVyc3RhbmQgYnV0
-IHdoeSBub3QgY2hhaW5pbmcgdGhlIHR5cGUgdG8gInVuc2lnbmVkIGludCIgYXQgbGVhc3QNCnRv
-IGF2b2lkIGNvbmZ1c2lvbiA/IA0KDQo+IEZlZWwgZnJlZSB0byBiZSB0aGUgaGVybyB3aG8gZG9l
-cyB0aGF0IGNsZWFudXAuDQoNCg0K
+I've been spending quite a bit of time fixing and
+preventing bit rot in the core TLS code. TLS seems
+to only be growing in importance, I'd like to help
+ensuring the quality of our implementation.
+
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Simon Horman <simon.horman@netronome.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 783569e3c4b4..3ff2e6ab3cf4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11282,6 +11282,7 @@ M:	Aviad Yehezkel <aviadye@mellanox.com>
+ M:	Dave Watson <davejwatson@fb.com>
+ M:	John Fastabend <john.fastabend@gmail.com>
+ M:	Daniel Borkmann <daniel@iogearbox.net>
++M:	Jakub Kicinski <jakub.kicinski@netronome.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	net/tls/*
+-- 
+2.21.0
+
