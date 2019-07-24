@@ -2,94 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92A417277F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 07:48:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3DE727A0
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 07:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726178AbfGXFsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 01:48:43 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35135 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbfGXFsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 01:48:43 -0400
-Received: by mail-wr1-f65.google.com with SMTP id y4so45489119wrm.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 22:48:41 -0700 (PDT)
+        id S1726086AbfGXF4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 01:56:47 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:43012 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbfGXF4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 01:56:47 -0400
+Received: by mail-io1-f68.google.com with SMTP id k20so87005050ios.10;
+        Tue, 23 Jul 2019 22:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=vl+4uYaHqhJOv+Pjo31wJJ/QiKb1I0k+OnqqTdPE3yA=;
-        b=lAqmmeUTge08wpbZoHuaEWQBpDgu4ViXPoayBgYiixPdd2SVxYQYgDGxrjzrSrSxxR
-         fQ2zR/T7/j/F6HasFFAPBwRepz42tQBBAi2JZx9/mLjDpEBl6UfkmCXnrOXg79bzlYBx
-         zIADBrZs1BB/epxtUybzKk8eUr8IncOvSqbyFuEhqUcqd+wMPEczogyAym1SfhDAal0v
-         WQeEEdyrXwX81DAAdGXFDX4ObW7WoHD4pQ6a5tKu3rfmDvVi7Xw0LT1DlDYTBYskdZhK
-         d2YE7LGS5WCpW9NFd0fasHUgzFbsSEdjq9gt813BWgDV5QFg8qprJTV0FFzxClZnUyjk
-         CK6A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=E6VQtWP2Qork1ITHffxNTt9vOJoeld9a+/tl+suTeZs=;
+        b=QUdjUPQ6JMmP0H3wsWzvspkk/2zFluSDgd7egZhjHKPWA9mwGimY+3zfCDG3YjNPjn
+         ZaFNic6ggJSNuSdYItOHrgMq7rLWr83NAo531nOApeTlFyFPbY0bQ/lshQiHa4wUIRbj
+         8Adtv9CVaZh744oEUjQMCuJZbTyo3Q5IqMHJNgdHD7O3YPFg/yXmej46kH3IkJAatg3f
+         ZA3EHIRMSUhREgbOq4IGhPG9av9I/srQ7wry2B4ykFnoOWld8MH4vRfpdPpsfa34vipE
+         stlyHTSnalTq1vXoi+2sW5qmEhozDTX91NTX1/Bc2stDuMcY9NPJeeQO9LMXVolJjndP
+         7j1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vl+4uYaHqhJOv+Pjo31wJJ/QiKb1I0k+OnqqTdPE3yA=;
-        b=Y8yBBfSKnc/SaX2zDtJDQz2A/ijJQi+KLKn+Fc9E8gZG/KAtbo/3JYyNqYlhi2AAzE
-         ZJMxoDLDOcSizKiznlx0xXhBn5GmA//BGW6Oc3FLCfB6fN97PDY4fOhQeixIQYshEFi8
-         ioYgkrRQKcrSl/s5E0mHkf3iLhxud/mOIuOx+StDLmaQtAA9E71qslqsirucLZ3H8wmf
-         sgcMaLVd/uaKD9oOkneJpcZaOnsx+jCeRag/aj9CsJe/8wFDQHx+bwHGPXY3GnoveUFV
-         olW3WX53MH6JS9vnFSDinTVbwuoJhWClt/nt//fsiff3aajTTRTUwcdAVmyWSTvmOar3
-         ghcQ==
-X-Gm-Message-State: APjAAAXex9yEKzL4iK+Ptbi2TmA3CYtgBZzmPcrGsd6A/57gz53BQwvP
-        T9/069UKRecT1tpNoVU3nXEaC6q3
-X-Google-Smtp-Source: APXvYqxJu87wNfJXXRxinPuVUI+eOo+2WB3qm1YbYWCV+xQ6i4eH2te1eZrLqZqa1cAPh0HGyZNfVg==
-X-Received: by 2002:a5d:5692:: with SMTP id f18mr39829644wrv.104.1563947321007;
-        Tue, 23 Jul 2019 22:48:41 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:44da:cb0:9744:f2d7? (p200300EA8F43420044DA0CB09744F2D7.dip0.t-ipconnect.de. [2003:ea:8f43:4200:44da:cb0:9744:f2d7])
-        by smtp.googlemail.com with ESMTPSA id q18sm51918184wrw.36.2019.07.23.22.48.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Jul 2019 22:48:40 -0700 (PDT)
-Subject: Re: kernel v5.3.0-rc1
-To:     Bob Gleitsmann <rjgleits@bellsouth.net>, netdev@vger.kernel.org
-References: <ed5c39e4-e364-ccca-0a9e-8d0b4d648bfd@bellsouth.net>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <91bc69d5-6185-8bb8-cb68-eb3655782226@gmail.com>
-Date:   Wed, 24 Jul 2019 07:48:32 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=E6VQtWP2Qork1ITHffxNTt9vOJoeld9a+/tl+suTeZs=;
+        b=EllVBld73IoZlFWXcDs5t1ILxZRvaCddPFypIub7axXFLX0jg2XTGMCtJdDEkxP8BX
+         U4qolhGbtpc1mEieI4AJ1SNHK1HdHpB+iWS8fmvI0jSGxf37FUkFK1quba6IJWT/UbzI
+         Nx+TJAU+ACFh9rvM+zWahQiOE0dZgHHvB4dy5llv+WQBil3zaX+AvKIpRYdqALS2Exbq
+         PO3HM1zFlNTbK7HvAV9C5g1CX0+S4tCiE0J6h4JGa6XCDJM+6D51UtnvQIv3y/3hC0tb
+         RYREEb/FhTRXerF4XEyh1h510IPqEuocfDzLKoIG5j9EJWQ4wrEvD14jcfslOZGRUKwa
+         FgeQ==
+X-Gm-Message-State: APjAAAWiYClxLolXofdN79ekblWK8+yRkexEdLHI7IGmM8/4uEe1m3TY
+        iT3Dj5OGnZSs5VzPyALe9CooD5/EtocrmA==
+X-Google-Smtp-Source: APXvYqzqzNrT7CUSQvyikq1Qah+Ake+fp6s52iiY2yNkvNiZeFeFTRwwL5fFHe4b/PKVG6ewk1n4Dw==
+X-Received: by 2002:a02:c6b8:: with SMTP id o24mr11826016jan.80.1563947806251;
+        Tue, 23 Jul 2019 22:56:46 -0700 (PDT)
+Received: from JATN (c-73-243-191-173.hsd1.co.comcast.net. [73.243.191.173])
+        by smtp.gmail.com with ESMTPSA id s10sm108747905iod.46.2019.07.23.22.56.44
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 23 Jul 2019 22:56:45 -0700 (PDT)
+Date:   Tue, 23 Jul 2019 23:56:44 -0600
+From:   Kelsey Skunberg <skunberg.kelsey@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     iyappan@os.amperecomputing.com, keyur@os.amperecomputing.com,
+        quan@os.amperecomputing.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bjorn@helgaas.com,
+        skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH v2] drivers: net: xgene: Remove acpi_has_method() calls
+Message-ID: <20190724055644.GA103525@JATN>
+References: <20190722030401.69563-1-skunberg.kelsey@gmail.com>
+ <20190723185811.8548-1-skunberg.kelsey@gmail.com>
+ <20190723.140646.505566792140054611.davem@davemloft.net>
+ <20190723.140739.379654507424022463.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <ed5c39e4-e364-ccca-0a9e-8d0b4d648bfd@bellsouth.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190723.140739.379654507424022463.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.07.2019 03:38, Bob Gleitsmann wrote:
-> Hello,
+On Tue, Jul 23, 2019 at 02:07:39PM -0700, David Miller wrote:
+> From: David Miller <davem@davemloft.net>
+> Date: Tue, 23 Jul 2019 14:06:46 -0700 (PDT)
 > 
+> > From: Kelsey Skunberg <skunberg.kelsey@gmail.com>
+> > Date: Tue, 23 Jul 2019 12:58:11 -0600
+> > 
+> >> acpi_evaluate_object will already return an error if the needed method
+> >> does not exist. Remove unnecessary acpi_has_method() calls and check the
+> >> returned acpi_status for failure instead.
+> >> 
+> >> Signed-off-by: Kelsey Skunberg <skunberg.kelsey@gmail.com>
+> >> ---
+> >> Changes in v2:
+> >> 	- Fixed white space warnings and errors
+> > 
+> > Applied to net-next.
 > 
-> I had problems with network functionality in kernel v5.3.0-rc1. I was
-> not able to ping local devices with ip address or internet points by
-> name. I have been testing git kernels for a while and this is the first
-> time this has happened, i.e., it didn't happen with v5.2.0. One
-> interesting thing is that simply rebooting with a good kernel doesn't
-> fix the problem. The machine has to be powered off and restarted.
-> 
-> It was clear that network names were not being resolved.
-> 
-> I can provide more details and try different things to help track down
-> the problem. I'm using x86-64 system, gentoo linux, r8169 PHY.
-> 
-Thanks for reporting. For one known issue there's a fix pending for 5.3-rc2:
-1a03bb532934 ("r8169: fix RTL8168g PHY init")
-You could apply it on top of 5.3-rc1 or test linux-next.
+> Wow did you even build test this?   Reverted...
+>
+This patch has definitely been a mess, so thank you for your time and
+sticking with me here. I thought my build tests included these files,
+though discovered they did not. Since submitting v2, I was able to reproduce the
+same errors you listed and corrected the problem in v3.
 
-If this doesn't help then at least a full dmesg log is needed.
+I also realized my .git/post-commit file needed to be fixed, so the white
+space problem in v1 should also not be a problem in the future.
 
-> 
-> Best Wishes,
-> 
-> 
-> Bob Gleitsmann
-> 
-> 
-Heiner
+Please let me know if you notice anything else I can improve on. I will
+learn from my mistakes and really appreciate advice. Thank you again, David.
+
+Best Regards,
+Kelsey
+
