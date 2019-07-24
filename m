@@ -2,128 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B79147425C
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 01:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 766B97425E
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 01:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388864AbfGXXv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 19:51:56 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:39189 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388770AbfGXXv4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 19:51:56 -0400
-Received: by mail-qk1-f196.google.com with SMTP id w190so35107051qkc.6;
-        Wed, 24 Jul 2019 16:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eVbSZHisblXB8XJsceIXXNLtFm8eOCsgwYNeGQOn75o=;
-        b=bumidWFNQ90PjOwVLgsXEzW1J/KSBACFnfKkmtpAX+Yla/L+yRuNhonbLo+2cvKoDx
-         gXeZpRS8bZhzXf4tg+luQG2Nl6orPHnEmgWdqNz8ygy8NavWTcbjz+NYOWmuKupuGdHk
-         bLOyY9P3yOtUF+zyJ1f83nGwDGvJj8tflfMdqFbK+rFTF+nrvtrUHcAmQhk/sNm++e0a
-         SuyuJAiwhvt6bUfni1MR8BLQhg7xCROv6cd50RbY3I3VvevT6XXymsSvcsoi5onpBIIj
-         ejVPcahHPZxiRtpHoKl7VRgBaYliD6r345ELl0CaT6ZVznNW1s9j6AwIo7bch/Cy8l+L
-         HCxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eVbSZHisblXB8XJsceIXXNLtFm8eOCsgwYNeGQOn75o=;
-        b=pMgSF7OTas1W4t4JJnzjVax+4NYcIg4BCOFvjlWDWaR/1B6hL7qN8Lhngwdjhoakh5
-         g8rrNvje2tfcgmcxP+T/tBOL8y7+VbeCM80AsDXh9qEWsMh5csgZaVSnfqzOOJYUeRWj
-         ZCpgGKWDUbtVaemV8HtD45iDB6Gh3Hn4IAyvmSUXQa7WQM18BUcM5WwVhflLJGStOSjB
-         AmPITLSo5d/LHoAtvZSSvdPEl2R53vsjTF+LuRqDSl5UuftaR5xnOaVA3zOF7bHXd5T1
-         RjC7mZW/XzzgGpkwW1DOnf/FjcJUPAYGo/sCxhgzkjt15jZhi/283CAWcC4ReQF3B1Qz
-         ShhQ==
-X-Gm-Message-State: APjAAAVrwwUsl2lHPxC7HVXY7+whKnX3ILul7Xc7kcPb3PW/afGjN5hy
-        PpyRQycBwfNNqaBsOyzVMV4399yu1ZQ=
-X-Google-Smtp-Source: APXvYqyhFZ7i/r0tA1P+yGHyhAMVlNk0EtX7ypGaznH2+4o11lCQIaX4hA9lViI7VFt4b32x5iSsWg==
-X-Received: by 2002:ae9:eb8f:: with SMTP id b137mr54676291qkg.136.1564012315175;
-        Wed, 24 Jul 2019 16:51:55 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:2135:7c3d:d61c:7f11:969d])
-        by smtp.gmail.com with ESMTPSA id x8sm22262220qka.106.2019.07.24.16.51.54
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 24 Jul 2019 16:51:54 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 0A30EC0AAD; Wed, 24 Jul 2019 20:51:52 -0300 (-03)
-Date:   Wed, 24 Jul 2019 20:51:51 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     wenxu@ucloud.cn
-Cc:     pablo@netfilter.org, davem@davemloft.net,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] netfilter: nf_table_offload: Fix zero prio of
- flow_cls_common_offload
-Message-ID: <20190724235151.GB4063@localhost.localdomain>
-References: <1562832210-25981-1-git-send-email-wenxu@ucloud.cn>
+        id S2388880AbfGXXwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 19:52:42 -0400
+Received: from mail-eopbgr40046.outbound.protection.outlook.com ([40.107.4.46]:36771
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726431AbfGXXwm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 19:52:42 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i52sCDfdpF5tAGQjuO1Q2VqQf+vWNq3OB3fINIncmsqTHdMTrxN6n1yvdFN88mgEG7wTBlZQi7t63/jFvDLDEFEmCO4c6JKEa0LUUhW6zgQbB5m+Yk/8FJihdjpZgjGPbZe6sVES09k4HI9ZusBTD76U3R8pUnDbiIuAvYqRFpGmYSkzGA1jyGrz/JTtUMRLGDGi3+eXsaltlcWGUIIYxwKK5PpmGIjhu7RnfOJxPgj8d/EtHKKraoh+oF2gRLXpIzN2lXHBSUjtkW3Pq0NmEQF4YE3V5AcxZu/baDdg4SqmL7emIHwmG5ywzB02zR4NB0xMvEBD1CasmX9XvwsFCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hRheVUz3Ej54t4rUQp18tc8wSIs0JjTnGB9UhTUQo5I=;
+ b=XyKBi+qiNvqxrDCabBr8fLmR7zp8MVT1blMN2sgK85SHI/l9jCh/pOJG+iy+l3jP1tNUqAtNAR91/iY3xj1eH7+LWaXKBtYCL0EkT+oAey71dzhzjL2oHu53Ldz7IuYNY1hrPik4G1h3DhnyAe3U+DMbZX68jFdxeiicYg4l9fkdW0hwx9sUQu+dbAdvritkKb8zfLOl2saAvsuFjtY9qSxxcoyr+zZOoUwpu18n4auAHEL+w3YDwLVZq146fZV4UKq6YNPTrwc1rM5w1UUQypZIkPYzClh3ETiJPBgulnv220pOa0278gik+ObP67hXleaa/pHtfJ83DWG1pSD76A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hRheVUz3Ej54t4rUQp18tc8wSIs0JjTnGB9UhTUQo5I=;
+ b=sPTQBa6+eWTVJZ29pLxcNs5TlgY/R8a59I6zomntjVwS9DA/8OTzgtOuI6FjALLTHNoioP+8yV6F+vQ0gMOEtO7FBABKsfoIgRzasZcOP9iG/tJkxIDTWVxE8PLWNJCeotcewTGwlgRnAQMlZ2Yv6MuBas3fitfbQgwPFJYQlpM=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2662.eurprd05.prod.outlook.com (10.172.230.8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.15; Wed, 24 Jul 2019 23:52:37 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Wed, 24 Jul 2019
+ 23:52:37 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "snelson@pensando.io" <snelson@pensando.io>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH v4 net-next 10/19] ionic: Add management of rx filters
+Thread-Topic: [PATCH v4 net-next 10/19] ionic: Add management of rx filters
+Thread-Index: AQHVQNY3gRbc1AvSvEuoJvtZxyGdzabadA6A
+Date:   Wed, 24 Jul 2019 23:52:37 +0000
+Message-ID: <e8b4002b415a2174280472b98640dda45d32d11b.camel@mellanox.com>
+References: <20190722214023.9513-1-snelson@pensando.io>
+         <20190722214023.9513-11-snelson@pensando.io>
+In-Reply-To: <20190722214023.9513-11-snelson@pensando.io>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 457b097b-1918-4ac5-4bb3-08d7109201c4
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB6PR0501MB2662;
+x-ms-traffictypediagnostic: DB6PR0501MB2662:
+x-microsoft-antispam-prvs: <DB6PR0501MB2662E07552A4109B941E6811BEC60@DB6PR0501MB2662.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-forefront-prvs: 0108A997B2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(136003)(39860400002)(376002)(366004)(199004)(189003)(11346002)(6512007)(14454004)(5660300002)(71200400001)(8676002)(7736002)(478600001)(25786009)(71190400001)(305945005)(99286004)(3846002)(6116002)(118296001)(486006)(2501003)(2906002)(14444005)(446003)(2201001)(186003)(6506007)(36756003)(476003)(2616005)(76176011)(81156014)(26005)(110136005)(58126008)(6486002)(102836004)(86362001)(229853002)(316002)(81166006)(66066001)(8936002)(6436002)(66946007)(256004)(64756008)(66556008)(6246003)(66476007)(66446008)(76116006)(53936002)(68736007)(91956017);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2662;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 3o7wxwE7F1Vbrka2l7SHfR+LZfTD88TyDBHt7+l1wqEK5C2uQcWN2lq1gjy4qzVhoeCGEBfZO6Y/has5LEur2AiZb+2/S49KDmrywdy5Sxwk8+RL/bdyZYuLKo04/VSexV73mx4R5wR6vsjhja6KxMyCRqPo0S3YStoRHFSOc13lk2AnTG4GEmk24ChHUSIcDpwfSdvUpbFhqdeKi9kDhmXU8fU1pE/VBBZI4a1/boyUCdwdct9aVBi3JDsK4ID2n0rNLdZbQOHQlcTdbpDDVj6I5zgJ0AV2Jre4aDNRT5/WdhEHufwPY57/a/2Rq6HpiJ9Lq1E2BlsmBGhEzhj7IByQhFr3pbUqek8iajxeEhKTmfjnxk6iw+mEUAKxqH43ShvMi2NLwN6mmsY7b9oucdFzaJaGIvNGELb1P03vIEg=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A4D62BBDB26D20469631444780DAF85A@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562832210-25981-1-git-send-email-wenxu@ucloud.cn>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 457b097b-1918-4ac5-4bb3-08d7109201c4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 23:52:37.6026
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2662
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 11, 2019 at 04:03:30PM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> The flow_cls_common_offload prio should be not zero
-> 
-> It leads the invalid table prio in hw.
-> 
-> # nft add table netdev firewall
-> # nft add chain netdev firewall acl { type filter hook ingress device mlx_pf0vf0 priority - 300 \; }
-> # nft add rule netdev firewall acl ip daddr 1.1.1.7 drop
-> Error: Could not process rule: Invalid argument
-> 
-> kernel log
-> mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22 (table prio: 65535, level: 0, size: 4194304)
-> 
-> Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  net/netfilter/nf_tables_offload.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-> index 2c33028..01d8133 100644
-> --- a/net/netfilter/nf_tables_offload.c
-> +++ b/net/netfilter/nf_tables_offload.c
-> @@ -7,6 +7,8 @@
->  #include <net/netfilter/nf_tables_offload.h>
->  #include <net/pkt_cls.h>
->  
-> +#define FLOW_OFFLOAD_DEFAUT_PRIO 1U
-> +
->  static struct nft_flow_rule *nft_flow_rule_alloc(int num_actions)
->  {
->  	struct nft_flow_rule *flow;
-> @@ -107,6 +109,7 @@ static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
->  					struct netlink_ext_ack *extack)
->  {
->  	common->protocol = proto;
-> +	common->prio = TC_H_MAKE(FLOW_OFFLOAD_DEFAUT_PRIO << 16, 0);
-
-Note that tc semantics for this is to auto-generate a priority in such
-cases, instead of using a default.
-
-@tc_new_tfilter():
-        if (prio == 0) {
-                /* If no priority is provided by the user,
-                 * we allocate one.
-                 */
-                if (n->nlmsg_flags & NLM_F_CREATE) {
-                        prio = TC_H_MAKE(0x80000000U, 0U);
-                        prio_allocate = true;
-...
-                if (prio_allocate)
-                        prio = tcf_auto_prio(tcf_chain_tp_prev(chain,
-                                                               &chain_info));
-
->  	common->extack = extack;
->  }
->  
-> -- 
-> 1.8.3.1
-> 
+T24gTW9uLCAyMDE5LTA3LTIyIGF0IDE0OjQwIC0wNzAwLCBTaGFubm9uIE5lbHNvbiB3cm90ZToN
+Cj4gU2V0IHVwIHRoZSBpbmZyYXN0cnVjdHVyZSBmb3IgbWFuYWdpbmcgUnggZmlsdGVycy4gIFdl
+IGNhbid0IGFzayB0aGUNCj4gaGFyZHdhcmUgZm9yIHdoYXQgZmlsdGVycyBpdCBoYXMsIHNvIHdl
+IGtlZXAgYSBsb2NhbCBsaXN0IG9mIGZpbHRlcnMNCj4gdGhhdCB3ZSd2ZSBwdXNoZWQgaW50byB0
+aGUgSFcuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBTaGFubm9uIE5lbHNvbiA8c25lbHNvbkBwZW5z
+YW5kby5pbz4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9wZW5zYW5kby9pb25pYy9N
+YWtlZmlsZSAgfCAgIDQgKy0NCj4gIC4uLi9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9u
+aWNfbGlmLmMgICB8ICAgNiArDQo+ICAuLi4vbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lv
+bmljX2xpZi5oICAgfCAgIDIgKw0KPiAgLi4uL2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmlj
+X3J4X2ZpbHRlci5jIHwgMTQzDQo+ICsrKysrKysrKysrKysrKysrKw0KPiAgLi4uL2V0aGVybmV0
+L3BlbnNhbmRvL2lvbmljL2lvbmljX3J4X2ZpbHRlci5oIHwgIDM1ICsrKysrDQo+ICA1IGZpbGVz
+IGNoYW5nZWQsIDE4OCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiAgY3JlYXRlIG1v
+ZGUgMTAwNjQ0DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmljX3J4
+X2ZpbHRlci5jDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQv
+cGVuc2FuZG8vaW9uaWMvaW9uaWNfcnhfZmlsdGVyLmgNCj4gDQo+IA0KDQpbLi4uXQ0KDQo+ICsj
+ZGVmaW5lIFJYUV9JTkRFWF9BTlkJCSgweEZGRkYpDQo+ICtzdHJ1Y3QgcnhfZmlsdGVyIHsNCj4g
+Kwl1MzIgZmxvd19pZDsNCj4gKwl1MzIgZmlsdGVyX2lkOw0KPiArCXUxNiByeHFfaW5kZXg7DQo+
+ICsJc3RydWN0IHJ4X2ZpbHRlcl9hZGRfY21kIGNtZDsNCj4gKwlzdHJ1Y3QgaGxpc3Rfbm9kZSBi
+eV9oYXNoOw0KPiArCXN0cnVjdCBobGlzdF9ub2RlIGJ5X2lkOw0KPiArfTsNCj4gKw0KPiArI2Rl
+ZmluZSBSWF9GSUxURVJfSEFTSF9CSVRTCTEwDQo+ICsjZGVmaW5lIFJYX0ZJTFRFUl9ITElTVFMJ
+QklUKFJYX0ZJTFRFUl9IQVNIX0JJVFMpDQo+ICsjZGVmaW5lIFJYX0ZJTFRFUl9ITElTVFNfTUFT
+SwkoUlhfRklMVEVSX0hMSVNUUyAtIDEpDQo+ICtzdHJ1Y3QgcnhfZmlsdGVycyB7DQo+ICsJc3Bp
+bmxvY2tfdCBsb2NrOwkJCQkvKiBmaWx0ZXIgbGlzdCBsb2NrDQo+ICovDQo+ICsJc3RydWN0IGhs
+aXN0X2hlYWQgYnlfaGFzaFtSWF9GSUxURVJfSExJU1RTXTsJLyogYnkgc2tiDQo+IGhhc2ggKi8N
+Cj4gKwlzdHJ1Y3QgaGxpc3RfaGVhZCBieV9pZFtSWF9GSUxURVJfSExJU1RTXTsJLyogYnkNCj4g
+ZmlsdGVyX2lkICovDQo+ICt9Ow0KPiArDQo+IA0KDQpGb2xsb3dpbmcgRGF2ZSdzIGNvbW1lbnQg
+b24gdGhpcywgeW91IHVzZSB0b28gZ2VuZXJpYyBzdHJ1Y3QgYW5kIG1hY3JvDQovZGVmaW5lIG5h
+bWVzLCBpIHN0cm9uZ2x5IHJlY29tbWVuZCB0byBhZGQgYSB1bmlxdWUgcHJlZml4IHRvIHRoaXMN
+CmRyaXZlci4NCg==
