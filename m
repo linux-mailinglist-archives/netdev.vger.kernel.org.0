@@ -2,71 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1CC572721
-	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 07:03:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D3672730
+	for <lists+netdev@lfdr.de>; Wed, 24 Jul 2019 07:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726038AbfGXFDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 01:03:32 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38473 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbfGXFDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 01:03:32 -0400
-Received: by mail-wr1-f65.google.com with SMTP id g17so45391707wrr.5
-        for <netdev@vger.kernel.org>; Tue, 23 Jul 2019 22:03:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=go6sV28vmWx02GAVcqpXk72VTrTktCe4RqW/sNshU3s=;
-        b=EUUvQulrKRUAGChnRKFwxFu5B441IlEa+RkYGBlu9Xakk87OrozcNT1QtrRFyXsYyx
-         wUfqV7ce3TrBBn/KNwbNc1/60Bm0twHDb7vvrmb9mWLOYE8sH4GlN26zBMtbLbOkndqd
-         2iJSevVsdfFr38QxmIzhZOYNC4TlmKuBV5E5TJN1dhLOFqITRUM1UhSDZGwX1Pdk2+W8
-         uJeD4PjthV83Gn1gNG6UbbIqhxn2GDc+USJdbCISDUuYGFnJ4t45ru08OJ08M6arVwmk
-         F6ZxkBpt4qiyxsPWwPYQf8dtoy13vw/yBqeRxbukPOZ8N3foEkpqzY8Xv5InC+j7cmV+
-         Ho2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=go6sV28vmWx02GAVcqpXk72VTrTktCe4RqW/sNshU3s=;
-        b=R6ADzP0oEOfDpnNT8lWi/+geSFw8zkLYxdMTYS0zkEJL8Y6Y+LBabPeI3asPz+yVyJ
-         QCq3QfvQXbObKHa8bTYcg+qZ/I6wE1xTzvXSrFHzU5PFBUAphyj/7bUbk3CLQO4xZWF9
-         VZa2K0+MG7DCzyeO66PJcJYUwbfkExzxKlVYcmUorwfN+x4uVoxBF1RZxlEpoTvxEMAo
-         5ulhdZIiUjyOxplbS6ToAcCNoeVgM0fTaha2zmPTe3i5NL3zQ8qerSSDmdA5YSt1+NK5
-         ClyXMvNHhVnIv0ShRRQsMer+VPBJ7u+4czbpvT7uIe0L7tfQkhFIthfzeei+ZPctMO7K
-         mj7A==
-X-Gm-Message-State: APjAAAVzBYncnqujAFJzKJBD54MczJELEbs0l4Pwf/CErNtdPwyVi2U6
-        npJuLH/5m5StWYczwf4bwgN5590MLlTDfZTLRx0=
-X-Google-Smtp-Source: APXvYqxDQYpM9Ab2C/jz8KSD+jMLMTLoWsKTRAKqRYmUsotkNaQd/smeg7Wc+30vq6eHyfiJStCxrSb7/+Sh3lbqen8=
-X-Received: by 2002:adf:fc52:: with SMTP id e18mr81569620wrs.14.1563944610776;
- Tue, 23 Jul 2019 22:03:30 -0700 (PDT)
+        id S1726178AbfGXFJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 01:09:50 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:55360 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725861AbfGXFJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 01:09:50 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 55F4F60D0C; Wed, 24 Jul 2019 05:09:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563944989;
+        bh=lLKO+gfsyxVLLXKWJzogBecneZk7iRc3LuTD2MbeGyc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fjUsEq3Rr8zi4Ghhc0jyTpsUyKkz6WgzImRgeHBERTU+XpFOgUm3rN5rUFXNn/70l
+         KJTDh7Qq7VFv7qszGAsg5ZBI8QGL1i30yBBw2l82cz+ksamglnhagV0cbb/vRTgT/2
+         VwJ7QqL7POiImSPD/v8UOHnp3N7bb+qurxO2ZiLo=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 9E1B960256;
+        Wed, 24 Jul 2019 05:09:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1563944982;
+        bh=lLKO+gfsyxVLLXKWJzogBecneZk7iRc3LuTD2MbeGyc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iv0fXWiyGC9fPCBBvvLInWED2Tdk2Xpa9aLdZfGnHZsfVkljntyMU5o9gp0E9n9Yl
+         VGcb2CC6B2O6lBWzQbpmUTy+s7a8MgygUz4dJ6vejVHmcppyFgV5HI0YOWIQfun45z
+         xyYD9+jXgr3cmvn22JxqEPaIDsKYqC3kwiDCQC4c=
 MIME-Version: 1.0
-Received: by 2002:a5d:6b07:0:0:0:0:0 with HTTP; Tue, 23 Jul 2019 22:03:28
- -0700 (PDT)
-Reply-To: umarbelloumar92@gmail.com
-From:   umar bello <umarbello046@gmail.com>
-Date:   Tue, 23 Jul 2019 22:03:28 -0700
-Message-ID: <CAPt4bbRBNB0PXDmxu-K7bqXSjcP9ZA1E17HF8sc0q2yOovKEKA@mail.gmail.com>
-Subject: Dear friend
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 24 Jul 2019 13:09:42 +0800
+From:   xiaofeis@codeaurora.org
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, vkoul@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        niklas.cassel@linaro.org, xiazha@codeaurora.org
+Subject: Re: [PATCH] qca8k: enable port flow control
+In-Reply-To: <20190719131306.GA24930@lunn.ch>
+References: <1563504791-43398-1-git-send-email-xiaofeis@codeaurora.org>
+ <20190719131306.GA24930@lunn.ch>
+Message-ID: <7613ffc99b6f9039a7ac56284b5a6329@codeaurora.org>
+X-Sender: xiaofeis@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear friend
+Hi Andrew
 
-I am contacting you on a business deal of $17.5 Million US Dollars, ready for
-transfer into your account
+Thanks for your comments. I have sent a new patch based on net-next 
+tree.
 
-if we make this claim, we will share it 60%/40%.
-100% risk free and it will be legally backed up with government approved
-If you are interested reply for more details.
+Thanks
+Xiaofeis
 
-
-Waiting for your reply
-Best regards,
-
-Umar Bello
-+226 68874958
+On 2019-07-19 21:13, Andrew Lunn wrote:
+> On Fri, Jul 19, 2019 at 10:53:11AM +0800, xiaofeis wrote:
+>> Set phy device advertising to enable MAC flow control.
+>> 
+>> Change-Id: Ibf0f554b072fc73136ec9f7ffb90c20b25a4faae
+>> Signed-off-by: Xiaofei Shen <xiaofeis@codeaurora.org>
+> 
+> Hi Xiaofei
+> 
+> What tree is this patch against? I don't think it is net-next. It
+> actually looks to be an old tree. Please rebase to David Millers
+> net-next. Patches to that tree are closed at the moment, due to the
+> merge window. You can post an RFC, or wait until it opens again.
+> 
+> Thanks
+> 	Andrew
