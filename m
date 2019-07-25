@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51CE97438F
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 05:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D19E874393
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 05:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389518AbfGYDAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 23:00:14 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2486 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389341AbfGYDAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 23:00:14 -0400
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 9F167A0EC54B8BF126DE;
-        Thu, 25 Jul 2019 11:00:12 +0800 (CST)
-Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
- DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 25 Jul 2019 11:00:12 +0800
-Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
- (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Thu, 25
- Jul 2019 11:00:11 +0800
-Subject: Re: [PATCH net] net: hns: fix LED configuration for marvell phy
-To:     David Miller <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
-References: <1563775152-21369-1-git-send-email-liuyonglong@huawei.com>
- <20190722.181906.2225538844348045066.davem@davemloft.net>
-From:   liuyonglong <liuyonglong@huawei.com>
-Message-ID: <72061222-411f-a58c-5873-ad873394cdb5@huawei.com>
-Date:   Thu, 25 Jul 2019 11:00:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        id S2389550AbfGYDDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 23:03:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55336 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388759AbfGYDDA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 23:03:00 -0400
+Received: from localhost (unknown [37.142.3.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5FF0229F4;
+        Thu, 25 Jul 2019 03:02:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564023779;
+        bh=1I5HVAZ8LrjB3eONoPwZXmFtQ2dW/++0B32YjLyLcmo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AO6/vJ7TAigTHx6Ix6BjNmTXxqZBXwzlHDn7MlYPHIBZMf9NJBkiX8RckNSlzv0K1
+         1aspZo0FjhBCAZSVM3v4xubru7ujQ+mfigJV+DG9XV1tM15bqip+wdYMXpTfqago47
+         MrWzsjI1lQ4+b/fCSJ0Bao0VACHz2z1xoBxms3MM=
+Date:   Thu, 25 Jul 2019 06:02:46 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Edward Srouji <edwards@mellanox.com>
+Subject: Re: [PATCH mlx5-next] net/mlx5: Fix modify_cq_in alignment
+Message-ID: <20190725030246.GE4674@mtr-leonro.mtl.com>
+References: <20190723071255.6588-1-leon@kernel.org>
+ <20190723.112850.610952032088764951.davem@davemloft.net>
+ <20190723190414.GU5125@mtr-leonro.mtl.com>
+ <5447fded90dfd133ef002177b77bfd3685bf8b42.camel@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20190722.181906.2225538844348045066.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.57.37.248]
-X-ClientProxiedBy: dggeme706-chm.china.huawei.com (10.1.199.102) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5447fded90dfd133ef002177b77bfd3685bf8b42.camel@mellanox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Revert "net: hns: fix LED configuration for marvell phy"
-> This reverts commit f4e5f775db5a4631300dccd0de5eafb50a77c131.
+On Wed, Jul 24, 2019 at 08:56:08PM +0000, Saeed Mahameed wrote:
+> On Tue, 2019-07-23 at 22:04 +0300, Leon Romanovsky wrote:
+> > On Tue, Jul 23, 2019 at 11:28:50AM -0700, David Miller wrote:
+> > > From: Leon Romanovsky <leon@kernel.org>
+> > > Date: Tue, 23 Jul 2019 10:12:55 +0300
+> > >
+> > > > From: Edward Srouji <edwards@mellanox.com>
+> > > >
+> > > > Fix modify_cq_in alignment to match the device specification.
+> > > > After this fix the 'cq_umem_valid' field will be in the right
+> > > > offset.
+> > > >
+> > > > Cc: <stable@vger.kernel.org> # 4.19
+> > > > Fixes: bd37197554eb ("net/mlx5: Update mlx5_ifc with DEVX UID
+> > > > bits")
 >
-> Andrew Lunn says this should be handled another way.
+> Leon, I applied this patch to my tree, it got marked for -stable 4.20
+> and not 4.19, i checked manually and indeed the offending patch came to
+> light only on 4.20
+
+Thanks
+
 >
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-
-
-Hi Andrew:
-
-I see this patch have been reverted, can you tell me the better way to do this?
-Thanks very much!
-
-On 2019/7/23 9:19, David Miller wrote:
-> From: Yonglong Liu <liuyonglong@huawei.com>
-> Date: Mon, 22 Jul 2019 13:59:12 +0800
-> 
->> Since commit(net: phy: marvell: change default m88e1510 LED configuration),
->> the active LED of Hip07 devices is always off, because Hip07 just
->> use 2 LEDs.
->> This patch adds a phy_register_fixup_for_uid() for m88e1510 to
->> correct the LED configuration.
->>
->> Fixes: 077772468ec1 ("net: phy: marvell: change default m88e1510 LED configuration")
->> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
->> Reviewed-by: linyunsheng <linyunsheng@huawei.com>
-> 
-> Applied and queued up for -stable.
-> 
-> .
-> 
-
