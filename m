@@ -2,96 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3B8174F69
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 15:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E063C74F79
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 15:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730039AbfGYN2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 09:28:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37158 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727670AbfGYN2u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 09:28:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=d2TBFYSox5r5coVXRv7vGh7GJRiOOtP+rHZcaGSwKpA=; b=TyuzjwrNxQVkfZWtSvJXEdwnsh
-        4gKBqjadfNJmsTbYa9IBNv+41fzprxeiQ4KldbsbvP5i3wkm8vHmZFDW3m3v6qwNMWNr5WVLvn+dE
-        xSs79UPUBM3scEcF2XoHCrhetlLoJ8lKOMxPavOn2e/fUFsKrGcUeGxc4+4dmkniprlE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hqdnZ-00066I-JS; Thu, 25 Jul 2019 15:28:45 +0200
-Date:   Thu, 25 Jul 2019 15:28:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v4 net-next 13/19] ionic: Add initial ethtool support
-Message-ID: <20190725132845.GC21952@lunn.ch>
-References: <20190722214023.9513-1-snelson@pensando.io>
- <20190722214023.9513-14-snelson@pensando.io>
+        id S2387483AbfGYN3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 09:29:49 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52883 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387460AbfGYN3t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 09:29:49 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s3so45004245wms.2
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 06:29:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tU8YjTmFbALUAn/qrmdPvLulIsSkzB2d5vOtzmfY2Rs=;
+        b=QSmEwdLe+YhZkcsz6o4ys0tAUbny3GwZMtN99XRXmdJW1iCZ+Vf5w/In+CBSdd0gHg
+         vibClHZKjsQ5r9p6HBHE/H/GgOJk2X6+elUIbON0QW6rgTxwJvqUGQ9yHbtra0efGoNs
+         W83ucOFD+C4dzQ7oUHIVDBhfdDQb4we0p+KDsHMlSnYg72/tUWMX3ZZTFsDnQKSagzp3
+         /5fqCWCWSPGPtFoHuE2tk0wdqTt2RTmL6SBUIE6hAPQblRStbcdtARk/9JRhp/aOg+/a
+         4Mb5/Tq5DHwFlXZrrC18XGiypTMQhfqfVm5Dbu5ShEOWmhs5SWISOep78td+xziV4xUO
+         CVSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tU8YjTmFbALUAn/qrmdPvLulIsSkzB2d5vOtzmfY2Rs=;
+        b=mqbZQd1YwQEh5Zy5dM+CckMz9sjdj/cKOvedX+nuXt0SiQZ4cpUrWw7rYVWob9s6uW
+         G6LEUPQS4XmMlhJwcDoNLiltdwLO0B58MJSggaOlnK3MFQwwQsl4U8olRfBqVg5kCUQm
+         BZAiHVhhILPX8XcbO9DuF93wZX+ZxHMJk3o5U1OtVy5NkDJMvDtapUfgGZrgQAAX7lpr
+         WDovotMBhzki1uz7DSmjG+OtVHVQaf7dW7knb7ro3NnlcPevuvJ2foCYGQpI4h1Wzn6p
+         T6wtX10bpHw92Cs5qb1YxFaJkgGTRlmTTSvMEEcMSDsB2EvN3iX6j6F3ai4h/byNMsmF
+         ym1A==
+X-Gm-Message-State: APjAAAWvD82TywLiJ+rxfwYoazO5P3daqkc76+DWhlG0hwIfjF0YamXy
+        8jH6y8S5h00uRBP3AKDB53SAeVGh4g4=
+X-Google-Smtp-Source: APXvYqxLCUPCepcCny7CzWoDDk1ywAgVa3CW+UD6K7NsIV9sI+XkHhXJ84YGrnyVi4MvfOP3KuSWxQ==
+X-Received: by 2002:a05:600c:20c1:: with SMTP id y1mr82394008wmm.10.1564061386852;
+        Thu, 25 Jul 2019 06:29:46 -0700 (PDT)
+Received: from [192.168.112.17] (nikaet.starlink.ru. [94.141.168.29])
+        by smtp.gmail.com with ESMTPSA id t13sm61665737wrr.0.2019.07.25.06.29.44
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Jul 2019 06:29:45 -0700 (PDT)
+Subject: Re: [PATCH 2/7] can: rcar_canfd: fix possible IRQ storm on high load
+To:     Sasha Levin <sashal@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
+        linux-stable <stable@vger.kernel.org>
+References: <20190724130322.31702-3-mkl@pengutronix.de>
+ <20190724210328.D91DF21873@mail.kernel.org>
+From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Message-ID: <6b23b091-92d1-b05d-b451-d8c78a990ef3@cogentembedded.com>
+Date:   Thu, 25 Jul 2019 16:29:43 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190722214023.9513-14-snelson@pensando.io>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190724210328.D91DF21873@mail.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 02:40:17PM -0700, Shannon Nelson wrote:
+> NOTE: The patch will not be queued to stable trees until it is upstream.
+> 
+> How should we proceed with this patch?
 
-> +static void ionic_get_pauseparam(struct net_device *netdev,
-> +				 struct ethtool_pauseparam *pause)
-> +{
-> +	struct lif *lif = netdev_priv(netdev);
-> +	struct ionic_dev *idev = &lif->ionic->idev;
-> +	uint8_t pause_type = idev->port_info->config.pause_type;
-> +
-> +	pause->autoneg = 0;
-> +
-> +	if (pause_type) {
-> +		pause->rx_pause = pause_type & IONIC_PAUSE_F_RX ? 1 : 0;
-> +		pause->tx_pause = pause_type & IONIC_PAUSE_F_TX ? 1 : 0;
-> +	}
-> +}
-> +
-> +static int ionic_set_pauseparam(struct net_device *netdev,
-> +				struct ethtool_pauseparam *pause)
-> +{
-> +	struct lif *lif = netdev_priv(netdev);
-> +	struct ionic *ionic = lif->ionic;
-> +	struct ionic_dev *idev = &lif->ionic->idev;
-> +	u32 requested_pause;
-> +	int err;
-> +
-> +	if (pause->autoneg == AUTONEG_ENABLE) {
-> +		netdev_info(netdev, "Please use 'ethtool -s ...' to change autoneg\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	/* change both at the same time */
-> +	requested_pause = PORT_PAUSE_TYPE_LINK;
-> +	if (pause->rx_pause)
-> +		requested_pause |= IONIC_PAUSE_F_RX;
-> +	if (pause->tx_pause)
-> +		requested_pause |= IONIC_PAUSE_F_TX;
-
-Hi Shannon
-
-This not what i was expecting, and i'm guessing what you have here is
-not right.
-
-So you don't support the case of pause->autoneg ==
-AUTONEG_ENABLE. That implies that setting pause values directly
-configures the MAC. The values from auto-neg are always ignored. Then
-why did you set PAUSE in the get ksettings function?
-
-If you always ignore the values from auto-neg, then your info message
-also makes no sense.
-
-What really does the firmware do?
-
-     Andrew
+I don't know.
+Maintainer did not respond, nor to original send nor to resend.
