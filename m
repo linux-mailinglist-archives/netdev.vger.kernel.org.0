@@ -2,94 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA09C75106
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95BBA75123
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388197AbfGYO0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 10:26:06 -0400
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:14345 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727937AbfGYO0E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 10:26:04 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d39bbf90000>; Thu, 25 Jul 2019 07:26:01 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 25 Jul 2019 07:26:03 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 25 Jul 2019 07:26:03 -0700
-Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 25 Jul
- 2019 14:26:00 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <7a79be5d-7ba2-c457-36d3-1ccef6572181@nvidia.com>
- <BYAPR12MB3269927AB1F67D46E150ED6BD3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <9e695f33-fd9f-a910-0891-2b63bd75e082@nvidia.com>
-Date:   Thu, 25 Jul 2019 15:25:59 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2387804AbfGYOaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 10:30:04 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:46567 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387712AbfGYOaE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 10:30:04 -0400
+X-Originating-IP: 86.250.200.211
+Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id C624F1BF216;
+        Thu, 25 Jul 2019 14:30:01 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        allan.nielsen@microchip.com
+Subject: [PATCH net-next v4 0/6] net: mscc: PTP Hardware Clock (PHC) support
+Date:   Thu, 25 Jul 2019 16:27:01 +0200
+Message-Id: <20190725142707.9313-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <BYAPR12MB3269927AB1F67D46E150ED6BD3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1564064761; bh=02CCi2dURDoTdTOLsKxT1oBFwomdLIlg5QDDNMYzFOQ=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=DXknfBB+azI5uGhCeC7AuX2u46+p182Ai+AfpMw9eJdl5incUApMGK/H63FgwohOJ
-         mOUAzFzHdP350C1HF/3gtjxX6c4geXco8PF/HfsaqzEnI3ih2794mUrwW23auOUuBm
-         5Cewh8XPlfrMPZKmCLvmdyHzCaS5yFP/F5d4E308ASTgwXIzMgkBqjvo6UPmBlqnm9
-         8YnIa+OSuqAaHE0uF91Zcqy5z+cyNUlRrRlJlNBPS0ugoFzxjmt0bYkSg7rqwLe2BF
-         EtyjQS7ifAkRCJUhEvLf8SqNxDh3xXejjKZIm4RSNdwGaxWAexRTeKGxaGfdvlEqWF
-         Atza3kh8wxz2g==
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 25/07/2019 14:26, Jose Abreu wrote:
+This series introduces the PTP Hardware Clock (PHC) support to the Mscc
+Ocelot switch driver. In order to make use of this, a new register bank
+is added and described in the device tree, as well as a new interrupt.
+The use this bank and interrupt was made optional in the driver for dt
+compatibility reasons.
 
-...
+Thanks!
+Antoine
 
-> Well, I wasn't expecting that :/
-> 
-> Per documentation of barriers I think we should set descriptor fields 
-> and then barrier and finally ownership to HW so that remaining fields 
-> are coherent before owner is set.
-> 
-> Anyway, can you also add a dma_rmb() after the call to 
-> stmmac_rx_status() ?
+Since v3:
+  - Fixed a spin_unlock_irqrestore issue.
 
-Yes. I removed the debug print added the barrier, but that did not help.
+Since v2:
+  - Prevented from a possible infinite loop when reading the h/w
+    timestamps.
+  - s/GFP_KERNEL/GFP_ATOMIC/ in the Tx path.
+  - Set rx_filter to HWTSTAMP_FILTER_PTP_V2_EVENT at probe.
+  - Fixed s/w timestamping dependencies.
+  - Added Paul Burton's Acked-by on patches 2 and 4.
 
-Jon
+Since v1:
+  - Used list_for_each_safe() in ocelot_deinit().
+  - Fixed a memory leak in ocelot_deinit() by calling
+    dev_kfree_skb_any().
+  - Fixed a locking issue in get_hwtimestamp().
+  - Handled the NULL case of ptp_clock_register().
+  - Added comments on optional dt properties.
+
+Antoine Tenart (6):
+  Documentation/bindings: net: ocelot: document the PTP bank
+  Documentation/bindings: net: ocelot: document the PTP ready IRQ
+  net: mscc: describe the PTP register range
+  net: mscc: improve the frame header parsing readability
+  net: mscc: remove the frame_info cpuq member
+  net: mscc: PTP Hardware Clock (PHC) support
+
+ .../devicetree/bindings/net/mscc-ocelot.txt   |  20 +-
+ drivers/net/ethernet/mscc/ocelot.c            | 394 +++++++++++++++++-
+ drivers/net/ethernet/mscc/ocelot.h            |  49 ++-
+ drivers/net/ethernet/mscc/ocelot_board.c      | 144 ++++++-
+ drivers/net/ethernet/mscc/ocelot_ptp.h        |  41 ++
+ drivers/net/ethernet/mscc/ocelot_regs.c       |  11 +
+ 6 files changed, 630 insertions(+), 29 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_ptp.h
 
 -- 
-nvpublic
+2.21.0
+
