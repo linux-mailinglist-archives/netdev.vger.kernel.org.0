@@ -2,141 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA6F74CE0
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 13:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9488674CF9
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 13:24:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391781AbfGYLTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 07:19:52 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:51078 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390493AbfGYLTc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 07:19:32 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DDEF92006C0;
-        Thu, 25 Jul 2019 13:19:30 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D039F2006BE;
-        Thu, 25 Jul 2019 13:19:30 +0200 (CEST)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 6B031205E8;
-        Thu, 25 Jul 2019 13:19:30 +0200 (CEST)
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     andrew@lunn.ch, Rob Herring <robh+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, alexandru.marginean@nxp.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 4/4] arm64: dts: fsl: ls1028a: Enable eth port1 on the ls1028a QDS board
-Date:   Thu, 25 Jul 2019 14:19:28 +0300
-Message-Id: <1564053568-20522-5-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1564053568-20522-1-git-send-email-claudiu.manoil@nxp.com>
-References: <1564053568-20522-1-git-send-email-claudiu.manoil@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2391808AbfGYLYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 07:24:17 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:31458 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391270AbfGYLYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 07:24:17 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 12E5F41AAE;
+        Thu, 25 Jul 2019 19:24:14 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] net/mlx5e: Fix zero table prio set by user.
+Date:   Thu, 25 Jul 2019 19:24:07 +0800
+Message-Id: <1564053847-28756-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVMTUxCQkJDQ0xPTU1PSFlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NC46GSo5Pzg2KlZLDQg#Tjw1
+        AjFPCzlVSlVKTk1PS05IQ05PSkpKVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUpMQ083Bg++
+X-HM-Tid: 0a6c28dfd7852086kuqy12e5f41aae
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS1028a has one Ethernet management interface. On the QDS board, the
-MDIO signals are multiplexed to either on-board AR8035 PHY device or
-to 4 PCIe slots allowing for SGMII cards.
-To enable the Ethernet ENETC Port 1, which can only be connected to a
-RGMII PHY, the multiplexer needs to be configured to route the MDIO to
-the AR8035 PHY.  The MDIO/MDC routing is controlled by bits 7:4 of FPGA
-board config register 0x54, and value 0 selects the on-board RGMII PHY.
-The FPGA board config registers are accessible on the i2c bus, at address
-0x66.
+From: wenxu <wenxu@ucloud.cn>
 
-The PF3 MDIO PCIe integrated endpoint device allows for centralized access
-to the MDIO bus.  Add the corresponding devicetree node and set it to be
-the MDIO bus parent.
+The flow_cls_common_offload prio is zero
 
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+It leads the invalid table prio in hw.
+
+Error: Could not process rule: Invalid argument
+
+kernel log:
+mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22 (table prio: 65535, level: 0, size: 4194304)
+
+table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
+should check (chain * FDB_MAX_PRIO) + prio is not 0
+
+Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
-v1 - none
-v2 - none
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- .../boot/dts/freescale/fsl-ls1028a-qds.dts    | 40 +++++++++++++++++++
- .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  6 +++
- 2 files changed, 46 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index de6ef39f3118..663c4b728c07 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -85,6 +85,26 @@
- 			system-clock-frequency = <25000000>;
- 		};
- 	};
-+
-+	mdio-mux {
-+		compatible = "mdio-mux-multiplexer";
-+		mux-controls = <&mux 0>;
-+		mdio-parent-bus = <&enetc_mdio_pf3>;
-+		#address-cells=<1>;
-+		#size-cells = <0>;
-+
-+		/* on-board RGMII PHY */
-+		mdio@0 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0>;
-+
-+			qds_phy1: ethernet-phy@5 {
-+				/* Atheros 8035 */
-+				reg = <5>;
-+			};
-+		};
-+	};
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 089ae4d..64ca90f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -970,7 +970,9 @@ static int esw_add_fdb_miss_rule(struct mlx5_eswitch *esw)
+ 		flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
+ 			  MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
  
- &duart0 {
-@@ -164,6 +184,26 @@
- 			};
- 		};
- 	};
-+
-+	fpga@66 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "fsl,ls1028aqds-fpga", "fsl,fpga-qixis-i2c",
-+			     "simple-mfd";
-+		reg = <0x66>;
-+
-+		mux: mux-controller {
-+			compatible = "reg-mux";
-+			#mux-control-cells = <1>;
-+			mux-reg-masks = <0x54 0xf0>; /* 0: reg 0x54, bits 7:4 */
-+		};
-+	};
-+
-+};
-+
-+&enetc_port1 {
-+	phy-handle = <&qds_phy1>;
-+	phy-connection-type = "rgmii-id";
- };
+-	table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
++	table_prio = (chain * FDB_MAX_PRIO) + prio;
++	if (table_prio)
++		table_prio = table_prio - 1;
  
- &sai1 {
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 7975519b4f56..de71153fda00 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -536,6 +536,12 @@
- 				compatible = "fsl,enetc";
- 				reg = <0x000100 0 0 0 0>;
- 			};
-+			enetc_mdio_pf3: mdio@0,3 {
-+				compatible = "fsl,enetc-mdio";
-+				reg = <0x000300 0 0 0 0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
- 			ethernet@0,4 {
- 				compatible = "fsl,enetc-ptp";
- 				reg = <0x000400 0 0 0 0>;
+ 	/* create earlier levels for correct fs_core lookup when
+ 	 * connecting tables
 -- 
-2.17.1
+1.8.3.1
 
