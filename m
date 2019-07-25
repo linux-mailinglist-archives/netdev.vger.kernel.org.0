@@ -2,84 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E537428B
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7A37429A
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728274AbfGYAXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 20:23:07 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:42500 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726987AbfGYAXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 20:23:07 -0400
-Received: by mail-yb1-f196.google.com with SMTP id f195so17925247ybg.9
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 17:23:06 -0700 (PDT)
+        id S1729020AbfGYAh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 20:37:28 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38604 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726531AbfGYAh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 20:37:28 -0400
+Received: by mail-qt1-f193.google.com with SMTP id n11so47411167qtl.5;
+        Wed, 24 Jul 2019 17:37:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AHEEeqS0RIWwnIW9ubiumtEUJKwAyh7PaxD3THhSDLs=;
-        b=a5uQ7T/AThp/yOiDQnavmrBn2evsIkMtlevlYaBERR6CnsUN6xjqJ0DkmLTLuSjSRs
-         Q3OHfrr9G+JI8UZ14JcxLq3tzbJDUu2e4flfeDLO4D1cbN5iiZdMOEbe3u6lbib3C77F
-         ZJCUp8DqgRWCfFH3sa8M8fGhOtCW8BryCeK8aABvPi7hB/49+52DtHS7zOvsi5+ENtII
-         8XglpzEoxYWHjPMfePUZljODvjy4G6SRUHS8JSYpeUEb95ErN+Xk0PhRgi6EBD3aQPPn
-         ZRjSd6pI5ylqiyb+uNwl0tYReRFGsl6NhikpzSAilZeiE8YecoCLJzJVSwn5j3P/3alO
-         BhUA==
+        bh=rkYrcnzGklcjqyrCpXelRjKMi97QveEgZZ2vQcZX2ZE=;
+        b=VYZLhzwaqlhUYckpCGpBP1LTZCh6+zml2gUGKSwnTqGVJw5iiXDIWeZdwEWACT9dTh
+         0PGMRYuj12InP14cG8RkLVM1Ua3+FMFArGfr6vYkxgrqjvgdMeHQuo75m5d0pAACIEgH
+         E5EvLv4PwdbwfUI4jsIjO1k1iJNQDipEQEf0Plmyz+ogbJ6mmuvQr769rPSWoIM2wUBF
+         /5w95je6gH+iOH+bDOXRgm09DBTVi/jSH3d/rkMe/CLnvjS1nkR5apI1ZK1nOMnINid4
+         jJkfOYthdlLJ0VTR6538LUIafRF6Xuy1+Ho12OjnDjz8bq3GZKmfxNlk6bBVdIGiHoz1
+         P9rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AHEEeqS0RIWwnIW9ubiumtEUJKwAyh7PaxD3THhSDLs=;
-        b=BVtwBSfYb8bEV4e6Cu9onpfuPiS6fadBIJ7eaqJZOsDj88XtPrqvGwqQ/XKi2jh8my
-         Y7OTV4vMh/YHN4SW1jFUlh/gcWTq3oqqjCWI4CCA9IDyq05bFRI+3gwd1hc05fR7dkWC
-         x9/PMCoy3Nq380BR32b6IN1x8LYUKiGD04odNsqgpldjIYswM8+gSl3emgSrHmmpajQ0
-         DOPLsZjSnTe6X5yzdCxJuD6GY4n/MBn+UCS8ai5a43iNoFG/a0gVk+tsbbdN1H+5YLp3
-         KJktBBidDLrCv4bKbJsKXrvtomr/Qqfwfy/OO9M7xVgK9yMQw320aIEH2lvfStRk40ek
-         a7Hw==
-X-Gm-Message-State: APjAAAUsFn2CGU1uD+7i9yCfn5MblCh1UTvMzg0MXWBny9+xYVKYEBR9
-        manK5ZrHaEcn0B+gAFnVQZoM0EfS
-X-Google-Smtp-Source: APXvYqwDZpS0Dej0Wqdyk8s4Q2lYiQsfzu4RL4LnXUcmOVkDquSjnP136IqXv8Uwe3FhLHoqCrYT0g==
-X-Received: by 2002:a25:cfcd:: with SMTP id f196mr54429492ybg.344.1564014185719;
-        Wed, 24 Jul 2019 17:23:05 -0700 (PDT)
-Received: from mail-yw1-f42.google.com (mail-yw1-f42.google.com. [209.85.161.42])
-        by smtp.gmail.com with ESMTPSA id v77sm11690410ywc.25.2019.07.24.17.23.03
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 17:23:04 -0700 (PDT)
-Received: by mail-yw1-f42.google.com with SMTP id l79so18672898ywe.11
-        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 17:23:03 -0700 (PDT)
-X-Received: by 2002:a81:6a05:: with SMTP id f5mr53051661ywc.368.1564014183505;
- Wed, 24 Jul 2019 17:23:03 -0700 (PDT)
+        bh=rkYrcnzGklcjqyrCpXelRjKMi97QveEgZZ2vQcZX2ZE=;
+        b=tlyGCGZkS2i7qzlSjxhej5d/7t7ZEsqO+HXxOU2gEeUlUC2eunFG8c4frFVp+H7IFk
+         PyBM0ApY/iIqgWmPe3RwoBh65w1/4hBDIUz382uLxydYO0BpNaRGRNRh9xNY+vz/lozW
+         pkndhQKjZBSiESX5E5+KvMkFtB1ryx2vBfGjGdRmibGGHmJX3yUoy5FJYsbNRwiKMw2n
+         lF2cHUijr6PtKXUHmaIYeFSl4DKa0i0DPZRuUdvGIRfLLqXZGvs6HDoxxAgeVw/QtPSO
+         NXT+oMyJcJxQlcrkLnWMlKJotCf/hCBCFJixFhgkkw8tqDj5c9Q/UnClCKLIOv3jeExT
+         bfOA==
+X-Gm-Message-State: APjAAAVadcZnqBKlIIa4Bpe9AQ6yKPzei9YsQ0nLqaZ38nPUbe+XELp5
+        r9GIWXNjzCPhGgsb/flZ8gJlYARxo0TK5PGURX8=
+X-Google-Smtp-Source: APXvYqxXGC3tv3syaluC0CU6o88VgNxqa1oaqH9sLYDIqc3Op07TJi40G+uuR07Vt8LYt8PkGpdgUsRXiruBEEtkTro=
+X-Received: by 2002:a0c:818f:: with SMTP id 15mr58085742qvd.162.1564015047359;
+ Wed, 24 Jul 2019 17:37:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190725000714.10200-1-jakub.kicinski@netronome.com>
-In-Reply-To: <20190725000714.10200-1-jakub.kicinski@netronome.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 24 Jul 2019 20:22:27 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSek+Rb4o5ogKZh=3CQgyzXNMV=pq4iM7u5RknMEYL-vnw@mail.gmail.com>
-Message-ID: <CA+FuTSek+Rb4o5ogKZh=3CQgyzXNMV=pq4iM7u5RknMEYL-vnw@mail.gmail.com>
-Subject: Re: [PATCH net] selftests/net: add missing gitignores (ipv6_flowlabel)
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com,
-        Quentin Monnet <quentin.monnet@netronome.com>
+References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-2-andriin@fb.com>
+ <B5E772A5-C0D9-4697-ADE2-2A94C4AD37B5@fb.com>
+In-Reply-To: <B5E772A5-C0D9-4697-ADE2-2A94C4AD37B5@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 24 Jul 2019 17:37:16 -0700
+Message-ID: <CAEf4BzZsU8qXa08neQ=nrFFTXpSWsxrZuZz=kVjS2BXNUoofUw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 01/10] libbpf: add .BTF.ext offset relocation
+ section loading
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 8:07 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
+On Wed, Jul 24, 2019 at 5:00 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> ipv6_flowlabel and ipv6_flowlabel_mgr are missing from
-> gitignore.  Quentin points out that the original
-> commit 3fb321fde22d ("selftests/net: ipv6 flowlabel")
-> did add ignore entries, they are just missing the "ipv6_"
-> prefix.
 >
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+>
+> > On Jul 24, 2019, at 12:27 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Add support for BPF CO-RE offset relocations. Add section/record
+> > iteration macros for .BTF.ext. These macro are useful for iterating over
+> > each .BTF.ext record, either for dumping out contents or later for BPF
+> > CO-RE relocation handling.
+> >
+> > To enable other parts of libbpf to work with .BTF.ext contents, moved
+> > a bunch of type definitions into libbpf_internal.h.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> > tools/lib/bpf/btf.c             | 64 +++++++++--------------
+> > tools/lib/bpf/btf.h             |  4 ++
+> > tools/lib/bpf/libbpf_internal.h | 91 +++++++++++++++++++++++++++++++++
+> > 3 files changed, 118 insertions(+), 41 deletions(-)
+> >
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+[...]
 
-Thanks Jakub
+> > +
+> > static int btf_ext_parse_hdr(__u8 *data, __u32 data_size)
+> > {
+> >       const struct btf_ext_header *hdr = (struct btf_ext_header *)data;
+> > @@ -1004,6 +979,13 @@ struct btf_ext *btf_ext__new(__u8 *data, __u32 size)
+> >       if (err)
+> >               goto done;
+> >
+> > +     /* check if there is offset_reloc_off/offset_reloc_len fields */
+> > +     if (btf_ext->hdr->hdr_len < sizeof(struct btf_ext_header))
+>
+> This check will break when we add more optional sections to btf_ext_header.
+> Maybe use offsetof() instead?
+
+I didn't do it, because there are no fields after offset_reloc_len.
+But now I though that maybe it would be ok to add zero-sized marker
+field, kind of like marking off various versions of btf_ext header?
+
+Alternatively, I can add offsetofend() macro somewhere in libbpf_internal.h.
+
+Do you have any preference?
+
+>
+> > +             goto done;
+> > +     err = btf_ext_setup_offset_reloc(btf_ext);
+> > +     if (err)
+> > +             goto done;
+> > +
+> > done:
+
+[...]
