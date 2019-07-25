@@ -2,140 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F317431D
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 04:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E6A174330
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 04:19:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388915AbfGYCHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 22:07:19 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:37854 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388620AbfGYCHS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 22:07:18 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id EEC52192EE9578B56EBC;
-        Thu, 25 Jul 2019 10:07:16 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Thu, 25 Jul 2019
- 10:07:14 +0800
-Subject: Re: [PATCH 4.4 stable net] net: tcp: Fix use-after-free in
- tcp_write_xmit
-To:     Eric Dumazet <eric.dumazet@gmail.com>, <davem@davemloft.net>,
-        <gregkh@linuxfoundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190724091715.137033-1-maowenan@huawei.com>
- <badce2b6-b75e-db01-39c8-d68a0161c101@gmail.com>
- <be1aebb5-fee7-e079-d864-a2e4aa13007f@gmail.com>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <2b5798ea-a16d-d615-77f1-a86a4e6f50ec@huawei.com>
-Date:   Thu, 25 Jul 2019 10:06:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1728168AbfGYCTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 22:19:31 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:41448 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726300AbfGYCTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 22:19:30 -0400
+Received: by mail-qk1-f193.google.com with SMTP id v22so35324409qkj.8;
+        Wed, 24 Jul 2019 19:19:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9G4+pN2cxWowXbZZyCIC7KTWC6wMDbOZ0AlFZhGnUI8=;
+        b=fWVsY04dwPKolHRiQDFH3qM6nyxzQm1Uu1thVE8OmyVh3qcrhyXGCxfJvuuHvpJ7+i
+         n3wXIPBdBn+zA/RZht+CGigyJLoLFS1ARPeBpgk5j+Y0WncXQMMDKYfKmzAz8balnoxC
+         rR+1ykTPoI8r5N2AZ3bW18e4P6qHvGPVcaoVLxwC01XDX2HV5fFOx5YekJGmE4LWYK7j
+         RfiKQs3w2PQ+1z+ZvwCxLlPqgFteTwi9WmLIZUZ55Iqd1nVmyxxteSp6pK5dq2N6r8aj
+         jfNBXNjCbgkIKR+0RLQyKxbZUKm/47KWDwaamODB4/E/G+Ga1FY1sd3hDDe2ji7XJgT6
+         Phsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9G4+pN2cxWowXbZZyCIC7KTWC6wMDbOZ0AlFZhGnUI8=;
+        b=muX+iYwH8suTfqCcZPzfh6eyWm2mLPSsojqtUrNDS7ho0y6s95/Hl7kKo8dd+Niy14
+         DgknbEu7bklwMdZ9CEmLmG171FlJ4kPIjAOw0+da3KoUfmMbSlvCQQd3DjqSe8JAFSjL
+         8POw9tgfwdKqVqvxyrZUs37jcfpWXamtI0xORonO8yLBj9yiGZc0WQePa1lU+M8x2cgV
+         oUDWKU47kihT6emOVg7iIhNtOxU+wPz23YFaNZ5X44LIvwEtfjZQGi4vzBDCW34p25Gv
+         E84gM1EqXIvAczPTK1pB+f9hQHc75LQ7Rs7lkdCrWk4ZiEcyrLV5BEkGE0xTMIAO5V7z
+         K3KQ==
+X-Gm-Message-State: APjAAAUvyga7R1MTivxO5quNV920zWQFqpf31QckBW2fvlv8zH6tOaVB
+        RIXiQuts2TJoRBSYCeO6DEc=
+X-Google-Smtp-Source: APXvYqwL6wLU8rld29cLRXAxZ3QTezr3U/j6A7GSc8wLZl/k5wE+5nLp+KnUGqQlKiObUg+x+MJmUA==
+X-Received: by 2002:a37:48d0:: with SMTP id v199mr55559570qka.318.1564021169541;
+        Wed, 24 Jul 2019 19:19:29 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.49.45])
+        by smtp.gmail.com with ESMTPSA id h1sm23916466qkh.101.2019.07.24.19.19.28
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 24 Jul 2019 19:19:28 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id C3555C0AAD; Wed, 24 Jul 2019 23:19:25 -0300 (-03)
+Date:   Wed, 24 Jul 2019 23:19:25 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        Hillf Danton <hdanton@sina.com>, linux-sctp@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzbot <syzbot+6ad9c3bd0a218a2ab41d@syzkaller.appspotmail.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH] net: sctp: fix memory leak in sctp_send_reset_streams
+Message-ID: <20190725021925.GI6204@localhost.localdomain>
+References: <20190602034429.6888-1-hdanton@sina.com>
+ <20190602105133.GA16948@hmswarspite.think-freely.org>
+ <CADvbK_dUDjK3UAF49uo+DZv+QiuEsaMmZeqDwBJ0suRwu4yXJw@mail.gmail.com>
+ <CADvbK_ddFyO2iz-QS3bHevHN7Q29VUS4joK3Kxam3Y4tEqHFKA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <be1aebb5-fee7-e079-d864-a2e4aa13007f@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_ddFyO2iz-QS3bHevHN7Q29VUS4joK3Kxam3Y4tEqHFKA@mail.gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 24, 2019 at 03:56:40PM +0800, Xin Long wrote:
+> On Sun, Jun 2, 2019 at 9:36 PM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > On Sun, Jun 2, 2019 at 6:52 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > >
+> > > On Sun, Jun 02, 2019 at 11:44:29AM +0800, Hillf Danton wrote:
+> > > >
+> > > > syzbot found the following crash on:
+> > > >
+> > > > HEAD commit:    036e3431 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+> > > > git tree:       upstream
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=153cff12a00000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=8f0f63a62bb5b13c
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=6ad9c3bd0a218a2ab41d
+> > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12561c86a00000
+> > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15b76fd8a00000
+> > > >
+> > > > executing program
+> > > > executing program
+> > > > executing program
+> > > > executing program
+> > > > executing program
+> > > > BUG: memory leak
+> > > > unreferenced object 0xffff888123894820 (size 32):
+> > > >   comm "syz-executor045", pid 7267, jiffies 4294943559 (age 13.660s)
+> > > >   hex dump (first 32 bytes):
+> > > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> > > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> > > >   backtrace:
+> > > >     [<00000000c7e71c69>] kmemleak_alloc_recursive
+> > > > include/linux/kmemleak.h:55 [inline]
+> > > >     [<00000000c7e71c69>] slab_post_alloc_hook mm/slab.h:439 [inline]
+> > > >     [<00000000c7e71c69>] slab_alloc mm/slab.c:3326 [inline]
+> > > >     [<00000000c7e71c69>] __do_kmalloc mm/slab.c:3658 [inline]
+> > > >     [<00000000c7e71c69>] __kmalloc+0x161/0x2c0 mm/slab.c:3669
+> > > >     [<000000003250ed8e>] kmalloc_array include/linux/slab.h:670 [inline]
+> > > >     [<000000003250ed8e>] kcalloc include/linux/slab.h:681 [inline]
+> > > >     [<000000003250ed8e>] sctp_send_reset_streams+0x1ab/0x5a0 net/sctp/stream.c:302
+> > > >     [<00000000cd899c6e>] sctp_setsockopt_reset_streams net/sctp/socket.c:4314 [inline]
+> > > >     [<00000000cd899c6e>] sctp_setsockopt net/sctp/socket.c:4765 [inline]
+> > > >     [<00000000cd899c6e>] sctp_setsockopt+0xc23/0x2bf0 net/sctp/socket.c:4608
+> > > >     [<00000000ff3a21a2>] sock_common_setsockopt+0x38/0x50 net/core/sock.c:3130
+> > > >     [<000000009eb87ae7>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
+> > > >     [<00000000e0ede6ca>] __do_sys_setsockopt net/socket.c:2089 [inline]
+> > > >     [<00000000e0ede6ca>] __se_sys_setsockopt net/socket.c:2086 [inline]
+> > > >     [<00000000e0ede6ca>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
+> > > >     [<00000000c61155f5>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:301
+> > > >     [<00000000e540958c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > > >
+> > > >
+> > > > It was introduced in commit d570a59c5b5f ("sctp: only allow the out stream
+> > > > reset when the stream outq is empty"), in orde to check stream outqs before
+> > > > sending SCTP_STRRESET_IN_PROGRESS back to the peer of the stream. EAGAIN is
+> > > > returned, however, without the nstr_list slab released, if any outq is found
+> > > > to be non empty.
+> > > >
+> > > > Freeing the slab in question before bailing out fixes it.
+> > > >
+> > > > Fixes: d570a59c5b5f ("sctp: only allow the out stream reset when the stream outq is empty")
+> > > > Reported-by: syzbot <syzbot+6ad9c3bd0a218a2ab41d@syzkaller.appspotmail.com>
+> > > > Reported-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > > > Tested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > > > Cc: Xin Long <lucien.xin@gmail.com>
+> > > > Cc: Neil Horman <nhorman@tuxdriver.com>
+> > > > Cc: Vlad Yasevich <vyasevich@gmail.com>
+> > > > Cc: Eric Dumazet <edumazet@google.com>
+> > > > Signed-off-by: Hillf Danton <hdanton@sina.com>
+> > > > ---
+> > > > net/sctp/stream.c | 1 +
+> > > > 1 file changed, 1 insertion(+)
+> > > >
+> > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> > > > index 93ed078..d3e2f03 100644
+> > > > --- a/net/sctp/stream.c
+> > > > +++ b/net/sctp/stream.c
+> > > > @@ -310,6 +310,7 @@ int sctp_send_reset_streams(struct sctp_association *asoc,
+> > > >
+> > > >       if (out && !sctp_stream_outq_is_empty(stream, str_nums, nstr_list)) {
+> > > >               retval = -EAGAIN;
+> > > > +             kfree(nstr_list);
+> > > >               goto out;
+> > > >       }
+> > > >
+> > > > --
+> > > >
+> > > >
+> > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> > Reviewed-by: Xin Long <lucien.xin@gmail.com>
+> This fix is not applied, pls resend it with:
+> to = network dev <netdev@vger.kernel.org>
+> cc = davem@davemloft.net
+> to = linux-sctp@vger.kernel.org
+> cc = Neil Horman <nhorman@tuxdriver.com>
+> cc = Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
+Good catch, thanks Xin. I don't know what happened but I never got
+this patch via netdev@, just the direct delivery. If it didn't reach
+netdev@, that explains it.
 
-On 2019/7/24 18:13, Eric Dumazet wrote:
-> 
-> 
-> On 7/24/19 12:01 PM, Eric Dumazet wrote:
->>
->>
->> On 7/24/19 11:17 AM, Mao Wenan wrote:
->>> There is one report about tcp_write_xmit use-after-free with version 4.4.136:
->>
->> Current stable 4.4 is 4.4.186
->>
->> Can you check the bug is still there ?
->>
-> 
-> BTW, I tried the C repro and another bug showed up.
-> 
-> It looks like 4.4.186 misses other fixes :/
-
-Do you have logs about this?
-Is it the bugs followed up this UAF?
-
-> 
-> [  180.811610] skbuff: skb_under_panic: text:ffffffff825ec6ea len:156 put:84 head:ffff8837dd1f0990 data:ffff8837dd1f098c tail:0x98 end:0xc0 dev:ip6gre0
-> [  180.825037] ------------[ cut here ]------------
-> [  180.829688] kernel BUG at net/core/skbuff.c:104!
-> [  180.834316] invalid opcode: 0000 [#1] SMP KASAN
-> [  180.839305] gsmi: Log Shutdown Reason 0x03
-> [  180.843426] Modules linked in: ipip bonding bridge stp llc tun veth w1_therm wire i2c_mux_pca954x i2c_mux cdc_acm ehci_pci ehci_hcd ip_gre mlx4_en ib_uverbs mlx4_ib ib_sa ib_mad ib_core ib_addr mlx4_core
-> [  180.862052] CPU: 22 PID: 1619 Comm: kworker/22:1 Not tainted 4.4.186-smp-DEV #41
-> [  180.869475] Hardware name: Intel BIOS 2.56.0 10/19/2018
-> [  180.876463] Workqueue: ipv6_addrconf addrconf_dad_work
-> [  180.881658] task: ffff8837f1f59d80 ti: ffff8837eeeb8000 task.ti: ffff8837eeeb8000
-> [  180.889171] RIP: 0010:[<ffffffff821ef26f>]  [<ffffffff821ef26f>] skb_panic+0x14f/0x210
-> [  180.897162] RSP: 0018:ffff8837eeebf4b8  EFLAGS: 00010282
-> [  180.902504] RAX: 0000000000000088 RBX: ffff8837eeeeb600 RCX: 0000000000000000
-> [  180.909645] RDX: 0000000000000000 RSI: 0000000000000246 RDI: ffffffff83508c00
-> [  180.916854] RBP: ffff8837eeebf520 R08: 0000000000000016 R09: 0000000000000000
-> [  180.924029] R10: ffff881fc8abf038 R11: 0000000000000007 R12: ffff881fc8abe720
-> [  180.931213] R13: ffffffff82aa9e80 R14: 00000000000000c0 R15: 0000000000000098
-> [  180.938390] FS:  0000000000000000(0000) GS:ffff8837ff280000(0000) knlGS:0000000000000000
-> [  180.946519] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  180.952290] CR2: 00007f519426f530 CR3: 00000037d37f2000 CR4: 0000000000160670
-> [  180.959447] Stack:
-> [  180.961458]  ffff8837dd1f098c 0000000000000098 00000000000000c0 ffff881fc8abe720
-> [  180.968909]  ffffea00df747c00 ffff881fff404b40 ffff8837ff2a1a20 ffff8837eeebf5b8
-> [  180.976371]  ffff8837eeeeb600 ffffffff825ec6ea 1ffff106fddd7eb6 ffff8837eeeeb600
-> [  180.983848] Call Trace:
-> [  180.986297]  [<ffffffff825ec6ea>] ? ip6gre_header+0xba/0xd50
-> [  180.991962]  [<ffffffff821f0e01>] skb_push+0xc1/0x100
-> [  180.997023]  [<ffffffff825ec6ea>] ip6gre_header+0xba/0xd50
-> [  181.002519]  [<ffffffff8158dc16>] ? memcpy+0x36/0x40
-> [  181.007509]  [<ffffffff825ec630>] ? ip6gre_changelink+0x6d0/0x6d0
-> [  181.013629]  [<ffffffff82550741>] ? ndisc_constructor+0x5b1/0x770
-> [  181.019728]  [<ffffffff82666861>] ? _raw_write_unlock_bh+0x41/0x50
-> [  181.025924]  [<ffffffff8226540b>] ? __neigh_create+0xe6b/0x1670
-> [  181.031851]  [<ffffffff8225817f>] neigh_connected_output+0x23f/0x480
-> [  181.038219]  [<ffffffff824f61ec>] ip6_finish_output2+0x74c/0x1a90
-> [  181.044324]  [<ffffffff810f1d33>] ? print_context_stack+0x73/0xf0
-> [  181.050429]  [<ffffffff824f5aa0>] ? ip6_xmit+0x1700/0x1700
-> [  181.055933]  [<ffffffff82304a28>] ? nf_hook_slow+0x118/0x1b0
-> [  181.061617]  [<ffffffff82502d7a>] ip6_finish_output+0x2ba/0x580
-> [  181.067546]  [<ffffffff82503179>] ip6_output+0x139/0x380
-> [  181.072884]  [<ffffffff82503040>] ? ip6_finish_output+0x580/0x580
-> [  181.079004]  [<ffffffff82502ac0>] ? ip6_fragment+0x31b0/0x31b0
-> [  181.084852]  [<ffffffff82251b51>] ? dst_init+0x4b1/0x820
-> [  181.090172]  [<ffffffff8158da45>] ? kasan_unpoison_shadow+0x35/0x50
-> [  181.096437]  [<ffffffff8158da45>] ? kasan_unpoison_shadow+0x35/0x50
-> [  181.102712]  [<ffffffff8254f3ca>] NF_HOOK_THRESH.constprop.22+0xca/0x180
-> [  181.109421]  [<ffffffff8254f300>] ? ndisc_alloc_skb+0x340/0x340
-> [  181.115338]  [<ffffffff8254d820>] ? compat_ipv6_setsockopt+0x180/0x180
-> [  181.121874]  [<ffffffff8254fbc2>] ndisc_send_skb+0x742/0xd10
-> [  181.127550]  [<ffffffff8254f480>] ? NF_HOOK_THRESH.constprop.22+0x180/0x180
-> [  181.134516]  [<ffffffff821f2440>] ? skb_complete_tx_timestamp+0x280/0x280
-> [  181.141311]  [<ffffffff8254e2b3>] ? ndisc_fill_addr_option+0x193/0x260
-> [  181.147844]  [<ffffffff82553bd9>] ndisc_send_rs+0x179/0x2d0
-> [  181.153426]  [<ffffffff8251e7df>] addrconf_dad_completed+0x41f/0x7c0
-> [  181.159795]  [<ffffffff81297f78>] ? pick_next_entity+0x198/0x470
-> [  181.165807]  [<ffffffff8251e3c0>] ? addrconf_rs_timer+0x4a0/0x4a0
-> [  181.171918]  [<ffffffff81aab928>] ? find_next_bit+0x18/0x20
-> [  181.177504]  [<ffffffff81a99ec9>] ? prandom_seed+0xd9/0x160
-> [  181.183095]  [<ffffffff8251eef5>] addrconf_dad_work+0x375/0x9e0
-> [  181.189024]  [<ffffffff8251eb80>] ? addrconf_dad_completed+0x7c0/0x7c0
-> [  181.195576]  [<ffffffff81249d8f>] process_one_work+0x52f/0xf60
-> [  181.201468]  [<ffffffff8124a89d>] worker_thread+0xdd/0xe80
-> [  181.206977]  [<ffffffff8265cf0a>] ? __schedule+0x73a/0x16d0
-> [  181.212550]  [<ffffffff8124a7c0>] ? process_one_work+0xf60/0xf60
-> [  181.218572]  [<ffffffff8125a115>] kthread+0x205/0x2b0
-> [  181.223633]  [<ffffffff81259f10>] ? kthread_worker_fn+0x4e0/0x4e0
-> [  181.229743]  [<ffffffff81259f10>] ? kthread_worker_fn+0x4e0/0x4e0
-> [  181.235834]  [<ffffffff8266726f>] ret_from_fork+0x3f/0x70
-> [  181.241232]  [<ffffffff81259f10>] ? kthread_worker_fn+0x4e0/0x4e0
-> 
-> 
-> .
-> 
-
+  Marcelo
