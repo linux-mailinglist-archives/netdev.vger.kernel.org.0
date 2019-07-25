@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A218175010
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 15:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA80E75083
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:03:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390618AbfGYNtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 09:49:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37260 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389122AbfGYNtF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 09:49:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=H0ZKN/xiAYk5rM8gIrU23+VdBgNzjstbqxwwwf4PbeQ=; b=haHYgkOBZXJJSqCrQTIJ59lEEO
-        bumcqeE7dUat8vbB+7ZQssdvoPOengB4IwPhuD9JGWdl1zifSlLSPSmu6aCF/dS7tzIoCoKEOmpic
-        Z1LeNDqp28N3BdFj1o51T70nT0ij+LUVDsD28iN14fDZqF746yownUFn02ltB/kvT8ck=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hqe71-0006Li-Qz; Thu, 25 Jul 2019 15:48:51 +0200
-Date:   Thu, 25 Jul 2019 15:48:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Parshuram Raju Thombare <pthombar@cadence.com>
-Cc:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rafal Ciepiela <rafalc@cadence.com>,
-        Piotr Sroka <piotrs@cadence.com>,
-        Anil Joy Varughese <aniljoy@cadence.com>,
-        Arthur Marris <arthurm@cadence.com>,
-        Steven Ho <stevenh@cadence.com>,
-        Milind Parab <mparab@cadence.com>
-Subject: Re: [PATCH v6 0/5] net: macb: cover letter
-Message-ID: <20190725134851.GF21952@lunn.ch>
-References: <1562769391-31803-1-git-send-email-pthombar@cadence.com>
- <20190718151310.GE25635@lunn.ch>
- <CO2PR07MB246961335F7D401785377765C1C10@CO2PR07MB2469.namprd07.prod.outlook.com>
+        id S2387674AbfGYODz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 10:03:55 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:47001 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727136AbfGYODy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 10:03:54 -0400
+X-Originating-IP: 92.137.69.152
+Received: from localhost (alyon-656-1-672-152.w92-137.abo.wanadoo.fr [92.137.69.152])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 7D0B5E0021;
+        Thu, 25 Jul 2019 14:03:52 +0000 (UTC)
+Date:   Thu, 25 Jul 2019 16:03:51 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net] ocelot: Cancel delayed work before wq destruction
+Message-ID: <20190725140351.GT24911@piout.net>
+References: <1564061598-4440-1-git-send-email-claudiu.manoil@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CO2PR07MB246961335F7D401785377765C1C10@CO2PR07MB2469.namprd07.prod.outlook.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <1564061598-4440-1-git-send-email-claudiu.manoil@nxp.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 25, 2019 at 01:27:58PM +0000, Parshuram Raju Thombare wrote:
-> Hi Andrew,
+On 25/07/2019 16:33:18+0300, Claudiu Manoil wrote:
+> Make sure the delayed work for stats update is not pending before
+> wq destruction.
+> This fixes the module unload path.
+> The issue is there since day 1.
 > 
-> >One thing which was never clear is how you are testing the features you are
-> >adding. Please could you describe your test setup and how each new feature
-> >is tested using that hardware. I'm particularly interested in what C45 device
-> >are you using? But i expect Russell would like to know more about SFP
-> >modules you are using. Do you have any which require 1000BaseX,
-> >2500BaseX, or provide copper 1G?
+> Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
 > 
-> Sorry for late reply.
-> Here is a little more information on our setup used for testing C45 patch with a view to
-> try clarify a few points. 
-> Regarding the MDIO communication channel that our controller supports - We have tested
-> MDIO transfers through Clause 22, but none of our local PHY's support Clause 45 so our hardware
-> team have created an example Clause 45 slave device for us to add support to the driver.
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-O.K.
+> ---
+>  drivers/net/ethernet/mscc/ocelot.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> index b71e4ecbe469..6932e615d4b0 100644
+> --- a/drivers/net/ethernet/mscc/ocelot.c
+> +++ b/drivers/net/ethernet/mscc/ocelot.c
+> @@ -1818,6 +1818,7 @@ EXPORT_SYMBOL(ocelot_init);
+>  
+>  void ocelot_deinit(struct ocelot *ocelot)
+>  {
+> +	cancel_delayed_work(&ocelot->stats_work);
+>  	destroy_workqueue(ocelot->stats_queue);
+>  	mutex_destroy(&ocelot->stats_lock);
+>  	ocelot_ace_deinit();
+> -- 
+> 2.17.1
+> 
 
-Given Russells reply, i suggest you submit the MDIO Clause 45 patch,
-and throw all the other patches away.
-
-    Andrew
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
