@@ -2,83 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E721874A0E
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:37:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C38A174A18
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388519AbfGYJhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 05:37:19 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:43655 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725808AbfGYJhT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 05:37:19 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45vRvH2DVYz9s8m;
-        Thu, 25 Jul 2019 19:37:14 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1564047435;
-        bh=7RiHInY7DFEoGXyuXyrZaDPTm271sEh+0+BO/eN/XyY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TGj+UyFXQ3lkHKGajD69PjX7WCQCPKkIk/yGkk7uZud5Hrr76VGjffAGiQ0h0NPl0
-         8MdBtGc/fVBaYwCO1E6bmliRXkAf0xEDOYLGYos6+x9oDpE69tupZJ6pFYKegaJinc
-         Tg5cjhweylGo40M8YfguNvxcOuzvepF7Stx7mAHpzjAwxuAOO18IBRu4J7jPE6aj0j
-         xY4RVPhWVdKpX4aUEbAYphRSAapeeeAtw5yDqEtVQRhhE7DiYw8FiJKkwGVVsrj0wu
-         KHgHI6+0HTXFa7DqrY+UubwTY3CAQqtvGJHeKyDwwMHXiqPXpLQHhuwG7l4cUmOaVB
-         D38GnGGETjH3A==
-Date:   Thu, 25 Jul 2019 19:37:05 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20190725193647.388c149b@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/N52ruag=7bLPa+bY2JH2LKG";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S2390626AbfGYJjf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jul 2019 05:39:35 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:34511 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387533AbfGYJjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 05:39:35 -0400
+Received: from marcel-macbook.fritz.box (p5B3D2BA7.dip0.t-ipconnect.de [91.61.43.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 178D5CED29;
+        Thu, 25 Jul 2019 11:48:10 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH] net: bluetooth: hci_sock: Fix a possible null-pointer
+ dereference in hci_mgmt_cmd()
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20190725092253.15912-1-baijiaju1990@gmail.com>
+Date:   Thu, 25 Jul 2019 11:39:32 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <BC138E23-E2FE-450E-B33E-1AD846D14687@holtmann.org>
+References: <20190725092253.15912-1-baijiaju1990@gmail.com>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/N52ruag=7bLPa+bY2JH2LKG
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Jia-Ju,
 
-Hi all,
+> In hci_mgmt_cmd(), there is an if statement on line 1570 to check
+> whether hdev is NULL:
+>    if (hdev && chan->hdev_init)
+> 
+> When hdev is NULL, it is used on line 1575:
+>    err = handler->func(sk, hdev, cp, len);
+> 
+> Some called functions of handler->func use hdev, such as:
+> set_appearance(), add_device() and remove_device() in mgmt.c.
+> 
+> Thus, a possible null-pointer dereference may occur.
+> 
+> To fix this bug, hdev is checked before calling handler->func().
+> 
+> This bug is found by a static analysis tool STCheck written by us.
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> ---
+> net/bluetooth/hci_sock.c | 11 ++++++-----
+> 1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index d32077b28433..18ea1e47ea48 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -1570,11 +1570,12 @@ static int hci_mgmt_cmd(struct hci_mgmt_chan *chan, struct sock *sk,
+> 	if (hdev && chan->hdev_init)
+> 		chan->hdev_init(sk, hdev);
+> 
+> -	cp = buf + sizeof(*hdr);
+> -
+> -	err = handler->func(sk, hdev, cp, len);
+> -	if (err < 0)
+> -		goto done;
+> +	if (hdev) {
+> +		cp = buf + sizeof(*hdr);
+> +		err = handler->func(sk, hdev, cp, len);
+> +		if (err < 0)
+> +			goto done;
+> +	}
+> 
+> 	err = msglen;
 
-After merging the net-next tree, today's linux-next build (mips
-cavium_octeon_defconfig) failed like this:
+have you evaluated the statement above:
 
-drivers/staging/octeon/ethernet-tx.c:287:23: error: implicit declaration of=
- function 'skb_drag_size'; did you mean 'skb_frag_size'? [-Werror=3Dimplici=
-t-function-declaration]
+        no_hdev = (handler->flags & HCI_MGMT_NO_HDEV);                           
+        if (no_hdev != !hdev) {                                                  
+                err = mgmt_cmd_status(sk, index, opcode,                         
+                                      MGMT_STATUS_INVALID_INDEX);                
+                goto done;                                                       
+        }
 
-Caused by commit
+I think that code is just overly complex and can be simplified, but I doubt you get to the situation where hdev is NULL for any function that requires it. Only the handler->func marked with HCI_MGMT_NO_HDEV will get hdev == NULL and these are not using it.
 
-  92493a2f8a8d ("Build fixes for skb_frag_size conversion")
+So we might can make this easier code to really check the index != MGMT_INDEX_NONE check above to cover all cases to ensure that hdev is either valid or set to NULL before proceeding any further.
 
---=20
-Cheers,
-Stephen Rothwell
+And since we have a full set of unit tests in tools/mgmt-tester, I assume we would have had a chance to catch an issue like this. But we can add a test case to it to explicitly call the functions with either MGMT_INDEX_NONE used or not.
 
---Sig_/N52ruag=7bLPa+bY2JH2LKG
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Regards
 
------BEGIN PGP SIGNATURE-----
+Marcel
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl05eEEACgkQAVBC80lX
-0GxEuQf8D8J95ArpVOssGYWkAXI4kje9KKTdgcPQbOQo95octSRGnr6TE0vd+zcZ
-FpevIgM6HBv/LjsIg6YBV/awwpx8XxbwbSTwWcQ+a7uhSUH3fyaS6+iON9OK+kHG
-SP+TpRO1IRe/DQyXE5qO8ct23WUARyVfhuu3vD6HXiZdY7Bdm789hMrUnW3PUcVI
-WTVK1wsED1yNnucH7Vuym8fyFecuvdx1KyBtRwWo6N1Oit4NpJ+vukfWif+WV8iS
-5A6rRAU4jDQaMdN3WZPtP5GlPMBokMzdRvDQ1Aiovpf/+B6pXZaGcDRJ6qfEbNQe
-qUXVUw26dhhjhuqvplbDYZqhqqqKsQ==
-=vyep
------END PGP SIGNATURE-----
-
---Sig_/N52ruag=7bLPa+bY2JH2LKG--
