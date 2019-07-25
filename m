@@ -2,67 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D4C7511E
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A8575126
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727824AbfGYO3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 10:29:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34422 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725867AbfGYO3d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 10:29:33 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E454F83F4C;
-        Thu, 25 Jul 2019 14:29:32 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-49.rdu2.redhat.com [10.10.120.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9DC9D1001281;
-        Thu, 25 Jul 2019 14:29:31 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CAKv+Gu_bJfs3zc90CbmXXo17+CYMVK+bo7OyJ-RYA=AiU38Fvg@mail.gmail.com>
-References: <CAKv+Gu_bJfs3zc90CbmXXo17+CYMVK+bo7OyJ-RYA=AiU38Fvg@mail.gmail.com> <156406148519.15479.13870345028835442313.stgit@warthog.procyon.org.uk>
-To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH] rxrpc: Fix -Wframe-larger-than= warnings from on-stack crypto
+        id S2387774AbfGYOaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 10:30:16 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:44425 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727301AbfGYOaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 10:30:14 -0400
+Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 95CA8200016;
+        Thu, 25 Jul 2019 14:30:12 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        allan.nielsen@microchip.com
+Subject: [PATCH net-next v4 1/6] Documentation/bindings: net: ocelot: document the PTP bank
+Date:   Thu, 25 Jul 2019 16:27:02 +0200
+Message-Id: <20190725142707.9313-2-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190725142707.9313-1-antoine.tenart@bootlin.com>
+References: <20190725142707.9313-1-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <21522.1564064970.1@warthog.procyon.org.uk>
-Date:   Thu, 25 Jul 2019 15:29:30 +0100
-Message-ID: <21523.1564064970@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Thu, 25 Jul 2019 14:29:33 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ard Biesheuvel <ard.biesheuvel@linaro.org> wrote:
+One additional register range needs to be described within the Ocelot
+device tree node: the PTP. This patch documents the binding needed to do
+so.
 
-> Given that this part of the driver only uses synchronous crypto, and
-> only using a hardcoded algo and mode [pcbc(fcrypt)], of which only a
-> generic C implementation exists, may I suggest that we switch to a
-> library based approach instead?
-> 
-> That way, we can get rid of the crypto API overhead here, and IMO, we
-> can drop support for this cipher from the crypto API entirely.
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+---
+ Documentation/devicetree/bindings/net/mscc-ocelot.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Ummm...  I'm not entirely sure.  At some point, I need to look at implementing
-the rxgk security class to allow gss to be used.  That can in theory support
-any kerberos cipher suite (which don't include pcbc or fcrypt).  I don't yet
-know how much code I could theoretically share with rxkad.c.
+diff --git a/Documentation/devicetree/bindings/net/mscc-ocelot.txt b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
+index 9e5c17d426ce..4d05a3b0f786 100644
+--- a/Documentation/devicetree/bindings/net/mscc-ocelot.txt
++++ b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
+@@ -12,6 +12,7 @@ Required properties:
+   - "sys"
+   - "rew"
+   - "qs"
++  - "ptp" (optional due to backward compatibility)
+   - "qsys"
+   - "ana"
+   - "portX" with X from 0 to the number of last port index available on that
+@@ -44,6 +45,7 @@ Example:
+ 		reg = <0x1010000 0x10000>,
+ 		      <0x1030000 0x10000>,
+ 		      <0x1080000 0x100>,
++		      <0x10e0000 0x10000>,
+ 		      <0x11e0000 0x100>,
+ 		      <0x11f0000 0x100>,
+ 		      <0x1200000 0x100>,
+@@ -57,9 +59,10 @@ Example:
+ 		      <0x1280000 0x100>,
+ 		      <0x1800000 0x80000>,
+ 		      <0x1880000 0x10000>;
+-		reg-names = "sys", "rew", "qs", "port0", "port1", "port2",
+-			    "port3", "port4", "port5", "port6", "port7",
+-			    "port8", "port9", "port10", "qsys", "ana";
++		reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
++			    "port2", "port3", "port4", "port5", "port6",
++			    "port7", "port8", "port9", "port10", "qsys",
++			    "ana";
+ 		interrupts = <21 22>;
+ 		interrupt-names = "xtr", "inj";
+ 
+-- 
+2.21.0
 
-However, since pcbc and fcrypt are only used by rxkad.c, it might make sense
-to move them to net/rxrpc/ and hard code them in rxkad.c - though I'd prefer
-to make an attempt on rxgk first.
-
-David
