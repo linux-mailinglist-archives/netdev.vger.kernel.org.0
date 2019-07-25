@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7428742BB
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9876742E9
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 03:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387993AbfGYA6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 20:58:32 -0400
-Received: from ozlabs.org ([203.11.71.1]:44507 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727364AbfGYA6b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 20:58:31 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45vDNd2jmCz9sBt;
-        Thu, 25 Jul 2019 10:58:25 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1564016309;
-        bh=PPuO+Wxvc09i2eFH/arezdXXxJeN18c0zhD/Fc+fE9o=;
-        h=Date:From:To:Cc:Subject:From;
-        b=uPq/hUDVxd2V4wrQ7uj6GvE5l52FsLbXrQJ+k1TKrN/sbZzrc+hgnRT69eWxmVDJQ
-         B+pXy87eaIndxIT7fhjP9PJkntL3Aaz0HrBiBCpgNyqxSiQ4zKo76ImraUM9byojNw
-         NRXEg/FBsWYfivX5xnbTpRMMmzLMYZvAiAGwPuOD3ZlU2GfXDv6RiOgEQDkNrKsEgo
-         AshuYYtmgQX3p3DYRftiYtrCSkE9MRmcvXtAZYG6qbWix7wDKcK9Q7zrjRulQ1xkxl
-         S3XkK+UhIPYyJX3P/VoQIowZ64EG+J1fn0EltsxG+H6qJlypPU5Xx6wU4UDJnulRF0
-         yBdbGJNJ/h+PQ==
-Date:   Thu, 25 Jul 2019 10:58:24 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wen Yang <wen.yang99@zte.com.cn>,
-        Sean Nyekjaer <sean@geanix.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20190725105824.4e628c43@canb.auug.org.au>
+        id S2387895AbfGYBkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 21:40:41 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35876 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726808AbfGYBkl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 21:40:41 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 8A9CB1451149D3AC8C95;
+        Thu, 25 Jul 2019 09:40:38 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.439.0; Thu, 25 Jul 2019
+ 09:40:30 +0800
+Subject: Re: [PATCH] carl9170: remove set but not used variable 'udev'
+To:     Christian Lamparter <chunkeey@gmail.com>
+References: <20190724015411.66525-1-yuehaibing@huawei.com>
+ <CAAd0S9BvTfRyUVkQzcczyNkU_oeU5hNdK3KVQzLsU21b4JGNTQ@mail.gmail.com>
+CC:     Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <1cfbfe67-e931-029b-1836-a6b796283c2c@huawei.com>
+Date:   Thu, 25 Jul 2019 09:40:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/k5AIR+Ny/7Yd5oGlEAw1gLx";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <CAAd0S9BvTfRyUVkQzcczyNkU_oeU5hNdK3KVQzLsU21b4JGNTQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/k5AIR+Ny/7Yd5oGlEAw1gLx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 2019/7/25 3:42, Christian Lamparter wrote:
+> On Wed, Jul 24, 2019 at 3:48 AM YueHaibing <yuehaibing@huawei.com> wrote:
+>>
+>> Fixes gcc '-Wunused-but-set-variable' warning:
+>>
+>> drivers/net/wireless/ath/carl9170/usb.c: In function 'carl9170_usb_disconnect':
+>> drivers/net/wireless/ath/carl9170/usb.c:1110:21: warning:
+>>  variable 'udev' set but not used [-Wunused-but-set-variable]
+>>
+>> It is not used, so can be removed.
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>> ---
+> Isn't this the same patch you sent earlier:
+> 
+> https://patchwork.kernel.org/patch/11027909/
+> 
+>>From what I can tell, it's the same but with an extra [-next], I
+> remember that I've acked that one
+> but your patch now does not have it? Is this an oversight, because I'm
+> the maintainer for this
+> driver. So, in my opinion at least the "ack" should have some value
+> and shouldn't be "ignored".
+> 
+> Look, from what I know, Kalle is not ignoring you, It's just that
+> carl9170 is no longer top priority.
+> So please be patient. As long as its queued in the patchwork it will
+> get considered.
 
-Hi all,
+Thank you for reminder. I forget the previous patch，and our CI robot
+report it again, So I do it again, sorry for confusion.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Just pls drop this and use previous one.
 
-  drivers/net/can/flexcan.c
+> 
+> Cheers,
+> Christian
+> 
+>>  drivers/net/wireless/ath/carl9170/usb.c | 2 --
+>>  1 file changed, 2 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/ath/carl9170/usb.c b/drivers/net/wireless/ath/carl9170/usb.c
+>> index 99f1897a775d..486957a04bd1 100644
+>> --- a/drivers/net/wireless/ath/carl9170/usb.c
+>> +++ b/drivers/net/wireless/ath/carl9170/usb.c
+>> @@ -1107,12 +1107,10 @@ static int carl9170_usb_probe(struct usb_interface *intf,
+>>  static void carl9170_usb_disconnect(struct usb_interface *intf)
+>>  {
+>>         struct ar9170 *ar = usb_get_intfdata(intf);
+>> -       struct usb_device *udev;
+>>
+>>         if (WARN_ON(!ar))
+>>                 return;
+>>
+>> -       udev = ar->udev;
+>>         wait_for_completion(&ar->fw_load_wait);
+>>
+>>         if (IS_INITIALIZED(ar)) {
+>>
+>>
+>>
+> 
+> .
+> 
 
-between commit:
-
-  e9f2a856e102 ("can: flexcan: fix an use-after-free in flexcan_setup_stop_=
-mode()")
-
-from the net tree and commit:
-
-  915f9666421c ("can: flexcan: add support for DT property 'wakeup-source'")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/can/flexcan.c
-index fcec8bcb53d6,09d8e623dcf6..000000000000
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@@ -1473,9 -1473,10 +1491,12 @@@ static int flexcan_setup_stop_mode(stru
- =20
-  	device_set_wakeup_capable(&pdev->dev, true);
- =20
-+ 	if (of_property_read_bool(np, "wakeup-source"))
-+ 		device_set_wakeup_enable(&pdev->dev, true);
-+=20
- -	return 0;
- +out_put_node:
- +	of_node_put(gpr_np);
- +	return ret;
-  }
- =20
-  static const struct of_device_id flexcan_of_match[] =3D {
-
---Sig_/k5AIR+Ny/7Yd5oGlEAw1gLx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl04/rAACgkQAVBC80lX
-0GyiVAf+MH+vKU+Xk/7uRhw3NEVTbPL8rqUhF4NnbV/gg8TYjFUEgPCYmpi0XEMQ
-C5Irjn7+z2skP7HjrUqEx2XFesmYaD7zYibKTKBv2p22RFs5h00rs3OJIBYU6BKf
-6C0Y/+tczdwzGupkK5FZJOtXLlMItApFMthS2J/Ukua12TNo1p/TrzKZlaX4hEmm
-XYtMsXd/Qm4/5dDgCt1nc8LBpGVEGyoUos0YGxxke4uDLNbkv+X5ak6AQQu1U4Xq
-a4y9+lzaamtpNBIwNCzFUGLSlRSZPhlPFF73RBN7uVhD1TFxA3S4WZeLMWLb/dNr
-Oza9Twf+VCb1Q8beyRTVTQ7Vd/KYqA==
-=wiVc
------END PGP SIGNATURE-----
-
---Sig_/k5AIR+Ny/7Yd5oGlEAw1gLx--
