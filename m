@@ -2,97 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23ED374D3E
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 13:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEDCC74D49
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 13:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404109AbfGYLhl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jul 2019 07:37:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53622 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404104AbfGYLhk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 07:37:40 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DC114308C38C;
-        Thu, 25 Jul 2019 11:37:39 +0000 (UTC)
-Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9C15460497;
-        Thu, 25 Jul 2019 11:37:32 +0000 (UTC)
-Date:   Thu, 25 Jul 2019 13:37:30 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        id S2404095AbfGYLj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 07:39:29 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53322 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389834AbfGYLj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 07:39:28 -0400
+Received: by mail-wm1-f66.google.com with SMTP id x15so44685225wmj.3
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 04:39:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/KNocy2+ZfOQXTjSVoKpw5gYwyEUDk8UgKcJTP4ngYE=;
+        b=MAEDyrQNT8xSuX9iSr/7BWAuVtiFFg0r91vvdxT2++HHJS9g3J0YPwvOtkJtKUq8Jv
+         5iKmWqJK52t0LH1sXJk3PO+C21INeHi4V/ZYW7YuPXVIBflnQMtUHe6awRTT5dvD1DaE
+         WpfQIVfVij+bSGThMlicGuVLRiLpF6rqQwZpgSsW3OX9UHyDapWCYIrbuJner3poxc++
+         G0Bn8vzCLpCMRU3GuO3rYDre/AQ/pQH9pBaRn/BU0lkFmSiIGNMktCQBPARjaQkabMe+
+         GuF14I1ZfrdG7ZX9sunB4JjQ9JvX8MVHFeTldfj+sF04kvwCNlmOmMZTYqLm/phbk5K8
+         qnTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/KNocy2+ZfOQXTjSVoKpw5gYwyEUDk8UgKcJTP4ngYE=;
+        b=fysYU4QbSh8ojqfh6BIq2ByAM3SuSYRLUCGpnSSBkCW8rG74qAsGRIZBgorrW7S92b
+         Uht/0FYogkB8yvSEo9trjzoQEkuVLI/5fHzAubPKJhr3CbOp7Fw+l1YrAKP4A6hyMVuu
+         FiHQYDRxvCE9NyA4RJ4/34Ns2T5IcRHbTSqBj83JwZ1d4QXDYT1fJnR37BGBj3kXhavn
+         pmzTDpK3jPHsTEKgCEXm3VtZB33TMTyjaVWg4IjkhXqU/lK8U7IdyFE+Hd7Oeb0Y1eW/
+         DTaSCInOjAMXyUKwMQCCwjiv7RtF6oCFmzQ31v8GN46k9WwEh0K2Bd7hKzyrobY+CSFh
+         5wlg==
+X-Gm-Message-State: APjAAAVST1DVTfAxcLUOibbb79wwciXvIWEQTfqu/qm92u+2lfv96BE2
+        EZ/62Dv6Govk5/gKAWelmilZTg==
+X-Google-Smtp-Source: APXvYqxKToM60L7WegP6mEG3X3RaqPtSEAUsT9RXfSRetFr+Hk/NVm3V8WF2BD26TvV4TjAbT9vnuA==
+X-Received: by 2002:a7b:c5c2:: with SMTP id n2mr77541522wmk.92.1564054766915;
+        Thu, 25 Jul 2019 04:39:26 -0700 (PDT)
+Received: from apalos (athedsl-373703.home.otenet.gr. [79.131.11.197])
+        by smtp.gmail.com with ESMTPSA id p6sm53195376wrq.97.2019.07.25.04.39.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Jul 2019 04:39:26 -0700 (PDT)
+Date:   Thu, 25 Jul 2019 14:39:22 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Yonghong Song <yhs@fb.com>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next v4 3/6] xdp: Add devmap_hash map type for
- looking up devices by hashed index
-Message-ID: <20190725133730.3750c66c@carbon>
-In-Reply-To: <87muh2z9os.fsf@toke.dk>
-References: <156379636786.12332.17776973951938230698.stgit@alrua-x1>
-        <156379636866.12332.6546616116016146789.stgit@alrua-x1>
-        <20190725100717.0c4e8265@carbon>
-        <87muh2z9os.fsf@toke.dk>
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "lists@bofh.nu" <lists@bofh.nu>,
+        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "maxime.ripard@bootlin.com" <maxime.ripard@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "wens@csie.org" <wens@csie.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+Message-ID: <20190725113922.GA1703@apalos>
+References: <20190723.115112.1824255524103179323.davem@davemloft.net>
+ <20190724085427.GA10736@apalos>
+ <BYAPR12MB3269AA9955844E317B62A239D3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <20190724095310.GA12991@apalos>
+ <BYAPR12MB3269C5766F553438ECFF2C9BD3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <33de62bf-2f8a-bf00-9260-418b12bed24c@nvidia.com>
+ <BYAPR12MB32696F0A2BFDF69F31C4311CD3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <a07c3480-af03-a61b-4e9c-d9ceb29ce622@nvidia.com>
+ <BYAPR12MB3269F4E62B64484B08F90998D3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <d2658b7d-1f24-70f7-fafe-b60a0fd7d240@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Thu, 25 Jul 2019 11:37:40 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d2658b7d-1f24-70f7-fafe-b60a0fd7d240@nvidia.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Jul 2019 12:32:19 +0200
-Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+Hi Jon, Jose,
+On Thu, Jul 25, 2019 at 10:45:46AM +0100, Jon Hunter wrote:
 > 
-> > On Mon, 22 Jul 2019 13:52:48 +0200
-> > Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> >  
-> >> +static inline struct hlist_head *dev_map_index_hash(struct bpf_dtab *dtab,
-> >> +						    int idx)
-> >> +{
-> >> +	return &dtab->dev_index_head[idx & (NETDEV_HASHENTRIES - 1)];
-> >> +}  
-> >
-> > It is good for performance that our "hash" function is simply an AND
-> > operation on the idx.  We want to keep it this way.
-> >
-> > I don't like that you are using NETDEV_HASHENTRIES, because the BPF map
-> > infrastructure already have a way to specify the map size (struct
-> > bpf_map_def .max_entries).  BUT for performance reasons, to keep the
-> > AND operation, we would need to round up the hash-array size to nearest
-> > power of 2 (or reject if user didn't specify a power of 2, if we want
-> > to "expose" this limit to users).  
+> On 25/07/2019 08:44, Jose Abreu wrote:
 > 
-> But do we really want the number of hash buckets to be equal to the max
-> number of entries? The values are not likely to be evenly distributed,
-> so we'll end up with big buckets if the number is small, meaning we'll
-> blow performance on walking long lists in each bucket.
+> ...
+> 
+> > OK. Can you please test what Ilias mentioned ?
+> > 
+> > Basically you can hard-code the order to 0 in 
+> > alloc_dma_rx_desc_resources():
+> > - pp_params.order = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
+> > + pp_params.order = 0;
+> > 
+> > Unless you use a MTU > PAGE_SIZE.
+> 
+> I made the change but unfortunately the issue persists.
 
-The requested change makes it user-configurable, instead of fixed 256
-entries.  I've seen production use-case with >5000 net_devices, thus
-they need a knob to increase this (to avoid the list walking as you
-mention).
+Yea tbh i didn't expect this to fix it, since i think the mappings are fine, but
+it never hurts to verify.
+@Jose: Can we add some debugging prints on the driver?
+Ideally the pages the api allocates (on init), the page that the driver is
+trying to use before the crash and the size of the packet (right from the device
+descriptor). Maybe this will tell us where the erroneous access is
 
-
-> Also, if the size is dynamic the size needs to be loaded from memory
-> instead of being a compile-time constant, which will presumably hurt
-> performance (though not sure by how much)?
-
-To counter this, the mask value which need to be loaded from memory,
-needs to be placed next to some other struct member which is already in
-use (at least on same cacheline, Intel have some 16 bytes access micro
-optimizations, which I've never been able to measure, as its in 0.5
-nanosec scale).
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Thanks
+/Ilias
