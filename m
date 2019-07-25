@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 052CD74A2A
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3E774A2F
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390615AbfGYJnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 05:43:17 -0400
-Received: from mail-eopbgr150040.outbound.protection.outlook.com ([40.107.15.40]:60902
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725808AbfGYJnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 05:43:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XKosNsjIWB0Rwh+zLM2vPjb1t7AkHEVMHpncG6ken/WFjy4QcrQFR5lD2Tx1X7peVlfm73GTzVQonioiILtWzYGnl6ykmpTLifZOaW/C7wMiprIGnmB1x3XvWi8CQUIJ2nZ0FNSTeAafbQi/YOzKKHzfw+kwcDnGyHtwTpFoUokL/7a04vMIdjkEbUyFiAyAq1Ou6G+KW7rWZFZksJauVaz1Hwd3uPbwJF4lQ+5dzCLYaXEclKegMF5FKiURsgG9So6md45jxDhvN1y5+okCAIf8efLhmS6RfD8g2Nl6qSPrmms3WlXpFRPzY4TMta1gsvmYHnz9REWZpFukjX7ClA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XDGduCEYR/tRBYLj7DokqOqMB/G1KRNvrjCZko1HRTQ=;
- b=QrL3CkWO+hC3Eu2i+4S+kFf1R/U+20Eo9WSxfJOlTIM8ZcOPszLlNuN0+e8SM7c0jiTyxavwFf4wOz50Gu8OH17+jbiQLMOmtr1VmGe2dfXCvekoVUafYAXwu2Uyq6pTUCj9yvyfuCm6SGalrBUJlMmT/XMID/CWZIrR9dP27032kjehLEyBWFkYwGkSceLRzdrO6ZGo1+Ws9ibWYtH6lwIQ/5TOyJ60SJJ/pE+1gidKoP8w5tC4TjI/yfKCkU0KtHcSaCdwkjoPTmqAJeNFdcJxjdZjaX5HLoz6lSF3cFJbrzwGfJOSGkUB32RBKGb1idURR8rvhi0mGcNnribSjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XDGduCEYR/tRBYLj7DokqOqMB/G1KRNvrjCZko1HRTQ=;
- b=Al1ZDS8XvrCMSyHfGgQvK0F8dSt+LAdTzaL+W8Um9hn3aYweWtPAcTKDely/qFpPSbyA2C/dxqmVSwac23zvf55T6XSW7tzsRWGkO9totVGFSmx/VpJWxp+XMZUf+XQCbPS5qRwZlO4LIC4pJr14peXjEMPWMa2WNloCStCV3Fk=
-Received: from AM6PR05MB5879.eurprd05.prod.outlook.com (20.179.0.76) by
- AM6PR05MB6405.eurprd05.prod.outlook.com (20.179.6.80) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.10; Thu, 25 Jul 2019 09:43:06 +0000
-Received: from AM6PR05MB5879.eurprd05.prod.outlook.com
- ([fe80::f9d8:38bc:4a18:f7a7]) by AM6PR05MB5879.eurprd05.prod.outlook.com
- ([fe80::f9d8:38bc:4a18:f7a7%5]) with mapi id 15.20.2115.005; Thu, 25 Jul 2019
- 09:43:06 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     Kevin Laatz <kevin.laatz@intel.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "bruce.richardson@intel.com" <bruce.richardson@intel.com>,
-        "ciara.loftus@intel.com" <ciara.loftus@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: Re: [PATCH bpf-next v3 08/11] samples/bpf: add unaligned chunks mode
- support to xdpsock
-Thread-Topic: [PATCH bpf-next v3 08/11] samples/bpf: add unaligned chunks mode
- support to xdpsock
-Thread-Index: AQHVQiNte53eRR+QTUqnn7befgzUpKbbFmwA
-Date:   Thu, 25 Jul 2019 09:43:06 +0000
-Message-ID: <fd7b6b71-5bfd-986a-b288-b9e3478acebb@mellanox.com>
-References: <20190716030637.5634-1-kevin.laatz@intel.com>
- <20190724051043.14348-1-kevin.laatz@intel.com>
- <20190724051043.14348-9-kevin.laatz@intel.com>
-In-Reply-To: <20190724051043.14348-9-kevin.laatz@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1P192CA0024.EURP192.PROD.OUTLOOK.COM (2603:10a6:3:fe::34)
- To AM6PR05MB5879.eurprd05.prod.outlook.com (2603:10a6:20b:a2::12)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [159.224.90.213]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 869f8f85-bbf4-492d-a22a-08d710e47f03
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB6405;
-x-ms-traffictypediagnostic: AM6PR05MB6405:
-x-microsoft-antispam-prvs: <AM6PR05MB6405829A28E48F36AC1EE9F7D1C10@AM6PR05MB6405.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0109D382B0
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(136003)(366004)(396003)(39860400002)(199004)(189003)(6506007)(36756003)(76176011)(102836004)(55236004)(53546011)(386003)(305945005)(66946007)(14454004)(64756008)(26005)(52116002)(5660300002)(8936002)(6512007)(3846002)(6116002)(81166006)(66446008)(99286004)(6436002)(68736007)(6486002)(7736002)(316002)(6246003)(86362001)(66556008)(486006)(81156014)(31696002)(2906002)(25786009)(53936002)(6916009)(66066001)(446003)(8676002)(11346002)(4326008)(54906003)(31686004)(71200400001)(71190400001)(476003)(186003)(478600001)(2616005)(256004)(66476007)(7416002)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6405;H:AM6PR05MB5879.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: UgtbhasJw2gu1IVQU9J/7jrL7wKn5RJ06965Pal0TBtWfZkY4WLErzQZtVhAlqlisH0V3k54+ZJ6rynJnA4mR48bn/VdUyqTmYhmRF25osbek/hKjHBFZcZeoRSYJnqtickOAXS7zJngYJJMF5pic6ni3RO5xoOgLLcqMvlJY6+mSdzRFkx9amnuGhiFzN8D6cXndx3y2rM0/3CiEyxOdzwpV6gRgScaIyKaT8sUlYkBLK9sUd+mEisFMCAXQm5Z0DiHaMqDCK4zD6/SWPdho3X8VrZ+3pFBbx6zktg3XGI11eeL8UMSE/GaPXdPYymv3CWvyM7mQ1MV2Gat1XPFDD2LeEj23fn28ZOxNLQRU7VRvpNsv+yn/Alu7IeONlN4Mza3pQZVTtCMo9l0y12qqQZNI/kwcwK/rXxaGSqQYbQ=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3858018B23BE0C48BA41FECF6A806CCB@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2390744AbfGYJpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 05:45:52 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:15831 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725808AbfGYJpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 05:45:52 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d397a500000>; Thu, 25 Jul 2019 02:45:52 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 25 Jul 2019 02:45:51 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 25 Jul 2019 02:45:51 -0700
+Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 25 Jul
+ 2019 09:45:48 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+CC:     David Miller <davem@davemloft.net>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "lists@bofh.nu" <lists@bofh.nu>,
+        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "maxime.ripard@bootlin.com" <maxime.ripard@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "wens@csie.org" <wens@csie.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <6c769226-bdd9-6fe0-b96b-5a0d800fed24@arm.com>
+ <8756d681-e167-fe4a-c6f0-47ae2dcbb100@nvidia.com>
+ <20190723.115112.1824255524103179323.davem@davemloft.net>
+ <20190724085427.GA10736@apalos>
+ <BYAPR12MB3269AA9955844E317B62A239D3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <20190724095310.GA12991@apalos>
+ <BYAPR12MB3269C5766F553438ECFF2C9BD3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <33de62bf-2f8a-bf00-9260-418b12bed24c@nvidia.com>
+ <BYAPR12MB32696F0A2BFDF69F31C4311CD3C60@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <a07c3480-af03-a61b-4e9c-d9ceb29ce622@nvidia.com>
+ <BYAPR12MB3269F4E62B64484B08F90998D3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <d2658b7d-1f24-70f7-fafe-b60a0fd7d240@nvidia.com>
+Date:   Thu, 25 Jul 2019 10:45:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 869f8f85-bbf4-492d-a22a-08d710e47f03
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2019 09:43:06.7446
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: maximmi@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6405
+In-Reply-To: <BYAPR12MB3269F4E62B64484B08F90998D3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1564047952; bh=5isgglopm7SeJ86vy3+jPoE2tjL+r8qlKxtTv2QKBHM=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=UOPEEsvkrrYBFIWOd177XUvGoLoWRcDIklaeRlE6HdJ86bODEuxFdAKOnXSsl7TQj
+         C1BlC2kjEQ0OhI0uEKzvHK9P8cFLhTi9bOecyjyqn+yeZ5oJTX4F0fA21jvxkmoMGW
+         TNukEvfcPf42Mg3iQLiGz6vTTPRGJWuSlRF4vZIshHT3rYR/wZStZWNFVVkYAUtTdd
+         e5axWio9Qs/BMnGYpAWXNM8SBrmW/SE92TcRbIn7zHU7j0fR3D8FXMdI5wfJW2vgh6
+         LWbcupZd1chBOxvamcdQX84cb/usJkiRoWPgbFY/h+z97ZHmL8OzwA12q1uekPsgVZ
+         PMCZNteWQgGFg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjAxOS0wNy0yNCAwODoxMCwgS2V2aW4gTGFhdHogd3JvdGU6DQo+IFRoaXMgcGF0Y2ggYWRk
-cyBzdXBwb3J0IGZvciB0aGUgdW5hbGlnbmVkIGNodW5rcyBtb2RlLiBUaGUgYWRkaXRpb24gb2Yg
-dGhlDQo+IHVuYWxpZ25lZCBjaHVua3Mgb3B0aW9uIHdpbGwgYWxsb3cgdXNlcnMgdG8gcnVuIHRo
-ZSBhcHBsaWNhdGlvbiB3aXRoIG1vcmUNCj4gcmVsYXhlZCBjaHVuayBwbGFjZW1lbnQgaW4gdGhl
-IFhEUCB1bWVtLg0KPiANCj4gVW5hbGlnbmVkIGNodW5rcyBtb2RlIGNhbiBiZSB1c2VkIHdpdGgg
-dGhlICctdScgb3IgJy0tdW5hbGlnbmVkJyBjb21tYW5kDQo+IGxpbmUgb3B0aW9ucy4NCj4gDQo+
-IFNpZ25lZC1vZmYtYnk6IEtldmluIExhYXR6IDxrZXZpbi5sYWF0ekBpbnRlbC5jb20+DQo+IFNp
-Z25lZC1vZmYtYnk6IENpYXJhIExvZnR1cyA8Y2lhcmEubG9mdHVzQGludGVsLmNvbT4NCj4gLS0t
-DQo+ICAgc2FtcGxlcy9icGYveGRwc29ja191c2VyLmMgfCAxNyArKysrKysrKysrKysrKystLQ0K
-PiAgIDEgZmlsZSBjaGFuZ2VkLCAxNSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KDQo8
-Li4uPg0KDQo+IEBAIC0zNzIsNiArMzc4LDcgQEAgc3RhdGljIHZvaWQgdXNhZ2UoY29uc3QgY2hh
-ciAqcHJvZykNCj4gICAJCSIgIC16LCAtLXplcm8tY29weSAgICAgIEZvcmNlIHplcm8tY29weSBt
-b2RlLlxuIg0KPiAgIAkJIiAgLWMsIC0tY29weSAgICAgICAgICAgRm9yY2UgY29weSBtb2RlLlxu
-Ig0KPiAgIAkJIiAgLWYsIC0tZnJhbWUtc2l6ZT1uICAgU2V0IHRoZSBmcmFtZSBzaXplIChtdXN0
-IGJlIGEgcG93ZXIgb2YgdHdvLCBkZWZhdWx0IGlzICVkKS5cbiINCg0KSGVscCB0ZXh0IGZvciAt
-ZiBoYXMgdG8gYmUgdXBkYXRlZCwgaXQgZG9lc24ndCBoYXZlIHRvIGJlIGEgcG93ZXIgb2YgdHdv
-IA0KaWYgLXUgaXMgc3BlY2lmaWVkLg0KDQo+ICsJCSIgIC11LCAtLXVuYWxpZ25lZAlFbmFibGUg
-dW5hbGlnbmVkIGNodW5rIHBsYWNlbWVudFxuIg0KDQo8Li4uPg0KDQo+ICAgDQo+IC0JaWYgKG9w
-dF94c2tfZnJhbWVfc2l6ZSAmIChvcHRfeHNrX2ZyYW1lX3NpemUgLSAxKSkgew0KPiArCWlmICgo
-b3B0X3hza19mcmFtZV9zaXplICYgKG9wdF94c2tfZnJhbWVfc2l6ZSAtIDEpKSAmJg0KPiArCQkJ
-IW9wdF91bmFsaWduZWRfY2h1bmtzKSB7DQo+ICAgCQlmcHJpbnRmKHN0ZGVyciwgIi0tZnJhbWUt
-c2l6ZT0lZCBpcyBub3QgYSBwb3dlciBvZiB0d29cbiIsDQo+ICAgCQkJb3B0X3hza19mcmFtZV9z
-aXplKTsNCj4gICAJCXVzYWdlKGJhc2VuYW1lKGFyZ3ZbMF0pKTsNCj4gDQoNCg==
+
+On 25/07/2019 08:44, Jose Abreu wrote:
+
+...
+
+> OK. Can you please test what Ilias mentioned ?
+> 
+> Basically you can hard-code the order to 0 in 
+> alloc_dma_rx_desc_resources():
+> - pp_params.order = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
+> + pp_params.order = 0;
+> 
+> Unless you use a MTU > PAGE_SIZE.
+
+I made the change but unfortunately the issue persists.
+
+Jon
+
+-- 
+nvpublic
