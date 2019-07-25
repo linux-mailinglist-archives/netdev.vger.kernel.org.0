@@ -2,83 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA8874309
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 03:56:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C793F74311
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 04:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388527AbfGYB4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 21:56:21 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41613 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387820AbfGYB4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 21:56:20 -0400
-Received: by mail-io1-f65.google.com with SMTP id j5so89677701ioj.8;
-        Wed, 24 Jul 2019 18:56:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=qevhiXyEkOEohVJW3YzRivh0Gax/OIllMhMhZOJIHME=;
-        b=TBFGwqbj3nbU65GLBrBZl71FwhcyOLJT3oy7f6HQ4p7OWd1UZhw3x6ghQj+GOX+qhr
-         +DszMCfhiI1rXxU1HPJomwyCL1toRYPMPdvV1xqcO4NLpS+9TEPeRygIgPOOXwZEFMIt
-         4dTKKRc1M41Xg7MAQpy1PNbRPjn/eADt2UQGCZHrFmKVD1/F7yiO85nWWByvpbqsYTUc
-         fZNNK1dKeA17LldaN3EXLn8m+8mO17RTcLdZ+yh4NCOFvhQkbWOdelQOZDolVeFc0oqT
-         82qWfZ7CiPdzuMuoytedxXQCIu10RyXWGymZ+aRg6cLH9bcZv+6l3R7EAC/2BlsL2Ede
-         Z9tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=qevhiXyEkOEohVJW3YzRivh0Gax/OIllMhMhZOJIHME=;
-        b=JY9ckdhqCsQxpVmOlzxHJuYEk0WuCWqfjBcY+wf7nfdWwIyY0WWx2ZcmFsJ1hMvBew
-         tNRV1EbHoLd97PzGoYmuL1hSRUDjTM6lCkmnS7nSwwwgjt7EITl+MuceCUJTHhw9k9nT
-         qrWuvSBqz+boBwp4PXVexN/Erj7nLcrkHOC35ZzysB/+eahvPY+yCrqIE0jb/8qTwvZp
-         tRmhH5UgPsx4KlyNszu6MlbzObh4Q1OsfZz8YNOfBT/H6AHrBCHe8uocnh98kdw+63G/
-         rjDA2050xSfdJnefY2RmPo9XZs5rk59py36gK2oi1G49Uvcbso3WxJqiYHxsarnvMHvh
-         bwbw==
-X-Gm-Message-State: APjAAAXq5pnUTQpZpzgqYBlDimEta/IqTm7I1rfSX7t9V9jkzUt/VKbm
-        VVRTR/O1+8GHS1kBwK6wMkY=
-X-Google-Smtp-Source: APXvYqx8tccydlT5uM42UOdOEystMy52xKNIp/ebeNlBVZV+/HV7vIDYOpojHdALAR4RTxu/IW9lHg==
-X-Received: by 2002:a5d:8ccc:: with SMTP id k12mr79818851iot.141.1564019779646;
-        Wed, 24 Jul 2019 18:56:19 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id n22sm80119216iob.37.2019.07.24.18.56.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 18:56:19 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
-        secalert@redhat.com, Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mscc: ocelot: null check devm_kcalloc
-Date:   Wed, 24 Jul 2019 20:56:09 -0500
-Message-Id: <20190725015609.24389-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        id S2388718AbfGYCFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 22:05:11 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2716 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388438AbfGYCFL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 22:05:11 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 8054973CF4BA97690F29;
+        Thu, 25 Jul 2019 10:05:08 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 25 Jul 2019
+ 10:04:47 +0800
+Subject: Re: [PATCH net-next 04/11] net: hns3: fix mis-counting IRQ vector
+ numbers issue
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "lipeng321@huawei.com" <lipeng321@huawei.com>,
+        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
+        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "liuyonglong@huawei.com" <liuyonglong@huawei.com>
+References: <1563938327-9865-1-git-send-email-tanhuazhong@huawei.com>
+ <1563938327-9865-5-git-send-email-tanhuazhong@huawei.com>
+ <ad63b46dfb7e36d63d95866a023ef181af40aa76.camel@mellanox.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <327e1905-30e3-6dea-f3f1-71dc73478e0b@huawei.com>
+Date:   Thu, 25 Jul 2019 10:04:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
+MIME-Version: 1.0
+In-Reply-To: <ad63b46dfb7e36d63d95866a023ef181af40aa76.camel@mellanox.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devm_kcalloc may fail and return NULL. Added the null check.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- drivers/net/ethernet/mscc/ocelot_board.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index 58bde1a9eacb..52377cfdc31a 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -257,6 +257,8 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 
- 	ocelot->ports = devm_kcalloc(&pdev->dev, ocelot->num_phys_ports,
- 				     sizeof(struct ocelot_port *), GFP_KERNEL);
-+	if (!ocelot->ports)
-+		return -ENOMEM;
- 
- 	INIT_LIST_HEAD(&ocelot->multicast);
- 	ocelot_init(ocelot);
--- 
-2.17.1
+On 2019/7/25 2:28, Saeed Mahameed wrote:
+> On Wed, 2019-07-24 at 11:18 +0800, Huazhong Tan wrote:
+>> From: Yonglong Liu <liuyonglong@huawei.com>
+>>
+>> The num_msi_left means the vector numbers of NIC, but if the
+>> PF supported RoCE, it contains the vector numbers of NIC and
+>> RoCE(Not expected).
+>>
+>> This may cause interrupts lost in some case, because of the
+>> NIC module used the vector resources which belongs to RoCE.
+>>
+>> This patch corrects the value of num_msi_left to be equals to
+>> the vector numbers of NIC, and adjust the default tqp numbers
+>> according to the value of num_msi_left.
+>>
+>> Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine &
+>> Compatibility Layer Support")
+>> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+>> Signed-off-by: Peng Li <lipeng321@huawei.com>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+>> ---
+>>   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   |  5 ++++-
+>>   drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 12
+>> ++++++++++--
+>>   2 files changed, 14 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> index 3c64d70..a59d13f 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> @@ -1470,13 +1470,16 @@ static int hclge_vport_setup(struct
+>> hclge_vport *vport, u16 num_tqps)
+>>   {
+>>   	struct hnae3_handle *nic = &vport->nic;
+>>   	struct hclge_dev *hdev = vport->back;
+>> +	u16 alloc_tqps;
+>>   	int ret;
+>>   
+>>   	nic->pdev = hdev->pdev;
+>>   	nic->ae_algo = &ae_algo;
+>>   	nic->numa_node_mask = hdev->numa_node_mask;
+>>   
+>> -	ret = hclge_knic_setup(vport, num_tqps,
+>> +	alloc_tqps = min_t(u16, hdev->roce_base_msix_offset - 1,
+> 
+> 
+> Why do you need the extra alloc_tqps ? just overwrite num_tqps, the
+> original value is not needed afterwards.
+> 
+
+Yes, using num_tqps is better.
+I will remove the extra alloc_tqps in V2.
+Thanks.
+
+>> num_tqps);
+>> +
+>> +	ret = hclge_knic_setup(vport, alloc_tqps,
+>>   			       hdev->num_tx_desc, hdev->num_rx_desc);
+>>   	if (ret)
+>>   		dev_err(&hdev->pdev->dev, "knic setup failed %d\n",
+>> ret);
+>>
 
