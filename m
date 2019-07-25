@@ -2,87 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D487568B
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 20:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372AC7568C
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 20:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbfGYSG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 14:06:26 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35663 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726300AbfGYSGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 14:06:25 -0400
-Received: by mail-qt1-f193.google.com with SMTP id d23so50024172qto.2
-        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 11:06:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=IBzLUbfuZY1yXSm5tU/kxob6ZMidh6X8dv85/aPXEPs=;
-        b=GXQCM2pmttL9pRo3O8N2fTMYslKqPqjJWB94KMSRAICEClAFscw5G5xGh6Cj79m93x
-         5nmV4of6dSvJLGdZ84s94MuGBQFGZxTv85hes23hz/n5xUWNNhfRSo+eIMsvmrIw+OK0
-         1ZKeicAuGmvOka1FsS91lvOqHDKhD5L27MYkexclgtLlHm08ekQt4rEeketan2jY6fT4
-         /7f0uK2yxguOll53aVg/hXI55YOVu14gLaa2WknZVHWnMFA4Bobk5BTEELhaWSuFINcU
-         CIbDYQhEJFG6ha8Xer1KR4TKEcZ+/q9F3QGNT7ArEaXh/kr38q3RQ8A4L6bzMxAtZeVU
-         0eJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=IBzLUbfuZY1yXSm5tU/kxob6ZMidh6X8dv85/aPXEPs=;
-        b=mQB5n9besl5X/sQn7mOe7+6j5p2TEpizDE2FpAx+HyddqZQ3P8J9mUdUxLz/eJB7Lp
-         HCAs3MvS3U9r1Kjt2RDvwRcQBm2IdujBGD4Hd/vt+sLobJP+TgDK1xSEQ3x3H8mMEFd8
-         FkPpOLSPw8c+6nUDJ2y70oH0RDquw/NrZNBFQ9d/ZPeZ5P0AdQTX/kSnuFt7gvp5qFvH
-         ZizgkP5EFd2kdVD1Qywkb7JCODDV+utfZtvnTkYg+Sowop/0rd3ShWvsteMRH1WaK1P1
-         /Bfwu48Ph6CNQpS806isHwPATnArtlOqCSFjzIabYOW3zKoz7Ola2R/70WqQyaMlNpGR
-         rSEw==
-X-Gm-Message-State: APjAAAWZNDHuJNy29TV+rF2gt3LMbN8LgMuwLZQsr7hRuS9O70ZQO4EK
-        jL4yxP6ayMgZNo0VbN62gIUeiQ==
-X-Google-Smtp-Source: APXvYqxuCFS52KUiwjQrsyCGdLoT5/fE0KDdLCqz30/q/szjTbrmHIOXQMIt0uNvoaq72eyUTY4u4Q==
-X-Received: by 2002:ac8:1b30:: with SMTP id y45mr61139694qtj.218.1564077984957;
-        Thu, 25 Jul 2019 11:06:24 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
-        by smtp.gmail.com with ESMTPSA id o22sm20371188qkk.50.2019.07.25.11.06.24
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 25 Jul 2019 11:06:24 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hqi8F-0008SB-SC; Thu, 25 Jul 2019 15:06:23 -0300
-Date:   Thu, 25 Jul 2019 15:06:23 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Michal Kalderon <michal.kalderon@marvell.com>
-Cc:     ariel.elior@marvell.com, dledford@redhat.com, galpress@amazon.com,
-        linux-rdma@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v6 rdma-next 4/6] qed*: Change dpi_addr to be denoted
- with __iomem
-Message-ID: <20190725180623.GA32435@ziepe.ca>
-References: <20190709141735.19193-1-michal.kalderon@marvell.com>
- <20190709141735.19193-5-michal.kalderon@marvell.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709141735.19193-5-michal.kalderon@marvell.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1726808AbfGYSHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 14:07:53 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:52412 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726300AbfGYSHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 14:07:53 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id B083B6050D; Thu, 25 Jul 2019 18:07:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564078072;
+        bh=xWcJB4xqD9BHc6q5GqWONIdIwBHTZkst/q/IRTHJ8lA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UX8BxhG6gouOuWQ70+zs0AftvhOViLcvZjRKnDl5IWT/biaTevxtAxp6dotDgjhHC
+         ccq2cMr2RV2m8vAaZnh/11Sj41Jmc8jMGcq0qVTv47ZXFRma/0kv61GVPTxGyCS519
+         VWKWrgv7Pp7nSgskAB6MIRK7Wajh8BZu1pJwLik4=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab@codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EB236602F5;
+        Thu, 25 Jul 2019 18:07:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564078071;
+        bh=xWcJB4xqD9BHc6q5GqWONIdIwBHTZkst/q/IRTHJ8lA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VAQTpDWv9hxpqA8NB6QvkX1kQDtTque4Lk7xY5k+zlsfT5X/YmNLDx6QK60utyg7+
+         N3NY8pCwPWpvM5w0gru66MRG1YWRbdT/BQniU1KjlQf/r4f7wU14b+eFULqT+2yvai
+         H+JBZRpivN996PxjLcAg/cR3hObBJ2+SYNrioiRs=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EB236602F5
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=subashab@codeaurora.org
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Sean Tranchetti <stranche@codeaurora.org>
+Subject: [PATCH net] net: qualcomm: rmnet: Fix incorrect UL checksum offload logic
+Date:   Thu, 25 Jul 2019 12:07:12 -0600
+Message-Id: <1564078032-8754-1-git-send-email-subashab@codeaurora.org>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 09, 2019 at 05:17:33PM +0300, Michal Kalderon wrote:
-> Several casts were required around dpi_addr parameter in qed_rdma_if.h
-> This is an address on the doorbell bar and should therefore be marked
-> with __iomem.
-> 
-> Reported-by: Jason Gunthorpe <jgg@mellanox.com>
-> Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
->  drivers/infiniband/hw/qedr/main.c          | 2 +-
->  drivers/infiniband/hw/qedr/qedr.h          | 2 +-
->  drivers/net/ethernet/qlogic/qed/qed_rdma.c | 5 ++---
->  include/linux/qed/qed_rdma_if.h            | 2 +-
->  4 files changed, 5 insertions(+), 6 deletions(-)
+The udp_ip4_ind bit is set only for IPv4 UDP non-fragmented packets
+so that the hardware can flip the checksum to 0xFFFF if the computed
+checksum is 0 per RFC768.
 
-More lines are RDMA than net, so this patch applied to for-next
+However, this bit had to be set for IPv6 UDP non fragmented packets
+as well per hardware requirements. Otherwise, IPv6 UDP packets
+with computed checksum as 0 were transmitted by hardware and were
+dropped in the network.
 
-Thanks,
-Jason
+In addition to setting this bit for IPv6 UDP, the field is also
+appropriately renamed to udp_ind as part of this change.
+
+Fixes: 5eb5f8608ef1 ("net: qualcomm: rmnet: Add support for TX checksum offload")
+Cc: Sean Tranchetti <stranche@codeaurora.org>
+Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+---
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c | 13 +++++++++----
+ include/linux/if_rmnet.h                             |  4 ++--
+ 2 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+index 6018992..21d3816 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+@@ -206,9 +206,9 @@ static void rmnet_map_complement_ipv4_txporthdr_csum_field(void *iphdr)
+ 	ul_header->csum_insert_offset = skb->csum_offset;
+ 	ul_header->csum_enabled = 1;
+ 	if (ip4h->protocol == IPPROTO_UDP)
+-		ul_header->udp_ip4_ind = 1;
++		ul_header->udp_ind = 1;
+ 	else
+-		ul_header->udp_ip4_ind = 0;
++		ul_header->udp_ind = 0;
+ 
+ 	/* Changing remaining fields to network order */
+ 	hdr++;
+@@ -239,6 +239,7 @@ static void rmnet_map_complement_ipv6_txporthdr_csum_field(void *ip6hdr)
+ 			      struct rmnet_map_ul_csum_header *ul_header,
+ 			      struct sk_buff *skb)
+ {
++	struct ipv6hdr *ip6h = (struct ipv6hdr *)ip6hdr;
+ 	__be16 *hdr = (__be16 *)ul_header, offset;
+ 
+ 	offset = htons((__force u16)(skb_transport_header(skb) -
+@@ -246,7 +247,11 @@ static void rmnet_map_complement_ipv6_txporthdr_csum_field(void *ip6hdr)
+ 	ul_header->csum_start_offset = offset;
+ 	ul_header->csum_insert_offset = skb->csum_offset;
+ 	ul_header->csum_enabled = 1;
+-	ul_header->udp_ip4_ind = 0;
++
++	if (ip6h->nexthdr == IPPROTO_UDP)
++		ul_header->udp_ind = 1;
++	else
++		ul_header->udp_ind = 0;
+ 
+ 	/* Changing remaining fields to network order */
+ 	hdr++;
+@@ -419,7 +424,7 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
+ 	ul_header->csum_start_offset = 0;
+ 	ul_header->csum_insert_offset = 0;
+ 	ul_header->csum_enabled = 0;
+-	ul_header->udp_ip4_ind = 0;
++	ul_header->udp_ind = 0;
+ 
+ 	priv->stats.csum_sw++;
+ }
+diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
+index b4f5403..9661416 100644
+--- a/include/linux/if_rmnet.h
++++ b/include/linux/if_rmnet.h
+@@ -41,11 +41,11 @@ struct rmnet_map_ul_csum_header {
+ 	__be16 csum_start_offset;
+ #if defined(__LITTLE_ENDIAN_BITFIELD)
+ 	u16 csum_insert_offset:14;
+-	u16 udp_ip4_ind:1;
++	u16 udp_ind:1;
+ 	u16 csum_enabled:1;
+ #elif defined (__BIG_ENDIAN_BITFIELD)
+ 	u16 csum_enabled:1;
+-	u16 udp_ip4_ind:1;
++	u16 udp_ind:1;
+ 	u16 csum_insert_offset:14;
+ #else
+ #error	"Please fix <asm/byteorder.h>"
+-- 
+1.9.1
+
