@@ -2,371 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 688B574266
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F97574267
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728518AbfGYAAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 20:00:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47752 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727379AbfGYAAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 20:00:32 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6ONwxd1022623;
-        Wed, 24 Jul 2019 17:00:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=TzJuJSUGKFv56M/yMxhF6gq7LXEzhyVD5YdD/hQLDgs=;
- b=Y0obuz6ZelnFKXmumyaGXgtD8LSuPyruiFOhlaflE+LB9csgt2QmTfxVbXOtNGLQrgWr
- aSh14TsXMTZmj1yKqxc3IvbL1okcVFqMCsRixCubAOaAqzn7mwsMwUxBtG6UbFNKltTy
- AhHIjgqybs/1Hdb3yJryA3Wkp6AjDyqr+GY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2txty6smer-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 24 Jul 2019 17:00:09 -0700
-Received: from ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) by
- ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 24 Jul 2019 17:00:07 -0700
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 24 Jul 2019 17:00:07 -0700
+        id S1728727AbfGYAEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 20:04:47 -0400
+Received: from mail-eopbgr80085.outbound.protection.outlook.com ([40.107.8.85]:49797
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727379AbfGYAEr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jul 2019 20:04:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AuDG23DHFrI7l8fGnPUW0A+KQkra6b8FZSClmEOeIJkkQqfPaL4Z5pLFIFRJu+4U/jWvfoROsZ3hmp7fj862wWtBJfiQn2YbP7h3O9877Uiul5lV0jsOaZXIqAPkc5VlR3TcGjiY9yVTircN86zMkA5FED5jzNnHoUy8BVZ6ATT+KoD111SIgaQKGtufEcf6BOQ7SgW+4r73AmV2Rj+NIZgAJQndluI9URh6b3ZTFAb+T8D4h7O3aQv006jZd1VRsgIxPIBNpPrFZU6Ct1GefR/0JXqrwY77sGR/AZJM720cHu0oe2lOuknxX9nZsWecECrdWLvfRT/9zXuj99vs9Q==
+ b=kPuSigtXScZi/6KYbqB6vP2uVBvYRoMFuGsMNhrZNZJMlWsCIoEAsiJ3XidCQS5XrCt4DtPvIbFIoamxNtAOWSNKTTp0OKNRrqypXdJPX6NP47Jq4LxG2WHLUnqjZlJKecjjwoTCyCZuw4dH0F2pf2SSrezJWDluYCB7oqi0lFEKPkQrOOv8ZWvhkJmAPgNJXFMN5QzalbgqWMbORoUtwFWmTGsPoX194RlQkYOSmhxPcjkz4LcLxka3uNN4KXh/lmSbqAQ/xdixzn2+9rXgVlfUgqBPy18Z1O/snqI9JsP3SjcSgIxzQ5O5b6DSm4ACXHqenZWg4kDxXHow0fvwbw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TzJuJSUGKFv56M/yMxhF6gq7LXEzhyVD5YdD/hQLDgs=;
- b=BLvZC11Jemd7OvWyLmhgNd8aPwZ93WQgIbVd8NzSbZMRHxVlC1ImSizCYKmMoafBFm3nIq/q+B3JTbS4YSCb+jj7/mMdh9SBuYqy+4Mm9xHeWliKQuYdGHlypC+vLqiPehPMb17Ad27mi01wdf8u+htfp5monAO3tLVNMB81wKEkM4v3h16T7orRdcfUCmGVeRO2kvi/8qTOj0SeKPPbOwzDhBsVMpgOZYipX0KXqKdMF+JJrLAk/2XmZhHpqL7Q4ni+/RokB67ieW3cLthRPgG85jBs7yqEvILlDZ0PJdA6IvELFcFDXScYGeUckLBhNsqX0Eapz5UIwKh8Xgmr9A==
+ bh=2/ydSUhq1BwnSR3ykhgzcYlr7pYaMhOKsVyNIwTFiFg=;
+ b=Jal9O6278zDXdwxZn770ie8MjSxqvoom1/ZJUAz2B4UHTkHzM1Cm/8wS005ObhbzcXOppgUqA4zNKA1R7oS7BRfXaVYfRSbugVTGGjaIpvxKTZPYPl0hplvsO5Ax30jGWhRnnQ3/QSeRH1BFIC3E4yHzkE1Snojes/SvjzQjZKzJMWylmR7OETHNy776SOCrzTMjl3iBbF9xtGDLOaWKlJhGzl9hK291XBpTpVBnufMmN7SPUvi6yrg6UpoL9Y+2vpXthUSez6voNzTy9GBU6l+xHg9hyg75xHOW7OyFkYly1EvuPJpSqfxw94ASRFubdg8SL1QFsV2ZRQ6Sz6gaZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
- header.d=fb.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TzJuJSUGKFv56M/yMxhF6gq7LXEzhyVD5YdD/hQLDgs=;
- b=bF+JJvscU3BlX+cXljZrclT2mH/LMJML8mB/HYS/gzUYYmCotSxZFyTFK7YCB1K+4UuGSLGNNpNPeyFchKEq63hRVem45W61RYTlZMB8ljIFAa2mYg0OEasuhYyqTcB6jwvq3LYm3p3NNmftsGjiHS4EB274kjh3vgrnFQLn0M4=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1119.namprd15.prod.outlook.com (10.175.8.20) with Microsoft SMTP
+ bh=2/ydSUhq1BwnSR3ykhgzcYlr7pYaMhOKsVyNIwTFiFg=;
+ b=oP55eP6S3rrtM4xHJEb04eCEXhXyp18J1HomFOrFHjWrL2gWnfTlSG5mmh2E8MrQGcu60oevirrS9yUvIwb8tMYH/xLKS7FlOnQklkzv1guFzYRjQudWO4qvPn+sz2z2b8pTOAnUWvQrwzpeZVco3xN6I17HPHlGe5K5hS0LbnE=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2421.eurprd05.prod.outlook.com (10.168.75.14) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2094.17; Thu, 25 Jul 2019 00:00:06 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::4066:b41c:4397:27b7]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::4066:b41c:4397:27b7%7]) with mapi id 15.20.2094.013; Thu, 25 Jul 2019
- 00:00:06 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Yonghong Song" <yhs@fb.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 01/10] libbpf: add .BTF.ext offset relocation
- section loading
-Thread-Topic: [PATCH bpf-next 01/10] libbpf: add .BTF.ext offset relocation
- section loading
-Thread-Index: AQHVQlYK69qsehsdP0Kkd9QeaocpJKbacyeA
-Date:   Thu, 25 Jul 2019 00:00:06 +0000
-Message-ID: <B5E772A5-C0D9-4697-ADE2-2A94C4AD37B5@fb.com>
-References: <20190724192742.1419254-1-andriin@fb.com>
- <20190724192742.1419254-2-andriin@fb.com>
-In-Reply-To: <20190724192742.1419254-2-andriin@fb.com>
+ 15.20.2094.15; Thu, 25 Jul 2019 00:04:42 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::7148:ecd4:3a7f:f3f%11]) with mapi id 15.20.2094.011; Thu, 25 Jul 2019
+ 00:04:42 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "snelson@pensando.io" <snelson@pensando.io>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH v4 net-next 12/19] ionic: Add async link status check and
+ basic stats
+Thread-Topic: [PATCH v4 net-next 12/19] ionic: Add async link status check and
+ basic stats
+Thread-Index: AQHVQNY1pOPJW3dsSEC+yk6pvhIaqabad28A
+Date:   Thu, 25 Jul 2019 00:04:42 +0000
+Message-ID: <1621fa0c5649e1afb07889db0972cf87e1580332.camel@mellanox.com>
+References: <20190722214023.9513-1-snelson@pensando.io>
+         <20190722214023.9513-13-snelson@pensando.io>
+In-Reply-To: <20190722214023.9513-13-snelson@pensando.io>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:180::1:856f]
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ad7cd75e-c258-4c88-305f-08d710930d52
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1119;
-x-ms-traffictypediagnostic: MWHPR15MB1119:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <MWHPR15MB11195F1BCE6FDF24B01359DBB3C10@MWHPR15MB1119.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:551;
+x-ms-office365-filtering-correlation-id: 0a47c43b-9992-469f-82b7-08d71093b1c8
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2421;
+x-ms-traffictypediagnostic: DB6PR0501MB2421:
+x-microsoft-antispam-prvs: <DB6PR0501MB242121ED6B1983088DDE7F98BEC10@DB6PR0501MB2421.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 0109D382B0
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(376002)(136003)(396003)(346002)(189003)(199004)(71200400001)(256004)(6486002)(6246003)(81156014)(8676002)(54906003)(37006003)(6436002)(25786009)(14444005)(8936002)(81166006)(50226002)(76176011)(53936002)(71190400001)(966005)(33656002)(99286004)(316002)(478600001)(6306002)(2906002)(66446008)(6512007)(14454004)(53546011)(446003)(66476007)(486006)(102836004)(66556008)(66946007)(76116006)(186003)(91956017)(5660300002)(68736007)(64756008)(229853002)(6506007)(36756003)(4326008)(476003)(57306001)(86362001)(305945005)(6116002)(11346002)(6636002)(46003)(2616005)(7736002)(6862004)(142923001);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1119;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(376002)(39860400002)(396003)(366004)(189003)(199004)(14444005)(36756003)(6486002)(6116002)(66446008)(66946007)(478600001)(3846002)(66476007)(76116006)(66556008)(64756008)(91956017)(256004)(81156014)(86362001)(2501003)(110136005)(66066001)(8676002)(6246003)(81166006)(58126008)(6436002)(305945005)(5660300002)(316002)(8936002)(14454004)(99286004)(2201001)(26005)(53936002)(71190400001)(2906002)(71200400001)(486006)(68736007)(476003)(6512007)(7736002)(11346002)(6506007)(446003)(76176011)(186003)(118296001)(102836004)(229853002)(2616005)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2421;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 2WbBvrleNsjRq94J+9BRDubDV9eWAQ/uTK20i8f0FResZjEXIa1L+aewByjdJwqcJNII6hzkbyumfzDZdje+4tHIRgMmTG5PG6BXbZ2Alpf9MhcaxOeL0wsPwgMMitL6WDfqy80DrSS+zMlRHvyJ8waZ6wow2zU+kJpfZDvk2aSYwNV7QpOuvcniDBLhSCt+akdZxMSZXXHkNl5Y0HnvxYczUy4TJyW0KWnnmOuuPCbhMLHYoO4do45xvJmpUWSqAVDFBZVJ1G7OeQIB6Hu2yd8SmtHyBteQGNOMOmRVD+bm0yCoGEdokIR0qNb/Kjf6zWQTLjXybVz1F6nxk6+odr0DX64GQQzzttcUL4HperyE3JkNJZrRreTzNES1WUlYGOHjiYBRDjsBmigj0/y7frA6/uItH+PjzGveYIxUfXw=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <893F7B341CCC90428B8A9F8C0083A0C4@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: 6Q6D7Zp7Uc0lju2nSfsM85O3KH+xKIvWzYijfzywFzDipA4vV1/6jvB1tQLO1uRW3QfX3IY7vYJg+myZO2+cfsVvFi4rvBmU4HIEH/07O7bWdrg6THerZzHYY4/I1PZE5EN1bzpc1OuGUInTbXXLXPYwRyvm3xHAgELm8Fe0D4pGwu8Wl5IooXYqS744JCKS52Per/03zfg+67OD6UAXNiyq7//poZWQLlFZJ/3D30/mDGGKvHUQqk6GdGEH6HSXbb8gFj2E5qJeI87RLF22g2DmS5QZQsA1jq4lSGNijeBIlFV0/wT8SmAX3E8I19S7ZuiMPWv4LWivfAZMJqT4nELM5jlF6onE/5Bbw0fhVOiaZdvcA0JQPEOwfx/SzfnMC7MGbXZXz6MQf3etsYBJBfR/m2D5lx7QsKs+VkLSHpI=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B2E940DE373CCC43923E4786064FAE26@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad7cd75e-c258-4c88-305f-08d710930d52
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2019 00:00:06.4040
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a47c43b-9992-469f-82b7-08d71093b1c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2019 00:04:42.3859
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1119
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-24_10:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907240259
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2421
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> On Jul 24, 2019, at 12:27 PM, Andrii Nakryiko <andriin@fb.com> wrote:
->=20
-> Add support for BPF CO-RE offset relocations. Add section/record
-> iteration macros for .BTF.ext. These macro are useful for iterating over
-> each .BTF.ext record, either for dumping out contents or later for BPF
-> CO-RE relocation handling.
->=20
-> To enable other parts of libbpf to work with .BTF.ext contents, moved
-> a bunch of type definitions into libbpf_internal.h.
->=20
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
-> tools/lib/bpf/btf.c             | 64 +++++++++--------------
-> tools/lib/bpf/btf.h             |  4 ++
-> tools/lib/bpf/libbpf_internal.h | 91 +++++++++++++++++++++++++++++++++
-> 3 files changed, 118 insertions(+), 41 deletions(-)
->=20
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index 467224feb43b..4a36bc783848 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -42,47 +42,6 @@ struct btf {
-> 	int fd;
-> };
->=20
-> -struct btf_ext_info {
-> -	/*
-> -	 * info points to the individual info section (e.g. func_info and
-> -	 * line_info) from the .BTF.ext. It does not include the __u32 rec_size=
-.
-> -	 */
-> -	void *info;
-> -	__u32 rec_size;
-> -	__u32 len;
-> -};
-> -
-> -struct btf_ext {
-> -	union {
-> -		struct btf_ext_header *hdr;
-> -		void *data;
-> -	};
-> -	struct btf_ext_info func_info;
-> -	struct btf_ext_info line_info;
-> -	__u32 data_size;
-> -};
-> -
-> -struct btf_ext_info_sec {
-> -	__u32	sec_name_off;
-> -	__u32	num_info;
-> -	/* Followed by num_info * record_size number of bytes */
-> -	__u8	data[0];
-> -};
-> -
-> -/* The minimum bpf_func_info checked by the loader */
-> -struct bpf_func_info_min {
-> -	__u32   insn_off;
-> -	__u32   type_id;
-> -};
-> -
-> -/* The minimum bpf_line_info checked by the loader */
-> -struct bpf_line_info_min {
-> -	__u32	insn_off;
-> -	__u32	file_name_off;
-> -	__u32	line_off;
-> -	__u32	line_col;
-> -};
-> -
-> static inline __u64 ptr_to_u64(const void *ptr)
-> {
-> 	return (__u64) (unsigned long) ptr;
-> @@ -831,6 +790,9 @@ static int btf_ext_setup_info(struct btf_ext *btf_ext=
-,
-> 	/* The start of the info sec (including the __u32 record_size). */
-> 	void *info;
->=20
-> +	if (ext_sec->len =3D=3D 0)
-> +		return 0;
-> +
-> 	if (ext_sec->off & 0x03) {
-> 		pr_debug(".BTF.ext %s section is not aligned to 4 bytes\n",
-> 		     ext_sec->desc);
-> @@ -934,6 +896,19 @@ static int btf_ext_setup_line_info(struct btf_ext *b=
-tf_ext)
-> 	return btf_ext_setup_info(btf_ext, &param);
-> }
->=20
-> +static int btf_ext_setup_offset_reloc(struct btf_ext *btf_ext)
-> +{
-> +	struct btf_ext_sec_setup_param param =3D {
-> +		.off =3D btf_ext->hdr->offset_reloc_off,
-> +		.len =3D btf_ext->hdr->offset_reloc_len,
-> +		.min_rec_size =3D sizeof(struct bpf_offset_reloc),
-> +		.ext_info =3D &btf_ext->offset_reloc_info,
-> +		.desc =3D "offset_reloc",
-> +	};
-> +
-> +	return btf_ext_setup_info(btf_ext, &param);
-> +}
-> +
-> static int btf_ext_parse_hdr(__u8 *data, __u32 data_size)
-> {
-> 	const struct btf_ext_header *hdr =3D (struct btf_ext_header *)data;
-> @@ -1004,6 +979,13 @@ struct btf_ext *btf_ext__new(__u8 *data, __u32 size=
-)
-> 	if (err)
-> 		goto done;
->=20
-> +	/* check if there is offset_reloc_off/offset_reloc_len fields */
-> +	if (btf_ext->hdr->hdr_len < sizeof(struct btf_ext_header))
-
-This check will break when we add more optional sections to btf_ext_header.
-Maybe use offsetof() instead?
-
-> +		goto done;
-> +	err =3D btf_ext_setup_offset_reloc(btf_ext);
-> +	if (err)
-> +		goto done;
-> +
-> done:
-> 	if (err) {
-> 		btf_ext__free(btf_ext);
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index 88a52ae56fc6..287361ee1f6b 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -57,6 +57,10 @@ struct btf_ext_header {
-> 	__u32	func_info_len;
-> 	__u32	line_info_off;
-> 	__u32	line_info_len;
-> +
-> +	/* optional part of .BTF.ext header */
-> +	__u32	offset_reloc_off;
-> +	__u32	offset_reloc_len;
-> };
->=20
-> LIBBPF_API void btf__free(struct btf *btf);
-> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_inter=
-nal.h
-> index 2ac29bd36226..087ff512282f 100644
-> --- a/tools/lib/bpf/libbpf_internal.h
-> +++ b/tools/lib/bpf/libbpf_internal.h
-> @@ -46,4 +46,95 @@ do {				\
-> int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
-> 			 const char *str_sec, size_t str_len);
->=20
-> +struct btf_ext_info {
-> +	/*
-> +	 * info points to the individual info section (e.g. func_info and
-> +	 * line_info) from the .BTF.ext. It does not include the __u32 rec_size=
-.
-> +	 */
-> +	void *info;
-> +	__u32 rec_size;
-> +	__u32 len;
-> +};
-> +
-> +#define for_each_btf_ext_sec(seg, sec)					\
-> +	for (sec =3D (seg)->info;						\
-> +	     (void *)sec < (seg)->info + (seg)->len;			\
-> +	     sec =3D (void *)sec + sizeof(struct btf_ext_info_sec) +	\
-> +		   (seg)->rec_size * sec->num_info)
-> +
-> +#define for_each_btf_ext_rec(seg, sec, i, rec)				\
-> +	for (i =3D 0, rec =3D (void *)&(sec)->data;				\
-> +	     i < (sec)->num_info;					\
-> +	     i++, rec =3D (void *)rec + (seg)->rec_size)
-> +
-> +struct btf_ext {
-> +	union {
-> +		struct btf_ext_header *hdr;
-> +		void *data;
-> +	};
-> +	struct btf_ext_info func_info;
-> +	struct btf_ext_info line_info;
-> +	struct btf_ext_info offset_reloc_info;
-> +	__u32 data_size;
-> +};
-> +
-> +struct btf_ext_info_sec {
-> +	__u32	sec_name_off;
-> +	__u32	num_info;
-> +	/* Followed by num_info * record_size number of bytes */
-> +	__u8	data[0];
-> +};
-> +
-> +/* The minimum bpf_func_info checked by the loader */
-> +struct bpf_func_info_min {
-> +	__u32   insn_off;
-> +	__u32   type_id;
-> +};
-> +
-> +/* The minimum bpf_line_info checked by the loader */
-> +struct bpf_line_info_min {
-> +	__u32	insn_off;
-> +	__u32	file_name_off;
-> +	__u32	line_off;
-> +	__u32	line_col;
-> +};
-> +
-> +/* The minimum bpf_offset_reloc checked by the loader
-> + *
-> + * Offset relocation captures the following data:
-> + * - insn_off - instruction offset (in bytes) within a BPF program that =
-needs
-> + *   its insn->imm field to be relocated with actual offset;
-> + * - type_id - BTF type ID of the "root" (containing) entity of a reloca=
-table
-> + *   offset;
-> + * - access_str_off - offset into corresponding .BTF string section. Str=
-ing
-> + *   itself encodes an accessed field using a sequence of field and arra=
-y
-> + *   indicies, separated by colon (:). It's conceptually very close to L=
-LVM's
-> + *   getelementptr ([0]) instruction's arguments for identifying offset =
-to=20
-> + *   a field.
-> + *
-> + * Example to provide a better feel.
-> + *
-> + *   struct sample {
-> + *       int a;
-> + *       struct {
-> + *           int b[10];
-> + *       };
-> + *   };
-> + *=20
-> + *   struct sample *s =3D ...;
-> + *   int x =3D &s->a;     // encoded as "0:0" (a is field #0)
-> + *   int y =3D &s->b[5];  // encoded as "0:1:5" (b is field #1, arr elem=
- #5)
-> + *   int z =3D &s[10]->b; // encoded as "10:1" (ptr is used as an array)
-> + *
-> + * type_id for all relocs in this example  will capture BTF type id of
-> + * `struct sample`.
-> + *
-> + *   [0] https://llvm.org/docs/LangRef.html#getelementptr-instruction
-> + */
-> +struct bpf_offset_reloc {
-> +	__u32   insn_off;
-> +	__u32   type_id;
-> +	__u32   access_str_off;
-> +};
-> +
-> #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-> --=20
-> 2.17.1
->=20
-
+T24gTW9uLCAyMDE5LTA3LTIyIGF0IDE0OjQwIC0wNzAwLCBTaGFubm9uIE5lbHNvbiB3cm90ZToN
+Cj4gQWRkIGNvZGUgdG8gaGFuZGxlIHRoZSBsaW5rIHN0YXR1cyBldmVudCwgYW5kIHdpcmUgdXAg
+dGhlDQo+IGJhc2ljIG5ldGRldiBoYXJkd2FyZSBzdGF0cy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6
+IFNoYW5ub24gTmVsc29uIDxzbmVsc29uQHBlbnNhbmRvLmlvPg0KPiAtLS0NCj4gIC4uLi9uZXQv
+ZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfbGlmLmMgICB8IDExNg0KPiArKysrKysrKysr
+KysrKysrKysNCj4gIC4uLi9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfbGlmLmgg
+ICB8ICAgMSArDQo+ICAyIGZpbGVzIGNoYW5nZWQsIDExNyBpbnNlcnRpb25zKCspDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfbGlm
+LmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9wZW5zYW5kby9pb25pYy9pb25pY19saWYuYw0K
+PiBpbmRleCBlZmNkYTEzMzdmOTEuLmY1MmFmOWNiNjI2NCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfbGlmLmMNCj4gKysrIGIvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfbGlmLmMNCj4gQEAgLTE1LDYgKzE1
+LDcgQEANCj4gIHN0YXRpYyB2b2lkIGlvbmljX2xpZl9yeF9tb2RlKHN0cnVjdCBsaWYgKmxpZiwg
+dW5zaWduZWQgaW50DQo+IHJ4X21vZGUpOw0KPiAgc3RhdGljIGludCBpb25pY19saWZfYWRkcl9h
+ZGQoc3RydWN0IGxpZiAqbGlmLCBjb25zdCB1OCAqYWRkcik7DQo+ICBzdGF0aWMgaW50IGlvbmlj
+X2xpZl9hZGRyX2RlbChzdHJ1Y3QgbGlmICpsaWYsIGNvbnN0IHU4ICphZGRyKTsNCj4gK3N0YXRp
+YyB2b2lkIGlvbmljX2xpbmtfc3RhdHVzX2NoZWNrKHN0cnVjdCBsaWYgKmxpZik7DQo+ICANCj4g
+IHN0YXRpYyBpbnQgaW9uaWNfc2V0X25pY19mZWF0dXJlcyhzdHJ1Y3QgbGlmICpsaWYsIG5ldGRl
+dl9mZWF0dXJlc190DQo+IGZlYXR1cmVzKTsNCj4gIHN0YXRpYyBpbnQgaW9uaWNfbm90aWZ5cV9j
+bGVhbihzdHJ1Y3QgbGlmICpsaWYsIGludCBidWRnZXQpOw0KPiBAQCAtNDQsNiArNDUsOSBAQCBz
+dGF0aWMgdm9pZCBpb25pY19saWZfZGVmZXJyZWRfd29yayhzdHJ1Y3QNCj4gd29ya19zdHJ1Y3Qg
+KndvcmspDQo+ICAJCWNhc2UgRFdfVFlQRV9SWF9BRERSX0RFTDoNCj4gIAkJCWlvbmljX2xpZl9h
+ZGRyX2RlbChsaWYsIHctPmFkZHIpOw0KPiAgCQkJYnJlYWs7DQo+ICsJCWNhc2UgRFdfVFlQRV9M
+SU5LX1NUQVRVUzoNCj4gKwkJCWlvbmljX2xpbmtfc3RhdHVzX2NoZWNrKGxpZik7DQo+ICsJCQli
+cmVhazsNCj4gIAkJZGVmYXVsdDoNCj4gIAkJCWJyZWFrOw0KPiAgCQl9DQo+IEBAIC02OSw2ICs3
+Myw3IEBAIGludCBpb25pY19vcGVuKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYpDQo+ICANCj4g
+IAlzZXRfYml0KExJRl9VUCwgbGlmLT5zdGF0ZSk7DQo+ICANCj4gKwlpb25pY19saW5rX3N0YXR1
+c19jaGVjayhsaWYpOw0KPiAgCWlmIChuZXRpZl9jYXJyaWVyX29rKG5ldGRldikpDQo+ICAJCW5l
+dGlmX3R4X3dha2VfYWxsX3F1ZXVlcyhuZXRkZXYpOw0KPiAgDQo+IEBAIC0xNTEsNiArMTU2LDM5
+IEBAIHN0YXRpYyBpbnQgaW9uaWNfYWRtaW5xX25hcGkoc3RydWN0IG5hcGlfc3RydWN0DQo+ICpu
+YXBpLCBpbnQgYnVkZ2V0KQ0KPiAgCXJldHVybiBtYXgobl93b3JrLCBhX3dvcmspOw0KPiAgfQ0K
+PiAgDQo+ICtzdGF0aWMgdm9pZCBpb25pY19saW5rX3N0YXR1c19jaGVjayhzdHJ1Y3QgbGlmICps
+aWYpDQo+ICt7DQo+ICsJc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiA9IGxpZi0+bmV0ZGV2Ow0K
+PiArCXUxNiBsaW5rX3N0YXR1czsNCj4gKwlib29sIGxpbmtfdXA7DQo+ICsNCj4gKwljbGVhcl9i
+aXQoTElGX0xJTktfQ0hFQ0tfTkVFREVELCBsaWYtPnN0YXRlKTsNCj4gKw0KPiArCWxpbmtfc3Rh
+dHVzID0gbGUxNl90b19jcHUobGlmLT5pbmZvLT5zdGF0dXMubGlua19zdGF0dXMpOw0KPiArCWxp
+bmtfdXAgPSBsaW5rX3N0YXR1cyA9PSBQT1JUX09QRVJfU1RBVFVTX1VQOw0KPiArDQo+ICsJLyog
+ZmlsdGVyIG91dCB0aGUgbm8tY2hhbmdlIGNhc2VzICovDQo+ICsJaWYgKGxpbmtfdXAgPT0gbmV0
+aWZfY2Fycmllcl9vayhuZXRkZXYpKQ0KPiArCQlyZXR1cm47DQo+ICsNCj4gKwlpZiAobGlua191
+cCkgew0KPiArCQluZXRkZXZfaW5mbyhuZXRkZXYsICJMaW5rIHVwIC0gJWQgR2Jwc1xuIiwNCj4g
+KwkJCSAgICBsZTMyX3RvX2NwdShsaWYtPmluZm8tPnN0YXR1cy5saW5rX3NwZWVkKSAvDQo+IDEw
+MDApOw0KPiArDQo+ICsJCWlmICh0ZXN0X2JpdChMSUZfVVAsIGxpZi0+c3RhdGUpKSB7DQo+ICsJ
+CQluZXRpZl90eF93YWtlX2FsbF9xdWV1ZXMobGlmLT5uZXRkZXYpOw0KPiArCQkJbmV0aWZfY2Fy
+cmllcl9vbihuZXRkZXYpOw0KPiArCQl9DQo+ICsJfSBlbHNlIHsNCj4gKwkJbmV0ZGV2X2luZm8o
+bmV0ZGV2LCAiTGluayBkb3duXG4iKTsNCj4gKw0KPiArCQkvKiBjYXJyaWVyIG9mZiBmaXJzdCB0
+byBhdm9pZCB3YXRjaGRvZyB0aW1lb3V0ICovDQo+ICsJCW5ldGlmX2NhcnJpZXJfb2ZmKG5ldGRl
+dik7DQo+ICsJCWlmICh0ZXN0X2JpdChMSUZfVVAsIGxpZi0+c3RhdGUpKQ0KPiArCQkJbmV0aWZf
+dHhfc3RvcF9hbGxfcXVldWVzKG5ldGRldik7DQo+ICsJfQ0KPiArfQ0KPiArDQo+ICBzdGF0aWMg
+Ym9vbCBpb25pY19ub3RpZnlxX3NlcnZpY2Uoc3RydWN0IGNxICpjcSwgc3RydWN0IGNxX2luZm8N
+Cj4gKmNxX2luZm8pDQo+ICB7DQo+ICAJdW5pb24gbm90aWZ5cV9jb21wICpjb21wID0gY3FfaW5m
+by0+Y3FfZGVzYzsNCj4gQEAgLTE4Miw2ICsyMjAsOSBAQCBzdGF0aWMgYm9vbCBpb25pY19ub3Rp
+ZnlxX3NlcnZpY2Uoc3RydWN0IGNxICpjcSwNCj4gc3RydWN0IGNxX2luZm8gKmNxX2luZm8pDQo+
+ICAJCQkgICAgIiAgbGlua19zdGF0dXM9JWQgbGlua19zcGVlZD0lZFxuIiwNCj4gIAkJCSAgICBs
+ZTE2X3RvX2NwdShjb21wLT5saW5rX2NoYW5nZS5saW5rX3N0YXR1cyksDQo+ICAJCQkgICAgbGUz
+Ml90b19jcHUoY29tcC0+bGlua19jaGFuZ2UubGlua19zcGVlZCkpOw0KPiArDQo+ICsJCXNldF9i
+aXQoTElGX0xJTktfQ0hFQ0tfTkVFREVELCBsaWYtPnN0YXRlKTsNCj4gKw0KPiAgCQlicmVhazsN
+Cj4gIAljYXNlIEVWRU5UX09QQ09ERV9SRVNFVDoNCj4gIAkJbmV0ZGV2X2luZm8obmV0ZGV2LCAi
+Tm90aWZ5cSBFVkVOVF9PUENPREVfUkVTRVQNCj4gZWlkPSVsbGRcbiIsDQo+IEBAIC0yMjIsMTAg
+KzI2Myw4MSBAQCBzdGF0aWMgaW50IGlvbmljX25vdGlmeXFfY2xlYW4oc3RydWN0IGxpZiAqbGlm
+LA0KPiBpbnQgYnVkZ2V0KQ0KPiAgCWlmICh3b3JrX2RvbmUgPT0gYnVkZ2V0KQ0KPiAgCQlnb3Rv
+IHJldHVybl90b19uYXBpOw0KPiAgDQo+ICsJLyogQWZ0ZXIgb3V0c3RhbmRpbmcgZXZlbnRzIGFy
+ZSBwcm9jZXNzZWQgd2UgY2FuIGNoZWNrIG9uDQo+ICsJICogdGhlIGxpbmsgc3RhdHVzIGFuZCBh
+bnkgb3V0c3RhbmRpbmcgaW50ZXJydXB0IGNyZWRpdHMuDQo+ICsJICoNCj4gKwkgKiBXZSB3YWl0
+IHVudGlsIGhlcmUgdG8gY2hlY2sgb24gdGhlIGxpbmsgc3RhdHVzIGluIGNhc2UNCj4gKwkgKiB0
+aGVyZSB3YXMgYSBsb25nIGxpc3Qgb2YgbGluayBldmVudHMgZnJvbSBhIGZsYXAgZXBpc29kZS4N
+Cj4gKwkgKi8NCj4gKwlpZiAodGVzdF9iaXQoTElGX0xJTktfQ0hFQ0tfTkVFREVELCBsaWYtPnN0
+YXRlKSkgew0KPiArCQlzdHJ1Y3QgaW9uaWNfZGVmZXJyZWRfd29yayAqd29yazsNCj4gKw0KPiAr
+CQl3b3JrID0ga3phbGxvYyhzaXplb2YoKndvcmspLCBHRlBfQVRPTUlDKTsNCj4gKwkJaWYgKCF3
+b3JrKSB7DQo+ICsJCQluZXRkZXZfZXJyKGxpZi0+bmV0ZGV2LCAiJXMgT09NXG4iLCBfX2Z1bmNf
+Xyk7DQoNCndoeSBub3QgaGF2aW5nIGEgcHJlIGFsbG9jYXRlZCBkZWRpY2F0ZWQgbGlmLT5saW5r
+X2NoZWNrX3dvcmssIGluc3RlYWQNCm9mIGFsbG9jYXRpbmcgaW4gYXRvbWljIGNvbnRleHQgb24g
+ZXZlcnkgbGluayBjaGVjayBldmVudCA/DQoNCj4gKwkJfSBlbHNlIHsNCj4gKwkJCXdvcmstPnR5
+cGUgPSBEV19UWVBFX0xJTktfU1RBVFVTOw0KPiArCQkJaW9uaWNfbGlmX2RlZmVycmVkX2VucXVl
+dWUoJmxpZi0+ZGVmZXJyZWQsDQo+IHdvcmspOw0KPiArCQl9DQo+ICsJfQ0KPiArDQo+ICByZXR1
+cm5fdG9fbmFwaToNCj4gIAlyZXR1cm4gd29ya19kb25lOw0KPiAgfQ0KPiAgDQo+ICtzdGF0aWMg
+dm9pZCBpb25pY19nZXRfc3RhdHM2NChzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2LA0KPiArCQkJ
+ICAgICAgc3RydWN0IHJ0bmxfbGlua19zdGF0czY0ICpucykNCj4gK3sNCj4gKwlzdHJ1Y3QgbGlm
+ICpsaWYgPSBuZXRkZXZfcHJpdihuZXRkZXYpOw0KPiArCXN0cnVjdCBsaWZfc3RhdHMgKmxzOw0K
+PiArDQo+ICsJbWVtc2V0KG5zLCAwLCBzaXplb2YoKm5zKSk7DQo+ICsJbHMgPSAmbGlmLT5pbmZv
+LT5zdGF0czsNCj4gKw0KPiArCW5zLT5yeF9wYWNrZXRzID0gbGU2NF90b19jcHUobHMtPnJ4X3Vj
+YXN0X3BhY2tldHMpICsNCj4gKwkJCSBsZTY0X3RvX2NwdShscy0+cnhfbWNhc3RfcGFja2V0cykg
+Kw0KPiArCQkJIGxlNjRfdG9fY3B1KGxzLT5yeF9iY2FzdF9wYWNrZXRzKTsNCj4gKw0KPiArCW5z
+LT50eF9wYWNrZXRzID0gbGU2NF90b19jcHUobHMtPnR4X3VjYXN0X3BhY2tldHMpICsNCj4gKwkJ
+CSBsZTY0X3RvX2NwdShscy0+dHhfbWNhc3RfcGFja2V0cykgKw0KPiArCQkJIGxlNjRfdG9fY3B1
+KGxzLT50eF9iY2FzdF9wYWNrZXRzKTsNCj4gKw0KPiArCW5zLT5yeF9ieXRlcyA9IGxlNjRfdG9f
+Y3B1KGxzLT5yeF91Y2FzdF9ieXRlcykgKw0KPiArCQkgICAgICAgbGU2NF90b19jcHUobHMtPnJ4
+X21jYXN0X2J5dGVzKSArDQo+ICsJCSAgICAgICBsZTY0X3RvX2NwdShscy0+cnhfYmNhc3RfYnl0
+ZXMpOw0KPiArDQo+ICsJbnMtPnR4X2J5dGVzID0gbGU2NF90b19jcHUobHMtPnR4X3VjYXN0X2J5
+dGVzKSArDQo+ICsJCSAgICAgICBsZTY0X3RvX2NwdShscy0+dHhfbWNhc3RfYnl0ZXMpICsNCj4g
+KwkJICAgICAgIGxlNjRfdG9fY3B1KGxzLT50eF9iY2FzdF9ieXRlcyk7DQo+ICsNCj4gKwlucy0+
+cnhfZHJvcHBlZCA9IGxlNjRfdG9fY3B1KGxzLT5yeF91Y2FzdF9kcm9wX3BhY2tldHMpICsNCj4g
+KwkJCSBsZTY0X3RvX2NwdShscy0+cnhfbWNhc3RfZHJvcF9wYWNrZXRzKSArDQo+ICsJCQkgbGU2
+NF90b19jcHUobHMtPnJ4X2JjYXN0X2Ryb3BfcGFja2V0cyk7DQo+ICsNCj4gKwlucy0+dHhfZHJv
+cHBlZCA9IGxlNjRfdG9fY3B1KGxzLT50eF91Y2FzdF9kcm9wX3BhY2tldHMpICsNCj4gKwkJCSBs
+ZTY0X3RvX2NwdShscy0+dHhfbWNhc3RfZHJvcF9wYWNrZXRzKSArDQo+ICsJCQkgbGU2NF90b19j
+cHUobHMtPnR4X2JjYXN0X2Ryb3BfcGFja2V0cyk7DQo+ICsNCj4gKwlucy0+bXVsdGljYXN0ID0g
+bGU2NF90b19jcHUobHMtPnJ4X21jYXN0X3BhY2tldHMpOw0KPiArDQo+ICsJbnMtPnJ4X292ZXJf
+ZXJyb3JzID0gbGU2NF90b19jcHUobHMtPnJ4X3F1ZXVlX2VtcHR5KTsNCj4gKw0KPiArCW5zLT5y
+eF9taXNzZWRfZXJyb3JzID0gbGU2NF90b19jcHUobHMtPnJ4X2RtYV9lcnJvcikgKw0KPiArCQkJ
+ICAgICAgIGxlNjRfdG9fY3B1KGxzLT5yeF9xdWV1ZV9kaXNhYmxlZCkgKw0KPiArCQkJICAgICAg
+IGxlNjRfdG9fY3B1KGxzLT5yeF9kZXNjX2ZldGNoX2Vycm9yKSArDQo+ICsJCQkgICAgICAgbGU2
+NF90b19jcHUobHMtPnJ4X2Rlc2NfZGF0YV9lcnJvcik7DQo+ICsNCj4gKwlucy0+dHhfYWJvcnRl
+ZF9lcnJvcnMgPSBsZTY0X3RvX2NwdShscy0+dHhfZG1hX2Vycm9yKSArDQo+ICsJCQkJbGU2NF90
+b19jcHUobHMtPnR4X3F1ZXVlX2Rpc2FibGVkKSArDQo+ICsJCQkJbGU2NF90b19jcHUobHMtPnR4
+X2Rlc2NfZmV0Y2hfZXJyb3IpICsNCj4gKwkJCQlsZTY0X3RvX2NwdShscy0+dHhfZGVzY19kYXRh
+X2Vycm9yKTsNCj4gKw0KPiArCW5zLT5yeF9lcnJvcnMgPSBucy0+cnhfb3Zlcl9lcnJvcnMgKw0K
+PiArCQkJbnMtPnJ4X21pc3NlZF9lcnJvcnM7DQo+ICsNCj4gKwlucy0+dHhfZXJyb3JzID0gbnMt
+PnR4X2Fib3J0ZWRfZXJyb3JzOw0KPiArfQ0KPiArDQo+ICBzdGF0aWMgaW50IGlvbmljX2xpZl9h
+ZGRyX2FkZChzdHJ1Y3QgbGlmICpsaWYsIGNvbnN0IHU4ICphZGRyKQ0KPiAgew0KPiAgCXN0cnVj
+dCBpb25pY19hZG1pbl9jdHggY3R4ID0gew0KPiBAQCAtNTgxLDYgKzY5Myw3IEBAIHN0YXRpYyBp
+bnQgaW9uaWNfdmxhbl9yeF9raWxsX3ZpZChzdHJ1Y3QNCj4gbmV0X2RldmljZSAqbmV0ZGV2LCBf
+X2JlMTYgcHJvdG8sDQo+ICBzdGF0aWMgY29uc3Qgc3RydWN0IG5ldF9kZXZpY2Vfb3BzIGlvbmlj
+X25ldGRldl9vcHMgPSB7DQo+ICAJLm5kb19vcGVuICAgICAgICAgICAgICAgPSBpb25pY19vcGVu
+LA0KPiAgCS5uZG9fc3RvcCAgICAgICAgICAgICAgID0gaW9uaWNfc3RvcCwNCj4gKwkubmRvX2dl
+dF9zdGF0czY0CT0gaW9uaWNfZ2V0X3N0YXRzNjQsDQo+ICAJLm5kb19zZXRfcnhfbW9kZQk9IGlv
+bmljX3NldF9yeF9tb2RlLA0KPiAgCS5uZG9fc2V0X2ZlYXR1cmVzCT0gaW9uaWNfc2V0X2ZlYXR1
+cmVzLA0KPiAgCS5uZG9fc2V0X21hY19hZGRyZXNzCT0gaW9uaWNfc2V0X21hY19hZGRyZXNzLA0K
+PiBAQCAtMTQxOCw2ICsxNTMxLDggQEAgc3RhdGljIGludCBpb25pY19saWZfaW5pdChzdHJ1Y3Qg
+bGlmICpsaWYpDQo+ICANCj4gIAlzZXRfYml0KExJRl9JTklURUQsIGxpZi0+c3RhdGUpOw0KPiAg
+DQo+ICsJaW9uaWNfbGlua19zdGF0dXNfY2hlY2sobGlmKTsNCj4gKw0KPiAgCXJldHVybiAwOw0K
+PiAgDQo+ICBlcnJfb3V0X25vdGlmeXFfZGVpbml0Og0KPiBAQCAtMTQ2MSw2ICsxNTc2LDcgQEAg
+aW50IGlvbmljX2xpZnNfcmVnaXN0ZXIoc3RydWN0IGlvbmljICppb25pYykNCj4gIAkJcmV0dXJu
+IGVycjsNCj4gIAl9DQo+ICANCg0KYXJlIGV2ZW50cyAoTm90aWZ5USkgZW5hYmxlZCBhdCB0aGlz
+IHN0YWdlID8gaWYgc28gdGhlbiB5b3UgbWlnaHQgZW5kdXANCnJhY2luZyBpb25pY19saW5rX3N0
+YXR1c19jaGVjayB3aXRoIGl0c2VsZi4NCg0KPiArCWlvbmljX2xpbmtfc3RhdHVzX2NoZWNrKGlv
+bmljLT5tYXN0ZXJfbGlmKTsNCj4gIAlpb25pYy0+bWFzdGVyX2xpZi0+cmVnaXN0ZXJlZCA9IHRy
+dWU7DQo+ICANCj4gIAlyZXR1cm4gMDsNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L3BlbnNhbmRvL2lvbmljL2lvbmljX2xpZi5oDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
+cGVuc2FuZG8vaW9uaWMvaW9uaWNfbGlmLmgNCj4gaW5kZXggMjBiNGZhNTczZjc3Li45OTMwYjkz
+OTBjOGEgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmlj
+L2lvbmljX2xpZi5oDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmlj
+L2lvbmljX2xpZi5oDQo+IEBAIC04Niw2ICs4Niw3IEBAIHN0cnVjdCBpb25pY19kZWZlcnJlZCB7
+DQo+ICBlbnVtIGxpZl9zdGF0ZV9mbGFncyB7DQo+ICAJTElGX0lOSVRFRCwNCj4gIAlMSUZfVVAs
+DQo+ICsJTElGX0xJTktfQ0hFQ0tfTkVFREVELA0KPiAgCUxJRl9RVUVVRV9SRVNFVCwNCj4gIA0K
+PiAgCS8qIGxlYXZlIHRoaXMgYXMgbGFzdCAqLw0K
