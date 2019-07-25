@@ -2,117 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D7A37429A
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B81742A8
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 02:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729020AbfGYAh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 20:37:28 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38604 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726531AbfGYAh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 20:37:28 -0400
-Received: by mail-qt1-f193.google.com with SMTP id n11so47411167qtl.5;
-        Wed, 24 Jul 2019 17:37:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rkYrcnzGklcjqyrCpXelRjKMi97QveEgZZ2vQcZX2ZE=;
-        b=VYZLhzwaqlhUYckpCGpBP1LTZCh6+zml2gUGKSwnTqGVJw5iiXDIWeZdwEWACT9dTh
-         0PGMRYuj12InP14cG8RkLVM1Ua3+FMFArGfr6vYkxgrqjvgdMeHQuo75m5d0pAACIEgH
-         E5EvLv4PwdbwfUI4jsIjO1k1iJNQDipEQEf0Plmyz+ogbJ6mmuvQr769rPSWoIM2wUBF
-         /5w95je6gH+iOH+bDOXRgm09DBTVi/jSH3d/rkMe/CLnvjS1nkR5apI1ZK1nOMnINid4
-         jJkfOYthdlLJ0VTR6538LUIafRF6Xuy1+Ho12OjnDjz8bq3GZKmfxNlk6bBVdIGiHoz1
-         P9rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rkYrcnzGklcjqyrCpXelRjKMi97QveEgZZ2vQcZX2ZE=;
-        b=tlyGCGZkS2i7qzlSjxhej5d/7t7ZEsqO+HXxOU2gEeUlUC2eunFG8c4frFVp+H7IFk
-         PyBM0ApY/iIqgWmPe3RwoBh65w1/4hBDIUz382uLxydYO0BpNaRGRNRh9xNY+vz/lozW
-         pkndhQKjZBSiESX5E5+KvMkFtB1ryx2vBfGjGdRmibGGHmJX3yUoy5FJYsbNRwiKMw2n
-         lF2cHUijr6PtKXUHmaIYeFSl4DKa0i0DPZRuUdvGIRfLLqXZGvs6HDoxxAgeVw/QtPSO
-         NXT+oMyJcJxQlcrkLnWMlKJotCf/hCBCFJixFhgkkw8tqDj5c9Q/UnClCKLIOv3jeExT
-         bfOA==
-X-Gm-Message-State: APjAAAVadcZnqBKlIIa4Bpe9AQ6yKPzei9YsQ0nLqaZ38nPUbe+XELp5
-        r9GIWXNjzCPhGgsb/flZ8gJlYARxo0TK5PGURX8=
-X-Google-Smtp-Source: APXvYqxXGC3tv3syaluC0CU6o88VgNxqa1oaqH9sLYDIqc3Op07TJi40G+uuR07Vt8LYt8PkGpdgUsRXiruBEEtkTro=
-X-Received: by 2002:a0c:818f:: with SMTP id 15mr58085742qvd.162.1564015047359;
- Wed, 24 Jul 2019 17:37:27 -0700 (PDT)
+        id S2388401AbfGYAop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 20:44:45 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:36430 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387421AbfGYAoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 20:44:44 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6P0dlXf171093;
+        Thu, 25 Jul 2019 00:41:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=gv2SPbpkF9xScJE1PHpWHpgE3ifu6hFMD2cmVIyD7TY=;
+ b=muZVds6swMHMAuFbMxKchNkOUd8CqTrPV0KBCMC49yrWg/LxnLuU6ow/RmgyiMUnnjmy
+ MAiRa6Zm+jzf7B99ZPeMXmyGgQxIYQlCeWqFQqyGoNTjbspAoTiqbjfg4/VmNuRd7Vm5
+ HrFVwz2k57PMYa/HPZcBBc0f5omPk+LrAWZPjNDUaWWol7Y67+yRcy8wbGU1Wbct1RLH
+ zVzTyoIxGQlKet79OucxPmXfLkDZ0FkQP1v/RZBYzmhhy8PDfe/AB0YbSVtLklYjMvP9
+ lz6P71WYbBjNCITeo6xlPXLd7l7LVGerjJLbDawimLUiySB/y4c3YF5VO7XLIrxNTkjP MA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 2tx61c0gjv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 25 Jul 2019 00:41:25 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6P0beDT189084;
+        Thu, 25 Jul 2019 00:41:24 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2tx60yhed4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 25 Jul 2019 00:41:24 +0000
+Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x6P0fGBA002510;
+        Thu, 25 Jul 2019 00:41:16 GMT
+Received: from [192.168.1.14] (/180.165.87.209)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 24 Jul 2019 17:41:15 -0700
+Subject: Re: [PATCH 00/12] block/bio, fs: convert put_page() to
+ put_user_page*()
+To:     john.hubbard@gmail.com, Andrew Morton <akpm@linux-foundation.org>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>, ceph-devel@vger.kernel.org,
+        kvm@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, samba-technical@lists.samba.org,
+        v9fs-developer@lists.sourceforge.net,
+        virtualization@lists.linux-foundation.org,
+        John Hubbard <jhubbard@nvidia.com>
+References: <20190724042518.14363-1-jhubbard@nvidia.com>
+From:   Bob Liu <bob.liu@oracle.com>
+Message-ID: <8621066c-e242-c449-eb04-4f2ce6867140@oracle.com>
+Date:   Thu, 25 Jul 2019 08:41:04 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-2-andriin@fb.com>
- <B5E772A5-C0D9-4697-ADE2-2A94C4AD37B5@fb.com>
-In-Reply-To: <B5E772A5-C0D9-4697-ADE2-2A94C4AD37B5@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 24 Jul 2019 17:37:16 -0700
-Message-ID: <CAEf4BzZsU8qXa08neQ=nrFFTXpSWsxrZuZz=kVjS2BXNUoofUw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 01/10] libbpf: add .BTF.ext offset relocation
- section loading
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190724042518.14363-1-jhubbard@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9328 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1907250003
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9328 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1907250003
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 5:00 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jul 24, 2019, at 12:27 PM, Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > Add support for BPF CO-RE offset relocations. Add section/record
-> > iteration macros for .BTF.ext. These macro are useful for iterating over
-> > each .BTF.ext record, either for dumping out contents or later for BPF
-> > CO-RE relocation handling.
-> >
-> > To enable other parts of libbpf to work with .BTF.ext contents, moved
-> > a bunch of type definitions into libbpf_internal.h.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> > tools/lib/bpf/btf.c             | 64 +++++++++--------------
-> > tools/lib/bpf/btf.h             |  4 ++
-> > tools/lib/bpf/libbpf_internal.h | 91 +++++++++++++++++++++++++++++++++
-> > 3 files changed, 118 insertions(+), 41 deletions(-)
-> >
+On 7/24/19 12:25 PM, john.hubbard@gmail.com wrote:
+> From: John Hubbard <jhubbard@nvidia.com>
+> 
+> Hi,
+> 
+> This is mostly Jerome's work, converting the block/bio and related areas
+> to call put_user_page*() instead of put_page(). Because I've changed
+> Jerome's patches, in some cases significantly, I'd like to get his
+> feedback before we actually leave him listed as the author (he might
+> want to disown some or all of these).
+> 
 
-[...]
+Could you add some background to the commit log for people don't have the context..
+Why this converting? What's the main differences?
 
-> > +
-> > static int btf_ext_parse_hdr(__u8 *data, __u32 data_size)
-> > {
-> >       const struct btf_ext_header *hdr = (struct btf_ext_header *)data;
-> > @@ -1004,6 +979,13 @@ struct btf_ext *btf_ext__new(__u8 *data, __u32 size)
-> >       if (err)
-> >               goto done;
-> >
-> > +     /* check if there is offset_reloc_off/offset_reloc_len fields */
-> > +     if (btf_ext->hdr->hdr_len < sizeof(struct btf_ext_header))
->
-> This check will break when we add more optional sections to btf_ext_header.
-> Maybe use offsetof() instead?
+Regards, -Bob
 
-I didn't do it, because there are no fields after offset_reloc_len.
-But now I though that maybe it would be ok to add zero-sized marker
-field, kind of like marking off various versions of btf_ext header?
+> I added a new patch, in order to make this work with Christoph Hellwig's
+> recent overhaul to bio_release_pages(): "block: bio_release_pages: use
+> flags arg instead of bool".
+> 
+> I've started the series with a patch that I've posted in another
+> series ("mm/gup: add make_dirty arg to put_user_pages_dirty_lock()"[1]),
+> because I'm not sure which of these will go in first, and this allows each
+> to stand alone.
+> 
+> Testing: not much beyond build and boot testing has been done yet. And
+> I'm not set up to even exercise all of it (especially the IB parts) at
+> run time.
+> 
+> Anyway, changes here are:
+> 
+> * Store, in the iov_iter, a "came from gup (get_user_pages)" parameter.
+>   Then, use the new iov_iter_get_pages_use_gup() to retrieve it when
+>   it is time to release the pages. That allows choosing between put_page()
+>   and put_user_page*().
+> 
+> * Pass in one more piece of information to bio_release_pages: a "from_gup"
+>   parameter. Similar use as above.
+> 
+> * Change the block layer, and several file systems, to use
+>   put_user_page*().
+> 
+> [1] https://urldefense.proofpoint.com/v2/url?u=https-3A__lore.kernel.org_r_20190724012606.25844-2D2-2Djhubbard-40nvidia.com&d=DwIDaQ&c=RoP1YumCXCgaWHvlZYR8PZh8Bv7qIrMUB65eapI_JnE&r=1ktT0U2YS_I8Zz2o-MS1YcCAzWZ6hFGtyTgvVMGM7gI&m=FpFhv2rjbKCAYGmO6Hy8WJAottr1Qz_mDKDLObQ40FU&s=q-_mX3daEr22WbdZMElc_ZbD8L9oGLD7U0xLeyJ661Y&e= 
+>     And please note the correction email that I posted as a follow-up,
+>     if you're looking closely at that patch. :) The fixed version is
+>     included here.
+> 
+> John Hubbard (3):
+>   mm/gup: add make_dirty arg to put_user_pages_dirty_lock()
+>   block: bio_release_pages: use flags arg instead of bool
+>   fs/ceph: fix a build warning: returning a value from void function
+> 
+> Jérôme Glisse (9):
+>   iov_iter: add helper to test if an iter would use GUP v2
+>   block: bio_release_pages: convert put_page() to put_user_page*()
+>   block_dev: convert put_page() to put_user_page*()
+>   fs/nfs: convert put_page() to put_user_page*()
+>   vhost-scsi: convert put_page() to put_user_page*()
+>   fs/cifs: convert put_page() to put_user_page*()
+>   fs/fuse: convert put_page() to put_user_page*()
+>   fs/ceph: convert put_page() to put_user_page*()
+>   9p/net: convert put_page() to put_user_page*()
+> 
+>  block/bio.c                                |  81 ++++++++++++---
+>  drivers/infiniband/core/umem.c             |   5 +-
+>  drivers/infiniband/hw/hfi1/user_pages.c    |   5 +-
+>  drivers/infiniband/hw/qib/qib_user_pages.c |   5 +-
+>  drivers/infiniband/hw/usnic/usnic_uiom.c   |   5 +-
+>  drivers/infiniband/sw/siw/siw_mem.c        |   8 +-
+>  drivers/vhost/scsi.c                       |  13 ++-
+>  fs/block_dev.c                             |  22 +++-
+>  fs/ceph/debugfs.c                          |   2 +-
+>  fs/ceph/file.c                             |  62 ++++++++---
+>  fs/cifs/cifsglob.h                         |   3 +
+>  fs/cifs/file.c                             |  22 +++-
+>  fs/cifs/misc.c                             |  19 +++-
+>  fs/direct-io.c                             |   2 +-
+>  fs/fuse/dev.c                              |  22 +++-
+>  fs/fuse/file.c                             |  53 +++++++---
+>  fs/nfs/direct.c                            |  10 +-
+>  include/linux/bio.h                        |  22 +++-
+>  include/linux/mm.h                         |   5 +-
+>  include/linux/uio.h                        |  11 ++
+>  mm/gup.c                                   | 115 +++++++++------------
+>  net/9p/trans_common.c                      |  14 ++-
+>  net/9p/trans_common.h                      |   3 +-
+>  net/9p/trans_virtio.c                      |  18 +++-
+>  24 files changed, 357 insertions(+), 170 deletions(-)
+> 
 
-Alternatively, I can add offsetofend() macro somewhere in libbpf_internal.h.
-
-Do you have any preference?
-
->
-> > +             goto done;
-> > +     err = btf_ext_setup_offset_reloc(btf_ext);
-> > +     if (err)
-> > +             goto done;
-> > +
-> > done:
-
-[...]
