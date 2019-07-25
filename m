@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4D775124
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D4C7511E
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 16:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387841AbfGYOaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 10:30:07 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:49557 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387712AbfGYOaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 10:30:07 -0400
-X-Originating-IP: 86.250.200.211
-Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 617A5FF80A;
-        Thu, 25 Jul 2019 14:30:02 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, richardcochran@gmail.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com
-Subject: [PATCH net-next v4 2/6] Documentation/bindings: net: ocelot: document the PTP ready IRQ
-Date:   Thu, 25 Jul 2019 16:27:03 +0200
-Message-Id: <20190725142707.9313-3-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190725142707.9313-1-antoine.tenart@bootlin.com>
-References: <20190725142707.9313-1-antoine.tenart@bootlin.com>
+        id S1727824AbfGYO3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 10:29:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34422 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725867AbfGYO3d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jul 2019 10:29:33 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E454F83F4C;
+        Thu, 25 Jul 2019 14:29:32 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-49.rdu2.redhat.com [10.10.120.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9DC9D1001281;
+        Thu, 25 Jul 2019 14:29:31 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CAKv+Gu_bJfs3zc90CbmXXo17+CYMVK+bo7OyJ-RYA=AiU38Fvg@mail.gmail.com>
+References: <CAKv+Gu_bJfs3zc90CbmXXo17+CYMVK+bo7OyJ-RYA=AiU38Fvg@mail.gmail.com> <156406148519.15479.13870345028835442313.stgit@warthog.procyon.org.uk>
+To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH] rxrpc: Fix -Wframe-larger-than= warnings from on-stack crypto
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <21522.1564064970.1@warthog.procyon.org.uk>
+Date:   Thu, 25 Jul 2019 15:29:30 +0100
+Message-ID: <21523.1564064970@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Thu, 25 Jul 2019 14:29:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One additional interrupt needs to be described within the Ocelot device
-tree node: the PTP ready one. This patch documents the binding needed to
-do so.
+Ard Biesheuvel <ard.biesheuvel@linaro.org> wrote:
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- Documentation/devicetree/bindings/net/mscc-ocelot.txt | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+> Given that this part of the driver only uses synchronous crypto, and
+> only using a hardcoded algo and mode [pcbc(fcrypt)], of which only a
+> generic C implementation exists, may I suggest that we switch to a
+> library based approach instead?
+> 
+> That way, we can get rid of the crypto API overhead here, and IMO, we
+> can drop support for this cipher from the crypto API entirely.
 
-diff --git a/Documentation/devicetree/bindings/net/mscc-ocelot.txt b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
-index 4d05a3b0f786..3b6290b45ce5 100644
---- a/Documentation/devicetree/bindings/net/mscc-ocelot.txt
-+++ b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
-@@ -17,9 +17,10 @@ Required properties:
-   - "ana"
-   - "portX" with X from 0 to the number of last port index available on that
-     switch
--- interrupts: Should contain the switch interrupts for frame extraction and
--  frame injection
--- interrupt-names: should contain the interrupt names: "xtr", "inj"
-+- interrupts: Should contain the switch interrupts for frame extraction,
-+  frame injection and PTP ready.
-+- interrupt-names: should contain the interrupt names: "xtr", "inj". Can contain
-+  "ptp_rdy" which is optional due to backward compatibility.
- - ethernet-ports: A container for child nodes representing switch ports.
- 
- The ethernet-ports container has the following properties
-@@ -63,8 +64,8 @@ Example:
- 			    "port2", "port3", "port4", "port5", "port6",
- 			    "port7", "port8", "port9", "port10", "qsys",
- 			    "ana";
--		interrupts = <21 22>;
--		interrupt-names = "xtr", "inj";
-+		interrupts = <18 21 22>;
-+		interrupt-names = "ptp_rdy", "xtr", "inj";
- 
- 		ethernet-ports {
- 			#address-cells = <1>;
--- 
-2.21.0
+Ummm...  I'm not entirely sure.  At some point, I need to look at implementing
+the rxgk security class to allow gss to be used.  That can in theory support
+any kerberos cipher suite (which don't include pcbc or fcrypt).  I don't yet
+know how much code I could theoretically share with rxkad.c.
 
+However, since pcbc and fcrypt are only used by rxkad.c, it might make sense
+to move them to net/rxrpc/ and hard code them in rxkad.c - though I'd prefer
+to make an attempt on rxgk first.
+
+David
