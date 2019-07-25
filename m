@@ -2,129 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A09375304
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 17:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE5475312
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 17:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389348AbfGYPlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 11:41:40 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:39503 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388598AbfGYPlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 11:41:39 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 45vbzh20mLz1rcP1;
-        Thu, 25 Jul 2019 17:41:36 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 45vbzh199sz1qqkP;
-        Thu, 25 Jul 2019 17:41:36 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id rIeHRAl92dkc; Thu, 25 Jul 2019 17:41:35 +0200 (CEST)
-X-Auth-Info: hiFxjrugFlX7lLulug2/k9VukwTd0mAVRKfhUCFbAEM=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 25 Jul 2019 17:41:35 +0200 (CEST)
-Subject: Re: [PATCH 3/3] net: dsa: ksz: Add Microchip KSZ8795 DSA driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20190724134048.31029-1-marex@denx.de>
- <20190724134048.31029-4-marex@denx.de> <20190725140351.GG21952@lunn.ch>
- <ea4f2da3-a91f-f1fa-b70d-e9bd46708454@denx.de>
- <20190725145924.GB25700@lunn.ch>
-From:   Marek Vasut <marex@denx.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <7b74e0c3-cdfc-1bf6-e565-e677a01a2244@denx.de>
-Date:   Thu, 25 Jul 2019 17:36:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S2389429AbfGYPnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 11:43:43 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:44312 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389338AbfGYPnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 11:43:43 -0400
+Received: by mail-pg1-f195.google.com with SMTP id i18so23243248pgl.11;
+        Thu, 25 Jul 2019 08:43:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=fnr6pBwaZHgrvTrsWM0lWf29ZYtVudcvDA0tXClUAIk=;
+        b=gxTUCmi61k8oCloWLGbyuaU+8sKP1tpWvDlX3UC7PUQ6qUZgnhmhR21mKOah/E+yap
+         ojXtojkZYWZxjGfsIC46db8zt3mLHOf5X8elBHkNi374kSVvwfCgnN8gpoD3l8l3Xu75
+         fEYjaDF8sKc9Vkqp6wcRMHY8Fd0SOmT+CV2Cd3NOtYIcXlCzNfwFPAvW2cjFx7SZHVh8
+         asChtjFOAbZXNHKYlKCENY6cvtnlLfRkW9RBdk6pFsBHcNmIuN+xahJNHOefqFmKSy8O
+         x5L5bODT/ttqd+GthkjXVIO+1aRFCJeGzQ8dTTqbnbSQnDLLpYjvsubZIwc1eN93f8L0
+         IcEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=fnr6pBwaZHgrvTrsWM0lWf29ZYtVudcvDA0tXClUAIk=;
+        b=VEgBL/TBUAswygF1plyalk0UHA5Iqr0ncQlSPAp8K8v12wK6rj9+uIQ9UKmRfF9bsJ
+         cD7bXYM3bsUhTNluKtAlQ3fsMbm9gwLVV/rC/FwAthLe3d2YG+NUpi/gmQpnCs+SznM6
+         V49Ym8doBWUMPR+VubRfFWuGhJd+ugbx7r7rGwuCj4IbpM6QdNf5TtUyWpTV6a1dfwOq
+         ib1K4x8L8cU5zc8xglQ5fTmtG6qQavT7I+vnJl5knnnXMxbnCe3aU9UodURuNYBXgzhi
+         NekZgPJgnQypLLDGRlbVmrNVg3LCFZ6Wc82lm4a1c6vacia8Pfy6OXWiUNMEzOpzkKMQ
+         NkAA==
+X-Gm-Message-State: APjAAAVuBK1V5rWhzYgCJXrOiuU5hj3dJBi2LYACoBeGQw6f/bCYiCFd
+        3GE18RGgKiBr4u8iXwcjFUQ=
+X-Google-Smtp-Source: APXvYqwICO+lUQpX0zfeSUwlQ8SBPmqpnb9NS3+v6JoAVsMYhlrKUgJY8pslMcI2jr4Ozz/YqyM/9A==
+X-Received: by 2002:a17:90a:220a:: with SMTP id c10mr95042299pje.33.1564069422669;
+        Thu, 25 Jul 2019 08:43:42 -0700 (PDT)
+Received: from [172.20.174.128] ([2620:10d:c090:180::1:622f])
+        by smtp.gmail.com with ESMTPSA id z68sm46012882pgz.88.2019.07.25.08.43.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Jul 2019 08:43:42 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Magnus Karlsson" <magnus.karlsson@gmail.com>
+Cc:     "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
+        "Kevin Laatz" <kevin.laatz@intel.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Network Development" <netdev@vger.kernel.org>,
+        ciara.loftus@intel.com, "Alexei Starovoitov" <ast@kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        bruce.richardson@intel.com, bpf <bpf@vger.kernel.org>,
+        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH v2 00/10] XDP unaligned chunk placement
+ support
+Date:   Thu, 25 Jul 2019 08:43:40 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <19272E3B-7BA5-4AC2-8D16-E9FC143E13D3@gmail.com>
+In-Reply-To: <CAJ8uoz26Byzhc4My70h3nmfd3pQB1ahFf=ZzN2heN4asrJ-NQg@mail.gmail.com>
+References: <20190620090958.2135-1-kevin.laatz@intel.com>
+ <20190716030637.5634-1-kevin.laatz@intel.com>
+ <CAADnVQLEdJwT7DRCpp2zuKWTg0uj=WKQkFc2LZ4o+1fDgnEFLg@mail.gmail.com>
+ <CAJ8uoz26Byzhc4My70h3nmfd3pQB1ahFf=ZzN2heN4asrJ-NQg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190725145924.GB25700@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/25/19 4:59 PM, Andrew Lunn wrote:
-> On Thu, Jul 25, 2019 at 04:56:37PM +0200, Marek Vasut wrote:
->> On 7/25/19 4:03 PM, Andrew Lunn wrote:
->>> On Wed, Jul 24, 2019 at 03:40:48PM +0200, Marek Vasut wrote:
->>>> From: Tristram Ha <Tristram.Ha@microchip.com>
->>>> +static void ksz8795_phy_setup(struct ksz_device *dev, int port,
->>>> +			      struct phy_device *phy)
->>>> +{
->>>> +	if (port < dev->phy_port_cnt) {
->>>> +		/*
->>>> +		 * SUPPORTED_Asym_Pause and SUPPORTED_Pause can be removed to
->>>> +		 * disable flow control when rate limiting is used.
->>>> +		 */
->>>> +		linkmode_copy(phy->advertising, phy->supported);
->>>> +	}
->>>> +}
->>>
->>> Hi Marek
->>>
->>> Do you know why this is needed?
->>
->> Unfortunately, no.
->>
->> It seems it copies supported features of the PHY to advertised features
->> of the PHY for ports which are downstream (i.e. not the CPU port).
-> 
-> Hi Marek
-> 
-> Could you test it without this copy? Do you get sensible values from
-> ethtool? Does the pause configuration look sensible?
 
-They do look OK even without the code.
+
+On 24 Jul 2019, at 6:25, Magnus Karlsson wrote:
+
+> On Tue, Jul 23, 2019 at 11:08 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>>
+>> Johnathan, Bjorn, Jakub,
+>> Please review!
+>> The patch set has been pending for a week.
+>
+> There is a v3 coming out shortly so I suggest we wait for that. It
+> will have Mellanox support for this feature too and some clean ups. I
+> refrained from posting a review on the mailing list due to the merge
+> window being closed last week, but maybe that was not correct. Should
+> I still post reviews for new features submitted during the closed
+> merge window period? I am happy to do it since I do not have any other
+> tasks during that time. It is a quite period for me. Just let me know.
+
+Same here - last time I posted a patch when the merge window was closed,
+it was signaled to me (Hi Jakub!) to wait until it reopened.
+-- 
+Jonathan
+
+
+
+>
+> /Magnus
+>
+>> On Tue, Jul 16, 2019 at 4:21 AM Kevin Laatz <kevin.laatz@intel.com> 
+>> wrote:
+>>>
+>>> This patch set adds the ability to use unaligned chunks in the XDP 
+>>> umem.
+>>>
+>>> Currently, all chunk addresses passed to the umem are masked to be 
+>>> chunk
+>>> size aligned (default is 2k, max is PAGE_SIZE). This limits where we 
+>>> can
+>>> place chunks within the umem as well as limiting the packet sizes 
+>>> that are
+>>> supported.
+>>>
+>>> The changes in this patch set removes these restrictions, allowing 
+>>> XDP to
+>>> be more flexible in where it can place a chunk within a umem. By 
+>>> relaxing
+>>> where the chunks can be placed, it allows us to use an arbitrary 
+>>> buffer
+>>> size and place that wherever we have a free address in the umem. 
+>>> These
+>>> changes add the ability to support arbitrary frame sizes up to 4k
+>>> (PAGE_SIZE) and make it easy to integrate with other existing 
+>>> frameworks
+>>> that have their own memory management systems, such as DPDK.
+>>>
+>>> Since we are now dealing with arbitrary frame sizes, we need also 
+>>> need to
+>>> update how we pass around addresses. Currently, the addresses can 
+>>> simply be
+>>> masked to 2k to get back to the original address. This becomes less 
+>>> trivial
+>>> when using frame sizes that are not a 'power of 2' size. This patch 
+>>> set
+>>> modifies the Rx/Tx descriptor format to use the upper 16-bits of the 
+>>> addr
+>>> field for an offset value, leaving the lower 48-bits for the address 
+>>> (this
+>>> leaves us with 256 Terabytes, which should be enough!). We only need 
+>>> to use
+>>> the upper 16-bits to store the offset when running in unaligned 
+>>> mode.
+>>> Rather than adding the offset (headroom etc) to the address, we will 
+>>> store
+>>> it in the upper 16-bits of the address field. This way, we can 
+>>> easily add
+>>> the offset to the address where we need it, using some bit 
+>>> manipulation and
+>>> addition, and we can also easily get the original address wherever 
+>>> we need
+>>> it (for example in i40e_zca_free) by simply masking to get the lower
+>>> 48-bits of the address field.
+>>>
+>>> The numbers below were recorded with the following set up:
+>>>   - Intel(R) Xeon(R) Gold 6140 CPU @ 2.30GHz
+>>>   - Intel Corporation Ethernet Controller XXV710 for 25GbE SFP28 
+>>> (rev 02)
+>>>   - Driver: i40e
+>>>   - Application: xdpsock with l2fwd (single interface)
+>>>
+>>> These are solely for comparing performance with and without the 
+>>> patches.
+>>> The largest drop was ~1% (in zero-copy mode).
+>>>
+>>> +-------------------------+------------+-----------------+-------------+
+>>> | Buffer size: 2048       | SKB mode   | Zero-copy       | Copy      
+>>>   |
+>>> +-------------------------+------------+-----------------+-------------+
+>>> | Aligned (baseline)      | 1.7 Mpps   | 15.3 Mpps       | 2.08 Mpps 
+>>>   |
+>>> +-------------------------+------------+-----------------+-------------+
+>>> | Aligned (with patches)  | 1.7 Mpps   | 15.1 Mpps       | 2.08 Mpps 
+>>>   |
+>>> +-------------------------+------------+-----------------+-------------+
+>>> | Unaligned               | 1.7 Mpps   | 14.5 Mpps       | 2.08 Mpps 
+>>>   |
+>>> +-------------------------+------------+-----------------+-------------+
+>>>
+>>> NOTE: We are currently working on the changes required in the 
+>>> Mellanox
+>>> driver. We will include these in the v3.
+>>>
+>>> Structure of the patchset:
+>>> Patch 1:
+>>>   - Remove unnecessary masking and headroom addition during 
+>>> zero-copy Rx
+>>>     buffer recycling in i40e. This change is required in order for 
+>>> the
+>>>     buffer recycling to work in the unaligned chunk mode.
+>>>
+>>> Patch 2:
+>>>   - Remove unnecessary masking and headroom addition during
+>>>     zero-copy Rx buffer recycling in ixgbe. This change is required 
+>>> in
+>>>     order for the  buffer recycling to work in the unaligned chunk 
+>>> mode.
+>>>
+>>> Patch 3:
+>>>   - Add infrastructure for unaligned chunks. Since we are dealing 
+>>> with
+>>>     unaligned chunks that could potentially cross a physical page 
+>>> boundary,
+>>>     we add checks to keep track of that information. We can later 
+>>> use this
+>>>     information to correctly handle buffers that are placed at an 
+>>> address
+>>>     where they cross a page boundary.  This patch also modifies the
+>>>     existing Rx and Tx functions to use the new descriptor format. 
+>>> To
+>>>     handle addresses correctly, we need to mask appropriately based 
+>>> on
+>>>     whether we are in aligned or unaligned mode.
+>>>
+>>> Patch 4:
+>>>   - This patch updates the i40e driver to make use of the new 
+>>> descriptor
+>>>     format. The new format is particularly useful here since we can 
+>>> now
+>>>     retrieve the original address in places like i40e_zca_free with 
+>>> ease.
+>>>     This saves us doing various calculations to get the original 
+>>> address
+>>>     back.
+>>>
+>>> Patch 5:
+>>>   - This patch updates the ixgbe driver to make use of the new 
+>>> descriptor
+>>>     format. The new format is particularly useful here since we can 
+>>> now
+>>>     retrieve the original address in places like ixgbe_zca_free with 
+>>> ease.
+>>>     This saves us doing various calculations to get the original 
+>>> address
+>>>     back.
+>>>
+>>> Patch 6:
+>>>   - Add flags for umem configuration to libbpf
+>>>
+>>> Patch 7:
+>>>   - Modify xdpsock application to add a command line option for
+>>>     unaligned chunks
+>>>
+>>> Patch 8:
+>>>   - Since we can now run the application in unaligned chunk mode, we 
+>>> need
+>>>     to make sure we recycle the buffers appropriately.
+>>>
+>>> Patch 9:
+>>>   - Adds hugepage support to the xdpsock application
+>>>
+>>> Patch 10:
+>>>   - Documentation update to include the unaligned chunk scenario. We 
+>>> need
+>>>     to explicitly state that the incoming addresses are only masked 
+>>> in the
+>>>     aligned chunk mode and not the unaligned chunk mode.
+>>>
+>>> ---
+>>> v2:
+>>>   - fixed checkpatch issues
+>>>   - fixed Rx buffer recycling for unaligned chunks in xdpsock
+>>>   - removed unused defines
+>>>   - fixed how chunk_size is calculated in xsk_diag.c
+>>>   - added some performance numbers to cover letter
+>>>   - modified descriptor format to make it easier to retrieve 
+>>> original
+>>>     address
+>>>   - removed patch adding off_t off to the zero copy allocator. This 
+>>> is no
+>>>     longer needed with the new descriptor format.
+>>>
+>>> Kevin Laatz (10):
+>>>   i40e: simplify Rx buffer recycle
+>>>   ixgbe: simplify Rx buffer recycle
+>>>   xsk: add support to allow unaligned chunk placement
+>>>   i40e: modify driver for handling offsets
+>>>   ixgbe: modify driver for handling offsets
+>>>   libbpf: add flags to umem config
+>>>   samples/bpf: add unaligned chunks mode support to xdpsock
+>>>   samples/bpf: add buffer recycling for unaligned chunks to xdpsock
+>>>   samples/bpf: use hugepages in xdpsock app
+>>>   doc/af_xdp: include unaligned chunk case
+>>>
+>>>  Documentation/networking/af_xdp.rst          | 10 ++-
+>>>  drivers/net/ethernet/intel/i40e/i40e_xsk.c   | 39 +++++----
+>>>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 39 +++++----
+>>>  include/net/xdp_sock.h                       |  2 +
+>>>  include/uapi/linux/if_xdp.h                  |  9 ++
+>>>  net/xdp/xdp_umem.c                           | 17 ++--
+>>>  net/xdp/xsk.c                                | 89 
+>>> ++++++++++++++++----
+>>>  net/xdp/xsk_diag.c                           |  2 +-
+>>>  net/xdp/xsk_queue.h                          | 70 +++++++++++++--
+>>>  samples/bpf/xdpsock_user.c                   | 61 ++++++++++----
+>>>  tools/include/uapi/linux/if_xdp.h            |  4 +
+>>>  tools/lib/bpf/xsk.c                          |  3 +
+>>>  tools/lib/bpf/xsk.h                          |  2 +
+>>>  13 files changed, 266 insertions(+), 81 deletions(-)
+>>>
+>>> --
+>>> 2.17.1
+>>>
+>> _______________________________________________
+>> Intel-wired-lan mailing list
+>> Intel-wired-lan@osuosl.org
+>> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
