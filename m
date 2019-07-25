@@ -2,51 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BDF275777
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB4B75797
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfGYTAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 15:00:10 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:43053 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726303AbfGYTAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 15:00:10 -0400
-Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
-        (envelope-from <linville@tuxdriver.com>)
-        id 1hqiyH-0001Mm-1f
-        for netdev@vger.kernel.org; Thu, 25 Jul 2019 15:00:09 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by localhost.localdomain (8.15.2/8.14.6) with ESMTP id x6PIxHeK028548
-        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 14:59:17 -0400
-Received: (from linville@localhost)
-        by localhost.localdomain (8.15.2/8.15.2/Submit) id x6PIxHlV028547
-        for netdev@vger.kernel.org; Thu, 25 Jul 2019 14:59:17 -0400
-Date:   Thu, 25 Jul 2019 14:59:17 -0400
-From:   "John W. Linville" <linville@tuxdriver.com>
-To:     netdev@vger.kernel.org
-Subject: ethtool 5.2 released
-Message-ID: <20190725185917.GA23037@tuxdriver.com>
+        id S1726489AbfGYTKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 15:10:36 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45888 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726065AbfGYTKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 15:10:36 -0400
+Received: by mail-qk1-f193.google.com with SMTP id s22so37302597qkj.12
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 12:10:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=iKVapx1RqpxI4fC/IeFwmqp7E16OG+D1ofg7IIrvhQg=;
+        b=vUWKD0RRiPRmwMu/QH7xCx/r3e2UNByUpx8QWn0jCjt1aud5Ui1164+ZPJfueeId+7
+         Tm4oSPV5SR56aOKAUDbKg8KXkSoM11yY28/DK4nhE+ayk09JyOpuujXjBZVfHPF0fsbL
+         4neSq/zNQL4gLYctF1ZtffxR9J7BAJ694o0BFnVhmBSxqDB5Q8l8U2vtE1mw7CTuxdx6
+         5XSRacQ/BN7dGwYYx7y39QhGR+A5v53OqjwE2Djf8Po+Cyen+XoI055Ks89OdRCN7ooE
+         izHL+pvDvuGGwu6ZLaomIYAw5kAZCfa7sHvNWDFhJxMuUthuDjL/xP262twclHOuxhjr
+         QeUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=iKVapx1RqpxI4fC/IeFwmqp7E16OG+D1ofg7IIrvhQg=;
+        b=AdQtewvInewfEVUXYvVc6nsW1pSbM1JpXNsjb9g/zX11p+0GuCabdfHj5/wxYsEmK3
+         eVUQaXZZZ+Dmpm+rlZlMb9gQkyLwC5cWm1DGKGKRCGk8Dbu9g43qNuIF+uY+W9SJibxR
+         gRnIOsjkEmSq7V81WsSV8SOY7zaVQU0mKgP6om3eqgsS2pijUnqpCjE/pOdhmN+mbe7n
+         YrKPktbnq/ZG3eRA51XB0UyAOgOaYkfgFJ4SdsbPymbTsP1y39IQwxol8Cn1I2xarOHu
+         q9lf4JTgU+6tly5juCx6yQjgMhAj0lKKPFKl0HtOoSQcOa36cM2ad3fw+bYJ/OuQxm6b
+         +qCQ==
+X-Gm-Message-State: APjAAAX3agbM7jwtQlMej3olo1T6V+T8h3uL8jwr2hGkhCY7KYJ/pffs
+        nQMXEew0J5jQHnDT7lJ2+s4MnQ==
+X-Google-Smtp-Source: APXvYqzqFw9CSlMSLMTe/OvgGUoYAX8lbHzh+recHR3EUzWUU00tGD6X5MxRRe0L8xiWCcnrzb/YQw==
+X-Received: by 2002:a37:aa04:: with SMTP id t4mr59931514qke.359.1564081835202;
+        Thu, 25 Jul 2019 12:10:35 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y3sm24473960qtj.46.2019.07.25.12.10.34
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 25 Jul 2019 12:10:35 -0700 (PDT)
+Date:   Thu, 25 Jul 2019 12:10:29 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     wenxu@ucloud.cn
+Cc:     pablo@netfilter.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] flow_offload: move tc indirect block to
+ flow offload
+Message-ID: <20190725121029.75f26c2d@cakuba.netronome.com>
+In-Reply-To: <1564048533-27283-1-git-send-email-wenxu@ucloud.cn>
+References: <1564048533-27283-1-git-send-email-wenxu@ucloud.cn>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ethtool version 5.2 has been released.
+Please provide cover letter for the patch set.
 
-Home page: https://www.kernel.org/pub/software/network/ethtool/
-Download link:
-https://www.kernel.org/pub/software/network/ethtool/ethtool-5.2.tar.xz
+On Thu, 25 Jul 2019 17:55:31 +0800, wenxu@ucloud.cn wrote:
+> +static bool rhash_table_init;
+> +int flow_indr_rhashtable_init(void)
+> +{
+> +	int err = 0;
+> +
+> +	if (!rhash_table_init) {
+> +		err = rhashtable_init(&indr_setup_block_ht,
+> +				      &flow_indr_setup_block_ht_params);
+> +
+> +		if (!err)
+> +			rhash_table_init = true;
+> +	}
+> +
+> +	return err;
+> +}
+> +EXPORT_SYMBOL_GPL(flow_indr_rhashtable_init);
 
-Release notes:
+This should be written like this:
 
-	* Feature: Add 100BaseT1 and 1000BaseT1 link modes
-	* Feature: Use standard file location macros in ethtool.spec
+int flow_indr_rhashtable_init(void)
+{
+	static bool rhash_table_init;
+	int err;
 
-John
--- 
-John W. Linville		Someday the world will need a hero, and you
-linville@tuxdriver.com			might be all we have.  Be ready.
+	if (rhash_table_init)
+		return 0;
+
+	err = rhashtable_init(&indr_setup_block_ht,
+			      &flow_indr_setup_block_ht_params);
+	if (err)
+		return err;
+
+	rhash_table_init = true;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(flow_indr_rhashtable_init);
