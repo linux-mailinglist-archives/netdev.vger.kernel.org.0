@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D81B6757FF
+	by mail.lfdr.de (Postfix) with ESMTP id 5FAAC757FE
 	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:35:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726481AbfGYTfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 15:35:19 -0400
+        id S1726557AbfGYTfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 15:35:25 -0400
 Received: from mga09.intel.com ([134.134.136.24]:23656 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726432AbfGYTfS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 15:35:18 -0400
+        id S1726490AbfGYTfT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jul 2019 15:35:19 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jul 2019 12:35:17 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,307,1559545200"; 
-   d="scan'208";a="170359960"
+   d="scan'208";a="164299244"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 25 Jul 2019 12:35:15 -0700
+  by orsmga008.jf.intel.com with ESMTP; 25 Jul 2019 12:35:15 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 1A28F552; Thu, 25 Jul 2019 22:35:12 +0300 (EEST)
+        id 2640F5A8; Thu, 25 Jul 2019 22:35:12 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?= 
         <clement.perrochaud@effinnov.com>,
@@ -30,9 +30,9 @@ To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?=
         Sedat Dilek <sedat.dilek@credativ.de>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH v3 08/14] NFC: nxp-nci: Constify acpi_device_id
-Date:   Thu, 25 Jul 2019 22:35:05 +0300
-Message-Id: <20190725193511.64274-8-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 09/14] NFC: nxp-nci: Drop of_match_ptr() use
+Date:   Thu, 25 Jul 2019 22:35:06 +0300
+Message-Id: <20190725193511.64274-9-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190725193511.64274-1-andriy.shevchenko@linux.intel.com>
 References: <20190725193511.64274-1-andriy.shevchenko@linux.intel.com>
@@ -43,9 +43,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The content of acpi_device_id is not supposed to change at runtime.
-All functions working with acpi_device_id provided by <linux/acpi.h>
-work with const acpi_device_id. So mark the non-const structs as const.
+There is no need to guard OF device ID table with of_match_ptr().
+Otherwise we would get a defined but not used data.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
@@ -54,18 +53,18 @@ Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index bec9b1ea78e2..4e71962dc557 100644
+index 4e71962dc557..f2c8a560e265 100644
 --- a/drivers/nfc/nxp-nci/i2c.c
 +++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -330,7 +330,7 @@ static const struct of_device_id of_nxp_nci_i2c_match[] = {
- MODULE_DEVICE_TABLE(of, of_nxp_nci_i2c_match);
- 
- #ifdef CONFIG_ACPI
--static struct acpi_device_id acpi_id[] = {
-+static const struct acpi_device_id acpi_id[] = {
- 	{ "NXP1001" },
- 	{ "NXP7471" },
- 	{ },
+@@ -342,7 +342,7 @@ static struct i2c_driver nxp_nci_i2c_driver = {
+ 	.driver = {
+ 		   .name = NXP_NCI_I2C_DRIVER_NAME,
+ 		   .acpi_match_table = ACPI_PTR(acpi_id),
+-		   .of_match_table = of_match_ptr(of_nxp_nci_i2c_match),
++		   .of_match_table = of_nxp_nci_i2c_match,
+ 		  },
+ 	.probe = nxp_nci_i2c_probe,
+ 	.id_table = nxp_nci_i2c_id_table,
 -- 
 2.20.1
 
