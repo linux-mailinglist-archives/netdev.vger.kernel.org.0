@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C348675804
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:35:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B4B757FA
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:35:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726385AbfGYTfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 15:35:15 -0400
-Received: from mga01.intel.com ([192.55.52.88]:5245 "EHLO mga01.intel.com"
+        id S1726426AbfGYTfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 15:35:16 -0400
+Received: from mga07.intel.com ([134.134.136.100]:61367 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726183AbfGYTfP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726352AbfGYTfP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 25 Jul 2019 15:35:15 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jul 2019 12:35:15 -0700
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jul 2019 12:35:14 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,307,1559545200"; 
-   d="scan'208";a="181591152"
+   d="scan'208";a="369260715"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 25 Jul 2019 12:35:12 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 25 Jul 2019 12:35:12 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DED42130; Thu, 25 Jul 2019 22:35:11 +0300 (EEST)
+        id E82D4177; Thu, 25 Jul 2019 22:35:11 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?= 
         <clement.perrochaud@effinnov.com>,
@@ -30,137 +30,163 @@ To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?=
         Sedat Dilek <sedat.dilek@credativ.de>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH v3 03/14] NFC: nxp-nci: Get rid of platform data
-Date:   Thu, 25 Jul 2019 22:35:00 +0300
-Message-Id: <20190725193511.64274-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 04/14] NFC: nxp-nci: Convert to use GPIO descriptor
+Date:   Thu, 25 Jul 2019 22:35:01 +0300
+Message-Id: <20190725193511.64274-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190725193511.64274-1-andriy.shevchenko@linux.intel.com>
 References: <20190725193511.64274-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Legacy platform data must go away. We are on the safe side here since
-there are no users of it in the kernel.
-
-If anyone by any odd reason needs it the GPIO lookup tables and
-built-in device properties at your service.
+Since we got rid of platform data, the driver may use
+GPIO descriptor directly.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
 ---
- MAINTAINERS                           |  1 -
- drivers/nfc/nxp-nci/core.c            |  1 -
- drivers/nfc/nxp-nci/i2c.c             |  9 +--------
- drivers/nfc/nxp-nci/nxp-nci.h         |  1 -
- include/linux/platform_data/nxp-nci.h | 19 -------------------
- 5 files changed, 1 insertion(+), 30 deletions(-)
- delete mode 100644 include/linux/platform_data/nxp-nci.h
+ drivers/nfc/nxp-nci/core.c |  1 -
+ drivers/nfc/nxp-nci/i2c.c  | 60 ++++++++++----------------------------
+ 2 files changed, 15 insertions(+), 46 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 711b5d07f73d..e54e19f2c96d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11351,7 +11351,6 @@ F:	include/net/nfc/
- F:	include/uapi/linux/nfc.h
- F:	drivers/nfc/
- F:	include/linux/platform_data/nfcmrvl.h
--F:	include/linux/platform_data/nxp-nci.h
- F:	Documentation/devicetree/bindings/net/nfc/
- 
- NFS, SUNRPC, AND LOCKD CLIENTS
 diff --git a/drivers/nfc/nxp-nci/core.c b/drivers/nfc/nxp-nci/core.c
-index 8dafc696719f..aed18ca60170 100644
+index aed18ca60170..a0ce95a287c5 100644
 --- a/drivers/nfc/nxp-nci/core.c
 +++ b/drivers/nfc/nxp-nci/core.c
-@@ -14,7 +14,6 @@
- #include <linux/gpio.h>
+@@ -11,7 +11,6 @@
+  */
+ 
+ #include <linux/delay.h>
+-#include <linux/gpio.h>
  #include <linux/module.h>
  #include <linux/nfc.h>
--#include <linux/platform_data/nxp-nci.h>
- 
- #include <net/nfc/nci_core.h>
  
 diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index 5db71869f04b..47b3b7e612e6 100644
+index 47b3b7e612e6..713c267acf88 100644
 --- a/drivers/nfc/nxp-nci/i2c.c
 +++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -23,7 +23,6 @@
+@@ -21,8 +21,6 @@
+ #include <linux/module.h>
+ #include <linux/nfc.h>
  #include <linux/gpio/consumer.h>
- #include <linux/of_gpio.h>
- #include <linux/of_irq.h>
--#include <linux/platform_data/nxp-nci.h>
+-#include <linux/of_gpio.h>
+-#include <linux/of_irq.h>
  #include <asm/unaligned.h>
  
  #include <net/nfc/nfc.h>
-@@ -304,7 +303,6 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
- 			    const struct i2c_device_id *id)
- {
- 	struct nxp_nci_i2c_phy *phy;
--	struct nxp_nci_nfc_platform_data *pdata;
- 	int r;
+@@ -37,8 +35,8 @@ struct nxp_nci_i2c_phy {
+ 	struct i2c_client *i2c_dev;
+ 	struct nci_dev *ndev;
  
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-@@ -323,17 +321,12 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
- 	phy->i2c_dev = client;
- 	i2c_set_clientdata(client, phy);
- 
--	pdata = client->dev.platform_data;
--
--	if (!pdata && client->dev.of_node) {
-+	if (client->dev.of_node) {
- 		r = nxp_nci_i2c_parse_devtree(client);
- 		if (r < 0) {
- 			nfc_err(&client->dev, "Failed to get DT data\n");
- 			goto probe_exit;
- 		}
--	} else if (pdata) {
--		phy->gpio_en = pdata->gpio_en;
--		phy->gpio_fw = pdata->gpio_fw;
- 	} else if (ACPI_HANDLE(&client->dev)) {
- 		r = nxp_nci_i2c_acpi_config(phy);
- 		if (r < 0)
-diff --git a/drivers/nfc/nxp-nci/nxp-nci.h b/drivers/nfc/nxp-nci/nxp-nci.h
-index 6fe7c45544bf..ae3fb2735a4e 100644
---- a/drivers/nfc/nxp-nci/nxp-nci.h
-+++ b/drivers/nfc/nxp-nci/nxp-nci.h
-@@ -14,7 +14,6 @@
- #include <linux/completion.h>
- #include <linux/firmware.h>
- #include <linux/nfc.h>
--#include <linux/platform_data/nxp-nci.h>
- 
- #include <net/nfc/nci_core.h>
- 
-diff --git a/include/linux/platform_data/nxp-nci.h b/include/linux/platform_data/nxp-nci.h
-deleted file mode 100644
-index 97827ad468e2..000000000000
---- a/include/linux/platform_data/nxp-nci.h
-+++ /dev/null
-@@ -1,19 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * Generic platform data for the NXP NCI NFC chips.
-- *
-- * Copyright (C) 2014  NXP Semiconductors  All rights reserved.
-- *
-- * Authors: Clément Perrochaud <clement.perrochaud@nxp.com>
-- */
--
--#ifndef _NXP_NCI_H_
--#define _NXP_NCI_H_
--
--struct nxp_nci_nfc_platform_data {
 -	unsigned int gpio_en;
 -	unsigned int gpio_fw;
--	unsigned int irq;
--};
++	struct gpio_desc *gpiod_en;
++	struct gpio_desc *gpiod_fw;
+ 
+ 	int hard_fault; /*
+ 			 * < 0 if hardware error occurred (e.g. i2c err)
+@@ -51,8 +49,8 @@ static int nxp_nci_i2c_set_mode(void *phy_id,
+ {
+ 	struct nxp_nci_i2c_phy *phy = (struct nxp_nci_i2c_phy *) phy_id;
+ 
+-	gpio_set_value(phy->gpio_fw, (mode == NXP_NCI_MODE_FW) ? 1 : 0);
+-	gpio_set_value(phy->gpio_en, (mode != NXP_NCI_MODE_COLD) ? 1 : 0);
++	gpiod_set_value(phy->gpiod_fw, (mode == NXP_NCI_MODE_FW) ? 1 : 0);
++	gpiod_set_value(phy->gpiod_en, (mode != NXP_NCI_MODE_COLD) ? 1 : 0);
+ 	usleep_range(10000, 15000);
+ 
+ 	if (mode == NXP_NCI_MODE_COLD)
+@@ -252,30 +250,18 @@ static irqreturn_t nxp_nci_i2c_irq_thread_fn(int irq, void *phy_id)
+ static int nxp_nci_i2c_parse_devtree(struct i2c_client *client)
+ {
+ 	struct nxp_nci_i2c_phy *phy = i2c_get_clientdata(client);
+-	struct device_node *pp;
+-	int r;
 -
--#endif /* _NXP_NCI_H_ */
+-	pp = client->dev.of_node;
+-	if (!pp)
+-		return -ENODEV;
+ 
+-	r = of_get_named_gpio(pp, "enable-gpios", 0);
+-	if (r == -EPROBE_DEFER)
+-		r = of_get_named_gpio(pp, "enable-gpios", 0);
+-	if (r < 0) {
+-		nfc_err(&client->dev, "Failed to get EN gpio, error: %d\n", r);
+-		return r;
++	phy->gpiod_en = devm_gpiod_get(&client->dev, "enable", GPIOD_OUT_LOW);
++	if (IS_ERR(phy->gpiod_en)) {
++		nfc_err(&client->dev, "Failed to get EN gpio\n");
++		return PTR_ERR(phy->gpiod_en);
+ 	}
+-	phy->gpio_en = r;
+ 
+-	r = of_get_named_gpio(pp, "firmware-gpios", 0);
+-	if (r == -EPROBE_DEFER)
+-		r = of_get_named_gpio(pp, "firmware-gpios", 0);
+-	if (r < 0) {
+-		nfc_err(&client->dev, "Failed to get FW gpio, error: %d\n", r);
+-		return r;
++	phy->gpiod_fw = devm_gpiod_get(&client->dev, "firmware", GPIOD_OUT_LOW);
++	if (IS_ERR(phy->gpiod_fw)) {
++		nfc_err(&client->dev, "Failed to get FW gpio\n");
++		return PTR_ERR(phy->gpiod_fw);
+ 	}
+-	phy->gpio_fw = r;
+ 
+ 	return 0;
+ }
+@@ -283,19 +269,15 @@ static int nxp_nci_i2c_parse_devtree(struct i2c_client *client)
+ static int nxp_nci_i2c_acpi_config(struct nxp_nci_i2c_phy *phy)
+ {
+ 	struct i2c_client *client = phy->i2c_dev;
+-	struct gpio_desc *gpiod_en, *gpiod_fw;
+ 
+-	gpiod_en = devm_gpiod_get_index(&client->dev, NULL, 2, GPIOD_OUT_LOW);
+-	gpiod_fw = devm_gpiod_get_index(&client->dev, NULL, 1, GPIOD_OUT_LOW);
++	phy->gpiod_en = devm_gpiod_get_index(&client->dev, NULL, 2, GPIOD_OUT_LOW);
++	phy->gpiod_fw = devm_gpiod_get_index(&client->dev, NULL, 1, GPIOD_OUT_LOW);
+ 
+-	if (IS_ERR(gpiod_en) || IS_ERR(gpiod_fw)) {
++	if (IS_ERR(phy->gpiod_en) || IS_ERR(phy->gpiod_fw)) {
+ 		nfc_err(&client->dev, "No GPIOs\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	phy->gpio_en = desc_to_gpio(gpiod_en);
+-	phy->gpio_fw = desc_to_gpio(gpiod_fw);
+-
+ 	return 0;
+ }
+ 
+@@ -331,24 +313,12 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
+ 		r = nxp_nci_i2c_acpi_config(phy);
+ 		if (r < 0)
+ 			goto probe_exit;
+-		goto nci_probe;
+ 	} else {
+ 		nfc_err(&client->dev, "No platform data\n");
+ 		r = -EINVAL;
+ 		goto probe_exit;
+ 	}
+ 
+-	r = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_en,
+-				  GPIOF_OUT_INIT_LOW, "nxp_nci_en");
+-	if (r < 0)
+-		goto probe_exit;
+-
+-	r = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_fw,
+-				  GPIOF_OUT_INIT_LOW, "nxp_nci_fw");
+-	if (r < 0)
+-		goto probe_exit;
+-
+-nci_probe:
+ 	r = nxp_nci_probe(phy, &client->dev, &i2c_phy_ops,
+ 			  NXP_NCI_I2C_MAX_PAYLOAD, &phy->ndev);
+ 	if (r < 0)
 -- 
 2.20.1
 
