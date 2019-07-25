@@ -2,153 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0A475348
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 17:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 006BB753B6
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 18:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728969AbfGYP4U convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jul 2019 11:56:20 -0400
-Received: from mga05.intel.com ([192.55.52.43]:9738 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387660AbfGYP4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 11:56:19 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jul 2019 08:56:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,307,1559545200"; 
-   d="scan'208";a="197920389"
-Received: from irsmsx102.ger.corp.intel.com ([163.33.3.155])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Jul 2019 08:56:17 -0700
-Received: from irsmsx103.ger.corp.intel.com ([169.254.3.45]) by
- IRSMSX102.ger.corp.intel.com ([169.254.2.59]) with mapi id 14.03.0439.000;
- Thu, 25 Jul 2019 16:56:16 +0100
-From:   "Richardson, Bruce" <bruce.richardson@intel.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "Laatz, Kevin" <kevin.laatz@intel.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "Topel, Bjorn" <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "maximmi@mellanox.com" <maximmi@mellanox.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "Loftus, Ciara" <ciara.loftus@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [PATCH bpf-next v3 00/11] XDP unaligned chunk placement support
-Thread-Topic: [PATCH bpf-next v3 00/11] XDP unaligned chunk placement support
-Thread-Index: AQHVQv8nG1Zh3ZxuZEyx+Rx8z76G9qbbeLcQ
-Date:   Thu, 25 Jul 2019 15:56:15 +0000
-Message-ID: <59AF69C657FD0841A61C55336867B5B07EDB5C3F@IRSMSX103.ger.corp.intel.com>
-References: <20190716030637.5634-1-kevin.laatz@intel.com>
- <20190724051043.14348-1-kevin.laatz@intel.com>
- <94EAD717-F632-499F-8BBD-FFF5A5333CBF@gmail.com>
-In-Reply-To: <94EAD717-F632-499F-8BBD-FFF5A5333CBF@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiM2NhNDczOWYtNDEyMy00NGNmLWIyMjItODJkN2U2ODI4ZWY3IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiMWtIU2tZWEFWemNWbTEzeTRETzF5OU1yZXcra0dhc3liUkNHbGtcL2t2YW9hbTdjWDFpQlNqSXFBQ2xwSWtBYmgifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [163.33.239.182]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S2387572AbfGYQSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 12:18:25 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41398 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727852AbfGYQSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 12:18:24 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c2so48200288wrm.8
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 09:18:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=6c11XBSlxlpUPDTeDcCA+gOyKsJ/Qa7ZVxOca+/QVnw=;
+        b=hKjWQy7vJFRKo3qabGsH4/EofrHv1M3cn/zFDZAPwLAcAnFxAJSxW+AzZ1xsLhRB4m
+         XF6dlugbBF4OcBAlCOgIHHpMD3ndtJ8BKtWE/ZMgZ2qG/M92ItflwTzWb0H1OGnZcBv/
+         JKrvLFDkT5jyyqPF356lt6lY0QlNGmIbmXnvzRW5NXZHQVSpmq/1tmiOa17KKAQ49rRf
+         s3s0MskKC8qsp9B/athy7udRm9HXaUMRVQ3kzKGNXO2vTifThcZ+8RQA4igTFzzBXmto
+         omh6TemUDvtwzL4kTznaY3Bb5AeTeF+VEtZiAK6lqx1stXTkHAX0YrdTGK5XrW8egApS
+         7LNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6c11XBSlxlpUPDTeDcCA+gOyKsJ/Qa7ZVxOca+/QVnw=;
+        b=Ij8OnERWDw6dBPhpUDXod8RG3Ttq2hqiBT7OdpO531G4usxU5v2pt7InU+Zia7/e/S
+         73NjWo9XiMLba0yK2BqvGACrLNpiRFwOnKL2r3zXNn5nyKJEP66uDMQbEkqSGmBhB3b/
+         5PSUbbkrp2uDy/F72PkN4aJrwTyN2HDPKZab9Zfo9dYSst/5fNmf++gpOWfcGjsPbz5Y
+         n90TpmtgAlrShqOyvBlKcThYfNi4e/zx9jBwcJ/QqaJQM2R/JAqqNFD5aFW4sHHh+M3W
+         gcPRBU2Q2DZlmhlo2+0YUfArDQDgJhajD/QW6gp/f9iGgKZOX+cEZ9Ggrbp6Ad7vmHg6
+         Fndg==
+X-Gm-Message-State: APjAAAVf6nqfJZ8jBvZZzYQc5JdmhzeHmqDxHR3Z4Lffm/969e8DzWol
+        iA16cyuwiPkV/Q==
+X-Google-Smtp-Source: APXvYqyGRcfkQlxgqx0ugx5dDS9W34Dv3AeniIpSfFOJmNJLB1Wg7LVL2cXdgQEkwPSedElPROaegA==
+X-Received: by 2002:a5d:4108:: with SMTP id l8mr94191385wrp.113.1564071502328;
+        Thu, 25 Jul 2019 09:18:22 -0700 (PDT)
+Received: from x-Inspiron-15-5568.fritz.box (ip-178-201-112-148.hsi08.unitymediagroup.de. [178.201.112.148])
+        by smtp.gmail.com with ESMTPSA id y16sm50576811wrw.33.2019.07.25.09.18.21
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 25 Jul 2019 09:18:21 -0700 (PDT)
+From:   Sergej Benilov <sergej.benilov@googlemail.com>
+To:     venza@brownhat.org, netdev@vger.kernel.org, andrew@lunn.ch
+Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
+Subject: [PATCH] sis900: add support for ethtool --eeprom-dump
+Date:   Thu, 25 Jul 2019 18:18:09 +0200
+Message-Id: <20190725161809.14650-1-sergej.benilov@googlemail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Implement ethtool's EEPROM dump command (ethtool -e|--eeprom-dump).
 
+Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
+---
+ drivers/net/ethernet/sis/sis900.c | 68 +++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
-> -----Original Message-----
-> From: Jonathan Lemon [mailto:jonathan.lemon@gmail.com]
-> Sent: Thursday, July 25, 2019 4:39 PM
-> To: Laatz, Kevin <kevin.laatz@intel.com>
-> Cc: netdev@vger.kernel.org; ast@kernel.org; daniel@iogearbox.net; Topel,
-> Bjorn <bjorn.topel@intel.com>; Karlsson, Magnus
-> <magnus.karlsson@intel.com>; jakub.kicinski@netronome.com;
-> saeedm@mellanox.com; maximmi@mellanox.com; stephen@networkplumber.org;
-> Richardson, Bruce <bruce.richardson@intel.com>; Loftus, Ciara
-> <ciara.loftus@intel.com>; bpf@vger.kernel.org; intel-wired-
-> lan@lists.osuosl.org
-> Subject: Re: [PATCH bpf-next v3 00/11] XDP unaligned chunk placement
-> support
-> 
-> 
-> 
-> On 23 Jul 2019, at 22:10, Kevin Laatz wrote:
-> 
-> > This patch set adds the ability to use unaligned chunks in the XDP umem.
-> >
-> > Currently, all chunk addresses passed to the umem are masked to be
-> > chunk size aligned (max is PAGE_SIZE). This limits where we can place
-> > chunks within the umem as well as limiting the packet sizes that are
-> supported.
-> >
-> > The changes in this patch set removes these restrictions, allowing XDP
-> > to be more flexible in where it can place a chunk within a umem. By
-> > relaxing where the chunks can be placed, it allows us to use an
-> > arbitrary buffer size and place that wherever we have a free address
-> > in the umem. These changes add the ability to support arbitrary frame
-> > sizes up to 4k
-> > (PAGE_SIZE) and make it easy to integrate with other existing
-> > frameworks that have their own memory management systems, such as DPDK.
-> > In DPDK, for example, there is already support for AF_XDP with zero-
-> copy.
-> > However, with this patch set the integration will be much more seamless.
-> > You can find the DPDK AF_XDP driver at:
-> > https://git.dpdk.org/dpdk/tree/drivers/net/af_xdp
-> >
-> > Since we are now dealing with arbitrary frame sizes, we need also need
-> > to update how we pass around addresses. Currently, the addresses can
-> > simply be masked to 2k to get back to the original address. This
-> > becomes less trivial when using frame sizes that are not a 'power of
-> > 2' size. This patch set modifies the Rx/Tx descriptor format to use
-> > the upper 16-bits of the addr field for an offset value, leaving the
-> > lower 48-bits for the address (this leaves us with 256 Terabytes,
-> > which should be enough!). We only need to use the upper 16-bits to store
-> the offset when running in unaligned mode.
-> > Rather than adding the offset (headroom etc) to the address, we will
-> > store it in the upper 16-bits of the address field. This way, we can
-> > easily add the offset to the address where we need it, using some bit
-> > manipulation and addition, and we can also easily get the original
-> > address wherever we need it (for example in i40e_zca_fr-- ee) by
-> > simply masking to get the lower 48-bits of the address field.
-> 
-> I wonder if it would be better to break backwards compatibility here and
-> say that a handle is going to change from [addr] to [base | offset], or
-> even [index | offset], where address = (index * chunk size) + offset, and
-> then use accessor macros to manipulate the queue entries.
-> 
-> This way, the XDP hotpath can adjust the handle with simple arithmetic,
-> bypassing the "if (unaligned)", check, as it changes the offset directly.
-> 
-> Using a chunk index instead of a base address is safer, otherwise it is
-> too easy to corrupt things.
-> --
+diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
+index 6e07f5ebacfc..cf9d75ffefc9 100644
+--- a/drivers/net/ethernet/sis/sis900.c
++++ b/drivers/net/ethernet/sis/sis900.c
+@@ -191,6 +191,8 @@ struct sis900_private {
+ 	unsigned int tx_full; /* The Tx queue is full. */
+ 	u8 host_bridge_rev;
+ 	u8 chipset_rev;
++	/* EEPROM data */
++	int eeprom_size;
+ };
+ 
+ MODULE_AUTHOR("Jim Huang <cmhuang@sis.com.tw>, Ollie Lho <ollie@sis.com.tw>");
+@@ -475,6 +477,8 @@ static int sis900_probe(struct pci_dev *pci_dev,
+ 	sis_priv->pci_dev = pci_dev;
+ 	spin_lock_init(&sis_priv->lock);
+ 
++	sis_priv->eeprom_size = 24;
++
+ 	pci_set_drvdata(pci_dev, net_dev);
+ 
+ 	ring_space = pci_alloc_consistent(pci_dev, TX_TOTAL_SIZE, &ring_dma);
+@@ -2122,6 +2126,68 @@ static void sis900_get_wol(struct net_device *net_dev, struct ethtool_wolinfo *w
+ 	wol->supported = (WAKE_PHY | WAKE_MAGIC);
+ }
+ 
++static int sis900_get_eeprom_len(struct net_device *dev)
++{
++	struct sis900_private *sis_priv = netdev_priv(dev);
++
++	return sis_priv->eeprom_size;
++}
++
++static int sis900_read_eeprom(struct net_device *net_dev, u8 *buf)
++{
++	struct sis900_private *sis_priv = netdev_priv(net_dev);
++	void __iomem *ioaddr = sis_priv->ioaddr;
++	int wait, ret = -EAGAIN;
++	u16 signature;
++	u16 *ebuf = (u16 *)buf;
++	int i;
++
++	if (sis_priv->chipset_rev == SIS96x_900_REV) {
++		sw32(mear, EEREQ);
++		for (wait = 0; wait < 2000; wait++) {
++			if (sr32(mear) & EEGNT) {
++				/* read 16 bits, and index by 16 bits */
++				for (i = 0; i < sis_priv->eeprom_size / 2; i++)
++					ebuf[i] = (u16)read_eeprom(ioaddr, i);
++			ret = 0;
++			break;
++			}
++		udelay(1);
++		}
++	sw32(mear, EEDONE);
++	} else {
++		signature = (u16)read_eeprom(ioaddr, EEPROMSignature);
++		if (signature != 0xffff && signature != 0x0000) {
++			/* read 16 bits, and index by 16 bits */
++			for (i = 0; i < sis_priv->eeprom_size / 2; i++)
++				ebuf[i] = (u16)read_eeprom(ioaddr, i);
++			ret = 0;
++		}
++	}
++	return ret;
++}
++
++#define SIS900_EEPROM_MAGIC	0xBABE
++static int sis900_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom, u8 *data)
++{
++	struct sis900_private *sis_priv = netdev_priv(dev);
++	u8 *eebuf;
++	int res;
++
++	eebuf = kmalloc(sis_priv->eeprom_size, GFP_KERNEL);
++	if (!eebuf)
++		return -ENOMEM;
++
++	eeprom->magic = SIS900_EEPROM_MAGIC;
++	spin_lock_irq(&sis_priv->lock);
++	res = sis900_read_eeprom(dev, eebuf);
++	spin_unlock_irq(&sis_priv->lock);
++	if (!res)
++		memcpy(data, eebuf + eeprom->offset, eeprom->len);
++	kfree(eebuf);
++	return res;
++}
++
+ static const struct ethtool_ops sis900_ethtool_ops = {
+ 	.get_drvinfo 	= sis900_get_drvinfo,
+ 	.get_msglevel	= sis900_get_msglevel,
+@@ -2132,6 +2198,8 @@ static const struct ethtool_ops sis900_ethtool_ops = {
+ 	.set_wol	= sis900_set_wol,
+ 	.get_link_ksettings = sis900_get_link_ksettings,
+ 	.set_link_ksettings = sis900_set_link_ksettings,
++	.get_eeprom_len = sis900_get_eeprom_len,
++	.get_eeprom = sis900_get_eeprom,
+ };
+ 
+ /**
+-- 
+2.17.1
 
-The trouble with using a chunk index is that it assumes that all chunks are
-contiguous, which is not always going to be the case. For example, for
-userspace apps the easiest way to get memory that is IOVA/physically 
-contiguous is to use hugepages, but even then we still need to skip space
-when crossing a 2MB barrier.
-
-Specifically in this example case, with a 3k buffer size and 2MB hugepages,
-we'd get 666 buffers on a single page, but then waste a few KB before
-starting the 667th buffer at byte 0 on the second 2MB page.
-This is the setup used in DPDK, for instance, when we allocate memory for
-use in buffer pools. 
-
-Therefore, I think it's better to just have the kernel sanity checking the
-request for safety and leave userspace the freedom to decide where in its
-memory area it wants to place the buffers.
-
-Regards,
-/Bruce
