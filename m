@@ -2,126 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C1775453
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 18:42:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C6C754EB
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 19:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390731AbfGYQl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 12:41:56 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:34165 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390669AbfGYQly (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 12:41:54 -0400
-Received: by mail-lj1-f195.google.com with SMTP id p17so48656769ljg.1
-        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 09:41:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mC6vEXRd06MjrSqVkYbBiMA0HYRFyKd/iCZNBarYTrQ=;
-        b=rHSiiBRsMr9Gn8XrU1QSWjJZCEJwrtH8UHMhSVuUsV0ex+H/4X+kVbbtAjZGocgUTi
-         NdEQvP7XseMJ9wP6dK2tR+f0D3WolhK/YGp8oZcnyLtbEweb6HYXBX1V9rlmP0Ga4Hgd
-         a2mw3DYN3VCo4aP3BOjk8ASp/CTV/JtWj8NhnqdMRvL16KLjHj3vFsXnI7wMKNTNeuKs
-         NCNYHUPFm9yhq3ICPcGNUkEJ2FSuY4B71q9WPmVfh7iiKRtUGH+iEucnuEtwd/BQ637c
-         7wwzksXzxe5bPiVIEv8UpzslYA49BcXkMXxCCI2fpmh+9sa1a8km8h5BrjyH7jecuvMR
-         TYvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mC6vEXRd06MjrSqVkYbBiMA0HYRFyKd/iCZNBarYTrQ=;
-        b=CypmMLJy3FdE0KWsPXjQyy/N+kTv+j+lScluoLAyOxxVt+GramqVGjz8SDuyxuumsA
-         YrIwBthO4rg9T6pxn/H4GJzcitQ9Z85WxmzB6gtAhxlk8CR/+VKSdl55AnHHwazGb1rx
-         UEQlHYfiaZGqkVu8nYqeY+Kb3PO+hOmJGxOH38NEzrGGa+YXeBdgL/IEmbU+PtmmbBj3
-         DeOvchZGtQ53RQUMpQZgfazaZCWtGLBwIDMuq6MuMx1fyd3f75IdBFhHKHxhzlDFANX3
-         oYTFYRoNFYCHFrVllI1YuS+RDgKNpP3LXv2zk0VMxcnjBN5Yq6EWUti4v8fZoeNsuZ9U
-         Zzng==
-X-Gm-Message-State: APjAAAWEWy1GOpXirC5Swn1Vm/hmXrZuqMDgnbJkO6tgQT40WlO9shcz
-        gEMMK7PECoYx5auhMyHG47RMK8onTDJTe5VZxMQ=
-X-Google-Smtp-Source: APXvYqzfVtRI76lTSKPVKcpaqHwusqOBIEMwAdU3wE5lYMro1Zfo7bNEEX5YY4mNcAmccPU6y+zDaA/hcq9q8/TESDA=
-X-Received: by 2002:a2e:9c85:: with SMTP id x5mr18224396lji.139.1564072912248;
- Thu, 25 Jul 2019 09:41:52 -0700 (PDT)
+        id S2391071AbfGYRAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 13:00:21 -0400
+Received: from mga14.intel.com ([192.55.52.115]:54449 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389772AbfGYRAT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jul 2019 13:00:19 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jul 2019 10:00:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,307,1559545200"; 
+   d="scan'208";a="345497251"
+Received: from klaatz-mobl1.ger.corp.intel.com (HELO [10.237.221.70]) ([10.237.221.70])
+  by orsmga005.jf.intel.com with ESMTP; 25 Jul 2019 10:00:15 -0700
+Subject: Re: [PATCH bpf-next v3 03/11] xsk: add support to allow unaligned
+ chunk placement
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "Topel, Bjorn" <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "Richardson, Bruce" <bruce.richardson@intel.com>,
+        "Loftus, Ciara" <ciara.loftus@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+References: <20190716030637.5634-1-kevin.laatz@intel.com>
+ <20190724051043.14348-1-kevin.laatz@intel.com>
+ <20190724051043.14348-4-kevin.laatz@intel.com>
+ <3af74e26-8899-cf1e-6fd4-5ea0bd349fc3@mellanox.com>
+From:   "Laatz, Kevin" <kevin.laatz@intel.com>
+Message-ID: <02909a39-efd8-052e-8128-4a6e5a142f99@intel.com>
+Date:   Thu, 25 Jul 2019 18:00:14 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20190725161809.14650-1-sergej.benilov@googlemail.com> <20190725162543.GJ21952@lunn.ch>
-In-Reply-To: <20190725162543.GJ21952@lunn.ch>
-From:   Sergej Benilov <sergej.benilov@googlemail.com>
-Date:   Thu, 25 Jul 2019 18:41:41 +0200
-Message-ID: <CAC9-QvATLW0uCzGpeY1kLXs5BBsfNBF_BKCnCz+38_f+STJhog@mail.gmail.com>
-Subject: Re: [PATCH] sis900: add support for ethtool --eeprom-dump
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     venza@brownhat.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <3af74e26-8899-cf1e-6fd4-5ea0bd349fc3@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Jul 2019 at 18:25, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > +static int sis900_read_eeprom(struct net_device *net_dev, u8 *buf)
-> > +{
-> > +     struct sis900_private *sis_priv = netdev_priv(net_dev);
-> > +     void __iomem *ioaddr = sis_priv->ioaddr;
-> > +     int wait, ret = -EAGAIN;
-> > +     u16 signature;
-> > +     u16 *ebuf = (u16 *)buf;
-> > +     int i;
-> > +
-> > +     if (sis_priv->chipset_rev == SIS96x_900_REV) {
-> > +             sw32(mear, EEREQ);
-> > +             for (wait = 0; wait < 2000; wait++) {
-> > +                     if (sr32(mear) & EEGNT) {
-> > +                             /* read 16 bits, and index by 16 bits */
-> > +                             for (i = 0; i < sis_priv->eeprom_size / 2; i++)
-> > +                                     ebuf[i] = (u16)read_eeprom(ioaddr, i);
-> > +                     ret = 0;
-> > +                     break;
-> > +                     }
-> > +             udelay(1);
-> > +             }
-> > +     sw32(mear, EEDONE);
->
-> The indentation looks all messed up here.
 
-This has passed ./scripts/checkpatch.pl, as you had suggested for the
-previous patch.
-
+On 25/07/2019 10:27, Maxim Mikityanskiy wrote:
+> On 2019-07-24 08:10, Kevin Laatz wrote:
+>> Currently, addresses are chunk size aligned. This means, we are very
+>> restricted in terms of where we can place chunk within the umem. For
+>> example, if we have a chunk size of 2k, then our chunks can only be placed
+>> at 0,2k,4k,6k,8k... and so on (ie. every 2k starting from 0).
+>>
+>> This patch introduces the ability to use unaligned chunks. With these
+>> changes, we are no longer bound to having to place chunks at a 2k (or
+>> whatever your chunk size is) interval. Since we are no longer dealing with
+>> aligned chunks, they can now cross page boundaries. Checks for page
+>> contiguity have been added in order to keep track of which pages are
+>> followed by a physically contiguous page.
+>>
+>> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
+>> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+>> Signed-off-by: Bruce Richardson <bruce.richardson@intel.com>
+>>
+>> ---
+>> v2:
+>>     - Add checks for the flags coming from userspace
+>>     - Fix how we get chunk_size in xsk_diag.c
+>>     - Add defines for masking the new descriptor format
+>>     - Modified the rx functions to use new descriptor format
+>>     - Modified the tx functions to use new descriptor format
+>>
+>> v3:
+>>     - Add helper function to do address/offset masking/addition
+>> ---
+>>    include/net/xdp_sock.h      | 17 ++++++++
+>>    include/uapi/linux/if_xdp.h |  9 ++++
+>>    net/xdp/xdp_umem.c          | 18 +++++---
+>>    net/xdp/xsk.c               | 86 ++++++++++++++++++++++++++++++-------
+>>    net/xdp/xsk_diag.c          |  2 +-
+>>    net/xdp/xsk_queue.h         | 68 +++++++++++++++++++++++++----
+>>    6 files changed, 170 insertions(+), 30 deletions(-)
+>>
+> <...>
 >
-> > +     } else {
-> > +             signature = (u16)read_eeprom(ioaddr, EEPROMSignature);
-> > +             if (signature != 0xffff && signature != 0x0000) {
-> > +                     /* read 16 bits, and index by 16 bits */
-> > +                     for (i = 0; i < sis_priv->eeprom_size / 2; i++)
-> > +                             ebuf[i] = (u16)read_eeprom(ioaddr, i);
-> > +                     ret = 0;
-> > +             }
-> > +     }
-> > +     return ret;
-> > +}
-> > +
-> > +#define SIS900_EEPROM_MAGIC  0xBABE
-> > +static int sis900_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom, u8 *data)
-> > +{
-> > +     struct sis900_private *sis_priv = netdev_priv(dev);
-> > +     u8 *eebuf;
-> > +     int res;
-> > +
-> > +     eebuf = kmalloc(sis_priv->eeprom_size, GFP_KERNEL);
-> > +     if (!eebuf)
-> > +             return -ENOMEM;
-> > +
-> > +     eeprom->magic = SIS900_EEPROM_MAGIC;
-> > +     spin_lock_irq(&sis_priv->lock);
-> > +     res = sis900_read_eeprom(dev, eebuf);
-> > +     spin_unlock_irq(&sis_priv->lock);
-> > +     if (!res)
-> > +             memcpy(data, eebuf + eeprom->offset, eeprom->len);
-> > +     kfree(eebuf);
->
-> Why do you not put the data directly into data and avoid this memory
-> allocation, and memcpy?
+>> +/* If a buffer crosses a page boundary, we need to do 2 memcpy's, one for
+>> + * each page. This is only required in copy mode.
+>> + */
+>> +static void __xsk_rcv_memcpy(struct xdp_umem *umem, u64 addr, void *from_buf,
+>> +			     u32 len, u32 metalen)
+>> +{
+>> +	void *to_buf = xdp_umem_get_data(umem, addr);
+>> +
+>> +	if (xskq_crosses_non_contig_pg(umem, addr, len + metalen)) {
+>> +		void *next_pg_addr = umem->pages[(addr >> PAGE_SHIFT) + 1].addr;
+>> +		u64 page_start = addr & (PAGE_SIZE - 1);
+>> +		u64 first_len = PAGE_SIZE - (addr - page_start);
+> Let addr = 0x12345, PAGE_SIZE = 0x1000, len = 0x1000. Your calculations
+> lead to page_start = 0x345, first_len = 0x1000 - 0x12000, which is
+> negative. I think page_start is calculated incorrectly (is ~ missing?).
 
-Because EEPROM data from 'eeprom->offset' offset and of 'eeprom->len'
-length only is expected to be returned in 'data'.
+Correct, the ~ is missing in the page_start calculation. Nice spot, thanks!
 
 >
->             Andrew
+>> +
+>> +		memcpy(to_buf, from_buf, first_len + metalen);
+>> +		memcpy(next_pg_addr, from_buf + first_len, len - first_len);
+>> +
+>> +		return;
+>> +	}
+>> +
+>> +	memcpy(to_buf, from_buf, len + metalen);
+>> +}
+>> +
+> <...>
+>
+>> +static inline bool xskq_is_valid_addr_unaligned(struct xsk_queue *q, u64 addr,
+>> +						u64 length,
+>> +						struct xdp_umem *umem)
+>> +{
+>> +	addr += addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
+>> +	addr &= XSK_UNALIGNED_BUF_ADDR_MASK;
+>> +	if (addr >= q->size ||
+> Addresses like 0x00aaffffffffffff will pass the validation (0xaa +
+> 0xffffffffffff will overflow mod 2^48 and become a small number),
+> whereas such addresses don't look valid for me.
+
+If you are referring to the addr >= q->size check... that check was 
+already in xskq_is_valid_addr (which I based this function on). If this 
+doesn't make sense, then it should be removed/fixed for both.
+
+>
+>> +	    xskq_crosses_non_contig_pg(umem, addr, length)) {
+> If the region is not contiguous, we cant RX into it - that's clear.
+> However, how can the userspace determine whether these two pages of UMEM
+> are mapped contiguously in the DMA space? Are we going to silently drop
+> descriptors to non-contiguous frames and leak them? Please explain how
+> to use it correctly from the application side.
+
+Correct, if it is not contiguous then we cannot Rx into it.
+
+Userspace apps should be aware of the page contiguity when using 
+zero-copy and if not, then should not be using the unaligned mode. 
+Existing frameworks that have their own memory management subsystem, 
+such as DPDK, are aware of page contiguity and manage this themselves 
+while simpler apps that don't have this kind of visibility can use 
+hugepages, as is shown in the xdpsock sample changes in this set.
+
+
+
