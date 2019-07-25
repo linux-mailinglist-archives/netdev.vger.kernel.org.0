@@ -2,85 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B514E74C5C
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 13:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D4B74C61
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 13:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391464AbfGYLAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 07:00:00 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:3520 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388173AbfGYLAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 07:00:00 -0400
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 8BDC241CAA;
-        Thu, 25 Jul 2019 18:59:53 +0800 (CST)
-Subject: Re: [PATCH net-next 2/3] flow_offload: Support get tcf block
- immediately
-To:     Florian Westphal <fw@strlen.de>
-Cc:     pablo@netfilter.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <1564048533-27283-1-git-send-email-wenxu@ucloud.cn>
- <1564048533-27283-2-git-send-email-wenxu@ucloud.cn>
- <20190725102434.c72m32tpsjwf7nff@breakpoint.cc>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <28d218f1-39b3-57ab-086e-f153ddc8f749@ucloud.cn>
-Date:   Thu, 25 Jul 2019 18:59:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2391478AbfGYLBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 07:01:30 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:15326 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388173AbfGYLBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 07:01:30 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x6PB0Va1001004;
+        Thu, 25 Jul 2019 04:01:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=FwURqODJkvM0zrIWS14p96nNulMX0DwXr9XftxeSKvY=;
+ b=sXC8gI9wiGChr7M3LlM6SiQBShiMP/NSh5vekjFnxwD/UGROZny78D5Fx8hnMqI25fKn
+ /dUr7W+Wya/a5jWOQzQlP27tuozvURFTFC0lydMIgeaSus7GeOhBj5nra8Ml6oYCRqxk
+ tpNRhwmQcRaKem6zI8pDPVtzsNNhg5KSXnU4GNo8oyOvZRsmYu/npkFXMjdRYyXMMj//
+ 9dYYficr0usYAbGW12LuEY4vRiTATAY3k/JYV+HHIAnJpdVcbu56+ekBMIjvwh98/H9V
+ 6KBCGI3VIzwKJPMoVPH79M+DOIgHJ2ruVqI1qeqycRIVF3WfbEqAKryF2QNmYsQCLrks QQ== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2tx61rh4h2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 25 Jul 2019 04:01:28 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 25 Jul
+ 2019 04:01:27 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Thu, 25 Jul 2019 04:01:27 -0700
+Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
+        by maili.marvell.com (Postfix) with ESMTP id 2BB333F703F;
+        Thu, 25 Jul 2019 04:01:25 -0700 (PDT)
+From:   Michal Kalderon <michal.kalderon@marvell.com>
+To:     <michal.kalderon@marvell.com>, <ariel.elior@marvell.com>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Subject: [PATCH] qed: RDMA - Fix the hw_ver returned in device attributes
+Date:   Thu, 25 Jul 2019 13:59:55 +0300
+Message-ID: <20190725105955.12492-1-michal.kalderon@marvell.com>
+X-Mailer: git-send-email 2.14.5
 MIME-Version: 1.0
-In-Reply-To: <20190725102434.c72m32tpsjwf7nff@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVT0JOS0tLSklIQkxMTU1ZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MCo6Pzo5Hzg2OlYCHRceK0k6
-        MDkaCyNVSlVKTk1PS05JSEJITE1DVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBSU1JSTcG
-X-HM-Tid: 0a6c28c98eee2086kuqy8bdc241caa
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-07-25_04:2019-07-25,2019-07-25 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The hw_ver field was initialized to zero. Return the chip revision.
+This is relevant for rdma driver.
 
-@tc_indr_block_dev_get funcion,
+Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-static struct tc_indr_block_dev *tc_indr_block_dev_get(struct net_device *dev)
-{
-    struct tc_indr_block_dev *indr_dev;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+index f900fde448db..7110cae384ee 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+@@ -442,7 +442,7 @@ static void qed_rdma_init_devinfo(struct qed_hwfn *p_hwfn,
+ 	/* Vendor specific information */
+ 	dev->vendor_id = cdev->vendor_id;
+ 	dev->vendor_part_id = cdev->device_id;
+-	dev->hw_ver = 0;
++	dev->hw_ver = cdev->chip_rev;
+ 	dev->fw_ver = (FW_MAJOR_VERSION << 24) | (FW_MINOR_VERSION << 16) |
+ 		      (FW_REVISION_VERSION << 8) | (FW_ENGINEERING_VERSION);
+ 
+-- 
+2.14.5
 
-    indr_dev = tc_indr_block_dev_lookup(dev);
-    if (indr_dev)
-        goto inc_ref;
-
-    indr_dev = kzalloc(sizeof(*indr_dev), GFP_KERNEL);
-    if (!indr_dev)
-        return NULL;
-
-    INIT_LIST_HEAD(&indr_dev->cb_list);
-    indr_dev->dev = dev;
-    indr_dev->block = tc_dev_ingress_block(dev);
-
-when the indr device register. It will call __tc_indr_block_cb_register-->tc_indr_block_dev_get,
-
-It can get the indr_dev->block immediately through tc_dev_ingress_block,
-
-But when the indr_block_dev_get put in the common flow_offload.  It can not direct access 
-
-tc_dev_ingress_block.
-
-
-
-On 7/25/2019 6:24 PM, Florian Westphal wrote:
-> wenxu@ucloud.cn <wenxu@ucloud.cn> wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> It provide a callback to find the tcf block in
->> the flow_indr_block_dev_get
-> Can you explain why you're making this change?
-> This will help us understand the concept/idea of your series.
->
-> The above describes what the patch does, but it should
-> explain why this is callback is added.
->
