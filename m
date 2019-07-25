@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BFC67499E
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3F8749B8
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390269AbfGYJMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 05:12:15 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41991 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389193AbfGYJMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 05:12:15 -0400
-Received: by mail-io1-f65.google.com with SMTP id e20so65329726iob.9
-        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 02:12:14 -0700 (PDT)
+        id S2390351AbfGYJUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 05:20:31 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:39573 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389608AbfGYJUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 05:20:31 -0400
+Received: by mail-pl1-f193.google.com with SMTP id b7so23212226pls.6;
+        Thu, 25 Jul 2019 02:20:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=87eP3g3vMlOVRkDsC6d0lSp/rtq8GPVwOCIfIIJNOTI=;
-        b=bJp8T1oXYOc6/E2tBu4Q83DP1rNnDNYcEi3l0Jy3HGhqhB0rapw4NtGfUsVvQcmg/K
-         GpDxDTP/IYwKml2Ahs/ozrgnZ1wIi1XqT300T1eCIkUaisvOOYTV0RNwrS3WkKBP5spL
-         upmxnln7NshpbvFDTpnWWkmMLZi18Z/nlNh7PVyvTRm6naMPOxMOaeirRq5HxUUozdwa
-         apeHbSDWvA5shpsb47r4UoLxLvzlevlnpI/nZKWpba5/fg+dlTFt9KOxZrLZ2SM7h9fe
-         4IBS8S+CWv+kYXcpEYmVJFNox6fo6otT0vSmxSTAWoeoVjUqE5Qm9uqFeyuMTPvbOd0E
-         DFBw==
+        h=from:to:cc:subject:date:message-id;
+        bh=zA7KRGQBThFlm3trFdcFJLFeokCVJBElzgWnMbH4/xY=;
+        b=srjPnRvPY/aH+inPjd8GxoBJ9c8BAlAYvCtROiRCw5VK7mQ+3YQsHM9iiU0aJmzDOK
+         h9ekc2iQkY03EcwrfIF2JaWxwmbrH0+3NflYT+xFOkQB4ZX0/FFqWJ2eP7mAfwi2rJzS
+         Y764XokyisS4CiuKHKUrtAmMjqMgeydLpA//p8q18p4SManU6AsaV1jvovhpNYtM7Qhp
+         usFWqBuefOJ4jDrVP2fKbmKX1L7zAp535EcJCSXCdAKw8hrDP18slnoRIaYbAwvLdBiJ
+         rCBC0E+Dm/rmnLm051d/2IV9gWl6qbmCfWGVPxBwQ5mfuZ+7mZEs/OGA4kPhjOciD9pa
+         clpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=87eP3g3vMlOVRkDsC6d0lSp/rtq8GPVwOCIfIIJNOTI=;
-        b=VI2QNy2U6IvzHaQBBAXXXzeGdD3sr+YDBdD2Fh3ho41cKbTurpGAnp3LCG4spWOKCJ
-         W8SwkiWPPFCSumIJw//WnZROz4lYZjq8/KoWmKRCYu1mweRutywDLIB/mBIkYp6Fq9l8
-         Cz0T2Kb0fNF5AIGhHoCFxrokQZcCTdnJV2wjs6nkreCM5pBjRXgiNNhL0hSYrSlhnR4d
-         E9Y+cR1LGoRs+dtD4rw0mHgAvBBFqdUQCf2cE85rHHCWm3kQ5ESGUDCVr5iUvI2bqSmy
-         F7egJROYq+z737YpvQYps6FJeL8rnzATh9hbx+IgaVgW5IXDO6xJTSLd8gem7uPpbSDE
-         mLcA==
-X-Gm-Message-State: APjAAAV6v6e0EaFDQd5hOh9HYWOK8fvWcJ3QMy+QlQfSBO30Sag9AsjO
-        Vw2l7V1lApZGaF5/ofdxOMIIdsHyp71PLIY3b34=
-X-Google-Smtp-Source: APXvYqxrC7JK6XagnEmnzETKy+ererxk7I/H3FX3KNrQVyWB4WoiQq/9EsZBT97J18GgGcMRcg1BSBaPs2lugjD4Fp8=
-X-Received: by 2002:a02:cc76:: with SMTP id j22mr93047382jaq.9.1564045934283;
- Thu, 25 Jul 2019 02:12:14 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a4f:f464:0:0:0:0:0 with HTTP; Thu, 25 Jul 2019 02:12:13
- -0700 (PDT)
-Reply-To: stamfrancois20@gmail.com
-From:   "Sir.Francois Stamm" <wansah010101@gmail.com>
-Date:   Thu, 25 Jul 2019 02:12:13 -0700
-Message-ID: <CAB6_NDwzPz6YT1wZcmF6jK-50jMBmU=f9fDvoBtp_s08yuEXBQ@mail.gmail.com>
-Subject: INVESTMENT PROPOSAL!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zA7KRGQBThFlm3trFdcFJLFeokCVJBElzgWnMbH4/xY=;
+        b=DO5nN0DX764/zQdq0bfBlagALCldnHsEc5w8isXQFDKQT/+z8NLDpWm1AOgYJTZ5yp
+         2okFWyJtWmW1z20TmfNaIg1ZZz+C1aJoQrjTWyQMCdPL1DWwpf2ZWz4jHiTkU72mW/9s
+         LGWK4C5kOvh2iG4SJqwilicKPr9Y1u+eXPkEfgjQ/YqDFNw38i+O6uZysI528FUtQ1Lj
+         e0y9Co4iOzFC2iEMBKIRsKYBNwy5lzLFQl/NUHyH+iIs+jdWltJrD5vL9EP+lXS8nTlu
+         F1bt2+ifqdmHIA7wy2VU87ORIB0DMqB7rHZXQgQAMI7rVHPosvCoXDkIQuPjIhFkyzmo
+         ZLQg==
+X-Gm-Message-State: APjAAAVgW4HjkVDpCOLPN/TuQD+ayKQrZ4zuWrxQfDtHUg7XOsMmltu5
+        IZWNndGxemR64s5SihbrYURefZqxtnA=
+X-Google-Smtp-Source: APXvYqzCqFvoVk/5zWPv6j1nHOEeI11GV0H7hRlvnyHok4PklHT5XXeY2XXVO6icCHcI7eo4VD8Vqg==
+X-Received: by 2002:a17:902:6b44:: with SMTP id g4mr89424816plt.152.1564046429985;
+        Thu, 25 Jul 2019 02:20:29 -0700 (PDT)
+Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
+        by smtp.gmail.com with ESMTPSA id s24sm49909791pfh.133.2019.07.25.02.20.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Jul 2019 02:20:29 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     jon.maloy@ericsson.com, ying.xue@windriver.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: tipc: Fix a possible null-pointer dereference in tipc_publ_purge()
+Date:   Thu, 25 Jul 2019 17:20:21 +0800
+Message-Id: <20190725092021.15855-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got your contact while on a search for a reliable and trustworthy
-partner who is to help me co-ordinate a business over there in your
-country. I am interested in having an investment in your country based
-on long-term business venture that has a good return on investment
-[ROI] under your supervision.You will be required to;
+In tipc_publ_purge(), there is an if statement on 215 to 
+check whether p is NULL: 
+    if (p)
 
-[1]. Receive the funds.
-[2]. Invest and Manage the funds profitably.
+When p is NULL, it is used on line 226:
+    kfree_rcu(p, rcu);
 
-Though am interested in mechanized farm or any other viable business,
-and I do not know if your country is a very good market for such
-investment, so i needed a very good advice on what kind of investment
-has a good return and profitable there in your country that we can
-both start apart from the mechanized farming I already have in mind.
+Thus, a possible null-pointer dereference may occur.
 
-If you are interested, kindly contact me
-via:-stamfrancois20@gmail.com,for more details.
-Regards,
-Francois.
+To fix this bug, p is checked before being used.
+
+This bug is found by a static analysis tool STCheck written by us.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ net/tipc/name_distr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
+index 44abc8e9c990..241ed2274473 100644
+--- a/net/tipc/name_distr.c
++++ b/net/tipc/name_distr.c
+@@ -223,7 +223,8 @@ static void tipc_publ_purge(struct net *net, struct publication *publ, u32 addr)
+ 		       publ->key);
+ 	}
+ 
+-	kfree_rcu(p, rcu);
++	if (p)
++		kfree_rcu(p, rcu);
+ }
+ 
+ /**
+-- 
+2.17.0
+
