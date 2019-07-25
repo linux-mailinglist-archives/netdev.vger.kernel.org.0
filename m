@@ -2,73 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D19E874393
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 05:03:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E67B74396
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 05:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389550AbfGYDDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jul 2019 23:03:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55336 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388759AbfGYDDA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jul 2019 23:03:00 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C5FF0229F4;
-        Thu, 25 Jul 2019 03:02:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564023779;
-        bh=1I5HVAZ8LrjB3eONoPwZXmFtQ2dW/++0B32YjLyLcmo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AO6/vJ7TAigTHx6Ix6BjNmTXxqZBXwzlHDn7MlYPHIBZMf9NJBkiX8RckNSlzv0K1
-         1aspZo0FjhBCAZSVM3v4xubru7ujQ+mfigJV+DG9XV1tM15bqip+wdYMXpTfqago47
-         MrWzsjI1lQ4+b/fCSJ0Bao0VACHz2z1xoBxms3MM=
-Date:   Thu, 25 Jul 2019 06:02:46 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        Edward Srouji <edwards@mellanox.com>
-Subject: Re: [PATCH mlx5-next] net/mlx5: Fix modify_cq_in alignment
-Message-ID: <20190725030246.GE4674@mtr-leonro.mtl.com>
-References: <20190723071255.6588-1-leon@kernel.org>
- <20190723.112850.610952032088764951.davem@davemloft.net>
- <20190723190414.GU5125@mtr-leonro.mtl.com>
- <5447fded90dfd133ef002177b77bfd3685bf8b42.camel@mellanox.com>
+        id S2389566AbfGYDEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jul 2019 23:04:05 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:54057 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389554AbfGYDEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jul 2019 23:04:04 -0400
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id D0337416D3;
+        Thu, 25 Jul 2019 11:03:58 +0800 (CST)
+Subject: Re: [PATCH net-next] netfilter: nf_table_offload: Fix zero prio of
+ flow_cls_common_offload
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     pablo@netfilter.org, davem@davemloft.net,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+References: <1562832210-25981-1-git-send-email-wenxu@ucloud.cn>
+ <20190724235151.GB4063@localhost.localdomain>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <9775e2da-78ce-95f8-c215-b35b464ea5a9@ucloud.cn>
+Date:   Thu, 25 Jul 2019 11:03:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5447fded90dfd133ef002177b77bfd3685bf8b42.camel@mellanox.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190724235151.GB4063@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEJKS0tLSk5KTUhPSUlZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OVE6SDo4Pjg8FFY#MA4uPAg2
+        SU0KCxdVSlVKTk1PS0lIQ0hCSkpMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBT0tDTTcG
+X-HM-Tid: 0a6c2715d9522086kuqyd0337416d3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 08:56:08PM +0000, Saeed Mahameed wrote:
-> On Tue, 2019-07-23 at 22:04 +0300, Leon Romanovsky wrote:
-> > On Tue, Jul 23, 2019 at 11:28:50AM -0700, David Miller wrote:
-> > > From: Leon Romanovsky <leon@kernel.org>
-> > > Date: Tue, 23 Jul 2019 10:12:55 +0300
-> > >
-> > > > From: Edward Srouji <edwards@mellanox.com>
-> > > >
-> > > > Fix modify_cq_in alignment to match the device specification.
-> > > > After this fix the 'cq_umem_valid' field will be in the right
-> > > > offset.
-> > > >
-> > > > Cc: <stable@vger.kernel.org> # 4.19
-> > > > Fixes: bd37197554eb ("net/mlx5: Update mlx5_ifc with DEVX UID
-> > > > bits")
->
-> Leon, I applied this patch to my tree, it got marked for -stable 4.20
-> and not 4.19, i checked manually and indeed the offending patch came to
-> light only on 4.20
 
-Thanks
-
+On 7/25/2019 7:51 AM, Marcelo Ricardo Leitner wrote:
+> On Thu, Jul 11, 2019 at 04:03:30PM +0800, wenxu@ucloud.cn wrote:
+>> From: wenxu <wenxu@ucloud.cn>
+>>
+>> The flow_cls_common_offload prio should be not zero
+>>
+>> It leads the invalid table prio in hw.
+>>
+>> # nft add table netdev firewall
+>> # nft add chain netdev firewall acl { type filter hook ingress device mlx_pf0vf0 priority - 300 \; }
+>> # nft add rule netdev firewall acl ip daddr 1.1.1.7 drop
+>> Error: Could not process rule: Invalid argument
+>>
+>> kernel log
+>> mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22 (table prio: 65535, level: 0, size: 4194304)
+>>
+>> Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> ---
+>>  net/netfilter/nf_tables_offload.c | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+>> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+>> index 2c33028..01d8133 100644
+>> --- a/net/netfilter/nf_tables_offload.c
+>> +++ b/net/netfilter/nf_tables_offload.c
+>> @@ -7,6 +7,8 @@
+>>  #include <net/netfilter/nf_tables_offload.h>
+>>  #include <net/pkt_cls.h>
+>>  
+>> +#define FLOW_OFFLOAD_DEFAUT_PRIO 1U
+>> +
+>>  static struct nft_flow_rule *nft_flow_rule_alloc(int num_actions)
+>>  {
+>>  	struct nft_flow_rule *flow;
+>> @@ -107,6 +109,7 @@ static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
+>>  					struct netlink_ext_ack *extack)
+>>  {
+>>  	common->protocol = proto;
+>> +	common->prio = TC_H_MAKE(FLOW_OFFLOAD_DEFAUT_PRIO << 16, 0);
+> Note that tc semantics for this is to auto-generate a priority in such
+> cases, instead of using a default.
 >
+> @tc_new_tfilter():
+>         if (prio == 0) {
+>                 /* If no priority is provided by the user,
+>                  * we allocate one.
+>                  */
+>                 if (n->nlmsg_flags & NLM_F_CREATE) {
+>                         prio = TC_H_MAKE(0x80000000U, 0U);
+>                         prio_allocate = true;
+> ...
+>                 if (prio_allocate)
+>                         prio = tcf_auto_prio(tcf_chain_tp_prev(chain,
+>                                                                &chain_info));
+
+Yes,The tc auto-generate a priority.  But if there is no pre tcf_proto, the priority is also set as a default.
+
+In nftables each rule no priortiy for each other. So It is enough to set a default value which is similar as the
+
+tc.
+
+static inline u32 tcf_auto_prio(struct tcf_proto *tp)
+{
+    u32 first = TC_H_MAKE(0xC0000000U, 0U);
+
+    if (tp)
+        first = tp->prio - 1;
+
+    return TC_H_MAJ(first);
+}
+
