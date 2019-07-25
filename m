@@ -2,70 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDDED757A9
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1315757B4
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbfGYTPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 15:15:24 -0400
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:39474 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726065AbfGYTPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 15:15:23 -0400
-Received: from localhost.localdomain ([92.140.204.221])
-        by mwinf5d13 with ME
-        id h7EX2000F4n7eLC037EpXF; Thu, 25 Jul 2019 21:15:21 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 25 Jul 2019 21:15:21 +0200
-X-ME-IP: 92.140.204.221
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     johannes@sipsolutions.net, kvalo@codeaurora.org,
-        davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] mac80211_hwsim: Fix a typo in the name of function 'mac80211_hswim_he_capab()'
-Date:   Thu, 25 Jul 2019 21:13:28 +0200
-Message-Id: <20190725191328.18010-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.20.1
+        id S1726669AbfGYTSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 15:18:31 -0400
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:44753 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726574AbfGYTSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 15:18:31 -0400
+Received: by mail-pg1-f170.google.com with SMTP id i18so23510227pgl.11
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 12:18:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aDAwL5Cdh2i3pmbUFIvBo+BF+mpIwQmrHQFud17yoiU=;
+        b=KvdIQeU2WyS6Rj3t/8oofxoNMqb33x+F//0Oquki/4v1RGRk66CPLW2JcPQSNb3LoB
+         j39AP945iuSEjh/0KnJc7ItgLIB4NYrQQkf+mm9V9hoGN0RJI0vQeKWGg+lsxmN810TR
+         X/KUiY77g1CY+6JhePmWhdmXMEdRoHCz8yciY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aDAwL5Cdh2i3pmbUFIvBo+BF+mpIwQmrHQFud17yoiU=;
+        b=nyxVkyVO4t9pMrku/Vz6ANWR3ol/mOFEsN+OpW3NEkJX96s86hxQ9vzinRGHdRA5hH
+         AQcL7yMPgW+gvcrRn/BSJTxCQL0fZV2/p+k7Kuzxa8sdLkoJvhaFDTcGFX+F1NHL6Q2V
+         VreyIbX2LewUtye0lWJaD4lrDtkBDk//nIJXGqCy9vBhbOEjbmroo7pFd6/7kzn3EPkz
+         0ZqerPA8nALb3qNv0+P4EppIX1k4QaDQx87T/UaOLHlUF0p8cFkak1eioHj4hPFA5tiz
+         9eAeOpRhWGRHiiS9+iLTrf3IYtTYGVqfHPKEdQSfwgaag8xVZFEHJ1/D/4SGyqU3t4fQ
+         xYQQ==
+X-Gm-Message-State: APjAAAVtGIMMBYQHDpRLOwm/kG/xNeT9spwU3o3cgffQr4guwDZlOhCX
+        mMV0gnnTHRnvCmLaWtW1M0W1uw==
+X-Google-Smtp-Source: APXvYqyCcBWmg6tvDPsrLgmH0sYeAY28oba+EPqncQmOdGW/32zXvf1WUPg3MaIyYU4E6Pss9CvKVw==
+X-Received: by 2002:a63:30c6:: with SMTP id w189mr84852127pgw.398.1564082309986;
+        Thu, 25 Jul 2019 12:18:29 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id a5sm43642552pjv.21.2019.07.25.12.18.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Jul 2019 12:18:28 -0700 (PDT)
+Date:   Thu, 25 Jul 2019 12:18:25 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [RFC] dt-bindings: net: phy: Add subnode for LED configuration
+Message-ID: <20190725191825.GF250418@google.com>
+References: <20190722223741.113347-1-mka@chromium.org>
+ <20190724180430.GB28488@lunn.ch>
+ <20190725175258.GE250418@google.com>
+ <20190725183441.GL21952@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190725183441.GL21952@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function name should be 'mac80211_hwsim_he_capab()' (s wand w
-switched) to be consistent with the rest of the file.
-Fix and use it.
+On Thu, Jul 25, 2019 at 08:34:41PM +0200, Andrew Lunn wrote:
+> > As of now I don't plan to expose the label to userspace by the PHY
+> > driver/framework itself.
+> 
+> Great.
+> 
+> With that change, i think this proposed binding is O.K.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/wireless/mac80211_hwsim.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Great, thanks for your feedback!
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index b5274d1f30fa..64b0e51f8e8d 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2595,7 +2595,7 @@ static const struct ieee80211_sband_iftype_data he_capa_5ghz = {
- 	},
- };
- 
--static void mac80211_hswim_he_capab(struct ieee80211_supported_band *sband)
-+static void mac80211_hwsim_he_capab(struct ieee80211_supported_band *sband)
- {
- 	if (sband->band == NL80211_BAND_2GHZ)
- 		sband->iftype_data =
-@@ -2898,7 +2898,7 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
- 		sband->ht_cap.mcs.rx_mask[1] = 0xff;
- 		sband->ht_cap.mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
- 
--		mac80211_hswim_he_capab(sband);
-+		mac80211_hwsim_he_capab(sband);
- 
- 		hw->wiphy->bands[band] = sband;
- 	}
--- 
-2.20.1
-
+I'll probably post a new version with actual code next week, unless
+there is more discussion before I get to it.
