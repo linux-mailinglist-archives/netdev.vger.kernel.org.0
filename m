@@ -2,51 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C1B756C6
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 20:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A5F975703
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 20:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbfGYSWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 14:22:22 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:36812 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725800AbfGYSWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 14:22:21 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 233261434E34A;
-        Thu, 25 Jul 2019 11:22:21 -0700 (PDT)
-Date:   Thu, 25 Jul 2019 11:22:20 -0700 (PDT)
-Message-Id: <20190725.112220.1065850726074526108.davem@davemloft.net>
-To:     xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org,
-        syzbot+fbb5b288c9cb6a2eeac4@syzkaller.appspotmail.com,
-        jhs@mojatatu.com, jiri@resnulli.us
-Subject: Re: [Patch net] ife: error out when nla attributes are empty
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190723044300.16143-1-xiyou.wangcong@gmail.com>
-References: <20190723044300.16143-1-xiyou.wangcong@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 25 Jul 2019 11:22:21 -0700 (PDT)
+        id S1726174AbfGYSet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 14:34:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38152 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725800AbfGYSet (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jul 2019 14:34:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=M6GuFdL+bO6L1qoMoP2vNiL93csRJG5VJGOAi/Rol8Q=; b=AvN8/TWFD3shwUn3mjIXxPqVgg
+        PiMjgC+KBi9fbr5D2dFEpxZlbi6fN+J3ijrxYFR18Wj1Bz+hH5D1VsOaQROJ+aWtctyrQTiNLVPwr
+        uaGpTcFAi4x3VLyv66yznSQeC9jc897+S4GHoLKlfRV02mnw2YF4FZ42IZnUWwcdm1O0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hqiZd-0008GV-9l; Thu, 25 Jul 2019 20:34:41 +0200
+Date:   Thu, 25 Jul 2019 20:34:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [RFC] dt-bindings: net: phy: Add subnode for LED configuration
+Message-ID: <20190725183441.GL21952@lunn.ch>
+References: <20190722223741.113347-1-mka@chromium.org>
+ <20190724180430.GB28488@lunn.ch>
+ <20190725175258.GE250418@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190725175258.GE250418@google.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
-Date: Mon, 22 Jul 2019 21:43:00 -0700
+> As of now I don't plan to expose the label to userspace by the PHY
+> driver/framework itself.
 
-> act_ife at least requires TCA_IFE_PARMS, so we have to bail out
-> when there is no attribute passed in.
-> 
-> Reported-by: syzbot+fbb5b288c9cb6a2eeac4@syzkaller.appspotmail.com
-> Fixes: ef6980b6becb ("introduce IFE action")
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Great.
 
-Applied and queued up for -stable.
+With that change, i think this proposed binding is O.K.
+
+     Andrew
