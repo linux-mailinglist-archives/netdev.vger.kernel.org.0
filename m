@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBDA5752AD
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 17:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D90A752AF
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 17:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389040AbfGYPdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 11:33:49 -0400
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:35851 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387422AbfGYPds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 11:33:48 -0400
-Received: by mail-pl1-f202.google.com with SMTP id a5so26523009pla.3
-        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 08:33:48 -0700 (PDT)
+        id S2389088AbfGYPdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 11:33:52 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:51906 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389058AbfGYPdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 11:33:51 -0400
+Received: by mail-pg1-f202.google.com with SMTP id n23so19087490pgf.18
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 08:33:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=BiKfBntvSFGLnKAjRbgK5CvGVATtpbHbwqwm+GPuZM4=;
-        b=Y+nZ4sF3XfsqIdOBUvW6QLFFURKIkSbiN2BirNiVi09bpzTbt/WkF9toIjRNZVRPMc
-         4Pw7iVR+Ki4t68gxFEEfyi93KvLpti3+lhXOwN0vasftojfM/a3wL/zI5i+FqUthpkYn
-         njLCufcM56Tbum98fAPzBCga//Re2YIbDCNIAtSb3FZ/9OusYh44rykwdB6BIxxFvtoV
-         OHJeb/aSO8tRUoyK68jJvpHWJGiSOZOEJa2v1km7aNETL5ViGKMDXny4x9H/FwDPcTDy
-         wKoWN52AtQ1TZ9zsZGuKNtVpsm0+nVWYZeTEexvSf9b3s+qbyHxzaFQBQZPFpUS2QvXm
-         6hzA==
+        bh=3XbTWLRwhAiceZDqvAg53SxI5TZhBv0wWnTV5f6ZWpg=;
+        b=dt7Fyk8+3nkOtpq+ABH4X03prQxT2jVZTjXOu26LKAUorYfFXPUtf4Ga4R4An4+QjG
+         nFEeh/gkSzoltiMGhEqQJU59mI9wBqex62CDWTPmY8lslLMqnhD2x1zQRbuZ22pFWjeM
+         N5gipQVPdGvFEAQbEFbgt4KZ0xpzQcnhFNZr/GC8M960zYBoAIKayPZ66FI/KV9TzIDb
+         7s7ayLv9rkUnQgUr36J5AclM/w83bawrgRsmGIr4te5UZrAE4vrToqnuKZES4WXTfwqm
+         gjLRiC9gtNcCHaN14tnkR72BxE0zidXSBB5uEo2+DQpBMEpWn3m/wR5oAtyyKwK6Y1Lv
+         kcEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=BiKfBntvSFGLnKAjRbgK5CvGVATtpbHbwqwm+GPuZM4=;
-        b=EJJkinXcEBYaeI8IJDB+gPcx4vOwvuP4meoe2I+xLN7EGmFt8Fh/b7ELl6ZhAX0+yD
-         PnHn4OkU4vxjowigZ3C7Tq5iyVVEp90/OyW9WUZjGlBZfvhg0sA85TsRHnuTEvbOUcVz
-         sjxUXoSs/tTSimHOdV9XoOC+DQZPMAr38CtjJo6AytcOiHBf3c3ybqGG+NLcvr0emagz
-         Gm27fkleQ5sYMqDyn0uNE8daxKbAUdINsH7IexePdGnhQIq8+zNU+G2n9+sQFflP1qtx
-         ywTIEHtAfeeMo5xVtAcO63PX8pnqBvlE2HCocxatTy7Z5k9hi7W0feq0vSiotjP+D6hg
-         KNDA==
-X-Gm-Message-State: APjAAAVbYtodN8JUxdz+s0sjSsQ+gi1jmiZnVAxT5D4nqPzaj9XPuPQY
-        UDoYBcRQMcADjxcD/1nff3eO2XchXus0naoz4gUxEEK4jIqgB6f1cAFWpk6UiaqHbBKpJcHl2Jy
-        96gg3mF5x/aZiBS43dIWOXWA7LPV5kk0EiMgEMj53+kutWLeSbXwMfQ==
-X-Google-Smtp-Source: APXvYqxZ0SC77ZxbxqR3/hY40el0h/u5xVtOwr2M2vPzJXBpCCswhoYh6QYZSLr8aAqW9Pm73y3YREk=
-X-Received: by 2002:a63:d23:: with SMTP id c35mr86278020pgl.376.1564068827362;
- Thu, 25 Jul 2019 08:33:47 -0700 (PDT)
-Date:   Thu, 25 Jul 2019 08:33:36 -0700
+        bh=3XbTWLRwhAiceZDqvAg53SxI5TZhBv0wWnTV5f6ZWpg=;
+        b=ii6Bt+vLOhOOkkyvA8sJnk6mBCIYrVZaGu7enGzKNr5VzCMOkFAISJuGS3LBjzPMuu
+         xMRcB9Lvd/NMc6f1R8f0fXlMzOjrmtub0F0gMj8jBptu3MtXFV46PZKxXOysHyf1hsLp
+         rl/2+759P59THkEF4BGpxii5P8sazIyepPMn2gBvde8V0e+BHUDvBEYmodq1gOpGzHOG
+         cST3aHdsK4DUjKUJiNRd5xHBEqIQYsdLxT1czwkYiMZw1ntOkPsXBgNQdj5/5SiKPZtf
+         hg+wj3TlFdTNZhtNSvZS1Z3B3eCZ/AJdkVyfFBe3RcRnUMxDlue5yUbsuRA/jwyRKRHL
+         IYBg==
+X-Gm-Message-State: APjAAAUbo9UGvNCyjMA0ogpdn5r7+Z2afUoZzISmrO4mZBcMU3ER6PWU
+        MOveWnQo5AMqIsA+uhAfhPMJG2yTrJ/3gyxMkpjz5IrMshSXQk4IMuJpuPPcOO063fZSMOjYAFm
+        rDz+8ExEkJ0zwhuhkavuzKz4PIKRvarWtazibml6LIVs4PkcxNIofWQ==
+X-Google-Smtp-Source: APXvYqwLFBkyn38D1qFrEAeYPuAcbFMlbnSs7YTkekejpPm/cNmDJoNnuQp4f4Y9BUhti4M24n36n1c=
+X-Received: by 2002:a65:6552:: with SMTP id a18mr77689946pgw.208.1564068829986;
+ Thu, 25 Jul 2019 08:33:49 -0700 (PDT)
+Date:   Thu, 25 Jul 2019 08:33:37 -0700
 In-Reply-To: <20190725153342.3571-1-sdf@google.com>
-Message-Id: <20190725153342.3571-2-sdf@google.com>
+Message-Id: <20190725153342.3571-3-sdf@google.com>
 Mime-Version: 1.0
 References: <20190725153342.3571-1-sdf@google.com>
 X-Mailer: git-send-email 2.22.0.657.g960e92d24f-goog
-Subject: [PATCH bpf-next v2 1/7] bpf/flow_dissector: pass input flags to BPF
- flow dissector program
+Subject: [PATCH bpf-next v2 2/7] bpf/flow_dissector: document flags
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -62,11 +61,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-C flow dissector supports input flags that tell it to customize parsing
-by either stopping early or trying to parse as deep as possible. Pass
-those flags to the BPF flow dissector so it can make the same
-decisions. In the next commits I'll add support for those flags to
-our reference bpf_flow.c
+Describe what each input flag does and who uses it.
 
 Acked-by: Willem de Bruijn <willemb@google.com>
 Acked-by: Song Liu <songliubraving@fb.com>
@@ -75,107 +70,45 @@ Cc: Willem de Bruijn <willemb@google.com>
 Cc: Petar Penkov <ppenkov@google.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/linux/skbuff.h       | 2 +-
- include/net/flow_dissector.h | 4 ----
- include/uapi/linux/bpf.h     | 5 +++++
- net/bpf/test_run.c           | 2 +-
- net/core/flow_dissector.c    | 5 +++--
- 5 files changed, 10 insertions(+), 8 deletions(-)
+ Documentation/bpf/prog_flow_dissector.rst | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 718742b1c505..9b7a8038beec 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1271,7 +1271,7 @@ static inline int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
+diff --git a/Documentation/bpf/prog_flow_dissector.rst b/Documentation/bpf/prog_flow_dissector.rst
+index ed343abe541e..0f3f380b2ce4 100644
+--- a/Documentation/bpf/prog_flow_dissector.rst
++++ b/Documentation/bpf/prog_flow_dissector.rst
+@@ -26,6 +26,7 @@ and output arguments.
+   * ``nhoff`` - initial offset of the networking header
+   * ``thoff`` - initial offset of the transport header, initialized to nhoff
+   * ``n_proto`` - L3 protocol type, parsed out of L2 header
++  * ``flags`` - optional flags
  
- struct bpf_flow_dissector;
- bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
--		      __be16 proto, int nhoff, int hlen);
-+		      __be16 proto, int nhoff, int hlen, unsigned int flags);
+ Flow dissector BPF program should fill out the rest of the ``struct
+ bpf_flow_keys`` fields. Input arguments ``nhoff/thoff/n_proto`` should be
+@@ -101,6 +102,23 @@ can be called for both cases and would have to be written carefully to
+ handle both cases.
  
- bool __skb_flow_dissect(const struct net *net,
- 			const struct sk_buff *skb,
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index 90bd210be060..3e2642587b76 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -253,10 +253,6 @@ enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_MAX,
- };
  
--#define FLOW_DISSECTOR_F_PARSE_1ST_FRAG		BIT(0)
--#define FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL	BIT(1)
--#define FLOW_DISSECTOR_F_STOP_AT_ENCAP		BIT(2)
--
- struct flow_dissector_key {
- 	enum flow_dissector_key_id key_id;
- 	size_t offset; /* offset of struct flow_dissector_key_*
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index fa1c753dcdbc..b4ad19bd6aa8 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3507,6 +3507,10 @@ enum bpf_task_fd_type {
- 	BPF_FD_TYPE_URETPROBE,		/* filename + offset */
- };
- 
-+#define FLOW_DISSECTOR_F_PARSE_1ST_FRAG		(1U << 0)
-+#define FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL	(1U << 1)
-+#define FLOW_DISSECTOR_F_STOP_AT_ENCAP		(1U << 2)
++Flags
++=====
 +
- struct bpf_flow_keys {
- 	__u16	nhoff;
- 	__u16	thoff;
-@@ -3528,6 +3532,7 @@ struct bpf_flow_keys {
- 			__u32	ipv6_dst[4];	/* in6_addr; network order */
- 		};
- 	};
-+	__u32	flags;
- };
++``flow_keys->flags`` might contain optional input flags that work as follows:
++
++* ``FLOW_DISSECTOR_F_PARSE_1ST_FRAG`` - tells BPF flow dissector to continue
++  parsing first fragment; the default expected behavior is that flow dissector
++  returns as soon as it finds out that the packet is fragmented;
++  used by ``eth_get_headlen`` to estimate length of all headers for GRO.
++* ``FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL`` - tells BPF flow dissector to stop
++  parsing as soon as it reaches IPv6 flow label; used by ``___skb_get_hash``
++  and ``__skb_get_hash_symmetric`` to get flow hash.
++* ``FLOW_DISSECTOR_F_STOP_AT_ENCAP`` - tells BPF flow dissector to stop
++  parsing as soon as it reaches encapsulated headers; used by routing
++  infrastructure.
++
++
+ Reference Implementation
+ ========================
  
- struct bpf_func_info {
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 80e6f3a6864d..4e41d15a1098 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -419,7 +419,7 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 	time_start = ktime_get_ns();
- 	for (i = 0; i < repeat; i++) {
- 		retval = bpf_flow_dissect(prog, &ctx, eth->h_proto, ETH_HLEN,
--					  size);
-+					  size, 0);
- 
- 		if (signal_pending(current)) {
- 			preempt_enable();
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 3e6fedb57bc1..a74c4ed1b30d 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -784,7 +784,7 @@ static void __skb_flow_bpf_to_target(const struct bpf_flow_keys *flow_keys,
- }
- 
- bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
--		      __be16 proto, int nhoff, int hlen)
-+		      __be16 proto, int nhoff, int hlen, unsigned int flags)
- {
- 	struct bpf_flow_keys *flow_keys = ctx->flow_keys;
- 	u32 result;
-@@ -794,6 +794,7 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
- 	flow_keys->n_proto = proto;
- 	flow_keys->nhoff = nhoff;
- 	flow_keys->thoff = flow_keys->nhoff;
-+	flow_keys->flags = flags;
- 
- 	preempt_disable();
- 	result = BPF_PROG_RUN(prog, ctx);
-@@ -914,7 +915,7 @@ bool __skb_flow_dissect(const struct net *net,
- 			}
- 
- 			ret = bpf_flow_dissect(attached, &ctx, n_proto, nhoff,
--					       hlen);
-+					       hlen, flags);
- 			__skb_flow_bpf_to_target(&flow_keys, flow_dissector,
- 						 target_container);
- 			rcu_read_unlock();
 -- 
 2.22.0.657.g960e92d24f-goog
 
