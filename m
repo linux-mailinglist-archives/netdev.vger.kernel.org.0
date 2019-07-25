@@ -2,100 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1497D74707
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 08:20:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA1EA74729
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 08:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728080AbfGYGT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 02:19:56 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46229 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbfGYGT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 02:19:56 -0400
-Received: by mail-wr1-f66.google.com with SMTP id z1so49330826wru.13;
-        Wed, 24 Jul 2019 23:19:54 -0700 (PDT)
+        id S2387508AbfGYGbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 02:31:13 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:44309 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727193AbfGYGbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 02:31:13 -0400
+Received: by mail-pl1-f195.google.com with SMTP id t14so22962781plr.11
+        for <netdev@vger.kernel.org>; Wed, 24 Jul 2019 23:31:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=oairFP+0IPKj9z34QsgCMnG9avxEW40PIU4DCp8RWuw=;
-        b=P2WDBWnFpseUEZC2tFSn/41K/3wV8NfZRDP8IOxM4ICMYSeIwFduUAq9oz3lb9ovhk
-         h4SJhOBkiAyddhMSBxOGPxa0kp6WmrY170evuzYJ6F4yBXE2KG+Ze6ukW8XeXVpObS0j
-         reYS7dNb/OlXKlmcehv+3BhapgXsvRmGBzRCp+VYrVC5/Kqvi2JHUg2w5RmDpTgK6oir
-         eKtMw1griabhuXiNQFGkaeAgvxXDYfDZEyT+EXP0Ecaw11tZi34UUu42L81Sgq06YGtG
-         8eeBm4mgn7c15fBWPUcRWdfwi4r3ojWlosS5XyB5xcpwmneZpj+dHFeR1JIIHiMZnAQr
-         aBaQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=8XFmRxjQUZHfVuRq3opWFethuoNp09CnP8B4IXsgP2g=;
+        b=lDvH4bOZdi3rf06kd04Z6/z7aZTM9n3BDjMG1P4MiI9U2bq4ihnjOdRiMDojZC3cdQ
+         wQVDtkyW1W70wY/r0o/WnUlce5m9eCRRyGMdpQ4C2L0z/2p2CMuMdijk7f2tAaaJa6MO
+         Di5KFe+egyDw/zmlP597M+we8ZV9NleQEAOlCUnTEEEuClbE37sd0XDyZy/6kzhu15IE
+         rB+OziPI0jqEn9heW52ZFS9rJC/mc8iS9f/OPH+vLM/DQVuniiQGxBZpcCSszPNt8CZc
+         QF943y7g3Cn55w26SgFH4CQGfT0pPyz2G9P4yZ+5x+2pbuhPDtDJRrqtxFuQ+BYDAZWf
+         iiCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oairFP+0IPKj9z34QsgCMnG9avxEW40PIU4DCp8RWuw=;
-        b=Gzj+OWMIv6eQjkTBWQcqCi1s1X2xvvvDA/iQLR7MmsZYOJTM1QTc5b2z0D88KR+Tfc
-         RvEs39cW9uNkZT45nX8dCRPnTYJBFj8pf7jlHgep3CI02ELKuf+ujfMhUcrJLVYdF2RO
-         eang1BoIlVjDcGK0TZ+dROwGV2JOK2B+5qc5FCBOwU/CVew2AX3U/E6sUBaSQz5CDOmt
-         GvM2NddF5IvINqD6rL32+yDIETw+y5IKblDZRs6Uw1dUI7vc1erE64jGSRKoLyUa3Wzf
-         CBtlfCQBQlUW6UsJ+bqqFPbVhQ3v/R7f1fXRcTnHhH32ijkoO+rDtYTNKWd1e9HeG2Zb
-         e3Lw==
-X-Gm-Message-State: APjAAAXLYd/R9sihud6eZkaJmP2EgD0QBxSSjEzgwUw5wy+mz6eaL57Y
-        YWkvGj8J7eGTU87vAVY6Fl09jhZ7
-X-Google-Smtp-Source: APXvYqzUfCB9qKelAt7/YGzQ+wDGxjkeqzNGZaQxBMlUr15kSwxOCLHvY9XrWW8c1hbwMT4ANQlhbQ==
-X-Received: by 2002:a5d:6583:: with SMTP id q3mr98127700wru.184.1564035594038;
-        Wed, 24 Jul 2019 23:19:54 -0700 (PDT)
-Received: from [192.168.8.147] (240.169.185.81.rev.sfr.net. [81.185.169.240])
-        by smtp.gmail.com with ESMTPSA id r11sm60497627wre.14.2019.07.24.23.19.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8XFmRxjQUZHfVuRq3opWFethuoNp09CnP8B4IXsgP2g=;
+        b=TMbbKIiAhM0vbA5nz6ClZROPAH0OlffoCsvbo9ivouDppZ1uDFbi2wynMVhy318Lm/
+         n8zKtvJ0UhzMIef0uThInTVxOsoc9AtN3yxb2I2wi2QkipYf3h4EYSCaE9OSU0537ZWw
+         6YhtoNrjcLie0MS6VIaJ6Dnjo+gsU6jLM+sQxkofL8XJEWUojmAijKI9dmymo6UfiSH5
+         sDlFj4gh8lyOC0kBz2XWf54E4/v1scVUfVpJ5iBQb6IkMrkfp/lGSjyEbdctE8cHcUbN
+         vgkrBralgZNf2W1syInmlk0fk+CTnvSYDoGcLDy4vbdXiYgYPJzpGAoP8P1pNwpLQwHf
+         JKXg==
+X-Gm-Message-State: APjAAAVgTDGxo5uuQEQX/AxAu4gPJFvIxx+U8cT2BQEhPJxG0iZyS2P1
+        1e3xO26MTjmimeKypzr/g71m4dUv3oI=
+X-Google-Smtp-Source: APXvYqz6+fZBBApCPKsAaDn53hy/LvF1r11aSW4WKDF6l32eyUiF7aK+w6f4RqwdNS/8CTcIi1LqWg==
+X-Received: by 2002:a17:902:7c90:: with SMTP id y16mr90845841pll.238.1564036272112;
+        Wed, 24 Jul 2019 23:31:12 -0700 (PDT)
+Received: from localhost.localdomain (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id w18sm61226317pfj.37.2019.07.24.23.31.10
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2019 23:19:53 -0700 (PDT)
-Subject: Re: [PATCH 4.4 stable net] net: tcp: Fix use-after-free in
- tcp_write_xmit
-To:     maowenan <maowenan@huawei.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190724091715.137033-1-maowenan@huawei.com>
- <2e09f4d1-8a47-27e9-60f9-63d3b19a98ec@gmail.com>
- <13ffa2fe-d064-9786-bc52-e4281d26ed1d@huawei.com>
- <44f0ba0d-fd19-d44b-9c5c-686e2f8ef988@gmail.com>
- <9a8d6a5a-9a9d-9cb5-caa9-5c12ba04a43c@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <510109e3-101f-517c-22b4-921432f04fe5@gmail.com>
-Date:   Thu, 25 Jul 2019 08:19:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <9a8d6a5a-9a9d-9cb5-caa9-5c12ba04a43c@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Wed, 24 Jul 2019 23:31:11 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath10k@lists.infradead.org, stable@vger.kernel.org
+Subject: [PATCH] ath10k: Fix HOST capability QMI incompatibility
+Date:   Wed, 24 Jul 2019 23:31:08 -0700
+Message-Id: <20190725063108.15790-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.18.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The introduction of 768ec4c012ac ("ath10k: update HOST capability QMI
+message") served the purpose of supporting the new and extended HOST
+capability QMI message.
 
+But while the new message adds a slew of optional members it changes the
+data type of the "daemon_support" member, which means that older
+versions of the firmware will fail to decode the incoming request
+message.
 
-On 7/25/19 6:29 AM, maowenan wrote:
-> 
+There is no way to detect this breakage from Linux and there's no way to
+recover from sending the wrong message (i.e. we can't just try one
+format and then fallback to the other), so a quirk is introduced in
+DeviceTree to indicate to the driver that the firmware requires the 8bit
+version of this message.
 
->>>>> Syzkaller reproducer():
->>>>> r0 = socket$packet(0x11, 0x3, 0x300)
->>>>> r1 = socket$inet_tcp(0x2, 0x1, 0x0)
->>>>> bind$inet(r1, &(0x7f0000000300)={0x2, 0x4e21, @multicast1}, 0x10)
->>>>> connect$inet(r1, &(0x7f0000000140)={0x2, 0x1000004e21, @loopback}, 0x10)
->>>>> recvmmsg(r1, &(0x7f0000001e40)=[{{0x0, 0x0, &(0x7f0000000100)=[{&(0x7f00000005c0)=""/88, 0x58}], 0x1}}], 0x1, 0x40000000, 0x0)
->>>>> sendto$inet(r1, &(0x7f0000000000)="e2f7ad5b661c761edf", 0x9, 0x8080, 0x0, 0x0)
->>>>> r2 = fcntl$dupfd(r1, 0x0, r0)
->>>>> connect$unix(r2, &(0x7f00000001c0)=@file={0x0, './file0\x00'}, 0x6e)
->>>>>
->>
->> It does call tcp_disconnect(), by one of the connect() call.
-> 
-> yes, __inet_stream_connect will call tcp_disconnect when sa_family == AF_UNSPEC, in c repro if it
-> passes sa_family with AF_INET it won't call disconnect, and then sk_send_head won't be NULL when tcp_connect.
-> 
+Cc: stable@vger.kernel.org
+Fixes: 768ec4c012ac ("ath10k: update HOST capability qmi message")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ .../bindings/net/wireless/qcom,ath10k.txt     |  6 +++++
+ drivers/net/wireless/ath/ath10k/qmi.c         | 13 ++++++++---
+ .../net/wireless/ath/ath10k/qmi_wlfw_v01.c    | 22 +++++++++++++++++++
+ .../net/wireless/ath/ath10k/qmi_wlfw_v01.h    |  1 +
+ drivers/net/wireless/ath/ath10k/snoc.c        | 11 ++++++++++
+ drivers/net/wireless/ath/ath10k/snoc.h        |  1 +
+ 6 files changed, 51 insertions(+), 3 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
+index ae661e65354e..f9499b20d840 100644
+--- a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
++++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
+@@ -81,6 +81,12 @@ Optional properties:
+ 	Definition: Name of external front end module used. Some valid FEM names
+ 		    for example: "microsemi-lx5586", "sky85703-11"
+ 		    and "sky85803" etc.
++- qcom,snoc-host-cap-8bit-quirk:
++	Usage: Optional
++	Value type: <empty>
++	Definition: Quirk specifying that the firmware expects the 8bit version
++		    of the host capability QMI request
++
+ 
+ Example (to supply PCI based wifi block details):
+ 
+diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
+index 3b63b6257c43..545ac1f06997 100644
+--- a/drivers/net/wireless/ath/ath10k/qmi.c
++++ b/drivers/net/wireless/ath/ath10k/qmi.c
+@@ -581,22 +581,29 @@ static int ath10k_qmi_host_cap_send_sync(struct ath10k_qmi *qmi)
+ {
+ 	struct wlfw_host_cap_resp_msg_v01 resp = {};
+ 	struct wlfw_host_cap_req_msg_v01 req = {};
++	struct qmi_elem_info *req_ei;
+ 	struct ath10k *ar = qmi->ar;
++	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+ 	struct qmi_txn txn;
+ 	int ret;
+ 
+ 	req.daemon_support_valid = 1;
+ 	req.daemon_support = 0;
+ 
+-	ret = qmi_txn_init(&qmi->qmi_hdl, &txn,
+-			   wlfw_host_cap_resp_msg_v01_ei, &resp);
++	ret = qmi_txn_init(&qmi->qmi_hdl, &txn, wlfw_host_cap_resp_msg_v01_ei,
++			   &resp);
+ 	if (ret < 0)
+ 		goto out;
+ 
++	if (test_bit(ATH10K_SNOC_FLAG_8BIT_HOST_CAP_QUIRK, &ar_snoc->flags))
++		req_ei = wlfw_host_cap_8bit_req_msg_v01_ei;
++	else
++		req_ei = wlfw_host_cap_req_msg_v01_ei;
++
+ 	ret = qmi_send_request(&qmi->qmi_hdl, NULL, &txn,
+ 			       QMI_WLFW_HOST_CAP_REQ_V01,
+ 			       WLFW_HOST_CAP_REQ_MSG_V01_MAX_MSG_LEN,
+-			       wlfw_host_cap_req_msg_v01_ei, &req);
++			       req_ei, &req);
+ 	if (ret < 0) {
+ 		qmi_txn_cancel(&txn);
+ 		ath10k_err(ar, "failed to send host capability request: %d\n", ret);
+diff --git a/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.c b/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.c
+index 1fe05c6218c3..86fcf4e1de5f 100644
+--- a/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.c
++++ b/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.c
+@@ -1988,6 +1988,28 @@ struct qmi_elem_info wlfw_host_cap_req_msg_v01_ei[] = {
+ 	{}
+ };
+ 
++struct qmi_elem_info wlfw_host_cap_8bit_req_msg_v01_ei[] = {
++	{
++		.data_type      = QMI_OPT_FLAG,
++		.elem_len       = 1,
++		.elem_size      = sizeof(u8),
++		.array_type     = NO_ARRAY,
++		.tlv_type       = 0x10,
++		.offset         = offsetof(struct wlfw_host_cap_req_msg_v01,
++					   daemon_support_valid),
++	},
++	{
++		.data_type      = QMI_UNSIGNED_1_BYTE,
++		.elem_len       = 1,
++		.elem_size      = sizeof(u8),
++		.array_type     = NO_ARRAY,
++		.tlv_type       = 0x10,
++		.offset         = offsetof(struct wlfw_host_cap_req_msg_v01,
++					   daemon_support),
++	},
++	{}
++};
++
+ struct qmi_elem_info wlfw_host_cap_resp_msg_v01_ei[] = {
+ 	{
+ 		.data_type      = QMI_STRUCT,
+diff --git a/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.h b/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.h
+index bca1186e1560..4d107e1364a8 100644
+--- a/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.h
++++ b/drivers/net/wireless/ath/ath10k/qmi_wlfw_v01.h
+@@ -575,6 +575,7 @@ struct wlfw_host_cap_req_msg_v01 {
+ 
+ #define WLFW_HOST_CAP_REQ_MSG_V01_MAX_MSG_LEN 189
+ extern struct qmi_elem_info wlfw_host_cap_req_msg_v01_ei[];
++extern struct qmi_elem_info wlfw_host_cap_8bit_req_msg_v01_ei[];
+ 
+ struct wlfw_host_cap_resp_msg_v01 {
+ 	struct qmi_response_type_v01 resp;
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index b491361e6ed4..fc15a0037f0e 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -1261,6 +1261,15 @@ static int ath10k_snoc_resource_init(struct ath10k *ar)
+ 	return ret;
+ }
+ 
++static void ath10k_snoc_quirks_init(struct ath10k *ar)
++{
++	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
++	struct device *dev = &ar_snoc->dev->dev;
++
++	if (of_property_read_bool(dev->of_node, "qcom,snoc-host-cap-8bit-quirk"))
++		set_bit(ATH10K_SNOC_FLAG_8BIT_HOST_CAP_QUIRK, &ar_snoc->flags);
++}
++
+ int ath10k_snoc_fw_indication(struct ath10k *ar, u64 type)
+ {
+ 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+@@ -1678,6 +1687,8 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+ 	ar->ce_priv = &ar_snoc->ce;
+ 	msa_size = drv_data->msa_size;
+ 
++	ath10k_snoc_quirks_init(ar);
++
+ 	ret = ath10k_snoc_resource_init(ar);
+ 	if (ret) {
+ 		ath10k_warn(ar, "failed to initialize resource: %d\n", ret);
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.h b/drivers/net/wireless/ath/ath10k/snoc.h
+index d62f53501fbb..9db823e46314 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.h
++++ b/drivers/net/wireless/ath/ath10k/snoc.h
+@@ -63,6 +63,7 @@ enum ath10k_snoc_flags {
+ 	ATH10K_SNOC_FLAG_REGISTERED,
+ 	ATH10K_SNOC_FLAG_UNREGISTERING,
+ 	ATH10K_SNOC_FLAG_RECOVERY,
++	ATH10K_SNOC_FLAG_8BIT_HOST_CAP_QUIRK,
+ };
+ 
+ struct ath10k_snoc {
+-- 
+2.18.0
 
-Look again at the Syzkaller reproducer()
-
-It definitely uses tcp_disconnect()
-
-Do not be fooled by connect$unix(), this is a connect() call really, with AF_UNSPEC
