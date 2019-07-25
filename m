@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B727574B
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 20:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BDF275777
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 21:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbfGYSxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 14:53:48 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:37180 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726107AbfGYSxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 14:53:48 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0D1FE143986A8;
-        Thu, 25 Jul 2019 11:53:48 -0700 (PDT)
-Date:   Thu, 25 Jul 2019 11:53:47 -0700 (PDT)
-Message-Id: <20190725.115347.1639559656820873202.davem@davemloft.net>
-To:     chris.packham@alliedtelesis.co.nz
-Cc:     madalin.bucur@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fsl/fman: Remove comment referring to non-existent
- function
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190723233501.6626-1-chris.packham@alliedtelesis.co.nz>
-References: <20190723233501.6626-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 25 Jul 2019 11:53:48 -0700 (PDT)
+        id S1726371AbfGYTAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 15:00:10 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:43053 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726303AbfGYTAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 15:00:10 -0400
+Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
+        (envelope-from <linville@tuxdriver.com>)
+        id 1hqiyH-0001Mm-1f
+        for netdev@vger.kernel.org; Thu, 25 Jul 2019 15:00:09 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by localhost.localdomain (8.15.2/8.14.6) with ESMTP id x6PIxHeK028548
+        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 14:59:17 -0400
+Received: (from linville@localhost)
+        by localhost.localdomain (8.15.2/8.15.2/Submit) id x6PIxHlV028547
+        for netdev@vger.kernel.org; Thu, 25 Jul 2019 14:59:17 -0400
+Date:   Thu, 25 Jul 2019 14:59:17 -0400
+From:   "John W. Linville" <linville@tuxdriver.com>
+To:     netdev@vger.kernel.org
+Subject: ethtool 5.2 released
+Message-ID: <20190725185917.GA23037@tuxdriver.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Date: Wed, 24 Jul 2019 11:35:01 +1200
+ethtool version 5.2 has been released.
 
-> fm_set_max_frm() existed in the Freescale SDK as a callback for an
-> early_param. When this code was ported to the upstream kernel the
-> early_param was converted to a module_param making the reference to the
-> function incorrect. The rest of the comment already does a good job of
-> explaining the parameter so removing the reference to the non-existent
-> function seems like the best thing to do.
-> 
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.2.tar.xz
 
-Applied, thanks.
+Release notes:
+
+	* Feature: Add 100BaseT1 and 1000BaseT1 link modes
+	* Feature: Use standard file location macros in ethtool.spec
+
+John
+-- 
+John W. Linville		Someday the world will need a hero, and you
+linville@tuxdriver.com			might be all we have.  Be ready.
