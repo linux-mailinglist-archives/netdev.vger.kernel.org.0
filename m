@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 684FF749BF
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D842749C6
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 11:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390384AbfGYJVN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jul 2019 05:21:13 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:23767 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388732AbfGYJVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 05:21:12 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-235-scnLaRCdNWKuzfuwzi4QFQ-1; Thu, 25 Jul 2019 10:21:09 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu,
- 25 Jul 2019 10:21:08 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 25 Jul 2019 10:21:08 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jian-Hong Pan' <jian-hong@endlessm.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] rtw88: pci: Use general byte arrays as the elements of RX
- ring
-Thread-Topic: [PATCH] rtw88: pci: Use general byte arrays as the elements of
- RX ring
-Thread-Index: AQHVQsDFH4BG56wpwU66J+Fzxhx3XabbDGOQ
-Date:   Thu, 25 Jul 2019 09:21:08 +0000
-Message-ID: <06d713fff7434dfb9ccab32c2e2112e2@AcuMS.aculab.com>
-References: <20190725080925.6575-1-jian-hong@endlessm.com>
-In-Reply-To: <20190725080925.6575-1-jian-hong@endlessm.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-X-MC-Unique: scnLaRCdNWKuzfuwzi4QFQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S2390408AbfGYJXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 05:23:05 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44766 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725808AbfGYJXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 05:23:05 -0400
+Received: by mail-pg1-f194.google.com with SMTP id i18so22732308pgl.11;
+        Thu, 25 Jul 2019 02:23:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=6exXecWBG0k9kez9FGk7YSp5KXJbfwmTQdkFhgGKZo0=;
+        b=lvtl5SCD1CEWdcHEeiLXUeefZs2wHJFEVwWdhOuxL6yoQJQ2dVxK94HvSLL10hRLn8
+         CY5/8lhBKIIs8PSSGQVVO19ApVYQmKPJGD6VPxc8G+NGW99WNBTUPw83h9R9U2U/APPD
+         0JLH8d3KWVnIWqNCjOMatP3FH+JoXvcKYgUT1neIRVe0i8txKc8MSb/3YHffdoovlJ3u
+         3U6w4i7ISZzgGIlPO6UcOlMmsjGrIfPMckK2q+iu4zchp1P5u9dWC25Y6vYOBidkN/b4
+         XFDOb8hyvdj/Ok3LIncMurg+dP3AvEaMIZIwNcQZ7a2KQJUrnzOw1zEjoeG512lvwU7L
+         M+Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6exXecWBG0k9kez9FGk7YSp5KXJbfwmTQdkFhgGKZo0=;
+        b=WIqXrGp3tAlntCjKHTfFhLcXjkfWuaual5eF9ZSJQUo6b63gy8PY4QTPMj/RWp0fH8
+         nOH+ASk8hr0bZoybyth3qPewxu5E/9UuxRBVXDGsRIi6Zv7e7MdPdn2mUJUCXGPfTZnW
+         QeAW67Ue3nd/FrvKaKU4eFJ6P0UMvIOdXjhdbFpRcyc/9ZAOF5OxbRLv9baCK+AYwXGi
+         BcePuyVHMqAl2JbD+7F+WJiJwL1JQt7bECDOR3+iDNKcOLl27OxV+YBnzD6xPx1/pcsU
+         qeqbFHXYd+DLr8thrk2ukDLE+XZi/YTewZXfykYjlBtuUcWZp9DNDEeJdcxaIvljA0S2
+         FHcQ==
+X-Gm-Message-State: APjAAAV1Da4kerPgKcoi4dnsZnF/B2PqXzJoktlhzaoWecJ0ZqUIPz/+
+        PqiK8dkTW2lKEWwk2ylUB+Q=
+X-Google-Smtp-Source: APXvYqwt5S251Ls8+WEXtgiOR2m0ZD3Z56AOdR4AQTJu22b6JGXpQi72qxEU3n7GR7KkY+NPG39i6A==
+X-Received: by 2002:a17:90b:f0e:: with SMTP id br14mr91707102pjb.117.1564046584280;
+        Thu, 25 Jul 2019 02:23:04 -0700 (PDT)
+Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
+        by smtp.gmail.com with ESMTPSA id x9sm26549209pgp.75.2019.07.25.02.23.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Jul 2019 02:23:03 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: bluetooth: hci_sock: Fix a possible null-pointer dereference in hci_mgmt_cmd()
+Date:   Thu, 25 Jul 2019 17:22:53 +0800
+Message-Id: <20190725092253.15912-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian-Hong Pan
-> Sent: 25 July 2019 09:09
-> Each skb as the element in RX ring was expected with sized buffer 8216
-> (RTK_PCI_RX_BUF_SIZE) bytes. However, the skb buffer's true size is
-> 16640 bytes for alignment after allocated, x86_64 for example. And, the
-> difference will be enlarged 512 times (RTK_MAX_RX_DESC_NUM).
-> To prevent that much wasted memory, this patch follows David's
-> suggestion [1] and uses general buffer arrays, instead of skbs as the
-> elements in RX ring.
-...
->  	for (i = 0; i < len; i++) {
-> -		skb = dev_alloc_skb(buf_sz);
-> -		if (!skb) {
-> +		buf = devm_kzalloc(rtwdev->dev, buf_sz, GFP_ATOMIC);
+In hci_mgmt_cmd(), there is an if statement on line 1570 to check
+whether hdev is NULL:
+    if (hdev && chan->hdev_init)
 
-You should do this allocation somewhere than can sleep.
-So you don't need GFP_ATOMIC, making the allocate (and dma map)
-much less likely to fail.
-If they do fail using a smaller ring might be better than failing
-completely.
+When hdev is NULL, it is used on line 1575:
+    err = handler->func(sk, hdev, cp, len);
 
-I suspect that buf_sz gets rounded up somewhat.
-Also you almost certainly want 'buf' to be cache-line aligned.
-I don't think devm_kzalloc() guarantees that at all.
+Some called functions of handler->func use hdev, such as:
+set_appearance(), add_device() and remove_device() in mgmt.c.
 
-While allocating all 512 buffers in one block (just over 4MB)
-is probably not a good idea, you may need to allocated (and dma map)
-then in groups.
+Thus, a possible null-pointer dereference may occur.
 
-	David
+To fix this bug, hdev is checked before calling handler->func().
 
+This bug is found by a static analysis tool STCheck written by us.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ net/bluetooth/hci_sock.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index d32077b28433..18ea1e47ea48 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -1570,11 +1570,12 @@ static int hci_mgmt_cmd(struct hci_mgmt_chan *chan, struct sock *sk,
+ 	if (hdev && chan->hdev_init)
+ 		chan->hdev_init(sk, hdev);
+ 
+-	cp = buf + sizeof(*hdr);
 -
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+-	err = handler->func(sk, hdev, cp, len);
+-	if (err < 0)
+-		goto done;
++	if (hdev) {
++		cp = buf + sizeof(*hdr);
++		err = handler->func(sk, hdev, cp, len);
++		if (err < 0)
++			goto done;
++	}
+ 
+ 	err = msglen;
+ 
+-- 
+2.17.0
 
