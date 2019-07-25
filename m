@@ -2,290 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F21A97450B
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 07:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 050BB746A5
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 07:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403930AbfGYFgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 01:36:36 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:41575 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390589AbfGYFgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 01:36:35 -0400
-Received: by mail-qt1-f193.google.com with SMTP id d17so47838435qtj.8;
-        Wed, 24 Jul 2019 22:36:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cit/uEEj5zGRVU08n3pEs9ORmGfaUtgK6Q2DtGqIsC0=;
-        b=o8f5v4EJIvCqOz8lPbvo6c6wgGt2p9wwkhplvGtC/hii6Ts78bDRKmMIHiL670/UH6
-         uRC/EU02He971Y/jx/PN4v02DFEgwZryIyE2rWhyXzn6a/ZMalXNHUqVEk43WUpQNy70
-         HLU0b9TFRaDzEwhAklPaGpYGxWxaX5djfC7qkqY0PI6jGfAoTYMCuvRI/VQpFzg0+whd
-         1RWK0IV25Ej7tRRmavK7dDOgYqIzwoEi6GdozCiIF8C4IWd9TXEYu13EKrAPViGfkwQ2
-         5eIhaO6513g7v9kNf9tM+rtYsnLefV3zYRYr+gbiHtQiRLIxpjcve/KYP4oPdh5+K2N6
-         52Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cit/uEEj5zGRVU08n3pEs9ORmGfaUtgK6Q2DtGqIsC0=;
-        b=Ueis6ikWruoB7gv/mDsdBfuYnjRv1zK68QUt0XVVOgllTQnk60I1qDoG2Ev6geNTk6
-         omvyCAS3ZZVlGNFsKsDdCjEva9HW+DdXj+eCkFQnIpiNwVPB/JTwMVEqiAGbh7iXMFaE
-         Wa+W4oLdR3pTBj0MbiKmdv0myYR+SR8agBKd05gk5DD89aP4u/b88yDYl9Xs5WLMLGU9
-         fWnHNq4x0Xy2xfsHXbV8314lfKDI5JxaqMIr81J+GU71fDSEE0GtnqsWrzRYHXYbehJz
-         7npf95CoGyvj4Yh+q22EQhOLW0UmEOdPD2E0Tlv/0vScNGBOqNn3wk84oJgTnWmjYJns
-         8DFw==
-X-Gm-Message-State: APjAAAUSuxQR7ayXQhgRkC7B2Tk24LH63/XsU9lGZZXbJZ+4HJG38Oys
-        X/VXHa1jWU/gHLpIAV1YZsG8V1srL0uP/6yDezo=
-X-Google-Smtp-Source: APXvYqyUzBKkJrng1tUlk3fsq66kk4GEK+lk1TQzlOtY8gMm3IxY+8S6DWOcnPbRgFhH/NYHHVISheno726TI4tjAUk=
-X-Received: by 2002:ac8:6a17:: with SMTP id t23mr58843171qtr.183.1564032994412;
- Wed, 24 Jul 2019 22:36:34 -0700 (PDT)
+        id S1727981AbfGYF4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 01:56:44 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:37618 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725800AbfGYF4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 01:56:43 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 4C67C6055D; Thu, 25 Jul 2019 05:56:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564034202;
+        bh=obQivilrrq99bI/JADOtPPw40Tam6JqkCOlcQ4u07Pg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=bMsF962d6/5hRs8CNVfvOuFh4McgKgeaYjwiNj3rwaaPtAP6v1KZ5KaO+5ayPT7X8
+         Dk0u0GVbi2sdzFC5siDwnBU1Ll2HS92frYguPRwP1uvbB0SUBU8gLoQwBwEQ/gApbq
+         43BEiRsKf6jOkmD6Y6EjXSwyN/8B3a+P3AvXqgpA=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 80BD960213;
+        Thu, 25 Jul 2019 05:56:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564034201;
+        bh=obQivilrrq99bI/JADOtPPw40Tam6JqkCOlcQ4u07Pg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=fk8JO0d1n7CFnbxsgD6H9t57uVvCqUoYRCA9TuaG0rfqi+Tvb2UVr3h4dHScgkhSY
+         EQ6SzMH0UOjrdbwzJYMIgy6mDuQfDqre9tdHdaNcPknctiD6v44h7ISBXfHbXfxEoq
+         tpwl1W30EdWY0/KUbJAxnaMqr9tlLD3iht+TUTO0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 80BD960213
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ganapathi Bhat <gbhat@marvell.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Andreas Fenkart <afenkart@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        "open list\:ARM\/Rockchip SoC..." 
+        <linux-rockchip@lists.infradead.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Nishant Sarmukadam <nishants@marvell.com>,
+        netdev <netdev@vger.kernel.org>,
+        Avri Altman <avri.altman@wdc.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Xinming Hu <huxinming820@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] mwifiex: Make use of the new sdio_trigger_replug() API to reset
+References: <20190722193939.125578-3-dianders@chromium.org>
+        <20190724113508.47A356021C@smtp.codeaurora.org>
+        <CAD=FV=WAsrBV9PzUz1qPzQru+AkOYZ5hsaWdhNYRTNqUfDeOmQ@mail.gmail.com>
+Date:   Thu, 25 Jul 2019 08:56:35 +0300
+In-Reply-To: <CAD=FV=WAsrBV9PzUz1qPzQru+AkOYZ5hsaWdhNYRTNqUfDeOmQ@mail.gmail.com>
+        (Doug Anderson's message of "Wed, 24 Jul 2019 13:22:22 -0700")
+Message-ID: <87imrqzmgc.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20190724170018.96659-1-sdf@google.com> <20190724170018.96659-6-sdf@google.com>
- <CAPhsuW6Z2Bx66ZDOV-9jW+hsxKbZJxY-YFgP0rL_4QipAuptQA@mail.gmail.com> <20190724235254.GB3500@mini-arch>
-In-Reply-To: <20190724235254.GB3500@mini-arch>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Wed, 24 Jul 2019 22:36:23 -0700
-Message-ID: <CAPhsuW6cNxQb_manSbaOqUfW_xCoPpCsdBwCDwweyjO=CGsi=w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/7] sefltests/bpf: support FLOW_DISSECTOR_F_PARSE_1ST_FRAG
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 4:52 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+Doug Anderson <dianders@chromium.org> writes:
+
+> Hi,
 >
-> On 07/24, Song Liu wrote:
-> > On Wed, Jul 24, 2019 at 10:11 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > bpf_flow.c: exit early unless FLOW_DISSECTOR_F_PARSE_1ST_FRAG is passed
-> > > in flags. Also, set ip_proto earlier, this makes sure we have correct
-> > > value with fragmented packets.
-> > >
-> > > Add selftest cases to test ipv4/ipv6 fragments and skip eth_get_headlen
-> > > tests that don't have FLOW_DISSECTOR_F_PARSE_1ST_FRAG flag.
-> > >
-> > > eth_get_headlen calls flow dissector with
-> > > FLOW_DISSECTOR_F_PARSE_1ST_FRAG flag so we can't run tests that
-> > > have different set of input flags against it.
-> > >
-> > > Cc: Willem de Bruijn <willemb@google.com>
-> > > Cc: Petar Penkov <ppenkov@google.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  .../selftests/bpf/prog_tests/flow_dissector.c | 129 ++++++++++++++++++
-> > >  tools/testing/selftests/bpf/progs/bpf_flow.c  |  28 +++-
-> > >  2 files changed, 151 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> > > index c938283ac232..966cb3b06870 100644
-> > > --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> > > @@ -5,6 +5,10 @@
-> > >  #include <linux/if_tun.h>
-> > >  #include <sys/uio.h>
-> > >
-> > > +#ifndef IP_MF
-> > > +#define IP_MF 0x2000
-> > > +#endif
-> > > +
-> > >  #define CHECK_FLOW_KEYS(desc, got, expected)                           \
-> > >         CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) != 0,           \
-> > >               desc,                                                     \
-> > > @@ -49,6 +53,18 @@ struct ipv6_pkt {
-> > >         struct tcphdr tcp;
-> > >  } __packed;
-> > >
-> > > +struct ipv6_frag_pkt {
-> > > +       struct ethhdr eth;
-> > > +       struct ipv6hdr iph;
-> > > +       struct frag_hdr {
-> > > +               __u8 nexthdr;
-> > > +               __u8 reserved;
-> > > +               __be16 frag_off;
-> > > +               __be32 identification;
-> > > +       } ipf;
-> > > +       struct tcphdr tcp;
-> > > +} __packed;
-> > > +
-> > >  struct dvlan_ipv6_pkt {
-> > >         struct ethhdr eth;
-> > >         __u16 vlan_tci;
-> > > @@ -65,9 +81,11 @@ struct test {
-> > >                 struct ipv4_pkt ipv4;
-> > >                 struct svlan_ipv4_pkt svlan_ipv4;
-> > >                 struct ipv6_pkt ipv6;
-> > > +               struct ipv6_frag_pkt ipv6_frag;
-> > >                 struct dvlan_ipv6_pkt dvlan_ipv6;
-> > >         } pkt;
-> > >         struct bpf_flow_keys keys;
-> > > +       __u32 flags;
-> > >  };
-> > >
-> > >  #define VLAN_HLEN      4
-> > > @@ -143,6 +161,102 @@ struct test tests[] = {
-> > >                         .n_proto = __bpf_constant_htons(ETH_P_IPV6),
-> > >                 },
-> > >         },
-> > > +       {
-> > > +               .name = "ipv4-frag",
-> > > +               .pkt.ipv4 = {
-> > > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IP),
-> > > +                       .iph.ihl = 5,
-> > > +                       .iph.protocol = IPPROTO_TCP,
-> > > +                       .iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
-> > > +                       .iph.frag_off = __bpf_constant_htons(IP_MF),
-> > > +                       .tcp.doff = 5,
-> > > +                       .tcp.source = 80,
-> > > +                       .tcp.dest = 8080,
-> > > +               },
-> > > +               .keys = {
-> > > +                       .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
-> > > +                       .nhoff = ETH_HLEN,
-> > > +                       .thoff = ETH_HLEN + sizeof(struct iphdr),
-> > > +                       .addr_proto = ETH_P_IP,
-> > > +                       .ip_proto = IPPROTO_TCP,
-> > > +                       .n_proto = __bpf_constant_htons(ETH_P_IP),
-> > > +                       .is_frag = true,
-> > > +                       .is_first_frag = true,
-> > > +                       .sport = 80,
-> > > +                       .dport = 8080,
-> > > +               },
-> > > +               .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
-> > > +       },
-> > > +       {
-> > > +               .name = "ipv4-no-frag",
-> > > +               .pkt.ipv4 = {
-> > > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IP),
-> > > +                       .iph.ihl = 5,
-> > > +                       .iph.protocol = IPPROTO_TCP,
-> > > +                       .iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
-> > > +                       .iph.frag_off = __bpf_constant_htons(IP_MF),
-> > > +                       .tcp.doff = 5,
-> > > +                       .tcp.source = 80,
-> > > +                       .tcp.dest = 8080,
-> > > +               },
-> > > +               .keys = {
-> > > +                       .nhoff = ETH_HLEN,
-> > > +                       .thoff = ETH_HLEN + sizeof(struct iphdr),
-> > > +                       .addr_proto = ETH_P_IP,
-> > > +                       .ip_proto = IPPROTO_TCP,
-> > > +                       .n_proto = __bpf_constant_htons(ETH_P_IP),
-> > > +                       .is_frag = true,
-> > > +                       .is_first_frag = true,
-> > > +               },
-> > > +       },
-> > > +       {
-> > > +               .name = "ipv6-frag",
-> > > +               .pkt.ipv6_frag = {
-> > > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IPV6),
-> > > +                       .iph.nexthdr = IPPROTO_FRAGMENT,
-> > > +                       .iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
-> > > +                       .ipf.nexthdr = IPPROTO_TCP,
-> > > +                       .tcp.doff = 5,
-> > > +                       .tcp.source = 80,
-> > > +                       .tcp.dest = 8080,
-> > > +               },
-> > > +               .keys = {
-> > > +                       .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
-> > > +                       .nhoff = ETH_HLEN,
-> > > +                       .thoff = ETH_HLEN + sizeof(struct ipv6hdr) +
-> > > +                               sizeof(struct frag_hdr),
-> > > +                       .addr_proto = ETH_P_IPV6,
-> > > +                       .ip_proto = IPPROTO_TCP,
-> > > +                       .n_proto = __bpf_constant_htons(ETH_P_IPV6),
-> > > +                       .is_frag = true,
-> > > +                       .is_first_frag = true,
-> > > +                       .sport = 80,
-> > > +                       .dport = 8080,
-> > > +               },
-> > > +               .flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG,
-> > > +       },
-> > > +       {
-> > > +               .name = "ipv6-no-frag",
-> > > +               .pkt.ipv6_frag = {
-> > > +                       .eth.h_proto = __bpf_constant_htons(ETH_P_IPV6),
-> > > +                       .iph.nexthdr = IPPROTO_FRAGMENT,
-> > > +                       .iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
-> > > +                       .ipf.nexthdr = IPPROTO_TCP,
-> > > +                       .tcp.doff = 5,
-> > > +                       .tcp.source = 80,
-> > > +                       .tcp.dest = 8080,
-> > > +               },
-> > > +               .keys = {
-> > > +                       .nhoff = ETH_HLEN,
-> > > +                       .thoff = ETH_HLEN + sizeof(struct ipv6hdr) +
-> > > +                               sizeof(struct frag_hdr),
-> > > +                       .addr_proto = ETH_P_IPV6,
-> > > +                       .ip_proto = IPPROTO_TCP,
-> > > +                       .n_proto = __bpf_constant_htons(ETH_P_IPV6),
-> > > +                       .is_frag = true,
-> > > +                       .is_first_frag = true,
-> > > +               },
-> > > +       },
-> > >  };
-> > >
-> > >  static int create_tap(const char *ifname)
-> > > @@ -225,6 +339,13 @@ void test_flow_dissector(void)
-> > >                         .data_size_in = sizeof(tests[i].pkt),
-> > >                         .data_out = &flow_keys,
-> > >                 };
-> > > +               static struct bpf_flow_keys ctx = {};
-> > > +
-> > > +               if (tests[i].flags) {
-> > > +                       tattr.ctx_in = &ctx;
-> > > +                       tattr.ctx_size_in = sizeof(ctx);
-> > > +                       ctx.flags = tests[i].flags;
-> > > +               }
-> > >
-> > >                 err = bpf_prog_test_run_xattr(&tattr);
-> > >                 CHECK_ATTR(tattr.data_size_out != sizeof(flow_keys) ||
-> > > @@ -255,6 +376,14 @@ void test_flow_dissector(void)
-> > >                 struct bpf_prog_test_run_attr tattr = {};
-> > >                 __u32 key = 0;
-> > >
-> > > +               /* Don't run tests that are not marked as
-> > > +                * FLOW_DISSECTOR_F_PARSE_1ST_FRAG; eth_get_headlen
-> > > +                * sets this flag.
-> > > +                */
-> > > +
-> > > +               if (tests[i].flags != FLOW_DISSECTOR_F_PARSE_1ST_FRAG)
-> > > +                       continue;
-> >
-> > Maybe test flags & FLOW_DISSECTOR_F_PARSE_1ST_FRAG == 0 instead?
-> > It is not necessary now, but might be useful in the future.
-> I'm not sure about this one. We want flags here to match flags
-> from eth_get_headlen:
+> On Wed, Jul 24, 2019 at 4:35 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>>
+>> Douglas Anderson <dianders@chromium.org> wrote:
+>>
+>> > As described in the patch ("mmc: core: Add sdio_trigger_replug()
+>> > API"), the current mwifiex_sdio_card_reset() is broken in the cases
+>> > where we're running Bluetooth on a second SDIO func on the same card
+>> > as WiFi.  The problem goes away if we just use the
+>> > sdio_trigger_replug() API call.
+>> >
+>> > NOTE: Even though with this new solution there is less of a reason to
+>> > do our work from a workqueue (the unplug / plug mechanism we're using
+>> > is possible for a human to perform at any time so the stack is
+>> > supposed to handle it without it needing to be called from a special
+>> > context), we still need a workqueue because the Marvell reset function
+>> > could called from a context where sleeping is invalid and thus we
+>> > can't claim the host.  One example is Marvell's wakeup_timer_fn().
+>> >
+>> > Cc: Andreas Fenkart <afenkart@gmail.com>
+>> > Cc: Brian Norris <briannorris@chromium.org>
+>> > Fixes: b4336a282db8 ("mwifiex: sdio: reset adapter using mmc_hw_reset")
+>> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>> > Reviewed-by: Brian Norris <briannorris@chromium.org>
+>>
+>> I assume this is going via some other tree so I'm dropping this from my
+>> queue. If I should apply this please resend once the dependency is in
+>> wireless-drivers-next.
+>>
+>> Patch set to Not Applicable.
 >
->         const unsigned int flags = FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
->         ...
->         if (!skb_flow_dissect_flow_keys_basic(..., flags))
->
-> Otherwise the test might break unexpectedly. So I'd rather manually
-> adjust a test here if eth_get_headlen flags change.
+> Thanks.  For now I'll assume that Ulf will pick it up if/when he is
+> happy with patch #1 in this series.  Would you be willing to provide
+> your Ack on this patch to make it clear to Ulf you're OK with that?
 
-Could we have
+Sure, I was planning to do that already in my previous email but forgot.
 
-  flags ==  FLOW_DISSECTOR_F_PARSE_1ST_FRAG | some_other_flag
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
-in the future? This flag is not equal to FLOW_DISSECTOR_F_PARSE_1ST_FRAG.
-
->
-> Maybe I should clarify the comment to signify that dependency? Because
-> currently it might be read as if we only care about
-> FLOW_DISSECTOR_F_PARSE_1ST_FRAG, but we really care about all flags
-> in eth_get_headlen; it just happens that it only has one right now.
-
-Some clarification will be great.
-
-Thanks,
-Song
+-- 
+Kalle Valo
