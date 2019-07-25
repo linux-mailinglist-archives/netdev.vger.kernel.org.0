@@ -2,122 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 050BB746A5
-	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 07:56:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1497D74707
+	for <lists+netdev@lfdr.de>; Thu, 25 Jul 2019 08:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbfGYF4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 01:56:44 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:37618 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725800AbfGYF4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 01:56:43 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 4C67C6055D; Thu, 25 Jul 2019 05:56:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1564034202;
-        bh=obQivilrrq99bI/JADOtPPw40Tam6JqkCOlcQ4u07Pg=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=bMsF962d6/5hRs8CNVfvOuFh4McgKgeaYjwiNj3rwaaPtAP6v1KZ5KaO+5ayPT7X8
-         Dk0u0GVbi2sdzFC5siDwnBU1Ll2HS92frYguPRwP1uvbB0SUBU8gLoQwBwEQ/gApbq
-         43BEiRsKf6jOkmD6Y6EjXSwyN/8B3a+P3AvXqgpA=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 80BD960213;
-        Thu, 25 Jul 2019 05:56:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1564034201;
-        bh=obQivilrrq99bI/JADOtPPw40Tam6JqkCOlcQ4u07Pg=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=fk8JO0d1n7CFnbxsgD6H9t57uVvCqUoYRCA9TuaG0rfqi+Tvb2UVr3h4dHScgkhSY
-         EQ6SzMH0UOjrdbwzJYMIgy6mDuQfDqre9tdHdaNcPknctiD6v44h7ISBXfHbXfxEoq
-         tpwl1W30EdWY0/KUbJAxnaMqr9tlLD3iht+TUTO0=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 80BD960213
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Andreas Fenkart <afenkart@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        "open list\:ARM\/Rockchip SoC..." 
-        <linux-rockchip@lists.infradead.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        netdev <netdev@vger.kernel.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Xinming Hu <huxinming820@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] mwifiex: Make use of the new sdio_trigger_replug() API to reset
-References: <20190722193939.125578-3-dianders@chromium.org>
-        <20190724113508.47A356021C@smtp.codeaurora.org>
-        <CAD=FV=WAsrBV9PzUz1qPzQru+AkOYZ5hsaWdhNYRTNqUfDeOmQ@mail.gmail.com>
-Date:   Thu, 25 Jul 2019 08:56:35 +0300
-In-Reply-To: <CAD=FV=WAsrBV9PzUz1qPzQru+AkOYZ5hsaWdhNYRTNqUfDeOmQ@mail.gmail.com>
-        (Doug Anderson's message of "Wed, 24 Jul 2019 13:22:22 -0700")
-Message-ID: <87imrqzmgc.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728080AbfGYGT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 02:19:56 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46229 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfGYGT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jul 2019 02:19:56 -0400
+Received: by mail-wr1-f66.google.com with SMTP id z1so49330826wru.13;
+        Wed, 24 Jul 2019 23:19:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=oairFP+0IPKj9z34QsgCMnG9avxEW40PIU4DCp8RWuw=;
+        b=P2WDBWnFpseUEZC2tFSn/41K/3wV8NfZRDP8IOxM4ICMYSeIwFduUAq9oz3lb9ovhk
+         h4SJhOBkiAyddhMSBxOGPxa0kp6WmrY170evuzYJ6F4yBXE2KG+Ze6ukW8XeXVpObS0j
+         reYS7dNb/OlXKlmcehv+3BhapgXsvRmGBzRCp+VYrVC5/Kqvi2JHUg2w5RmDpTgK6oir
+         eKtMw1griabhuXiNQFGkaeAgvxXDYfDZEyT+EXP0Ecaw11tZi34UUu42L81Sgq06YGtG
+         8eeBm4mgn7c15fBWPUcRWdfwi4r3ojWlosS5XyB5xcpwmneZpj+dHFeR1JIIHiMZnAQr
+         aBaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oairFP+0IPKj9z34QsgCMnG9avxEW40PIU4DCp8RWuw=;
+        b=Gzj+OWMIv6eQjkTBWQcqCi1s1X2xvvvDA/iQLR7MmsZYOJTM1QTc5b2z0D88KR+Tfc
+         RvEs39cW9uNkZT45nX8dCRPnTYJBFj8pf7jlHgep3CI02ELKuf+ujfMhUcrJLVYdF2RO
+         eang1BoIlVjDcGK0TZ+dROwGV2JOK2B+5qc5FCBOwU/CVew2AX3U/E6sUBaSQz5CDOmt
+         GvM2NddF5IvINqD6rL32+yDIETw+y5IKblDZRs6Uw1dUI7vc1erE64jGSRKoLyUa3Wzf
+         CBtlfCQBQlUW6UsJ+bqqFPbVhQ3v/R7f1fXRcTnHhH32ijkoO+rDtYTNKWd1e9HeG2Zb
+         e3Lw==
+X-Gm-Message-State: APjAAAXLYd/R9sihud6eZkaJmP2EgD0QBxSSjEzgwUw5wy+mz6eaL57Y
+        YWkvGj8J7eGTU87vAVY6Fl09jhZ7
+X-Google-Smtp-Source: APXvYqzUfCB9qKelAt7/YGzQ+wDGxjkeqzNGZaQxBMlUr15kSwxOCLHvY9XrWW8c1hbwMT4ANQlhbQ==
+X-Received: by 2002:a5d:6583:: with SMTP id q3mr98127700wru.184.1564035594038;
+        Wed, 24 Jul 2019 23:19:54 -0700 (PDT)
+Received: from [192.168.8.147] (240.169.185.81.rev.sfr.net. [81.185.169.240])
+        by smtp.gmail.com with ESMTPSA id r11sm60497627wre.14.2019.07.24.23.19.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Jul 2019 23:19:53 -0700 (PDT)
+Subject: Re: [PATCH 4.4 stable net] net: tcp: Fix use-after-free in
+ tcp_write_xmit
+To:     maowenan <maowenan@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190724091715.137033-1-maowenan@huawei.com>
+ <2e09f4d1-8a47-27e9-60f9-63d3b19a98ec@gmail.com>
+ <13ffa2fe-d064-9786-bc52-e4281d26ed1d@huawei.com>
+ <44f0ba0d-fd19-d44b-9c5c-686e2f8ef988@gmail.com>
+ <9a8d6a5a-9a9d-9cb5-caa9-5c12ba04a43c@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <510109e3-101f-517c-22b4-921432f04fe5@gmail.com>
+Date:   Thu, 25 Jul 2019 08:19:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <9a8d6a5a-9a9d-9cb5-caa9-5c12ba04a43c@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Doug Anderson <dianders@chromium.org> writes:
 
-> Hi,
->
-> On Wed, Jul 24, 2019 at 4:35 AM Kalle Valo <kvalo@codeaurora.org> wrote:
->>
->> Douglas Anderson <dianders@chromium.org> wrote:
->>
->> > As described in the patch ("mmc: core: Add sdio_trigger_replug()
->> > API"), the current mwifiex_sdio_card_reset() is broken in the cases
->> > where we're running Bluetooth on a second SDIO func on the same card
->> > as WiFi.  The problem goes away if we just use the
->> > sdio_trigger_replug() API call.
->> >
->> > NOTE: Even though with this new solution there is less of a reason to
->> > do our work from a workqueue (the unplug / plug mechanism we're using
->> > is possible for a human to perform at any time so the stack is
->> > supposed to handle it without it needing to be called from a special
->> > context), we still need a workqueue because the Marvell reset function
->> > could called from a context where sleeping is invalid and thus we
->> > can't claim the host.  One example is Marvell's wakeup_timer_fn().
->> >
->> > Cc: Andreas Fenkart <afenkart@gmail.com>
->> > Cc: Brian Norris <briannorris@chromium.org>
->> > Fixes: b4336a282db8 ("mwifiex: sdio: reset adapter using mmc_hw_reset")
->> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
->> > Reviewed-by: Brian Norris <briannorris@chromium.org>
->>
->> I assume this is going via some other tree so I'm dropping this from my
->> queue. If I should apply this please resend once the dependency is in
->> wireless-drivers-next.
->>
->> Patch set to Not Applicable.
->
-> Thanks.  For now I'll assume that Ulf will pick it up if/when he is
-> happy with patch #1 in this series.  Would you be willing to provide
-> your Ack on this patch to make it clear to Ulf you're OK with that?
 
-Sure, I was planning to do that already in my previous email but forgot.
+On 7/25/19 6:29 AM, maowenan wrote:
+> 
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+>>>>> Syzkaller reproducer():
+>>>>> r0 = socket$packet(0x11, 0x3, 0x300)
+>>>>> r1 = socket$inet_tcp(0x2, 0x1, 0x0)
+>>>>> bind$inet(r1, &(0x7f0000000300)={0x2, 0x4e21, @multicast1}, 0x10)
+>>>>> connect$inet(r1, &(0x7f0000000140)={0x2, 0x1000004e21, @loopback}, 0x10)
+>>>>> recvmmsg(r1, &(0x7f0000001e40)=[{{0x0, 0x0, &(0x7f0000000100)=[{&(0x7f00000005c0)=""/88, 0x58}], 0x1}}], 0x1, 0x40000000, 0x0)
+>>>>> sendto$inet(r1, &(0x7f0000000000)="e2f7ad5b661c761edf", 0x9, 0x8080, 0x0, 0x0)
+>>>>> r2 = fcntl$dupfd(r1, 0x0, r0)
+>>>>> connect$unix(r2, &(0x7f00000001c0)=@file={0x0, './file0\x00'}, 0x6e)
+>>>>>
+>>
+>> It does call tcp_disconnect(), by one of the connect() call.
+> 
+> yes, __inet_stream_connect will call tcp_disconnect when sa_family == AF_UNSPEC, in c repro if it
+> passes sa_family with AF_INET it won't call disconnect, and then sk_send_head won't be NULL when tcp_connect.
+> 
 
--- 
-Kalle Valo
+
+Look again at the Syzkaller reproducer()
+
+It definitely uses tcp_disconnect()
+
+Do not be fooled by connect$unix(), this is a connect() call really, with AF_UNSPEC
