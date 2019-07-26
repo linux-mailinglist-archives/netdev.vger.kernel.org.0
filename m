@@ -2,80 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB1077261
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:47:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B942977264
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727947AbfGZTrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 15:47:39 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36082 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727645AbfGZTrj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:47:39 -0400
-Received: by mail-wm1-f66.google.com with SMTP id g67so44473327wme.1
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:47:38 -0700 (PDT)
+        id S1727959AbfGZTtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 15:49:43 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:38096 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727643AbfGZTtn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:49:43 -0400
+Received: by mail-qt1-f196.google.com with SMTP id n11so53768810qtl.5
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:49:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=9uMJXnFWfjBhvPSvY9fzTfD6jfxTl1hZlPomSYIlBEk=;
-        b=N8lkjMuP1swIlOXHsuY9fgBe8SMAZNID71JDg9NHLayXVWuwaevfr5l9EXf0OPnxk5
-         sXXaYZDBB/g80isCdhzYDqt5aK+Fkks0rFq5KgsyhVhlP+3umS6RdeS6LNuL2LlZG7wd
-         4efKvmmUvynwaIxEj5KHx8yGjrxEdBUMWjnRVb9FeEv1ugtOxvlsp2OwXZ/e5mWed43e
-         TPElVOA8UBM/5ZWwyVj+TpMSb5XE8Y6OXmEqd0A2e0NTb4PHvGWTw6x2FDGMUE6OngPR
-         u6OqZZHPeBNCGmX1DPS2ycBUZtcwa53wO8vYxrhopNnEdRznNRahl1KYk8dUvGIubotl
-         QrYA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZTgTHrN6B+JKK0bxUfsBC3AuqiptBA1np1rV+FpgXS8=;
+        b=vYpaC/nQschTK08XZSTMuyTP3F9LCSSLlQ5cEHAh/JYkSCAQpCwO2qAf+uDX5wRKL9
+         LkqFzpFb9AFA81VV8y49VzYJoviYcKA30KipAxG8gZLkXJ5j5xh3B8Xi6aSdwoMi6oRx
+         3s0D7Zc4HRIA9zMtJW7TUfjcqKuy25q4PrhL8e0ryE4jS8J2MriT/lR1/AtMBZstXOiF
+         YLGiazPW+EdBnTFOJbYGhgpigK2fvlAU/1PjLFGHbuDsUjCLV2sYaHVNHApIkW5xrhYO
+         lbcF9hW040vXQ/LQYIao27ZqqNxRZLvxgvhoMBZU66B9XE8IQ39LuD1WWC+AwQBwyJkl
+         T8TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=9uMJXnFWfjBhvPSvY9fzTfD6jfxTl1hZlPomSYIlBEk=;
-        b=X+C/iyH1PHGpa/IC2fMctpENZ20GnRpXwu0W6ACwf+FqNy9b7LM2H0bCCdWuIPmdOT
-         OLEm7k+sP9mQ2sUW0ikfI+kZQ2+2tDM6MRcEfq5Dc47FN8kT8kByn53R1KiqcU42H57y
-         p8MIO/DCWHOaqyQRadiXj9WmK23hNxeAvE2n8zIiaX2M8ARgzDLFJ+UwVYDtMlcK48eg
-         MO8BE2pMmlSY6qf9aGgJEP7qkIML5Q6zmyEg+t1tM+xqiKc3XPTWZXW4d0FDisbM8zzN
-         GrdoVoEF8ZfWNIFvuqERInNoK8DfyXonIJVVoOmXMZf1gUrkYN74Y45HWGx8ZfBvp5hd
-         G4OQ==
-X-Gm-Message-State: APjAAAXoZ/yZNtkcmGIwbKFYG+1oQfrksmMF3e+scMxj9QAX3+xg02a8
-        N58z7dTp7Nt/BlcXPofqFZx01Kug
-X-Google-Smtp-Source: APXvYqyPje8/zPdKLnblCMOzz9zkWKYOZNpRYneDHI9cE2NMKUZdoUITpj7XLaogGfRTYpi22TfuNA==
-X-Received: by 2002:a1c:630a:: with SMTP id x10mr91047910wmb.113.1564170457256;
-        Fri, 26 Jul 2019 12:47:37 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:55f1:e404:698f:358? (p200300EA8F43420055F1E404698F0358.dip0.t-ipconnect.de. [2003:ea:8f43:4200:55f1:e404:698f:358])
-        by smtp.googlemail.com with ESMTPSA id n12sm57473059wmc.24.2019.07.26.12.47.36
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 12:47:36 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/4] r8169: improve HW csum and TSO handling
-Message-ID: <d347af97-0b46-6c71-37ef-46ce2b46f4df@gmail.com>
-Date:   Fri, 26 Jul 2019 21:47:30 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZTgTHrN6B+JKK0bxUfsBC3AuqiptBA1np1rV+FpgXS8=;
+        b=nICCqroy7beHb1cH6p8v3W+IH0m6kDkz3cpSBoD7Uci/8bEeUFvpG0oXpC3cRsp9SW
+         PI9MIW/dEGAWw+zylnmxNDFnlcDke0Txn3yYH33mFmaQwTwG1je7yUQEComacRoJEWiC
+         m3NHDGc+SzkqUUH+kBUk5C+V5l/hvAVzhVcgfI6aj/+c1wX/6s8dNwaW33MKvEUDavjg
+         9tiZ7w7xV0mlsJ+4soXuuTmGM76Ks2lP9WFcQSxNR9NAAJxmxGKQLFVttX3nuONGXe+n
+         CnK9DZ+r7mJ0CnA7oWPHJl22/GVLMTprhSOWiqOR1RFWVoFyUz5uA9V6NK7gGKcZA+pr
+         5NHA==
+X-Gm-Message-State: APjAAAVn12KtrllFsbQNyKqEuKzM9LYmL0RXM3BvTE7yykbNUrJnujG9
+        5EU3oB/gDi2kFDJ1Z00r6v90A9vNsooRsTLGjHKs8w==
+X-Google-Smtp-Source: APXvYqyz+HZo+hz+50oIUBT+Ci74ViWrpTikyXGqsAjt2avy5pzWrJYRGhJgiJyHNg0NzKoxh7dEaZwnmnKE17vZF0Q=
+X-Received: by 2002:ac8:1ba9:: with SMTP id z38mr69008671qtj.176.1564170582398;
+ Fri, 26 Jul 2019 12:49:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
+ <20190716224150.GC172157@google.com> <20190716235500.GA199237@google.com>
+ <20190717012406.lugqemvubixfdd6v@ast-mbp.dhcp.thefacebook.com>
+ <20190717130119.GA138030@google.com> <CAADnVQJY_=yeY0C3k1ZKpRFu5oNbB4zhQf5tQnLr=Mi8i6cgeQ@mail.gmail.com>
+ <20190718025143.GB153617@google.com> <20190723221108.gamojemj5lorol7k@ast-mbp>
+ <20190724135714.GA9945@google.com> <20190726183954.oxzhkrwt4uhgl4gl@ast-mbp.dhcp.thefacebook.com>
+ <20190726191853.GA196514@google.com>
+In-Reply-To: <20190726191853.GA196514@google.com>
+From:   Joel Fernandes <joelaf@google.com>
+Date:   Fri, 26 Jul 2019 15:49:30 -0400
+Message-ID: <CAJWu+opEckc++G6btY6Muhi6ToJQYSW7HfxPYdrJkXiAoy4Fww@mail.gmail.com>
+Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to ftrace
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Cc: Android Kernel" <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series:
-- delegates more tasks from the driver to the core
-- enables HW csum and TSO per default
-- copies quirks for buggy chip versions from vendor driver
+On Fri, Jul 26, 2019 at 3:18 PM Joel Fernandes <joel@joelfernandes.org> wrote:
+>
+> On Fri, Jul 26, 2019 at 11:39:56AM -0700, Alexei Starovoitov wrote:
+[snip]
+> > > For bpf program:
+> > > https://android.googlesource.com/platform/system/bpfprogs/+/908f6cd718fab0de7a944f84628c56f292efeb17%5E%21/
+> >
+> > what is unsafe_bpf_map_update_elem() in there?
+> > The verifier comment sounds odd.
+> > Could you describe the issue you see with the verifier?
+>
+> Will dig out the verifier issue I was seeing. I was just trying to get a
+> prototype working so I did not go into verifier details much.
 
-Heiner Kallweit (4):
-  r8169: set GSO size and segment limits
-  r8169: implement callback ndo_features_check
-  r8169: remove r8169_csum_workaround
-  r8169: enable HW csum and TSO
+This is actually slightly old code, the actual function name is
+bpf_map_update_elem_unsafe() .
+ https://android.googlesource.com/platform/system/bpf/+/refs/heads/master/progs/include/bpf_helpers.h#39
 
- drivers/net/ethernet/realtek/r8169_main.c | 128 +++++++++++-----------
- 1 file changed, 61 insertions(+), 67 deletions(-)
+This function came about because someone added a DEFINE_BPF_MAP macro
+which defines BPF map accessors based on the type of the key and
+value. So that's the "safe" variant:
+https://android.googlesource.com/platform/system/bpf/+/refs/heads/master/progs/include/bpf_helpers.h#54
+(added in commit
+https://android.googlesource.com/platform/system/bpf/+/6564b8eac46fc27dde807a39856386d98d2471c3)
 
--- 
-2.22.0
+So the "safe" variant of the bpf_map_update_elem for us became a map
+specific version with a prototype:
+static inline __always_inline __unused int
+bpf_##the_map##_update_elem(TypeOfKey* k, TypeOfValue* v, unsigned
+long long flags)
 
+Since I had not upgraded my BPF program to the "safe" variant, I had
+to use the internal "unsafe" variant of the API (if that makes
+sense..).
+
+thanks Alexei!
+
+- Joel
