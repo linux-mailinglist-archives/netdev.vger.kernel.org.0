@@ -2,130 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 255B077205
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0952E7725F
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:47:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388537AbfGZTS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 15:18:57 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39966 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388525AbfGZTS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:18:57 -0400
-Received: by mail-pg1-f195.google.com with SMTP id w10so25217699pgj.7
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:18:56 -0700 (PDT)
+        id S1727912AbfGZTrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 15:47:16 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38895 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727645AbfGZTrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:47:16 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y15so24991457pfn.5
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:47:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aaLCO9rquW8zOfKrWz3ON/6AgObn6JUEqFdlb0biVXs=;
-        b=t7xuzeqrfaBvKuIzgMGqiBiJ+bNKXpm0hav9D4RB0YlIt0j3Ja5TcPtOdARR8OOKXv
-         R8skIXSww2dlvw1KwWGssW8pAcTrO0mxapnzlplUyC+8320bpsICCvBR4p/oYgIW/hxO
-         TWmLmhivSt+2Q5v6AU6uj2TpMtH6HN72fyR+E=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4wGRkgS2FF/uTIQN+Jc8iKQcgvfPp40Yuscy8pEbkUk=;
+        b=k0N/C624XI2FN2mhH5DTw+AutJtv8jb67SyDoPs0wDBwbQS35ouoRYmbZTkoS2vOVG
+         dXxA0aZKN2a3uLAnuvPdwpndA8/B1P2CgAb9vDaKiKefeykiekPD6Myt/ECb1rNmC+mb
+         n4DheuB35AV/p734JTiiUrW6mwgYIK3B3RcYTIIWnn4G+zHIXoDo24vcBzUFUrq/+PI8
+         rI1GyFAOs7UuVIDN2aAojE0ATM2yRLNcTog1UKpbS1p5qziyc0qKIfF3gkaloPVmAJgI
+         6waQ4aSMuvmYXzBZ0Wtkr7lBj+MjkFY3AqfJGM1oyj1TFXD4UX99skTn5+EMSwyRtHgC
+         MowQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aaLCO9rquW8zOfKrWz3ON/6AgObn6JUEqFdlb0biVXs=;
-        b=HUJf6QABcMCaSWqG4FEJovmo6yOpbp08cwIc6c3n6uKufH1/aLRGTSZhLigxXJRWnV
-         kMBcry3/FzpRr5q/FFhN7u+4bfrxfKmXHEMl4IAzxWkyqbFmQG7vw6Zf1dcBAdG3jxU4
-         rQx3QdDMkWEOnAiiEJJu0gF5CVPTIt1D1QjFXos2N+OzyiEEq/H1l9x+iC+ypAlooM/C
-         rSjSjPNcDuOXHHWl7nTNO1sLgqw0Hr53jwfr3nnkBqgTmhX4SgZOgynhq7izzzjAeZTL
-         M1bOo7plByBUKjiocOSQQMrMZfFAuK4luzqkxNXSO0629/e4Acy5iQKmoP5OuYIQbzWJ
-         N3fA==
-X-Gm-Message-State: APjAAAXpkSwDPFaf1FRjl7yPKHbbmOrK42BM3DSdEhwYh5uukZKKix2u
-        2NMegIw/jhf+IvXO5HoDzHk=
-X-Google-Smtp-Source: APXvYqzchn27cAzocnBFE1KDl/j92iJMV04GePHVAx4gM5q3wTu5qdEQzK08hGWd1BxpCIg6dSLdxQ==
-X-Received: by 2002:a65:5b8e:: with SMTP id i14mr91573307pgr.188.1564168736216;
-        Fri, 26 Jul 2019 12:18:56 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id j12sm45814793pff.4.2019.07.26.12.18.54
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4wGRkgS2FF/uTIQN+Jc8iKQcgvfPp40Yuscy8pEbkUk=;
+        b=m5XXDJHbg3NnZBz3+nTL+pW2Jb25dVvFo3dx9BBRmaVlfGWOtKjv/1wxVYRhHlMWDk
+         eCvfFQ/6q6sMRRjMDLsQk4V8FSJ5n6xZ28B4iLe/dmoCUmxUpaaTOkG4S2RmIS40LB3S
+         feDNQNtNYl9fHNCsE0yNY+rFUDMRQzyC18tRgiHLETkOq7ZVp4/Ox046AhSYUhSJJtJI
+         WFyz6Q0fW9LLpx70tDwuT+zvLl0q/EgBANn9j4ChqS06lEV7fkgcyXkxfj9EUOCc6RsT
+         NwBLIW7RHdbhuNrPTGLeF7x52qcyHk8Zf5xH4OqnSwLJoPySaz+Psqnd7Zo2FXAdrVS7
+         4Yew==
+X-Gm-Message-State: APjAAAVf5hySYVk7EVm6TuHrNbMxj5AdxsbHIFd2dRrX0bhlrZbMSAp0
+        5S8jw+cikb44T+YyLnfPu84=
+X-Google-Smtp-Source: APXvYqxnrIgL/Ngxp7/Xsh6CnKAkVNbp82e7pNSahawvr02afzTr/erAzDJ3kVBqWvDG0D484sCgHw==
+X-Received: by 2002:a63:7d49:: with SMTP id m9mr84214543pgn.161.1564170435062;
+        Fri, 26 Jul 2019 12:47:15 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a21sm61270581pfi.27.2019.07.26.12.47.13
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 12:18:55 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 15:18:53 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, kernel-team@android.com
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190726191853.GA196514@google.com>
-References: <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
- <20190716224150.GC172157@google.com>
- <20190716235500.GA199237@google.com>
- <20190717012406.lugqemvubixfdd6v@ast-mbp.dhcp.thefacebook.com>
- <20190717130119.GA138030@google.com>
- <CAADnVQJY_=yeY0C3k1ZKpRFu5oNbB4zhQf5tQnLr=Mi8i6cgeQ@mail.gmail.com>
- <20190718025143.GB153617@google.com>
- <20190723221108.gamojemj5lorol7k@ast-mbp>
- <20190724135714.GA9945@google.com>
- <20190726183954.oxzhkrwt4uhgl4gl@ast-mbp.dhcp.thefacebook.com>
+        Fri, 26 Jul 2019 12:47:14 -0700 (PDT)
+Date:   Fri, 26 Jul 2019 12:47:07 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jiri Pirko <jiri@resnulli.us>, chrims@mellanox.com
+Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
+        alexanderk@mellanox.com, mlxsw@mellanox.com
+Subject: Re: [patch iproute2 1/2] tc: action: fix crash caused by incorrect
+ *argv check
+Message-ID: <20190726124707.2c53d6a4@hermes.lan>
+In-Reply-To: <20190723112538.10977-1-jiri@resnulli.us>
+References: <20190723112538.10977-1-jiri@resnulli.us>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190726183954.oxzhkrwt4uhgl4gl@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 11:39:56AM -0700, Alexei Starovoitov wrote:
-[snip]
-> > > > 1. timeinstate: By hooking 2 programs onto sched_switch and cpu_frequency
-> > > > tracepoints, we are able to collect CPU power per-UID (specific app). Connor
-> > > > O'Brien is working on that.
-> > > > 
-> > > > 2. inode to file path mapping: By hooking onto VFS tracepoints we are adding to
-> > > > the android kernels, we can collect data when the kernel resolves a file path
-> > > > to a inode/device number. A BPF map stores the inode/dev number (key) and the
-> > > > path (value). We have usecases where we need a high speed lookup of this
-> > > > without having to scan all the files in the filesystem.
-> > > 
-> > > Can you share the link to vfs tracepoints you're adding?
-> > > Sounds like you're not going to attempt to upstream them knowing
-> > > Al's stance towards them?
-> > > May be there is a way we can do the feature you need, but w/o tracepoints?
-> > 
-> > Yes, given Al's stance I understand the patch is not upstreamable. The patch
-> > is here:
-> > For tracepoint:
-> > https://android.googlesource.com/kernel/common/+/27d3bfe20558d279041af403a887e7bdbdcc6f24%5E%21/
+On Tue, 23 Jul 2019 13:25:37 +0200
+Jiri Pirko <jiri@resnulli.us> wrote:
+
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> this is way more than tracepoint.
-
-True there is some code that calls the tracepoint. I want to optimize it more
-but lets see I am ready to think more about it before doing it this way,
-based on your suggestions.
-
-> > For bpf program:
-> > https://android.googlesource.com/platform/system/bpfprogs/+/908f6cd718fab0de7a944f84628c56f292efeb17%5E%21/
+> One cannot depend on *argv being null in case of no arg is left on the
+> command line. For example in batch mode, this is not always true. Check
+> argc instead to prevent crash.
 > 
-> what is unsafe_bpf_map_update_elem() in there?
-> The verifier comment sounds odd.
-> Could you describe the issue you see with the verifier?
-
-Will dig out the verifier issue I was seeing. I was just trying to get a
-prototype working so I did not go into verifier details much.
-
-> > I intended to submit the tracepoint only for the Android kernels, however if
-> > there is an upstream solution to this then that's even better since upstream can
-> > benefit. Were you thinking of a BPF helper function to get this data?
+> Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
+> Fixes: fd8b3d2c1b9b ("actions: Add support for user cookies")
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+>  tc/m_action.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I think the best way to evaluate the patches is whether they are upstreamable or not.
-> If they're not (like this case), it means that there is something wrong with their design
-> and if android decides to go with such approach it will only create serious issues long term.
-> Starting with the whole idea of dev+inode -> filepath cache.
-> dev+inode is not a unique identifier of the file.
-> In some filesystems two different files may have the same ino integer value.
-> Have you looked at 'struct file_handle' ? and name_to_handle_at ?
-> I think fhandle is the only way to get unique identifier of the file.
-> Could you please share more details why android needs this cache of dev+ino->path?
+> diff --git a/tc/m_action.c b/tc/m_action.c
+> index ab6bc0ad28ff..0f9c3a27795d 100644
+> --- a/tc/m_action.c
+> +++ b/tc/m_action.c
+> @@ -222,7 +222,7 @@ done0:
+>  				goto bad_val;
+>  			}
+>  
+> -			if (*argv && strcmp(*argv, "cookie") == 0) {
+> +			if (argc && strcmp(*argv, "cookie") == 0) {
+>  				size_t slen;
+>  
+>  				NEXT_ARG();
 
-I will follow-up with you on this by email off the list, thanks.
 
-thanks,
+The logic here is broken at end of file.
 
- - Joel
+	do {
+		if (getcmdline(&line_next, &len, stdin) == -1)
+			lastline = true;
 
+		largc_next = makeargs(line_next, largv_next, 100);
+		bs_enabled_next = batchsize_enabled(largc_next, largv_next);
+		if (bs_enabled) {
+			struct batch_
+
+
+getcmdline() will return -1 at end of file.
+The code will call make_args on an uninitialized pointer.
+
+I see lots of other unnecessary complexity in the whole batch logic.
+It needs to be rewritten.
+
+Rather than me fixing the code, I am probably going to revert.
+
+commit 485d0c6001c4aa134b99c86913d6a7089b7b2ab0
+Author: Chris Mi <chrism@mellanox.com>
+Date:   Fri Jan 12 14:13:16 2018 +0900
+
+    tc: Add batchsize feature for filter and actions
