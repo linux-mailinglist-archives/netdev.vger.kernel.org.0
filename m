@@ -2,71 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB695765DA
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 14:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05DC376610
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 14:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbfGZMdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 08:33:00 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:46436 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726366AbfGZMdA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 08:33:00 -0400
-Received: from gondolin.me.apana.org.au ([192.168.0.6] helo=gondolin.hengli.com.au)
-        by fornost.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
-        id 1hqzP8-0003pj-1X; Fri, 26 Jul 2019 22:32:58 +1000
-Received: from herbert by gondolin.hengli.com.au with local (Exim 4.80)
-        (envelope-from <herbert@gondor.apana.org.au>)
-        id 1hqzP2-00029d-1a; Fri, 26 Jul 2019 22:32:52 +1000
-Date:   Fri, 26 Jul 2019 22:32:51 +1000
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, smueller@chronox.de,
-        steffen.klassert@secunet.com, dzickus@redhat.com
-Subject: Re: [PATCH] crypto: user - make NETLINK_CRYPTO work inside netns
-Message-ID: <20190726123251.GA8274@gondor.apana.org.au>
+        id S1726846AbfGZMkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 08:40:01 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:55144 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726287AbfGZMkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 08:40:01 -0400
+Received: from [192.168.1.5] (unknown [180.157.110.197])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 620D041172;
+        Fri, 26 Jul 2019 20:39:56 +0800 (CST)
+Subject: Re: [PATCH] net/mlx5e: Fix zero table prio set by user.
+To:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1564053847-28756-1-git-send-email-wenxu@ucloud.cn>
+ <7b03d1fdda172ce99c3693d8403cbdaf5a31bb6c.camel@mellanox.com>
+ <CAJ3xEMi65JcF97nHeE482xgkps0GLLso+b6hp=34uX+wF=BjiQ@mail.gmail.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <692b090f-c19e-aa8b-796e-17999ac79df1@ucloud.cn>
+Date:   Fri, 26 Jul 2019 20:39:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190709111124.31127-1-omosnace@redhat.com>
-Organization: Core
-X-Newsgroups: apana.lists.os.linux.cryptoapi,apana.lists.os.linux.netdev
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <CAJ3xEMi65JcF97nHeE482xgkps0GLLso+b6hp=34uX+wF=BjiQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0tKS0tLS09NTEhLS09ZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PyI6Gjo4Ajg9MkseThQtDUMZ
+        NjcKFDVVSlVKTk1PSk9PTEJNTU1JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSkpLVUpCTFlXWQgBWUFPSE1CNwY+
+X-HM-Tid: 0a6c2e4b83ba2086kuqy620d041172
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> Currently, NETLINK_CRYPTO works only in the init network namespace. It
-> doesn't make much sense to cut it out of the other network namespaces,
-> so do the minor plumbing work necessary to make it work in any network
-> namespace. Code inspired by net/core/sock_diag.c.
-> 
-> Tested using kcapi-dgst from libkcapi [1]:
-> Before:
->    # unshare -n kcapi-dgst -c sha256 </dev/null | wc -c
->    libkcapi - Error: Netlink error: sendmsg failed
->    libkcapi - Error: Netlink error: sendmsg failed
->    libkcapi - Error: NETLINK_CRYPTO: cannot obtain cipher information for hmac(sha512) (is required crypto_user.c patch missing? see documentation)
->    0
-> 
-> After:
->    # unshare -n kcapi-dgst -c sha256 </dev/null | wc -c
->    32
-> 
-> [1] https://github.com/smuellerDD/libkcapi
-> 
-> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-> ---
-> crypto/crypto_user_base.c            | 37 +++++++++++++++++++---------
-> crypto/crypto_user_stat.c            |  4 ++-
-> include/crypto/internal/cryptouser.h |  2 --
-> include/net/net_namespace.h          |  3 +++
-> 4 files changed, 31 insertions(+), 15 deletions(-)
 
-Patch applied.  Thanks.
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+在 2019/7/26 20:19, Or Gerlitz 写道:
+> On Fri, Jul 26, 2019 at 12:24 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
+>> On Thu, 2019-07-25 at 19:24 +0800, wenxu@ucloud.cn wrote:
+>>> From: wenxu <wenxu@ucloud.cn>
+>>>
+>>> The flow_cls_common_offload prio is zero
+>>>
+>>> It leads the invalid table prio in hw.
+>>>
+>>> Error: Could not process rule: Invalid argument
+>>>
+>>> kernel log:
+>>> mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22
+>>> (table prio: 65535, level: 0, size: 4194304)
+>>>
+>>> table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
+>>> should check (chain * FDB_MAX_PRIO) + prio is not 0
+>>>
+>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>>> ---
+>>>  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
+>>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git
+>>> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+>>> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+>>> index 089ae4d..64ca90f 100644
+>>> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+>>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+>>> @@ -970,7 +970,9 @@ static int esw_add_fdb_miss_rule(struct
+>> this piece of code isn't in this function, weird how it got to the
+>> diff, patch applies correctly though !
+>>
+>>> mlx5_eswitch *esw)
+>>>               flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
+>>>                         MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
+>>>
+>>> -     table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
+>>> +     table_prio = (chain * FDB_MAX_PRIO) + prio;
+>>> +     if (table_prio)
+>>> +             table_prio = table_prio - 1;
+>>>
+>> This is black magic, even before this fix.
+>> this -1 seems to be needed in order to call
+>> create_next_size_table(table_prio) with the previous "table prio" ?
+>> (table_prio - 1)  ?
+>>
+>> The whole thing looks wrong to me since when prio is 0 and chain is 0,
+>> there is not such thing table_prio - 1.
+>>
+>> mlnx eswitch guys in the cc, please advise.
+> basically, prio 0 is not something we ever get in the driver, since if
+> user space
+> specifies 0, the kernel generates some random non-zero prio, and we support
+> only prios 1-16 -- Wenxu -- what do you run to get this error?
+>
+>
+I run offload with nfatbles(but not tc), there is no prio for each rule.
+
+prio of flow_cls_common_offload init as 0.
+
+static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
+
+                     __be16 proto,
+                    struct netlink_ext_ack *extack)
+{
+    common->protocol = proto;
+    common->extack = extack;
+}
+
+
+flow_cls_common_offload
+
