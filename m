@@ -2,136 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07BF677368
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 23:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5567736B
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 23:25:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728576AbfGZVZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 17:25:00 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21412 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728162AbfGZVZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 17:25:00 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6QLGg98019778
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 14:24:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=GI7epV/4an4omYx2lqaRoB42fVZYo/OIOREpVv0zfeU=;
- b=PUp08BnFc7DSIAbncU8K3Hl/1gCJSVlJsh1s34NqawW3vh9cYsdH8cKPc0faZK+Jy6GG
- CZFApprtzUVWlvmVta6JOiVU5pFZVPv03up4COnYL7YUNd973agrSn1n+lW6Fp+E+Ph4
- AD5JhgKx87FzVIn8eS/Uw+1JnEC7hRU+FNQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2u04gfs6ny-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 14:24:58 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 26 Jul 2019 14:24:57 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id E76A6861663; Fri, 26 Jul 2019 14:24:56 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <rdna@fb.com>, <yhs@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf] libbpf: fix erroneous multi-closing of BTF FD
-Date:   Fri, 26 Jul 2019 14:24:38 -0700
-Message-ID: <20190726212438.1269599-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727500AbfGZVZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 17:25:50 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45780 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727476AbfGZVZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 17:25:50 -0400
+Received: by mail-pg1-f194.google.com with SMTP id o13so25325007pgp.12
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 14:25:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LekkghtlH5FinA+DVS2eRfWC67+I3bndZnDiQBCuUPc=;
+        b=zCYWxn7KxFaU0faZkK/mK3QZOLUFygPML+d+uzotHRxoLM7/9c+VNuv8Vgspe62/KW
+         usF1k6/kKGUtTTt2fR7cWZcRCjK09VI+SU6npfRycoVAEs7yFHqhzC07MeF2hLCNdsub
+         htRyuDFyshJYgpGxY7FpC8k6TuQcVyty2a4l6WHz9n2IiMpsffd7I23hxrSYTP52m2Z8
+         mmsUpQTx+hk7sFfGYQPngsPot6cRdiRpY42rC138R8CqcMJvsqhhsfmHOPcaGFUv9zhJ
+         3HttcgU99063wxmfyr7iur6LT12zp20POmJy4xzWcdPZEQTU7Y4bwscosMPuetp86MvD
+         NDog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LekkghtlH5FinA+DVS2eRfWC67+I3bndZnDiQBCuUPc=;
+        b=R8XQp09jGc/Vb04/SU/WMtmnIKDX93aO1VTO05KPwq3bFlOi+2fwH0WHchx1IwsnCv
+         Gnh5dtM5mFGPi9NmpaKk0fxCVSubP+mu2x6RQmTBiyAXJGJjmQzx/m6qrMaiRKOK9olp
+         1mIX8pwxVY1DrtXmRMsXuVSHqmhSo9NoT2bQLc0GkEGrC3QqsQrqkXqmHJkWQteOjmdi
+         fWPH/mb6clOk2zE9Ns1UMgdAkRwR6hYe9lfq83EBdW2N84M8jT2/YFtQgaESwthjYAbq
+         cBGOvOxh2IvCNn8S44EYH5iPeigOe71Finq97vnNkCIUp4Th/myduDxH3ST6LWSMYbTk
+         mfUA==
+X-Gm-Message-State: APjAAAUWhXXpKceSRmYwSPxmwpbjwxRQdhd80nxFo+bJRd3zJwZWnkln
+        18mloN1SyGkV9apm00gWuuzx4N8U
+X-Google-Smtp-Source: APXvYqyo4DOiONwY5o1vr2YAOCJv8E+jLqVrwDcKSWelapx6OfkM56yi6ZFGij+6DA3eK/G4j8tsiQ==
+X-Received: by 2002:aa7:8acb:: with SMTP id b11mr23527596pfd.109.1564176349747;
+        Fri, 26 Jul 2019 14:25:49 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id j6sm40127452pfa.141.2019.07.26.14.25.48
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 26 Jul 2019 14:25:48 -0700 (PDT)
+Date:   Fri, 26 Jul 2019 14:25:47 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 3/9] selftests/bpf: add test selectors by number
+ and name to test_progs
+Message-ID: <20190726212547.GB24397@mini-arch>
+References: <20190726203747.1124677-1-andriin@fb.com>
+ <20190726203747.1124677-4-andriin@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-26_15:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907260241
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190726203747.1124677-4-andriin@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Libbpf stores associated BTF FD per each instance of bpf_program. When
-program is unloaded, that FD is closed. This is wrong, because leads to
-a race and possibly closing of unrelated files, if application
-simultaneously opens new files while bpf_programs are unloaded.
+On 07/26, Andrii Nakryiko wrote:
+> Add ability to specify either test number or test name substring to
+> narrow down a set of test to run.
+> 
+> Usage:
+> sudo ./test_progs -n 1
+> sudo ./test_progs -t attach_probe
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/testing/selftests/bpf/test_progs.c | 43 +++++++++++++++++++++---
+>  1 file changed, 39 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> index eea88ba59225..6e04b9f83777 100644
+> --- a/tools/testing/selftests/bpf/test_progs.c
+> +++ b/tools/testing/selftests/bpf/test_progs.c
+> @@ -4,6 +4,7 @@
+>  #include "test_progs.h"
+>  #include "bpf_rlimit.h"
+>  #include <argp.h>
+> +#include <string.h>
+>  
+>  int error_cnt, pass_cnt;
+>  bool jit_enabled;
+> @@ -164,6 +165,7 @@ void *spin_lock_thread(void *arg)
+>  
+>  struct prog_test_def {
+>  	const char *test_name;
+> +	int test_num;
+>  	void (*run_test)(void);
+>  };
+>  
+> @@ -181,26 +183,49 @@ const char *argp_program_bug_address = "<bpf@vger.kernel.org>";
+>  const char argp_program_doc[] = "BPF selftests test runner";
+>  
+>  enum ARG_KEYS {
+> +	ARG_TEST_NUM = 'n',
+> +	ARG_TEST_NAME = 't',
+>  	ARG_VERIFIER_STATS = 's',
+>  };
+>  	
+>  static const struct argp_option opts[] = {
+> +	{ "num", ARG_TEST_NUM, "NUM", 0,
+> +	  "Run test number NUM only " },
+> +	{ "name", ARG_TEST_NAME, "NAME", 0,
+> +	  "Run tests with names containing NAME" },
+>  	{ "verifier-stats", ARG_VERIFIER_STATS, NULL, 0,
+>  	  "Output verifier statistics", },
+>  	{},
+>  };
+>  
+>  struct test_env {
+> +	int test_num_selector;
+> +	const char *test_name_selector;
+>  	bool verifier_stats;
+>  };
+>  
+> -static struct test_env env = {};
+> +static struct test_env env = {
+> +	.test_num_selector = -1,
+> +};
+>  
+>  static error_t parse_arg(int key, char *arg, struct argp_state *state)
+>  {
+>  	struct test_env *env = state->input;
+>  
+>  	switch (key) {
+[..]
+> +	case ARG_TEST_NUM: {
+> +		int test_num;
+> +
+> +		errno = 0;
+> +		test_num = strtol(arg, NULL, 10);
+> +		if (errno)
+> +			return -errno;
+> +		env->test_num_selector = test_num;
+> +		break;
+> +	}
+Do you think it's really useful? I agree about running by name (I
+usually used grep -v in the Makefile :-), but I'm not sure about running
+by number.
 
-It's also unnecessary, because struct btf "owns" that FD, and
-btf__free(), called from bpf_object__close() will close it. Thus the fix
-is to never have per-program BTF FD and fetch it from obj->btf, when
-necessary.
+Or is the idea is that you can just copy-paste this number from the
+test_progs output to rerun the tests? In this case, why not copy-paste
+the name instead?
 
-Fixes: 2993e0515bb4 ("tools/bpf: add support to read .BTF.ext sections")
-Reported-by: Andrey Ignatov <rdna@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8741c39adb1c..44a428378d48 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -181,7 +181,6 @@ struct bpf_program {
- 	bpf_program_clear_priv_t clear_priv;
- 
- 	enum bpf_attach_type expected_attach_type;
--	int btf_fd;
- 	void *func_info;
- 	__u32 func_info_rec_size;
- 	__u32 func_info_cnt;
-@@ -312,7 +311,6 @@ void bpf_program__unload(struct bpf_program *prog)
- 	prog->instances.nr = -1;
- 	zfree(&prog->instances.fds);
- 
--	zclose(prog->btf_fd);
- 	zfree(&prog->func_info);
- 	zfree(&prog->line_info);
- }
-@@ -391,7 +389,6 @@ bpf_program__init(void *data, size_t size, char *section_name, int idx,
- 	prog->instances.fds = NULL;
- 	prog->instances.nr = -1;
- 	prog->type = BPF_PROG_TYPE_UNSPEC;
--	prog->btf_fd = -1;
- 
- 	return 0;
- errout:
-@@ -2283,9 +2280,6 @@ bpf_program_reloc_btf_ext(struct bpf_program *prog, struct bpf_object *obj,
- 		prog->line_info_rec_size = btf_ext__line_info_rec_size(obj->btf_ext);
- 	}
- 
--	if (!insn_offset)
--		prog->btf_fd = btf__fd(obj->btf);
--
- 	return 0;
- }
- 
-@@ -2458,7 +2452,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
- 	char *cp, errmsg[STRERR_BUFSIZE];
- 	int log_buf_size = BPF_LOG_BUF_SIZE;
- 	char *log_buf;
--	int ret;
-+	int btf_fd, ret;
- 
- 	if (!insns || !insns_cnt)
- 		return -EINVAL;
-@@ -2473,7 +2467,8 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
- 	load_attr.license = license;
- 	load_attr.kern_version = kern_version;
- 	load_attr.prog_ifindex = prog->prog_ifindex;
--	load_attr.prog_btf_fd = prog->btf_fd >= 0 ? prog->btf_fd : 0;
-+	btf_fd = bpf_object__btf_fd(prog->obj);
-+	load_attr.prog_btf_fd = btf_fd >= 0 ? btf_fd : 0;
- 	load_attr.func_info = prog->func_info;
- 	load_attr.func_info_rec_size = prog->func_info_rec_size;
- 	load_attr.func_info_cnt = prog->func_info_cnt;
--- 
-2.17.1
-
+> +	case ARG_TEST_NAME:
+> +		env->test_name_selector = arg;
+> +		break;
+>  	case ARG_VERIFIER_STATS:
+>  		env->verifier_stats = true;
+>  		break;
+> @@ -223,7 +248,7 @@ int main(int argc, char **argv)
+>  		.parser = parse_arg,
+>  		.doc = argp_program_doc,
+>  	};
+> -	const struct prog_test_def *def;
+> +	struct prog_test_def *test;
+>  	int err, i;
+>  
+>  	err = argp_parse(&argp, argc, argv, 0, NULL, &env);
+> @@ -237,8 +262,18 @@ int main(int argc, char **argv)
+>  	verifier_stats = env.verifier_stats;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(prog_test_defs); i++) {
+> -		def = &prog_test_defs[i];
+> -		def->run_test();
+> +		test = &prog_test_defs[i];
+> +
+> +		test->test_num = i + 1;
+> +
+> +		if (env.test_num_selector >= 0 &&
+> +		    test->test_num != env.test_num_selector)
+> +			continue;
+> +		if (env.test_name_selector &&
+> +		    !strstr(test->test_name, env.test_name_selector))
+> +			continue;
+> +
+> +		test->run_test();
+>  	}
+>  
+>  	printf("Summary: %d PASSED, %d FAILED\n", pass_cnt, error_cnt);
+> -- 
+> 2.17.1
+> 
