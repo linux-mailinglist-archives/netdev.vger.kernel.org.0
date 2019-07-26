@@ -2,82 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B5DD772B6
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 22:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B79E0772D1
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 22:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387437AbfGZUZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 16:25:02 -0400
-Received: from mail-wr1-f43.google.com ([209.85.221.43]:42265 "EHLO
-        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbfGZUZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 16:25:02 -0400
-Received: by mail-wr1-f43.google.com with SMTP id x1so5726774wrr.9;
-        Fri, 26 Jul 2019 13:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HHa17vzHiWrmjHIgGNiq1sBSijdQrhuWsaVzln+Qeqo=;
-        b=NqYanJMeMlq7f59a5Vx+cpN4OhiLYHISnSWuGi10y8cX0lZ8SwUE/nEjE6gJaQxCLZ
-         vH6G85BNMWNP5MwNCtd3ggpJkONNQEPLA/Aj6ifxIOEBoC4q5lon3pTtlpmCR96gFWVH
-         VB8wH04xYTrBu9jWagarmMvOhd/CoI2Glwd8PDwwhDzsThfVSTswY6+TsflbqN5FTQD5
-         ErsnzeDaTh0J095GiBgFMxQb7vHIy9Ee9u5CK9GuoMBLzMmZV8UhNYe8M+/ZxMl9uXkL
-         zdPax2murb+DLnUM80uLYlaCjzf+bp7Xv+lyYCqcrJeXfkphh0VlQwIAwLubQ5JHSlVA
-         yy8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HHa17vzHiWrmjHIgGNiq1sBSijdQrhuWsaVzln+Qeqo=;
-        b=JLd2LUcIlfQmWIckmMj2AKK/Eg5DYWgbjFRAe5vCiAOJ1XK27fAX0N0ANHa2+bpGgj
-         RrF6nDkwBh2M6bmZoaxlS1r25jCLL5bbn5SkAb5Ab4CYREJL4lPbL+iTnDI5tWrKK0MC
-         792Q99ANhat1o2FSZl2zfNpaw2JsuJWgtYtpKdjbt1Rqy/gcFd57fVT7GBs1pOXrRP2l
-         zRwwdFE/+EQ2g9VazuAX+FhVEsce/tY2jiGX7hfzCmO/k83WWpg5Gv5P8Dyktbjhopud
-         Af2w8QomWJoOHxLJbmlSlV+VetUhYGSND3f3HV+Ba96xfzvJxx7RWvDWBaoz6Jfe8Y+v
-         YlgQ==
-X-Gm-Message-State: APjAAAUB9fwOlxnuo1gkWLfPm+rY7a43iSZC1ortz+qVWxKXaoUWzanI
-        V4aEZqFto5CHhHcWRbIp45Y=
-X-Google-Smtp-Source: APXvYqwI/jKDZZBIgzVuqZkeovAMfFMCa09B4bwsnOveIrm8rzZDQQbInVD0IpbVLhJ30EZ5bO18PA==
-X-Received: by 2002:adf:f28a:: with SMTP id k10mr25374515wro.343.1564172700616;
-        Fri, 26 Jul 2019 13:25:00 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:55f1:e404:698f:358? (p200300EA8F43420055F1E404698F0358.dip0.t-ipconnect.de. [2003:ea:8f43:4200:55f1:e404:698f:358])
-        by smtp.googlemail.com with ESMTPSA id r5sm56829890wmh.35.2019.07.26.13.24.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 13:24:59 -0700 (PDT)
-Subject: Re: [REGRESSION] 5.3-rc1: r8169: remove 1000/Half from supported
- modes
-To:     Bernhard Held <berny156@gmx.de>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>
-References: <a291af45-310c-8b60-ae7e-392e73e3bad1@gmx.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <0a48ecd7-7134-222d-833d-c1f65e055c02@gmail.com>
-Date:   Fri, 26 Jul 2019 22:24:54 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726731AbfGZUhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 16:37:55 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54412 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726305AbfGZUhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 16:37:55 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6QKT1fw013550
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 13:37:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=VdZqT49/ay0o0Kgz1NPOxtjgssHjlm3z8/vB2LgHSmw=;
+ b=PzVBHO9xmcBAoWec8s8GNCK3uXsT+0ULWKqLUkaZgKojpaqSxDhmhZPwZmdbB2G4XJYz
+ rwRkhA+fHH5YTPmOXwm+wCW0jx3acA5G1vlwxdR6KCr4T/bI3nW4uNhtr54f9Mp+XUei
+ 4/UI8BoydZ/p03ZKAbz1NaIh6KEe/dAvxtI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2u04gfs1m1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 13:37:53 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 26 Jul 2019 13:37:53 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id BA80D861663; Fri, 26 Jul 2019 13:37:52 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next 0/9] Revamp test_progs as a test running framework
+Date:   Fri, 26 Jul 2019 13:37:38 -0700
+Message-ID: <20190726203747.1124677-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <a291af45-310c-8b60-ae7e-392e73e3bad1@gmx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-26_15:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=930 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1907260234
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.07.2019 22:16, Bernhard Held wrote:
-> Hi Heiner,
-> 
-> with commit a6851c613fd7 "r8169: remove 1000/Half from supported modes" my RTL8111B GB-link stops working. It thinks that it established a link, however nothing is actually transmitted. Setting the mode with `mii-tool -F 100baseTx-HD` establishes a successful connection.
-> 
-Can you provide standard ethtool output w/ and w/o this patch? Also a full dmesg output
-with the patch would be helpful.
-Is "100baseTx-HD" a typo and you mean GBit? And any special reason why you set half duplex?
+This patch set makes a number of changes to test_progs selftest, which is
+a collection of many other tests (and sometimes sub-tests as well), to provide
+better testing experience and allow to start convering many individual test
+programs under selftests/bpf into a single and convenient test runner.
 
-> Reverting a6851c613fd7 (while considering the file name change) fixes autonegotiation for me.
-> 
-> Kind regards
-> Bernhard
-> 
-Heiner
+Patch #1 fixes issue with Makefile, which makes prog_tests/test.h compiled as
+a C code. This fix allows to change how test.h is generated, providing ability
+to have more control on what and how tests are run.
+
+Patch #2 changes how test.h is auto-generated, which allows to have test
+definitions, instead of just running test functions. This gives ability to do
+more complicated test run policies.
+
+Patch #3 adds `-t <test-name>` and `-n <test-num>` selectors to run only
+subset of tests.
+
+Patch #4 adds libbpf_swap_print() API allowing to temporarily replace current
+print callback and then set it back. This is necessary for some tests that
+want more control over libbpf logging.
+
+Patch #5 sets up and takes over libbpf logging from individual tests to
+test_prog runner, adding -vv verbosity to capture debug output from libbpf.
+This is useful when debugging failing tests.
+
+Patch #6 furthers test output management and buffers it by default, emitting
+log output only if test fails. This give succinct and clean default test
+output. It's possible to bypass this behavior with -v flag, which will turn
+off test output buffering.
+
+Patch #7 adds support for sub-tests. It also enhances -t and -n selectors to
+both support ability to specify sub-test selectors, as well as enhancing
+number selector to accept sets of test, instead of just individual test
+number.
+
+Patch #8 converts bpf_verif_scale.c test to use sub-test APIs.
+
+Patch #9 converts send_signal.c tests to use sub-test APIs.
+
+Andrii Nakryiko (9):
+  selftests/bpf: prevent headers to be compiled as C code
+  selftests/bpf: revamp test_progs to allow more control
+  selftests/bpf: add test selectors by number and name to test_progs
+  libbpf: add libbpf_swap_print to get previous print func
+  selftest/bpf: centralize libbpf logging management for test_progs
+  selftests/bpf: abstract away test log output
+  selftests/bpf: add sub-tests support for test_progs
+  selftests/bpf: convert bpf_verif_scale.c to sub-tests API
+  selftests/bpf: convert send_signal.c to use subtests
+
+ tools/lib/bpf/libbpf.c                        |   8 +
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf.map                      |   5 +
+ tools/testing/selftests/bpf/Makefile          |  14 +-
+ .../selftests/bpf/prog_tests/bpf_obj_id.c     |   6 +-
+ .../bpf/prog_tests/bpf_verif_scale.c          |  90 +++--
+ .../bpf/prog_tests/get_stack_raw_tp.c         |   4 +-
+ .../selftests/bpf/prog_tests/l4lb_all.c       |   2 +-
+ .../selftests/bpf/prog_tests/map_lock.c       |  10 +-
+ .../bpf/prog_tests/reference_tracking.c       |  15 +-
+ .../selftests/bpf/prog_tests/send_signal.c    |  17 +-
+ .../selftests/bpf/prog_tests/spinlock.c       |   2 +-
+ .../bpf/prog_tests/stacktrace_build_id.c      |   4 +-
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |   4 +-
+ .../selftests/bpf/prog_tests/xdp_noinline.c   |   3 +-
+ tools/testing/selftests/bpf/test_progs.c      | 373 +++++++++++++++++-
+ tools/testing/selftests/bpf/test_progs.h      |  45 ++-
+ 17 files changed, 501 insertions(+), 102 deletions(-)
+
+-- 
+2.17.1
+
