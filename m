@@ -2,155 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9160776ADE
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 16:01:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B94B76B2C
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 16:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727584AbfGZOBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 10:01:47 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:40796 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbfGZOBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 10:01:47 -0400
-Received: by mail-qk1-f195.google.com with SMTP id s145so39087591qke.7
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 07:01:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=cNSqQLC1LK7YLHqpFhV9lHoyc6PsC8glzU3dj2eN2KM=;
-        b=OpopPXi7qGELPP8gLORhGcWtAfs1Od0DnHMgIt4+P7/9eGrvmohvxe0dvBvU0FMvjx
-         m7z0xPpXBXPXwGByvWn2TstiEr1ZLkt5PhBt3mN2l+mSdFhtQ9LumTZONiJbwxIzIO/p
-         B9FUbVeG6yUNZBksefUZ8DwK+bUcOTqzmUDTQXCPUu0WPvDFM0q1FXPWtyGt69Zw3SlG
-         a0GgF/OevPI7XkqkoY2C2cAjMLZ7EJ2qtpWWPZpSF7lPZkbL7lRLEEOikZTkvEi9+2Hy
-         c9CheMLqi9QZLG4FnVme21YCjvVOTXYje1mjXIXkxUQVW0binarEBH9RwNQHfmB2doD7
-         pj/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=cNSqQLC1LK7YLHqpFhV9lHoyc6PsC8glzU3dj2eN2KM=;
-        b=rdewLd8B00EI0eUFCrAmQ4GpTx6SnGXDwEWUNdy3HpeTpbZaEt6kH5cihTUTYiBimy
-         HneFMGmUcGKpJfA0MvrjPtyD1b4elpybbUEdQyKmUy6IPibCaU6OgN5p3iqwwRrKkDbM
-         X2DivkdI3aOZh5NqWCS3XSIZvGQB252hPS00sLABFfGKjuDN2yeQRtWxLBzfRkVEBrRp
-         w9W8lnT9xWAn2MHo7gAvy+jjZOraRvjg4lJb3nCWPTSzROcSA5pDoo0yBdn110A2CNIR
-         eBF4wSMGCWZ8cP4cLfzZTSj02Dg/uCua8aTnJ5IhHP+Wjulsw2anI1uLCRbu7ZgkrTlv
-         fmqA==
-X-Gm-Message-State: APjAAAWc+BeGXTZ0MgWsxkUxgSFd+X24BaRvSesJgfEUKIFGLehxQFn/
-        zEZh1LjGsw0/RQ7RFQAAFxM=
-X-Google-Smtp-Source: APXvYqwYgSyd5ngIjaMjYp/UHQTthwlGEmNu1aPm3JO+OZfKyciV1EYq1aUTfEwtU6l7VnMGuvc76w==
-X-Received: by 2002:a05:620a:11b2:: with SMTP id c18mr63191425qkk.174.1564149706290;
-        Fri, 26 Jul 2019 07:01:46 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.45])
-        by smtp.gmail.com with ESMTPSA id e1sm26075594qtb.52.2019.07.26.07.01.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 07:01:45 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 7713BC0AAD; Fri, 26 Jul 2019 11:01:42 -0300 (-03)
-Date:   Fri, 26 Jul 2019 11:01:42 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>, pablo@netfilter.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5e: Fix zero table prio set by user.
-Message-ID: <20190726140142.GC4063@localhost.localdomain>
-References: <1564053847-28756-1-git-send-email-wenxu@ucloud.cn>
- <7b03d1fdda172ce99c3693d8403cbdaf5a31bb6c.camel@mellanox.com>
- <CAJ3xEMi65JcF97nHeE482xgkps0GLLso+b6hp=34uX+wF=BjiQ@mail.gmail.com>
- <692b090f-c19e-aa8b-796e-17999ac79df1@ucloud.cn>
+        id S1727981AbfGZOLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 10:11:07 -0400
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:10309 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727437AbfGZOLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 10:11:06 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d3b09f60000>; Fri, 26 Jul 2019 07:11:02 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 26 Jul 2019 07:11:04 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 26 Jul 2019 07:11:04 -0700
+Received: from [10.26.11.58] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 26 Jul
+ 2019 14:11:01 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "David S . Miller" <davem@davemloft.net>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <7a79be5d-7ba2-c457-36d3-1ccef6572181@nvidia.com>
+ <BYAPR12MB3269927AB1F67D46E150ED6BD3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <9e695f33-fd9f-a910-0891-2b63bd75e082@nvidia.com>
+ <BYAPR12MB3269B4A401E4DA10A07515C7D3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <1e2ea942-28fe-15b9-f675-8d6585f9a33f@nvidia.com>
+Date:   Fri, 26 Jul 2019 15:11:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <692b090f-c19e-aa8b-796e-17999ac79df1@ucloud.cn>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <BYAPR12MB3269B4A401E4DA10A07515C7D3C10@BYAPR12MB3269.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1564150262; bh=7V/0vUwcrIsIcIy2xWgyyeEieWEZr2FRYFdBVkYbeyQ=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=mJDWo1CPsTJea2C7XpERAf9KXg8RisOceJD+uSLFeI1yyUzkGurA7BChg+6xKS9wa
+         yLkxSzCVyt6hC2yWO1w5HZUPPkPCFd/KbaZtV1vWd5NCVt+3LH+09luniQCev/R06V
+         ClVqhzPr+ebBRMamcTph3XbpD1oJSLEHC+tQQq8zN5FTrYrLk2FbwMVCPLYelEhzGv
+         1Ba0uS43gyhxp68YWyqG7GN1bJasAEjqijE1paEjN/rJe5I8or0GrIRwvZNrPQboZy
+         vb6yMlFe8nldtK2ANvrJp/Zj9fVC6e7JkvK3TBe7+O8Hu1OXs7SP6j8/nZfoB5pQN2
+         04nm16vaN1x0g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 08:39:43PM +0800, wenxu wrote:
-> 
-> 在 2019/7/26 20:19, Or Gerlitz 写道:
-> > On Fri, Jul 26, 2019 at 12:24 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
-> >> On Thu, 2019-07-25 at 19:24 +0800, wenxu@ucloud.cn wrote:
-> >>> From: wenxu <wenxu@ucloud.cn>
-> >>>
-> >>> The flow_cls_common_offload prio is zero
-> >>>
-> >>> It leads the invalid table prio in hw.
-> >>>
-> >>> Error: Could not process rule: Invalid argument
-> >>>
-> >>> kernel log:
-> >>> mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22
-> >>> (table prio: 65535, level: 0, size: 4194304)
-> >>>
-> >>> table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
-> >>> should check (chain * FDB_MAX_PRIO) + prio is not 0
-> >>>
-> >>> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> >>> ---
-> >>>  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
-> >>>  1 file changed, 3 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git
-> >>> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> >>> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> >>> index 089ae4d..64ca90f 100644
-> >>> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> >>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> >>> @@ -970,7 +970,9 @@ static int esw_add_fdb_miss_rule(struct
-> >> this piece of code isn't in this function, weird how it got to the
-> >> diff, patch applies correctly though !
-> >>
-> >>> mlx5_eswitch *esw)
-> >>>               flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
-> >>>                         MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
-> >>>
-> >>> -     table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
-> >>> +     table_prio = (chain * FDB_MAX_PRIO) + prio;
-> >>> +     if (table_prio)
-> >>> +             table_prio = table_prio - 1;
-> >>>
-> >> This is black magic, even before this fix.
-> >> this -1 seems to be needed in order to call
-> >> create_next_size_table(table_prio) with the previous "table prio" ?
-> >> (table_prio - 1)  ?
-> >>
-> >> The whole thing looks wrong to me since when prio is 0 and chain is 0,
-> >> there is not such thing table_prio - 1.
-> >>
-> >> mlnx eswitch guys in the cc, please advise.
-> > basically, prio 0 is not something we ever get in the driver, since if
-> > user space
-> > specifies 0, the kernel generates some random non-zero prio, and we support
-> > only prios 1-16 -- Wenxu -- what do you run to get this error?
-> >
-> >
-> I run offload with nfatbles(but not tc), there is no prio for each rule.
-> 
-> prio of flow_cls_common_offload init as 0.
-> 
-> static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
-> 
->                      __be16 proto,
->                     struct netlink_ext_ack *extack)
-> {
->     common->protocol = proto;
->     common->extack = extack;
-> }
-> 
-> 
-> flow_cls_common_offload
 
-Note that on
-[PATCH net-next] netfilter: nf_table_offload: Fix zero prio of flow_cls_common_offload
-I asked Pablo on how nftables should behave on this situation.
+On 25/07/2019 16:12, Jose Abreu wrote:
+> From: Jon Hunter <jonathanh@nvidia.com>
+> Date: Jul/25/2019, 15:25:59 (UTC+00:00)
+> 
+>>
+>> On 25/07/2019 14:26, Jose Abreu wrote:
+>>
+>> ...
+>>
+>>> Well, I wasn't expecting that :/
+>>>
+>>> Per documentation of barriers I think we should set descriptor fields 
+>>> and then barrier and finally ownership to HW so that remaining fields 
+>>> are coherent before owner is set.
+>>>
+>>> Anyway, can you also add a dma_rmb() after the call to 
+>>> stmmac_rx_status() ?
+>>
+>> Yes. I removed the debug print added the barrier, but that did not help.
+> 
+> So, I was finally able to setup NFS using your replicated setup and I 
+> can't see the issue :(
+> 
+> The only difference I have from yours is that I'm using TCP in NFS 
+> whilst you (I believe from the logs), use UDP.
 
-It's the same issue as in the patch above but being fixed at a
-different level.
+So I tried TCP by setting the kernel boot params to 'nfsvers=3' and
+'proto=tcp' and this does appear to be more stable, but not 100% stable.
+It still appears to fail in the same place about 50% of the time.
+
+> You do have flow control active right ? And your HW FIFO size is >= 4k ?
+
+How can I verify if flow control is active?
+
+The documentation for this device indicates a max transfer size of 16kB
+for TX and RX.
+
+Cheers
+Jon
+
+-- 
+nvpublic
