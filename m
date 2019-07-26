@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3741E764E7
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 13:51:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560F3764F2
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 13:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbfGZLvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 07:51:18 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35642 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726180AbfGZLvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 07:51:18 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d23so52300797qto.2
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 04:51:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=9gHO9TyKSj0CYwPdw5b5x4szapbbJYZPZ0dkycmRYIw=;
-        b=LFvYBGdw1YWcerrJT3heh73/+M4WqEEq9co5TjwQuqGxyxCEJHgjtZZ4/GK42OBe3m
-         SUOnTFupw47eCa0+JqoSXEOjF5D/6d0UdWFyfrntb69v1fm3e9kRblWQsXqnWfa/d718
-         Xn9+aTgZg47Z+eZEw+lSB5e7kJwFBWQra17NKa6R755mFmvC2KH+8KWwbJUbBcgbKcC0
-         Ux7sSzN1PPOIIA+CXLnFwm1eLb26e8u/N9cc6r4ZZIqCjZj+9ZwUBW/9Kc9wbArPeXID
-         GltUkdw3WxNnNfXKAVA/nw9H/hh+WApPwOag744pn+EiaNRWoUmjFNGEA3bsFbmLHbVa
-         l5bg==
-X-Gm-Message-State: APjAAAWijlUJrntHYpHgDf9R9A7dOEz64hBzBssFQbsXQZbytSwPVJ1m
-        4y+O4pjZSB9EeC3EBlwOpjfA7EQCtyEGOUn2
-X-Google-Smtp-Source: APXvYqymcbOMEQ4lUl13pE8Gi7ZsmsaJk9G/++ds4UPazH2mBxi16XyvfrDkgsSarz23FJllDH4Qvg==
-X-Received: by 2002:ac8:520e:: with SMTP id r14mr65932257qtn.50.1564141877674;
-        Fri, 26 Jul 2019 04:51:17 -0700 (PDT)
-Received: from redhat.com ([212.92.104.165])
-        by smtp.gmail.com with ESMTPSA id 39sm28940576qts.41.2019.07.26.04.51.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 04:51:16 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 07:51:12 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH] vhost: disable metadata prefetch optimization
-Message-ID: <20190726115021.7319-1-mst@redhat.com>
+        id S1726678AbfGZL5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 07:57:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56310 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726115AbfGZL5d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 07:57:33 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3785183F4C;
+        Fri, 26 Jul 2019 11:57:33 +0000 (UTC)
+Received: from [10.72.12.238] (ovpn-12-238.pek2.redhat.com [10.72.12.238])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DC5EA60C18;
+        Fri, 26 Jul 2019 11:57:28 +0000 (UTC)
+Subject: Re: [PATCH] vhost: disable metadata prefetch optimization
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+References: <20190726115021.7319-1-mst@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ccba99c1-7708-3e55-6fc9-7775415c77a8@redhat.com>
+Date:   Fri, 26 Jul 2019 19:57:25 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.22.0.678.g13338e74b8
-X-Mutt-Fcc: =sent
+In-Reply-To: <20190726115021.7319-1-mst@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Fri, 26 Jul 2019 11:57:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This seems to cause guest and host memory corruption.
-Disable for now until we get a better handle on that.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
+On 2019/7/26 下午7:51, Michael S. Tsirkin wrote:
+> This seems to cause guest and host memory corruption.
+> Disable for now until we get a better handle on that.
+>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>
+> I put this in linux-next, we'll re-enable if we can fix
+> the outstanding issues in a short order.
 
-I put this in linux-next, we'll re-enable if we can fix
-the outstanding issues in a short order.
 
- drivers/vhost/vhost.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Btw, is this more suitable to e.g revert the 
+842aa64eddacd23adc6ecdbc69cb2030bec47122 and let syzbot fuzz more on the 
+current code?
 
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 819296332913..42a8c2a13ab1 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -96,7 +96,7 @@ struct vhost_uaddr {
- };
- 
- #if defined(CONFIG_MMU_NOTIFIER) && ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE == 0
--#define VHOST_ARCH_CAN_ACCEL_UACCESS 1
-+#define VHOST_ARCH_CAN_ACCEL_UACCESS 0
- #else
- #define VHOST_ARCH_CAN_ACCEL_UACCESS 0
- #endif
--- 
-MST
+I think we won't accept that patch eventually, so I suspect what syzbot 
+reports today is a false positives.
+
+Thanks
+
+
+>
+>   drivers/vhost/vhost.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index 819296332913..42a8c2a13ab1 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -96,7 +96,7 @@ struct vhost_uaddr {
+>   };
+>   
+>   #if defined(CONFIG_MMU_NOTIFIER) && ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE == 0
+> -#define VHOST_ARCH_CAN_ACCEL_UACCESS 1
+> +#define VHOST_ARCH_CAN_ACCEL_UACCESS 0
+>   #else
+>   #define VHOST_ARCH_CAN_ACCEL_UACCESS 0
+>   #endif
