@@ -2,118 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DC376610
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 14:40:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5ECC7663F
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 14:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbfGZMkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 08:40:01 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:55144 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbfGZMkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 08:40:01 -0400
-Received: from [192.168.1.5] (unknown [180.157.110.197])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 620D041172;
-        Fri, 26 Jul 2019 20:39:56 +0800 (CST)
-Subject: Re: [PATCH] net/mlx5e: Fix zero table prio set by user.
-To:     Or Gerlitz <gerlitz.or@gmail.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1564053847-28756-1-git-send-email-wenxu@ucloud.cn>
- <7b03d1fdda172ce99c3693d8403cbdaf5a31bb6c.camel@mellanox.com>
- <CAJ3xEMi65JcF97nHeE482xgkps0GLLso+b6hp=34uX+wF=BjiQ@mail.gmail.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <692b090f-c19e-aa8b-796e-17999ac79df1@ucloud.cn>
-Date:   Fri, 26 Jul 2019 20:39:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1726298AbfGZMu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 08:50:56 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:38407 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726000AbfGZMu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 08:50:56 -0400
+X-Originating-IP: 86.250.200.211
+Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 89D6C20004;
+        Fri, 26 Jul 2019 12:50:53 +0000 (UTC)
+Date:   Fri, 26 Jul 2019 14:50:53 +0200
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Stefan Chulski <stefanc@marvell.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] mvpp2: refactor MTU change code
+Message-ID: <20190726125053.GA5031@kwain>
+References: <20190725231931.24073-1-mcroce@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJ3xEMi65JcF97nHeE482xgkps0GLLso+b6hp=34uX+wF=BjiQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0tKS0tLS09NTEhLS09ZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PyI6Gjo4Ajg9MkseThQtDUMZ
-        NjcKFDVVSlVKTk1PSk9PTEJNTU1JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
-        TkxVSkpLVUpCTFlXWQgBWUFPSE1CNwY+
-X-HM-Tid: 0a6c2e4b83ba2086kuqy620d041172
+In-Reply-To: <20190725231931.24073-1-mcroce@redhat.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Matteo,
 
-在 2019/7/26 20:19, Or Gerlitz 写道:
-> On Fri, Jul 26, 2019 at 12:24 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
->> On Thu, 2019-07-25 at 19:24 +0800, wenxu@ucloud.cn wrote:
->>> From: wenxu <wenxu@ucloud.cn>
->>>
->>> The flow_cls_common_offload prio is zero
->>>
->>> It leads the invalid table prio in hw.
->>>
->>> Error: Could not process rule: Invalid argument
->>>
->>> kernel log:
->>> mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22
->>> (table prio: 65535, level: 0, size: 4194304)
->>>
->>> table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
->>> should check (chain * FDB_MAX_PRIO) + prio is not 0
->>>
->>> Signed-off-by: wenxu <wenxu@ucloud.cn>
->>> ---
->>>  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
->>>  1 file changed, 3 insertions(+), 1 deletion(-)
->>>
->>> diff --git
->>> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->>> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->>> index 089ae4d..64ca90f 100644
->>> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->>> @@ -970,7 +970,9 @@ static int esw_add_fdb_miss_rule(struct
->> this piece of code isn't in this function, weird how it got to the
->> diff, patch applies correctly though !
->>
->>> mlx5_eswitch *esw)
->>>               flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
->>>                         MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
->>>
->>> -     table_prio = (chain * FDB_MAX_PRIO) + prio - 1;
->>> +     table_prio = (chain * FDB_MAX_PRIO) + prio;
->>> +     if (table_prio)
->>> +             table_prio = table_prio - 1;
->>>
->> This is black magic, even before this fix.
->> this -1 seems to be needed in order to call
->> create_next_size_table(table_prio) with the previous "table prio" ?
->> (table_prio - 1)  ?
->>
->> The whole thing looks wrong to me since when prio is 0 and chain is 0,
->> there is not such thing table_prio - 1.
->>
->> mlnx eswitch guys in the cc, please advise.
-> basically, prio 0 is not something we ever get in the driver, since if
-> user space
-> specifies 0, the kernel generates some random non-zero prio, and we support
-> only prios 1-16 -- Wenxu -- what do you run to get this error?
->
->
-I run offload with nfatbles(but not tc), there is no prio for each rule.
+On Fri, Jul 26, 2019 at 01:19:31AM +0200, Matteo Croce wrote:
+> The MTU change code can call napi_disable() with the device already down,
+> leading to a deadlock. Also, lot of code is duplicated unnecessarily.
+> 
+> Rework mvpp2_change_mtu() to avoid the deadlock and remove duplicated code.
+> 
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
 
-prio of flow_cls_common_offload init as 0.
+As this is a fix sent to net, you could add a Fixes: tag.
 
-static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
+Otherwise this looks good,
+Acked-by: Antoine Tenart <antoine.tenart@bootlin.com>
 
-                     __be16 proto,
-                    struct netlink_ext_ack *extack)
-{
-    common->protocol = proto;
-    common->extack = extack;
-}
+Thanks!
+Antoine
 
+> ---
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 41 ++++++-------------
+>  1 file changed, 13 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 2f7286bd203b..60eb98f99571 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -3612,6 +3612,7 @@ static int mvpp2_set_mac_address(struct net_device *dev, void *p)
+>  static int mvpp2_change_mtu(struct net_device *dev, int mtu)
+>  {
+>  	struct mvpp2_port *port = netdev_priv(dev);
+> +	bool running = netif_running(dev);
+>  	int err;
+>  
+>  	if (!IS_ALIGNED(MVPP2_RX_PKT_SIZE(mtu), 8)) {
+> @@ -3620,40 +3621,24 @@ static int mvpp2_change_mtu(struct net_device *dev, int mtu)
+>  		mtu = ALIGN(MVPP2_RX_PKT_SIZE(mtu), 8);
+>  	}
+>  
+> -	if (!netif_running(dev)) {
+> -		err = mvpp2_bm_update_mtu(dev, mtu);
+> -		if (!err) {
+> -			port->pkt_size =  MVPP2_RX_PKT_SIZE(mtu);
+> -			return 0;
+> -		}
+> -
+> -		/* Reconfigure BM to the original MTU */
+> -		err = mvpp2_bm_update_mtu(dev, dev->mtu);
+> -		if (err)
+> -			goto log_error;
+> -	}
+> -
+> -	mvpp2_stop_dev(port);
+> +	if (running)
+> +		mvpp2_stop_dev(port);
+>  
+>  	err = mvpp2_bm_update_mtu(dev, mtu);
+> -	if (!err) {
+> +	if (err) {
+> +		netdev_err(dev, "failed to change MTU\n");
+> +		/* Reconfigure BM to the original MTU */
+> +		mvpp2_bm_update_mtu(dev, dev->mtu);
+> +	} else {
+>  		port->pkt_size =  MVPP2_RX_PKT_SIZE(mtu);
+> -		goto out_start;
+>  	}
+>  
+> -	/* Reconfigure BM to the original MTU */
+> -	err = mvpp2_bm_update_mtu(dev, dev->mtu);
+> -	if (err)
+> -		goto log_error;
+> -
+> -out_start:
+> -	mvpp2_start_dev(port);
+> -	mvpp2_egress_enable(port);
+> -	mvpp2_ingress_enable(port);
+> +	if (running) {
+> +		mvpp2_start_dev(port);
+> +		mvpp2_egress_enable(port);
+> +		mvpp2_ingress_enable(port);
+> +	}
+>  
+> -	return 0;
+> -log_error:
+> -	netdev_err(dev, "failed to change MTU\n");
+>  	return err;
+>  }
+>  
+> -- 
+> 2.21.0
+> 
 
-flow_cls_common_offload
-
+-- 
+Antoine T�nart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
