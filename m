@@ -2,73 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ACA5774F2
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 01:26:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB86774F6
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 01:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727202AbfGZX0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 19:26:02 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:36006 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbfGZX0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 19:26:01 -0400
-Received: by mail-io1-f72.google.com with SMTP id k21so60393725ioj.3
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 16:26:01 -0700 (PDT)
+        id S1726869AbfGZX3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 19:29:14 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:36014 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726167AbfGZX3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 19:29:14 -0400
+Received: by mail-qt1-f193.google.com with SMTP id z4so54321896qtc.3;
+        Fri, 26 Jul 2019 16:29:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iP+4tXpLLeYulkhr0ZU6hQTrNg2JblROEAiYyRg4WR0=;
+        b=tYVEYEgZYyhQJFBs8/vhITB4QTXcU+Ii5yBrep0rH0JawtIPtvAqHbsfjwoqc1FKWZ
+         Gqh5zpyOCjO99KzLjY8Sgwa5p3yDktPb17gOWNky7v9UzlaEE4nJ3yWPjBHQI7ATKsDf
+         RroR13NVs72Awy5hpSqMF1EAEkJyG6xcKsAKg0GRHW3FTHYq67NeqYu5pBqRO5a9kiDy
+         4sTH855lj/4nlRRq3YitQV986y+K+Fu4lZhG/64I1+7awhkwZ/nAJGscmBe4awl+naN7
+         cRmO/UXB/y0oDfGjc2GcBA4O5lMTv2/3nQaLo53u0IHFjeCXg/IkDb82hH+CQJ8T3DdD
+         Gk4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=jU9fP+7H8MVZejaHdG74+bs1E1cZqrGALTWcbghPSM4=;
-        b=s0u45fIGtJPuNps9HCuK5r1Cj1nGY89X3lNLeccCIBntFGUzh4605/Wh/9x3WpowrU
-         JenVU0iJt0WML0EeVXAJvyYxcnCUZo8/iq2Kv7a+TVSxuqFqcAMU7AuYspIwXeUxWa5b
-         qfHV+FCfbwa621dxZkOhf+yPVWLXluaFV/qqXSQ7jxoQDSgDp3jr0sEORCiVr8P9/+WH
-         D0Pk4/zi/Ra4pPktMmrRDeQ4lhHdnUOOGwxLbqOW5ru1xCyBbx5Xcx4V3vqh2eC4Z1Os
-         NtoGif0qZ6Z4g6mQBBZX2uYeuK7Qx7lmjczmmAMEg9HVgRvgRSa617BWyN68O1R/tfPD
-         0XMQ==
-X-Gm-Message-State: APjAAAXcrCbeeRBYfjQIssZCi6+5VYxMeLnOCVE4zcj0esUS1cZOvLeG
-        mlf3NRQv4Ee6g2v74dZnArU98i3DEyL77EWzMIAPH1ifZqO5
-X-Google-Smtp-Source: APXvYqxovLmXIv75laVrMtZvlr79yeQWRntZAt1hwL6RBmKRhi84q3dBc8vJmpG72hkv1CJ8iH3NYbDZi9CnPAFhes4c6TPcq2Lv
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iP+4tXpLLeYulkhr0ZU6hQTrNg2JblROEAiYyRg4WR0=;
+        b=o0Rx7WC96bi6Gl3FIRh9UosPMFimJoHT8LG/nSuzY+pI8sa+7Xl6Siza3yzKT3q8gL
+         yvVQ4QrBtFVW9VqodCipBcPEeL6wd4aNUN4utbsInPr9Q56lpf1ERczntD8RhyZgmzxC
+         4IBkbHz3MjDp2BGx8vvhqXDMB1hgygvUhnwRaujmwotZf4AYrm/mQtJOxJRDFQeI2RUZ
+         KJHR3pGgvslfC8mIbb/j0UZ1Fzg1VXu4eGju9irJd27fcEUdpQMPRo0FiQigOYU+0AIk
+         eybKO1xwiLVXdJlT6CmZlrq1JIR5gSgalAQmiEeVa0ACifneud2EMRD34DmQ+D+VZF9i
+         6rjA==
+X-Gm-Message-State: APjAAAWeoLQ9vycbVo9s8EzLNs8IrYc+TouNb+RCZNgh7qosVrgolRS5
+        q0P7o0U6FwjTTzHrfJixmRXNEtuSBO8Mi4cxSQA=
+X-Google-Smtp-Source: APXvYqxjTpZCnXWPYVPXCFLjhJEDGo6+SOZ7ZKkwTfEcfUTdPhr5mOG8NIob9UXiDZTDtVzOfwDIRl0l8pTL02MRlTo=
+X-Received: by 2002:ac8:6601:: with SMTP id c1mr63893457qtp.93.1564183752890;
+ Fri, 26 Jul 2019 16:29:12 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:d611:: with SMTP id w17mr24902658iom.63.1564183560976;
- Fri, 26 Jul 2019 16:26:00 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 16:26:00 -0700
-In-Reply-To: <000000000000edcb3c058e6143d5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000083ffc4058e9dddf0@google.com>
-Subject: Re: memory leak in kobject_set_name_vargs (2)
-From:   syzbot <syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com>
-To:     catalin.marinas@arm.com, davem@davemloft.net, dvyukov@google.com,
-        herbert@gondor.apana.org.au, kuznet@ms2.inr.ac.ru,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, luciano.coelho@intel.com,
-        netdev@vger.kernel.org, steffen.klassert@secunet.com,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-7-andriin@fb.com>
+ <20190725232633.zt6fxixq72xqwwmz@ast-mbp>
+In-Reply-To: <20190725232633.zt6fxixq72xqwwmz@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 26 Jul 2019 16:29:02 -0700
+Message-ID: <CAEf4Bzbhk1-L4iktq-0=hTQdTrzzoWRhjt93wVWb+EQBQK8Pqw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 06/10] selftests/bpf: add CO-RE relocs array tests
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Thu, Jul 25, 2019 at 4:26 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Jul 24, 2019 at 12:27:38PM -0700, Andrii Nakryiko wrote:
+> > Add tests for various array handling/relocation scenarios.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ...
+> > +
+> > +#define CORE_READ(dst, src) \
+> > +     bpf_probe_read(dst, sizeof(*src), __builtin_preserve_access_index(src))
+>
+> This is the key accessor that all progs will use.
+> Please split just this single macro into individual commit and add
+> detailed comment about its purpose and
+> what __builtin_preserve_access_index() does underneath.
 
-commit 0e034f5c4bc408c943f9c4a06244415d75d7108c
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed May 18 18:51:25 2016 +0000
+I'm planning to add more powerful and flexible set of macros to
+support BCC style a->b->c->d accesses using single macro. Something
+like BPF_CORE_READ(&dst, sizeof(dst), a, b, c, d). I want to move
+bpf_helpers.h into libbpf itself first, after some clean up. How about
+I write all that at that time and for now just add this simpler
+CORE_READ into bpf_helpers.h?
 
-     iwlwifi: fix mis-merge that breaks the driver
+Relocations recorded by __builtin_preserve_access_index() are
+described pretty well in patch #1, which adds bpf_offset_reloc. I'll
+double check if I mention this built-in there, and if not - will add
+that.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10f955f0600000
-start commit:   3bfe1fc4 Merge tag 'for-5.3/dm-changes-2' of git://git.ker..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=12f955f0600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14f955f0600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dcfc65ee492509c6
-dashboard link: https://syzkaller.appspot.com/bug?extid=ad8ca40ecd77896d51e2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=135cbed0600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14dd4e34600000
-
-Reported-by: syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com
-Fixes: 0e034f5c4bc4 ("iwlwifi: fix mis-merge that breaks the driver")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>
+> > +SEC("raw_tracepoint/sys_enter")
+> > +int test_core_nesting(void *ctx)
+> > +{
+> > +     struct core_reloc_arrays *in = (void *)&data.in;
+> > +     struct core_reloc_arrays_output *out = (void *)&data.out;
+> > +
+> > +     /* in->a[2] */
+> > +     if (CORE_READ(&out->a2, &in->a[2]))
+> > +             return 1;
+> > +     /* in->b[1][2][3] */
+> > +     if (CORE_READ(&out->b123, &in->b[1][2][3]))
+> > +             return 1;
