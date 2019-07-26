@@ -2,110 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A4375EE5
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 08:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1BFC75F51
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 08:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726314AbfGZGTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 02:19:05 -0400
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:46629 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725867AbfGZGTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 02:19:05 -0400
-Received: by mail-vs1-f66.google.com with SMTP id r3so35343102vsr.13
-        for <netdev@vger.kernel.org>; Thu, 25 Jul 2019 23:19:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Bl7fI4eVZWffKAOz4zhIOA0eJ2D0U0DNka5Gld+y0is=;
-        b=WmFtrFSw/R5Cz8UuWt8tiEoXLxFQ6BCS/F4MD7pwFOpPfJiwxzoJexVjGGjwbsbDM2
-         8kGywwqi+EOUNqcAN2+vSIAEsSl/yhZDMdDmQonSWX1pUYtAwsGuFx3miJ2JcVGBs7na
-         bOUfRzSLSYvBUWvbRSdvjTY1ct55yl0Iqn5yJ5tjdfz6zPsgOdAnc8TuJC4Fxt7PuTiq
-         6AM60l/Fdw/kt2HG/LbYjxx1ftu9FTGK4yV8DVY1xA3Da9zgQcDfENwhQDx1YstruteQ
-         q/r7kniw5cWXc/F3AtJTiR2+eVsb/myAm9vO7XDIP/hpQUaUdZ+mg1Nva++4iPrL65v/
-         E2tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Bl7fI4eVZWffKAOz4zhIOA0eJ2D0U0DNka5Gld+y0is=;
-        b=LJmuLVWmMBHc3kaCr0/p0KWz79p4uuu+jOaNusXihRFZWfBa+Py1L6dvs9WOnIFSdS
-         KWH11HMx54Q4CU1iZCGq/ZP4cuhR51wzzxfAzbT4NdHc1qmJre1SbA2F1v2MygEGP/Wh
-         HNTBbLqZqhWUTZBJ9ZyXPr13aP8JRQZf4DK2AqWPcKWIitkLL7qEGJu2qyoImaFHdHYF
-         gVjBnx0+hllG9tB7vIVnoVm5wlchAD8OVdrNeBvQqby9pseQF3tdMGj3SdJj3UzAQXNv
-         RXzyb0HwzoP/d9aOC4czYtt7EEIJiM9OITqNN1ACMi3wqyVV/AKIQ++nvaz/WEbHxP67
-         1iIw==
-X-Gm-Message-State: APjAAAU61gfX66NiKa1XdRgG2lhcdvvlZccPgKOMFV2z9ytRZAO2bmlz
-        h3hBwpRqLbausZh5Sx0dfFd8Koobj7vYaRbO2pYkCg==
-X-Google-Smtp-Source: APXvYqy5de4RdPtgj97TOfRHiUta7VD2dn3FWaYfsVQWQZRVK/s1bYmGEqsu1oqBvlo5cD2KF02tErIDgh9uivkIFbI=
-X-Received: by 2002:a67:eb19:: with SMTP id a25mr58320351vso.109.1564121943796;
- Thu, 25 Jul 2019 23:19:03 -0700 (PDT)
+        id S1726139AbfGZGw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 02:52:26 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:49106 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725864AbfGZGw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 02:52:26 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 7130A6053D; Fri, 26 Jul 2019 06:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564123945;
+        bh=45rlvmxAk80l2YGJDp8L9VwoMC5Accf2bkvFWQ7rH2Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MPo66DQnePBb9HPCqbRq0xL4Hn6M9xqdBGRDDvyWgBC3WS2/QnsH8hUIVhkhH/OOC
+         +jhmf4PvUCLKq94Yfd6lZWE0NvcrpaIaa6nafL1Q7UhRUt4F/AgZLiKDdO9kv8XQ66
+         c5PEF33x5QVXyeU+aehhWKn6Cxa3rP+UTUu+sCpk=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id AFF9B606FC;
+        Fri, 26 Jul 2019 06:52:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564123944;
+        bh=45rlvmxAk80l2YGJDp8L9VwoMC5Accf2bkvFWQ7rH2Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FzKftfZ8E7sWY3QOPlc74YzWQYB/HV00IrG1WdFtk55IbVpwfHa3kMc3edl3ScdVa
+         XjoO4Qkc7Ykg+3smYnlk4kIMirrrcl+GY5OS92CM1BJyCFTfyT1JZAMvcdvtA9guRZ
+         W5KeMVsiOXisNNjDsgKiid1w4I6UNuD5z5m7qVSY=
 MIME-Version: 1.0
-References: <20190725080925.6575-1-jian-hong@endlessm.com> <06d713fff7434dfb9ccab32c2e2112e2@AcuMS.aculab.com>
-In-Reply-To: <06d713fff7434dfb9ccab32c2e2112e2@AcuMS.aculab.com>
-From:   Jian-Hong Pan <jian-hong@endlessm.com>
-Date:   Fri, 26 Jul 2019 14:18:26 +0800
-Message-ID: <CAPpJ_ecAAw=1X=7+MOw-VVH0ZKBr6rcRub6JnEqgNbZ6Hxt=ag@mail.gmail.com>
-Subject: Re: [PATCH] rtw88: pci: Use general byte arrays as the elements of RX ring
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 26 Jul 2019 12:22:24 +0530
+From:   Govind Singh <govinds@codeaurora.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 0/3] ath10k: Clean up regulator and clock handling
+In-Reply-To: <20190725174755.23432-1-bjorn.andersson@linaro.org>
+References: <20190725174755.23432-1-bjorn.andersson@linaro.org>
+Message-ID: <196fa4aa63fd5135aead736396fe3f8c@codeaurora.org>
+X-Sender: govinds@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Laight <David.Laight@aculab.com> =E6=96=BC 2019=E5=B9=B47=E6=9C=8825=
-=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=885:21=E5=AF=AB=E9=81=93=EF=BC=
-=9A
->
-> From: Jian-Hong Pan
-> > Sent: 25 July 2019 09:09
-> > Each skb as the element in RX ring was expected with sized buffer 8216
-> > (RTK_PCI_RX_BUF_SIZE) bytes. However, the skb buffer's true size is
-> > 16640 bytes for alignment after allocated, x86_64 for example. And, the
-> > difference will be enlarged 512 times (RTK_MAX_RX_DESC_NUM).
-> > To prevent that much wasted memory, this patch follows David's
-> > suggestion [1] and uses general buffer arrays, instead of skbs as the
-> > elements in RX ring.
-> ...
-> >       for (i =3D 0; i < len; i++) {
-> > -             skb =3D dev_alloc_skb(buf_sz);
-> > -             if (!skb) {
-> > +             buf =3D devm_kzalloc(rtwdev->dev, buf_sz, GFP_ATOMIC);
->
-> You should do this allocation somewhere than can sleep.
-> So you don't need GFP_ATOMIC, making the allocate (and dma map)
-> much less likely to fail.
-> If they do fail using a smaller ring might be better than failing
-> completely.
+On 2019-07-25 23:17, Bjorn Andersson wrote:
+> The first patch in this series removes the regulator_set_voltage() of a 
+> fixed
+> voltate, as fixed regulator constraints should be specified on a board 
+> level
+> and on certain boards - such as the Lenovo Yoga C630 - the voltage 
+> specified
+> for the 3.3V regulator is outside the given range.
+> 
+> The following two patches cleans up regulator and clock usage by using 
+> the bulk
+> API provided by the two frameworks.
+> 
+> Bjorn Andersson (3):
+>   ath10k: snoc: skip regulator operations
+>   ath10k: Use standard regulator bulk API in snoc
+>   ath10k: Use standard bulk clock API in snoc
+> 
+>  drivers/net/wireless/ath/ath10k/snoc.c | 324 ++++---------------------
+>  drivers/net/wireless/ath/ath10k/snoc.h |  26 +-
+>  2 files changed, 48 insertions(+), 302 deletions(-)
 
-Ok, I can tweak and try it.
+Tested on 845 MTP and QCS404 platform with normal sanity and driver 
+recover cases for proxy votes.
 
-> I suspect that buf_sz gets rounded up somewhat.
-> Also you almost certainly want 'buf' to be cache-line aligned.
-> I don't think devm_kzalloc() guarantees that at all.
+Tested-by: Govind Singh <govinds@codeaurora.org>
+Reviewed-by: Govind Singh <govinds@codeaurora.org>
 
-Sure
-
-> While allocating all 512 buffers in one block (just over 4MB)
-> is probably not a good idea, you may need to allocated (and dma map)
-> then in groups.
-
-Thanks for reviewing.  But got questions here to double confirm the idea.
-According to original code, it allocates 512 skbs for RX ring and dma
-mapping one by one.  So, the new code allocates memory buffer 512
-times to get 512 buffer arrays.  Will the 512 buffers arrays be in one
-block?  Do you mean aggregate the buffers as a scatterlist and use
-dma_map_sg?
-
-Thank you,
-Jain-Hong Pan
+BR,
+Govind
