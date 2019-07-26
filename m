@@ -2,61 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9736762C3
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 11:51:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D0BB762DE
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 11:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfGZJqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 05:46:15 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:42258 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfGZJqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 05:46:15 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hqwnk-0007TE-1C; Fri, 26 Jul 2019 09:46:12 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: neigh: remove redundant assignment to variable bucket
-Date:   Fri, 26 Jul 2019 10:46:11 +0100
-Message-Id: <20190726094611.3597-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726013AbfGZJ5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 05:57:10 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:45098 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725815AbfGZJ5K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 05:57:10 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id A574AA3A8054CBAEA764;
+        Fri, 26 Jul 2019 17:57:07 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 26 Jul 2019 17:56:59 +0800
+From:   Yonglong Liu <liuyonglong@huawei.com>
+To:     <andrew@lunn.ch>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
+Subject: [RFC] net: phy: read link status twice when phy_check_link_status()
+Date:   Fri, 26 Jul 2019 17:53:51 +0800
+Message-ID: <1564134831-24962-1-git-send-email-liuyonglong@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+According to the datasheet of Marvell phy and Realtek phy, the
+copper link status should read twice, or it may get a fake link
+up status, and cause up->down->up at the first time when link up.
+This happens more oftem at Realtek phy.
 
-The variable bucket is being initialized with a value that is never
-read and it is being updated later with a new value in a following
-for-loop. The initialization is redundant and can be removed.
+I add a fake status read, and can solve this problem.
 
-Addresses-Coverity: ("Unused value")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+I also see that in genphy_update_link(), had delete the fake
+read in polling mode, so I don't know whether my solution is
+correct.
+
+Or provide a phydev->drv->read_status functions for the phy I
+used is more acceptable?
+
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
 ---
- net/core/neighbour.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/phy.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index f79e61c570ea..5480edff0c86 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -3033,7 +3033,7 @@ static struct neighbour *neigh_get_first(struct seq_file *seq)
- 	struct net *net = seq_file_net(seq);
- 	struct neigh_hash_table *nht = state->nht;
- 	struct neighbour *n = NULL;
--	int bucket = state->bucket;
-+	int bucket;
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index ef7aa73..0c03edc 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -1,4 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0+
++	err = phy_read_status(phydev);
++	if (err)
++		return err;
+ /* Framework for configuring and reading PHY devices
+  * Based on code in sungem_phy.c and gianfar_phy.c
+  *
+@@ -525,6 +528,11 @@ static int phy_check_link_status(struct phy_device *phydev)
  
- 	state->flags &= ~NEIGH_SEQ_IS_PNEIGH;
- 	for (bucket = 0; bucket < (1 << nht->hash_shift); bucket++) {
+ 	WARN_ON(!mutex_is_locked(&phydev->lock));
+ 
++	/* Do a fake read */
++	err = phy_read(phydev, MII_BMSR);
++	if (err < 0)
++		return err;
++
+ 	err = phy_read_status(phydev);
+ 	if (err)
+ 		return err;
 -- 
-2.20.1
+2.8.1
 
