@@ -2,106 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 988D8761B7
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 11:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4F4761D0
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 11:23:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726393AbfGZJVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 05:21:22 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33698 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbfGZJVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 05:21:22 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n9so53749026wru.0
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 02:21:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rg6liGE7Xe5Eny9GwF05J9Y2Gg6qiVmmlIS0z2M9AS8=;
-        b=hAj9bL7hkhKsw30qHY5Nf36Mnyp4gFKJayMwRRo87NbpAmNaqhN4nAtCzD0OYZnKSJ
-         WFuv/LaD35l2w5wQnh1WuC2YcDm0YowhoTreeJ5vzUO/h4IVEEwNLk5SmTH+9AcgtPxh
-         zUTV2UfAT5jte3+kgEO4mliLieXj8K7DmWrf88NwExCRpzbMx6jGZfl7rRhvLIkK+wMR
-         mt0RhTLInWnXYOYJ2YSPHHggEYe5eZNQeoq9rLX9PmLCXqgLXVSCJK7g1DQCphAWXzvN
-         F9PcVhhZeiaGTzWd/KfBbI13D/j1QDk+N7h7vZ3qc4b9uDX+Ieq3OueuI+ZkK5Ng7qHS
-         ynow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=rg6liGE7Xe5Eny9GwF05J9Y2Gg6qiVmmlIS0z2M9AS8=;
-        b=ui28pckP5CR/EIX6MOn3j25Lc6HyayCb0Mp1mDTY3E9VyImwwQeYVV3X7z+ClH99cr
-         hvHpiIV5vtkk1Vq0TiSrBBzrDvlcfxqm5R+jNiD9f2kUSkMkyhYn3iksDUgo0/kNFakW
-         p6GIF2p9XGU7u8uaHN8Bmsl88se6rvAkW1Rd0Il6fsq/I69VSjKFOCXaGvsVMW9KdyoQ
-         BAAyyKINnvNoaMQcz7KdqsZBRqCoSgT6yHEXb5Gl+BCrIE1QftFOGz1QW92pbgnwHtL1
-         TvPEU/cL6Khdhl9hcJ7Ti6+eZ4wEAEecLaAGFo3V3GIlUrAnAcTiJexHEXC5JC3LREd4
-         SHmQ==
-X-Gm-Message-State: APjAAAW3PB0k9MSb7nY9Gls4c0kXbCoMykmyhdpxDRWRX520DQwW1cUE
-        HubmMtcoW59d2ksqgktYyOPMCA==
-X-Google-Smtp-Source: APXvYqwDO4urFG+RW2RDSJPPmyJAWpxvecy/fGHur6arOBQcJDc593v3T70IgrP1yS6jyEzh6slVeA==
-X-Received: by 2002:adf:eacf:: with SMTP id o15mr15300851wrn.171.1564132879891;
-        Fri, 26 Jul 2019 02:21:19 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:9d:caad:2868:a68c? ([2a01:e35:8b63:dc30:9d:caad:2868:a68c])
-        by smtp.gmail.com with ESMTPSA id t24sm46674717wmj.14.2019.07.26.02.21.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 02:21:18 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH 2/2] net: ipv6: Fix a possible null-pointer dereference in
- vti6_link_config()
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190726080321.4466-1-baijiaju1990@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <6b583833-bbb1-dd59-2c83-eda747a58481@6wind.com>
-Date:   Fri, 26 Jul 2019 11:21:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190726080321.4466-1-baijiaju1990@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726283AbfGZJXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 05:23:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:40872 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726193AbfGZJXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 05:23:39 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-213-_IbTtnJhNCekhz4rwLltKA-1; Fri, 26 Jul 2019 10:23:36 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 26 Jul 2019 10:23:35 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 26 Jul 2019 10:23:35 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jian-Hong Pan' <jian-hong@endlessm.com>
+CC:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@endlessm.com" <linux@endlessm.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] rtw88: pci: Use general byte arrays as the elements of RX
+ ring
+Thread-Topic: [PATCH] rtw88: pci: Use general byte arrays as the elements of
+ RX ring
+Thread-Index: AQHVQsDFH4BG56wpwU66J+Fzxhx3XabbDGOQgAFRNgCAADuAcA==
+Date:   Fri, 26 Jul 2019 09:23:35 +0000
+Message-ID: <c2cdffd30923459e8773379fc2927e1d@AcuMS.aculab.com>
+References: <20190725080925.6575-1-jian-hong@endlessm.com>
+ <06d713fff7434dfb9ccab32c2e2112e2@AcuMS.aculab.com>
+ <CAPpJ_ecAAw=1X=7+MOw-VVH0ZKBr6rcRub6JnEqgNbZ6Hxt=ag@mail.gmail.com>
+In-Reply-To: <CAPpJ_ecAAw=1X=7+MOw-VVH0ZKBr6rcRub6JnEqgNbZ6Hxt=ag@mail.gmail.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: _IbTtnJhNCekhz4rwLltKA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 26/07/2019 à 10:03, Jia-Ju Bai a écrit :
-> In vti6_link_config(), there is an if statement on line 649 to check
-> whether rt is NULL:
->     if (rt)
-> 
-> When rt is NULL, it is used on line 651:
->     ip6_rt_put(rt);
->         dst_release(&rt->dst);
-> 
-> Thus, a possible null-pointer dereference may occur.
-> 
-> To fix this bug, ip6_rt_put() is called when rt is not NULL.
-> 
-> This bug is found by a static analysis tool STCheck written by us.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-> ---
->  net/ipv6/ip6_vti.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-> index 024db17386d2..572647205c52 100644
-> --- a/net/ipv6/ip6_vti.c
-> +++ b/net/ipv6/ip6_vti.c
-> @@ -646,9 +646,10 @@ static void vti6_link_config(struct ip6_tnl *t, bool keep_mtu)
->  						 &p->raddr, &p->laddr,
->  						 p->link, NULL, strict);
->  
-> -		if (rt)
-> +		if (rt) {
->  			tdev = rt->dst.dev;
-> -		ip6_rt_put(rt);
-> +			ip6_rt_put(rt);
-> +		}
-Please, look at ip6_rt_put(), it is explicitly stated that it can be called with
-rt == NULL.
+RnJvbTogSmlhbi1Ib25nIFBhbiANCj4gU2VudDogMjYgSnVseSAyMDE5IDA3OjE4DQouLi4NCj4g
+PiBXaGlsZSBhbGxvY2F0aW5nIGFsbCA1MTIgYnVmZmVycyBpbiBvbmUgYmxvY2sgKGp1c3Qgb3Zl
+ciA0TUIpDQo+ID4gaXMgcHJvYmFibHkgbm90IGEgZ29vZCBpZGVhLCB5b3UgbWF5IG5lZWQgdG8g
+YWxsb2NhdGVkIChhbmQgZG1hIG1hcCkNCj4gPiB0aGVuIGluIGdyb3Vwcy4NCj4gDQo+IFRoYW5r
+cyBmb3IgcmV2aWV3aW5nLiAgQnV0IGdvdCBxdWVzdGlvbnMgaGVyZSB0byBkb3VibGUgY29uZmly
+bSB0aGUgaWRlYS4NCj4gQWNjb3JkaW5nIHRvIG9yaWdpbmFsIGNvZGUsIGl0IGFsbG9jYXRlcyA1
+MTIgc2ticyBmb3IgUlggcmluZyBhbmQgZG1hDQo+IG1hcHBpbmcgb25lIGJ5IG9uZS4gIFNvLCB0
+aGUgbmV3IGNvZGUgYWxsb2NhdGVzIG1lbW9yeSBidWZmZXIgNTEyDQo+IHRpbWVzIHRvIGdldCA1
+MTIgYnVmZmVyIGFycmF5cy4gIFdpbGwgdGhlIDUxMiBidWZmZXJzIGFycmF5cyBiZSBpbiBvbmUN
+Cj4gYmxvY2s/ICBEbyB5b3UgbWVhbiBhZ2dyZWdhdGUgdGhlIGJ1ZmZlcnMgYXMgYSBzY2F0dGVy
+bGlzdCBhbmQgdXNlDQo+IGRtYV9tYXBfc2c/DQoNCklmIHlvdSBtYWxsb2MgYSBidWZmZXIgb2Yg
+c2l6ZSAoODE5MiszMikgdGhlIGFsbG9jYXRvciB3aWxsIGVpdGhlcg0Kcm91bmQgaXQgdXAgdG8g
+YSB3aG9sZSBudW1iZXIgb2YgKG9mdGVuIDRrKSBwYWdlcyBvciB0byBhIHBvd2VyIG9mDQoyIG9m
+IHBhZ2VzIC0gc28gZWl0aGVyIDEyayBvZiAxNmsuDQpJIHRoaW5rIHRoZSBMaW51eCBhbGxvY2F0
+b3IgZG9lcyB0aGUgbGF0dGVyLg0KU29tZSBvZiB0aGUgYWxsb2NhdG9ycyBhbHNvICdzdGVhbCcg
+YSBiaXQgZnJvbSB0aGUgZnJvbnQgb2YgdGhlIGJ1ZmZlcg0KZm9yICdyZWQgdGFwZScuDQoNCk9U
+T0ggbWFsbG9jIHRoZSBzcGFjZSAxNSBidWZmZXJzIGFuZCB0aGUgYWxsb2NhdG9yIHdpbGwgcm91
+bmQgdGhlDQoxNSooODE5MiArIDMyKSB1cCB0byAzMio0ayAtIGFuZCB5b3Ugd2FzdGUgdW5kZXIg
+OGsgYWNyb3NzIGFsbCB0aGUNCmJ1ZmZlcnMuDQoNCllvdSB0aGVuIGRtYV9tYXAgdGhlIGxhcmdl
+IGJ1ZmZlciBhbmQgc3BsaXQgaW50byB0aGUgYWN0dWFsIHJ4IGJ1ZmZlcnMuDQpSZXBlYXQgdW50
+aWwgeW91J3ZlIGZpbGxlZCB0aGUgZW50aXJlIHJpbmcuDQpUaGUgb25seSBjb21wbGljYXRpb24g
+aXMgcmVtZW1iZXJpbmcgdGhlIGJhc2UgYWRkcmVzcyAoYW5kIHNpemUpIGZvcg0KdGhlIGRtYV91
+bm1hcCBhbmQgZnJlZS4NCkFsdGhvdWdoIHRoZXJlIGlzIHBsZW50eSBvZiBwYWRkaW5nIHRvIGV4
+dGVuZCB0aGUgYnVmZmVyIHN0cnVjdHVyZQ0Kc2lnbmlmaWNhbnRseSB3aXRob3V0IHVzaW5nIG1v
+cmUgbWVtb3J5Lg0KQWxsb2NhdGUgaW4gMTUncyBhbmQgeW91IChwcm9iYWJseSkgaGF2ZSA1MTIg
+Ynl0ZXMgcGVyIGJ1ZmZlci4NCkFsbG9jYXRlIGluIDMxJ3MgYW5kIHlvdSBoYXZlIDI1NiBieXRl
+cy4NCg0KVGhlIHByb2JsZW0gaXMgdGhhdCBsYXJnZXIgYWxsb2NhdGVzIGFyZSBtb3JlIGxpa2Vs
+eSB0byBmYWlsDQooZXNwZWNpYWxseSBpZiB0aGUgc3lzdGVtIGhhcyBiZWVuIHJ1bm5pbmcgZm9y
+IHNvbWUgdGltZSkuDQpTbyB5b3UgYWxtb3N0IGNlcnRhaW5seSB3YW50IHRvIGJlIGFibGUgdG8g
+ZmFsbCBiYWNrIHRvIHNtYWxsZXINCmFsbG9jYXRlcyBldmVuIHRob3VnaCB0aGV5IHVzZSBtb3Jl
+IG1lbW9yeS4NCg0KSSBhbHNvIHdvbmRlciBpZiB5b3UgYWN0dWFsbHkgbmVlZCA1MTIgOGsgcngg
+YnVmZmVycyB0byBjb3Zlcg0KaW50ZXJydXB0IGxhdGVuY3k/DQpJJ3ZlIG5vdCBkb25lIGFueSBt
+ZWFzdXJlbWVudHMgZm9yIDIwIHllYXJzIQ0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRy
+ZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1L
+MSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+
