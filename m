@@ -2,155 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB0076E85
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 18:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7777E76ED4
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 18:21:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727915AbfGZQHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 12:07:03 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33677 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727208AbfGZQHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 12:07:02 -0400
-Received: by mail-ed1-f65.google.com with SMTP id i11so53742046edq.0
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 09:07:00 -0700 (PDT)
+        id S1728703AbfGZQUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 12:20:53 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33219 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728611AbfGZQUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 12:20:53 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n9so55130627wru.0;
+        Fri, 26 Jul 2019 09:20:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T/qDVf+3dooEMAhruNasjaP2IHvuiWtEmkuvHmBG+jE=;
+        b=u74QyaIaeokVKcRlclbi8ZChTroTb+hxErNprFXFz63Rra5MoMHUzsrbWObUJ9n0Ux
+         7ANAXkMymd83qMr5GScNwcw2aYi3uILh36LndhKYmSk6ed00GJi2B4x8HZ08xB4gQjWX
+         aqlfKimYkJ02s5kxVwcBDzn5ouy8Mb5tK5a7LpJ7Gje454GjWKDTCaYpqL35f/JYeEXa
+         Xr2fLn4cqHSs8Q9sov/srOvuG70bhp7UfBx4vA58SfNFZLxQ1y5tufGPhazUruajAR0x
+         8tpSWrFw+RlYbtQ+LLXAPXew0fL9tOO+6ShaAfoaTduq/lBtsW20YbNWycu3Q6Re0sb2
+         x/YQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=QUSRDGhQvpw6WT0H2taZqTzTOf4dWCkoNKTleIiH9jI=;
-        b=FvTh4n/+QHXbNtHtrKxCNEfv3Imwmhnzle+KWdpBAsaHD97MGNJwAh+aBz2wQZydjC
-         xGronsi1be6nBUw+jVG5zAK2B2ZgVf+iDa+Qh9/VaNu2jaG8ltZA3PKSnLvgLfFGzgSR
-         QAqVdDBgGOoZd4L/Ss7KsaknV4ZE3rXYMspVnYkAZXR1erfSLgU3B2TMi9nz7dMs153l
-         guIjWGgXYkGPf5GJwgivK9zBBO8qYRdtjT4JJtoVna8ejRwfpC7WQotoYy4pMDJMEgKQ
-         uFau8ET/Q4EhuE2Y4gsjGWZAWaUcz0AGkRna1y6i8pRx+47mjPY6d4w9aycqnaf/jMif
-         Wsaw==
-X-Gm-Message-State: APjAAAW8yyu+YCv/CcUQBN35/dFAkVEX1HYPmkInX6nLjH/IC0Nt9tro
-        RUY86FIbXVu3nhxdofT+nYokJA==
-X-Google-Smtp-Source: APXvYqxjyEGFSqB2NLQTkxCNJKyAiVg82M2UfZu2h/Va/9TiGfNKnsPK1X9R16wD92SfU7zIjT7uIA==
-X-Received: by 2002:a17:906:d154:: with SMTP id br20mr71277876ejb.76.1564157220324;
-        Fri, 26 Jul 2019 09:07:00 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id f12sm10524050ejj.32.2019.07.26.09.06.59
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T/qDVf+3dooEMAhruNasjaP2IHvuiWtEmkuvHmBG+jE=;
+        b=JT/l2/28218hdsfYg+y6C7smE5Uc1JA5YXC2HgV8uNS3S/leHYD4rv6tcZj86iaZTh
+         yLr/Y72eUMULv6K6E5iDl75zL5iCvwAQFIKF5UzONLFhpX/Bl7n87m6MkVBHH5kPAsbF
+         ZEN2qj0kKanwTheX210UPtQOYliawxpzrTqiaU31fg02efPeQTUp6X02Kq1eRasQvJb/
+         bjLNTa2LqQCDAsmo2QcNcLHNPxXmRDRqcczRAsBDT6uE6DMBNooAmtlMHOjE70bgA2mj
+         nK4WdqrSPwEB7uV2R1xnTYbywCDmUU9gUoMEBRkVtMJ/qtEvzcuhkjhHFWpKn9WwO5jF
+         trQw==
+X-Gm-Message-State: APjAAAX9NOE5r9pJ7hULJImChL74CT3b4h9JGTS7P9313iywapOUucPV
+        vQcxSMrjGZRu2+EHGcYKar0=
+X-Google-Smtp-Source: APXvYqwChD/6H+v/k2i0GRnWa8BPb9pYfF23pSNRnjD9xEwPX6Kks+G03fmvtv+XXTU2gzoC5WPMnw==
+X-Received: by 2002:a5d:53c1:: with SMTP id a1mr323995wrw.185.1564158051059;
+        Fri, 26 Jul 2019 09:20:51 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id u2sm45819941wmc.3.2019.07.26.09.20.49
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 09:06:59 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id CB6631800C5; Fri, 26 Jul 2019 18:06:58 +0200 (CEST)
-Subject: [PATCH bpf-next v5 6/6] tools: Add definitions for devmap_hash map
- type
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Date:   Fri, 26 Jul 2019 18:06:58 +0200
-Message-ID: <156415721858.13581.13229682989409553007.stgit@alrua-x1>
-In-Reply-To: <156415721066.13581.737309854787645225.stgit@alrua-x1>
-References: <156415721066.13581.737309854787645225.stgit@alrua-x1>
-User-Agent: StGit/0.19-dirty
+        Fri, 26 Jul 2019 09:20:49 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kelsey Skunberg <skunberg.kelsey@gmail.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] drivers: net: xgene: Move status variable declaration into CONFIG_ACPI block
+Date:   Fri, 26 Jul 2019 09:20:37 -0700
+Message-Id: <20190726162037.37308-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+X-Patchwork-Bot: notify
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+When CONFIG_ACPI is unset (arm allyesconfig), status is unused.
 
-This adds selftest and bpftool updates for the devmap_hash map type.
+drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c:383:14: warning:
+unused variable 'status' [-Wunused-variable]
+        acpi_status status;
+                    ^
+drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c:440:14: warning:
+unused variable 'status' [-Wunused-variable]
+        acpi_status status;
+                    ^
+drivers/net/ethernet/apm/xgene/xgene_enet_hw.c:697:14: warning: unused
+variable 'status' [-Wunused-variable]
+        acpi_status status;
+                    ^
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Move the declaration into the CONFIG_ACPI block so that there are no
+compiler warnings.
+
+Fixes: 570d785ba46b ("drivers: net: xgene: Remove acpi_has_method() calls")
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
- tools/bpf/bpftool/Documentation/bpftool-map.rst |    2 +-
- tools/bpf/bpftool/bash-completion/bpftool       |    4 ++--
- tools/bpf/bpftool/map.c                         |    3 ++-
- tools/testing/selftests/bpf/test_maps.c         |   16 ++++++++++++++++
- 4 files changed, 21 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/apm/xgene/xgene_enet_hw.c    | 3 ++-
+ drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c | 3 ++-
+ drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c | 3 ++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-index 490b4501cb6e..61d1d270eb5e 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-@@ -46,7 +46,7 @@ MAP COMMANDS
- |	*TYPE* := { **hash** | **array** | **prog_array** | **perf_event_array** | **percpu_hash**
- |		| **percpu_array** | **stack_trace** | **cgroup_array** | **lru_hash**
- |		| **lru_percpu_hash** | **lpm_trie** | **array_of_maps** | **hash_of_maps**
--|		| **devmap** | **sockmap** | **cpumap** | **xskmap** | **sockhash**
-+|		| **devmap** | **devmap_hash** | **sockmap** | **cpumap** | **xskmap** | **sockhash**
- |		| **cgroup_storage** | **reuseport_sockarray** | **percpu_cgroup_storage**
- |		| **queue** | **stack** }
- 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index c8f42e1fcbc9..6b961a5ed100 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -489,8 +489,8 @@ _bpftool()
-                                 perf_event_array percpu_hash percpu_array \
-                                 stack_trace cgroup_array lru_hash \
-                                 lru_percpu_hash lpm_trie array_of_maps \
--                                hash_of_maps devmap sockmap cpumap xskmap \
--                                sockhash cgroup_storage reuseport_sockarray \
-+                                hash_of_maps devmap devmap_hash sockmap cpumap \
-+                                xskmap sockhash cgroup_storage reuseport_sockarray \
-                                 percpu_cgroup_storage queue stack' -- \
-                                                    "$cur" ) )
-                             return 0
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index 5da5a7311f13..bfbbc6b4cb83 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -37,6 +37,7 @@ const char * const map_type_name[] = {
- 	[BPF_MAP_TYPE_ARRAY_OF_MAPS]		= "array_of_maps",
- 	[BPF_MAP_TYPE_HASH_OF_MAPS]		= "hash_of_maps",
- 	[BPF_MAP_TYPE_DEVMAP]			= "devmap",
-+	[BPF_MAP_TYPE_DEVMAP_HASH]		= "devmap_hash",
- 	[BPF_MAP_TYPE_SOCKMAP]			= "sockmap",
- 	[BPF_MAP_TYPE_CPUMAP]			= "cpumap",
- 	[BPF_MAP_TYPE_XSKMAP]			= "xskmap",
-@@ -1271,7 +1272,7 @@ static int do_help(int argc, char **argv)
- 		"       TYPE := { hash | array | prog_array | perf_event_array | percpu_hash |\n"
- 		"                 percpu_array | stack_trace | cgroup_array | lru_hash |\n"
- 		"                 lru_percpu_hash | lpm_trie | array_of_maps | hash_of_maps |\n"
--		"                 devmap | sockmap | cpumap | xskmap | sockhash |\n"
-+		"                 devmap | devmap_hash | sockmap | cpumap | xskmap | sockhash |\n"
- 		"                 cgroup_storage | reuseport_sockarray | percpu_cgroup_storage }\n"
- 		"       " HELP_SPEC_OPTIONS "\n"
- 		"",
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index 5443b9bd75ed..e1f1becda529 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -508,6 +508,21 @@ static void test_devmap(unsigned int task, void *data)
- 	close(fd);
- }
- 
-+static void test_devmap_hash(unsigned int task, void *data)
-+{
-+	int fd;
-+	__u32 key, value;
-+
-+	fd = bpf_create_map(BPF_MAP_TYPE_DEVMAP_HASH, sizeof(key), sizeof(value),
-+			    2, 0);
-+	if (fd < 0) {
-+		printf("Failed to create devmap_hash '%s'!\n", strerror(errno));
-+		exit(1);
-+	}
-+
-+	close(fd);
-+}
-+
- static void test_queuemap(unsigned int task, void *data)
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c b/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
+index 79924efd4ab7..5f657879134e 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
+@@ -694,7 +694,6 @@ bool xgene_ring_mgr_init(struct xgene_enet_pdata *p)
+ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
  {
- 	const int MAP_SIZE = 32;
-@@ -1684,6 +1699,7 @@ static void run_all_tests(void)
- 	test_arraymap_percpu_many_keys();
+ 	struct device *dev = &pdata->pdev->dev;
+-	acpi_status status;
  
- 	test_devmap(0, NULL);
-+	test_devmap_hash(0, NULL);
- 	test_sockmap(0, NULL);
+ 	if (!xgene_ring_mgr_init(pdata))
+ 		return -ENODEV;
+@@ -713,6 +712,8 @@ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ 		udelay(5);
+ 	} else {
+ #ifdef CONFIG_ACPI
++		acpi_status status;
++
+ 		status = acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
+ 					      "_RST", NULL, NULL);
+ 		if (ACPI_FAILURE(status)) {
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c b/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c
+index 3b3dc5b25b29..f482ced2cadd 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.c
+@@ -437,7 +437,6 @@ static void xgene_sgmac_tx_disable(struct xgene_enet_pdata *p)
+ static int xgene_enet_reset(struct xgene_enet_pdata *p)
+ {
+ 	struct device *dev = &p->pdev->dev;
+-	acpi_status status;
  
- 	test_map_large();
+ 	if (!xgene_ring_mgr_init(p))
+ 		return -ENODEV;
+@@ -461,6 +460,8 @@ static int xgene_enet_reset(struct xgene_enet_pdata *p)
+ 		}
+ 	} else {
+ #ifdef CONFIG_ACPI
++		acpi_status status;
++
+ 		status = acpi_evaluate_object(ACPI_HANDLE(&p->pdev->dev),
+ 					      "_RST", NULL, NULL);
+ 		if (ACPI_FAILURE(status)) {
+diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c b/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c
+index 78584089d76d..304b5d43f236 100644
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_xgmac.c
+@@ -380,7 +380,6 @@ static void xgene_xgmac_tx_disable(struct xgene_enet_pdata *pdata)
+ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ {
+ 	struct device *dev = &pdata->pdev->dev;
+-	acpi_status status;
+ 
+ 	if (!xgene_ring_mgr_init(pdata))
+ 		return -ENODEV;
+@@ -394,6 +393,8 @@ static int xgene_enet_reset(struct xgene_enet_pdata *pdata)
+ 		udelay(5);
+ 	} else {
+ #ifdef CONFIG_ACPI
++		acpi_status status;
++
+ 		status = acpi_evaluate_object(ACPI_HANDLE(&pdata->pdev->dev),
+ 					      "_RST", NULL, NULL);
+ 		if (ACPI_FAILURE(status)) {
+-- 
+2.22.0
 
