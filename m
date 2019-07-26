@@ -2,149 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2B97715B
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 20:40:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B90C771CE
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387656AbfGZSkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 14:40:01 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:40876 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387434AbfGZSkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 14:40:01 -0400
-Received: by mail-pf1-f195.google.com with SMTP id p184so24905194pfp.7;
-        Fri, 26 Jul 2019 11:40:00 -0700 (PDT)
+        id S2388351AbfGZTFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 15:05:13 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44539 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387743AbfGZTFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:05:13 -0400
+Received: by mail-wr1-f65.google.com with SMTP id p17so55429844wrf.11
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:05:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bY4xnD9VEBuMVQmfTHfPZt8vwC6Vj5uTPYAbzW3F/j4=;
-        b=r2LYzePY0p1lz7qwyh9m7J8u6+UVqedhCQ7BKobVOg1zauDSAKbok5ceFZRuNp2VFf
-         lX/4BDr8lMTXFrfSeA0Op5MpsCZYnTg97r/E85vHuBuuKbkvll4YhTyjAU5YtmA0YfYi
-         3KN/k8jdDTyKs4BWRUh+VTETT++7zIU/khvMxnp8IjNmpTSFZDwCi7cQAqeyCTdCiegT
-         f4oor9KFs6N9V0FWfGlOcVzy0OlGKexfdAmTY8oCDgKlKh+cvcZFhvCJj6/CUG9BLPLb
-         nW6VTyq9P/MBwWVndBBdFnXhACkGNtbgaoLicUBHDJrL9AjJjHbTdq0du8q5IIgzqVUa
-         MJXQ==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=OU+xI+UC2+jhskW0aNJzaD9odUC1cGBoiqXoFh7kqho=;
+        b=duXIShv0BePiUvertcoqsv6gkDctw0/RSb9VpcTQj0I4eHAc5ebYi+WJrw6J0o7nzp
+         26fJxjV9fM/uui8MTW2UOK2T0O7i6SneE394NuPxFOk8WX+zFKtbCHVadJJcBoJEjXtV
+         uz80LnLpbrKN5nmdtAkzUWWkDoZcX2SkaYm645UHcKuqUozOsKOVIqlLYE1VCgOoBsok
+         lOP9daRe6xnfMAEOECkphx2KeLKJM3BDMl2NWr4+SHxinDwL4eTafjfIqUbq0Kk/zMMG
+         XVC0r2Iniu2FW9noInY9WNSZMc6G11W6ZxM50o8x2JfX7U2Q38CPok+R4k3vKjek+s/D
+         4Vvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bY4xnD9VEBuMVQmfTHfPZt8vwC6Vj5uTPYAbzW3F/j4=;
-        b=sVIkUmNTzPdwwd6L/YGQm/fmdc3DV9vaWQx44tOISw352lMJVwHkd0igkwXBoeKbHq
-         DgtUCz20X6il+u1yChY5Bexfvhydtc+CPN8ee9TeO/aZlhBd0wmPPcVkSz1f71g/AQno
-         WYco9rpsUxBIhSjVXIL2ZHhLjSwUbjRKYYxzKoLXdSamBgcG+107XtIJbRyWKWhYantv
-         teBddUPH/j9czeo+d6hC4wuv3oBpDZPkmC88zabQ4gvYkf4q6aRWoqk2f8IiRPPAB/Jf
-         3MGrU3n6jhbYahr1Ka0sZKCES1gWMRIzD36Fks0rSqImu/oz4H88WSQPv9LstQ/Gn+Yv
-         0cQw==
-X-Gm-Message-State: APjAAAVEcb98W1HGpjlRTH6KtsRysmnN6D0xL7kWwjonzs0BYGm6j0Hl
-        ZqVJr4h+Mb6lxSvPvww7Z0c=
-X-Google-Smtp-Source: APXvYqwAa7f6KrCivJT9i9iP+Ljnbnzh9F83yxbeML6KsVRnVjPFn3zX0egbZMn28CCYbk40FWxZ9w==
-X-Received: by 2002:a62:1b0c:: with SMTP id b12mr23337721pfb.17.1564166400088;
-        Fri, 26 Jul 2019 11:40:00 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:2eeb])
-        by smtp.gmail.com with ESMTPSA id u7sm47886990pgr.94.2019.07.26.11.39.58
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=OU+xI+UC2+jhskW0aNJzaD9odUC1cGBoiqXoFh7kqho=;
+        b=UzNGjRvBOyqZrHPVvwRpiBQFevwS5xwJmVPpzWO5JtWkTYqvuUQpThdl8TOAbL0GHP
+         Lo5xSNVOwuUhfZAY2GhcL91f9OKl7DDqerUvnxADPItG5a4QIp/SIyYRYWri45vqUF+h
+         7UWtu8StZzHLsRi1PQf6EDfnbO/yAL8J/eNwRwrtfJzZiJL0sB/7PXyjOc8EKfmZbUw8
+         dAptiyPzgP1ZBwDxGVbySvfL1V+TNTP092bJctzZ//UAfaxv6rcTsMGlhmz7NTlELja3
+         3GgQ82hLeSDEG2NwkvPEGf2m7PTjMhs/xu5Ab34FcKsV011DcAlPie7UWnDyVD9reiz2
+         w78Q==
+X-Gm-Message-State: APjAAAWo2k6ZSYwpZOreli5uLPjLMKitlmZisvLViZl8Q42jd6ky/gjA
+        a4uDE/PBSo7qGYXT/lRTo6GtAqRN
+X-Google-Smtp-Source: APXvYqyEr2cb8SoxXQxj0DCmVElQuck3Qa+QntXQihR6peOx+nF/JOjsxLUJp9lp5Oi2cUVwpqm3FQ==
+X-Received: by 2002:adf:f888:: with SMTP id u8mr12078381wrp.238.1564167910593;
+        Fri, 26 Jul 2019 12:05:10 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f43:4200:55f1:e404:698f:358? (p200300EA8F43420055F1E404698F0358.dip0.t-ipconnect.de. [2003:ea:8f43:4200:55f1:e404:698f:358])
+        by smtp.googlemail.com with ESMTPSA id i6sm47012754wrv.47.2019.07.26.12.05.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 11:39:59 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 11:39:56 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, kernel-team@android.com
-Subject: Re: [PATCH RFC 0/4] Add support to directly attach BPF program to
- ftrace
-Message-ID: <20190726183954.oxzhkrwt4uhgl4gl@ast-mbp.dhcp.thefacebook.com>
-References: <20190716213050.GA161922@google.com>
- <20190716222650.tk2coihjtsxszarf@ast-mbp.dhcp.thefacebook.com>
- <20190716224150.GC172157@google.com>
- <20190716235500.GA199237@google.com>
- <20190717012406.lugqemvubixfdd6v@ast-mbp.dhcp.thefacebook.com>
- <20190717130119.GA138030@google.com>
- <CAADnVQJY_=yeY0C3k1ZKpRFu5oNbB4zhQf5tQnLr=Mi8i6cgeQ@mail.gmail.com>
- <20190718025143.GB153617@google.com>
- <20190723221108.gamojemj5lorol7k@ast-mbp>
- <20190724135714.GA9945@google.com>
+        Fri, 26 Jul 2019 12:05:09 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: align setting PME with vendor driver
+Message-ID: <dfc84691-5643-63be-6338-55fe56df18b9@gmail.com>
+Date:   Fri, 26 Jul 2019 20:56:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190724135714.GA9945@google.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 09:57:14AM -0400, Joel Fernandes wrote:
-> On Tue, Jul 23, 2019 at 03:11:10PM -0700, Alexei Starovoitov wrote:
-> > > > > > I think allowing one tracepoint and disallowing another is pointless
-> > > > > > from security point of view. Tracing bpf program can do bpf_probe_read
-> > > > > > of anything.
-> > > > >
-> > > > > I think the assumption here is the user controls the program instructions at
-> > > > > runtime, but that's not the case. The BPF program we are loading is not
-> > > > > dynamically generated, it is built at build time and it is loaded from a
-> > > > > secure verified partition, so even though it can do bpf_probe_read, it is
-> > > > > still not something that the user can change.
-> > > > 
-> > > > so you're saying that by having a set of signed bpf programs which
-> > > > instructions are known to be non-malicious and allowed set of tracepoints
-> > > > to attach via selinux whitelist, such setup will be safe?
-> > > > Have you considered how mix and match will behave?
-> > > 
-> > > Do you mean the effect of mixing tracepoints and programs? I have not
-> > > considered this. I am Ok with further enforcing of this (only certain
-> > > tracepoints can be attached to certain programs) if needed. What do
-> > > you think? We could have a new bpf(2) syscall attribute specify which
-> > > tracepoint is expected, or similar.
-> > > 
-> > > I wanted to walk you through our 2 usecases we are working on:
-> > 
-> > thanks for sharing the use case details. Appreciate it.
-> 
-> No problem and thanks for your thoughts.
-> 
-> > > 1. timeinstate: By hooking 2 programs onto sched_switch and cpu_frequency
-> > > tracepoints, we are able to collect CPU power per-UID (specific app). Connor
-> > > O'Brien is working on that.
-> > > 
-> > > 2. inode to file path mapping: By hooking onto VFS tracepoints we are adding to
-> > > the android kernels, we can collect data when the kernel resolves a file path
-> > > to a inode/device number. A BPF map stores the inode/dev number (key) and the
-> > > path (value). We have usecases where we need a high speed lookup of this
-> > > without having to scan all the files in the filesystem.
-> > 
-> > Can you share the link to vfs tracepoints you're adding?
-> > Sounds like you're not going to attempt to upstream them knowing
-> > Al's stance towards them?
-> > May be there is a way we can do the feature you need, but w/o tracepoints?
-> 
-> Yes, given Al's stance I understand the patch is not upstreamable. The patch
-> is here:
-> For tracepoint:
-> https://android.googlesource.com/kernel/common/+/27d3bfe20558d279041af403a887e7bdbdcc6f24%5E%21/
+Align setting PME with the vendor driver. PMEnable is writable on
+RTL8169 only, on later chip versions it's read-only. PME_SIGNAL is
+used on chip versions from RTL8168evl with the exception of the
+RTL8168f family.
 
-this is way more than tracepoint.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-> For bpf program:
-> https://android.googlesource.com/platform/system/bpfprogs/+/908f6cd718fab0de7a944f84628c56f292efeb17%5E%21/
-
-what is unsafe_bpf_map_update_elem() in there?
-The verifier comment sounds odd.
-Could you describe the issue you see with the verifier?
-
-> I intended to submit the tracepoint only for the Android kernels, however if
-> there is an upstream solution to this then that's even better since upstream can
-> benefit. Were you thinking of a BPF helper function to get this data?
-
-I think the best way to evaluate the patches is whether they are upstreamable or not.
-If they're not (like this case), it means that there is something wrong with their design
-and if android decides to go with such approach it will only create serious issues long term.
-Starting with the whole idea of dev+inode -> filepath cache.
-dev+inode is not a unique identifier of the file.
-In some filesystems two different files may have the same ino integer value.
-Have you looked at 'struct file_handle' ? and name_to_handle_at ?
-I think fhandle is the only way to get unique identifier of the file.
-Could you please share more details why android needs this cache of dev+ino->path?
-I guess something uses ino to find paths?
-Sort of faster version of 'find -inum' ?
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index e1e1c89fb..5c337234b 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1414,18 +1414,22 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
+ 	}
+ 
+ 	switch (tp->mac_version) {
+-	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_17:
++	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
+ 		options = RTL_R8(tp, Config1) & ~PMEnable;
+ 		if (wolopts)
+ 			options |= PMEnable;
+ 		RTL_W8(tp, Config1, options);
+ 		break;
+-	default:
++	case RTL_GIGA_MAC_VER_34:
++	case RTL_GIGA_MAC_VER_37:
++	case RTL_GIGA_MAC_VER_39 ... RTL_GIGA_MAC_VER_51:
+ 		options = RTL_R8(tp, Config2) & ~PME_SIGNAL;
+ 		if (wolopts)
+ 			options |= PME_SIGNAL;
+ 		RTL_W8(tp, Config2, options);
+ 		break;
++	default:
++		break;
+ 	}
+ 
+ 	rtl_lock_config_regs(tp);
+-- 
+2.22.0
 
