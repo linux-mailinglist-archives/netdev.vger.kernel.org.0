@@ -2,126 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E93F77370
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 23:28:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBD8A77371
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 23:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728372AbfGZV2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 17:28:20 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35764 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727398AbfGZV2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 17:28:20 -0400
-Received: by mail-pg1-f194.google.com with SMTP id s1so19037609pgr.2
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 14:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+z7GOTmT3nNgKC279a8ACROVHWGzWXxrdH8l/jHT3m0=;
-        b=dfnglxIX5OjNlpmG1N11VkmIjJmPc4py8gPeqZG7SeqK+Ggtjz8el1QhSSWSwy4CiW
-         APou4pPA1qWnTFzT/WcJK4gbAglLnZf/E/XRTHiVAQT1qx1tLbcVCN2IW+kIE34EgVQ0
-         pI/Wou0mxvZ8CdfQj9xcKmc9LW5bm+75pcFsqnygR4c2ji6loRsu0XhISQm1xOBmr5AQ
-         riKBcqGSJ3wXbmX0WkBsNk2ESZSc0ZOdljS15Oqi14X1kbp4hM3BYN7mARRzmEegkaRG
-         g6oq7UFVgpKO5rw2cRys81c9hECP32198yeYQnaqEiMsPhDMsDmKnXeBdrLVlA20iSwg
-         INjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+z7GOTmT3nNgKC279a8ACROVHWGzWXxrdH8l/jHT3m0=;
-        b=CVTH04r7Juyj5Qo9Q0Sm3DLv58zthPy8rdPwgySXw3c1AJ0EOOyj14ne9+hnaoKQfi
-         Fjy2x29e56eYNo4pD6CCNr4P0CcUEpwl09236oB0GaIRyfqj1aHnyHRDGez9+eDwD7gc
-         wpqdgyiCFh8jco0smaxoncIB27GoFssED8yCN7Ph58X/4Auib1/46yn/naKV+QUJhW6D
-         fdyPNgREH+fDzfsRJcG9BssUzA4nO/vDZyb2a3d367gEFhbo/ONDl2MxnbN1L/T7Et4s
-         xTPUImPpG5kTlv2jYE13rkZ4A1fkfbg+5/MtWalXgAPuS8VoD4s8JqJ21923SunTkWUb
-         q1WQ==
-X-Gm-Message-State: APjAAAVR7Gn4v4hXuGsLJLhsqM0pkvy+oBNaMNQjuKLhuL6Y4wqlJNoU
-        G/n+/Pp2VXt7ioBrdvG4+Oc=
-X-Google-Smtp-Source: APXvYqwtzGX+2PfYSt224WPJM4zPXeFd7Zlsy3vH1nvn/GL9oXPV+mMKveijM/0q5d0SdlMgeF6itw==
-X-Received: by 2002:a63:5f09:: with SMTP id t9mr59942983pgb.351.1564176499249;
-        Fri, 26 Jul 2019 14:28:19 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id 185sm54366553pfd.125.2019.07.26.14.28.18
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 14:28:18 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 14:28:18 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 4/9] libbpf: add libbpf_swap_print to get
- previous print func
-Message-ID: <20190726212818.GC24397@mini-arch>
-References: <20190726203747.1124677-1-andriin@fb.com>
- <20190726203747.1124677-5-andriin@fb.com>
+        id S1728374AbfGZV25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 17:28:57 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:56852 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727398AbfGZV25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 17:28:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=2E9bno7xNc/HHdQG3LhbJ/60rliX27eGgYVlnlV1kpg=; b=Re65h+ViZhk0DACmQWyvRH/Wi
+        FiT6b3YRmvaFV+oYr2gn8Wp5MZnbRu4LESB7Iq0sPdkxGdjPW8OlXVac9fBPCrIP3/QJ2cLVFnXjQ
+        J2UjgRoFC9lJVzpjwqJlPzdYE0WrlMFEhXdTgvDef+oGbKV0Gw9VNjRC0ogq8uq+69eQH9aooPyF5
+        EdyvC7FPRehQYohF92F3QctXxf01NFc/U5e7+A3Ur1wUvUleT6hjl9qtzM6wO+B70ItUmeArVeV0J
+        mpmYrqCg5Z+nW0deljpVCK0dtpOrOLYl2pAJ5sxuuiME3rpRuq6mabNt0cy5D9KLbe1KqpASkvvXV
+        lV5BYa3Ww==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:37402)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hr7li-0008Uf-H2; Fri, 26 Jul 2019 22:28:54 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hr7lh-00075s-Kx; Fri, 26 Jul 2019 22:28:49 +0100
+Date:   Fri, 26 Jul 2019 22:28:49 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: phylink: flow control on fixed-link not working.
+Message-ID: <20190726212849.GR1330@shell.armlinux.org.uk>
+References: <20190717213111.Horde.nir2D5kAJww569fjh8BZgZm@www.vdorst.com>
+ <20190717215150.tk3gvq7lqc56scac@shell.armlinux.org.uk>
+ <20190717225816.Horde.Lym7vHLMewe-3L_Elk45WIQ@www.vdorst.com>
+ <20190719195226.Horde.MpIE5TFL_P5-pUU6V-K6R9J@www.vdorst.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190726203747.1124677-5-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190719195226.Horde.MpIE5TFL_P5-pUU6V-K6R9J@www.vdorst.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/26, Andrii Nakryiko wrote:
-> libbpf_swap_print allows to restore previously set print function.
-> This is useful when running many independent test with one default print
-> function, but overriding log verbosity for particular subset of tests.
-Can we change the return type of libbpf_set_print instead and return
-the old function from it? Will it break ABI?
+On Fri, Jul 19, 2019 at 07:52:26PM +0000, René van Dorst wrote:
+> Hi Russel,
+> 
+> If I use this patch below:
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 5d0af041b8f9..a6aebaa14338 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -216,6 +216,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
+>                                pl->supported, true);
+>         linkmode_zero(pl->supported);
+>         phylink_set(pl->supported, MII);
+> +       phylink_set(pl->supported, Pause);
+> +       phylink_set(pl->supported, Asym_Pause);
+>         if (s) {
+>                 __set_bit(s->bit, pl->supported);
+>         } else {
+> 
+> Which is similar thing also done in phylink_parse_mode().
 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/libbpf.c   | 8 ++++++++
->  tools/lib/bpf/libbpf.h   | 1 +
->  tools/lib/bpf/libbpf.map | 5 +++++
->  3 files changed, 14 insertions(+)
-> 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 8741c39adb1c..0c254b6c9685 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -79,6 +79,14 @@ void libbpf_set_print(libbpf_print_fn_t fn)
->  	__libbpf_pr = fn;
->  }
->  
-> +libbpf_print_fn_t libbpf_swap_print(libbpf_print_fn_t fn)
-> +{
-> +	libbpf_print_fn_t old_print_fn = __libbpf_pr;
-> +
-> +	__libbpf_pr = fn;
-> +	return old_print_fn;
-> +}
-> +
->  __printf(2, 3)
->  void libbpf_print(enum libbpf_print_level level, const char *format, ...)
->  {
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 5cbf459ece0b..4e0aa893571f 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -58,6 +58,7 @@ typedef int (*libbpf_print_fn_t)(enum libbpf_print_level level,
->  				 const char *, va_list ap);
->  
->  LIBBPF_API void libbpf_set_print(libbpf_print_fn_t fn);
-> +LIBBPF_API libbpf_print_fn_t libbpf_swap_print(libbpf_print_fn_t fn);
->  
->  /* Hide internal to user */
->  struct bpf_object;
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index f9d316e873d8..e211c38ddc43 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -184,3 +184,8 @@ LIBBPF_0.0.4 {
->  		perf_buffer__new_raw;
->  		perf_buffer__poll;
->  } LIBBPF_0.0.3;
-> +
-> +LIBBPF_0.0.5 {
-> +	global:
-> +		libbpf_swap_print;
-> +} LIBBPF_0.0.4;
-> -- 
-> 2.17.1
-> 
+Yep, that's what should be there - please submit as a fix patch, thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
