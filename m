@@ -2,80 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A43BB76034
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 09:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FE176046
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 10:03:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfGZHxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 03:53:37 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2767 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726302AbfGZHxg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 03:53:36 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id BB69CBFCC25EB9BE62DD;
-        Fri, 26 Jul 2019 15:53:34 +0800 (CST)
-Received: from localhost.localdomain (10.67.212.132) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.439.0; Fri, 26 Jul 2019 15:53:27 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <saeedm@mellanox.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 10/10] net: hns3: use dev_info() instead of pr_info()
-Date:   Fri, 26 Jul 2019 15:51:30 +0800
-Message-ID: <1564127490-22173-11-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1564127490-22173-1-git-send-email-tanhuazhong@huawei.com>
-References: <1564127490-22173-1-git-send-email-tanhuazhong@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.212.132]
-X-CFilter-Loop: Reflected
+        id S1726291AbfGZIDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 04:03:19 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42073 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725815AbfGZIDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 04:03:19 -0400
+Received: by mail-pg1-f194.google.com with SMTP id t132so24380270pgb.9;
+        Fri, 26 Jul 2019 01:03:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=ezk7udNGHpj8DbEIJ/QK4G3fHV7bgQKFf1n90gssYQo=;
+        b=en3ja7HyoKgOPY37rbkkkpAKcd3jXXyZKTnEL91Dcq/q0Tlt+t8iJtE2ZT6824Hcn1
+         V7TeS/+Hw0FAF4yiWCDOkUhboPVglR8hJ7cIAls7dgJlR0OQKP89SEcWtOfeuptZP3b8
+         zE2ufeY0BLqnrzxryvVDcfW2YIyFBSED/jRbfck+d0iAwzZGGqRFf4bmh/3w5W9x4dUL
+         q1ASzn5Z9qF32UXqwAM/newgkWDnex6px7geRSJmEc/Bqe/jAaLJJs5mm5gcw7LvUKie
+         t3w0xqBC1udxSllaPpeobGT2dAezNKcI5q9+CbwLlKO+0HXO9dXO3mIYHc82ejxCwHm2
+         3b7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ezk7udNGHpj8DbEIJ/QK4G3fHV7bgQKFf1n90gssYQo=;
+        b=Awg5sIWsbUYxYNg7Ds29nf+xOF1qsEQDfSko+IZ+5C5wVv1gSGMgWAnGlc2E6Tf6OK
+         bwKL04NztfTJwVOt0jh0V069BK2WlimUvmYHW/hTIef40n19xtpBaRpIhGZK1gvcCaNd
+         s1t7U6+sv4kSG36/bZeN+8ENlpCIydJABZN+/h8zuWIp6t9rV6+J9pl9t5/k0lyrjVsN
+         Bw572kwQYSadgdWLhFEU99RuyNien7iS49obuXlx4/0KhWIbxH7CMa2GBuLtjkuKd9Mm
+         3rQMIkICQ6mDPNKhxwtyWCzfu7hWgr09bxVGaq6CCczY7o6Zlnk0zZ+6EyPvsQN4k3gF
+         Yy0Q==
+X-Gm-Message-State: APjAAAWkwRMgvahlzSiSSLZxoq9XfzGMvtFE5SPRGdRvoxFDO8n343Ed
+        9vJQKBhyuZUhDiZoCv3TV48=
+X-Google-Smtp-Source: APXvYqwZHG3CeVEGEoQyGF0hdHVJkM/QYHRbr5DITZn/g0vK6/+1dNQHLnzULw5PNNjdf4tMGzhzsw==
+X-Received: by 2002:a17:90a:e397:: with SMTP id b23mr95739307pjz.140.1564128198517;
+        Fri, 26 Jul 2019 01:03:18 -0700 (PDT)
+Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
+        by smtp.gmail.com with ESMTPSA id v22sm49742272pgk.69.2019.07.26.01.03.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Jul 2019 01:03:18 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH 1/2] net: ipv6: Fix a possible null-pointer dereference in ip6_xmit()
+Date:   Fri, 26 Jul 2019 16:03:07 +0800
+Message-Id: <20190726080307.4414-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dev_info() is more appropriate for printing messages when driver
-initialization done, so switch to dev_info().
+In ip6_xmit(), there is an if statement on line 245 to check whether 
+np is NULL:
+    if (np)
 
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+When np is NULL, it is used on line 251:
+    ip6_autoflowlabel(net, np)
+        if (!np->autoflowlabel_set)
+
+Thus, a possible null-pointer dereference may occur.
+
+To fix this bug, np is checked before calling 
+ip6_autoflowlabel(net,np).
+
+This bug is found by a static analysis tool STCheck written by us.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 4 +++-
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 3 ++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ net/ipv6/ip6_output.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 30a7074..4138780 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8862,7 +8862,9 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	hclge_state_init(hdev);
- 	hdev->last_reset_time = jiffies;
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 8e49fd62eea9..07db5ab6e970 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -247,8 +247,10 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 	if (hlimit < 0)
+ 		hlimit = ip6_dst_hoplimit(dst);
  
--	pr_info("%s driver initialization finished.\n", HCLGE_DRIVER_NAME);
-+	dev_info(&hdev->pdev->dev, "%s driver initialization finished.\n",
-+		 HCLGE_DRIVER_NAME);
-+
- 	return 0;
+-	ip6_flow_hdr(hdr, tclass, ip6_make_flowlabel(net, skb, fl6->flowlabel,
+-				ip6_autoflowlabel(net, np), fl6));
++	if (np) {
++		ip6_flow_hdr(hdr, tclass, ip6_make_flowlabel(net, skb, fl6->flowlabel,
++					ip6_autoflowlabel(net, np), fl6));
++	}
  
- err_mdiobus_unreg:
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index a13a0e1..ae0e6a6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2695,7 +2695,8 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 	}
- 
- 	hdev->last_reset_time = jiffies;
--	pr_info("finished initializing %s driver\n", HCLGEVF_DRIVER_NAME);
-+	dev_info(&hdev->pdev->dev, "finished initializing %s driver\n",
-+		 HCLGEVF_DRIVER_NAME);
- 
- 	return 0;
- 
+ 	hdr->payload_len = htons(seg_len);
+ 	hdr->nexthdr = proto;
 -- 
-2.7.4
+2.17.0
 
