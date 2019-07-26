@@ -2,104 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFDE7619F
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 11:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D069B761AF
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 11:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbfGZJP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 05:15:59 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39834 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfGZJP7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 05:15:59 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x4so485364wrt.6
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 02:15:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9r9uyuQRxfZKsoTfi+2znRv6sD15zYzQ2hWxzsI8gkU=;
-        b=FH1O0W8U9KDswyjDE9zBBKyiW+8HqfR5iTgIt4qJ9Y3AGO+xa5LRQKGEPJ0seda+4v
-         HI+s51qtGlL3qrvNl8cMfjrZNb57Bj0BioHtSus10VSR5cQsEcQA5S3iwfpwBIlvoYm3
-         P3U8b4ZpT3T8QnLmGboYhMHszdu3Y9s3gwcSmPgolImcipQBpTkidyJNeMXy9o+8msfI
-         mgAGuPxuMU5sRLjLUes9hrVEkUssc0vwOw4IIhoV1t5MNgV4H8CF4e8Pf/LXRUmjRt0w
-         ozpM2Q1hmcRGR2fwAJ7Qqub+f1zyeq7jr8/GmNhA9Pa3kOSKbxN5m0YE9iw04Iv7La7J
-         sYZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=9r9uyuQRxfZKsoTfi+2znRv6sD15zYzQ2hWxzsI8gkU=;
-        b=ILip92uR4YB21eesF7Fr025UhnNy6cebmCt9vRwS3fXuO+Cvbiscg1dSLDxplljvLx
-         hz7TXUH8lEJcvDNACgbkKlNK5pur7tvQk6hv6nx+9hGM/I7zNZlzTMdYA4ex8sLkw9yI
-         JWTA0BXS5ZFdxW7ez6pPOgRLkakHE1hKn7oxVK8MfkvxcUl/rwf1slNhuZeKiixxmrIN
-         S6ucEfjSQZIYmJsDPhETE8uyVeR/5wtzqfPwdMPJpaVRGJjxOL64ch5zRDm618R2iyRt
-         rRsjwOnq5QvHY3DwlnI11SXs6VQc3EcvOoDikwFPYY0NxQVAH4vetv94PHJ9cAltOboS
-         3J+Q==
-X-Gm-Message-State: APjAAAVCR6ATjwjreWdjinwz5lWogBqLE6ly26biHkyJFdWkRYyyIrS8
-        nzy+8w/nbe6rKB/wgqkgfcUPPg==
-X-Google-Smtp-Source: APXvYqxz+P+obXJh82sven9XrOIR1qZjORt5FUejMPL60HgvSTlqEnklEnW7LYq1aLEaXt1KO3iw5g==
-X-Received: by 2002:a5d:4206:: with SMTP id n6mr33329547wrq.110.1564132556971;
-        Fri, 26 Jul 2019 02:15:56 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:9d:caad:2868:a68c? ([2a01:e35:8b63:dc30:9d:caad:2868:a68c])
-        by smtp.gmail.com with ESMTPSA id f12sm57268364wrg.5.2019.07.26.02.15.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 02:15:56 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH 1/2] net: ipv4: Fix a possible null-pointer dereference in
- inet_csk_rebuild_route()
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190726022534.24994-1-baijiaju1990@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <64986d3e-3ee8-896f-0261-3d9cc595ba11@6wind.com>
-Date:   Fri, 26 Jul 2019 11:15:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726115AbfGZJTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 05:19:43 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2778 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725815AbfGZJTn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 05:19:43 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id C2D0C9EE189CFEC56772;
+        Fri, 26 Jul 2019 17:19:41 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 26 Jul 2019 17:19:31 +0800
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Yang Guo <guoyang2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [PATCH] Revert "net: get rid of an signed integer overflow in ip_idents_reserve()"
+Date:   Fri, 26 Jul 2019 17:17:15 +0800
+Message-ID: <1564132635-57634-1-git-send-email-zhangshaokun@hisilicon.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <20190726022534.24994-1-baijiaju1990@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 26/07/2019 à 04:25, Jia-Ju Bai a écrit :
-> In inet_csk_rebuild_route(), rt is assigned to NULL on line 1071.
-> On line 1076, rt is used:
->     return &rt->dst;
-> Thus, a possible null-pointer dereference may occur.>
-> To fix this bug, rt is checked before being used.
-> 
-> This bug is found by a static analysis tool STCheck written by us.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-> ---
->  net/ipv4/inet_connection_sock.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index f5c163d4771b..27d9d80f3401 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -1073,7 +1073,10 @@ static struct dst_entry *inet_csk_rebuild_route(struct sock *sk, struct flowi *f
->  		sk_setup_caps(sk, &rt->dst);
->  	rcu_read_unlock();
->  
-> -	return &rt->dst;
-> +	if (rt)
-> +		return &rt->dst;
-> +	else
-> +		return NULL;
-Hmm, ->dst is the first field (and that will never change), thus &rt->dst is
-NULL if rt is NULL.
-I don't think there is a problem with the current code.
+From: Yang Guo <guoyang2@huawei.com>
 
+There is an significant performance regression with the following
+commit-id <adb03115f459>
+("net: get rid of an signed integer overflow in ip_idents_reserve()").
 
-Regards,
-Nicolas
+Both on x86 server(Skylake) and ARM64 server, when cpu core number
+increase, the function ip_idents_reserve() of cpu usage is very high, 
+and the performance will become bad. After revert the patch, we can
+avoid this problem when cpu core number increases.
+
+With the patch on x86, ip_idents_reserve() cpu usage is 63.05% when
+iperf3 is run with 32 cpu cores.
+Samples: 18K of event 'cycles:ppp', Event count (approx.)
+  Children      Self  Command  Shared Object      Symbol
+    63.18%    63.05%  iperf3   [kernel.vmlinux]   [k] ip_idents_reserve
+
+And the IOPS is 4483830pps.
+10:46:13 AM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s
+10:46:14 AM        lo 4483830.00 4483830.00 192664.57 192664.57
+
+Resert the patch, ip_idents_reserve() cpu usage is 17.05%.
+Samples: 37K of event 'cycles:ppp', 4000 Hz, Event count (approx.)
+  Children      Self  Shared Object      Symbol
+    17.07%    17.05%  [kernel]           [k] ip_idents_reserve
+
+And the IOPS is 1160021pps.
+05:03:15 PM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s
+05:03:16 PM        lo 11600213.00 11600213.00 498446.65 498446.65
+
+The performance regression was also found on ARM64 server and discussed
+a few days ago:
+https://lore.kernel.org/netdev/98b95fbe-adcc-c95f-7f3d-6c57122f4586
+@pengutronix.de/T/#t
+
+Cc: "David S. Miller" <davem@davemloft.net> 
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru> 
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Signed-off-by: Yang Guo <guoyang2@huawei.com>
+---
+ net/ipv4/route.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 517300d..dff457b 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -489,18 +489,12 @@ u32 ip_idents_reserve(u32 hash, int segs)
+ 	atomic_t *p_id = ip_idents + hash % IP_IDENTS_SZ;
+ 	u32 old = READ_ONCE(*p_tstamp);
+ 	u32 now = (u32)jiffies;
+-	u32 new, delta = 0;
++	u32 delta = 0;
+ 
+ 	if (old != now && cmpxchg(p_tstamp, old, now) == old)
+ 		delta = prandom_u32_max(now - old);
+ 
+-	/* Do not use atomic_add_return() as it makes UBSAN unhappy */
+-	do {
+-		old = (u32)atomic_read(p_id);
+-		new = old + delta + segs;
+-	} while (atomic_cmpxchg(p_id, old, new) != old);
+-
+-	return new - segs;
++	return atomic_add_return(segs + delta, p_id) - segs;
+ }
+ EXPORT_SYMBOL(ip_idents_reserve);
+ 
+-- 
+1.8.3.1
+
