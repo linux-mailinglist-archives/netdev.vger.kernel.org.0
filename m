@@ -2,122 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F96763A8
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 12:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 868CA763F4
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 12:59:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726558AbfGZKjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 06:39:08 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43076 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726000AbfGZKjH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 06:39:07 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1FEB3308A968;
-        Fri, 26 Jul 2019 10:39:07 +0000 (UTC)
-Received: from ovpn-204-199.brq.redhat.com (ovpn-204-199.brq.redhat.com [10.40.204.199])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6EF4519729;
-        Fri, 26 Jul 2019 10:39:05 +0000 (UTC)
-Message-ID: <7ec40c37b843ebd3fd2ff5998bb382e13e45d816.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/2] mlx4/en_netdev: call notifiers when
- hw_enc_features change
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Eran Ben Elisha <eranbe@mellanox.com>
-In-Reply-To: <f9ca12ff3880f94d4576ab4e4239f072ed611293.camel@mellanox.com>
-References: <cover.1563976690.git.dcaratti@redhat.com>
-         <e157af6e79d9385df37444d817cf3c166878c8f6.1563976690.git.dcaratti@redhat.com>
-         <e007bac4c951486294d4e69d20f7c9ed7040172d.camel@mellanox.com>
-         <73cd7a2a29db5a32d669273d367566cdf6652f4e.camel@redhat.com>
-         <f9ca12ff3880f94d4576ab4e4239f072ed611293.camel@mellanox.com>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Fri, 26 Jul 2019 12:39:04 +0200
+        id S1726469AbfGZK7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 06:59:11 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:35234 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726000AbfGZK7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 06:59:07 -0400
+Received: by mail-io1-f72.google.com with SMTP id w17so58342817iom.2
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 03:59:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=WWmRsBVGmR2qQrNgLA62GMpMQKl0SNR5rBwzYzqX+MM=;
+        b=M1s9TYgMkxKB4VcwCNqfhb3g3lSqyIH9WXupwHt84b4tC4gzRrexfnI4/c9qOdSlkk
+         ONJyJnyMYjtJyS8rcxwI9xPYyW0ZbR1q0hofPAD0FTaenTvCyG7BLajjHkj+6pKK3y5V
+         0XNchB2ACp5zauXuMexxjMIKoBB9lNlkvc672xExQPhwfmyymZT/semYEdTozXYSpBIs
+         YO8eD2rWmdKagM7M65dLOoDLQX9U/pFVilAxpUFnpGvpszdJGsgtZGT9PG9QdfuXuwOQ
+         qK3bm4FMTfBrSwtaa/fzWj/38XfDwwAuZI9A0tnpUO7qLBxnKdoYZcQlwaZ7GxM53rLu
+         TZOA==
+X-Gm-Message-State: APjAAAWyJQneNUDLd5B67LiEtM4ZsYzPSkglfQLtcbADoV8410BnsvQX
+        PMN0/b/UA0cBuT0CTVMG6TCdUm+IIWJYr4ZyAXQg5/PRh9nt
+X-Google-Smtp-Source: APXvYqyUVb9n5IvExk+Hf4u8c+xc2wmIDxqI5ebvGXLLMbrbGWYlLgcD7zoLSDj0MawXKzAM/zniWN5La9o4P/VZvVkwV1ViUBIg
 MIME-Version: 1.0
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 26 Jul 2019 10:39:07 +0000 (UTC)
+X-Received: by 2002:a5d:8347:: with SMTP id q7mr81926091ior.277.1564138746086;
+ Fri, 26 Jul 2019 03:59:06 -0700 (PDT)
+Date:   Fri, 26 Jul 2019 03:59:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000570e17058e936e76@google.com>
+Subject: KASAN: use-after-free Read in bpf_get_prog_name
+From:   syzbot <syzbot+4d5cdc96ead2e74e7f90@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        xdp-newbies@vger.kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-07-25 at 21:27 +0000, Saeed Mahameed wrote:
-> On Thu, 2019-07-25 at 14:25 +0200, Davide Caratti wrote:
-> > On Wed, 2019-07-24 at 20:47 +0000, Saeed Mahameed wrote:
-> > > On Wed, 2019-07-24 at 16:02 +0200, Davide Caratti wrote:
-> > > > ensure to call netdev_features_change() when the driver flips its
-> > > > hw_enc_features bits.
-> > > > 
-> > > > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> > > 
-> > > The patch is correct, 
-> > 
-> > hello Saeed, and thanks for looking at this!
-> > 
-> > > but can you explain how did you come to this ? 
-> > > did you encounter any issue with the current code ?
-> > > 
-> > > I am asking just because i think the whole dynamic changing of dev-
-> > > > hw_enc_features is redundant since mlx4 has the featutres_check
-> > > callback.
-> > 
-> > we need it to ensure that vlan_transfer_features() updates
-> > the (new) value of hw_enc_features in the overlying vlan: otherwise,
-> > segmentation will happen anyway when skb passes from vxlan to vlan,
-> > if the
-> > vxlan is added after the vlan device has been created (see:
-> > 7dad9937e064
-> > ("net: vlan: add support for tunnel offload") ).
-> > 
-> 
-> but in previous patch you made sure that the vlan always sees the
-> correct hw_enc_features on driver load, we don't need to have this
-> dynamic update mechanism,
+Hello,
 
-ok, but the mlx4 driver flips the value of hw_enc_features when VXLAN
-tunnels are added or removed. So, assume eth0 is a Cx3-pro, and I do:
- 
- # ip link add name vlan5 link eth0 type vlan id 5
- # ip link add dev vxlan6 type vxlan id 6  [...]  dev vlan5
- 
-the value of dev->hw_enc_features is 0 for vlan5, and as a consequence
-VXLAN over VLAN traffic becomes segmented by the VLAN, even if eth0, at
-the end of this sequence, has the "right" features bits.
+syzbot found the following crash on:
 
-> features_check ndo should take care of
-> protocols we don't support.
+HEAD commit:    192f0f8e Merge tag 'powerpc-5.3-1' of git://git.kernel.org..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=170afe64600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87305c3ca9c25c70
+dashboard link: https://syzkaller.appspot.com/bug?extid=4d5cdc96ead2e74e7f90
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-I just had a look at mlx4_en_features_check(), I see it checks if the
-packet is tunneled in VXLAN and the destination port matches the
-configured value of priv->vxlan_port (when that value is not zero). Now:
+Unfortunately, I don't have any reproducer for this crash yet.
 
-On Wed, 2019-07-24 at 20:47 +0000, Saeed Mahameed wrote:
-> I am asking just because i think the whole dynamic changing of 
-> dev-> hw_enc_features is redundant since mlx4 has the featutres_check
-> callback.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+4d5cdc96ead2e74e7f90@syzkaller.appspotmail.com
 
-I read your initial proposal again. Would it be correct if I just use
-patch 1/2, where I add an assignment of
+==================================================================
+BUG: KASAN: use-after-free in string_nocheck+0x219/0x240 lib/vsprintf.c:605
+Read of size 1 at addr ffff88809fee2d70 by task syz-executor.1/30647
 
-dev->hw_enc_features = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | \
-                       NETIF_F_RXCSUM | \
-                       NETIF_F_TSO | NETIF_F_TSO6 | \
-                       NETIF_F_GSO_UDP_TUNNEL | \
-                       NETIF_F_GSO_UDP_TUNNEL_CSUM | \
-                       NETIF_F_GSO_PARTIAL;
+CPU: 1 PID: 30647 Comm: syz-executor.1 Not tainted 5.2.0+ #41
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.cold+0xd4/0x306 mm/kasan/report.c:351
+  __kasan_report.cold+0x1b/0x36 mm/kasan/report.c:482
+  kasan_report+0x12/0x20 mm/kasan/common.c:612
+  __asan_report_load1_noabort+0x14/0x20 mm/kasan/generic_report.c:129
+  string_nocheck+0x219/0x240 lib/vsprintf.c:605
+  string+0xed/0x100 lib/vsprintf.c:668
+  vsnprintf+0x97b/0x19a0 lib/vsprintf.c:2503
+  snprintf+0xbb/0xf0 lib/vsprintf.c:2636
+  bpf_get_prog_name+0x159/0x360 kernel/bpf/core.c:570
+  perf_event_bpf_emit_ksymbols+0x284/0x390 kernel/events/core.c:7883
+  perf_event_bpf_event+0x253/0x290 kernel/events/core.c:7914
+  bpf_prog_load+0x102a/0x1670 kernel/bpf/syscall.c:1723
+  __do_sys_bpf+0xa46/0x42f0 kernel/bpf/syscall.c:2849
+  __se_sys_bpf kernel/bpf/syscall.c:2808 [inline]
+  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2808
+  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f8c78cf3c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459829
+RDX: 0000000000000070 RSI: 0000000020000240 RDI: 0000000000000005
+RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f8c78cf46d4
+R13: 00000000004bfc7c R14: 00000000004d16d8 R15: 00000000ffffffff
 
-in mlx4_en_init_netdev(), and then remove the code that flips
-dev->hw_enc_features in mlx4_en_add_vxlan_offloads() and
-mlx4_en_del_vxlan_offloads() ?
+Allocated by task 30647:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc mm/kasan/common.c:487 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:460
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:501
+  kmem_cache_alloc_trace+0x158/0x790 mm/slab.c:3550
+  kmalloc include/linux/slab.h:552 [inline]
+  kzalloc include/linux/slab.h:748 [inline]
+  bpf_prog_alloc_no_stats+0xe6/0x2b0 kernel/bpf/core.c:88
+  bpf_prog_alloc+0x31/0x230 kernel/bpf/core.c:110
+  bpf_prog_load+0x400/0x1670 kernel/bpf/syscall.c:1652
+  __do_sys_bpf+0xa46/0x42f0 kernel/bpf/syscall.c:2849
+  __se_sys_bpf kernel/bpf/syscall.c:2808 [inline]
+  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2808
+  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-thanks,
---
-davide
+Freed by task 12:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:449
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:457
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3756
+  __bpf_prog_free+0x87/0xc0 kernel/bpf/core.c:258
+  bpf_jit_free+0x64/0x1b0
+  bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1982
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the object at ffff88809fee2cc0
+  which belongs to the cache kmalloc-512 of size 512
+The buggy address is located 176 bytes inside of
+  512-byte region [ffff88809fee2cc0, ffff88809fee2ec0)
+The buggy address belongs to the page:
+page:ffffea00027fb880 refcount:1 mapcount:0 mapping:ffff8880aa400a80  
+index:0x0
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea0002709008 ffffea000246e348 ffff8880aa400a80
+raw: 0000000000000000 ffff88809fee2040 0000000100000006 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88809fee2c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff88809fee2c80: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+> ffff88809fee2d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                              ^
+  ffff88809fee2d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88809fee2e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
