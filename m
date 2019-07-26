@@ -2,96 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7FB76B71
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 16:22:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBCE776B82
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 16:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387421AbfGZOWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 10:22:24 -0400
-Received: from lb1-smtp-cloud9.xs4all.net ([194.109.24.22]:55109 "EHLO
-        lb1-smtp-cloud9.xs4all.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727502AbfGZOWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 10:22:24 -0400
-Received: from xps13 ([83.160.161.190])
-        by smtp-cloud9.xs4all.net with ESMTPSA
-        id r16whKvVQAffAr16zhYGlX; Fri, 26 Jul 2019 16:22:21 +0200
-Message-ID: <1876196a0e7fc665f0f50d5e9c0e2641f713e089.camel@tiscali.nl>
-Subject: Re: [PATCH] isdn/gigaset: check endpoint null in gigaset_probe
-From:   Paul Bolle <pebolle@tiscali.nl>
-To:     Phong Tran <tranmanphong@gmail.com>, isdn@linux-pingi.de,
-        gregkh@linuxfoundation.org
-Cc:     gigaset307x-common@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
-Date:   Fri, 26 Jul 2019 16:22:18 +0200
-In-Reply-To: <20190726133528.11063-1-tranmanphong@gmail.com>
-References: <20190726133528.11063-1-tranmanphong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S2387521AbfGZOYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 10:24:45 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:56218 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387397AbfGZOYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 10:24:44 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6QEOJvS115049;
+        Fri, 26 Jul 2019 14:24:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=Goe8R1MO+kKgjWPnckhRWLHat8tNL3qy3qwaq865LEA=;
+ b=nRCJPm/DCLPZFJIlisv6u2dnedD6ckrHi3Mv+bx/gTHbYeEkkuzyRy6paKwjbGF5sAhI
+ whparH0QvSMbKqUmj0XIRn57Tgb4i1PqmZfDVRsfYrnLvSEIARQqROWfgFKM4sOOG5+v
+ 4eyB1Akgy2GxZU0+A61RE7Pezv2MD7okV4VFv/QQ9/PESqgQ9UIVFZC1rcyahwwwRyYz
+ Wu/7Er3tDVGEfokuPQx/AC1m1qxgIPnVOHxcGgqMTmQ7vzThCA5I4DP42DLtrvnO1k+E
+ CW/W+ilqH2c5DblJ3UXqxRQskZRqagldAAgBxnoOI1z4n3T2jGos02a50jsFnoMDSQzR WA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2tx61cag52-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 26 Jul 2019 14:24:35 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6QEMPqx163406;
+        Fri, 26 Jul 2019 14:24:34 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2tycv808gk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 26 Jul 2019 14:24:34 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6QEOYpS168353;
+        Fri, 26 Jul 2019 14:24:34 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 2tycv808gc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 26 Jul 2019 14:24:34 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x6QEOX63019475;
+        Fri, 26 Jul 2019 14:24:33 GMT
+Received: from [10.159.129.19] (/10.159.129.19)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 26 Jul 2019 07:24:33 -0700
+Subject: Re: [PATCH] net: rds: Fix possible null-pointer dereferences in
+ rds_rdma_cm_event_handler_cmn()
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+References: <20190726141705.9585-1-baijiaju1990@gmail.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <822b6157-57c5-8313-d487-6a0b3880c66d@oracle.com>
+Date:   Fri, 26 Jul 2019 07:24:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20190726141705.9585-1-baijiaju1990@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-CMAE-Envelope: MS4wfFJtsA4bTDd5shYb0nHuFZYTI15MEGFgAWw8jsSPvPGvE0A8aew2qYUZToVNF69Zx9q7S/ETRWYGMQcZvIYd2UvKlgrXNZWzR+8/xc90O4NF+w9CE52s
- DV7omZgcXu3jwABtrM17VrnK3vWE46IU5zqsvpgu/P1NX5qeREMX3B1s/9tgwHcPqk7znM+mxwHSGSiD4ZoGrwSQ8VmsRsT/eRIwLPDbRGwL25vKX825bQt6
- qC8+74pGcQvytoBRVcM1oIYzPp3DFBZcUXFoNCja0+WxntwXoH7cZJUrTS54EfIqT9ksPG55rLvzG5EZDJ9wW14gsfnmcVhbhzYUOlFR98DwIWrsiOjLkFeS
- Od0JUnNt1VnCZti3RlidmEsflh0ZPzl613qThvFYFnA9TXFgYPWPHjd9ZRcSTvIIkM4rsbLLk0Df8MSMPE2gXIl4QMqtiZLGEAvOWj+sQtDflRTOEjI+NN/D
- IcBpkByBmDoZ6XDBDLQ1qjsUuthKsQ17nJruug==
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9330 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1907260177
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Phong Tran schreef op vr 26-07-2019 om 20:35 [+0700]:
-> This fixed the potential reference NULL pointer while using variable
-> endpoint.
+On 7/26/19 7:17 AM, Jia-Ju Bai wrote:
+> In rds_rdma_cm_event_handler_cmn(), there are some if statements to
+> check whether conn is NULL, such as on lines 65, 96 and 112.
+> But conn is not checked before being used on line 108:
+>      trans->cm_connect_complete(conn, event);
+> and on lines 140-143:
+>      rdsdebug("DISCONNECT event - dropping connection "
+>              "%pI6c->%pI6c\n", &conn->c_laddr,
+>              &conn->c_faddr);
+>      rds_conn_drop(conn);
 > 
-> Reported-by: syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
-> Tested by syzbot:
-> https://groups.google.com/d/msg/syzkaller-bugs/wnHG8eRNWEA/Qn2HhjNdBgAJ
+> Thus, possible null-pointer dereferences may occur.
 > 
-> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+> To fix these bugs, conn is checked before being used.
+> 
+> These bugs are found by a static analysis tool STCheck written by us.
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 > ---
->  drivers/isdn/gigaset/usb-gigaset.c | 9 +++++++++
+That's possible. Looks good.
 
-This is now drivers/staging/isdn/gigaset/usb-gigaset.c.
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/isdn/gigaset/usb-gigaset.c b/drivers/isdn/gigaset/usb-gigaset.c
-> index 1b9b43659bdf..2e011f3db59e 100644
-> --- a/drivers/isdn/gigaset/usb-gigaset.c
-> +++ b/drivers/isdn/gigaset/usb-gigaset.c
-> @@ -703,6 +703,10 @@ static int gigaset_probe(struct usb_interface *interface,
->  	usb_set_intfdata(interface, cs);
->  
->  	endpoint = &hostif->endpoint[0].desc;
-> +        if (!endpoint) {
-> +		dev_err(cs->dev, "Couldn't get control endpoint\n");
-> +		return -ENODEV;
-> +	}
-
-When can this happen? Is this one of those bugs that one can only trigger with
-a specially crafted (evil) usb device?
-
->  	buffer_size = le16_to_cpu(endpoint->wMaxPacketSize);
->  	ucs->bulk_out_size = buffer_size;
-> @@ -722,6 +726,11 @@ static int gigaset_probe(struct usb_interface *interface,
->  	}
->  
->  	endpoint = &hostif->endpoint[1].desc;
-> +        if (!endpoint) {
-> +		dev_err(cs->dev, "Endpoint not available\n");
-> +		retval = -ENODEV;
-> +		goto error;
-> +	}
->  
->  	ucs->busy = 0;
->  
-
-Please note that I'm very close to getting cut off from the ISDN network, so
-the chances of being able to testi this on a live system are getting small. 
-
-Thanks,
-
-
-Paul Bolle
 
