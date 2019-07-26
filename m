@@ -2,176 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2988763F7
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 12:59:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2590D76417
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 13:05:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbfGZK7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 06:59:53 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:40027 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfGZK7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 06:59:53 -0400
-Received: by mail-io1-f66.google.com with SMTP id h6so17345276iom.7
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 03:59:52 -0700 (PDT)
+        id S1726622AbfGZLFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 07:05:19 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40952 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726558AbfGZLFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 07:05:19 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r1so53988259wrl.7
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 04:05:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/2Qkyg89gM8E4GiN52BSgJrYKhgOHFEX8MPsTOQQb/8=;
-        b=pvKKUb3xOgOs5idwxVhzJYYdgRH/f/hAG+mKTXBqLzmghnIB+xujpY1bBX9Y7LdVMd
-         aa+9Jt3AuO0Z+wHmXBs10VaaQaWws08Jo7yKOGYxFZaomRSCzixATWN007WGKlzn48EA
-         MfTec8I68rvjBmvtB214HMPqY9bMtNJPjysQehKPbyefTroUBtvIkPufc//tKBw+3Q3W
-         GhxC8/QO4NqmtXKDkFTfzoSVaEKnICoXOwH0JuyFLRh7ZV/6ndmdlqe1FttJgKV/DPAQ
-         4zOxvgJqZo2nlpiVPA7khQNbyK3zr3GiFarRbnSzEbNe8EtRuu6bdZIPpCGdVa+nJwyf
-         P6Mg==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0aZgBfd2LjEg8oChGrxbHcMK3BcpqzePLziZP6z8Hvs=;
+        b=O58DCo6GLQwFgzb4D3v5Im4nW+eUrJyCZCicx9PO8liOLG5aT3wh4gjNsypIVzba1Q
+         9EOeVyd/6OiMDapj2C1EKPVfo53xAw6O7DkDWwgvbZcZyWOp4djdFLJSIxXxp4o+OrAS
+         mVxaRaAv8qyaZOb4UoteXiISp0gcLZzkFyrB8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/2Qkyg89gM8E4GiN52BSgJrYKhgOHFEX8MPsTOQQb/8=;
-        b=gRMq/x2XznlmQGggqO6gM46heTxbWnx81aFU+tDWU+uoJ+wsmSY/6pTG15dipy2WyH
-         gNArYeyoikrPoHghNZ74Ke9c2rfjwzhaqC+GlZjkEG4Gg8UnUJx3AoYnG1G/FwI+QZC2
-         gOWnsm4XaJ5bi5KLnM36LupXPAjX+AS1j7irPQFeVPxx/qoPLCc5WBy2rOQQnhYaJ69i
-         jLClPvXyrnAGAoURzTXEUKVc3ZpFG331725C8/QKVU78gWaDCfb2oKXaEcd/pGXpaJ5K
-         NCIIYDJgZP0Xfcr+Amg+jL9sM3cO9zsOoId5K7MF7W+Fh0eBPIgP86D4T+UVeXgh2fue
-         +M5A==
-X-Gm-Message-State: APjAAAUC1M1b8cunJhARndctcTrzWSV2btYTITDVrTNPkX6AYpxhPFOM
-        blCiJ/Z+avzfEMA3I1wWnrX7Xp4gWDsuo4Gy96iSiNiueBChWQ==
-X-Google-Smtp-Source: APXvYqwy0DspGrxpJRfm+kJx/feLb96cqxdHBXTbxWdZC6ECQstx1/+jNOE+Dzwx0A8fEiu4b7xFBoluWw/tmZ/Q6DY=
-X-Received: by 2002:a02:c7c9:: with SMTP id s9mr38357516jao.82.1564138791753;
- Fri, 26 Jul 2019 03:59:51 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0aZgBfd2LjEg8oChGrxbHcMK3BcpqzePLziZP6z8Hvs=;
+        b=B6XFn1wnh3nq7omcm1lh/GVoH4obzaks2bpwBH5ym4z2CGulFtxCFKShhGhKbQATKT
+         +T+DcPowR/gKorronpZOPbG04v0hP7PRnfv0gZgYtAC7uIYB82qfmTOLKOnv3elxi5l+
+         oshUH0cHQxfaqlIHPGO+c5o5xMmPKl6vyWH/LaWcxexPuYMpgcJ15LdrLvfVIvGaFhEO
+         g0+6O+kVzqY12DrnkeJfMwoBqrMbKBevNVmaZ7Mp1jyHRkLB9Jhgu8buLS2yGblssxbf
+         xo2Mpysp6yJpi/D92J3usOPSS5D4vO/e89RJ9WDcCfb9ffJX3eCKZNuMS+gkK9U9GV6Q
+         aeYg==
+X-Gm-Message-State: APjAAAVowwvS0KKjJvft7qby7MRcASFgEAvXNZHj51DUIA6cfP+d2D3X
+        qXsiPZii8r+68MWxTs3ylMLxhw==
+X-Google-Smtp-Source: APXvYqzrm1AHD4PvDzyKZ1iEbjkCxUx0KkVvGNwNktXxm4Qjms4A6OgnzHQtVKXP6Oa+QcPHfudKpg==
+X-Received: by 2002:adf:fe09:: with SMTP id n9mr106020057wrr.41.1564139116664;
+        Fri, 26 Jul 2019 04:05:16 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id q18sm62425469wrw.36.2019.07.26.04.05.15
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Jul 2019 04:05:16 -0700 (PDT)
+Subject: Re: [PATCH 1/2] ipmr: Make cache queue length configurable
+To:     Brodie Greenfield <brodie.greenfield@alliedtelesis.co.nz>,
+        davem@davemloft.net, stephen@networkplumber.org,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, chris.packham@alliedtelesis.co.nz,
+        luuk.paulussen@alliedtelesis.co.nz
+References: <20190725204230.12229-1-brodie.greenfield@alliedtelesis.co.nz>
+ <20190725204230.12229-2-brodie.greenfield@alliedtelesis.co.nz>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <e5606cf7-6848-1109-6cbe-63d94868ed65@cumulusnetworks.com>
+Date:   Fri, 26 Jul 2019 14:05:14 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <000000000000b7abcc058e924c12@google.com>
-In-Reply-To: <000000000000b7abcc058e924c12@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 26 Jul 2019 12:59:40 +0200
-Message-ID: <CACT4Y+aigCawAqjh=W83uAvbC+n3FXfsiYSA0sbMSn8kkPMSNA@mail.gmail.com>
-Subject: Re: possible deadlock in rxrpc_put_peer
-To:     syzbot <syzbot+72af434e4b3417318f84@syzkaller.appspotmail.com>,
-        David Howells <dhowells@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        linux-afs@lists.infradead.org, netdev <netdev@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190725204230.12229-2-brodie.greenfield@alliedtelesis.co.nz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 11:38 AM syzbot
-<syzbot+72af434e4b3417318f84@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    6d21a41b Add linux-next specific files for 20190718
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=174e3af0600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3430a151e1452331
-> dashboard link: https://syzkaller.appspot.com/bug?extid=72af434e4b3417318f84
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->
-> Unfortunately, I don't have any reproducer for this crash yet.
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+72af434e4b3417318f84@syzkaller.appspotmail.com
-
-+net/rxrpc/peer_object.c maintainers
-
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.2.0-next-20190718 #41 Not tainted
-> --------------------------------------------
-> kworker/0:3/21678 is trying to acquire lock:
-> 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at: spin_lock_bh
-> /./include/linux/spinlock.h:343 [inline]
-> 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> __rxrpc_put_peer /net/rxrpc/peer_object.c:415 [inline]
-> 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> rxrpc_put_peer+0x2d3/0x6a0 /net/rxrpc/peer_object.c:435
->
-> but task is already holding lock:
-> 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at: spin_lock_bh
-> /./include/linux/spinlock.h:343 [inline]
-> 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> rxrpc_peer_keepalive_dispatch /net/rxrpc/peer_event.c:378 [inline]
-> 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> rxrpc_peer_keepalive_worker+0x6b3/0xd02 /net/rxrpc/peer_event.c:430
->
-> other info that might help us debug this:
->   Possible unsafe locking scenario:
->
->         CPU0
->         ----
->    lock(&(&rxnet->peer_hash_lock)->rlock);
->    lock(&(&rxnet->peer_hash_lock)->rlock);
->
->   *** DEADLOCK ***
->
->   May be due to missing lock nesting notation
->
-> 3 locks held by kworker/0:3/21678:
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at: __write_once_size
-> /./include/linux/compiler.h:226 [inline]
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at: arch_atomic64_set
-> /./arch/x86/include/asm/atomic64_64.h:34 [inline]
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at: atomic64_set
-> /./include/asm-generic/atomic-instrumented.h:855 [inline]
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at: atomic_long_set
-> /./include/asm-generic/atomic-long.h:40 [inline]
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at: set_work_data
-> /kernel/workqueue.c:620 [inline]
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at:
-> set_work_pool_and_clear_pending /kernel/workqueue.c:647 [inline]
->   #0: 000000007c4c2bc3 ((wq_completion)krxrpcd){+.+.}, at:
-> process_one_work+0x88b/0x1740 /kernel/workqueue.c:2240
->   #1: 000000006782bc7f
-> ((work_completion)(&rxnet->peer_keepalive_work)){+.+.}, at:
-> process_one_work+0x8c1/0x1740 /kernel/workqueue.c:2244
->   #2: 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> spin_lock_bh /./include/linux/spinlock.h:343 [inline]
->   #2: 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> rxrpc_peer_keepalive_dispatch /net/rxrpc/peer_event.c:378 [inline]
->   #2: 00000000aa5eecdf (&(&rxnet->peer_hash_lock)->rlock){+.-.}, at:
-> rxrpc_peer_keepalive_worker+0x6b3/0xd02 /net/rxrpc/peer_event.c:430
->
-> stack backtrace:
-> CPU: 0 PID: 21678 Comm: kworker/0:3 Not tainted 5.2.0-next-20190718 #41
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> Workqueue: krxrpcd rxrpc_peer_keepalive_worker
-> Call Trace:
->   __dump_stack /lib/dump_stack.c:77 [inline]
->   dump_stack+0x172/0x1f0 /lib/dump_stack.c:113
->   print_deadlock_bug /kernel/locking/lockdep.c:2301 [inline]
->   check_deadlock /kernel/locking/lockdep.c:2342 [inline]
->   validate_chain /kernel/locking/lockdep.c:2881 [inline]
->   __lock_acquire.cold+0x194/0x398 /kernel/locking/lockdep.c:3880
->   lock_acquire+0x190/0x410 /kernel/locking/lockdep.c:4413
->   __raw_spin_lock_bh /./include/linux/spinlock_api_smp.h:135 [inline]
->   _raw_spin_lock_bh+0x33/0x50 /kernel/locking/spinlock.c:175
->   spin_lock_bh /./include/linux/spinlock.h:343 [inline]
->   __rxrpc_put_peer /net/rxrpc/peer_object.c:415 [inline]
->   rxrpc_put_peer+0x2d3/0x6a0 /net/rxrpc/peer_object.c:435
->   rxrpc_peer_keepalive_dispatch /net/rxrpc/peer_event.c:381 [inline]
->   rxrpc_peer_keepalive_worker+0x7a6/0xd02 /net/rxrpc/peer_event.c:430
->   process_one_work+0x9af/0x1740 /kernel/workqueue.c:2269
->   worker_thread+0x98/0xe40 /kernel/workqueue.c:2415
->   kthread+0x361/0x430 /kernel/kthread.c:255
->   ret_from_fork+0x24/0x30 /arch/x86/entry/entry_64.S:352
->
->
+On 25/07/2019 23:42, Brodie Greenfield wrote:
+> We want to be able to keep more spaces available in our queue for
+> processing incoming multicast traffic (adding (S,G) entries) - this lets
+> us learn more groups faster, rather than dropping them at this stage.
+> 
+> Signed-off-by: Brodie Greenfield <brodie.greenfield@alliedtelesis.co.nz>
 > ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000b7abcc058e924c12%40google.com.
+>  Documentation/networking/ip-sysctl.txt | 8 ++++++++
+>  include/net/netns/ipv4.h               | 1 +
+>  net/ipv4/af_inet.c                     | 1 +
+>  net/ipv4/ipmr.c                        | 4 +++-
+>  net/ipv4/sysctl_net_ipv4.c             | 7 +++++++
+>  5 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+> index acdfb5d2bcaa..02f77e932adf 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -887,6 +887,14 @@ ip_local_reserved_ports - list of comma separated ranges
+>  
+>  	Default: Empty
+>  
+> +ip_mr_cache_queue_length - INTEGER
+> +	Limit the number of multicast packets we can have in the queue to be
+> +	resolved.
+> +	Bear in mind that when an unresolved multicast packet is received,
+> +	there is an O(n) traversal of the queue. This should be considered
+> +	if increasing.
+> +	Default: 10
+> +
+
+Hi,
+You've said it yourself - it has linear traversal time, but doesn't this patch allow any netns on the
+system to increase its limit to any value, thus possibly affecting others ?
+Though the socket limit will kick in at some point. I think that's where David
+was going with his suggestion back in 2018:
+https://www.spinics.net/lists/netdev/msg514543.html
+
+If we add this sysctl now, we'll be stuck with it. I'd prefer David's suggestion
+so we can rely only on the receive queue queue limit which is already configurable. 
+We still need to be careful with the defaults though, the NOCACHE entry is 128 bytes
+and with the skb overhead currently on my setup we end up at about 277 entries default limit.
+
+Cheers,
+ Nik
+
+>  ip_unprivileged_port_start - INTEGER
+>  	This is a per-namespace sysctl.  It defines the first
+>  	unprivileged port in the network namespace.  Privileged ports
+> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+> index 104a6669e344..3411d3f18d51 100644
+> --- a/include/net/netns/ipv4.h
+> +++ b/include/net/netns/ipv4.h
+> @@ -187,6 +187,7 @@ struct netns_ipv4 {
+>  	int sysctl_igmp_max_msf;
+>  	int sysctl_igmp_llm_reports;
+>  	int sysctl_igmp_qrv;
+> +	unsigned int sysctl_ip_mr_cache_queue_length;
+>  
+>  	struct ping_group_range ping_group_range;
+>  
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index 0dfb72c46671..8e25538bdb1e 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -1827,6 +1827,7 @@ static __net_init int inet_init_net(struct net *net)
+>  	net->ipv4.sysctl_igmp_llm_reports = 1;
+>  	net->ipv4.sysctl_igmp_qrv = 2;
+>  
+> +	net->ipv4.sysctl_ip_mr_cache_queue_length = 10;
+>  	return 0;
+>  }
+>  
+> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+> index ddbf8c9a1abb..c6a6c3e453a9 100644
+> --- a/net/ipv4/ipmr.c
+> +++ b/net/ipv4/ipmr.c
+> @@ -1127,6 +1127,7 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
+>  				 struct sk_buff *skb, struct net_device *dev)
+>  {
+>  	const struct iphdr *iph = ip_hdr(skb);
+> +	struct net *net = dev_net(dev);
+>  	struct mfc_cache *c;
+>  	bool found = false;
+>  	int err;
+> @@ -1142,7 +1143,8 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
+>  
+>  	if (!found) {
+>  		/* Create a new entry if allowable */
+> -		if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
+> +		if (atomic_read(&mrt->cache_resolve_queue_len) >=
+> +		    net->ipv4.sysctl_ip_mr_cache_queue_length ||
+>  		    (c = ipmr_cache_alloc_unres()) == NULL) {
+>  			spin_unlock_bh(&mfc_unres_lock);
+>  
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index ba0fc4b18465..78ae86e8c6cb 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -784,6 +784,13 @@ static struct ctl_table ipv4_net_table[] = {
+>  		.proc_handler	= proc_dointvec
+>  	},
+>  #ifdef CONFIG_IP_MULTICAST
+> +	{
+> +		.procname	= "ip_mr_cache_queue_length",
+> +		.data		= &init_net.ipv4.sysctl_ip_mr_cache_queue_length,
+> +		.maxlen		= sizeof(int),
+> +		.mode		= 0644,
+> +		.proc_handler	= proc_dointvec
+> +	},
+>  	{
+>  		.procname	= "igmp_qrv",
+>  		.data		= &init_net.ipv4.sysctl_igmp_qrv,
+> 
+
