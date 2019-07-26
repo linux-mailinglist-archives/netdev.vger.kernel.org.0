@@ -2,119 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0952E7725F
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB1077261
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbfGZTrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 15:47:16 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38895 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727645AbfGZTrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:47:16 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y15so24991457pfn.5
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:47:15 -0700 (PDT)
+        id S1727947AbfGZTrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 15:47:39 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36082 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727645AbfGZTrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:47:39 -0400
+Received: by mail-wm1-f66.google.com with SMTP id g67so44473327wme.1
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4wGRkgS2FF/uTIQN+Jc8iKQcgvfPp40Yuscy8pEbkUk=;
-        b=k0N/C624XI2FN2mhH5DTw+AutJtv8jb67SyDoPs0wDBwbQS35ouoRYmbZTkoS2vOVG
-         dXxA0aZKN2a3uLAnuvPdwpndA8/B1P2CgAb9vDaKiKefeykiekPD6Myt/ECb1rNmC+mb
-         n4DheuB35AV/p734JTiiUrW6mwgYIK3B3RcYTIIWnn4G+zHIXoDo24vcBzUFUrq/+PI8
-         rI1GyFAOs7UuVIDN2aAojE0ATM2yRLNcTog1UKpbS1p5qziyc0qKIfF3gkaloPVmAJgI
-         6waQ4aSMuvmYXzBZ0Wtkr7lBj+MjkFY3AqfJGM1oyj1TFXD4UX99skTn5+EMSwyRtHgC
-         MowQ==
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=9uMJXnFWfjBhvPSvY9fzTfD6jfxTl1hZlPomSYIlBEk=;
+        b=N8lkjMuP1swIlOXHsuY9fgBe8SMAZNID71JDg9NHLayXVWuwaevfr5l9EXf0OPnxk5
+         sXXaYZDBB/g80isCdhzYDqt5aK+Fkks0rFq5KgsyhVhlP+3umS6RdeS6LNuL2LlZG7wd
+         4efKvmmUvynwaIxEj5KHx8yGjrxEdBUMWjnRVb9FeEv1ugtOxvlsp2OwXZ/e5mWed43e
+         TPElVOA8UBM/5ZWwyVj+TpMSb5XE8Y6OXmEqd0A2e0NTb4PHvGWTw6x2FDGMUE6OngPR
+         u6OqZZHPeBNCGmX1DPS2ycBUZtcwa53wO8vYxrhopNnEdRznNRahl1KYk8dUvGIubotl
+         QrYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4wGRkgS2FF/uTIQN+Jc8iKQcgvfPp40Yuscy8pEbkUk=;
-        b=m5XXDJHbg3NnZBz3+nTL+pW2Jb25dVvFo3dx9BBRmaVlfGWOtKjv/1wxVYRhHlMWDk
-         eCvfFQ/6q6sMRRjMDLsQk4V8FSJ5n6xZ28B4iLe/dmoCUmxUpaaTOkG4S2RmIS40LB3S
-         feDNQNtNYl9fHNCsE0yNY+rFUDMRQzyC18tRgiHLETkOq7ZVp4/Ox046AhSYUhSJJtJI
-         WFyz6Q0fW9LLpx70tDwuT+zvLl0q/EgBANn9j4ChqS06lEV7fkgcyXkxfj9EUOCc6RsT
-         NwBLIW7RHdbhuNrPTGLeF7x52qcyHk8Zf5xH4OqnSwLJoPySaz+Psqnd7Zo2FXAdrVS7
-         4Yew==
-X-Gm-Message-State: APjAAAVf5hySYVk7EVm6TuHrNbMxj5AdxsbHIFd2dRrX0bhlrZbMSAp0
-        5S8jw+cikb44T+YyLnfPu84=
-X-Google-Smtp-Source: APXvYqxnrIgL/Ngxp7/Xsh6CnKAkVNbp82e7pNSahawvr02afzTr/erAzDJ3kVBqWvDG0D484sCgHw==
-X-Received: by 2002:a63:7d49:: with SMTP id m9mr84214543pgn.161.1564170435062;
-        Fri, 26 Jul 2019 12:47:15 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id a21sm61270581pfi.27.2019.07.26.12.47.13
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 12:47:14 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 12:47:07 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jiri Pirko <jiri@resnulli.us>, chrims@mellanox.com
-Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
-        alexanderk@mellanox.com, mlxsw@mellanox.com
-Subject: Re: [patch iproute2 1/2] tc: action: fix crash caused by incorrect
- *argv check
-Message-ID: <20190726124707.2c53d6a4@hermes.lan>
-In-Reply-To: <20190723112538.10977-1-jiri@resnulli.us>
-References: <20190723112538.10977-1-jiri@resnulli.us>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=9uMJXnFWfjBhvPSvY9fzTfD6jfxTl1hZlPomSYIlBEk=;
+        b=X+C/iyH1PHGpa/IC2fMctpENZ20GnRpXwu0W6ACwf+FqNy9b7LM2H0bCCdWuIPmdOT
+         OLEm7k+sP9mQ2sUW0ikfI+kZQ2+2tDM6MRcEfq5Dc47FN8kT8kByn53R1KiqcU42H57y
+         p8MIO/DCWHOaqyQRadiXj9WmK23hNxeAvE2n8zIiaX2M8ARgzDLFJ+UwVYDtMlcK48eg
+         MO8BE2pMmlSY6qf9aGgJEP7qkIML5Q6zmyEg+t1tM+xqiKc3XPTWZXW4d0FDisbM8zzN
+         GrdoVoEF8ZfWNIFvuqERInNoK8DfyXonIJVVoOmXMZf1gUrkYN74Y45HWGx8ZfBvp5hd
+         G4OQ==
+X-Gm-Message-State: APjAAAXoZ/yZNtkcmGIwbKFYG+1oQfrksmMF3e+scMxj9QAX3+xg02a8
+        N58z7dTp7Nt/BlcXPofqFZx01Kug
+X-Google-Smtp-Source: APXvYqyPje8/zPdKLnblCMOzz9zkWKYOZNpRYneDHI9cE2NMKUZdoUITpj7XLaogGfRTYpi22TfuNA==
+X-Received: by 2002:a1c:630a:: with SMTP id x10mr91047910wmb.113.1564170457256;
+        Fri, 26 Jul 2019 12:47:37 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f43:4200:55f1:e404:698f:358? (p200300EA8F43420055F1E404698F0358.dip0.t-ipconnect.de. [2003:ea:8f43:4200:55f1:e404:698f:358])
+        by smtp.googlemail.com with ESMTPSA id n12sm57473059wmc.24.2019.07.26.12.47.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Jul 2019 12:47:36 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/4] r8169: improve HW csum and TSO handling
+Message-ID: <d347af97-0b46-6c71-37ef-46ce2b46f4df@gmail.com>
+Date:   Fri, 26 Jul 2019 21:47:30 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Jul 2019 13:25:37 +0200
-Jiri Pirko <jiri@resnulli.us> wrote:
+This series:
+- delegates more tasks from the driver to the core
+- enables HW csum and TSO per default
+- copies quirks for buggy chip versions from vendor driver
 
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> One cannot depend on *argv being null in case of no arg is left on the
-> command line. For example in batch mode, this is not always true. Check
-> argc instead to prevent crash.
-> 
-> Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
-> Fixes: fd8b3d2c1b9b ("actions: Add support for user cookies")
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  tc/m_action.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tc/m_action.c b/tc/m_action.c
-> index ab6bc0ad28ff..0f9c3a27795d 100644
-> --- a/tc/m_action.c
-> +++ b/tc/m_action.c
-> @@ -222,7 +222,7 @@ done0:
->  				goto bad_val;
->  			}
->  
-> -			if (*argv && strcmp(*argv, "cookie") == 0) {
-> +			if (argc && strcmp(*argv, "cookie") == 0) {
->  				size_t slen;
->  
->  				NEXT_ARG();
+Heiner Kallweit (4):
+  r8169: set GSO size and segment limits
+  r8169: implement callback ndo_features_check
+  r8169: remove r8169_csum_workaround
+  r8169: enable HW csum and TSO
 
+ drivers/net/ethernet/realtek/r8169_main.c | 128 +++++++++++-----------
+ 1 file changed, 61 insertions(+), 67 deletions(-)
 
-The logic here is broken at end of file.
+-- 
+2.22.0
 
-	do {
-		if (getcmdline(&line_next, &len, stdin) == -1)
-			lastline = true;
-
-		largc_next = makeargs(line_next, largv_next, 100);
-		bs_enabled_next = batchsize_enabled(largc_next, largv_next);
-		if (bs_enabled) {
-			struct batch_
-
-
-getcmdline() will return -1 at end of file.
-The code will call make_args on an uninitialized pointer.
-
-I see lots of other unnecessary complexity in the whole batch logic.
-It needs to be rewritten.
-
-Rather than me fixing the code, I am probably going to revert.
-
-commit 485d0c6001c4aa134b99c86913d6a7089b7b2ab0
-Author: Chris Mi <chrism@mellanox.com>
-Date:   Fri Jan 12 14:13:16 2018 +0900
-
-    tc: Add batchsize feature for filter and actions
