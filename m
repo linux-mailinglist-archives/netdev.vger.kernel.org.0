@@ -2,216 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A19E476797
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABFC17679D
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727337AbfGZNeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:34:19 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:41613 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726303AbfGZNeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:34:19 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 477C84171B;
-        Fri, 26 Jul 2019 21:34:08 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     pablo@netfilter.org, fw@strlen.de
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 3/3] netfilter: nf_tables_offload: support indr block call
-Date:   Fri, 26 Jul 2019 21:34:07 +0800
-Message-Id: <1564148047-6428-4-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1564148047-6428-1-git-send-email-wenxu@ucloud.cn>
-References: <1564148047-6428-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVSU5MS0tLSUtMQktKWVdZKFlBSU
-        I3V1ktWUFJV1kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PDY6NSo6AjgyOksQTk4iCz0c
-        DR4KFDxVSlVKTk1PSk9DS09DTUlLVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU1KSE03Bg++
-X-HM-Tid: 0a6c2e7d21b92086kuqy477c84171b
+        id S1727169AbfGZNfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:35:40 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41419 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfGZNfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:35:40 -0400
+Received: by mail-pg1-f196.google.com with SMTP id x15so14464511pgg.8;
+        Fri, 26 Jul 2019 06:35:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5vo7sld/uL/U9JDdD3PiiYj0frOzh5KbSziKzqfPl7Y=;
+        b=bvaxc3gCcfame+Q7d7uO/NY/FkQ9rJUTag603siglBaLoqGN8SEYdK3RHmkYQCG+p9
+         84Em6VvzsTR1HT9pWwSAOEMm4sIvfSxX8z3M37/QctZRxtzNv6el8uI9JIlefP/x7P16
+         BOXigXPT75K1aiUumlTzYWOttmQITS9EZmRE3/W1cxVsHTZZ+JmnWKlr64+ADPFuVDvr
+         pW4cAmx09+P9Yx79zqCMLjb6ZNQ+oglWkm9wFL+PwMH2VSFpmdHEDraifefvotPNk2cW
+         vexG7n+hzYmIvjNJ1gXVN4fHgCAUnCJHa75ism5eSt7znXqBuNSD5dCrY1SpxweiQ43Q
+         ndjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5vo7sld/uL/U9JDdD3PiiYj0frOzh5KbSziKzqfPl7Y=;
+        b=JskinGmQNG7rtZr207huu1YrBRX/8OhbPd27X6tpGnSHFJW9M38En5qTYAJw8BQ2Vz
+         zIJKKh81MtPj6HXwjSvlty8LCWj3Jj90qfzFSq8LN7CpciOAbqK0GOhc0HAH4KIZ3thS
+         wIcbeztx1cnsXnVuvk0Hb6Q43uSAa9eCY7w6ueDfrgUNjwqT0qHxeFmko1yc4DRkADQ1
+         3zmbKBuWrJETqs/+2Kizi5GmGPNUXjhr1R9SXlCkWMe0NpV4NDl5KdEFBviRZFtqEf0c
+         CEhQOS7FQzARLqIzKP+N93U6uuB1HdCT3znuFL1jCjdg0oquqZV10EyIckLrsxu/OuJP
+         FqNw==
+X-Gm-Message-State: APjAAAVsqIaCzyTVvAlSbXE85vlnT2skuV1BZINKjHB3LtvRNgbebBUQ
+        Nycy8fLvd4t5Sfkwoz6vWZo=
+X-Google-Smtp-Source: APXvYqwhYbxf/AS6zqCEVHvWXkXBuk3Vw3cw5lSS4pUZzVW7r+G1zlxB1zhXY8PgnPc7IOU0LHy/YQ==
+X-Received: by 2002:a62:be0c:: with SMTP id l12mr22452326pff.224.1564148139716;
+        Fri, 26 Jul 2019 06:35:39 -0700 (PDT)
+Received: from debian.net.fpt ([2405:4800:58f7:1782:e03a:f6b:ecba:b51])
+        by smtp.gmail.com with ESMTPSA id 137sm64940745pfz.112.2019.07.26.06.35.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 26 Jul 2019 06:35:39 -0700 (PDT)
+From:   Phong Tran <tranmanphong@gmail.com>
+To:     pebolle@tiscali.nl, isdn@linux-pingi.de, gregkh@linuxfoundation.org
+Cc:     gigaset307x-common@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Phong Tran <tranmanphong@gmail.com>,
+        syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
+Subject: [PATCH] isdn/gigaset: check endpoint null in gigaset_probe
+Date:   Fri, 26 Jul 2019 20:35:28 +0700
+Message-Id: <20190726133528.11063-1-tranmanphong@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+This fixed the potential reference NULL pointer while using variable
+endpoint.
 
-nftable support indr-block call. It makes nftable an offload vlan
-and tunnel device.
+Reported-by: syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
+Tested by syzbot:
+https://groups.google.com/d/msg/syzkaller-bugs/wnHG8eRNWEA/Qn2HhjNdBgAJ
 
-nft add table netdev firewall
-nft add chain netdev firewall aclout { type filter hook ingress offload device mlx_pf0vf0 priority - 300 \; }
-nft add rule netdev firewall aclout ip daddr 10.0.0.1 fwd to vlan0
-nft add chain netdev firewall aclin { type filter hook ingress device vlan0 priority - 300 \; }
-nft add rule netdev firewall aclin ip daddr 10.0.0.7 fwd to mlx_pf0vf0
-
-Signed-off-by: wenxu <wenxu@ucloud.cn>
+Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 ---
-v3: subsys_initcall for init_flow_indr_rhashtable
+ drivers/isdn/gigaset/usb-gigaset.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
- net/netfilter/nf_tables_offload.c | 128 +++++++++++++++++++++++++++++++-------
- 1 file changed, 104 insertions(+), 24 deletions(-)
-
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 64f5fd5..09a5efe 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -171,24 +171,120 @@ static int nft_flow_offload_unbind(struct flow_block_offload *bo,
- 	return 0;
- }
+diff --git a/drivers/isdn/gigaset/usb-gigaset.c b/drivers/isdn/gigaset/usb-gigaset.c
+index 1b9b43659bdf..2e011f3db59e 100644
+--- a/drivers/isdn/gigaset/usb-gigaset.c
++++ b/drivers/isdn/gigaset/usb-gigaset.c
+@@ -703,6 +703,10 @@ static int gigaset_probe(struct usb_interface *interface,
+ 	usb_set_intfdata(interface, cs);
  
-+static int nft_block_setup(struct nft_base_chain *basechain,
-+			   struct flow_block_offload *bo,
-+			   enum flow_block_command cmd)
-+{
-+	int err;
-+
-+	switch (cmd) {
-+	case FLOW_BLOCK_BIND:
-+		err = nft_flow_offload_bind(bo, basechain);
-+		break;
-+	case FLOW_BLOCK_UNBIND:
-+		err = nft_flow_offload_unbind(bo, basechain);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		err = -EOPNOTSUPP;
+ 	endpoint = &hostif->endpoint[0].desc;
++        if (!endpoint) {
++		dev_err(cs->dev, "Couldn't get control endpoint\n");
++		return -ENODEV;
 +	}
-+
-+	return err;
-+}
-+
-+static int nft_block_offload_cmd(struct nft_base_chain *chain,
-+				 struct net_device *dev,
-+				 enum flow_block_command cmd)
-+{
-+	struct netlink_ext_ack extack = {};
-+	struct flow_block_offload bo = {};
-+	int err;
-+
-+	bo.net = dev_net(dev);
-+	bo.block = &chain->flow_block;
-+	bo.command = cmd;
-+	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-+	bo.extack = &extack;
-+	INIT_LIST_HEAD(&bo.cb_list);
-+
-+	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
-+	if (err < 0)
-+		return err;
-+
-+	return nft_block_setup(chain, &bo, cmd);
-+}
-+
-+static void nft_indr_block_ing_cmd(struct net_device *dev,
-+				   struct flow_block *flow_block,
-+				   struct flow_indr_block_cb *indr_block_cb,
-+				   enum flow_block_command cmd)
-+{
-+	struct netlink_ext_ack extack = {};
-+	struct flow_block_offload bo = {};
-+	struct nft_base_chain *chain;
-+
-+	if (flow_block)
-+		return;
-+
-+	chain = container_of(flow_block, struct nft_base_chain, flow_block);
-+
-+	bo.net = dev_net(dev);
-+	bo.block = flow_block;
-+	bo.command = cmd;
-+	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-+	bo.extack = &extack;
-+	INIT_LIST_HEAD(&bo.cb_list);
-+
-+	indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK, &bo);
-+
-+	nft_block_setup(chain, &bo, cmd);
-+}
-+
-+static int nft_indr_block_offload_cmd(struct nft_base_chain *chain,
-+				      struct net_device *dev,
-+				      enum flow_block_command cmd)
-+{
-+	struct flow_indr_block_cb *indr_block_cb;
-+	struct flow_indr_block_dev *indr_dev;
-+	struct flow_block_offload bo = {};
-+	struct netlink_ext_ack extack = {};
-+
-+	bo.net = dev_net(dev);
-+	bo.block = &chain->flow_block;
-+	bo.command = cmd;
-+	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-+	bo.extack = &extack;
-+	INIT_LIST_HEAD(&bo.cb_list);
-+
-+	indr_dev = flow_indr_block_dev_lookup(dev);
-+	if (!indr_dev)
-+		return -EOPNOTSUPP;
-+
-+	indr_dev->flow_block = cmd == FLOW_BLOCK_BIND ? &chain->flow_block : NULL;
-+	indr_dev->ing_cmd_cb = cmd == FLOW_BLOCK_BIND ? nft_indr_block_ing_cmd : NULL;
-+
-+	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
-+		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
-+				  &bo);
-+
-+	return nft_block_setup(chain, &bo, cmd);
-+}
-+
- #define FLOW_SETUP_BLOCK TC_SETUP_BLOCK
  
- static int nft_flow_offload_chain(struct nft_trans *trans,
- 				  enum flow_block_command cmd)
- {
- 	struct nft_chain *chain = trans->ctx.chain;
--	struct netlink_ext_ack extack = {};
--	struct flow_block_offload bo = {};
- 	struct nft_base_chain *basechain;
- 	struct net_device *dev;
--	int err;
+ 	buffer_size = le16_to_cpu(endpoint->wMaxPacketSize);
+ 	ucs->bulk_out_size = buffer_size;
+@@ -722,6 +726,11 @@ static int gigaset_probe(struct usb_interface *interface,
+ 	}
  
- 	if (!nft_is_base_chain(chain))
- 		return -EOPNOTSUPP;
+ 	endpoint = &hostif->endpoint[1].desc;
++        if (!endpoint) {
++		dev_err(cs->dev, "Endpoint not available\n");
++		retval = -ENODEV;
++		goto error;
++	}
  
- 	basechain = nft_base_chain(chain);
- 	dev = basechain->ops.dev;
--	if (!dev || !dev->netdev_ops->ndo_setup_tc)
-+	if (!dev)
- 		return -EOPNOTSUPP;
+ 	ucs->busy = 0;
  
- 	/* Only default policy to accept is supported for now. */
-@@ -197,26 +293,10 @@ static int nft_flow_offload_chain(struct nft_trans *trans,
- 	    nft_trans_chain_policy(trans) != NF_ACCEPT)
- 		return -EOPNOTSUPP;
- 
--	bo.command = cmd;
--	bo.block = &basechain->flow_block;
--	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
--	bo.extack = &extack;
--	INIT_LIST_HEAD(&bo.cb_list);
--
--	err = dev->netdev_ops->ndo_setup_tc(dev, FLOW_SETUP_BLOCK, &bo);
--	if (err < 0)
--		return err;
--
--	switch (cmd) {
--	case FLOW_BLOCK_BIND:
--		err = nft_flow_offload_bind(&bo, basechain);
--		break;
--	case FLOW_BLOCK_UNBIND:
--		err = nft_flow_offload_unbind(&bo, basechain);
--		break;
--	}
--
--	return err;
-+	if (dev->netdev_ops->ndo_setup_tc)
-+		return nft_block_offload_cmd(basechain, dev, cmd);
-+	else
-+		return nft_indr_block_offload_cmd(basechain, dev, cmd);
- }
- 
- int nft_flow_rule_offload_commit(struct net *net)
 -- 
-1.8.3.1
+2.20.1
 
