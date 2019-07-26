@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4751376908
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B15767689D
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:45:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbfGZNsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:48:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53372 "EHLO mail.kernel.org"
+        id S2388269AbfGZNpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:45:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54998 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388458AbfGZNoz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 09:44:55 -0400
+        id S2387912AbfGZNpr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 09:45:47 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0255D22CD3;
-        Fri, 26 Jul 2019 13:44:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6E8C22CBF;
+        Fri, 26 Jul 2019 13:45:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564148694;
-        bh=HNdcrqsHlssrUlXQcjsWqatBEMppPGypVvJfeyrDWH4=;
+        s=default; t=1564148746;
+        bh=1Nx+pXv8/xDANp9AAKMymmPxnaEzBXyhJvBdMDF0yUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZibfS+AxdB0d5VkbcYDEmV1fm2JNq6Vi1RVZ1SCvujzKL/FZtG6jzHvjsCNehrZv+
-         PnMPm/gqx+P358g6sQbP5Nsm++skHzeBQJYd1QLk6GqKhkTqSES7GBjiz4KddrJbIL
-         zZqZvJQil/LiO65QFSN+GZaAamEyV37Prcsg/XoE=
+        b=ZEGKCBmXIDCGVKv37g2GiLx0dGkqFM5waOJAyFbEC/jumPNYpljUXbXFKqUrP+tY7
+         PDriG17SbzCvFD2XUrELrwhqCwujBMCBhPU1/6AtCatu8Fz3idTs8lLm8XU/cM6i66
+         8orWJAC1JBJBUQAYUV4tdhHBZjsUY1m6cAvb9ICA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Benjamin Poirier <bpoirier@suse.com>,
+Cc:     Phong Tran <tranmanphong@gmail.com>,
+        syzbot+8750abbc3a46ef47d509@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 16/30] be2net: Signal that the device cannot transmit during reconfiguration
-Date:   Fri, 26 Jul 2019 09:44:18 -0400
-Message-Id: <20190726134432.12993-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 11/23] ISDN: hfcsusb: checking idx of ep configuration
+Date:   Fri, 26 Jul 2019 09:45:10 -0400
+Message-Id: <20190726134522.13308-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190726134432.12993-1-sashal@kernel.org>
-References: <20190726134432.12993-1-sashal@kernel.org>
+In-Reply-To: <20190726134522.13308-1-sashal@kernel.org>
+References: <20190726134522.13308-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,44 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Benjamin Poirier <bpoirier@suse.com>
+From: Phong Tran <tranmanphong@gmail.com>
 
-[ Upstream commit 7429c6c0d9cb086d8e79f0d2a48ae14851d2115e ]
+[ Upstream commit f384e62a82ba5d85408405fdd6aeff89354deaa9 ]
 
-While changing the number of interrupt channels, be2net stops adapter
-operation (including netif_tx_disable()) but it doesn't signal that it
-cannot transmit. This may lead dev_watchdog() to falsely trigger during
-that time.
+The syzbot test with random endpoint address which made the idx is
+overflow in the table of endpoint configuations.
 
-Add the missing call to netif_carrier_off(), following the pattern used in
-many other drivers. netif_carrier_on() is already taken care of in
-be_open().
+this adds the checking for fixing the error report from
+syzbot
 
-Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+KASAN: stack-out-of-bounds Read in hfcsusb_probe [1]
+The patch tested by syzbot [2]
+
+Reported-by: syzbot+8750abbc3a46ef47d509@syzkaller.appspotmail.com
+
+[1]:
+https://syzkaller.appspot.com/bug?id=30a04378dac680c5d521304a00a86156bb913522
+[2]:
+https://groups.google.com/d/msg/syzkaller-bugs/_6HBdge8F3E/OJn7wVNpBAAJ
+
+Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/emulex/benet/be_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/isdn/hardware/mISDN/hfcsusb.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index b2eeecb26939..289560b0f643 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -4701,8 +4701,12 @@ int be_update_queues(struct be_adapter *adapter)
- 	struct net_device *netdev = adapter->netdev;
- 	int status;
+diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
+index 114f3bcba1b0..c60c7998af17 100644
+--- a/drivers/isdn/hardware/mISDN/hfcsusb.c
++++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
+@@ -1963,6 +1963,9 @@ hfcsusb_probe(struct usb_interface *intf, const struct usb_device_id *id)
  
--	if (netif_running(netdev))
-+	if (netif_running(netdev)) {
-+		/* device cannot transmit now, avoid dev_watchdog timeouts */
-+		netif_carrier_off(netdev);
+ 				/* get endpoint base */
+ 				idx = ((ep_addr & 0x7f) - 1) * 2;
++				if (idx > 15)
++					return -EIO;
 +
- 		be_close(netdev);
-+	}
- 
- 	be_cancel_worker(adapter);
- 
+ 				if (ep_addr & 0x80)
+ 					idx++;
+ 				attr = ep->desc.bmAttributes;
 -- 
 2.20.1
 
