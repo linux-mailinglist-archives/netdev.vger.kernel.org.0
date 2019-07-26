@@ -2,85 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF02876951
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC48B7699B
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387810AbfGZNoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:44:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52012 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727922AbfGZNoA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 09:44:00 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0F0F122CD2;
-        Fri, 26 Jul 2019 13:43:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564148639;
-        bh=neU+KPgUJ+aeKz64xdDye6EMKJnpcX9ePEn4aV9DERk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CcWBQ/j+pMeRvvZPgnh1iAhD3UM3Pkqgg8apYFS/aADCyfo76Wbs39QMTL4zI3Iob
-         O5W/WFoW06y8pxPvNgUh9guONZawhjkPXWv9IWpimIQW6GrpDurs6BAUbfor7gZAO9
-         iPp551Xvjg+czRBt+kh83CTd2+FW19ocK6hwS998=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Benjamin Poirier <bpoirier@suse.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 20/37] be2net: Signal that the device cannot transmit during reconfiguration
-Date:   Fri, 26 Jul 2019 09:43:15 -0400
-Message-Id: <20190726134332.12626-20-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190726134332.12626-1-sashal@kernel.org>
-References: <20190726134332.12626-1-sashal@kernel.org>
+        id S2388892AbfGZNxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:53:12 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34302 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388284AbfGZNxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:53:05 -0400
+Received: by mail-qt1-f196.google.com with SMTP id k10so52705493qtq.1
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 06:53:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=AG8g0/5+Esm5c3gfwUTGC7xBT2DUyGJWbBLEtSQE6Lo=;
+        b=AtLhvXnrKCs8lMYMnz9aOAFh2heSHPwNUOPeZ8tQfpI29K8JAUWNKh44ISm9RlKSMP
+         mxR4ml8DfgYJLCrPSEQ9l732QeVgfikXIGzRVY8pcJDGYDhOc/MiuNnVSh/yLFrGe6Tn
+         fbtGnviDZVGnFREHGyg/9olhXMA/8ZpTOMIZsgVly28j+JOd3hShcQ6PLvN7I64y9E7P
+         PxVqAtBO6GOcjtDKcJaKht7UEl1j9FyqeL/9kWf8sIzJRA+r3Jf7VS08w6HWMq3/rSzB
+         JqOGaYDB5cJwN8VVjqDH7bbKjSIIDmfk+mbctJOA/HhVKr/VVWJHsfGa3LLWpOBWWgSg
+         M29A==
+X-Gm-Message-State: APjAAAX746WL7JNW7QYf5DygxC/xiP8/RmaCs1rUv2weUhmPo9ziSzaK
+        KtOGv5bDVdpBZcwUuBunzgNjt/Y/kkHVGA==
+X-Google-Smtp-Source: APXvYqydwEkRiDUhjkzyGjQfoaMf8JbYOCxKxauTFB3YoeZG49kK7ARiVn02SSH3ZF9H39y3z1BKaA==
+X-Received: by 2002:a0c:b521:: with SMTP id d33mr68309462qve.239.1564149185035;
+        Fri, 26 Jul 2019 06:53:05 -0700 (PDT)
+Received: from redhat.com ([212.92.104.165])
+        by smtp.gmail.com with ESMTPSA id v17sm30156688qtc.23.2019.07.26.06.53.02
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 26 Jul 2019 06:53:04 -0700 (PDT)
+Date:   Fri, 26 Jul 2019 09:52:59 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vhost: disable metadata prefetch optimization
+Message-ID: <20190726095044-mutt-send-email-mst@kernel.org>
+References: <20190726115021.7319-1-mst@redhat.com>
+ <ccba99c1-7708-3e55-6fc9-7775415c77a8@redhat.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <ccba99c1-7708-3e55-6fc9-7775415c77a8@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Benjamin Poirier <bpoirier@suse.com>
+On Fri, Jul 26, 2019 at 07:57:25PM +0800, Jason Wang wrote:
+> 
+> On 2019/7/26 下午7:51, Michael S. Tsirkin wrote:
+> > This seems to cause guest and host memory corruption.
+> > Disable for now until we get a better handle on that.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> > 
+> > I put this in linux-next, we'll re-enable if we can fix
+> > the outstanding issues in a short order.
+> 
+> 
+> Btw, is this more suitable to e.g revert the
+> 842aa64eddacd23adc6ecdbc69cb2030bec47122
 
-[ Upstream commit 7429c6c0d9cb086d8e79f0d2a48ae14851d2115e ]
+Yes I did that too.
 
-While changing the number of interrupt channels, be2net stops adapter
-operation (including netif_tx_disable()) but it doesn't signal that it
-cannot transmit. This may lead dev_watchdog() to falsely trigger during
-that time.
+> and let syzbot fuzz more on the
+> current code?
 
-Add the missing call to netif_carrier_off(), following the pattern used in
-many other drivers. netif_carrier_on() is already taken care of in
-be_open().
+Current metadata direct access code is known to corrupt guest and host
+memory - I don't feel we need more fuzzing.
 
-Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/emulex/benet/be_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> I think we won't accept that patch eventually, so I suspect what syzbot
+> reports today is a false positives.
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 39f399741647..cabeb1790db7 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -4600,8 +4600,12 @@ int be_update_queues(struct be_adapter *adapter)
- 	struct net_device *netdev = adapter->netdev;
- 	int status;
- 
--	if (netif_running(netdev))
-+	if (netif_running(netdev)) {
-+		/* device cannot transmit now, avoid dev_watchdog timeouts */
-+		netif_carrier_off(netdev);
-+
- 		be_close(netdev);
-+	}
- 
- 	be_cancel_worker(adapter);
- 
--- 
-2.20.1
+Today's reports are real, it's a bug in my patch. But I reverted it -
+the below is an easier way to make sure at least linux-next is stable
+for everyone.
 
+> 
+> Thanks
+> 
+> 
+> > 
+> >   drivers/vhost/vhost.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> > index 819296332913..42a8c2a13ab1 100644
+> > --- a/drivers/vhost/vhost.h
+> > +++ b/drivers/vhost/vhost.h
+> > @@ -96,7 +96,7 @@ struct vhost_uaddr {
+> >   };
+> >   #if defined(CONFIG_MMU_NOTIFIER) && ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE == 0
+> > -#define VHOST_ARCH_CAN_ACCEL_UACCESS 1
+> > +#define VHOST_ARCH_CAN_ACCEL_UACCESS 0
+> >   #else
+> >   #define VHOST_ARCH_CAN_ACCEL_UACCESS 0
+> >   #endif
