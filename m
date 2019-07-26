@@ -2,127 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 719FE7710B
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 20:15:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AFB77118
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 20:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728594AbfGZSPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 14:15:02 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37381 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726781AbfGZSPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 14:15:02 -0400
-Received: by mail-wm1-f67.google.com with SMTP id f17so48395842wme.2;
-        Fri, 26 Jul 2019 11:15:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JKw39pI2llb7A01NXuEKDfaC4+iRUymYwQL0imdPSKs=;
-        b=dNqzYdVqcZfPAziZ23MpFrZNMRjes+fGTgZkSQ1C+5pbkn7xHFhvm8aXQ1gHZJW9ZH
-         El2HrLr604GsqqIFQg5uuc+Zg0CY4Ust2WMYx5pWJnVbQFNF9lbeDcv6H/gu5PRS3x8B
-         nBp3Aut03vN4wALa1S8wR/68wgUpJxD8UlMbQdqpvaj1ca03j5ULZ+UB5HD6pmjTQjzR
-         gg/ttUspqIuZ9YJdsrWGXq0oolILm02GG1l9aflkLD+c/+MOup7a5dV9pNvTTCSTp8uD
-         qs/fL5gzo4gnV+OBdwvaDSLxDtbf6s7lprq1Q9wPXS6IT8NucSkx2or0ekft2KeT1Ahm
-         zlXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JKw39pI2llb7A01NXuEKDfaC4+iRUymYwQL0imdPSKs=;
-        b=ffhg1Hl2sxi1CDhgpLTgrdvghFHnLaONSZcBb1+Ps/f57AsTJrXluGijcE+CQ3W2ic
-         cgCFMzZlIoHWIFYigmI8r2FnpFAO/lKnqFpeFAYAGdIBJUHjxm7FszaVBM9mhNECD/8Z
-         P67odqxA6iCVoodR0jFMnCdduyEYom3nvxgscwxg+yUX55r9JZESx9XCOOdkrCpQm+oY
-         PQGeYR5MIr02QG7uapWLDw3FIfr5PzEpzSJSe3QeCg9zDC+fuq5/gDcZhnmEXV+3GmV/
-         m/OLxDLec0VaKYvj88nzPXDG0lcr7jnbZLxNk45DFsa9cTQGo9meFcOBc0QzS7xyFSlr
-         XFtQ==
-X-Gm-Message-State: APjAAAWlGmE5LZGSSXreYO7Se0eZnOXInJql37hrIjcsZjc7EU9uQ2Nt
-        0EPw173Ts8rD3Vis0yk0fCM=
-X-Google-Smtp-Source: APXvYqxYXMQI2HJ97cUHUaomwuteph1EY3UXRjsSSsubmMq20Bid28heJ2nMYVrj8lNHRSbGUubIAw==
-X-Received: by 2002:a05:600c:230c:: with SMTP id 12mr83673655wmo.166.1564164899711;
-        Fri, 26 Jul 2019 11:14:59 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:55f1:e404:698f:358? (p200300EA8F43420055F1E404698F0358.dip0.t-ipconnect.de. [2003:ea:8f43:4200:55f1:e404:698f:358])
-        by smtp.googlemail.com with ESMTPSA id u6sm54367668wml.9.2019.07.26.11.14.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 11:14:59 -0700 (PDT)
-Subject: Re: [RFC] net: phy: read link status twice when
- phy_check_link_status()
-To:     Yonglong Liu <liuyonglong@huawei.com>, andrew@lunn.ch,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com, salil.mehta@huawei.com,
-        yisen.zhuang@huawei.com, shiju.jose@huawei.com
-References: <1564134831-24962-1-git-send-email-liuyonglong@huawei.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <92f42ee8-3659-87a7-ac96-d312a98046ba@gmail.com>
-Date:   Fri, 26 Jul 2019 20:14:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728501AbfGZSSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 14:18:22 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52284 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726781AbfGZSSV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 14:18:21 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1DD7F307D974;
+        Fri, 26 Jul 2019 18:18:21 +0000 (UTC)
+Received: from new-host.redhat.com (ovpn-204-199.brq.redhat.com [10.40.204.199])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E9B425FC17;
+        Fri, 26 Jul 2019 18:18:15 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2] mlx4/en_netdev: allow offloading VXLAN over VLAN
+Date:   Fri, 26 Jul 2019 20:18:12 +0200
+Message-Id: <2beb05557960e04aa588ecc09e9ee5e5a19fc651.1564164688.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1564134831-24962-1-git-send-email-liuyonglong@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 26 Jul 2019 18:18:21 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.07.2019 11:53, Yonglong Liu wrote:
-> According to the datasheet of Marvell phy and Realtek phy, the
-> copper link status should read twice, or it may get a fake link
-> up status, and cause up->down->up at the first time when link up.
-> This happens more oftem at Realtek phy.
-> 
-This is not correct, there is no fake link up status.
-Read the comment in genphy_update_link, only link-down events
-are latched. Means if the first read returns link up, then there
-is no need for a second read. And in polling mode we don't do a
-second read because we want to detect also short link drops.
+ConnectX-3 Pro can offload transmission of VLAN packets with VXLAN inside:
+enable tunnel offloads in dev->vlan_features, like it's done with other
+NIC drivers (e.g. be2net and ixgbe).
 
-It would be helpful if you could describe your actual problem
-and whether you use polling or interrupt mode.
+It's no more necessary to change dev->hw_enc_features when VXLAN are added
+or removed, since .ndo_features_check() already checks for VXLAN packet
+where the UDP destination port matches the configured value. Just set
+dev->hw_enc_features when the NIC is initialized, so that overlying VLAN
+can correctly inherit the tunnel offload capabilities.
 
-> I add a fake status read, and can solve this problem.
-> 
-> I also see that in genphy_update_link(), had delete the fake
-> read in polling mode, so I don't know whether my solution is
-> correct.
-> 
-> Or provide a phydev->drv->read_status functions for the phy I
-> used is more acceptable?
-> 
-> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
-> ---
->  drivers/net/phy/phy.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> index ef7aa73..0c03edc 100644
-> --- a/drivers/net/phy/phy.c
-> +++ b/drivers/net/phy/phy.c
-> @@ -1,4 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0+
-> +	err = phy_read_status(phydev);
-> +	if (err)
-> +		return err;
+Changes since v1:
+- avoid flipping hw_enc_features, instead of calling netdev notifiers,
+  thanks to Saeed Mahameed
+- squash two patches into a single one
 
-This seems to be completely wrong at that place.
+CC: Paolo Abeni <pabeni@redhat.com>
+CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 43 ++++++++-----------
+ 1 file changed, 17 insertions(+), 26 deletions(-)
 
->  /* Framework for configuring and reading PHY devices
->   * Based on code in sungem_phy.c and gianfar_phy.c
->   *
-> @@ -525,6 +528,11 @@ static int phy_check_link_status(struct phy_device *phydev)
->  
->  	WARN_ON(!mutex_is_locked(&phydev->lock));
->  
-> +	/* Do a fake read */
-> +	err = phy_read(phydev, MII_BMSR);
-> +	if (err < 0)
-> +		return err;
-> +
->  	err = phy_read_status(phydev);
->  	if (err)
->  		return err;
-> 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index c1438ae52a11..40ec5acf79c0 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -2645,14 +2645,6 @@ static void mlx4_en_add_vxlan_offloads(struct work_struct *work)
+ 		en_err(priv, "failed setting L2 tunnel configuration ret %d\n", ret);
+ 		return;
+ 	}
+-
+-	/* set offloads */
+-	priv->dev->hw_enc_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-				      NETIF_F_RXCSUM |
+-				      NETIF_F_TSO | NETIF_F_TSO6 |
+-				      NETIF_F_GSO_UDP_TUNNEL |
+-				      NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-				      NETIF_F_GSO_PARTIAL;
+ }
+ 
+ static void mlx4_en_del_vxlan_offloads(struct work_struct *work)
+@@ -2660,14 +2652,6 @@ static void mlx4_en_del_vxlan_offloads(struct work_struct *work)
+ 	int ret;
+ 	struct mlx4_en_priv *priv = container_of(work, struct mlx4_en_priv,
+ 						 vxlan_del_task);
+-	/* unset offloads */
+-	priv->dev->hw_enc_features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-					NETIF_F_RXCSUM |
+-					NETIF_F_TSO | NETIF_F_TSO6 |
+-					NETIF_F_GSO_UDP_TUNNEL |
+-					NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-					NETIF_F_GSO_PARTIAL);
+-
+ 	ret = mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
+ 				  VXLAN_STEER_BY_OUTER_MAC, 0);
+ 	if (ret)
+@@ -3415,6 +3399,23 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
+ 	if (mdev->LSO_support)
+ 		dev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
+ 
++	if (mdev->dev->caps.tunnel_offload_mode ==
++	    MLX4_TUNNEL_OFFLOAD_MODE_VXLAN) {
++		dev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
++				    NETIF_F_GSO_UDP_TUNNEL_CSUM |
++				    NETIF_F_GSO_PARTIAL;
++		dev->features    |= NETIF_F_GSO_UDP_TUNNEL |
++				    NETIF_F_GSO_UDP_TUNNEL_CSUM |
++				    NETIF_F_GSO_PARTIAL;
++		dev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		dev->hw_enc_features = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
++				       NETIF_F_RXCSUM |
++				       NETIF_F_TSO | NETIF_F_TSO6 |
++				       NETIF_F_GSO_UDP_TUNNEL |
++				       NETIF_F_GSO_UDP_TUNNEL_CSUM |
++				       NETIF_F_GSO_PARTIAL;
++	}
++
+ 	dev->vlan_features = dev->hw_features;
+ 
+ 	dev->hw_features |= NETIF_F_RXCSUM | NETIF_F_RXHASH;
+@@ -3483,16 +3484,6 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
+ 		priv->rss_hash_fn = ETH_RSS_HASH_TOP;
+ 	}
+ 
+-	if (mdev->dev->caps.tunnel_offload_mode == MLX4_TUNNEL_OFFLOAD_MODE_VXLAN) {
+-		dev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
+-				    NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-				    NETIF_F_GSO_PARTIAL;
+-		dev->features    |= NETIF_F_GSO_UDP_TUNNEL |
+-				    NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-				    NETIF_F_GSO_PARTIAL;
+-		dev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-	}
+-
+ 	/* MTU range: 68 - hw-specific max */
+ 	dev->min_mtu = ETH_MIN_MTU;
+ 	dev->max_mtu = priv->max_mtu;
+-- 
+2.20.1
 
