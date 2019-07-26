@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9CA766D4
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F6C766E9
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:06:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726902AbfGZNFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:05:46 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:54662 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726086AbfGZNFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:05:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:
-        From:Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=v25fSyTOpn+HLVJ1/RYUYjo/p2HKkKXuypllJV6JuFU=; b=FGTl2rF5Ekw99U5eWA0qO4ViY
-        ezxgPoNckrfd02rKeR5DfhI5n58vJTcEz7aQ3diHZkRmGndI5Rrlekc33Ay4TibbLOwpG1XKCSloG
-        82pJRxtCcnQvPslNG7xO/8DHeER9qlTWSUhlaF/iNE0YUnkdxnIGvBgg9Brpdp4iVK9JkJjbm0TvY
-        TcCvfrG3NaxcqzRwVsiX1+l5U3fjf1yQEEnGnZRs2iZazrP26MkKBj4gTVChmnzy3Hz3krFh/Kx2g
-        S6dj3Qi5GKN2Rfpl0jR+wq9OXeL8jT6dpW75i/Mr7cpWYS51GnMWuFS7A6xMmFALsHG7f3ly85U0p
-        sDY3Ty9HA==;
-Received: from [179.95.31.157] (helo=coco.lan)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hqzun-0004Yn-F9; Fri, 26 Jul 2019 13:05:42 +0000
-Date:   Fri, 26 Jul 2019 10:05:33 -0300
-From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-pci@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-scsi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-rtc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-        openrisc@lists.librecores.org, devel@driverdev.osuosl.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        devel@lists.orangefs.org, dmaengine@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-mips@vger.kernel.org,
-        linux-wireless@vger.kernel.org, rcu@vger.kernel.org
-Subject: Re: [PATCH v2 00/26] ReST conversion of text files without .txt
- extension
-Message-ID: <20190726100521.5d379300@coco.lan>
-In-Reply-To: <cover.1564145354.git.mchehab+samsung@kernel.org>
-References: <cover.1564145354.git.mchehab+samsung@kernel.org>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1726851AbfGZNGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:06:43 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35428 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726001AbfGZNGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:06:43 -0400
+Received: by mail-wm1-f66.google.com with SMTP id l2so47624438wmg.0
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 06:06:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N/jacX4raO+gSjEjjPalf4Eo+H/2OJFwD/3R9MxkKqU=;
+        b=lq2+SiCFcPKOO02SSbZqzR3+Ofac1SMa5CaG5WTD2ohc6zWIuZAObxiLe5zOvWpwut
+         Nia3ci2E9JHanf2SQ1BpbH5qCFHUv+xlNQvk86lGpLxFWOg+T5GaorAKF8PJ5vZcYrBa
+         /SD9Dtf4AH0ELmKsO8dZfJEr/3xcPReECV+FelFQKja1PgFczK5CCsYLMbFd3n5s1gP8
+         QoLiGdzL/kTObguF3h+IH7oNDXNChkHGCsuHBEMbjGISxNAIdv1tNyC5txHRvPoLPcOO
+         Z7v4+GZeqF3uCBFYP933J2KKtpbjQeco89tOfX/zEMP2IzMnraX2UbRV44xjqcW213/d
+         VrJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N/jacX4raO+gSjEjjPalf4Eo+H/2OJFwD/3R9MxkKqU=;
+        b=NnWy2wzu5ZZEEAh7xUTcRjXExZcWMy4Q0BoQCrWakZ96W0dQK35x8V3XlRvmMumcMT
+         JaUZNsdjHFCBKojFLa5hcPqrnIWlHMOeZkjURgItDqzheeYz6hUI2/QPaZK6FSuwpKCn
+         pXYiZo4HNvcpUQkrP5Gq30fSVdTmY98mSLOU1dybxInpF0/SA0gRVH4gyFFYWlCCn9Ru
+         rMKt6V9oSIzHoPNg1FROSyuwxEhh9QAT6bU6WbvAd7ovcaiZXQUYNRI63rZAXLQoEM8I
+         pbRAlXn7J+XFH+gT/87FWEPF52LLEVTSPWQEjelURL5PbHghweC4dfW9uh7qz4nycYnp
+         E+vw==
+X-Gm-Message-State: APjAAAWQQBeiS3yAuSqkd/BOFrYp6SzbQKGZsTwrf9q1M/n/GB3MojqG
+        eJcZQ9OUxIaOik5P+UgyED92zM4T+bLBWA==
+X-Google-Smtp-Source: APXvYqz+mIPPVrTc01s6hE5Puu+RqqB++xPFx2cZI3wJOIFYDXkcn/Qm/e947Rqv0GN168jbNpt00Q==
+X-Received: by 2002:a1c:f408:: with SMTP id z8mr59757131wma.97.1564146400296;
+        Fri, 26 Jul 2019 06:06:40 -0700 (PDT)
+Received: from localhost.localdomain (lputeaux-657-1-239-64.w80-14.abo.wanadoo.fr. [80.14.206.64])
+        by smtp.gmail.com with ESMTPSA id z6sm46848891wrw.2.2019.07.26.06.06.38
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 26 Jul 2019 06:06:39 -0700 (PDT)
+From:   Antonio Borneo <borneo.antonio@gmail.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH] iplink_can: fix format output of clock with flag -details
+Date:   Fri, 26 Jul 2019 15:06:09 +0200
+Message-Id: <20190726130609.27704-1-borneo.antonio@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, 26 Jul 2019 09:51:10 -0300
-Mauro Carvalho Chehab <mchehab+samsung@kernel.org> escreveu:
+The command
+	ip -details link show can0
+prints in the last line the value of the clock frequency attached
+to the name of the following value "numtxqueues", e.g.
+	clock 49500000numtxqueues 1 numrxqueues 1 gso_max_size
+	 65536 gso_max_segs 65535
 
-> This series converts the text files under Documentation with doesn't end
-> neither .txt or .rst and are not part of ABI or features.
-> 
-> This series is at:
-> 	https://git.linuxtv.org/mchehab/experimental.git/log/?h=rst_for_5_4_v3
-> 
-> And it is based on yesterday's upstream tree.
-> 
-> After this series, we have ~320 files left to be converted to ReST.
-> 
-> v2:
->   - Added 3 files submitted for v5.3 that weren't merged yet;
->   - markdown patch broken into two, per Rob's request;
->   - rebased on the top of upstream master branch
-> 
-> Mauro Carvalho Chehab (26):
+Add the missing space after the clock value.
 
->   docs: ABI: remove extension from sysfs-class-mic.txt
+Signed-off-by: Antonio Borneo <borneo.antonio@gmail.com>
+---
+ ip/iplink_can.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-    ^ In time: this one was already merged.
+diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+index 5bf490a9..735ab941 100644
+--- a/ip/iplink_can.c
++++ b/ip/iplink_can.c
+@@ -545,7 +545,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 
+ 		print_int(PRINT_ANY,
+ 			  "clock",
+-			  "\n	  clock %d",
++			  "\n	  clock %d ",
+ 			  clock->freq);
+ 	}
+ 
+-- 
+2.22.0
 
-Thanks,
-Mauro
