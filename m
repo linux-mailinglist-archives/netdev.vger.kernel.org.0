@@ -2,35 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC14E76810
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF44676814
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727894AbfGZNmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:42:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49120 "EHLO mail.kernel.org"
+        id S2387847AbfGZNmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:42:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727620AbfGZNl6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 09:41:58 -0400
+        id S2387418AbfGZNmG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 09:42:06 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CB7622CC2;
-        Fri, 26 Jul 2019 13:41:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7EF6F22BF5;
+        Fri, 26 Jul 2019 13:42:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564148518;
-        bh=DM7dIiX4yXoSE31CLN5Uu6r4oDMxr77YDotnzPxyWQc=;
+        s=default; t=1564148525;
+        bh=jwyKKrIH0Sb3LUWowXcuRJ297ShxLiOtHjsxfr0bXBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DTMgiuoKz6sh6z+D9SeXycpHulUeUXqXdQ7rMCpu+NGFM+tR0pAUimuMujCUD4Hfx
-         URufPQcMHEYqom0W21vnIxIRBfIBfcU1rzEB631p4luJ2TSS9gLIrHzaLD8MBZV9Ih
-         GujEm8obuRzhQw4aJHJGzi2bNKLuvIMQtq6EeYl8=
+        b=pO5aPHJxePB3A5na1SQEVi0ksbB8X4/W0lmianAPdtLFJ4Sapxqu0Upn/899C8v56
+         Bav46PtE7M6gNmUjihALnfKi7vW0dOLYuRYb4W3XW6koCN/BsNes+mGnzobjYKd/fr
+         qj69X3excgIFeu6Hx8XSpCCWm274qB/xugGW6LVs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 80/85] bnxt_en: Fix VNIC accounting when enabling aRFS on 57500 chips.
-Date:   Fri, 26 Jul 2019 09:39:30 -0400
-Message-Id: <20190726133936.11177-80-sashal@kernel.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 82/85] bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()
+Date:   Fri, 26 Jul 2019 09:39:32 -0400
+Message-Id: <20190726133936.11177-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190726133936.11177-1-sashal@kernel.org>
 References: <20190726133936.11177-1-sashal@kernel.org>
@@ -43,56 +47,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-[ Upstream commit 9b3d15e6b05e0b916be5fbd915f90300a403098b ]
+[ Upstream commit 3193c0836f203a91bef96d88c64cccf0be090d9c ]
 
-Unlike legacy chips, 57500 chips don't need additional VNIC resources
-for aRFS/ntuple.  Fix the code accordingly so that we don't reserve
-and allocate additional VNICs on 57500 chips.  Without this patch,
-the driver is failing to initialize when it tries to allocate extra
-VNICs.
+On x86-64, with CONFIG_RETPOLINE=n, GCC's "global common subexpression
+elimination" optimization results in ___bpf_prog_run()'s jumptable code
+changing from this:
 
-Fixes: ac33906c67e2 ("bnxt_en: Add support for aRFS on 57500 chips.")
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+	select_insn:
+		jmp *jumptable(, %rax, 8)
+		...
+	ALU64_ADD_X:
+		...
+		jmp *jumptable(, %rax, 8)
+	ALU_ADD_X:
+		...
+		jmp *jumptable(, %rax, 8)
+
+to this:
+
+	select_insn:
+		mov jumptable, %r12
+		jmp *(%r12, %rax, 8)
+		...
+	ALU64_ADD_X:
+		...
+		jmp *(%r12, %rax, 8)
+	ALU_ADD_X:
+		...
+		jmp *(%r12, %rax, 8)
+
+The jumptable address is placed in a register once, at the beginning of
+the function.  The function execution can then go through multiple
+indirect jumps which rely on that same register value.  This has a few
+issues:
+
+1) Objtool isn't smart enough to be able to track such a register value
+   across multiple recursive indirect jumps through the jump table.
+
+2) With CONFIG_RETPOLINE enabled, this optimization actually results in
+   a small slowdown.  I measured a ~4.7% slowdown in the test_bpf
+   "tcpdump port 22" selftest.
+
+   This slowdown is actually predicted by the GCC manual:
+
+     Note: When compiling a program using computed gotos, a GCC
+     extension, you may get better run-time performance if you
+     disable the global common subexpression elimination pass by
+     adding -fno-gcse to the command line.
+
+So just disable the optimization for this function.
+
+Fixes: e55a73251da3 ("bpf: Fix ORC unwinding in non-JIT BPF code")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/30c3ca29ba037afcbd860a8672eef0021addf9fe.1563413318.git.jpoimboe@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ include/linux/compiler-gcc.h   | 2 ++
+ include/linux/compiler_types.h | 4 ++++
+ kernel/bpf/core.c              | 2 +-
+ 3 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f758b2e0591f..9a2a0d24d20d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3022,7 +3022,7 @@ static int bnxt_alloc_vnics(struct bnxt *bp)
- 	int num_vnics = 1;
- 
- #ifdef CONFIG_RFS_ACCEL
--	if (bp->flags & BNXT_FLAG_RFS)
-+	if ((bp->flags & (BNXT_FLAG_RFS | BNXT_FLAG_CHIP_P5)) == BNXT_FLAG_RFS)
- 		num_vnics += bp->rx_nr_rings;
+diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+index e8579412ad21..d7ee4c6bad48 100644
+--- a/include/linux/compiler-gcc.h
++++ b/include/linux/compiler-gcc.h
+@@ -170,3 +170,5 @@
+ #else
+ #define __diag_GCC_8(s)
+ #endif
++
++#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index 19e58b9138a0..0454d82f8bd8 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -187,6 +187,10 @@ struct ftrace_likely_data {
+ #define asm_volatile_goto(x...) asm goto(x)
  #endif
  
-@@ -7124,6 +7124,9 @@ static int bnxt_alloc_rfs_vnics(struct bnxt *bp)
- #ifdef CONFIG_RFS_ACCEL
- 	int i, rc = 0;
- 
-+	if (bp->flags & BNXT_FLAG_CHIP_P5)
-+		return 0;
++#ifndef __no_fgcse
++# define __no_fgcse
++#endif
 +
- 	for (i = 0; i < bp->rx_nr_rings; i++) {
- 		struct bnxt_vnic_info *vnic;
- 		u16 vnic_id = i + 1;
-@@ -9587,7 +9590,7 @@ int bnxt_check_rings(struct bnxt *bp, int tx, int rx, bool sh, int tcs,
- 		return -ENOMEM;
+ /* Are two types/vars the same type (ignoring qualifiers)? */
+ #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
  
- 	vnics = 1;
--	if (bp->flags & BNXT_FLAG_RFS)
-+	if ((bp->flags & (BNXT_FLAG_RFS | BNXT_FLAG_CHIP_P5)) == BNXT_FLAG_RFS)
- 		vnics += rx_rings;
- 
- 	if (bp->flags & BNXT_FLAG_AGG_RINGS)
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 080e2bb644cc..ebfd189916dc 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1295,7 +1295,7 @@ bool bpf_opcode_in_insntable(u8 code)
+  *
+  * Decode and execute eBPF instructions.
+  */
+-static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
++static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+ {
+ #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
+ #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
 -- 
 2.20.1
 
