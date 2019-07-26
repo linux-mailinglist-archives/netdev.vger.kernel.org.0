@@ -2,78 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 115DF75D2A
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 04:46:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3620175D66
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 05:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726193AbfGZCqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jul 2019 22:46:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39880 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725942AbfGZCqp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jul 2019 22:46:45 -0400
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E14462238C;
-        Fri, 26 Jul 2019 02:46:42 +0000 (UTC)
-Date:   Thu, 25 Jul 2019 22:46:41 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     syzbot <syzbot+b2098bc44728a4efb3e9@syzkaller.appspotmail.com>
-Cc:     bsingharora@gmail.com, coreteam@netfilter.org, davem@davemloft.net,
-        dri-devel@lists.freedesktop.org, duwe@suse.de, dvyukov@google.com,
-        kaber@trash.net, kadlec@blackhole.kfki.hu,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, mingo@redhat.com, mpe@ellerman.id.au,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, sumit.semwal@linaro.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: memory leak in dma_buf_ioctl
-Message-ID: <20190725224641.5d8baeb7@oasis.local.home>
-In-Reply-To: <00000000000005dbbc058e8c608d@google.com>
-References: <000000000000b68e04058e6a3421@google.com>
-        <00000000000005dbbc058e8c608d@google.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726195AbfGZD1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jul 2019 23:27:07 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2761 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726086AbfGZD1G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jul 2019 23:27:06 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id D66A6B923C7304F05653;
+        Fri, 26 Jul 2019 11:27:04 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 26 Jul 2019 11:26:57 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 00/11] net: hns3: some code optimizations & bugfixes & features
+Date:   Fri, 26 Jul 2019 11:24:51 +0800
+Message-ID: <1564111502-15504-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Jul 2019 19:34:01 -0700
-syzbot <syzbot+b2098bc44728a4efb3e9@syzkaller.appspotmail.com> wrote:
+This patch-set includes code optimizations, bugfixes and features for
+the HNS3 ethernet controller driver.
 
-> syzbot has bisected this bug to:
-> 
-> commit 04cf31a759ef575f750a63777cee95500e410994
-> Author: Michael Ellerman <mpe@ellerman.id.au>
-> Date:   Thu Mar 24 11:04:01 2016 +0000
-> 
->      ftrace: Make ftrace_location_range() global
+[patch 1/11] checks reset status before setting channel.
 
-It's sad that I have yet to find a single syzbot bisect useful. Really?
-setting a function from static to global will cause a memory leak in a
-completely unrelated area of the kernel?
+[patch 2/11] adds a NULL pointer checking.
 
-I'm about to set these to my /dev/null folder.
+[patch 3/11] removes reset level upgrading when current reset fails.
 
--- Steve
+[patch 4/11] fixes a bug related to IRQ vector number initialization.
 
+[patch 5/11] fixes a GFP flags errors when holding spin_lock.
 
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=154293f4600000
-> start commit:   abdfd52a Merge tag 'armsoc-defconfig' of git://git.kernel...
-> git tree:       upstream
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=174293f4600000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=134293f4600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d31de3d88059b7fa
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b2098bc44728a4efb3e9
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12526e58600000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=161784f0600000
-> 
-> Reported-by: syzbot+b2098bc44728a4efb3e9@syzkaller.appspotmail.com
-> Fixes: 04cf31a759ef ("ftrace: Make ftrace_location_range() global")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+[patch 6/11] modifies firmware version format.
+
+[patch 7/11] adds some print information which is off by default.
+
+[patch 8/11 - 9/11] adds two code optimizations about interrupt handler
+and work task.
+
+[patch 10/11] adds support for using order 1 pages with a 4K buffer.
+
+[patch 11/11] modifies messages prints with dev_info() instead of
+pr_info().
+
+Change log:
+V1->V2: fixes comments from Saeed Mahameed and
+	removes previous [patch 11/11] which needs further discussion,
+	adds a new patch [11/11] suggested by Saeed Mahameed.
+
+Guangbin Huang (1):
+  net: hns3: add a check for get_reset_level
+
+Huazhong Tan (2):
+  net: hns3: remove upgrade reset level when reset fail
+  net: hns3: use dev_info() instead of pr_info()
+
+Jian Shen (1):
+  net: hns3: add reset checking before set channels
+
+Yonglong Liu (2):
+  net: hns3: fix mis-counting IRQ vector numbers issue
+  net: hns3: adds debug messages to identify eth down cause
+
+Yufeng Mo (2):
+  net: hns3: change GFP flag during lock period
+  net: hns3: modify firmware version display format
+
+Yunsheng Lin (3):
+  net: hns3: make hclge_service use delayed workqueue
+  net: hns3: add interrupt affinity support for misc interrupt
+  net: hns3: Add support for using order 1 pages with a 4K buffer
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   9 ++
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  39 +++++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  15 ++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  41 +++++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  10 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c |  14 +++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 137 ++++++++++++---------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   7 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  10 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  15 ++-
+ 10 files changed, 223 insertions(+), 74 deletions(-)
+
+-- 
+2.7.4
 
