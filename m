@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C5D76A51
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DD2376A56
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727738AbfGZNkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:40:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47046 "EHLO mail.kernel.org"
+        id S1728385AbfGZN6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:58:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387601AbfGZNku (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 09:40:50 -0400
+        id S2387575AbfGZNkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 09:40:53 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 84F272238C;
-        Fri, 26 Jul 2019 13:40:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F1D5B22BEF;
+        Fri, 26 Jul 2019 13:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564148449;
-        bh=YBzj4fQ+SdNXzgQNLcvqMQX9tA99KBH39x2aobuK4sk=;
+        s=default; t=1564148452;
+        bh=b8v1s0/Nhsc9bXPHePJK13Qv88Pa349rf1WKvsM3Ge0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CNKpWfFkf7hPGHHjhRcwGnAZBlwNxDn30cuN9uj2UMmLtyumAolwN2UrFHkH4iqpn
-         9A82c1oQNX3t4e8L0h0xG2ZahB/HUmqkQb58wpUeX3ZhhL1Iv2W3JmBOtObFNzkInJ
-         PmO6p9MJuXuenVdBzQ1rW1oRxNMT+l0eBvJ8/wDc=
+        b=a7pldTrY4cJrA8iHQ+jAceYnj4V7yfSqrvscA4vLuYkm6UDGzXS9bjc6fcnbfGMNf
+         qCAThAeR+rZinjFBqdjfEt5KxLKFLgU1+xyiwa6YL2o9ahD0QjGjEtZMAe58Jyy0DA
+         xhxFr8kGtFenwQv3OgQTIwFvUH75tCxcgzsNHnt0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phong Tran <tranmanphong@gmail.com>,
-        syzbot+8750abbc3a46ef47d509@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 45/85] ISDN: hfcsusb: checking idx of ep configuration
-Date:   Fri, 26 Jul 2019 09:38:55 -0400
-Message-Id: <20190726133936.11177-45-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 48/85] libbpf: fix another GCC8 warning for strncpy
+Date:   Fri, 26 Jul 2019 09:38:58 -0400
+Message-Id: <20190726133936.11177-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190726133936.11177-1-sashal@kernel.org>
 References: <20190726133936.11177-1-sashal@kernel.org>
@@ -44,47 +45,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phong Tran <tranmanphong@gmail.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit f384e62a82ba5d85408405fdd6aeff89354deaa9 ]
+[ Upstream commit 763ff0e7d9c72e7094b31e7fb84a859be9325635 ]
 
-The syzbot test with random endpoint address which made the idx is
-overflow in the table of endpoint configuations.
+Similar issue was fixed in cdfc7f888c2a ("libbpf: fix GCC8 warning for
+strncpy") already. This one was missed. Fixing now.
 
-this adds the checking for fixing the error report from
-syzbot
-
-KASAN: stack-out-of-bounds Read in hfcsusb_probe [1]
-The patch tested by syzbot [2]
-
-Reported-by: syzbot+8750abbc3a46ef47d509@syzkaller.appspotmail.com
-
-[1]:
-https://syzkaller.appspot.com/bug?id=30a04378dac680c5d521304a00a86156bb913522
-[2]:
-https://groups.google.com/d/msg/syzkaller-bugs/_6HBdge8F3E/OJn7wVNpBAAJ
-
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/hfcsusb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/lib/bpf/xsk.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index 4c99739b937e..0e224232f746 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -1955,6 +1955,9 @@ hfcsusb_probe(struct usb_interface *intf, const struct usb_device_id *id)
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 38667b62f1fe..aa37005209aa 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -561,7 +561,8 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 		err = -errno;
+ 		goto out_socket;
+ 	}
+-	strncpy(xsk->ifname, ifname, IFNAMSIZ);
++	strncpy(xsk->ifname, ifname, IFNAMSIZ - 1);
++	xsk->ifname[IFNAMSIZ - 1] = '\0';
  
- 				/* get endpoint base */
- 				idx = ((ep_addr & 0x7f) - 1) * 2;
-+				if (idx > 15)
-+					return -EIO;
-+
- 				if (ep_addr & 0x80)
- 					idx++;
- 				attr = ep->desc.bmAttributes;
+ 	err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
+ 	if (err)
 -- 
 2.20.1
 
