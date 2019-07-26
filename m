@@ -2,105 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFC17679D
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 550DD767EE
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbfGZNfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:35:40 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41419 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfGZNfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:35:40 -0400
-Received: by mail-pg1-f196.google.com with SMTP id x15so14464511pgg.8;
-        Fri, 26 Jul 2019 06:35:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5vo7sld/uL/U9JDdD3PiiYj0frOzh5KbSziKzqfPl7Y=;
-        b=bvaxc3gCcfame+Q7d7uO/NY/FkQ9rJUTag603siglBaLoqGN8SEYdK3RHmkYQCG+p9
-         84Em6VvzsTR1HT9pWwSAOEMm4sIvfSxX8z3M37/QctZRxtzNv6el8uI9JIlefP/x7P16
-         BOXigXPT75K1aiUumlTzYWOttmQITS9EZmRE3/W1cxVsHTZZ+JmnWKlr64+ADPFuVDvr
-         pW4cAmx09+P9Yx79zqCMLjb6ZNQ+oglWkm9wFL+PwMH2VSFpmdHEDraifefvotPNk2cW
-         vexG7n+hzYmIvjNJ1gXVN4fHgCAUnCJHa75ism5eSt7znXqBuNSD5dCrY1SpxweiQ43Q
-         ndjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5vo7sld/uL/U9JDdD3PiiYj0frOzh5KbSziKzqfPl7Y=;
-        b=JskinGmQNG7rtZr207huu1YrBRX/8OhbPd27X6tpGnSHFJW9M38En5qTYAJw8BQ2Vz
-         zIJKKh81MtPj6HXwjSvlty8LCWj3Jj90qfzFSq8LN7CpciOAbqK0GOhc0HAH4KIZ3thS
-         wIcbeztx1cnsXnVuvk0Hb6Q43uSAa9eCY7w6ueDfrgUNjwqT0qHxeFmko1yc4DRkADQ1
-         3zmbKBuWrJETqs/+2Kizi5GmGPNUXjhr1R9SXlCkWMe0NpV4NDl5KdEFBviRZFtqEf0c
-         CEhQOS7FQzARLqIzKP+N93U6uuB1HdCT3znuFL1jCjdg0oquqZV10EyIckLrsxu/OuJP
-         FqNw==
-X-Gm-Message-State: APjAAAVsqIaCzyTVvAlSbXE85vlnT2skuV1BZINKjHB3LtvRNgbebBUQ
-        Nycy8fLvd4t5Sfkwoz6vWZo=
-X-Google-Smtp-Source: APXvYqwhYbxf/AS6zqCEVHvWXkXBuk3Vw3cw5lSS4pUZzVW7r+G1zlxB1zhXY8PgnPc7IOU0LHy/YQ==
-X-Received: by 2002:a62:be0c:: with SMTP id l12mr22452326pff.224.1564148139716;
-        Fri, 26 Jul 2019 06:35:39 -0700 (PDT)
-Received: from debian.net.fpt ([2405:4800:58f7:1782:e03a:f6b:ecba:b51])
-        by smtp.gmail.com with ESMTPSA id 137sm64940745pfz.112.2019.07.26.06.35.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 06:35:39 -0700 (PDT)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     pebolle@tiscali.nl, isdn@linux-pingi.de, gregkh@linuxfoundation.org
-Cc:     gigaset307x-common@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Phong Tran <tranmanphong@gmail.com>,
-        syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
-Subject: [PATCH] isdn/gigaset: check endpoint null in gigaset_probe
-Date:   Fri, 26 Jul 2019 20:35:28 +0700
-Message-Id: <20190726133528.11063-1-tranmanphong@gmail.com>
+        id S2387567AbfGZNkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:40:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727748AbfGZNkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 09:40:53 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C62562238C;
+        Fri, 26 Jul 2019 13:40:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564148451;
+        bh=nb+zJZftTQM8nQ2ze5k/VmpjYrxra2RgQex0fH8qUcg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jZJZRnDLDnc/XfxxgfclezeCyH81gu7yM93vpuYxMemrXXn8sAut2FOyJTRiNAyd7
+         UYAO30k+vO09iNOKKwj3Ce9HNPr2gGxyokOwYBpiO1bLfPZSynLVw5rPI3ZRS9hv0q
+         suGvlzXeqxLTMjEoL0pCDMFtFHxBxhKqXNtRz5jM=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Andrii Nakryiko <andriin@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 47/85] bpf: fix BTF verifier size resolution logic
+Date:   Fri, 26 Jul 2019 09:38:57 -0400
+Message-Id: <20190726133936.11177-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190726133936.11177-1-sashal@kernel.org>
+References: <20190726133936.11177-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixed the potential reference NULL pointer while using variable
-endpoint.
+From: Andrii Nakryiko <andriin@fb.com>
 
-Reported-by: syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
-Tested by syzbot:
-https://groups.google.com/d/msg/syzkaller-bugs/wnHG8eRNWEA/Qn2HhjNdBgAJ
+[ Upstream commit 1acc5d5c5832da9a98b22374a8fae08ffe31b3f8 ]
 
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+BTF verifier has a size resolution bug which in some circumstances leads to
+invalid size resolution for, e.g., TYPEDEF modifier.  This happens if we have
+[1] PTR -> [2] TYPEDEF -> [3] ARRAY, in which case due to being in pointer
+context ARRAY size won't be resolved (because for pointer it doesn't matter, so
+it's a sink in pointer context), but it will be permanently remembered as zero
+for TYPEDEF and TYPEDEF will be marked as RESOLVED. Eventually ARRAY size will
+be resolved correctly, but TYPEDEF resolved_size won't be updated anymore.
+This, subsequently, will lead to erroneous map creation failure, if that
+TYPEDEF is specified as either key or value, as key_size/value_size won't
+correspond to resolved size of TYPEDEF (kernel will believe it's zero).
+
+Note, that if BTF was ordered as [1] ARRAY <- [2] TYPEDEF <- [3] PTR, this
+won't be a problem, as by the time we get to TYPEDEF, ARRAY's size is already
+calculated and stored.
+
+This bug manifests itself in rejecting BTF-defined maps that use array
+typedef as a value type:
+
+typedef int array_t[16];
+
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __type(value, array_t); /* i.e., array_t *value; */
+} test_map SEC(".maps");
+
+The fix consists on not relying on modifier's resolved_size and instead using
+modifier's resolved_id (type ID for "concrete" type to which modifier
+eventually resolves) and doing size determination for that resolved type. This
+allow to preserve existing "early DFS termination" logic for PTR or
+STRUCT_OR_ARRAY contexts, but still do correct size determination for modifier
+types.
+
+Fixes: eb3f595dab40 ("bpf: btf: Validate type reference")
+Cc: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/gigaset/usb-gigaset.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ kernel/bpf/btf.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/isdn/gigaset/usb-gigaset.c b/drivers/isdn/gigaset/usb-gigaset.c
-index 1b9b43659bdf..2e011f3db59e 100644
---- a/drivers/isdn/gigaset/usb-gigaset.c
-+++ b/drivers/isdn/gigaset/usb-gigaset.c
-@@ -703,6 +703,10 @@ static int gigaset_probe(struct usb_interface *interface,
- 	usb_set_intfdata(interface, cs);
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index cad09858a5f2..8614102971da 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -1073,11 +1073,18 @@ const struct btf_type *btf_type_id_size(const struct btf *btf,
+ 				 !btf_type_is_var(size_type)))
+ 			return NULL;
  
- 	endpoint = &hostif->endpoint[0].desc;
-+        if (!endpoint) {
-+		dev_err(cs->dev, "Couldn't get control endpoint\n");
-+		return -ENODEV;
-+	}
- 
- 	buffer_size = le16_to_cpu(endpoint->wMaxPacketSize);
- 	ucs->bulk_out_size = buffer_size;
-@@ -722,6 +726,11 @@ static int gigaset_probe(struct usb_interface *interface,
+-		size = btf->resolved_sizes[size_type_id];
+ 		size_type_id = btf->resolved_ids[size_type_id];
+ 		size_type = btf_type_by_id(btf, size_type_id);
+ 		if (btf_type_nosize_or_null(size_type))
+ 			return NULL;
++		else if (btf_type_has_size(size_type))
++			size = size_type->size;
++		else if (btf_type_is_array(size_type))
++			size = btf->resolved_sizes[size_type_id];
++		else if (btf_type_is_ptr(size_type))
++			size = sizeof(void *);
++		else
++			return NULL;
  	}
  
- 	endpoint = &hostif->endpoint[1].desc;
-+        if (!endpoint) {
-+		dev_err(cs->dev, "Endpoint not available\n");
-+		retval = -ENODEV;
-+		goto error;
-+	}
+ 	*type_id = size_type_id;
+@@ -1602,7 +1609,6 @@ static int btf_modifier_resolve(struct btf_verifier_env *env,
+ 	const struct btf_type *next_type;
+ 	u32 next_type_id = t->type;
+ 	struct btf *btf = env->btf;
+-	u32 next_type_size = 0;
  
- 	ucs->busy = 0;
+ 	next_type = btf_type_by_id(btf, next_type_id);
+ 	if (!next_type || btf_type_is_resolve_source_only(next_type)) {
+@@ -1620,7 +1626,7 @@ static int btf_modifier_resolve(struct btf_verifier_env *env,
+ 	 * save us a few type-following when we use it later (e.g. in
+ 	 * pretty print).
+ 	 */
+-	if (!btf_type_id_size(btf, &next_type_id, &next_type_size)) {
++	if (!btf_type_id_size(btf, &next_type_id, NULL)) {
+ 		if (env_type_is_resolved(env, next_type_id))
+ 			next_type = btf_type_id_resolve(btf, &next_type_id);
  
+@@ -1633,7 +1639,7 @@ static int btf_modifier_resolve(struct btf_verifier_env *env,
+ 		}
+ 	}
+ 
+-	env_stack_pop_resolved(env, next_type_id, next_type_size);
++	env_stack_pop_resolved(env, next_type_id, 0);
+ 
+ 	return 0;
+ }
+@@ -1645,7 +1651,6 @@ static int btf_var_resolve(struct btf_verifier_env *env,
+ 	const struct btf_type *t = v->t;
+ 	u32 next_type_id = t->type;
+ 	struct btf *btf = env->btf;
+-	u32 next_type_size;
+ 
+ 	next_type = btf_type_by_id(btf, next_type_id);
+ 	if (!next_type || btf_type_is_resolve_source_only(next_type)) {
+@@ -1675,12 +1680,12 @@ static int btf_var_resolve(struct btf_verifier_env *env,
+ 	 * forward types or similar that would resolve to size of
+ 	 * zero is allowed.
+ 	 */
+-	if (!btf_type_id_size(btf, &next_type_id, &next_type_size)) {
++	if (!btf_type_id_size(btf, &next_type_id, NULL)) {
+ 		btf_verifier_log_type(env, v->t, "Invalid type_id");
+ 		return -EINVAL;
+ 	}
+ 
+-	env_stack_pop_resolved(env, next_type_id, next_type_size);
++	env_stack_pop_resolved(env, next_type_id, 0);
+ 
+ 	return 0;
+ }
 -- 
 2.20.1
 
