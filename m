@@ -2,88 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F6C766E9
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:06:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5DD7671B
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 15:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfGZNGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 09:06:43 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35428 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbfGZNGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 09:06:43 -0400
-Received: by mail-wm1-f66.google.com with SMTP id l2so47624438wmg.0
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 06:06:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/jacX4raO+gSjEjjPalf4Eo+H/2OJFwD/3R9MxkKqU=;
-        b=lq2+SiCFcPKOO02SSbZqzR3+Ofac1SMa5CaG5WTD2ohc6zWIuZAObxiLe5zOvWpwut
-         Nia3ci2E9JHanf2SQ1BpbH5qCFHUv+xlNQvk86lGpLxFWOg+T5GaorAKF8PJ5vZcYrBa
-         /SD9Dtf4AH0ELmKsO8dZfJEr/3xcPReECV+FelFQKja1PgFczK5CCsYLMbFd3n5s1gP8
-         QoLiGdzL/kTObguF3h+IH7oNDXNChkHGCsuHBEMbjGISxNAIdv1tNyC5txHRvPoLPcOO
-         Z7v4+GZeqF3uCBFYP933J2KKtpbjQeco89tOfX/zEMP2IzMnraX2UbRV44xjqcW213/d
-         VrJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/jacX4raO+gSjEjjPalf4Eo+H/2OJFwD/3R9MxkKqU=;
-        b=NnWy2wzu5ZZEEAh7xUTcRjXExZcWMy4Q0BoQCrWakZ96W0dQK35x8V3XlRvmMumcMT
-         JaUZNsdjHFCBKojFLa5hcPqrnIWlHMOeZkjURgItDqzheeYz6hUI2/QPaZK6FSuwpKCn
-         pXYiZo4HNvcpUQkrP5Gq30fSVdTmY98mSLOU1dybxInpF0/SA0gRVH4gyFFYWlCCn9Ru
-         rMKt6V9oSIzHoPNg1FROSyuwxEhh9QAT6bU6WbvAd7ovcaiZXQUYNRI63rZAXLQoEM8I
-         pbRAlXn7J+XFH+gT/87FWEPF52LLEVTSPWQEjelURL5PbHghweC4dfW9uh7qz4nycYnp
-         E+vw==
-X-Gm-Message-State: APjAAAWQQBeiS3yAuSqkd/BOFrYp6SzbQKGZsTwrf9q1M/n/GB3MojqG
-        eJcZQ9OUxIaOik5P+UgyED92zM4T+bLBWA==
-X-Google-Smtp-Source: APXvYqz+mIPPVrTc01s6hE5Puu+RqqB++xPFx2cZI3wJOIFYDXkcn/Qm/e947Rqv0GN168jbNpt00Q==
-X-Received: by 2002:a1c:f408:: with SMTP id z8mr59757131wma.97.1564146400296;
-        Fri, 26 Jul 2019 06:06:40 -0700 (PDT)
-Received: from localhost.localdomain (lputeaux-657-1-239-64.w80-14.abo.wanadoo.fr. [80.14.206.64])
-        by smtp.gmail.com with ESMTPSA id z6sm46848891wrw.2.2019.07.26.06.06.38
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 06:06:39 -0700 (PDT)
-From:   Antonio Borneo <borneo.antonio@gmail.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] iplink_can: fix format output of clock with flag -details
-Date:   Fri, 26 Jul 2019 15:06:09 +0200
-Message-Id: <20190726130609.27704-1-borneo.antonio@gmail.com>
-X-Mailer: git-send-email 2.22.0
+        id S1727061AbfGZNQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 09:16:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40018 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726364AbfGZNQd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jul 2019 09:16:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=zlBlbbS7pVGRZymSGxMNLXgZrluPVS4d6ho9KEo9Pe8=; b=peGM8EL7a0nP0aP/yzSd4+E5sp
+        FK9GZHL9uLqS0vxfePvism+CuZKTKocVBcNjB0ekZRj/G6FeguYBa39rg7rRZIHGexiWGpeP9UeX+
+        rgGEsjmSoJxk8KSmV3x/M/q6fp3YPZk4fLIefVARbHzSBkS12c6To7D8y+K9aswxBWgA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hr04q-0004s6-Hl; Fri, 26 Jul 2019 15:16:04 +0200
+Date:   Fri, 26 Jul 2019 15:16:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     netdev@vger.kernel.org, frank-w@public-files.de,
+        sean.wang@mediatek.com, f.fainelli@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
+        vivien.didelot@gmail.com, john@phrozen.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] dt-bindings: net: ethernet: Update mt7622
+ docs and dts to reflect the new phylink API
+Message-ID: <20190726131604.GA18223@lunn.ch>
+References: <20190724192411.20639-1-opensource@vdorst.com>
+ <20190725193123.GA32542@lunn.ch>
+ <20190726071956.Horde.s4rfuzovwXB-d3LnV0PLRc8@www.vdorst.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190726071956.Horde.s4rfuzovwXB-d3LnV0PLRc8@www.vdorst.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The command
-	ip -details link show can0
-prints in the last line the value of the clock frequency attached
-to the name of the following value "numtxqueues", e.g.
-	clock 49500000numtxqueues 1 numrxqueues 1 gso_max_size
-	 65536 gso_max_segs 65535
+On Fri, Jul 26, 2019 at 07:19:56AM +0000, René van Dorst wrote:
+> Quoting Andrew Lunn <andrew@lunn.ch>:
+> 
+> >>+	gmac0: mac@0 {
+> >>+		compatible = "mediatek,eth-mac";
+> >>+		reg = <0>;
+> >>+		phy-mode = "sgmii";
+> >>+
+> >>+		fixed-link {
+> >>+			speed = <2500>;
+> >>+			full-duplex;
+> >>+			pause;
+> >>+		};
+> >>+	};
+> >
+> >Hi René
+> >
+> 
+> Hi Andrew,
+> 
+> >SGMII and fixed-link is rather odd. Why do you need this combination?
+> 
+> BananaPi R64 has a RTL8367S 5+2-port switch, switch interfaces with the SOC
+> by a
+> (H)SGMII and/or RGMII interface. SGMII is mainly used for the LAN ports and
+> RGMII for the WAN port.
+> 
+> I mimic the SDK software which puts SGMII interface in 2.5GBit fixed-link
+> mode.
+> The RTL8367S switch code also put switch mac in forge 2.5GBit mode.
+> 
+> So this is the reason why I put a fixed-link mode here.
 
-Add the missing space after the clock value.
+Are you sure it is using SGMII and not 2500BaseX? Can you get access
+to the signalling word? SGMII is supposed to indicate to the MAC what
+speed it is using, via inband signalling. So there should not be any
+need for a fixed-link. 2500BaseX however does not have such
+signalling, so there would need to be a fixed link.
 
-Signed-off-by: Antonio Borneo <borneo.antonio@gmail.com>
----
- ip/iplink_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Maybe we should really consider what phy-mode = "sgmii"; means. Should
+this include the overclocked 2.5G speed, or should we add a 2500sgmii
+link mode?
 
-diff --git a/ip/iplink_can.c b/ip/iplink_can.c
-index 5bf490a9..735ab941 100644
---- a/ip/iplink_can.c
-+++ b/ip/iplink_can.c
-@@ -545,7 +545,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 
- 		print_int(PRINT_ANY,
- 			  "clock",
--			  "\n	  clock %d",
-+			  "\n	  clock %d ",
- 			  clock->freq);
- 	}
- 
--- 
-2.22.0
-
+     Andrew
