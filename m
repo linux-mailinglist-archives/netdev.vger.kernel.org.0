@@ -2,103 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43BE9771D0
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A0C771EC
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 21:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388355AbfGZTFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 15:05:15 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33511 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388306AbfGZTFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:05:14 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n9so55556152wru.0
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:05:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gVa8cIbPutE5rL45K7Sot9V21PybDTNJygwf/2u2+nU=;
-        b=SotgcCso6c/cna9LVi/B1UJr2mtT7q8m87lO0v85tshWFNBQdXSioVH1nJoOjsj24p
-         qB0r0gmRjD7SIG0Zgfrr/tmKgE7XDzuG0KGDmQL8a1GiEPkMXcxRN2udZlH529ODi6sd
-         T6ZmrGcMK5NxDMU4U+PwlbD0qWZ2+XlCBfSor6AFpoy6c0A5UDxd6qteIePhj9QjJVY3
-         Iqqs4Mk57T0a7Uo+AcN1YOC0D18MDru/n0U/em2lUKdWEjYHrc5XOGyuEf3o4XZFKHup
-         HiaCPg2nbYf6fECPDHIjYIY3nqdfESKGIfAX7Fmxcak9UFXVptPOrq0pjQxT+5IkI6w6
-         CZLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gVa8cIbPutE5rL45K7Sot9V21PybDTNJygwf/2u2+nU=;
-        b=TuX0PKkbp6JRdvJxqMP2N2ipBVv/Pn9bgqq8lK7svKjnbepSd4243g8ajur/cIsBQs
-         Dl30hB4/LlNecVPPS86f4pzrEVW+RCdLk6q+5coc0JNluNTYjzacNh66PRE1F+agbTG2
-         h3ZlUXC8/qSrd8FYjT/SEgo1ynSTGQUlWj5XgMdpuzrcpMKwYgFUrhtCmBq6aGfARH/c
-         moc/HgaHuRmZELOcdS3siQaW2QcoUJYK8BTQg1+X37nB8WmsZyoj8biE1L06Kzlb0XuG
-         DFr2BesvmYip0Y78Fytays9hfP0m/h4sGueWdGO29HBZt6uIM4xCZ53KmF7J7q5OaJ/I
-         sEsA==
-X-Gm-Message-State: APjAAAXC2SD3xA2w2Hj/hKv5sJkIri/j5r2ooTQeLc3eGbRkp1kPJSbq
-        wVG0riH0SqIRPzuqkVuq1ls=
-X-Google-Smtp-Source: APXvYqxIrXvIFUMenEl4saGYID2J6nEtUqtt8CxSjcZXWkvEhJXz7gphABRE+FA2vfv2bZokKh1ONQ==
-X-Received: by 2002:a05:6000:1186:: with SMTP id g6mr93258286wrx.17.1564167912637;
-        Fri, 26 Jul 2019 12:05:12 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:55f1:e404:698f:358? (p200300EA8F43420055F1E404698F0358.dip0.t-ipconnect.de. [2003:ea:8f43:4200:55f1:e404:698f:358])
-        by smtp.googlemail.com with ESMTPSA id h1sm39654182wrt.20.2019.07.26.12.05.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 12:05:11 -0700 (PDT)
-Subject: Re: Driver support for Realtek RTL8125 2.5GB Ethernet
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jian-Hong Pan <jian-hong@endlessm.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>
-Cc:     Linux Upstreaming Team <linux@endlessm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <CAPpJ_ed7dSCfWPt8PiK3_LNw=MDPrFwo-5M1xcpKw-3x7dxsrA@mail.gmail.com>
- <e178221e-4f48-b9b9-2451-048e8f4a0f9f@gmail.com>
-Message-ID: <a3066098-9fba-c2f4-f2d3-b95b08ef5637@gmail.com>
-Date:   Fri, 26 Jul 2019 21:05:02 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2388222AbfGZTQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 15:16:13 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63848 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387455AbfGZTQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 15:16:13 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6QJDOXT026331
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:16:12 -0700
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0089730.ppops.net with ESMTP id 2u03nj90a3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 12:16:12 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 26 Jul 2019 12:16:10 -0700
+Received: by devvm34215.prn1.facebook.com (Postfix, from userid 172786)
+        id D05662543D3B7; Fri, 26 Jul 2019 12:16:09 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm34215.prn1.facebook.com
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
+CC:     <kernel-team@fb.com>
+Smtp-Origin-Cluster: prn1c35
+Subject: [PATCH net-next] ipv6: remove printk
+Date:   Fri, 26 Jul 2019 12:16:09 -0700
+Message-ID: <20190726191609.3601197-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <e178221e-4f48-b9b9-2451-048e8f4a0f9f@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-26_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=989 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1907260225
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.07.2019 22:02, Heiner Kallweit wrote:
-> On 24.07.2019 10:19, Jian-Hong Pan wrote:
->> Hi all,
->>
->> We have got a consumer desktop equipped with Realtek RTL8125 2.5GB
->> Ethernet [1] recently.  But, there is no related driver in mainline
->> kernel yet.  So, we can only use the vendor driver [2] and customize
->> it [3] right now.
->>
->> Is anyone working on an upstream driver for this hardware?
->>
-> At least I'm not aware of any such work. Issue with Realtek is that
-> they answer individual questions very quickly but company policy is
-> to not release any datasheets or errata documentation.
-> RTL8169 inherited a lot from RTL8139, so I would expect that the
-> r8169 driver could be a good basis for a RTL8125 mainline driver.
-> 
-Meanwhile I had a look at the RTL8125 vendor driver. Most parts are
-quite similar to RTL8168. However the PHY handling is quite weird.
-2.5Gbps isn't covered by Clause 22, but instead of switching to
-Clause 45 Realtek uses Clause 22 plus a proprietary chip register
-(for controlling the 2.5Gbps mode) that doesn't seem to be accessible
-via MDIO bus. This may make using phylib tricky.
+ipv6_find_hdr() prints a non-rate limited error message
+when it cannot find an ipv6 header at a specific offset.
+This could be used as a DoS, so just remove it.
 
->> [1] https://www.realtek.com/en/press-room/news-releases/item/realtek-launches-world-s-first-single-chip-2-5g-ethernet-controller-for-multiple-applications-including-gaming-solution
->> [2] https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
->> [3] https://github.com/endlessm/linux/commit/da1e43f58850d272eb72f571524ed71fd237d32b
->>
->> Jian-Hong Pan
->>
-> Heiner
-> 
-Heiner
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ net/ipv6/exthdrs_core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/net/ipv6/exthdrs_core.c b/net/ipv6/exthdrs_core.c
+index b358f1a4dd08..da46c4284676 100644
+--- a/net/ipv6/exthdrs_core.c
++++ b/net/ipv6/exthdrs_core.c
+@@ -197,10 +197,8 @@ int ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset,
+ 		struct ipv6hdr _ip6, *ip6;
+ 
+ 		ip6 = skb_header_pointer(skb, *offset, sizeof(_ip6), &_ip6);
+-		if (!ip6 || (ip6->version != 6)) {
+-			printk(KERN_ERR "IPv6 header not found\n");
++		if (!ip6 || (ip6->version != 6))
+ 			return -EBADMSG;
+-		}
+ 		start = *offset + sizeof(struct ipv6hdr);
+ 		nexthdr = ip6->nexthdr;
+ 	}
+-- 
+2.17.1
+
