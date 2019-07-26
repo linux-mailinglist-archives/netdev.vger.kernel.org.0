@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BAF76334
-	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 12:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D2C76336
+	for <lists+netdev@lfdr.de>; Fri, 26 Jul 2019 12:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726065AbfGZKKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 06:10:20 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:45493 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfGZKKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 06:10:20 -0400
-Received: by mail-oi1-f196.google.com with SMTP id m206so39900665oib.12;
-        Fri, 26 Jul 2019 03:10:20 -0700 (PDT)
+        id S1726175AbfGZKK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 06:10:58 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:40989 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbfGZKK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 06:10:58 -0400
+Received: by mail-oi1-f193.google.com with SMTP id g7so39880457oia.8;
+        Fri, 26 Jul 2019 03:10:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=mCOemuW7OeSOeQ+Uqij0MoIKzzoDy+1eNdkZPdSVP54=;
-        b=erRAqgFmX6IHm2FHcpL4kWfXxdwp3wr1aRpmssGeodkNKtm4UsrzE8xeqlm+TW9Wfo
-         mjl9wEDRfLOUvAajobERMrV9nPA7I2GTo9C3ztvQx1Biyl12kKbWCAcHCZ0yqncoiGZ0
-         JhfR6UeXc81ZENnCtFt7IQM2jIplDg3tbo6nrbFiKzB4wtHhN+eKpGoJ84VzJURKYxu2
-         nwhvthWL5AL5Wg1M8ZsVoMWjnLsO06X4jzY0T5tghLkIhN/2Ac0DRBItCzpi4JLMlxiO
-         uZ3tEidM6Qmg6/zdCgWSp57Lzdff9vIHCxatfKw268Ha1FTaJa597PbqrUTPL4WiWJpb
-         99UA==
+        bh=PNbBPnX465bO/iHYUql8hJxHjiShHO4VBCJbc58eum0=;
+        b=NsvmIADRZ57CP2p7Ho68q+fx2U75fRpq5kr0UboAGLj6Id7cvbFd4UwuCBpGl5bn2n
+         gEeBnYGW3UaKhB++QOy96ktL18gY0lBmJ3yH+SG9gm61hBwYfx7yC1/14Fuiuvt6q3p0
+         UxdZDqrnvNlgTjcRuR+A2J81jrUjPzp6l8gGg1kmEFAUQA2z/kjxy4I21los3fPpfOJ0
+         mdauYplpLJ1zCC8oJ5SzUNYLWFhKX7C1fGTkJO6YOCcD3/kv+aeCB58N9GUn1NcO7Zjc
+         Sh+cailfzPDVm19q2zbHNc7VvtE75S9WDZx8ZJV1evhjlIntC7UM9NiYofZSxdwJKR0z
+         p+aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mCOemuW7OeSOeQ+Uqij0MoIKzzoDy+1eNdkZPdSVP54=;
-        b=tno0xkdsKlzD35MtYKZe4bcPnEr+m+AtrCafeuW/6PdU9eQpuZN0lEhiXsKnhW9ivG
-         UQyKTFNcuhSELR3fpfYSBK9mDUixta8/mTKmUFdSuc4fZIvCSMwTqibQ0oI1YSjhzMBn
-         5YvqrX5h1hB2xs7QNf/Qnovhr+wJ9QFmAHAxzdvX1IsgwkAyCAGFctWGjl0KEVuW+CQV
-         gZr9SWcHx1+oe+gFvn2DqzCo6hIp2gz7498rAqpLkzBrlBOdaaowyOrKo3Bhj7CPTZZk
-         tEL9rWPy+7ufmQW9xQW388w+0wL80jORl96SPnZlQziAr8et9bUbVrOpiNs3A7h+NJwN
-         0Y2Q==
-X-Gm-Message-State: APjAAAXL9wn9PSnsVSbeV77CX3hUTgKGsABDHVpby0UNodLjRdYe+VmH
-        8zH+QMDtpTuX0PwgMH6cRwAR6miGGg==
-X-Google-Smtp-Source: APXvYqy/af14xV8MrqcJedO7vWz5UcJLfvWlOZ6LLT0eX0/kcVOqNpzCMsX7qgAp2J1ae0+q0b0YoQ==
-X-Received: by 2002:aca:2b10:: with SMTP id i16mr41898155oik.42.1564135819659;
-        Fri, 26 Jul 2019 03:10:19 -0700 (PDT)
+        bh=PNbBPnX465bO/iHYUql8hJxHjiShHO4VBCJbc58eum0=;
+        b=SQKXkmwEv42xX3ov35M19HGPi1HsnqPjo1W0fMsa3cTHg3ZlXMPvejXpKrzCYugFuP
+         bmzxyvCbVpY+ot/Prvas388r3U/fnaXWxfo2C8URAYT6C+MlQuS48HYtlyqYRaszdBF6
+         gRzL9m5OMBe/dY5YdZNqRejm6La7tFn9OE7A3MNL+gCXN+/TCq9yg6v780JxqF5iRNZ9
+         z5VY3g8T/7S6CbgvTBjC7O39yjc82eGXcAYHgercu+VcHdVp6mfc3n/NTNHgPXGY6y9s
+         tOeluGxQTzZ9Lwkno1GnOnlgJ69AyINYL6iGsMfdyFTn8QcTJMc0Zl/xEDJSecFH4Om8
+         1Vcg==
+X-Gm-Message-State: APjAAAU04uGDkGWhYX6hDhSBrfGopY4Uxvgbxg3gd2WCvAG4Wgp6xyI3
+        YZy4PBPkIr5TiczNUpHS/g==
+X-Google-Smtp-Source: APXvYqzUoe7Bbm12mN0YHsVCYgmCsjlUkR4jX1fDlc4O7IwKvtGF6z7+Hlv+bdkgY5zEXgt1is35/A==
+X-Received: by 2002:aca:5050:: with SMTP id e77mr41854917oib.52.1564135857484;
+        Fri, 26 Jul 2019 03:10:57 -0700 (PDT)
 Received: from ubuntu (99-149-127-125.lightspeed.rlghnc.sbcglobal.net. [99.149.127.125])
-        by smtp.gmail.com with ESMTPSA id p126sm17820827oia.10.2019.07.26.03.10.18
+        by smtp.gmail.com with ESMTPSA id 17sm4040687oip.26.2019.07.26.03.10.56
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 26 Jul 2019 03:10:18 -0700 (PDT)
-Date:   Fri, 26 Jul 2019 06:10:09 -0400
+        Fri, 26 Jul 2019 03:10:56 -0700 (PDT)
+Date:   Fri, 26 Jul 2019 06:10:54 -0400
 From:   Stephen Suryaputra <ssuryaextr@gmail.com>
 To:     Brodie Greenfield <brodie.greenfield@alliedtelesis.co.nz>
 Cc:     davem@davemloft.net, stephen@networkplumber.org,
@@ -52,28 +52,25 @@ Cc:     davem@davemloft.net, stephen@networkplumber.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         chris.packham@alliedtelesis.co.nz,
         luuk.paulussen@alliedtelesis.co.nz
-Subject: Re: [PATCH 1/2] ipmr: Make cache queue length configurable
-Message-ID: <20190726101009.GA2657@ubuntu>
+Subject: Re: [PATCH 2/2] ip6mr: Make cache queue length configurable
+Message-ID: <20190726101054.GB2657@ubuntu>
 References: <20190725204230.12229-1-brodie.greenfield@alliedtelesis.co.nz>
- <20190725204230.12229-2-brodie.greenfield@alliedtelesis.co.nz>
+ <20190725204230.12229-3-brodie.greenfield@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190725204230.12229-2-brodie.greenfield@alliedtelesis.co.nz>
+In-Reply-To: <20190725204230.12229-3-brodie.greenfield@alliedtelesis.co.nz>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 08:42:29AM +1200, Brodie Greenfield wrote:
+On Fri, Jul 26, 2019 at 08:42:30AM +1200, Brodie Greenfield wrote:
 > We want to be able to keep more spaces available in our queue for
-> processing incoming multicast traffic (adding (S,G) entries) - this lets
-> us learn more groups faster, rather than dropping them at this stage.
+> processing incoming IPv6 multicast traffic (adding (S,G) entries) - this
+> lets us learn more groups faster, rather than dropping them at this stage.
 > 
 > Signed-off-by: Brodie Greenfield <brodie.greenfield@alliedtelesis.co.nz>
-
-Our system can use this. The patch applied cleanly to my net-next
-sandbox. Thank you.
 
 Reviewed-by: Stephen Suryaputra <ssuryaextr@gmail.com>
