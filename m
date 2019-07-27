@@ -2,166 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BAE677765
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 09:07:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B9A77779
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 09:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728189AbfG0HFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 03:05:53 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:41194 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725905AbfG0HFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 03:05:53 -0400
-Received: by mail-yb1-f194.google.com with SMTP id x188so15750962yba.8
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 00:05:52 -0700 (PDT)
+        id S1728332AbfG0Hge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 03:36:34 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38777 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfG0Hge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 03:36:34 -0400
+Received: by mail-wr1-f65.google.com with SMTP id g17so56580539wrr.5;
+        Sat, 27 Jul 2019 00:36:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ub5PKkn5EFfxxnY9bb39Ftw8pu5yDUa3VBuzjuSOfzE=;
-        b=XfmmckmQDh6+fBoBPIeXBbtQpCSL4eyFL8BIQ+pdmEK7vvAmPm30S1i19dXL2B3Oro
-         DXCjAWVsow7yHUOgU34oYt6BcM317Kz8ZFDL7LnmkI9XpjQQJ8HrupoNCMzFXnQVMxFY
-         PkwT/qL8mi7Z83zmfEXYsUEsq45U2EzS9apsoQqM1izTDpdt2G6/x5O9VqM+o1m9p3ZY
-         qbtA163DOKDHnuNI5JxG7GxcTL+586vk2Tgm2667R5IcHUf19uuA9YCkTHj2MCUfaI80
-         cHjgGLiKatAsjtfSvrZoCwcrwsKW+bGzNycpB74M8US70kv36R+Uzp9zZ/uEZfkeSj1H
-         MiaA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=76ws4qemCbK8PdXmvOPFqC7qosVhVH8+4Ya0bG6HZyU=;
+        b=fAWCaJ1iAvmLQfjZi/HMIwN+ytyy2n4tTQpgr/FGuNMhF9qeAWCCSx8t3/6OMu8GSS
+         k/74shZx9E0KhapiK0TH+XP+h69DjxFMvFFLmlyHEwGhmbdowfk1iv9PpNzCvlG+zTa7
+         87HHwy26rVnjJ1mw++sisyoFRKdQicBbvdgTaWEduLOFlmxrICVyYIPAsDKxNWDKs8Y5
+         9jeY9qnSBywQF7xQ2Sw2izpzDKdjuLnJBYh8lSwH1KhyfGh2FCwk1xhP1F6UOAv8IUhy
+         5OnfQtNIsWKzyHkNeHpTVAMU/sQe2MhXdgQlB+zxpxizHL+Z3UfTsJcxZV5tKS5tbAEw
+         XFmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ub5PKkn5EFfxxnY9bb39Ftw8pu5yDUa3VBuzjuSOfzE=;
-        b=j1oWIN6cRkpDDV4GyUmrTDT+Z6gDH8ZKMmvOdrUFsBDRTasfFK+zLGPkWQ4kt51Jaf
-         GxTTDq9uXv6o6gyGDfVIxYr1B9A800wrsalLKnxPM/VQeQIe79Ahl/MfdGK8Do+0XWaH
-         pFIdCUaBfuMpkA6bleEH6Z5WfyLY1WS48/JfTURNS+zPJRa6DswsrooLNHKyrhHuhVDA
-         uGd+TvajprKYJtmGj0XLhyNCh0FdJNNwn6hujsE3O/fScwYhaQooEwLRl7ffRdqXC1xp
-         WeaO/4mGRthtpFxqFp9dlZjl51f67stgg+hvWPbdQAZwk1dswsWYJ09V8HVCKO7am0sC
-         GJNA==
-X-Gm-Message-State: APjAAAWieJMeWEs9VX+FsaTv+xOLzRSQI/abzH1lg78qZHc/OWKpC3pX
-        9GOClFY9s4YvSncIbUBxUJ7dk0voG4TckHAcIDBxpA==
-X-Google-Smtp-Source: APXvYqziauk9S0SO4ysDFYsjbZ+1M6kxz19XmDsYg/G/M4Av0VWWr0BGcgGH1k3VXMe0GMphuyP/WkdPHvZGpmrebL8=
-X-Received: by 2002:a25:9343:: with SMTP id g3mr52940500ybo.234.1564211151456;
- Sat, 27 Jul 2019 00:05:51 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=76ws4qemCbK8PdXmvOPFqC7qosVhVH8+4Ya0bG6HZyU=;
+        b=nmLB9pX1V+bilDtKeFDDPijX1tnQYqBhdoevkJQ+POOF1Z+ZP3fRs7sDM+TwR1tGVS
+         V2Q9+hjo0nbFKjrQF3W6cS3KZZPYEMB45Cg6CCXkzYUDyJ4WaA3EF0ezWdUi05OtFka0
+         Wc+k6olH8bw8ygabFMnP5h+rdjy/ODXhgg2c6K8piA4rMJEmn1bs+H+ap8Qu3CxPELQ8
+         vPIBV/bLrCkP1NvZb+9sHQMKYrymnOwUrH+3kh/GfhDgXIUWxz+5QXhl/edKOM2euFux
+         L7hsH6GNG6zXpVa6/4cGgvGM8szFIcavxTbRduJuggizrlUjW1dhMF93FpDi+e0ljXVy
+         JLUg==
+X-Gm-Message-State: APjAAAWA+Z3a8xT8wx4F8iNiLfV4mHZ4NVq4lpPOeQ9aF0vjP0pYI23c
+        6rqS72h2Fe9VTyr+Dc3zShcuZdQOEsT1flgeK0w=
+X-Google-Smtp-Source: APXvYqxroH+KmlWgRBo+HzQxhgLvRnbBgWmKuDR+aiS23pQ4whB2EoPIjXLGsovY6+QMmmEzNblRBH0uQi5koKnIFPM=
+X-Received: by 2002:a5d:4101:: with SMTP id l1mr52631955wrp.202.1564212991777;
+ Sat, 27 Jul 2019 00:36:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <1564194225-14342-1-git-send-email-johunt@akamai.com>
-In-Reply-To: <1564194225-14342-1-git-send-email-johunt@akamai.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 27 Jul 2019 09:05:39 +0200
-Message-ID: <CANn89iJtw_XrU-F0-frE=P6egH99kF0W0kTzReK701LmigcJ4Q@mail.gmail.com>
-Subject: Re: [PATCH] tcp: add new tcp_mtu_probe_floor sysctl
-To:     Josh Hunt <johunt@akamai.com>
-Cc:     netdev <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>
+References: <CA+icZUWF=B_phP8eGD3v2d9jSSK6Y-N65y-T6xewZnY91vc2_Q@mail.gmail.com>
+ <c2524c96-d71c-d7db-22ec-12da905dc180@fb.com> <CA+icZUXYp=Jx+8aGrZmkCbSFp-cSPcoRzRdRJsPj4yYNs_mJQw@mail.gmail.com>
+ <CA+icZUXsPRWmH3i-9=TK-=2HviubRqpAeDJGriWHgK1fkFhgUg@mail.gmail.com>
+ <295d2acd-0844-9a40-3f94-5bcbb13871d2@fb.com> <CA+icZUUe0QE9QGMom1iQwuG8nM7Oi4Mq0GKqrLvebyxfUmj6RQ@mail.gmail.com>
+ <CAADnVQLhymu8YqtfM1NHD5LMgO6a=FZYaeaYS1oCyfGoBDE_BQ@mail.gmail.com>
+In-Reply-To: <CAADnVQLhymu8YqtfM1NHD5LMgO6a=FZYaeaYS1oCyfGoBDE_BQ@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Sat, 27 Jul 2019 09:36:20 +0200
+Message-ID: <CA+icZUXGPCgdJzxTO+8W0EzNLZEQ88J_wusp7fPfEkNE2RoXJA@mail.gmail.com>
+Subject: Re: next-20190723: bpf/seccomp - systemd/journald issue?
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 27, 2019 at 4:23 AM Josh Hunt <johunt@akamai.com> wrote:
+On Sat, Jul 27, 2019 at 4:24 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> The current implementation of TCP MTU probing can considerably
-> underestimate the MTU on lossy connections allowing the MSS to get down to
-> 48. We have found that in almost all of these cases on our networks these
-> paths can handle much larger MTUs meaning the connections are being
-> artificially limited. Even though TCP MTU probing can raise the MSS back up
-> we have seen this not to be the case causing connections to be "stuck" with
-> an MSS of 48 when heavy loss is present.
+> On Fri, Jul 26, 2019 at 2:19 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > On Fri, Jul 26, 2019 at 11:10 PM Yonghong Song <yhs@fb.com> wrote:
+> > >
+> > >
+> > >
+> > > On 7/26/19 2:02 PM, Sedat Dilek wrote:
+> > > > On Fri, Jul 26, 2019 at 10:38 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> > > >>
+> > > >> Hi Yonghong Song,
+> > > >>
+> > > >> On Fri, Jul 26, 2019 at 5:45 PM Yonghong Song <yhs@fb.com> wrote:
+> > > >>>
+> > > >>>
+> > > >>>
+> > > >>> On 7/26/19 1:26 AM, Sedat Dilek wrote:
+> > > >>>> Hi,
+> > > >>>>
+> > > >>>> I have opened a new issue in the ClangBuiltLinux issue tracker.
+> > > >>>
+> > > >>> Glad to know clang 9 has asm goto support and now It can compile
+> > > >>> kernel again.
+> > > >>>
+> > > >>
+> > > >> Yupp.
+> > > >>
+> > > >>>>
+> > > >>>> I am seeing a problem in the area bpf/seccomp causing
+> > > >>>> systemd/journald/udevd services to fail.
+> > > >>>>
+> > > >>>> [Fri Jul 26 08:08:43 2019] systemd[453]: systemd-udevd.service: Failed
+> > > >>>> to connect stdout to the journal socket, ignoring: Connection refused
+> > > >>>>
+> > > >>>> This happens when I use the (LLVM) LLD ld.lld-9 linker but not with
+> > > >>>> BFD linker ld.bfd on Debian/buster AMD64.
+> > > >>>> In both cases I use clang-9 (prerelease).
+> > > >>>
+> > > >>> Looks like it is a lld bug.
+> > > >>>
+> > > >>> I see the stack trace has __bpf_prog_run32() which is used by
+> > > >>> kernel bpf interpreter. Could you try to enable bpf jit
+> > > >>>     sysctl net.core.bpf_jit_enable = 1
+> > > >>> If this passed, it will prove it is interpreter related.
+> > > >>>
+> > > >>
+> > > >> After...
+> > > >>
+> > > >> sysctl -w net.core.bpf_jit_enable=1
+> > > >>
+> > > >> I can start all failed systemd services.
+> > > >>
+> > > >> systemd-journald.service
+> > > >> systemd-udevd.service
+> > > >> haveged.service
+> > > >>
+> > > >> This is in maintenance mode.
+> > > >>
+> > > >> What is next: Do set a permanent sysctl setting for net.core.bpf_jit_enable?
+> > > >>
+> > > >
+> > > > This is what I did:
+> > >
+> > > I probably won't have cycles to debug this potential lld issue.
+> > > Maybe you already did, I suggest you put enough reproducible
+> > > details in the bug you filed against lld so they can take a look.
+> > >
+> >
+> > I understand and will put the journalctl-log into the CBL issue
+> > tracker and update informations.
+> >
+> > Thanks for your help understanding the BPF correlations.
+> >
+> > Is setting 'net.core.bpf_jit_enable = 2' helpful here?
 >
-> Prior to pushing out this change we could not keep TCP MTU probing enabled
-> b/c of the above reasons. Now with a reasonble floor set we've had it
-> enabled for the past 6 months.
+> jit_enable=1 is enough.
+> Or use CONFIG_BPF_JIT_ALWAYS_ON to workaround.
+>
+> It sounds like clang miscompiles interpreter.
+> modprobe test_bpf
+> should be able to point out which part of interpreter is broken.
 
-And what reasonable value have you used ???
+Maybe we need something like...
 
->
-> The new sysctl will still default to TCP_MIN_SND_MSS (48), but gives
-> administrators the ability to control the floor of MSS probing.
->
-> Signed-off-by: Josh Hunt <johunt@akamai.com>
-> ---
->  Documentation/networking/ip-sysctl.txt | 6 ++++++
->  include/net/netns/ipv4.h               | 1 +
->  net/ipv4/sysctl_net_ipv4.c             | 9 +++++++++
->  net/ipv4/tcp_ipv4.c                    | 1 +
->  net/ipv4/tcp_timer.c                   | 2 +-
->  5 files changed, 18 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-> index df33674799b5..49e95f438ed7 100644
-> --- a/Documentation/networking/ip-sysctl.txt
-> +++ b/Documentation/networking/ip-sysctl.txt
-> @@ -256,6 +256,12 @@ tcp_base_mss - INTEGER
->         Path MTU discovery (MTU probing).  If MTU probing is enabled,
->         this is the initial MSS used by the connection.
->
-> +tcp_mtu_probe_floor - INTEGER
-> +       If MTU probing is enabled this caps the minimum MSS used for search_low
-> +       for the connection.
-> +
-> +       Default : 48
-> +
->  tcp_min_snd_mss - INTEGER
->         TCP SYN and SYNACK messages usually advertise an ADVMSS option,
->         as described in RFC 1122 and RFC 6691.
-> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-> index bc24a8ec1ce5..c0c0791b1912 100644
-> --- a/include/net/netns/ipv4.h
-> +++ b/include/net/netns/ipv4.h
-> @@ -116,6 +116,7 @@ struct netns_ipv4 {
->         int sysctl_tcp_l3mdev_accept;
->  #endif
->         int sysctl_tcp_mtu_probing;
-> +       int sysctl_tcp_mtu_probe_floor;
->         int sysctl_tcp_base_mss;
->         int sysctl_tcp_min_snd_mss;
->         int sysctl_tcp_probe_threshold;
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 0b980e841927..59ded25acd04 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -820,6 +820,15 @@ static struct ctl_table ipv4_net_table[] = {
->                 .extra2         = &tcp_min_snd_mss_max,
->         },
->         {
-> +               .procname       = "tcp_mtu_probe_floor",
-> +               .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_floor,
-> +               .maxlen         = sizeof(int),
-> +               .mode           = 0644,
-> +               .proc_handler   = proc_dointvec_minmax,
-> +               .extra1         = &tcp_min_snd_mss_min,
-> +               .extra2         = &tcp_min_snd_mss_max,
-> +       },
-> +       {
->                 .procname       = "tcp_probe_threshold",
->                 .data           = &init_net.ipv4.sysctl_tcp_probe_threshold,
->                 .maxlen         = sizeof(int),
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index d57641cb3477..e0a372676329 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -2637,6 +2637,7 @@ static int __net_init tcp_sk_init(struct net *net)
->         net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
->         net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
->         net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
-> +       net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
->
->         net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
->         net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
-> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-> index c801cd37cc2a..dbd9d2d0ee63 100644
-> --- a/net/ipv4/tcp_timer.c
-> +++ b/net/ipv4/tcp_timer.c
-> @@ -154,7 +154,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
->         } else {
->                 mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
->                 mss = min(net->ipv4.sysctl_tcp_base_mss, mss);
-> -               mss = max(mss, 68 - tcp_sk(sk)->tcp_header_len);
-> +               mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
->                 mss = max(mss, net->ipv4.sysctl_tcp_min_snd_mss);
->                 icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
->         }
+"bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()"
 
+...for clang?
 
-Existing sysctl should be enough ?
+- Sedat -
 
-tcp_min_snd_mss  documentation could be slightly updated.
-
-And maybe its default value could be raised a bit.
+[1] https://git.kernel.org/linus/3193c0836f203a91bef96d88c64cccf0be090d9c
