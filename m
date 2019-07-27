@@ -2,91 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0254F77B04
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 20:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6BB177B1E
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 20:38:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388004AbfG0SYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 14:24:53 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:44294 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387841AbfG0SYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 14:24:52 -0400
-Received: by mail-qt1-f193.google.com with SMTP id 44so24826154qtg.11;
-        Sat, 27 Jul 2019 11:24:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nSZzeCEsm4nsXZ5ynIhIs66RHBvK6ubd2BmbREFA9Mc=;
-        b=sazxP5vsGGZgLQpvMjWUzg3juRl9OrRTxK3VUOaqwotxKYnFAUMU7SWzNAGk3+qhTw
-         doUf1EP0V1K7+iAjGgEd2HEOMFOEZ2pVGwUo02xrBs5bMgfKxk7pUpjcaLaoHJ7GoD9W
-         rwFKOdgAR8CZgaAW0GBzYcPGI9gQqVH5glonZ3rF+pyBBbzDpPH5PQSuMEPMWlNwFzQH
-         CGEnraNQUQLBKoyUgfMb4Bu/v1q3yut6bJ8v2NvvNkobJOpk/XFERZvupU6reXoe9F9s
-         N2OCk6MI7aeUqW4wm3x3aA+H5ILhdBkTFgygccY62EUxzCCDM3W6cSutmQq7se+Ls/cL
-         MwWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nSZzeCEsm4nsXZ5ynIhIs66RHBvK6ubd2BmbREFA9Mc=;
-        b=kfv0g9ca+ifZQgf4r8p6u/852a5U/mcy+il42kxhd1frcF34bQBLQJrvOlI2GaXcXR
-         7QqRGrMGKFrNdPT2LEWAnE4mwho5IxN0dnAE1EOp5i3pOWMhJBPVJplyTX9MQ8oSR8ff
-         knp+4BEHjTydVjXD+jcIvRtRRa0HGhA4zdNaySz830uQWkgijflJV2NXaO2ESVeXyoDU
-         P+EI//BIv2sj1sqljomxnBzaJ4zeStJNe8a6NVd/HR/LeQTiRFNZUS5HP0K9U9vLMJgt
-         QM6GkosE09CbVh7a9pH4feQPgNUeckBIxh7+9F7IAcly95rJ3i5GtpgdSW+BgtDc2Skf
-         8Fmg==
-X-Gm-Message-State: APjAAAXd9Lhxq7mA2UhnlXWezr0gRvqbu34+lzEhMpQdnVD6ah0uBwV7
-        Nl4ffW2XD+InSqqt5QClm9ohP/o1Gf03Df5vcjY=
-X-Google-Smtp-Source: APXvYqz0k7c7QBhfSALdauT1EsFkp4hll3hKFyJkfMHIXPh69kPkX3I9pjZt+d6mr4E8k3+JueTg/t22qf8IOphZTlU=
-X-Received: by 2002:a0c:c107:: with SMTP id f7mr72046973qvh.150.1564251891722;
- Sat, 27 Jul 2019 11:24:51 -0700 (PDT)
+        id S2388074AbfG0Sij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 14:38:39 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:34210 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387841AbfG0Sij (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jul 2019 14:38:39 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id 8BE265FCC5;
+        Sat, 27 Jul 2019 20:38:36 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="Pfh1mqLo";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id 46EE61D2CA51;
+        Sat, 27 Jul 2019 20:38:36 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 46EE61D2CA51
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1564252716;
+        bh=gZ0/qGKKB7Oj35mAvspuVpFyZiLKrE/dJBM6qWu6lTE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Pfh1mqLoft7Tkp4ukhQLHMSSOsPuq2FZtVk1ARp8mdO3r3rhAYbDQqwTyIIhyeLO6
+         WpPCX2DGepVG9eOHWAUJ59K/0d3CA2MGuQ+FSgBUylphkU+zrN/q0OZ4jVjD8SZHXc
+         2ESiKmEctrqvLs0qTkUBIrwR10canWBb2RX2AWwSvmLDW8xBk19e+Mp9ZGQB6auSQ0
+         RGb3FeRTwIS9KCphHGMyHSgeutYqKqsycXVzf0/XUnofqynh9/AjOrxjxFNmxCQUsL
+         6Au3D8Ym+Rce30MxMo4t4FNfvZzeBufcvkHCWk/7TRsdF9kSkPSCHnUH9d+zL7zLjO
+         LhzHl1nDBA1EQ==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Sat, 27 Jul 2019 18:38:36 +0000
+Date:   Sat, 27 Jul 2019 18:38:36 +0000
+Message-ID: <20190727183836.Horde.B4Y-dcWu5sojGbybcU-O1Qc@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, frank-w@public-files.de,
+        sean.wang@mediatek.com, linux@armlinux.org.uk, davem@davemloft.net,
+        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        john@phrozen.org, linux-mediatek@lists.infradead.org,
+        linux-mips@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mt7530: Add support for port 5
+References: <20190724192549.24615-1-opensource@vdorst.com>
+ <20190724192549.24615-4-opensource@vdorst.com>
+ <f4a9e219-cd03-1512-874d-925c43e3c44f@gmail.com>
+In-Reply-To: <f4a9e219-cd03-1512-874d-925c43e3c44f@gmail.com>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-3-andriin@fb.com>
- <20190725231831.7v7mswluomcymy2l@ast-mbp> <CAEf4BzZxPgAh4PGSWyD0tPOd1wh=DGZuSe1fzxc-Sgyk4D5vDg@mail.gmail.com>
- <957fff81-d845-ebc9-0e80-dbb1f1736b40@fb.com>
-In-Reply-To: <957fff81-d845-ebc9-0e80-dbb1f1736b40@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 27 Jul 2019 11:24:40 -0700
-Message-ID: <CAEf4Bzbt4+mT8GfQG4xMj4tCnWd2ZqJiY3r8cwOankFFQo8wWA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 02/10] libbpf: implement BPF CO-RE offset
- relocation algorithm
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 27, 2019 at 10:00 AM Alexei Starovoitov <ast@fb.com> wrote:
+Quoting Florian Fainelli <f.fainelli@gmail.com>:
+
+> On 7/24/2019 9:25 PM, René van Dorst wrote:
+>> Adding support for port 5.
+>>
+>> Port 5 can muxed/interface to:
+>> - internal 5th GMAC of the switch; can be used as 2nd CPU port or as
+>>   extra port with an external phy for a 6th ethernet port.
+>> - internal PHY of port 0 or 4; Used in most applications so that port 0
+>>   or 4 is the WAN port and interfaces with the 2nd GMAC of the SOC.
+>>
+>> Signed-off-by: René van Dorst <opensource@vdorst.com>
 >
-> On 7/26/19 11:25 PM, Andrii Nakryiko wrote:
-> >>> +     } else if (class == BPF_ST && BPF_MODE(insn->code) == BPF_MEM) {
-> >>> +             if (insn->imm != orig_off)
-> >>> +                     return -EINVAL;
-> >>> +             insn->imm = new_off;
-> >>> +             pr_debug("prog '%s': patched insn #%d (ST | MEM) imm %d -> %d\n",
-> >>> +                      bpf_program__title(prog, false),
-> >>> +                      insn_idx, orig_off, new_off);
-> >> I'm pretty sure llvm was not capable of emitting BPF_ST insn.
-> >> When did that change?
-> > I just looked at possible instructions that could have 32-bit
-> > immediate value. This is `*(rX) = offsetof(struct s, field)`, which I
-> > though is conceivable. Do you think I should drop it?
+> [snip]
 >
-> Just trying to point out that since it's not emitted by llvm
-> this code is likely untested ?
-> Or you've created a bpf asm test for this?
+>> +	/* Setup port 5 */
+>> +	priv->p5_intf_sel = P5_DISABLED;
+>> +	interface = PHY_INTERFACE_MODE_NA;
+>> +
+>> +	if (!dsa_is_unused_port(ds, 5)) {
+>> +		priv->p5_intf_sel = P5_INTF_SEL_GMAC5;
+>> +		interface = of_get_phy_mode(ds->ports[5].dn);
+>> +	} else {
+>> +		/* Scan the ethernet nodes. Look for GMAC1, Lookup used phy */
+>> +		for_each_child_of_node(dn, mac_np) {
+>> +			if (!of_device_is_compatible(mac_np,
+>> +						     "mediatek,eth-mac"))
+>> +				continue;
+>> +			_id = of_get_property(mac_np, "reg", NULL);
+>> +			if (be32_to_cpup(_id)  != 1)
+>> +				continue;
+>> +
+>> +			interface = of_get_phy_mode(mac_np);
+>> +			phy_node = of_parse_phandle(mac_np, "phy-handle", 0);
+>> +
+>> +			if (phy_node->parent == priv->dev->of_node->parent) {
+>> +				_id = of_get_property(phy_node, "reg", NULL);
+>> +				id = be32_to_cpup(_id);
+>> +				if (id == 0)
+>> +					priv->p5_intf_sel = P5_INTF_SEL_PHY_P0;
+>> +				if (id == 4)
+>> +					priv->p5_intf_sel = P5_INTF_SEL_PHY_P4;
+>
+
+Hi Florian,
+
+> Can you use of_mdio_parse_addr() here?
+
+Yes that function be used.
+
+Thanks for mention this function.
+
+I see that I can refactor this scan routine a bit more.
+Also I missing a of_node_put(phy_node) at the end.
+
+> --
+> Florian
+
+Greats,
+
+René
 
 
-Yeah, it's untested right now. Let me try to come up with LLVM
-assembly + relocation (not yet sure how/whether builtin works with
-inline assembly), if that works out, I'll leave this, if not, I'll
-drop BPF_ST|BPF_MEM part.
 
->
->
