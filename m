@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1E21777F2
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 11:41:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A329B777F7
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 11:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387442AbfG0JlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 05:41:02 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:33498 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387400AbfG0JlC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jul 2019 05:41:02 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 314ED5FCC5;
-        Sat, 27 Jul 2019 11:41:00 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="BCxL4cTx";
-        dkim-atps=neutral
-Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id D6CD61D2B7F8;
-        Sat, 27 Jul 2019 11:40:59 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D6CD61D2B7F8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1564220459;
-        bh=Po8WG1qBDIYCnjQlWQtEgz+phG5m7K/kvenHfs5fjjk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BCxL4cTxie75o/k9XqkiVfHwB60RmuIQLrriLsw8HsNf+Yfty4lDx6SxsIRdGCAhj
-         n/cdvVUMBhDeraVG32XU/fmgoSPuIIldmJFov0OgmaWlrIQxbbNqu52USv4XgkkjHJ
-         VDgWPjLKfTJvdHPIlHhMlqcEikofCz4kq6m1l37RIu90GFG93XPY6UzvQqlihSAOZ5
-         /w5ImhYbu5iwWInUP9nznl9CDSeW8lr8dEsCc+88rGFuNCuFRZCW02lFuBNkIwi9S3
-         oCNO1Z5ooAdICcQX75G5iDkBKEyOIl+jjzVg7g+HTePZSGcpJxV+Gimdy80VwTIqW9
-         xd5C8BMywzOwA==
-From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH net] net: phylink: Fix flow control for fixed-link
-Date:   Sat, 27 Jul 2019 11:40:11 +0200
-Message-Id: <20190727094011.14024-1-opensource@vdorst.com>
-X-Mailer: git-send-email 2.20.1
+        id S2387500AbfG0JpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 05:45:02 -0400
+Received: from mail-wm1-f51.google.com ([209.85.128.51]:39759 "EHLO
+        mail-wm1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727885AbfG0JpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 05:45:02 -0400
+Received: by mail-wm1-f51.google.com with SMTP id u25so39160225wmc.4
+        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 02:45:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1k/1wm+N7shOd9rz5DG/vh07V48TlJQtYdFDDPRdU4Y=;
+        b=sN+Esk9AzFuvIU8AxLlGC8BjJWNrmCZDlah/nXmDyJUuQhQqXAbWSIAl5M5jBjnX8V
+         cxz2tY19hl2dNqmztBqOW7Z+gjxIBfwW7GH5p4D2nCJ3gREixGfQcyLntum7s8Fh+EWe
+         eSQt/zIzkj3FKiSuRnmNfYr85FTG8DsJth/77VAe2sbBme9A75jBpBkRXYkbMlgtsg/K
+         Mp6ApGGd+OmnkBZNdwSdQKbUoHukDsGzrHlBNuoErw2WV+61Lc+9H6yA1+Yjn+pM3trr
+         SiUkMMmySy0t6JhE9j6MLSklj3+oE+Omrlpd/dhJJNOgokiuvVtIPRW3GOZD5f8D5WOR
+         lXDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1k/1wm+N7shOd9rz5DG/vh07V48TlJQtYdFDDPRdU4Y=;
+        b=WeLlLJBzk6mLj/RQEQ4r8FC+CbjvYjEoDs+cDopTVPRbIDBx72ng88qDOe+TX+Jkhf
+         WVoqrKJD5OY0Tor0n9PnYFzu/xU/UNQd2LSXfbg4oKdIeJt6vD5s/qPV3J3aiIqDYyh7
+         Z6+LYl6UelV6nhkYK0hONCT1Z/xbwXGgWqkGkKoGAl5ULD8TODpB9IOsBa/xSWO+sWin
+         c7SkiVv5rKdsHYvSrE8fahl+V71giVQm9OpxEnK8DZKlzbwgx/4fXqbmxl8Mm4gzRAlF
+         4hrD7e7jzdyrPxcu94FLUYLPF16f7oRtkYzh2/xcjgnHJk1xCfvQMtDPP/LVHzCFe731
+         BjpA==
+X-Gm-Message-State: APjAAAWsU7Ew3waFoUXp/Hj1+9A+qRQKGbjrSmantmw76LKvbmiB96Qj
+        /+rZS1HzNK9d50R3HjFxBY4QbdlO
+X-Google-Smtp-Source: APXvYqy6TPAUuq0qdWGkuYEInSfZqP8TLWkHlBvNgkpMkyjdhC48xA82s3EmbwjU3vyb7mnEmeS/qg==
+X-Received: by 2002:a7b:ce88:: with SMTP id q8mr90503471wmj.89.1564220700047;
+        Sat, 27 Jul 2019 02:45:00 -0700 (PDT)
+Received: from localhost (ip-78-102-222-119.net.upcbroadband.cz. [78.102.222.119])
+        by smtp.gmail.com with ESMTPSA id r12sm66191804wrt.95.2019.07.27.02.44.59
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sat, 27 Jul 2019 02:44:59 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
+Subject: [patch net-next 0/3] net: devlink: Finish network namespace support
+Date:   Sat, 27 Jul 2019 11:44:56 +0200
+Message-Id: <20190727094459.26345-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In phylink_parse_fixedlink() the pl->link_config.advertising bits are AND
-with pl->supported, pl->supported is zeroed and only the speed/duplex
-modes and MII bits are set.
-So pl->link_config.advertising always loses the flow control/pause bits.
+From: Jiri Pirko <jiri@mellanox.com>
 
-By setting Pause and Asym_Pause bits in pl->supported, the flow control
-work again when devicetree "pause" is set in fixes-link node and the MAC
-advertise that is supports pause.
+Devlink from the beginning counts with network namespaces, but the
+instances has been fixed to init_net. The first patch allows user
+to move existing devlink instances into namespaces:
 
-Results with this patch.
+$ devlink dev
+netdevsim/netdevsim1
+$ ip netns add ns1
+$ devlink dev set netdevsim/netdevsim1 netns ns1
+$ devlink -N ns1 dev                                   
+netdevsim/netdevsim1
 
-Legend:
-- DT = 'Pause' is set in the fixed-link in devicetree.
-- validate() = ‘Yes’ means phylink_set(mask, Pause) is set in the
-  validate().
-- flow = results reported my link is Up line.
+The last patch allows user to create new netdevsim instance directly
+inside network namespace of a caller.
 
-+-----+------------+-------+
-| DT  | validate() | flow  |
-+-----+------------+-------+
-| Yes | Yes        | rx/tx |
-| No  | Yes        | off   |
-| Yes | No         | off   |
-+-----+------------+-------+
+Jiri Pirko (3):
+  net: devlink: allow to change namespaces
+  net: devlink: export devlink net set/get helpers
+  netdevsim: create devlink and netdev instances in namespace
 
-Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
-Signed-off-by: René van Dorst <opensource@vdorst.com>
----
- drivers/net/phy/phylink.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/netdevsim/bus.c       |   1 +
+ drivers/net/netdevsim/dev.c       |  17 ++--
+ drivers/net/netdevsim/netdev.c    |   4 +-
+ drivers/net/netdevsim/netdevsim.h |   5 +-
+ include/net/devlink.h             |   3 +
+ include/uapi/linux/devlink.h      |   4 +
+ net/core/devlink.c                | 128 ++++++++++++++++++++++++++++--
+ 7 files changed, 148 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 5d0af041b8f9..a6aebaa14338 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -216,6 +216,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
- 			       pl->supported, true);
- 	linkmode_zero(pl->supported);
- 	phylink_set(pl->supported, MII);
-+	phylink_set(pl->supported, Pause);
-+	phylink_set(pl->supported, Asym_Pause);
- 	if (s) {
- 		__set_bit(s->bit, pl->supported);
- 	} else {
 -- 
-2.20.1
+2.21.0
 
