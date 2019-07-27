@@ -2,98 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0161977B3C
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 20:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60DBC77B40
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 20:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388035AbfG0SxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 14:53:23 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:42398 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387794AbfG0SxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 14:53:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=covUQ5YlTMmZ1d1AuGCbTv+DxOfUBDuShOI19nDbUYM=; b=FcPe5PAuEocrke1UDZ/bKtZ+a
-        yFBzp7z0k/jxWa1lFJMtXNhgSYSS3fqiRhWB7+Z8dIP8FjTDkAuSog96+DW/VoBr91PE5BcRZQ1UH
-        awzF24JVk59ES15JNTXL26QEKwRrmNqgBkzYCqreDfEqAcd7Ez2nWkivF3/wmDpWdv231F3OHNdzs
-        uXVIOYz8i8rYQc2AKul6RdbFFOl633TWuYCRVJMtyrD30dygGXOiVxS6OUkAn04Od/iaqet9FgTrK
-        h+psXs9/MTdxSJk50v5qPc/GZ2w/j2jOSPnwJUHk1OyhtfootyggzmOdd7B33m557vR8m6sfqyy7k
-        9R8mNvSRg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49416)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hrRok-000565-CC; Sat, 27 Jul 2019 19:53:18 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hrRoh-0007yD-S7; Sat, 27 Jul 2019 19:53:15 +0100
-Date:   Sat, 27 Jul 2019 19:53:15 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Cc:     netdev@vger.kernel.org, frank-w@public-files.de,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        john@phrozen.org, linux-mediatek@lists.infradead.org,
-        linux-mips@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mt7530: Add support for port 5
-Message-ID: <20190727185315.GU1330@shell.armlinux.org.uk>
-References: <20190724192549.24615-1-opensource@vdorst.com>
- <20190724192549.24615-4-opensource@vdorst.com>
+        id S2388052AbfG0Sxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 14:53:41 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:44971 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387794AbfG0Sxk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 14:53:40 -0400
+Received: by mail-qk1-f194.google.com with SMTP id d79so41440412qke.11;
+        Sat, 27 Jul 2019 11:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z9cho60COAaI1MuHirslk6ZK0cSSVNeS7/9hJsI097Q=;
+        b=Er/hdYwUZKWpGf0qqgAzufqlWD6xrubQsjVq/Sq+Co3yYnrMASORZSEvUbr8NfkS21
+         58YnmGMuv1Sca/Q4/tvaGCycozz1NkxW9Ehw7GZlOsFGP0lmTsIVPZksrEXpB7HVWP6/
+         xzWIvrvm27UjnHAhWL+98AryaZloMb3hR7xYz2Z4jctQGdqVE/23n7iYlIZchTpFVGxE
+         HiMQKQyLTS909NDRw/mqVSpMv1M6fCNfdGz+fNIMTBpkbgwsEzmRM48YIKuPtrQYb8Gg
+         CFzEvGzrVWHi3J7t4OMnMn/LKLlkodrozPvkG4BgjMVU5LM27yC7Rf5dO7ufvk46zpVU
+         nI7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z9cho60COAaI1MuHirslk6ZK0cSSVNeS7/9hJsI097Q=;
+        b=s2mLtAc0K72wsAIjV4cdDEKfH6yTG0WHgVpkqZOeBCBEuqfSUWk0xFJvnNznyDQcmX
+         hCjn/wOPI2xCbHqGSsZ7VXJVCO0P5CbZdqqNGTAREyURvWGOLTbU0BLoYXeBXjQ3kuPS
+         KWgLTYk/l7h/bowyMFUidT2fZqbRf8iZhkMBEEgni6OvQIPaJJlDkm7lWvZKI9sHptA6
+         /ei+yogxJNhSEWAR0K4mAXTiuDPKTLNKXVtZoiWIkx1Att1WFFv721PxA0fSsapR4YU+
+         e+zX6E6Dj/gStDKDducZySusBgxsnNlWE6u70MEAzpDO53YLnjISazCiO2smeT1+1Pkz
+         8bzA==
+X-Gm-Message-State: APjAAAVn+05qdvQo6OIrktvZAOSCf6XNaKrUNkDMY3Kpl0akwaERVnWt
+        X1bZk229gL9ZZn/1vogg7yRCVs3PeykreP/hskl7oPT2OEk=
+X-Google-Smtp-Source: APXvYqywAunKei+y4li5vf03mIdlyeqm02RsjdyK59zVEdtkJI/jhbyeqoPUWpne3fG0vbxcU0ixKQp6+K7n4JW8d5Q=
+X-Received: by 2002:a37:660d:: with SMTP id a13mr40289236qkc.36.1564253619458;
+ Sat, 27 Jul 2019 11:53:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190724192549.24615-4-opensource@vdorst.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190726203747.1124677-1-andriin@fb.com> <20190726203747.1124677-2-andriin@fb.com>
+ <20190726212152.GA24397@mini-arch> <CAEf4BzYDvZENJqrT0KKpHbfHNCdObB9p4ZcJqQj3+rM_1ESF3g@mail.gmail.com>
+ <20190726220119.GE24397@mini-arch>
+In-Reply-To: <20190726220119.GE24397@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 27 Jul 2019 11:53:28 -0700
+Message-ID: <CAEf4Bzbj6RWUo8Q7wgMnbL=T7V2yK2=gbdO3sSfxJ71Gp6jeYA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/9] selftests/bpf: prevent headers to be
+ compiled as C code
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 09:25:49PM +0200, René van Dorst wrote:
-> Adding support for port 5.
-> 
-> Port 5 can muxed/interface to:
-> - internal 5th GMAC of the switch; can be used as 2nd CPU port or as
->   extra port with an external phy for a 6th ethernet port.
-> - internal PHY of port 0 or 4; Used in most applications so that port 0
->   or 4 is the WAN port and interfaces with the 2nd GMAC of the SOC.
+On Fri, Jul 26, 2019 at 3:01 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 07/26, Andrii Nakryiko wrote:
+> > On Fri, Jul 26, 2019 at 2:21 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > >
+> > > On 07/26, Andrii Nakryiko wrote:
+> > > > Apprently listing header as a normal dependency for a binary output
+> > > > makes it go through compilation as if it was C code. This currently
+> > > > works without a problem, but in subsequent commits causes problems for
+> > > > differently generated test.h for test_progs. Marking those headers as
+> > > > order-only dependency solves the issue.
+> > > Are you sure it will not result in a situation where
+> > > test_progs/test_maps is not regenerated if tests.h is updated.
+> > >
+> > > If I read the following doc correctly, order deps make sense for
+> > > directories only:
+> > > https://www.gnu.org/software/make/manual/html_node/Prerequisite-Types.html
+> > >
+> > > Can you maybe double check it with:
+> > > * make
+> > > * add new prog_tests/test_something.c
+> > > * make
+> > > to see if the binary is regenerated with test_something.c?
+> >
+> > Yeah, tested that, it triggers test_progs rebuild.
+> >
+> > Ordering is still preserved, because test.h is dependency of
+> > test_progs.c, which is dependency of test_progs binary, so that's why
+> > it works.
+> >
+> > As to why .h file is compiled as C file, I have no idea and ideally
+> > that should be fixed somehow.
+> I guess that's because it's a prerequisite and we have a target that
+> puts all prerequisites when calling CC:
+>
+> test_progs: a.c b.c tests.h
+>         gcc a.c b.c tests.h -o test_progs
+>
+> So gcc compiles each input file.
 
-...
+If that's really a definition of the rule, then it seems not exactly
+correct. What if some of the prerequisites are some object files,
+directories, etc. I'd say the rule should only include .c files. I'll
+add it to my TODO list to go and check how all this is defined
+somewhere, but for now I'm leaving everything as is in this patch.
 
-> @@ -1381,15 +1506,19 @@ static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
->  	phylink_set_port_modes(mask);
->  	phylink_set(mask, Autoneg);
->  
-> -	if (state->interface != PHY_INTERFACE_MODE_TRGMII) {
-> +	if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
-> +		phylink_set(mask, 1000baseT_Full);
-> +	} else {
->  		phylink_set(mask, 10baseT_Half);
->  		phylink_set(mask, 10baseT_Full);
->  		phylink_set(mask, 100baseT_Half);
->  		phylink_set(mask, 100baseT_Full);
-> -		phylink_set(mask, 1000baseT_Half);
-> -	}
->  
-> -	phylink_set(mask, 1000baseT_Full);
-> +		if (state->interface != PHY_INTERFACE_MODE_MII) {
-> +			phylink_set(mask, 1000baseT_Half);
-> +			phylink_set(mask, 1000baseT_Full);
-> +		}
-> +	}
+>
+> I'm not actually sure why default dependency system that uses 'gcc -M'
+> is not working for us (see scripts/Kbuild.include) and we need to manually
+> add tests.h dependency. But that's outside of the scope..
+>
+> > I also started with just removing header as dependency completely
+> > (because it's indirect dependency of test_progs.c), but that broke the
+> > build logic. Dunno, too much magic... This works, tested many-many
+> > times, so I was satisfied enough :)
+> Yeah, that's my only concern, too much magic already and we add
+> quite a bit more.
+>
+> > > Maybe fix the problem of header compilation by having '#ifndef
+> > > DECLARE_TEST #define DECLARE_TEST() #endif' in tests.h instead?
+> >
+> > That's ugly, I'd like to avoid doing that.
+> That's your call, but I'm not sure what's uglier: complicating already
+> complex make rules or making a header self contained.
 
-As port 5 could use an external PHY, and it supports gigabit speeds,
-consider that the PHY may provide not only copper but also fiber
-connectivity, so port 5 should probably also have 1000baseX modes
-too, which would allow such a PHY to bridge the switch to fiber.
+The right call is to fix selftests/bpf Makefile for good (there are
+more issues, e.g., we rebuild all the prog_tests/*.c for alu32 tests,
+even if we only modified test_progs.c), but that's for another patch
+set, unless someone beats me and fixes that first.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+>
+> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > > ---
+> > > >  tools/testing/selftests/bpf/Makefile | 6 +++---
+> > > >  1 file changed, 3 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > > > index 11c9c62c3362..bb66cc4a7f34 100644
+> > > > --- a/tools/testing/selftests/bpf/Makefile
+> > > > +++ b/tools/testing/selftests/bpf/Makefile
+> > > > @@ -235,7 +235,7 @@ PROG_TESTS_H := $(PROG_TESTS_DIR)/tests.h
+> > > >  PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
+> > > >  test_progs.c: $(PROG_TESTS_H)
+> > > >  $(OUTPUT)/test_progs: CFLAGS += $(TEST_PROGS_CFLAGS)
+> > > > -$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_H) $(PROG_TESTS_FILES)
+> > > > +$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_FILES) | $(PROG_TESTS_H)
+> > > >  $(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
+> > > >       $(shell ( cd prog_tests/; \
+> > > >                 echo '/* Generated header, do not edit */'; \
+> > > > @@ -256,7 +256,7 @@ MAP_TESTS_H := $(MAP_TESTS_DIR)/tests.h
+> > > >  MAP_TESTS_FILES := $(wildcard map_tests/*.c)
+> > > >  test_maps.c: $(MAP_TESTS_H)
+> > > >  $(OUTPUT)/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+> > > > -$(OUTPUT)/test_maps: test_maps.c $(MAP_TESTS_H) $(MAP_TESTS_FILES)
+> > > > +$(OUTPUT)/test_maps: test_maps.c $(MAP_TESTS_FILES) | $(MAP_TESTS_H)
+> > > >  $(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
+> > > >       $(shell ( cd map_tests/; \
+> > > >                 echo '/* Generated header, do not edit */'; \
+> > > > @@ -277,7 +277,7 @@ VERIFIER_TESTS_H := $(VERIFIER_TESTS_DIR)/tests.h
+> > > >  VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
+> > > >  test_verifier.c: $(VERIFIER_TESTS_H)
+> > > >  $(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
+> > > > -$(OUTPUT)/test_verifier: test_verifier.c $(VERIFIER_TESTS_H)
+> > > > +$(OUTPUT)/test_verifier: test_verifier.c | $(VERIFIER_TEST_FILES) $(VERIFIER_TESTS_H)
+> > > >  $(VERIFIER_TESTS_H): $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
+> > > >       $(shell ( cd verifier/; \
+> > > >                 echo '/* Generated header, do not edit */'; \
+> > > > --
+> > > > 2.17.1
+> > > >
