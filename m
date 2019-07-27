@@ -2,105 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B27BA77C18
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 23:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 256C977C61
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 01:25:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725983AbfG0Vgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 17:36:33 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33890 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbfG0Vgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 17:36:33 -0400
-Received: by mail-qt1-f195.google.com with SMTP id k10so56160109qtq.1;
-        Sat, 27 Jul 2019 14:36:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=79/Oy0HkICvBfbMtx7+8dDegRPctNVaxsRp2EyYDzME=;
-        b=lLRWOwf3EiTQqwuBb2++1YbILkyPDvrw35KXhQGu5lA2OFO8q6V4zXutdhpaBfj6Z6
-         uvGH0BInYHP++v9R9vi8Cm1VE0s08+gOkFxxZbwK/t/UDi9LLKIctwFK91DHZCUp4xaa
-         t++3Fd/RFlTERYneoVkSAsxDksYAP3AxbRBTShdmV1TebPnUCY/VCl5APzXf3oSLiMDP
-         PQJnep5KumqRbflHYFpVQ5kJIr5YgEXtc0iJHxf15r9Os932SNZga0aYXn2nY7aXjfS1
-         inQpfXDOroxVZWbISI6x+hZ0RFvtqremnTaTuk/jbX8ZuZtwXYGBCkmGGQ3ByOCszwxT
-         6OuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=79/Oy0HkICvBfbMtx7+8dDegRPctNVaxsRp2EyYDzME=;
-        b=FMXEF6OxcUCaAaEd/pOzFI29gP34CUizgvcGINaoMVuWctbX9pkLmSKbxv0fqVDscU
-         ZPdhqawTu1DmJkQOTq0wBOHzYsKyswQQLwjx0cW7GV0Sd5EP7yHpifAdOz5Be+uJh7MB
-         CKXqpAzjoHzEWMQfuj+RFuA/zuG0aUydMeEIh7To0QoD3A2wxqUL+tnvDJFSmjmQyP/o
-         /6zhACRJ26aQ3UmCb513jOGgCXi14yGnmD48UOelLyCnv+Qgj/7h6AM+zSkbhF58FXyL
-         EyWwnoFctdDd8Pdd8wZmch9FQ7v/ZbengNrX5cMFd/ZN9fh16NtXpxsjc84F47EHPbwS
-         0AXQ==
-X-Gm-Message-State: APjAAAU7mXS9TxVA2T/L0oMx9ZJl33eVB35XGO/2ju4aH9aTK/9mmIug
-        aalhD+IirTujpzAohPclVg3I3xAZGH4N7Xe77+0=
-X-Google-Smtp-Source: APXvYqzdhospRPZMf3oGiCOeYQxjmn/QlIfdBK2UfI+qbV5Dv52/8MWcBGjARpn9DOgqvYKGX5BiDxf/Jo6bnKrQfro=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr69934608qty.141.1564263392236;
- Sat, 27 Jul 2019 14:36:32 -0700 (PDT)
+        id S1726357AbfG0XV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 19:21:29 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:57760 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725280AbfG0XV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 19:21:29 -0400
+Received: from pps.filterd (m0050096.ppops.net [127.0.0.1])
+        by m0050096.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id x6RNLNfd017876;
+        Sun, 28 Jul 2019 00:21:23 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=rG9wpH+5dS3XkQEApJKVRr9HxbkNR2gEXf5GRIkYslU=;
+ b=UnZPQEVx05ri99X64K8JjBQCWSvmP5n8AMbbJ3Dhj3XkB0TgOfOJgyQ0o5Kzqy5bgGJQ
+ Ipq/McamqTVPrDOmvXv72/dP1SR3ZetvEV+yjpYlAgdYLlS7+CIj0L41DBFyitzHYJuz
+ vljtxQBVutk0TjiS4vW+tqxJSK12RmnpKO9JQR8J3g8aKerqW7MSCjL9RnwMS5UA0QX/
+ LYMpmt/ObIaaIFI5+amuxgrwAL5AzmD0KD1xjRG36jKg7WolfYU2QA+ir7hSqZ4h411y
+ b6rZIybM1uCrBltMeDgEiW9AmwnostsoV5Yq8dMisC4Cq6FFKswCIxr5yJeQyzOrfKsX jQ== 
+Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
+        by m0050096.ppops.net-00190b01. with ESMTP id 2u0f18ats9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 28 Jul 2019 00:21:23 +0100
+Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
+        by prod-mail-ppoint6.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x6RNHfoJ016148;
+        Sat, 27 Jul 2019 19:21:23 -0400
+Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
+        by prod-mail-ppoint6.akamai.com with ESMTP id 2u0hxv8jqd-1;
+        Sat, 27 Jul 2019 19:21:22 -0400
+Received: from [0.0.0.0] (caldecot.sanmateo.corp.akamai.com [172.22.187.166])
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 544321FC6B;
+        Sat, 27 Jul 2019 23:21:22 +0000 (GMT)
+Subject: Re: [PATCH] tcp: add new tcp_mtu_probe_floor sysctl
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>
+References: <1564194225-14342-1-git-send-email-johunt@akamai.com>
+ <CANn89iJtw_XrU-F0-frE=P6egH99kF0W0kTzReK701LmigcJ4Q@mail.gmail.com>
+From:   Josh Hunt <johunt@akamai.com>
+Message-ID: <a9ec9cfd-c381-c02e-7d67-e24373c693d6@akamai.com>
+Date:   Sat, 27 Jul 2019 16:21:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-3-andriin@fb.com>
- <20190725231831.7v7mswluomcymy2l@ast-mbp> <CAEf4BzZxPgAh4PGSWyD0tPOd1wh=DGZuSe1fzxc-Sgyk4D5vDg@mail.gmail.com>
- <957fff81-d845-ebc9-0e80-dbb1f1736b40@fb.com> <CAEf4Bzbt4+mT8GfQG4xMj4tCnWd2ZqJiY3r8cwOankFFQo8wWA@mail.gmail.com>
- <363f7363-7031-3160-9f5f-583a1662fe25@fb.com>
-In-Reply-To: <363f7363-7031-3160-9f5f-583a1662fe25@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 27 Jul 2019 14:36:21 -0700
-Message-ID: <CAEf4BzZrN-GKMHmLSkdh3JZT_h226RK_F3Tu3tPxrVqKYNSoUQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 02/10] libbpf: implement BPF CO-RE offset
- relocation algorithm
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANn89iJtw_XrU-F0-frE=P6egH99kF0W0kTzReK701LmigcJ4Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-27_18:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1907270293
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-07-27_18:2019-07-26,2019-07-27 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 clxscore=1015
+ priorityscore=1501 phishscore=0 malwarescore=0 mlxlogscore=999
+ adultscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1907270294
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 27, 2019 at 2:29 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/27/19 11:24 AM, Andrii Nakryiko wrote:
-> > On Sat, Jul 27, 2019 at 10:00 AM Alexei Starovoitov <ast@fb.com> wrote:
-> >>
-> >> On 7/26/19 11:25 PM, Andrii Nakryiko wrote:
-> >>>>> +     } else if (class == BPF_ST && BPF_MODE(insn->code) == BPF_MEM) {
-> >>>>> +             if (insn->imm != orig_off)
-> >>>>> +                     return -EINVAL;
-> >>>>> +             insn->imm = new_off;
-> >>>>> +             pr_debug("prog '%s': patched insn #%d (ST | MEM) imm %d -> %d\n",
-> >>>>> +                      bpf_program__title(prog, false),
-> >>>>> +                      insn_idx, orig_off, new_off);
-> >>>> I'm pretty sure llvm was not capable of emitting BPF_ST insn.
-> >>>> When did that change?
-> >>> I just looked at possible instructions that could have 32-bit
-> >>> immediate value. This is `*(rX) = offsetof(struct s, field)`, which I
-> >>> though is conceivable. Do you think I should drop it?
-> >>
-> >> Just trying to point out that since it's not emitted by llvm
-> >> this code is likely untested ?
-> >> Or you've created a bpf asm test for this?
-> >
-> >
-> > Yeah, it's untested right now. Let me try to come up with LLVM
-> > assembly + relocation (not yet sure how/whether builtin works with
-> > inline assembly), if that works out, I'll leave this, if not, I'll
-> > drop BPF_ST|BPF_MEM part.
->
-> FYI. The llvm does not have assembly code format for BPF_ST instructions
-> as it does not generate code for it. So inline asm through llvm won't
-> work. llvm disasseembler won't be able to decode BPF_ST either.
+On 7/27/19 12:05 AM, Eric Dumazet wrote:
+> On Sat, Jul 27, 2019 at 4:23 AM Josh Hunt <johunt@akamai.com> wrote:
+>>
+>> The current implementation of TCP MTU probing can considerably
+>> underestimate the MTU on lossy connections allowing the MSS to get down to
+>> 48. We have found that in almost all of these cases on our networks these
+>> paths can handle much larger MTUs meaning the connections are being
+>> artificially limited. Even though TCP MTU probing can raise the MSS back up
+>> we have seen this not to be the case causing connections to be "stuck" with
+>> an MSS of 48 when heavy loss is present.
+>>
+>> Prior to pushing out this change we could not keep TCP MTU probing enabled
+>> b/c of the above reasons. Now with a reasonble floor set we've had it
+>> enabled for the past 6 months.
+> 
+> And what reasonable value have you used ???
 
-Well then, I'll just drop it for now. Thanks!
+Reasonable for some may not be reasonable for others hence the new 
+sysctl :) We're currently running with a fairly high value based off of 
+the v6 min MTU minus headers and options, etc. We went conservative with 
+our setting initially as it seemed a reasonable first step when 
+re-enabling TCP MTU probing since with no configurable floor we saw a # 
+of cases where connections were using severely reduced mss b/c of loss 
+and not b/c of actual path restriction. I plan to reevaluate the setting 
+at some point, but since the probing method is still the same it means 
+the same clients who got stuck with mss of 48 before will land at 
+whatever floor we set. Looking forward we are interested in trying to 
+improve TCP MTU probing so it does not penalize clients like this.
 
->
-> >>
-> >>
+A suggestion for a more reasonable floor default would be 512, which is 
+the same as the min_pmtu. Given both mechanisms are trying to achieve 
+the same goal it seems like they should have a similar min/floor.
+
+> 
+>>
+>> The new sysctl will still default to TCP_MIN_SND_MSS (48), but gives
+>> administrators the ability to control the floor of MSS probing.
+>>
+>> Signed-off-by: Josh Hunt <johunt@akamai.com>
+>> ---
+>>   Documentation/networking/ip-sysctl.txt | 6 ++++++
+>>   include/net/netns/ipv4.h               | 1 +
+>>   net/ipv4/sysctl_net_ipv4.c             | 9 +++++++++
+>>   net/ipv4/tcp_ipv4.c                    | 1 +
+>>   net/ipv4/tcp_timer.c                   | 2 +-
+>>   5 files changed, 18 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+>> index df33674799b5..49e95f438ed7 100644
+>> --- a/Documentation/networking/ip-sysctl.txt
+>> +++ b/Documentation/networking/ip-sysctl.txt
+>> @@ -256,6 +256,12 @@ tcp_base_mss - INTEGER
+>>          Path MTU discovery (MTU probing).  If MTU probing is enabled,
+>>          this is the initial MSS used by the connection.
+>>
+>> +tcp_mtu_probe_floor - INTEGER
+>> +       If MTU probing is enabled this caps the minimum MSS used for search_low
+>> +       for the connection.
+>> +
+>> +       Default : 48
+>> +
+>>   tcp_min_snd_mss - INTEGER
+>>          TCP SYN and SYNACK messages usually advertise an ADVMSS option,
+>>          as described in RFC 1122 and RFC 6691.
+>> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+>> index bc24a8ec1ce5..c0c0791b1912 100644
+>> --- a/include/net/netns/ipv4.h
+>> +++ b/include/net/netns/ipv4.h
+>> @@ -116,6 +116,7 @@ struct netns_ipv4 {
+>>          int sysctl_tcp_l3mdev_accept;
+>>   #endif
+>>          int sysctl_tcp_mtu_probing;
+>> +       int sysctl_tcp_mtu_probe_floor;
+>>          int sysctl_tcp_base_mss;
+>>          int sysctl_tcp_min_snd_mss;
+>>          int sysctl_tcp_probe_threshold;
+>> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+>> index 0b980e841927..59ded25acd04 100644
+>> --- a/net/ipv4/sysctl_net_ipv4.c
+>> +++ b/net/ipv4/sysctl_net_ipv4.c
+>> @@ -820,6 +820,15 @@ static struct ctl_table ipv4_net_table[] = {
+>>                  .extra2         = &tcp_min_snd_mss_max,
+>>          },
+>>          {
+>> +               .procname       = "tcp_mtu_probe_floor",
+>> +               .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_floor,
+>> +               .maxlen         = sizeof(int),
+>> +               .mode           = 0644,
+>> +               .proc_handler   = proc_dointvec_minmax,
+>> +               .extra1         = &tcp_min_snd_mss_min,
+>> +               .extra2         = &tcp_min_snd_mss_max,
+>> +       },
+>> +       {
+>>                  .procname       = "tcp_probe_threshold",
+>>                  .data           = &init_net.ipv4.sysctl_tcp_probe_threshold,
+>>                  .maxlen         = sizeof(int),
+>> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+>> index d57641cb3477..e0a372676329 100644
+>> --- a/net/ipv4/tcp_ipv4.c
+>> +++ b/net/ipv4/tcp_ipv4.c
+>> @@ -2637,6 +2637,7 @@ static int __net_init tcp_sk_init(struct net *net)
+>>          net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
+>>          net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
+>>          net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
+>> +       net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
+>>
+>>          net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
+>>          net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
+>> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+>> index c801cd37cc2a..dbd9d2d0ee63 100644
+>> --- a/net/ipv4/tcp_timer.c
+>> +++ b/net/ipv4/tcp_timer.c
+>> @@ -154,7 +154,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+>>          } else {
+>>                  mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
+>>                  mss = min(net->ipv4.sysctl_tcp_base_mss, mss);
+>> -               mss = max(mss, 68 - tcp_sk(sk)->tcp_header_len);
+>> +               mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
+>>                  mss = max(mss, net->ipv4.sysctl_tcp_min_snd_mss);
+>>                  icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
+>>          }
+> 
+> 
+> Existing sysctl should be enough ?
+
+I don't think so. Changing tcp_min_snd_mss could impact clients that 
+really want/need a small mss. When you added the new sysctl I tried to 
+analyze the mss values we're seeing to understand what we could possibly 
+raise it to. While not a huge amount, we see more clients than I 
+expected announcing mss values in the 180-512 range. Given that I would 
+not feel comfortable setting tcp_min_snd_mss to say 512 as I suggested 
+above.
+
+> 
+> tcp_min_snd_mss  documentation could be slightly updated.
+> 
+> And maybe its default value could be raised a bit.
+> 
+
+Thanks
+Josh
