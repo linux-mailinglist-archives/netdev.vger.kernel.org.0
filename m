@@ -2,125 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F63A7787B
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 13:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1E1B77881
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 13:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728869AbfG0LkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 07:40:07 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:55488 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbfG0LkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 07:40:06 -0400
-Received: by mail-io1-f70.google.com with SMTP id f22so61768524ioh.22
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 04:40:06 -0700 (PDT)
+        id S1728839AbfG0LvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 07:51:20 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:32871 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfG0LvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 07:51:20 -0400
+Received: by mail-pf1-f194.google.com with SMTP id g2so25743697pfq.0;
+        Sat, 27 Jul 2019 04:51:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=i8GuTXVr9WWsDy7xmOlSHK3JnLYni7YF8DESUAMuRRE=;
+        b=FL0GaRGd+ddhv6Zl4tN/3EqAoU4fTSKBmZZklZtCOspIhC4nY78wsia2ORaX5cejbi
+         p+QyY7RiSoc6Xr5xahvQZ0BTgnFvahvLx3znIvuNUOPab5tcVF7JXV8BlO+dnTk/W9L6
+         Tc38N7mNZ0ffaoT1oyHskfnEHIDcRd3GQT9ygE15GXwlpnZ2XbNhNgZbx4lZi18I0LW8
+         P3+19FSCgpH7+XEZ/OxPxWxoihlVgXwxp+L9otLTCbP+jeAcfHQu3+fhF4/jN5Gyfcld
+         MAT05Gl+FHsWw8omlgS3y0GquX8l9k3S3vI4HM9e+EacqAS2kpEdmYE7iPgnJkb4fuMu
+         wRig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=4hE5MFlcvCrluUJqG4iGcm5nKHlJDnOlC6mpPTKYzN8=;
-        b=J2UPp4aok2RwCfBulxVygyxoPEPnX3+/AkPFg2G+7IFsI3QHEUA7AwIIwxN8aKe7c7
-         gKgqgtVOIl8RXcCKmxBFgqHvRfVDxeCmGBCXDq9eEGW84eG6Xgy2y2TPBWkZqg6a00ou
-         iTzmZZlHmEdkRY6rS5tgMwN7o3/X0qVq9PoZhHe9kvpK53AVxNpNhMaAs21aIJsfAH8y
-         D/DEGcE4Kv+Q1vKMi3fcIMH56yTq3r+0UzmFy5GDyKBxaER0k7hnQNKKJlBqvxk+Ea2H
-         YfBoqUVX+4HDkGKWIc/jyXzShsWpA1jV7bi5Cwji4tzt/0+ksfH78Jbicp+Y9VVDZsIT
-         +dMw==
-X-Gm-Message-State: APjAAAVMvqxXrE6LnWshEmKP8lvgY+KOWjRdl0x1mEaqLIIujyUG31QH
-        Hf5vAlTMpnWVaEkCcCqj9cqkzWCc4l5H+X8CjIfHCsV8Yn/E
-X-Google-Smtp-Source: APXvYqzROQXiyDS5c/uLW2dsKoaCgTkYKi/WKjtywPIJN4f1/0PgmEZsC292WWXMeFNK8gSs9jBIlV1Cv7tMp2g6pnNdNGvmyGVm
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=i8GuTXVr9WWsDy7xmOlSHK3JnLYni7YF8DESUAMuRRE=;
+        b=OkmF9mu66enfL4n5JO0GWUuapyrQIhA/UjI3AbMhcUQDLZ4SUrwIJv/wVhci3O4nrc
+         +cHJkaoOd3l/ddUiNnrqhJ9Lk0dayFUDDuG2EyreRJiyj0wyztF6hVnPPNyr+wUgi0eJ
+         oo/ifPhASG65x7dp3/B95tlQzMWlvu5mLKlcX5lV0jR96cyL5tr9k7OPgwwRk4vjV5bN
+         DQXNzqZD17k9K2np/yTT0PmJNYVaIxXuRm5VC1UcQiAYiKyP5PcToIZimLxx0dalSw/n
+         Ax2lhOqsWAtAc95sCp2HMzQkbOetEaTY3jA0p47x2TbY48wPY7gOYB62/3XPQdiB5jnX
+         QNUA==
+X-Gm-Message-State: APjAAAVm9LfCAHhyJW9Le5uKAx5URshpA3x+eSI0LzG4PIXVgzqJH2Cf
+        FQObXKLDfqd/D+FTnLlkrzY=
+X-Google-Smtp-Source: APXvYqzTbcrT3kuFfgzA+VCEZgArno03apGQuK6wmQ0ufm1Fe4rykeTWak7DhKFTTXP651/tvKw7Lg==
+X-Received: by 2002:a17:90a:33c4:: with SMTP id n62mr105446625pjb.28.1564228279211;
+        Sat, 27 Jul 2019 04:51:19 -0700 (PDT)
+Received: from ?IPv6:2405:205:c906:e9d:e9fc:f9a6:f2b7:2864? ([2405:205:c906:e9d:e9fc:f9a6:f2b7:2864])
+        by smtp.gmail.com with ESMTPSA id 67sm19455517pfd.177.2019.07.27.04.51.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 27 Jul 2019 04:51:18 -0700 (PDT)
+Subject: Re: [PATCH] hv_sock: use HV_HYP_PAGE_SIZE instead of PAGE_SIZE_4K
+To:     kbuild test robot <lkp@intel.com>
+Cc:     kbuild-all@01.org, mikelley@microsoft.com, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, sashal@kernel.org,
+        davem@davemloft.net, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Himadri Pandya <himadri18.07@gmail.com>
+References: <20190725051125.10605-1-himadri18.07@gmail.com>
+ <201907271302.tDRkl9uU%lkp@intel.com>
+From:   Himadri Pandya <himadrispandya@gmail.com>
+Message-ID: <3f425a25-8ecc-6fbd-31d5-d26d28d56cde@gmail.com>
+Date:   Sat, 27 Jul 2019 17:20:33 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:691:: with SMTP id i17mr102984038jab.70.1564227605925;
- Sat, 27 Jul 2019 04:40:05 -0700 (PDT)
-Date:   Sat, 27 Jul 2019 04:40:05 -0700
-In-Reply-To: <0000000000002b4896058e7abf78@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cc977f058ea81e82@google.com>
-Subject: Re: general protection fault in tls_trim_both_msgs
-From:   syzbot <syzbot+0e0fedcad708d12d3032@syzkaller.appspotmail.com>
-To:     ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <201907271302.tDRkl9uU%lkp@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
 
-HEAD commit:    fde50b96 Add linux-next specific files for 20190726
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=142826cc600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4b58274564b354c1
-dashboard link: https://syzkaller.appspot.com/bug?extid=0e0fedcad708d12d3032
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14779d64600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1587c842600000
+On 7/27/2019 10:50 AM, kbuild test robot wrote:
+> Hi Himadri,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on linus/master]
+> [cannot apply to v5.3-rc1 next-20190726]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+0e0fedcad708d12d3032@syzkaller.appspotmail.com
+This patch should be applied to linux-next git tree.
 
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 10205 Comm: syz-executor265 Not tainted 5.3.0-rc1-next-20190726  
-#53
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:tls_trim_both_msgs+0x54/0x130 net/tls/tls_sw.c:268
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 e3 00 00 00 4d 8b b5 b0 06 00 00 48 b8  
-00 00 00 00 00 fc ff df 49 8d 7e 28 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
-85 b3 00 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b
-RSP: 0018:ffff88809037fac0 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff8880a8c0eec0 RCX: ffffffff862f4eef
-RDX: 0000000000000005 RSI: ffffffff862e9016 RDI: 0000000000000028
-RBP: ffff88809037fae0 R08: ffff8880944a8040 R09: ffffed10125e7d51
-R10: ffffed10125e7d50 R11: ffff888092f3ea83 R12: 0000000000000000
-R13: ffff8880a9560c80 R14: 0000000000000000 R15: 00000000ffffffe0
-FS:  000055555717a880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fc5f44109c0 CR3: 000000008b1cc000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  tls_sw_sendmsg+0xe38/0x17b0 net/tls/tls_sw.c:1057
-  inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
-  sock_sendmsg_nosec net/socket.c:637 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:657
-  __sys_sendto+0x262/0x380 net/socket.c:1952
-  __do_sys_sendto net/socket.c:1964 [inline]
-  __se_sys_sendto net/socket.c:1960 [inline]
-  __x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441339
-Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffef90e4908 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441339
-RDX: ffffffffffffffc1 RSI: 00000000200005c0 RDI: 0000000000000003
-RBP: 00000000006cb018 R08: 0000000000000000 R09: 1201000000003618
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402160
-R13: 00000000004021f0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 94e33101f438b014 ]---
-RIP: 0010:tls_trim_both_msgs+0x54/0x130 net/tls/tls_sw.c:268
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 e3 00 00 00 4d 8b b5 b0 06 00 00 48 b8  
-00 00 00 00 00 fc ff df 49 8d 7e 28 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
-85 b3 00 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b
-RSP: 0018:ffff88809037fac0 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff8880a8c0eec0 RCX: ffffffff862f4eef
-RDX: 0000000000000005 RSI: ffffffff862e9016 RDI: 0000000000000028
-RBP: ffff88809037fae0 R08: ffff8880944a8040 R09: ffffed10125e7d51
-R10: ffffed10125e7d50 R11: ffff888092f3ea83 R12: 0000000000000000
-R13: ffff8880a9560c80 R14: 0000000000000000 R15: 00000000ffffffe0
-FS:  000055555717a880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fc5f44109c0 CR3: 000000008b1cc000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Thank you.
 
+- Himadri
+
+>
+> url:    https://github.com/0day-ci/linux/commits/Himadri-Pandya/hv_sock-use-HV_HYP_PAGE_SIZE-instead-of-PAGE_SIZE_4K/20190726-085229
+> config: x86_64-allyesconfig (attached as .config)
+> compiler: gcc-7 (Debian 7.4.0-10) 7.4.0
+> reproduce:
+>          # save the attached .config to linux build tree
+>          make ARCH=x86_64
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+>
+> All error/warnings (new ones prefixed by >>):
+>
+>>> net/vmw_vsock/hyperv_transport.c:58:28: error: 'HV_HYP_PAGE_SIZE' undeclared here (not in a function); did you mean 'HV_MESSAGE_SIZE'?
+>      #define HVS_SEND_BUF_SIZE (HV_HYP_PAGE_SIZE - sizeof(struct vmpipe_proto_header))
+>                                 ^
+>>> net/vmw_vsock/hyperv_transport.c:65:10: note: in expansion of macro 'HVS_SEND_BUF_SIZE'
+>       u8 data[HVS_SEND_BUF_SIZE];
+>               ^~~~~~~~~~~~~~~~~
+>     In file included from include/linux/list.h:9:0,
+>                      from include/linux/module.h:9,
+>                      from net/vmw_vsock/hyperv_transport.c:11:
+>     net/vmw_vsock/hyperv_transport.c: In function 'hvs_open_connection':
+>>> include/linux/kernel.h:845:2: error: first argument to '__builtin_choose_expr' not a constant
+>       __builtin_choose_expr(__safe_cmp(x, y), \
+>       ^
+>     include/linux/kernel.h:921:27: note: in expansion of macro '__careful_cmp'
+>      #define max_t(type, x, y) __careful_cmp((type)(x), (type)(y), >)
+>                                ^~~~~~~~~~~~~
+>>> net/vmw_vsock/hyperv_transport.c:390:12: note: in expansion of macro 'max_t'
+>        sndbuf = max_t(int, sk->sk_sndbuf, RINGBUFFER_HVS_SND_SIZE);
+>                 ^~~~~
+>>> include/linux/kernel.h:845:2: error: first argument to '__builtin_choose_expr' not a constant
+>       __builtin_choose_expr(__safe_cmp(x, y), \
+>       ^
+>     include/linux/kernel.h:913:27: note: in expansion of macro '__careful_cmp'
+>      #define min_t(type, x, y) __careful_cmp((type)(x), (type)(y), <)
+>                                ^~~~~~~~~~~~~
+>>> net/vmw_vsock/hyperv_transport.c:391:12: note: in expansion of macro 'min_t'
+>        sndbuf = min_t(int, sndbuf, RINGBUFFER_HVS_MAX_SIZE);
+>                 ^~~~~
+>>> include/linux/kernel.h:845:2: error: first argument to '__builtin_choose_expr' not a constant
+>       __builtin_choose_expr(__safe_cmp(x, y), \
+>       ^
+>     include/linux/kernel.h:921:27: note: in expansion of macro '__careful_cmp'
+>      #define max_t(type, x, y) __careful_cmp((type)(x), (type)(y), >)
+>                                ^~~~~~~~~~~~~
+>     net/vmw_vsock/hyperv_transport.c:393:12: note: in expansion of macro 'max_t'
+>        rcvbuf = max_t(int, sk->sk_rcvbuf, RINGBUFFER_HVS_RCV_SIZE);
+>                 ^~~~~
+>>> include/linux/kernel.h:845:2: error: first argument to '__builtin_choose_expr' not a constant
+>       __builtin_choose_expr(__safe_cmp(x, y), \
+>       ^
+>     include/linux/kernel.h:913:27: note: in expansion of macro '__careful_cmp'
+>      #define min_t(type, x, y) __careful_cmp((type)(x), (type)(y), <)
+>                                ^~~~~~~~~~~~~
+>     net/vmw_vsock/hyperv_transport.c:394:12: note: in expansion of macro 'min_t'
+>        rcvbuf = min_t(int, rcvbuf, RINGBUFFER_HVS_MAX_SIZE);
+>                 ^~~~~
+>     net/vmw_vsock/hyperv_transport.c: In function 'hvs_stream_enqueue':
+>>> include/linux/kernel.h:845:2: error: first argument to '__builtin_choose_expr' not a constant
+>       __builtin_choose_expr(__safe_cmp(x, y), \
+>       ^
+>     include/linux/kernel.h:913:27: note: in expansion of macro '__careful_cmp'
+>      #define min_t(type, x, y) __careful_cmp((type)(x), (type)(y), <)
+>                                ^~~~~~~~~~~~~
+>     net/vmw_vsock/hyperv_transport.c:681:14: note: in expansion of macro 'min_t'
+>        to_write = min_t(ssize_t, to_write, HVS_SEND_BUF_SIZE);
+>                   ^~~~~
+>
+> vim +58 net/vmw_vsock/hyperv_transport.c
+>
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
