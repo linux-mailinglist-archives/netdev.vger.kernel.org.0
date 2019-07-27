@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DBC77606
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 04:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323087761C
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 04:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbfG0Chh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 22:37:37 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:44569 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726184AbfG0Chg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 22:37:36 -0400
-Received: by mail-lj1-f195.google.com with SMTP id k18so53234721ljc.11
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 19:37:35 -0700 (PDT)
+        id S1727885AbfG0C4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 22:56:23 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37076 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727824AbfG0C4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 22:56:22 -0400
+Received: by mail-qk1-f194.google.com with SMTP id d15so40492666qkl.4
+        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 19:56:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rRuVoGQyiTr9OUVJXnZ+mSEFCM9DeRijbw8KeVVr9qA=;
-        b=CqthdUK3I5f1pgMbLDofd4KnjLcPFrqkN9aDucnvupiA1OVhLJf7fiU9qJpf7ye2GT
-         RbW1RNJFPP/itRtlczIUYEZnt/BZbeyMOTY+mA9Q3Br/G3SfnGCP4iMUnQIBll/n1pik
-         D/0MwAQdtPTxdxt/k0w3VOygmGrY+l6w3VCNg=
+        d=lca.pw; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=b/g/UkQMvOsg1N0rbY/yySPTGMQNY5F8dTERfSADiKQ=;
+        b=eMQaGK35dCJBd/0p+TnvHHYFPeX+5bAbP3P+lOGrohXSgf0UD+zb4GX1wjJUaUalFw
+         xP/ktfqhdDXRXBgu3kHNwSdBC4wcnJU2HQqO3AwoaqQZcb+YCTcIGTbVrXlmfPaGDDw1
+         u1zoRgwf+jJFVZEl8UGmZ4M6zJKyoszU3Lc9r2VNvtweL81sT87uWShaE+0L75AgWtQa
+         gEodjoNCreMgSA0Iy2EK7ssDqIfHRju6uVuvzrEyVPLw2prglB9XzVvgqgHmWf5lGxAf
+         yikXff4rCyszF7fcS6j0xm54AVhH135ZqwXOoOsfREkcQyRwtpehRvKSniGmoe3GUGIE
+         omWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rRuVoGQyiTr9OUVJXnZ+mSEFCM9DeRijbw8KeVVr9qA=;
-        b=i60LRLQGNyi7Tt7pY/LbVaFM85E9LKaSKavfepNHFupcTis/mnB6PD1gSlmQ7Ls7Tl
-         Kqya/atUVQ6ttlUR4WNDA9yj+nmrzX6Yr+00n9QYbGhXtKcTxDARiObQfvH2GZF25xyY
-         HCiW43/xbV1zLQx5nbje9cDgn7gpOg5gGJPT+mymygRLL3AaiH3LLzFtshQezN30ZrzD
-         9KV/3FKgwzA43frFGJ+CYM/cK4bUDUXm3SsHHgl0xg+jbm06MlsP6uOYK0DMmYm1Ecqr
-         7WnOpp6TqiYpq3LnSCpRREMlU8OUQ4P5BwpxakWkSgRk7USF/G2b4CEyq1Rb9gVirZ+x
-         NK0A==
-X-Gm-Message-State: APjAAAVhjF5VWuXOqGBQzYSm5DXc/XZ9mk3itfZ2CLWBnsnC6eRFelcG
-        Re0fJuFpcAkePnPQhfeUt91LrzHfNug=
-X-Google-Smtp-Source: APXvYqws6VhND+IxMxWyTj1zcMkxcWMMdSBiT1E3+gujKjGfC+ml4A9MRdMrWTNj/4NBcjLGLyeYdA==
-X-Received: by 2002:a05:651c:87:: with SMTP id 7mr42732717ljq.184.1564195054279;
-        Fri, 26 Jul 2019 19:37:34 -0700 (PDT)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id x67sm10625744ljb.13.2019.07.26.19.37.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 19:37:34 -0700 (PDT)
-Received: by mail-lf1-f53.google.com with SMTP id c9so38313143lfh.4
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 19:37:34 -0700 (PDT)
-X-Received: by 2002:ac2:4839:: with SMTP id 25mr46122226lft.79.1564194572710;
- Fri, 26 Jul 2019 19:29:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000edcb3c058e6143d5@google.com> <00000000000083ffc4058e9dddf0@google.com>
-In-Reply-To: <00000000000083ffc4058e9dddf0@google.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 26 Jul 2019 19:29:16 -0700
-X-Gmail-Original-Message-ID: <CAHk-=why-PdP_HNbskRADMp1bnj+FwUDYpUZSYoNLNHMRPtoVA@mail.gmail.com>
-Message-ID: <CAHk-=why-PdP_HNbskRADMp1bnj+FwUDYpUZSYoNLNHMRPtoVA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=b/g/UkQMvOsg1N0rbY/yySPTGMQNY5F8dTERfSADiKQ=;
+        b=jyCF0tbZ5NSEKHsL8DdTvyoy8Wqvvq15bO1HKdI0/EhpNrl+i/ZEJmBgORjD5kMEFf
+         GyXEQ6v6vGcnu4d/M+bgM86Aluo/RQaqSBLRtbZwgYaXDIvKNncrPD3U5cp9sX5uvs4q
+         bwdXwCVA7sBjLWcM796yqr0ixO2K9iLwU1yswwwEh0q9ZVuEQmorxBQRQJw4umrtHkm6
+         WpuYilRskfWTgrC+RlaPBKC5bEIYRqNa9yjNan/Pss9f1KTJRpbvwW56FBLns7nGaPJU
+         UOYWQWxmzSMAUSeAbaKg1swbiRkXTYbK97sqMJx4/n32Eg/3OVOqbt2e3gI48kkO8eCz
+         05rw==
+X-Gm-Message-State: APjAAAUVFdBB3/fRTfttM9WUCFntTqX1uN3PWxCf12M9j6HHYAspFnTK
+        bx9ZjfGMBbTCS2KG/T1wTIz8bw==
+X-Google-Smtp-Source: APXvYqynQocQE4l7hBi/wmTypC83TazHSdyWCMed6qXNA6h59EAC1XNMJmP9bCMa5a4vj95oaIQkNg==
+X-Received: by 2002:a05:620a:137c:: with SMTP id d28mr1857550qkl.351.1564196181742;
+        Fri, 26 Jul 2019 19:56:21 -0700 (PDT)
+Received: from qians-mbp.fios-router.home (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+        by smtp.gmail.com with ESMTPSA id v84sm24822683qkb.0.2019.07.26.19.56.20
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Jul 2019 19:56:21 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
 Subject: Re: memory leak in kobject_set_name_vargs (2)
-To:     syzbot <syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+From:   Qian Cai <cai@lca.pw>
+In-Reply-To: <CAHk-=why-PdP_HNbskRADMp1bnj+FwUDYpUZSYoNLNHMRPtoVA@mail.gmail.com>
+Date:   Fri, 26 Jul 2019 22:56:19 -0400
+Cc:     syzbot <syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         David Miller <davem@davemloft.net>,
         Dmitry Vyukov <dvyukov@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>, kuznet@ms2.inr.ac.ru,
@@ -64,37 +61,62 @@ Cc:     Catalin Marinas <catalin.marinas@arm.com>,
         Linux-MM <linux-mm@kvack.org>, luciano.coelho@intel.com,
         Netdev <netdev@vger.kernel.org>, steffen.klassert@secunet.com,
         syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+        yoshfuji@linux-ipv6.org, Wang Hai <wanghai26@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E20E1982-1F60-4F01-AE3C-0CF397A596C4@lca.pw>
+References: <000000000000edcb3c058e6143d5@google.com>
+ <00000000000083ffc4058e9dddf0@google.com>
+ <CAHk-=why-PdP_HNbskRADMp1bnj+FwUDYpUZSYoNLNHMRPtoVA@mail.gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 4:26 PM syzbot
-<syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com> wrote:
->
-> syzbot has bisected this bug to:
->
-> commit 0e034f5c4bc408c943f9c4a06244415d75d7108c
-> Author: Linus Torvalds <torvalds@linux-foundation.org>
-> Date:   Wed May 18 18:51:25 2016 +0000
->
->      iwlwifi: fix mis-merge that breaks the driver
 
-While this bisection looks more likely than the other syzbot entry
-that bisected to a version change, I don't think it is correct eitger.
 
-The bisection ended up doing a lot of "git bisect skip" because of the
+> On Jul 26, 2019, at 10:29 PM, Linus Torvalds =
+<torvalds@linux-foundation.org> wrote:
+>=20
+> On Fri, Jul 26, 2019 at 4:26 PM syzbot
+> <syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com> wrote:
+>>=20
+>> syzbot has bisected this bug to:
+>>=20
+>> commit 0e034f5c4bc408c943f9c4a06244415d75d7108c
+>> Author: Linus Torvalds <torvalds@linux-foundation.org>
+>> Date:   Wed May 18 18:51:25 2016 +0000
+>>=20
+>>     iwlwifi: fix mis-merge that breaks the driver
+>=20
+> While this bisection looks more likely than the other syzbot entry
+> that bisected to a version change, I don't think it is correct eitger.
+>=20
+> The bisection ended up doing a lot of "git bisect skip" because of the
+>=20
+>    undefined reference to `nf_nat_icmp_reply_translation'
+>=20
+> issue. Also, the memory leak doesn't seem to be entirely reliable:
+> when the bisect does 10 runs to verify that some test kernel is bad,
+> there are a couple of cases where only one or two of the ten run
+> failed.
+>=20
+> Which makes me wonder if one or two of the "everything OK" runs were
+> actually buggy, but just happened to have all ten pass=E2=80=A6
 
-    undefined reference to `nf_nat_icmp_reply_translation'
+Real bisection should point to,
 
-issue. Also, the memory leak doesn't seem to be entirely reliable:
-when the bisect does 10 runs to verify that some test kernel is bad,
-there are a couple of cases where only one or two of the ten run
-failed.
+8ed633b9baf9e (=E2=80=9CRevert "net-sysfs: Fix memory leak in =
+netdev_register_kobject=E2=80=9D")
 
-Which makes me wonder if one or two of the "everything OK" runs were
-actually buggy, but just happened to have all ten pass...
+I did encounter those memory leak and comes up with a similar fix in,
 
-               Linus
+6b70fc94afd1 ("net-sysfs: Fix memory leak in netdev_register_kobject=E2=80=
+=9D)
+
+but those error handling paths are tricky that seems nobody did much =
+testing there, so it will
+keep hitting other bugs in upper functions.=
