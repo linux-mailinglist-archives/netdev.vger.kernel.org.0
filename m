@@ -2,95 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C17FD77823
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 12:25:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E067782A
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 12:32:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbfG0KZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 06:25:13 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:40231 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbfG0KZN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 06:25:13 -0400
-Received: by mail-ed1-f66.google.com with SMTP id k8so55281506eds.7
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 03:25:12 -0700 (PDT)
+        id S1726906AbfG0Kch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 06:32:37 -0400
+Received: from mail-wr1-f41.google.com ([209.85.221.41]:42034 "EHLO
+        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725875AbfG0Kch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 06:32:37 -0400
+Received: by mail-wr1-f41.google.com with SMTP id x1so6957299wrr.9;
+        Sat, 27 Jul 2019 03:32:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I9urIWyfzBTbYOSOMidgQgAJ5dRa4kNEamHc41n0CB4=;
+        b=D08JMQPXt/3RUaObdc1X8+6L+8vSHaCR0ke9D5Igdcmo2wCHOuHCjKSABfQxGKCtPK
+         VyewGU96h6ATR5UuRnwvfs8CoohZp6jICPXFYJcZX4mamjDCEQ6ddXxRG2DxLXjr6sk5
+         LFhgiZ+QpqXPlHpoQZgzoNZzn3JMW3j5WHAsZtpxHxoJnAD+Urp/TdnsCFZEJ+Jw8yJ0
+         YJy0GF7gru7J6XYUF6GG0xZPG2QygHpD39iL1fro1xS0TYS7O3XmUCrvStdQR8PIbpV3
+         ccM8m/h9iMmFt/NdKkjaE9+EynxLTTl5bB3hHCR6qwbQKEDW6kpo3ZMUCRWGoWtdfEPh
+         Td8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=gRkoR81Uu5EiiHCvSASeMQn+rAcZzE3EOi2+08buUhM=;
-        b=WLREo7XdRmHojfIKbw5P6B9qW4RqEuW5FDJR1VqMxUvlIKoNrcEJgPO1YGv18HV3sW
-         iPDDhoR/49xnn9ojpio8Pmk4nEeBVeo8ERzUPStFSIFjAHWi2ZNUc8Lak4krq16vcIn1
-         W4MU1u7tGOzwJ3NJQSMNokiH3i1SZCTWK+zC21AUjLhUYJfPW5+Nj0jatmg7FUiJMdkO
-         bXSdoNy9S0H4vAAmFauLDU9E2pKrYBHB5Uw+7MyHvt5G06pJY6ib/ES9j2qjQmKTbciX
-         mq3Tk4YolFFtmvL1T8muzz8tylT/B6RHP4pmzq33zfaAwy4hflo9fxyPzBPTPq/pOBZs
-         VYzA==
-X-Gm-Message-State: APjAAAVWwD+ATv6isGDBZY1P8hDSV0NXZ/IKzGDYQm1bcUf/1dUP7RNj
-        wTaZWKdV2fG7WOfCJuTAq7p1oR9YWDE=
-X-Google-Smtp-Source: APXvYqxfgvdCQsk/WGaZtym0pWET2OA5SCXzb4sRRw5OXfrQhg3Q75+uUM1PJ5cUscOsDOw27qXnQQ==
-X-Received: by 2002:a50:b617:: with SMTP id b23mr86501083ede.135.1564223111914;
-        Sat, 27 Jul 2019 03:25:11 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id b53sm14785413edd.45.2019.07.27.03.25.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 27 Jul 2019 03:25:11 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 64BFB1800C5; Sat, 27 Jul 2019 12:25:10 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch iproute2 1/2] devlink: introduce cmdline option to switch to a different namespace
-In-Reply-To: <20190727102116.GC2843@nanopsycho>
-References: <20190727094459.26345-1-jiri@resnulli.us> <20190727100544.28649-1-jiri@resnulli.us> <87ef2bwztr.fsf@toke.dk> <20190727102116.GC2843@nanopsycho>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 27 Jul 2019 12:25:10 +0200
-Message-ID: <87a7czwz95.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I9urIWyfzBTbYOSOMidgQgAJ5dRa4kNEamHc41n0CB4=;
+        b=mnTQmNTcnjb5dA1rAf+eQM89L26tEbfDigso9mQ1mrSgVUGHebl4HIsGk4K0JgxK2L
+         DHxTuqRi0OVzE1fS6qQccb/Rmifp0/GLyEvqLgWLo8r7hlZTYngLI2J617G5tk5yG7Ds
+         XpZlvTrVmkOFA91qVJp0v4M5fV/wcS6F2cFn6e9NDds9UWXlhc8WfKNRq2BZyBfOkqWD
+         fRkEQduUFHzYWaLhAt+kQQgct4sz1cAVBZT/3U/2PtSexBlpV7VYqQTLaes3hNMvks+l
+         np7TNYFd5iLKq5zhc83BN6g5Pb8vIupTXK243Jlr3RwGemnPiPI8I46uCUt93YKgNpA7
+         DPUg==
+X-Gm-Message-State: APjAAAXSeTLYTB20C21VcP43mnLgLySp8eUtaAt/dN6qTypIkwA9hARj
+        qR1tlfxJQHdp1RUx7+s7Kf+R2cTo
+X-Google-Smtp-Source: APXvYqxDNZmdyAMjswJgvBjZzalaaqC1Szyson1mZJ5ZiQmYZ7RuwdNLSUctMM+/yVdLnjQ2UXoR1w==
+X-Received: by 2002:adf:f6cb:: with SMTP id y11mr21486105wrp.245.1564223554872;
+        Sat, 27 Jul 2019 03:32:34 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f43:4200:c0a4:381:9a20:d2e8? (p200300EA8F434200C0A403819A20D2E8.dip0.t-ipconnect.de. [2003:ea:8f43:4200:c0a4:381:9a20:d2e8])
+        by smtp.googlemail.com with ESMTPSA id j33sm112993820wre.42.2019.07.27.03.32.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 27 Jul 2019 03:32:34 -0700 (PDT)
+Subject: Re: [REGRESSION] 5.3-rc1: r8169: remove 1000/Half from supported
+ modes
+To:     Bernhard Held <berny156@gmx.de>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>
+References: <a291af45-310c-8b60-ae7e-392e73e3bad1@gmx.de>
+ <0a48ecd7-7134-222d-833d-c1f65e055c02@gmail.com>
+ <9af99856-2e5d-0e3a-34d3-0582da869919@gmx.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <603ca390-eeb2-d50b-c2e6-9e22d92c535b@gmail.com>
+Date:   Sat, 27 Jul 2019 12:27:22 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <9af99856-2e5d-0e3a-34d3-0582da869919@gmx.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Pirko <jiri@resnulli.us> writes:
-
-> Sat, Jul 27, 2019 at 12:12:48PM CEST, toke@redhat.com wrote:
->>Jiri Pirko <jiri@resnulli.us> writes:
->>
->>> From: Jiri Pirko <jiri@mellanox.com>
+On 26.07.2019 22:45, Bernhard Held wrote:
+> On 26.07.19 at 22:24, Heiner Kallweit wrote:
+>> On 26.07.2019 22:16, Bernhard Held wrote:
+>>> Hi Heiner,
 >>>
->>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->>> ---
->>>  devlink/devlink.c  | 12 ++++++++++--
->>>  man/man8/devlink.8 |  4 ++++
->>>  2 files changed, 14 insertions(+), 2 deletions(-)
+>>> with commit a6851c613fd7 "r8169: remove 1000/Half from supported modes" my RTL8111B GB-link stops working. It thinks that it established a link, however nothing is actually transmitted. Setting the mode with `mii-tool -F 100baseTx-HD` establishes a successful connection.
 >>>
->>> diff --git a/devlink/devlink.c b/devlink/devlink.c
->>> index d8197ea3a478..9242cc05ad0c 100644
->>> --- a/devlink/devlink.c
->>> +++ b/devlink/devlink.c
->>> @@ -32,6 +32,7 @@
->>>  #include "mnlg.h"
->>>  #include "json_writer.h"
->>>  #include "utils.h"
->>> +#include "namespace.h"
->>>  
->>>  #define ESWITCH_MODE_LEGACY "legacy"
->>>  #define ESWITCH_MODE_SWITCHDEV "switchdev"
->>> @@ -6332,7 +6333,7 @@ static int cmd_health(struct dl *dl)
->>>  static void help(void)
->>>  {
->>>  	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
->>> -	       "       devlink [ -f[orce] ] -b[atch] filename\n"
->>> +	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns]
->>>  netnsname\n"
+>> Can you provide standard ethtool output w/ and w/o this patch? Also a full dmesg output
+>> with the patch would be helpful.
+>> Is "100baseTx-HD" a typo and you mean GBit? And any special reason why you set half duplex?
 >>
->>'ip' uses lower-case n for this; why not be consistent?
->
-> Because "n" is taken :/
+> 
+> The requested files are attached.
+> 
+Looks all normal. So it seems to be a HW issue with the integrated PHY (RTL8211B).
+This PHY version is used also e.g. in RTL8168d. So better revert the original change.
 
-Ah, right, that was right there on the line below in the patch context.
-Oops, by bad (and too bad!)
-
--Toke
+> mii-tool doesn't offer GBit settings. I used HD only while playing around, both FD and HD are working.
+> 
+> Hope it helps!
+> Bernhard
+Heiner
