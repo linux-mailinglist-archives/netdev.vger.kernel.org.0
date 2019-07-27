@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8EA8776D2
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 07:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD28776D9
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 07:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728360AbfG0FsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 01:48:25 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2783 "EHLO huawei.com"
+        id S1728238AbfG0FsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 01:48:22 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:38724 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728184AbfG0FsV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jul 2019 01:48:21 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 062D8CED9C6169735ACD;
-        Sat, 27 Jul 2019 13:48:19 +0800 (CST)
+        id S1727195AbfG0FsU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jul 2019 01:48:20 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CCE9DA9FE6F7EBE133F6;
+        Sat, 27 Jul 2019 13:48:18 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
  14.3.439.0; Sat, 27 Jul 2019 13:48:08 +0800
@@ -22,10 +22,12 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <saeedm@mellanox.com>,
+        Yufeng Mo <moyufeng@huawei.com>,
+        lipeng 00277521 <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V3 net-next 03/10] net: hns3: remove upgrade reset level when reset fail
-Date:   Sat, 27 Jul 2019 13:46:05 +0800
-Message-ID: <1564206372-42467-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH V3 net-next 04/10] net: hns3: change GFP flag during lock period
+Date:   Sat, 27 Jul 2019 13:46:06 +0800
+Message-ID: <1564206372-42467-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564206372-42467-1-git-send-email-tanhuazhong@huawei.com>
 References: <1564206372-42467-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,86 +40,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, hclge_reset_err_handle() will assert a global reset
-when the failing count is smaller than MAX_RESET_FAIL_CNT, which
-will affect other running functions.
+From: Yufeng Mo <moyufeng@huawei.com>
 
-So this patch removes this upgrading, and uses re-scheduling reset
-task to do it.
+When allocating memory, the GFP_KERNEL cannot be used during the
+spin_lock period. This is because it may cause scheduling when holding
+spin_lock. This patch changes GFP flag to GFP_ATOMIC in this case.
 
+Fixes: dd74f815dd41 ("net: hns3: Add support for rule add/delete for flow director")
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: lipeng 00277521 <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 28 +++++++---------------
- 1 file changed, 8 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 3fde5471..3c64d70 100644
+index 3c64d70..14199c4 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3305,7 +3305,7 @@ static int hclge_reset_prepare_wait(struct hclge_dev *hdev)
- 	return ret;
- }
+@@ -5796,7 +5796,7 @@ static int hclge_add_fd_entry_by_arfs(struct hnae3_handle *handle, u16 queue_id,
+ 			return -ENOSPC;
+ 		}
  
--static bool hclge_reset_err_handle(struct hclge_dev *hdev, bool is_timeout)
-+static bool hclge_reset_err_handle(struct hclge_dev *hdev)
- {
- #define MAX_RESET_FAIL_CNT 5
- 
-@@ -3322,20 +3322,11 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev, bool is_timeout)
- 		return false;
- 	} else if (hdev->reset_fail_cnt < MAX_RESET_FAIL_CNT) {
- 		hdev->reset_fail_cnt++;
--		if (is_timeout) {
--			set_bit(hdev->reset_type, &hdev->reset_pending);
--			dev_info(&hdev->pdev->dev,
--				 "re-schedule to wait for hw reset done\n");
--			return true;
--		}
--
--		dev_info(&hdev->pdev->dev, "Upgrade reset level\n");
--		hclge_clear_reset_cause(hdev);
--		set_bit(HNAE3_GLOBAL_RESET, &hdev->default_reset_request);
--		mod_timer(&hdev->reset_timer,
--			  jiffies + HCLGE_RESET_INTERVAL);
--
--		return false;
-+		set_bit(hdev->reset_type, &hdev->reset_pending);
-+		dev_info(&hdev->pdev->dev,
-+			 "re-schedule reset task(%d)\n",
-+			 hdev->reset_fail_cnt);
-+		return true;
- 	}
- 
- 	hclge_clear_reset_cause(hdev);
-@@ -3382,7 +3373,6 @@ static int hclge_reset_stack(struct hclge_dev *hdev)
- static void hclge_reset(struct hclge_dev *hdev)
- {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
--	bool is_timeout = false;
- 	int ret;
- 
- 	/* Initialize ae_dev reset status as well, in case enet layer wants to
-@@ -3410,10 +3400,8 @@ static void hclge_reset(struct hclge_dev *hdev)
- 	if (ret)
- 		goto err_reset;
- 
--	if (hclge_reset_wait(hdev)) {
--		is_timeout = true;
-+	if (hclge_reset_wait(hdev))
- 		goto err_reset;
--	}
- 
- 	hdev->rst_stats.hw_reset_done_cnt++;
- 
-@@ -3465,7 +3453,7 @@ static void hclge_reset(struct hclge_dev *hdev)
- err_reset_lock:
- 	rtnl_unlock();
- err_reset:
--	if (hclge_reset_err_handle(hdev, is_timeout))
-+	if (hclge_reset_err_handle(hdev))
- 		hclge_reset_task_schedule(hdev);
- }
+-		rule = kzalloc(sizeof(*rule), GFP_KERNEL);
++		rule = kzalloc(sizeof(*rule), GFP_ATOMIC);
+ 		if (!rule) {
+ 			spin_unlock_bh(&hdev->fd_rule_lock);
  
 -- 
 2.7.4
