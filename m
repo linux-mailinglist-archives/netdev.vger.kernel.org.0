@@ -2,68 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57E9677625
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 05:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DA3177630
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 05:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727758AbfG0DCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 23:02:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41242 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726184AbfG0DCd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jul 2019 23:02:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tN/4dk4E58XistgDJ6zOTKtSRYqHTx/a1QOwwGKZMmk=; b=eUp19m/y/Qg1oORIbOZgd/lgOH
-        dU1x4yAORlsvB70utYGcZLTwWnbrpNdkE7MYvHycUmKDhdJNay1C1zWz9TrPxN3INRKVF9XHSSupf
-        aBX961lzv4uzmUhvzpmGFQZqpRpzlpaSNm7sKFvaywt+8zVZA/E+URoyEHPR5rlto02w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hrCyV-0007ol-5S; Sat, 27 Jul 2019 05:02:23 +0200
-Date:   Sat, 27 Jul 2019 05:02:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-Message-ID: <20190727030223.GA29731@lunn.ch>
-References: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
- <7e7a7015-6072-d884-b2ba-0a51177245ab@cumulusnetworks.com>
- <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
- <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
- <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
- <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
- <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
- <20190726134613.GD18223@lunn.ch>
- <20190726195010.7x75rr74v7ph3m6m@lx-anielsen.microsemi.net>
+        id S1727805AbfG0DOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 23:14:34 -0400
+Received: from smtprelay0024.hostedemail.com ([216.40.44.24]:58931 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726184AbfG0DOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 23:14:34 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id A8E15182CED2A;
+        Sat, 27 Jul 2019 03:14:32 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3867:3868:3871:4321:4605:5007:6119:7576:7903:10004:10400:10848:11026:11232:11658:11914:12043:12048:12296:12297:12740:12760:12895:13069:13163:13229:13255:13311:13357:13439:14180:14181:14659:14721:21060:21080:21212:21433:21451:21627:30012:30054:30062:30090:30091,0,RBL:23.242.70.174:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: crush31_276c62a312e60
+X-Filterd-Recvd-Size: 3010
+Received: from XPS-9350 (cpe-23-242-70-174.socal.res.rr.com [23.242.70.174])
+        (Authenticated sender: joe@perches.com)
+        by omf18.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 27 Jul 2019 03:14:30 +0000 (UTC)
+Message-ID: <d594eab0036305be337c25add9c0bde965ef1213.camel@perches.com>
+Subject: Re: [PATCH V2 net-next 07/11] net: hns3: adds debug messages to
+ identify eth down cause
+From:   Joe Perches <joe@perches.com>
+To:     liuyonglong <liuyonglong@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     "lipeng321@huawei.com" <lipeng321@huawei.com>,
+        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
+        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Fri, 26 Jul 2019 20:14:29 -0700
+In-Reply-To: <f517dc69-6356-98fe-fb7a-0427728814bb@huawei.com>
+References: <1564111502-15504-1-git-send-email-tanhuazhong@huawei.com>
+         <1564111502-15504-8-git-send-email-tanhuazhong@huawei.com>
+         <a32ca755bfd69046cf89aeacbf67fd16313de768.camel@mellanox.com>
+         <05602c954c689ffcd796e9468c52bca6fa4efe3f.camel@perches.com>
+         <f517dc69-6356-98fe-fb7a-0427728814bb@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190726195010.7x75rr74v7ph3m6m@lx-anielsen.microsemi.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> As you properly guessed, this model is quite different from what we are used to.
+On Sat, 2019-07-27 at 10:28 +0800, liuyonglong wrote:
+> On 2019/7/27 6:18, Joe Perches wrote:
+> > On Fri, 2019-07-26 at 22:00 +0000, Saeed Mahameed wrote:
+> > > On Fri, 2019-07-26 at 11:24 +0800, Huazhong Tan wrote:
+> > > > From: Yonglong Liu <liuyonglong@huawei.com>
+> > > > 
+> > > > Some times just see the eth interface have been down/up via
+> > > > dmesg, but can not know why the eth down. So adds some debug
+> > > > messages to identify the cause for this.
+> > []
+> > > > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > > []
+> > > > @@ -459,6 +459,10 @@ static int hns3_nic_net_open(struct net_device
+> > > > *netdev)
+> > > >  		h->ae_algo->ops->set_timer_task(priv->ae_handle, true);
+> > > >  
+> > > >  	hns3_config_xps(priv);
+> > > > +
+> > > > +	if (netif_msg_drv(h))
+> > > > +		netdev_info(netdev, "net open\n");
+> > > > +
+> > > 
+> > > to make sure this is only intended for debug, and to avoid repetition.
+> > > #define hns3_dbg(__dev, format, args...)			\
+> > > ({								\
+> > > 	if (netif_msg_drv(h))					\
+> > > 		netdev_info(h->netdev, format, ##args);         \
+> > > })
+> > 
+> > 	netif_dbg(h, drv, h->netdev, "net open\n")
+> > 
+> 
+> Hi, Saeed && Joe:
+> For our cases, maybe netif_info() can be use for HNS3 drivers?
+> netif_dbg need to open dynamic debug options additional.
 
-Yes, it takes a while to get the idea that the hardware is just an
-accelerator for what the Linux stack can already do. And if the switch
-cannot do some feature, pass the frame to Linux so it can handle it.
+Your code, your choice.
 
-You need to keep in mind that there could be other ports in the bridge
-than switch ports, and those ports might be interested in the
-multicast traffic. Hence the CPU needs to see the traffic. But IGMP
-snooping can be used to optimise this. But you still need to be
-careful, eg. IPv6 Neighbour discovery has often been broken on
-mv88e6xxx because we have been too aggressive with filtering
-multicast.
+I do think littering dmesg with "net open" style messages
+and such may be unnecessary.  KERN_DEBUG seems a more
+appropriate log level.
 
-	Andrew
+
