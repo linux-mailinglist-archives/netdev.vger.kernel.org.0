@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD5F775B1
-	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 03:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CC11775C3
+	for <lists+netdev@lfdr.de>; Sat, 27 Jul 2019 03:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfG0BwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jul 2019 21:52:11 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:33441 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbfG0BwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 21:52:11 -0400
-Received: by mail-ot1-f65.google.com with SMTP id q20so57102303otl.0
-        for <netdev@vger.kernel.org>; Fri, 26 Jul 2019 18:52:10 -0700 (PDT)
+        id S1726766AbfG0B4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jul 2019 21:56:08 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38209 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726115AbfG0B4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jul 2019 21:56:08 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f5so16738293pgu.5;
+        Fri, 26 Jul 2019 18:56:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+        h=cc:subject:to:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GkP9juew67RSsJdqIVfBOEIXrHlACP1JKEVuOlV1hIg=;
-        b=IAKiU3nzbXTVOh+Xh4evLMwiGugjHz1C3Mu1mIHQIKXFIVghsWJUqEZRc8RFcMjydv
-         unNaZ3WHntdmM69FK2uadVcVZ31L5MOuSNqXir5f4OSrGvNQoCoqG8b0Adzb6PRsp1YD
-         arkPANS5tf/3hGHTlGoFjd4FclrmWDUnjxCHoKjTzIpBBgGJZEbttImO7FNXPmO57eyI
-         SC20k/tisZszstZ6mSQzT4aoQjF0mPBp/g12YYuRXoE2V5HB4V3yrY7IR8gFVu0n3je1
-         7UwJU0fXUYkqqw9XU1XkeWiIPAZJjZOzKdiaS6rhZfniEfSxGd80bfdEibMvstYWhWxY
-         6U0Q==
+        bh=H+r1Jf7HsWqkg8FYa7uesUzkrZtCjbPloOA40dzxmdY=;
+        b=BobiB+JMpw3YdHN52pVs0y3Hk9me5OUP4b82DV70BjHEpdsIHOovWHeSspUI7/ZdDZ
+         fZ7xsxp532TuA919s8emfLW/yH7A1PkH2nxsZiKJACvctSPpWRYs139NDCiSwrbP9bLv
+         x1y5PcogIVpfPYiy+UuE29bcoh1v6Mz3WdOTYVl27rVI9WJavGnvGlzQbX878Oub9qrh
+         A1SiQUxkteLZPJrxGJuWajnQ+iUeeDUCm/leIWbcZLhpJeuY/hiv7hcZaxM/t2a3WYXR
+         Zt/rhY9hdAX18Cq5ygOXdyA347be3Tukg2N8nsx2vWNqOlErGPvYspqhuS4K6Yhaunch
+         iNSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:cc:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=GkP9juew67RSsJdqIVfBOEIXrHlACP1JKEVuOlV1hIg=;
-        b=YffIdK2lEDesCulOW7Qmft1cEMlJ6bTqwPc/hk8BcL2mK0PZXsBQti0UYV2mSWXyQ4
-         RSJ+SllvUKqw6fL7GlqG/gUDhROZBGtVWoxpUq4ZAoo3ok8f/ofbLuzRiJgNaA81SERu
-         XrkUpQIlx1RUi0+IdmOK/Fnzt8uyck4vxLGygIBdEl0EcJTq7eHWcopWr0JiHkubVvH2
-         VvWKca2XJf2q2uTBrWnyGFG1m4GtA2IIKcVUozBhnkHzD1EDLY2Ac1i+/2qbT3NRG7YH
-         2kxvQzj/IcFMhuWMIXceFLx0G8Hf921QYImSr5zHMMlm2ER4JeeupPugq99tnvAdF7Ly
-         /JKA==
-X-Gm-Message-State: APjAAAXi923Ejr7lrvNQO+3GGN+TsMzM7f20ykYxXDR1yl1/MHqtxvSw
-        MRNpeYYrCBbBuHeBX6H4x3I=
-X-Google-Smtp-Source: APXvYqySC86U82U5gbGK8XU35ayAJK2Qg1PX8S+ItWtjob+IFJA8X4SolIEOsI1dLHeEsDxjLbgmfQ==
-X-Received: by 2002:a9d:5c0d:: with SMTP id o13mr8478218otk.310.1564192330662;
-        Fri, 26 Jul 2019 18:52:10 -0700 (PDT)
-Received: from [192.168.1.139] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id x19sm18671489oto.42.2019.07.26.18.52.09
+        bh=H+r1Jf7HsWqkg8FYa7uesUzkrZtCjbPloOA40dzxmdY=;
+        b=diEzI3tPaT8HF3JgZSwVDzkmsNXwm3EaCof5X2Ud44mAt/nxwcwTVnO9i0DKRm7jcZ
+         N90OVBNxp7rjTLSuWK/lVFdHDJ+tIw3K0avqf6PxBqEMqCsH6gcFCFkCDPwdQY/S5tUJ
+         vJdJ5mgkzb2Pq8uUJ+C9gKilwh23KPKo7YPkII7V19ohF5HI1xbii0v22sPY4TC/Urqw
+         RjncxF2xBHHRJPyyg2T+EyH6MEzBCdW2owDS83vs1kp/B5jeyGYM8SKckMfs1rMUA+lJ
+         3al8M7FhnbkekeAES+BcBdh5/i4U7iUcVG/pp2Seo0QhlNOilhALWiMBrRn60uI7euTe
+         +46g==
+X-Gm-Message-State: APjAAAUvvwGjHQ2nRlogOyMX781EUCxA81EpGwY66NXBgeVzk3IuuaU3
+        nXgr1uTTcVb7Dw14m39C1gA=
+X-Google-Smtp-Source: APXvYqzOMyF8QtzM5EplAjtJU3IAbE80dKRh1AoIyzIrau7BIlUroDO8t0md3cGFsArlQ6DUzuSJOA==
+X-Received: by 2002:aa7:8b11:: with SMTP id f17mr25338093pfd.19.1564192567759;
+        Fri, 26 Jul 2019 18:56:07 -0700 (PDT)
+Received: from ?IPv6:2405:4800:58f7:1782:e03a:f6b:ecba:b51? ([2405:4800:58f7:1782:e03a:f6b:ecba:b51])
+        by smtp.gmail.com with ESMTPSA id u16sm51302148pjb.2.2019.07.26.18.56.04
         (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jul 2019 18:52:10 -0700 (PDT)
-Subject: Re: [PATCH] b43legacy: Remove pointless cond_resched() wrapper
-To:     Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org
-Cc:     b43-dev@lists.infradead.org, Kalle Valo <kvalo@codeaurora.org>
-References: <alpine.DEB.2.21.1907262157500.1791@nanos.tec.linutronix.de>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <46a1581f-6fd7-92b4-4eec-8196254e63cc@lwfinger.net>
-Date:   Fri, 26 Jul 2019 20:52:09 -0500
+        Fri, 26 Jul 2019 18:56:06 -0700 (PDT)
+Cc:     tranmanphong@gmail.com, gigaset307x-common@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
+Subject: Re: [PATCH] isdn/gigaset: check endpoint null in gigaset_probe
+To:     Paul Bolle <pebolle@tiscali.nl>, isdn@linux-pingi.de,
+        gregkh@linuxfoundation.org
+References: <20190726133528.11063-1-tranmanphong@gmail.com>
+ <1876196a0e7fc665f0f50d5e9c0e2641f713e089.camel@tiscali.nl>
+From:   Phong Tran <tranmanphong@gmail.com>
+Message-ID: <24cd0b70-45e6-ea98-fc8f-b25fbf6e817f@gmail.com>
+Date:   Sat, 27 Jul 2019 08:56:02 +0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1907262157500.1791@nanos.tec.linutronix.de>
+In-Reply-To: <1876196a0e7fc665f0f50d5e9c0e2641f713e089.camel@tiscali.nl>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -64,25 +69,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/26/19 3:00 PM, Thomas Gleixner wrote:
-> cond_resched() can be used unconditionally. If CONFIG_PREEMPT is set, it
-> becomes a NOP scheduler wise.
+On 7/26/19 9:22 PM, Paul Bolle wrote:
+> Phong Tran schreef op vr 26-07-2019 om 20:35 [+0700]:
+>> This fixed the potential reference NULL pointer while using variable
+>> endpoint.
+>>
+>> Reported-by: syzbot+35b1c403a14f5c89eba7@syzkaller.appspotmail.com
+>> Tested by syzbot:
+>> https://groups.google.com/d/msg/syzkaller-bugs/wnHG8eRNWEA/Qn2HhjNdBgAJ
+>>
+>> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+>> ---
+>>   drivers/isdn/gigaset/usb-gigaset.c | 9 +++++++++
 > 
-> Also the B43_BUG_ON() in that wrapper is a homebrewn variant of
-> __might_sleep() which is part of cond_resched() already.
-> 
-> Remove the wrapper and invoke cond_resched() directly.
-> 
-> Found while looking for CONFIG_PREEMPT dependent code treewide.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: netdev@vger.kernel.org
-> Cc: b43-dev@lists.infradead.org
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Larry Finger <Larry.Finger@lwfinger.net>
+> This is now drivers/staging/isdn/gigaset/usb-gigaset.c.
 
-Reviewed- and Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+this patch was created base on branch 
+kasan/usb-fuzzer-usb-testing-2019.07.11 [1]
+I did not notice about the driver was moved to staging.
 
-Thanks.
+> 
+>>   1 file changed, 9 insertions(+)
+>>
+>> diff --git a/drivers/isdn/gigaset/usb-gigaset.c b/drivers/isdn/gigaset/usb-gigaset.c
+>> index 1b9b43659bdf..2e011f3db59e 100644
+>> --- a/drivers/isdn/gigaset/usb-gigaset.c
+>> +++ b/drivers/isdn/gigaset/usb-gigaset.c
+>> @@ -703,6 +703,10 @@ static int gigaset_probe(struct usb_interface *interface,
+>>   	usb_set_intfdata(interface, cs);
+>>   
+>>   	endpoint = &hostif->endpoint[0].desc;
+>> +        if (!endpoint) {
+>> +		dev_err(cs->dev, "Couldn't get control endpoint\n");
+>> +		return -ENODEV;
+>> +	}
+> 
+> When can this happen? Is this one of those bugs that one can only trigger with
+> a specially crafted (evil) usb device?
+> 
 
-Larry
+Yes, in my understanding, this only happens with random test of syzbot.
+
+>>   	buffer_size = le16_to_cpu(endpoint->wMaxPacketSize);
+>>   	ucs->bulk_out_size = buffer_size;
+>> @@ -722,6 +726,11 @@ static int gigaset_probe(struct usb_interface *interface,
+>>   	}
+>>   
+>>   	endpoint = &hostif->endpoint[1].desc;
+>> +        if (!endpoint) {
+>> +		dev_err(cs->dev, "Endpoint not available\n");
+>> +		retval = -ENODEV;
+>> +		goto error;
+>> +	}
+>>   
+>>   	ucs->busy = 0;
+>>   
+> 
+> Please note that I'm very close to getting cut off from the ISDN network, so
+> the chances of being able to testi this on a live system are getting small.
+> 
+
+This bug can be invalid now. Do you agree?
+There is an instruction to report invalid bug to syzbot [2].
+
+> Thanks,
+> 
+> 
+> Paul Bolle
+> 
+
+
+[1] 
+https://github.com/google/kasan/commits/usb-fuzzer-usb-testing-2019.07.11
+[2] 
+https://github.com/google/syzkaller/blob/master/docs/syzbot.md#communication-with-syzbot
+
+Thanks,
+Phong
