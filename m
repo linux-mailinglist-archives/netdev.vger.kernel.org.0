@@ -2,89 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF80977D86
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 05:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FFC77D73
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 05:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbfG1D0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 23:26:00 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11578 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726207AbfG1DZ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 23:25:57 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6S3PvoX007719
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 20:25:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=nFRgnH9mQPN+sVp1HVKIA2YU5tTgpJRhti1w1Ct/vNg=;
- b=W4AXxtxEE4tsbtxuSeTn3xKIRxKJWWM3F8XL4gp7LzcKlC34UXCyOirkcAhdnEY4oAYf
- 1uIHPaPUW5oRI9hcMyfit7Rf0kjSubHw6iclwGfROibPuuUQRZe9eczCMixjwTBrMXsm
- 9DMgrpfhsGd4K94htV7eSqNE7sdtUKuH46o= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u0ma0t2v3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 20:25:56 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 27 Jul 2019 20:25:55 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id E0DB18615B1; Sat, 27 Jul 2019 20:25:54 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <sdf@fomichev.me>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v3 bpf-next 9/9] selftests/bpf: convert send_signal.c to use subtests
-Date:   Sat, 27 Jul 2019 20:25:31 -0700
-Message-ID: <20190728032531.2358749-10-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190728032531.2358749-1-andriin@fb.com>
-References: <20190728032531.2358749-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1725880AbfG1DUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 23:20:36 -0400
+Received: from [1.52.200.85] ([1.52.200.85]:12475 "EHLO [1.52.200.85]"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725440AbfG1DUg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jul 2019 23:20:36 -0400
+From:   "niven24" <cfawkb@activeware.com>
+To:     <netdev@vger.kernel.org>
+Subject: High level of danger. Your account was under attack.
+Date:   28 Jul 2019 15:50:46 +0600
+Message-ID: <002801d5452d$0572c1b3$01d975a0$@activeware.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-28_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=675 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907280042
-X-FB-Internal: deliver
+Content-Type: text/plain;
+        charset="windows-1252"
+Content-Transfer-Encoding: 8bit
+X-Mailer: Microsoft Office Outlook 12.0
+Thread-Index: Ac5doo0mdtwl3i5e5doo0mdtwl3i5e==
+Content-Language: en
+x-cr-hashedpuzzle: 2D4= oo0m dtwl 3i5e 5doo 0mdt 1h57 22v4 j8u3 tt1h 5722 v4j8 u3tt 1h57 22v4 j8u3;1;tt1h5722v4j8u3tt1h5722v4j8u3tt1h5722v4j8u3tt1h57;Sosha1_v1;7;\{A9B81A4B-9E0B-E9CF-DE7C-2DF86D8FA9B8\};ZQB3AGUAZgj8u3tt1h5722v4j8u3tt1h5722v4j8u3tt1h57;28 Jul 2019 15:50:46 +0600;hlr65tnptwvffwhl
+x-cr-puzzleid: \{A9B81A4B-9E0B-E9CF-DE7C-2DF86D8FA9B8\}
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert send_signal set of tests to be exposed as three sub-tests.
+Hi, dear user of vger.kernel.org
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/prog_tests/send_signal.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+We have installed one RAT software into you device 
+For this moment your email account is hacked too.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-index d950f4558897..461b423d0584 100644
---- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
-+++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-@@ -219,7 +219,10 @@ void test_send_signal(void)
- {
- 	int ret = 0;
- 
--	ret |= test_send_signal_tracepoint();
--	ret |= test_send_signal_perf();
--	ret |= test_send_signal_nmi();
-+	if (test__start_subtest("send_signal_tracepoint"))
-+		ret |= test_send_signal_tracepoint();
-+	if (test__start_subtest("send_signal_perf"))
-+		ret |= test_send_signal_perf();
-+	if (test__start_subtest("send_signal_nmi"))
-+		ret |= test_send_signal_nmi();
- }
--- 
-2.17.1
+Changed your password? You're doing great!
+But my software recognizes every such action. I'm updating passwords!
+I'm always one step ahead....
+
+So... I have downloaded all confidential information from your system and I got some more evidence.
+The most interesting moment that I have discovered are videos records where you masturbating.
+
+I posted EternalBlue Exploit modification on porn site, and then you installed my malicious code (trojan) on your operation system.
+When you clicked the button Play on porn video, at that moment my trojan was downloaded to your device.
+After installation, your front camera shoots video every time you masturbate, in addition, the software is synchronized with the video you choose.
+
+For the moment, the software has harvrested all your contact information from social networks and email addresses.
+If you need to erase all of your collected data and video with your enjoy, send me $600(usd) in BTC (crypto currency).
+
+This is my Bitcoin wallet: 1A19CzQQ5ZFxK57LWoAn2rFScTda6DnK1q
+You have 48 hours after reading this letter.
+
+After your transaction I will erase all your data.
+Otherwise, I will send video with your pranks to all your colleagues, friends and relatives!!!
+
+P.S. I'm asking you - not to answer this letter because the sender's address is fake, just to keep me incognito.
+
+And henceforth be more careful!
+Please visit only secure sites!
+Bye,Bye...
 
