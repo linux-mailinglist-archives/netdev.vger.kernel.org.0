@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B037477D78
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 05:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B09377D7C
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 05:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725983AbfG1DZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jul 2019 23:25:43 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8664 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725875AbfG1DZm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 23:25:42 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6S3PHuZ003702
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 20:25:41 -0700
+        id S1726108AbfG1DZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jul 2019 23:25:49 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17610 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726008AbfG1DZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jul 2019 23:25:47 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6S3Ni5O023369
+        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 20:25:46 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=Ro1atBOQn0FoflswE2CRQID1FbEPRYZgHIZRtk7tSxE=;
- b=LH1fhSecnYmaHHK2Dg+snv3pZIjsx0SjSOdELLyAR8tGFlc0TcGpGflxPOwst1t8qJAZ
- 2nCnRvFQfkYbDYWa13vkN8A9quwyxhcvGZmIWDaTWJe7K1FGw3nlHh0QyKoIK+dG6hMy
- moULaSzDirAybG6aVWYn9U/wShTTIQyU9II= 
+ content-type; s=facebook; bh=44ceatmvJcmJn22R9vBTITFdEuxhvHirtmB4yCAIeQk=;
+ b=mVtBBDM7vU5Pajd2QiWTeD36mW99ltgoJgrU4/40KtLKwSI/E+LnBxZsRcpcqAKm8FO3
+ vWOczrnpsH91IJyIJi+1j1heEC7Ya4ZOh6072K89G9fVVsDxXEGtZiJB2vL7EEF0WRw2
+ dF9tn81ppRRxd+fFJRfHW4nrLQPfRdecn8Q= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u0hx2tbtb-1
+        by m0089730.ppops.net with ESMTP id 2u0j3stamw-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 20:25:41 -0700
+        for <netdev@vger.kernel.org>; Sat, 27 Jul 2019 20:25:46 -0700
 Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Sat, 27 Jul 2019 20:25:40 -0700
+ Sat, 27 Jul 2019 20:25:44 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 91F0F8615B1; Sat, 27 Jul 2019 20:25:38 -0700 (PDT)
+        id 9ABFC8615B1; Sat, 27 Jul 2019 20:25:40 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v3 bpf-next 1/9] selftests/bpf: prevent headers to be compiled as C code
-Date:   Sat, 27 Jul 2019 20:25:23 -0700
-Message-ID: <20190728032531.2358749-2-andriin@fb.com>
+Subject: [PATCH v3 bpf-next 2/9] selftests/bpf: revamp test_progs to allow more control
+Date:   Sat, 27 Jul 2019 20:25:24 -0700
+Message-ID: <20190728032531.2358749-3-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190728032531.2358749-1-andriin@fb.com>
 References: <20190728032531.2358749-1-andriin@fb.com>
@@ -60,48 +60,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apprently listing header as a normal dependency for a binary output
-makes it go through compilation as if it was C code. This currently
-works without a problem, but in subsequent commits causes problems for
-differently generated test.h for test_progs. Marking those headers as
-order-only dependency solves the issue.
+Refactor test_progs to allow better control on what's being run.
+Also use argp to do argument parsing, so that it's easier to keep adding
+more options.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/testing/selftests/bpf/Makefile | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/Makefile     |  8 +--
+ tools/testing/selftests/bpf/test_progs.c | 84 +++++++++++++++++++++---
+ 2 files changed, 77 insertions(+), 15 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 11c9c62c3362..bb66cc4a7f34 100644
+index bb66cc4a7f34..3bd0f4a0336a 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -235,7 +235,7 @@ PROG_TESTS_H := $(PROG_TESTS_DIR)/tests.h
- PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
- test_progs.c: $(PROG_TESTS_H)
- $(OUTPUT)/test_progs: CFLAGS += $(TEST_PROGS_CFLAGS)
--$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_H) $(PROG_TESTS_FILES)
-+$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_FILES) | $(PROG_TESTS_H)
+@@ -239,14 +239,8 @@ $(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_FILES) | $(PROG_TESTS_H)
  $(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
  	$(shell ( cd prog_tests/; \
  		  echo '/* Generated header, do not edit */'; \
-@@ -256,7 +256,7 @@ MAP_TESTS_H := $(MAP_TESTS_DIR)/tests.h
- MAP_TESTS_FILES := $(wildcard map_tests/*.c)
- test_maps.c: $(MAP_TESTS_H)
- $(OUTPUT)/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
--$(OUTPUT)/test_maps: test_maps.c $(MAP_TESTS_H) $(MAP_TESTS_FILES)
-+$(OUTPUT)/test_maps: test_maps.c $(MAP_TESTS_FILES) | $(MAP_TESTS_H)
- $(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
- 	$(shell ( cd map_tests/; \
- 		  echo '/* Generated header, do not edit */'; \
-@@ -277,7 +277,7 @@ VERIFIER_TESTS_H := $(VERIFIER_TESTS_DIR)/tests.h
- VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
- test_verifier.c: $(VERIFIER_TESTS_H)
- $(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
--$(OUTPUT)/test_verifier: test_verifier.c $(VERIFIER_TESTS_H)
-+$(OUTPUT)/test_verifier: test_verifier.c | $(VERIFIER_TEST_FILES) $(VERIFIER_TESTS_H)
- $(VERIFIER_TESTS_H): $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
- 	$(shell ( cd verifier/; \
- 		  echo '/* Generated header, do not edit */'; \
+-		  echo '#ifdef DECLARE'; \
+ 		  ls *.c 2> /dev/null | \
+-			sed -e 's@\([^\.]*\)\.c@extern void test_\1(void);@'; \
+-		  echo '#endif'; \
+-		  echo '#ifdef CALL'; \
+-		  ls *.c 2> /dev/null | \
+-			sed -e 's@\([^\.]*\)\.c@test_\1();@'; \
+-		  echo '#endif' \
++			sed -e 's@\([^\.]*\)\.c@DEFINE_TEST(\1)@'; \
+ 		 ) > $(PROG_TESTS_H))
+ 
+ MAP_TESTS_DIR = $(OUTPUT)/map_tests
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index dae0819b1141..eea88ba59225 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -3,6 +3,7 @@
+  */
+ #include "test_progs.h"
+ #include "bpf_rlimit.h"
++#include <argp.h>
+ 
+ int error_cnt, pass_cnt;
+ bool jit_enabled;
+@@ -156,22 +157,89 @@ void *spin_lock_thread(void *arg)
+ 	pthread_exit(arg);
+ }
+ 
+-#define DECLARE
++/* extern declarations for test funcs */
++#define DEFINE_TEST(name) extern void test_##name();
+ #include <prog_tests/tests.h>
+-#undef DECLARE
++#undef DEFINE_TEST
+ 
+-int main(int ac, char **av)
++struct prog_test_def {
++	const char *test_name;
++	void (*run_test)(void);
++};
++
++static struct prog_test_def prog_test_defs[] = {
++#define DEFINE_TEST(name) {	      \
++	.test_name = #name,	      \
++	.run_test = &test_##name,   \
++},
++#include <prog_tests/tests.h>
++#undef DEFINE_TEST
++};
++
++const char *argp_program_version = "test_progs 0.1";
++const char *argp_program_bug_address = "<bpf@vger.kernel.org>";
++const char argp_program_doc[] = "BPF selftests test runner";
++
++enum ARG_KEYS {
++	ARG_VERIFIER_STATS = 's',
++};
++	
++static const struct argp_option opts[] = {
++	{ "verifier-stats", ARG_VERIFIER_STATS, NULL, 0,
++	  "Output verifier statistics", },
++	{},
++};
++
++struct test_env {
++	bool verifier_stats;
++};
++
++static struct test_env env = {};
++
++static error_t parse_arg(int key, char *arg, struct argp_state *state)
+ {
++	struct test_env *env = state->input;
++
++	switch (key) {
++	case ARG_VERIFIER_STATS:
++		env->verifier_stats = true;
++		break;
++	case ARGP_KEY_ARG:
++		argp_usage(state);
++		break;
++	case ARGP_KEY_END:
++		break;
++	default:
++		return ARGP_ERR_UNKNOWN;
++	}
++	return 0;
++}
++
++
++int main(int argc, char **argv)
++{
++	static const struct argp argp = {
++		.options = opts,
++		.parser = parse_arg,
++		.doc = argp_program_doc,
++	};
++	const struct prog_test_def *def;
++	int err, i;
++
++	err = argp_parse(&argp, argc, argv, 0, NULL, &env);
++	if (err)
++		return err;
++
+ 	srand(time(NULL));
+ 
+ 	jit_enabled = is_jit_enabled();
+ 
+-	if (ac == 2 && strcmp(av[1], "-s") == 0)
+-		verifier_stats = true;
++	verifier_stats = env.verifier_stats;
+ 
+-#define CALL
+-#include <prog_tests/tests.h>
+-#undef CALL
++	for (i = 0; i < ARRAY_SIZE(prog_test_defs); i++) {
++		def = &prog_test_defs[i];
++		def->run_test();
++	}
+ 
+ 	printf("Summary: %d PASSED, %d FAILED\n", pass_cnt, error_cnt);
+ 	return error_cnt ? EXIT_FAILURE : EXIT_SUCCESS;
 -- 
 2.17.1
 
