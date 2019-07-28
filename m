@@ -2,103 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8862077EAC
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 10:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C282377EC4
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 11:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726043AbfG1IqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 04:46:13 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:59956 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbfG1IqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 04:46:13 -0400
+        id S1725994AbfG1JZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 05:25:28 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43862 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbfG1JZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 05:25:28 -0400
+Received: by mail-wr1-f66.google.com with SMTP id p13so58584602wru.10
+        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 02:25:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1564303571; x=1595839571;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=fmh+KrgUGyJc3QHLpkwIoIxwupdb23F7VTtQ2lozaCQ=;
-  b=TAdSlfU7R/iowSyr8BkBRm+XgsUMDaGICx7nZYi2qIfeT24fXtUlEJHQ
-   GP31FFr2lkzh3qo4eR6p3Vt187O9u9qH7rdNpMh3JfNls+jU159jMSr3i
-   hurk4V7ptWHT4JpGjpPCpM4OPAFlfDPs+5X3OadA/7rHM9czsOpFWKz4S
-   0=;
-X-IronPort-AV: E=Sophos;i="5.64,317,1559520000"; 
-   d="scan'208";a="814310415"
-Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com) ([10.47.22.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 28 Jul 2019 08:46:07 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com (Postfix) with ESMTPS id 138C8A1EC7;
-        Sun, 28 Jul 2019 08:46:07 +0000 (UTC)
-Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 28 Jul 2019 08:46:06 +0000
-Received: from 8c85908914bf.ant.amazon.com (10.43.161.8) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 28 Jul 2019 08:46:02 +0000
-Subject: Re: [PATCH v6 rdma-next 1/6] RDMA/core: Create mmap database and
- cookie helper functions
-To:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Michal Kalderon <mkalderon@marvell.com>
-CC:     Kamal Heib <kamalheib1@gmail.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190709141735.19193-1-michal.kalderon@marvell.com>
- <20190709141735.19193-2-michal.kalderon@marvell.com>
- <20190725175540.GA18757@ziepe.ca>
- <MN2PR18MB3182469DB08CD20B56C9697FA1C10@MN2PR18MB3182.namprd18.prod.outlook.com>
- <20190725195236.GF7467@ziepe.ca>
- <MN2PR18MB3182BFFEA83044C0163F9DCBA1C00@MN2PR18MB3182.namprd18.prod.outlook.com>
- <20190726132316.GA8695@ziepe.ca>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <1e54c4de-7349-3154-1b98-39774c83899f@amazon.com>
-Date:   Sun, 28 Jul 2019 11:45:56 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=QPjUt6Bidk8UplF80zHcbFucy6wiMx+xtg+7Ju9xl0k=;
+        b=EwGRR7yFwCanssmgh0eshGkXKL/xWRwHMvvZk89gBoGd/Zha5J3n2bdETBjpK4GZrC
+         zXIf/5N8gul6V+x+EluM2cswQ72CupJ/ffXul5GLBbEFgvBw0BR6oh3zjw3xKRg1liBF
+         T105tCwWOxrM6AD6TLDx7UiuvJWm24CAg/PLaJxFyjBjbOkt0+DPSEWZAPmxUGtgQFSg
+         XmyPHBJhWdT7fAxWGB2vgHEYlBU+BX27NjPUXqUKC8vuCRv58kzvVJu0FxBnfBa/iPTE
+         mIRarhey7gIT1zd+UxF2jTktw3M0r/DOlFGjV3lUI9UX81DulnMs63hRE9n8QwaBPTNi
+         QxuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=QPjUt6Bidk8UplF80zHcbFucy6wiMx+xtg+7Ju9xl0k=;
+        b=hdHXCJ8P7SfkLnMBYlsyWTL26t1qJQXv8mr2xZ2V4Z5RzAXXhjbzyK1WwWUhQmvFJ8
+         U3jOqST764nBowPmjyOwNCtP8tXfwVEiAEMZIjcnnbkzh/AVBWeG7YZCOCMEge5iMW0e
+         tVH8V2vZX5bF46Ncctofd6+NjpE26MmJHfuLnC140lB5tHvx/cb7yitcf0qq7Fhq0QU7
+         QI6x7lQICA2JbPmFsudlDwJ4SmfY9NhWC/GawzPLUhKZ52/Sy8ofVlVUb8Q5O30XbhY6
+         x8l71NE56VDcWyI28+UWBdcxInEYNu1G0dDmzueP6DLHZXdKKKetD5qxNgDzHUfWZOJm
+         Mkew==
+X-Gm-Message-State: APjAAAUdQmXoACsF8ZdGSnmF1jGA6XEgwbQPUqxaPhQwtHfi+tnkB7c5
+        shIYzh5InQhbp/Rz3vseM/E=
+X-Google-Smtp-Source: APXvYqyR+L0cl0kK3AHNDOwNpj5lgebkGV2UDdLG2nTgx5GRAW9dSFnchv38pjKA8zK6ErJABHNv5Q==
+X-Received: by 2002:adf:9ccf:: with SMTP id h15mr98260298wre.241.1564305926495;
+        Sun, 28 Jul 2019 02:25:26 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f43:4200:e178:4192:2a76:5cf5? (p200300EA8F434200E17841922A765CF5.dip0.t-ipconnect.de. [2003:ea:8f43:4200:e178:4192:2a76:5cf5])
+        by smtp.googlemail.com with ESMTPSA id o24sm63850842wmh.2.2019.07.28.02.25.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 28 Jul 2019 02:25:25 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sander Eikelenboom <linux@eikelenboom.it>,
+        Eric Dumazet <edumazet@google.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: make use of xmit_more
+Message-ID: <2950b2f7-7460-cce0-d964-ad654d897295@gmail.com>
+Date:   Sun, 28 Jul 2019 11:25:19 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190726132316.GA8695@ziepe.ca>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.161.8]
-X-ClientProxiedBy: EX13D02UWB004.ant.amazon.com (10.43.161.11) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/07/2019 16:23, Jason Gunthorpe wrote:
-> On Fri, Jul 26, 2019 at 08:42:07AM +0000, Michal Kalderon wrote:
-> 
->>>> But we don't free entires from the xa_array ( only when ucontext is
->>>> destroyed) so how will There be an empty element after we wrap ?
->>>
->>> Oh!
->>>
->>> That should be fixed up too, in the general case if a user is
->>> creating/destroying driver objects in loop we don't want memory usage to
->>> be unbounded.
->>>
->>> The rdma_user_mmap stuff has VMA ops that can refcount the xa entry and
->>> now that this is core code it is easy enough to harmonize the two things and
->>> track the xa side from the struct rdma_umap_priv
->>>
->>> The question is, does EFA or qedr have a use model for this that allows a
->>> userspace verb to create/destroy in a loop? ie do we need to fix this right
->>> now?
-> 
->> The mapping occurs for every qp and cq creation. So yes.
->>
->> So do you mean add a ref-cnt to the xarray entry and from umap
->> decrease the refcnt and free?
-> 
-> Yes, free the entry (release the HW resource) and release the xa_array
-> ID.
+There was a previous attempt to use xmit_more, but the change had to be
+reverted because under load sometimes a transmit timeout occurred [0].
+Maybe this was caused by a missing memory barrier, the new attempt
+keeps the memory barrier before the call to netif_stop_queue like it
+is used by the driver as of today. The new attempt also changes the
+order of some calls as suggested by Eric.
 
-This is a bit tricky for EFA.
-The UAR BAR resources (LLQ for example) aren't cleaned up until the UAR is
-deallocated, so many of the entries won't really be freed when the refcount
-reaches zero (i.e the HW considers these entries as refcounted as long as the
-UAR exists). The best we can do is free the DMA buffers for appropriate entries.
+[0] https://lkml.org/lkml/2019/2/10/39
+
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 864ca529d..d9261e68f 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5637,6 +5637,8 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 	struct device *d = tp_to_dev(tp);
+ 	dma_addr_t mapping;
+ 	u32 opts[2], len;
++	bool stop_queue;
++	bool door_bell;
+ 	int frags;
+ 
+ 	if (unlikely(!rtl_tx_slots_avail(tp, skb_shinfo(skb)->nr_frags))) {
+@@ -5680,13 +5682,13 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 
+ 	txd->opts2 = cpu_to_le32(opts[1]);
+ 
+-	netdev_sent_queue(dev, skb->len);
+-
+ 	skb_tx_timestamp(skb);
+ 
+ 	/* Force memory writes to complete before releasing descriptor */
+ 	dma_wmb();
+ 
++	door_bell = __netdev_sent_queue(dev, skb->len, netdev_xmit_more());
++
+ 	txd->opts1 = rtl8169_get_txd_opts1(opts[0], len, entry);
+ 
+ 	/* Force all memory writes to complete before notifying device */
+@@ -5694,14 +5696,19 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 
+ 	tp->cur_tx += frags + 1;
+ 
+-	RTL_W8(tp, TxPoll, NPQ);
+-
+-	if (!rtl_tx_slots_avail(tp, MAX_SKB_FRAGS)) {
++	stop_queue = !rtl_tx_slots_avail(tp, MAX_SKB_FRAGS);
++	if (unlikely(stop_queue)) {
+ 		/* Avoid wrongly optimistic queue wake-up: rtl_tx thread must
+ 		 * not miss a ring update when it notices a stopped queue.
+ 		 */
+ 		smp_wmb();
+ 		netif_stop_queue(dev);
++	}
++
++	if (door_bell)
++		RTL_W8(tp, TxPoll, NPQ);
++
++	if (unlikely(stop_queue)) {
+ 		/* Sync with rtl_tx:
+ 		 * - publish queue status and cur_tx ring index (write barrier)
+ 		 * - refresh dirty_tx ring index (read barrier).
+-- 
+2.22.0
+
