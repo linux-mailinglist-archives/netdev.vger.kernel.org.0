@@ -2,191 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEFF77F79
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 14:56:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91E777F98
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 15:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726032AbfG1M4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 08:56:41 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35721 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbfG1M4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 08:56:41 -0400
-Received: by mail-wr1-f66.google.com with SMTP id y4so58939197wrm.2
-        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 05:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=q6gn7sLwdDcweCefXKtAn/6hkDl4sxGOV7Zl8lLNchw=;
-        b=eWXYHSTKNki+7GQKWBy+CLDtrlmGOUIYTxKEFwDWnYtVnP5BcBbFwGbIBzoHCBubcS
-         zmKTqqhOHueBxrK+gLwyq3cCZBDXBROnL14FfT+Lh6pKm2zhWAfpGlGbX/OQJfq0lZLv
-         eDstfu3OnNr65f5oy0xF47Vf7qZ0kB04GGS07FQTMKE6mZqZD17AXuMUWA4xR6HwyWhs
-         xpOT+U5cC99oDf9vpEN4pi6dDg8uGjlf3guV48WVungGoa2T/ia6iE3bnKkIDDXEbU6F
-         5zY7XSD8u5dH6bX3jr8n27pDewNUl2AimlNesgfB+n4iuV6S97O7kTqFZJ7Ihy4iBRac
-         k7WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=q6gn7sLwdDcweCefXKtAn/6hkDl4sxGOV7Zl8lLNchw=;
-        b=kMjQsOCT9y9QcwSOcSTdLuimisx6MeFgd7GNnKJtcFYz3uhOezDzS9OO9HeS0+CPwr
-         rMeWQ0q28BvmYquSh7+C3lH2gZ9Kvlqe4T36TBoBQhEtu7wzN07R+fPf+Slw99ImIurr
-         zInYyTAVSv77wTCis34ZW6hg5Yl0b42FkSS6CzQBxT24pGSBRjwNjgt4xbekmHN/7Ge7
-         CFFEHKujKe/OYBLmGiVCyhRwDFYRBXwtPEG2wa0fRg5Im+wem2SKObinhzZVFKvg+ZWb
-         6/tcrMOqPw6/0yVOEJCiIihy7u6eO/lkh6yacNxmjia7pBhGKfeD/TwX9TKtQ+kCA153
-         jMCg==
-X-Gm-Message-State: APjAAAWl+cVyq/gZy3Tgfa5RiJC1RwfbciNCTTdaOGUQOY3Gk+SWMg5o
-        HM3WC4vojglLvlygecjy0aPW1ct5
-X-Google-Smtp-Source: APXvYqzxTSjpj7XfmszMOrpTx/E0kALDbxMLCOvaSpR2tGsdrAc+9FTIcmDTcCk9Ip7UasxicGgxxw==
-X-Received: by 2002:adf:de8b:: with SMTP id w11mr36657904wrl.134.1564318597760;
-        Sun, 28 Jul 2019 05:56:37 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id x8sm48663685wmc.5.2019.07.28.05.56.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 28 Jul 2019 05:56:37 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, xemul@virtuozzo.com, edumazet@google.com,
-        pabeni@redhat.com, idosch@mellanox.com, petrm@mellanox.com,
-        sd@queasysnail.net, f.fainelli@gmail.com,
-        stephen@networkplumber.org, mlxsw@mellanox.com,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [patch net] net: fix ifindex collision during namespace removal
-Date:   Sun, 28 Jul 2019 14:56:36 +0200
-Message-Id: <20190728125636.13895-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        id S1726134AbfG1NYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 09:24:25 -0400
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:58916 "EHLO
+        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726032AbfG1NYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 09:24:25 -0400
+Received: by atrey.karlin.mff.cuni.cz (Postfix, from userid 512)
+        id 33D9E80239; Sun, 28 Jul 2019 15:24:11 +0200 (CEST)
+Date:   Sun, 28 Jul 2019 15:24:12 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     liuyonglong <liuyonglong@huawei.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        shiju.jose@huawei.com
+Subject: Re: [PATCH net] net: hns: fix LED configuration for marvell phy
+Message-ID: <20190728132412.GC8718@xo-6d-61-c0.localdomain>
+References: <1563775152-21369-1-git-send-email-liuyonglong@huawei.com>
+ <20190722.181906.2225538844348045066.davem@davemloft.net>
+ <72061222-411f-a58c-5873-ad873394cdb5@huawei.com>
+ <20190725042829.GB14276@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190725042829.GB14276@lunn.ch>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On Thu 2019-07-25 06:28:29, Andrew Lunn wrote:
+> On Thu, Jul 25, 2019 at 11:00:08AM +0800, liuyonglong wrote:
+> > > Revert "net: hns: fix LED configuration for marvell phy"
+> > > This reverts commit f4e5f775db5a4631300dccd0de5eafb50a77c131.
+> > >
+> > > Andrew Lunn says this should be handled another way.
+> > >
+> > > Signed-off-by: David S. Miller <davem@davemloft.net>
+> > 
+> > 
+> > Hi Andrew:
+> > 
+> > I see this patch have been reverted, can you tell me the better way to do this?
+> > Thanks very much!
+> 
+> Please take a look at the work Matthias Kaehlcke is doing. It has not
+> got too far yet, but when it is complete, it should define a generic
+> way to configure PHY LEDs.
 
-Commit aca51397d014 ("netns: Fix arbitrary net_device-s corruptions
-on net_ns stop.") introduced a possibility to hit a BUG in case device
-is returning back to init_net and two following conditions are met:
-1) dev->ifindex value is used in a name of another "dev%d"
-   device in init_net.
-2) dev->name is used by another device in init_net.
+I don't remember PHY LED discussion from LED mailing list. Would you have a pointer?
+Would it make sense to coordinate with LED subsystem?
 
-Under real life circumstances this is hard to get. Therefore this has
-been present happily for over 10 years. To reproduce:
-
-$ ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether 86:89:3f:86:61:29 brd ff:ff:ff:ff:ff:ff
-3: enp0s2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
-$ ip netns add ns1
-$ ip -n ns1 link add dummy1ns1 type dummy
-$ ip -n ns1 link add dummy2ns1 type dummy
-$ ip link set enp0s2 netns ns1
-$ ip -n ns1 link set enp0s2 name dummy0
-[  100.858894] virtio_net virtio0 dummy0: renamed from enp0s2
-$ ip link add dev4 type dummy
-$ ip -n ns1 a
-1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: dummy1ns1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether 16:63:4c:38:3e:ff brd ff:ff:ff:ff:ff:ff
-3: dummy2ns1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether aa:9e:86:dd:6b:5d brd ff:ff:ff:ff:ff:ff
-4: dummy0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
-$ ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether 86:89:3f:86:61:29 brd ff:ff:ff:ff:ff:ff
-4: dev4: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether 5a:e1:4a:b6:ec:f8 brd ff:ff:ff:ff:ff:ff
-$ ip netns del ns1
-[  158.717795] default_device_exit: failed to move dummy0 to init_net: -17
-[  158.719316] ------------[ cut here ]------------
-[  158.720591] kernel BUG at net/core/dev.c:9824!
-[  158.722260] invalid opcode: 0000 [#1] SMP KASAN PTI
-[  158.723728] CPU: 0 PID: 56 Comm: kworker/u2:1 Not tainted 5.3.0-rc1+ #18
-[  158.725422] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
-[  158.727508] Workqueue: netns cleanup_net
-[  158.728915] RIP: 0010:default_device_exit.cold+0x1d/0x1f
-[  158.730683] Code: 84 e8 18 c9 3e fe 0f 0b e9 70 90 ff ff e8 36 e4 52 fe 89 d9 4c 89 e2 48 c7 c6 80 d6 25 84 48 c7 c7 20 c0 25 84 e8 f4 c8 3e
-[  158.736854] RSP: 0018:ffff8880347e7b90 EFLAGS: 00010282
-[  158.738752] RAX: 000000000000003b RBX: 00000000ffffffef RCX: 0000000000000000
-[  158.741369] RDX: 0000000000000000 RSI: ffffffff8128013d RDI: ffffed10068fcf64
-[  158.743418] RBP: ffff888033550170 R08: 000000000000003b R09: fffffbfff0b94b9c
-[  158.745626] R10: fffffbfff0b94b9b R11: ffffffff85ca5cdf R12: ffff888032f28000
-[  158.748405] R13: dffffc0000000000 R14: ffff8880335501b8 R15: 1ffff110068fcf72
-[  158.750638] FS:  0000000000000000(0000) GS:ffff888036000000(0000) knlGS:0000000000000000
-[  158.752944] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  158.755245] CR2: 00007fe8b45d21d0 CR3: 00000000340b4005 CR4: 0000000000360ef0
-[  158.757654] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  158.760012] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  158.762758] Call Trace:
-[  158.763882]  ? dev_change_net_namespace+0xbb0/0xbb0
-[  158.766148]  ? devlink_nl_cmd_set_doit+0x520/0x520
-[  158.768034]  ? dev_change_net_namespace+0xbb0/0xbb0
-[  158.769870]  ops_exit_list.isra.0+0xa8/0x150
-[  158.771544]  cleanup_net+0x446/0x8f0
-[  158.772945]  ? unregister_pernet_operations+0x4a0/0x4a0
-[  158.775294]  process_one_work+0xa1a/0x1740
-[  158.776896]  ? pwq_dec_nr_in_flight+0x310/0x310
-[  158.779143]  ? do_raw_spin_lock+0x11b/0x280
-[  158.780848]  worker_thread+0x9e/0x1060
-[  158.782500]  ? process_one_work+0x1740/0x1740
-[  158.784454]  kthread+0x31b/0x420
-[  158.786082]  ? __kthread_create_on_node+0x3f0/0x3f0
-[  158.788286]  ret_from_fork+0x3a/0x50
-[  158.789871] ---[ end trace defd6c657c71f936 ]---
-[  158.792273] RIP: 0010:default_device_exit.cold+0x1d/0x1f
-[  158.795478] Code: 84 e8 18 c9 3e fe 0f 0b e9 70 90 ff ff e8 36 e4 52 fe 89 d9 4c 89 e2 48 c7 c6 80 d6 25 84 48 c7 c7 20 c0 25 84 e8 f4 c8 3e
-[  158.804854] RSP: 0018:ffff8880347e7b90 EFLAGS: 00010282
-[  158.807865] RAX: 000000000000003b RBX: 00000000ffffffef RCX: 0000000000000000
-[  158.811794] RDX: 0000000000000000 RSI: ffffffff8128013d RDI: ffffed10068fcf64
-[  158.816652] RBP: ffff888033550170 R08: 000000000000003b R09: fffffbfff0b94b9c
-[  158.820930] R10: fffffbfff0b94b9b R11: ffffffff85ca5cdf R12: ffff888032f28000
-[  158.825113] R13: dffffc0000000000 R14: ffff8880335501b8 R15: 1ffff110068fcf72
-[  158.829899] FS:  0000000000000000(0000) GS:ffff888036000000(0000) knlGS:0000000000000000
-[  158.834923] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  158.838164] CR2: 00007fe8b45d21d0 CR3: 00000000340b4005 CR4: 0000000000360ef0
-[  158.841917] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  158.845149] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fix this by checking if a device with the same name exists in init_net
-and fallback to original code - dev%d to allocate name - in case it does.
-
-This was found using syzkaller.
-
-Fixes: aca51397d014 ("netns: Fix arbitrary net_device-s corruptions on net_ns stop.")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- net/core/dev.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 2a3be2b279d3..1a24ba26b098 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9817,6 +9817,8 @@ static void __net_exit default_device_exit(struct net *net)
- 
- 		/* Push remaining network devices to init_net */
- 		snprintf(fb_name, IFNAMSIZ, "dev%d", dev->ifindex);
-+		if (__dev_get_by_name(&init_net, fb_name))
-+			snprintf(fb_name, IFNAMSIZ, "dev%%d");
- 		err = dev_change_net_namespace(dev, &init_net, fb_name);
- 		if (err) {
- 			pr_emerg("%s: failed to move %s to init_net: %d\n",
+									Pavel
 -- 
-2.21.0
-
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
