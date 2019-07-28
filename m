@@ -2,100 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01A1278086
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 18:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC3D0780BF
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 19:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbfG1QvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 12:51:08 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40293 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbfG1QvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 12:51:08 -0400
-Received: by mail-wr1-f67.google.com with SMTP id r1so59262666wrl.7
-        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 09:51:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=5K+SuxpGvXfQ///N9XK1+tF5GqeC/HVgCK0aC6WVZtU=;
-        b=OfC8vdkx64xyhbGpo8KCxYo+Lm9vikgIF+jEkc9Nv6Yxn4gP0DjP/kIQg51vfl7xGC
-         jV8WoJ2HAmWTP3kg4XrVF4jk+AGlMOm8gSNklsPETgCIJkZwo7ReZmIX238PnP9Qyin9
-         yd0vAmYMJBw9QIB5VddDz14pj4cZtz7R9nCvg=
+        id S1726430AbfG1Rf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 13:35:57 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:39953 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbfG1Rf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 13:35:57 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r1so59335856wrl.7
+        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 10:35:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5K+SuxpGvXfQ///N9XK1+tF5GqeC/HVgCK0aC6WVZtU=;
-        b=UC/wQrLYxdc/xoNlV1fdoZcDNN+JSAyd9khrXg3qjiYBQYKDCgCPhUAtNGMRukmYWR
-         Y1rMEZ13481LSr9XGEtgjg7nOM72n4tOca8Hi90iHnf2YgAEq1aZ2S8GSe9CwzIWWhPS
-         +zU33pSSqiG6yO/snAxEg+c2TFAiZplT8bvhPVvYkSIY8vkZBv48KpmvnHymZ8RR/x8E
-         8oZg4K4ZFgWtNMi3uvukpyjF0d1uP59qig0+9/EBshVbgdr/79p9s9w1uytrRNjTTjH0
-         2O5AbkovHK73vlAAUzl3JY+fAwH42Vq49J7MLOea0gHvupifb01skKbZr9RlX5mLoAUt
-         cu/g==
-X-Gm-Message-State: APjAAAX2i/3HvmpL/VnxTUNUN0U2wT+1w0poms15/gUVxeNk6xHEw9aa
-        7T6ZgseHfijgR4rKWXA4vaSg4A==
-X-Google-Smtp-Source: APXvYqw83tJg77hrak37KuOXdaRIdcSuKl5v2EFRFUxMzT6hdmsmAZ/ogHbPEp7hpFDY2TYo5CjGUQ==
-X-Received: by 2002:adf:ea87:: with SMTP id s7mr116716538wrm.24.1564332666403;
-        Sun, 28 Jul 2019 09:51:06 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id i12sm69356215wrx.61.2019.07.28.09.51.04
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Jul 2019 09:51:05 -0700 (PDT)
-Subject: Re: memory leak in fdb_create
-To:     syzbot <syzbot+88533dc8b582309bf3ee@syzkaller.appspotmail.com>,
-        bridge@lists.linux-foundation.org, bsingharora@gmail.com,
-        coreteam@netfilter.org, davem@davemloft.net, duwe@suse.de,
-        kaber@trash.net, kadlec@blackhole.kfki.hu,
-        linux-kernel@vger.kernel.org, mingo@redhat.com, mpe@ellerman.id.au,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, roopa@cumulusnetworks.com,
-        rostedt@goodmis.org, syzkaller-bugs@googlegroups.com
-References: <0000000000008be1b2058ebe7805@google.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <d16a3297-d651-0a32-e803-774a9c8c61bf@cumulusnetworks.com>
-Date:   Sun, 28 Jul 2019 19:51:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        bh=b2zuiNV9z+FTezAi/VZPRSNLA8E7gVpLhLnn8tmOsl8=;
+        b=lDccMtkKsh+0eA5sF2W4toWln1qzrMgLWmW2ryFN0Zia3xIf4G9ibfXfuz+rXJ1Lny
+         uk1HBsQAMZo9HIC8L0gCt5qnYRU3yUpYmjEdxxeubUAEAkezt8ew/vd+RU5vm+xOcoAV
+         HaCvg0GyrQjFoTEE2/SJ4QzElcGh2JBYMelKHWlZE0hElpWKvHHvtSPMD/lUNkZ8CmiZ
+         ch7KTg83eVY4ALtSQIkTlV+AMvuRgw7p7qxE5vq6T0VE8Pi/wH8Wjl0LRqGeFPh6I2Qv
+         h7wKnbI6fNcFqZSYYgPvEg8t7hbQuWH8Hw/2dfaOlYWTHrbWWnDtDP2ftYTxItwn+0Pl
+         oiRg==
+X-Gm-Message-State: APjAAAXBIm1Bnm7626sR9XAx+gzS4UvZIOaTXlp4HlgchZskjnFq/S7/
+        RfUgTYkTCC2MPta/otJYimuvpG5jLCc=
+X-Google-Smtp-Source: APXvYqzmHrUH5DR1DuabwII6AeoWJ1witAV6rclFFLf5pp1RWkQsEUhAKHdon+uwsXhFoDu6Hpk5ww==
+X-Received: by 2002:a5d:67cd:: with SMTP id n13mr41178123wrw.138.1564335355423;
+        Sun, 28 Jul 2019 10:35:55 -0700 (PDT)
+Received: from mcroce-redhat.redhat.com (host221-208-dynamic.27-79-r.retail.telecomitalia.it. [79.27.208.221])
+        by smtp.gmail.com with ESMTPSA id x20sm134505614wrg.10.2019.07.28.10.35.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 28 Jul 2019 10:35:54 -0700 (PDT)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Stefan Chulski <stefanc@marvell.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: [PATCH net v2] mvpp2: refactor the HW checksum setup
+Date:   Sun, 28 Jul 2019 19:35:49 +0200
+Message-Id: <20190728173549.32034-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <0000000000008be1b2058ebe7805@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/07/2019 17:20, syzbot wrote:
-> syzbot has bisected this bug to:
-> 
-> commit 04cf31a759ef575f750a63777cee95500e410994
-> Author: Michael Ellerman <mpe@ellerman.id.au>
-> Date:   Thu Mar 24 11:04:01 2016 +0000
-> 
->     ftrace: Make ftrace_location_range() global
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1538c778600000
-> start commit:   abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org/pu..
-> git tree:       upstream
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=1738c778600000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1338c778600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=56f1da14935c3cce
-> dashboard link: https://syzkaller.appspot.com/bug?extid=88533dc8b582309bf3ee
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16de5c06a00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10546026a00000
-> 
-> Reported-by: syzbot+88533dc8b582309bf3ee@syzkaller.appspotmail.com
-> Fixes: 04cf31a759ef ("ftrace: Make ftrace_location_range() global")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+The hardware can only offload checksum calculation on first port due to
+the Tx FIFO size limitation, and has a maximum L3 offset of 128 bytes.
+Document this in a comment and move duplicated code in a function.
 
-I see the problem, it'd happen if the multicast stats memory allocation fails on bridge
-init then the fdb added due to the default vlan would remain and the bridge kmem cache
-would be destroyed while not empty (you can even trigger a BUG because of that).
-I'll post a patch shortly after running a few tests.
+Fixes: 576193f2d579 ("net: mvpp2: jumbo frames support")
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+---
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 35 ++++++++++++-------
+ 1 file changed, 22 insertions(+), 13 deletions(-)
 
-Thanks,
- Nik
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 937e4b928b94..a99405135046 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -811,6 +811,26 @@ static int mvpp2_swf_bm_pool_init(struct mvpp2_port *port)
+ 	return 0;
+ }
+ 
++static void mvpp2_set_hw_csum(struct mvpp2_port *port,
++			      enum mvpp2_bm_pool_log_num new_long_pool)
++{
++	const netdev_features_t csums = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
++
++	/* Update L4 checksum when jumbo enable/disable on port.
++	 * Only port 0 supports hardware checksum offload due to
++	 * the Tx FIFO size limitation.
++	 * Also, don't set NETIF_F_HW_CSUM because L3_offset in TX descriptor
++	 * has 7 bits, so the maximum L3 offset is 128.
++	 */
++	if (new_long_pool == MVPP2_BM_JUMBO && port->id != 0) {
++		port->dev->features &= ~csums;
++		port->dev->hw_features &= ~csums;
++	} else {
++		port->dev->features |= csums;
++		port->dev->hw_features |= csums;
++	}
++}
++
+ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
+ {
+ 	struct mvpp2_port *port = netdev_priv(dev);
+@@ -843,15 +863,7 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
+ 		/* Add port to new short & long pool */
+ 		mvpp2_swf_bm_pool_init(port);
+ 
+-		/* Update L4 checksum when jumbo enable/disable on port */
+-		if (new_long_pool == MVPP2_BM_JUMBO && port->id != 0) {
+-			dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
+-			dev->hw_features &= ~(NETIF_F_IP_CSUM |
+-					      NETIF_F_IPV6_CSUM);
+-		} else {
+-			dev->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+-			dev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+-		}
++		mvpp2_set_hw_csum(port, new_long_pool);
+ 	}
+ 
+ 	dev->mtu = mtu;
+@@ -5209,10 +5221,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 		dev->features |= NETIF_F_NTUPLE;
+ 	}
+ 
+-	if (port->pool_long->id == MVPP2_BM_JUMBO && port->id != 0) {
+-		dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
+-		dev->hw_features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
+-	}
++	mvpp2_set_hw_csum(port, port->pool_long->id);
+ 
+ 	dev->vlan_features |= features;
+ 	dev->gso_max_segs = MVPP2_MAX_TSO_SEGS;
+-- 
+2.21.0
 
