@@ -2,77 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 489FD77E7A
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 09:46:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C1F77E99
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 10:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725975AbfG1HqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 03:46:23 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39036 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbfG1HqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 03:46:23 -0400
-Received: by mail-wm1-f68.google.com with SMTP id u25so40480821wmc.4
-        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 00:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=2/G7IaZ8tiYQkvUjO2OGRQfRiaaHFpZ/Ktl9QzMcAM4=;
-        b=Q5h14Lfr1vWRYHjX5e6phEJRFTeh+7dNc+QdnUBBekSIV3CtR0lIVJ3fd6BRZsIQj3
-         Hh9/qDIlUUekUyF/zlcHYhwJWJ7c6YHQ1hmMWt7IDtGEyyNNpE/Gu0BRooM3DNGaKkAF
-         GQmpZJCrBdT9B8U2g4jYormH1HLmxS58DSCyP4CaFtjxPWSHPwOOulmHdzO+2vOA8qwR
-         A0xhEMeBiyXi1+FHnhqJ2Ox0ZGseYzK6n9gL1eEqE+I7VHdoI/XvjCcwItsawXAwnSeW
-         kxhoz3SVHnlqAS365oB3V4fplD91va1O5hEAdCc6y3mK8ZSdxVoLHQdwCufe8lhY1ZvN
-         fPjw==
+        id S1726058AbfG1Igs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 04:36:48 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:42896 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfG1Igs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 04:36:48 -0400
+Received: by mail-io1-f68.google.com with SMTP id e20so83179139iob.9
+        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 01:36:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2/G7IaZ8tiYQkvUjO2OGRQfRiaaHFpZ/Ktl9QzMcAM4=;
-        b=pXd/aCWpyVQa1FsjyQeEBqpmZYdZRoyfuIECCLvGZ7kE7lmmRODL+XFrd/oT9rTwoV
-         GNgIYbhVKpt57LD/755f/PRzLyLSYehVL/lD565/qf3Cy/mAXVd2kbXerugSTA2I56gn
-         obgJUWllg3Sye8Jl7+HxEdrY8pbnEeC690bUJWwrRAnIkeXl8WDN4O13EcOL7oqTOu9H
-         nFAGSa0ix0+j3tsseDFKyb2GuyGCeakhXPjih5qtc7oxSXMHmSn28l6UQgLwJ6/9byXo
-         2WwwLucixIYlpng240rAu1oTss0vhB4crdjY05pn2ARP2s7kzZtCZzpFvtkkAKI6F1ei
-         zz2w==
-X-Gm-Message-State: APjAAAVlP6B7UuzvWN/ThdTh4xySuqWH7VCVY6zHib8V7U7Jq2TyMtcB
-        2yJ1CpketoeHGLQ3yejQD2k=
-X-Google-Smtp-Source: APXvYqyg9ads4NJultwbj5Ts8UfWbNW/kHbokiWQB83owxZnaZwiVsGhlK22m19FExLQ6sHi8BCEBA==
-X-Received: by 2002:a1c:ddc1:: with SMTP id u184mr91017388wmg.158.1564299980967;
-        Sun, 28 Jul 2019 00:46:20 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f1sm39579827wml.28.2019.07.28.00.46.20
+         :mime-version:content-disposition:in-reply-to;
+        bh=JmcimYJf+Bna2bF5oHtnyvYwQab4h3brdRl3y+Yku3w=;
+        b=eZ8bHh5/UazBgsw5Mf/4akZsCfwJOl1HgXAE8a8JEE47wFPEjzI/owGPQqsL36uI4X
+         yZnrAYlQnIbzfTexZMdKSSDxHQHe9N56y/ix74dXIUooNcKH6zTCMCnqz70DTaDHKssC
+         FSWFH/5oyOEpH+47swahBMMRmSO+lutRvISpezo3dgj8TYYKC1c7KSEE1xj5FsWdSEoL
+         XStLi9D6tOYSsLE8J+uf0NPfXZ9fXoMkjCkvFFtVJULm9k9QkU4dINGp+Qh6COEQFx6B
+         AVpC7v6SPPMn1aNCPjHumpjEcgaJ48OZKcQfTrK9tuGi7FUkMtg8sCiUsfEuyyzPCJwG
+         UI6g==
+X-Gm-Message-State: APjAAAXd2+5asr9z53GZM+k24SYTvroF6hhl09xqPHRJaUaxAsD5LtsD
+        XE7r3idcjYPR2fDot4ebM9uNPM+OyEQ=
+X-Google-Smtp-Source: APXvYqyHU6qTV7uMr9tjpRxhhvTuO4lK+5tp+FQOjsGxN+s/1qcSKnN7S1nMevwymEewifIu5iF5Gg==
+X-Received: by 2002:a02:b883:: with SMTP id p3mr34245354jam.79.1564303007037;
+        Sun, 28 Jul 2019 01:36:47 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
+        by smtp.gmail.com with ESMTPSA id o7sm48957845ioo.81.2019.07.28.01.36.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 28 Jul 2019 00:46:20 -0700 (PDT)
-Date:   Sun, 28 Jul 2019 09:46:19 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Colin King <colin.king@canonical.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rocker: fix memory leaks of fib_work on two error return
- paths
-Message-ID: <20190728074619.GA2423@nanopsycho.orion>
-References: <20190727233726.3121-1-colin.king@canonical.com>
+        Sun, 28 Jul 2019 01:36:45 -0700 (PDT)
+Date:   Sun, 28 Jul 2019 04:36:39 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+36e93b425cd6eb54fcc1@syzkaller.appspotmail.com>,
+        jasowang@redhat.com, kvm@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.lkml@markovi.net, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
+        virtualization@lists.linux-foundation.org,
+        yamada.masahiro@socionext.com
+Subject: Re: INFO: rcu detected stall in vhost_worker
+Message-ID: <20190728043619-mutt-send-email-mst@kernel.org>
+References: <000000000000b4358f058e924c6d@google.com>
+ <000000000000e87d14058e9728d7@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190727233726.3121-1-colin.king@canonical.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <000000000000e87d14058e9728d7@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jul 28, 2019 at 01:37:26AM CEST, colin.king@canonical.com wrote:
->From: Colin Ian King <colin.king@canonical.com>
->
->Currently there are two error return paths that leak memory allocated
->to fib_work. Fix this by kfree'ing fib_work before returning.
->
->Addresses-Coverity: ("Resource leak")
->Fixes: 19a9d136f198 ("ipv4: Flag fib_info with a fib_nh using IPv6 gateway")
->Fixes: dbcc4fa718ee ("rocker: Fail attempts to use routes with nexthop objects")
->Signed-off-by: Colin Ian King <colin.king@canonical.com>
+On Sat, Jul 27, 2019 at 04:23:23PM +0800, Hillf Danton wrote:
+> 
+> Fri, 26 Jul 2019 08:26:01 -0700 (PDT)
+> > syzbot has bisected this bug to:
+> > 
+> > commit 0ecfebd2b52404ae0c54a878c872bb93363ada36
+> > Author: Linus Torvalds <torvalds@linux-foundation.org>
+> > Date:   Sun Jul 7 22:41:56 2019 +0000
+> > 
+> >      Linux 5.2
+> > 
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=118810bfa00000
+> > start commit:   13bf6d6a Add linux-next specific files for 20190725
+> > git tree:       linux-next
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=8ae987d803395886
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=36e93b425cd6eb54fcc1
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15112f3fa00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=131ab578600000
+> > 
+> > Reported-by: syzbot+36e93b425cd6eb54fcc1@syzkaller.appspotmail.com
+> > Fixes: 0ecfebd2b524 ("Linux 5.2")
+> > 
+> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> 
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -787,7 +787,6 @@ static void vhost_setup_uaddr(struct vho
+> 			      size_t size, bool write)
+> {
+> 	struct vhost_uaddr *addr = &vq->uaddrs[index];
+> -	spin_lock(&vq->mmu_lock);
+> 
+> 	addr->uaddr = uaddr;
+> 	addr->size = size;
+> @@ -797,7 +796,10 @@ static void vhost_setup_uaddr(struct vho
+> static void vhost_setup_vq_uaddr(struct vhost_virtqueue *vq)
+> {
+> 	spin_lock(&vq->mmu_lock);
+> -
+> +	/*
+> +	 * deadlock if managing to take mmu_lock again while
+> +	 * setting up uaddr
+> +	 */
+> 	vhost_setup_uaddr(vq, VHOST_ADDR_DESC,
+> 			  (unsigned long)vq->desc,
+> 			  vhost_get_desc_size(vq, vq->num),
+> --
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Thanks!
+I reverted this whole commit.
+
+-- 
+MST
