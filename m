@@ -2,244 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3036877F2B
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 13:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DEFF77F79
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 14:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726013AbfG1LRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 07:17:11 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:35863 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbfG1LRL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 07:17:11 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g67so46960536wme.1;
-        Sun, 28 Jul 2019 04:17:09 -0700 (PDT)
+        id S1726032AbfG1M4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 08:56:41 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35721 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726010AbfG1M4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 08:56:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id y4so58939197wrm.2
+        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 05:56:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=7A61jDnVRYJC5BJ5xISsqutxop7nCjzOOFrTn2F86z4=;
-        b=CFQ/f97tvy5dYM8qnkMdVoUQAz4a2ug0uf8k7zV/QiXhFTi3ZYsqZK/Ab+Obl7OW3+
-         2kCAqvPEaTlZpY427zGr14ZZvtbERWiFwUkQrmwNbeA3dXhxjaZp++SQFYh9p3WxpuOb
-         qe14mbD8jCtOmXOkvipLVZnJGJ0l/bmGCdWgneILvVaq1IguQyVX7MONVkuGN42d7CKG
-         Y3gs0Xl0ZnHjefFabPOu/j6vTJwlxEfG6cE8irk1tUtAVLknX9mNvQbijSFZM4uK3HYD
-         axBONYR5MLBjW6Zx/YtiojxKY0TjkTcWaaA+r1yvHHss5QUhka2+PyyEQmAkb/zegB+C
-         LYeQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q6gn7sLwdDcweCefXKtAn/6hkDl4sxGOV7Zl8lLNchw=;
+        b=eWXYHSTKNki+7GQKWBy+CLDtrlmGOUIYTxKEFwDWnYtVnP5BcBbFwGbIBzoHCBubcS
+         zmKTqqhOHueBxrK+gLwyq3cCZBDXBROnL14FfT+Lh6pKm2zhWAfpGlGbX/OQJfq0lZLv
+         eDstfu3OnNr65f5oy0xF47Vf7qZ0kB04GGS07FQTMKE6mZqZD17AXuMUWA4xR6HwyWhs
+         xpOT+U5cC99oDf9vpEN4pi6dDg8uGjlf3guV48WVungGoa2T/ia6iE3bnKkIDDXEbU6F
+         5zY7XSD8u5dH6bX3jr8n27pDewNUl2AimlNesgfB+n4iuV6S97O7kTqFZJ7Ihy4iBRac
+         k7WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=7A61jDnVRYJC5BJ5xISsqutxop7nCjzOOFrTn2F86z4=;
-        b=lndsiqgm2NUfp0L8G4Pscu87d+JHBciEGnCD5SXgU+klUpPoyIzOaT58+secnUqHJW
-         gWJ6QNAJ+ZJ5c1KjtAfHDTQ9hotg3Zl57M/rWmfFrG8JP3kxNIJ/h9ZrrnnzP9Bjq/ud
-         6OW/VR0oo28Cw5COa41Wd8FyHnSqMknxCsFY0VGv8r2PYEVHaldsY8e5LLINnxBsIDj0
-         UnwjsA0mJnG9Ch+63csEKVo3k+Ob+RY5ZD93Y9ppae1T4dgy2aNpGuvKyOKQ+bbr2fj6
-         AgfLGGFbDqdCdyl/QFu6gqLKp7Qt++T/mF671DOljFCN/QbV8UbtgetmwNKc3EajpFSC
-         +fEw==
-X-Gm-Message-State: APjAAAU3aDbQAOheHlCyBxRGmsGxN10Q/RG2NvwE2d7/yKmbOccAud5m
-        hKPTZuW3zLAz95STM6mwEVMtwjIxVOzV2hImKMo=
-X-Google-Smtp-Source: APXvYqzzy7eqHmIBZhYkurTUnTOOvst057CDN3imlQhYfSoB/rwVSGRMzSmfAByw/rlW56FaAAm31UCK4rKQuQes+1Q=
-X-Received: by 2002:a1c:3cc4:: with SMTP id j187mr90243101wma.36.1564312628810;
- Sun, 28 Jul 2019 04:17:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q6gn7sLwdDcweCefXKtAn/6hkDl4sxGOV7Zl8lLNchw=;
+        b=kMjQsOCT9y9QcwSOcSTdLuimisx6MeFgd7GNnKJtcFYz3uhOezDzS9OO9HeS0+CPwr
+         rMeWQ0q28BvmYquSh7+C3lH2gZ9Kvlqe4T36TBoBQhEtu7wzN07R+fPf+Slw99ImIurr
+         zInYyTAVSv77wTCis34ZW6hg5Yl0b42FkSS6CzQBxT24pGSBRjwNjgt4xbekmHN/7Ge7
+         CFFEHKujKe/OYBLmGiVCyhRwDFYRBXwtPEG2wa0fRg5Im+wem2SKObinhzZVFKvg+ZWb
+         6/tcrMOqPw6/0yVOEJCiIihy7u6eO/lkh6yacNxmjia7pBhGKfeD/TwX9TKtQ+kCA153
+         jMCg==
+X-Gm-Message-State: APjAAAWl+cVyq/gZy3Tgfa5RiJC1RwfbciNCTTdaOGUQOY3Gk+SWMg5o
+        HM3WC4vojglLvlygecjy0aPW1ct5
+X-Google-Smtp-Source: APXvYqzxTSjpj7XfmszMOrpTx/E0kALDbxMLCOvaSpR2tGsdrAc+9FTIcmDTcCk9Ip7UasxicGgxxw==
+X-Received: by 2002:adf:de8b:: with SMTP id w11mr36657904wrl.134.1564318597760;
+        Sun, 28 Jul 2019 05:56:37 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id x8sm48663685wmc.5.2019.07.28.05.56.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 28 Jul 2019 05:56:37 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, xemul@virtuozzo.com, edumazet@google.com,
+        pabeni@redhat.com, idosch@mellanox.com, petrm@mellanox.com,
+        sd@queasysnail.net, f.fainelli@gmail.com,
+        stephen@networkplumber.org, mlxsw@mellanox.com,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: [patch net] net: fix ifindex collision during namespace removal
+Date:   Sun, 28 Jul 2019 14:56:36 +0200
+Message-Id: <20190728125636.13895-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <CA+icZUWF=B_phP8eGD3v2d9jSSK6Y-N65y-T6xewZnY91vc2_Q@mail.gmail.com>
- <c2524c96-d71c-d7db-22ec-12da905dc180@fb.com> <CA+icZUXYp=Jx+8aGrZmkCbSFp-cSPcoRzRdRJsPj4yYNs_mJQw@mail.gmail.com>
- <CA+icZUXsPRWmH3i-9=TK-=2HviubRqpAeDJGriWHgK1fkFhgUg@mail.gmail.com>
- <295d2acd-0844-9a40-3f94-5bcbb13871d2@fb.com> <CA+icZUUe0QE9QGMom1iQwuG8nM7Oi4Mq0GKqrLvebyxfUmj6RQ@mail.gmail.com>
- <CAADnVQLhymu8YqtfM1NHD5LMgO6a=FZYaeaYS1oCyfGoBDE_BQ@mail.gmail.com>
- <CA+icZUXGPCgdJzxTO+8W0EzNLZEQ88J_wusp7fPfEkNE2RoXJA@mail.gmail.com>
- <CA+icZUWVf6AK3bxfWBZ7iM1QTyk_G-4+1_LyK0jkoBDkDzvx4Q@mail.gmail.com> <57169960-35c2-d9d3-94e4-3b5a43d5aca7@fb.com>
-In-Reply-To: <57169960-35c2-d9d3-94e4-3b5a43d5aca7@fb.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Sun, 28 Jul 2019 13:16:57 +0200
-Message-ID: <CA+icZUWNWmF4T6GRrkdanh1syYntRkGjk8SN0yDirnapmpOBwg@mail.gmail.com>
-Subject: Re: next-20190723: bpf/seccomp - systemd/journald issue?
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 27, 2019 at 7:11 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/27/19 1:16 AM, Sedat Dilek wrote:
-> > On Sat, Jul 27, 2019 at 9:36 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >>
-> >> On Sat, Jul 27, 2019 at 4:24 AM Alexei Starovoitov
-> >> <alexei.starovoitov@gmail.com> wrote:
-> >>>
-> >>> On Fri, Jul 26, 2019 at 2:19 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >>>>
-> >>>> On Fri, Jul 26, 2019 at 11:10 PM Yonghong Song <yhs@fb.com> wrote:
-> >>>>>
-> >>>>>
-> >>>>>
-> >>>>> On 7/26/19 2:02 PM, Sedat Dilek wrote:
-> >>>>>> On Fri, Jul 26, 2019 at 10:38 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >>>>>>>
-> >>>>>>> Hi Yonghong Song,
-> >>>>>>>
-> >>>>>>> On Fri, Jul 26, 2019 at 5:45 PM Yonghong Song <yhs@fb.com> wrote:
-> >>>>>>>>
-> >>>>>>>>
-> >>>>>>>>
-> >>>>>>>> On 7/26/19 1:26 AM, Sedat Dilek wrote:
-> >>>>>>>>> Hi,
-> >>>>>>>>>
-> >>>>>>>>> I have opened a new issue in the ClangBuiltLinux issue tracker.
-> >>>>>>>>
-> >>>>>>>> Glad to know clang 9 has asm goto support and now It can compile
-> >>>>>>>> kernel again.
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> Yupp.
-> >>>>>>>
-> >>>>>>>>>
-> >>>>>>>>> I am seeing a problem in the area bpf/seccomp causing
-> >>>>>>>>> systemd/journald/udevd services to fail.
-> >>>>>>>>>
-> >>>>>>>>> [Fri Jul 26 08:08:43 2019] systemd[453]: systemd-udevd.service: Failed
-> >>>>>>>>> to connect stdout to the journal socket, ignoring: Connection refused
-> >>>>>>>>>
-> >>>>>>>>> This happens when I use the (LLVM) LLD ld.lld-9 linker but not with
-> >>>>>>>>> BFD linker ld.bfd on Debian/buster AMD64.
-> >>>>>>>>> In both cases I use clang-9 (prerelease).
-> >>>>>>>>
-> >>>>>>>> Looks like it is a lld bug.
-> >>>>>>>>
-> >>>>>>>> I see the stack trace has __bpf_prog_run32() which is used by
-> >>>>>>>> kernel bpf interpreter. Could you try to enable bpf jit
-> >>>>>>>>      sysctl net.core.bpf_jit_enable = 1
-> >>>>>>>> If this passed, it will prove it is interpreter related.
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> After...
-> >>>>>>>
-> >>>>>>> sysctl -w net.core.bpf_jit_enable=1
-> >>>>>>>
-> >>>>>>> I can start all failed systemd services.
-> >>>>>>>
-> >>>>>>> systemd-journald.service
-> >>>>>>> systemd-udevd.service
-> >>>>>>> haveged.service
-> >>>>>>>
-> >>>>>>> This is in maintenance mode.
-> >>>>>>>
-> >>>>>>> What is next: Do set a permanent sysctl setting for net.core.bpf_jit_enable?
-> >>>>>>>
-> >>>>>>
-> >>>>>> This is what I did:
-> >>>>>
-> >>>>> I probably won't have cycles to debug this potential lld issue.
-> >>>>> Maybe you already did, I suggest you put enough reproducible
-> >>>>> details in the bug you filed against lld so they can take a look.
-> >>>>>
-> >>>>
-> >>>> I understand and will put the journalctl-log into the CBL issue
-> >>>> tracker and update informations.
-> >>>>
-> >>>> Thanks for your help understanding the BPF correlations.
-> >>>>
-> >>>> Is setting 'net.core.bpf_jit_enable = 2' helpful here?
-> >>>
-> >>> jit_enable=1 is enough.
-> >>> Or use CONFIG_BPF_JIT_ALWAYS_ON to workaround.
-> >>>
-> >>> It sounds like clang miscompiles interpreter.
-> >
-> > Just to clarify:
-> > This does not happen with clang-9 + ld.bfd (GNU/ld linker).
-> >
-> >>> modprobe test_bpf
-> >>> should be able to point out which part of interpreter is broken.
-> >>
-> >> Maybe we need something like...
-> >>
-> >> "bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()"
-> >>
-> >> ...for clang?
-> >>
-> >
-> > Not sure if something like GCC's...
-> >
-> > -fgcse
-> >
-> > Perform a global common subexpression elimination pass. This pass also
-> > performs global constant and copy propagation.
-> >
-> > Note: When compiling a program using computed gotos, a GCC extension,
-> > you may get better run-time performance if you disable the global
-> > common subexpression elimination pass by adding -fno-gcse to the
-> > command line.
-> >
-> > Enabled at levels -O2, -O3, -Os.
-> >
-> > ...is available for clang.
-> >
-> > I tried with hopping to turn off "global common subexpression elimination":
-> >
-> > diff --git a/arch/x86/net/Makefile b/arch/x86/net/Makefile
-> > index 383c87300b0d..92f934a1e9ff 100644
-> > --- a/arch/x86/net/Makefile
-> > +++ b/arch/x86/net/Makefile
-> > @@ -3,6 +3,8 @@
-> >   # Arch-specific network modules
-> >   #
-> >
-> > +KBUILD_CFLAGS += -O0
->
-> This won't work. First, you added to the wrong file. The interpreter
-> is at kernel/bpf/core.c.
->
+From: Jiri Pirko <jiri@mellanox.com>
 
-Thanks for the clarification.
-I mixed up the x86 BPF JIT compiler with the BPF interpreter.
+Commit aca51397d014 ("netns: Fix arbitrary net_device-s corruptions
+on net_ns stop.") introduced a possibility to hit a BUG in case device
+is returning back to init_net and two following conditions are met:
+1) dev->ifindex value is used in a name of another "dev%d"
+   device in init_net.
+2) dev->name is used by another device in init_net.
 
-I see no diff in the disassembled kernel/bpf/core.o in my clang9-bfd
-and clang9-lld build-dirs.
+Under real life circumstances this is hard to get. Therefore this has
+been present happily for over 10 years. To reproduce:
 
-l$ objdump -M intel -d linux.clang9-bfd/kernel/bpf/core.o >
-bpf_core_o_clang9-bfd.txt
-$ objdump -M intel -d linux.clang9-lld/kernel/bpf/core.o >
-bpf_core_o_clang9-lld.txt
+$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 86:89:3f:86:61:29 brd ff:ff:ff:ff:ff:ff
+3: enp0s2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+$ ip netns add ns1
+$ ip -n ns1 link add dummy1ns1 type dummy
+$ ip -n ns1 link add dummy2ns1 type dummy
+$ ip link set enp0s2 netns ns1
+$ ip -n ns1 link set enp0s2 name dummy0
+[  100.858894] virtio_net virtio0 dummy0: renamed from enp0s2
+$ ip link add dev4 type dummy
+$ ip -n ns1 a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: dummy1ns1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 16:63:4c:38:3e:ff brd ff:ff:ff:ff:ff:ff
+3: dummy2ns1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether aa:9e:86:dd:6b:5d brd ff:ff:ff:ff:ff:ff
+4: dummy0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 86:89:3f:86:61:29 brd ff:ff:ff:ff:ff:ff
+4: dev4: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 5a:e1:4a:b6:ec:f8 brd ff:ff:ff:ff:ff:ff
+$ ip netns del ns1
+[  158.717795] default_device_exit: failed to move dummy0 to init_net: -17
+[  158.719316] ------------[ cut here ]------------
+[  158.720591] kernel BUG at net/core/dev.c:9824!
+[  158.722260] invalid opcode: 0000 [#1] SMP KASAN PTI
+[  158.723728] CPU: 0 PID: 56 Comm: kworker/u2:1 Not tainted 5.3.0-rc1+ #18
+[  158.725422] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
+[  158.727508] Workqueue: netns cleanup_net
+[  158.728915] RIP: 0010:default_device_exit.cold+0x1d/0x1f
+[  158.730683] Code: 84 e8 18 c9 3e fe 0f 0b e9 70 90 ff ff e8 36 e4 52 fe 89 d9 4c 89 e2 48 c7 c6 80 d6 25 84 48 c7 c7 20 c0 25 84 e8 f4 c8 3e
+[  158.736854] RSP: 0018:ffff8880347e7b90 EFLAGS: 00010282
+[  158.738752] RAX: 000000000000003b RBX: 00000000ffffffef RCX: 0000000000000000
+[  158.741369] RDX: 0000000000000000 RSI: ffffffff8128013d RDI: ffffed10068fcf64
+[  158.743418] RBP: ffff888033550170 R08: 000000000000003b R09: fffffbfff0b94b9c
+[  158.745626] R10: fffffbfff0b94b9b R11: ffffffff85ca5cdf R12: ffff888032f28000
+[  158.748405] R13: dffffc0000000000 R14: ffff8880335501b8 R15: 1ffff110068fcf72
+[  158.750638] FS:  0000000000000000(0000) GS:ffff888036000000(0000) knlGS:0000000000000000
+[  158.752944] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  158.755245] CR2: 00007fe8b45d21d0 CR3: 00000000340b4005 CR4: 0000000000360ef0
+[  158.757654] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  158.760012] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  158.762758] Call Trace:
+[  158.763882]  ? dev_change_net_namespace+0xbb0/0xbb0
+[  158.766148]  ? devlink_nl_cmd_set_doit+0x520/0x520
+[  158.768034]  ? dev_change_net_namespace+0xbb0/0xbb0
+[  158.769870]  ops_exit_list.isra.0+0xa8/0x150
+[  158.771544]  cleanup_net+0x446/0x8f0
+[  158.772945]  ? unregister_pernet_operations+0x4a0/0x4a0
+[  158.775294]  process_one_work+0xa1a/0x1740
+[  158.776896]  ? pwq_dec_nr_in_flight+0x310/0x310
+[  158.779143]  ? do_raw_spin_lock+0x11b/0x280
+[  158.780848]  worker_thread+0x9e/0x1060
+[  158.782500]  ? process_one_work+0x1740/0x1740
+[  158.784454]  kthread+0x31b/0x420
+[  158.786082]  ? __kthread_create_on_node+0x3f0/0x3f0
+[  158.788286]  ret_from_fork+0x3a/0x50
+[  158.789871] ---[ end trace defd6c657c71f936 ]---
+[  158.792273] RIP: 0010:default_device_exit.cold+0x1d/0x1f
+[  158.795478] Code: 84 e8 18 c9 3e fe 0f 0b e9 70 90 ff ff e8 36 e4 52 fe 89 d9 4c 89 e2 48 c7 c6 80 d6 25 84 48 c7 c7 20 c0 25 84 e8 f4 c8 3e
+[  158.804854] RSP: 0018:ffff8880347e7b90 EFLAGS: 00010282
+[  158.807865] RAX: 000000000000003b RBX: 00000000ffffffef RCX: 0000000000000000
+[  158.811794] RDX: 0000000000000000 RSI: ffffffff8128013d RDI: ffffed10068fcf64
+[  158.816652] RBP: ffff888033550170 R08: 000000000000003b R09: fffffbfff0b94b9c
+[  158.820930] R10: fffffbfff0b94b9b R11: ffffffff85ca5cdf R12: ffff888032f28000
+[  158.825113] R13: dffffc0000000000 R14: ffff8880335501b8 R15: 1ffff110068fcf72
+[  158.829899] FS:  0000000000000000(0000) GS:ffff888036000000(0000) knlGS:0000000000000000
+[  158.834923] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  158.838164] CR2: 00007fe8b45d21d0 CR3: 00000000340b4005 CR4: 0000000000360ef0
+[  158.841917] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  158.845149] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
---- bpf_core_o_clang9-bfd.txt   2019-07-28 13:11:59.363552042 +0200
-+++ bpf_core_o_clang9-lld.txt   2019-07-28 13:12:09.975535278 +0200
-@@ -1,5 +1,5 @@
+Fix this by checking if a device with the same name exists in init_net
+and fallback to original code - dev%d to allocate name - in case it does.
 
--linux.clang9-bfd/kernel/bpf/core.o:     file format elf64-x86-64
-+linux.clang9-lld/kernel/bpf/core.o:     file format elf64-x86-64
+This was found using syzkaller.
 
+Fixes: aca51397d014 ("netns: Fix arbitrary net_device-s corruptions on net_ns stop.")
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+---
+ net/core/dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- Disassembly of section .text:
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2a3be2b279d3..1a24ba26b098 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9817,6 +9817,8 @@ static void __net_exit default_device_exit(struct net *net)
+ 
+ 		/* Push remaining network devices to init_net */
+ 		snprintf(fb_name, IFNAMSIZ, "dev%d", dev->ifindex);
++		if (__dev_get_by_name(&init_net, fb_name))
++			snprintf(fb_name, IFNAMSIZ, "dev%%d");
+ 		err = dev_change_net_namespace(dev, &init_net, fb_name);
+ 		if (err) {
+ 			pr_emerg("%s: failed to move %s to init_net: %d\n",
+-- 
+2.21.0
 
-> Second, kernel may have compilation issues with -O0.
->
-
-Confirmed.
-
-- Sedat -
-
-> > +
-> >   ifeq ($(CONFIG_X86_32),y)
-> >           obj-$(CONFIG_BPF_JIT) += bpf_jit_comp32.o
-> >   else
-> >
-> > Still see...
-> > BROKEN: test_bpf: #294 BPF_MAXINSNS: Jump, gap, jump, ... jited:0
-> >
-> > - Sedat -
-> >
