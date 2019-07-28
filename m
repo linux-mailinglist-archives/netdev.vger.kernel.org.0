@@ -2,133 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE58978105
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 21:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4F37810C
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 21:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726171AbfG1TQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 15:16:03 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:21211 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726098AbfG1TQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 15:16:02 -0400
-Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa5.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: nfVslRGlBP3jSD2/UOVCrH3bTtjdhYH/82SxjIu63midTzY8YUXbqMoj7viNJdGHsF1KVVaz3Q
- +gEMNrJC+OpQKMOmYTapnlPiEoc+e3uaix2PLhUn2hVnfwwJkhht3lYDMfMWRouDlsAK0kX6yJ
- OLKhlE+N3jh8Tj74ADcIq8JPQknNlypNwFwE/U0d5cZahCPmoWRrblPGqCbhSG4RUMY6XUrbNB
- ntoqk2QOt5bkSdwDAZ850QOcGc1O1zeLoCqvAvooYREQvFFR692Ynie+kq1l+9qThVSphe1JzR
- YaE=
-X-IronPort-AV: E=Sophos;i="5.64,319,1559545200"; 
-   d="scan'208";a="41428814"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jul 2019 12:16:01 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.87.152) by
- chn-vm-ex04.mchp-main.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sun, 28 Jul 2019 12:16:00 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sun, 28 Jul 2019 12:16:00 -0700
-Date:   Sun, 28 Jul 2019 21:15:59 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-Message-ID: <20190728191558.zuopgfqza2iz5d5b@lx-anielsen.microsemi.net>
-References: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
- <7e7a7015-6072-d884-b2ba-0a51177245ab@cumulusnetworks.com>
- <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
- <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
- <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
- <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
- <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
- <20190726134613.GD18223@lunn.ch>
- <20190726195010.7x75rr74v7ph3m6m@lx-anielsen.microsemi.net>
- <20190727030223.GA29731@lunn.ch>
+        id S1726138AbfG1TY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 15:24:27 -0400
+Received: from mail-lf1-f52.google.com ([209.85.167.52]:40533 "EHLO
+        mail-lf1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbfG1TY1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 15:24:27 -0400
+Received: by mail-lf1-f52.google.com with SMTP id b17so40528685lff.7;
+        Sun, 28 Jul 2019 12:24:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m1bkao4L2HOCuabkoSA/X13Y3hjpAfMVV+naV5LffF4=;
+        b=hx9jfQ9tM4cYnm1aIPDcrP2APz/emt/55jeszuJPdT/X0kPcaARRTWHB9ppUOlTpxs
+         hNLJCB9fk/nNXni/kM65Jm5dZv3zYIOexiw2u7X1eVIkQ75m8bPdlGKRLi5viMZZqIJ0
+         vtgLcYmUnv7/rLNevKast1AP29CqKzeK0vrb3kDNSv9xzgI7EcUKYnkuuqiC3m7srMdk
+         uNpUwqNfA8u11nMzp0OWIGywKBOuo/cqmgB5idPlv1plYXtpehntTGSWiiswCTTTpxuH
+         BIKn+T3OOFRLTZADaxRNZBR2hXsAe3iVoJUSPKzAZPRccES7iRWPexlg5Woy9Sh4gH+g
+         0dfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m1bkao4L2HOCuabkoSA/X13Y3hjpAfMVV+naV5LffF4=;
+        b=A1F6Yw2muSOXIIRoukMqu0/3P/fAlNQFjeF0qNqfC0ZKJbZhFcIbrKD4oDOepaIv/J
+         wHtswae8lXgRQpn1IFojA0vKnL7x1sm2oKCGidGS6U+6xZpjXMQvXNFPLX3gsUaoaHmZ
+         1nlcBbEcivCLZDDgxHSJ0dEyuGWEp/jrmGQZIDmkowgQ2jC/MzASrynpHaKujHGmMWIK
+         n186s4jD1tevKnb2LvJx61WYpitOt7YiA49Vqm0STsu5gbukag2lQYjWnit7mxn0INOa
+         tLp6OdNfedUoAnmsy26X2Y21XB67Zl3OJYuYABDlgzI0Hm4kGsD/im9wGdirLSxbK+Ic
+         uxcw==
+X-Gm-Message-State: APjAAAVsLA47Fbfj4MluNRy4C6T0TmDZmvHwyM6dRrwcpBWoDw2ng7RV
+        nrpJQLpbc9RX9akW8K03ozDeIJ1ypTtR0H5E1nU=
+X-Google-Smtp-Source: APXvYqwHSJGB6dXPgpl27UZrPHyZ7vIJtR4DxjPwhPr1lUpR3kClZ12N0XpBJpWTiosLdhMtjUn4AZxPu7op7veybBM=
+X-Received: by 2002:ac2:5337:: with SMTP id f23mr50595546lfh.15.1564341865219;
+ Sun, 28 Jul 2019 12:24:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190727030223.GA29731@lunn.ch>
-User-Agent: NeoMutt/20180716
+References: <2e9f33c9-b772-396e-1e70-2e2d5027cac5@iogearbox.net>
+ <5f1e881b-7094-a6d9-5d7c-f391d128780d@iogearbox.net> <CAADnVQJ0ATngyqo8xjXdDsyFuuov3KRtbHMR1LcV8VnEDUK8Fg@mail.gmail.com>
+In-Reply-To: <CAADnVQJ0ATngyqo8xjXdDsyFuuov3KRtbHMR1LcV8VnEDUK8Fg@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 28 Jul 2019 12:24:13 -0700
+Message-ID: <CAADnVQKsvEaQhJBZ7mjds+8092=bhtK52LyYt7cE0WmQjp7qNw@mail.gmail.com>
+Subject: Linux Plumbers BPF micro-conference CFP (reminder)
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 07/27/2019 05:02, Andrew Lunn wrote:
-> > As you properly guessed, this model is quite different from what we are used to.
-> 
-> Yes, it takes a while to get the idea that the hardware is just an
-> accelerator for what the Linux stack can already do. And if the switch
-> cannot do some feature, pass the frame to Linux so it can handle it.
-This is understood, and not that different from what we are used to.
+Hey Folks,
 
-The surprise was to make all multicast traffic to go to the CPU.
+August 2nd deadline to submit a proposal for BPF uconf
+is quickly approaching.
+If you're attending LPC in Lisbon and interested
+in awesome BPF uconf you need to submit a proposal.
 
-> You need to keep in mind that there could be other ports in the bridge
-> than switch ports, and those ports might be interested in the
-> multicast traffic. Hence the CPU needs to see the traffic.
-This is a good argument, but I was under the impression that not all HW/drivers
-supports foreign interfaces (see ocelot_netdevice_dev_check and
-mlxsw_sp_port_dev_check).
+Some of you already submitted them to lpc-bpf@vger
+per instructions that were sent back on July 12.
+Some proposals were sent via website.
+We'd like all proposals to be seen in the website.
+Could you please re-enter your proposal there?
+Please go to:
+https://www.linuxplumbersconf.org/event/4/abstracts/
+click on 'submit new proposal'
+and copy-paste what you've already sent to lpc-bpf@vger.
+Much appreciate it and sorry for confusion.
 
-> But IGMP snooping can be used to optimise this.
-Yes, IGMP snooping can limit the multicast storm of multicast IP traffic, but
-not for L2 non-IP multicast traffic.
+There is still room for few new proposals,
+but space is getting very limited.
+Please don't delay.
 
-We could really use something similar for non-IP multicast MAC addresses.
+Thanks!
 
-Trying to get back to the original problem:
-
-We have a network which implements the ODVA/DLR ring protocol. This protocol
-sends out a beacon frame as often as every 3 us (as far as I recall, default I
-believe is 400 us) to this MAC address: 01:21:6C:00:00:01.
-
-Try take a quick look at slide 10 in [1].
-
-If we assume that the SwitchDev driver implemented such that all multicast
-traffic goes to the CPU, then we should really have a way to install a HW
-offload path in the silicon, such that these packets does not go to the CPU (as
-they are known not to be use full, and a frame every 3 us is a significant load
-on small DMA connections and CPU resources).
-
-If we assume that the SwitchDev driver implemented such that only "needed"
-multicast packets goes to the CPU, then we need a way to get these packets in
-case we want to implement the DLR protocol.
-
-I'm sure that both models can work, and I do not think that this is the main
-issue here.
-
-Our initial attempt was to allow install static L2-MAC entries and append
-multiple ports to such an entry in the MAC table. This was rejected, for several
-good reasons it seems. But I'm not sure it was clear what we wanted to achieve,
-and why we find it to be important. Hopefully this is clear with a real world
-use-case.
-
-Any hints or ideas on what would be a better way to solve this problems will be
-much appreciated.
-
-/Allan
-
-[1] https://www.odva.org/Portals/0/Library/Conference/2017-ODVA-Conference_Woods_High%20Availability_Guidelines%20for%20Use%20of%20DLR%20in%20EtherNetIP%20Networks_FINAL%20PPT.pdf
+> ---------- Forwarded message ---------
+> From: Daniel Borkmann <daniel@iogearbox.net>
+> Date: Fri, Jul 12, 2019 at 7:26 AM
+> Subject: Linux Plumbers BPF micro-conference CFP (reminder)
+> To: <bpf@vger.kernel.org>
+> Cc: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+> <xdp-newbies@vger.kernel.org>, <iovisor-dev@lists.iovisor.org>,
+> <lpc-bpf@vger.kernel.org>, <alexei.starovoitov@gmail.com>
+>
+>
+> This is a call for proposals for the BPF micro-conference at this
+> years' Linux Plumbers Conference (LPC) 2019 which will be held in
+> Lisbon, Portugal for September 9-11.
+>
+> The goal of the BPF micro-conference is to bring BPF developers
+> together to discuss topics around Linux kernel work related to
+> the BPF core infrastructure as well as its many subsystems under
+> tracing, networking, security, and BPF user space tooling (LLVM,
+> libbpf, bpftool and many others).
+>
+> The format of the micro-conference has a main focus on discussion,
+> therefore each accepted topic will provide a short 1-2 slide
+> introduction with subsequent discussion for the rest of the given
+> time slot.
+>
+> The BPF micro-conference is a community-driven event and open to
+> all LPC attendees, there is no additional registration required.
+>
+> Please submit your discussion proposals to the LPC BPF micro-conference
+> organizers at:
+>
+>         lpc-bpf@vger.kernel.org
+>
+> Proposals must be submitted until August 2nd, and submitters will
+> be notified of acceptance at latest by August 9. (Please note that
+> proposals must not be sent as html mail as they are otherwise dropped
+> by vger.)
+>
+> The format of the submission and many other details can be found at:
+>
+>         http://vger.kernel.org/lpc-bpf.html
+>
+> Looking forward to seeing you all in Lisbon in September!
