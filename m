@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD9777E57
-	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 08:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C582977E59
+	for <lists+netdev@lfdr.de>; Sun, 28 Jul 2019 08:53:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726008AbfG1Gw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 02:52:57 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:1507 "EHLO
+        id S1726032AbfG1GxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 02:53:00 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:1531 "EHLO
         m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbfG1Gw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 02:52:57 -0400
+        with ESMTP id S1725937AbfG1GxA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 02:53:00 -0400
 Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 0FCD9416E3;
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 23EEE416E5;
         Sun, 28 Jul 2019 14:52:50 +0800 (CST)
 From:   wenxu@ucloud.cn
 To:     pablo@netfilter.org, fw@strlen.de, jakub.kicinski@netronome.com
 Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 2/3] flow_offload: Support get default block from tc immediately
-Date:   Sun, 28 Jul 2019 14:52:48 +0800
-Message-Id: <1564296769-32294-3-git-send-email-wenxu@ucloud.cn>
+Subject: [PATCH net-next v4 3/3] netfilter: nf_tables_offload: support indr block call
+Date:   Sun, 28 Jul 2019 14:52:49 +0800
+Message-Id: <1564296769-32294-4-git-send-email-wenxu@ucloud.cn>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1564296769-32294-1-git-send-email-wenxu@ucloud.cn>
 References: <1564296769-32294-1-git-send-email-wenxu@ucloud.cn>
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS09NQkJCQ0pJSklNSk1ZV1koWU
         FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PxQ6NBw4MTg5HEoVIhciKx8V
-        OhkKCzNVSlVKTk1PSUJNTExLSklNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU9KSUw3Bg++
-X-HM-Tid: 0a6c375a72232086kuqy0fcd9416e3
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NBQ6MRw4SDg6LkosMhUvKy4*
+        OA0wCz9VSlVKTk1PSUJNTExLT0hIVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQU1ITEI3Bg++
+X-HM-Tid: 0a6c375a72752086kuqy23eee416e5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -36,108 +36,187 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: wenxu <wenxu@ucloud.cn>
 
-When thre indr device register, it can get the default block
-from tc immediately if the block is exist.
+nftable support indr-block call. It makes nftable an offload vlan
+and tunnel device.
+
+nft add table netdev firewall
+nft add chain netdev firewall aclout { type filter hook ingress offload device mlx_pf0vf0 priority - 300 \; }
+nft add rule netdev firewall aclout ip daddr 10.0.0.1 fwd to vlan0
+nft add chain netdev firewall aclin { type filter hook ingress device vlan0 priority - 300 \; }
+nft add rule netdev firewall aclin ip daddr 10.0.0.7 fwd to mlx_pf0vf0
 
 Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
-v3: no change
-v4: get tc default block without callback
+v3: subsys_initcall for init_flow_indr_rhashtable
+v4: guarantee only one offload base chain used per indr dev. 
+If the indr_block_cmd bind fail return unsupported.
 
- include/net/pkt_cls.h   |  7 +++++++
- net/core/flow_offload.c |  2 ++
- net/sched/cls_api.c     | 33 +++++++++++++++++++++++++++++++++
- 3 files changed, 42 insertions(+)
+ net/netfilter/nf_tables_offload.c | 131 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 107 insertions(+), 24 deletions(-)
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 0790a4e..77c3a42 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -54,6 +54,8 @@ int tcf_block_get_ext(struct tcf_block **p_block, struct Qdisc *q,
- void tcf_block_put_ext(struct tcf_block *block, struct Qdisc *q,
- 		       struct tcf_block_ext_info *ei);
- 
-+void tc_indr_get_default_block(struct flow_indr_block_dev *indr_dev);
-+
- static inline bool tcf_block_shared(struct tcf_block *block)
- {
- 	return block->index;
-@@ -74,6 +76,11 @@ int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		 struct tcf_result *res, bool compat_mode);
- 
- #else
-+static inline
-+void tc_indr_get_default_block(struct flow_indr_block_dev *indr_dev)
-+{
-+}
-+
- static inline bool tcf_block_shared(struct tcf_block *block)
- {
- 	return false;
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 9f1ae67..0ca3d51 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -3,6 +3,7 @@
- #include <linux/slab.h>
- #include <net/flow_offload.h>
- #include <linux/rtnetlink.h>
-+#include <net/pkt_cls.h>
- 
- struct flow_rule *flow_rule_alloc(unsigned int num_actions)
- {
-@@ -312,6 +313,7 @@ static struct flow_indr_block_dev *flow_indr_block_dev_get(struct net_device *de
- 
- 	INIT_LIST_HEAD(&indr_dev->cb_list);
- 	indr_dev->dev = dev;
-+	tc_indr_get_default_block(indr_dev);
- 	if (rhashtable_insert_fast(&indr_setup_block_ht, &indr_dev->ht_node,
- 				   flow_indr_setup_block_ht_params)) {
- 		kfree(indr_dev);
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index d551c56..59e9572 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -576,6 +576,39 @@ static void tc_indr_block_ing_cmd(struct net_device *dev,
- 	tcf_block_setup(block, &bo);
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 64f5fd5..19214ad 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -171,24 +171,123 @@ static int nft_flow_offload_unbind(struct flow_block_offload *bo,
+ 	return 0;
  }
  
-+static struct tcf_block *tc_dev_ingress_block(struct net_device *dev)
++static int nft_block_setup(struct nft_base_chain *basechain,
++			   struct flow_block_offload *bo,
++			   enum flow_block_command cmd)
 +{
-+	const struct Qdisc_class_ops *cops;
-+	struct Qdisc *qdisc;
++	int err;
 +
-+	if (!dev_ingress_queue(dev))
-+		return NULL;
-+
-+	qdisc = dev_ingress_queue(dev)->qdisc_sleeping;
-+	if (!qdisc)
-+		return NULL;
-+
-+	cops = qdisc->ops->cl_ops;
-+	if (!cops)
-+		return NULL;
-+
-+	if (!cops->tcf_block)
-+		return NULL;
-+
-+	return cops->tcf_block(qdisc, TC_H_MIN_INGRESS, NULL);
-+}
-+
-+void tc_indr_get_default_block(struct flow_indr_block_dev *indr_dev)
-+{
-+	struct tcf_block *block = tc_dev_ingress_block(indr_dev->dev);
-+
-+	if (block) {
-+		indr_dev->flow_block = &block->flow_block;
-+		indr_dev->ing_cmd_cb = tc_indr_block_ing_cmd;
++	switch (cmd) {
++	case FLOW_BLOCK_BIND:
++		err = nft_flow_offload_bind(bo, basechain);
++		break;
++	case FLOW_BLOCK_UNBIND:
++		err = nft_flow_offload_unbind(bo, basechain);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		err = -EOPNOTSUPP;
 +	}
-+}
-+EXPORT_SYMBOL(tc_indr_get_default_block);
 +
- static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
- 			       struct tcf_block_ext_info *ei,
- 			       enum flow_block_command command,
++	return err;
++}
++
++static int nft_block_offload_cmd(struct nft_base_chain *chain,
++				 struct net_device *dev,
++				 enum flow_block_command cmd)
++{
++	struct netlink_ext_ack extack = {};
++	struct flow_block_offload bo = {};
++	int err;
++
++	bo.net = dev_net(dev);
++	bo.block = &chain->flow_block;
++	bo.command = cmd;
++	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
++	bo.extack = &extack;
++	INIT_LIST_HEAD(&bo.cb_list);
++
++	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
++	if (err < 0)
++		return err;
++
++	return nft_block_setup(chain, &bo, cmd);
++}
++
++static void nft_indr_block_ing_cmd(struct net_device *dev,
++				   struct flow_block *flow_block,
++				   struct flow_indr_block_cb *indr_block_cb,
++				   enum flow_block_command cmd)
++{
++	struct netlink_ext_ack extack = {};
++	struct flow_block_offload bo = {};
++	struct nft_base_chain *chain;
++
++	if (flow_block)
++		return;
++
++	chain = container_of(flow_block, struct nft_base_chain, flow_block);
++
++	bo.net = dev_net(dev);
++	bo.block = flow_block;
++	bo.command = cmd;
++	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
++	bo.extack = &extack;
++	INIT_LIST_HEAD(&bo.cb_list);
++
++	indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK, &bo);
++
++	nft_block_setup(chain, &bo, cmd);
++}
++
++static int nft_indr_block_offload_cmd(struct nft_base_chain *chain,
++				      struct net_device *dev,
++				      enum flow_block_command cmd)
++{
++	struct flow_indr_block_cb *indr_block_cb;
++	struct flow_indr_block_dev *indr_dev;
++	struct flow_block_offload bo = {};
++	struct netlink_ext_ack extack = {};
++
++	bo.net = dev_net(dev);
++	bo.block = &chain->flow_block;
++	bo.command = cmd;
++	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
++	bo.extack = &extack;
++	INIT_LIST_HEAD(&bo.cb_list);
++
++	indr_dev = flow_indr_block_dev_lookup(dev);
++	if (!indr_dev)
++		return -EOPNOTSUPP;
++
++	indr_dev->flow_block = cmd == FLOW_BLOCK_BIND ? &chain->flow_block : NULL;
++	indr_dev->ing_cmd_cb = cmd == FLOW_BLOCK_BIND ? nft_indr_block_ing_cmd : NULL;
++
++	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
++		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
++				  &bo);
++
++	if (list_empty(&bo.cb_list))
++		return -EOPNOTSUPP;
++
++	return nft_block_setup(chain, &bo, cmd);
++}
++
+ #define FLOW_SETUP_BLOCK TC_SETUP_BLOCK
+ 
+ static int nft_flow_offload_chain(struct nft_trans *trans,
+ 				  enum flow_block_command cmd)
+ {
+ 	struct nft_chain *chain = trans->ctx.chain;
+-	struct netlink_ext_ack extack = {};
+-	struct flow_block_offload bo = {};
+ 	struct nft_base_chain *basechain;
+ 	struct net_device *dev;
+-	int err;
+ 
+ 	if (!nft_is_base_chain(chain))
+ 		return -EOPNOTSUPP;
+ 
+ 	basechain = nft_base_chain(chain);
+ 	dev = basechain->ops.dev;
+-	if (!dev || !dev->netdev_ops->ndo_setup_tc)
++	if (!dev)
+ 		return -EOPNOTSUPP;
+ 
+ 	/* Only default policy to accept is supported for now. */
+@@ -197,26 +296,10 @@ static int nft_flow_offload_chain(struct nft_trans *trans,
+ 	    nft_trans_chain_policy(trans) != NF_ACCEPT)
+ 		return -EOPNOTSUPP;
+ 
+-	bo.command = cmd;
+-	bo.block = &basechain->flow_block;
+-	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+-	bo.extack = &extack;
+-	INIT_LIST_HEAD(&bo.cb_list);
+-
+-	err = dev->netdev_ops->ndo_setup_tc(dev, FLOW_SETUP_BLOCK, &bo);
+-	if (err < 0)
+-		return err;
+-
+-	switch (cmd) {
+-	case FLOW_BLOCK_BIND:
+-		err = nft_flow_offload_bind(&bo, basechain);
+-		break;
+-	case FLOW_BLOCK_UNBIND:
+-		err = nft_flow_offload_unbind(&bo, basechain);
+-		break;
+-	}
+-
+-	return err;
++	if (dev->netdev_ops->ndo_setup_tc)
++		return nft_block_offload_cmd(basechain, dev, cmd);
++	else
++		return nft_indr_block_offload_cmd(basechain, dev, cmd);
+ }
+ 
+ int nft_flow_rule_offload_commit(struct net *net)
 -- 
 1.8.3.1
 
