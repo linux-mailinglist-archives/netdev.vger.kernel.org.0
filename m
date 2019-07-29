@@ -2,108 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A947378594
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 08:56:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89337785CD
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 09:05:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726856AbfG2G4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 02:56:55 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:41553 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726768AbfG2G4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 02:56:55 -0400
-Received: by mail-wr1-f65.google.com with SMTP id c2so57289503wrm.8
-        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 23:56:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=77kBMlKTAenEQAkiXPo05Wm16zYsJQ8LVBsU59Q9oVA=;
-        b=pPD/sBPWrxLVysfk2Ps6tNucGWwJlCOr6XR//BG7RR8oyJv9v2k0wFNw+aXtAtsXYm
-         luzVZfhEqo8WA7WT/fSQnZtLwComZEEyj8mBmG+fymQinBJIgbaFF7evSjaTfz2+9Jol
-         2kUHUh75XX13bm33it4tEGzQXVUJxh83BJ/xYgTjF4zu0Ddf23BiggfphU3EaRAJctJM
-         Bh+an0KVkI7Z0NnC+O2OUljKfZ26Iq8iDoRE6D8JEdsKtNDEeVU2Mh0cLcsxyhaZW5SH
-         2HmMkqHzIIN65y/5FRFy5MVWQsGTiAc5O+XD9DHQPA+sFP7xWlzl0Jkw0UevTMw/Mxm0
-         fX9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=77kBMlKTAenEQAkiXPo05Wm16zYsJQ8LVBsU59Q9oVA=;
-        b=aJ2iqkKS/TYLHK49K+pNii4/JhFgUR6P+MkESIYFqAdXRbwYvt7B53UR+4+kRD1K+x
-         yatEzRtOPE1LKUf2mmytrpoJFig/IFBip81Wsjluz0V+B8LYW3GzMuyuHDdrltKIuqL+
-         Wca1TnopQbrKeKHvDAoLGG0j8EuUhtPy5voo698FldsY9xGU4CpTWcBgxMRwr6igw9TC
-         +IkWBn7opBo/GRY5rNQQhifZXUaQEko8Vt3cHRppJqKFW1SG+GPc40HraTl6OTtAhBDM
-         grFZ0Dk8d96EQV7ApsgWG+0txYg0Bh8IdRCyQvB3k7GWStgAQHhf64ITagv7fMwe000m
-         4aKg==
-X-Gm-Message-State: APjAAAXDULVO2URKHunGHlzSm9ha/KjKUsYzLTvi5dOAYD5GJADu4d3b
-        odvJHnJd9rBM/+YgA0+rtyc=
-X-Google-Smtp-Source: APXvYqwltHE9iEWxKnbbh87k8UY3j+nd3lsQOuNtcbriLQ+0SNoXQVr2iH8MQnAoJMCtZAHoz6/ZDg==
-X-Received: by 2002:adf:fd08:: with SMTP id e8mr122286409wrr.147.1564383414116;
-        Sun, 28 Jul 2019 23:56:54 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id e7sm54869909wmd.0.2019.07.28.23.56.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 28 Jul 2019 23:56:53 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 08:56:53 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sched: Fix a possible null-pointer dereference in
- dequeue_func()
-Message-ID: <20190729065653.GA2211@nanopsycho>
-References: <20190729022157.18090-1-baijiaju1990@gmail.com>
+        id S1726335AbfG2HFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 03:05:44 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:5395 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725957AbfG2HFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 03:05:44 -0400
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 4228241655;
+        Mon, 29 Jul 2019 15:05:36 +0800 (CST)
+Subject: Re: [PATCH net-next v4 2/3] flow_offload: Support get default block
+ from tc immediately
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <1564296769-32294-1-git-send-email-wenxu@ucloud.cn>
+ <1564296769-32294-3-git-send-email-wenxu@ucloud.cn>
+ <20190728131653.6af72a87@cakuba.netronome.com>
+ <5eed91c1-20ed-c08c-4700-979392bc5f33@ucloud.cn>
+ <20190728214237.2c0687db@cakuba.netronome.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <c405ff42-dfc5-6f3f-061c-7788e1204afa@ucloud.cn>
+Date:   Mon, 29 Jul 2019 15:05:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190729022157.18090-1-baijiaju1990@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190728214237.2c0687db@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0lKQkJCQk5OSkxMSEpZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Ni46Pxw4LDgySUoYDh4*IR8T
+        FhowCjhVSlVKTk1PSENIQkhNTU9JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBSUxDQjcG
+X-HM-Tid: 0a6c3c8c80492086kuqy4228241655
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 29, 2019 at 04:21:57AM CEST, baijiaju1990@gmail.com wrote:
->In dequeue_func(), there is an if statement on line 74 to check whether
->skb is NULL:
->    if (skb)
->
->When skb is NULL, it is used on line 77:
->    prefetch(&skb->end);
->
->Thus, a possible null-pointer dereference may occur.
->
->To fix this bug, skb->end is used when skb is not NULL.
->
->This bug is found by a static analysis tool STCheck written by us.
->
->Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-Fixes tag, please?
+On 7/29/2019 12:42 PM, Jakub Kicinski wrote:
+> On Mon, 29 Jul 2019 10:43:56 +0800, wenxu wrote:
+>> On 7/29/2019 4:16 AM, Jakub Kicinski wrote:
+>>> I don't know the nft code, but it seems unlikely it wouldn't have the
+>>> same problem/need..  
+>> nft don't have the same problem.  The offload rule can only attached
+>> to offload base chain.
+>>
+>> Th  offload base chain is created after the device driver loaded (the
+>> device exist).
+> For indirect blocks the block is on the tunnel device and the offload
+> target is another device. E.g. you offload rules from a VXLAN device
+> onto the ASIC. The ASICs driver does not have to be loaded when VXLAN
+> device is created.
+>
+> So I feel like either the chain somehow directly references the offload
+> target (in which case the indirect infrastructure with hash lookup etc
+> is not needed for nft), or indirect infra is needed, and we need to take
+> care of replays.
+
+So you mean the case is there are two card A and B both can offload vxlan.
+
+First vxlan device offload with A.  And then the B driver loaded, So the rules
+
+should replay to B device?
 
 
->---
-> net/sched/sch_codel.c | 6 +++---
-> 1 file changed, 3 insertions(+), 3 deletions(-)
->
->diff --git a/net/sched/sch_codel.c b/net/sched/sch_codel.c
->index 25ef172c23df..30169b3adbbb 100644
->--- a/net/sched/sch_codel.c
->+++ b/net/sched/sch_codel.c
->@@ -71,10 +71,10 @@ static struct sk_buff *dequeue_func(struct codel_vars *vars, void *ctx)
-> 	struct Qdisc *sch = ctx;
-> 	struct sk_buff *skb = __qdisc_dequeue_head(&sch->q);
-> 
->-	if (skb)
->+	if (skb) {
-> 		sch->qstats.backlog -= qdisc_pkt_len(skb);
->-
->-	prefetch(&skb->end); /* we'll need skb_shinfo() */
->+		prefetch(&skb->end); /* we'll need skb_shinfo() */
->+	}
-> 	return skb;
-> }
-> 
->-- 
->2.17.0
->
+
