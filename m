@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E06479072
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54B1A7906E
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728956AbfG2QMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 12:12:36 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:40790 "EHLO inva021.nxp.com"
+        id S1728931AbfG2QMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 12:12:25 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:40818 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728903AbfG2QMW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 12:12:22 -0400
+        id S1728912AbfG2QMY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 12:12:24 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C88CE200356;
-        Mon, 29 Jul 2019 18:12:20 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4106720035B;
+        Mon, 29 Jul 2019 18:12:22 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BC1BF200344;
-        Mon, 29 Jul 2019 18:12:20 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 33A41200344;
+        Mon, 29 Jul 2019 18:12:22 +0200 (CEST)
 Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 55E28205F3;
-        Mon, 29 Jul 2019 18:12:20 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id C0DB0205F3;
+        Mon, 29 Jul 2019 18:12:21 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
         f.fainelli@gmail.com, jiri@mellanox.com,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH 4/5] staging: fsl-dpaa2/ethsw: check added_by_user flag
-Date:   Mon, 29 Jul 2019 19:11:51 +0300
-Message-Id: <1564416712-16946-5-git-send-email-ioana.ciornei@nxp.com>
+Subject: [PATCH 5/5] staging: fsl-dpaa2/ethsw: add .ndo_fdb[add|del] callbacks
+Date:   Mon, 29 Jul 2019 19:11:52 +0300
+Message-Id: <1564416712-16946-6-git-send-email-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1564416712-16946-1-git-send-email-ioana.ciornei@nxp.com>
 References: <1564416712-16946-1-git-send-email-ioana.ciornei@nxp.com>
@@ -38,36 +38,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We do not want to offload FDB entries if not added by user as static
-entries. Check the added_by_user flag and break if not set.
+Add the .ndo_fdb_[add|del] callbacks so that FDB entries not associated
+with a master device still end up offloaded.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- drivers/staging/fsl-dpaa2/ethsw/ethsw.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
 diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-index e6423f1e190d..2d3179c6bad8 100644
+index 2d3179c6bad8..4b94a01513a7 100644
 --- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
 +++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-@@ -1179,6 +1179,8 @@ static void ethsw_switchdev_event_work(struct work_struct *work)
+@@ -316,6 +316,31 @@ static int ethsw_port_fdb_del_mc(struct ethsw_port_priv *port_priv,
+ 	return err;
+ }
  
- 	switch (switchdev_work->event) {
- 	case SWITCHDEV_FDB_ADD_TO_DEVICE:
-+		if (!fdb_info->added_by_user)
-+			break;
- 		if (is_unicast_ether_addr(fdb_info->addr))
- 			err = ethsw_port_fdb_add_uc(netdev_priv(dev),
- 						    fdb_info->addr);
-@@ -1192,6 +1194,8 @@ static void ethsw_switchdev_event_work(struct work_struct *work)
- 					 &fdb_info->info, NULL);
- 		break;
- 	case SWITCHDEV_FDB_DEL_TO_DEVICE:
-+		if (!fdb_info->added_by_user)
-+			break;
- 		if (is_unicast_ether_addr(fdb_info->addr))
- 			ethsw_port_fdb_del_uc(netdev_priv(dev), fdb_info->addr);
- 		else
++static int port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
++			struct net_device *dev, const unsigned char *addr,
++			u16 vid, u16 flags,
++			struct netlink_ext_ack *extack)
++{
++	if (is_unicast_ether_addr(addr))
++		return ethsw_port_fdb_add_uc(netdev_priv(dev),
++					     addr);
++	else
++		return ethsw_port_fdb_add_mc(netdev_priv(dev),
++					     addr);
++}
++
++static int port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
++			struct net_device *dev,
++			const unsigned char *addr, u16 vid)
++{
++	if (is_unicast_ether_addr(addr))
++		return ethsw_port_fdb_del_uc(netdev_priv(dev),
++					     addr);
++	else
++		return ethsw_port_fdb_del_mc(netdev_priv(dev),
++					     addr);
++}
++
+ static void port_get_stats(struct net_device *netdev,
+ 			   struct rtnl_link_stats64 *stats)
+ {
+@@ -670,6 +695,8 @@ static int port_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
+ 	.ndo_change_mtu		= port_change_mtu,
+ 	.ndo_has_offload_stats	= port_has_offload_stats,
+ 	.ndo_get_offload_stats	= port_get_offload_stats,
++	.ndo_fdb_add		= port_fdb_add,
++	.ndo_fdb_del		= port_fdb_del,
+ 	.ndo_fdb_dump		= port_fdb_dump,
+ 
+ 	.ndo_start_xmit		= port_dropframe,
 -- 
 1.9.1
 
