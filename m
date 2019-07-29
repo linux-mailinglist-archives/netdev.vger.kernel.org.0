@@ -2,116 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE6778E5D
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:49:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE66078E5A
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387680AbfG2OtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 10:49:04 -0400
-Received: from gateway36.websitewelcome.com ([192.185.195.25]:26584 "EHLO
-        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726556AbfG2OtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 10:49:03 -0400
-X-Greylist: delayed 1435 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 10:49:03 EDT
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway36.websitewelcome.com (Postfix) with ESMTP id AD4F0400C8F52
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 08:49:12 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id s6aJhrfd790ons6aJhjIzq; Mon, 29 Jul 2019 09:25:07 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NBg3ypbm56vJ5nByaMp1eHrBG/oKINIBK+Vq+wESKT0=; b=A7uomH9Hb4wDBRLWnhYsJYAm7d
-        FNXmzwRvmbx2dE54sBW398poQFOThzC6Re1aLy1TBI6QAZY7G0ixMNgyT2/rOih1iZoS3XTrw8Vdw
-        9mKhy+5taaBkKjM7FdByOfZT6fnYet9UevPJUQHn5HurjFBKCTNEEwjLJwcseIv2bfMlGyj25/34d
-        8J36GY+IAE90BzW425xXPtX+ellj4uw+yTI1sxvvOOBTUzQD4lv/2ZGbR4u3+9CI2IDMx8x4ZFLuq
-        NTTej80qtXt2gs+dgDXZaZqxU0y5/CvgC8MeIh7LCdl4SgQz7cCdnExD8KT+mn++DHVxpHvXEOU69
-        YeWTw38Q==;
-Received: from [187.192.11.120] (port=50414 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hs6aH-002Hdm-Vp; Mon, 29 Jul 2019 09:25:06 -0500
-Date:   Mon, 29 Jul 2019 09:25:03 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH] arcnet: com20020-isa: Mark expected switch fall-throughs
-Message-ID: <20190729142503.GA7917@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.192.11.120
-X-Source-L: No
-X-Exim-ID: 1hs6aH-002Hdm-Vp
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [187.192.11.120]:50414
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 3
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        id S2387586AbfG2OsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 10:48:08 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:48869 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726556AbfG2OsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 10:48:08 -0400
+Received: from orion.localdomain ([77.4.29.213]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MbRbr-1iOymx226T-00boKg; Mon, 29 Jul 2019 16:48:02 +0200
+From:   "Enrico Weigelt, metux IT consult" <info@metux.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH] init: Kconfig: consistent indentions
+Date:   Mon, 29 Jul 2019 16:48:01 +0200
+Message-Id: <1564411681-28013-1-git-send-email-info@metux.net>
+X-Mailer: git-send-email 1.9.1
+X-Provags-ID: V03:K1:dW4jkDPZBxuRMIXPJtCRf30d71VoDDYo7pJonzBRhds3XJ3NQ0/
+ MdKDkaU7Cb3UKfQvVQb+GrdO8G2227MyJ/hxfLUVoBBn+oljMAf3P+z4SJvy5/tYIb81HP6
+ T3IY4/soZHeeP3NuiPoeObx8S3Ua5+lCjfqCdEgR7P1hdHcjweVX/kmcv7ki8fqqgH2B7nh
+ p8hqtdGj2GrFflSMRI+5A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dEwgoYK4RAk=:hU3b8BNd54os3Dqti7kG53
+ gdOmeypCBkqVc2/6sVBYX8zVIXtPVyWZzaHvwn6vcb/zDxxuTxTB9sTHhWfmnTqyVR2MLacBY
+ W48c8Axh99S7YVgklvkMddulPFdZ4nZ6UG03cNZLjxcjOtuulWx1X/s6rW/aEvZsCVYiuQU3W
+ 5sp0Io4MEFdq+rGoUXJcbvhi/o3hdokHLOfijA30syNoomUZnjZSMVrnXFaW4LQ6pjwJp9vda
+ it7AQ2eRI+5wD+npitNjdD2aw0loTwPJx/6TltpcC3E4xL4m9GKfBnlU401Kq6N2nFkWa/1xt
+ EdsQyvNiUMl5uDvfiUZZWpf6z8dKkvWey9DlXW6jAk/SPZroLzbJm7m4KLvvrANC0PX7lNeCO
+ +QhoBz/j0dT3Y5sNrvf8s7DTsqgrbJ+Db026XJNqFuIXp7wM0RnzpBMt7GykoiN6jcQi4cHux
+ gmgXBp/PaqBEZn+LpLBjQjplM9JJl/MAcsUbBV3zopNoIco1q+WVH3AuHWGsI0ZuZa0uewhGf
+ nkC+WiZv91W9CNIJTHtTHrouB1Jvo0fUenDx/V98TC0W82usJalGKDH5zWK91FRDplaGIG8mg
+ l0Ypy7lqnzJzT/l+6hg2Jik3EtxtiR1eQCGNF4+FxJZ3xxS+TsKuoo1pwVeIT/El+19Izow33
+ Xy0YsPwK5ZHKk0NzUYSh9GIfqfgMlD9emvTR3ky9u79KA3Zx9aofaiz76XlsTidX1WSme6ovw
+ +vLrF6iqOMV1EUUg9CuruA1jM9hsWQYccy27ZA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mark switch cases where we are expecting to fall through.
+From: Enrico Weigelt <info@metux.net>
 
-This patch fixes the following warnings:
+Just make the indentions consistent with the rest of the file,
+as well as most other Kconfig files.
 
-drivers/net/arcnet/com20020-isa.c: warning: this statement may fall
-through [-Wimplicit-fallthrough=]:  => 205:13, 203:10, 209:7, 201:11,
-207:8
-
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/net/arcnet/com20020-isa.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ init/Kconfig | 54 +++++++++++++++++++++++++++---------------------------
+ 1 file changed, 27 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/arcnet/com20020-isa.c b/drivers/net/arcnet/com20020-isa.c
-index 28510e33924f..cd27fdc1059b 100644
---- a/drivers/net/arcnet/com20020-isa.c
-+++ b/drivers/net/arcnet/com20020-isa.c
-@@ -197,16 +197,22 @@ static int __init com20020isa_setup(char *s)
- 	switch (ints[0]) {
- 	default:		/* ERROR */
- 		pr_info("Too many arguments\n");
-+		/* Fall through */
- 	case 6:		/* Timeout */
- 		timeout = ints[6];
-+		/* Fall through */
- 	case 5:		/* CKP value */
- 		clockp = ints[5];
-+		/* Fall through */
- 	case 4:		/* Backplane flag */
- 		backplane = ints[4];
-+		/* Fall through */
- 	case 3:		/* Node ID */
- 		node = ints[3];
-+		/* Fall through */
- 	case 2:		/* IRQ */
- 		irq = ints[2];
-+		/* Fall through */
- 	case 1:		/* IO address */
- 		io = ints[1];
- 	}
+diff --git a/init/Kconfig b/init/Kconfig
+index bd7d650..1a589c6 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -161,13 +161,13 @@ config LOCALVERSION_AUTO
+ 	  which is done within the script "scripts/setlocalversion".)
+ 
+ config BUILD_SALT
+-       string "Build ID Salt"
+-       default ""
+-       help
+-          The build ID is used to link binaries and their debug info. Setting
+-          this option will use the value in the calculation of the build id.
+-          This is mostly useful for distributions which want to ensure the
+-          build is unique between builds. It's safe to leave the default.
++	string "Build ID Salt"
++	default ""
++	help
++	  The build ID is used to link binaries and their debug info. Setting
++	  this option will use the value in the calculation of the build id.
++	  This is mostly useful for distributions which want to ensure the
++	  build is unique between builds. It's safe to leave the default.
+ 
+ config HAVE_KERNEL_GZIP
+ 	bool
+@@ -1294,9 +1294,9 @@ menuconfig EXPERT
+ 	select DEBUG_KERNEL
+ 	help
+ 	  This option allows certain base kernel options and settings
+-          to be disabled or tweaked. This is for specialized
+-          environments which can tolerate a "non-standard" kernel.
+-          Only use this if you really know what you are doing.
++	  to be disabled or tweaked. This is for specialized
++	  environments which can tolerate a "non-standard" kernel.
++	  Only use this if you really know what you are doing.
+ 
+ config UID16
+ 	bool "Enable 16-bit UID system calls" if EXPERT
+@@ -1406,11 +1406,11 @@ config BUG
+ 	bool "BUG() support" if EXPERT
+ 	default y
+ 	help
+-          Disabling this option eliminates support for BUG and WARN, reducing
+-          the size of your kernel image and potentially quietly ignoring
+-          numerous fatal conditions. You should only consider disabling this
+-          option for embedded systems with no facilities for reporting errors.
+-          Just say Y.
++	  Disabling this option eliminates support for BUG and WARN, reducing
++	  the size of your kernel image and potentially quietly ignoring
++	  numerous fatal conditions. You should only consider disabling this
++	  option for embedded systems with no facilities for reporting errors.
++	  Just say Y.
+ 
+ config ELF_CORE
+ 	depends on COREDUMP
+@@ -1426,8 +1426,8 @@ config PCSPKR_PLATFORM
+ 	select I8253_LOCK
+ 	default y
+ 	help
+-          This option allows to disable the internal PC-Speaker
+-          support, saving some memory.
++	  This option allows to disable the internal PC-Speaker
++	  support, saving some memory.
+ 
+ config BASE_FULL
+ 	default y
+@@ -1555,18 +1555,18 @@ config KALLSYMS_ALL
+ 	bool "Include all symbols in kallsyms"
+ 	depends on DEBUG_KERNEL && KALLSYMS
+ 	help
+-	   Normally kallsyms only contains the symbols of functions for nicer
+-	   OOPS messages and backtraces (i.e., symbols from the text and inittext
+-	   sections). This is sufficient for most cases. And only in very rare
+-	   cases (e.g., when a debugger is used) all symbols are required (e.g.,
+-	   names of variables from the data sections, etc).
++	  Normally kallsyms only contains the symbols of functions for nicer
++	  OOPS messages and backtraces (i.e., symbols from the text and inittext
++	  sections). This is sufficient for most cases. And only in very rare
++	  cases (e.g., when a debugger is used) all symbols are required (e.g.,
++	  names of variables from the data sections, etc).
+ 
+-	   This option makes sure that all symbols are loaded into the kernel
+-	   image (i.e., symbols from all sections) in cost of increased kernel
+-	   size (depending on the kernel configuration, it may be 300KiB or
+-	   something like this).
++	  This option makes sure that all symbols are loaded into the kernel
++	  image (i.e., symbols from all sections) in cost of increased kernel
++	  size (depending on the kernel configuration, it may be 300KiB or
++	  something like this).
+ 
+-	   Say N unless you really need all symbols.
++	  Say N unless you really need all symbols.
+ 
+ config KALLSYMS_ABSOLUTE_PERCPU
+ 	bool
 -- 
-2.22.0
+1.9.1
 
