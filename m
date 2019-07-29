@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 484DF78DE1
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5578378DE0
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728045AbfG2O2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 10:28:38 -0400
+        id S1728031AbfG2O2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 10:28:35 -0400
 Received: from mga06.intel.com ([134.134.136.31]:48955 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727601AbfG2O2f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726478AbfG2O2f (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 29 Jul 2019 10:28:35 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Jul 2019 06:35:20 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,322,1559545200"; 
-   d="scan'208";a="255235464"
+   d="scan'208";a="346616238"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 29 Jul 2019 06:35:18 -0700
+  by orsmga005.jf.intel.com with ESMTP; 29 Jul 2019 06:35:18 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 1E135714; Mon, 29 Jul 2019 16:35:15 +0300 (EEST)
+        id 403FA736; Mon, 29 Jul 2019 16:35:15 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?= 
         <clement.perrochaud@effinnov.com>,
@@ -30,9 +30,9 @@ To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?=
         Sedat Dilek <sedat.dilek@credativ.de>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH v4 08/14] NFC: nxp-nci: Constify acpi_device_id
-Date:   Mon, 29 Jul 2019 16:35:08 +0300
-Message-Id: <20190729133514.13164-9-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 11/14] NFC: nxp-nci: Remove unused macro pr_fmt()
+Date:   Mon, 29 Jul 2019 16:35:11 +0300
+Message-Id: <20190729133514.13164-12-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
 References: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
@@ -43,29 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The content of acpi_device_id is not supposed to change at runtime.
-All functions working with acpi_device_id provided by <linux/acpi.h>
-work with const acpi_device_id. So mark the non-const structs as const.
+The macro had never been used.
+
+The driver uses mostly the nfc_err(), which, with other macros in the family,
+is backed by corresponding dev_err(). pr_fmt() is not used for dev_err()
+macro. Moreover, there is no need to print the module name which is part of the
+device instance name anyway.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
 ---
- drivers/nfc/nxp-nci/i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nfc/nxp-nci/i2c.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index bec9b1ea78e2..4e71962dc557 100644
+index 59b0a02a813d..307bd2afbe05 100644
 --- a/drivers/nfc/nxp-nci/i2c.c
 +++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -330,7 +330,7 @@ static const struct of_device_id of_nxp_nci_i2c_match[] = {
- MODULE_DEVICE_TABLE(of, of_nxp_nci_i2c_match);
+@@ -12,8 +12,6 @@
+  * Copyright (C) 2012  Intel Corporation. All rights reserved.
+  */
  
- #ifdef CONFIG_ACPI
--static struct acpi_device_id acpi_id[] = {
-+static const struct acpi_device_id acpi_id[] = {
- 	{ "NXP1001" },
- 	{ "NXP7471" },
- 	{ },
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-
+ #include <linux/acpi.h>
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
 -- 
 2.20.1
 
