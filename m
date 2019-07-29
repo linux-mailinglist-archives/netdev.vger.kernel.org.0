@@ -2,95 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D24677823E
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 01:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39208782A7
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 02:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726245AbfG1XHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 19:07:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43032 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726120AbfG1XHv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Jul 2019 19:07:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rgynBm9hctybZUQVcP0RXwQdxJdI0dv3Bh59KGp9aWo=; b=CEzzNg0Xm/Z5ZBhcLdThuFymBA
-        3m2WnPrllV0f9OJX4NEWnjuV4tuMKPsDcGlKkETaNLhGbKx6cDsNYO6hMT/yS8pLPcX3D9foSF9cp
-        KNe4aEAtQeNKWIaIXvwStAnRykxDdlJRAfnYWuaj3vdzxMx4Jb6cbcZz9Q6Pbx4HEtAk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hrsGT-0006hC-MQ; Mon, 29 Jul 2019 01:07:41 +0200
-Date:   Mon, 29 Jul 2019 01:07:41 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-Message-ID: <20190728230741.GF23125@lunn.ch>
-References: <7e7a7015-6072-d884-b2ba-0a51177245ab@cumulusnetworks.com>
- <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
- <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
- <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
- <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
- <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
- <20190726134613.GD18223@lunn.ch>
- <20190726195010.7x75rr74v7ph3m6m@lx-anielsen.microsemi.net>
- <20190727030223.GA29731@lunn.ch>
- <20190728191558.zuopgfqza2iz5d5b@lx-anielsen.microsemi.net>
+        id S1726443AbfG2AIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 20:08:16 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:42381 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbfG2AIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 20:08:15 -0400
+Received: by mail-vs1-f67.google.com with SMTP id 190so39636314vsf.9
+        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 17:08:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=BrTkYGT/CoRQ7U7g4N9efxmX5N2ln4oVBYUSCIHtobA=;
+        b=Hrbix6Ncwndj0/ZhLdg0qekQEb+2Kgjc0SeRBr4FoeMFiX6XHGMMMukOQcIKSRIyn6
+         1FLJR6mLR/vulQ1VtBLTJl0Lda2nbHDXGla8f4MZapoFNxChdOqG0oC2RV/IR5Di4VyD
+         grjfPw7UAkWugiyvS9Gl1hDt40Nvloz7Q8hFS7wLEsjTOSX4W7lFPW9PhND4JzOEZ+VX
+         SBGYCM0giRSd8L6L/uLWJrYqn2I37qhpbbuqonQi3s5AF+bCkD88dzpmwDbsGmVCx0VK
+         YxQyZe0oSBHMaPJJxMQFY+Lj0j7LLb7a1Ztlp5dpJ58wOiotopzo5wS6I3+UonrsS7ek
+         PqTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=BrTkYGT/CoRQ7U7g4N9efxmX5N2ln4oVBYUSCIHtobA=;
+        b=NC4yznwrA9ZyIgLujNyJ07VYeKsq/Veb4iBhd/mpQtWX5bJx/ZsEj1oHmBpNGqPOb1
+         9kfTwqCnkz6TtIx7xxTHNU4Puri44LHT5pptucW3m0qA5CAKF4aRv9pIo5duo7azRyL+
+         VSeUq3q/XOonBB5VK09I9yj92umlnTRPIsX88OjXjkNjzMQ0LfoJ2u95IJaCPLUwPEsM
+         lMucVLuj1SihoiO3UpGqQZVQQu6IUIHKuLjfJM6vF67r1SdEsbu/OYTuVT0E9SOURv8G
+         rkI/nJxyZrDra4JQLEyOHgF/Nw4j+Vjg5CDSsJ1jV5yLys6KP1yOZ0i6KMmcCQLEL3yH
+         aNKw==
+X-Gm-Message-State: APjAAAUcJyGV4EfGMrwPAKcRnaJjg2Z/AxoLW7tMiv6jUZAZmoJAwYIz
+        1Rc+vDleyMQBL4lKPVrq4yJ2natIVmRRmmqJW7s=
+X-Google-Smtp-Source: APXvYqz5Tv/G3ojzOIebxdxZc+D3VZ7ztK4AVBhaXkUwSAzoovp0N7wtTAf+Vftj4yT+nLwP2EIhs0O9djQd9MpIws8=
+X-Received: by 2002:a67:eb19:: with SMTP id a25mr65238884vso.109.1564358894898;
+ Sun, 28 Jul 2019 17:08:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190728191558.zuopgfqza2iz5d5b@lx-anielsen.microsemi.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Received: by 2002:a67:80c8:0:0:0:0:0 with HTTP; Sun, 28 Jul 2019 17:08:14
+ -0700 (PDT)
+Reply-To: williamrobert416@gmail.com
+From:   "Mr. Robert William" <officialuse87@gmail.com>
+Date:   Mon, 29 Jul 2019 01:08:14 +0100
+Message-ID: <CAD00q0_sEF2SnzFkOGUBd7uFGZugFRAOygkgQE-c=-i01FWC-w@mail.gmail.com>
+Subject: Please listen
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Trying to get back to the original problem:
-> 
-> We have a network which implements the ODVA/DLR ring protocol. This protocol
-> sends out a beacon frame as often as every 3 us (as far as I recall, default I
-> believe is 400 us) to this MAC address: 01:21:6C:00:00:01.
-> 
-> Try take a quick look at slide 10 in [1].
-> 
-> If we assume that the SwitchDev driver implemented such that all multicast
-> traffic goes to the CPU, then we should really have a way to install a HW
-> offload path in the silicon, such that these packets does not go to the CPU (as
-> they are known not to be use full, and a frame every 3 us is a significant load
-> on small DMA connections and CPU resources).
-> 
-> If we assume that the SwitchDev driver implemented such that only "needed"
-> multicast packets goes to the CPU, then we need a way to get these packets in
-> case we want to implement the DLR protocol.
-> 
-> I'm sure that both models can work, and I do not think that this is the main
-> issue here.
-> 
-> Our initial attempt was to allow install static L2-MAC entries and append
-> multiple ports to such an entry in the MAC table. This was rejected, for several
-> good reasons it seems. But I'm not sure it was clear what we wanted to achieve,
-> and why we find it to be important. Hopefully this is clear with a real world
-> use-case.
-> 
-> Any hints or ideas on what would be a better way to solve this problems will be
-> much appreciated.
+-- 
+Hello,
 
-I always try to think about how this would work if i had a bunch of
-discrete network interfaces, not a switch. What APIs are involved in
-configuring such a system? How does the Linux network stack perform
-software DLR? How is the reception and blocking of the multicast group
-performed?
+I am Eng. Robert William, a retired Marine Engineer residing in
+Trinidad & Tobago.
+Unfortunately i am admitted to the hospital for a cancer (Sickness)
+over a year now,my doctor reported that i have only few months to pass
+away. Please i need your consent to invest my money (USD$1.8 Million)
+in any business of your
 
-Once you understand how it works in the software implement, it should
-then be more obvious which switchdev hooks should be used to
-accelerate this using hardware.
+choice in your country before i die, i have no other relatives not
+even children because i lost my family in a fire disaster in 2005.
+Please i need your urgent and
 
-	   Andrew
+kind response to enable me send you more information on how to contact
+my bank as my next of kin to process the fund into your bank account.
+
+Mr Robert William
