@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39208782A7
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 02:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E5F8782DA
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 02:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbfG2AIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 20:08:16 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:42381 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbfG2AIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 20:08:15 -0400
-Received: by mail-vs1-f67.google.com with SMTP id 190so39636314vsf.9
-        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 17:08:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=BrTkYGT/CoRQ7U7g4N9efxmX5N2ln4oVBYUSCIHtobA=;
-        b=Hrbix6Ncwndj0/ZhLdg0qekQEb+2Kgjc0SeRBr4FoeMFiX6XHGMMMukOQcIKSRIyn6
-         1FLJR6mLR/vulQ1VtBLTJl0Lda2nbHDXGla8f4MZapoFNxChdOqG0oC2RV/IR5Di4VyD
-         grjfPw7UAkWugiyvS9Gl1hDt40Nvloz7Q8hFS7wLEsjTOSX4W7lFPW9PhND4JzOEZ+VX
-         SBGYCM0giRSd8L6L/uLWJrYqn2I37qhpbbuqonQi3s5AF+bCkD88dzpmwDbsGmVCx0VK
-         YxQyZe0oSBHMaPJJxMQFY+Lj0j7LLb7a1Ztlp5dpJ58wOiotopzo5wS6I3+UonrsS7ek
-         PqTQ==
+        id S1726370AbfG2AiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 20:38:02 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:34301 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726251AbfG2AiB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 20:38:01 -0400
+Received: by mail-io1-f69.google.com with SMTP id u84so65936482iod.1
+        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 17:38:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=BrTkYGT/CoRQ7U7g4N9efxmX5N2ln4oVBYUSCIHtobA=;
-        b=NC4yznwrA9ZyIgLujNyJ07VYeKsq/Veb4iBhd/mpQtWX5bJx/ZsEj1oHmBpNGqPOb1
-         9kfTwqCnkz6TtIx7xxTHNU4Puri44LHT5pptucW3m0qA5CAKF4aRv9pIo5duo7azRyL+
-         VSeUq3q/XOonBB5VK09I9yj92umlnTRPIsX88OjXjkNjzMQ0LfoJ2u95IJaCPLUwPEsM
-         lMucVLuj1SihoiO3UpGqQZVQQu6IUIHKuLjfJM6vF67r1SdEsbu/OYTuVT0E9SOURv8G
-         rkI/nJxyZrDra4JQLEyOHgF/Nw4j+Vjg5CDSsJ1jV5yLys6KP1yOZ0i6KMmcCQLEL3yH
-         aNKw==
-X-Gm-Message-State: APjAAAUcJyGV4EfGMrwPAKcRnaJjg2Z/AxoLW7tMiv6jUZAZmoJAwYIz
-        1Rc+vDleyMQBL4lKPVrq4yJ2natIVmRRmmqJW7s=
-X-Google-Smtp-Source: APXvYqz5Tv/G3ojzOIebxdxZc+D3VZ7ztK4AVBhaXkUwSAzoovp0N7wtTAf+Vftj4yT+nLwP2EIhs0O9djQd9MpIws8=
-X-Received: by 2002:a67:eb19:: with SMTP id a25mr65238884vso.109.1564358894898;
- Sun, 28 Jul 2019 17:08:14 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=P/bfC/9DYsjpqYrAz/GLNeevsKIsGM5ry8dJO/L9Ihk=;
+        b=eeDv5r8aFUxR7BAnjfVs8KMIqbcyo8ja6AX1PqCwO1jVbkgnLxOI8jQU8i5tsS1+/N
+         km86yDd9b+N1SmLrUTP83gsC9DV/lhIGRJuOiG5/vPo1NbK+Go98vpm2oh4Iuk3bc4/e
+         wREF6g3C+Ry5NmbbqQQZGD7eutmA8j3Dl1yg1eJbg3yRu8lZVHDjo/ZMiYMHUZy1e4Mg
+         IHomWFhtXiHmRqcIhki5xOIw0qesYeVZSzHhs9Sn4orU8pUuERjFyDhfDzGPkplHIOel
+         k153tpdRaf/YtwqePMshwsiK5XS/K5vdssNKgG/NY5tx2lH20XMKBQKeZ8Wg+nU4DblA
+         apCQ==
+X-Gm-Message-State: APjAAAUFS28uj3qRnLVihP+yENuUPvhIvS0/5c5JPX8UfEsDc9frieSB
+        tkqNiDBVBsgkMVUOyGfykPg8OycsORuixDJrdaHY59Om0jAD
+X-Google-Smtp-Source: APXvYqwVilF5qTRSsaLkhL6POlQdbplmHCUtbsaCjcw6sv9rHxSg5wY2IEL+f/ULWS/npxF51AhFcSpVnuGNfy6+mXTXpQgpNXm3
 MIME-Version: 1.0
-Received: by 2002:a67:80c8:0:0:0:0:0 with HTTP; Sun, 28 Jul 2019 17:08:14
- -0700 (PDT)
-Reply-To: williamrobert416@gmail.com
-From:   "Mr. Robert William" <officialuse87@gmail.com>
-Date:   Mon, 29 Jul 2019 01:08:14 +0100
-Message-ID: <CAD00q0_sEF2SnzFkOGUBd7uFGZugFRAOygkgQE-c=-i01FWC-w@mail.gmail.com>
-Subject: Please listen
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a05:6638:40c:: with SMTP id q12mr81494815jap.17.1564360680847;
+ Sun, 28 Jul 2019 17:38:00 -0700 (PDT)
+Date:   Sun, 28 Jul 2019 17:38:00 -0700
+In-Reply-To: <000000000000c75fb7058ba0c0e4@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aec4ec058ec71a3d@google.com>
+Subject: Re: memory leak in bio_copy_user_iov
+From:   syzbot <syzbot+03e5c8ebd22cc6c3a8cb@syzkaller.appspotmail.com>
+To:     agk@redhat.com, axboe@kernel.dk, coreteam@netfilter.org,
+        davem@davemloft.net, dm-devel@redhat.com, hdanton@sina.com,
+        kaber@trash.net, kadlec@blackhole.kfki.hu,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-raid@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        shli@kernel.org, snitzer@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello,
+syzbot has bisected this bug to:
 
-I am Eng. Robert William, a retired Marine Engineer residing in
-Trinidad & Tobago.
-Unfortunately i am admitted to the hospital for a cancer (Sickness)
-over a year now,my doctor reported that i have only few months to pass
-away. Please i need your consent to invest my money (USD$1.8 Million)
-in any business of your
+commit 664820265d70a759dceca87b6eb200cd2b93cda8
+Author: Mike Snitzer <snitzer@redhat.com>
+Date:   Thu Feb 18 20:44:39 2016 +0000
 
-choice in your country before i die, i have no other relatives not
-even children because i lost my family in a fire disaster in 2005.
-Please i need your urgent and
+     dm: do not return target from dm_get_live_table_for_ioctl()
 
-kind response to enable me send you more information on how to contact
-my bank as my next of kin to process the fund into your bank account.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13f4eb64600000
+start commit:   0011572c Merge branch 'for-5.2-fixes' of git://git.kernel...
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=100ceb64600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17f4eb64600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cb38d33cd06d8d48
+dashboard link: https://syzkaller.appspot.com/bug?extid=03e5c8ebd22cc6c3a8cb
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13244221a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=117b2432a00000
 
-Mr Robert William
+Reported-by: syzbot+03e5c8ebd22cc6c3a8cb@syzkaller.appspotmail.com
+Fixes: 664820265d70 ("dm: do not return target from  
+dm_get_live_table_for_ioctl()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
