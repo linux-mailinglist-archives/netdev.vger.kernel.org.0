@@ -2,114 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0477848D
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 07:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9542784D6
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 08:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbfG2Fse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 01:48:34 -0400
-Received: from mail-eopbgr20078.outbound.protection.outlook.com ([40.107.2.78]:35976
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725988AbfG2Fse (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 01:48:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CmSqAKG//rp7D9bzwfzxCdPy19blIloaxLHOOOB5B1FpF7GSD9rqKxJB5GPiGPJOuSPKE8T3gkEivmtPZR0ux9A43KTQzEf+GH6++gmOikXRoYquhE3C63oplFeb2BOZezDvZ7M1D3n+6DCNXeDoHBiU9ienya9KRCWHjkAAMIvKyGnkgpW6GhuTJWzBbC29/KTd2DuItrNBKAZX9hb+yv4zWM3HeGwYOsUL2ruNhagVbIyh3p0f23Lg5tH8T/SoN4oZDyN2PQ0oR4ZvqfBgXwRfPwprslC96vIOjVEQEk1D/ky7hXD+nLkIiyEXbwUVm/djKAnlHnJlMIUR7dl6Rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N9IYg2LtqT4orkyXY5cPb0ZNG/qBkCzLoW0mMATQ/04=;
- b=iKAfH7BHR9bNdWvgF/TeeJNY8GgTAtUK/SMYMR4uWGD1/mkVEhYV4ubPAaterZ0LHOnjp312Y3NRG4hAp6sAFautclSsUyl5/iGhHsgVf8uqhNAQmQIQVlvZdOrBAwRoTEGIuJwNmsPeY/46Jnx9aZTheI4AvNcoyYITw5f5BJPwG/olMkgnCvczKrwiLt27ZHB7aJDgseHyCFJY0/0wjN9pQsNPMJQPd5nnYlGar1L5cLxZAvtjkBN79X9EbpZZsSakRjg6WZ0/8kFDBKUn94gXFO7dsGtYUZUBbuKCUS3fiJylvLpnWitY+BT/+18KiRWS2/0fHD8X8MqQjkM9eg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N9IYg2LtqT4orkyXY5cPb0ZNG/qBkCzLoW0mMATQ/04=;
- b=ZjBKex1YX7DyP3uPOo68jzpMg0NQiuBLqCVXwCyQtn9YMswVhXnFP3s0Dq9fDn1H6PrXaYiY+7WHrC1jdjVdhhy22JnNWLSR55EQ2Xie9lp71wy7mYPf3e5CG3WCCbzNNfLoGzirfUiAv3cyJF3FfMbjBVgDWu1+bWLXPS6XXV0=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2376.eurprd05.prod.outlook.com (10.168.75.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.14; Mon, 29 Jul 2019 05:48:29 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2115.005; Mon, 29 Jul 2019
- 05:48:29 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V4 net-next 00/10] net: hns3: some code optimizations &
- bugfixes & features
-Thread-Topic: [PATCH V4 net-next 00/10] net: hns3: some code optimizations &
- bugfixes & features
-Thread-Index: AQHVRbkez66y46wiD02cT7vkv/dyNabhFwqA
-Date:   Mon, 29 Jul 2019 05:48:28 +0000
-Message-ID: <1aa604e4afe85fa9cfd2e47fbb5386c2c1041310.camel@mellanox.com>
-References: <1564368811-65492-1-git-send-email-tanhuazhong@huawei.com>
-In-Reply-To: <1564368811-65492-1-git-send-email-tanhuazhong@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 65bd0094-fb7c-44e5-756a-08d713e861ca
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2376;
-x-ms-traffictypediagnostic: DB6PR0501MB2376:
-x-microsoft-antispam-prvs: <DB6PR0501MB2376DD4383F3FCB020E5838FBEDD0@DB6PR0501MB2376.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-forefront-prvs: 01136D2D90
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(136003)(346002)(366004)(39860400002)(199004)(189003)(54534003)(26005)(316002)(186003)(3846002)(25786009)(6116002)(11346002)(68736007)(71190400001)(71200400001)(6486002)(229853002)(54906003)(110136005)(486006)(256004)(36756003)(2906002)(6436002)(2616005)(476003)(446003)(14444005)(66446008)(66946007)(478600001)(8936002)(99286004)(7736002)(5660300002)(6246003)(6506007)(66556008)(102836004)(64756008)(66476007)(305945005)(76116006)(91956017)(86362001)(76176011)(14454004)(8676002)(53936002)(58126008)(2501003)(66066001)(81166006)(81156014)(4326008)(6512007)(118296001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2376;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: S7D6+PZedXk1PNIByIDrfyCU7TB5eHu2+3tPf4PHYsPGdhrncjgrluAsbVH2ey+8IqSBJgR2W4UB8WpaTsIClBnsrE3cNB0cCcqOr40Tl0trIw/IfJ3PGwBhb7dGcOKLRDdFzahnqYCgVQN1+z8gzP0PMoYjFesB9zuKNwHNevl+L9MFwD2mFiQpGVR7a8ioH/gE7ZuEJNnbSypNnroro0cL3R0/6MGE7I+JIBB2ZPoie8uFx9FRdlLpIp72EMkEcwg2ji2e0afViHuQS38JU9OSREldgnRdmqEv8boAr1BdgjOotDYHqTABRWK0w2Y5j+cxhmxaXrzCpshBhJI1gSUVzgfdW5UC8g8Yt//mPppbEAXKUtADW+ueJbDpoyHiiehzRe7hVL4ZozapjqYHYtbSoB7CLxmD1FteMGZfRhs=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F3B16A678070FF4993F05AAF527C9563@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726713AbfG2GJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 02:09:29 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:33007 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725934AbfG2GJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 02:09:29 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id B022721BA9;
+        Mon, 29 Jul 2019 02:09:27 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 29 Jul 2019 02:09:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=/SBTOk
+        cbxtFVR/CQbarJXCkuOQOjrMyBPaPW6M0UaOY=; b=tU5hGH3MbArrHjbFBCxnyN
+        sLwoXsz5UlH8fSkija53SDNKpwKyPmwLL7Q77iRj6oep4VVras9IhIY7B1Lh2Q9v
+        Xlxr19rUz3fWZxt2yb+gj9YAib0kv06C6KrIDKQmwkCJTO39eMNIUGMJ+O1yHjFX
+        TKFan5XnAtpVvarDGVGGLYjS3SDbe45WOPY0UFaIDVMT+cIClG3XbqqpFYgivyvR
+        3wI90SEMVIWAD9WcWtzmYmGXhHTlOy0cAamegbz7XLhK29Epy0o4mjayLrSMIFvD
+        AwhdDJkiGyAGCK46262UZXarz/0kS3EBU+ls0ITFWz5mkajFWbGKd6GYrG9FRBrg
+        ==
+X-ME-Sender: <xms:lY0-XeRFLxc_89Ovi38c5c_4U18LY6x5fm8VPMYK5X3eHaL9qagLzg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrledtgddutdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:lY0-Xd2kBRcEYGfdOM8_THMJW0L6ZW9vqSdM5B44LGtdTnWIN37btw>
+    <xmx:lY0-XQwM7I5k4jx9ZTP45nbw-0EhJq7RqtoOOiPtEo7yvX75kVceGQ>
+    <xmx:lY0-XRzMUeoucuNzVH_GhHIT6y8K0XE7AkeCd_uf7V3MVCZtJySAMg>
+    <xmx:l40-XQI3KeEhB6FjU7hI4CPYZNNBhBX9ZcxHhLknPV5foPv5GHOioQ>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 63E4D80061;
+        Mon, 29 Jul 2019 02:09:25 -0400 (EDT)
+Date:   Mon, 29 Jul 2019 09:09:23 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
+Message-ID: <20190729060923.GA16938@splinter>
+References: <7e7a7015-6072-d884-b2ba-0a51177245ab@cumulusnetworks.com>
+ <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
+ <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
+ <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
+ <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
+ <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
+ <20190726134613.GD18223@lunn.ch>
+ <20190726195010.7x75rr74v7ph3m6m@lx-anielsen.microsemi.net>
+ <20190727030223.GA29731@lunn.ch>
+ <20190728191558.zuopgfqza2iz5d5b@lx-anielsen.microsemi.net>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65bd0094-fb7c-44e5-756a-08d713e861ca
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jul 2019 05:48:28.8414
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2376
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190728191558.zuopgfqza2iz5d5b@lx-anielsen.microsemi.net>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA3LTI5IGF0IDEwOjUzICswODAwLCBIdWF6aG9uZyBUYW4gd3JvdGU6DQo+
-IFRoaXMgcGF0Y2gtc2V0IGluY2x1ZGVzIGNvZGUgb3B0aW1pemF0aW9ucywgYnVnZml4ZXMgYW5k
-IGZlYXR1cmVzIGZvcg0KPiB0aGUgSE5TMyBldGhlcm5ldCBjb250cm9sbGVyIGRyaXZlci4NCj4g
-DQo+IFtwYXRjaCAxLzEwXSBjaGVja3MgcmVzZXQgc3RhdHVzIGJlZm9yZSBzZXR0aW5nIGNoYW5u
-ZWwuDQo+IA0KPiBbcGF0Y2ggMi8xMF0gYWRkcyBhIE5VTEwgcG9pbnRlciBjaGVja2luZy4NCj4g
-DQo+IFtwYXRjaCAzLzEwXSByZW1vdmVzIHJlc2V0IGxldmVsIHVwZ3JhZGluZyB3aGVuIGN1cnJl
-bnQgcmVzZXQgZmFpbHMuDQo+IA0KPiBbcGF0Y2ggNC8xMF0gZml4ZXMgYSBHRlAgZmxhZ3MgZXJy
-b3JzIHdoZW4gaG9sZGluZyBzcGluX2xvY2suDQo+IA0KPiBbcGF0Y2ggNS8xMF0gbW9kaWZpZXMg
-ZmlybXdhcmUgdmVyc2lvbiBmb3JtYXQuDQo+IA0KPiBbcGF0Y2ggNi8xMF0gYWRkcyBzb21lIHBy
-aW50IGluZm9ybWF0aW9uIHdoaWNoIGlzIG9mZiBieSBkZWZhdWx0Lg0KPiANCj4gW3BhdGNoIDcv
-MTAgLSA4LzEwXSBhZGRzIHR3byBjb2RlIG9wdGltaXphdGlvbnMgYWJvdXQgaW50ZXJydXB0DQo+
-IGhhbmRsZXINCj4gYW5kIHdvcmsgdGFzay4NCj4gDQo+IFtwYXRjaCA5LzEwXSBhZGRzIHN1cHBv
-cnQgZm9yIHVzaW5nIG9yZGVyIDEgcGFnZXMgd2l0aCBhIDRLIGJ1ZmZlci4NCj4gDQo+IFtwYXRj
-aCAxMC8xMF0gbW9kaWZpZXMgbWVzc2FnZXMgcHJpbnRzIHdpdGggZGV2X2luZm8oKSBpbnN0ZWFk
-IG9mDQo+IHByX2luZm8oKS4NCj4gDQo+IENoYW5nZSBsb2c6DQo+IFYzLT5WNDogcmVwbGFjZSBu
-ZXRpZl9pbmZvIHdpdGggbmV0aWZfZGJnIGluIFtwYXRjaCA2LzEwXQ0KPiBWMi0+VjM6IGZpeGVz
-IGNvbW1lbnRzIGZyb20gU2FlZWQgTWFoYW1lZWQgYW5kIEpvZSBQZXJjaGVzLg0KPiBWMS0+VjI6
-IGZpeGVzIGNvbW1lbnRzIGZyb20gU2FlZWQgTWFoYW1lZWQgYW5kDQo+IAlyZW1vdmVzIHByZXZp
-b3VzIFtwYXRjaCA0LzExXSBhbmQgW3BhdGNoIDExLzExXQ0KPiAJd2hpY2ggbmVlZHMgZnVydGhl
-ciBkaXNjdXNzaW9uLCBhbmQgYWRkcyBhIG5ldw0KPiAJcGF0Y2ggWzEwLzEwXSBzdWdnZXN0ZWQg
-YnkgU2FlZWQgTWFoYW1lZWQuDQo+IA0KDQpSZXZpZXdlZC1ieTogU2FlZWQgTWFoYW1lZWQgPHNh
-ZWVkbUBtZWxsYW5veC5jb20+DQo=
+On Sun, Jul 28, 2019 at 09:15:59PM +0200, Allan W. Nielsen wrote:
+> If we assume that the SwitchDev driver implemented such that all multicast
+> traffic goes to the CPU, then we should really have a way to install a HW
+> offload path in the silicon, such that these packets does not go to the CPU (as
+> they are known not to be use full, and a frame every 3 us is a significant load
+> on small DMA connections and CPU resources).
+> 
+> If we assume that the SwitchDev driver implemented such that only "needed"
+> multicast packets goes to the CPU, then we need a way to get these packets in
+> case we want to implement the DLR protocol.
+
+I'm not familiar with the HW you're working with, so the below might not
+be relevant.
+
+In case you don't want to send all multicast traffic to the CPU (I'll
+refer to it later), you can install an ingress tc filter that traps to
+the CPU the packets you do want to receive. Something like:
+
+# tc qdisc add dev swp1 clsact
+# tc filter add dev swp1 pref 1 ingress flower skip_sw dst_mac \
+	01:21:6C:00:00:01 action trap
+
+If your HW supports sharing the same filter among multiple ports, then
+you can install your filter in a tc shared block and bind multiple ports
+to it.
+
+Another option is to always send a *copy* of multicast packets to the
+CPU, but make sure the HW uses a policer that prevents the CPU from
+being overwhelmed. To avoid packets being forwarded twice (by HW and
+SW), you will need to mark such packets in your driver with
+'skb->offload_fwd_mark = 1'.
+
+Now, in case user wants to allow the CPU to receive certain packets at a
+higher rate, a tc filter can be used. It will be identical to the filter
+I mentioned earlier, but with a 'police' action chained before 'trap'.
+
+I don't think this is currently supported by any driver, but I believe
+it's the right way to go: By default the CPU receives all the traffic it
+should receive and user can fine-tune it using ACLs.
