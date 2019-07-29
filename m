@@ -2,76 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 029C4786F5
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 10:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 095B4786FF
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 10:06:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727440AbfG2IDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 04:03:43 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:51364 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727257AbfG2IDn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 04:03:43 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id A91E620251;
-        Mon, 29 Jul 2019 10:03:42 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id z3XHQg18Gcm1; Mon, 29 Jul 2019 10:03:42 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 43F7220082;
-        Mon, 29 Jul 2019 10:03:42 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.468.0; Mon, 29 Jul 2019
- 10:03:41 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id D9F5231805DA;
- Mon, 29 Jul 2019 10:03:41 +0200 (CEST)
-Date:   Mon, 29 Jul 2019 10:03:41 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+        id S1727506AbfG2IGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 04:06:42 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33601 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726680AbfG2IGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 04:06:41 -0400
+Received: by mail-pl1-f196.google.com with SMTP id c14so27130385plo.0;
+        Mon, 29 Jul 2019 01:06:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=2pAUhDKwxtf6yA9o6haMqMvNurh2OyNtCVDu9kkP27Y=;
+        b=ko33qF85rx7Kj/E/p5ck0ZVyIEiFrZO3mZoaMCfKVZZdYNT8mU2KWrXNMKiO5sI2q+
+         /M6SFPAWaN9+AzqzI0E7Ta1p3yXmthvXvK2oGyn4lkJzELNMf5hovxHQ0XUIAPAHLrPt
+         VrrGYOzKw/yLNVy7muXO9Bl/rvdOVzUr9Qp5B8wwTEWWnwHmMaS49eVI55TyzZdcQ8LG
+         kmnLmZOOxcKyFGKjAsWVWvyOMgKNJO1L1cry8KR9wbTT1Q62enY+H4L3+ZWh08lcN1+d
+         AkXIaYW+PCOj0vK4etWWQWxdbjYoBkXMC7CkxiiWAADMLcr0SryyCIyULLSFUgnkZlmA
+         p2VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=2pAUhDKwxtf6yA9o6haMqMvNurh2OyNtCVDu9kkP27Y=;
+        b=XqljnwzGxJP6A07Xf00O3QsGZkdMASDw0dggtyMDBplZZKEnDG0Nm0Imrj/hUTXBdy
+         ytZZ9bdkKbfrqVey90Nv77kP4iRRYitDEJi5LynDo3h2diHRXEakdNe96msbJZLtTkyg
+         OWE0o/+uqEQjLfaR/rlN1xn+jjxnNuUMaPltIXdHx1mbbxv54Vrk8pXKFcTU6RvUTeE/
+         GcScTh2AK6fvTRrg92upXnQSaMrol2NxfDJCewvrKBHH704Cjgt+iZfUJCZHNq7q0dIi
+         RUcf128DY53MCyrwcjb7lz/2m6QHAAuNTo/YOnuW8TYOvKLWQB+dPnQIzfPs2S6yceql
+         16ZQ==
+X-Gm-Message-State: APjAAAXXzkJ/8tQDBEq/43fiwTupTNsY6BJqcZeAbK42jRaSStTzsQO4
+        6OTjW/mCZgDcsiaC1gBrMfXE6SaD
+X-Google-Smtp-Source: APXvYqzWlcF99hbImVSj/76MU2Juyx+KoQQ8ntf0t7JlnSTTddjw79XM3FCs7jIlPfATgItJaejx/A==
+X-Received: by 2002:a17:902:b612:: with SMTP id b18mr82187232pls.8.1564387600832;
+        Mon, 29 Jul 2019 01:06:40 -0700 (PDT)
+Received: from ?IPv6:2402:f000:4:72:808::177e? ([2402:f000:4:72:808::177e])
+        by smtp.gmail.com with ESMTPSA id 21sm60230844pjh.25.2019.07.29.01.06.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 01:06:40 -0700 (PDT)
 Subject: Re: [BUG] net: xfrm: possible null-pointer dereferences in
  xfrm_policy()
-Message-ID: <20190729080341.GJ2879@gauss3.secunet.de>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <464bb93d-75b2-c21b-ee32-25a10ff61622@gmail.com>
+ <20190729080341.GJ2879@gauss3.secunet.de>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <da903311-9fdb-d20a-9584-c35836947302@gmail.com>
+Date:   Mon, 29 Jul 2019 16:06:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+In-Reply-To: <20190729080341.GJ2879@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <464bb93d-75b2-c21b-ee32-25a10ff61622@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 11:43:49AM +0800, Jia-Ju Bai wrote:
-> In xfrm_policy(), the while loop on lines 3802-3830 ends when dst->xfrm is
-> NULL.
 
-We don't have a xfrm_policy() function, and as said already the
-line numbers does not help much as long as you don't say which
-tree/branch this is and which commit is the head commit.
 
-> Then, dst->xfrm is used on line 3840:
->     xfrm_state_mtu(dst->xfrm, mtu);
->         if (x->km.state != XFRM_STATE_VALID...)
->         aead = x->data;
-> 
-> Thus, possible null-pointer dereferences may occur.
+On 2019/7/29 16:03, Steffen Klassert wrote:
+> On Mon, Jul 29, 2019 at 11:43:49AM +0800, Jia-Ju Bai wrote:
+>> In xfrm_policy(), the while loop on lines 3802-3830 ends when dst->xfrm is
+>> NULL.
+> We don't have a xfrm_policy() function, and as said already the
+> line numbers does not help much as long as you don't say which
+> tree/branch this is and which commit is the head commit.
+>
+>> Then, dst->xfrm is used on line 3840:
+>>  Â Â Â  xfrm_state_mtu(dst->xfrm, mtu);
+>>  Â Â Â Â Â Â Â  if (x->km.state != XFRM_STATE_VALID...)
+>>  Â Â Â Â Â Â Â  aead = x->data;
+>>
+>> Thus, possible null-pointer dereferences may occur.
+> I guess you refer to xfrm_bundle_ok(). The dst pointer
+> is reoaded after the loop, so the dereferenced pointer
+> is not the one that had NULL at dst->xfrm.
+>
+>> These bugs are found by a static analysis tool STCheck written by us.
+>>
+>> I do not know how to correctly fix these bugs, so I only report them.
+> I'd suggest you to manually review the reports of your
+> tool and to fix the tool accordingly.
 
-I guess you refer to xfrm_bundle_ok(). The dst pointer
-is reoaded after the loop, so the dereferenced pointer
-is not the one that had NULL at dst->xfrm.
+Oh, sorry for my mistakes.
+I have found that dst is updated:
+ Â Â Â  dst = &xdst->u.dst;
 
-> 
-> These bugs are found by a static analysis tool STCheck written by us.
-> 
-> I do not know how to correctly fix these bugs, so I only report them.
+I will fix my tool, thanks.
 
-I'd suggest you to manually review the reports of your
-tool and to fix the tool accordingly.
+
+Best wishes,
+Jia-Ju Bai
