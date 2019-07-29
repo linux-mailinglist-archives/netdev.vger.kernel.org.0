@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2227878C85
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 15:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8F1B78C9E
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 15:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727268AbfG2NQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 09:16:20 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3231 "EHLO huawei.com"
+        id S2388057AbfG2NRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 09:17:46 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:52848 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726173AbfG2NQT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 09:16:19 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id EEE4E407267BF28F5523;
-        Mon, 29 Jul 2019 21:16:12 +0800 (CST)
+        id S2387920AbfG2NRp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 09:17:45 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CF713298BD40AEA61126;
+        Mon, 29 Jul 2019 21:17:42 +0800 (CST)
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 29 Jul 2019 21:16:09 +0800
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.439.0; Mon, 29 Jul 2019 21:17:39 +0800
 From:   Mao Wenan <maowenan@huawei.com>
 To:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH stable 4.9] tcp: reset sk_send_head in tcp_write_queue_purge
-Date:   Mon, 29 Jul 2019 21:21:08 +0800
-Message-ID: <20190729132108.162320-1-maowenan@huawei.com>
+Subject: [PATCH stable 4.4] tcp: reset sk_send_head in tcp_write_queue_purge
+Date:   Mon, 29 Jul 2019 21:22:42 +0800
+Message-ID: <20190729132242.162505-1-maowenan@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -166,10 +166,10 @@ Signed-off-by: Mao Wenan <maowenan@huawei.com>
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/include/net/tcp.h b/include/net/tcp.h
-index d7047de952f0..1eda31f7f013 100644
+index bf8a0dae977a..77438a8406ec 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -1512,6 +1512,11 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
+@@ -1443,6 +1443,11 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
  void tcp_fastopen_init_key_once(bool publish);
  #define TCP_FASTOPEN_KEY_LENGTH 16
  
@@ -181,7 +181,7 @@ index d7047de952f0..1eda31f7f013 100644
  /* Fastopen key context */
  struct tcp_fastopen_context {
  	struct crypto_cipher	*tfm;
-@@ -1528,6 +1533,7 @@ static inline void tcp_write_queue_purge(struct sock *sk)
+@@ -1459,6 +1464,7 @@ static inline void tcp_write_queue_purge(struct sock *sk)
  		sk_wmem_free_skb(sk, skb);
  	sk_mem_reclaim(sk);
  	tcp_clear_all_retrans_hints(tcp_sk(sk));
@@ -189,7 +189,7 @@ index d7047de952f0..1eda31f7f013 100644
  	inet_csk(sk)->icsk_backoff = 0;
  }
  
-@@ -1589,11 +1595,6 @@ static inline void tcp_check_send_head(struct sock *sk, struct sk_buff *skb_unli
+@@ -1520,11 +1526,6 @@ static inline void tcp_check_send_head(struct sock *sk, struct sk_buff *skb_unli
  		tcp_sk(sk)->highest_sack = NULL;
  }
  
