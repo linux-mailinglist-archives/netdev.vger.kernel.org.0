@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF6EF792B9
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 19:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02731792BE
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 20:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729069AbfG2R7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 13:59:13 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:36870 "EHLO
+        id S1727816AbfG2SBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 14:01:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:36906 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbfG2R7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 13:59:13 -0400
+        with ESMTP id S1726167AbfG2SBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 14:01:07 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E119C1401D962;
-        Mon, 29 Jul 2019 10:59:12 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 10:59:12 -0700 (PDT)
-Message-Id: <20190729.105912.372124003186607133.davem@davemloft.net>
-To:     colin.king@canonical.com
-Cc:     dsahern@gmail.com, jiri@resnulli.us, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rocker: fix memory leaks of fib_work on two error
- return paths
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BACAE140505B5;
+        Mon, 29 Jul 2019 11:01:06 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 11:01:06 -0700 (PDT)
+Message-Id: <20190729.110106.1654712144874525336.davem@davemloft.net>
+To:     mcroce@redhat.com
+Cc:     netdev@vger.kernel.org, antoine.tenart@bootlin.com,
+        maxime.chevallier@bootlin.com, mw@semihalf.com,
+        stefanc@marvell.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] mvpp2: refactor MTU change code
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190727233726.3121-1-colin.king@canonical.com>
-References: <20190727233726.3121-1-colin.king@canonical.com>
+In-Reply-To: <20190728004645.4807-1-mcroce@redhat.com>
+References: <20190728004645.4807-1-mcroce@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Jul 2019 10:59:13 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Jul 2019 11:01:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin King <colin.king@canonical.com>
-Date: Sun, 28 Jul 2019 00:37:26 +0100
+From: Matteo Croce <mcroce@redhat.com>
+Date: Sun, 28 Jul 2019 02:46:45 +0200
 
-> From: Colin Ian King <colin.king@canonical.com>
+> The MTU change code can call napi_disable() with the device already down,
+> leading to a deadlock. Also, lot of code is duplicated unnecessarily.
 > 
-> Currently there are two error return paths that leak memory allocated
-> to fib_work. Fix this by kfree'ing fib_work before returning.
+> Rework mvpp2_change_mtu() to avoid the deadlock and remove duplicated code.
 > 
-> Addresses-Coverity: ("Resource leak")
-> Fixes: 19a9d136f198 ("ipv4: Flag fib_info with a fib_nh using IPv6 gateway")
-> Fixes: dbcc4fa718ee ("rocker: Fail attempts to use routes with nexthop objects")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
 
-Applied.
+Applied and queued up for -stable, thanks.
