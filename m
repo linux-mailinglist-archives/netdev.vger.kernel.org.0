@@ -2,222 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 855A178D5F
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AD078D63
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:04:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728048AbfG2OEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 10:04:35 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43212 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727648AbfG2OEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 10:04:35 -0400
-Received: by mail-qt1-f196.google.com with SMTP id w17so15439809qto.10
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 07:04:35 -0700 (PDT)
+        id S1728390AbfG2OEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 10:04:47 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:34420 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728380AbfG2OEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 10:04:46 -0400
+Received: by mail-qk1-f196.google.com with SMTP id t8so44196932qkt.1
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 07:04:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=7ppbGArVZI4ZDOixVF87b1IeJRA7ogQ7KQEeVarUgp8=;
+        b=bvHawiHxZdslwx2WM5E/f2kRIS5duXnjcFeeD4L1SbDcy0npDM5EmKEHnRN7jN9AXa
+         QAdZxvhzFqjQz4WZyj5C6zc6gyNqcQESthsgp+dZJXPaWegcTSJYB0GIXSfW25NICXcm
+         gI+3u727rW7x6QID/xhN7s9Z2MGCVefIOgAYUGKqhAX5o6sjy9P8qgu4v27kG5Snb7G2
+         OfHAgGoYc6IxcOzoHJM8eL6RQPL9xoFZQy50dlXp6XhN7Qgqt2KejTJqD325vqiUCZI/
+         Vt+tuCRfgDxKRMDEHWVchn8JbNoP06bs3azn6n7k6J7C+QOy2N0rcIVQf8Unud84Rrey
+         cdRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9TGrSWXBSPwHy8jYtphhW0dEmj0QZhEapSIaBCYSsds=;
-        b=ReyKO7ynCX4XG7e45B5xtvdUExUeRhz/PzLPt512LnmS7fPWcNdjOY1KGsxTkJluVO
-         SEF2kRsf0b+MeGkCJ1nznUin1hf+amcxvb3MmDs8OThMQOhqX3UH1be3B+K6I84UE3DX
-         fD+HkHXm1/FDkhRAhIIfG7cEnmfZecsOazcZ2NTLlI8LIgDoijnOAOr4yOXsgstqh6Xv
-         JyrTF6MweSGHzYQ0O6tC6/hIbV3Std/w+oTKPrABXbxKqHhFCpbZvD7LF9Q6wGaT7Ua4
-         NSdSILR47XWT9cuVJqVqb+N9DH4DzYraoGqKULvnfHZA+pDqGOYEWBi7YtRkRKAgVsBu
-         jRzA==
-X-Gm-Message-State: APjAAAWtFx1Xqo0kzUu0SgBRMSXVN+8vGNvGSobsxLSXBReJuwe2CeNq
-        +FRbAeql5fR2L/6Weq0MACiOCkD3B/GFkg==
-X-Google-Smtp-Source: APXvYqxjkWPX2jNn/Dzz4DX/RzsFfIydjYDR0yXBAhz1UUZ7xlpbws8nDmZPX4DMGukA3N0rsbT+uA==
-X-Received: by 2002:ac8:333d:: with SMTP id t58mr79478835qta.167.1564409074630;
-        Mon, 29 Jul 2019 07:04:34 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id f25sm32100187qta.81.2019.07.29.07.04.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 29 Jul 2019 07:04:33 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 10:04:29 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190729095956-mutt-send-email-mst@kernel.org>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-2-sgarzare@redhat.com>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=7ppbGArVZI4ZDOixVF87b1IeJRA7ogQ7KQEeVarUgp8=;
+        b=Jhxkbow+6Dy6tZhw2laySJLpCg+roOMb7VAr2cuNB+0v2FOOQRxBy90RzERU4o+n9k
+         AJCkWUmqH0G4NRmNBhY0CGMLEqWrKrRWrs3yPEw0Z1pqlG7St35oSvrpIJAcqCFNpolf
+         bdJiOIMGB5loNWuuVdEE16+8vF6rOgunOJ7K7t2FZZAiPB5pf2MpScyOKKw3FjC1k7QZ
+         SJvzurSxtrxSWDm6StzI7oxJ9W7CM841CYCe+NDoLxw4wJlGhUisRqhlD80LuAgpQyOM
+         b5/Go3otAWDJVG+lnbCm63MxPoY9Hes28rfC8egR4asBNizOsNxwWg0STPwNFzvMdrMy
+         0t7Q==
+X-Gm-Message-State: APjAAAX+/pK+/Xc39orCNikq5C08n8e2wH3VBYqAEOaolIsA+aoh+pkA
+        oLqGGfSsWrKuvD0iwpWDyM9rWg==
+X-Google-Smtp-Source: APXvYqxiIW5VTLvJD/4xCKU7cLsg2FfVyKcwS5jsjnveptNBlJcIQiQHiN/Ewy/7P0Bfq3ehFC2PYQ==
+X-Received: by 2002:a37:9ec8:: with SMTP id h191mr77824303qke.229.1564409085498;
+        Mon, 29 Jul 2019 07:04:45 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id e1sm30581721qtb.52.2019.07.29.07.04.44
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 29 Jul 2019 07:04:44 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hs6Ga-00071u-9w; Mon, 29 Jul 2019 11:04:44 -0300
+Date:   Mon, 29 Jul 2019 11:04:44 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Gal Pressman <galpress@amazon.com>
+Cc:     Michal Kalderon <mkalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v6 rdma-next 1/6] RDMA/core: Create mmap database and
+ cookie helper functions
+Message-ID: <20190729140444.GB17990@ziepe.ca>
+References: <20190709141735.19193-1-michal.kalderon@marvell.com>
+ <20190709141735.19193-2-michal.kalderon@marvell.com>
+ <20190725175540.GA18757@ziepe.ca>
+ <MN2PR18MB3182F4557BC042EE37A3C565A1DD0@MN2PR18MB3182.namprd18.prod.outlook.com>
+ <d632598e-0896-fa10-9148-73794a9a49d7@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190717113030.163499-2-sgarzare@redhat.com>
+In-Reply-To: <d632598e-0896-fa10-9148-73794a9a49d7@amazon.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
-> Since virtio-vsock was introduced, the buffers filled by the host
-> and pushed to the guest using the vring, are directly queued in
-> a per-socket list. These buffers are preallocated by the guest
-> with a fixed size (4 KB).
-> 
-> The maximum amount of memory used by each socket should be
-> controlled by the credit mechanism.
-> The default credit available per-socket is 256 KB, but if we use
-> only 1 byte per packet, the guest can queue up to 262144 of 4 KB
-> buffers, using up to 1 GB of memory per-socket. In addition, the
-> guest will continue to fill the vring with new 4 KB free buffers
-> to avoid starvation of other sockets.
-> 
-> This patch mitigates this issue copying the payload of small
-> packets (< 128 bytes) into the buffer of last packet queued, in
-> order to avoid wasting memory.
-> 
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+On Mon, Jul 29, 2019 at 04:53:38PM +0300, Gal Pressman wrote:
+> On 29/07/2019 15:58, Michal Kalderon wrote:
+> >> From: linux-rdma-owner@vger.kernel.org <linux-rdma-
+> >> owner@vger.kernel.org> On Behalf Of Jason Gunthorpe
+> >>
+> >>> +	xa_lock(&ucontext->mmap_xa);
+> >>> +	if (check_add_overflow(ucontext->mmap_xa_page,
+> >>> +			       (u32)(length >> PAGE_SHIFT),
+> >>> +			       &next_mmap_page))
+> >>> +		goto err_unlock;
+> >>
+> >> I still don't like that this algorithm latches into a permanent failure when the
+> >> xa_page wraps.
+> >>
+> >> It seems worth spending a bit more time here to tidy this.. Keep using the
+> >> mmap_xa_page scheme, but instead do something like
+> >>
+> >> alloc_cyclic_range():
+> >>
+> >> while () {
+> >>    // Find first empty element in a cyclic way
+> >>    xa_page_first = mmap_xa_page;
+> >>    xa_find(xa, &xa_page_first, U32_MAX, XA_FREE_MARK)
+> >>
+> >>    // Is there a enough room to have the range?
+> >>    if (check_add_overflow(xa_page_first, npages, &xa_page_end)) {
+> >>       mmap_xa_page = 0;
+> >>       continue;
+> >>    }
+> >>
+> >>    // See if the element before intersects
+> >>    elm = xa_find(xa, &zero, xa_page_end, 0);
+> >>    if (elm && intersects(xa_page_first, xa_page_last, elm->first, elm->last)) {
+> >>       mmap_xa_page = elm->last + 1;
+> >>       continue
+> >>    }
+> >>
+> >>    // xa_page_first -> xa_page_end should now be free
+> >>    xa_insert(xa, xa_page_start, entry);
+> >>    mmap_xa_page = xa_page_end + 1;
+> >>    return xa_page_start;
+> >> }
+> >>
+> >> Approximately, please check it.
+> > Gal & Jason, 
+> > 
+> > Coming back to the mmap_xa_page algorithm. I couldn't find some background on this. 
+> > Why do you need the length to be represented in the mmap_xa_page ?  
+> > Why not simply use xa_alloc_cyclic ( like in siw )
 
-This is good enough for net-next, but for net I think we
-should figure out how to address the issue completely.
-Can we make the accounting precise? What happens to
-performance if we do?
+I think siw is dealing with only PAGE_SIZE objects, efa had variable
+sized ones.
 
-
-> ---
->  drivers/vhost/vsock.c                   |  2 +
->  include/linux/virtio_vsock.h            |  1 +
->  net/vmw_vsock/virtio_transport.c        |  1 +
->  net/vmw_vsock/virtio_transport_common.c | 60 +++++++++++++++++++++----
->  4 files changed, 55 insertions(+), 9 deletions(-)
+> > This is simply a key to a mmap object... 
 > 
-> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> index 6a50e1d0529c..6c8390a2af52 100644
-> --- a/drivers/vhost/vsock.c
-> +++ b/drivers/vhost/vsock.c
-> @@ -329,6 +329,8 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
->  		return NULL;
->  	}
->  
-> +	pkt->buf_len = pkt->len;
-> +
->  	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
->  	if (nbytes != pkt->len) {
->  		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
-> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-> index e223e2632edd..7d973903f52e 100644
-> --- a/include/linux/virtio_vsock.h
-> +++ b/include/linux/virtio_vsock.h
-> @@ -52,6 +52,7 @@ struct virtio_vsock_pkt {
->  	/* socket refcnt not held, only use for cancellation */
->  	struct vsock_sock *vsk;
->  	void *buf;
-> +	u32 buf_len;
->  	u32 len;
->  	u32 off;
->  	bool reply;
-> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> index 0815d1357861..082a30936690 100644
-> --- a/net/vmw_vsock/virtio_transport.c
-> +++ b/net/vmw_vsock/virtio_transport.c
-> @@ -307,6 +307,7 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
->  			break;
->  		}
->  
-> +		pkt->buf_len = buf_len;
->  		pkt->len = buf_len;
->  
->  		sg_init_one(&hdr, &pkt->hdr, sizeof(pkt->hdr));
-> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-> index 6f1a8aff65c5..095221f94786 100644
-> --- a/net/vmw_vsock/virtio_transport_common.c
-> +++ b/net/vmw_vsock/virtio_transport_common.c
-> @@ -26,6 +26,9 @@
->  /* How long to wait for graceful shutdown of a connection */
->  #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
->  
-> +/* Threshold for detecting small packets to copy */
-> +#define GOOD_COPY_LEN  128
-> +
->  static const struct virtio_transport *virtio_transport_get_ops(void)
->  {
->  	const struct vsock_transport *t = vsock_core_get_transport();
-> @@ -64,6 +67,9 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
->  		pkt->buf = kmalloc(len, GFP_KERNEL);
->  		if (!pkt->buf)
->  			goto out_pkt;
-> +
-> +		pkt->buf_len = len;
-> +
->  		err = memcpy_from_msg(pkt->buf, info->msg, len);
->  		if (err)
->  			goto out;
-> @@ -841,24 +847,60 @@ virtio_transport_recv_connecting(struct sock *sk,
->  	return err;
->  }
->  
-> +static void
-> +virtio_transport_recv_enqueue(struct vsock_sock *vsk,
-> +			      struct virtio_vsock_pkt *pkt)
-> +{
-> +	struct virtio_vsock_sock *vvs = vsk->trans;
-> +	bool free_pkt = false;
-> +
-> +	pkt->len = le32_to_cpu(pkt->hdr.len);
-> +	pkt->off = 0;
-> +
-> +	spin_lock_bh(&vvs->rx_lock);
-> +
-> +	virtio_transport_inc_rx_pkt(vvs, pkt);
-> +
-> +	/* Try to copy small packets into the buffer of last packet queued,
-> +	 * to avoid wasting memory queueing the entire buffer with a small
-> +	 * payload.
-> +	 */
-> +	if (pkt->len <= GOOD_COPY_LEN && !list_empty(&vvs->rx_queue)) {
-> +		struct virtio_vsock_pkt *last_pkt;
-> +
-> +		last_pkt = list_last_entry(&vvs->rx_queue,
-> +					   struct virtio_vsock_pkt, list);
-> +
-> +		/* If there is space in the last packet queued, we copy the
-> +		 * new packet in its buffer.
-> +		 */
-> +		if (pkt->len <= last_pkt->buf_len - last_pkt->len) {
-> +			memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
-> +			       pkt->len);
-> +			last_pkt->len += pkt->len;
-> +			free_pkt = true;
-> +			goto out;
-> +		}
-> +	}
-> +
-> +	list_add_tail(&pkt->list, &vvs->rx_queue);
-> +
-> +out:
-> +	spin_unlock_bh(&vvs->rx_lock);
-> +	if (free_pkt)
-> +		virtio_transport_free_pkt(pkt);
-> +}
-> +
->  static int
->  virtio_transport_recv_connected(struct sock *sk,
->  				struct virtio_vsock_pkt *pkt)
->  {
->  	struct vsock_sock *vsk = vsock_sk(sk);
-> -	struct virtio_vsock_sock *vvs = vsk->trans;
->  	int err = 0;
->  
->  	switch (le16_to_cpu(pkt->hdr.op)) {
->  	case VIRTIO_VSOCK_OP_RW:
-> -		pkt->len = le32_to_cpu(pkt->hdr.len);
-> -		pkt->off = 0;
-> -
-> -		spin_lock_bh(&vvs->rx_lock);
-> -		virtio_transport_inc_rx_pkt(vvs, pkt);
-> -		list_add_tail(&pkt->list, &vvs->rx_queue);
-> -		spin_unlock_bh(&vvs->rx_lock);
-> -
-> +		virtio_transport_recv_enqueue(vsk, pkt);
->  		sk->sk_data_ready(sk);
->  		return err;
->  	case VIRTIO_VSOCK_OP_CREDIT_UPDATE:
-> -- 
-> 2.20.1
+> The intention was that the entry would "occupy" number of xarray elements
+> according to its size (in pages). It wasn't initially like this, but IIRC this
+> was preferred by Jason.
+
+It is not so critical, maybe we could drop it if it is really
+simplifiying. But it doesn't look so hard to make an xa algorithm that
+will be OK.
+
+The offset/length is shown in things like lsof and what not, and from
+a debugging perspective it makes a lot more sense if the offset/length
+are sensible, ie they should not overlap.
+
+Jason
