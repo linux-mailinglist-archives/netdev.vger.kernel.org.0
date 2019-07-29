@@ -2,151 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0362278BEE
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 14:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE29778BFB
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 14:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728385AbfG2Mnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 08:43:46 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:18027 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726986AbfG2Mnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 08:43:46 -0400
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: QVP+RtM4+DDzDC8jZq3pxzcUzdvIDDn0XDWUHrYFYj32QyQKjV7MJX9kyefoAYguJlY5yyf3ho
- CJjdi5R5+7CkkBM6lPlG3o8V7SW7WoNSm76rVDt9yYV/Ioy+nIqExCq4a6wW8AIB0dZgYG+2ec
- Dieyw9EFVFyvfIu3yFh6fVH4yqmRRz5KZCxAC+jMI4MvA//CMFjgPCN5Oi/H004uhQjTIGw2VX
- M1LcW3i2BAeOmlype0F/EV/kHR+tuW7aaGeLiUuUcVbaKYZALETD5JaxEYC+g/ce8kaYB7c1gI
- EBY=
-X-IronPort-AV: E=Sophos;i="5.64,322,1559545200"; 
-   d="scan'208";a="43093694"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2019 05:43:45 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex03.mchp-main.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 29 Jul 2019 05:43:45 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 29 Jul 2019 05:43:43 -0700
-Date:   Mon, 29 Jul 2019 14:43:43 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Ido Schimmel <idosch@idosch.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-Message-ID: <20190729124343.rynm5qjdsueonlno@lx-anielsen.microsemi.net>
-References: <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
- <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
- <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
- <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
- <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
- <20190726134613.GD18223@lunn.ch>
- <20190726195010.7x75rr74v7ph3m6m@lx-anielsen.microsemi.net>
- <20190727030223.GA29731@lunn.ch>
- <20190728191558.zuopgfqza2iz5d5b@lx-anielsen.microsemi.net>
- <20190729060923.GA16938@splinter>
+        id S1727788AbfG2MrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 08:47:25 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:56035 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726717AbfG2MrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 08:47:25 -0400
+Received: from [192.168.1.5] (unknown [116.234.0.221])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id BFE3841CF9;
+        Mon, 29 Jul 2019 20:47:20 +0800 (CST)
+Subject: Re: [PATCH net-next v4 1/3] flow_offload: move tc indirect block to
+ flow offload
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     pablo@netfilter.org, fw@strlen.de, jakub.kicinski@netronome.com,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+References: <1564296769-32294-1-git-send-email-wenxu@ucloud.cn>
+ <1564296769-32294-2-git-send-email-wenxu@ucloud.cn>
+ <20190729111350.GE2211@nanopsycho>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <c218d9bb-1da7-2ed6-d5b0-afddbe3d0bd7@ucloud.cn>
+Date:   Mon, 29 Jul 2019 20:47:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190729060923.GA16938@splinter>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190729111350.GE2211@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVS0pIS0tLSU9CQ01JTUxZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MEk6Hyo6IzgwLkkNE1ZOI0NR
+        SElPCxNVSlVKTk1PT0tPT09KSUxPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SE9VS1VJSUpZV1kIAVlBSENMTzcG
+X-HM-Tid: 0a6c3dc5607e2086kuqybfe3841cf9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ido,
 
-The 07/29/2019 09:09, Ido Schimmel wrote:
-> External E-Mail
-> 
-> 
-> On Sun, Jul 28, 2019 at 09:15:59PM +0200, Allan W. Nielsen wrote:
-> > If we assume that the SwitchDev driver implemented such that all multicast
-> > traffic goes to the CPU, then we should really have a way to install a HW
-> > offload path in the silicon, such that these packets does not go to the CPU (as
-> > they are known not to be use full, and a frame every 3 us is a significant load
-> > on small DMA connections and CPU resources).
-> > 
-> > If we assume that the SwitchDev driver implemented such that only "needed"
-> > multicast packets goes to the CPU, then we need a way to get these packets in
-> > case we want to implement the DLR protocol.
-> 
-> I'm not familiar with the HW you're working with, so the below might not
-> be relevant.
-> 
-> In case you don't want to send all multicast traffic to the CPU (I'll
-> refer to it later), you can install an ingress tc filter that traps to
-> the CPU the packets you do want to receive. Something like:
-> 
-> # tc qdisc add dev swp1 clsact
-> # tc filter add dev swp1 pref 1 ingress flower skip_sw dst_mac \
-> 	01:21:6C:00:00:01 action trap
-I have actually been looking at this, and it may an idea to go down this road.
-But so far we have chosen not to for the following reasons:
-- It is not only about trapping traffic to the CPU, we also needs to capability
-  to limit the flooding on the front ports.
-- In our case (the silicon), this feature really belongs to the MAC-table, which
-  is why we did prefer to do it via the FDB entries.
-  - But the HW does have TCAM resources, and we are planning on exposing these
-    resources via the tc-flower interface. It is just that we have more MAC
-    table resoruces than TCAM resources, which is another argument for using the
-    MAC table.
+在 2019/7/29 19:13, Jiri Pirko 写道:
+> Sun, Jul 28, 2019 at 08:52:47AM CEST, wenxu@ucloud.cn wrote:
+>> From: wenxu <wenxu@ucloud.cn>
+>>
+>> move tc indirect block to flow_offload and rename
+>> it to flow indirect block.The nf_tables can use the
+>> indr block architecture.
+>>
+>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> ---
+>> v3: subsys_initcall for init_flow_indr_rhashtable
+>> v4: no change
+>>
+> [...]
+>
+>
+>> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+>> index 00b9aab..66f89bc 100644
+>> --- a/include/net/flow_offload.h
+>> +++ b/include/net/flow_offload.h
+>> @@ -4,6 +4,7 @@
+>> #include <linux/kernel.h>
+>> #include <linux/list.h>
+>> #include <net/flow_dissector.h>
+>> +#include <linux/rhashtable.h>
+>>
+>> struct flow_match {
+>> 	struct flow_dissector	*dissector;
+>> @@ -366,4 +367,42 @@ static inline void flow_block_init(struct flow_block *flow_block)
+>> 	INIT_LIST_HEAD(&flow_block->cb_list);
+>> }
+>>
+>> +typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
+>> +				      enum tc_setup_type type, void *type_data);
+>> +
+>> +struct flow_indr_block_cb {
+>> +	struct list_head list;
+>> +	void *cb_priv;
+>> +	flow_indr_block_bind_cb_t *cb;
+>> +	void *cb_ident;
+>> +};
+> I don't understand why are you pushing this struct out of the c file to
+> the header. Please don't.
+>
+>
+>> +
+>> +typedef void flow_indr_block_ing_cmd_t(struct net_device *dev,
+>> +				       struct flow_block *flow_block,
+>> +				       struct flow_indr_block_cb *indr_block_cb,
+>> +				       enum flow_block_command command);
+>> +
+>> +struct flow_indr_block_dev {
+>> +	struct rhash_head ht_node;
+>> +	struct net_device *dev;
+>> +	unsigned int refcnt;
+>> +	struct list_head cb_list;
+>> +	flow_indr_block_ing_cmd_t *ing_cmd_cb;
+>> +	struct flow_block *flow_block;
+> I don't understand why are you pushing this struct out of the c file to
+> the header. Please don't.
 
-> If your HW supports sharing the same filter among multiple ports, then
-> you can install your filter in a tc shared block and bind multiple ports
-> to it.
-It does, thanks for making us aware of this optimization option.
+the flow_indr_block_dev and indr_block_cb in the h file used for the function
 
-> Another option is to always send a *copy* of multicast packets to the
-> CPU, but make sure the HW uses a policer that prevents the CPU from
-> being overwhelmed. To avoid packets being forwarded twice (by HW and
-> SW), you will need to mark such packets in your driver with
-> 'skb->offload_fwd_mark = 1'.
-Understood
+tc_indr_block_ing_cmd in cls_api.c
 
-> Now, in case user wants to allow the CPU to receive certain packets at a
-> higher rate, a tc filter can be used. It will be identical to the filter
-> I mentioned earlier, but with a 'police' action chained before 'trap'.
-I see.
-
-> I don't think this is currently supported by any driver, but I believe
-> it's the right way to go: By default the CPU receives all the traffic it
-> should receive and user can fine-tune it using ACLs.
-If all the frames goes to the CPU, then how can I fine-tune frames not to go to
-the CPU?? I can do a TRAP (to get it to the CPU) a DROP (to drop it before
-forwarding), but how can I forward a multicast packet, but prevent it from going
-to the CPU?
-
-I have seen that the mirror command can do re-direction, but not to a list of
-ports...
-
-All in all, thanks a lot for the suggestions, but to begin with I think we will
-explore the MAC table option a bit more. But we will get back to TC to support
-the ACL functions.
-
-/Allan
-
-
+>> -static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
+>> -				  struct tc_indr_block_cb *indr_block_cb,
+>> +static void tc_indr_block_ing_cmd(struct net_device *dev,
+> I don't understand why you change struct tc_indr_block_dev * to
+> struct net_device * here. If you want to do that, please do that in a
+> separate patch, not it this one where only "the move" should happen.
+>
