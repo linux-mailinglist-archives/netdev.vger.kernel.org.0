@@ -2,136 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B40BA798DA
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:11:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35ABF79909
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730465AbfG2ULA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 16:11:00 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:33543 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388040AbfG2Td5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 15:33:57 -0400
-Received: by mail-vs1-f68.google.com with SMTP id m8so41830910vsj.0
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 12:33:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=APfgCVofNAxTgIpWJJctDNySOFsZWXGHU5vcxTekT1w=;
-        b=VffsDnkrIY6mioaHIVm9+N5PqEOA01xrK78l1Wty5BdwA4OxOF2fBwLJSob6poL3Yr
-         QwIEp3MbS8C6Aj6cx0Mkgp1lqb0zrJi/BvQ/Xe6KFk98b5fZR4ga0z/WnnFevsKymXNH
-         JIU0LS/uuABJZ9/XqYRMOnWfPR9wYh8nAVXvghiFD1jj9gjsgQPVu890ouePGt1FS62o
-         IF+0UpEj8iM3xbA1pPQcvqn2SGl4dzlgwUSEZgHbNMNB+eKLUQh7nlXsHmqvNBcFL2/O
-         4mtOAitopKb7A0gXTRVGUqpEhNWIHgK9DVU5SYShm99r+6oTJBvWPpHw/ydmNurdT5c+
-         qNhw==
-X-Gm-Message-State: APjAAAXpZ8TCpTpkBgcEqpcrTan9fiy+0CzZmvOWHq0H7+TngvjsdTXr
-        QZOs8Eu+OPxiJB2pO+s+U0C8+g==
-X-Google-Smtp-Source: APXvYqzRLP/c6oL54wDBJQuKWm3Ku8BrREq1OSA8ge6Iw1WLkwaDnlWWbhuSQBXPE/VnBAgrAnjwqw==
-X-Received: by 2002:a67:f518:: with SMTP id u24mr26227759vsn.87.1564428837005;
-        Mon, 29 Jul 2019 12:33:57 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id u27sm12353175vkk.53.2019.07.29.12.33.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 29 Jul 2019 12:33:56 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 15:33:49 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190729152634-mutt-send-email-mst@kernel.org>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-2-sgarzare@redhat.com>
- <20190729095956-mutt-send-email-mst@kernel.org>
- <20190729153656.zk4q4rob5oi6iq7l@steredhat>
- <20190729115904-mutt-send-email-mst@kernel.org>
- <CAGxU2F5F1KcaFNJ6n7++ApZiYMGnoEWKVRgo3Vc4h5hpxSJEZg@mail.gmail.com>
+        id S1730510AbfG2UMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 16:12:34 -0400
+Received: from gateway21.websitewelcome.com ([192.185.45.147]:24368 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730492AbfG2UMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:12:33 -0400
+X-Greylist: delayed 651 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 16:12:33 EDT
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id E4289400C52FF
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 15:12:32 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id sC0Why4Zm90onsC0Whpf5e; Mon, 29 Jul 2019 15:12:32 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=oENqlPZb6frT+9DV38Oo3+KZ9Fe2eujoFK1IJWgO4vw=; b=bvchi7hMrWhQPxGx54HWPe1FFE
+        9Q7FdSp3dSqUxWMZ+3xyYnsciVZgTrxHcDFC371vq/52zy+/8aD/Hz/ggxNEn2bwxK3flx8V3/g2g
+        l7sfwySfRiFiZq9P3gVtkvj/emQCy/xz3ccUV2c999hwW9IqmPuVRsCn/LXhRnjBiKzTI28sAKyHf
+        lE9nn1YYGg3ji/WXTmN+J7XAE6mIimvc6ZhHwqMzGiwyTiNWol3A4FK13CZFKKY3ZMilxo3uITFrW
+        rY27zgrimQSiK5JbrN+igpeqSesCY2ah3B+6RZf0HhxA3la4QRsbCyutGKebvwisgI03eU+eO+ByX
+        5Ufd6JwQ==;
+Received: from [187.192.11.120] (port=59540 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hsC0V-000znM-P1; Mon, 29 Jul 2019 15:12:31 -0500
+Date:   Mon, 29 Jul 2019 15:12:31 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Thomas Sailer <t.sailer@alumni.ethz.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH] net: hamradio: baycom_epp: Mark expected switch fall-through
+Message-ID: <20190729201231.GA7576@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAGxU2F5F1KcaFNJ6n7++ApZiYMGnoEWKVRgo3Vc4h5hpxSJEZg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.192.11.120
+X-Source-L: No
+X-Exim-ID: 1hsC0V-000znM-P1
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [187.192.11.120]:59540
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 14
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 06:41:27PM +0200, Stefano Garzarella wrote:
-> On Mon, Jul 29, 2019 at 12:01:37PM -0400, Michael S. Tsirkin wrote:
-> > On Mon, Jul 29, 2019 at 05:36:56PM +0200, Stefano Garzarella wrote:
-> > > On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
-> > > > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
-> > > > > Since virtio-vsock was introduced, the buffers filled by the host
-> > > > > and pushed to the guest using the vring, are directly queued in
-> > > > > a per-socket list. These buffers are preallocated by the guest
-> > > > > with a fixed size (4 KB).
-> > > > >
-> > > > > The maximum amount of memory used by each socket should be
-> > > > > controlled by the credit mechanism.
-> > > > > The default credit available per-socket is 256 KB, but if we use
-> > > > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
-> > > > > buffers, using up to 1 GB of memory per-socket. In addition, the
-> > > > > guest will continue to fill the vring with new 4 KB free buffers
-> > > > > to avoid starvation of other sockets.
-> > > > >
-> > > > > This patch mitigates this issue copying the payload of small
-> > > > > packets (< 128 bytes) into the buffer of last packet queued, in
-> > > > > order to avoid wasting memory.
-> > > > >
-> > > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > >
-> > > > This is good enough for net-next, but for net I think we
-> > > > should figure out how to address the issue completely.
-> > > > Can we make the accounting precise? What happens to
-> > > > performance if we do?
-> > > >
-> > >
-> > > In order to do more precise accounting maybe we can use the buffer size,
-> > > instead of payload size when we update the credit available.
-> > > In this way, the credit available for each socket will reflect the memory
-> > > actually used.
-> > >
-> > > I should check better, because I'm not sure what happen if the peer sees
-> > > 1KB of space available, then it sends 1KB of payload (using a 4KB
-> > > buffer).
-> > > The other option is to copy each packet in a new buffer like I did in
-> > > the v2 [2], but this forces us to make a copy for each packet that does
-> > > not fill the entire buffer, perhaps too expensive.
-> > >
-> > > [2] https://patchwork.kernel.org/patch/10938741/
-> > >
-> >
-> > So one thing we can easily do is to under-report the
-> > available credit. E.g. if we copy up to 256bytes,
-> > then report just 256bytes for every buffer in the queue.
-> >
-> 
-> Ehm sorry, I got lost :(
-> Can you explain better?
-> 
-> 
-> Thanks,
-> Stefano
+Mark switch cases where we are expecting to fall through.
 
-I think I suggested a better idea more recently.
-But to clarify this option: we are adding a 4K buffer.
-Let's say we know we will always copy 128 bytes.
+This patch fixes the following warning (Building: i386):
 
-So we just tell remote we have 128.
-If we add another 4K buffer we add another 128 credits.
+drivers/net/hamradio/baycom_epp.c: In function ‘transmit’:
+drivers/net/hamradio/baycom_epp.c:491:7: warning: this statement may fall through [-Wimplicit-fallthrough=]
+    if (i) {
+       ^
+drivers/net/hamradio/baycom_epp.c:504:3: note: here
+   default:  /* fall through */
+   ^~~~~~~
 
-So we are charging local socket 16x more (4k for a 128 byte packet) but
-we are paying remote 16x less (128 credits for 4k byte buffer). It evens
-out.
+Notice that, in this particular case, the code comment is
+modified in accordance with what GCC is expecting to find.
 
-Way less credits to go around so I'm not sure it's a good idea,
-at least as the only solution. Can be combined with other
-optimizations and probably in a less drastic fashion
-(e.g. 2x rather than 16x).
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/hamradio/baycom_epp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
+diff --git a/drivers/net/hamradio/baycom_epp.c b/drivers/net/hamradio/baycom_epp.c
+index daab2c07d891..9303aeb2595f 100644
+--- a/drivers/net/hamradio/baycom_epp.c
++++ b/drivers/net/hamradio/baycom_epp.c
+@@ -500,8 +500,9 @@ static int transmit(struct baycom_state *bc, int cnt, unsigned char stat)
+ 				}
+ 				break;
+ 			}
++			/* fall through */
+ 
+-		default:  /* fall through */
++		default:
+ 			if (bc->hdlctx.calibrate <= 0)
+ 				return 0;
+ 			i = min_t(int, cnt, bc->hdlctx.calibrate);
 -- 
-MST
+2.22.0
+
