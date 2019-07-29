@@ -2,117 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0468C78982
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 12:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32AFE78997
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 12:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387441AbfG2KRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 06:17:15 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:39734 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387428AbfG2KRP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 06:17:15 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 72AA6AD22FDC85C90763;
-        Mon, 29 Jul 2019 18:17:12 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Mon, 29 Jul 2019
- 18:17:02 +0800
-Subject: Re: [PATCH net-next 08/11] net: hns3: add interrupt affinity support
- for misc interrupt
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "lipeng321@huawei.com" <lipeng321@huawei.com>,
-        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1563938327-9865-1-git-send-email-tanhuazhong@huawei.com>
- <1563938327-9865-9-git-send-email-tanhuazhong@huawei.com>
- <67b32cdc72c0be03622e78899ac518d807ca7b85.camel@mellanox.com>
- <db2d081f-b892-b141-7fa5-44e66dd97eb9@huawei.com>
- <fa9b747119c2e7acb1ef5f139c022402cd2c854d.camel@mellanox.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <6a1d85f1-cc6c-1f5a-38c4-e08915e3bc45@huawei.com>
-Date:   Mon, 29 Jul 2019 18:17:02 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-In-Reply-To: <fa9b747119c2e7acb1ef5f139c022402cd2c854d.camel@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+        id S2387415AbfG2K0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 06:26:25 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:35920 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726358AbfG2K0Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 06:26:25 -0400
+Received: by mail-pf1-f194.google.com with SMTP id r7so27803597pfl.3;
+        Mon, 29 Jul 2019 03:26:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=VcI5Q2ZpLHcc17k5AiEkcskGfcvmAnlW8nbveIAcfMs=;
+        b=Ig1uEQG2w/0mpeZQe+ESmJRXBhegqQnZD4UxuXyDRkCKi7daWitBiMoDqMoHExcmXd
+         mTC/ub8DvvLIz2UCTl16BApIZXWPSnXcCMm4+TRdyHgGj1ZNZ3DukfhHNajVO1r7XAeg
+         pGmN4M+7XB6liHUnSIRyI83yFWKRKWP0SghzBSnt3euDTs0J+8X5IBUM2uTB32xD7Lpe
+         LfFvEbo0SgJRSPc54XEhFkF0g0Wy1MK8Wxh9AQ5LJzVszsgpNz2lteYsYSGypedVQvx4
+         S2+K5NanZToi+1T/if4wpF8eGftCvZsTgjvxX3EvcnUIqeiAxia/uWbCzeQ/ZD79KCHA
+         w4+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=VcI5Q2ZpLHcc17k5AiEkcskGfcvmAnlW8nbveIAcfMs=;
+        b=LcO+2p+uAU7OTofTer4MN10BcNByJWWA9LOpXuEdQ7YK3iqcz6R2IoF54jcMa+Lncg
+         7d0BUTyd5GYf8Ru1X1kvDK+V6oIKibhMOTrbv3zV8VOoNsHpFCMl+Su9N4MozL6PUPWi
+         CwHIt/PYCNnSbXzKAWGy+wBmvHMYIfWG1/d+uLGUqCxMIeO8eLKdoV8zfN/EYMBr9yJf
+         HRR4REXWlJ61TwrArZDDWzSqFYUMCEBW3pXbxSnK7xGXhSkMJIskufnbouFNWb8nkuwV
+         FqYGb6X6h4Inw/u2RI8dsZZjREIR/+oEvzFP/V+nbi8zHyb3zDGSKBt4aswzzYoEjaeF
+         kaQQ==
+X-Gm-Message-State: APjAAAW3dwl+p4ZdeULJOTjYln7qakb3JlewLlDrAOTvFOq7Hwc0zRug
+        3XDpaNHl7FcaJ2UG0AsXjDM=
+X-Google-Smtp-Source: APXvYqz3xs6nPpq/kgFOfr3gnJ6RaJd9dm9GfIi8867z/pWOsGB+ekawfPGdjAES1m7qYTHTjVMebw==
+X-Received: by 2002:a63:c1c:: with SMTP id b28mr71431117pgl.354.1564395984612;
+        Mon, 29 Jul 2019 03:26:24 -0700 (PDT)
+Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
+        by smtp.gmail.com with ESMTPSA id i137sm60421203pgc.4.2019.07.29.03.26.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 03:26:24 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     davem@davemloft.net, sbrivio@redhat.com, sd@queasysnail.net,
+        liuhangbin@gmail.com, jbenc@redhat.com, dsahern@gmail.com,
+        natechancellor@gmail.com, tglx@linutronix.de
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: geneve: Fix a possible null-pointer dereference in geneve_link_config()
+Date:   Mon, 29 Jul 2019 18:26:11 +0800
+Message-Id: <20190729102611.2338-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/7/27 7:18, Saeed Mahameed wrote:
-> On Thu, 2019-07-25 at 10:05 +0800, Yunsheng Lin wrote:
->> On 2019/7/25 3:24, Saeed Mahameed wrote:
->>> On Wed, 2019-07-24 at 11:18 +0800, Huazhong Tan wrote:
->>>> From: Yunsheng Lin <linyunsheng@huawei.com>
->>>>
-> 
-> [...]
->>>>
->>>> +static void hclge_irq_affinity_notify(struct irq_affinity_notify
->>>> *notify,
->>>> +				      const cpumask_t *mask)
->>>> +{
->>>> +	struct hclge_dev *hdev = container_of(notify, struct hclge_dev,
->>>> +					      affinity_notify);
->>>> +
->>>> +	cpumask_copy(&hdev->affinity_mask, mask);
->>>> +	del_timer_sync(&hdev->service_timer);
->>>> +	hdev->service_timer.expires = jiffies + HZ;
->>>> +	add_timer_on(&hdev->service_timer, cpumask_first(&hdev-
->>>>> affinity_mask));
->>>> +}
->>>
->>> I don't see any relation between your misc irq vector and &hdev-
->>>> service_timer, to me this looks like an abuse of the irq affinity
->>>> API
->>> to allow the user to move the service timer affinity.
->>
->> Hi, thanks for reviewing.
->>
->> hdev->service_timer is used to schedule the periodic work
->> queue hdev->service_task， we want all the management work
->> queue including hdev->service_task to bind to the same cpu
->> to improve cache and power efficiency, it is better to move
->> service timer affinity according to that.
->>
->> The hdev->service_task is changed to delay work queue in
->> next patch " net: hns3: make hclge_service use delayed workqueue",
->> So the affinity in the timer of the delay work queue is automatically
->> set to the affinity of the delay work queue, we will move the
->> "make hclge_service use delayed workqueue" patch before the
->> "add interrupt affinity support for misc interrupt" patch, so
->> we do not have to set service timer affinity explicitly.
->>
->> Also, There is there work queues(mbx_service_task, service_task,
->> rst_service_task) in the hns3 driver, we plan to combine them
->> to one or two workqueue to improve efficiency and readability.
->>
-> 
-> So just to make it clear, you have 3 deferred works, 2 are triggered by
-> the misc irq and 1 is periodic, you want them all on the same core and
-> you want to control their affinity via the irq affinity ? for works #1
-> and  #2 you get that for free since the irq is triggering them, but for
-> work #3 (the periodic one) you need to manually move it when the irq
-> affinity changes.
+In geneve_link_config(), there is an if statement on line 1524 to check
+whether rt is NULL:
+    if (rt && rt->dst.dev)
 
-Yes, You are right.
+When rt is NULL, it is used on line 1526:
+    ip6_rt_put(rt)
+        dst_release(&rt->dst);
 
-> 
-> I guess i am ok with this, since moving the irq affinity isn't only
-> required by the periodic work but also for the other works that the irq
-> is actually triggering (so it is not an actual abuse, sort of .. )
-> 
-> 
-> 
+Thus, a possible null-pointer dereference may occur.
+
+To fix this bug, ip6_rt_put(rt) is called when rt is not NULL.
+
+This bug is found by a static analysis tool STCheck written by us.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/geneve.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index cb2ea8facd8d..a47a1b31b166 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -1521,9 +1521,10 @@ static void geneve_link_config(struct net_device *dev,
+ 		rt = rt6_lookup(geneve->net, &info->key.u.ipv6.dst, NULL, 0,
+ 				NULL, 0);
+ 
+-		if (rt && rt->dst.dev)
++		if (rt && rt->dst.dev) {
+ 			ldev_mtu = rt->dst.dev->mtu - GENEVE_IPV6_HLEN;
+-		ip6_rt_put(rt);
++			ip6_rt_put(rt);
++		}
+ 		break;
+ 	}
+ #endif
+-- 
+2.17.0
 
