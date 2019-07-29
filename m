@@ -2,102 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B3778752
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 10:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44DE978761
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 10:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727611AbfG2IZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 04:25:42 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:46374 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727241AbfG2IZm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 04:25:42 -0400
-Received: by mail-pl1-f194.google.com with SMTP id c2so27187099plz.13;
-        Mon, 29 Jul 2019 01:25:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=NH4lN7mu8BOKkfv6t88t7ZhBrCg11QlAHHEp1XAW710=;
-        b=qwWgHodvvihYWDb0UOMMmCxPqDWo3t6/8zVyQ7tP749NrTsPt5HMs7KWdu3nXGkmj8
-         SpQS8XhQBvxpZ0KOv/qBD8tdrtdMesvjtq/kvBfQotUqqq0TTbqcj0j/mZ/BIPPD2p4P
-         cnfYdlJtNcQSWyAb6CsaWUZmTCnFfwiAE7nHfUaDL5a/w7xg/c05bfZxccDpI3CLzTt5
-         T5spntzFBadJb4y9sC8zVNI2mgHz94lOWLcGEp0OfLvP2I2oCvAdipuyXkTeDam+Cgz8
-         hwjXLE8f4UNj+b7HKD6dqt9QU/n4gZ/9/nxLj8HFtL0StrgZzw/RuJuz+s6TE54KFUKV
-         seWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=NH4lN7mu8BOKkfv6t88t7ZhBrCg11QlAHHEp1XAW710=;
-        b=YB5OgKzkD4oEuFuObguYmJCVssZC7TGuE8dHY6AncFEDwPXUKYdstvlxjqaFIS2uVM
-         2MFFpMEJ7TbOxG2CUz0rWCmhiog8js02/w+iquhRPHy+48ODdOtm8I9evDI6JVrJg9+H
-         xOUXzC7fg9/oUo810kgEszxikavxG2ZGAj2bjDnxBJS/1HfJd6koU5XzV10L0xN17Aqx
-         Nr8Syapf5DZrM14mONxGcJnrcAiRJTpqlh37Ik/gl63gnzCHFW7EiZXSVN4MyOsnYaTy
-         ei8Yl/dNkave5+JS5KiP5n/ss5Wue2unEvBuaaH00sirAaqbCtLOjOtjHsfOqRA5tPYB
-         UovQ==
-X-Gm-Message-State: APjAAAWzIFbyoclVgejxHKf9Hfr0C4C9siPM1eeWJqm+awV4nh5QUn8n
-        Gbk9Ys02gv3utOC9SF/RxJOVLsh+AKc=
-X-Google-Smtp-Source: APXvYqzUL8MoUKRpHICLcWOcctUAGjZsDzWU9jLkSmVyIZRBrM4Kv24LNMtcqZFN1hX61REQ3ly6Cw==
-X-Received: by 2002:a17:902:7887:: with SMTP id q7mr110530731pll.129.1564388741261;
-        Mon, 29 Jul 2019 01:25:41 -0700 (PDT)
-Received: from ?IPv6:2402:f000:4:72:808::177e? ([2402:f000:4:72:808::177e])
-        by smtp.gmail.com with ESMTPSA id w132sm62425631pfd.78.2019.07.29.01.25.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 01:25:40 -0700 (PDT)
-Subject: Re: [PATCH v2] net: sched: Fix a possible null-pointer dereference in
- dequeue_func()
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190729080018.28678-1-baijiaju1990@gmail.com>
- <20190729081854.GC2211@nanopsycho>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <4619ec69-b800-1a61-7082-85ef4fa9af74@gmail.com>
-Date:   Mon, 29 Jul 2019 16:25:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727109AbfG2IaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 04:30:12 -0400
+Received: from rs07.intra2net.com ([85.214.138.66]:53608 "EHLO
+        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726305AbfG2IaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 04:30:12 -0400
+X-Greylist: delayed 550 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 04:30:10 EDT
+Received: from mail.m.i2n (unknown [172.17.128.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by rs07.intra2net.com (Postfix) with ESMTPS id 1D94315000D9;
+        Mon, 29 Jul 2019 10:20:59 +0200 (CEST)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id D77B76EE;
+        Mon, 29 Jul 2019 10:20:58 +0200 (CEST)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.68,VDF=8.16.19.170)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from rocinante.m.i2n (rocinante.m.i2n [172.16.1.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: smtp-auth-user)
+        by mail.m.i2n (Postfix) with ESMTPSA id 91A955C8;
+        Mon, 29 Jul 2019 10:20:56 +0200 (CEST)
+From:   Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+To:     isdn@linux-pingi.de, netdev@vger.kernel.org
+Subject: [PATCH] isdn: hfcsusb: Fix mISDN driver crash caused by transfer buffer on the stack
+Date:   Mon, 29 Jul 2019 10:20:56 +0200
+Message-ID: <2635856.so0i2TFZOM@rocinante.m.i2n>
 MIME-Version: 1.0
-In-Reply-To: <20190729081854.GC2211@nanopsycho>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Since linux 4.9 it is not possible to use buffers on the stack for DMA transfers.
+
+During usb probe the driver crashes with "transfer buffer is on stack" message.
+
+This fix k-allocates a buffer to be used on "read_reg_atomic", which is a macro
+that calls "usb_control_msg" under the hood.
+
+Kernel 4.19 backtrace:
+
+usb_hcd_submit_urb+0x3e5/0x900
+? sched_clock+0x9/0x10
+? log_store+0x203/0x270
+? get_random_u32+0x6f/0x90
+? cache_alloc_refill+0x784/0x8a0
+usb_submit_urb+0x3b4/0x550
+usb_start_wait_urb+0x4e/0xd0
+usb_control_msg+0xb8/0x120
+hfcsusb_probe+0x6bc/0xb40 [hfcsusb]
+usb_probe_interface+0xc2/0x260
+really_probe+0x176/0x280
+driver_probe_device+0x49/0x130
+__driver_attach+0xa9/0xb0
+? driver_probe_device+0x130/0x130
+bus_for_each_dev+0x5a/0x90
+driver_attach+0x14/0x20
+? driver_probe_device+0x130/0x130
+bus_add_driver+0x157/0x1e0
+driver_register+0x51/0xe0
+usb_register_driver+0x5d/0x120
+? 0xf81ed000
+hfcsusb_drv_init+0x17/0x1000 [hfcsusb]
+do_one_initcall+0x44/0x190
+? free_unref_page_commit+0x6a/0xd0
+do_init_module+0x46/0x1c0
+load_module+0x1dc1/0x2400
+sys_init_module+0xed/0x120
+do_fast_syscall_32+0x7a/0x200
+entry_SYSENTER_32+0x6b/0xbe
+
+Signed-off-by: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+---
+ drivers/isdn/hardware/mISDN/hfcsusb.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
+index 6d05946b445e..02006fdce67f 100644
+--- a/drivers/isdn/hardware/mISDN/hfcsusb.c
++++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
+@@ -1705,12 +1705,22 @@ static int
+ setup_hfcsusb(struct hfcsusb *hw)
+ {
+ 	u_char b;
++	int ret;
++	void *dmabuf = kmalloc(sizeof(u_char), GFP_KERNEL);
+ 
+ 	if (debug & DBG_HFC_CALL_TRACE)
+ 		printk(KERN_DEBUG "%s: %s\n", hw->name, __func__);
+ 
++	if (!dmabuf)
++		return -ENOMEM;
++
++	ret = read_reg_atomic(hw, HFCUSB_CHIP_ID, dmabuf);
++
++	memcpy(&b, dmabuf, sizeof(u_char));
++	kfree(dmabuf);
++
+ 	/* check the chip id */
+-	if (read_reg_atomic(hw, HFCUSB_CHIP_ID, &b) != 1) {
++	if (ret != 1) {
+ 		printk(KERN_DEBUG "%s: %s: cannot read chip id\n",
+ 		       hw->name, __func__);
+ 		return 1;
+-- 
+2.20.1
 
 
-On 2019/7/29 16:18, Jiri Pirko wrote:
-> Mon, Jul 29, 2019 at 10:00:18AM CEST, baijiaju1990@gmail.com wrote:
->> In dequeue_func(), there is an if statement on line 74 to check whether
->> skb is NULL:
->>     if (skb)
->>
->> When skb is NULL, it is used on line 77:
->>     prefetch(&skb->end);
->>
->> Thus, a possible null-pointer dereference may occur.
->>
->> To fix this bug, skb->end is used when skb is not NULL.
->>
->> This bug is found by a static analysis tool STCheck written by us.
->>
->> Fixes: 79bdc4c862af ("codel: generalize the implementation")
-> Looks like this is something being there since the beginning:
-> commit 76e3cc126bb223013a6b9a0e2a51238d1ef2e409
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Thu May 10 07:51:25 2012 +0000
->
->      codel: Controlled Delay AQM
->
->
-> Please adjust "Fixes:".
-
-Thanks for the advice :)
-I have sent a v3 patch.
 
 
-Best wishes,
-Jia-Ju Bai
