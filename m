@@ -2,121 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44DE978761
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 10:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB34787AA
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 10:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbfG2IaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 04:30:12 -0400
-Received: from rs07.intra2net.com ([85.214.138.66]:53608 "EHLO
-        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbfG2IaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 04:30:12 -0400
-X-Greylist: delayed 550 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 04:30:10 EDT
-Received: from mail.m.i2n (unknown [172.17.128.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by rs07.intra2net.com (Postfix) with ESMTPS id 1D94315000D9;
-        Mon, 29 Jul 2019 10:20:59 +0200 (CEST)
-Received: from localhost (mail.m.i2n [127.0.0.1])
-        by localhost (Postfix) with ESMTP id D77B76EE;
-        Mon, 29 Jul 2019 10:20:58 +0200 (CEST)
-X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.68,VDF=8.16.19.170)
-X-Spam-Status: 
-X-Spam-Level: 0
-Received: from rocinante.m.i2n (rocinante.m.i2n [172.16.1.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: smtp-auth-user)
-        by mail.m.i2n (Postfix) with ESMTPSA id 91A955C8;
-        Mon, 29 Jul 2019 10:20:56 +0200 (CEST)
-From:   Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
-To:     isdn@linux-pingi.de, netdev@vger.kernel.org
-Subject: [PATCH] isdn: hfcsusb: Fix mISDN driver crash caused by transfer buffer on the stack
-Date:   Mon, 29 Jul 2019 10:20:56 +0200
-Message-ID: <2635856.so0i2TFZOM@rocinante.m.i2n>
+        id S1727721AbfG2Imc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 04:42:32 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:32905 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726305AbfG2Imc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 04:42:32 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n9so60947625wru.0
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 01:42:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=HM9wt+7L8iCxq+XhLcq/mYJLhBqmWxeU0HeP7054uFI=;
+        b=M7Ew+e8V8IYqDaBkX9ZqaOWxitWlDsnStPaZJZocWesm17uealDovRVwxHNaw5Ww7x
+         s5//Gxpc3fLoi7ksTk3qDFih0C3QUNtPN9Hthj/kWn26w5RatTy8DdJ3n4cyvh4ZPDCI
+         Vu2CA7Fa9ymRTgw33vwx5Dmhh1QJMhnpMlFweCaaA+WXKF0o3BzF7NEF6wDLPyaUO4Ym
+         5rOoG6gM2QBJUL/kZSGsV/rab+xx5zXg4PLx1HT6UpNTxX7aEZ+iys+alntQl5a8hELQ
+         r5eMb8oAyM1hfJ4sjxv2Wo0dXi3ahq1nTZ2Txioql/YsWGF1JsHvPHYo6NscGifbDTUy
+         sbqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HM9wt+7L8iCxq+XhLcq/mYJLhBqmWxeU0HeP7054uFI=;
+        b=GjsEo7weOme37nVuRLj1Ze2WUT1IfArx6IfUaTBtbxrKLz0vSKjPCDP/jgo8INfCPe
+         We9OHEzX93uR4IxZztO3Vs0gUBljd6Bv/PILH0CxXQNEo+OCaQeynVGet1KJ96DZqpCV
+         6xcMCcbsxcJobs0B1gIFp7MyzfKFh6YsC+poh7xz1Pz8JPY7vQiIDMTvTAwRsp2zdq8s
+         hSk9uexjPVrEbPIrWRparja3Zu3rzWHkkvo6k9gLT2td5udgQISf2BnhceoUV0VGpchY
+         bCRaB7NMfYaQoW+rtBMV5NNRFQi9EcNaeaO6/dUEJh7vmFE8zHnoUkcMIXSgLGrxeE6I
+         BTJA==
+X-Gm-Message-State: APjAAAXBleuJWE5+w4Ls9bLYV0KPdAZOE2VtCyQjTKR4e8YxON2wRjGS
+        j9+sJKL8FM5/hcNGp5Cbhyo=
+X-Google-Smtp-Source: APXvYqyZM49wAAISdKAPa1qeQvCisClNRF0liq1nsGklqMEN5hl9QSImiAElZn2gaM/Fj3NkJvA+RQ==
+X-Received: by 2002:a5d:4e50:: with SMTP id r16mr114007668wrt.227.1564389750065;
+        Mon, 29 Jul 2019 01:42:30 -0700 (PDT)
+Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
+        by smtp.gmail.com with ESMTPSA id c78sm84201547wmd.16.2019.07.29.01.42.29
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 01:42:29 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 10:42:28 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] net: sched: Fix a possible null-pointer dereference
+ in dequeue_func()
+Message-ID: <20190729084228.GD2211@nanopsycho>
+References: <20190729082433.28981-1-baijiaju1990@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190729082433.28981-1-baijiaju1990@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since linux 4.9 it is not possible to use buffers on the stack for DMA transfers.
+Mon, Jul 29, 2019 at 10:24:33AM CEST, baijiaju1990@gmail.com wrote:
+>In dequeue_func(), there is an if statement on line 74 to check whether
+>skb is NULL:
+>    if (skb)
+>
+>When skb is NULL, it is used on line 77:
+>    prefetch(&skb->end);
+>
+>Thus, a possible null-pointer dereference may occur.
+>
+>To fix this bug, skb->end is used when skb is not NULL.
+>
+>This bug is found by a static analysis tool STCheck written by us.
+>
+>Fixes: 76e3cc126bb2 ("codel: Controlled Delay AQM")
+>Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-During usb probe the driver crashes with "transfer buffer is on stack" message.
-
-This fix k-allocates a buffer to be used on "read_reg_atomic", which is a macro
-that calls "usb_control_msg" under the hood.
-
-Kernel 4.19 backtrace:
-
-usb_hcd_submit_urb+0x3e5/0x900
-? sched_clock+0x9/0x10
-? log_store+0x203/0x270
-? get_random_u32+0x6f/0x90
-? cache_alloc_refill+0x784/0x8a0
-usb_submit_urb+0x3b4/0x550
-usb_start_wait_urb+0x4e/0xd0
-usb_control_msg+0xb8/0x120
-hfcsusb_probe+0x6bc/0xb40 [hfcsusb]
-usb_probe_interface+0xc2/0x260
-really_probe+0x176/0x280
-driver_probe_device+0x49/0x130
-__driver_attach+0xa9/0xb0
-? driver_probe_device+0x130/0x130
-bus_for_each_dev+0x5a/0x90
-driver_attach+0x14/0x20
-? driver_probe_device+0x130/0x130
-bus_add_driver+0x157/0x1e0
-driver_register+0x51/0xe0
-usb_register_driver+0x5d/0x120
-? 0xf81ed000
-hfcsusb_drv_init+0x17/0x1000 [hfcsusb]
-do_one_initcall+0x44/0x190
-? free_unref_page_commit+0x6a/0xd0
-do_init_module+0x46/0x1c0
-load_module+0x1dc1/0x2400
-sys_init_module+0xed/0x120
-do_fast_syscall_32+0x7a/0x200
-entry_SYSENTER_32+0x6b/0xbe
-
-Signed-off-by: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
----
- drivers/isdn/hardware/mISDN/hfcsusb.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index 6d05946b445e..02006fdce67f 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -1705,12 +1705,22 @@ static int
- setup_hfcsusb(struct hfcsusb *hw)
- {
- 	u_char b;
-+	int ret;
-+	void *dmabuf = kmalloc(sizeof(u_char), GFP_KERNEL);
- 
- 	if (debug & DBG_HFC_CALL_TRACE)
- 		printk(KERN_DEBUG "%s: %s\n", hw->name, __func__);
- 
-+	if (!dmabuf)
-+		return -ENOMEM;
-+
-+	ret = read_reg_atomic(hw, HFCUSB_CHIP_ID, dmabuf);
-+
-+	memcpy(&b, dmabuf, sizeof(u_char));
-+	kfree(dmabuf);
-+
- 	/* check the chip id */
--	if (read_reg_atomic(hw, HFCUSB_CHIP_ID, &b) != 1) {
-+	if (ret != 1) {
- 		printk(KERN_DEBUG "%s: %s: cannot read chip id\n",
- 		       hw->name, __func__);
- 		return 1;
--- 
-2.20.1
-
-
-
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
