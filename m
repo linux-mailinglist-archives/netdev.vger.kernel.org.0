@@ -2,69 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A280B799C0
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D04B799E6
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727620AbfG2USC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 16:18:02 -0400
-Received: from mail-pf1-f175.google.com ([209.85.210.175]:41196 "EHLO
-        mail-pf1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbfG2USB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:18:01 -0400
-Received: by mail-pf1-f175.google.com with SMTP id m30so28593114pff.8
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 13:18:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lHJMnxl9MoXz7n5jWjbSx3gwvXltLqX9GTLV/nZ/mjA=;
-        b=Uch9uOZlbKmyIDN8OfGZbgo6JM74fE4AgSF3it9ajvDJbROa/+KfJTyBDyTbHTeqLk
-         wKjsKojXmt8kJHe6uxu8s7peYz4r17URnPerG5qTt5MReC31McxCMIbQBF10IJ9T+JYs
-         cszLE1b6eoQd1jsCLSj1HY4rk6pOEylVX/0YzQ6/XN+PA0LnQYNFFasLSntpeohgXWWu
-         98zoU6sbhHRrnwohpzpVyslM/GMO2xMnnWEQwU3dD1YQbWoUq+9EvhCAjt7MvBU+2JJk
-         Yy7mrx/ixhTVcOjBM1ULsrMV3M6qYohk0TmjLZbTrx2NYQq54zLiRMQc0JcGWZfsgcep
-         TWXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lHJMnxl9MoXz7n5jWjbSx3gwvXltLqX9GTLV/nZ/mjA=;
-        b=Fw4RApBwVbMZjVA5uUfiIban6YGUrTKbkwh/F6czJqIVKr2tI/8R1fJku0meghsheq
-         cxV2Xl/A0exN4kEi4a7I+86Tep7CM9V5ZhNXNHFBfz25jlVPQTuL3xApIqUnAOFr14ce
-         LVAPvJFn0kozritcuLHJFjs0AHobJoSon1QBN2ZqojCahAvOyvc27qhTRbA+PZYQKQxo
-         d0cI50onPyXlzY91dQ/61c7Bp8PzTRdfZcabUWI2Sn9PFre68JwKMJAhvt7Jx0n/EKqR
-         Dv30qUVphqnlWcqe6+mMdtqbLqExXHsJkx6IayvcTOkYRSDOTFs5+kEz8HjHKH9WZ2JJ
-         1YSA==
-X-Gm-Message-State: APjAAAVbysDCmsfReKsWBO8GOQLmB94tqlWorna2FCJ0nZ6PDwItdZA2
-        FKsPMQINJmL/a4o3wckQfBE=
-X-Google-Smtp-Source: APXvYqxH8EB3MDH8LouCBRHnCANxNHmQlHzdWOCfTzJgVMEU2Z3odIPtfl7KFtyEzoUvJxl9JubH2g==
-X-Received: by 2002:a65:6152:: with SMTP id o18mr102118417pgv.279.1564431481222;
-        Mon, 29 Jul 2019 13:18:01 -0700 (PDT)
-Received: from [172.27.227.219] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id w22sm66900028pfi.175.2019.07.29.13.17.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 13:18:00 -0700 (PDT)
-Subject: Re: [patch iproute2 1/2] devlink: introduce cmdline option to switch
- to a different namespace
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-References: <20190727094459.26345-1-jiri@resnulli.us>
- <20190727100544.28649-1-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <db479059-0dc5-63b2-44e2-5628a5d2d4bc@gmail.com>
-Date:   Mon, 29 Jul 2019 14:17:57 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1728787AbfG2U0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 16:26:15 -0400
+Received: from gateway21.websitewelcome.com ([192.185.45.147]:33314 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725975AbfG2U0O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:26:14 -0400
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id B3CFC400C2EF5
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 15:01:41 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id sBq1hGv5qdnCesBq1hkHFX; Mon, 29 Jul 2019 15:01:41 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8IG03zJ4dGQM2zbEUf5K8f+GqYdtT4wDuV0aUuJyIEc=; b=h3AQ9EvojkPpBuTQyEEMrXpXZq
+        nSPz/PMP8BOP/Gkpovpf4ecOi0Bgk1Nj5vZeZuBCjFi7MHcr8mrCsTfHJtd6xdHjqwmCv/2Vtauqa
+        OZ//RWt45ZLleJ711Q0j3wzO75rler0Spa/gO0E1YCVNVtiImHsDaFqUby2/WfTdQZl68xzDsE5Xu
+        0T6Y4kiSO98nkftvORk+VbjLpfg0oEYNZZPMPpZHe7COxSx95ZGsKvvyEuFf536pc3khda2KjBwe9
+        vV0xJFcJCOokYnV+JNKOahJIvEUkJ9RGdHY4zg0Dk9CNfxeah9RUVHS7yGdWmSNd/C33YeA7xswHQ
+        aYERSh3Q==;
+Received: from [187.192.11.120] (port=59520 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hsBq0-000tYi-Gi; Mon, 29 Jul 2019 15:01:40 -0500
+Date:   Mon, 29 Jul 2019 15:01:39 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH] net: wan: sdla: Mark expected switch fall-through
+Message-ID: <20190729200139.GA6102@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <20190727100544.28649-1-jiri@resnulli.us>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.192.11.120
+X-Source-L: No
+X-Exim-ID: 1hsBq0-000tYi-Gi
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [187.192.11.120]:59520
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 2
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-subject line should have iproute2-next
+Mark switch cases where we are expecting to fall through.
+
+This patch fixes the following warning (Building: i386):
+
+drivers/net/wan/sdla.c: In function ‘sdla_errors’:
+drivers/net/wan/sdla.c:414:7: warning: this statement may fall through [-Wimplicit-fallthrough=]
+    if (cmd == SDLA_INFORMATION_WRITE)
+       ^
+drivers/net/wan/sdla.c:417:3: note: here
+   default:
+   ^~~~~~~
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/wan/sdla.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wan/sdla.c b/drivers/net/wan/sdla.c
+index a9ac3f37b904..e2e679a01b65 100644
+--- a/drivers/net/wan/sdla.c
++++ b/drivers/net/wan/sdla.c
+@@ -413,6 +413,7 @@ static void sdla_errors(struct net_device *dev, int cmd, int dlci, int ret, int
+ 		case SDLA_RET_NO_BUFS:
+ 			if (cmd == SDLA_INFORMATION_WRITE)
+ 				break;
++			/* Else, fall through */
+ 
+ 		default: 
+ 			netdev_dbg(dev, "Cmd 0x%02X generated return code 0x%02X\n",
+-- 
+2.22.0
+
