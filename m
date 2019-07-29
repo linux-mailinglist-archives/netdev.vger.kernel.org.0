@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B1A7906E
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 195DE7908F
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:16:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728931AbfG2QMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 12:12:25 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:40818 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728912AbfG2QMY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 12:12:24 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4106720035B;
-        Mon, 29 Jul 2019 18:12:22 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 33A41200344;
-        Mon, 29 Jul 2019 18:12:22 +0200 (CEST)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id C0DB0205F3;
-        Mon, 29 Jul 2019 18:12:21 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, jiri@mellanox.com,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH 5/5] staging: fsl-dpaa2/ethsw: add .ndo_fdb[add|del] callbacks
-Date:   Mon, 29 Jul 2019 19:11:52 +0300
-Message-Id: <1564416712-16946-6-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1564416712-16946-1-git-send-email-ioana.ciornei@nxp.com>
-References: <1564416712-16946-1-git-send-email-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727999AbfG2QQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 12:16:12 -0400
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:38034 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727624AbfG2QQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 12:16:12 -0400
+Received: by mail-ua1-f68.google.com with SMTP id j2so24175747uaq.5
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 09:16:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=AyvJSduUmZn33FbpJeTkP5NHm1ThVmp/uEoZugiTS6k=;
+        b=R8zIkhYX8QIFzFk4oxgjhG2T1GS3XHiOYyBv6Txp4goeFhfe3dlk9pO1i1TUy8t4kl
+         Ar96ZlHkum+bX69xiT6/yORWCwXlwC7Mu2nKz7l8RIV2E8Ixnhhf8eAk0WFCZ3OL9SX8
+         6Z2aszbl4PdIDgIpzp5DP9OvxO+M9sL9uui98dUB42GzksqVY4thnxFAIszgzsL8F5Hx
+         C3RxgGZHIYl/deYlUzPqfQAEYkhoqw4/ZR0EHLXQxqfki6gk9tux85l3HMq+a1/niJ6m
+         /fBvNGc9YqxuLbn97Zt49dk1rNIw9IU7B3ClwxCyMN/LFa7HJ/Sl/YvXH9AE5KYvLWH5
+         8Big==
+X-Gm-Message-State: APjAAAWKd08NbJK30RSX476Y1wjC6ftqUVtPCNZg9+cNxI/4QkHS9Bdn
+        G+15j54+I0cSW43GsO8p03aq2A==
+X-Google-Smtp-Source: APXvYqwG8Q4XQWblCYfrnvjYrxOZIt94OjzyFiLAXTSDaMhX/fRr5dDybVH26+paFqcxZZfddeveUQ==
+X-Received: by 2002:a9f:31a2:: with SMTP id v31mr67985907uad.15.1564416971073;
+        Mon, 29 Jul 2019 09:16:11 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
+        by smtp.gmail.com with ESMTPSA id u5sm60539788uah.0.2019.07.29.09.16.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 09:16:10 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 12:16:05 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        eric.auger@redhat.com, jean-philippe@linaro.org, jroedel@suse.de,
+        mst@redhat.com, namit@vmware.com, wei.w.wang@intel.com
+Subject: [PULL] vhost,virtio: cleanups and fixes
+Message-ID: <20190729121605-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the .ndo_fdb_[add|del] callbacks so that FDB entries not associated
-with a master device still end up offloaded.
+The following changes since commit 5f9e832c137075045d15cd6899ab0505cfb2ca4b:
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/staging/fsl-dpaa2/ethsw/ethsw.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+  Linus 5.3-rc1 (2019-07-21 14:05:38 -0700)
 
-diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-index 2d3179c6bad8..4b94a01513a7 100644
---- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-+++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-@@ -316,6 +316,31 @@ static int ethsw_port_fdb_del_mc(struct ethsw_port_priv *port_priv,
- 	return err;
- }
- 
-+static int port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
-+			struct net_device *dev, const unsigned char *addr,
-+			u16 vid, u16 flags,
-+			struct netlink_ext_ack *extack)
-+{
-+	if (is_unicast_ether_addr(addr))
-+		return ethsw_port_fdb_add_uc(netdev_priv(dev),
-+					     addr);
-+	else
-+		return ethsw_port_fdb_add_mc(netdev_priv(dev),
-+					     addr);
-+}
-+
-+static int port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
-+			struct net_device *dev,
-+			const unsigned char *addr, u16 vid)
-+{
-+	if (is_unicast_ether_addr(addr))
-+		return ethsw_port_fdb_del_uc(netdev_priv(dev),
-+					     addr);
-+	else
-+		return ethsw_port_fdb_del_mc(netdev_priv(dev),
-+					     addr);
-+}
-+
- static void port_get_stats(struct net_device *netdev,
- 			   struct rtnl_link_stats64 *stats)
- {
-@@ -670,6 +695,8 @@ static int port_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	.ndo_change_mtu		= port_change_mtu,
- 	.ndo_has_offload_stats	= port_has_offload_stats,
- 	.ndo_get_offload_stats	= port_get_offload_stats,
-+	.ndo_fdb_add		= port_fdb_add,
-+	.ndo_fdb_del		= port_fdb_del,
- 	.ndo_fdb_dump		= port_fdb_dump,
- 
- 	.ndo_start_xmit		= port_dropframe,
--- 
-1.9.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+
+for you to fetch changes up to 73f628ec9e6bcc45b77c53fe6d0c0ec55eaf82af:
+
+  vhost: disable metadata prefetch optimization (2019-07-26 07:49:29 -0400)
+
+----------------------------------------------------------------
+virtio, vhost: bugfixes
+
+Fixes in the iommu and balloon devices.
+Disable the meta-data optimization for now - I hope we can get it fixed
+shortly, but there's no point in making users suffer crashes while we
+are working on that.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Jean-Philippe Brucker (1):
+      iommu/virtio: Update to most recent specification
+
+Michael S. Tsirkin (2):
+      balloon: fix up comments
+      vhost: disable metadata prefetch optimization
+
+Wei Wang (1):
+      mm/balloon_compaction: avoid duplicate page removal
+
+ drivers/iommu/virtio-iommu.c      | 40 ++++++++++++++++-------
+ drivers/vhost/vhost.h             |  2 +-
+ include/uapi/linux/virtio_iommu.h | 32 ++++++++++--------
+ mm/balloon_compaction.c           | 69 +++++++++++++++++++++++----------------
+ 4 files changed, 89 insertions(+), 54 deletions(-)
