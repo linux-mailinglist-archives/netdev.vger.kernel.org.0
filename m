@@ -2,122 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB5079A20
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:41:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C5A879A42
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729053AbfG2UlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 16:41:21 -0400
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.21]:35277 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728915AbfG2UlU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:41:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1564432878;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=58Z8bDRgyAi1iHQvHHwK8+g7BxsaAQ9fV6DBfYqu6nI=;
-        b=F2ivxhPOOLN6tdjHSjli/a4rX/BrPWuIeCWO6rPZNAjsFK2wIvfQjuuqoFrnu86BGs
-        GLUafAUb6dgQuWSHyno7fLzgaXFfKeApPZVAVrqqCXXxqiBhqY1TKR+PfzZgSw5TGJbs
-        rSvJLPBsLBZkZuMDLitKYxdNQdXMHWzk4J81AiSoIZkJFFNxRARzAoAqmQUIMYG6GJ1J
-        Q94asqQ9S64anFq1dfB6+CIzxbX8/9s6kgXj2PGamrovFJfOv2Dx5MH1DhWB2wi9jEyG
-        5rE2PvyjN5fH1EX/HQqypQQlbmtD0s0ZLvrJIGSweMkskz6WnnlTtep6sA36qa6bBdla
-        qZag==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lO8DsfULo/u6TWni45U="
-X-RZG-CLASS-ID: mo00
-Received: from silver.lan
-        by smtp.strato.de (RZmta 44.24 DYNA|AUTH)
-        with ESMTPSA id k05d3bv6TKfCvOi
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Mon, 29 Jul 2019 22:41:12 +0200 (CEST)
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        kernel test robot <rong.a.chen@intel.com>
-Subject: [PATCH net-next] can: fix ioctl function removal
-Date:   Mon, 29 Jul 2019 22:40:56 +0200
-Message-Id: <20190729204056.2976-1-socketcan@hartkopp.net>
-X-Mailer: git-send-email 2.20.1
+        id S2388031AbfG2UsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 16:48:00 -0400
+Received: from mail-pl1-f181.google.com ([209.85.214.181]:35419 "EHLO
+        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387803AbfG2UsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:48:00 -0400
+Received: by mail-pl1-f181.google.com with SMTP id w24so27955491plp.2;
+        Mon, 29 Jul 2019 13:48:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rrf3YmDySsesPz6r55OZQ0AKfy6F1H52cMUT0s4aiNA=;
+        b=RTDyWkL+nHKz9HuiorY/Cr2AWik1RNbNRfajx9D38PfFYq76wplhOAXF1nkiHmIRAt
+         sV50Omfzr32r7anvolLARB9CPf23reqVSCHwSxZUNDfJ+yogrv5cUgcB1vRUm3+NNSWq
+         vOQX1J5mCW+xxlfTyB7U1uaAyVK5hsW2WyuW6kvFMqyDDGExMHQHjOPHtQTlPkxt4NHu
+         wag1URiJWegPZ5XjsfS3Zzg2TVpl8fkhWQhgPEtfyldfprhS9VrTxR2yEctvbdyZ4paX
+         2U8Kwg0Lq6NjsGaRvEN5ZgIQ2+/q5oexRiwOf6Aw0ba9MIryZFhCVAlWSxM3A2Y2aEnX
+         7Z0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rrf3YmDySsesPz6r55OZQ0AKfy6F1H52cMUT0s4aiNA=;
+        b=jSsK623wfG4YPiaU04g8tAhFeRMKFULEqX/U1zgbQ1UUCutpKVTitqlggBszhzJEET
+         iz8iSUIwdqv2/2iPfqXByNOnjYthN8HOxG2aOuN4Y1+CcPlQ8MAWZULGLdiWkjOZhdTx
+         zSx4RD0MptbUSV6wSXVzHMTOvVno1W9tG6W5Un+xc+ch/47duaRIHhDPlipH9WLzIQzg
+         k+evViGTZdGnQLoz0ZwtxJVnJrjS+TBtzJTl6VV/Zp2LNMgwEfOPAfM3pkZJrO4CbHAM
+         9sxho4Qm45MxeE70suhrV0yCGrbsw5v92zh2Dw9XDzJcSXGYY6XNZPRhXEyPY93oeWsG
+         mPDQ==
+X-Gm-Message-State: APjAAAXIRmuul8SjZJC/i+KfB1x3i51GiRzp6O4tcPh+CCMF7cQfxFw0
+        VxVmsZDGngNEMx6dZrBFt4I=
+X-Google-Smtp-Source: APXvYqzdFClt8NZj0Ty9TPln1gms5t6bJ3Rsu6yh4zcbv3KZPSSscDZ7+3Erfy4OsWTZsoJVztoMbA==
+X-Received: by 2002:a17:902:f213:: with SMTP id gn19mr115053605plb.35.1564433279524;
+        Mon, 29 Jul 2019 13:47:59 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::2:7c6a])
+        by smtp.gmail.com with ESMTPSA id 137sm77019728pfz.112.2019.07.29.13.47.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 13:47:58 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 13:47:57 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Petar Penkov <ppenkov.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, edumazet@google.com,
+        lmb@cloudflare.com, sdf@google.com, toke@redhat.com,
+        Petar Penkov <ppenkov@google.com>
+Subject: Re: [bpf-next,v2 0/6] Introduce a BPF helper to generate SYN cookies
+Message-ID: <20190729204755.iu5wp3xisu42vkky@ast-mbp>
+References: <20190729165918.92933-1-ppenkov.kernel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190729165918.92933-1-ppenkov.kernel@gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 60649d4e0af ("can: remove obsolete empty ioctl() handler") replaced the
-almost empty can_ioctl() function with sock_no_ioctl() which always returns
--EOPNOTSUPP.
+On Mon, Jul 29, 2019 at 09:59:12AM -0700, Petar Penkov wrote:
+> From: Petar Penkov <ppenkov@google.com>
+> 
+> This patch series introduces a BPF helper function that allows generating SYN
+> cookies from BPF. Currently, this helper is enabled at both the TC hook and the
+> XDP hook.
+> 
+> The first two patches in the series add/modify several TCP helper functions to
+> allow for SKB-less operation, as is the case at the XDP hook.
+> 
+> The third patch introduces the bpf_tcp_gen_syncookie helper function which
+> generates a SYN cookie for either XDP or TC programs. The return value of
+> this function contains both the MSS value, encoded in the cookie, and the
+> cookie itself.
+> 
+> The last three patches sync tools/ and add a test. 
+> 
+> Performance evaluation:
+> I sent 10Mpps to a fixed port on a host with 2 10G bonded Mellanox 4 NICs from
+> random IPv6 source addresses. Without XDP I observed 7.2Mpps (syn-acks) being
+> sent out if the IPv6 packets carry 20 bytes of TCP options or 7.6Mpps if they
+> carry no options. If I attached a simple program that checks if a packet is
+> IPv6/TCP/SYN, looks up the socket, issues a cookie, and sends it back out after
+> swapping src/dest, recomputing the checksum, and setting the ACK flag, I
+> observed 10Mpps being sent back out.
 
-Even though we don't have any ioctl() functions on socket/network layer we need
-to return -ENOIOCTLCMD to be able to forward ioctl commands like SIOCGIFINDEX
-to the network driver layer.
+Is it 10m because trafic gen is 10m?
+What is cpu utilization at this rate?
+Is it cpu or nic limited if you crank up the syn flood?
+Original 7M with all cores or single core?
 
-This patch fixes the wrong return codes in the CAN network layer protocols.
-
-Reported-by: kernel test robot <rong.a.chen@intel.com>
-Fixes: 60649d4e0af ("can: remove obsolete empty ioctl() handler")
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- net/can/bcm.c | 9 ++++++++-
- net/can/raw.c | 9 ++++++++-
- 2 files changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 8da986b19d88..bf1d0bbecec8 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -1680,6 +1680,13 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	return size;
- }
- 
-+int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
-+			 unsigned long arg)
-+{
-+	/* no ioctls for socket layer -> hand it down to NIC layer */
-+	return -ENOIOCTLCMD;
-+}
-+
- static const struct proto_ops bcm_ops = {
- 	.family        = PF_CAN,
- 	.release       = bcm_release,
-@@ -1689,7 +1696,7 @@ static const struct proto_ops bcm_ops = {
- 	.accept        = sock_no_accept,
- 	.getname       = sock_no_getname,
- 	.poll          = datagram_poll,
--	.ioctl         = sock_no_ioctl,
-+	.ioctl         = bcm_sock_no_ioctlcmd,
- 	.gettstamp     = sock_gettstamp,
- 	.listen        = sock_no_listen,
- 	.shutdown      = sock_no_shutdown,
-diff --git a/net/can/raw.c b/net/can/raw.c
-index ff720272f7b7..da386f1fa815 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -837,6 +837,13 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	return size;
- }
- 
-+int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
-+			 unsigned long arg)
-+{
-+	/* no ioctls for socket layer -> hand it down to NIC layer */
-+	return -ENOIOCTLCMD;
-+}
-+
- static const struct proto_ops raw_ops = {
- 	.family        = PF_CAN,
- 	.release       = raw_release,
-@@ -846,7 +853,7 @@ static const struct proto_ops raw_ops = {
- 	.accept        = sock_no_accept,
- 	.getname       = raw_getname,
- 	.poll          = datagram_poll,
--	.ioctl         = sock_no_ioctl,
-+	.ioctl         = raw_sock_no_ioctlcmd,
- 	.gettstamp     = sock_gettstamp,
- 	.listen        = sock_no_listen,
- 	.shutdown      = sock_no_shutdown,
--- 
-2.20.1
+The patch set looks good to me.
+I'd like Eric to review it one more time before applying.
 
