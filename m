@@ -2,142 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6F678920
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 12:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EACC78980
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 12:17:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728231AbfG2KEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 06:04:01 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:42720 "EHLO inva021.nxp.com"
+        id S2387413AbfG2KRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 06:17:04 -0400
+Received: from mail.kapsi.fi ([91.232.154.25]:41637 "EHLO mail.kapsi.fi"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728151AbfG2KDx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 06:03:53 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 35D8F2014D2;
-        Mon, 29 Jul 2019 12:03:51 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 260172014CE;
-        Mon, 29 Jul 2019 12:03:51 +0200 (CEST)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B199A205F3;
-        Mon, 29 Jul 2019 12:03:50 +0200 (CEST)
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     andrew@lunn.ch, Rob Herring <robh+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, alexandru.marginean@nxp.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 4/4] arm64: dts: fsl: ls1028a: Enable eth port1 on the ls1028a QDS board
-Date:   Mon, 29 Jul 2019 13:03:47 +0300
-Message-Id: <1564394627-3810-5-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1564394627-3810-1-git-send-email-claudiu.manoil@nxp.com>
-References: <1564394627-3810-1-git-send-email-claudiu.manoil@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726358AbfG2KRE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 06:17:04 -0400
+X-Greylist: delayed 1870 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 06:17:03 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nAOqsxTyQ4gYltZdfhxaj3SXIvjncVO2sE1nkzwLk4E=; b=tFKJc9Yt/mc9zFIxobPi3ypDnT
+        FuFFk4dfGUY/bNKduZtIu8/UzABRB1Mha/OY/Ka8bOZirm+sTiODILWjX4eI+TPKltxOPPiQlbBWf
+        lcHn1Z0FzpIT4jJpnngoKPRCpZkJSiAYOKF0inIIvZbjXYs/JEN1xIMWhsW+oqqxsCRG8jjpVYtwH
+        xIu5UVDbY4tj1Vq8rYyxrZzG8FuW5l7NvTl6UJXLmzrim4oCDDlYgIVT73gKTNknPKxmV2BKUwywp
+        /lusWQQUCCBhcY3HRSvCHguQ35UYGPRHyFfrjCxbM/1CiWrqTaSa0O7WpHNTzhkMPxg/krGIShmVI
+        9u4ITH2A==;
+Received: from [193.209.96.43] (helo=[10.21.26.179])
+        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1hs2Dn-0007rJ-W0; Mon, 29 Jul 2019 12:45:36 +0300
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+To:     Jon Hunter <jonathanh@nvidia.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Lars Persson <lists@bofh.nu>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20190722101830.GA24948@apalos>
+ <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
+ <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <11557fe0-0cba-cb49-0fb6-ad24792d4a53@nvidia.com>
+ <BN8PR12MB3266664ECA192E02C06061EED3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <BYAPR12MB3269A725AFDDA21E92946558D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <ab14f31f-2045-b1be-d31f-2a81b8527dac@nvidia.com>
+ <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <2ad7bf21-1f1f-db0f-2358-4901b7988b7d@nvidia.com>
+ <BYAPR12MB3269D050556BD51030DCDDFCD3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <8093e352-d992-e17f-7168-5afbd9d3fb3f@nvidia.com>
+ <BYAPR12MB3269EC45ABAF8F279288B003D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
+ <f3525260-c43f-c983-0b5b-34a83bd53283@nvidia.com>
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+Message-ID: <299d1803-fc5c-9298-3d10-582e76b47a9e@kapsi.fi>
+Date:   Mon, 29 Jul 2019 12:45:25 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <f3525260-c43f-c983-0b5b-34a83bd53283@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 193.209.96.43
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS1028a has one Ethernet management interface. On the QDS board, the
-MDIO signals are multiplexed to either on-board AR8035 PHY device or
-to 4 PCIe slots allowing for SGMII cards.
-To enable the Ethernet ENETC Port 1, which can only be connected to a
-RGMII PHY, the multiplexer needs to be configured to route the MDIO to
-the AR8035 PHY.  The MDIO/MDC routing is controlled by bits 7:4 of FPGA
-board config register 0x54, and value 0 selects the on-board RGMII PHY.
-The FPGA board config registers are accessible on the i2c bus, at address
-0x66.
+My understanding is that Tegra186 does not have DMA coherency, but 
+Tegra194 does.
 
-The PF3 MDIO PCIe integrated endpoint device allows for centralized access
-to the MDIO bus.  Add the corresponding devicetree node and set it to be
-the MDIO bus parent.
+Mikko
 
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
----
-v1 - none
-v2 - none
-v3 - none
-
- .../boot/dts/freescale/fsl-ls1028a-qds.dts    | 40 +++++++++++++++++++
- .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  6 +++
- 2 files changed, 46 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index de6ef39f3118..663c4b728c07 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -85,6 +85,26 @@
- 			system-clock-frequency = <25000000>;
- 		};
- 	};
-+
-+	mdio-mux {
-+		compatible = "mdio-mux-multiplexer";
-+		mux-controls = <&mux 0>;
-+		mdio-parent-bus = <&enetc_mdio_pf3>;
-+		#address-cells=<1>;
-+		#size-cells = <0>;
-+
-+		/* on-board RGMII PHY */
-+		mdio@0 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0>;
-+
-+			qds_phy1: ethernet-phy@5 {
-+				/* Atheros 8035 */
-+				reg = <5>;
-+			};
-+		};
-+	};
- };
- 
- &duart0 {
-@@ -164,6 +184,26 @@
- 			};
- 		};
- 	};
-+
-+	fpga@66 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "fsl,ls1028aqds-fpga", "fsl,fpga-qixis-i2c",
-+			     "simple-mfd";
-+		reg = <0x66>;
-+
-+		mux: mux-controller {
-+			compatible = "reg-mux";
-+			#mux-control-cells = <1>;
-+			mux-reg-masks = <0x54 0xf0>; /* 0: reg 0x54, bits 7:4 */
-+		};
-+	};
-+
-+};
-+
-+&enetc_port1 {
-+	phy-handle = <&qds_phy1>;
-+	phy-connection-type = "rgmii-id";
- };
- 
- &sai1 {
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 7975519b4f56..de71153fda00 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -536,6 +536,12 @@
- 				compatible = "fsl,enetc";
- 				reg = <0x000100 0 0 0 0>;
- 			};
-+			enetc_mdio_pf3: mdio@0,3 {
-+				compatible = "fsl,enetc-mdio";
-+				reg = <0x000300 0 0 0 0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
- 			ethernet@0,4 {
- 				compatible = "fsl,enetc-ptp";
- 				reg = <0x000400 0 0 0 0>;
--- 
-2.17.1
-
+On 23.7.2019 16.34, Jon Hunter wrote:
+> 
+> On 23/07/2019 13:51, Jose Abreu wrote:
+>> From: Jon Hunter <jonathanh@nvidia.com>
+>> Date: Jul/23/2019, 12:58:55 (UTC+00:00)
+>>
+>>>
+>>> On 23/07/2019 11:49, Jose Abreu wrote:
+>>>> From: Jon Hunter <jonathanh@nvidia.com>
+>>>> Date: Jul/23/2019, 11:38:33 (UTC+00:00)
+>>>>
+>>>>>
+>>>>> On 23/07/2019 11:07, Jose Abreu wrote:
+>>>>>> From: Jon Hunter <jonathanh@nvidia.com>
+>>>>>> Date: Jul/23/2019, 11:01:24 (UTC+00:00)
+>>>>>>
+>>>>>>> This appears to be a winner and by disabling the SMMU for the ethernet
+>>>>>>> controller and reverting commit 954a03be033c7cef80ddc232e7cbdb17df735663
+>>>>>>> this worked! So yes appears to be related to the SMMU being enabled. We
+>>>>>>> had to enable the SMMU for ethernet recently due to commit
+>>>>>>> 954a03be033c7cef80ddc232e7cbdb17df735663.
+>>>>>>
+>>>>>> Finally :)
+>>>>>>
+>>>>>> However, from "git show 954a03be033c7cef80ddc232e7cbdb17df735663":
+>>>>>>
+>>>>>> +         There are few reasons to allow unmatched stream bypass, and
+>>>>>> +         even fewer good ones.  If saying YES here breaks your board
+>>>>>> +         you should work on fixing your board.
+>>>>>>
+>>>>>> So, how can we fix this ? Is your ethernet DT node marked as
+>>>>>> "dma-coherent;" ?
+>>>>>
+>>>>> TBH I have no idea. I can't say I fully understand your change or how it
+>>>>> is breaking things for us.
+>>>>>
+>>>>> Currently, the Tegra DT binding does not have 'dma-coherent' set. I see
+>>>>> this is optional, but I am not sure how you determine whether or not
+>>>>> this should be set.
+>>>>
+>>>>  From my understanding it means that your device / IP DMA accesses are coherent regarding the CPU point of view. I think it will be the case if GMAC is not behind any kind of IOMMU in the HW arch.
+>>>
+>>> I understand what coherency is, I just don't know how you tell if this
+>>> implementation of the ethernet controller is coherent or not.
+>>
+>> Do you have any detailed diagram of your HW ? Such as blocks / IPs
+>> connection, address space wiring , ...
+> 
+> Yes, this can be found in the Tegra X2 Technical Reference Manual [0].
+> Unfortunately, you need to create an account to download it.
+> 
+> Jon
+> 
+> [0] https://developer.nvidia.com/embedded/dlc/parker-series-trm
+> 
