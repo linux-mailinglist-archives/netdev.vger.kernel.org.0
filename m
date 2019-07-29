@@ -2,116 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE29778BFB
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 14:47:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C107878C06
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 14:50:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbfG2MrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 08:47:25 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:56035 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726717AbfG2MrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 08:47:25 -0400
-Received: from [192.168.1.5] (unknown [116.234.0.221])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id BFE3841CF9;
-        Mon, 29 Jul 2019 20:47:20 +0800 (CST)
-Subject: Re: [PATCH net-next v4 1/3] flow_offload: move tc indirect block to
- flow offload
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     pablo@netfilter.org, fw@strlen.de, jakub.kicinski@netronome.com,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <1564296769-32294-1-git-send-email-wenxu@ucloud.cn>
- <1564296769-32294-2-git-send-email-wenxu@ucloud.cn>
- <20190729111350.GE2211@nanopsycho>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <c218d9bb-1da7-2ed6-d5b0-afddbe3d0bd7@ucloud.cn>
-Date:   Mon, 29 Jul 2019 20:47:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+        id S1727403AbfG2MuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 08:50:22 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35932 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726432AbfG2MuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 08:50:22 -0400
+Received: by mail-wr1-f66.google.com with SMTP id n4so61797168wrs.3
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 05:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FaAv73c7/caKA+SdXX+K+mh6Cm/86re9CSFJB7tkoPQ=;
+        b=KW0x3QFgAkbJtmPiI15VrDGcIK27GRcEgALtT7jEwcEraGN0NVvEz0pwJrsydt95ER
+         Gscowby0iaA/F56RCBP3ZeYqmxbBk0IT8HWNux4xxYpbZXYyoOy5qSmYe11ZL7x4A70k
+         GOuwSowPaBiPvlK5jU1gZjN8I57ndtLQhpu2M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FaAv73c7/caKA+SdXX+K+mh6Cm/86re9CSFJB7tkoPQ=;
+        b=MkyPFwIR27OOMGMqcbMItek/qqyNJEFo2g3SA9Mucn6t35ZmDEfZKynw3EHBJ6h587
+         +rE8/CItTjoMOgc2SgaEof9U4eJv+Am+u7MaJkn2quF5rlC+10ZqbYQtNlvO9s8OSHlc
+         ZLRi/7zkZYhxtOlcpE9VDswymroGX1Dd/IG78zMfabw11w4YZ1fGvU0434sH8LyGpjCm
+         /Mvf8qMQQ8jl4NLdSpHMvd5Go9dBeMF07VHvyg3qsZoSznVcU8+OnoE65a+cmymnDwt7
+         vy9DYPNZMwkiFXV6Ojmxb+dneqPKlIYM45E7QavbTnV5eMSlzxTkKAK1+7zK1nwunNwW
+         s8fg==
+X-Gm-Message-State: APjAAAUXI/2pGVw/dJYvzplM9gsIwwvm7hEKMHqz2/g5sbLiKJg5WsYI
+        NxgHPijLTsC9AGEOtbJUsqXF4Q==
+X-Google-Smtp-Source: APXvYqylO0ojx7HMCNib0ntkfakVQdA8p4X9NuiyKtM1VMknioWDrk4uX2Xz5EwZvObFvgSjRiOTJw==
+X-Received: by 2002:a5d:6a52:: with SMTP id t18mr19177948wrw.178.1564404620043;
+        Mon, 29 Jul 2019 05:50:20 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id a67sm67519549wmh.40.2019.07.29.05.50.18
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 05:50:19 -0700 (PDT)
+Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
+ <7e7a7015-6072-d884-b2ba-0a51177245ab@cumulusnetworks.com>
+ <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
+ <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
+ <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
+ <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
+ <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
+ <b755f613-e6d8-a2e6-16cd-6f13ec0a6ddc@cumulusnetworks.com>
+ <20190729121409.wa47uelw5f6l4vs4@lx-anielsen.microsemi.net>
+ <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
+Message-ID: <f4347439-0b96-f7f6-db34-4c7afbeba141@cumulusnetworks.com>
+Date:   Mon, 29 Jul 2019 15:50:18 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190729111350.GE2211@nanopsycho>
+In-Reply-To: <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVS0pIS0tLSU9CQ01JTUxZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MEk6Hyo6IzgwLkkNE1ZOI0NR
-        SElPCxNVSlVKTk1PT0tPT09KSUxPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
-        SE9VS1VJSUpZV1kIAVlBSENMTzcG
-X-HM-Tid: 0a6c3dc5607e2086kuqybfe3841cf9
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 29/07/2019 15:22, Nikolay Aleksandrov wrote:
+> Hi Allan,
+> On 29/07/2019 15:14, Allan W. Nielsen wrote:
+>> Hi Nikolay,
+>>
+>> First of all, as mentioned further down in this thread, I realized that our
+>> implementation of the multicast floodmasks does not align with the existing SW
+>> implementation. We will change this, such that all multicast packets goes to the
+>> SW bridge.
+>>
+>> This changes things a bit, not that much.
+>>
+>> I actually think you summarized the issue we have (after changing to multicast
+>> flood-masks) right here:
+>>
+>> The 07/26/2019 12:26, Nikolay Aleksandrov wrote:
+>>>>> Actually you mentioned non-IP traffic, so the querier stuff is not a problem. This
+>>>>> traffic will always be flooded by the bridge (and also a copy will be locally sent up).
+>>>>> Thus only the flooding may need to be controlled.
+>>
+>> This seems to be exactly what we need.
+>>
+>> Assuming we have a SW bridge (br0) with 4 slave interfaces (eth0-3). We use this
+>> on a network where we want to limit the flooding of frames with dmac
+>> 01:21:6C:00:00:01 (which is non IP traffic) to eth0 and eth1.
+>>
+>> One way of doing this could potentially be to support the following command:
+>>
+>> bridge fdb add    01:21:6C:00:00:01 port eth0
+>> bridge fdb append 01:21:6C:00:00:01 port eth1
+>>
 
-在 2019/7/29 19:13, Jiri Pirko 写道:
-> Sun, Jul 28, 2019 at 08:52:47AM CEST, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> move tc indirect block to flow_offload and rename
->> it to flow indirect block.The nf_tables can use the
->> indr block architecture.
->>
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->> v3: subsys_initcall for init_flow_indr_rhashtable
->> v4: no change
->>
-> [...]
->
->
->> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->> index 00b9aab..66f89bc 100644
->> --- a/include/net/flow_offload.h
->> +++ b/include/net/flow_offload.h
->> @@ -4,6 +4,7 @@
->> #include <linux/kernel.h>
->> #include <linux/list.h>
->> #include <net/flow_dissector.h>
->> +#include <linux/rhashtable.h>
->>
->> struct flow_match {
->> 	struct flow_dissector	*dissector;
->> @@ -366,4 +367,42 @@ static inline void flow_block_init(struct flow_block *flow_block)
->> 	INIT_LIST_HEAD(&flow_block->cb_list);
->> }
->>
->> +typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
->> +				      enum tc_setup_type type, void *type_data);
->> +
->> +struct flow_indr_block_cb {
->> +	struct list_head list;
->> +	void *cb_priv;
->> +	flow_indr_block_bind_cb_t *cb;
->> +	void *cb_ident;
->> +};
-> I don't understand why are you pushing this struct out of the c file to
-> the header. Please don't.
->
->
->> +
->> +typedef void flow_indr_block_ing_cmd_t(struct net_device *dev,
->> +				       struct flow_block *flow_block,
->> +				       struct flow_indr_block_cb *indr_block_cb,
->> +				       enum flow_block_command command);
->> +
->> +struct flow_indr_block_dev {
->> +	struct rhash_head ht_node;
->> +	struct net_device *dev;
->> +	unsigned int refcnt;
->> +	struct list_head cb_list;
->> +	flow_indr_block_ing_cmd_t *ing_cmd_cb;
->> +	struct flow_block *flow_block;
-> I don't understand why are you pushing this struct out of the c file to
-> the header. Please don't.
+And the fdbs become linked lists ? So we'll increase the complexity for something
+that is already supported by ACLs (e.g. tc) and also bridge per-port multicast
+flood flag ?
 
-the flow_indr_block_dev and indr_block_cb in the h file used for the function
+I'm sorry but that doesn't sound good to me for a case which is very rare and
+there are existing ways to solve without incurring performance hits or increasing
+code complexity.
 
-tc_indr_block_ing_cmd in cls_api.c
+>> On 25/07/2019 16:06, Nikolay Aleksandrov wrote:
+>>>>>>>>>  In general NLM_F_APPEND is only used in vxlan, the bridge does not
+>>>>>>>>>  handle that flag at all.  FDB is only for *unicast*, nothing is joined
+>>>>>>>>>  and no multicast should be used with fdbs. MDB is used for multicast
+>>>>>>>>>  handling, but both of these are used for forwarding.
+>> This is true, and this should have been addressed in the patch, we were too
+>> focused on setting up the offload patch in the driver, and forgot to do the SW
+>> implementation.
+>>
+>> Do you see any issues in supporting this flag, and updating the SW
+>> forwarding in br_handle_frame_finish such that it can support/allow a FDB entry
+>> to be a multicast?
+>>
+> 
+> Yes, all of the multicast code is handled differently, it doesn't go through the fdb
+> lookup or code at all. I don't see how you'll do a lookup in the fdb table with a
+> multicast mac address, take a look at br_handle_frame_finish() and you'll notice
+> that when a multicast dmac is detected then we use the bridge mcast code for lookups
+> and forwarding. If you're trying to achieve Rx only on the bridge of these then
+> why not just use Ido's tc suggestion or even the ip maddr add offload for each port ?
+> 
+> If you add a multicast mac in the fdb (currently allowed, but has no effect) and you
+> use dev_mc_add() as suggested that'd just be a hack to pass it down and it is already
+> possible to achieve via other methods, no need to go through the bridge.
+> 
+>> /Allan
+>>
+> 
 
->> -static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
->> -				  struct tc_indr_block_cb *indr_block_cb,
->> +static void tc_indr_block_ing_cmd(struct net_device *dev,
-> I don't understand why you change struct tc_indr_block_dev * to
-> struct net_device * here. If you want to do that, please do that in a
-> separate patch, not it this one where only "the move" should happen.
->
