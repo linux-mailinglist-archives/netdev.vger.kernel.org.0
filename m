@@ -2,61 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC16C7909C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727A8790A3
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728487AbfG2QSA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Jul 2019 12:18:00 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57866 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727556AbfG2QR7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 12:17:59 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CBCDAC025019;
-        Mon, 29 Jul 2019 16:17:59 +0000 (UTC)
-Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AC8385D6A0;
-        Mon, 29 Jul 2019 16:17:50 +0000 (UTC)
-Date:   Mon, 29 Jul 2019 18:17:49 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Yonghong Song <yhs@fb.com>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next v5 6/6] tools: Add definitions for devmap_hash
- map type
-Message-ID: <20190729181749.44cb903e@carbon>
-In-Reply-To: <156415721858.13581.13229682989409553007.stgit@alrua-x1>
-References: <156415721066.13581.737309854787645225.stgit@alrua-x1>
-        <156415721858.13581.13229682989409553007.stgit@alrua-x1>
+        id S1727324AbfG2QTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 12:19:10 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42690 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727646AbfG2QTJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 12:19:09 -0400
+Received: by mail-wr1-f68.google.com with SMTP id x1so12605109wrr.9
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 09:19:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZKDqUs0ayhzO8fC3NvwV+tCFuuA/FPgD3ePdCx1GJqM=;
+        b=Kj/30/bKk7ieRflxh/wAnNuTHFcsyVHcuZDfJWaJT+c70UnUHHdSqR3mCrhregdmmb
+         +f1qVak1A9kubqcGowCtjw82tczxjIJAm3QL21M2wvkTu0AOs4XQUpE2pEQn56fdBZOY
+         nzySs0KPbOVo2TCJ0dKFsrh8fcpZ3R3QPNRvO6jdVvx0lRDOeE9X/viwMNuHpf/Gk1bi
+         w/4IgVXtnoSK62kdmbKQVsiJgLBIr3qSKdRbO4Yk8D9Ge7NOtpYxspVJ7xaVKTLgbq8D
+         wFGE4WTGOe6P9jRQUUn6U8Wyq7PIUKjBNQOAHBhImxl1ZSJ7qxTCweOyI5yauzR36zk5
+         9LIg==
+X-Gm-Message-State: APjAAAXubjQRer5RrvWc8GzGXMQvVnmWKFJFo+VVCBe83Lcv5CUCIRM3
+        tArBx4nW2bb+pECHe2Xx2v/JWw==
+X-Google-Smtp-Source: APXvYqx0sc12Pv/jNOPaKvwFRyWt3K0PAbYM2mQ0eNUoR5RWLAC9VV53Iw6ZEaEpC4k4BBzOXgmD7Q==
+X-Received: by 2002:a5d:4b8b:: with SMTP id b11mr40501951wrt.294.1564417146999;
+        Mon, 29 Jul 2019 09:19:06 -0700 (PDT)
+Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
+        by smtp.gmail.com with ESMTPSA id c11sm104255286wrq.45.2019.07.29.09.19.05
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 09:19:06 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 18:19:03 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
+Message-ID: <20190729161903.yhaj5rfcvleexkhc@steredhat>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-2-sgarzare@redhat.com>
+ <20190729095956-mutt-send-email-mst@kernel.org>
+ <20190729153656.zk4q4rob5oi6iq7l@steredhat>
+ <20190729114302-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 29 Jul 2019 16:17:59 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190729114302-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Jul 2019 18:06:58 +0200
-Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-
-> From: Toke Høiland-Jørgensen <toke@redhat.com>
+On Mon, Jul 29, 2019 at 11:49:02AM -0400, Michael S. Tsirkin wrote:
+> On Mon, Jul 29, 2019 at 05:36:56PM +0200, Stefano Garzarella wrote:
+> > On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
+> > > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
+> > > > Since virtio-vsock was introduced, the buffers filled by the host
+> > > > and pushed to the guest using the vring, are directly queued in
+> > > > a per-socket list. These buffers are preallocated by the guest
+> > > > with a fixed size (4 KB).
+> > > > 
+> > > > The maximum amount of memory used by each socket should be
+> > > > controlled by the credit mechanism.
+> > > > The default credit available per-socket is 256 KB, but if we use
+> > > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
+> > > > buffers, using up to 1 GB of memory per-socket. In addition, the
+> > > > guest will continue to fill the vring with new 4 KB free buffers
+> > > > to avoid starvation of other sockets.
+> > > > 
+> > > > This patch mitigates this issue copying the payload of small
+> > > > packets (< 128 bytes) into the buffer of last packet queued, in
+> > > > order to avoid wasting memory.
+> > > > 
+> > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > 
+> > > This is good enough for net-next, but for net I think we
+> > > should figure out how to address the issue completely.
+> > > Can we make the accounting precise? What happens to
+> > > performance if we do?
+> > > 
+> > 
+> > In order to do more precise accounting maybe we can use the buffer size,
+> > instead of payload size when we update the credit available.
+> > In this way, the credit available for each socket will reflect the memory
+> > actually used.
+> > 
+> > I should check better, because I'm not sure what happen if the peer sees
+> > 1KB of space available, then it sends 1KB of payload (using a 4KB
+> > buffer).
+> > 
+> > The other option is to copy each packet in a new buffer like I did in
+> > the v2 [2], but this forces us to make a copy for each packet that does
+> > not fill the entire buffer, perhaps too expensive.
+> > 
+> > [2] https://patchwork.kernel.org/patch/10938741/
+> > 
+> > 
+> > Thanks,
+> > Stefano
 > 
-> This adds selftest and bpftool updates for the devmap_hash map type.
+> Interesting. You are right, and at some level the protocol forces copies.
 > 
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> We could try to detect that the actual memory is getting close to
+> admin limits and force copies on queued packets after the fact.
+> Is that practical?
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Yes, I think it is doable!
+We can decrease the credit available with the buffer size queued, and
+when the buffer size of packet to queue is bigger than the credit
+available, we can copy it.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+> 
+> And yes we can extend the credit accounting to include buffer size.
+> That's a protocol change but maybe it makes sense.
+
+Since we send to the other peer the credit available, maybe this
+change can be backwards compatible (I'll check better this).
+
+Thanks,
+Stefano
