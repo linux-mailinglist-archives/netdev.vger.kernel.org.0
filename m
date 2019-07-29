@@ -2,137 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 623AC78C77
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 15:14:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2227878C85
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 15:16:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728519AbfG2NOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 09:14:23 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:26607 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728077AbfG2NOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 09:14:23 -0400
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: G261h5Die/W2fcW8zeh0Zu7Ii9AVIm1kAQOMRhWOK5J3lDD/pJ6IxazQ8p8uxsvDqrXXP8WprS
- XCyjsCUJWdTWsszgJnXB7DeC3SOdnkT5qjyHpdlfi5YsYzL6JQT3Obfho/CYio1gZ8xwl5Bq8W
- R5df9VOn4exDmTzj6Zky7GBqN+GJ+EpIiRG4NtyWyHS3wETZRQ6pXr9IH2DOg+mdMtehSPo2vP
- dielJvi78eXAjoMupqSCHYNIJToGxlwdnoCFbyMpIRVVwIv3JmCHzUSt2J8QXbyT65gChwsA3r
- Ioo=
-X-IronPort-AV: E=Sophos;i="5.64,322,1559545200"; 
-   d="scan'208";a="40086148"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2019 06:14:22 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.87.152) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 29 Jul 2019 06:14:21 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 29 Jul 2019 06:14:22 -0700
-Date:   Mon, 29 Jul 2019 15:14:21 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-Message-ID: <20190729131420.tqukz55tz26jkg73@lx-anielsen.microsemi.net>
-References: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
- <7e7a7015-6072-d884-b2ba-0a51177245ab@cumulusnetworks.com>
- <eef063fe-fd3a-7e02-89c2-e40728a17578@cumulusnetworks.com>
- <20190725142101.65tusauc6fzxb2yp@soft-dev3.microsemi.net>
- <b9ce433a-3ef7-fe15-642a-659c5715d992@cumulusnetworks.com>
- <e6ad982f-4706-46f9-b8f0-1337b09de350@cumulusnetworks.com>
- <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
- <b755f613-e6d8-a2e6-16cd-6f13ec0a6ddc@cumulusnetworks.com>
- <20190729121409.wa47uelw5f6l4vs4@lx-anielsen.microsemi.net>
- <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
+        id S1727268AbfG2NQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 09:16:20 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3231 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726173AbfG2NQT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 09:16:19 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EEE4E407267BF28F5523;
+        Mon, 29 Jul 2019 21:16:12 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.439.0; Mon, 29 Jul 2019 21:16:09 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH stable 4.9] tcp: reset sk_send_head in tcp_write_queue_purge
+Date:   Mon, 29 Jul 2019 21:21:08 +0800
+Message-ID: <20190729132108.162320-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 07/29/2019 15:22, Nikolay Aleksandrov wrote:
-> Yes, all of the multicast code is handled differently, it doesn't go through the fdb
-> lookup or code at all. I don't see how you'll do a lookup in the fdb table with a
-> multicast mac address, take a look at br_handle_frame_finish() and you'll notice
-> that when a multicast dmac is detected then we use the bridge mcast code for lookups
-> and forwarding.
+From: Soheil Hassas Yeganeh <soheil@google.com>
 
-Here is my thinking (needs much more elaboration, which will come if we do a
-patch to test it out):
+tcp_write_queue_purge clears all the SKBs in the write queue
+but does not reset the sk_send_head. As a result, we can have
+a NULL pointer dereference anywhere that we use tcp_send_head
+instead of the tcp_write_queue_tail.
 
+For example, after a27fd7a8ed38 (tcp: purge write queue upon RST),
+we can purge the write queue on RST. Prior to
+75c119afe14f (tcp: implement rb-tree based retransmit queue),
+tcp_push will only check tcp_send_head and then accesses
+tcp_write_queue_tail to send the actual SKB. As a result, it will
+dereference a NULL pointer.
 
-In br_pkt_type
+This has been reported twice for 4.14 where we don't have
+75c119afe14f:
 
-Rename BR_PKT_MULTICAST to BR_PKT_MULTICAST_IP
-Add a new type called BR_PKT_MULTICAST_L2
+By Timofey Titovets:
 
-In br_handle_frame_finish
+[  422.081094] BUG: unable to handle kernel NULL pointer dereference
+at 0000000000000038
+[  422.081254] IP: tcp_push+0x42/0x110
+[  422.081314] PGD 0 P4D 0
+[  422.081364] Oops: 0002 [#1] SMP PTI
 
-	if (is_multicast_ether_addr(dest)) {
-		/* by definition the broadcast is also a multicast address */
-		if (is_broadcast_ether_addr(dest)) {
-			pkt_type = BR_PKT_BROADCAST;
-			local_rcv = true;
-		} else {
-			pkt_type = BR_PKT_MULTICAST;
-			if (br_multicast_rcv(br, p, skb, vid))
-				goto drop;
-		}
-	}
+By Yongjian Xu:
 
-Change the code above to detect if it is a BR_PKT_MULTICAST_IP or a
-BR_PKT_MULTICAST_L2
+BUG: unable to handle kernel NULL pointer dereference at 0000000000000038
+IP: tcp_push+0x48/0x120
+PGD 80000007ff77b067 P4D 80000007ff77b067 PUD 7fd989067 PMD 0
+Oops: 0002 [#18] SMP PTI
+Modules linked in: tcp_diag inet_diag tcp_bbr sch_fq iTCO_wdt
+iTCO_vendor_support pcspkr ixgbe mdio i2c_i801 lpc_ich joydev input_leds shpchp
+e1000e igb dca ptp pps_core hwmon mei_me mei ipmi_si ipmi_msghandler sg ses
+scsi_transport_sas enclosure ext4 jbd2 mbcache sd_mod ahci libahci megaraid_sas
+wmi ast ttm dm_mirror dm_region_hash dm_log dm_mod dax
+CPU: 6 PID: 14156 Comm: [ET_NET 6] Tainted: G D 4.14.26-1.el6.x86_64 #1
+Hardware name: LENOVO ThinkServer RD440 /ThinkServer RD440, BIOS A0TS80A
+09/22/2014
+task: ffff8807d78d8140 task.stack: ffffc9000e944000
+RIP: 0010:tcp_push+0x48/0x120
+RSP: 0018:ffffc9000e947a88 EFLAGS: 00010246
+RAX: 00000000000005b4 RBX: ffff880f7cce9c00 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000040 RDI: ffff8807d00f5000
+RBP: ffffc9000e947aa8 R08: 0000000000001c84 R09: 0000000000000000
+R10: ffff8807d00f5158 R11: 0000000000000000 R12: ffff8807d00f5000
+R13: 0000000000000020 R14: 00000000000256d4 R15: 0000000000000000
+FS: 00007f5916de9700(0000) GS:ffff88107fd00000(0000) knlGS:0000000000000000
+CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000038 CR3: 00000007f8226004 CR4: 00000000001606e0
+Call Trace:
+tcp_sendmsg_locked+0x33d/0xe50
+tcp_sendmsg+0x37/0x60
+inet_sendmsg+0x39/0xc0
+sock_sendmsg+0x49/0x60
+sock_write_iter+0xb6/0x100
+do_iter_readv_writev+0xec/0x130
+? rw_verify_area+0x49/0xb0
+do_iter_write+0x97/0xd0
+vfs_writev+0x7e/0xe0
+? __wake_up_common_lock+0x80/0xa0
+? __fget_light+0x2c/0x70
+? __do_page_fault+0x1e7/0x530
+do_writev+0x60/0xf0
+? inet_shutdown+0xac/0x110
+SyS_writev+0x10/0x20
+do_syscall_64+0x6f/0x140
+? prepare_exit_to_usermode+0x8b/0xa0
+entry_SYSCALL_64_after_hwframe+0x3d/0xa2
+RIP: 0033:0x3135ce0c57
+RSP: 002b:00007f5916de4b00 EFLAGS: 00000293 ORIG_RAX: 0000000000000014
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000003135ce0c57
+RDX: 0000000000000002 RSI: 00007f5916de4b90 RDI: 000000000000606f
+RBP: 0000000000000000 R08: 0000000000000000 R09: 00007f5916de8c38
+R10: 0000000000000000 R11: 0000000000000293 R12: 00000000000464cc
+R13: 00007f5916de8c30 R14: 00007f58d8bef080 R15: 0000000000000002
+Code: 48 8b 97 60 01 00 00 4c 8d 97 58 01 00 00 41 b9 00 00 00 00 41 89 f3 4c 39
+d2 49 0f 44 d1 41 81 e3 00 80 00 00 0f 85 b0 00 00 00 <80> 4a 38 08 44 8b 8f 74
+06 00 00 44 89 8f 7c 06 00 00 83 e6 01
+RIP: tcp_push+0x48/0x120 RSP: ffffc9000e947a88
+CR2: 0000000000000038
+---[ end trace 8d545c2e93515549 ]---
 
+There is other scenario which found in stable 4.4:
+Allocated:
+ [<ffffffff82f380a6>] __alloc_skb+0xe6/0x600 net/core/skbuff.c:218
+ [<ffffffff832466c3>] alloc_skb_fclone include/linux/skbuff.h:856 [inline]
+ [<ffffffff832466c3>] sk_stream_alloc_skb+0xa3/0x5d0 net/ipv4/tcp.c:833
+ [<ffffffff83249164>] tcp_sendmsg+0xd34/0x2b00 net/ipv4/tcp.c:1178
+ [<ffffffff83300ef3>] inet_sendmsg+0x203/0x4d0 net/ipv4/af_inet.c:755
+Freed:
+ [<ffffffff82f372fd>] __kfree_skb+0x1d/0x20 net/core/skbuff.c:676
+ [<ffffffff83288834>] sk_wmem_free_skb include/net/sock.h:1447 [inline]
+ [<ffffffff83288834>] tcp_write_queue_purge include/net/tcp.h:1460 [inline]
+ [<ffffffff83288834>] tcp_connect_init net/ipv4/tcp_output.c:3122 [inline]
+ [<ffffffff83288834>] tcp_connect+0xb24/0x30c0 net/ipv4/tcp_output.c:3261
+ [<ffffffff8329b991>] tcp_v4_connect+0xf31/0x1890 net/ipv4/tcp_ipv4.c:246
 
-In this section:
+BUG: KASAN: use-after-free in tcp_skb_pcount include/net/tcp.h:796 [inline]
+BUG: KASAN: use-after-free in tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
+BUG: KASAN: use-after-free in tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
+ [<ffffffff81515cd5>] kasan_report.cold.7+0x175/0x2f7 mm/kasan/report.c:408
+ [<ffffffff814f9784>] __asan_report_load2_noabort+0x14/0x20 mm/kasan/report.c:427
+ [<ffffffff83286582>] tcp_skb_pcount include/net/tcp.h:796 [inline]
+ [<ffffffff83286582>] tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
+ [<ffffffff83286582>] tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
+ [<ffffffff83287a40>] __tcp_push_pending_frames+0xa0/0x290 net/ipv4/tcp_output.c:2307
 
-switch (pkt_type) {
-....
-}
+stable 4.4 and stable 4.9 don't have the commit abb4a8b870b5 ("tcp: purge write queue upon RST")
+which is referred in dbbf2d1e4077,
+in tcp_connect_init, it calls tcp_write_queue_purge, and does not reset sk_send_head, then UAF.
 
-if (dst) {
-} else {
-}
+stable 4.14 have the commit abb4a8b870b5 ("tcp: purge write queue upon RST"),
+in tcp_reset, it calls tcp_write_queue_purge(sk), and does not reset sk_send_head, then UAF.
 
-Add awareness to the BR_PKT_MULTICAST_L2 type, and allow it do forwarding
-according to the static entry if it is there.
+So this patch can be used to fix stable 4.4 and 4.9.
 
-> If you're trying to achieve Rx only on the bridge of these then
-> why not just use Ido's tc suggestion or even the ip maddr add offload for each port ?
-> 
-> If you add a multicast mac in the fdb (currently allowed, but has no effect) and you
-> use dev_mc_add() as suggested that'd just be a hack to pass it down and it is already
-> possible to achieve via other methods, no need to go through the bridge.
+Fixes: a27fd7a8ed38 (tcp: purge write queue upon RST)
+Reported-by: Timofey Titovets <nefelim4ag@gmail.com>
+Reported-by: Yongjian Xu <yongjianchn@gmail.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+Tested-by: Yongjian Xu <yongjianchn@gmail.com>
 
-Well, I wanted the SW bridge implementation to behave the same with an without
-HW offload.
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ include/net/tcp.h | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-And also, I believe that is conceptually belongs to the MAC tables.
-
-/Allan
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index d7047de952f0..1eda31f7f013 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1512,6 +1512,11 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
+ void tcp_fastopen_init_key_once(bool publish);
+ #define TCP_FASTOPEN_KEY_LENGTH 16
+ 
++static inline void tcp_init_send_head(struct sock *sk)
++{
++	sk->sk_send_head = NULL;
++}
++
+ /* Fastopen key context */
+ struct tcp_fastopen_context {
+ 	struct crypto_cipher	*tfm;
+@@ -1528,6 +1533,7 @@ static inline void tcp_write_queue_purge(struct sock *sk)
+ 		sk_wmem_free_skb(sk, skb);
+ 	sk_mem_reclaim(sk);
+ 	tcp_clear_all_retrans_hints(tcp_sk(sk));
++	tcp_init_send_head(sk);
+ 	inet_csk(sk)->icsk_backoff = 0;
+ }
+ 
+@@ -1589,11 +1595,6 @@ static inline void tcp_check_send_head(struct sock *sk, struct sk_buff *skb_unli
+ 		tcp_sk(sk)->highest_sack = NULL;
+ }
+ 
+-static inline void tcp_init_send_head(struct sock *sk)
+-{
+-	sk->sk_send_head = NULL;
+-}
+-
+ static inline void __tcp_add_write_queue_tail(struct sock *sk, struct sk_buff *skb)
+ {
+ 	__skb_queue_tail(&sk->sk_write_queue, skb);
+-- 
+2.20.1
 
