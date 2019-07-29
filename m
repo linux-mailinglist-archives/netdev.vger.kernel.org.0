@@ -2,116 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDFA278FC9
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 17:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 405FD78FDC
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 17:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388263AbfG2PtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 11:49:10 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:34812 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387998AbfG2PtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 11:49:10 -0400
-Received: by mail-vs1-f65.google.com with SMTP id m23so41129185vso.1
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 08:49:09 -0700 (PDT)
+        id S2387606AbfG2Pva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 11:51:30 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37150 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387496AbfG2Pva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 11:51:30 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b3so27694533plr.4
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 08:51:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=Sf0m7JEZMUUuDoL9U1xqF7CQ40WOkIEU+KrNM0j4H5Y=;
+        b=gnpcRKVA/LWds4IEPAmXMViqA0s5eJpC6BTrArgD6qYibMDYNtZTFgdpAyN4lY4KDE
+         PxxiqC2SaeDKyDxL/zRQDVEtWaA8nxy9aUVT8z2cbogwdrPoP2JER3t/Aid3bWu7Uk2z
+         yzLiHCIfbhipnntrlMAKgITFDanA4gUGxMTs/WFdIiJmMy9iHAVUJsd8BEJ7xrV7yRv5
+         X1XlM/fHAMyo239CE7fSmZQF0FutlqjWP2LL+SiPeaZvTykl7jLh1snp8HsjhlUxYwNE
+         0mxI6veQ5C2jSOgVSxYzI4icgjsygf+fGPtMfy6KJClf773QplMCBptLd9+yEoEITQIw
+         EeeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/niwkJuj+kTChFIxAZJ7R3qyc1S8YzIk+KDkO6xs7tI=;
-        b=CrkAQNbFGf6q4ddsCmxRlDUAY4Lqj/DlhrvDJ4vRnqWsCpxw0SLxEDUdRMxHWSPMxd
-         HcL6Bj0DquT2t+76MekqDyvHthOxnEW/4ZNYSBVBbjux7JLsopMapUOL04kQt/b6mX7s
-         4hDMlOI7rnYa+yPSibc+2bHDswYe5V/5wVwepEYC+NnRbjdo5v6BHLYE6JGzGK+k9jvR
-         gDVXsT/9SPUQ1g21MNCbiq6rPgh4xLM816q53I4B4u9N0ciqtEfZFQdOMD133f36h/8l
-         X4qz8SILfe+Phr1pSgE86KC/HREQ0FZsc2ZCnqi3n+X7JLw+j7A6xLtNDbeKx/6bcqjf
-         D1oQ==
-X-Gm-Message-State: APjAAAV0kQaPUQljFuR7KCHxOgVSovg6JJmyoVhgB0JFCeStNiH3+T26
-        4IbDoybkwYlh/MlyzK3PaR/tRw==
-X-Google-Smtp-Source: APXvYqzLzOdW28+st9J99eGOoagZRY/+6mNu7Jt6yXi0Ig2fmuLKwy4BkNu3szWlUISUaVAULlX13Q==
-X-Received: by 2002:a67:694f:: with SMTP id e76mr14283114vsc.77.1564415349351;
-        Mon, 29 Jul 2019 08:49:09 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id h81sm16021382vka.19.2019.07.29.08.49.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=Sf0m7JEZMUUuDoL9U1xqF7CQ40WOkIEU+KrNM0j4H5Y=;
+        b=eBRQj4RxBt+bERmOgVhD7Y1QTUXfkcWT8BGeTanAgiguSpP7ZV18UGPle7xI5aBv6w
+         mak/JoStEDb4KqvC0juQEw3w1ezWOHUaGT8L4jk7OHEMx56vRukVFgT9sciObYFHwPt8
+         bcv9YJcbILDcLK6jY8bxHiLefm8190eQwQAv43yluoQtwXV3tndj+iIpPpNoC6v/tZe0
+         PVdmAMl8CAyK6vrAXkmfozmaglP2eLqOefTtPbVsoxGpVYjanL+TVS3h4Le6tkTdWvrM
+         ZsGn7HtuXlYdCEjRAk8U1zmZMLzKBGjuYqdJIvJWoZUIWlhXLEKR56r49ewfpR52fb+i
+         fNOg==
+X-Gm-Message-State: APjAAAWksJirvylgYLcCD4oF8FX/qJ1+5lYQmjRqG7Go4/gbJWWPwslO
+        /r0v0jJ6JR3Xavmuvkq6JuA=
+X-Google-Smtp-Source: APXvYqyI2mE3NI5wtrvXieo4lb4+5FCoVQAW4BWDP8dAATd1lwW3WlrJRYHKGcNQYT3v4M5DDid82A==
+X-Received: by 2002:a17:902:be12:: with SMTP id r18mr105484394pls.341.1564415489778;
+        Mon, 29 Jul 2019 08:51:29 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t96sm56135003pjb.1.2019.07.29.08.51.29
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 29 Jul 2019 08:49:08 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 11:49:02 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190729114302-mutt-send-email-mst@kernel.org>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-2-sgarzare@redhat.com>
- <20190729095956-mutt-send-email-mst@kernel.org>
- <20190729153656.zk4q4rob5oi6iq7l@steredhat>
+        Mon, 29 Jul 2019 08:51:29 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 08:51:22 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2 0/1] Fix s64 argument parsing
+Message-ID: <20190729085122.32d20033@hermes.lan>
+In-Reply-To: <20190729110408.fi6xfhc2msg5elih@linutronix.de>
+References: <20190704122427.22256-1-kurt@linutronix.de>
+        <20190729110408.fi6xfhc2msg5elih@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190729153656.zk4q4rob5oi6iq7l@steredhat>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/.7A4CCzw_++3cjhR9lrV/L0"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 05:36:56PM +0200, Stefano Garzarella wrote:
-> On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
-> > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
-> > > Since virtio-vsock was introduced, the buffers filled by the host
-> > > and pushed to the guest using the vring, are directly queued in
-> > > a per-socket list. These buffers are preallocated by the guest
-> > > with a fixed size (4 KB).
-> > > 
-> > > The maximum amount of memory used by each socket should be
-> > > controlled by the credit mechanism.
-> > > The default credit available per-socket is 256 KB, but if we use
-> > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
-> > > buffers, using up to 1 GB of memory per-socket. In addition, the
-> > > guest will continue to fill the vring with new 4 KB free buffers
-> > > to avoid starvation of other sockets.
-> > > 
-> > > This patch mitigates this issue copying the payload of small
-> > > packets (< 128 bytes) into the buffer of last packet queued, in
-> > > order to avoid wasting memory.
-> > > 
-> > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > 
-> > This is good enough for net-next, but for net I think we
-> > should figure out how to address the issue completely.
-> > Can we make the accounting precise? What happens to
-> > performance if we do?
-> > 
-> 
-> In order to do more precise accounting maybe we can use the buffer size,
-> instead of payload size when we update the credit available.
-> In this way, the credit available for each socket will reflect the memory
-> actually used.
-> 
-> I should check better, because I'm not sure what happen if the peer sees
-> 1KB of space available, then it sends 1KB of payload (using a 4KB
-> buffer).
-> 
-> The other option is to copy each packet in a new buffer like I did in
-> the v2 [2], but this forces us to make a copy for each packet that does
-> not fill the entire buffer, perhaps too expensive.
-> 
-> [2] https://patchwork.kernel.org/patch/10938741/
-> 
-> 
-> Thanks,
-> Stefano
+--Sig_/.7A4CCzw_++3cjhR9lrV/L0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Interesting. You are right, and at some level the protocol forces copies.
+On Mon, 29 Jul 2019 13:04:09 +0200
+Kurt Kanzenbach <kurt.kanzenbach@linutronix.de> wrote:
 
-We could try to detect that the actual memory is getting close to
-admin limits and force copies on queued packets after the fact.
-Is that practical?
+> On Thu, Jul 04, 2019 at 02:24:26PM +0200, Kurt Kanzenbach wrote:
+> > Hi,
+> >
+> > while using the TAPRIO Qdisc on ARM32 I've noticed that the base_time p=
+arameter is
+> > incorrectly configured. The problem is the utility function get_s64() u=
+sed by
+> > TAPRIO doesn't parse the value correctly. =20
+>=20
+> polite ping.
+>=20
+> >
+> > Thanks,
+> > Kurt
+> >
+> > Kurt Kanzenbach (1):
+> >   utils: Fix get_s64() function
+> >
+> >  lib/utils.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > --
+> > 2.11.0
+> > =20
 
-And yes we can extend the credit accounting to include buffer size.
-That's a protocol change but maybe it makes sense.
+Not sure why this got marked "Changes Requested"
+Applied.
 
--- 
-MST
+--Sig_/.7A4CCzw_++3cjhR9lrV/L0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEn2/DRbBb5+dmuDyPgKd/YJXN5H4FAl0/FfoACgkQgKd/YJXN
+5H4NtBAAr3GdkPs0OoNpzOKRN8UxB7FsmYCWfMqdmx8HVnsjrUE2yNaMorDeeKZb
+2qo7wOGzExcBzDV940c/djNVCFHSJhZ8PxNGaEkEnB4ULqsVqzsmyfw8P3Vs9dw0
+LQEyzpyLCOFE/F85HN79u6ehRh0ZTgaYqoYJewgpQMyBBkdl36ONjiaHNpYN5R90
+DrQDjgzCIkW8b3KE8DxzCloE515T4QZS/JvVOllVsoaYy2vSXBENITjmf4NgzRFf
+cYQQkIT6P/DiQ9DXKTYLKgOZKzKSjJ4teLU2LtwyGB6E/qHS42Dy/S+01lFHui1o
+wIL1eV468lIY2R1Z+c1L/DB9krsgti4rpQhqDU/N11B/YBKiMqegD8NH5rVLD6m2
+hw4DyJ1o+Tngsi55aCxh28Np1Ei6+VV60EPv1Tb1nP0j45k4E8z+rUhOvmHQrCKG
+jQ7mFco+/xRtR+TBb0pFI/vF9BJQ2cMS4EMiA3x1r48l93u8/oTN/BD7uY0ZqL7U
+Ip8hhU/MGrThC/VyPGRi4d0EPwn6Au1gQHg+uFLSQSRj5+rBGwju5FLGCfabY55J
+AH1oG3p5EyH9leEpGmOXBqXoIIZuupoV+QSvzwFq+o75LC8Tk51cd7MXkD8vW/mT
+tXx+9vB7IbtaoR1lHu8ZuaVz4o7Kp2MOe+7hxztD1iT2U7aGYZ8=
+=2xPl
+-----END PGP SIGNATURE-----
+
+--Sig_/.7A4CCzw_++3cjhR9lrV/L0--
