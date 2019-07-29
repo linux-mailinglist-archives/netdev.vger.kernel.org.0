@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C2CC79D10
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 01:50:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEB379D11
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 01:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729994AbfG2Xuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 19:50:50 -0400
+        id S1730010AbfG2Xux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 19:50:53 -0400
 Received: from mail-eopbgr130088.outbound.protection.outlook.com ([40.107.13.88]:24063
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729105AbfG2Xur (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 19:50:47 -0400
+        id S1729922AbfG2Xuu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 19:50:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VjKgkL/L6pHYXCb/cbg//9QW/tTZZblqmSdHv1suo05lLQJGrO61wSEM/oHGoxNRSzvKEfD8pVQv8CGn39QJh9rJiQdPYSysZhHg6kY1WWclVca962UZZEUl6K5LTw6iJWNYRjQ68cqx9fK/1/XyHc4zKkNq/zRxHSfMwdX3Pqj2BULTRxQ7PKuwc4BT2/m4CNTpGI8tU4YTZGt42wD9bMRNcmA1hSBvTQXreaiLdfXKfvBm6p6MjuVEPdpU+0XBy7MQOXmnYG5lZf7hmLNlzFlALRrBENBiyXI5YCTDE6SCXSv7O1uEKWXpstU4jXM6c9EApzqfndyZb9X5/LTQFg==
+ b=AkMp93ma5NHdlfzKCqyBPih6eGgLdTmqxg1K1soCPeQ5Z9iKeVMKmTxP6o0JeOLMSl4EtxNmX9W5Roxp2+Wau4vFoUJvj0Npidfm++SAaKGwtyaqvjijCMTCg5UlvVKNTF36ZbF5WOxUiqAlHsMG8Kuupuj+ywhUNKeJJkkMgyT8ZzgipA+hq/3qeYyq9E9zQgoLtt0CEw6i+AgPQyBvPhvqQ5Lwythm4rGknBTEPbpVZg+y0ArSUCp8qzhFrYHDjHJYXaOqW0w7r96ahqhOxJzmFj5suhWIf3prETr0gMvzZoxK+H3Hk7stIer5VNW3tj+Ceq19hQhUH7ANbKBt5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mQCggV43mVqGpUNekoMIDFJEYGChaHuco0nJIbnyoY8=;
- b=Egkz7b+4pAp8LiCJB9rnCcNit9LzzBYkJMnC8KafY5/mkGbiSO93NH3rCWSKRvGFoJpew5dNoRu8rbj996LRi5zbKTsyFDP0cn5PaN0rk9GZQgOVE6id0Es+/FXg0Mp45dl3uNJrq8DMwJTI+wsRUbt8m1pevsGqa7/l2CMqaS8ybZjtbp+R8c8+J0Q53Vp+rkU+Ugxl0Jm4BNoeJsEggRddhYc72PwGV6oedosUmie0Av8RKS2Vjz2QoQEIJ4kTDLC6D6BfNGJiHsV28j18n/ybep8kyVOQhIhFqGf7yRwVbJf4dnYKe2eRLj0tPb4pNQ3cWKqEUImU5Q3EnAfYvA==
+ bh=Ls2sMziSBxM8rzMiqLGWyqllbDDO9Rcvowrr+vRw97k=;
+ b=e1hcTV+PmR2OXDufID8PSwLTxCTiG1lX7SBVQCEutEQK4esEUYaVbXkkKDCno9u/1QUnPiuu/CLB8MmwJPWb6arkOIeNGn+LEdioOL5S5P2/vYFnCVr1MI+n6NaT2gI/nXpkgeKSU+yLYmXrdZ29LicXekQt2ugNb22KwpLvR72IhFS15IAWvgw0O6UKgEfkvPfQoazQVwUxLD5f+P08QxTbS5E5edJS05aEKkwbG3mc6sd/9hVvPTIDwTUOhobSWxEBzvw1z6oJtwYQKGmlWY/85pxIUufmd7iJ/ikkzO2QKEBq1jvivzqifJTTr9347/GjUNxE5RlG9MgcCsYjwA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
  smtp.mailfrom=mellanox.com;dmarc=pass action=none
  header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mQCggV43mVqGpUNekoMIDFJEYGChaHuco0nJIbnyoY8=;
- b=lf/5lnUHZNNBnWVuBdx19JHO+ncmy6WqEh/SciXdeSYMIb5YFgUq4C5NofywY0l4H9xbVBbKEdyDGCUjCwZyHFi/OGcZR+y7ICZYOmQsuUj+nrCClI+B/1HT+vfDhhV+dRoN4Bp1eG3aCqD+tMqNCkQPmTeR5eCzNddNAZQ2rgY=
+ bh=Ls2sMziSBxM8rzMiqLGWyqllbDDO9Rcvowrr+vRw97k=;
+ b=GeNd0kwY54yleJCnZG+ExMbwKUMN4H0cWV966GessrZOKdrwGpZcOV059IZbQw0scj6cCNcNCeWCu+spThI03YFLjlCCRIzrdKQ1901xwPdwKoM8UJNZOASZBe5Xi/p2jVXbmhnICyVHqbIrqSJeIHV4LtvTjBLdYmj10vsojT8=
 Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
  DB6PR0501MB2343.eurprd05.prod.outlook.com (10.168.56.136) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.15; Mon, 29 Jul 2019 23:50:29 +0000
+ 15.20.2115.15; Mon, 29 Jul 2019 23:50:31 +0000
 Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
  ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
  ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2115.005; Mon, 29 Jul 2019
- 23:50:29 +0000
+ 23:50:31 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -42,12 +42,13 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jianbo Liu <jianbol@mellanox.com>,
         Roi Dayan <roid@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 09/13] net/mlx5e: Protect unready flows with dedicated lock
-Thread-Topic: [net-next 09/13] net/mlx5e: Protect unready flows with dedicated
- lock
-Thread-Index: AQHVRmhnXG0CS2JHOEGxyx88Gl8Y6w==
-Date:   Mon, 29 Jul 2019 23:50:29 +0000
-Message-ID: <20190729234934.23595-10-saeedm@mellanox.com>
+Subject: [net-next 10/13] net/mlx5e: Eswitch, change offloads num_flows type
+ to atomic64
+Thread-Topic: [net-next 10/13] net/mlx5e: Eswitch, change offloads num_flows
+ type to atomic64
+Thread-Index: AQHVRmho2OdGL6r+lE+oLJwka+afkw==
+Date:   Mon, 29 Jul 2019 23:50:31 +0000
+Message-ID: <20190729234934.23595-11-saeedm@mellanox.com>
 References: <20190729234934.23595-1-saeedm@mellanox.com>
 In-Reply-To: <20190729234934.23595-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -63,24 +64,24 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c4eac8a9-5f73-4f6e-da92-08d7147f895c
+x-ms-office365-filtering-correlation-id: 1309ca1a-aa59-4b47-97b1-08d7147f8a72
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2343;
 x-ms-traffictypediagnostic: DB6PR0501MB2343:
-x-microsoft-antispam-prvs: <DB6PR0501MB23439B82ED519C7901555AC0BEDD0@DB6PR0501MB2343.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1107;
+x-microsoft-antispam-prvs: <DB6PR0501MB2343324D8EE73ABB06741863BEDD0@DB6PR0501MB2343.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2803;
 x-forefront-prvs: 01136D2D90
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(346002)(39860400002)(376002)(136003)(199004)(189003)(14454004)(25786009)(71190400001)(71200400001)(386003)(6506007)(6512007)(81166006)(81156014)(76176011)(8936002)(6436002)(8676002)(6486002)(316002)(102836004)(54906003)(6916009)(7736002)(478600001)(52116002)(186003)(26005)(99286004)(14444005)(256004)(476003)(5660300002)(1076003)(66446008)(66066001)(66556008)(66476007)(64756008)(36756003)(53936002)(486006)(86362001)(305945005)(107886003)(66946007)(68736007)(446003)(2616005)(11346002)(50226002)(6116002)(3846002)(4326008)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2343;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(4636009)(396003)(366004)(346002)(39860400002)(376002)(136003)(199004)(189003)(14454004)(25786009)(71190400001)(71200400001)(386003)(6506007)(6512007)(81166006)(81156014)(76176011)(8936002)(6436002)(8676002)(6486002)(316002)(102836004)(54906003)(6916009)(7736002)(478600001)(52116002)(186003)(26005)(99286004)(14444005)(256004)(476003)(5660300002)(1076003)(66446008)(66066001)(66556008)(66476007)(64756008)(36756003)(53936002)(486006)(86362001)(305945005)(107886003)(66946007)(68736007)(446003)(2616005)(11346002)(50226002)(6116002)(3846002)(4326008)(2906002)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2343;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: RtVN86dEXPzEWNBE4e2yzlNBTsOvLBy+AxbXHdCGkPN9eb9wpNWn2bNQ6Auzi85TqbMFouRqaPW8tC++s42iMYvkaXQJnjKZA1UDp/XuJ82+xtInWywa9DJFLkTRpwXJVyZNNdjQbrETiyE+3JqcSwWXLbhHkRaCCTUqseqzC4EhB74+xIauxBd9RxixffB3Is9F/QWAA1bxvKZh5q0u/2MH3vFhGDwf2PBPduzYG8oRFuQFlgL6+Akse50IarWPRyCXWIpMx7m4VISb9LSFeBdOqqN8Ts1G//44QNbdJmUn4bo0sNhRvcLnluqHs1Tc9Ki5PI/ago4OfJH6JLzsXhgNY34DBtFx5N1Jxww05SU9uvtRs1zZ42DJmfVK8TMDYdIF1hmQjkrnsyykR8b0SoTaeASehBS8xjZtG3OCRjs=
+x-microsoft-antispam-message-info: NYFQnPjJG4XTitY6ckk6TvcKJt13mFzMgzfhjJoUUucjM6QPNvC7CiGbc73KJeYzfBgjhfP4/uo7jUMGF4CEX1KLbknxHbdB1gP8VaD68J7Vv9rQ2hEy+uNH2EAaZm2I95TI2fQgOz1LWeaiIVRZWOgLc59X69YjQ7mghs+EKLX0TELFFG3i3719/SW/3AizZjkyu+biS6fOHpLNi+EHbyFG5YmgpagPLwLfHG2pu2/EhpgYsaDyNfu+GrPJbWcybfUSXSXGXa1Rr9fZq4KS3tE9u6V9vdEt0B+O/NPSWM2NhCPjDbwRnkiaQoWrGrQzAt+TPDz3Qh3a3G5DXBgJu/pcZOWnBRwmmSYK61DJH599bVm3qeShn6tznFa+6tT0gem5wTsV1BkXlfmE45jSDTx7bPxO8IOGyouYceqWKYA=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4eac8a9-5f73-4f6e-da92-08d7147f895c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jul 2019 23:50:29.7698
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1309ca1a-aa59-4b47-97b1-08d7147f8a72
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jul 2019 23:50:31.4881
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
@@ -94,137 +95,112 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vlad Buslov <vladbu@mellanox.com>
 
-In order to remove dependency on rtnl lock for protecting unready_flows
-list when reoffloading unready flows on workqueue, extend representor
-uplink private structure with dedicated 'unready_flows_lock' mutex. Take
-the lock in all users of unready_flows list before accessing it. Implement
-helper functions to add and delete unready flow.
+Eswitch implements its own locking by means of state_lock mutex and
+multiple fine-grained lock in containing data structures, and is supposed
+to not rely on rtnl lock. However, eswitch offloads num_flows type is a
+regular long long integer and cannot be modified concurrently. This is an
+implicit assumptions that mlx5 tc is serialized (by rtnl lock or any other
+means). In order to remove implicit dependency on rtnl lock, change
+num_flows type to atomic64 to allow concurrent modifications.
 
 Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 Reviewed-by: Jianbo Liu <jianbol@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  2 +
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |  2 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 43 ++++++++++++++++---
- 3 files changed, 40 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c      |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h      |  3 ++-
+ .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 10 +++++-----
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net=
-/ethernet/mellanox/mlx5/core/en_rep.c
-index 69f7ac8fc9be..6edf0aeb1e26 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -1560,6 +1560,7 @@ static int mlx5e_init_rep_tx(struct mlx5e_priv *priv)
- 	if (rpriv->rep->vport =3D=3D MLX5_VPORT_UPLINK) {
- 		uplink_priv =3D &rpriv->uplink_priv;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/eswitch.c
+index 1f3891fde2eb..d365551d2f10 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1933,6 +1933,7 @@ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
 =20
-+		mutex_init(&uplink_priv->unready_flows_lock);
- 		INIT_LIST_HEAD(&uplink_priv->unready_flows);
+ 	hash_init(esw->offloads.encap_tbl);
+ 	hash_init(esw->offloads.mod_hdr_tbl);
++	atomic64_set(&esw->offloads.num_flows, 0);
+ 	mutex_init(&esw->state_lock);
 =20
- 		/* init shared tc flow table */
-@@ -1604,6 +1605,7 @@ static void mlx5e_cleanup_rep_tx(struct mlx5e_priv *p=
-riv)
+ 	mlx5_esw_for_all_vports(esw, i, vport) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/eswitch.h
+index a38e8a3c7c9a..60f0c62b447b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -35,6 +35,7 @@
 =20
- 		/* delete shared tc flow table */
- 		mlx5e_tc_esw_cleanup(&rpriv->uplink_priv.tc_ht);
-+		mutex_destroy(&rpriv->uplink_priv.unready_flows_lock);
- 	}
- }
-=20
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net=
-/ethernet/mellanox/mlx5/core/en_rep.h
-index c56e6ee4350c..10fafd5fa17b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -75,6 +75,8 @@ struct mlx5_rep_uplink_priv {
-=20
- 	struct mlx5_tun_entropy tun_entropy;
-=20
-+	/* protects unready_flows */
-+	struct mutex                unready_flows_lock;
- 	struct list_head            unready_flows;
- 	struct work_struct          reoffload_flows_work;
+ #include <linux/if_ether.h>
+ #include <linux/if_link.h>
++#include <linux/atomic.h>
+ #include <net/devlink.h>
+ #include <linux/mlx5/device.h>
+ #include <linux/mlx5/eswitch.h>
+@@ -179,7 +180,7 @@ struct mlx5_esw_offload {
+ 	struct mutex termtbl_mutex; /* protects termtbl hash */
+ 	const struct mlx5_eswitch_rep_ops *rep_ops[NUM_REP_TYPES];
+ 	u8 inline_mode;
+-	u64 num_flows;
++	atomic64_t num_flows;
+ 	enum devlink_eswitch_encap_mode encap;
  };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_tc.c
-index a39f8a07de0a..714aa9d7180b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -996,6 +996,25 @@ mlx5e_tc_unoffload_from_slow_path(struct mlx5_eswitch =
-*esw,
- 	flow_flag_clear(flow, SLOW);
- }
 =20
-+/* Caller must obtain uplink_priv->unready_flows_lock mutex before calling=
- this
-+ * function.
-+ */
-+static void unready_flow_add(struct mlx5e_tc_flow *flow,
-+			     struct list_head *unready_flows)
-+{
-+	flow_flag_set(flow, NOT_READY);
-+	list_add_tail(&flow->unready, unready_flows);
-+}
-+
-+/* Caller must obtain uplink_priv->unready_flows_lock mutex before calling=
- this
-+ * function.
-+ */
-+static void unready_flow_del(struct mlx5e_tc_flow *flow)
-+{
-+	list_del(&flow->unready);
-+	flow_flag_clear(flow, NOT_READY);
-+}
-+
- static void add_unready_flow(struct mlx5e_tc_flow *flow)
- {
- 	struct mlx5_rep_uplink_priv *uplink_priv;
-@@ -1006,14 +1025,24 @@ static void add_unready_flow(struct mlx5e_tc_flow *=
-flow)
- 	rpriv =3D mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
- 	uplink_priv =3D &rpriv->uplink_priv;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/d=
+rivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 089ae4d48a82..244ad1893691 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -233,7 +233,7 @@ mlx5_eswitch_add_offloaded_rule(struct mlx5_eswitch *es=
+w,
+ 	if (IS_ERR(rule))
+ 		goto err_add_rule;
+ 	else
+-		esw->offloads.num_flows++;
++		atomic64_inc(&esw->offloads.num_flows);
 =20
--	flow_flag_set(flow, NOT_READY);
--	list_add_tail(&flow->unready, &uplink_priv->unready_flows);
-+	mutex_lock(&uplink_priv->unready_flows_lock);
-+	unready_flow_add(flow, &uplink_priv->unready_flows);
-+	mutex_unlock(&uplink_priv->unready_flows_lock);
- }
+ 	return rule;
 =20
- static void remove_unready_flow(struct mlx5e_tc_flow *flow)
- {
--	list_del(&flow->unready);
--	flow_flag_clear(flow, NOT_READY);
-+	struct mlx5_rep_uplink_priv *uplink_priv;
-+	struct mlx5e_rep_priv *rpriv;
-+	struct mlx5_eswitch *esw;
-+
-+	esw =3D flow->priv->mdev->priv.eswitch;
-+	rpriv =3D mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	uplink_priv =3D &rpriv->uplink_priv;
-+
-+	mutex_lock(&uplink_priv->unready_flows_lock);
-+	unready_flow_del(flow);
-+	mutex_unlock(&uplink_priv->unready_flows_lock);
- }
+@@ -298,7 +298,7 @@ mlx5_eswitch_add_fwd_rule(struct mlx5_eswitch *esw,
+ 	if (IS_ERR(rule))
+ 		goto add_err;
 =20
- static int
-@@ -3723,10 +3752,10 @@ void mlx5e_tc_reoffload_flows_work(struct work_stru=
-ct *work)
- 			     reoffload_flows_work);
- 	struct mlx5e_tc_flow *flow, *tmp;
+-	esw->offloads.num_flows++;
++	atomic64_inc(&esw->offloads.num_flows);
 =20
--	rtnl_lock();
-+	mutex_lock(&rpriv->unready_flows_lock);
- 	list_for_each_entry_safe(flow, tmp, &rpriv->unready_flows, unready) {
- 		if (!mlx5e_tc_add_fdb_flow(flow->priv, flow, NULL))
--			remove_unready_flow(flow);
-+			unready_flow_del(flow);
+ 	return rule;
+ add_err:
+@@ -326,7 +326,7 @@ __mlx5_eswitch_del_rule(struct mlx5_eswitch *esw,
+ 			mlx5_eswitch_termtbl_put(esw, attr->dests[i].termtbl);
  	}
--	rtnl_unlock();
-+	mutex_unlock(&rpriv->unready_flows_lock);
- }
+=20
+-	esw->offloads.num_flows--;
++	atomic64_dec(&esw->offloads.num_flows);
+=20
+ 	if (fwd_rule)  {
+ 		esw_put_prio_table(esw, attr->chain, attr->prio, 1);
+@@ -2349,7 +2349,7 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devli=
+nk *devlink, u8 mode,
+ 		break;
+ 	}
+=20
+-	if (esw->offloads.num_flows > 0) {
++	if (atomic64_read(&esw->offloads.num_flows) > 0) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "Can't set inline mode when flows are configured");
+ 		return -EOPNOTSUPP;
+@@ -2459,7 +2459,7 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlin=
+k *devlink,
+ 	if (esw->offloads.encap =3D=3D encap)
+ 		return 0;
+=20
+-	if (esw->offloads.num_flows > 0) {
++	if (atomic64_read(&esw->offloads.num_flows) > 0) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "Can't set encapsulation when flows are configured");
+ 		return -EOPNOTSUPP;
 --=20
 2.21.0
 
