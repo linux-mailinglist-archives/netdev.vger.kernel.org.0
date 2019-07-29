@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 195DE7908F
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:16:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3B579090
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727999AbfG2QQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 12:16:12 -0400
-Received: from mail-ua1-f68.google.com ([209.85.222.68]:38034 "EHLO
-        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727624AbfG2QQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 12:16:12 -0400
-Received: by mail-ua1-f68.google.com with SMTP id j2so24175747uaq.5
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 09:16:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=AyvJSduUmZn33FbpJeTkP5NHm1ThVmp/uEoZugiTS6k=;
-        b=R8zIkhYX8QIFzFk4oxgjhG2T1GS3XHiOYyBv6Txp4goeFhfe3dlk9pO1i1TUy8t4kl
-         Ar96ZlHkum+bX69xiT6/yORWCwXlwC7Mu2nKz7l8RIV2E8Ixnhhf8eAk0WFCZ3OL9SX8
-         6Z2aszbl4PdIDgIpzp5DP9OvxO+M9sL9uui98dUB42GzksqVY4thnxFAIszgzsL8F5Hx
-         C3RxgGZHIYl/deYlUzPqfQAEYkhoqw4/ZR0EHLXQxqfki6gk9tux85l3HMq+a1/niJ6m
-         /fBvNGc9YqxuLbn97Zt49dk1rNIw9IU7B3ClwxCyMN/LFa7HJ/Sl/YvXH9AE5KYvLWH5
-         8Big==
-X-Gm-Message-State: APjAAAWKd08NbJK30RSX476Y1wjC6ftqUVtPCNZg9+cNxI/4QkHS9Bdn
-        G+15j54+I0cSW43GsO8p03aq2A==
-X-Google-Smtp-Source: APXvYqwG8Q4XQWblCYfrnvjYrxOZIt94OjzyFiLAXTSDaMhX/fRr5dDybVH26+paFqcxZZfddeveUQ==
-X-Received: by 2002:a9f:31a2:: with SMTP id v31mr67985907uad.15.1564416971073;
-        Mon, 29 Jul 2019 09:16:11 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id u5sm60539788uah.0.2019.07.29.09.16.07
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 29 Jul 2019 09:16:10 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 12:16:05 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        eric.auger@redhat.com, jean-philippe@linaro.org, jroedel@suse.de,
-        mst@redhat.com, namit@vmware.com, wei.w.wang@intel.com
-Subject: [PULL] vhost,virtio: cleanups and fixes
-Message-ID: <20190729121605-mutt-send-email-mst@kernel.org>
+        id S1728108AbfG2QQW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Jul 2019 12:16:22 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:55402 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726190AbfG2QQW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 12:16:22 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AF7A2308AA11;
+        Mon, 29 Jul 2019 16:16:21 +0000 (UTC)
+Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 46ED96013A;
+        Mon, 29 Jul 2019 16:16:13 +0000 (UTC)
+Date:   Mon, 29 Jul 2019 18:16:12 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Yonghong Song <yhs@fb.com>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v5 3/6] xdp: Add devmap_hash map type for
+ looking up devices by hashed index
+Message-ID: <20190729181612.7bdbe16a@carbon>
+In-Reply-To: <156415721483.13581.2247227362994997536.stgit@alrua-x1>
+References: <156415721066.13581.737309854787645225.stgit@alrua-x1>
+        <156415721483.13581.2247227362994997536.stgit@alrua-x1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Mon, 29 Jul 2019 16:16:21 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 5f9e832c137075045d15cd6899ab0505cfb2ca4b:
+On Fri, 26 Jul 2019 18:06:55 +0200
+Toke Høiland-Jørgensen <toke@redhat.com> wrote:
 
-  Linus 5.3-rc1 (2019-07-21 14:05:38 -0700)
+> From: Toke Høiland-Jørgensen <toke@redhat.com>
+> 
+> A common pattern when using xdp_redirect_map() is to create a device map
+> where the lookup key is simply ifindex. Because device maps are arrays,
+> this leaves holes in the map, and the map has to be sized to fit the
+> largest ifindex, regardless of how many devices actually are actually
+> needed in the map.
+> 
+> This patch adds a second type of device map where the key is looked up
+> using a hashmap, instead of being used as an array index. This allows maps
+> to be densely packed, so they can be smaller.
+> 
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Acked-by: Yonghong Song <yhs@fb.com>
 
-are available in the Git repository at:
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+[...]
+> +static inline struct hlist_head *dev_map_index_hash(struct bpf_dtab *dtab,
+> +						    int idx)
+> +{
+> +	return &dtab->dev_index_head[idx & (dtab->n_buckets - 1)];
+> +}
 
-for you to fetch changes up to 73f628ec9e6bcc45b77c53fe6d0c0ec55eaf82af:
+I was about to complain about, that you are not using a pre-calculated
+MASK value, instead of doing the -1 operation each time.  But I looked
+at the ASM code, and the LEA operation used does the -1 operation in
+the same instruction, so I guess this makes no performance difference.
 
-  vhost: disable metadata prefetch optimization (2019-07-26 07:49:29 -0400)
-
-----------------------------------------------------------------
-virtio, vhost: bugfixes
-
-Fixes in the iommu and balloon devices.
-Disable the meta-data optimization for now - I hope we can get it fixed
-shortly, but there's no point in making users suffer crashes while we
-are working on that.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Jean-Philippe Brucker (1):
-      iommu/virtio: Update to most recent specification
-
-Michael S. Tsirkin (2):
-      balloon: fix up comments
-      vhost: disable metadata prefetch optimization
-
-Wei Wang (1):
-      mm/balloon_compaction: avoid duplicate page removal
-
- drivers/iommu/virtio-iommu.c      | 40 ++++++++++++++++-------
- drivers/vhost/vhost.h             |  2 +-
- include/uapi/linux/virtio_iommu.h | 32 ++++++++++--------
- mm/balloon_compaction.c           | 69 +++++++++++++++++++++++----------------
- 4 files changed, 89 insertions(+), 54 deletions(-)
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
