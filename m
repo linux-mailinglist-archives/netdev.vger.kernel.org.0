@@ -2,93 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E9F47838C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 05:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05039783B5
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 05:43:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfG2DDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jul 2019 23:03:13 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46989 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbfG2DDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 23:03:13 -0400
-Received: by mail-pg1-f195.google.com with SMTP id k189so8406761pgk.13;
-        Sun, 28 Jul 2019 20:03:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=vhdyHKbr6BRELOCiWIx8QFrf2iWsG4qCQT0zVGLttDQ=;
-        b=fYkbKVYbMf7WylANOPWUxOmxhD0YEN3Arb+f4/5LmCJvzWI/K7DodlBOlT/0Dv97xB
-         hXR41NQfxhGHng8dn5Wi7pv5WiWYA9ZnpivmMzmBCBcZFs5dalWXv08FTCRV/NHF+zQl
-         4ttOfg6yC8yU7jbOF5XFNpAG+klbqalXmZC4Fb0DQlaepm6hWzrhQpDTt7SxJzS1j8Wy
-         Rt5dgMjxwjQkRMoX8/Iu/I4EdkJ0Do8pp1PMwNPoMy95fvz7oB2E+ZkEq7deZw5a/YyN
-         5XM3okKO7MCXLRC4r5dzsQU7z28G6i/DbBi4BjAuETipwPfylJ3bMPLg5mI4l44V3KIZ
-         wcGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=vhdyHKbr6BRELOCiWIx8QFrf2iWsG4qCQT0zVGLttDQ=;
-        b=dXKauXZqnFuaPIqlHXmzDLchO5WM0Eau77ftTevClwOZ32o/swJO1Ii4FE8xFt+EW4
-         +LXgZafWYN3hwcE23IKRqy3jKFO1ovZCXscdUbYNlGK0h12Jo2/NfbTI8GnJwch1pGte
-         liQFHBefRj33Oku5h7m3NZWlcE5AqVynYJ5KMOTL9Co0vD3Nod7AFS2BgAllR3DJAUOo
-         0lXJmYnixhncgiGV3rqkSVnxf1ihxzLu7us0UOthcECmaDV03cJlv2Z/BZHSqCFGyE8B
-         d5xa4ceY2wEiHlPXdiq7n0SS8nUMSm2BRKRan/742Xphacz3dxh6gewtW9kxXw6MOlY1
-         aeWA==
-X-Gm-Message-State: APjAAAUWIisMkMNLcOaoTOWO4R7yWLi3UYtYv8vqGt5xpbbqQEATwuBL
-        x5TzCLTbSHPLdrfkDNzyJmg=
-X-Google-Smtp-Source: APXvYqy24B8Gn7MJsm4X2EXqziW8iKygHbrckYkajJkAi6vD9kLgfy2gVbVm/575Xf9i/1X6dbULzQ==
-X-Received: by 2002:a05:6a00:4c:: with SMTP id i12mr34459331pfk.134.1564369392804;
-        Sun, 28 Jul 2019 20:03:12 -0700 (PDT)
-Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
-        by smtp.gmail.com with ESMTPSA id h14sm74535781pfq.22.2019.07.28.20.03.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Jul 2019 20:03:12 -0700 (PDT)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] ath6kl: Fix a possible null-pointer dereference in ath6kl_htc_mbox_create()
-Date:   Mon, 29 Jul 2019 11:03:05 +0800
-Message-Id: <20190729030305.18410-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.0
+        id S1726640AbfG2DnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jul 2019 23:43:21 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:33847 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbfG2DnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jul 2019 23:43:21 -0400
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 6294D41A53;
+        Mon, 29 Jul 2019 11:43:09 +0800 (CST)
+Subject: Re: [PATCH net-next] netfilter: nf_table_offload: Fix zero prio of
+ flow_cls_common_offload
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        pablo@netfilter.org
+Cc:     davem@davemloft.net, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <1562832210-25981-1-git-send-email-wenxu@ucloud.cn>
+ <20190724235151.GB4063@localhost.localdomain>
+ <9775e2da-78ce-95f8-c215-b35b464ea5a9@ucloud.cn>
+ <20190725034540.GJ6204@localhost.localdomain>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <80fd8d7f-3437-1621-960c-02fd5173c985@ucloud.cn>
+Date:   Mon, 29 Jul 2019 11:43:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190725034540.GJ6204@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSENNS0tLSk5NT0tJTkJZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6KzI6Lio4TDgyMkooNhIVTy0R
+        GSxPCQxVSlVKTk1PSExKTENCTENCVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBTUxOTzcG
+X-HM-Tid: 0a6c3bd327672086kuqy6294d41a53
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ath6kl_htc_mbox_create(), when kzalloc() on line 2855 fails,
-target->dev is assigned to NULL, and ath6kl_htc_mbox_cleanup(target) is
-called on line 2885.
+Hi pablo
 
-In ath6kl_htc_mbox_cleanup(), target->dev is used on line 2895:
-    ath6kl_hif_cleanup_scatter(target->dev->ar);
 
-Thus, a null-pointer dereference may occur.
+Any suggestion for this case.  Tthe 0 prio vlaue for driver is an invalid priority. So What should we do for this
 
-To fix this bug, kfree(target) is called and NULL is returned when
-kzalloc() on line 2855 fails.
+case? Currently there is no prio for each nft rules.
 
-This bug is found by a static analysis tool STCheck written by us.
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/wireless/ath/ath6kl/htc_mbox.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+BR
 
-diff --git a/drivers/net/wireless/ath/ath6kl/htc_mbox.c b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
-index 65c31da43c47..998947ef63b6 100644
---- a/drivers/net/wireless/ath/ath6kl/htc_mbox.c
-+++ b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
-@@ -2855,8 +2855,8 @@ static void *ath6kl_htc_mbox_create(struct ath6kl *ar)
- 	target->dev = kzalloc(sizeof(*target->dev), GFP_KERNEL);
- 	if (!target->dev) {
- 		ath6kl_err("unable to allocate memory\n");
--		status = -ENOMEM;
--		goto err_htc_cleanup;
-+		kfree(target);
-+		return NULL;
- 	}
- 
- 	spin_lock_init(&target->htc_lock);
--- 
-2.17.0
+wenxu
 
+
+On 7/25/2019 11:45 AM, Marcelo Ricardo Leitner wrote:
+> On Thu, Jul 25, 2019 at 11:03:52AM +0800, wenxu wrote:
+>> On 7/25/2019 7:51 AM, Marcelo Ricardo Leitner wrote:
+>>> On Thu, Jul 11, 2019 at 04:03:30PM +0800, wenxu@ucloud.cn wrote:
+>>>> From: wenxu <wenxu@ucloud.cn>
+>>>>
+>>>> The flow_cls_common_offload prio should be not zero
+>>>>
+>>>> It leads the invalid table prio in hw.
+>>>>
+>>>> # nft add table netdev firewall
+>>>> # nft add chain netdev firewall acl { type filter hook ingress device mlx_pf0vf0 priority - 300 \; }
+>>>> # nft add rule netdev firewall acl ip daddr 1.1.1.7 drop
+>>>> Error: Could not process rule: Invalid argument
+>>>>
+>>>> kernel log
+>>>> mlx5_core 0000:81:00.0: E-Switch: Failed to create FDB Table err -22 (table prio: 65535, level: 0, size: 4194304)
+>>>>
+>>>> Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+>>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>>>> ---
+>>>>  net/netfilter/nf_tables_offload.c | 3 +++
+>>>>  1 file changed, 3 insertions(+)
+>>>>
+>>>> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+>>>> index 2c33028..01d8133 100644
+>>>> --- a/net/netfilter/nf_tables_offload.c
+>>>> +++ b/net/netfilter/nf_tables_offload.c
+>>>> @@ -7,6 +7,8 @@
+>>>>  #include <net/netfilter/nf_tables_offload.h>
+>>>>  #include <net/pkt_cls.h>
+>>>>  
+>>>> +#define FLOW_OFFLOAD_DEFAUT_PRIO 1U
+>>>> +
+>>>>  static struct nft_flow_rule *nft_flow_rule_alloc(int num_actions)
+>>>>  {
+>>>>  	struct nft_flow_rule *flow;
+>>>> @@ -107,6 +109,7 @@ static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
+>>>>  					struct netlink_ext_ack *extack)
+>>>>  {
+>>>>  	common->protocol = proto;
+>>>> +	common->prio = TC_H_MAKE(FLOW_OFFLOAD_DEFAUT_PRIO << 16, 0);
+>>> Note that tc semantics for this is to auto-generate a priority in such
+>>> cases, instead of using a default.
+>>>
+>>> @tc_new_tfilter():
+>>>         if (prio == 0) {
+>>>                 /* If no priority is provided by the user,
+>>>                  * we allocate one.
+>>>                  */
+>>>                 if (n->nlmsg_flags & NLM_F_CREATE) {
+>>>                         prio = TC_H_MAKE(0x80000000U, 0U);
+>>>                         prio_allocate = true;
+>>> ...
+>>>                 if (prio_allocate)
+>>>                         prio = tcf_auto_prio(tcf_chain_tp_prev(chain,
+>>>                                                                &chain_info));
+>> Yes,The tc auto-generate a priority.  But if there is no pre
+>> tcf_proto, the priority is also set as a default.
+> After the first filter, there will be a tcf_proto. Please see the test below.
+>
+>> In nftables each rule no priortiy for each other. So It is enough to
+>> set a default value which is similar as the tc.
+> Yep, maybe it works for nftables. I'm just highlighting this because
+> it is reusing tc infrastructure and will expose a different behavior
+> to the user.  But if nftables already has this defined, that probably
+> takes precedence by now and all that is left to do is to make sure any
+> documentation on it is updated.  Pablo?
+>
+>> static inline u32 tcf_auto_prio(struct tcf_proto *tp)
+>> {
+>>     u32 first = TC_H_MAKE(0xC0000000U, 0U);
+>                               ^^^^  base default prio, 0xC0000 = 49152
+>
+>>     if (tp)
+>>         first = tp->prio - 1;
+>>
+>>     return TC_H_MAJ(first);
+>> }
+> # tc qdisc add dev veth1 ingress
+> # tc filter add dev veth1 ingress proto ip flower src_mac ec:13:db:00:00:00 action drop
+>                                                            1st filter  --^^
+> # tc filter add dev veth1 ingress proto ip flower src_mac ec:13:db:00:00:01 action drop
+>                                                            2nd filter  --^^
+> # tc filter add dev veth1 ingress proto ip flower src_mac ec:13:db:00:00:02 action drop
+>
+> With no 'prio X' parameter, it uses 0 as default, and when dumped:
+>
+> # tc filter show dev veth1 ingress
+> filter protocol ip pref 49150 flower
+> filter protocol ip pref 49150 flower handle 0x1
+>   src_mac ec:13:db:00:00:02
+>   eth_type ipv4
+>   not_in_hw
+>         action order 1: gact action drop
+>          random type none pass val 0
+>          index 40003 ref 1 bind 1
+>
+> filter protocol ip pref 49151 flower
+> filter protocol ip pref 49151 flower handle 0x1
+>                         ^vv^^---- 2nd filter
+>   src_mac ec:13:db:00:00:01
+>   eth_type ipv4
+>   not_in_hw
+>         action order 1: gact action drop
+>          random type none pass val 0
+>          index 40002 ref 1 bind 1
+>
+> filter protocol ip pref 49152 flower
+> filter protocol ip pref 49152 flower handle 0x1
+>                         ^vv^^---- 1st filter
+>   src_mac ec:13:db:00:00:00
+>   eth_type ipv4
+>   not_in_hw
+>         action order 1: gact action drop
+>          random type none pass val 0
+>          index 40001 ref 1 bind 1
+>
+>
+>
