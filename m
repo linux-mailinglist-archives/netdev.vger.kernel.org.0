@@ -2,94 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A1478660
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 09:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 913A978675
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 09:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbfG2HcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 03:32:01 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:37538 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726432AbfG2HcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 03:32:01 -0400
-Received: by mail-pl1-f193.google.com with SMTP id b3so27179440plr.4;
-        Mon, 29 Jul 2019 00:32:00 -0700 (PDT)
+        id S1726795AbfG2Hl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 03:41:28 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44972 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfG2Hl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 03:41:28 -0400
+Received: by mail-wr1-f67.google.com with SMTP id p17so60617760wrf.11
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 00:41:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=kchq7srFNNnQej0FuA0OClC0TaerJgYlzJ7LEi/VOUo=;
-        b=bNjt42sboPYQB7y//DMTQDhTsSpnpt0//n63Gt7u2QeVZmOjHih58FEfRcxITnl7sd
-         gscWwkd3Fg7xDMMZWAdB/yzW69PKf1fFp8eFNemclvm6+9gssvR2e3VRjafYw9coCOMi
-         TjXjwovVU0EbyDimR5uRpYUB2Gl2hbOJfH5bCojm/lrVJhNlqg2KIkQZnUrgf4hlMKzS
-         KWnOlWLBOB+yqDH3AFBfQMa1xzRqne5LiGhX2Vjw9jEWVxt+P6WfnpzCNt16i6d1FGe8
-         TOO83BcpFaiZDKJk83BBcmnAugUp+7LEeP4P5nhUQlM5J6ngehRfzNyc3pGlaKA49PmN
-         tb2w==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ORbzlsHDa5hfAtYywIFIzyHDT+ZvebWOt6YTGvwMpig=;
+        b=U3Oyx9zN4u2Gtbuvjv+zgxcVNpE6ZKb70DCl4DIEj3I4V9ml3D84LExFTzRYkfan6s
+         NRYpbieyI3krseoucYfTo3uWhnm/qloBGOsfAQeLeKSMTPmLVq5mhJNmvLkNWMpW3kw0
+         8N7dxwE0J4bRWdRsK2a/ECi91IdaNWUrY6huK4eVd0YX1WVVHXNfCjobSYS+9Q7Aaahr
+         T2G43s/XcEQ8J+Kdb1dFGpzgHBXSXiAC8fhlwt7V+KlWya1e7Ew0hv/VYl9wPNUvz8X7
+         eCbL/7s2XVxgsrzOo5tkUEXOyGnO97DA9+NRaWTJKc56tnKpHdiFA0MikkGwnPtx2ZT5
+         nmcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=kchq7srFNNnQej0FuA0OClC0TaerJgYlzJ7LEi/VOUo=;
-        b=A4n/dlccl4Hg6vGSPWU7sII5OTXTdB+9wxfU6ypbw+oEC6opCaC2fahwQ+k9cHHb0v
-         kaAhJH8mWhJAkmh9ea9rpWSSIenrQJUA+JKrUHGqOv0LjrQTJCz9QcQqyfqqiKwyTyO7
-         3zXnQ5vLAYlFvk1faxJ/5Vw8R0wnwTuiZFgm+bIYYTFMlrOb/yhSuihViIL4N1+og83o
-         T3OLaqDXzZEGzG+pTauioJ72Ta2rFVJHTNawi6/JYHwUs52x8bUqi8KQwwJ+Ax8NGQgn
-         BCvVIU/uJ9XzZFoWDibLpyWnBVHJyR6wlFJOzxaIdqoaTLv7JcKoJDadgVl24JjXDB+D
-         Jf2Q==
-X-Gm-Message-State: APjAAAUVTLjewypKo0j90zEcOiYlAAuA4U439pMXx5ltVCJU7RjqH4GZ
-        KRbDXZYuyc4xJ2JliFt/XlQM8oIy
-X-Google-Smtp-Source: APXvYqzksUM4T9kWfQkETZnrTNQlrjPAcYkIwFmRNDP0cDAYvvNt0zVFR9kJwPGQ8EtRj1kb+cJtjg==
-X-Received: by 2002:a17:902:da4:: with SMTP id 33mr99311122plv.209.1564385520477;
-        Mon, 29 Jul 2019 00:32:00 -0700 (PDT)
-Received: from ?IPv6:2402:f000:4:72:808::177e? ([2402:f000:4:72:808::177e])
-        by smtp.gmail.com with ESMTPSA id u134sm59112458pfc.19.2019.07.29.00.31.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 00:32:00 -0700 (PDT)
-Subject: Re: [PATCH] net: sched: Fix a possible null-pointer dereference in
- dequeue_func()
-To:     Jiri Pirko <jiri@resnulli.us>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ORbzlsHDa5hfAtYywIFIzyHDT+ZvebWOt6YTGvwMpig=;
+        b=a2DO2FhZfanphYUe4j1vC0LjO2HTSZuk9mY+BuY7awx0eqbyEQiEHeDnoBBaXCnNR2
+         sHSTv3axSI9lgc5dsvZ5D9bdEVDN/OpJfSMuvGJoMIGlU9uMOxkpmINv043+Lu+64oG6
+         1bx7THlbCSkpb75irs5YJy2mQNcx6hjQGU5zumxopO+Nbt5K4O3/coRVFDGuPeN64AzB
+         a3WynHt97rDQl3KKwmaw4E04Tsf2/x0HLMQKPjBNeYroWALKgOFYAZdaTos02Gs8l8aC
+         P8xiuEW3heqYGq94PPraE1nYIMr5pOX0oOS1YlwtEV54eCjHGf1eE0h+QjdT5WfI0mOg
+         +56Q==
+X-Gm-Message-State: APjAAAWy5V443NlnZh9q/UtZN1xzr1ZKrulDvnqlca2FbEcmjycjubKE
+        riM8wG6w8jPYOgESVFNJgdE=
+X-Google-Smtp-Source: APXvYqw+rYnER7GSElPp44lGXfPWqu3WnBnRAu+1fqDmgcedrvhr4Z2/zTlGTzHIKSvjGwIqDz7wBg==
+X-Received: by 2002:a5d:43c9:: with SMTP id v9mr45383532wrr.70.1564386086100;
+        Mon, 29 Jul 2019 00:41:26 -0700 (PDT)
+Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
+        by smtp.gmail.com with ESMTPSA id v18sm63277633wrs.80.2019.07.29.00.41.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 00:41:25 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 09:41:25 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, davem@davemloft.net,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sched: Fix a possible null-pointer dereference in
+ dequeue_func()
+Message-ID: <20190729074125.GB2211@nanopsycho>
 References: <20190729022157.18090-1-baijiaju1990@gmail.com>
  <20190729065653.GA2211@nanopsycho>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <4752bf67-7a0c-7bc9-3d54-f18361085ba2@gmail.com>
-Date:   Mon, 29 Jul 2019 15:32:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ <4752bf67-7a0c-7bc9-3d54-f18361085ba2@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190729065653.GA2211@nanopsycho>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4752bf67-7a0c-7bc9-3d54-f18361085ba2@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Mon, Jul 29, 2019 at 09:32:00AM CEST, baijiaju1990@gmail.com wrote:
+>
+>
+>On 2019/7/29 14:56, Jiri Pirko wrote:
+>> Mon, Jul 29, 2019 at 04:21:57AM CEST, baijiaju1990@gmail.com wrote:
+>> > In dequeue_func(), there is an if statement on line 74 to check whether
+>> > skb is NULL:
+>> >     if (skb)
+>> > 
+>> > When skb is NULL, it is used on line 77:
+>> >     prefetch(&skb->end);
+>> > 
+>> > Thus, a possible null-pointer dereference may occur.
+>> > 
+>> > To fix this bug, skb->end is used when skb is not NULL.
+>> > 
+>> > This bug is found by a static analysis tool STCheck written by us.
+>> > 
+>> > Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+>> Fixes tag, please?
+>
+>Sorry, I do not know what "fixes tag" means...
+>I just find a possible bug and fix it in this patch.
+
+git log |grep Fixes:
+
+If A fix goes to -net tree, it most probably fixes some bug introduced
+by some commit in the past. So this tag is to put a reference.
 
 
-On 2019/7/29 14:56, Jiri Pirko wrote:
-> Mon, Jul 29, 2019 at 04:21:57AM CEST, baijiaju1990@gmail.com wrote:
->> In dequeue_func(), there is an if statement on line 74 to check whether
->> skb is NULL:
->>     if (skb)
->>
->> When skb is NULL, it is used on line 77:
->>     prefetch(&skb->end);
->>
->> Thus, a possible null-pointer dereference may occur.
->>
->> To fix this bug, skb->end is used when skb is not NULL.
->>
->> This bug is found by a static analysis tool STCheck written by us.
->>
->> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-> Fixes tag, please?
-
-Sorry, I do not know what "fixes tag" means...
-I just find a possible bug and fix it in this patch.
-
-
-Best wishes,
-Jia-Ju Bai
+>
+>
+>Best wishes,
+>Jia-Ju Bai
