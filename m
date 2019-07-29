@@ -2,48 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C907D79B83
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 23:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1DC179B86
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 23:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388888AbfG2VvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 17:51:15 -0400
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:44823 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388890AbfG2VvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 17:51:14 -0400
-Received: by mail-pl1-f201.google.com with SMTP id n1so33885464plk.11
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 14:51:14 -0700 (PDT)
+        id S2388903AbfG2VvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 17:51:18 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:40866 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388897AbfG2VvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 17:51:17 -0400
+Received: by mail-pg1-f201.google.com with SMTP id m19so24631608pgv.7
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 14:51:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Ky51eWLkWqKn9vu5XgFYadpIqkYzkr7aTFdFnNTQm0s=;
-        b=MFkx4MeFQBofsS1qaTHjIDBKc57vd+P4SE7zguji88eHPTh5dHAbyt0Wj8MHWUhRIy
-         bGIZK0mzCbLdKDFDx5S+/B5GiconXVgjxvUDZ1u6WjHLNp4qC827KCLx9I0Y84ET2Q/R
-         JCABlHwuAN7Iv75sGV/3in5j88iY9cKEJ+mw9XP9YVUB22qEJ0TYyM8qIaDpU7xC18YY
-         ca/bL1OJkRfiHBmB1XL63yktzBXcoQJ3kkjbf/kdM+CDn0rxmPE5IVqQpdMPhQOAESUX
-         BkbU0DA3ChotuIBVK7iCyrdArSZCRxFgMO51R3oTxNtAlSRF5SzKlHz6hL/hJsjch0yX
-         NnTw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=kBhb0smtLVURD2BBgCfZlpeNqb/3JQfxJqN7MROUQRA=;
+        b=hl8xMzZ6ToLMJfpw4O1KGxQFHfHFvvJ/u9S7aHuViuIoUvUvP7ITYfCPIAGUKRBJWX
+         EEqZ6FeqreQXt2/+LMXNXqH1RGNMwUUrR47Qur1d2NnOLYcVcg1bzfH8R7r++0dzPurZ
+         sGRhBjL0Pr0RphEbvl1FLBSZidHCs1d9jaV7Y1wI6SRU6FY5JHZMRFSKLquP/HBVnaE2
+         3oK7wq4bRSVaiFIwfEYmgxwcMLCiheJgwTek6uEtuz9nOXzQE1Ui78uIDnrv0pafTkhe
+         5Znt4TQNLnfI5OkZrEhD+oDq9E0pQ/ZIekdq5sGqNLq/yLA3C8vMc0Ii4dWwfiPQNnty
+         cRaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Ky51eWLkWqKn9vu5XgFYadpIqkYzkr7aTFdFnNTQm0s=;
-        b=NUmdbWH/uvmOd0Zm/mIET/OWJ1uJ8kD3dV9du1SXLioNlwk7ndynZKT0QNT9kkbJ8b
-         ktpvKe33rp60J+ENXSsDu2e4jt4dCzsz+eexRhBGNQLGxJxl28kzetvUaAtbOwxjYh0H
-         VXa4Nav1nESSvCyA3S+uLsnOVupuduxFQDlBpzu617cCgSDxfm12KqhedvEvNbrtQyuV
-         59GRRuWoSYCYI31eSUuhPX2b3eq9CQ9wsBqUoOkFVf8b6lejwwu6POGy1xu8bqyokpTa
-         f58W1F1wv9e6dKTkAQTN5Soy0+Kxlg4lGG3BizM4GoJ9qRMCT8i/XtS0Eyi9X2FB3RsE
-         tpzA==
-X-Gm-Message-State: APjAAAWuOeYvRapRjaXff1xDV5BvfFYVcYA6yBVL5LOMGFpiZtHfX+cy
-        fxneT/VLscnw3ziJFlQLM2o6NlaptHizSeaKelWxUmRQ5VG4EQT8f3WC/w4vvmDvxh0VtzdViT3
-        pKxCZBRqytNtBcy2fxsuPyYv4b9FFnWfa5zwdJw05viBE1EP1jguybA==
-X-Google-Smtp-Source: APXvYqyFxOxYQ67UvP3oT4a6QlvXzPKBxO+TGpvCE3BuhjhqfW2WM1GR+PmaoqJFc002MDt4vtWnjns=
-X-Received: by 2002:a65:56c1:: with SMTP id w1mr104359426pgs.395.1564437073710;
- Mon, 29 Jul 2019 14:51:13 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 14:51:09 -0700
-Message-Id: <20190729215111.209219-1-sdf@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=kBhb0smtLVURD2BBgCfZlpeNqb/3JQfxJqN7MROUQRA=;
+        b=GGOoEfeJk9VzQOp/31P/lv1zWyp+Nhjp5b4qI4yUCdkA6J5OuYB2xoPkcibbFMdRq1
+         cCvZRw6jajpfbu+cU3cMeU/eYdvdyBMyfvi0wMtnyWiJXUfav3FaVfE2hDGl15v5mAnr
+         iO5RCyUm//Joy+clfCdswQn9FaoaliZW9aIF7R26ZHU9D37bg6bvdhGo95/mEc/EUe/q
+         qxwLcHVvaQpd25MOc7ufiLAdh3knwkSoEirTg2yothLgkvClIrKdmmV95qeCgRTxLgP/
+         f30/2A4WYhgu6FbVNCigAho1GpuTx0yBDSwRoef/g1Ek44yWKXSEppQESf2c57IW4W2u
+         Sx8A==
+X-Gm-Message-State: APjAAAX43XkaxQpM/yp0tQ3EoqnEQo8f4NueoSAUM/UUXPh8zio0c/31
+        jcfxwBqJ8GXGzF8ijKbWl3zZCFmhViU+OD4bFAkkTFqsZ/L1RZN5lTqhyRg+WhB7JRQWENypTYF
+        bS45TL+8c8a5Iz9PYzMkkKFgmT7w5Xwnl1QxM4XpkQUTxqKPb+kAc5A==
+X-Google-Smtp-Source: APXvYqzOCoB3RhL/aGtJLgOCdcyWpnmkHSq3WV5WrLAx+O1Rkon6J0XFjZ1N2peLo+Y6WRlPnQl6W2s=
+X-Received: by 2002:a63:505a:: with SMTP id q26mr103339803pgl.18.1564437076749;
+ Mon, 29 Jul 2019 14:51:16 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 14:51:10 -0700
+In-Reply-To: <20190729215111.209219-1-sdf@google.com>
+Message-Id: <20190729215111.209219-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20190729215111.209219-1-sdf@google.com>
 X-Mailer: git-send-email 2.22.0.709.g102302147b-goog
-Subject: [PATCH bpf-next 0/2] bpf: allocate extra memory for setsockopt hook buffer
+Subject: [PATCH bpf-next 1/2] bpf: always allocate at least 16 bytes for
+ setsockopt hook
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -54,25 +59,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current setsockopt hook is limited to the size of the buffer that
-user had supplied. Since we always allocate memory and copy the value
-into kernel space, allocate just a little bit more in case BPF
-program needs to override input data with a larger value.
+Since we always allocate memory, allocate just a little bit more
+for the BPF program in case it need to override user input with
+bigger value. The canonical example is TCP_CONGESTION where
+input string might be too small to override (nv -> bbr or cubic).
 
-The canonical example is TCP_CONGESTION socket option where
-input buffer is a string and if user calls it with a short string,
-BPF program has no way of extending it.
+16 bytes are chosen to match the size of TCP_CA_NAME_MAX and can
+be extended in the future if needed.
 
-The tests are extended with TCP_CONGESTION use case.
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ kernel/bpf/cgroup.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-Stanislav Fomichev (2):
-  bpf: always allocate at least 16 bytes for setsockopt hook
-  selftests/bpf: extend sockopt_sk selftest with TCP_CONGESTION use case
-
- kernel/bpf/cgroup.c                           | 17 ++++++++++---
- .../testing/selftests/bpf/progs/sockopt_sk.c  | 22 ++++++++++++++++
- tools/testing/selftests/bpf/test_sockopt_sk.c | 25 +++++++++++++++++++
- 3 files changed, 60 insertions(+), 4 deletions(-)
-
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 0a00eaca6fae..6a6a154cfa7b 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -964,7 +964,6 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+ 		return -ENOMEM;
+ 
+ 	ctx->optval_end = ctx->optval + max_optlen;
+-	ctx->optlen = max_optlen;
+ 
+ 	return 0;
+ }
+@@ -984,7 +983,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+ 		.level = *level,
+ 		.optname = *optname,
+ 	};
+-	int ret;
++	int ret, max_optlen;
+ 
+ 	/* Opportunistic check to see whether we have any BPF program
+ 	 * attached to the hook so we don't waste time allocating
+@@ -994,10 +993,18 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+ 	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
+ 		return 0;
+ 
+-	ret = sockopt_alloc_buf(&ctx, *optlen);
++	/* Allocate a bit more than the initial user buffer for
++	 * BPF program. The canonical use case is overriding
++	 * TCP_CONGESTION(nv) to TCP_CONGESTION(cubic).
++	 */
++	max_optlen = max_t(int, 16, *optlen);
++
++	ret = sockopt_alloc_buf(&ctx, max_optlen);
+ 	if (ret)
+ 		return ret;
+ 
++	ctx.optlen = *optlen;
++
+ 	if (copy_from_user(ctx.optval, optval, *optlen) != 0) {
+ 		ret = -EFAULT;
+ 		goto out;
+@@ -1016,7 +1023,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+ 	if (ctx.optlen == -1) {
+ 		/* optlen set to -1, bypass kernel */
+ 		ret = 1;
+-	} else if (ctx.optlen > *optlen || ctx.optlen < -1) {
++	} else if (ctx.optlen > max_optlen || ctx.optlen < -1) {
+ 		/* optlen is out of bounds */
+ 		ret = -EFAULT;
+ 	} else {
+@@ -1063,6 +1070,8 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+ 	if (ret)
+ 		return ret;
+ 
++	ctx.optlen = max_optlen;
++
+ 	if (!retval) {
+ 		/* If kernel getsockopt finished successfully,
+ 		 * copy whatever was returned to the user back
 -- 
 2.22.0.709.g102302147b-goog
+
