@@ -2,124 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 756327937B
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 20:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C0F87937D
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 21:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727987AbfG2S7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 14:59:18 -0400
-Received: from mail-ua1-f67.google.com ([209.85.222.67]:39228 "EHLO
-        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727089AbfG2S7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 14:59:17 -0400
-Received: by mail-ua1-f67.google.com with SMTP id j8so24409757uan.6
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 11:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=AWZOzWNgzcatcBqh2ZMbPE7eLWZd31lPTz7bOJ65UQ8=;
-        b=BE1aXWX1W+WfcPkG4aHuFO59cqji1MJZiTRy+2u04+rPvWNxBKELsvut5AmXI1C1N5
-         CvTBka/3Etgdo0XJx2hbaUc8TvobUTteicM3YyShKYBjaHEE5OM+tk5yjBdyRUhTn998
-         7k22qx5fxQ1tuE/OEZt0vZTJQ/wMwdYjOE4SvkLP7vf6tdkpTNqNEkhTrdayoW3jrLu4
-         9icQJs+lmsCpWq1QNlb9FVrNRTvyoT9quPnquBJfOlmgWkm+PaLG0yd3LNq1jOYZZygn
-         S4XfSN2cU1+iQBW/8ironA6T+A4FW7iyhjJrPBY5H5Bl5TFBLgDMtD4OAV3m9/XNl3Wu
-         7RCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=AWZOzWNgzcatcBqh2ZMbPE7eLWZd31lPTz7bOJ65UQ8=;
-        b=fslO65G1dk9gTPojAk5XPYsCZ82IVCJpMqkakzuqcREk/6p8BfOz2FptoHaUiIXSa8
-         b47K7XrYFDNm0CEV4KOf6J9r0Ef1aKzR4wpG7EdJTbru4eRpL8dhBb85/9AxY5KSiPPb
-         cLtXk7PBFOlHbc6qevO3d5FDPFhHmtIoHXcxpRmVxZa27Z0uekqzraMblPQznGUEw3/K
-         4RIXFMzWJ7AuUsmri4A8S7UrY7YVbeUjx5CcIepaZUXL0+D7+/NFobBlDh9W8nkupyC/
-         STOeaF8eCR3MlxYa+JJjnW4szjNBLAig7nO9ucoTE7OW8Utkk4CVJIFAm76VsSbsqLC5
-         ILsg==
-X-Gm-Message-State: APjAAAWHBE3DKDAOg0ueh/V+mUV0Z3hi1qF+HLMqqZ6/y8O4guZKxxhu
-        SXJp6UJfy//aNvRJ27uZPyVQoQ==
-X-Google-Smtp-Source: APXvYqwAcPuxjgS1SNnzmCPWEgsgxEBF8t3m/zz0NXnP7IUFjrQNqGJ1+hVbXVLn4ZqI3FMqkogg6Q==
-X-Received: by 2002:ab0:7c3:: with SMTP id d3mr24509884uaf.131.1564426756805;
-        Mon, 29 Jul 2019 11:59:16 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c12sm8886297uao.8.2019.07.29.11.59.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 29 Jul 2019 11:59:16 -0700 (PDT)
-Date:   Mon, 29 Jul 2019 11:59:06 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next 3/3] netdevsim: create devlink and netdev
- instances in namespace
-Message-ID: <20190729115906.6bc2176d@cakuba.netronome.com>
-In-Reply-To: <20190727094459.26345-4-jiri@resnulli.us>
-References: <20190727094459.26345-1-jiri@resnulli.us>
-        <20190727094459.26345-4-jiri@resnulli.us>
-Organization: Netronome Systems, Ltd.
+        id S1728458AbfG2TAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 15:00:32 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:47659 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727089AbfG2TAc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 15:00:32 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0523C223A8;
+        Mon, 29 Jul 2019 15:00:31 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 29 Jul 2019 15:00:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=zoiT+g
+        nmstlHX62hYSN+tWp+MTF5CXw+1yLDRuatK1E=; b=qAMJxphOiQsAzo6c3GIY+7
+        oadjOGqBiV902wdjVugJH6zv7YIWIuOesntbkgetd3TOT//vG2/vbfLAdrjwx5D6
+        V3DCylgdDwpWbdj00Mq/B7mMtSb4yMUv3mo5Q6ThzKcv4nsWZsdffv2j0aC+z+Ci
+        FDq+l4x+YBrFgJroPQHe2QEG5YgtE7jfeTkbZMX3Q0zCIAeUv011n5ZIYVm55hu9
+        SIG3OoKCY8yutGG6DKON6fLdP1kFIq/3yiPgiH3epEYubpNPCKC1z9KdOP14Wg1L
+        JylPmo4ueYL2JsVNEe8am+ETh8CONH7GxmIyAyF5ofRuYjK/Qym4pZ7DKdgSPrmA
+        ==
+X-ME-Sender: <xms:TkI_XVTkyLeWpv05TL-ctJITiB_gb4ZMuaMD0oZjoUqvnFuXDy4kpg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrledugddufeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppeejje
+    drudefkedrvdegledrvddtleenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:TkI_XTWRUSDNmDpIaYsUhA7SU1JqBsWgqiGuglRqftryWnrA2hmxPA>
+    <xmx:TkI_XWti81Sa0AnbxKW0b6rqBe-FtbPEZ_kdaCc9kfekBUALJhaeaA>
+    <xmx:TkI_XZs5JTIKNfGxWT4TUPyJ3zVVHz-42Qfqr79S7ACK5-zLEtsDmA>
+    <xmx:TkI_XRT72YBPBroNIap-5w00ykLoswEy5MJF7DMr8SVsRgDOBCMLbA>
+Received: from localhost (unknown [77.138.249.209])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A5AB7380088;
+        Mon, 29 Jul 2019 15:00:29 -0400 (EDT)
+Date:   Mon, 29 Jul 2019 22:00:15 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH net v2] mlxsw: spectrum_ptp: Increase parsing depth when
+ PTP is enabled
+Message-ID: <20190729190015.GA31413@splinter>
+References: <b1584bdec4a0a36a2567a43dc0973dd8f3a05dec.1564424420.git.petrm@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b1584bdec4a0a36a2567a43dc0973dd8f3a05dec.1564424420.git.petrm@mellanox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 27 Jul 2019 11:44:59 +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
+On Mon, Jul 29, 2019 at 06:26:14PM +0000, Petr Machata wrote:
+> Spectrum systems have a configurable limit on how far into the packet they
+> parse. By default, the limit is 96 bytes.
 > 
-> When user does create new netdevsim instance using sysfs bus file,
-> create the devlink instance and related netdev instance in the namespace
-> of the caller.
+> An IPv6 PTP packet is layered as Ethernet/IPv6/UDP (14+40+8 bytes), and
+> sequence ID of a PTP event is only available 32 bytes into payload, for a
+> total of 94 bytes. When an additional 802.1q header is present as
+> well (such as when ptp4l is running on a VLAN port), the parsing limit is
+> exceeded. Such packets are not recognized as PTP, and are not timestamped.
 > 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> Therefore generalize the current VXLAN-specific parsing depth setting to
+> allow reference-counted requests from other modules as well. Keep it in the
+> VXLAN module, because the MPRS register also configures UDP destination
+> port number used for VXLAN, and is thus closely tied to the VXLAN code
+> anyway.
+> 
+> Then invoke the new interfaces from both VXLAN (in obvious places), as well
+> as from PTP code, when the (global) timestamping configuration changes from
+> disabled to enabled or vice versa.
+> 
+> Fixes: 8748642751ed ("mlxsw: spectrum: PTP: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls")
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
 
-> diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-> index 1a0ff3d7747b..6aeed0c600f8 100644
-> --- a/drivers/net/netdevsim/bus.c
-> +++ b/drivers/net/netdevsim/bus.c
-> @@ -283,6 +283,7 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
->  	nsim_bus_dev->dev.bus = &nsim_bus;
->  	nsim_bus_dev->dev.type = &nsim_bus_dev_type;
->  	nsim_bus_dev->port_count = port_count;
-> +	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
->  
->  	err = device_register(&nsim_bus_dev->dev);
->  	if (err)
-
-The saved initial_net is only to carry the net info from the adding
-process to the probe callback, because probe can be asynchronous?
-I'm not entirely sure netdevsim can probe asynchronously in practice
-given we never return EPROBE_DEFER, but would you mind at least adding
-a comment stating that next to the definition of the field, otherwise 
-I worry someone may mistakenly use this field instead of the up-to-date
-devlink's netns.
-
-> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-> index 79c05af2a7c0..cdf53d0e0c49 100644
-> --- a/drivers/net/netdevsim/netdevsim.h
-> +++ b/drivers/net/netdevsim/netdevsim.h
-> @@ -19,6 +19,7 @@
->  #include <linux/netdevice.h>
->  #include <linux/u64_stats_sync.h>
->  #include <net/devlink.h>
-> +#include <net/net_namespace.h>
-
-You can just do a forward declaration, no need to pull in the header.
-
->  #include <net/xdp.h>
->  
->  #define DRV_NAME	"netdevsim"
-
-> @@ -213,6 +215,7 @@ struct nsim_bus_dev {
->  	struct device dev;
->  	struct list_head list;
->  	unsigned int port_count;
-> +	struct net *initial_net;
->  	unsigned int num_vfs;
->  	struct nsim_vf_config *vfconfigs;
->  };
-
-Otherwise makes perfect sense, with the above nits addressed feel free
-to add:
-
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Ido Schimmel <idosch@mellanox.com>
