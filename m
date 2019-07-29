@@ -2,142 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 363B178E8E
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7229978E96
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 17:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728687AbfG2O7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 10:59:53 -0400
-Received: from gateway23.websitewelcome.com ([192.185.50.161]:35397 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727034AbfG2O7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 10:59:51 -0400
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id E16BCC1ED
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 09:59:49 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id s77thaZT94FKps77thkQi3; Mon, 29 Jul 2019 09:59:49 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        id S1728697AbfG2PCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 11:02:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44986 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727168AbfG2PCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 11:02:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=XmpL5my71AoWQs+D7f6gDo6C6zjPh/VxE9FhrUoDW+k=; b=YPfJRKWVkoa9XYZRrUKQgiiCxX
-        J3prPSSfYQzABPIC6B6QcsrlM04EbFP+jAIIgkFw48U8jXrGiVI/52jKJv4Rp7+S/CC6Kx7T0Vsf6
-        yV5M6bQElyRVSa4WNwiERV336bJ5QVJOhU0MhMb+RCdmimiMLItg/GWW8fKhpRxhW8ts864U67Ku2
-        NCx3UDswU5OOgTXNgVMogNu7tyfQzjUdEfH0sg9SbiNm0+pXFFpRwSfAxVkSZRvFHLgSbEqfr+sBP
-        DAmAgaKjwOMv2HGC09OJ8p7lAq/XReMmZ3y80wkjHNREuqYAFY/4jU5uf1dQhPRju2BalFtFNkC7H
-        KXfx+Qpw==;
-Received: from [187.192.11.120] (port=51566 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hs77s-002aSP-HK; Mon, 29 Jul 2019 09:59:48 -0500
-Date:   Mon, 29 Jul 2019 09:59:47 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH] net/af_iucv: mark expected switch fall-throughs
-Message-ID: <20190729145947.GA9494@embeddedor>
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=JSWsR08a0l9t8e7uYY7dWaL6U4fKWmgrhjCsvX1Z6cM=; b=YQbbjbDgFTYzXno+RUXkz4lJz9
+        Z3mXB/hc0MjZVyOnmuGeNMjXh3xaiuC8NmRAtn8NaCjWhdSdcPCCJ2kY9FIX4xl+ruPnUu7FNkEWA
+        xa3MbSsKKrmbIQFynBmaCZkiyxLMIL/gKIp+VQqV0eahIeW1gLKm8A90/TuxRgSsO2kg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hs79y-0002Ez-FQ; Mon, 29 Jul 2019 17:01:58 +0200
+Date:   Mon, 29 Jul 2019 17:01:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Benjamin Beckmeyer <beb@eks-engel.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: DSA Rate Limiting in 88E6390
+Message-ID: <20190729150158.GE4110@lunn.ch>
+References: <5a632696-946d-504b-1077-f7eb6d31ec19@eks-engel.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.192.11.120
-X-Source-L: No
-X-Exim-ID: 1hs77s-002aSP-HK
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [187.192.11.120]:51566
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 30
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+In-Reply-To: <5a632696-946d-504b-1077-f7eb6d31ec19@eks-engel.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mark switch cases where we are expecting to fall through.
+On Mon, Jul 29, 2019 at 12:30:20PM +0200, Benjamin Beckmeyer wrote:
+> Hi all,
+> is there a possibility to set the rate limiting for the 6390 with linux tools?
+> I've seen that the driver will init all to zero, so rate limiting is disabled, 
+> but there is no solution for it in the ip tool?
+> 
+> The only thing I found for rate limiting is the tc tool, but I guess this is 
+> only a software solution?
 
-This patch fixes the following warnings:
+Hi Benjamin
 
-net/iucv/af_iucv.c: warning: this statement may fall
-through [-Wimplicit-fallthrough=]:  => 537:3, 519:6, 2246:6, 510:6
+In Linux, we accelerate the software solution by offloading it to the
+hardware. So TC is what you need here.
+ 
+> Furthermore, does exist a table or a tutorial which functions DSA supports?
+> The background is that we are using the DSDT driver (in future maybe the UMSD
+> driver) but we would like to switch to the in kernel DSA entirely. And our
+> software is using some of the DSDT functions, so I have to find an 
+> alternative to these functions.
 
-Notice that, in this particular case, the code comment is
-modified in accordance with what GCC is expecting to find.
+The DSA framework supports offloading TC. There was some patches a
+while back adding ingress rate limiting to one of the DSA drivers, via
+TC. I forget which, and i don't think they have been merged yet. If
+you can find the patchset, it should give you a good idea how you can
+implement support in the mv88e6xxx driver.
 
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- net/iucv/af_iucv.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
-index 09e1694b6d34..ebb62a4ebe30 100644
---- a/net/iucv/af_iucv.c
-+++ b/net/iucv/af_iucv.c
-@@ -512,7 +512,9 @@ static void iucv_sock_close(struct sock *sk)
- 			sk->sk_state = IUCV_DISCONN;
- 			sk->sk_state_change(sk);
- 		}
--	case IUCV_DISCONN:   /* fall through */
-+		/* fall through */
-+
-+	case IUCV_DISCONN:
- 		sk->sk_state = IUCV_CLOSING;
- 		sk->sk_state_change(sk);
- 
-@@ -525,8 +527,9 @@ static void iucv_sock_close(struct sock *sk)
- 					iucv_sock_in_state(sk, IUCV_CLOSED, 0),
- 					timeo);
- 		}
-+		/* fall through */
- 
--	case IUCV_CLOSING:   /* fall through */
-+	case IUCV_CLOSING:
- 		sk->sk_state = IUCV_CLOSED;
- 		sk->sk_state_change(sk);
- 
-@@ -535,8 +538,9 @@ static void iucv_sock_close(struct sock *sk)
- 
- 		skb_queue_purge(&iucv->send_skb_q);
- 		skb_queue_purge(&iucv->backlog_skb_q);
-+		/* fall through */
- 
--	default:   /* fall through */
-+	default:
- 		iucv_sever_path(sk, 1);
- 	}
- 
-@@ -2247,10 +2251,10 @@ static int afiucv_hs_rcv(struct sk_buff *skb, struct net_device *dev,
- 			kfree_skb(skb);
- 			break;
- 		}
--		/* fall through and receive non-zero length data */
-+		/* fall through - and receive non-zero length data */
- 	case (AF_IUCV_FLAG_SHT):
- 		/* shutdown request */
--		/* fall through and receive zero length data */
-+		/* fall through - and receive zero length data */
- 	case 0:
- 		/* plain data frame */
- 		IUCV_SKB_CB(skb)->class = trans_hdr->iucv_hdr.class;
--- 
-2.22.0
-
+	  Andrew
