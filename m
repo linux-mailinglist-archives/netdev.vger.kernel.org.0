@@ -2,143 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EACC78980
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 12:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3547478949
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 12:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387413AbfG2KRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 06:17:04 -0400
-Received: from mail.kapsi.fi ([91.232.154.25]:41637 "EHLO mail.kapsi.fi"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726358AbfG2KRE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 06:17:04 -0400
-X-Greylist: delayed 1870 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 06:17:03 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=nAOqsxTyQ4gYltZdfhxaj3SXIvjncVO2sE1nkzwLk4E=; b=tFKJc9Yt/mc9zFIxobPi3ypDnT
-        FuFFk4dfGUY/bNKduZtIu8/UzABRB1Mha/OY/Ka8bOZirm+sTiODILWjX4eI+TPKltxOPPiQlbBWf
-        lcHn1Z0FzpIT4jJpnngoKPRCpZkJSiAYOKF0inIIvZbjXYs/JEN1xIMWhsW+oqqxsCRG8jjpVYtwH
-        xIu5UVDbY4tj1Vq8rYyxrZzG8FuW5l7NvTl6UJXLmzrim4oCDDlYgIVT73gKTNknPKxmV2BKUwywp
-        /lusWQQUCCBhcY3HRSvCHguQ35UYGPRHyFfrjCxbM/1CiWrqTaSa0O7WpHNTzhkMPxg/krGIShmVI
-        9u4ITH2A==;
-Received: from [193.209.96.43] (helo=[10.21.26.179])
-        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <cyndis@kapsi.fi>)
-        id 1hs2Dn-0007rJ-W0; Mon, 29 Jul 2019 12:45:36 +0300
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-To:     Jon Hunter <jonathanh@nvidia.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Lars Persson <lists@bofh.nu>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <BN8PR12MB32661E919A8DEBC7095BAA12D3C80@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20190722101830.GA24948@apalos>
- <CADnJP=thexf2sWcVVOLWw14rpteEj0RrfDdY8ER90MpbNN4-oA@mail.gmail.com>
- <BN8PR12MB326661846D53AAEE315A7434D3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
- <11557fe0-0cba-cb49-0fb6-ad24792d4a53@nvidia.com>
- <BN8PR12MB3266664ECA192E02C06061EED3C40@BN8PR12MB3266.namprd12.prod.outlook.com>
- <BYAPR12MB3269A725AFDDA21E92946558D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <ab14f31f-2045-b1be-d31f-2a81b8527dac@nvidia.com>
- <BYAPR12MB32692AF2BA127C5DA5B74804D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <2ad7bf21-1f1f-db0f-2358-4901b7988b7d@nvidia.com>
- <BYAPR12MB3269D050556BD51030DCDDFCD3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <8093e352-d992-e17f-7168-5afbd9d3fb3f@nvidia.com>
- <BYAPR12MB3269EC45ABAF8F279288B003D3C70@BYAPR12MB3269.namprd12.prod.outlook.com>
- <f3525260-c43f-c983-0b5b-34a83bd53283@nvidia.com>
-From:   Mikko Perttunen <cyndis@kapsi.fi>
-Message-ID: <299d1803-fc5c-9298-3d10-582e76b47a9e@kapsi.fi>
-Date:   Mon, 29 Jul 2019 12:45:25 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <f3525260-c43f-c983-0b5b-34a83bd53283@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 193.209.96.43
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+        id S1728133AbfG2KLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 06:11:14 -0400
+Received: from mail-pg1-f172.google.com ([209.85.215.172]:39841 "EHLO
+        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726358AbfG2KLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 06:11:14 -0400
+Received: by mail-pg1-f172.google.com with SMTP id u17so28007062pgi.6
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 03:11:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=hjnHrIoiyTd4+k+1YYZaghy8VywTzr16ySF99/m0V+8=;
+        b=Ph2+NL7ySbyQQr9CdgiVB8B21oJZx2KSNjyy45TcbQaPtBHvAzvHGCrOszF9zCFXbm
+         LKRhfQnGjGbn/235taubOzBabLeeiLmBvDp/Lg9EUE1Dgc3dZNFDKZiq4ERE2h095b2l
+         2xMmKZPz+SR7frqOD+vcE7VXyX61p1OcExU8M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=hjnHrIoiyTd4+k+1YYZaghy8VywTzr16ySF99/m0V+8=;
+        b=tiLG5h5yIydR9M2qYlfehn3+FinK6v4yQst9STXJepRwM1Mb2/Cwh5X6aFXZmPRurK
+         l8mR/hTKv+adevxlJb6tLnW+88C4zrQF9yTUvq4YZJViuYwsQwjQ1qOFtH1b9M0nLaaR
+         fHHgy9qDooUMw5oqH7N6zd3dD7njwqPi3eyU3++u4DkYAyVlNnZRIxtabEudhN7c2kJh
+         nsEgvWo4JqRIuBkXJn+4BQD06FoVSSpOC82Ve3F2Et5yMmpwgoADhv9pcUD56Xon0ZKw
+         xwwzeGZuNyLV93IP9KMNX2fqhs0zYiwmbRxvJ8ZOHghmwt8jpowSgJYvfY23sDpuHOAL
+         6JRg==
+X-Gm-Message-State: APjAAAU2+wJ3Us6PpDBBivs/vgzazE3tg5fg6htzh0nNoV1OJmevUPEM
+        p0hpq4hPe49FR2chYqcrkHaDbcYK9zs=
+X-Google-Smtp-Source: APXvYqwnU9wFG2ng895FyyFNKNzfzNyjFjZECF9ISjEp90anAZpDNGENZpS8b9ykFjBZFPzJxbdx6g==
+X-Received: by 2002:a17:90a:bb0c:: with SMTP id u12mr113041748pjr.132.1564395073494;
+        Mon, 29 Jul 2019 03:11:13 -0700 (PDT)
+Received: from localhost.dhcp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id e124sm99045812pfh.181.2019.07.29.03.11.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 03:11:13 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 00/16] bnxt_en: Add TPA (GRO_HW and LRO) on 57500 chips.
+Date:   Mon, 29 Jul 2019 06:10:17 -0400
+Message-Id: <1564395033-19511-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My understanding is that Tegra186 does not have DMA coherency, but 
-Tegra194 does.
+This patchset adds TPA v2 support on the 57500 chips.  TPA v2 is
+different from the legacy TPA scheme on older chips and requires major
+refactoring and restructuring of the existing TPA logic.  The main
+difference is that the new TPA v2 has on-the-fly aggregation buffer
+completions before a TPA packet is completed.  The larger aggregation
+ID space also requires a new ID mapping logic to make it more
+memory efficient.
 
-Mikko
+Michael Chan (16):
+  bnxt_en: Update firmware interface spec. to 1.10.0.89.
+  bnxt_en: Add TPA structure definitions for BCM57500 chips.
+  bnxt_en: Refactor TPA logic.
+  bnxt_en: Expand bnxt_tpa_info struct to support 57500 chips.
+  bnxt_en: Handle standalone RX_AGG completions.
+  bnxt_en: Refactor tunneled hardware GRO logic.
+  bnxt_en: Set TPA GRO mode flags on 57500 chips properly.
+  bnxt_en: Add fast path logic for TPA on 57500 chips.
+  bnxt_en: Add TPA ID mapping logic for 57500 chips.
+  bnxt_en: Add hardware GRO setup function for 57500 chips.
+  bnxt_en: Refactor ethtool ring statistics logic.
+  bnxt_en: Allocate the larger per-ring statistics block for 57500
+    chips.
+  bnxt_en: Support TPA counters on 57500 chips.
+  bnxt_en: Refactor bnxt_init_one() and turn on TPA support on 57500
+    chips.
+  bnxt_en: Support all variants of the 5750X chip family.
+  bnxt_en: Add PCI IDs for 57500 series NPAR devices.
 
-On 23.7.2019 16.34, Jon Hunter wrote:
-> 
-> On 23/07/2019 13:51, Jose Abreu wrote:
->> From: Jon Hunter <jonathanh@nvidia.com>
->> Date: Jul/23/2019, 12:58:55 (UTC+00:00)
->>
->>>
->>> On 23/07/2019 11:49, Jose Abreu wrote:
->>>> From: Jon Hunter <jonathanh@nvidia.com>
->>>> Date: Jul/23/2019, 11:38:33 (UTC+00:00)
->>>>
->>>>>
->>>>> On 23/07/2019 11:07, Jose Abreu wrote:
->>>>>> From: Jon Hunter <jonathanh@nvidia.com>
->>>>>> Date: Jul/23/2019, 11:01:24 (UTC+00:00)
->>>>>>
->>>>>>> This appears to be a winner and by disabling the SMMU for the ethernet
->>>>>>> controller and reverting commit 954a03be033c7cef80ddc232e7cbdb17df735663
->>>>>>> this worked! So yes appears to be related to the SMMU being enabled. We
->>>>>>> had to enable the SMMU for ethernet recently due to commit
->>>>>>> 954a03be033c7cef80ddc232e7cbdb17df735663.
->>>>>>
->>>>>> Finally :)
->>>>>>
->>>>>> However, from "git show 954a03be033c7cef80ddc232e7cbdb17df735663":
->>>>>>
->>>>>> +         There are few reasons to allow unmatched stream bypass, and
->>>>>> +         even fewer good ones.  If saying YES here breaks your board
->>>>>> +         you should work on fixing your board.
->>>>>>
->>>>>> So, how can we fix this ? Is your ethernet DT node marked as
->>>>>> "dma-coherent;" ?
->>>>>
->>>>> TBH I have no idea. I can't say I fully understand your change or how it
->>>>> is breaking things for us.
->>>>>
->>>>> Currently, the Tegra DT binding does not have 'dma-coherent' set. I see
->>>>> this is optional, but I am not sure how you determine whether or not
->>>>> this should be set.
->>>>
->>>>  From my understanding it means that your device / IP DMA accesses are coherent regarding the CPU point of view. I think it will be the case if GMAC is not behind any kind of IOMMU in the HW arch.
->>>
->>> I understand what coherency is, I just don't know how you tell if this
->>> implementation of the ethernet controller is coherent or not.
->>
->> Do you have any detailed diagram of your HW ? Such as blocks / IPs
->> connection, address space wiring , ...
-> 
-> Yes, this can be found in the Tegra X2 Technical Reference Manual [0].
-> Unfortunately, you need to create an account to download it.
-> 
-> Jon
-> 
-> [0] https://developer.nvidia.com/embedded/dlc/parker-series-trm
-> 
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 542 +++++++++++++++-------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  95 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 156 +++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h     | 109 ++++-
+ 4 files changed, 666 insertions(+), 236 deletions(-)
+
+-- 
+2.5.1
+
