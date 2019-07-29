@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4591978441
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 06:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E9E7844D
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 07:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726262AbfG2Emr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 00:42:47 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43727 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbfG2Emr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 00:42:47 -0400
-Received: by mail-pl1-f193.google.com with SMTP id 4so19997692pld.10
-        for <netdev@vger.kernel.org>; Sun, 28 Jul 2019 21:42:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=l92voTIZEyekIch5SAn07z8owJJ0AY4RSH8j88UGsQY=;
-        b=EgI7tgjtQE8yUhxXAyVwkKNWHwNX7a55Hc6LVsWrk090s+9jmw5GYHYiHl6VrX+Wbs
-         CYnktHVRr3WVk1fWJpB0YlfqR3MrOYIQJ7PxyebBweNuDL/86ILJYebFlcwRd+CfUt4A
-         i8KUCRHuBcpN1VbY/HWBusK+vNfvierZZcIJJ4oESJdCRJVC42cQ7i6H+R2GkkT/ZszB
-         TCcRsRkTVE/omKK4Uh4MBfkyX+bVgb4tVOWyH8L9yfgyC76g/UFgV/NjZih8ySK1RVG+
-         ukR24VuewPjwXyExiI6+egl4bwFkXOgBabKBesJUroKnGlNNcPPMOpYqmRW4HynJucDL
-         XWDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=l92voTIZEyekIch5SAn07z8owJJ0AY4RSH8j88UGsQY=;
-        b=TAE+dDFHMAW8iHA4Ee2V8ZF65H9R35SIIE/1vABBrwJ6OnwzoiPMDOP7titUUEkTrg
-         np4F419sF0bkR7xs7HOI7Re9p7bbEkGaCb82p4X1ZOANp0l9OVkbG3MvoKQ14XyAhF6n
-         BHbaBsKwa8T6xEb4bdshxecOfKEoXC/moUTBqUNh+cFPR0Q2Eryx1fswzNzrmgf74P4o
-         5VE4exlIp7sA6idcXOjv7GP1HwR0AquEruHWza9+QzTcAFjId20srXfbbyLkqZ+ZKmn6
-         JmsBtjIDoCcpBHEi18Wpe4Ff+SSp43q388b1zEHcgO/dNJkeFbTh8BJyAYSGqRMUim4a
-         Hjdw==
-X-Gm-Message-State: APjAAAV16+UNn9ooFI2NH8FBPFqKNZYD6j4sWmLemKgdF9t12RJkfU1h
-        ATPQfFMZnk+AsMKEmBHDjTK97YmNg1A=
-X-Google-Smtp-Source: APXvYqx8ZF3Tm6npsTxWEJVnTfZuXsgkJ+7nkec8proE/fymVNYurnzUJ2SETiDP0IkOexKMOSP5cQ==
-X-Received: by 2002:a17:902:a607:: with SMTP id u7mr108807346plq.43.1564375366836;
-        Sun, 28 Jul 2019 21:42:46 -0700 (PDT)
-Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id w16sm72704191pfj.85.2019.07.28.21.42.46
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 28 Jul 2019 21:42:46 -0700 (PDT)
-Date:   Sun, 28 Jul 2019 21:42:37 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 2/3] flow_offload: Support get default block
- from tc immediately
-Message-ID: <20190728214237.2c0687db@cakuba.netronome.com>
-In-Reply-To: <5eed91c1-20ed-c08c-4700-979392bc5f33@ucloud.cn>
-References: <1564296769-32294-1-git-send-email-wenxu@ucloud.cn>
-        <1564296769-32294-3-git-send-email-wenxu@ucloud.cn>
-        <20190728131653.6af72a87@cakuba.netronome.com>
-        <5eed91c1-20ed-c08c-4700-979392bc5f33@ucloud.cn>
-Organization: Netronome Systems, Ltd.
+        id S1726578AbfG2FB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 01:01:27 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:60140 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbfG2FB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 01:01:26 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id B4AEB6030E; Mon, 29 Jul 2019 05:01:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564376485;
+        bh=mIl0s08L7PkWOZYSA0TvcEa/OieZYgjExvg6P8P+lCw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZEUyHitlrJiUW4ROToV45adY2H51/pDubzbOjmU1k5S5r9nFjW9TULJv3pDo9KjjK
+         wD0oDoarJTpUSfke7chy7NtybbBWN2fStcgWoJ4kQod9UHzsYXWIo5ni7dTYnAilb+
+         MuUsBNw7XH1LCDQGZpjCWWZ0dY/rqaLukEehiSig=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id E1BD96030E;
+        Mon, 29 Jul 2019 05:01:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564376484;
+        bh=mIl0s08L7PkWOZYSA0TvcEa/OieZYgjExvg6P8P+lCw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Mo4++OukuoACyl7UMTY7E16qw8N1TkxYHCxpuvYRLuDJTZiuXeWW0QNXVLK7DFY1k
+         id0oIh6tq5VwoceK1hYZ58fecBe23u0UmYwoy6pN/ZtvDZ2prapYm8WH8v5Txe9CM4
+         2feOz+CX8sfShMqZcu0ZN8F5LTLmQMvxcJb/W7E0=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 29 Jul 2019 13:01:24 +0800
+From:   xiaofeis@codeaurora.org
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, vkoul@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        niklas.cassel@linaro.org, xiazha@codeaurora.org
+Subject: Re: [PATCH v3] net: dsa: qca8k: enable port flow control
+In-Reply-To: <20190728223114.GD23125@lunn.ch>
+References: <1564275470-52666-1-git-send-email-xiaofeis@codeaurora.org>
+ <20190728223114.GD23125@lunn.ch>
+Message-ID: <fa444b03b42a2cb72037bc73a62f1976@codeaurora.org>
+X-Sender: xiaofeis@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Jul 2019 10:43:56 +0800, wenxu wrote:
-> On 7/29/2019 4:16 AM, Jakub Kicinski wrote:
-> > I don't know the nft code, but it seems unlikely it wouldn't have the
-> > same problem/need.. =20
->=20
-> nft don't have the same problem.=C2=A0 The offload rule can only attached
-> to offload base chain.
->=20
-> Th=C2=A0 offload base chain is created after the device driver loaded (the
-> device exist).
+On 2019-07-29 06:31, Andrew Lunn wrote:
+> On Sun, Jul 28, 2019 at 08:57:50AM +0800, xiaofeis wrote:
+>> Set phy device advertising to enable MAC flow control.
+> 
+> Hi Xiaofei.
+> 
+> This is half of the needed change for MAC flow control.
+> 
+> phy_support_asym_pause(phy) is used by the MAC to tell the PHY layer
+> that the MAC supports flow control. The PHY will then advertise
+> this. When auto-negotiation is completed, the PHY layer will call
+> qca8k_adjust_link() with the results. It could be that the peer does
+> not support flow control, or only supports symmetric flow control.  So
+> in that function, you need to program the MAC with the results of the
+> auto-neg. This is currently missing. You need to look at phydev->pause
+> and phydev->asym_pause to decide how to configure the MAC.
+> 
+>        Andrew
+Hi Andrew
 
-For indirect blocks the block is on the tunnel device and the offload
-target is another device. E.g. you offload rules from a VXLAN device
-onto the ASIC. The ASICs driver does not have to be loaded when VXLAN
-device is created.
+You are correct. With the change, the auto-negotiation result still 
+depends on the peer.
 
-So I feel like either the chain somehow directly references the offload
-target (in which case the indirect infrastructure with hash lookup etc
-is not needed for nft), or indirect infra is needed, and we need to take
-care of replays.
+But our qca8k HW can auto sync the pause status to MAC from phy with the 
+auto-negotiated result.
+So no need to set in qca8k_adjust_link, since there is one setting in 
+qca8k_port_set_status: mask |= QCA8K_PORT_STATUS_LINK_AUTO;
+
+This change's purpose is to keep enable advertise on our side.
+
+Thanks
+Xiaofeis
