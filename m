@@ -2,235 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28271799CE
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:21:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D707C799D3
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:22:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729462AbfG2UVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 16:21:07 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:33890 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727592AbfG2UVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:21:06 -0400
-Received: by mail-lj1-f195.google.com with SMTP id p17so59860358ljg.1;
-        Mon, 29 Jul 2019 13:21:04 -0700 (PDT)
+        id S2387518AbfG2UWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 16:22:12 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39952 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729661AbfG2UVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:21:13 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w10so28814664pgj.7
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 13:21:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iIQJKZRKOL1tmqUR0VqArPUqUY3iTdT6W4lMEhezlQI=;
-        b=l4w8oEw9mwVVy4sDFRliMYfXKLZfqdlHa69GAIg+FzUdcSB/aJ0J7wmzNp5nbNCpeL
-         8rTxVTB97aL6UIVhTLOuoPCtrmuzCynhFr60INg68YVThWh949mNp0eUGHpigjzLdETh
-         vwo5eSMFPHb83hYsPmGt3C1qFNoJjTyODcjzlSeZur6YolyfmSrL+prGwZSV9GfDdKwA
-         JvK82T1YcaNpbP+IHs9jLTI/2llNTV9hPzZYMzxhNfSX5iAOA9FSHjbZt5lop8wfYYVR
-         3+sJFyrDK+iYPknP61EEAV/gMMvTQyzzL3fOpwwvav9Ry53NCX6vg+nILDz8Agssmbex
-         eVBQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aYjeni8hi9gCIqKfEF7sAzYP+NCIvwRDXRNk1O+7eI8=;
+        b=lu8LmvH26Ask+6l46/3kuEjRxOx+2JtkDCvfaTqlYwMrkrs8y8HNe/M9lngZ0qu87n
+         C/4XBPHwfebrr9JOauQ4k9K85B912iLOGW8dFuayPx6dkqgWc+GmheO6dZTJMVbAuM91
+         URtpgqh71mbPafjrnI16VI3tQyn02GFTipFvToePkrft6jBDgP5Hs0wMPVv1op4avo/N
+         4sQOrA6taIszNfl2AMgq6rgK6E5HG7XQ/8aohm8zM0ARr/zlUUAq4WiuWRqhQFRnHDUF
+         0lJZ5rB2NMWaWo9XC4yDRkPWBb4dRkkdWsShrr8QmOeFlIVtZGBCsQ3vq4TRhAu4ZNMm
+         25Mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iIQJKZRKOL1tmqUR0VqArPUqUY3iTdT6W4lMEhezlQI=;
-        b=uKH+5iXf2Tc/LNmldfEO/uj/8wZDVn8ABKKLVZD6pzxbOmbeVQSwgkM3lMBws3DfM/
-         esvmJDsvP29Jo7t07LLbp0zHP36kNQHkP2TNoJk3RgilbZH4Hy2n51iRsiCNJbSvw5df
-         Kd/mv7RxKDBUr4ekqmmGiVjntVu/V1Ir4L2suvilch+uDCgRXDS2MSoAoCD2x3Dwy3Qj
-         4UmA8P2pLpWCBq6ajSeJMF+WUrnGZOfHZzcSeTxEZl3OFygpCJbqa9ky7di0Q4o9+rn3
-         Kf5GYVd6Muv2DGvLIIjY1D8BoKV0p8aBPB4YvRvWfaK5Ywism+mR6wU9FgYyZW7HGO+Y
-         MtxA==
-X-Gm-Message-State: APjAAAUgY8wUcCvBcKBPAXUZDM4JcZlNzzerh/23LzPXdvX6wg5gwg3x
-        QA9Bli8DEpGmmwUEdp9DwGLKU2q1CaKUQEELqlo=
-X-Google-Smtp-Source: APXvYqxdXEla5zA4nGkyccynmSe9rHzCFFk0GXKDyq4aKaiY81H+4A+j0tvpDvHQWBn1fJ1TCp46yrCd32vJELZhsIk=
-X-Received: by 2002:a2e:9a19:: with SMTP id o25mr59468288lji.63.1564431663951;
- Mon, 29 Jul 2019 13:21:03 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aYjeni8hi9gCIqKfEF7sAzYP+NCIvwRDXRNk1O+7eI8=;
+        b=j+iJNt0hZjXwAwm2JZhEMy2ZRHFY/RdAQGxWvn8nX+58j65rEaH7qVyFTIQUT9f7rY
+         8hxLmXB5aP8R+DDbnX4N0pa/blYhw3sGDrQn8NHOQVjdoLFtFEKVC5b6RbUG1+ynq2/7
+         6lzBl6zmiVcB9e5QOWUP4l34RduXj47w+mSI+S/1gOdyrO8XM5hBj2DNu6OtzaFbhuvb
+         a+21PNYkTVAUUGOA3OG35bcILxsTnslV0S7HG42md7QNp7giZrdj0J1n7jQViYC5aokr
+         hzVuG27mFVF1zl0CBF9fCBN3fjQZ02kWDsQC3SpiXGkaDF8wcoFw13OMm6p++DPTbm8F
+         2F0w==
+X-Gm-Message-State: APjAAAVTWaK8bviizBtq//R1O5ZbqCFnWEKcYMNT9mfwS+2u1ZWV8oV4
+        8GupSmB9tz5VVEpQC6QfXNo=
+X-Google-Smtp-Source: APXvYqzFLkgKRwSWN29j++F9rPPSIffXulHyhX08DVr0wiEiWcBDyVu299L5v3Kzw5JNqN8bVqAfpg==
+X-Received: by 2002:a63:6c46:: with SMTP id h67mr97842229pgc.248.1564431673184;
+        Mon, 29 Jul 2019 13:21:13 -0700 (PDT)
+Received: from [172.27.227.219] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id x24sm59334420pgl.84.2019.07.29.13.21.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 13:21:12 -0700 (PDT)
+Subject: Re: [patch iproute2 1/2] devlink: introduce cmdline option to switch
+ to a different namespace
+To:     Jiri Pirko <jiri@resnulli.us>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
+        <toke@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
+        mlxsw@mellanox.com
+References: <20190727094459.26345-1-jiri@resnulli.us>
+ <20190727100544.28649-1-jiri@resnulli.us> <87ef2bwztr.fsf@toke.dk>
+ <20190727102116.GC2843@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d590ac7b-9dc7-41e2-e411-79ac4654c709@gmail.com>
+Date:   Mon, 29 Jul 2019 14:21:11 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190724192742.1419254-1-andriin@fb.com>
-In-Reply-To: <20190724192742.1419254-1-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Mon, 29 Jul 2019 13:20:52 -0700
-Message-ID: <CAPhsuW4hd2NJU5VZAwXDTMwrJRA4O-O2iNm8OywtJd0EZd5DmA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 00/10] CO-RE offset relocations
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190727102116.GC2843@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 1:34 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> This patch set implements central part of CO-RE (Compile Once - Run
-> Everywhere, see [0] and [1] for slides and video): relocating field offsets.
-> Most of the details are written down as comments to corresponding parts of the
-> code.
->
-> Patch #1 adds loading of .BTF.ext offset relocations section and macros to
-> work with its contents.
-> Patch #2 implements CO-RE relocations algorithm in libbpf.
-> Patches #3-#10 adds selftests validating various parts of relocation handling,
-> type compatibility, etc.
->
-> For all tests to work, you'll need latest Clang/LLVM supporting
-> __builtin_preserve_access_index intrinsic, used for recording offset
-> relocations. Kernel on which selftests run should have BTF information built
-> in (CONFIG_DEBUG_INFO_BTF=y).
->
->   [0] http://vger.kernel.org/bpfconf2019.html#session-2
->   [1] http://vger.kernel.org/lpc-bpf2018.html#session-2CO-RE relocations
->
-> This patch set implements central part of CO-RE (Compile Once - Run
-> Everywhere, see [0] and [1] for slides and video): relocating field offsets.
-> Most of the details are written down as comments to corresponding parts of the
-> code.
->
-> Patch #1 adds loading of .BTF.ext offset relocations section and macros to
-> work with its contents.
-> Patch #2 implements CO-RE relocations algorithm in libbpf.
-> Patches #3-#10 adds selftests validating various parts of relocation handling,
-> type compatibility, etc.
->
-> For all tests to work, you'll need latest Clang/LLVM supporting
-> __builtin_preserve_access_index intrinsic, used for recording offset
-> relocations. Kernel on which selftests run should have BTF information built
-> in (CONFIG_DEBUG_INFO_BTF=y).
->
->   [0] http://vger.kernel.org/bpfconf2019.html#session-2
->   [1] http://vger.kernel.org/lpc-bpf2018.html#session-2
->
-> Andrii Nakryiko (10):
->   libbpf: add .BTF.ext offset relocation section loading
->   libbpf: implement BPF CO-RE offset relocation algorithm
->   selftests/bpf: add CO-RE relocs testing setup
->   selftests/bpf: add CO-RE relocs struct flavors tests
->   selftests/bpf: add CO-RE relocs nesting tests
->   selftests/bpf: add CO-RE relocs array tests
->   selftests/bpf: add CO-RE relocs enum/ptr/func_proto tests
->   selftests/bpf: add CO-RE relocs modifiers/typedef tests
->   selftest/bpf: add CO-RE relocs ptr-as-array tests
->   selftests/bpf: add CO-RE relocs ints tests
->
->  tools/lib/bpf/btf.c                           |  64 +-
->  tools/lib/bpf/btf.h                           |   4 +
->  tools/lib/bpf/libbpf.c                        | 866 +++++++++++++++++-
->  tools/lib/bpf/libbpf.h                        |   1 +
->  tools/lib/bpf/libbpf_internal.h               |  91 ++
->  .../selftests/bpf/prog_tests/core_reloc.c     | 363 ++++++++
->  .../bpf/progs/btf__core_reloc_arrays.c        |   3 +
->  .../btf__core_reloc_arrays___diff_arr_dim.c   |   3 +
->  ...btf__core_reloc_arrays___diff_arr_val_sz.c |   3 +
->  .../btf__core_reloc_arrays___err_non_array.c  |   3 +
->  ...btf__core_reloc_arrays___err_too_shallow.c |   3 +
->  .../btf__core_reloc_arrays___err_too_small.c  |   3 +
->  ..._core_reloc_arrays___err_wrong_val_type1.c |   3 +
->  ..._core_reloc_arrays___err_wrong_val_type2.c |   3 +
->  .../bpf/progs/btf__core_reloc_flavors.c       |   3 +
->  .../btf__core_reloc_flavors__err_wrong_name.c |   3 +
->  .../bpf/progs/btf__core_reloc_ints.c          |   3 +
->  .../bpf/progs/btf__core_reloc_ints___bool.c   |   3 +
->  .../btf__core_reloc_ints___err_bitfield.c     |   3 +
->  .../btf__core_reloc_ints___err_wrong_sz_16.c  |   3 +
->  .../btf__core_reloc_ints___err_wrong_sz_32.c  |   3 +
->  .../btf__core_reloc_ints___err_wrong_sz_64.c  |   3 +
->  .../btf__core_reloc_ints___err_wrong_sz_8.c   |   3 +
->  .../btf__core_reloc_ints___reverse_sign.c     |   3 +
->  .../bpf/progs/btf__core_reloc_mods.c          |   3 +
->  .../progs/btf__core_reloc_mods___mod_swap.c   |   3 +
->  .../progs/btf__core_reloc_mods___typedefs.c   |   3 +
->  .../bpf/progs/btf__core_reloc_nesting.c       |   3 +
->  .../btf__core_reloc_nesting___anon_embed.c    |   3 +
->  ...f__core_reloc_nesting___dup_compat_types.c |   5 +
->  ...core_reloc_nesting___err_array_container.c |   3 +
->  ...tf__core_reloc_nesting___err_array_field.c |   3 +
->  ...e_reloc_nesting___err_dup_incompat_types.c |   4 +
->  ...re_reloc_nesting___err_missing_container.c |   3 +
->  ...__core_reloc_nesting___err_missing_field.c |   3 +
->  ..._reloc_nesting___err_nonstruct_container.c |   3 +
->  ...e_reloc_nesting___err_partial_match_dups.c |   4 +
->  .../btf__core_reloc_nesting___err_too_deep.c  |   3 +
->  .../btf__core_reloc_nesting___extra_nesting.c |   3 +
->  ..._core_reloc_nesting___struct_union_mixup.c |   3 +
->  .../bpf/progs/btf__core_reloc_primitives.c    |   3 +
->  ...f__core_reloc_primitives___diff_enum_def.c |   3 +
->  ..._core_reloc_primitives___diff_func_proto.c |   3 +
->  ...f__core_reloc_primitives___diff_ptr_type.c |   3 +
->  ...tf__core_reloc_primitives___err_non_enum.c |   3 +
->  ...btf__core_reloc_primitives___err_non_int.c |   3 +
->  ...btf__core_reloc_primitives___err_non_ptr.c |   3 +
->  .../bpf/progs/btf__core_reloc_ptr_as_arr.c    |   3 +
->  .../btf__core_reloc_ptr_as_arr___diff_sz.c    |   3 +
->  .../selftests/bpf/progs/core_reloc_types.h    | 642 +++++++++++++
->  .../bpf/progs/test_core_reloc_arrays.c        |  58 ++
->  .../bpf/progs/test_core_reloc_flavors.c       |  65 ++
->  .../bpf/progs/test_core_reloc_ints.c          |  48 +
->  .../bpf/progs/test_core_reloc_kernel.c        |  39 +
->  .../bpf/progs/test_core_reloc_mods.c          |  68 ++
->  .../bpf/progs/test_core_reloc_nesting.c       |  48 +
->  .../bpf/progs/test_core_reloc_primitives.c    |  50 +
->  .../bpf/progs/test_core_reloc_ptr_as_arr.c    |  34 +
->  58 files changed, 2527 insertions(+), 47 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/core_reloc.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_dim.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_val_sz.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_non_array.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_shallow.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_small.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_enum_def.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_func_proto.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_ptr_type.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_enum.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_int.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_ptr.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr.c
->  create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr___diff_sz.c
->  create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_primitives.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ptr_as_arr.c
+On 7/27/19 4:21 AM, Jiri Pirko wrote:
+>>> diff --git a/devlink/devlink.c b/devlink/devlink.c
+>>> index d8197ea3a478..9242cc05ad0c 100644
+>>> --- a/devlink/devlink.c
+>>> +++ b/devlink/devlink.c
+>>> @@ -32,6 +32,7 @@
+>>>  #include "mnlg.h"
+>>>  #include "json_writer.h"
+>>>  #include "utils.h"
+>>> +#include "namespace.h"
+>>>  
+>>>  #define ESWITCH_MODE_LEGACY "legacy"
+>>>  #define ESWITCH_MODE_SWITCHDEV "switchdev"
+>>> @@ -6332,7 +6333,7 @@ static int cmd_health(struct dl *dl)
+>>>  static void help(void)
+>>>  {
+>>>  	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
+>>> -	       "       devlink [ -f[orce] ] -b[atch] filename\n"
+>>> +	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns]
+>>>  netnsname\n"
+>>
+>> 'ip' uses lower-case n for this; why not be consistent?
+> 
+> Because "n" is taken :/
 
-We have created a lot of small files. Would it be cleaner if we can
-somehow put these
-data in one file (maybe different sections?).
-
-Alternatively, maybe create a folder for these files:
-  tools/testing/selftests/bpf/progs/core/
-
-Thanks,
-Song
+that's really unfortunate. commands within a package should have similar
+syntax and -n/N are backwards between ip/tc and devlink. That's the
+stuff that drives users crazy.
