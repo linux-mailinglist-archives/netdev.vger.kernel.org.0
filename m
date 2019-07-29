@@ -2,96 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C41D78E51
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE6778E5D
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 16:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387676AbfG2OqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 10:46:05 -0400
-Received: from mga18.intel.com ([134.134.136.126]:13899 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727567AbfG2OqE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 10:46:04 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Jul 2019 06:35:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,322,1559545200"; 
-   d="scan'208";a="371057490"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 29 Jul 2019 06:35:18 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 12C5F708; Mon, 29 Jul 2019 16:35:15 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?UTF-8?q?Cl=C3=A9ment=20Perrochaud?= 
-        <clement.perrochaud@effinnov.com>,
-        Charles Gorand <charles.gorand@effinnov.com>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Sedat Dilek <sedat.dilek@credativ.de>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH v4 07/14] NFC: nxp-nci: Get rid of useless label
-Date:   Mon, 29 Jul 2019 16:35:07 +0300
-Message-Id: <20190729133514.13164-8-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
-References: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
+        id S2387680AbfG2OtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 10:49:04 -0400
+Received: from gateway36.websitewelcome.com ([192.185.195.25]:26584 "EHLO
+        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726556AbfG2OtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 10:49:03 -0400
+X-Greylist: delayed 1435 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jul 2019 10:49:03 EDT
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway36.websitewelcome.com (Postfix) with ESMTP id AD4F0400C8F52
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 08:49:12 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id s6aJhrfd790ons6aJhjIzq; Mon, 29 Jul 2019 09:25:07 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=NBg3ypbm56vJ5nByaMp1eHrBG/oKINIBK+Vq+wESKT0=; b=A7uomH9Hb4wDBRLWnhYsJYAm7d
+        FNXmzwRvmbx2dE54sBW398poQFOThzC6Re1aLy1TBI6QAZY7G0ixMNgyT2/rOih1iZoS3XTrw8Vdw
+        9mKhy+5taaBkKjM7FdByOfZT6fnYet9UevPJUQHn5HurjFBKCTNEEwjLJwcseIv2bfMlGyj25/34d
+        8J36GY+IAE90BzW425xXPtX+ellj4uw+yTI1sxvvOOBTUzQD4lv/2ZGbR4u3+9CI2IDMx8x4ZFLuq
+        NTTej80qtXt2gs+dgDXZaZqxU0y5/CvgC8MeIh7LCdl4SgQz7cCdnExD8KT+mn++DHVxpHvXEOU69
+        YeWTw38Q==;
+Received: from [187.192.11.120] (port=50414 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hs6aH-002Hdm-Vp; Mon, 29 Jul 2019 09:25:06 -0500
+Date:   Mon, 29 Jul 2019 09:25:03 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH] arcnet: com20020-isa: Mark expected switch fall-throughs
+Message-ID: <20190729142503.GA7917@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.192.11.120
+X-Source-L: No
+X-Exim-ID: 1hs6aH-002Hdm-Vp
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [187.192.11.120]:50414
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 3
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return directly in ->probe() since there no special cleaning is needed.
+Mark switch cases where we are expecting to fall through.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+This patch fixes the following warnings:
+
+drivers/net/arcnet/com20020-isa.c: warning: this statement may fall
+through [-Wimplicit-fallthrough=]:  => 205:13, 203:10, 209:7, 201:11,
+207:8
+
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/nfc/nxp-nci/i2c.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/net/arcnet/com20020-isa.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index 6a627d1b6f85..bec9b1ea78e2 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -265,16 +265,13 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
- 
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
- 		nfc_err(&client->dev, "Need I2C_FUNC_I2C\n");
--		r = -ENODEV;
--		goto probe_exit;
-+		return -ENODEV;
+diff --git a/drivers/net/arcnet/com20020-isa.c b/drivers/net/arcnet/com20020-isa.c
+index 28510e33924f..cd27fdc1059b 100644
+--- a/drivers/net/arcnet/com20020-isa.c
++++ b/drivers/net/arcnet/com20020-isa.c
+@@ -197,16 +197,22 @@ static int __init com20020isa_setup(char *s)
+ 	switch (ints[0]) {
+ 	default:		/* ERROR */
+ 		pr_info("Too many arguments\n");
++		/* Fall through */
+ 	case 6:		/* Timeout */
+ 		timeout = ints[6];
++		/* Fall through */
+ 	case 5:		/* CKP value */
+ 		clockp = ints[5];
++		/* Fall through */
+ 	case 4:		/* Backplane flag */
+ 		backplane = ints[4];
++		/* Fall through */
+ 	case 3:		/* Node ID */
+ 		node = ints[3];
++		/* Fall through */
+ 	case 2:		/* IRQ */
+ 		irq = ints[2];
++		/* Fall through */
+ 	case 1:		/* IO address */
+ 		io = ints[1];
  	}
- 
- 	phy = devm_kzalloc(&client->dev, sizeof(struct nxp_nci_i2c_phy),
- 			   GFP_KERNEL);
--	if (!phy) {
--		r = -ENOMEM;
--		goto probe_exit;
--	}
-+	if (!phy)
-+		return -ENOMEM;
- 
- 	phy->i2c_dev = client;
- 	i2c_set_clientdata(client, phy);
-@@ -298,7 +295,7 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
- 	r = nxp_nci_probe(phy, &client->dev, &i2c_phy_ops,
- 			  NXP_NCI_I2C_MAX_PAYLOAD, &phy->ndev);
- 	if (r < 0)
--		goto probe_exit;
-+		return r;
- 
- 	r = request_threaded_irq(client->irq, NULL,
- 				 nxp_nci_i2c_irq_thread_fn,
-@@ -307,7 +304,6 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
- 	if (r < 0)
- 		nfc_err(&client->dev, "Unable to register IRQ handler\n");
- 
--probe_exit:
- 	return r;
- }
- 
 -- 
-2.20.1
+2.22.0
 
