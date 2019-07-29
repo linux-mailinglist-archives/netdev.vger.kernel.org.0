@@ -2,88 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0F87937D
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 21:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFEE79388
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 21:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728458AbfG2TAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 15:00:32 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:47659 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727089AbfG2TAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 15:00:32 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0523C223A8;
-        Mon, 29 Jul 2019 15:00:31 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 29 Jul 2019 15:00:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=zoiT+g
-        nmstlHX62hYSN+tWp+MTF5CXw+1yLDRuatK1E=; b=qAMJxphOiQsAzo6c3GIY+7
-        oadjOGqBiV902wdjVugJH6zv7YIWIuOesntbkgetd3TOT//vG2/vbfLAdrjwx5D6
-        V3DCylgdDwpWbdj00Mq/B7mMtSb4yMUv3mo5Q6ThzKcv4nsWZsdffv2j0aC+z+Ci
-        FDq+l4x+YBrFgJroPQHe2QEG5YgtE7jfeTkbZMX3Q0zCIAeUv011n5ZIYVm55hu9
-        SIG3OoKCY8yutGG6DKON6fLdP1kFIq/3yiPgiH3epEYubpNPCKC1z9KdOP14Wg1L
-        JylPmo4ueYL2JsVNEe8am+ETh8CONH7GxmIyAyF5ofRuYjK/Qym4pZ7DKdgSPrmA
-        ==
-X-ME-Sender: <xms:TkI_XVTkyLeWpv05TL-ctJITiB_gb4ZMuaMD0oZjoUqvnFuXDy4kpg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrledugddufeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppeejje
-    drudefkedrvdegledrvddtleenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:TkI_XTWRUSDNmDpIaYsUhA7SU1JqBsWgqiGuglRqftryWnrA2hmxPA>
-    <xmx:TkI_XWti81Sa0AnbxKW0b6rqBe-FtbPEZ_kdaCc9kfekBUALJhaeaA>
-    <xmx:TkI_XZs5JTIKNfGxWT4TUPyJ3zVVHz-42Qfqr79S7ACK5-zLEtsDmA>
-    <xmx:TkI_XRT72YBPBroNIap-5w00ykLoswEy5MJF7DMr8SVsRgDOBCMLbA>
-Received: from localhost (unknown [77.138.249.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A5AB7380088;
-        Mon, 29 Jul 2019 15:00:29 -0400 (EDT)
-Date:   Mon, 29 Jul 2019 22:00:15 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH net v2] mlxsw: spectrum_ptp: Increase parsing depth when
- PTP is enabled
-Message-ID: <20190729190015.GA31413@splinter>
-References: <b1584bdec4a0a36a2567a43dc0973dd8f3a05dec.1564424420.git.petrm@mellanox.com>
+        id S1729266AbfG2TD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 15:03:58 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41699 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728414AbfG2TD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 15:03:57 -0400
+Received: by mail-qk1-f194.google.com with SMTP id v22so44828759qkj.8;
+        Mon, 29 Jul 2019 12:03:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=P8PKbj5/kVJRE77VGyx4tqM3teDWFVy4oqqQvsX6TPg=;
+        b=j7Vcz5YhzBinJwVxgDGSMRwVTQkEGE1HV5EcHjmfuRwYF0HK8IlLg8lNN9JiuGkl5w
+         7Iky5h9OxoqdhPsgZPNIbiu5ycgAw7idsgSwCH9zuB2A/uwDG6WX0X+4QRdZfkkRt8ar
+         eeriZhW3ME/SRnOfrEOc2zEVPvxNXenqyeHQQxekBw1Y+lBiku5MUF07p+7ShEZAVtWV
+         uo7EQQlVGJ4//Q2lzuu4Wo7P6QcNZfqCZAJzEkBNf1wjOaNjPDlwVYTP7gAa8lYfB2r6
+         C+K8QfiU126ZolHuiX4cz0XlPsG3Bi26CvR4ub209SDAOPWf98T0/dNhAx9owwgC8Fxv
+         lZkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=P8PKbj5/kVJRE77VGyx4tqM3teDWFVy4oqqQvsX6TPg=;
+        b=BUB6ei0I0bJAe+3jPOhwqyQm62wP9Qmj7uX1UX0ME+s+6+qTuSUbK1upkZfLLEwoll
+         quPFdZFaXDDy+JMOvZjoZ0mUcG5MEgtKVKyTDKWbuLlsVGrnG5L8Uv/rESLfojmNmN6l
+         f/unCoi5SB8WsW2nsIYaMZNl1rATuMIhPkfn/5GjUv14U5tmSCf4dNSloLdrCXWLprXz
+         4/nq0mUA3TZnK1h+v27p8iY9j7mt40nD+bZ/vt0JKMpQgJOoKll7cXCVFck2WHZfvnK4
+         slXQ5ZTaNCqX6iX+VUFiTvC78lTBwH58fAPcEbzOLCMHgvRD0u7YwpW+b4nL4TXSvGIo
+         pDqw==
+X-Gm-Message-State: APjAAAW9k8HN5tp20PA1Vb/BVzs/SDg9GkLkxzdDQG/JfTyo/1eWkTrC
+        R5RXbBIwU2EvzaqqW3oIlas=
+X-Google-Smtp-Source: APXvYqy7eUQofVXEvopk+EJ3UTpDUvbii8+tkBox0yvO+aP7gKU5xUX3zpdmeVRPSJsuUn8OqKR9lw==
+X-Received: by 2002:a37:270a:: with SMTP id n10mr75124045qkn.434.1564427036466;
+        Mon, 29 Jul 2019 12:03:56 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:a0af:c6c5:7c31:69b:3f23])
+        by smtp.gmail.com with ESMTPSA id r4sm41553650qta.93.2019.07.29.12.03.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 12:03:55 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 0BCA7C1628; Mon, 29 Jul 2019 16:03:53 -0300 (-03)
+Date:   Mon, 29 Jul 2019 16:03:52 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: sctp: drop unneeded likely() call around IS_ERR()
+Message-ID: <20190729190352.GD4064@localhost.localdomain>
+References: <1564426521-22525-1-git-send-email-info@metux.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1584bdec4a0a36a2567a43dc0973dd8f3a05dec.1564424420.git.petrm@mellanox.com>
+In-Reply-To: <1564426521-22525-1-git-send-email-info@metux.net>
 User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 06:26:14PM +0000, Petr Machata wrote:
-> Spectrum systems have a configurable limit on how far into the packet they
-> parse. By default, the limit is 96 bytes.
+On Mon, Jul 29, 2019 at 08:55:21PM +0200, Enrico Weigelt, metux IT consult wrote:
+> From: Enrico Weigelt <info@metux.net>
 > 
-> An IPv6 PTP packet is layered as Ethernet/IPv6/UDP (14+40+8 bytes), and
-> sequence ID of a PTP event is only available 32 bytes into payload, for a
-> total of 94 bytes. When an additional 802.1q header is present as
-> well (such as when ptp4l is running on a VLAN port), the parsing limit is
-> exceeded. Such packets are not recognized as PTP, and are not timestamped.
+> IS_ERR() already calls unlikely(), so this extra unlikely() call
+> around IS_ERR() is not needed.
 > 
-> Therefore generalize the current VXLAN-specific parsing depth setting to
-> allow reference-counted requests from other modules as well. Keep it in the
-> VXLAN module, because the MPRS register also configures UDP destination
-> port number used for VXLAN, and is thus closely tied to the VXLAN code
-> anyway.
-> 
-> Then invoke the new interfaces from both VXLAN (in obvious places), as well
-> as from PTP code, when the (global) timestamping configuration changes from
-> disabled to enabled or vice versa.
-> 
-> Fixes: 8748642751ed ("mlxsw: spectrum: PTP: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls")
-> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> Signed-off-by: Enrico Weigelt <info@metux.net>
 
-Reviewed-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+
+> ---
+>  net/sctp/socket.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index aa80cda..9d1f83b 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -985,7 +985,7 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+>  		return -EINVAL;
+>  
+>  	kaddrs = memdup_user(addrs, addrs_size);
+> -	if (unlikely(IS_ERR(kaddrs)))
+> +	if (IS_ERR(kaddrs))
+>  		return PTR_ERR(kaddrs);
+>  
+>  	/* Walk through the addrs buffer and count the number of addresses. */
+> @@ -1315,7 +1315,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
+>  		return -EINVAL;
+>  
+>  	kaddrs = memdup_user(addrs, addrs_size);
+> -	if (unlikely(IS_ERR(kaddrs)))
+> +	if (IS_ERR(kaddrs))
+>  		return PTR_ERR(kaddrs);
+>  
+>  	/* Allow security module to validate connectx addresses. */
+> -- 
+> 1.9.1
+> 
