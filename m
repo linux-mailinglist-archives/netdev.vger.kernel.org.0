@@ -2,70 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0732779A19
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CB5079A20
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729077AbfG2Uhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 16:37:46 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40338 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727481AbfG2Uhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:37:46 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a15so60823179qtn.7;
-        Mon, 29 Jul 2019 13:37:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S0+qMs/DAzESeq9DchANEP4p5xDXagkeWxkgEMuPkCw=;
-        b=Ill3DDk/Sj/8N0RRN76wOh4jqEx3NQuAYu+gD4AzIISCg/a356RaVHWTr0S5WwhFLP
-         Z1cmKjhmq6YTET0GQKCA8lOZtqTUxcNqyLDF4fdL7I1EnyXGmT+BN4z714KuBd7qPtPj
-         dWNjYCQtY9I94CF8bRpqJ1XHVHGfPQizQfgqcZ0j967JWgTd9MoMo16wX0n06pJYvBha
-         oMralRKB3OQub3lNf/9n84VXLrh57Jq5g955BZ4dAe1M8enS8+7YN2xMmnfZANqYdLXm
-         i1cYGVen4FO1iLa7qNFVIFtzuKGtX07qz1KtDUDHxH7mM69PszFkPLrFNKopfWlh3w1+
-         JTLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S0+qMs/DAzESeq9DchANEP4p5xDXagkeWxkgEMuPkCw=;
-        b=oe6kaXZ0RXrWVmdmM06exGd8fvNTK5Oscs9eevC8tH2iAlL8ttKQaU5WP924rKa+wq
-         6xudcemeKYEMrY/c/dKXVcIpLo+nbEH3lnnHx4P47QqasvY1KliqI/yKFtMpqm502XD0
-         G2FhCx7Kdrt7l1Zt+tDNO4N5b/JrEh+tpvRuKcXkdYxKw5ZvE7363uxHl+3CKBKBCIDP
-         7TPwI3xdqAuwm8lrjFUkAPH3UU/q8NTHxne2CIq987ZnHxl0/SH/AyDoIiswhguEk6RN
-         tMY4KFTD95vPERPMbjbQAaryXEZsBpttueW14Dv+lrFSrvaTraBO2NwgFmeTc2CBxRDG
-         NHzg==
-X-Gm-Message-State: APjAAAUuKhgWU31gCoGqM9XuJDlAFnJq5SuqdNQGEVRi5d39yXlKDqgQ
-        MjqqSYUvhuoD42Efop5lvNoIf/eN6X1FiLeAWxw=
-X-Google-Smtp-Source: APXvYqws9W0GmLfIvkNUkZ/VBYYxfh0pHjFSr51tcLfg4pdlFlsMH5U1saGY4PtcT2U8slUGDUVqxpcCifuH6Iqxb00=
-X-Received: by 2002:ac8:152:: with SMTP id f18mr76661441qtg.84.1564432665017;
- Mon, 29 Jul 2019 13:37:45 -0700 (PDT)
+        id S1729053AbfG2UlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 16:41:21 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.21]:35277 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728915AbfG2UlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:41:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1564432878;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=58Z8bDRgyAi1iHQvHHwK8+g7BxsaAQ9fV6DBfYqu6nI=;
+        b=F2ivxhPOOLN6tdjHSjli/a4rX/BrPWuIeCWO6rPZNAjsFK2wIvfQjuuqoFrnu86BGs
+        GLUafAUb6dgQuWSHyno7fLzgaXFfKeApPZVAVrqqCXXxqiBhqY1TKR+PfzZgSw5TGJbs
+        rSvJLPBsLBZkZuMDLitKYxdNQdXMHWzk4J81AiSoIZkJFFNxRARzAoAqmQUIMYG6GJ1J
+        Q94asqQ9S64anFq1dfB6+CIzxbX8/9s6kgXj2PGamrovFJfOv2Dx5MH1DhWB2wi9jEyG
+        5rE2PvyjN5fH1EX/HQqypQQlbmtD0s0ZLvrJIGSweMkskz6WnnlTtep6sA36qa6bBdla
+        qZag==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lO8DsfULo/u6TWni45U="
+X-RZG-CLASS-ID: mo00
+Received: from silver.lan
+        by smtp.strato.de (RZmta 44.24 DYNA|AUTH)
+        with ESMTPSA id k05d3bv6TKfCvOi
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Mon, 29 Jul 2019 22:41:12 +0200 (CEST)
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        kernel test robot <rong.a.chen@intel.com>
+Subject: [PATCH net-next] can: fix ioctl function removal
+Date:   Mon, 29 Jul 2019 22:40:56 +0200
+Message-Id: <20190729204056.2976-1-socketcan@hartkopp.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-5-andriin@fb.com>
-In-Reply-To: <20190724192742.1419254-5-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Mon, 29 Jul 2019 13:37:34 -0700
-Message-ID: <CAPhsuW7ryBms0KsRrcrmVX7QwCeAfxhpnx=xDoJwMtFjaPzt1Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 04/10] selftests/bpf: add CO-RE relocs struct
- flavors tests
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 1:34 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Add tests verifying that BPF program can use various struct/union
-> "flavors" to extract data from the same target struct/union.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Commit 60649d4e0af ("can: remove obsolete empty ioctl() handler") replaced the
+almost empty can_ioctl() function with sock_no_ioctl() which always returns
+-EOPNOTSUPP.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Even though we don't have any ioctl() functions on socket/network layer we need
+to return -ENOIOCTLCMD to be able to forward ioctl commands like SIOCGIFINDEX
+to the network driver layer.
+
+This patch fixes the wrong return codes in the CAN network layer protocols.
+
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Fixes: 60649d4e0af ("can: remove obsolete empty ioctl() handler")
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ net/can/bcm.c | 9 ++++++++-
+ net/can/raw.c | 9 ++++++++-
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index 8da986b19d88..bf1d0bbecec8 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -1680,6 +1680,13 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	return size;
+ }
+ 
++int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
++			 unsigned long arg)
++{
++	/* no ioctls for socket layer -> hand it down to NIC layer */
++	return -ENOIOCTLCMD;
++}
++
+ static const struct proto_ops bcm_ops = {
+ 	.family        = PF_CAN,
+ 	.release       = bcm_release,
+@@ -1689,7 +1696,7 @@ static const struct proto_ops bcm_ops = {
+ 	.accept        = sock_no_accept,
+ 	.getname       = sock_no_getname,
+ 	.poll          = datagram_poll,
+-	.ioctl         = sock_no_ioctl,
++	.ioctl         = bcm_sock_no_ioctlcmd,
+ 	.gettstamp     = sock_gettstamp,
+ 	.listen        = sock_no_listen,
+ 	.shutdown      = sock_no_shutdown,
+diff --git a/net/can/raw.c b/net/can/raw.c
+index ff720272f7b7..da386f1fa815 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -837,6 +837,13 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	return size;
+ }
+ 
++int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
++			 unsigned long arg)
++{
++	/* no ioctls for socket layer -> hand it down to NIC layer */
++	return -ENOIOCTLCMD;
++}
++
+ static const struct proto_ops raw_ops = {
+ 	.family        = PF_CAN,
+ 	.release       = raw_release,
+@@ -846,7 +853,7 @@ static const struct proto_ops raw_ops = {
+ 	.accept        = sock_no_accept,
+ 	.getname       = raw_getname,
+ 	.poll          = datagram_poll,
+-	.ioctl         = sock_no_ioctl,
++	.ioctl         = raw_sock_no_ioctlcmd,
+ 	.gettstamp     = sock_gettstamp,
+ 	.listen        = sock_no_listen,
+ 	.shutdown      = sock_no_shutdown,
+-- 
+2.20.1
+
