@@ -2,100 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D707C799D3
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00ED4799D5
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 22:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387518AbfG2UWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 16:22:12 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:39952 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729661AbfG2UVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:21:13 -0400
-Received: by mail-pg1-f196.google.com with SMTP id w10so28814664pgj.7
-        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 13:21:13 -0700 (PDT)
+        id S1728255AbfG2UWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 16:22:33 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:43220 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726129AbfG2UWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 16:22:33 -0400
+Received: by mail-lj1-f193.google.com with SMTP id y17so35276317ljk.10;
+        Mon, 29 Jul 2019 13:22:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aYjeni8hi9gCIqKfEF7sAzYP+NCIvwRDXRNk1O+7eI8=;
-        b=lu8LmvH26Ask+6l46/3kuEjRxOx+2JtkDCvfaTqlYwMrkrs8y8HNe/M9lngZ0qu87n
-         C/4XBPHwfebrr9JOauQ4k9K85B912iLOGW8dFuayPx6dkqgWc+GmheO6dZTJMVbAuM91
-         URtpgqh71mbPafjrnI16VI3tQyn02GFTipFvToePkrft6jBDgP5Hs0wMPVv1op4avo/N
-         4sQOrA6taIszNfl2AMgq6rgK6E5HG7XQ/8aohm8zM0ARr/zlUUAq4WiuWRqhQFRnHDUF
-         0lJZ5rB2NMWaWo9XC4yDRkPWBb4dRkkdWsShrr8QmOeFlIVtZGBCsQ3vq4TRhAu4ZNMm
-         25Mw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TlgF/U6C9Nfq0ND+3tkWHMA2RYlrQtMv5J1HVmQnI3s=;
+        b=qZFFxhSTnWYnhOUyoGNFKY1OXsUZMIlekuFrMBfcsCNqhbH6TRjlTbpO/fIML5G9ST
+         6nt85rNCpCKkS5sG58z/pMyIGRLGoI2HlNPn1riIb2owosn7f2vlUtryy1PUJOSuQYqs
+         zEi4rRlVYVRd6A5rzK/KfoguU+DxztSMUozFHVReHztTQW51lrD9a8q8D6A9bDPNm7jK
+         jkXzhkuDecRzUhw3B+0njGtxwtPqTjN3eSkky8Rb4pq2mE4+xplP2Miy1FTgMLLsbpkG
+         IQLjuX2Tz3XtRBKhDLwnTJ37j4N0wfdDWwAGMAyzgdF0AWo8dznUVcY0jpo8FxVIUNuh
+         p8QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aYjeni8hi9gCIqKfEF7sAzYP+NCIvwRDXRNk1O+7eI8=;
-        b=j+iJNt0hZjXwAwm2JZhEMy2ZRHFY/RdAQGxWvn8nX+58j65rEaH7qVyFTIQUT9f7rY
-         8hxLmXB5aP8R+DDbnX4N0pa/blYhw3sGDrQn8NHOQVjdoLFtFEKVC5b6RbUG1+ynq2/7
-         6lzBl6zmiVcB9e5QOWUP4l34RduXj47w+mSI+S/1gOdyrO8XM5hBj2DNu6OtzaFbhuvb
-         a+21PNYkTVAUUGOA3OG35bcILxsTnslV0S7HG42md7QNp7giZrdj0J1n7jQViYC5aokr
-         hzVuG27mFVF1zl0CBF9fCBN3fjQZ02kWDsQC3SpiXGkaDF8wcoFw13OMm6p++DPTbm8F
-         2F0w==
-X-Gm-Message-State: APjAAAVTWaK8bviizBtq//R1O5ZbqCFnWEKcYMNT9mfwS+2u1ZWV8oV4
-        8GupSmB9tz5VVEpQC6QfXNo=
-X-Google-Smtp-Source: APXvYqzFLkgKRwSWN29j++F9rPPSIffXulHyhX08DVr0wiEiWcBDyVu299L5v3Kzw5JNqN8bVqAfpg==
-X-Received: by 2002:a63:6c46:: with SMTP id h67mr97842229pgc.248.1564431673184;
-        Mon, 29 Jul 2019 13:21:13 -0700 (PDT)
-Received: from [172.27.227.219] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id x24sm59334420pgl.84.2019.07.29.13.21.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 13:21:12 -0700 (PDT)
-Subject: Re: [patch iproute2 1/2] devlink: introduce cmdline option to switch
- to a different namespace
-To:     Jiri Pirko <jiri@resnulli.us>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
-        <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        mlxsw@mellanox.com
-References: <20190727094459.26345-1-jiri@resnulli.us>
- <20190727100544.28649-1-jiri@resnulli.us> <87ef2bwztr.fsf@toke.dk>
- <20190727102116.GC2843@nanopsycho>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d590ac7b-9dc7-41e2-e411-79ac4654c709@gmail.com>
-Date:   Mon, 29 Jul 2019 14:21:11 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TlgF/U6C9Nfq0ND+3tkWHMA2RYlrQtMv5J1HVmQnI3s=;
+        b=KnojoJlgOjSi5X3XTqX12wn2o0sLLszK/fErh+ZMDmJJnGwLeQzNrzSxlHzbQZ85NZ
+         clg74SqKmmJfVs+8mBG/nvgOnSW8GZHuzB1TUQc4pxkJKBq6SArN7O93v+5dQKl5snrp
+         Zx4GgDw9wryqYYQAhMsZHWLodc+8cGpVGUEOmVpBlh2eUu3e+t1833DhHPX/cm4lXdk0
+         r22oRMttMQMYpmiuDQcfnKJFBSckYyLLF3dqNXI9c1h0je+/RB10uPghRS2K2dK4LGWQ
+         xauTdcw7oTR0eBoOJ0m/ottDoxBLbGEoq9glw/E9btdTMseoQAoUca/PRFgPg3S5EgHY
+         JrOQ==
+X-Gm-Message-State: APjAAAWZpbUMogYWHaLRhBoZcOaUUjBjmCLssqnV/h7jUx9br3iMwyzo
+        GVPupfCNB/YD82T03mY7wvx03ALlikZYy/8Vpwb2PBBk
+X-Google-Smtp-Source: APXvYqwt688fBsTtG3NbbV1ylAwKCgSA/f7vffyqiJnkE6cHmn3Msa5Lpbef2RxjJttBz0jW9gGP/CJlN3FCW0urFGY=
+X-Received: by 2002:a2e:9a19:: with SMTP id o25mr59471615lji.63.1564431751429;
+ Mon, 29 Jul 2019 13:22:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190727102116.GC2843@nanopsycho>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190724192742.1419254-1-andriin@fb.com> <20190724192742.1419254-4-andriin@fb.com>
+In-Reply-To: <20190724192742.1419254-4-andriin@fb.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Mon, 29 Jul 2019 13:22:20 -0700
+Message-ID: <CAPhsuW4tbkLyY0tGBZW7dz=qY7NiAbz1MV6UsXPUdctXspn+YQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 03/10] selftests/bpf: add CO-RE relocs testing setup
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/19 4:21 AM, Jiri Pirko wrote:
->>> diff --git a/devlink/devlink.c b/devlink/devlink.c
->>> index d8197ea3a478..9242cc05ad0c 100644
->>> --- a/devlink/devlink.c
->>> +++ b/devlink/devlink.c
->>> @@ -32,6 +32,7 @@
->>>  #include "mnlg.h"
->>>  #include "json_writer.h"
->>>  #include "utils.h"
->>> +#include "namespace.h"
->>>  
->>>  #define ESWITCH_MODE_LEGACY "legacy"
->>>  #define ESWITCH_MODE_SWITCHDEV "switchdev"
->>> @@ -6332,7 +6333,7 @@ static int cmd_health(struct dl *dl)
->>>  static void help(void)
->>>  {
->>>  	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
->>> -	       "       devlink [ -f[orce] ] -b[atch] filename\n"
->>> +	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns]
->>>  netnsname\n"
->>
->> 'ip' uses lower-case n for this; why not be consistent?
-> 
-> Because "n" is taken :/
+On Wed, Jul 24, 2019 at 1:34 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Add CO-RE relocation test runner. Add one simple test validating that
+> libbpf's logic for searching for kernel image and loading BTF out of it
+> works.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-that's really unfortunate. commands within a package should have similar
-syntax and -n/N are backwards between ip/tc and devlink. That's the
-stuff that drives users crazy.
+Acked-by: Song Liu <songliubraving@fb.com>
