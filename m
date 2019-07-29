@@ -2,78 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0667079108
-	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:35:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA69E7911B
+	for <lists+netdev@lfdr.de>; Mon, 29 Jul 2019 18:37:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729220AbfG2QfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 12:35:11 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45372 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729210AbfG2QfL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jul 2019 12:35:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=xO0CP8AV1H6UAZ0iA2YeRu/E0C6+LBoCdmOpD6uQBuw=; b=fLUYnMvBS4xOpFiXxiBEXt0C9k
-        XRhUToIX6rC1gVoie4UGaQHmN9lGhxCpPerfuv2b7S4COFNcwL2l3KeoaoQ5DzHAN/AyM4cTV2fGd
-        Zbf7Wu+nJelHm3XNhcpGWb8COKANWnTQiKQ+7eZlGoPX5eIoZKG+2/ZSkW87nFIY+oKQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hs8c6-00030c-N5; Mon, 29 Jul 2019 18:35:06 +0200
-Date:   Mon, 29 Jul 2019 18:35:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
-        jiri@mellanox.com
-Subject: Re: [PATCH 0/5] staging: fsl-dpaa2/ethsw: add the .ndo_fdb_dump
- callback
-Message-ID: <20190729163506.GJ4110@lunn.ch>
-References: <1564416712-16946-1-git-send-email-ioana.ciornei@nxp.com>
+        id S2387631AbfG2QhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 12:37:12 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37230 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727314AbfG2QhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 12:37:11 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b3so27742544plr.4
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 09:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=rQNwVWhr/iAWO1h6tJ7DvuuxwYrEzjOkIjTIxJSwEeM=;
+        b=CzxJQ8DfEZgEgBpwt3AL5iNRX2dHKgYQ2l1Fdl9DjYxLKA9QEjfLSAuwQ8f4ble5pp
+         w3UhiYarfOQ6+3GwSpTqL1Nq6uiAt3NJBW9hqig7p/QWWjE53iA9SjYWtQ0wqqcC71FU
+         emdUecmyeMSXHAIs044VY7RhUmspvRPwEOfql2Nz7iE9n1X/MksTH5/z3UV5fpuFTvuV
+         DbbF2jPQkVNTfA2ZOmRfatcF7vbDefGpvhk8VxyBKVu3YuXaw5tX9nhcbM+vtSE0MrKA
+         SP/500QNfGzgH1dEsfScd3Ff66xKZ2KqeLsRKVG0hc2XOmON+Gag3SQOTzYHYiMks5vk
+         /aMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=rQNwVWhr/iAWO1h6tJ7DvuuxwYrEzjOkIjTIxJSwEeM=;
+        b=D+u7MfIBELJjIy5VdiSOfjIC/z2cOsqMJm7gvWxOjcs5ynYTz8obab9i8Kup0MSF4Y
+         I4KlBBlOXB99uSQU+RIG0xIJHGeGKW0D0qQ3p8BprfGu5jUqXDsxyVVZLHqq+GQL+EbZ
+         tV+mr7r2VAwq5Y7HGtGMBGc3qfsEjRNWcxibGLSeQu7dgwepNsLtNz1BJaru9C02Ymcl
+         ssBrIpcvm3Hf92MjfLzwJP/bVz+vBkLdjPmBCVZO7tLGeFKa+hcabGEM7hq0aNCXrEnF
+         2kFOPa8BRrkyaU0/8V+le53bK4en+4zYb4qtMj5zv8qhW13WoN91r0GOgwRiBwn/lmoF
+         avSA==
+X-Gm-Message-State: APjAAAXVp98Hi2uYhA/4i2ckdpjufG+shMwv8JFKMBU5Z7M2laE6CZvP
+        IvSPtfXfqQp129en8Rwcv7G3zg==
+X-Google-Smtp-Source: APXvYqxf5IrbxRXrgplVLx4tyGUqrNJe0VLQyF/nrJYjVyVRsG6XN4wmnW0oV3rs7b+I53AKL01jrA==
+X-Received: by 2002:a17:902:59c3:: with SMTP id d3mr107721634plj.22.1564418231023;
+        Mon, 29 Jul 2019 09:37:11 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id h11sm62978725pfn.120.2019.07.29.09.37.10
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 09:37:10 -0700 (PDT)
+Date:   Mon, 29 Jul 2019 09:37:00 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     xdp-newbies@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, john.fastabend@gmail.com
+Subject: Re: [PATCH net-next] MAINTAINERS: Remove mailing-list entry for XDP
+ (eXpress Data Path)
+Message-ID: <20190729093341.2bdb04dd@cakuba.netronome.com>
+In-Reply-To: <156440259790.6123.1563221733550893420.stgit@carbon>
+References: <156440259790.6123.1563221733550893420.stgit@carbon>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1564416712-16946-1-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 07:11:47PM +0300, Ioana Ciornei wrote:
-> This patch set adds some features and small fixes in the
-> FDB table manipulation area.
+On Mon, 29 Jul 2019 14:16:37 +0200, Jesper Dangaard Brouer wrote:
+> This removes the mailing list xdp-newbies@vger.kernel.org from the XDP
+> kernel maintainers entry.
 > 
-> First of all, we implement the .ndo_fdb_dump netdev callback so that all
-> offloaded FDB entries, either static or learnt, are available to the user.
-> This is necessary because the DPAA2 switch does not emit interrupts when a
-> new FDB is learnt or deleted, thus we are not able to keep the software
-> bridge state and the HW in sync by calling the switchdev notifiers.
+> Being in the kernel MAINTAINERS file successfully caused the list to
+> receive kbuild bot warnings, syzbot reports and sometimes developer
+> patches. The level of details in these messages, doesn't match the
+> target audience of the XDP-newbies list. This is based on a survey on
+> the mailing list, where 73% voted for removal from MAINTAINERS file.
 > 
-> The patch set also adds the .ndo_fdb_[add|del] callbacks in order to
-> facilitate adding FDB entries not associated with any master device.
-> 
-> One interesting thing that I observed is that when adding an FDB entry
-> associated with a bridge (ie using the 'master' keywork appended to the
-> bridge command) and then dumping the FDB entries, there will be duplicates
-> of the same entry: one listed by the bridge device and one by the
-> driver's .ndo_fdb_dump).
-> It raises the question whether this is the expected behavior or not.
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-DSA devices are the same, they don't provide an interrupt when a new
-entry is added by the hardware. So we can have two entries, or just
-the SW bridge entry, or just the HW entry, depending on ageing.
- 
-> Another concern is regarding the correct/desired machanism for drivers to
-> signal errors back to switchdev on adding or deleting an FDB entry.
-> In the switchdev documentation, there is a TODO in the place of this topic.
-
-It used to be a two state prepare/commit transaction, but that was
-changed a while back.
-
-Maybe the DSA core code can give you ideas?
-
-      Andrew
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
