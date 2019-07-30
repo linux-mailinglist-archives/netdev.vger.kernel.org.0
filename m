@@ -2,93 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A763F7AABB
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:18:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E03AF7AAE0
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:23:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730804AbfG3ORv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 10:17:51 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:42124 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727765AbfG3ORv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:17:51 -0400
-Received: by mail-vs1-f68.google.com with SMTP id 190so43570821vsf.9
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 07:17:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RK299o1I9nQNlsSGV+4buZQzWUsPGHe+LviTSNSniew=;
-        b=SxaVkioTG0t2pjLf5OyxRf9JMawK69C8+zJxxRkOddWQ67OVwOAduPXdi5/peQBnKk
-         lxi9e/T1J1zIv9jw/oMZp6JAuybJF9n7nnxAPDDqYruh+tZLoXZKJ/Q4A3AT5yM3UpDd
-         xwPcHIMWGUZGuT5Psh9H+Jxgn1UEA1p7tgXfDI0/kw+RynaQ8a6IsxMh9b2huMgPjP3o
-         mwBg41OPB8I5f2RDxKql10x6ujzkOMge/X4MS/u5FTbnMA54GyC8MC3VQhza3klGnXYI
-         k019OGWuAeXXutGGH3OceFAdoSGs9lXpunq0Ya6qlRFlWPZiHKR4GNpyV6lXlQkxRe3o
-         NBcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RK299o1I9nQNlsSGV+4buZQzWUsPGHe+LviTSNSniew=;
-        b=dvDNdbwrdmUXL6I/j2GAHNWrs/0CEIuDLLXh0lIQM9/Xh6QpwD8KddT4PW0LfMLhsm
-         mz5JHin5Uy6OXDBej0Va1KtP9qgluXgJRiVutjkMS1/kcOzpmTDGk4skOUGqu2bsvk/3
-         43h20NiVqPrj2vljh0fQ21kDfY9R9PY5WjAsCkkcu++r3rlk3T1GfjkDsu7GpA3yYlpP
-         4INald0OzvYpTT/iRoH9uojcckLiZ1FMBcTXI+owfmqJw8mZFznoxhJCSB/OC0t/QyBQ
-         QWKJeoPibiNUOuwHhHGjdfmpHH2IHd93h5LZs/Py5Hv+c02SZ66zMCjGzMci0j7RYZLd
-         CQ1A==
-X-Gm-Message-State: APjAAAWgsxMcE0xH5mGnDp26/KiFqwrNbJh0/ldg9Cc+VWXFL3BBQceU
-        7jMU7x5paq39fhj+9jWZkHTGnlCZy/hVHSCO2mM=
-X-Google-Smtp-Source: APXvYqzOWV7w5UY6HfuniMmOZbt2GqzgJCloyN6OJVs76PDRwHfZfJxx5YKZtGvjUeFd4Nxu5FnCxu0Lhw8PkE14veU=
-X-Received: by 2002:a67:e9ca:: with SMTP id q10mr41517640vso.105.1564496270292;
- Tue, 30 Jul 2019 07:17:50 -0700 (PDT)
+        id S1731241AbfG3OXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 10:23:22 -0400
+Received: from sesbmg23.ericsson.net ([193.180.251.37]:63602 "EHLO
+        sesbmg23.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725929AbfG3OXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:23:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
+        q=dns/txt; i=@ericsson.com; t=1564496598; x=1567088598;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xzZm2LQXTQHz+42GuRIe5BF2uYaMGKYsWxhdm9sG8YQ=;
+        b=Dub/+n4JQfHn9phnpevEJiajQlRBeDP9SCyzkv7qkTKW3rUuwp3EuVZTaK7xVzb0
+        aJBgkqyrYCj7z1x8/XdRB9S/zfcngNDSwfVQUQxcEXgBcDHc5hxI1WtgoBvhtnBt
+        XMq5Jhn3/T8GCx8XmIJEaS4edF8BlNA9tERdnAVB3b0=;
+X-AuditID: c1b4fb25-399ff700000029f0-94-5d4052d6ab3a
+Received: from ESESSMB503.ericsson.se (Unknown_Domain [153.88.183.121])
+        by sesbmg23.ericsson.net (Symantec Mail Security) with SMTP id 21.97.10736.6D2504D5; Tue, 30 Jul 2019 16:23:18 +0200 (CEST)
+Received: from ESESBMR506.ericsson.se (153.88.183.202) by
+ ESESSMB503.ericsson.se (153.88.183.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 30 Jul 2019 16:23:18 +0200
+Received: from ESESBMB505.ericsson.se (153.88.183.172) by
+ ESESBMR506.ericsson.se (153.88.183.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 30 Jul 2019 16:23:18 +0200
+Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
+ smtp.internal.ericsson.com (153.88.183.188) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Tue, 30 Jul 2019 16:23:18 +0200
+From:   Jon Maloy <jon.maloy@ericsson.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
+        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
+        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
+        <tipc-discussion@lists.sourceforge.net>
+Subject: [net-next  1/1] tipc: reduce risk of wakeup queue starvation
+Date:   Tue, 30 Jul 2019 16:23:18 +0200
+Message-ID: <1564496598-5080-1-git-send-email-jon.maloy@ericsson.com>
+X-Mailer: git-send-email 2.1.4
 MIME-Version: 1.0
-References: <3601e3ae4357d48b3294f42781d0f19095d1b00e.1564479382.git.joabreu@synopsys.com>
-In-Reply-To: <3601e3ae4357d48b3294f42781d0f19095d1b00e.1564479382.git.joabreu@synopsys.com>
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Date:   Tue, 30 Jul 2019 11:17:39 -0300
-Message-ID: <CAAEAJfDU23Q2G+qXW+BubX3FM3MwSGhJ15NrmDuzoM6UFfFLmw@mail.gmail.com>
-Subject: Re: [PATCH net] net: stmmac: Sync RX Buffer upon allocation
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jon Hunter <jonathanh@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOLMWRmVeSWpSXmKPExsUyM2J7pe61IIdYgxkzDCxuNPQwW8w538Ji
+        sWL3JFaLt69msVscWyBmseV8lsWV9rPsFo+vX2d24PDYsvImk8e7K2weuxd8ZvL4vEnOY/2W
+        rUwBrFFcNimpOZllqUX6dglcGbdfyxScFq34/ussSwPjLcEuRk4OCQETiXkvN7J0MXJxCAkc
+        ZZTY/HYNE4TzjVFi5sp3LHDO9GOz2SGcC4wSf2Z9YQfpZxPQkHg5rYMRxBYRMJZ4tbITrJ1Z
+        4DGjxJf7q9hAEsICrhJXFjxhBbFZBFQlNnzaATSWg4MXKD59lRvEHXIS54//ZAaxhQSUJeZ+
+        mMYEYvMKCEqcnPmEBcRmFpCQOPjiBfMERv5ZSFKzkKQWMDKtYhQtTi1Oyk03MtZLLcpMLi7O
+        z9PLSy3ZxAgM3oNbfqvuYLz8xvEQowAHoxIP75qt4rFCrIllxZW5hxglOJiVRHglz4nECvGm
+        JFZWpRblxxeV5qQWH2KU5mBREudd7/0vRkggPbEkNTs1tSC1CCbLxMEp1cDowGDquk//QXzv
+        rXknIitFGnXkF/746jrtIafW3JnhKV2+lzKFb3XeZKmTapp4plttqfBpm1TTdXeab5TzfWi5
+        mbbuMvP+fT4n9j4I4T2aFcZc9FGe2SwqdM5tw7Nb8w90rd6vuNLnME+q0J8tThKTH0d+YFUW
+        fzhl8+wT4U6Gp1v+/M8ujvivxFKckWioxVxUnAgA4SLCV1oCAAA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jul 2019 at 10:57, Jose Abreu <Jose.Abreu@synopsys.com> wrote:
->
-> With recent changes that introduced support for Page Pool in stmmac, Jon
-> reported that NFS boot was no longer working on an ARM64 based platform
-> that had the IP behind an IOMMU.
->
-> As Page Pool API does not guarantee DMA syncing because of the use of
-> DMA_ATTR_SKIP_CPU_SYNC flag, we have to explicit sync the whole buffer upon
-> re-allocation because we are always re-using same pages.
->
-> In fact, ARM64 code invalidates the DMA area upon two situations [1]:
->         - sync_single_for_cpu(): Invalidates if direction != DMA_TO_DEVICE
->         - sync_single_for_device(): Invalidates if direction == DMA_FROM_DEVICE
->
-> So, as we must invalidate both the current RX buffer and the newly allocated
-> buffer we propose this fix.
->
-> [1] arch/arm64/mm/cache.S
->
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Tested-by: Jon Hunter <jonathanh@nvidia.com>
-> Fixes: 2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
-> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+In commit 365ad353c256 ("tipc: reduce risk of user starvation during
+link congestion") we allowed senders to add exactly one list of extra
+buffers to the link backlog queues during link congestion (aka
+"oversubscription"). However, the criteria for when to stop adding
+wakeup messages to the input queue when the overload abates is
+inaccurate, and may cause starvation problems during very high load.
 
-Thanks a lot for the bug hunt and the fix. This fixes NFS mounting
-on my RK3288 and RK3399 boards.
+Currently, we stop adding wakeup messages after 10 total failed attempts
+where we find that there is no space left in the backlog queue for a
+certain importance level. The counter for this is accumulated across all
+levels, which may lead the algorithm to leave the loop prematurely,
+although there may still be plenty of space available at some levels.
+The result is sometimes that messages near the wakeup queue tail are not
+added to the input queue as they should be.
 
-Tested-by: Ezequiel Garcia <ezequiel@collabora.com>
+We now introduce a more exact algorithm, where we keep adding wakeup
+messages to a level as long as the backlog queue has free slots for
+the corresponding level, and stop at the moment there are no more such
+slots or when there are no more wakeup messages to dequeue.
+
+Fixes: 365ad35 ("tipc: reduce risk of user starvation during link congestion")
+Reported-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+---
+ net/tipc/link.c | 29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
+
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index 2c27477..dd3155b 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -854,18 +854,31 @@ static int link_schedule_user(struct tipc_link *l, struct tipc_msg *hdr)
+  */
+ static void link_prepare_wakeup(struct tipc_link *l)
+ {
++	struct sk_buff_head *wakeupq = &l->wakeupq;
++	struct sk_buff_head *inputq = l->inputq;
+ 	struct sk_buff *skb, *tmp;
+-	int imp, i = 0;
++	struct sk_buff_head tmpq;
++	int avail[5] = {0,};
++	int imp = 0;
++
++	__skb_queue_head_init(&tmpq);
+ 
+-	skb_queue_walk_safe(&l->wakeupq, skb, tmp) {
++	for (; imp <= TIPC_SYSTEM_IMPORTANCE; imp++)
++		avail[imp] = l->backlog[imp].limit - l->backlog[imp].len;
++
++	skb_queue_walk_safe(wakeupq, skb, tmp) {
+ 		imp = TIPC_SKB_CB(skb)->chain_imp;
+-		if (l->backlog[imp].len < l->backlog[imp].limit) {
+-			skb_unlink(skb, &l->wakeupq);
+-			skb_queue_tail(l->inputq, skb);
+-		} else if (i++ > 10) {
+-			break;
+-		}
++		if (avail[imp] <= 0)
++			continue;
++		avail[imp]--;
++		__skb_unlink(skb, wakeupq);
++		__skb_queue_tail(&tmpq, skb);
+ 	}
++
++	spin_lock_bh(&inputq->lock);
++	skb_queue_splice_tail(&tmpq, inputq);
++	spin_unlock_bh(&inputq->lock);
++
+ }
+ 
+ void tipc_link_reset(struct tipc_link *l)
+-- 
+2.1.4
+
