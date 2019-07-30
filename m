@@ -2,68 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5DF67A1A6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 09:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21BE67A2B6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 10:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729349AbfG3HNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 03:13:02 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:45201 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726180AbfG3HNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 03:13:01 -0400
-Received: by mail-io1-f69.google.com with SMTP id e20so69977825ioe.12
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 00:13:01 -0700 (PDT)
+        id S1730763AbfG3IDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 04:03:01 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35658 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729810AbfG3IDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 04:03:01 -0400
+Received: by mail-pg1-f196.google.com with SMTP id s1so23331058pgr.2;
+        Tue, 30 Jul 2019 01:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=VChiJaSG46ybZALSFOV8/YPDL/6pdPPKzTJ+KlFjbec=;
+        b=JXtXAVMkkw5n/mrWdLnavDkNKc9V87C4Koawc720nJ2ynLsSg+yvLSEpfiVYghyOzj
+         s2y64EygboGQCSPzeB7ai/5a1Vcc0xsMuuGZka9xo3fIEvYDsvLpBPj3G3WdNK91oDYP
+         Iw7MPSnE46V7MKFt5ziBNtVOXoONAHNK6S4YC0WEmzqbKM2PZLfezS0v2nYg6BHjYQ3R
+         hatIE3AU+bAR25ExlwAYeHX5/y5HriF19R3sIwwbb9dxZMsCnfszGPq1Ch4M1EgsbnDm
+         MuCXtcyxbkN87YKJrAjUoXfYzbGUYq8wVHqzNPcPkvvVPaTz7q5IZfABOq3tT+rOu3bb
+         OfzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=5NJsWs5rO4lIuS0ZgiXWXMUnUDOFAKxFplPhTBI+bqM=;
-        b=N07hk9zQYHFdTr+kUkQgX7vvAobTV878grBu5gY9/wkKVli3cRKvBd7hw5xjjJ5+va
-         rABQZmEEoV58KVkvdlseZQeQpAzoexzlgMhbMGj6ZV02GZgQn/Mq40zJDGhG5XpBc8hG
-         srv0C80qzw15d5C38eYBbTMy6FSbzc+CInUdqGH9EFRFvFSIbLUqD7+hft0ZF5qk9zks
-         uj1VieQf6WylOOS+ozwH8tZfXECUxysOFxZgZoDC1ssUOqkSwzOmj8zkZUQ6HpK7wNeq
-         sgIRaryPpUiLe4gAtVikyMsxAqiYtGsN5wwFVd9iL+ITrkHdn1rYk2X78CpHO4CytoqM
-         lfxg==
-X-Gm-Message-State: APjAAAV9wKtyRHXdOrNqRWh3MAYE5MiDFk45Rx05iGQIYx76nVWDObos
-        62GNQ2IpPWgg+8tvpB3RxMhA6Y5p96S/Pqj8PGOAn3xzCIfe
-X-Google-Smtp-Source: APXvYqw5SXLkTuBMD92g5AbsXWj+a5igK5Vc68j3TXyjLS+D+UvsTA9bxtT6u0WCZTYI0I29O9xwwLMF8YW79WjQUXBUs5hDeJu+
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=VChiJaSG46ybZALSFOV8/YPDL/6pdPPKzTJ+KlFjbec=;
+        b=MqvMnb/3Dae2yrBG+Hz7/lLGOVxtv+86ApgvdPzvQ9o+Uduelg5VPGwxEa++Sh36xP
+         PY0zz39cf8VMJIVqbhXXXZDAZhFN3284PP/b/R3i9OkLCnLeHAzy6sGTTs3Y9ZY8+9P9
+         MSzO3hyHhj2JkGudj96vCVzIZIImO6iDXSjsEj34uUBEDnzB+23P9aORnbBAiyFW8wx3
+         ZDAFqJxKO6A8VsfQYjoc7Qd3lCgVf4261uv5ItlbC/GYeXVDhn8kmWGIq7/AKkJ6z/d1
+         DZB72ld5oi6om0d8VXmQzXbEs7Bt/Wqi8PB0Zwrn6QR5du5LFDyGGC0Hhh5xpnHV33p3
+         i5yQ==
+X-Gm-Message-State: APjAAAVdjNRGAxjhz5udOqj/MMfh7QkmnxWjqz5gIS6jdESD7rIYDD3T
+        MQxV7YtV3cuSDRknQAGS8AoRX7PpBqM=
+X-Google-Smtp-Source: APXvYqzPNNwXVdfbBcDk92EEN5saUEUUJ8JLGm3xhnsvnw+wFq2WeTaR3y51UIFLTSSPf8PjTGxU2A==
+X-Received: by 2002:a65:4948:: with SMTP id q8mr49355881pgs.214.1564473780195;
+        Tue, 30 Jul 2019 01:03:00 -0700 (PDT)
+Received: from ?IPv6:2402:f000:4:72:808::177e? ([2402:f000:4:72:808::177e])
+        by smtp.gmail.com with ESMTPSA id v184sm59805009pgd.34.2019.07.30.01.02.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 01:02:59 -0700 (PDT)
+Subject: Re: [PATCH] net: phy: phy_led_triggers: Fix a possible null-pointer
+ dereference in phy_led_trigger_change_speed()
+To:     David Miller <davem@davemloft.net>, andrew@lunn.ch
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190729134553.GC4110@lunn.ch>
+ <f603f3c3-f7c9-8dff-5f30-74174282819c@gmail.com>
+ <20190730033229.GA20628@lunn.ch>
+ <20190729.204113.316505378355498068.davem@davemloft.net>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <c41475ec-b418-7874-9150-3a6eef125365@gmail.com>
+Date:   Tue, 30 Jul 2019 16:03:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:201:: with SMTP id e1mr36980524jaq.45.1564470780934;
- Tue, 30 Jul 2019 00:13:00 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 00:13:00 -0700
-In-Reply-To: <000000000000df9d48058e9228cd@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000028c26d058ee0bd1a@google.com>
-Subject: Re: KASAN: use-after-free Read in psi_task_change
-From:   syzbot <syzbot+f17ba6f9b8d9cc0498d0@syzkaller.appspotmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190729.204113.316505378355498068.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
 
-commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
-Author: John Fastabend <john.fastabend@gmail.com>
-Date:   Sat Jun 30 13:17:47 2018 +0000
 
-     bpf: sockhash fix omitted bucket lock in sock_close
+On 2019/7/30 11:41, David Miller wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+> Date: Tue, 30 Jul 2019 05:32:29 +0200
+>
+>> On Tue, Jul 30, 2019 at 10:25:36AM +0800, Jia-Ju Bai wrote:
+>>>
+>>> On 2019/7/29 21:45, Andrew Lunn wrote:
+>>>> On Mon, Jul 29, 2019 at 05:24:24PM +0800, Jia-Ju Bai wrote:
+>>>>> In phy_led_trigger_change_speed(), there is an if statement on line 48
+>>>>> to check whether phy->last_triggered is NULL:
+>>>>>      if (!phy->last_triggered)
+>>>>>
+>>>>> When phy->last_triggered is NULL, it is used on line 52:
+>>>>>      led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
+>>>>>
+>>>>> Thus, a possible null-pointer dereference may occur.
+>>>>>
+>>>>> To fix this bug, led_trigger_event(&phy->last_triggered->trigger,
+>>>>> LED_OFF) is called when phy->last_triggered is not NULL.
+>>>>>
+>>>>> This bug is found by a static analysis tool STCheck written by us.
+>>>> Who is 'us'?
+>>> Me and my colleague...
+>> Well, we can leave it very vague, giving no idea who 'us' is. But
+>> often you want to name the company behind it, or the university, or
+>> the sponsor, etc.
+> I agree, if you are going to mention that there is a tool you should be
+> clear exactly who and what organization are behind it
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10f4840c600000
-start commit:   bed38c3e Merge tag 'powerpc-5.3-2' of git://git.kernel.org..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=12f4840c600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14f4840c600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9aec8cb13b5f7389
-dashboard link: https://syzkaller.appspot.com/bug?extid=f17ba6f9b8d9cc0498d0
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10dc7b34600000
+Thanks for the advice.
+I will add my organization in the patch.
 
-Reported-by: syzbot+f17ba6f9b8d9cc0498d0@syzkaller.appspotmail.com
-Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Best wishes,
+Jia-Ju Bai
