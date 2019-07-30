@@ -2,94 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68D767B60A
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 01:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF067B627
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 01:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbfG3XFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 19:05:17 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39948 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726145AbfG3XFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 19:05:17 -0400
-Received: by mail-qk1-f193.google.com with SMTP id s145so47825023qke.7
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 16:05:16 -0700 (PDT)
+        id S1727163AbfG3XR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 19:17:59 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36633 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726145AbfG3XR7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 19:17:59 -0400
+Received: by mail-pf1-f196.google.com with SMTP id r7so30627742pfl.3
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 16:17:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=6mgyXmobHTrs2o2ZLLQ56AnGilF0c85DQgnFxa+XkMI=;
-        b=QuU+qrhJfM2jTjXqhXXssS/XZh9LJLGSWhSv9yO60iYPN4Mq+Ts9kpLNWoOEmZ1HED
-         ACktNCx6UBvtcEVEVz48gUaybxcEDXNxu1m3i48dx2vhJFlzvL6+DnNcXPX6rgvY896u
-         qNGxWmIC+5k8bFmdzqO08XOhA1ngF44bDiBvuLBZi/sHoML9eyra5KTSY0cjPsnQhDdJ
-         J76QezgICvZea5bzq+e9cIKm47yR1Pz1VAtceE4ELnKvhXiZVvG2dwCYt8mcpP1hYIr7
-         ucOiP2+ZTnDZwuy/oImhGobikpIMXwNYtV00jJcd0C4tp6wkElKUAfkwiSETYSIZPspB
-         AqPw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3NkrX7S/SZE/z05nSflRVpipYiefIx5yaTiBZV+O61U=;
+        b=FjinH4xTcY1UJoby94aPZXIkB1zOVd1v4g+fpQ+TdCC0rDG//+dYrDlgiwItrpGgJj
+         HC+FvHCxU9vYumhTymtd1yhktVXSY4gJpiXyHezqSgpBfYiAmnKkebsN486U+Vp5loaA
+         NgLjnvRqgKDRTxivQtDeukZIZG/Gm/D1CA3H+CXrKInD4zNZ3IfBmmpAQhLFJgqTzmR4
+         22n2G0KExOyAG0EX33InFc1XuTXugex4NUa8KOIZ3QunfSKVkoo7zBMV/gipysG6jfZy
+         MHG/2YCc+C8mjxdlH7dbGN3xCsNJexSNEHgw4i5UzkqAwGHHmnYyka94cVk8hau0H9mv
+         ZNnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=6mgyXmobHTrs2o2ZLLQ56AnGilF0c85DQgnFxa+XkMI=;
-        b=lsNKSfmZt7tAiOH1G8l+XZTZCwTZ4fLTZT2mK6FlWZ6KA61pWH30URlqkyJTIc747c
-         hWb1kGc+9tNY3f9x3Pjag1JOgSYGrQXdCGO+ZvlZU+SvdtcY8oLNcxVie2ivCvRXrVwP
-         5wqlTcka2z/OQW7Lv7VfyA5fB3WQnui8ZggSz0V7b3MTlvIjIdcfmY7HOcwtgIN3Oqdf
-         ZxYZa/HAj20o43ml87ccXUElztixstfU+bQaeKW9KSmGunHFZq5BQ/N2XbyeHlyGK/ni
-         X32z3GJOcdOJlQZygLfhVUdUnoYzJmDfun9qZUV3UV2MXBBODNe21oUKKvYsg7Ct3+4n
-         eoqg==
-X-Gm-Message-State: APjAAAV64kjZePXI6hjN319b/3cvUlr9i9SToGFM1HlYhD5b2fc43acy
-        jFRv/x5UCNTRlF/L4Oe802w5Eg==
-X-Google-Smtp-Source: APXvYqzbX5I3+hBWk4gulwg6diVg/DllgBsEu7H0m1y+lqOv24s1xCA+d3e1MQ2Ef8hInMZsmPTigg==
-X-Received: by 2002:a37:ac19:: with SMTP id e25mr78552195qkm.155.1564527916448;
-        Tue, 30 Jul 2019 16:05:16 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id r36sm35454012qte.71.2019.07.30.16.05.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 16:05:16 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 16:05:02 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Takshak Chahande <ctakshak@fb.com>
-Cc:     <netdev@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <rdna@fb.com>, <kernel-team@fb.com>, <hechaol@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf : make libbpf_num_possible_cpus
- function thread safe
-Message-ID: <20190730160502.699d0b9a@cakuba.netronome.com>
-In-Reply-To: <20190730222447.3918919-1-ctakshak@fb.com>
-References: <20190730222447.3918919-1-ctakshak@fb.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3NkrX7S/SZE/z05nSflRVpipYiefIx5yaTiBZV+O61U=;
+        b=NbH+/H0btQwCO0VUgotrm1qnV8X40Z3PlBBjXApo0uDHC17eC4euDTkf/6mbhwNvV9
+         QhIaA1IdR3B7l+CM+f7RF8znjBRxrnvxlhFTK1znTi7u2EnEPfn3be9+SbXud8dMZyqK
+         0yecuoYQZZkMDw6BoVGeIhjA0K1QHLZE0Oj9QohYveQeh+5iLKdHyNHDM10DksiPFbPf
+         2Pi2jtyntR4ph/1/lVD7y52gwaecQbdgWOlgSW7iwJ5lXb39WPtjHtQsh5W7zIt3TtgZ
+         WviCBtN4fqKnPn55E7TU7Mv+WgmSRpaCOcSp/eNnK7kTdmDm5kl508EX5Ujc8oNko1CV
+         ynyw==
+X-Gm-Message-State: APjAAAUUrQkJosF65XmF7VszueLJ5HmgjfdIdQ5I/XRATissbAD36s4E
+        uaiSY5fhJHv/4bxgPnonc5Q=
+X-Google-Smtp-Source: APXvYqyzfZobJ9mf1E6X5KuJ0FXAQw5PJMuqRThhwKwb6HUBHESIIi/P7Jc0wsQr4WXUcYuUUlPHMw==
+X-Received: by 2002:a17:90a:220a:: with SMTP id c10mr121242062pje.33.1564528678672;
+        Tue, 30 Jul 2019 16:17:58 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::3:af4b])
+        by smtp.gmail.com with ESMTPSA id r7sm77051003pfl.134.2019.07.30.16.17.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 16:17:57 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 16:17:56 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load XDP
+Message-ID: <20190730231754.efh3fj4mnsbv445l@ast-mbp>
+References: <20190730184821.10833-1-danieltimlee@gmail.com>
+ <20190730155915.5bbe3a03@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730155915.5bbe3a03@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jul 2019 15:24:47 -0700, Takshak Chahande wrote:
-> Having static variable `cpus` in libbpf_num_possible_cpus function without
-> guarding it with mutex makes this function thread-unsafe.
+On Tue, Jul 30, 2019 at 03:59:15PM -0700, Jakub Kicinski wrote:
+> On Wed, 31 Jul 2019 03:48:19 +0900, Daniel T. Lee wrote:
+> > Currently, bpftool net only supports dumping progs loaded on the
+> > interface. To load XDP prog on interface, user must use other tool
+> > (eg. iproute2). By this patch, with `bpftool net (un)load`, user can
+> > (un)load XDP prog on interface.
 > 
-> If multiple threads accessing this function, in the current form; it
-> leads to incrementing the static variable value `cpus` in the multiple
-> of total available CPUs.
+> I don't understand why using another tool is a bad thing :(
+> What happened to the Unix philosophy?
 > 
-> Let caching the number of possile CPUs handled by libbpf's users than
-> this library itself; 
-
-Can we just use stack variable for the calculations and
-READ_ONCE()/WRITE_ONCE() for assignment to the static?  
-libbpf itself uses this helper so caller caching wouldn't
-work there.
-
-> and let this function be rock bottom one which reads
-> and parse the file (/sys/devices/system/cpu/possible) everytime it gets
-> called to simplify the things.
-
-I don't understand can you rephrase?
-
-> Fixes: 6446b3155521 (bpf: add a new API libbpf_num_possible_cpus())
+> I remain opposed to duplicating iproute2's functionality under 
+> bpftool net :( The way to attach bpf programs in the networking
+> subsystem is through the iproute2 commends - ip and tc.. 
 > 
+> It seems easy enough to add a feature to bpftool but from 
+> a perspective of someone adding a new feature to the kernel, 
+> and wanting to update user space components it's quite painful :(
+> 
+> So could you describe to me in more detail why this is a good idea?
+> Perhaps others can chime in?
 
-No new line after the fixes tag, also I think you're missing quotation
-marks around the commit title?
+I don't think it has anything to do with 'unix philosophy'.
+Here the proposal to teach bpftool to attach xdp progs.
+I see nothing wrong with that.
+Another reason is iproute2 is still far away from adopting libbpf.
+So all the latest goodness like BTF, introspection, etc will not
+be available to iproute2 users for some time.
+Even when iproute2 is ready it would be convenient for folks like me
+(who need to debug stuff in production) to remember cmd line of
+bpftool only to introspect the server. Debugging often includes
+detaching/attaching progs. Not only doing 'bpftool p s'.
 
-> Signed-off-by: Takshak Chahande <ctakshak@fb.com>
-> Acked-by: Andrey Ignatov <rdna@fb.com>
+If bpftool was taught to do equivalent of 'ip link' that would be
+very different story and I would be opposed to that.
+
