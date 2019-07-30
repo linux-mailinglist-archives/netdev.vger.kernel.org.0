@@ -2,193 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5EE7ACF8
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 17:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60DD27AD00
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 17:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730291AbfG3PzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 11:55:17 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:39583 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727590AbfG3PzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 11:55:16 -0400
-Received: by mail-qk1-f196.google.com with SMTP id w190so46963263qkc.6
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 08:55:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V9i4tFdgsr/oc9TolUf3oJSK8PKi+/57EdsPiX8GnIk=;
-        b=UQYpjWInJGDVSka6aGHmNaZbTUeVmK/+Gl32O/V0XnBjWwjXNcHZ0KxHz2iFTppngX
-         aqN5DckRjJR0H0aiEDstkFtRwhvyR7paXrLWqoex2IOhK2PiIblQAR63Vc46LwBfdRg5
-         JU+aZOtTLFJEdpllEuS8dpBNOPspQdEVE/xc06PVcRAKKt0XY0Hg4Tl2o1O5cxZ7sLsg
-         NstDH6ECKJAFledv1sSwZ2g+fT1PFZagwGJpAnFvh8rKmqR3TpLAuegGGsrtCZlhECHG
-         l5+Wb3mQWNvG9pFi0JtH0A+6Oai0xcaaCa2Pf8fGgiTQ2lnyiE++aPeIkJ+8CvKEjzbG
-         CEDQ==
-X-Gm-Message-State: APjAAAXLVPacD3DtR3N5vUZJr5EYJ3P6GKa9Vz3C9DKCgH0mfJPvYXgh
-        nWpcb5lKMyS/u+kyGXnsXzlQ/g==
-X-Google-Smtp-Source: APXvYqyRt6WslbS7ETqHrIJVaZi9/9QisW/sVCRUH7pNsHoNaZ6Cb0EnoPCMnlDPns4aL/4pFeFO6A==
-X-Received: by 2002:a37:9644:: with SMTP id y65mr76486817qkd.191.1564502115840;
-        Tue, 30 Jul 2019 08:55:15 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id d9sm28627404qke.136.2019.07.30.08.55.12
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 08:55:15 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 11:55:09 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        kvm@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH net-next v5 0/5] vsock/virtio: optimizations to increase
- the throughput
-Message-ID: <20190730115503-mutt-send-email-mst@kernel.org>
-References: <20190730154334.237789-1-sgarzare@redhat.com>
- <20190730115339-mutt-send-email-mst@kernel.org>
+        id S1730106AbfG3P5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 11:57:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40090 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726363AbfG3P5U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 11:57:20 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AD19A300CB0C;
+        Tue, 30 Jul 2019 15:57:17 +0000 (UTC)
+Received: from redhat.com (ovpn-112-36.rdu2.redhat.com [10.10.112.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A63655D6A7;
+        Tue, 30 Jul 2019 15:57:05 +0000 (UTC)
+Date:   Tue, 30 Jul 2019 11:57:02 -0400
+From:   Jerome Glisse <jglisse@redhat.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Christoph Hellwig <hch@infradead.org>, john.hubbard@gmail.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>, ceph-devel@vger.kernel.org,
+        kvm@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, samba-technical@lists.samba.org,
+        v9fs-developer@lists.sourceforge.net,
+        virtualization@lists.linux-foundation.org,
+        John Hubbard <jhubbard@nvidia.com>,
+        Minwoo Im <minwoo.im.dev@gmail.com>
+Subject: Re: [PATCH 03/12] block: bio_release_pages: use flags arg instead of
+ bool
+Message-ID: <20190730155702.GB10366@redhat.com>
+References: <20190724042518.14363-1-jhubbard@nvidia.com>
+ <20190724042518.14363-4-jhubbard@nvidia.com>
+ <20190724053053.GA18330@infradead.org>
+ <20190729205721.GB3760@redhat.com>
+ <20190730102557.GA1700@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190730115339-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190730102557.GA1700@lst.de>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Tue, 30 Jul 2019 15:57:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 11:54:53AM -0400, Michael S. Tsirkin wrote:
-> On Tue, Jul 30, 2019 at 05:43:29PM +0200, Stefano Garzarella wrote:
-> > This series tries to increase the throughput of virtio-vsock with slight
-> > changes.
-> > While I was testing the v2 of this series I discovered an huge use of memory,
-> > so I added patch 1 to mitigate this issue. I put it in this series in order
-> > to better track the performance trends.
+On Tue, Jul 30, 2019 at 12:25:57PM +0200, Christoph Hellwig wrote:
+> On Mon, Jul 29, 2019 at 04:57:21PM -0400, Jerome Glisse wrote:
+> > > All pages releases by bio_release_pages should come from
+> > > get_get_user_pages, so I don't really see the point here.
 > > 
-> > v5:
-> > - rebased all patches on net-next
-> > - added Stefan's R-b and Michael's A-b
+> > No they do not all comes from GUP for see various callers
+> > of bio_check_pages_dirty() for instance iomap_dio_zero()
+> > 
+> > I have carefully tracked down all this and i did not do
+> > anyconvertion just for the fun of it :)
 > 
-> This doesn't solve all issues around allocation - as I mentioned I think
-> we will need to improve accounting for that,
-> and maybe add pre-allocation.
-> But it's a great series of steps in the right direction!
+> Well, the point is _should_ not necessarily do.  iomap_dio_zero adds the
+> ZERO_PAGE, which we by definition don't need to refcount.  So we can
+> mark this bio BIO_NO_PAGE_REF safely after removing the get_page there.
 > 
-
-
-So
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
+> Note that the equivalent in the old direct I/O code, dio_refill_pages,
+> will be a little more complicated as it can match user pages and the
+> ZERO_PAGE in a single bio, so a per-bio flag won't handle it easily.
+> Maybe we just need to use a separate bio there as well.
 > 
-> > v4: https://patchwork.kernel.org/cover/11047717
-> > v3: https://patchwork.kernel.org/cover/10970145
-> > v2: https://patchwork.kernel.org/cover/10938743
-> > v1: https://patchwork.kernel.org/cover/10885431
-> > 
-> > Below are the benchmarks step by step. I used iperf3 [1] modified with VSOCK
-> > support. As Michael suggested in the v1, I booted host and guest with 'nosmap'.
-> > 
-> > A brief description of patches:
-> > - Patches 1:   limit the memory usage with an extra copy for small packets
-> > - Patches 2+3: reduce the number of credit update messages sent to the
-> >                transmitter
-> > - Patches 4+5: allow the host to split packets on multiple buffers and use
-> >                VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max packet size allowed
-> > 
-> >                     host -> guest [Gbps]
-> > pkt_size before opt   p 1     p 2+3    p 4+5
-> > 
-> > 32         0.032     0.030    0.048    0.051
-> > 64         0.061     0.059    0.108    0.117
-> > 128        0.122     0.112    0.227    0.234
-> > 256        0.244     0.241    0.418    0.415
-> > 512        0.459     0.466    0.847    0.865
-> > 1K         0.927     0.919    1.657    1.641
-> > 2K         1.884     1.813    3.262    3.269
-> > 4K         3.378     3.326    6.044    6.195
-> > 8K         5.637     5.676   10.141   11.287
-> > 16K        8.250     8.402   15.976   16.736
-> > 32K       13.327    13.204   19.013   20.515
-> > 64K       21.241    21.341   20.973   21.879
-> > 128K      21.851    22.354   21.816   23.203
-> > 256K      21.408    21.693   21.846   24.088
-> > 512K      21.600    21.899   21.921   24.106
-> > 
-> >                     guest -> host [Gbps]
-> > pkt_size before opt   p 1     p 2+3    p 4+5
-> > 
-> > 32         0.045     0.046    0.057    0.057
-> > 64         0.089     0.091    0.103    0.104
-> > 128        0.170     0.179    0.192    0.200
-> > 256        0.364     0.351    0.361    0.379
-> > 512        0.709     0.699    0.731    0.790
-> > 1K         1.399     1.407    1.395    1.427
-> > 2K         2.670     2.684    2.745    2.835
-> > 4K         5.171     5.199    5.305    5.451
-> > 8K         8.442     8.500   10.083    9.941
-> > 16K       12.305    12.259   13.519   15.385
-> > 32K       11.418    11.150   11.988   24.680
-> > 64K       10.778    10.659   11.589   35.273
-> > 128K      10.421    10.339   10.939   40.338
-> > 256K      10.300     9.719   10.508   36.562
-> > 512K       9.833     9.808   10.612   35.979
-> > 
-> > As Stefan suggested in the v1, I measured also the efficiency in this way:
-> >     efficiency = Mbps / (%CPU_Host + %CPU_Guest)
-> > 
-> > The '%CPU_Guest' is taken inside the VM. I know that it is not the best way,
-> > but it's provided for free from iperf3 and could be an indication.
-> > 
-> >         host -> guest efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
-> > pkt_size before opt   p 1     p 2+3    p 4+5
-> > 
-> > 32         0.35      0.45     0.79     1.02
-> > 64         0.56      0.80     1.41     1.54
-> > 128        1.11      1.52     3.03     3.12
-> > 256        2.20      2.16     5.44     5.58
-> > 512        4.17      4.18    10.96    11.46
-> > 1K         8.30      8.26    20.99    20.89
-> > 2K        16.82     16.31    39.76    39.73
-> > 4K        30.89     30.79    74.07    75.73
-> > 8K        53.74     54.49   124.24   148.91
-> > 16K       80.68     83.63   200.21   232.79
-> > 32K      132.27    132.52   260.81   357.07
-> > 64K      229.82    230.40   300.19   444.18
-> > 128K     332.60    329.78   331.51   492.28
-> > 256K     331.06    337.22   339.59   511.59
-> > 512K     335.58    328.50   331.56   504.56
-> > 
-> >         guest -> host efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
-> > pkt_size before opt   p 1     p 2+3    p 4+5
-> > 
-> > 32         0.43      0.43     0.53     0.56
-> > 64         0.85      0.86     1.04     1.10
-> > 128        1.63      1.71     2.07     2.13
-> > 256        3.48      3.35     4.02     4.22
-> > 512        6.80      6.67     7.97     8.63
-> > 1K        13.32     13.31    15.72    15.94
-> > 2K        25.79     25.92    30.84    30.98
-> > 4K        50.37     50.48    58.79    59.69
-> > 8K        95.90     96.15   107.04   110.33
-> > 16K      145.80    145.43   143.97   174.70
-> > 32K      147.06    144.74   146.02   282.48
-> > 64K      145.25    143.99   141.62   406.40
-> > 128K     149.34    146.96   147.49   489.34
-> > 256K     156.35    149.81   152.21   536.37
-> > 512K     151.65    150.74   151.52   519.93
-> > 
-> > [1] https://github.com/stefano-garzarella/iperf/
-> > 
-> > Stefano Garzarella (5):
-> >   vsock/virtio: limit the memory used per-socket
-> >   vsock/virtio: reduce credit update messages
-> >   vsock/virtio: fix locking in virtio_transport_inc_tx_pkt()
-> >   vhost/vsock: split packets to send using multiple buffers
-> >   vsock/virtio: change the maximum packet size allowed
-> > 
-> >  drivers/vhost/vsock.c                   | 68 ++++++++++++-----
-> >  include/linux/virtio_vsock.h            |  4 +-
-> >  net/vmw_vsock/virtio_transport.c        |  1 +
-> >  net/vmw_vsock/virtio_transport_common.c | 99 ++++++++++++++++++++-----
-> >  4 files changed, 134 insertions(+), 38 deletions(-)
-> > 
-> > -- 
-> > 2.20.1
+> In general with series like this we should not encode the status quo an
+> pile new hacks upon the old one, but thing where we should be and fix
+> up the old warts while having to wade through all that code.
+
+Other user can also add page that are not coming from GUP but need to
+have a reference see __blkdev_direct_IO() saddly bio get fill from many
+different places and not always with GUP. So we can not say that all
+pages here are coming from bio. I had a different version of the patchset
+i think that was adding a new release dirty function for GUP versus non
+GUP bio. I posted it a while ago, i will try to dig it up once i am
+back.
+
+Cheers,
+Jérôme
