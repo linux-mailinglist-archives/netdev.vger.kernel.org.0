@@ -2,205 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A4257AD28
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 18:02:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F26B67AD5F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 18:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732796AbfG3QCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 12:02:16 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33905 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730617AbfG3QCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 12:02:16 -0400
-Received: by mail-wr1-f68.google.com with SMTP id 31so66408696wrm.1
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 09:02:14 -0700 (PDT)
+        id S1728773AbfG3QQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 12:16:21 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:42319 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727578AbfG3QQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 12:16:21 -0400
+Received: by mail-yw1-f65.google.com with SMTP id z63so23981308ywz.9
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 09:16:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KZFdGbtfNDebHsOvAkh47VjVTqsjW+r0MS7p21EsAro=;
+        b=Oc+IGbcyKIezQN+KkCn7emJ6GSQcNqomjb7NqgpUg+dB0/I24a4FJuhbarHi7dRCy8
+         Z5U8lUQ0kMWWmPjjyI5AAow+v1kIl6ajWrxfn62p5UFj5HGazHFXtAez+wZ7ubeOHv5O
+         h4oBkVepySHbbSF0HXlW0jUwQxddX5tr0t527VK0HGzHFOTnd/sChPo/7DM/mGCL6ezn
+         62gxjj+y+o4+vp9SJE67Lemrz+BoWRcsv755vtXzafToMRQZa9UbEWr3KSdxXUR5xVVX
+         +BBZVMloB2YE9rypZ5h6zmRHCv5jmQNNYMNia54EDXwzh59UJtB0v+vQNgjodV7i7zeN
+         InLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=V6Pf8h9wHTibuyyCP6HPV1Sh16lg6oXtd3546eqyiTY=;
-        b=QSh2pqQjSDYldgIqp/oFUxEt4pCuZAyilpJhFLaGztshYtVVYsNQHs9n9pYDgYaTEg
-         0oXFn01VQaAYPrzlYbKUiRHeVYG7M+rOoC+Wxd3Dk7g/2V5UVS9UjIm3lv8pgrMrXHs/
-         hghekXNoIlW5LXIq3zvqeG1weffbdubVPNVQIZW+hMvHALTYYIdmYhzVU5i5uFOa2yAt
-         Ryqu6CGrVkGPK0NFZVctuxIjpakhANjTvmg6icliD1YvjQIpW4pfIyd8JMEQe7c51Y8x
-         rhXiKRlVZloUBiJAtu4EA46jhp9AOGMeEL9yRZRRR3acj/er2xuiH2D59CmHALUuCxiH
-         shaw==
-X-Gm-Message-State: APjAAAVfNc3EvjO9CEtdQ2I2vguGZT0Xq3I+N8f9KMGoZfqwJM891XHA
-        do7+kQ6Is+bfDilKf4JdPl+GqA==
-X-Google-Smtp-Source: APXvYqx5xyKhNualkS1CVTfw1inkEk+M052ZGUWr39WSwunkma9AVrnPdyiLmtq9+gvnaBNOXudMMQ==
-X-Received: by 2002:adf:e947:: with SMTP id m7mr67344862wrn.123.1564502533191;
-        Tue, 30 Jul 2019 09:02:13 -0700 (PDT)
-Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
-        by smtp.gmail.com with ESMTPSA id n14sm124735032wra.75.2019.07.30.09.02.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 09:02:12 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 18:02:09 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        kvm@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH net-next v5 0/5] vsock/virtio: optimizations to increase
- the throughput
-Message-ID: <20190730160209.hu7kzdzrd22mklow@steredhat>
-References: <20190730154334.237789-1-sgarzare@redhat.com>
- <20190730115339-mutt-send-email-mst@kernel.org>
- <20190730115503-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KZFdGbtfNDebHsOvAkh47VjVTqsjW+r0MS7p21EsAro=;
+        b=LPBi3VkmKPxmXthsdCbjAR3NvDV6J2LxYkgPyuGFyKEO4Oa++rCvdFVgh5m7AGn/Qw
+         SzShZDC17cJLiArhOgQVbWUGHjgXteT2vrukRcDZMQCoW5Fpsydq0J/5ziDXZshVku1l
+         dMSrHBY+KrFLSEg944GQl6BacJ1+Y/v4jfiI9q3JmuF75xVOalP9Ajd3vofEn95xcgfG
+         s59HTkH4wkjxlMPyDz1hfi/nmyldH439QBsvmTPXcpT1du6iBk242kG2yWwwCWF0WW0d
+         /lcf2yr9Ut/RHPOg6JujBWsT1CLGGWRlguuzEGKPTrvR0Wtrej9afB18yAG5t8oc8m98
+         oh6g==
+X-Gm-Message-State: APjAAAWjfilVHMtFu7nCnqrESITroCpwt9s6ZcbEmBd+YJpcpUeqxTvi
+        sYydy4K8RfehbKztXkQXQWvK61sS
+X-Google-Smtp-Source: APXvYqwQ6a3MnZGTZ+aYeOHunaAR5JSatAYhkpXeYwYF+t8xPLNcRMvKkhIBORsBXhF0ARXjGJ83pQ==
+X-Received: by 2002:a81:af06:: with SMTP id n6mr68436334ywh.449.1564503379941;
+        Tue, 30 Jul 2019 09:16:19 -0700 (PDT)
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
+        by smtp.gmail.com with ESMTPSA id i137sm14910497ywa.3.2019.07.30.09.16.19
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 09:16:19 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id x188so1217734yba.8
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 09:16:19 -0700 (PDT)
+X-Received: by 2002:a5b:b46:: with SMTP id b6mr53836624ybr.391.1564503378599;
+ Tue, 30 Jul 2019 09:16:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190730115503-mutt-send-email-mst@kernel.org>
-User-Agent: NeoMutt/20180716
+References: <20190729234934.23595-1-saeedm@mellanox.com> <20190729234934.23595-9-saeedm@mellanox.com>
+In-Reply-To: <20190729234934.23595-9-saeedm@mellanox.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 30 Jul 2019 12:15:42 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfnikCV_J2cUEeafCaui8KxrK4njRR9rqgpo+5JhBxR9g@mail.gmail.com>
+Message-ID: <CA+FuTSfnikCV_J2cUEeafCaui8KxrK4njRR9rqgpo+5JhBxR9g@mail.gmail.com>
+Subject: Re: [net-next 08/13] net/mlx5e: Protect tc flows hashtable with rcu
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jianbo Liu <jianbol@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 11:55:09AM -0400, Michael S. Tsirkin wrote:
-> On Tue, Jul 30, 2019 at 11:54:53AM -0400, Michael S. Tsirkin wrote:
-> > On Tue, Jul 30, 2019 at 05:43:29PM +0200, Stefano Garzarella wrote:
-> > > This series tries to increase the throughput of virtio-vsock with slight
-> > > changes.
-> > > While I was testing the v2 of this series I discovered an huge use of memory,
-> > > so I added patch 1 to mitigate this issue. I put it in this series in order
-> > > to better track the performance trends.
-> > > 
-> > > v5:
-> > > - rebased all patches on net-next
-> > > - added Stefan's R-b and Michael's A-b
-> > 
-> > This doesn't solve all issues around allocation - as I mentioned I think
-> > we will need to improve accounting for that,
-> > and maybe add pre-allocation.
+On Mon, Jul 29, 2019 at 7:50 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
+>
+> From: Vlad Buslov <vladbu@mellanox.com>
+>
+> In order to remove dependency on rtnl lock, access to tc flows hashtable
+> must be explicitly protected from concurrent flows removal.
+>
+> Extend tc flow structure with rcu to allow concurrent parallel access. Use
+> rcu read lock to safely lookup flow in tc flows hash table, and take
+> reference to it. Use rcu free for flow deletion to accommodate concurrent
+> stats requests.
+>
+> Add new DELETED flow flag. Imlement new flow_flag_test_and_set() helper
+> that is used to set a flag and return its previous value. Use it to
+> atomically set the flag in mlx5e_delete_flower() to guarantee that flow can
+> only be deleted once, even when same flow is deleted concurrently by
+> multiple tasks.
+>
+> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> Reviewed-by: Jianbo Liu <jianbol@mellanox.com>
+> Reviewed-by: Roi Dayan <roid@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
 
-Yes, I'll work on it following your suggestions.
+> @@ -3492,16 +3507,32 @@ int mlx5e_delete_flower(struct net_device *dev, struct mlx5e_priv *priv,
+>  {
+>         struct rhashtable *tc_ht = get_tc_ht(priv, flags);
+>         struct mlx5e_tc_flow *flow;
+> +       int err;
+>
+> +       rcu_read_lock();
+>         flow = rhashtable_lookup_fast(tc_ht, &f->cookie, tc_ht_params);
+> -       if (!flow || !same_flow_direction(flow, flags))
+> -               return -EINVAL;
+> +       if (!flow || !same_flow_direction(flow, flags)) {
+> +               err = -EINVAL;
+> +               goto errout;
+> +       }
+>
+> +       /* Only delete the flow if it doesn't have MLX5E_TC_FLOW_DELETED flag
+> +        * set.
+> +        */
+> +       if (flow_flag_test_and_set(flow, DELETED)) {
+> +               err = -EINVAL;
+> +               goto errout;
+> +       }
+>         rhashtable_remove_fast(tc_ht, &flow->node, tc_ht_params);
+> +       rcu_read_unlock();
+>
+>         mlx5e_flow_put(priv, flow);
 
-> > But it's a great series of steps in the right direction!
-> > 
+Dereferencing flow outside rcu readside critical section? Does a build
+with lockdep not complain?
 
-Thank you very much :)
-Stefano
+>
+>         return 0;
+> +
+> +errout:
+> +       rcu_read_unlock();
+> +       return err;
+>  }
+>
+>  int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+> @@ -3517,8 +3548,10 @@ int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+>         u64 bytes = 0;
+>         int err = 0;
+>
+> -       flow = mlx5e_flow_get(rhashtable_lookup_fast(tc_ht, &f->cookie,
+> -                                                    tc_ht_params));
+> +       rcu_read_lock();
+> +       flow = mlx5e_flow_get(rhashtable_lookup(tc_ht, &f->cookie,
+> +                                               tc_ht_params));
+> +       rcu_read_unlock();
+>         if (IS_ERR(flow))
+>                 return PTR_ERR(flow);
 
-> 
-> 
-> So
-> 
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> 
-> > 
-> > > v4: https://patchwork.kernel.org/cover/11047717
-> > > v3: https://patchwork.kernel.org/cover/10970145
-> > > v2: https://patchwork.kernel.org/cover/10938743
-> > > v1: https://patchwork.kernel.org/cover/10885431
-> > > 
-> > > Below are the benchmarks step by step. I used iperf3 [1] modified with VSOCK
-> > > support. As Michael suggested in the v1, I booted host and guest with 'nosmap'.
-> > > 
-> > > A brief description of patches:
-> > > - Patches 1:   limit the memory usage with an extra copy for small packets
-> > > - Patches 2+3: reduce the number of credit update messages sent to the
-> > >                transmitter
-> > > - Patches 4+5: allow the host to split packets on multiple buffers and use
-> > >                VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max packet size allowed
-> > > 
-> > >                     host -> guest [Gbps]
-> > > pkt_size before opt   p 1     p 2+3    p 4+5
-> > > 
-> > > 32         0.032     0.030    0.048    0.051
-> > > 64         0.061     0.059    0.108    0.117
-> > > 128        0.122     0.112    0.227    0.234
-> > > 256        0.244     0.241    0.418    0.415
-> > > 512        0.459     0.466    0.847    0.865
-> > > 1K         0.927     0.919    1.657    1.641
-> > > 2K         1.884     1.813    3.262    3.269
-> > > 4K         3.378     3.326    6.044    6.195
-> > > 8K         5.637     5.676   10.141   11.287
-> > > 16K        8.250     8.402   15.976   16.736
-> > > 32K       13.327    13.204   19.013   20.515
-> > > 64K       21.241    21.341   20.973   21.879
-> > > 128K      21.851    22.354   21.816   23.203
-> > > 256K      21.408    21.693   21.846   24.088
-> > > 512K      21.600    21.899   21.921   24.106
-> > > 
-> > >                     guest -> host [Gbps]
-> > > pkt_size before opt   p 1     p 2+3    p 4+5
-> > > 
-> > > 32         0.045     0.046    0.057    0.057
-> > > 64         0.089     0.091    0.103    0.104
-> > > 128        0.170     0.179    0.192    0.200
-> > > 256        0.364     0.351    0.361    0.379
-> > > 512        0.709     0.699    0.731    0.790
-> > > 1K         1.399     1.407    1.395    1.427
-> > > 2K         2.670     2.684    2.745    2.835
-> > > 4K         5.171     5.199    5.305    5.451
-> > > 8K         8.442     8.500   10.083    9.941
-> > > 16K       12.305    12.259   13.519   15.385
-> > > 32K       11.418    11.150   11.988   24.680
-> > > 64K       10.778    10.659   11.589   35.273
-> > > 128K      10.421    10.339   10.939   40.338
-> > > 256K      10.300     9.719   10.508   36.562
-> > > 512K       9.833     9.808   10.612   35.979
-> > > 
-> > > As Stefan suggested in the v1, I measured also the efficiency in this way:
-> > >     efficiency = Mbps / (%CPU_Host + %CPU_Guest)
-> > > 
-> > > The '%CPU_Guest' is taken inside the VM. I know that it is not the best way,
-> > > but it's provided for free from iperf3 and could be an indication.
-> > > 
-> > >         host -> guest efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
-> > > pkt_size before opt   p 1     p 2+3    p 4+5
-> > > 
-> > > 32         0.35      0.45     0.79     1.02
-> > > 64         0.56      0.80     1.41     1.54
-> > > 128        1.11      1.52     3.03     3.12
-> > > 256        2.20      2.16     5.44     5.58
-> > > 512        4.17      4.18    10.96    11.46
-> > > 1K         8.30      8.26    20.99    20.89
-> > > 2K        16.82     16.31    39.76    39.73
-> > > 4K        30.89     30.79    74.07    75.73
-> > > 8K        53.74     54.49   124.24   148.91
-> > > 16K       80.68     83.63   200.21   232.79
-> > > 32K      132.27    132.52   260.81   357.07
-> > > 64K      229.82    230.40   300.19   444.18
-> > > 128K     332.60    329.78   331.51   492.28
-> > > 256K     331.06    337.22   339.59   511.59
-> > > 512K     335.58    328.50   331.56   504.56
-> > > 
-> > >         guest -> host efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
-> > > pkt_size before opt   p 1     p 2+3    p 4+5
-> > > 
-> > > 32         0.43      0.43     0.53     0.56
-> > > 64         0.85      0.86     1.04     1.10
-> > > 128        1.63      1.71     2.07     2.13
-> > > 256        3.48      3.35     4.02     4.22
-> > > 512        6.80      6.67     7.97     8.63
-> > > 1K        13.32     13.31    15.72    15.94
-> > > 2K        25.79     25.92    30.84    30.98
-> > > 4K        50.37     50.48    58.79    59.69
-> > > 8K        95.90     96.15   107.04   110.33
-> > > 16K      145.80    145.43   143.97   174.70
-> > > 32K      147.06    144.74   146.02   282.48
-> > > 64K      145.25    143.99   141.62   406.40
-> > > 128K     149.34    146.96   147.49   489.34
-> > > 256K     156.35    149.81   152.21   536.37
-> > > 512K     151.65    150.74   151.52   519.93
-> > > 
-> > > [1] https://github.com/stefano-garzarella/iperf/
-> > > 
-> > > Stefano Garzarella (5):
-> > >   vsock/virtio: limit the memory used per-socket
-> > >   vsock/virtio: reduce credit update messages
-> > >   vsock/virtio: fix locking in virtio_transport_inc_tx_pkt()
-> > >   vhost/vsock: split packets to send using multiple buffers
-> > >   vsock/virtio: change the maximum packet size allowed
-> > > 
-> > >  drivers/vhost/vsock.c                   | 68 ++++++++++++-----
-> > >  include/linux/virtio_vsock.h            |  4 +-
-> > >  net/vmw_vsock/virtio_transport.c        |  1 +
-> > >  net/vmw_vsock/virtio_transport_common.c | 99 ++++++++++++++++++++-----
-> > >  4 files changed, 134 insertions(+), 38 deletions(-)
-> > > 
-> > > -- 
-> > > 2.20.1
-
--- 
+Same, in code below this check?
