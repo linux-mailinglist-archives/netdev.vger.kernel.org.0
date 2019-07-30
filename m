@@ -2,194 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECBD37B43B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:18:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 147CB7B444
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728128AbfG3UR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 16:17:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34172 "EHLO mail.kernel.org"
+        id S1727043AbfG3UUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 16:20:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726837AbfG3UR4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 16:17:56 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728165AbfG3UUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 16:20:25 -0400
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99D7220693;
-        Tue, 30 Jul 2019 20:17:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A94B4217D6
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 20:20:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564517873;
-        bh=/W+9jaawErVT51Elva3JfolGD51FWoAeFhMH0Y/9LUI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cehCfNRKkrT9n1L7WOZyKEqR51p2eWfpV5gx6oNuAUQ4OcD3RRgsXG0nTq31thgXQ
-         emn16oRHDXBFzxh0A0k0sUWiRanV/dhPtSwRwLF962zqPR5A7wj/PhmzePF6Z46i22
-         Gh5fRebxyBK+goX+IVN0h7One1pe6TBCV72a378Y=
-Date:   Tue, 30 Jul 2019 16:17:52 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     maowenan <maowenan@huawei.com>
-Cc:     gregkh@linuxfoundation.org, stable@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH stable 4.9] tcp: reset sk_send_head in
- tcp_write_queue_purge
-Message-ID: <20190730201752.GE29162@sasha-vm>
-References: <20190729132108.162320-1-maowenan@huawei.com>
- <20190729153218.GA29162@sasha-vm>
- <29c1ee9c-4a5d-4f61-f526-85980185f0bd@huawei.com>
+        s=default; t=1564518023;
+        bh=Iu+6JPntZLE7GOijyjckcWIt8EYf9s4FJl/QwYGOOaE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JDmi0tnubv1So2xm5UTQtQWXJDJr+g2VqbhfsODtQfzpXun1MYr+R7IpC2F6HvJ+b
+         TDi9FZqH8oOsJmdqwIGRwNMJ/vEhPhPmyQme3+GfHYUkR96dUGHowWzJEc+XKdFYTi
+         QueCGEJJ0/d1j86TlgDEAo0+7wkpKRDWR5VFpmyU=
+Received: by mail-wm1-f51.google.com with SMTP id g67so53650964wme.1
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 13:20:23 -0700 (PDT)
+X-Gm-Message-State: APjAAAV5guAlYuw8O35jKDXuMvFGIfIqqLtOVSp1t8wCr8gX9ZIrjzJ8
+        cGzulPQriURRDFbJ6UFtT9NRNi2XG51kIx7/qtG/pw==
+X-Google-Smtp-Source: APXvYqzl8ZF//gu9dHlHhlkHH0HNpi+EOtNwImKwsGRjT7tn7mvma3rdV5Zit0f6Bw8ChZu9AISkh4etjc8YWGyd42M=
+X-Received: by 2002:a1c:a942:: with SMTP id s63mr105071199wme.76.1564518022044;
+ Tue, 30 Jul 2019 13:20:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <29c1ee9c-4a5d-4f61-f526-85980185f0bd@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com> <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+ <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com> <CALCETrWBnH4Q43POU8cQ7YMjb9LioK28FDEQf7aHZbdf1eBZWg@mail.gmail.com>
+ <0DE7F23E-9CD2-4F03-82B5-835506B59056@fb.com> <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
+ <201907021115.DCD56BBABB@keescook> <CALCETrXTta26CTtEDnzvtd03-WOGdXcnsAogP8JjLkcj4-mHvg@mail.gmail.com>
+ <4A7A225A-6C23-4C0F-9A95-7C6C56B281ED@fb.com> <CALCETrX2bMnwC6_t4b_G-hzJSfMPrkK4YKs5ebcecv2LJ0rt3w@mail.gmail.com>
+ <514D5453-0AEE-420F-AEB6-3F4F58C62E7E@fb.com> <1DE886F3-3982-45DE-B545-67AD6A4871AB@amacapital.net>
+ <7F51F8B8-CF4C-4D82-AAE1-F0F28951DB7F@fb.com> <77354A95-4107-41A7-8936-D144F01C3CA4@fb.com>
+In-Reply-To: <77354A95-4107-41A7-8936-D144F01C3CA4@fb.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Tue, 30 Jul 2019 13:20:10 -0700
+X-Gmail-Original-Message-ID: <CALCETrVS5FwtmTyspyg-UNoZTHes9wUNbbsvNYwQwXUUfrtaiQ@mail.gmail.com>
+Message-ID: <CALCETrVS5FwtmTyspyg-UNoZTHes9wUNbbsvNYwQwXUUfrtaiQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "linux-security@vger.kernel.org" <linux-security@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 09:31:19AM +0800, maowenan wrote:
+On Sat, Jul 27, 2019 at 11:20 AM Song Liu <songliubraving@fb.com> wrote:
 >
+> Hi Andy,
 >
->On 2019/7/29 23:32, Sasha Levin wrote:
->> On Mon, Jul 29, 2019 at 09:21:08PM +0800, Mao Wenan wrote:
->>> From: Soheil Hassas Yeganeh <soheil@google.com>
->>>
->>> tcp_write_queue_purge clears all the SKBs in the write queue
->>> but does not reset the sk_send_head. As a result, we can have
->>> a NULL pointer dereference anywhere that we use tcp_send_head
->>> instead of the tcp_write_queue_tail.
->>>
->>> For example, after a27fd7a8ed38 (tcp: purge write queue upon RST),
->>> we can purge the write queue on RST. Prior to
->>> 75c119afe14f (tcp: implement rb-tree based retransmit queue),
->>> tcp_push will only check tcp_send_head and then accesses
->>> tcp_write_queue_tail to send the actual SKB. As a result, it will
->>> dereference a NULL pointer.
->>>
->>> This has been reported twice for 4.14 where we don't have
->>> 75c119afe14f:
->>>
->>> By Timofey Titovets:
->>>
->>> [  422.081094] BUG: unable to handle kernel NULL pointer dereference
->>> at 0000000000000038
->>> [  422.081254] IP: tcp_push+0x42/0x110
->>> [  422.081314] PGD 0 P4D 0
->>> [  422.081364] Oops: 0002 [#1] SMP PTI
->>>
->>> By Yongjian Xu:
->>>
->>> BUG: unable to handle kernel NULL pointer dereference at 0000000000000038
->>> IP: tcp_push+0x48/0x120
->>> PGD 80000007ff77b067 P4D 80000007ff77b067 PUD 7fd989067 PMD 0
->>> Oops: 0002 [#18] SMP PTI
->>> Modules linked in: tcp_diag inet_diag tcp_bbr sch_fq iTCO_wdt
->>> iTCO_vendor_support pcspkr ixgbe mdio i2c_i801 lpc_ich joydev input_leds shpchp
->>> e1000e igb dca ptp pps_core hwmon mei_me mei ipmi_si ipmi_msghandler sg ses
->>> scsi_transport_sas enclosure ext4 jbd2 mbcache sd_mod ahci libahci megaraid_sas
->>> wmi ast ttm dm_mirror dm_region_hash dm_log dm_mod dax
->>> CPU: 6 PID: 14156 Comm: [ET_NET 6] Tainted: G D 4.14.26-1.el6.x86_64 #1
->>> Hardware name: LENOVO ThinkServer RD440 /ThinkServer RD440, BIOS A0TS80A
->>> 09/22/2014
->>> task: ffff8807d78d8140 task.stack: ffffc9000e944000
->>> RIP: 0010:tcp_push+0x48/0x120
->>> RSP: 0018:ffffc9000e947a88 EFLAGS: 00010246
->>> RAX: 00000000000005b4 RBX: ffff880f7cce9c00 RCX: 0000000000000000
->>> RDX: 0000000000000000 RSI: 0000000000000040 RDI: ffff8807d00f5000
->>> RBP: ffffc9000e947aa8 R08: 0000000000001c84 R09: 0000000000000000
->>> R10: ffff8807d00f5158 R11: 0000000000000000 R12: ffff8807d00f5000
->>> R13: 0000000000000020 R14: 00000000000256d4 R15: 0000000000000000
->>> FS: 00007f5916de9700(0000) GS:ffff88107fd00000(0000) knlGS:0000000000000000
->>> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> CR2: 0000000000000038 CR3: 00000007f8226004 CR4: 00000000001606e0
->>> Call Trace:
->>> tcp_sendmsg_locked+0x33d/0xe50
->>> tcp_sendmsg+0x37/0x60
->>> inet_sendmsg+0x39/0xc0
->>> sock_sendmsg+0x49/0x60
->>> sock_write_iter+0xb6/0x100
->>> do_iter_readv_writev+0xec/0x130
->>> ? rw_verify_area+0x49/0xb0
->>> do_iter_write+0x97/0xd0
->>> vfs_writev+0x7e/0xe0
->>> ? __wake_up_common_lock+0x80/0xa0
->>> ? __fget_light+0x2c/0x70
->>> ? __do_page_fault+0x1e7/0x530
->>> do_writev+0x60/0xf0
->>> ? inet_shutdown+0xac/0x110
->>> SyS_writev+0x10/0x20
->>> do_syscall_64+0x6f/0x140
->>> ? prepare_exit_to_usermode+0x8b/0xa0
->>> entry_SYSCALL_64_after_hwframe+0x3d/0xa2
->>> RIP: 0033:0x3135ce0c57
->>> RSP: 002b:00007f5916de4b00 EFLAGS: 00000293 ORIG_RAX: 0000000000000014
->>> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000003135ce0c57
->>> RDX: 0000000000000002 RSI: 00007f5916de4b90 RDI: 000000000000606f
->>> RBP: 0000000000000000 R08: 0000000000000000 R09: 00007f5916de8c38
->>> R10: 0000000000000000 R11: 0000000000000293 R12: 00000000000464cc
->>> R13: 00007f5916de8c30 R14: 00007f58d8bef080 R15: 0000000000000002
->>> Code: 48 8b 97 60 01 00 00 4c 8d 97 58 01 00 00 41 b9 00 00 00 00 41 89 f3 4c 39
->>> d2 49 0f 44 d1 41 81 e3 00 80 00 00 0f 85 b0 00 00 00 <80> 4a 38 08 44 8b 8f 74
->>> 06 00 00 44 89 8f 7c 06 00 00 83 e6 01
->>> RIP: tcp_push+0x48/0x120 RSP: ffffc9000e947a88
->>> CR2: 0000000000000038
->>> ---[ end trace 8d545c2e93515549 ]---
->>>
->>> There is other scenario which found in stable 4.4:
->>> Allocated:
->>> [<ffffffff82f380a6>] __alloc_skb+0xe6/0x600 net/core/skbuff.c:218
->>> [<ffffffff832466c3>] alloc_skb_fclone include/linux/skbuff.h:856 [inline]
->>> [<ffffffff832466c3>] sk_stream_alloc_skb+0xa3/0x5d0 net/ipv4/tcp.c:833
->>> [<ffffffff83249164>] tcp_sendmsg+0xd34/0x2b00 net/ipv4/tcp.c:1178
->>> [<ffffffff83300ef3>] inet_sendmsg+0x203/0x4d0 net/ipv4/af_inet.c:755
->>> Freed:
->>> [<ffffffff82f372fd>] __kfree_skb+0x1d/0x20 net/core/skbuff.c:676
->>> [<ffffffff83288834>] sk_wmem_free_skb include/net/sock.h:1447 [inline]
->>> [<ffffffff83288834>] tcp_write_queue_purge include/net/tcp.h:1460 [inline]
->>> [<ffffffff83288834>] tcp_connect_init net/ipv4/tcp_output.c:3122 [inline]
->>> [<ffffffff83288834>] tcp_connect+0xb24/0x30c0 net/ipv4/tcp_output.c:3261
->>> [<ffffffff8329b991>] tcp_v4_connect+0xf31/0x1890 net/ipv4/tcp_ipv4.c:246
->>>
->>> BUG: KASAN: use-after-free in tcp_skb_pcount include/net/tcp.h:796 [inline]
->>> BUG: KASAN: use-after-free in tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
->>> BUG: KASAN: use-after-free in tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
->>> [<ffffffff81515cd5>] kasan_report.cold.7+0x175/0x2f7 mm/kasan/report.c:408
->>> [<ffffffff814f9784>] __asan_report_load2_noabort+0x14/0x20 mm/kasan/report.c:427
->>> [<ffffffff83286582>] tcp_skb_pcount include/net/tcp.h:796 [inline]
->>> [<ffffffff83286582>] tcp_init_tso_segs net/ipv4/tcp_output.c:1619 [inline]
->>> [<ffffffff83286582>] tcp_write_xmit+0x3fc2/0x4cb0 net/ipv4/tcp_output.c:2056
->>> [<ffffffff83287a40>] __tcp_push_pending_frames+0xa0/0x290 net/ipv4/tcp_output.c:2307
->>>
->>> stable 4.4 and stable 4.9 don't have the commit abb4a8b870b5 ("tcp: purge write queue upon RST")
->>> which is referred in dbbf2d1e4077,
->>> in tcp_connect_init, it calls tcp_write_queue_purge, and does not reset sk_send_head, then UAF.
->>>
->>> stable 4.14 have the commit abb4a8b870b5 ("tcp: purge write queue upon RST"),
->>> in tcp_reset, it calls tcp_write_queue_purge(sk), and does not reset sk_send_head, then UAF.
->>>
->>> So this patch can be used to fix stable 4.4 and 4.9.
->>>
->>> Fixes: a27fd7a8ed38 (tcp: purge write queue upon RST)
->>> Reported-by: Timofey Titovets <nefelim4ag@gmail.com>
->>> Reported-by: Yongjian Xu <yongjianchn@gmail.com>
->>> Signed-off-by: Eric Dumazet <edumazet@google.com>
->>> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
->>> Tested-by: Yongjian Xu <yongjianchn@gmail.com>
->>>
->>> Signed-off-by: David S. Miller <davem@davemloft.net>
->>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
->>
->> So the "Fixes:" commit in the commit message is wrong? What's the actual
->> commit that this fixes?
+> >>>>
+> >>>
+> >>> Well, yes. sys_bpf() is pretty powerful.
+> >>>
+> >>> The goal of /dev/bpf is to enable special users to call sys_bpf(). In
+> >>> the meanwhile, such users should not take down the whole system easil=
+y
+> >>> by accident, e.g., with rm -rf /.
+> >>
+> >> That=E2=80=99s easy, though =E2=80=94 bpftool could learn to read /etc=
+/bpfusers before allowing ruid !=3D 0.
+> >
+> > This is a great idea! fscaps + /etc/bpfusers should do the trick.
 >
->Upstream commit is 7f582b248d0a ("tcp: purge write queue in tcp_connect_init()")
->linux-4.4.y
->Fixes: 5bbe138a250e ("tcp: purge write queue in tcp_connect_init()")
->linux-4.9.y
->Fixes: 74a4c09d4b05 ("tcp: purge write queue in tcp_connect_init()")
->linux-4.14.y
->Fixes: a27fd7a8ed38 ("tcp: purge write queue upon RST")
+> After some discussions and more thinking on this, I have some concerns
+> with the user space only approach.
+>
+> IIUC, your proposal for user space only approach is like:
+>
+> 1. bpftool (and other tools) check /etc/bpfusers and only do
+>    setuid for allowed users:
+>
+>         int main()
+>         {
+>                 if (/* uid in /etc/bpfusers */)
+>                         setuid(0);
+>                 sys_bpf(...);
+>         }
+>
+> 2. bpftool (and other tools) is installed with CAP_SETUID:
+>
+>         setcap cap_setuid=3De+p /bin/bpftool
+>
 
-Okay, I've queued this for 4.9 and 4.4, thank you.
+You have this a bit backwards.  You wouldn't use CAP_SETUID.  You
+would use the setuid *mode* bit, i.e. chmod 4111 (or 4100 and use ACLs
+to further lock it down).  Or you could use setcap cap_sys_admin=3Dp,
+although the details vary.  It woks a bit like this:
 
---
-Thanks,
-Sasha
+First, if you are running with elevated privilege due to SUID or
+fscaps, the kernel and glibc offer you a degree of protection: you are
+protected from ptrace(), LD_PRELOAD, etc.  You are *not* protected
+from yourself.  For example, you may be running in a context in which
+an attacker has malicious values in your environment variables, CWD,
+etc.  Do you need to carefully decide whether you are willing to run
+with elevated privilege on behalf of the user, which you learn like
+this:
+
+uid_t real_uid =3D getuid();
+
+Your decision may may depend on command-line arguments as well (i.e.
+you might want to allow tracing but not filtering, say).  Once you've
+made this decision, the details vary:
+
+For SUID, you either continue to run with euid =3D=3D 0, or you drop
+privilege using something like:
+
+if (setresuid(real_uid, real_uid, real_uid) !=3D 0) {
+ /* optionally print an error to stderr */
+ exit(1);
+}
+
+For fscaps, if you want to be privileged, you use something like
+capng_update(); capng_apply() to set CAP_SYS_ADMIN to be effective
+when you want privilege.  If you want to be unprivileged (because
+bpfusers says so, for example), you could use capng_update() to drop
+CAP_SYS_ADMIN entirely and see if the calls still work without
+privilege.  But this is a little bit awkward, since you don't directly
+know whether the user that invoked you in the first place had
+CAP_SYS_ADMIN to begin with.
+
+In general, SUID is a bit easier to work with.
+
+
+> This approach is not ideal, because we need to trust the tool to give
+> it CAP_SETUID. A hacked tool could easily bypass /etc/bpfusers check
+> or use other root only sys calls after setuid(0).
+
+How?  The whole SUID mechanism is designed fairly carefully to prevent
+this.  /bin/sudo is likely to be SUID on your system, but you can't
+just "hack" it to become root.
