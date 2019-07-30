@@ -2,125 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF34A7B4A0
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EDEA7B4B4
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 23:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728681AbfG3U5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 16:57:14 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39958 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728593AbfG3U5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 16:57:13 -0400
-Received: by mail-pf1-f193.google.com with SMTP id p184so30455139pfp.7;
-        Tue, 30 Jul 2019 13:57:12 -0700 (PDT)
+        id S1727477AbfG3VA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 17:00:56 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:34703 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726078AbfG3VA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 17:00:56 -0400
+Received: by mail-qk1-f196.google.com with SMTP id t8so47605589qkt.1
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 14:00:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zIg1AeRgD/CqkmVywbx+SzJM6fRrXplz7aYhAvptzng=;
-        b=XPofLF/PHutz4HRxq81cl690l9JazNX7DE9Sz1LHW56Ma+PaWewPn4NCX7vVDtKrug
-         q4GYLQHOLbQNIyzRjkilYec92LYHDHYE3s7umnjLyHZVoR8ACBwShBGZlhCQzJ0e/K9n
-         G7PcNQdBdB1MIJeCd9Jz0A5GyrPYQBkVdaffdydfOlpBLG3dhqUxeiCBrG1LWqTE7Xqy
-         zmL+9yVwrhVt2Kz5wb2SR2RniJWXisEJMoF7R3sZthPZBIVjkuCkP3ahQg4hWjCzfAjS
-         HmJSUf3TZqxLbfGjRtE0Yjx4i11cxdEwGB/Fo/WLx+/qENW7fbOiVLgn4HM3pHlMEDwz
-         K+sw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=UZVLH+YJQnTToBfxuUOLKOpxR4PzlV9zcM3XVpn0bZQ=;
+        b=mcws10hDVVGHgXmeHOx3+gacFHiyt6qxQmtnMf9VKy9x2aso89EW+Iz5QyvBfsb5k1
+         mYAFkhQqw6yWf+1/iIzcSs2OgAr0QWe+wVrEtAFBUilZNASolnS6iRHqCGouKKTxI2pb
+         tbupWsSD/Tc8IocksoN9BnMfFPsJswJhUvq0DvlfVplsZKLM0664vDVsqqjchQGU1OnD
+         Vmcd0hqOSEzOcAc6AyUEKp+4VSBl+vtPQNYbD9RnLXrL+N397Jh9IxFwt+Y155WBnSZm
+         YBsmWTIg7WDc3KKxVG9iLH62A88G7F44bLEDorf4En3SYksZTTcX8R4dfbxSdHLuL6gx
+         /7tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zIg1AeRgD/CqkmVywbx+SzJM6fRrXplz7aYhAvptzng=;
-        b=Vx8slnE/HxNKYox/WR+/ciNJMUFQHwzvjhWAbz1FBZBGb5KQZX4ihvswFNUqRJ04Te
-         nK73QQgZB9ypa1TiFBJglNEpeXDie2gHXPJKGxIFyKdUVXENngZqJ85Z9i4knajwbxgg
-         Gcep/7OVYaZzXTiDtI56G/RgZkrAX98TFbMvqoV5YhNGvukGx+WVerLwfWwOhJ6oKTEi
-         wDWotlkeZjxc/rw7Rty3Xn57777fsGNXkJBhU5LI7s8/A37o1neIzEGH6peQD5vvF7jO
-         BV4H8T46aKgneyP563LK09BNS6MURWXliLZwFbHT4nlsVdEwgQj+SHBap/N6N+AIzdk8
-         kSGw==
-X-Gm-Message-State: APjAAAWMDlPTB2RUgo6mz1+w916IG2rCQWH70AcK0vOenSUEpVZx2C0G
-        GN9EmeJKbIRtu+yyLEsdErs=
-X-Google-Smtp-Source: APXvYqxsCn2vX6p1aDH+4gab5/zzeAvDw245fAqNqTfAzQelWKMC8Rw1mqVzx4xsB8ePETum3mpINg==
-X-Received: by 2002:a63:121b:: with SMTP id h27mr95395492pgl.335.1564520232325;
-        Tue, 30 Jul 2019 13:57:12 -0700 (PDT)
-Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id 137sm80565678pfz.112.2019.07.30.13.57.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=UZVLH+YJQnTToBfxuUOLKOpxR4PzlV9zcM3XVpn0bZQ=;
+        b=J8Nw11Trk7U8SyHdcZeFAUYhi6eiO+M35hDTei/w1Up9nw6WYdf8iousWx0j+UDXRK
+         nBF5BPtBSU5UbeXYs9dfNSnTwB5gv0mqe6bA9B5BxhDmuowoxeAplT4QclD/Vx271As9
+         STG119vtPRkDrW/dIKRCpZPpsPQbspvyORd8oSirnqxVz4+yiZruRkscsYfS6aJE+RX/
+         raxkoblXnzJ5H5df4lgW4oimwhPO1+np0nbGKn2ktm7kzJ04ZMLEXY+PaJT/gG2GYmfm
+         uQRiy42WbA7mZx0uAG/wmD4YXnkOMXmcTD3aGykgukBNaXTazCqJjKVS8Cia8KB5y2sx
+         sY4w==
+X-Gm-Message-State: APjAAAXqNCLr2BhABJk5DAWOLhZUfh+5/KQDQ7FD8arkiaTHSMZk3UeA
+        masKCCzfhnftXc4gUbs4HtxO+A==
+X-Google-Smtp-Source: APXvYqy6uA8j/TiODO9MQFYAXMgFVAJWCFAWDabDRYE1w+HZfeiZDq7OyAAZj3mhuM9beq9rdAK4LQ==
+X-Received: by 2002:a37:274a:: with SMTP id n71mr72049172qkn.448.1564520454474;
+        Tue, 30 Jul 2019 14:00:54 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id g10sm27564265qkk.91.2019.07.30.14.00.53
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 13:57:11 -0700 (PDT)
-From:   john.hubbard@gmail.com
-X-Google-Original-From: jhubbard@nvidia.com
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Benvenuti <benve@cisco.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jerome Glisse <jglisse@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Marciniszyn <mike.marciniszyn@intel.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH v4 3/3] net/xdp: convert put_page() to put_user_page*()
-Date:   Tue, 30 Jul 2019 13:57:05 -0700
-Message-Id: <20190730205705.9018-4-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190730205705.9018-1-jhubbard@nvidia.com>
-References: <20190730205705.9018-1-jhubbard@nvidia.com>
+        Tue, 30 Jul 2019 14:00:54 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 14:00:40 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Takshak Chahande <ctakshak@fb.com>
+Cc:     "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        Kernel Team <Kernel-team@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCH bpf-next] tools: bpftool: add support for reporting the
+ effective cgroup progs
+Message-ID: <20190730140040.7a357b19@cakuba.netronome.com>
+In-Reply-To: <20190730180443.GA48276@ctakshak-mbp.dhcp.thefacebook.com>
+References: <20190729213538.8960-1-jakub.kicinski@netronome.com>
+        <20190730180443.GA48276@ctakshak-mbp.dhcp.thefacebook.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Hubbard <jhubbard@nvidia.com>
+On Tue, 30 Jul 2019 18:04:53 +0000, Takshak Chahande wrote:
+> Jakub Kicinski <jakub.kicinski@netronome.com> wrote on Mon [2019-Jul-29 14:35:38 -0700]:
+> > @@ -158,20 +161,30 @@ static int show_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type,
+> >  static int do_show(int argc, char **argv)
+> >  {
+> >  	enum bpf_attach_type type;
+> > +	const char *path;
+> >  	int cgroup_fd;
+> >  	int ret = -1;
+> >  
+> > -	if (argc < 1) {
+> > -		p_err("too few parameters for cgroup show");
+> > -		goto exit;
+> > -	} else if (argc > 1) {
+> > -		p_err("too many parameters for cgroup show");
+> > -		goto exit;
+> > +	query_flags = 0;
+> > +
+> > +	if (!REQ_ARGS(1))
+> > +		return -1;
+> > +	path = GET_ARG();
+> > +
+> > +	while (argc) {
+> > +		if (is_prefix(*argv, "effective")) {
+> > +			query_flags |= BPF_F_QUERY_EFFECTIVE;
+> > +			NEXT_ARG();
+> > +		} else {
+> > +			p_err("expected no more arguments, 'effective', got: '%s'?",
+> > +			      *argv);
+> > +			return -1;
+> > +		}
+> >  	}  
+> This while loop will allow multiple 'effective' keywords in the argument
+> unnecessarily. IMO, we should strictly restrict only for single
+> occurance of 'effective' word.
 
-For pages that were retained via get_user_pages*(), release those pages
-via the new put_user_page*() routines, instead of via put_page() or
-release_pages().
+It's kind of the way all bpftool works to date :(
 
-This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
-("mm: introduce put_user_page*(), placeholder versions").
+But perhaps not checking is worse than inconsistency? Okay, let's fix
+this up.
 
-Cc: Björn Töpel <bjorn.topel@intel.com>
-Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
- net/xdp/xdp_umem.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+> > -	cgroup_fd = open(argv[0], O_RDONLY);
+> > +	cgroup_fd = open(path, O_RDONLY);
+> >  	if (cgroup_fd < 0) {
+> > -		p_err("can't open cgroup %s", argv[0]);
+> > +		p_err("can't open cgroup %s", path);
+> >  		goto exit;
+> >  	}
+> >  
+> > @@ -297,23 +310,29 @@ static int do_show_tree(int argc, char **argv)
+> >  	char *cgroup_root;
+> >  	int ret;
+> >  
+> > -	switch (argc) {
+> > -	case 0:
+> > +	query_flags = 0;
+> > +
+> > +	if (!argc) {
+> >  		cgroup_root = find_cgroup_root();
+> >  		if (!cgroup_root) {
+> >  			p_err("cgroup v2 isn't mounted");
+> >  			return -1;
+> >  		}
+> > -		break;
+> > -	case 1:
+> > -		cgroup_root = argv[0];
+> > -		break;
+> > -	default:
+> > -		p_err("too many parameters for cgroup tree");
+> > -		return -1;
+> > +	} else {
+> > +		cgroup_root = GET_ARG();
+> > +
+> > +		while (argc) {
+> > +			if (is_prefix(*argv, "effective")) {
+> > +				query_flags |= BPF_F_QUERY_EFFECTIVE;
+> > +				NEXT_ARG();  
+> 
+> NEXT_ARG() does update argc value; that means after this outer if/else we need 
+> to know how argc has become 0 (through which path) before freeing up `cgroup_root` allocated
+> memory later at the end of this function.
 
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index 83de74ca729a..17c4b3d3dc34 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -166,14 +166,7 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
+Good catch!
+
+> > +			} else {
+> > +				p_err("expected no more arguments, 'effective', got: '%s'?",
+> > +				      *argv);
+> > +				return -1;
+> > +			}
+> > +		}
+> >  	}  
  
- static void xdp_umem_unpin_pages(struct xdp_umem *umem)
- {
--	unsigned int i;
--
--	for (i = 0; i < umem->npgs; i++) {
--		struct page *page = umem->pgs[i];
--
--		set_page_dirty_lock(page);
--		put_page(page);
--	}
-+	put_user_pages_dirty_lock(umem->pgs, umem->npgs, true);
- 
- 	kfree(umem->pgs);
- 	umem->pgs = NULL;
--- 
-2.22.0
+> Thanks for the patch. Apart from above two issues, patch looks good.
 
+Thanks for the review.
