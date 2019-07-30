@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4177A6AD
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 13:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30DAA7A6BB
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 13:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727036AbfG3LMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 07:12:41 -0400
-Received: from mail-eopbgr130075.outbound.protection.outlook.com ([40.107.13.75]:10727
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726267AbfG3LMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 07:12:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dQOlQhIv8p8kocslHiMJmdv/9U2mh+dzmW7ZtqbDuBAmeG8j2zoaqTCE7x9rDlKkT8RqMyxEHPxNy+WkvacUEAjhJrO9OC10H1UEFqdHopfroqz8K1uQips1JOOEohNkcnl6tcaqM3hnz5dZy46H1f+FQbcseb8XkyiX3KQQbFlSrZbL6cC3WSBEZ+RSqVbKV8MofusBdVeq8D89ZuJ+x4OmgPCE0bCSQ/mnob7gGQC9cy9ompFDH64Tg4jepql06ke4ofcCQwZNfH6lPvfhprhAP8HfHxzltqXEorX1aY4TQuqxi3GirEoKBEeJW/FgRy7bWfbR9zb1kF6ypXVhqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3C/xFAnnnvYJ78naSRzS2h/X32Skvt+DiXTgt1NaBHo=;
- b=jLBHdLHyQkZJpz9DDoDCsZFqfcgWdzmqgEALisJIstWRueMey6CRzTEHSI8qmuC7GlnZg1fJMxHosxMx+dQYLb1ypoI4+SgzX76Vb8jif5QgyzfQp9ozWghZrgwn+b50aYUU5lakA9kvzoTTHE5m8Q73IZocAsJ6/caPpxSzye5O2YkhXu/PUH/y2/H/PKZOv4YL52/WQ9ILgSuaG3dEgZgxvzGx7Bn6mgvhceyHzvjTPql0Rs9hIChw4Pt4t5QWuEB60NtyUwMsK7aPvdUUkP8vEZeGFQpv0fv3nYc0M5yLSvkTCf6cE19u7ZAIIShTHMsSSZoYReDe0WbATDlekQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3C/xFAnnnvYJ78naSRzS2h/X32Skvt+DiXTgt1NaBHo=;
- b=engVDig3G879Ch+SQHNwwGyec/QvNSZ4y8O4K9cjEGRaqD77HUOh5l52gqooz9HqyOlXN0mmuPB10pxK5UI2TMux/OkMpnpRXMrLhCt9Vd6JzZKPZGQSIhJ3KlbwXgw7Ncxhke3WAZVbxAi47AoLeILD8L8ojbSbqZQABi1AnQQ=
-Received: from DB8PR05MB6044.eurprd05.prod.outlook.com (20.179.10.157) by
- DB8PR05MB5930.eurprd05.prod.outlook.com (20.179.12.27) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.15; Tue, 30 Jul 2019 11:12:36 +0000
-Received: from DB8PR05MB6044.eurprd05.prod.outlook.com
- ([fe80::1587:f8a7:2e31:c75e]) by DB8PR05MB6044.eurprd05.prod.outlook.com
- ([fe80::1587:f8a7:2e31:c75e%3]) with mapi id 15.20.2115.005; Tue, 30 Jul 2019
- 11:12:36 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     Colin King <colin.king@canonical.com>
-CC:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][next] mlxsw: spectrum_ptp: fix duplicated check on
- orig_egr_types
-Thread-Topic: [PATCH][next] mlxsw: spectrum_ptp: fix duplicated check on
- orig_egr_types
-Thread-Index: AQHVRsCGQQzG+jKZokepZOkvOqeUUqbi/mGAgAADfIA=
-Date:   Tue, 30 Jul 2019 11:12:35 +0000
-Message-ID: <87imrjzsgu.fsf@mellanox.com>
-References: <20190730102114.1506-1-colin.king@canonical.com>
- <87mugvzt1m.fsf@mellanox.com>
-In-Reply-To: <87mugvzt1m.fsf@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0012.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100::24)
- To DB8PR05MB6044.eurprd05.prod.outlook.com (2603:10a6:10:aa::29)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [78.45.160.211]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 02b62426-364c-4e1d-7680-08d714ded352
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB5930;
-x-ms-traffictypediagnostic: DB8PR05MB5930:
-x-microsoft-antispam-prvs: <DB8PR05MB5930F1AB8D49A98068B71577DBDC0@DB8PR05MB5930.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0114FF88F6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(396003)(346002)(366004)(376002)(51914003)(43544003)(189003)(199004)(6246003)(86362001)(54906003)(81156014)(66946007)(6916009)(66556008)(64756008)(66446008)(8936002)(6436002)(6486002)(6512007)(53936002)(478600001)(26005)(229853002)(3846002)(6116002)(316002)(186003)(66476007)(99286004)(4744005)(71190400001)(36756003)(25786009)(7736002)(11346002)(446003)(52116002)(2616005)(68736007)(305945005)(476003)(386003)(6506007)(14454004)(5660300002)(8676002)(486006)(66066001)(256004)(4326008)(81166006)(71200400001)(2906002)(102836004)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5930;H:DB8PR05MB6044.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: vgOKyVsW6l6StAsrsDyfH6MjB2IbcV3S6Rj6Bfv8lJdr69GTOZSgTA+ikC/6fJiV2RObvQCJ3QGim9qVLeBA/r76tn1up2XFSerbLg+fKaHKHq6ll03IHTiwQOngekvdBMM6LncDRtkdhSz7Vm0EI0DqNGPZPgm0+k8JbKZJ1B1rhpwxbJAaEb74ndZQQHBfw00UUOoLDk+CpfvvLeJa/bJgfL2yeTSy9VE2dgy4J7N3+NHbuxiGHesOTqRUJKwXLIlzPT/Y+jHS/t78gmYjXrWrplJ2IS58FnTiEkdBxoyJRMsUMHUlJDy+UN2eQ3pkRHpxiOiwdb0FusgGpFHaE+7YCaO3NZ+tnIaFiSWvPYxXjyPj1KXRGDyD0/Zli1p5i5yEWz6ivv1LRAxh5S5WUFZBc979SB/wzHWrkC7AXtU=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727036AbfG3LSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 07:18:08 -0400
+Received: from correo.us.es ([193.147.175.20]:53122 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728980AbfG3LSH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 07:18:07 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8A656B60CD
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 13:18:05 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7BD6FDA732
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 13:18:05 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 69462115108; Tue, 30 Jul 2019 13:18:05 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5BE2FDA732;
+        Tue, 30 Jul 2019 13:18:03 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 30 Jul 2019 13:18:03 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [47.60.32.83])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 041BB4265A31;
+        Tue, 30 Jul 2019 13:18:02 +0200 (CEST)
+Date:   Tue, 30 Jul 2019 13:18:00 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     wenxu@ucloud.cn, jiri@resnulli.us, marcelo.leitner@gmail.com,
+        saeedm@mellanox.com, gerlitz.or@gmail.com, paulb@mellanox.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf] netfilter: nf_tables: map basechain priority to
+ hardware priority
+Message-ID: <20190730111800.yhtd5pgd32wyfilt@salvia>
+References: <20190730105417.14538-1-pablo@netfilter.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 02b62426-364c-4e1d-7680-08d714ded352
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jul 2019 11:12:35.8715
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: petrm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5930
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730105417.14538-1-pablo@netfilter.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 30, 2019 at 12:54:17PM +0200, Pablo Neira Ayuso wrote:
+[...]
+> @@ -180,6 +181,29 @@ static int nft_setup_cb_call(struct nft_base_chain *basechain,
+>  	return 0;
+>  }
+>  
+> +/* Available priorities for hardware offload range: -8192..8191 */
+> +#define NFT_BASECHAIN_OFFLOAD_PRIO_MAX		(SHRT_MAX / 4)
+> +#define NFT_BASECHAIN_OFFLOAD_PRIO_MIN		(SHRT_MIN / 4)
+> +#define NFT_BASECHAIN_OFFLOAD_PRIO_RANGE	(USHRT_MAX / 4)
+> +/* tcf_auto_prio() uses 0xC000 as base, then subtract one for each new chain. */
+> +#define NFT_BASECHAIN_OFFLOAD_HW_PRIO_BASE	(0xC000 + 1)
+> +
+> +u16 nft_chain_offload_priority(struct nft_base_chain *basechain)
+> +{
+> +	u16 prio;
+> +
+> +	if (basechain->ops.priority < NFT_BASECHAIN_OFFLOAD_PRIO_MIN ||
+> +	    basechain->ops.priority > NFT_BASECHAIN_OFFLOAD_PRIO_MAX)
+> +		return 0;
+> +
+> +	/* map netfilter chain priority to hardware priority. */
+> +	prio = basechain->ops.priority +
+> +		NFT_BASECHAIN_OFFLOAD_PRIO_MAX +
+> +			NFT_BASECHAIN_OFFLOAD_HW_PRIO_BASE;
+> +
+> +	return prio;
 
-Petr Machata <petrm@mellanox.com> writes:
+This function should actually return:
 
-> Colin King <colin.king@canonical.com> writes:
->
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> Currently there is a duplicated check on orig_egr_types which is
->> redundant, I believe this is a typo and should actually be
->> orig_ing_types || orig_egr_types instead of the expression
->> orig_egr_types || orig_egr_types.  Fix this.
->
-> Good catch, yes, there's a typo. Thanks for the fix!
->
->> Addresses-Coverity: ("Same on both sides")
->> Fixes: c6b36bdd04b5 ("mlxsw: spectrum_ptp: Increase parsing depth when P=
-TP is enabled")
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->
-> Reviewed-by: Petr Machata <petrm@mellanox.com>
+        return prio << 16;
 
-I see that there is an identical problem in the code one block further.
-Can you take care of that as well, please? Or should I do it?
+> +}
+> +
+>  static int nft_flow_offload_rule(struct nft_trans *trans,
+>  				 enum flow_cls_command command)
+>  {
