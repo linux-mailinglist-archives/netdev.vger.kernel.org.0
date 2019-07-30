@@ -2,219 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 165EE79DFA
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 03:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D8179E9B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 04:24:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730495AbfG3Bcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 21:32:48 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:46419 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729473AbfG3Bcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 21:32:48 -0400
-Received: by mail-ed1-f68.google.com with SMTP id d4so61093668edr.13;
-        Mon, 29 Jul 2019 18:32:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5Ftzg7THfmAK8OMfuBiBZ76IWfuhIkncq/8zqyt2pEg=;
-        b=cXRFi9Xs7adSiJ9+x1QqPHr3kKXJq+4QwiXeWuiyGUhnfzD7x+Xlf0nf9LePdzzpGs
-         jrC6UqK1Lv2A/GJU9u3Iht8ecKAJsFH7QHSUgHUb1S6BqFK6TBOgQsokgu/bkgPHVO8D
-         1Vlfqy4gYXJeZLbqtDztUyVuGbQsX5xB3nbC8wPz9HJcGCep1oP6xlihpg7SCnuAf984
-         0p+//YdZ1pxoUiIQNDSSary8lO5mxtN/n/PgX2rveV0WR5miFbnL2eo3VJu4qzGuVUSd
-         NR69lE0abWNwaprvqo769kpvEOOawbYdxvQi0DkDbPdk0EOdYMOq6+FE23Z0vRkMMqRW
-         wPvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5Ftzg7THfmAK8OMfuBiBZ76IWfuhIkncq/8zqyt2pEg=;
-        b=iDOBA7ldoFb+ftvUDySyd7V4qTYYG5pgZpPtYuRFxfrqOLLoAVciPgp4nwZWpyimmM
-         Jn+9CGVz1WMhxiKdf8Lh3+arKj3PmINXWnXQXyiZcGAahw+cSxqfkosIfNVNDvgP15U9
-         vHHMtOhhB154esNCSAYgopi0pOFg9TirihW7+8rP8tcD+iJklrLQiDkvrBfU2ulhrwxA
-         ima5uYHHQcZWMOsN+brKG34KgACRwFr7SzA3cPhF7/KWpK1DizdTeS9Q6+Pu7SZ2tMp6
-         CKlev6c0j2/04BVWlKbNA0F2W5VKmSn1jKP6Lp3hq15+lUe2exqHEFhWOZlsqTGcOoeq
-         txzw==
-X-Gm-Message-State: APjAAAXMk1Uj3/CvnO+efOFNcuHxaGOEZ9+kWYwc5fso/0LH9nFKI3BL
-        dZq4ax0IC87RfUB1G1aHy1Ib73lF8UFUntAPtbg=
-X-Google-Smtp-Source: APXvYqwt/QDnB9rTcjd7QhYqNNd2VrJcFwWAxBLPBnlVoaUa9E+8qUS6lr2o3cQ+y2MNazuIPOMHiQ8/FdFxQAC3UU4=
-X-Received: by 2002:a50:ba19:: with SMTP id g25mr98971820edc.123.1564450366223;
- Mon, 29 Jul 2019 18:32:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190730002549.86824-1-taoren@fb.com>
-In-Reply-To: <20190730002549.86824-1-taoren@fb.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 30 Jul 2019 04:32:35 +0300
-Message-ID: <CA+h21hq1+E6-ScFx425hXwTPTZHTVZbBuAm7RROFZTBOFvD8vQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: phy: broadcom: add 1000Base-X support
- for BCM54616S
-To:     Tao Ren <taoren@fb.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>, openbmc@lists.ozlabs.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1731231AbfG3CX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 22:23:58 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:56769 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728962AbfG3CX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 22:23:58 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 00EB91730;
+        Mon, 29 Jul 2019 22:23:57 -0400 (EDT)
+Received: from imap2 ([10.202.2.52])
+  by compute4.internal (MEProxy); Mon, 29 Jul 2019 22:23:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=
+        mime-version:message-id:in-reply-to:references:date:from:to:cc
+        :subject:content-type; s=fm3; bh=VyxODSw/tRbhfBSToBdgcw8l4+PZOn7
+        D5cdegfoq2fI=; b=irtv6mcrSUlU42j++dXIrzGmVdwZNEKgD3wm8OuYShRWbiN
+        lsYc5YurwtbemMyF5utr0AbLvumXjda4z7WNOIQ9TvLJwG9F94MiGdRDJ78Wo9PB
+        eyRSw/xqsnLYo0kGFhwkVWaonMBMYwaosQ6glU2eE5g8A5fQvsYh/bk9R/tWibUZ
+        ZFBPt5zpWHRnDa4PCS/4L63z6xtzMJ9MaHcb+W0bkT7mgDeSkxEKQEIiZ+Owhs8n
+        SjLp16FcpCcb4PHdEmQDA0Mvb/LL8HO40jmTrTwGHfJCcaX4E0aNBR3eX9EChtg2
+        aGjxWGL8Zd7TbbS/ojH6ycENN7UlqtIz94K4I+w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=VyxODS
+        w/tRbhfBSToBdgcw8l4+PZOn7D5cdegfoq2fI=; b=JD6AaBMLn3Dywuyoil5nHJ
+        HGpq8BqFtxkRvpRPftwZb0Mjr0T9aFRGX1ISizuQnoB2yNGMCRT2lRS0MACYxFdC
+        mhI9DMqj26YCtO1wTrTS5CTVXOpu4LgdgvJP41HyNKFf9tl3/SxEgL53F0pmMtc1
+        NTYY8XUCDt1ClWjZAZXG+XlGKoH4HBcsdcwu5z0xRxY0tVCedLAOUXdeQQ0kLDUz
+        YaOW9i17QiGXOl2Obyn2hkbOtUt3GAKIhH5pLeUK5Z6yhfa4uNh7buXcQuTqYgWi
+        QI1oHm/KOeDJZKUGBVIugGji5nPK8ZQaBSkUtEg8omvktNI6JZfEoNn/+yjksLxQ
+        ==
+X-ME-Sender: <xms:Oqo_XZ92B2MptR8XrGt2rvqB6A75BYkkM5sx03QQjQvLFhyx-fYYWQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrledvgdehkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedftehnughr
+    vgifucflvghffhgvrhihfdcuoegrnhgurhgvfiesrghjrdhiugdrrghuqeenucfrrghrrg
+    hmpehmrghilhhfrhhomheprghnughrvgifsegrjhdrihgurdgruhenucevlhhushhtvghr
+    ufhiiigvpedt
+X-ME-Proxy: <xmx:Oqo_XfyeKGs9_Kp2xn4n6k8X4Q_QyfYS9H2hAvAysNkzJUX-aQJeZg>
+    <xmx:Oqo_XVIfR7B0eYRrrsWvGr6l5LUm_WlD9ByFyaS0tOnIQMlsZnlsPg>
+    <xmx:Oqo_XSZ22Zt2dH67sAxpfF_ncRINFARY3vuRDuE9q2vkDZUYf-0xkA>
+    <xmx:PKo_XZXSkR4kTG8GdzueTXBHWP4gJmcD6l39HX2s9hrVP_EeSTfyJg>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 50C1AE00A2; Mon, 29 Jul 2019 22:23:54 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.1.6-736-gdfb8e44-fmstable-20190718v2
+Mime-Version: 1.0
+Message-Id: <19074ccb-5356-469b-8d1e-8076be135a21@www.fastmail.com>
+In-Reply-To: <20190729133250.GB4110@lunn.ch>
+References: <20190729043926.32679-1-andrew@aj.id.au>
+ <20190729043926.32679-3-andrew@aj.id.au> <20190729133250.GB4110@lunn.ch>
+Date:   Tue, 30 Jul 2019 11:53:32 +0930
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Andrew Lunn" <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David Miller" <davem@davemloft.net>,
+        "Rob Herring" <robh+dt@kernel.org>, mark.rutland@arm.com,
+        "Joel Stanley" <joel@jms.id.au>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Heiner Kallweit" <hkallweit1@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] net: phy: Add mdio-aspeed
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tao,
 
-On Tue, 30 Jul 2019 at 03:31, Tao Ren <taoren@fb.com> wrote:
->
-> Configure the BCM54616S for 1000Base-X mode when "brcm-phy-mode-1000bx"
-> is set in device tree. This is needed when the PHY is used for fiber and
-> backplane connections.
->
-> The patch is inspired by commit cd9af3dac6d1 ("PHYLIB: Add 1000Base-X
-> support for Broadcom bcm5482").
 
-As far as I can see, for the commit you referenced,
-PHY_BCM_FLAGS_MODE_1000BX is referenced from nowhere in the entire
-mainline kernel:
-https://elixir.bootlin.com/linux/latest/ident/PHY_BCM_FLAGS_MODE_1000BX
-(it is supposed to be put by the MAC driver in phydev->dev_flags prior
-to calling phy_connect). But I don't see the point to this - can't you
-check for phydev->interface == PHY_INTERFACE_MODE_1000BASEX?
-This has the advantage that no MAC driver will need to know that it's
-talking to a Broadcom PHY. Additionally, no custom DT bindings are
-needed.
-Also, for backplane connections you probably want 1000Base-KX which
-has its own AN/LT, not plain 1000Base-X.
+On Mon, 29 Jul 2019, at 23:03, Andrew Lunn wrote:
+> On Mon, Jul 29, 2019 at 02:09:24PM +0930, Andrew Jeffery wrote:
+> > The AST2600 design separates the MDIO controllers from the MAC, which is
+> > where they were placed in the AST2400 and AST2500. Further, the register
+> > interface is reworked again, so now we have three possible different
+> > interface implementations, however this driver only supports the
+> > interface provided by the AST2600. The AST2400 and AST2500 will continue
+> > to be supported by the MDIO support embedded in the FTGMAC100 driver.
+> > 
+> > Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
+> > ---
+> >  drivers/net/phy/Kconfig       |  13 +++
+> >  drivers/net/phy/Makefile      |   1 +
+> >  drivers/net/phy/mdio-aspeed.c | 159 ++++++++++++++++++++++++++++++++++
+> >  3 files changed, 173 insertions(+)
+> >  create mode 100644 drivers/net/phy/mdio-aspeed.c
+> > 
+> > diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> > index 20f14c5fbb7e..206d8650ee7f 100644
+> > --- a/drivers/net/phy/Kconfig
+> > +++ b/drivers/net/phy/Kconfig
+> > @@ -21,6 +21,19 @@ config MDIO_BUS
+> >  
+> >  if MDIO_BUS
+> >  
+> > +config MDIO_ASPEED
+> > +	tristate "ASPEED MDIO bus controller"
+> > +	depends on ARCH_ASPEED || COMPILE_TEST
+> > +	depends on OF_MDIO && HAS_IOMEM
+> > +	help
+> > +	  This module provides a driver for the independent MDIO bus
+> > +	  controllers found in the ASPEED AST2600 SoC. This is a driver for the
+> > +	  third revision of the ASPEED MDIO register interface - the first two
+> > +	  revisions are the "old" and "new" interfaces found in the AST2400 and
+> > +	  AST2500, embedded in the MAC. For legacy reasons, FTGMAC100 driver
+> > +	  continues to drive the embedded MDIO controller for the AST2400 and
+> > +	  AST2500 SoCs, so say N if AST2600 support is not required.
+> > +
+> >  config MDIO_BCM_IPROC
+> >  	tristate "Broadcom iProc MDIO bus controller"
+> >  	depends on ARCH_BCM_IPROC || COMPILE_TEST
+> > diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> > index 839acb292c38..ba07c27e4208 100644
+> > --- a/drivers/net/phy/Makefile
+> > +++ b/drivers/net/phy/Makefile
+> > @@ -22,6 +22,7 @@ libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
+> >  obj-$(CONFIG_PHYLINK)		+= phylink.o
+> >  obj-$(CONFIG_PHYLIB)		+= libphy.o
+> >  
+> > +obj-$(CONFIG_MDIO_ASPEED)	+= mdio-aspeed.o
+> >  obj-$(CONFIG_MDIO_BCM_IPROC)	+= mdio-bcm-iproc.o
+> >  obj-$(CONFIG_MDIO_BCM_UNIMAC)	+= mdio-bcm-unimac.o
+> >  obj-$(CONFIG_MDIO_BITBANG)	+= mdio-bitbang.o
+> > diff --git a/drivers/net/phy/mdio-aspeed.c b/drivers/net/phy/mdio-aspeed.c
+> > new file mode 100644
+> > index 000000000000..71496a9ff54a
+> > --- /dev/null
+> > +++ b/drivers/net/phy/mdio-aspeed.c
+> > @@ -0,0 +1,159 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +/* Copyright (C) 2019 IBM Corp. */
+> > +
+> > +#include <linux/bitfield.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/mdio.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_mdio.h>
+> > +#include <linux/phy.h>
+> > +#include <linux/platform_device.h>
+> > +
+> > +#define DRV_NAME "mdio-aspeed"
+> > +
+> > +#define ASPEED_MDIO_CTRL		0x0
+> > +#define   ASPEED_MDIO_CTRL_FIRE		BIT(31)
+> > +#define   ASPEED_MDIO_CTRL_ST		BIT(28)
+> > +#define     ASPEED_MDIO_CTRL_ST_C45	0
+> > +#define     ASPEED_MDIO_CTRL_ST_C22	1
+> > +#define   ASPEED_MDIO_CTRL_OP		GENMASK(27, 26)
+> > +#define     MDIO_C22_OP_WRITE		0b01
+> > +#define     MDIO_C22_OP_READ		0b10
+> > +#define   ASPEED_MDIO_CTRL_PHYAD	GENMASK(25, 21)
+> > +#define   ASPEED_MDIO_CTRL_REGAD	GENMASK(20, 16)
+> > +#define   ASPEED_MDIO_CTRL_MIIWDATA	GENMASK(15, 0)
+> > +
+> > +#define ASPEED_MDIO_DATA		0x4
+> > +#define   ASPEED_MDIO_DATA_MDC_THRES	GENMASK(31, 24)
+> > +#define   ASPEED_MDIO_DATA_MDIO_EDGE	BIT(23)
+> > +#define   ASPEED_MDIO_DATA_MDIO_LATCH	GENMASK(22, 20)
+> > +#define   ASPEED_MDIO_DATA_IDLE		BIT(16)
+> > +#define   ASPEED_MDIO_DATA_MIIRDATA	GENMASK(15, 0)
+> > +
+> > +#define ASPEED_MDIO_RETRIES		10
+> > +
+> > +struct aspeed_mdio {
+> > +	void __iomem *base;
+> > +};
+> > +
+> > +static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+> > +{
+> > +	struct aspeed_mdio *ctx = bus->priv;
+> > +	u32 ctrl;
+> > +	int i;
+> > +
+> > +	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
+> > +		regnum);
+> > +
+> > +	/* Just clause 22 for the moment */
+> > +	ctrl = ASPEED_MDIO_CTRL_FIRE
+> 
+> Hi Andrew
+> 
+> In the binding, you say C45 is supported. Here you don't. It would be
+> nice to be consistent.
 
->
-> Signed-off-by: Tao Ren <taoren@fb.com>
-> ---
->  drivers/net/phy/broadcom.c | 58 +++++++++++++++++++++++++++++++++++---
->  include/linux/brcmphy.h    |  4 +--
->  2 files changed, 56 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-> index 2b4e41a9d35a..6c22ac3a844b 100644
-> --- a/drivers/net/phy/broadcom.c
-> +++ b/drivers/net/phy/broadcom.c
-> @@ -383,9 +383,9 @@ static int bcm5482_config_init(struct phy_device *phydev)
->                 /*
->                  * Select 1000BASE-X register set (primary SerDes)
->                  */
-> -               reg = bcm_phy_read_shadow(phydev, BCM5482_SHD_MODE);
-> -               bcm_phy_write_shadow(phydev, BCM5482_SHD_MODE,
-> -                                    reg | BCM5482_SHD_MODE_1000BX);
-> +               reg = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> +               bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE,
-> +                                    reg | BCM54XX_SHD_MODE_1000BX);
->
->                 /*
->                  * LED1=ACTIVITYLED, LED3=LINKSPD[2]
-> @@ -451,6 +451,34 @@ static int bcm5481_config_aneg(struct phy_device *phydev)
->         return ret;
->  }
->
-> +static int bcm54616s_config_init(struct phy_device *phydev)
-> +{
-> +       int err, reg;
-> +       struct device_node *np = phydev->mdio.dev.of_node;
-> +
-> +       err = bcm54xx_config_init(phydev);
-> +
-> +       if (of_property_read_bool(np, "brcm-phy-mode-1000bx")) {
-> +               /* Select 1000BASE-X register set. */
-> +               reg = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> +               bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE,
-> +                                    reg | BCM54XX_SHD_MODE_1000BX);
-> +
-> +               /* Auto-negotiation doesn't seem to work quite right
-> +                * in this mode, so we disable it and force it to the
-> +                * right speed/duplex setting.  Only 'link status'
-> +                * is important.
-> +                */
-> +               phydev->autoneg = AUTONEG_DISABLE;
-> +               phydev->speed = SPEED_1000;
-> +               phydev->duplex = DUPLEX_FULL;
-> +
+Right - but the bindings describe the hardware, and the hardware is capable.
+Just that the driver as it stands can't drive it that way.
 
-1000Base-X AN does not include speed negotiation, so hardcoding
-SPEED_1000 is probably correct.
-What is wrong with the AN of duplex settings?
+Having said that I do need to do more digging to understand how to cater to
+C45 PHYs wrt the read/write calls.
 
-> +               phydev->dev_flags |= PHY_BCM_FLAGS_MODE_1000BX;
-> +       }
-> +
-> +       return err;
-> +}
-> +
->  static int bcm54616s_config_aneg(struct phy_device *phydev)
->  {
->         int ret;
-> @@ -464,6 +492,27 @@ static int bcm54616s_config_aneg(struct phy_device *phydev)
->         return ret;
->  }
->
-> +static int bcm54616s_read_status(struct phy_device *phydev)
-> +{
-> +       int ret;
-> +
-> +       ret = genphy_read_status(phydev);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX) {
-> +               /* Only link status matters for 1000Base-X mode, so force
-> +                * 1000 Mbit/s full-duplex status.
-> +                */
-> +               if (phydev->link) {
-> +                       phydev->speed = SPEED_1000;
-> +                       phydev->duplex = DUPLEX_FULL;
-> +               }
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  static int brcm_phy_setbits(struct phy_device *phydev, int reg, int set)
->  {
->         int val;
-> @@ -651,8 +700,9 @@ static struct phy_driver broadcom_drivers[] = {
->         .phy_id_mask    = 0xfffffff0,
->         .name           = "Broadcom BCM54616S",
->         .features       = PHY_GBIT_FEATURES,
-> -       .config_init    = bcm54xx_config_init,
-> +       .config_init    = bcm54616s_config_init,
->         .config_aneg    = bcm54616s_config_aneg,
-> +       .read_status    = bcm54616s_read_status,
->         .ack_interrupt  = bcm_phy_ack_intr,
->         .config_intr    = bcm_phy_config_intr,
->  }, {
-> diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-> index 6db2d9a6e503..82030155558c 100644
-> --- a/include/linux/brcmphy.h
-> +++ b/include/linux/brcmphy.h
-> @@ -200,8 +200,8 @@
->  #define BCM5482_SHD_SSD                0x14    /* 10100: Secondary SerDes control */
->  #define BCM5482_SHD_SSD_LEDM   0x0008  /* SSD LED Mode enable */
->  #define BCM5482_SHD_SSD_EN     0x0001  /* SSD enable */
-> -#define BCM5482_SHD_MODE       0x1f    /* 11111: Mode Control Register */
-> -#define BCM5482_SHD_MODE_1000BX        0x0001  /* Enable 1000BASE-X registers */
-> +#define BCM54XX_SHD_MODE       0x1f    /* 11111: Mode Control Register */
-> +#define BCM54XX_SHD_MODE_1000BX        0x0001  /* Enable 1000BASE-X registers */
+> 
+> 
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, ASPEED_MDIO_CTRL_ST_C22)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, MDIO_C22_OP_READ)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, addr)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regnum);
+> > +
+> > +	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
+> > +
+> > +	for (i = 0; i < ASPEED_MDIO_RETRIES; i++) {
+> > +		u32 data;
+> > +
+> > +		data = ioread32(ctx->base + ASPEED_MDIO_DATA);
+> > +		if (data & ASPEED_MDIO_DATA_IDLE)
+> > +			return FIELD_GET(ASPEED_MDIO_DATA_MIIRDATA, data);
+> > +
+> > +		udelay(100);
+> > +	}
+> 
+> One of the readx_poll_timeout functions could be used.
 
-These registers are also present on my BCM5464, probably safe to
-assume they're generic for the entire family.
-So if you make the registers definitions common, you can probably make
-the 1000Base-X configuration common as well.
+Thanks, I'll take a look.
 
->
->
->  /*
-> --
-> 2.17.1
->
+> 
+> > +
+> > +	dev_err(&bus->dev, "MDIO read failed\n");
+> > +	return -EIO;
+> > +}
+> > +
+> > +static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
+> > +{
+> > +	struct aspeed_mdio *ctx = bus->priv;
+> > +	u32 ctrl;
+> > +	int i;
+> > +
+> > +	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
+> > +		__func__, addr, regnum, val);
+> > +
+> > +	/* Just clause 22 for the moment */
+> > +	ctrl = ASPEED_MDIO_CTRL_FIRE
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, ASPEED_MDIO_CTRL_ST_C22)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, MDIO_C22_OP_WRITE)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, addr)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regnum)
+> > +		| FIELD_PREP(ASPEED_MDIO_CTRL_MIIWDATA, val);
+> > +
+> > +	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
+> > +
+> > +	for (i = 0; i < ASPEED_MDIO_RETRIES; i++) {
+> > +		ctrl = ioread32(ctx->base + ASPEED_MDIO_CTRL);
+> > +		if (!(ctrl & ASPEED_MDIO_CTRL_FIRE))
+> > +			return 0;
+> > +
+> > +		udelay(100);
+> > +	}
+> 
+> readx_poll_timeout() here as well.
+> 
+> Otherwise this looks good.
 
-Regards,
--Vladimir
+Thanks for the review!
+
+Andrew
