@@ -2,214 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4507B472
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C347B47F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727723AbfG3Umd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 16:42:33 -0400
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:46192 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727323AbfG3Umd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 16:42:33 -0400
-Received: by mail-ua1-f65.google.com with SMTP id o19so26061008uap.13
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 13:42:32 -0700 (PDT)
+        id S1727990AbfG3UrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 16:47:04 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:36364 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfG3UrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 16:47:04 -0400
+Received: by mail-ed1-f65.google.com with SMTP id k21so63743017edq.3;
+        Tue, 30 Jul 2019 13:47:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rnJlkh/Q87VmPKlKJL1ihGGE96lC4RRb7Zru8TgeksQ=;
+        b=f8IqJ/pAch002pXspZ6OhH5kYQoo6n1EqdqJxxjFLE57pclEzoGGY2TuFeRh82x+zB
+         SIl0/VlupxrlWOPyFbQDl8BbRrewXg4quGXAcSW6woMu+RZPN2tGTv0GQ7IXkqLF/jX0
+         fS9CmLsIw9tu+wJt3JHv/PzL0WYLt7U+fCXlxpEXVDlz58ZzE00bnUQh1vWI5zcePL8h
+         kn9zsjk9w062Z2ommrJu9r7pi4k6oqnOKUPwM4Ked5mnBGpDXregTGTwfZ9BRiRibfop
+         yqAYPra2h7LuufqdOZT2CzkWpG9HaN+gED8jAM2oTW/hOi/EKvx5zmmp5qwDY5QXYJEr
+         wNLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=h4kyAN8zAS9Uf4irFUDSjqH9ZWhN5E7zurQwgpnPXwU=;
-        b=t1+G3QIfKQ8QMhaXa4jdH2qVz2I9gRTqE2vVTqcrThhUgF1ij7oBahIITfgshXsMfP
-         lZuMBF2nvHhXwM8W3Sm5dDszif1cKcHF4grBLHX7XkGVjJ+7Db9VbOSbgj8SR6gkzRNN
-         s3sM7idrgFuwdlXf/t5Go0WH77ezLIOYhcHCnvesso0+Y7TOx2sefRSgQ1qHJOt01EK6
-         mTptVEbfITmXhFmVWg+/cEmqwLdkbyI8+QmN/paIFRdp1QfEgCly5jIDUE+0qQdkefWp
-         kGFjvRXjuNZQ73TYV+obM4+8sd9WbbJDfIpyoK2RJlZFxBruSaTUfmTNwlnmUO1jVViu
-         N9qw==
-X-Gm-Message-State: APjAAAUf5xM+LlrkxdVysowNt1b3pf2AcL3WhzjeLWWwRunsEF7B3fkR
-        bnmYUSyNOsVYfokc/JaqsumNOA==
-X-Google-Smtp-Source: APXvYqzuofIoIgW0NFQRZMAF5gCoA5QsmaeHY7a5l8LrRfDIeWZx1zRIzcCUI7+E/DfBxSmEXTf/9g==
-X-Received: by 2002:ab0:64cc:: with SMTP id j12mr25828664uaq.110.1564519351815;
-        Tue, 30 Jul 2019 13:42:31 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id i137sm31392254vkd.24.2019.07.30.13.42.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 13:42:30 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 16:42:25 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190730163807-mutt-send-email-mst@kernel.org>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-2-sgarzare@redhat.com>
- <20190729095956-mutt-send-email-mst@kernel.org>
- <20190729153656.zk4q4rob5oi6iq7l@steredhat>
- <20190729114302-mutt-send-email-mst@kernel.org>
- <20190729161903.yhaj5rfcvleexkhc@steredhat>
- <20190729165056.r32uzj6om3o6vfvp@steredhat>
- <20190729143622-mutt-send-email-mst@kernel.org>
- <20190730093539.dcksure3vrykir3g@steredhat>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rnJlkh/Q87VmPKlKJL1ihGGE96lC4RRb7Zru8TgeksQ=;
+        b=atImn6qFoHSJZxPjfoWbKtE6qO5xocSogIuQYxInXodrSiqb8d285nSafVHF3mGUVY
+         BSezSCPC2J+hi6BpT5IWMmVY2AI6pyzcq4tmLJ6AiCt2Lc050/zgWjiinDWGiUcbCYQQ
+         UZHch8T4wIgA2h6ba4IR92KxmvvIOHFGKt/MK27BH2ySuyowx4ywqCcneGEOXkkl+6Gv
+         h7nYuKM2MjXjA3VdvKVcg/GNxHmQmJEohhscVWjwx1J7MH+0MWFl7oxqX14OVrxKhYsa
+         Ka1kLA0pH44+5/P5YdoeDcEllXxvorMV+K09lYpR9TFfcESpB9mWl45ayaxLD4xJK7vH
+         7nJA==
+X-Gm-Message-State: APjAAAXH6CNOUVk7Um59P1tQ7OCDJ7vLdckkiuNB0CcAjMZxKh8vkeuQ
+        TMqROf6tOkeRHHcclLXVJ2na00JIJ9gPabNIO94=
+X-Google-Smtp-Source: APXvYqzTmA9ZCLaCKv2CjU1OaBPUeBWS/AGhjp211bQ/qkymDMs/MNLT7MCGyxg0UuoVaCphkUeSjUzlsg21CoyXsYk=
+X-Received: by 2002:a50:ba19:: with SMTP id g25mr103537071edc.123.1564519622422;
+ Tue, 30 Jul 2019 13:47:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190730093539.dcksure3vrykir3g@steredhat>
+References: <20190730100429.32479-1-h.feurstein@gmail.com> <20190730100429.32479-5-h.feurstein@gmail.com>
+ <20190730160032.GA1251@localhost> <CAFfN3gUCqGuC7WB_UjYYNt+VWGfEBsdfgvPBqxoJi_xitH=yog@mail.gmail.com>
+ <20190730171246.GB1251@localhost>
+In-Reply-To: <20190730171246.GB1251@localhost>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 30 Jul 2019 23:46:51 +0300
+Message-ID: <CA+h21hqWO=qT6EuQOVgX=J1=m60AWT6EGvQgfzGS=BNNq1cyTg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] net: dsa: mv88e6xxx: add PTP support for MV88E6250 family
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 11:35:39AM +0200, Stefano Garzarella wrote:
-> On Mon, Jul 29, 2019 at 03:10:15PM -0400, Michael S. Tsirkin wrote:
-> > On Mon, Jul 29, 2019 at 06:50:56PM +0200, Stefano Garzarella wrote:
-> > > On Mon, Jul 29, 2019 at 06:19:03PM +0200, Stefano Garzarella wrote:
-> > > > On Mon, Jul 29, 2019 at 11:49:02AM -0400, Michael S. Tsirkin wrote:
-> > > > > On Mon, Jul 29, 2019 at 05:36:56PM +0200, Stefano Garzarella wrote:
-> > > > > > On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
-> > > > > > > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
-> > > > > > > > Since virtio-vsock was introduced, the buffers filled by the host
-> > > > > > > > and pushed to the guest using the vring, are directly queued in
-> > > > > > > > a per-socket list. These buffers are preallocated by the guest
-> > > > > > > > with a fixed size (4 KB).
-> > > > > > > > 
-> > > > > > > > The maximum amount of memory used by each socket should be
-> > > > > > > > controlled by the credit mechanism.
-> > > > > > > > The default credit available per-socket is 256 KB, but if we use
-> > > > > > > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
-> > > > > > > > buffers, using up to 1 GB of memory per-socket. In addition, the
-> > > > > > > > guest will continue to fill the vring with new 4 KB free buffers
-> > > > > > > > to avoid starvation of other sockets.
-> > > > > > > > 
-> > > > > > > > This patch mitigates this issue copying the payload of small
-> > > > > > > > packets (< 128 bytes) into the buffer of last packet queued, in
-> > > > > > > > order to avoid wasting memory.
-> > > > > > > > 
-> > > > > > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > > > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > > > > > 
-> > > > > > > This is good enough for net-next, but for net I think we
-> > > > > > > should figure out how to address the issue completely.
-> > > > > > > Can we make the accounting precise? What happens to
-> > > > > > > performance if we do?
-> > > > > > > 
-> > > > > > 
-> > > > > > In order to do more precise accounting maybe we can use the buffer size,
-> > > > > > instead of payload size when we update the credit available.
-> > > > > > In this way, the credit available for each socket will reflect the memory
-> > > > > > actually used.
-> > > > > > 
-> > > > > > I should check better, because I'm not sure what happen if the peer sees
-> > > > > > 1KB of space available, then it sends 1KB of payload (using a 4KB
-> > > > > > buffer).
-> > > > > > 
-> > > > > > The other option is to copy each packet in a new buffer like I did in
-> > > > > > the v2 [2], but this forces us to make a copy for each packet that does
-> > > > > > not fill the entire buffer, perhaps too expensive.
-> > > > > > 
-> > > > > > [2] https://patchwork.kernel.org/patch/10938741/
-> > > > > > 
-> > > > > > 
-> > > > > > Thanks,
-> > > > > > Stefano
-> > > > > 
-> > > > > Interesting. You are right, and at some level the protocol forces copies.
-> > > > > 
-> > > > > We could try to detect that the actual memory is getting close to
-> > > > > admin limits and force copies on queued packets after the fact.
-> > > > > Is that practical?
-> > > > 
-> > > > Yes, I think it is doable!
-> > > > We can decrease the credit available with the buffer size queued, and
-> > > > when the buffer size of packet to queue is bigger than the credit
-> > > > available, we can copy it.
-> > > > 
-> > > > > 
-> > > > > And yes we can extend the credit accounting to include buffer size.
-> > > > > That's a protocol change but maybe it makes sense.
-> > > > 
-> > > > Since we send to the other peer the credit available, maybe this
-> > > > change can be backwards compatible (I'll check better this).
-> > > 
-> > > What I said was wrong.
-> > > 
-> > > We send a counter (increased when the user consumes the packets) and the
-> > > "buf_alloc" (the max memory allowed) to the other peer.
-> > > It makes a difference between a local counter (increased when the
-> > > packets are sent) and the remote counter to calculate the credit available:
-> > > 
-> > >     u32 virtio_transport_get_credit(struct virtio_vsock_sock *vvs, u32 credit)
-> > >     {
-> > >     	u32 ret;
-> > > 
-> > >     	spin_lock_bh(&vvs->tx_lock);
-> > >     	ret = vvs->peer_buf_alloc - (vvs->tx_cnt - vvs->peer_fwd_cnt);
-> > >     	if (ret > credit)
-> > >     		ret = credit;
-> > >     	vvs->tx_cnt += ret;
-> > >     	spin_unlock_bh(&vvs->tx_lock);
-> > > 
-> > >     	return ret;
-> > >     }
-> > > 
-> > > Maybe I can play with "buf_alloc" to take care of bytes queued but not
-> > > used.
-> > > 
-> > > Thanks,
-> > > Stefano
-> > 
-> > Right. And the idea behind it all was that if we send a credit
-> > to remote then we have space for it.
-> 
-> Yes.
-> 
-> > I think the basic idea was that if we have actual allocated
-> > memory and can copy data there, then we send the credit to
-> > remote.
-> > 
-> > Of course that means an extra copy every packet.
-> > So as an optimization, it seems that we just assume
-> > that we will be able to allocate a new buffer.
-> 
-> Yes, we refill the virtqueue when half of the buffers were used.
-> 
-> > 
-> > First this is not the best we can do. We can actually do
-> > allocate memory in the socket before sending credit.
-> 
-> In this case, IIUC we should allocate an entire buffer (4KB),
-> so we can reuse it if the packet is big.
-> 
-> > If packet is small then we copy it there.
-> > If packet is big then we queue the packet,
-> > take the buffer out of socket and add it to the virtqueue.
-> > 
-> > Second question is what to do about medium sized packets.
-> > Packet is 1K but buffer is 4K, what do we do?
-> > And here I wonder - why don't we add the 3K buffer
-> > to the vq?
-> 
-> This would allow us to have an accurate credit account.
-> 
-> The problem here is the compatibility. Before this series virtio-vsock
-> and vhost-vsock modules had the RX buffer size hard-coded
-> (VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE = 4K). So, if we send a buffer smaller
-> of 4K, there might be issues.
+Hi Hubert, Richard,
 
-Shouldn't be if they are following the spec. If not let's fix
-the broken parts.
+On Tue, 30 Jul 2019 at 19:44, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Tue, Jul 30, 2019 at 12:04:29PM +0200, Hubert Feurstein wrote:
+> > diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
+> > index 768d256f7c9f..51cdf4712517 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/ptp.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/ptp.c
+> > @@ -15,11 +15,38 @@
+> >  #include "hwtstamp.h"
+> >  #include "ptp.h"
+> >
+> > -/* Raw timestamps are in units of 8-ns clock periods. */
+> > -#define CC_SHIFT     28
+> > -#define CC_MULT              (8 << CC_SHIFT)
+> > -#define CC_MULT_NUM  (1 << 9)
+> > -#define CC_MULT_DEM  15625ULL
+> > +/* The adjfine API clamps ppb between [-32,768,000, 32,768,000], and
+>
+> That is not true.
+>
 
-> 
-> Maybe it is the time to add add 'features' to virtio-vsock device.
-> 
+I was referring to this:
+https://github.com/richardcochran/linuxptp/blob/master/phc.c#L38
+
+/*
+* On 32 bit platforms, the PHC driver's maximum adjustment (type
+* 'int' in units of ppb) can overflow the timex.freq field (type
+* 'long'). So in this case we clamp the maximum to the largest
+* possible adjustment that fits into a 32 bit long.
+*/
+#define BITS_PER_LONG (sizeof(long)*8)
+#define MAX_PPB_32 32767999 /* 2^31 - 1 / 65.536 */
+
+Technically it is not "not true".
+
+[snip]
+
+On Tue, 30 Jul 2019 at 21:09, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Tue, Jul 30, 2019 at 06:20:00PM +0200, Hubert Feurstein wrote:
+> > > Please don't re-write this logic.  It is written like that for a reason.
+> > I used the sja1105_ptp.c as a reference. So it is also wrong there.
+>
+> I'll let that driver's author worry about that.
+>
 > Thanks,
-> Stefano
+> Richard
+>
 
-Why would a remote care about buffer sizes?
+And what is the reason for the neg_adj thing? Can you give an example
+of when does the "normal way" of doing signed arithmetics not work?
 
-Let's first see what the issues are. If they exist
-we can either fix the bugs, or code the bug as a feature in spec.
-
--- 
-MST
+Thanks,
+-Vladimir
