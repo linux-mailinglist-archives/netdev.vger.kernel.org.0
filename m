@@ -2,128 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E9B37A822
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A7F7A855
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728534AbfG3MXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 08:23:01 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37224 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbfG3MXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:23:01 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hsR9f-0005Ax-Gu; Tue, 30 Jul 2019 12:22:59 +0000
-Subject: Re: [PATCH][net-next][V2] mlxsw: spectrum_ptp: fix duplicated check
- on orig_egr_types
-From:   Colin Ian King <colin.king@canonical.com>
-To:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190730114752.24133-1-colin.king@canonical.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <d1907bca-a6f7-deb0-cffe-ba2561cfe608@canonical.com>
-Date:   Tue, 30 Jul 2019 13:22:59 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190730114752.24133-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1730308AbfG3MZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 08:25:39 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:36026 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728534AbfG3MZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:25:39 -0400
+Received: by mail-io1-f67.google.com with SMTP id o9so23964147iom.3;
+        Tue, 30 Jul 2019 05:25:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=s5yWI2xfBi7yZUvh5vbuUYKfiAIOr2+n9/J+pTBAvvA=;
+        b=oNRi4RrqZcCHcv3ihpvxRh05FVUCJujtgcfihPqzEIhibrVSyvLxH6ou+KPX3QcJW1
+         8odyqmb9Xy6OZW3Akl4mhb8QXyeta1TByczNxiawqeZqlsAEQgeNH4zWnRQNZjNaanng
+         0uyuZIy+8zTVFFxa0Ya/KrP2BWiVnBI9uP6oyFln1SImZYqFXKVsPFuT21tgQZ7JxlFX
+         Fs+CbA/+uEvCQ0ZUgz9IPY356ERlad9t/WiFeJ2j53Gucbi1JlQ9yIBQgH0c0Te24k7b
+         EffDwc1jhPKoAalhRJA+XcovRIjMe2TsRZptfp0V8HA2/1B5SE8WZ8hszhzXBdu/7690
+         DokQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=s5yWI2xfBi7yZUvh5vbuUYKfiAIOr2+n9/J+pTBAvvA=;
+        b=TMGbfHz7XYUaf0EEpYhojlH2AUFA8fqyYprqvHQp0O+q0TjwUdFbpgltjDLL9ujHyn
+         yeZ00voKnicZ84UCrXg6I8nSL+xZ6tvdaiYd7Bmn8Qryw+8NhG9WlsgxcuJZIvcuZB+J
+         JtHrkSSxBc4X5FV6x4qQWAoqzunbiYNj5mljYW6JnzNVi0/P5CXxlI9/t1MFRI8ANQdZ
+         wpMIEapsrfEYW7cXrkcrPqEjBI/YuhlWqPKb0mN3LTXLmLSrReCPiC5fBoQ8cYxHhb3D
+         cD5/6dvCJz7NfXVcBa7CtjQdMoxreac96H5y8a7dwievlDsY09rEbbmMquO8YCFjhHpG
+         oQIg==
+X-Gm-Message-State: APjAAAUbOB4VI52yGSCxBg4E9Ux5lxqkkngGvDEH5YFAJF1wOlefoLnN
+        wj4Dl2K7JSpkv3oJyPTAiA==
+X-Google-Smtp-Source: APXvYqyQH9tqYauuovKG4HR22AWdKr93hT9a4O67gZNyhFbLW2ujv+hKs4GCYjdavvE1y4Ujue7gVA==
+X-Received: by 2002:a6b:cd86:: with SMTP id d128mr106118586iog.234.1564489538291;
+        Tue, 30 Jul 2019 05:25:38 -0700 (PDT)
+Received: from ip-172-31-35-247.us-east-2.compute.internal (ec2-52-15-165-154.us-east-2.compute.amazonaws.com. [52.15.165.154])
+        by smtp.gmail.com with ESMTPSA id j23sm52454755ioo.6.2019.07.30.05.25.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 05:25:37 -0700 (PDT)
+From:   Rundong Ge <rdong.ge@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, roopa@cumulusnetworks.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, nikolay@cumulusnetworks.com,
+        linux-kernel@vger.kernel.org, rdong.ge@gmail.com
+Subject: [PATCH] bridge:fragmented packets dropped by bridge
+Date:   Tue, 30 Jul 2019 12:25:34 +0000
+Message-Id: <20190730122534.30687-1-rdong.ge@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As pointed out by Petr, this should be [net] and not [net-next]
+Given following setup:
+-modprobe br_netfilter
+-echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+-brctl addbr br0
+-brctl addif br0 enp2s0
+-brctl addif br0 enp3s0
+-brctl addif br0 enp6s0
+-ifconfig enp2s0 mtu 1300
+-ifconfig enp3s0 mtu 1500
+-ifconfig enp6s0 mtu 1500
+-ifconfig br0 up
 
+                 multi-port
+mtu1500 - mtu1500|bridge|1500 - mtu1500
+  A                  |            B
+                   mtu1300
 
-On 30/07/2019 12:47, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Currently are duplicated checks on orig_egr_types which are
-> redundant, I believe this is a typo and should actually be
-> orig_ing_types || orig_egr_types instead of the expression
-> orig_egr_types || orig_egr_types.  Fix these.
-> 
-> Addresses-Coverity: ("Same on both sides")
-> Fixes: c6b36bdd04b5 ("mlxsw: spectrum_ptp: Increase parsing depth when PTP is enabled")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-> index 98c5ba3200bc..63b07edd9d81 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-> @@ -999,14 +999,14 @@ static int mlxsw_sp1_ptp_mtpppc_update(struct mlxsw_sp_port *mlxsw_sp_port,
->  		}
->  	}
->  
-> -	if ((ing_types || egr_types) && !(orig_egr_types || orig_egr_types)) {
-> +	if ((ing_types || egr_types) && !(orig_ing_types || orig_egr_types)) {
->  		err = mlxsw_sp_nve_inc_parsing_depth_get(mlxsw_sp);
->  		if (err) {
->  			netdev_err(mlxsw_sp_port->dev, "Failed to increase parsing depth");
->  			return err;
->  		}
->  	}
-> -	if (!(ing_types || egr_types) && (orig_egr_types || orig_egr_types))
-> +	if (!(ing_types || egr_types) && (orig_ing_types || orig_egr_types))
->  		mlxsw_sp_nve_inc_parsing_depth_put(mlxsw_sp);
->  
->  	return mlxsw_sp1_ptp_mtpppc_set(mlxsw_sp_port->mlxsw_sp,
-> 
-> --
-> 
-> V2: fix both occurances of this typo. Thanks to Petr Machata for spotting
->     the 2nd occurrance
-> 
+With netfilter defragmentation/conntrack enabled, fragmented
+packets from A will be defragmented in prerouting, and refragmented
+at postrouting.
+But in this scenario the bridge found the frag_max_size(1500) is
+larger than the dst mtu stored in the fake_rtable whitch is
+always equal to the bridge's mtu 1300, then packets will be dopped.
+
+This modifies ip_skb_dst_mtu to use the out dev's mtu instead
+of bridge's mtu in bridge refragment.
+
+Signed-off-by: Rundong Ge <rdong.ge@gmail.com>
+---
+ include/net/ip.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 29d89de..0512de3 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -450,6 +450,8 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+ static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
+ 					  const struct sk_buff *skb)
+ {
++	if ((skb_dst(skb)->flags & DST_FAKE_RTABLE) && skb->dev)
++		return min(skb->dev->mtu, IP_MAX_MTU);
+ 	if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
+ 		bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
+ 
+-- 
+1.8.3.1
 
