@@ -2,104 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA46B7AA68
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93F027AA6D
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbfG3OAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 10:00:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47814 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726351AbfG3OAM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 10:00:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=SwbAuGYNR738vPMX2wZZ770KkNXn/jj+ytesRumbdT8=; b=6CZpF/kcIpVApWLtxS1muDtDSi
-        riqNwSSmZlOIBoHBRiKrs82NVgKFOOR+NQj1nEN7qOTLoZ+Ae4e4YQjkF7xNM3CTHSpD6nDZoCZvJ
-        nG4KecaIEE1aoQU77ebwgXiM3bntFivJbXDkhxOmGC3nJEHeMls51HPxmivp0rCFY1Ks=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hsSfh-000805-L0; Tue, 30 Jul 2019 16:00:09 +0200
-Date:   Tue, 30 Jul 2019 16:00:09 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Hubert Feurstein <h.feurstein@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, richardcochran@gmail.com
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: extend PTP gettime function to read
- system clock
-Message-ID: <20190730140009.GJ28552@lunn.ch>
-References: <20190730101007.344-1-h.feurstein@gmail.com>
+        id S1729321AbfG3OAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 10:00:31 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40611 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727323AbfG3OAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:00:30 -0400
+Received: by mail-wr1-f68.google.com with SMTP id r1so65898493wrl.7
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 07:00:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OVJbTjwxJ2V7gEJ1EnH0FtfbT8cNqFpXv0RRwvyIbGo=;
+        b=D6/voHBS9dUFEITrTHGgDCMTH2ke7EsEqVZdZ93v1yLAuANCfSibdGPFfAsIbGPp+m
+         sO5PeIFsg7mBpdo65ea6RQDnw4TQ81wITBTUcjvYDA3TYMFMCji79v3FlEXWy5VqcOyc
+         JPGqK/l6Nrv4WsZzkV3FeOWuK8l9u/jLlvwRc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OVJbTjwxJ2V7gEJ1EnH0FtfbT8cNqFpXv0RRwvyIbGo=;
+        b=tNL4+3eA7PAk9b+TLCE9QYMlSagIzybT5Uja/1cr0JFFiEvKrmgmqbdpD5pm0bjfYO
+         KoxkLbN2s3U3/PGV0tMyyXPjE+sZl+ogpcHf7BKdZf0t6pkFaOzDkXVDnwx2OfE60lKx
+         8YJB+1UhwPYyKp/Jh+nj4QR5cdNO0KCIhs2NbsGgDNfN0Artl+cLRJPsSe3ClqPmeTZ6
+         AQU2vQyp6Yzp6osWNzcQJAiLzXxGpTkBJLvYK5fSbc8Z2ZISS+OyGZWigFrcToUw81Qj
+         GTthZvQGbbnGZ+cWWDTWDEAq1zrceSRaHHAIpb6gYSlHwOl7z2AAkTiea7fIArAg0KCq
+         aYrg==
+X-Gm-Message-State: APjAAAVgWSmwf0kae6sZZUtM24eZd2DakFWfQq5ZVBabdTkygP36UnyJ
+        z7DapszEKTT5YqDupY1wwsYPUw==
+X-Google-Smtp-Source: APXvYqytpnI0ZY2uTT8feWzMH92iQ3CBWa0akOaYeEEvNfhhio0d1dj0S/CHj+0Fe0lYpC/qIYVafQ==
+X-Received: by 2002:adf:ec8e:: with SMTP id z14mr4445595wrn.269.1564495229044;
+        Tue, 30 Jul 2019 07:00:29 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id t140sm58302813wmt.0.2019.07.30.07.00.28
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 07:00:28 -0700 (PDT)
+Subject: Re: [PATCH net] net: bridge: mcast: don't delete permanent entries
+ when fast leave is enabled
+To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org
+References: <20190730112100.18156-1-nikolay@cumulusnetworks.com>
+ <4511701d-88c4-a937-2fbc-b557033a24ed@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <1b6cd3cf-0e01-2730-b8ad-d26e2355ce84@cumulusnetworks.com>
+Date:   Tue, 30 Jul 2019 17:00:27 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190730101007.344-1-h.feurstein@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <4511701d-88c4-a937-2fbc-b557033a24ed@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 12:10:07PM +0200, Hubert Feurstein wrote:
-> This adds support for the PTP_SYS_OFFSET_EXTENDED ioctl.
+On 30/07/2019 16:58, David Ahern wrote:
+> On 7/30/19 5:21 AM, Nikolay Aleksandrov wrote:
+>> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+>> index 3d8deac2353d..f8cac3702712 100644
+>> --- a/net/bridge/br_multicast.c
+>> +++ b/net/bridge/br_multicast.c
+>> @@ -1388,6 +1388,9 @@ br_multicast_leave_group(struct net_bridge *br,
+>>  			if (!br_port_group_equal(p, port, src))
+>>  				continue;
+>>  
+>> +			if (p->flags & MDB_PG_FLAGS_PERMANENT)
+>> +				break;
+>> +
+>>  			rcu_assign_pointer(*pp, p->next);
+>>  			hlist_del_init(&p->mglist);
+>>  			del_timer(&p->timer);
 > 
-> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
-
-Please include the PTP maintainer for patches like this. Richard also
-wrote this PTP code.
-
-      Andrew
-
-> ---
->  drivers/net/dsa/mv88e6xxx/ptp.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
+> Why 'break' and not 'continue' like you have with
+> 	if (!br_port_group_equal(p, port, src))
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
-> index 51cdf4712517..1ff983376f95 100644
-> --- a/drivers/net/dsa/mv88e6xxx/ptp.c
-> +++ b/drivers/net/dsa/mv88e6xxx/ptp.c
-> @@ -230,14 +230,17 @@ static int mv88e6xxx_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
->  	return 0;
->  }
->  
-> -static int mv88e6xxx_ptp_gettime(struct ptp_clock_info *ptp,
-> -				 struct timespec64 *ts)
-> +static int mv88e6xxx_ptp_gettimex(struct ptp_clock_info *ptp,
-> +				  struct timespec64 *ts,
-> +				  struct ptp_system_timestamp *sts)
->  {
->  	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
->  	u64 ns;
->  
->  	mv88e6xxx_reg_lock(chip);
-> +	ptp_read_system_prets(sts);
->  	ns = timecounter_read(&chip->tstamp_tc);
-> +	ptp_read_system_postts(sts);
->  	mv88e6xxx_reg_unlock(chip);
->  
->  	*ts = ns_to_timespec64(ns);
-> @@ -386,7 +389,7 @@ static void mv88e6xxx_ptp_overflow_check(struct work_struct *work)
->  	struct mv88e6xxx_chip *chip = dw_overflow_to_chip(dw);
->  	struct timespec64 ts;
->  
-> -	mv88e6xxx_ptp_gettime(&chip->ptp_clock_info, &ts);
-> +	mv88e6xxx_ptp_gettimex(&chip->ptp_clock_info, &ts, NULL);
->  
->  	schedule_delayed_work(&chip->overflow_work,
->  			      MV88E6XXX_TAI_OVERFLOW_PERIOD);
-> @@ -444,7 +447,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
->  	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
->  	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
->  	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
-> -	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
-> +	chip->ptp_clock_info.gettimex64	= mv88e6xxx_ptp_gettimex;
->  	chip->ptp_clock_info.settime64	= mv88e6xxx_ptp_settime;
->  	chip->ptp_clock_info.enable	= ptp_ops->ptp_enable;
->  	chip->ptp_clock_info.verify	= ptp_ops->ptp_verify;
-> -- 
-> 2.22.0
-> 
+
+Because we'll hit the goto out after this hunk always, no point in continuing
+if we matched a group and it's permanent, the break might as well be a goto out.
+
