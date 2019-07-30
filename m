@@ -2,222 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D1A7A377
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 10:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BABD07A379
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 10:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731236AbfG3I5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 04:57:44 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:50270 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731222AbfG3I5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 04:57:41 -0400
-Received: by mail-wm1-f67.google.com with SMTP id v15so56360474wml.0
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 01:57:39 -0700 (PDT)
+        id S1730702AbfG3I6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 04:58:37 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:33968 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729242AbfG3I6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 04:58:37 -0400
+Received: by mail-wm1-f65.google.com with SMTP id w9so44799197wmd.1
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 01:58:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sOtgozJiOFMaFQ2w5V4pX8WVi8yTBi0K3VlVGO5H9kU=;
-        b=AhWuKNRtQFqAKVx8VTVofdrj0ZyZGE2fx6r/Bv+Rpo9hWBdMYsU3KjA4LrnMkDKCt0
-         1jwiG3an89x1+o8olp3FcFp6I173bgkHlxJE96gA5vQ7S+adseSwA7WSwnR9sjn8ytP3
-         xuUg2JkAY8z1l6uDMht32+AvWMwwwTyLz68KIGoRNmfQjowfhW21znKOkTVhgpPnrZtA
-         EplGU/aN1duVWbxopJhCUTUFiMGLPA1XOpUCrJaUi932CSCjY7+0HhS8hjfn2yvpaWUk
-         uk4h1OJFjL3eb68dyKhXBhzsC4tyWZ40f3zBjn1xpEJpexR0G/c8q4XxpmoAMOzALJsi
-         nbPQ==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Te2pMk8TSNWFzz71U4QMt5lRCNayXZcJS1v3r4ymmPY=;
+        b=cqEBgfaZxzBDd1Xvx+4Cfg89O+z3vfUvIkw9zg9LcyYxRII5fVW7VL2ktfL4xhPO7y
+         R3tG6VIHTvUrfQrUQNlLP4HmcHQO5WfQKv6AWboks9cJ0Akmb4nV2KLGgY3pWDA2EHAv
+         yoKYZoDsi6vFNVr6CFPXHbw4OBsLjN2iC8Ssc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sOtgozJiOFMaFQ2w5V4pX8WVi8yTBi0K3VlVGO5H9kU=;
-        b=h54DLUvqlj791TRr6LVBrO5k3DBUZl38JH/Glxshs5QlBu0YC/COfF5qgNp4DzKXo3
-         xz/jj4/Om8B16EA/2ExOVLmr/MjfOd1646LE0pFma2l71uN9UdTjCb/n7vqp1jrjKq+Z
-         I0Fi5Rgnj21l2+uRpemombkkPYrEbwWGa12Q7hiuRg5o7Bs6gWPviPjHJx6uTJyIpogy
-         nJ1prHXmmL/ZVUKLbB1nWpb8/vaGfZ+DkGU5n/aTxJ7GMXX3XMDXIWaHyWjvvd+xjiQz
-         79AxztITqMZHW1QTmUCM0n+/Mhk5ckeNo/4ZeASlgNraM/sHu6dS5EWtd4cfcw3vFHHq
-         KS8A==
-X-Gm-Message-State: APjAAAV0sH1N9ZyaCBeuJ/0GPf5YacY/knfWLM2OPsdSDR4J2NkSS4XD
-        5Z3Ho84ErvHk3bfhycdSMS4gt+8v
-X-Google-Smtp-Source: APXvYqwqd1UaRvY/X6qkvUVFZZ7rJb2koiBHcOyszrUy92KE+wAtvpTn/txc3mpt0lycspUC+Jz10A==
-X-Received: by 2002:a7b:cf0b:: with SMTP id l11mr109699772wmg.143.1564477058716;
-        Tue, 30 Jul 2019 01:57:38 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id k9sm45398562wmi.33.2019.07.30.01.57.38
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 01:57:38 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: [patch net-next v2 3/3] netdevsim: create devlink and netdev instances in namespace
-Date:   Tue, 30 Jul 2019 10:57:34 +0200
-Message-Id: <20190730085734.31504-4-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190730085734.31504-1-jiri@resnulli.us>
-References: <20190730085734.31504-1-jiri@resnulli.us>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Te2pMk8TSNWFzz71U4QMt5lRCNayXZcJS1v3r4ymmPY=;
+        b=MmF1h0Cm5L2lAboDRzDRLCFpGzX5PmOvxOKsN4FDS0ftLY8Mvqm+XCYZPXbUcq6FPd
+         5g8mpMpbhsB7n2GhI2TRn20NiEPdDkkjxu2GDqlb8zlvRobRCETfM1uPkdauh/kmdYUH
+         bZh3Ux0rmSto1smBVK8Y/2Og1POYhjsrkhiK974rQoAwQHH+7FSJK/SdpfdAF5Xzi18i
+         3MzaOKnYK4YBDwaQLRWmYKMWLP/Q49hYAZSMNEPExkbqp8ufg0mVuXttfPAbH0FqpDUd
+         TNlfOHRzRrRR3LmIKBzqBIMHCpjTr2XnXa2Gm42HfwWMsDv7QDRJPGiU1Vj7KLnjELVC
+         Qjrg==
+X-Gm-Message-State: APjAAAXeBFAWqeeDcxNMr/bu7VGiWnUZiKCw5/1C86Qk3vRhrRndEjJV
+        sjkTeVOITM0FacSKq17rooqm2g==
+X-Google-Smtp-Source: APXvYqw4v9xSEyYUryB2pHMDrXmwG/5ObRMbYbrYOqpu/Ul9zDvG7pzZJ0qaSJhOCu/myBkWy0UTyg==
+X-Received: by 2002:a1c:99ca:: with SMTP id b193mr101311855wme.31.1564477113536;
+        Tue, 30 Jul 2019 01:58:33 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id j189sm72501798wmb.48.2019.07.30.01.58.32
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 01:58:32 -0700 (PDT)
+Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190729121409.wa47uelw5f6l4vs4@lx-anielsen.microsemi.net>
+ <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
+ <20190729131420.tqukz55tz26jkg73@lx-anielsen.microsemi.net>
+ <3cc69103-d194-2eca-e7dd-e2fa6a730223@cumulusnetworks.com>
+ <20190729135205.oiuthcyesal4b4ct@lx-anielsen.microsemi.net>
+ <e4cd0db9-695a-82a7-7dc0-623ded66a4e5@cumulusnetworks.com>
+ <20190729143508.tcyebbvleppa242d@lx-anielsen.microsemi.net>
+ <20190729175136.GA28572@splinter>
+ <20190730062721.p4vrxo5sxbtulkrx@lx-anielsen.microsemi.net>
+ <20190730070626.GA508@splinter>
+ <20190730083027.biuzy7h5dbq7pik3@lx-anielsen.microsemi.net>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <13f66ebe-4173-82d7-604b-08e9d33d9aff@cumulusnetworks.com>
+Date:   Tue, 30 Jul 2019 11:58:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190730083027.biuzy7h5dbq7pik3@lx-anielsen.microsemi.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On 30/07/2019 11:30, Allan W. Nielsen wrote:
+> The 07/30/2019 10:06, Ido Schimmel wrote:
+>> On Tue, Jul 30, 2019 at 08:27:22AM +0200, Allan W. Nielsen wrote:
+>>> The 07/29/2019 20:51, Ido Schimmel wrote:
+>>>> Can you please clarify what you're trying to achieve? I just read the
+>>>> thread again and my impression is that you're trying to locally receive
+>>>> packets with a certain link layer multicast address.
+>>> Yes. The thread is also a bit confusing because we half way through realized
+>>> that we misunderstood how the multicast packets should be handled (sorry about
+>>> that). To begin with we had a driver where multicast packets was only copied to
+>>> the CPU if someone needed it. Andrew and Nikolay made us aware that this is not
+>>> how other drivers are doing it, so we changed the driver to include the CPU in
+>>> the default multicast flood-mask.
+>> OK, so what prevents you from removing all other ports from the
+>> flood-mask and letting the CPU handle the flooding? Then you can install
+>> software tc filters to limit the flooding.
+> I do not have the bandwidth to forward the multicast traffic in the CPU.
+> 
+> It will also cause enormous latency on the forwarding of L2 multicast packets.
+> 
+>>> This changes the objective a bit. To begin with we needed to get more packets to
+>>> the CPU (which could have been done using tc ingress rules and a trap action).
+>>>
+>>> Now after we changed the driver, we realized that we need something to limit the
+>>> flooding of certain L2 multicast packets. This is the new problem we are trying
+>>> to solve!
+>>>
+>>> Example: Say we have a bridge with 4 slave interfaces, then we want to install a
+>>> forwarding rule saying that packets to a given L2-multicast MAC address, should
+>>> only be flooded to 2 of the 4 ports.
+>>>
+>>> (instead of adding rules to get certain packets to the CPU, we are now adding
+>>> other rules to prevent other packets from going to the CPU and other ports where
+>>> they are not needed/wanted).
+>>>
+>>> This is exactly the same thing as IGMP snooping does dynamically, but only for
+>>> IP multicast.
+>>>
+>>> The "bridge mdb" allow users to manually/static add/del a port to a multicast
+>>> group, but still it operates on IP multicast address (not L2 multicast
+>>> addresses).
+>>>
+>>>> Nik suggested SIOCADDMULTI.
+>>> It is not clear to me how this should be used to limit the flooding, maybe we
+>>> can make some hacks, but as far as I understand the intend of this is maintain
+>>> the list of addresses an interface should receive. I'm not sure this should
+>>> influence how for forwarding decisions are being made.
+>>>
+>>>> and I suggested a tc filter to get the packet to the CPU.
+>>> The TC solution is a good solution to the original problem where wanted to copy
+>>> more frames to the CPU. But we were convinced that this is not the right
+>>> approach, and that the CPU by default should receive all multicast packets, and
+>>> we should instead try to find a way to limit the flooding of certain frames as
+>>> an optimization.
+>>
+>> This can still work. In Linux, ingress tc filters are executed before the
+>> bridge's Rx handler. The same happens in every sane HW. Ingress ACL is
+>> performed before L2 forwarding. Assuming you have eth0-eth3 bridged and
+>> you want to prevent packets with DMAC 01:21:6C:00:00:01 from egressing
+>> eth2:
+>>
+>> # tc filter add dev eth0 ingress pref 1 flower skip_sw \
+>> 	dst_mac 01:21:6C:00:00:01 action trap
+>> # tc filter add dev eth2 egress pref 1 flower skip_hw \
+>> 	dst_mac 01:21:6C:00:00:01 action drop
+>>
+>> The first filter is only present in HW ('skip_sw') and should result in
+>> your HW passing you the sole copy of the packet.
+> Agree.
+> 
+>> The second filter is only present in SW ('skip_hw', not using HW egress
+>> ACL that you don't have) and drops the packet after it was flooded by
+>> the SW bridge.
+> Agree.
+> 
+>> As I mentioned earlier, you can install the filter once in your HW and
+>> share it between different ports using a shared block. This means you
+>> only consume one TCAM entry.
+>>
+>> Note that this allows you to keep flooding all other multicast packets
+>> in HW.
+> Yes, but the frames we want to limit the flood-mask on are the exact frames
+> which occurs at a very high rate, and where latency is important.
+> 
+> I really do not consider it as an option to forward this in SW, when it is
+> something that can easily be offloaded in HW.
+> 
+>>>> If you now want to limit the ports to which this packet is flooded, then
+>>>> you can use tc filters in *software*:
+>>>>
+>>>> # tc qdisc add dev eth2 clsact
+>>>> # tc filter add dev eth2 egress pref 1 flower skip_hw \
+>>>> 	dst_mac 01:21:6C:00:00:01 action drop
+>>> Yes. This can work in the SW bridge.
+>>>
+>>>> If you want to forward the packet in hardware and locally receive it,
+>>>> you can chain several mirred action and then a trap action.
+>>> I'm not I fully understand how this should be done, but it does sound like it
+>>> becomes quite complicated. Also, as far as I understand it will mean that we
+>>> will be using TCAM/ACL resources to do something that could have been done with
+>>> a simple MAC entry.
+>>>
+>>>> Both options avoid HW egress ACLs which your design does not support.
+>>> True, but what is wrong with expanding the functionality of the normal
+>>> forwarding/MAC operations to allow multiple destinations?
+>>>
+>>> It is not an uncommon feature (I just browsed the manual of some common L2
+>>> switches and they all has this feature).
+>>>
+>>> It seems to fit nicely into the existing user-interface:
+>>>
+>>> bridge fdb add    01:21:6C:00:00:01 port eth0
+>>> bridge fdb append 01:21:6C:00:00:01 port eth1
+>>
+>> Wouldn't it be better to instead extend the MDB entries so that they are
+>> either keyed by IP or MAC? I believe FDB should remain as unicast-only.
+> 
+> You might be right, it was not clear to me which of the two would fit the
+> purpose best.
+> 
+> From a user-space iproute2 perspective I prefer using the "bridge fdb" command
+> as it already supports the needed syntax, and I do not think it will be too
+> pretty if we squeeze this into the "bridge mdb" command syntax.
+> 
 
-When user does create new netdevsim instance using sysfs bus file,
-create the devlink instance and related netdev instance in the namespace
-of the caller.
+MDB is a much better fit as Ido already suggested. FDB should remain unicast
+and mixing them is not a good idea, we already have a good ucast/mcast separation
+and we'd like to keep it that way.
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v1->v2:
-- remove net_namespace.h include and forward decralared net struct
-- add comment to initial_net pointer
----
- drivers/net/netdevsim/bus.c       |  1 +
- drivers/net/netdevsim/dev.c       | 17 +++++++++++------
- drivers/net/netdevsim/netdev.c    |  4 +++-
- drivers/net/netdevsim/netdevsim.h |  8 +++++++-
- 4 files changed, 22 insertions(+), 8 deletions(-)
+> But that does not mean that it need to go into the FDB database in the
+> implementation.
+> 
+> Last evening when I looked at it again, I was considering keeping the
+> net_bridge_fdb_entry structure as is, and add a new hashtable with the
+> following:
+> 
+> struct net_bridge_fdbmc_entry {
+> 	struct rhash_head		rhnode;
+> 	struct net_bridge_fdbmc_ports   *dst;
+> 
+> 	struct net_bridge_fdb_key	key;
+> 	struct hlist_node		fdb_node;
+> 	unsigned char			offloaded:1;
+> 
+> 	struct rcu_head			rcu;
+> };
+> 
 
-diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-index 1a0ff3d7747b..6aeed0c600f8 100644
---- a/drivers/net/netdevsim/bus.c
-+++ b/drivers/net/netdevsim/bus.c
-@@ -283,6 +283,7 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
- 	nsim_bus_dev->dev.bus = &nsim_bus;
- 	nsim_bus_dev->dev.type = &nsim_bus_dev_type;
- 	nsim_bus_dev->port_count = port_count;
-+	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
- 
- 	err = device_register(&nsim_bus_dev->dev);
- 	if (err)
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index c5c417a3c0ce..685dd21f5500 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -268,7 +268,8 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
- };
- 
- static struct nsim_dev *
--nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev, unsigned int port_count)
-+nsim_dev_create(struct net *net, struct nsim_bus_dev *nsim_bus_dev,
-+		unsigned int port_count)
- {
- 	struct nsim_dev *nsim_dev;
- 	struct devlink *devlink;
-@@ -277,6 +278,7 @@ nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev, unsigned int port_count)
- 	devlink = devlink_alloc(&nsim_dev_devlink_ops, sizeof(*nsim_dev));
- 	if (!devlink)
- 		return ERR_PTR(-ENOMEM);
-+	devlink_net_set(devlink, net);
- 	nsim_dev = devlink_priv(devlink);
- 	nsim_dev->nsim_bus_dev = nsim_bus_dev;
- 	nsim_dev->switch_id.id_len = sizeof(nsim_dev->switch_id.id);
-@@ -335,7 +337,7 @@ static void nsim_dev_destroy(struct nsim_dev *nsim_dev)
- 	devlink_free(devlink);
- }
- 
--static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
-+static int __nsim_dev_port_add(struct net *net, struct nsim_dev *nsim_dev,
- 			       unsigned int port_index)
- {
- 	struct nsim_dev_port *nsim_dev_port;
-@@ -361,7 +363,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
- 	if (err)
- 		goto err_dl_port_unregister;
- 
--	nsim_dev_port->ns = nsim_create(nsim_dev, nsim_dev_port);
-+	nsim_dev_port->ns = nsim_create(net, nsim_dev, nsim_dev_port);
- 	if (IS_ERR(nsim_dev_port->ns)) {
- 		err = PTR_ERR(nsim_dev_port->ns);
- 		goto err_port_debugfs_exit;
-@@ -404,17 +406,19 @@ static void nsim_dev_port_del_all(struct nsim_dev *nsim_dev)
- 
- int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- {
-+	struct net *initial_net = nsim_bus_dev->initial_net;
- 	struct nsim_dev *nsim_dev;
- 	int i;
- 	int err;
- 
--	nsim_dev = nsim_dev_create(nsim_bus_dev, nsim_bus_dev->port_count);
-+	nsim_dev = nsim_dev_create(initial_net, nsim_bus_dev,
-+				   nsim_bus_dev->port_count);
- 	if (IS_ERR(nsim_dev))
- 		return PTR_ERR(nsim_dev);
- 	dev_set_drvdata(&nsim_bus_dev->dev, nsim_dev);
- 
- 	for (i = 0; i < nsim_bus_dev->port_count; i++) {
--		err = __nsim_dev_port_add(nsim_dev, i);
-+		err = __nsim_dev_port_add(initial_net, nsim_dev, i);
- 		if (err)
- 			goto err_port_del_all;
- 	}
-@@ -449,13 +453,14 @@ int nsim_dev_port_add(struct nsim_bus_dev *nsim_bus_dev,
- 		      unsigned int port_index)
- {
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
-+	struct net *net = devlink_net(priv_to_devlink(nsim_dev));
- 	int err;
- 
- 	mutex_lock(&nsim_dev->port_list_lock);
- 	if (__nsim_dev_port_lookup(nsim_dev, port_index))
- 		err = -EEXIST;
- 	else
--		err = __nsim_dev_port_add(nsim_dev, port_index);
-+		err = __nsim_dev_port_add(net, nsim_dev, port_index);
- 	mutex_unlock(&nsim_dev->port_list_lock);
- 	return err;
- }
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index 0740940f41b1..25c7de7a4a31 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -280,7 +280,8 @@ static void nsim_setup(struct net_device *dev)
- }
- 
- struct netdevsim *
--nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
-+nsim_create(struct net *net, struct nsim_dev *nsim_dev,
-+	    struct nsim_dev_port *nsim_dev_port)
- {
- 	struct net_device *dev;
- 	struct netdevsim *ns;
-@@ -290,6 +291,7 @@ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
- 	if (!dev)
- 		return ERR_PTR(-ENOMEM);
- 
-+	dev_net_set(dev, net);
- 	ns = netdev_priv(dev);
- 	ns->netdev = dev;
- 	ns->nsim_dev = nsim_dev;
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 79c05af2a7c0..9563acb61b03 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -74,8 +74,11 @@ struct netdevsim {
- 	struct nsim_ipsec ipsec;
- };
- 
-+struct net;
-+
- struct netdevsim *
--nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port);
-+nsim_create(struct net *net, struct nsim_dev *nsim_dev,
-+	    struct nsim_dev_port *nsim_dev_port);
- void nsim_destroy(struct netdevsim *ns);
- 
- #ifdef CONFIG_BPF_SYSCALL
-@@ -213,6 +216,9 @@ struct nsim_bus_dev {
- 	struct device dev;
- 	struct list_head list;
- 	unsigned int port_count;
-+	struct net *initial_net; /* Purpose of this is to carry net pointer
-+				  * during the probe time only.
-+				  */
- 	unsigned int num_vfs;
- 	struct nsim_vf_config *vfconfigs;
- };
--- 
-2.21.0
+What would the notification for this look like ?
 
+> If we go with this approach then we can look at the MAC address and see if it is
+> a unicast which will cause a lookup in the fdb, l3-multicast (33:33:* or
+> 01:00:5e:*) which will cause a lookup in the mdb, or finally a fdbmc which will
+> need to do a lookup in this new hashtable.
+
+That sounds wrong, you will change the current default behaviour of flooding these
+packets. This will have to be well hidden behind a new option and enabled only on user
+request.
+
+> 
+> Alternative it would be like this:
+> 
+> struct net_bridge_fdb_entry {
+> 	struct rhash_head		rhnode;
+> 	union net_bridge_port_or_list	*dst;
+> 
+> 	struct net_bridge_fdb_key	key;
+> 	struct hlist_node		fdb_node;
+> 	unsigned char			is_local:1,
+> 					is_static:1,
+> 					is_sticky:1,
+> 					added_by_user:1,
+> 					added_by_external_learn:1,
+> 					offloaded:1;
+> 					multi_dst:1;
+> 
+> 	/* write-heavy members should not affect lookups */
+> 	unsigned long			updated ____cacheline_aligned_in_smp;
+> 	unsigned long			used;
+> 
+> 	struct rcu_head			rcu;
+> };
+> 
+> Both solutions should require fairly few changes, and should not cause any
+> measurable performance hit.
+> 
+
+You'll have to convert these bits to use the proper atomic bitops if you go with
+the second solution. That has to be done even today, but the second case would
+make it a must.
+
+> Making it fit into the net_bridge_mdb_entry seems to be harder.
+> 
+
+But it is the correct abstraction from bridge POV, so please stop trying to change
+the FDB code and try to keep to the multicast code.
+
+>> As a bonus, existing drivers could benefit from it, as MDB entries are already
+>> notified by MAC.
+> Not sure I follow. When FDB entries are added, it also generates notification
+> events.
+> 
+
+Could you please show fdb event with multiple ports ?
+
+>>> It seems that it can be added to the existing implementation with out adding
+>>> significant complexity.
+>>>
+>>> It will be easy to offload in HW.
+>>>
+>>> I do not believe that it will be a performance issue, if this is a concern then
+>>> we may have to do a bit of benchmarking, or we can make it a configuration
+>>> option.
+>>>
+>>> Long story short, we (Horatiu and I) learned a lot from the discussion here, and
+>>> I think we should try do a new patch with the learning we got. Then it is easier
+>>> to see what it actually means to the exiting code, complexity, exiting drivers,
+>>> performance, default behavioral, backwards compatibly, and other valid concerns.
+>>>
+>>> If the patch is no good, and cannot be fixed, then we will go back and look
+>>> further into alternative solutions.
+>> Overall, I tend to agree with Nik. I think your use case is too specific
+>> to justify the amount of changes you want to make in the bridge driver.
+>> We also provided other alternatives. That being said, you're more than
+>> welcome to send the patches and we can continue the discussion then.
+> Okay, good to know. I'm not sure I agree that the alternative solutions really
+> solves the issue this is trying to solve, nor do I agree that this is specific
+> to our needs.
+> 
+> But lets take a look at a new patch, and see what is the amount of changes we
+> are talking about. Without having the patch it is really hard to know for sure.
+> 
+
+Please keep in mind that this case is the exception, not the norm, thus it should
+not under any circumstance affect the standard deployments.
