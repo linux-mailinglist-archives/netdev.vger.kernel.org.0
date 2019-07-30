@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 425407A5B6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 12:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B6897A5C9
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 12:15:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732141AbfG3KLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 06:11:51 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44381 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726078AbfG3KLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 06:11:51 -0400
-Received: by mail-wr1-f68.google.com with SMTP id p17so65088393wrf.11;
-        Tue, 30 Jul 2019 03:11:49 -0700 (PDT)
+        id S1732235AbfG3KPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 06:15:03 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41242 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727115AbfG3KPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 06:15:02 -0400
+Received: by mail-wr1-f66.google.com with SMTP id c2so61908031wrm.8;
+        Tue, 30 Jul 2019 03:15:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=naKRDX9WVo3cs2KZ0MRfRmaNOOl0VGQTm099H1LHTFA=;
-        b=mwt+N/rr9IRwMUmgbPph/bv0tW2YVSgPQpf9L7S+qZiQmvzTL3dnLmJtN3f+OCJ61d
-         VR/zcfvsHPbiAY5aA+AJlwbmEh0IEOq6XOZlbP2wHe2G7ZLNmj8NWmH14udho7Xkrk+R
-         3yxdWv4o4DYc3uHQzzMoonMViKrrfdQ+QQ3Ai98fARpP8HMd9+4OYL7e7U6YqUKnYu35
-         kgnvWibdWrHw62aOXh6oi1qZ0Px0ZnBeEQl68DKc0rGYiYcfinSt0oDiLa3ls2qs8fvV
-         lINJ1Ezp9L+LLnsFtU6Gy3BYtrYv1Hxl0A3vsgllGoyt69NDF13jzDbIsKmSFyJgYXKo
-         oLdw==
+        bh=NZp0tiWYWeflnEAC5FTPRrIF191ca+yE63dpLeeohbM=;
+        b=iqhUW7gefyNQWxi/AXgQJi+mke0tyoTCIeeGxHaI6DdwOXdqhrhInZxksGWxXUgapU
+         y5bEkAyakQ9F0vbaKPrKgUGGM9ZA65jwfaJ1nnxLkiurfGohERRKsTn0ELKgsLS69c+R
+         OSy3eBJMnVK39CjFjJJxUc+liMePZo73QRvLnFNttmkot7m2UyPVktUh2rHfz2Z7n/nH
+         zqKuAyTw3wzca4aX4pqMYpbtFWSNZsMvqJYQ/qsnqWkHsgh43H6bzbZXSrlSmAY8u1fk
+         QXK3KbpJqOxD+/FdTDrXu0v7z2+HF59OKEewDePjz4fh1plYVIFu0Ci651RloEuNtKLY
+         JCPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=naKRDX9WVo3cs2KZ0MRfRmaNOOl0VGQTm099H1LHTFA=;
-        b=IAFDXDTbSOe7N1xXJMOFaHWWKWR8XlQ1CUeCTNnTRYP6RArlP3CE3EThYd5iEEQtoY
-         jvUBWNv53qr6An7xCvLctkMelZhU2ZrzEl6c4mRVZkDeSF66tPshruXXlaUBpY2e5YIU
-         jieStr1FCBBekctmUEetVLVG67mh0qga6qK9O9iDXX4j4tDpZ4GFYMMfIP3iIePMZJFq
-         cRhU8qeJWmOL/66gd99u7MSZXdfaBWoa7zFRj9/RqZBypk4LVc4YRVQe5X5iwVytUeDC
-         5wzymLk63ugw4yJYrKCEXY1+EP8uuhcGs25knxtNfChY3XoKveyVUiPDdIiyUSOdYwQT
-         rvww==
-X-Gm-Message-State: APjAAAWwDJ5Igs46MpTXzizh5w/t6Z43gEQgnqthGBge7jt0fKF8sFc+
-        kiZCYQFx4cVMNyEwnQF6HQguDN00
-X-Google-Smtp-Source: APXvYqyOn10wVAdTCy2JJCYfoRBCb0ES9hi12BdNy0eCrTe+b372UObinJPXwZD13x/d3N6nZncwvw==
-X-Received: by 2002:a05:6000:42:: with SMTP id k2mr6096793wrx.80.1564481508717;
-        Tue, 30 Jul 2019 03:11:48 -0700 (PDT)
+        bh=NZp0tiWYWeflnEAC5FTPRrIF191ca+yE63dpLeeohbM=;
+        b=NcMlb4Qsw7J3EG0OvUx63Qt6ZB66/wk5xMaknNwmPbd9nd+zU127lf77V8rgnTnIQI
+         Q+K8zP23+tVujQjTFnMCBuyw1Sn7Gb/kl7s55B1hRZwddMya1BVOs2C+iQml/ga/oH4r
+         sTEvXxuY38XsL5df2ntr/GUplSYr72+LzIATH3Jt53kUbMkKpvPoEwo868ggEL5u5DTh
+         Um6t8DgXp5LGp0+ev+NlYWETreaM71k4fWcL9IHGzjIfTS2fYiUsmKUjuYw5pXwilfWj
+         SJ7Erl7bzwPFodmCQVQhVSWM2VuT7vcSkDvTM9eRIpa4qJFhEXtbIvAlQ+hRu6fGvphK
+         O1rA==
+X-Gm-Message-State: APjAAAXMOG2fzvHiUGJZQqg4+/1qBWjpLWvve/FUogIIZauRRRRtNgXr
+        oIwShLhvUTB9RCBuvJySWG5szHW0
+X-Google-Smtp-Source: APXvYqw5TctgZNI/sY48QsAhxzUoVbouLp3+D3FvBMNnPX+HyBGTpWPdbtz149ad4H0CNj4/lJ0w6g==
+X-Received: by 2002:adf:8364:: with SMTP id 91mr125855137wrd.13.1564481699090;
+        Tue, 30 Jul 2019 03:14:59 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id y24sm47435687wmi.10.2019.07.30.03.11.47
+        by smtp.gmail.com with ESMTPSA id w14sm50923832wrk.44.2019.07.30.03.14.58
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 03:11:48 -0700 (PDT)
+        Tue, 30 Jul 2019 03:14:58 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
@@ -51,9 +51,9 @@ Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] net: dsa: mv88e6xxx: use link-down-define instead of plain value
-Date:   Tue, 30 Jul 2019 12:11:42 +0200
-Message-Id: <20190730101142.548-1-h.feurstein@gmail.com>
+Subject: [PATCH 1/2] net: dsa: mv88e6xxx: add support to setup led-control register through device-tree
+Date:   Tue, 30 Jul 2019 12:14:50 +0200
+Message-Id: <20190730101451.845-1-h.feurstein@gmail.com>
 X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,26 +62,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the define here makes the code more expressive.
+So it is possible to change the default behaviour of the switch LEDs.
 
 Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 52 ++++++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
+ drivers/net/dsa/mv88e6xxx/port.c | 13 ++++++++
+ drivers/net/dsa/mv88e6xxx/port.h | 10 ++++++
+ 4 files changed, 77 insertions(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 58e298cc90e0..85638b868d8e 100644
+index 85638b868d8e..e5a11454e1e0 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -430,7 +430,7 @@ int mv88e6xxx_port_setup_mac(struct mv88e6xxx_chip *chip, int port, int link,
- 		return 0;
+@@ -1985,6 +1985,52 @@ static int mv88e6xxx_switch_reset(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_software_reset(chip);
+ }
  
- 	/* Port's MAC control must not be changed unless the link is down */
--	err = chip->info->ops->port_set_link(chip, port, 0);
-+	err = chip->info->ops->port_set_link(chip, port, LINK_FORCED_DOWN);
- 	if (err)
- 		return err;
++static void mv88e6xxx_led_control_init(struct mv88e6xxx_chip *chip,
++				       const struct device_node *np)
++{
++	struct device_node *ports, *port;
++	struct mv88e6xxx_port *chip_port;
++	u32 led_control, reg;
++	int err;
++
++	if (!np)
++		return;
++
++	/* Read LED Control register value from device-tree */
++	ports = of_get_child_by_name(np, "ports");
++	if (!ports)
++		return;
++
++	for_each_available_child_of_node(ports, port) {
++		err = of_property_read_u32(port, "reg", &reg);
++		if (err || reg >= ARRAY_SIZE(chip->ports))
++			break;
++
++		err = of_property_read_u32(port, "marvell,led-control",
++					   &led_control);
++		if (!err) {
++			chip_port = &chip->ports[reg];
++			chip_port->led_control = led_control |
++						 MV88E6XXX_LED_CONTROL_VALID;
++			dev_dbg(chip->dev, "LED control value for port%d = 0x%02x\n",
++				reg, led_control);
++		}
++	}
++
++	of_node_put(ports);
++}
++
++static int mv88e6xxx_led_control_setup(struct mv88e6xxx_chip *chip, int port)
++{
++	u16 led_control = chip->ports[port].led_control;
++
++	if ((led_control & MV88E6XXX_LED_CONTROL_VALID) == 0)
++		return 0;
++
++	led_control &= ~MV88E6XXX_LED_CONTROL_VALID;
++	return mv88e6xxx_port_set_led_control(chip, port, led_control);
++}
++
+ static int mv88e6xxx_set_port_mode(struct mv88e6xxx_chip *chip, int port,
+ 				   enum mv88e6xxx_frame_mode frame,
+ 				   enum mv88e6xxx_egress_mode egress, u16 etype)
+@@ -2120,6 +2166,11 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 	chip->ports[port].chip = chip;
+ 	chip->ports[port].port = port;
  
++	/* Setup LED Control before link-up or link-unforce */
++	err = mv88e6xxx_led_control_setup(chip, port);
++	if (err)
++		return err;
++
+ 	/* MAC Forcing register: don't force link, speed, duplex or flow control
+ 	 * state to any particular values on physical ports, but force the CPU
+ 	 * port and all DSA ports to their maximum bandwidth and full duplex.
+@@ -4851,6 +4902,7 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
+ 		goto out;
+ 
+ 	mv88e6xxx_phy_init(chip);
++	mv88e6xxx_led_control_init(chip, np);
+ 
+ 	if (chip->info->ops->get_eeprom) {
+ 		if (np)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 64872251e479..1bb775855d62 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -24,6 +24,7 @@
+ #define MV88E6XXX_MAX_PVT_PORTS		16
+ 
+ #define MV88E6XXX_MAX_GPIO	16
++#define MV88E6XXX_LED_CONTROL_VALID	0x8000
+ 
+ enum mv88e6xxx_egress_mode {
+ 	MV88E6XXX_EGRESS_MODE_UNMODIFIED,
+@@ -194,6 +195,7 @@ struct mv88e6xxx_port {
+ 	u64 vtu_member_violation;
+ 	u64 vtu_miss_violation;
+ 	u8 cmode;
++	u16 led_control;
+ 	int serdes_irq;
+ };
+ 
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 04309ef0a1cc..111bb686b764 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -1183,6 +1183,19 @@ int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ETH_TYPE, etype);
+ }
+ 
++/* Offset 0x16: LED Control Register */
++
++int mv88e6xxx_port_set_led_control(struct mv88e6xxx_chip *chip, int port,
++				   u16 led_control)
++{
++	led_control &= MV88E6XXX_PORT_LED_CONTROL_DATA_MASK;
++	led_control |= MV88E6XXX_PORT_LED_CONTROL_POINTER_CONTROL_LED01
++		    |  MV88E6XXX_PORT_LED_CONTROL_UPDATE;
++
++	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_LED_CONTROL,
++				    led_control);
++}
++
+ /* Offset 0x18: Port IEEE Priority Remapping Registers [0-3]
+  * Offset 0x19: Port IEEE Priority Remapping Registers [4-7]
+  */
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index 141df2988cd1..5aacbccf81e3 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -239,6 +239,14 @@
+ /* Offset 0x13: OutFiltered Counter */
+ #define MV88E6XXX_PORT_OUT_FILTERED	0x13
+ 
++/* Offset 0x16: LED Control Register */
++#define MV88E6XXX_PORT_LED_CONTROL				0x16
++#define MV88E6XXX_PORT_LED_CONTROL_DATA_MASK			0x07ff
++#define MV88E6XXX_PORT_LED_CONTROL_UPDATE			0x8000
++#define MV88E6XXX_PORT_LED_CONTROL_POINTER_CONTROL_LED01	0x0000
++#define MV88E6XXX_PORT_LED_CONTROL_POINTER_STRECH_BLINK_RATE	0x6000
++#define MV88E6XXX_PORT_LED_CONTROL_POINTER_CONTROL_SPECIAL	0x7000
++
+ /* Offset 0x18: IEEE Priority Mapping Table */
+ #define MV88E6390_PORT_IEEE_PRIO_MAP_TABLE			0x18
+ #define MV88E6390_PORT_IEEE_PRIO_MAP_TABLE_UPDATE		0x8000
+@@ -323,6 +331,8 @@ int mv88e6352_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
+ 				     bool unicast, bool multicast);
+ int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
+ 				  u16 etype);
++int mv88e6xxx_port_set_led_control(struct mv88e6xxx_chip *chip, int port,
++				   u16 led_control);
+ int mv88e6xxx_port_set_message_port(struct mv88e6xxx_chip *chip, int port,
+ 				    bool message_port);
+ int mv88e6165_port_set_jumbo_size(struct mv88e6xxx_chip *chip, int port,
 -- 
 2.22.0
 
