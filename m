@@ -2,160 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA157B3E1
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:01:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B5E27B3E9
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbfG3UBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 16:01:30 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:44405 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726859AbfG3UB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 16:01:29 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MzR0i-1iEV4S49z6-00vL3y; Tue, 30 Jul 2019 22:01:21 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Deepa Dinamani <deepa.kernel@gmail.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5 19/29] compat_ioctl: move hci_sock handlers into driver
-Date:   Tue, 30 Jul 2019 21:55:35 +0200
-Message-Id: <20190730195819.901457-7-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190730195819.901457-1-arnd@arndb.de>
-References: <20190730192552.4014288-1-arnd@arndb.de>
- <20190730195819.901457-1-arnd@arndb.de>
+        id S1727502AbfG3UCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 16:02:36 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:49958 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726174AbfG3UCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 16:02:36 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 633AC140089;
+        Tue, 30 Jul 2019 20:02:34 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 30 Jul
+ 2019 13:02:30 -0700
+Subject: Re: [RFC PATCH net-next 0/3] net: batched receive in GRO path
+From:   Edward Cree <ecree@solarflare.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>
+References: <7920e85c-439e-0622-46f8-0602cf37e306@solarflare.com>
+ <c80a9e7846bf903728327a1ca2c3bdcc078057a2.camel@redhat.com>
+ <677040f4-05d1-e664-d24a-5ee2d2edcdbd@solarflare.com>
+ <1735314f-3c6a-45fc-0270-b90cc4d5d6ba@gmail.com>
+ <4516a34a-5a88-88ef-e761-7512dff4f3ce@solarflare.com>
+ <38ff0ce0-7e26-1683-90f0-adc9c0ac9abe@gmail.com>
+ <927da9ee-c2fc-8556-fbeb-e26ea1c98d1e@solarflare.com>
+ <d7ca6e7a-b80e-12e8-9050-c25b8b92bf26@gmail.com>
+ <a30137b4-1b01-df6e-c771-c5ddd1cfc490@solarflare.com>
+Message-ID: <d7e1665f-807d-e5a7-01a5-ee411e4b967a@solarflare.com>
+Date:   Tue, 30 Jul 2019 21:02:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
+In-Reply-To: <a30137b4-1b01-df6e-c771-c5ddd1cfc490@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:MRkTCynjx8ZKieEaweTLO5hE+mPqZVxegMLXPvi77ZFI1txQjJ9
- mTrIRI4m4fTqEgGSmmFN3Usqtf2R5hhD0UTDT/QRPC8IcYkJNc9RCybcAKzU9ok26pVCy5x
- ntkofHM1zI0tSnU5pRTvXGNm9jz6ODVkgpTv3FlyEqRYcF0gPPf0Zg4bNFKh5M/3p95jW3c
- NJpqqqWo8sTvCujeLhHJQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:imcKfvdmqYo=:DzN1SJA2kycqmDkWZRU/Nc
- NsiVwWKpUTSbb/mjgweqnGJqA8PbLpXcIVI0DnYKLcstHKQqUM9bO1645MdEsaq35cznVPvnq
- X9McomuGyhOeQ4PuSbktBrAlw0vSZNecfiZbb3tG7c3h22XpzdplbFOuxv3KhygMonfVWHRom
- q/lMAAoIWhR0QRDN3FJ7HuxgNRTr7sSsYzWLch8LnunYDT7RAzT8SXZWWJJLACkpr027DVyBm
- huvqteZ6Pd8c2x4Aggmq/hFTmsM3Zq9uPsl9lo935UhlkRild7uIT9VuPcWYPtlV2L+eoAnCS
- Pnlb4AdR2HlsodyDTCQeCcjUgzEHDub1fnFtoonfOdpw5bf22CbPFFcrFmFO6jrDrYeNuxmva
- ix3kaBzwtWdlwkm57P4mrdU6RkeO/B74i4gO1svQDK7My2+U8l3oD1c/ow7kpQyLk77k0i8PK
- raIm0SZOwvPAT/xC4YctG+JWo6dvw1nCt4x+GcshvZNS0bvVb+U671bBLfumJqbGql+jqSWvQ
- /7zT8QpcC5SMTxfJAGBChF6BIceVc3gKJCROeL+dXVKfyE9cBEhQZzVlSdphRCpuoFKPt8eLv
- Td5m7QCdZ+W8eXpu6wquobqfUhHJ12/2yxsqKSKfFpO3/Ag/TBXOKTuHKnVHNpVkmEiFU+2Mc
- lCLkOH5UiTCy359HjqQDgB2hX4PkesHavNc/hE3CnlZzRMAiUOuQi3br5MXWsqjDFmO5MYGw7
- 47iC//C6Eal1Nx6VmsgdHZTfqrEtec8LChFJ6w==
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24810.005
+X-TM-AS-Result: No-2.710700-4.000000-10
+X-TMASE-MatchedRID: VfovoVrt/obmLzc6AOD8DfHkpkyUphL9jHhXj1NLbjBSw5Q5cFoXDYy+
+        AfTlDGN1ivAi4K698nv303d0Xu5kOt3aQrftNh+sLyz9QvAyHjq++wkLapaddxlLPW+8b7Sa5su
+        eCC+qhXdEtH2LywAwaweVY2lBlw7gAM0/G7XUdePykdOisNw8ygIbyV+avmzj0SxMhOhuA0QFda
+        zC65CWD2CvPgSERlEIhd5kI3o9+M/yEOzoYJM0nXH7HV/mO4UTprzcyrz2L11/Z0SyQdcmEBQHK
+        cqebMTmHqgUZTJwkRGz9Xcgq3OOrI9oUcx9VMLggxsfzkNRlfLdB/CxWTRRuwihQpoXbuXFxpgT
+        d/zf2b03Ursl1lB77qOUJys1AD66+4UACK+RSTuofK4KSi50sbCvT+c7SAC2J4DWLneOqb6h1cf
+        P1wneY9fFGZDAMnnJatIHicZOMH4XNif4eWqnz5x7WsNeU26IiY14e+tx2CaeqD9WtJkSIw==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.710700-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24810.005
+X-MDID: 1564516955-9BsG7NRFe_5m
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All these ioctl commands are compatible, so we can handle
-them with a trivial wrapper in hci_sock.c and remove
-the listing in fs/compat_ioctl.c.
+On 24/07/2019 22:49, Edward Cree wrote:
+> One thing that's causing me some uncertainty: busy_poll_stop() does a
+>  napi->poll(), which can potentially gro_normal_one() something.  But
+>  when I tried to put a gro_normal_list() just after that, I ran into
+>  list corruption because it could race against the one in
+>  napi_complete_done().
+Turns out that the bh_disables are a red herring, we're racing against a
+ napi poll on a different CPU.
+I *think* that the sequence of events is
+- enter busy_poll_stop
+- enter napi->poll
+- napi->poll calls napi_complete_done(), which schedules a new napi
+- that new napi runs, on another CPU
+- meanwhile, busy_poll_stop returns from napi->poll; if it then does a
+  gro_normal_list it can race with the one on the other CPU from the new
+  napi-poll.
+Which means that...
+> Questions that arise from that:
+> 1) Is it safe to potentially be adding to the rx_list (gro_normal_one(),
+>    which in theory can end up calling gro_normal_list() as well) within
+>    busy_poll_stop()?  I haven't ever seen a splat from that, but it seems
+>    every bit as possible as what I have been seeing.
+... this isn't a problem, because napi->poll() will do all of its
+ gro_normal_one()s before it calls napi_complete_done().
 
-A few of the commands pass integer arguments instead of
-pointers, so for correctness skip the compat_ptr() conversion
-here.
+Just gathering some final performance numbers, then I'll post the updated
+ patches (hopefully) later tonight.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- fs/compat_ioctl.c        | 24 ------------------------
- net/bluetooth/hci_sock.c | 21 ++++++++++++++++++++-
- 2 files changed, 20 insertions(+), 25 deletions(-)
-
-diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
-index 8dbef92b10fd..9302157d1471 100644
---- a/fs/compat_ioctl.c
-+++ b/fs/compat_ioctl.c
-@@ -40,9 +40,6 @@
- 
- #include "internal.h"
- 
--#include <net/bluetooth/bluetooth.h>
--#include <net/bluetooth/hci_sock.h>
--
- #ifdef CONFIG_BLOCK
- #include <linux/cdrom.h>
- #include <linux/fd.h>
-@@ -646,27 +643,6 @@ COMPATIBLE_IOCTL(RNDADDENTROPY)
- COMPATIBLE_IOCTL(RNDZAPENTCNT)
- COMPATIBLE_IOCTL(RNDCLEARPOOL)
- /* Bluetooth */
--COMPATIBLE_IOCTL(HCIDEVUP)
--COMPATIBLE_IOCTL(HCIDEVDOWN)
--COMPATIBLE_IOCTL(HCIDEVRESET)
--COMPATIBLE_IOCTL(HCIDEVRESTAT)
--COMPATIBLE_IOCTL(HCIGETDEVLIST)
--COMPATIBLE_IOCTL(HCIGETDEVINFO)
--COMPATIBLE_IOCTL(HCIGETCONNLIST)
--COMPATIBLE_IOCTL(HCIGETCONNINFO)
--COMPATIBLE_IOCTL(HCIGETAUTHINFO)
--COMPATIBLE_IOCTL(HCISETRAW)
--COMPATIBLE_IOCTL(HCISETSCAN)
--COMPATIBLE_IOCTL(HCISETAUTH)
--COMPATIBLE_IOCTL(HCISETENCRYPT)
--COMPATIBLE_IOCTL(HCISETPTYPE)
--COMPATIBLE_IOCTL(HCISETLINKPOL)
--COMPATIBLE_IOCTL(HCISETLINKMODE)
--COMPATIBLE_IOCTL(HCISETACLMTU)
--COMPATIBLE_IOCTL(HCISETSCOMTU)
--COMPATIBLE_IOCTL(HCIBLOCKADDR)
--COMPATIBLE_IOCTL(HCIUNBLOCKADDR)
--COMPATIBLE_IOCTL(HCIINQUIRY)
- COMPATIBLE_IOCTL(HCIUARTSETPROTO)
- COMPATIBLE_IOCTL(HCIUARTGETPROTO)
- COMPATIBLE_IOCTL(HCIUARTGETDEVICE)
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index d32077b28433..5d0ed28c0d3a 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -23,7 +23,7 @@
- */
- 
- /* Bluetooth HCI sockets. */
--
-+#include <linux/compat.h>
- #include <linux/export.h>
- #include <linux/utsname.h>
- #include <linux/sched.h>
-@@ -1054,6 +1054,22 @@ static int hci_sock_ioctl(struct socket *sock, unsigned int cmd,
- 	return err;
- }
- 
-+#ifdef CONFIG_COMPAT
-+static int hci_sock_compat_ioctl(struct socket *sock, unsigned int cmd,
-+				 unsigned long arg)
-+{
-+	switch (cmd) {
-+	case HCIDEVUP:
-+	case HCIDEVDOWN:
-+	case HCIDEVRESET:
-+	case HCIDEVRESTAT:
-+		return hci_sock_ioctl(sock, cmd, arg);
-+	}
-+
-+	return hci_sock_ioctl(sock, cmd, (unsigned long)compat_ptr(arg));
-+}
-+#endif
-+
- static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 			 int addr_len)
- {
-@@ -1974,6 +1990,9 @@ static const struct proto_ops hci_sock_ops = {
- 	.sendmsg	= hci_sock_sendmsg,
- 	.recvmsg	= hci_sock_recvmsg,
- 	.ioctl		= hci_sock_ioctl,
-+#ifdef CONFIG_COMPAT
-+	.compat_ioctl	= hci_sock_compat_ioctl,
-+#endif
- 	.poll		= datagram_poll,
- 	.listen		= sock_no_listen,
- 	.shutdown	= sock_no_shutdown,
--- 
-2.20.0
-
+-Ed
