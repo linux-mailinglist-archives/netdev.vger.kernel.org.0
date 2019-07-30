@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D697A4CA
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 11:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53C717A4C6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 11:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731849AbfG3Jkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 05:40:36 -0400
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:16555 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726505AbfG3Jkg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 05:40:36 -0400
-X-IronPort-AV: E=Sophos;i="5.64,326,1559491200"; 
-   d="scan'208";a="72517729"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 30 Jul 2019 17:40:34 +0800
-Received: from G08CNEXCHPEKD03.g08.fujitsu.local (unknown [10.167.33.85])
-        by cn.fujitsu.com (Postfix) with ESMTP id C22224CDE65E;
-        Tue, 30 Jul 2019 17:40:36 +0800 (CST)
-Received: from [10.167.226.33] (10.167.226.33) by
- G08CNEXCHPEKD03.g08.fujitsu.local (10.167.33.89) with Microsoft SMTP Server
- (TLS) id 14.3.439.0; Tue, 30 Jul 2019 17:40:38 +0800
-Subject: Re: net: ipv6: Fix a bug in ndisc_send_ns when netdev only has a
- global address
-To:     Mark Smith <markzzzsmith@gmail.com>, <netdev@vger.kernel.org>
-References: <CAO42Z2yN=FfueKAjb0KjY8-CdiKuvkJDr2iJdJR4XdKM90HJRg@mail.gmail.com>
-From:   Su Yanjun <suyj.fnst@cn.fujitsu.com>
-Message-ID: <93c401b9-bf8b-4d49-9c3b-72d09073444e@cn.fujitsu.com>
-Date:   Tue, 30 Jul 2019 17:39:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1730903AbfG3JkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 05:40:17 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36895 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727009AbfG3JkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 05:40:17 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n9so39916770wrr.4
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 02:40:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fQg1192WhNDyv6FjBGie6urrqGv9zjrLIH2bCUp56uc=;
+        b=SkoWiAaJzgSrR7Tc2p5yrnk88xUTVMrW3ZqlKi/52mIqWMoTypCEu0Ic3HLQcMv5A9
+         iKm+8MgtibZQW9o7MP0RYWJz6cFhj5cCK/1GhpfGo0PkZV9Zx+qvf+F/125QqzAlHWUD
+         oGomxOgBM1PlQxZ/U/Wy7nn3rKGtx65hpVOTwFsPdanJpUJwzdeWxADRFZve0VqUuCU3
+         MN9SPPSCJYvzT+DLWnK2HMpfHg0chzle4uBoPu7iWT9tSzbxucJVxnSVbJ2s4DRvRpeP
+         OaWnU5gpB8+p1wOsmrSHVF029+/CFWKI1JWU+ZMm97G4b95W7oHilWwrgeJNJO011VxB
+         +7EQ==
+X-Gm-Message-State: APjAAAVe1I08fTfs83AkrRASo10WT+8VHEkWlovYVzrGaDvGswqbBfoa
+        Lec9tG7LqcF1IMHzHhD9XoMXig==
+X-Google-Smtp-Source: APXvYqwQrJXSgJVI83eo1dkA3KRV/8pRzTuIDgoLCeF0kh3lvGAFxSVFdhlDZkRo9pud0n2msXMp9A==
+X-Received: by 2002:a5d:50d1:: with SMTP id f17mr72705216wrt.124.1564479615723;
+        Tue, 30 Jul 2019 02:40:15 -0700 (PDT)
+Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
+        by smtp.gmail.com with ESMTPSA id r12sm77203676wrt.95.2019.07.30.02.40.14
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 02:40:15 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 11:40:13 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v4 0/5] vsock/virtio: optimizations to increase the
+ throughput
+Message-ID: <20190730094013.ruqjllqrjmkdnh5y@steredhat>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190729095743-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAO42Z2yN=FfueKAjb0KjY8-CdiKuvkJDr2iJdJR4XdKM90HJRg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.167.226.33]
-X-yoursite-MailScanner-ID: C22224CDE65E.AC4C3
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: suyj.fnst@cn.fujitsu.com
-X-Spam-Status: No
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190729095743-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 29, 2019 at 09:59:23AM -0400, Michael S. Tsirkin wrote:
+> On Wed, Jul 17, 2019 at 01:30:25PM +0200, Stefano Garzarella wrote:
+> > This series tries to increase the throughput of virtio-vsock with slight
+> > changes.
+> > While I was testing the v2 of this series I discovered an huge use of memory,
+> > so I added patch 1 to mitigate this issue. I put it in this series in order
+> > to better track the performance trends.
+> 
+> Series:
+> 
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+> 
+> Can this go into net-next?
+> 
 
-在 2019/7/30 16:15, Mark Smith 写道:
-> Hi,
->
-> I'm not subscribed to the Linux netdev mailing list, so I can't
-> directly reply to the patch email.
->
-> This patch is not the correct solution to this issue.
->
-> Per RFC 4291 "IP Version 6 Addressing Architecture", all IPv6
-> interfaces are required to have Link-Local addresses, so therefore
-> there should always be a link-local address available to use as the
-> source address for an ND NS.
+I think so.
+Michael, Stefan thanks to ack the series!
 
-In linux implementation, one interface may have no link local address if 
-kernel config
+Should I resend it with net-next tag?
 
-*addr_gen_mode* is set to IN6_ADDR_GEN_MODE_NONE. My patch is to fix 
-this problem.
-
-And what you say is related to the lo interface.  I'm not sure whether 
-the lo interface needs a ll adreess.
-
-IMO the ll address is used to get l2 address by sending ND ns. The lo is 
-very special.
-
-Thanks
-
-Su
-
->
-> "2.1. Addressing Model"
->
-> ...
->
-> "All interfaces are required to have at least one Link-Local unicast
->     address (see Section 2.8 for additional required addresses)."
->
-> I have submitted a more specific bug regarding no Link-Local
-> address/prefix on the Linux kernel loopback interface through RedHat
-> bugzilla as I use Fedora 30, however it doesn't seem to have been
-> looked at yet.
->
-> "Loopback network interface does not have a Link Local address,
-> contrary to RFC 4291"
-> https://bugzilla.redhat.com/show_bug.cgi?id=1706709
->
->
-> Thanks very much,
-> Mark.
->
->
-
-
+Thanks,
+Stefano
