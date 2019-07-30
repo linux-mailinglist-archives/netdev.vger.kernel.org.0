@@ -2,127 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 420F17A81E
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9B37A822
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbfG3MVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 08:21:15 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53359 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbfG3MVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:21:15 -0400
-Received: by mail-wm1-f66.google.com with SMTP id x15so56971422wmj.3
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 05:21:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TlNchQ/vtVIj+X/dPogW/VhRCNvW7uKobaOaSR9wIVw=;
-        b=XztUXeM97JDaihnB0HagW5xvRBMhRYAr79vQdfBG04yIqoZYcKub3kXOUsu9ULFsjm
-         BIzlEU01i72gcZwbffxBob+Ml856DF5tWt2iinloyTic4HrdjAPmJmjuHsJ1aFytONGB
-         EsMVjzQJwTbx1vE/QlYDqe3xTgtpoPu9BXczg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TlNchQ/vtVIj+X/dPogW/VhRCNvW7uKobaOaSR9wIVw=;
-        b=rz14bgcHEXmo1U7X0+G8Hd7kR8N3++vaSyoJrBSR01VCtYcHoxgrBuNtzWtamRbJrD
-         51V0yp0BfJWrC/oag3hW23adSOGkBteHxnNfI/KicbiAwKxwRsi4XKceG48ABXTOn7tH
-         z7VAztJusvXYPwWn+xOw8I2CHhe6TpIVF+/Tcuf4ne1V51M1JBtCGcHe6oghYPcbZzKT
-         +uUNsmis5DARarOZqLIQ9xy5UxsTHkVG0NrRECP3taAS8tJPdJfs+JYPZpagqOjn9pX8
-         dCoL7JVEEjcfPb8bwR83/uG0hAXmsffLiUjmAUKNAMexIGL4vETH4hlhb0HzM17kBEN6
-         kzkQ==
-X-Gm-Message-State: APjAAAVvn+FPS/5TKWwNnBi4J7D/2UxxOWyHeDHyB8XSJGOKpW/MIU0t
-        rWMTCJ++32LBOZj2FbgZj38UkmrAA6s=
-X-Google-Smtp-Source: APXvYqz/bHR9d2rrOZ/49Uk9ujDRweI5mm2fYTQ2y7HdZbDIekx0jz1Rut9ZywlIODtRP0IhMrEqog==
-X-Received: by 2002:a1c:a848:: with SMTP id r69mr102326719wme.12.1564489272624;
-        Tue, 30 Jul 2019 05:21:12 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id l25sm49316717wme.13.2019.07.30.05.21.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 05:21:11 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next] net: bridge: mcast: add delete due to fast-leave mdb flag
-Date:   Tue, 30 Jul 2019 15:20:41 +0300
-Message-Id: <20190730122041.14647-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.21.0
+        id S1728534AbfG3MXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 08:23:01 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:37224 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726167AbfG3MXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:23:01 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hsR9f-0005Ax-Gu; Tue, 30 Jul 2019 12:22:59 +0000
+Subject: Re: [PATCH][net-next][V2] mlxsw: spectrum_ptp: fix duplicated check
+ on orig_egr_types
+From:   Colin Ian King <colin.king@canonical.com>
+To:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190730114752.24133-1-colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <d1907bca-a6f7-deb0-cffe-ba2561cfe608@canonical.com>
+Date:   Tue, 30 Jul 2019 13:22:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190730114752.24133-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In user-space there's no way to distinguish why an mdb entry was deleted
-and that is a problem for daemons which would like to keep the mdb in
-sync with remote ends (e.g. mlag) but would also like to converge faster.
-In almost all cases we'd like to age-out the remote entry for performance
-and convergence reasons except when fast-leave is enabled. In that case we
-want explicit immediate remote delete, thus add mdb flag which is set only
-when the entry is being deleted due to fast-leave.
+As pointed out by Petr, this should be [net] and not [net-next]
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- include/uapi/linux/if_bridge.h | 1 +
- net/bridge/br_mdb.c            | 2 ++
- net/bridge/br_multicast.c      | 2 +-
- net/bridge/br_private.h        | 1 +
- 4 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 773e476a8e54..1b3c2b643a02 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -237,6 +237,7 @@ struct br_mdb_entry {
- #define MDB_PERMANENT 1
- 	__u8 state;
- #define MDB_FLAGS_OFFLOAD	(1 << 0)
-+#define MDB_FLAGS_FAST_LEAVE	(1 << 1)
- 	__u8 flags;
- 	__u16 vid;
- 	struct {
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index bf6acd34234d..428af1abf8cc 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -60,6 +60,8 @@ static void __mdb_entry_fill_flags(struct br_mdb_entry *e, unsigned char flags)
- 	e->flags = 0;
- 	if (flags & MDB_PG_FLAGS_OFFLOAD)
- 		e->flags |= MDB_FLAGS_OFFLOAD;
-+	if (flags & MDB_PG_FLAGS_FAST_LEAVE)
-+		e->flags |= MDB_FLAGS_FAST_LEAVE;
- }
- 
- static void __mdb_entry_to_br_ip(struct br_mdb_entry *entry, struct br_ip *ip)
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 3d8deac2353d..3d4b2817687f 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1393,7 +1393,7 @@ br_multicast_leave_group(struct net_bridge *br,
- 			del_timer(&p->timer);
- 			kfree_rcu(p, rcu);
- 			br_mdb_notify(br->dev, port, group, RTM_DELMDB,
--				      p->flags);
-+				      p->flags | MDB_PG_FLAGS_FAST_LEAVE);
- 
- 			if (!mp->ports && !mp->host_joined &&
- 			    netif_running(br->dev))
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index e8cf03b43b7d..c4fd307fbfdc 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -199,6 +199,7 @@ struct net_bridge_fdb_entry {
- 
- #define MDB_PG_FLAGS_PERMANENT	BIT(0)
- #define MDB_PG_FLAGS_OFFLOAD	BIT(1)
-+#define MDB_PG_FLAGS_FAST_LEAVE	BIT(2)
- 
- struct net_bridge_port_group {
- 	struct net_bridge_port		*port;
--- 
-2.21.0
+On 30/07/2019 12:47, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Currently are duplicated checks on orig_egr_types which are
+> redundant, I believe this is a typo and should actually be
+> orig_ing_types || orig_egr_types instead of the expression
+> orig_egr_types || orig_egr_types.  Fix these.
+> 
+> Addresses-Coverity: ("Same on both sides")
+> Fixes: c6b36bdd04b5 ("mlxsw: spectrum_ptp: Increase parsing depth when PTP is enabled")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+> index 98c5ba3200bc..63b07edd9d81 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+> @@ -999,14 +999,14 @@ static int mlxsw_sp1_ptp_mtpppc_update(struct mlxsw_sp_port *mlxsw_sp_port,
+>  		}
+>  	}
+>  
+> -	if ((ing_types || egr_types) && !(orig_egr_types || orig_egr_types)) {
+> +	if ((ing_types || egr_types) && !(orig_ing_types || orig_egr_types)) {
+>  		err = mlxsw_sp_nve_inc_parsing_depth_get(mlxsw_sp);
+>  		if (err) {
+>  			netdev_err(mlxsw_sp_port->dev, "Failed to increase parsing depth");
+>  			return err;
+>  		}
+>  	}
+> -	if (!(ing_types || egr_types) && (orig_egr_types || orig_egr_types))
+> +	if (!(ing_types || egr_types) && (orig_ing_types || orig_egr_types))
+>  		mlxsw_sp_nve_inc_parsing_depth_put(mlxsw_sp);
+>  
+>  	return mlxsw_sp1_ptp_mtpppc_set(mlxsw_sp_port->mlxsw_sp,
+> 
+> --
+> 
+> V2: fix both occurances of this typo. Thanks to Petr Machata for spotting
+>     the 2nd occurrance
+> 
 
