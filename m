@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 147CB7B444
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 034FE7B450
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 22:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbfG3UUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 16:20:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34736 "EHLO mail.kernel.org"
+        id S1728218AbfG3UYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 16:24:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728165AbfG3UUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 16:20:25 -0400
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+        id S1728182AbfG3UYP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 16:24:15 -0400
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A94B4217D6
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 20:20:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2DE6021773
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 20:24:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564518023;
-        bh=Iu+6JPntZLE7GOijyjckcWIt8EYf9s4FJl/QwYGOOaE=;
+        s=default; t=1564518253;
+        bh=Kt8xMfLEUIW3Y3BQbWr7auw3iHGpmo7WxKDcHNpHrJY=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JDmi0tnubv1So2xm5UTQtQWXJDJr+g2VqbhfsODtQfzpXun1MYr+R7IpC2F6HvJ+b
-         TDi9FZqH8oOsJmdqwIGRwNMJ/vEhPhPmyQme3+GfHYUkR96dUGHowWzJEc+XKdFYTi
-         QueCGEJJ0/d1j86TlgDEAo0+7wkpKRDWR5VFpmyU=
-Received: by mail-wm1-f51.google.com with SMTP id g67so53650964wme.1
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 13:20:23 -0700 (PDT)
-X-Gm-Message-State: APjAAAV5guAlYuw8O35jKDXuMvFGIfIqqLtOVSp1t8wCr8gX9ZIrjzJ8
-        cGzulPQriURRDFbJ6UFtT9NRNi2XG51kIx7/qtG/pw==
-X-Google-Smtp-Source: APXvYqzl8ZF//gu9dHlHhlkHH0HNpi+EOtNwImKwsGRjT7tn7mvma3rdV5Zit0f6Bw8ChZu9AISkh4etjc8YWGyd42M=
-X-Received: by 2002:a1c:a942:: with SMTP id s63mr105071199wme.76.1564518022044;
- Tue, 30 Jul 2019 13:20:22 -0700 (PDT)
+        b=dg00idpt+nWyhqrCK+U2jSJ3sgEYeNS6kxfx6cIOY9laRHislxCGjaH1t797jpuTN
+         sGqGFZ6UDDXBtBA8yTn8ZU4/UL97slbOmXPw5DL1vlUGJvdEOBhdRv5bRTES4/henZ
+         J3pSln7N/BQjPbfsS7CEa6wQ1ApaNLU93HGJc8/0=
+Received: by mail-wr1-f52.google.com with SMTP id x4so13980373wrt.6
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 13:24:13 -0700 (PDT)
+X-Gm-Message-State: APjAAAV+tJlVxmkyeY//1z3cp+Ng4gWLLeM+kPktPgILc1v52e27G9cc
+        5+rOEzxsh4FaUre/k84qP2d4wrBt0GjyNkz8d3XFtg==
+X-Google-Smtp-Source: APXvYqzZ/BahTMAZqJKvw3CKJJrYc0VH2HO2IKCQHMz+jcl+qF5qZMCRFU61mq2qYTzjNeslp+cWZBSZeISWQwA0qnU=
+X-Received: by 2002:adf:f28a:: with SMTP id k10mr52015339wro.343.1564518251602;
+ Tue, 30 Jul 2019 13:24:11 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190627201923.2589391-1-songliubraving@fb.com>
  <20190627201923.2589391-2-songliubraving@fb.com> <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
@@ -39,16 +39,16 @@ References: <20190627201923.2589391-1-songliubraving@fb.com>
  <4A7A225A-6C23-4C0F-9A95-7C6C56B281ED@fb.com> <CALCETrX2bMnwC6_t4b_G-hzJSfMPrkK4YKs5ebcecv2LJ0rt3w@mail.gmail.com>
  <514D5453-0AEE-420F-AEB6-3F4F58C62E7E@fb.com> <1DE886F3-3982-45DE-B545-67AD6A4871AB@amacapital.net>
  <7F51F8B8-CF4C-4D82-AAE1-F0F28951DB7F@fb.com> <77354A95-4107-41A7-8936-D144F01C3CA4@fb.com>
-In-Reply-To: <77354A95-4107-41A7-8936-D144F01C3CA4@fb.com>
+ <369476A8-4CE1-43DA-9239-06437C0384C7@fb.com>
+In-Reply-To: <369476A8-4CE1-43DA-9239-06437C0384C7@fb.com>
 From:   Andy Lutomirski <luto@kernel.org>
-Date:   Tue, 30 Jul 2019 13:20:10 -0700
-X-Gmail-Original-Message-ID: <CALCETrVS5FwtmTyspyg-UNoZTHes9wUNbbsvNYwQwXUUfrtaiQ@mail.gmail.com>
-Message-ID: <CALCETrVS5FwtmTyspyg-UNoZTHes9wUNbbsvNYwQwXUUfrtaiQ@mail.gmail.com>
+Date:   Tue, 30 Jul 2019 13:24:00 -0700
+X-Gmail-Original-Message-ID: <CALCETrUpVMrk7aaf0trfg9AfZ4fy279uJgZH7V+gZzjFw=hUxA@mail.gmail.com>
+Message-ID: <CALCETrUpVMrk7aaf0trfg9AfZ4fy279uJgZH7V+gZzjFw=hUxA@mail.gmail.com>
 Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
 To:     Song Liu <songliubraving@fb.com>
 Cc:     Andy Lutomirski <luto@kernel.org>,
         Kees Cook <keescook@chromium.org>,
-        "linux-security@vger.kernel.org" <linux-security@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -56,7 +56,8 @@ Cc:     Andy Lutomirski <luto@kernel.org>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Jann Horn <jannh@google.com>,
         Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -64,88 +65,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 27, 2019 at 11:20 AM Song Liu <songliubraving@fb.com> wrote:
+On Mon, Jul 29, 2019 at 10:07 PM Song Liu <songliubraving@fb.com> wrote:
 >
 > Hi Andy,
 >
-> >>>>
-> >>>
-> >>> Well, yes. sys_bpf() is pretty powerful.
-> >>>
-> >>> The goal of /dev/bpf is to enable special users to call sys_bpf(). In
-> >>> the meanwhile, such users should not take down the whole system easil=
-y
-> >>> by accident, e.g., with rm -rf /.
-> >>
-> >> That=E2=80=99s easy, though =E2=80=94 bpftool could learn to read /etc=
-/bpfusers before allowing ruid !=3D 0.
+> > On Jul 27, 2019, at 11:20 AM, Song Liu <songliubraving@fb.com> wrote:
 > >
-> > This is a great idea! fscaps + /etc/bpfusers should do the trick.
+> > Hi Andy,
+> >
+> >>>>>
+> >>>>
+> >>>> Well, yes. sys_bpf() is pretty powerful.
+> >>>>
+> >>>> The goal of /dev/bpf is to enable special users to call sys_bpf(). I=
+n
+> >>>> the meanwhile, such users should not take down the whole system easi=
+ly
+> >>>> by accident, e.g., with rm -rf /.
+> >>>
+> >>> That=E2=80=99s easy, though =E2=80=94 bpftool could learn to read /et=
+c/bpfusers before allowing ruid !=3D 0.
+> >>
+> >> This is a great idea! fscaps + /etc/bpfusers should do the trick.
+> >
+> > After some discussions and more thinking on this, I have some concerns
+> > with the user space only approach.
+> >
+> > IIUC, your proposal for user space only approach is like:
+> >
+> > 1. bpftool (and other tools) check /etc/bpfusers and only do
+> >   setuid for allowed users:
+> >
+> >       int main()
+> >       {
+> >               if (/* uid in /etc/bpfusers */)
+> >                       setuid(0);
+> >               sys_bpf(...);
+> >       }
+> >
+> > 2. bpftool (and other tools) is installed with CAP_SETUID:
+> >
+> >       setcap cap_setuid=3De+p /bin/bpftool
+> >
+> > 3. sys admin maintains proper /etc/bpfusers.
+> >
+> > This approach is not ideal, because we need to trust the tool to give
+> > it CAP_SETUID. A hacked tool could easily bypass /etc/bpfusers check
+> > or use other root only sys calls after setuid(0).
+> >
 >
-> After some discussions and more thinking on this, I have some concerns
-> with the user space only approach.
+> I would like more comments on this.
 >
-> IIUC, your proposal for user space only approach is like:
+> Currently, bpf permission is more or less "root or nothing", which we
+> would like to change.
 >
-> 1. bpftool (and other tools) check /etc/bpfusers and only do
->    setuid for allowed users:
+> The short term goal is to separate bpf from root, in other words, it is
+> "all or nothing". Special user space utilities, such as systemd, would
+> benefit from this. Once this is implemented, systemd can call sys_bpf()
+> when it is not running as root.
+
+As generally nasty as Linux capabilities are, this sounds like a good
+use for CAP_BPF_ADMIN.
+
+But what do you have in mind?  Isn't non-root systemd mostly just the
+user systemd session?  That should *not* have bpf() privileges until
+bpf() is improved such that you can't use it to compromise the system.
+
 >
->         int main()
->         {
->                 if (/* uid in /etc/bpfusers */)
->                         setuid(0);
->                 sys_bpf(...);
->         }
+> In longer term, it may be useful to provide finer grain permission of
+> sys_bpf(). For example, sys_bpf() should be aware of containers; and
+> user may only have access to certain bpf maps. Let's call this
+> "fine grain" capability.
 >
-> 2. bpftool (and other tools) is installed with CAP_SETUID:
 >
->         setcap cap_setuid=3De+p /bin/bpftool
+> Since we are seeing new use cases every year, we will need many
+> iterations to implement the fine grain permission. I think we need an
+> API that is flexible enough to cover different types of permission
+> control.
+>
+> For example, bpf_with_cap() can be flexible:
+>
+>         bpf_with_cap(cmd, attr, size, perm_fd);
+>
+> We can get different types of permission via different combinations of
+> arguments:
+>
+>     A perm_fd to /dev/bpf gives access to all sys_bpf() commands, so
+>     this is "all or nothing" permission.
+>
+>     A perm_fd to /sys/fs/cgroup/.../bpf.xxx would only allow some
+>     commands to this specific cgroup.
 >
 
-You have this a bit backwards.  You wouldn't use CAP_SETUID.  You
-would use the setuid *mode* bit, i.e. chmod 4111 (or 4100 and use ACLs
-to further lock it down).  Or you could use setcap cap_sys_admin=3Dp,
-although the details vary.  It woks a bit like this:
+I don't see why you need to invent a whole new mechanism for this.
+The entire cgroup ecosystem outside bpf() does just fine using the
+write permission on files in cgroupfs to control access.  Why can't
+bpf() do the same thing?
 
-First, if you are running with elevated privilege due to SUID or
-fscaps, the kernel and glibc offer you a degree of protection: you are
-protected from ptrace(), LD_PRELOAD, etc.  You are *not* protected
-from yourself.  For example, you may be running in a context in which
-an attacker has malicious values in your environment variables, CWD,
-etc.  Do you need to carefully decide whether you are willing to run
-with elevated privilege on behalf of the user, which you learn like
-this:
+>
+> Alexei raised another idea in offline discussions: instead of adding
+> bpf_with_cap(), we add a command LOAD_PERM_FD, which enables special
+> permission for the _next_ sys_bpf() from current task:
+>
+>     bpf(LOAD_PERM_FD, perm_fd);
+>     /* the next sys_bpf() uses permission from perm_fd */
+>     bpf(cmd, attr, size);
+>
+> This is equivalent to bpf_with_cap(cmd, attr, size, perm_fd), but
+> doesn't require the new sys call.
 
-uid_t real_uid =3D getuid();
+That sounds almost every bit as problematic as the approach where you
+ask for permission once and it sticks.
 
-Your decision may may depend on command-line arguments as well (i.e.
-you might want to allow tracing but not filtering, say).  Once you've
-made this decision, the details vary:
+>
+> 1. User space only approach doesn't work, even for "all or nothing"
+>    permission control. I expanded the discussion in the previous
+>    email. Please let me know if I missed anything there.
 
-For SUID, you either continue to run with euid =3D=3D 0, or you drop
-privilege using something like:
-
-if (setresuid(real_uid, real_uid, real_uid) !=3D 0) {
- /* optionally print an error to stderr */
- exit(1);
-}
-
-For fscaps, if you want to be privileged, you use something like
-capng_update(); capng_apply() to set CAP_SYS_ADMIN to be effective
-when you want privilege.  If you want to be unprivileged (because
-bpfusers says so, for example), you could use capng_update() to drop
-CAP_SYS_ADMIN entirely and see if the calls still work without
-privilege.  But this is a little bit awkward, since you don't directly
-know whether the user that invoked you in the first place had
-CAP_SYS_ADMIN to begin with.
-
-In general, SUID is a bit easier to work with.
-
-
-> This approach is not ideal, because we need to trust the tool to give
-> it CAP_SETUID. A hacked tool could easily bypass /etc/bpfusers check
-> or use other root only sys calls after setuid(0).
-
-How?  The whole SUID mechanism is designed fairly carefully to prevent
-this.  /bin/sudo is likely to be SUID on your system, but you can't
-just "hack" it to become root.
+As in my previous email, I disagree.
