@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E227A2F5
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 10:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE5B7A31A
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 10:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728966AbfG3IPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 04:15:54 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:43075 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727789AbfG3IPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 04:15:53 -0400
-Received: by mail-ot1-f67.google.com with SMTP id j11so8089565otp.10
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 01:15:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=MYVr9bLt51oj6nMDCXM5N/aPeMMseJtFz0L43lFA8lk=;
-        b=B8wcEZxBCiFqrKbsIEXrsF6O3aNqF7Ig/NLOI2FIJCmeGQNWMJNFErbhkBCzkIfF50
-         wtG9fj23s1xstu00jU1sjxiU3aH4kyDcRcg2n36s7Jfwuf38BCGiH/aG4mwq10imAq9k
-         TQ9qteYXCF7TRuD8hAQEuMeKOK4UpCKZinvCzTPVReFnJ7htlGCtFD/UtUEJKHUjGM+w
-         upRVrRdJe+2D2XRsRKA4JalqozKCEuj7WZgXX/BmnroGQyH7gl2+E7OGNOqXScmw4CSx
-         HkDREoHyHJEZQtW3btHvw0PBPeiv5Ibq5Rpsm9+9aXzSBn0gCnXLjx8m3RC+vunZ/Jqs
-         94Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=MYVr9bLt51oj6nMDCXM5N/aPeMMseJtFz0L43lFA8lk=;
-        b=eEvz70CKihzcQRO1iAvCUuwXQTCIeq3D4BRAGuID9+Y5YTlnE1XIg/ePwbHNvW68M9
-         VKIyjyKmBlCrQTD2/3zVH7Ex+GKbTaOrRyhjxP/T93mMWxf8tBJi+MfiGuBQMb6aUhye
-         ASOiM1jl+KzThJz4oEZbXjWtJx6ymmsK6YCOBfyuQoXpSYaWx8dtn/D1RJt8A9cys97X
-         n2XzjTAX8H2UpIzAGV53zdWounP7/91FcRRl/aYtU5dr0RJkWac8doNsFC7Hjnez/crg
-         +DwFZR/o32zVZytDn5oY5hhHRGDIYXdqxsMWi/bXBuMbeidzfuGXuNkc/fNZbacIyiPZ
-         KUHA==
-X-Gm-Message-State: APjAAAXn8RUrXDPEDE5tsmZufA5021Z1D8eqsJ/7tK1iatcYlYHumR5M
-        AkewFI7k0WcbC1y6uDEK3nrxmAFlRfVWsaElvaN4pGWr
-X-Google-Smtp-Source: APXvYqxHPwVfyetuWcfpvAvjV+DB9dgadQFNl3y5aksFkTHHX7iG7MkCac2ts6+IMJnYUTqUtD/KzMafyQ6npHReLDY=
-X-Received: by 2002:a9d:66c8:: with SMTP id t8mr28862438otm.94.1564474553152;
- Tue, 30 Jul 2019 01:15:53 -0700 (PDT)
+        id S1730563AbfG3I3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 04:29:55 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:34034 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726946AbfG3I3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 04:29:55 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 7E64D60364; Tue, 30 Jul 2019 08:29:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564475394;
+        bh=menrHelllvoSAEob7qyUGOB6xMltFu26Q0XkIjqBajU=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=D9vFOkQxB7BlpnKwz0K6RwAOXgt+9uBLjUfVy4WdzSFKYmom6lLrdElrAHDO47O9g
+         EUNZfTPOM5GTtuWXXpS11ASRu/2jKyPubDLQBrrar923ofgB2rw73IJ24x+KKY+HT2
+         GcMk+IONwZfiIEJv9iIamukhIgDy/ciIOiHCXXjU=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BDC4D60364;
+        Tue, 30 Jul 2019 08:29:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1564475393;
+        bh=menrHelllvoSAEob7qyUGOB6xMltFu26Q0XkIjqBajU=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=P64oKLBz9GLbt0NjsrO54/2n5VxDgP6IlXxSEXBRhJf/89J+hlxybTakdpGQaFTm/
+         DeMhx4FPRRg1Be/AOddGQB4TaV+kQIBFPwcR4CL6XanEC/Pi19PNj9NDud5AvzhvsG
+         NC71ZZV0bGxs4acBveXwR98UsHmXY8zj3lDk0+K0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BDC4D60364
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Enrico Weigelt\, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, amitkarwar@gmail.com,
+        siva8118@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] drivers: net: wireless: rsi: return explicit error values
+References: <1564413872-10720-1-git-send-email-info@metux.net>
+Date:   Tue, 30 Jul 2019 11:29:49 +0300
+In-Reply-To: <1564413872-10720-1-git-send-email-info@metux.net> (Enrico
+        Weigelt's message of "Mon, 29 Jul 2019 17:24:32 +0200")
+Message-ID: <87k1c0lybm.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-From:   Mark Smith <markzzzsmith@gmail.com>
-Date:   Tue, 30 Jul 2019 18:15:27 +1000
-Message-ID: <CAO42Z2yN=FfueKAjb0KjY8-CdiKuvkJDr2iJdJR4XdKM90HJRg@mail.gmail.com>
-Subject: net: ipv6: Fix a bug in ndisc_send_ns when netdev only has a global address
-To:     suyj.fnst@cn.fujitsu.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+"Enrico Weigelt, metux IT consult" <info@metux.net> writes:
 
-I'm not subscribed to the Linux netdev mailing list, so I can't
-directly reply to the patch email.
+> From: Enrico Weigelt <info@metux.net>
+>
+> Explicitly return constants instead of variable (and rely on
+> it to be explicitly initialized), if the value is supposed
+> to be fixed anyways. Align it with the rest of the driver,
+> which does it the same way.
+>
+> Signed-off-by: Enrico Weigelt <info@metux.net>
+> ---
+>  drivers/net/wireless/rsi/rsi_91x_sdio.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-This patch is not the correct solution to this issue.
+The prefix should be just "rsi:", I'll fix that.
 
-Per RFC 4291 "IP Version 6 Addressing Architecture", all IPv6
-interfaces are required to have Link-Local addresses, so therefore
-there should always be a link-local address available to use as the
-source address for an ND NS.
-
-"2.1. Addressing Model"
-
-...
-
-"All interfaces are required to have at least one Link-Local unicast
-   address (see Section 2.8 for additional required addresses)."
-
-I have submitted a more specific bug regarding no Link-Local
-address/prefix on the Linux kernel loopback interface through RedHat
-bugzilla as I use Fedora 30, however it doesn't seem to have been
-looked at yet.
-
-"Loopback network interface does not have a Link Local address,
-contrary to RFC 4291"
-https://bugzilla.redhat.com/show_bug.cgi?id=1706709
-
-
-Thanks very much,
-Mark.
+-- 
+Kalle Valo
