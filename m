@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B989F7A593
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 12:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF79B7A595
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 12:06:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732417AbfG3KGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 06:06:06 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50848 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732383AbfG3KGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 06:06:04 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v15so56577349wml.0;
-        Tue, 30 Jul 2019 03:06:02 -0700 (PDT)
+        id S1732427AbfG3KGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 06:06:07 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36375 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732400AbfG3KGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 06:06:05 -0400
+Received: by mail-wm1-f66.google.com with SMTP id g67so51968982wme.1;
+        Tue, 30 Jul 2019 03:06:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RycgqhH4JxS9m3prvzU10m9/PxF5nPcDLGYt83ucnH8=;
-        b=ECKL/MHhK3nqTxz0/l7hKn6gV+7ScSxzyBi9HLKnbQWV7+/CMz90OMqFuHyC0Pz3/M
-         ways2fLR4YtHIYApLyOBMNMaR6gdpFaeNM5bHxKMWQGzJ/nGWkM8ruG+TwyC5dJ52W5L
-         kji01imDsYYZLQZTYICBc06u6ijA8DeqztEFRNWyVReGcCLllfX5SDZIDLAWs9WhDFrH
-         vpCSbyPwIwjB1rPEdGGK1NvfvE9+UNE5BkcqEoA8WFzjkQBvPcwtM7YpDb+gx85jt1CT
-         il4GoKMkh06o01dZWQgpn+WznO033iImVLFGK0cyQjMtD247tdliP9Vpca1wCQSZmeAJ
-         0m+g==
+        bh=eQ5m96viicp/uKrw4YilGeqaBwgd5Q/OqI86QnY1rs4=;
+        b=Z8MRMFxUTTwFRGe+phpPHZeoMYIMDq7Ro5dHn4cnIbdyUCLAcICzL0+nEjo8ACdtDx
+         ZZDVuvjmQ2e/Wa10fDt227TewV1XWhlimf6vttBhmgmjTB/YDm0QVKWeMzMKKQo9fLrC
+         yuYYvakuC8xfVy7lnD94q1hzKkyVJebu20T6eF/vqGjmJaqzGk9TREs/4KTh3XTdon7s
+         vvD6oyT7Yd+yHbWYwCuFlmdJcH6Ua2L2MdzOhevuIF33XSQvPF8+EUUg51jdXjYcq8ek
+         QaVC4ieTntcZg1PwMLdWmVSfm2XFV7jUgruBg9cKMkZQQhMtR7hdid5AWgDrwUrNe6Rb
+         zniQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RycgqhH4JxS9m3prvzU10m9/PxF5nPcDLGYt83ucnH8=;
-        b=a6YG2PMNsy9K1aZonxFpD1fGeqL5Sojz1xizsIcq6XFjvvW8vn1j2fqMKqNGQq+H3w
-         SkozRCbK3LhqNSM+q7Mn6GuO0+VZTvmkO2Sw+jQ6n/MAlJeLkiEuMFaqtI3sP74/NHTd
-         UN3Hp6JRcX1QRN/9OzARlOdr/Kooz9J5x+/N198axZGxeppib0hrWlCbDqbjmN2xQnoA
-         M4yKIQkMWnNl+U2fx3/0dJwBRlkFX5qfKcNBcoRThjUDOxwRCkYXexFyOBXmo+a6kMcu
-         Vj48QzTVwWe2923iGbKRPcdOajitUAznpASEhP1GacxdtoKOhdaIwgfDm4g9UgegXNGl
-         9KWQ==
-X-Gm-Message-State: APjAAAXoFK9PILn73K8x3dOhuVGnEWMkFqVM+6rU68Is0SrJs9YV+6Ll
-        oMCF0+8qok5MAHDZL6ACpwWwCBCcZho=
-X-Google-Smtp-Source: APXvYqwHUHztv/zhhrI9uYdRdluMb7mUOhB02Ls+La/4c3YLM6CxmDAjpVTuT08fUugKgr+FfHrcYw==
-X-Received: by 2002:a1c:a101:: with SMTP id k1mr107102706wme.98.1564481161187;
-        Tue, 30 Jul 2019 03:06:01 -0700 (PDT)
+        bh=eQ5m96viicp/uKrw4YilGeqaBwgd5Q/OqI86QnY1rs4=;
+        b=bDWziGXpwV+qIo7eGaAXRZuY9D+qOWufzD/JYqHrgmznwXwMMjUJOGw6emV0dc323p
+         RjcHptsXlv6irczwx4JY34lvwkXtza/MF9cP4X6uf/+x11wXOM+likM6NThYD0uH4pfa
+         Ss4DkktwOeUKNSGyKUmFOtzJ/Fa4rU/IgwnIKmzCVaJ7yL4TLHXdLgLAP3T78b0vulNY
+         fO43O0wSvFQUDx/UjG1pxwglj9BmQsvRyFmllqzWDHcp6vDKe4KxBYQXCxLZlyJVb8k+
+         vcSAXoCy2/Gj342+eKyXWVZGjcfAa2vSyoTR5fKO7oBoEJ3OoqU+gtxZ5a0T05AZK9nm
+         OiIg==
+X-Gm-Message-State: APjAAAXTGRGfRe0Eit2hgD8BGhxPZ97QqnpIimmn2c+3qRDS/z2W2AY1
+        uAsOMom+lWKHeipLtk1xtQ73OqfTjT4=
+X-Google-Smtp-Source: APXvYqzC4rjnsH22kDsr4du5VTvV6rIbK5bv/67ooBr2VVThufKjgsjLtOsX+goHrgA51OkaF3fDRg==
+X-Received: by 2002:a1c:cc0d:: with SMTP id h13mr102055747wmb.119.1564481162555;
+        Tue, 30 Jul 2019 03:06:02 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id n9sm108236322wrp.54.2019.07.30.03.06.00
+        by smtp.gmail.com with ESMTPSA id n9sm108236322wrp.54.2019.07.30.03.06.01
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 03:06:00 -0700 (PDT)
+        Tue, 30 Jul 2019 03:06:01 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
@@ -52,9 +52,9 @@ Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: [PATCH 3/4] net: dsa: mv88e6xxx: setup message port is not supported in the 6250 family
-Date:   Tue, 30 Jul 2019 12:04:28 +0200
-Message-Id: <20190730100429.32479-4-h.feurstein@gmail.com>
+Subject: [PATCH 4/4] net: dsa: mv88e6xxx: add PTP support for MV88E6250 family
+Date:   Tue, 30 Jul 2019 12:04:29 +0200
+Message-Id: <20190730100429.32479-5-h.feurstein@gmail.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190730100429.32479-1-h.feurstein@gmail.com>
 References: <20190730100429.32479-1-h.feurstein@gmail.com>
@@ -65,254 +65,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MV88E6250 family doesn't support the MV88E6XXX_PORT_CTL1_MESSAGE_PORT
-bit.
+This adds PTP support for the MV88E6250 family.
 
 Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 34 +++++++++++++++++++++++++++++---
- drivers/net/dsa/mv88e6xxx/chip.h |  1 +
- 2 files changed, 32 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c |  4 ++
+ drivers/net/dsa/mv88e6xxx/chip.h |  4 ++
+ drivers/net/dsa/mv88e6xxx/ptp.c  | 73 ++++++++++++++++++++++----------
+ 3 files changed, 59 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index c4982ced908e..c2fb4ea66434 100644
+index c2fb4ea66434..58e298cc90e0 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2252,9 +2252,11 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 			return err;
- 	}
+@@ -3514,6 +3514,8 @@ static const struct mv88e6xxx_ops mv88e6250_ops = {
+ 	.reset = mv88e6250_g1_reset,
+ 	.vtu_getnext = mv88e6250_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6250_g1_vtu_loadpurge,
++	.avb_ops = &mv88e6352_avb_ops,
++	.ptp_ops = &mv88e6352_ptp_ops,
+ 	.phylink_validate = mv88e6065_phylink_validate,
+ };
  
--	err = mv88e6xxx_setup_message_port(chip, port);
--	if (err)
--		return err;
-+	if (chip->info->ops->port_setup_message_port) {
-+		err = chip->info->ops->port_setup_message_port(chip, port);
-+		if (err)
-+			return err;
-+	}
+@@ -4333,6 +4335,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.atu_move_port_mask = 0xf,
+ 		.dual_chip = true,
+ 		.tag_protocol = DSA_TAG_PROTO_DSA,
++		.ptp_support = true,
+ 		.ops = &mv88e6250_ops,
+ 	},
  
- 	/* Port based VLAN map: give each port the same default address
- 	 * database, and allow bidirectional communication between the
-@@ -2797,6 +2799,7 @@ static const struct mv88e6xxx_ops mv88e6085_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -2831,6 +2834,7 @@ static const struct mv88e6xxx_ops mv88e6095_ops = {
- 	.port_set_upstream_port = mv88e6095_port_set_upstream_port,
- 	.port_link_state = mv88e6185_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -2867,6 +2871,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -2901,6 +2906,7 @@ static const struct mv88e6xxx_ops mv88e6123_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -2938,6 +2944,7 @@ static const struct mv88e6xxx_ops mv88e6131_ops = {
- 	.port_set_pause = mv88e6185_port_set_pause,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -2982,6 +2989,7 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3022,6 +3030,7 @@ static const struct mv88e6xxx_ops mv88e6161_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3055,6 +3064,7 @@ static const struct mv88e6xxx_ops mv88e6165_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3096,6 +3106,7 @@ static const struct mv88e6xxx_ops mv88e6171_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3137,6 +3148,7 @@ static const struct mv88e6xxx_ops mv88e6172_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3179,6 +3191,7 @@ static const struct mv88e6xxx_ops mv88e6175_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3220,6 +3233,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3258,6 +3272,7 @@ static const struct mv88e6xxx_ops mv88e6185_ops = {
- 	.port_set_pause = mv88e6185_port_set_pause,
- 	.port_link_state = mv88e6185_port_link_state,
- 	.port_get_cmode = mv88e6185_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6xxx_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3300,6 +3315,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
- 	.port_set_cmode = mv88e6390_port_set_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3345,6 +3361,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
- 	.port_set_cmode = mv88e6390x_port_set_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3390,6 +3407,7 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
- 	.port_set_cmode = mv88e6390_port_set_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3437,6 +3455,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3522,6 +3541,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
- 	.port_set_cmode = mv88e6390_port_set_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3569,6 +3589,7 @@ static const struct mv88e6xxx_ops mv88e6320_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3612,6 +3633,7 @@ static const struct mv88e6xxx_ops mv88e6321_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3655,6 +3677,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3698,6 +3721,7 @@ static const struct mv88e6xxx_ops mv88e6350_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3737,6 +3761,7 @@ static const struct mv88e6xxx_ops mv88e6351_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3780,6 +3805,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6320_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6095_stats_get_sset_count,
-@@ -3832,6 +3858,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
- 	.port_set_cmode = mv88e6390_port_set_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-@@ -3881,6 +3908,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
- 	.port_set_cmode = mv88e6390x_port_set_cmode,
-+	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
+@@ -4354,6 +4357,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.atu_move_port_mask = 0xf,
+ 		.dual_chip = true,
+ 		.tag_protocol = DSA_TAG_PROTO_DSA,
++		.ptp_support = true,
+ 		.ops = &mv88e6250_ops,
+ 	},
+ 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 6eb13f269366..720cace3db4e 100644
+index 720cace3db4e..64872251e479 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -390,6 +390,7 @@ struct mv88e6xxx_ops {
- 				u8 out);
- 	int (*port_disable_learn_limit)(struct mv88e6xxx_chip *chip, int port);
- 	int (*port_disable_pri_override)(struct mv88e6xxx_chip *chip, int port);
-+	int (*port_setup_message_port)(struct mv88e6xxx_chip *chip, int port);
+@@ -273,6 +273,10 @@ struct mv88e6xxx_chip {
+ 	u16 trig_config;
+ 	u16 evcap_config;
+ 	u16 enable_count;
++	u32 ptp_cc_shift;
++	u32 ptp_cc_mult;
++	u32 ptp_cc_mult_num;
++	u32 ptp_cc_mult_dem;
  
- 	/* CMODE control what PHY mode the MAC will use, eg. SGMII, RGMII, etc.
- 	 * Some chips allow this to be configured on specific ports.
+ 	/* Per-port timestamping resources. */
+ 	struct mv88e6xxx_port_hwtstamp port_hwtstamp[DSA_MAX_PORTS];
+diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
+index 768d256f7c9f..51cdf4712517 100644
+--- a/drivers/net/dsa/mv88e6xxx/ptp.c
++++ b/drivers/net/dsa/mv88e6xxx/ptp.c
+@@ -15,11 +15,38 @@
+ #include "hwtstamp.h"
+ #include "ptp.h"
+ 
+-/* Raw timestamps are in units of 8-ns clock periods. */
+-#define CC_SHIFT	28
+-#define CC_MULT		(8 << CC_SHIFT)
+-#define CC_MULT_NUM	(1 << 9)
+-#define CC_MULT_DEM	15625ULL
++/* The adjfine API clamps ppb between [-32,768,000, 32,768,000], and
++ * therefore scaled_ppm between [-2,147,483,648, 2,147,483,647].
++ * Set the maximum supported ppb to a round value smaller than the maximum.
++ *
++ * Percentually speaking, this is a +/- 0.032x adjustment of the
++ * free-running counter (0.968x to 1.032x).
++ */
++#define MV88E6XXX_MAX_ADJ_PPB	32000000
++
++/* Family MV88E6250:
++ * Raw timestamps are in units of 10-ns clock periods.
++ *
++ * clkadj = scaled_ppm * 10*2^28 / (10^6 * 2^16)
++ * simplifies to
++ * clkadj = scaled_ppm * 2^7 / 5^5
++ */
++#define MV88E6250_CC_SHIFT	28
++#define MV88E6250_CC_MULT	(10 << MV88E6250_CC_SHIFT)
++#define MV88E6250_CC_MULT_NUM	(1 << 7)
++#define MV88E6250_CC_MULT_DEM	3125ULL
++
++/* Other families:
++ * Raw timestamps are in units of 8-ns clock periods.
++ *
++ * clkadj = scaled_ppm * 8*2^28 / (10^6 * 2^16)
++ * simplifies to
++ * clkadj = scaled_ppm * 2^9 / 5^6
++ */
++#define MV88E6XXX_CC_SHIFT	28
++#define MV88E6XXX_CC_MULT	(8 << MV88E6XXX_CC_SHIFT)
++#define MV88E6XXX_CC_MULT_NUM	(1 << 9)
++#define MV88E6XXX_CC_MULT_DEM	15625ULL
+ 
+ #define TAI_EVENT_WORK_INTERVAL msecs_to_jiffies(100)
+ 
+@@ -179,24 +206,14 @@ static void mv88e6352_tai_event_work(struct work_struct *ugly)
+ static int mv88e6xxx_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
+-	int neg_adj = 0;
+-	u32 diff, mult;
+-	u64 adj;
++	s64 adj;
+ 
+-	if (scaled_ppm < 0) {
+-		neg_adj = 1;
+-		scaled_ppm = -scaled_ppm;
+-	}
+-	mult = CC_MULT;
+-	adj = CC_MULT_NUM;
+-	adj *= scaled_ppm;
+-	diff = div_u64(adj, CC_MULT_DEM);
++	adj = (s64)scaled_ppm * chip->ptp_cc_mult_num;
++	adj = div_s64(adj, chip->ptp_cc_mult_dem);
+ 
+ 	mv88e6xxx_reg_lock(chip);
+-
+ 	timecounter_read(&chip->tstamp_tc);
+-	chip->tstamp_cc.mult = neg_adj ? mult - diff : mult + diff;
+-
++	chip->tstamp_cc.mult = chip->ptp_cc_mult + adj;
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+ 	return 0;
+@@ -380,12 +397,24 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
+ 	const struct mv88e6xxx_ptp_ops *ptp_ops = chip->info->ops->ptp_ops;
+ 	int i;
+ 
++	if (chip->info->family == MV88E6XXX_FAMILY_6250) {
++		chip->ptp_cc_shift	= MV88E6250_CC_SHIFT;
++		chip->ptp_cc_mult	= MV88E6250_CC_MULT;
++		chip->ptp_cc_mult_num	= MV88E6250_CC_MULT_NUM;
++		chip->ptp_cc_mult_dem	= MV88E6250_CC_MULT_DEM;
++	} else {
++		chip->ptp_cc_shift	= MV88E6XXX_CC_SHIFT;
++		chip->ptp_cc_mult	= MV88E6XXX_CC_MULT;
++		chip->ptp_cc_mult_num	= MV88E6XXX_CC_MULT_NUM;
++		chip->ptp_cc_mult_dem	= MV88E6XXX_CC_MULT_DEM;
++	}
++
+ 	/* Set up the cycle counter */
+ 	memset(&chip->tstamp_cc, 0, sizeof(chip->tstamp_cc));
+ 	chip->tstamp_cc.read	= mv88e6xxx_ptp_clock_read;
+ 	chip->tstamp_cc.mask	= CYCLECOUNTER_MASK(32);
+-	chip->tstamp_cc.mult	= CC_MULT;
+-	chip->tstamp_cc.shift	= CC_SHIFT;
++	chip->tstamp_cc.mult	= chip->ptp_cc_mult;
++	chip->tstamp_cc.shift	= chip->ptp_cc_shift;
+ 
+ 	timecounter_init(&chip->tstamp_tc, &chip->tstamp_cc,
+ 			 ktime_to_ns(ktime_get_real()));
+@@ -397,7 +426,6 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
+ 	chip->ptp_clock_info.owner = THIS_MODULE;
+ 	snprintf(chip->ptp_clock_info.name, sizeof(chip->ptp_clock_info.name),
+ 		 "%s", dev_name(chip->dev));
+-	chip->ptp_clock_info.max_adj	= 1000000;
+ 
+ 	chip->ptp_clock_info.n_ext_ts	= ptp_ops->n_ext_ts;
+ 	chip->ptp_clock_info.n_per_out	= 0;
+@@ -413,6 +441,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
+ 	}
+ 	chip->ptp_clock_info.pin_config = chip->pin_config;
+ 
++	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
+ 	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
+ 	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
+ 	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
 -- 
 2.22.0
 
