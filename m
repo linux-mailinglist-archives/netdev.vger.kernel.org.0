@@ -2,141 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F21E97A4FC
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 11:45:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA557A51E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 11:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731928AbfG3Jpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 05:45:30 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:34014 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727582AbfG3Jp0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 05:45:26 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 71A3B1A062D;
-        Tue, 30 Jul 2019 11:45:23 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 649D41A0616;
-        Tue, 30 Jul 2019 11:45:23 +0200 (CEST)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id F157E204D6;
-        Tue, 30 Jul 2019 11:45:22 +0200 (CEST)
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     andrew@lunn.ch, Rob Herring <robh+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, alexandru.marginean@nxp.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4 4/4] arm64: dts: fsl: ls1028a: Enable eth port1 on the ls1028a QDS board
-Date:   Tue, 30 Jul 2019 12:45:19 +0300
-Message-Id: <1564479919-18835-5-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1564479919-18835-1-git-send-email-claudiu.manoil@nxp.com>
-References: <1564479919-18835-1-git-send-email-claudiu.manoil@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1731017AbfG3Jr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 05:47:29 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36590 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730150AbfG3Jr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 05:47:28 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n4so65099295wrs.3;
+        Tue, 30 Jul 2019 02:47:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bCbdxxLbqxrpV82n9Yp3CBGNk09BtzYShH1n+PyQxZw=;
+        b=sDifU7u9jNRAq5kNlqnu/1rkZANl6J1APsRXOe4d7bIEp377J8Y7y2w5LrFDcQJSbH
+         lXX4OW5VlRxigCaqjpcukYysnA+fjS1u+Q/fG0wKdvMUulYcSnQxOZc1J/I8nfOePfZu
+         bWXI8CEyUfvCdtKDOMVT+79sIFILkj3WI+0aBnz3mcLoW35/zDQ93x/YKiRL0qXHVxbZ
+         m3qV3PP2fwReCTaK8OGWO3OJPbldUT21fo1e7y5QyOPC3bSPvS+2J/rOVKp6v8g7sLqf
+         3Gb+Ho+m/xFjU+Xx/pCODD5T+A8uDxISAOWxuej/+XwooJ2yDNYfwOXn/GBI/h02mLy5
+         mTWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bCbdxxLbqxrpV82n9Yp3CBGNk09BtzYShH1n+PyQxZw=;
+        b=boRfELNp8gOxYZSMGXl89U2rgBToqg0hnpyimB9YYU8sWcbdd8m+b1SBxtu8UG6Jsb
+         MNglM76fTMjzt/MQRaHAdp4xvfmQ5r50WkKcq54qvD2ko4ckeWXIUWDBGe13WxvgIiE7
+         CdFw8ztvSE0eZlnpcZpA77u9gIMUt/klmpP1mMlllT1n2NzJ3jBAL7CG+v5KjE+30OVg
+         pAJ6k2ALMv/sAiKLHEk+iSSC8LLMDw6RyMm7p1TVpaLBzh5uVLLcttaedfzXyuFZ0a1r
+         jTXpd4ZowPlFF1gwD+4p65Yqvci4o6JKzPsHx9M3fEhJlf0NB0dpPphsX9/NO9yVuqfv
+         3I0g==
+X-Gm-Message-State: APjAAAV4VClpGwqxgOZHe9rGeaiQe/38psPPnNepwLhSBn2GvkKIUfmh
+        IG1SJipdi0pgxuzxdACJYrVMA9NU
+X-Google-Smtp-Source: APXvYqxpuM1LWAHpIrorVL3CbA/q0uiJjOiAgTMu5yGGCSK7GRpI1zv6AkjqptzH0aucfiwlL9Jgdw==
+X-Received: by 2002:a5d:5452:: with SMTP id w18mr86200966wrv.327.1564480046500;
+        Tue, 30 Jul 2019 02:47:26 -0700 (PDT)
+Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
+        by smtp.gmail.com with ESMTPSA id r12sm77235777wrt.95.2019.07.30.02.47.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 02:47:25 -0700 (PDT)
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH] net: phy: fixed_phy: print gpio error only if gpio node is present
+Date:   Tue, 30 Jul 2019 11:46:23 +0200
+Message-Id: <20190730094623.31640-1-h.feurstein@gmail.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS1028a has one Ethernet management interface. On the QDS board, the
-MDIO signals are multiplexed to either on-board AR8035 PHY device or
-to 4 PCIe slots allowing for SGMII cards.
-To enable the Ethernet ENETC Port 1, which can only be connected to a
-RGMII PHY, the multiplexer needs to be configured to route the MDIO to
-the AR8035 PHY.  The MDIO/MDC routing is controlled by bits 7:4 of FPGA
-board config register 0x54, and value 0 selects the on-board RGMII PHY.
-The FPGA board config registers are accessible on the i2c bus, at address
-0x66.
+It is perfectly ok to not have an gpio attached to the fixed-link node. So
+the driver should not throw an error message when the gpio is missing.
 
-The PF3 MDIO PCIe integrated endpoint device allows for centralized access
-to the MDIO bus.  Add the corresponding devicetree node and set it to be
-the MDIO bus parent.
-
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 ---
-v1-v4 - none
+ drivers/net/phy/fixed_phy.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
- .../boot/dts/freescale/fsl-ls1028a-qds.dts    | 40 +++++++++++++++++++
- .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  6 +++
- 2 files changed, 46 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index de6ef39f3118..663c4b728c07 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -85,6 +85,26 @@
- 			system-clock-frequency = <25000000>;
- 		};
- 	};
+diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
+index 3ffe46df249e..7c5265fd2b94 100644
+--- a/drivers/net/phy/fixed_phy.c
++++ b/drivers/net/phy/fixed_phy.c
+@@ -216,8 +216,10 @@ static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
+ 	if (IS_ERR(gpiod)) {
+ 		if (PTR_ERR(gpiod) == -EPROBE_DEFER)
+ 			return gpiod;
+-		pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
+-		       fixed_link_node);
 +
-+	mdio-mux {
-+		compatible = "mdio-mux-multiplexer";
-+		mux-controls = <&mux 0>;
-+		mdio-parent-bus = <&enetc_mdio_pf3>;
-+		#address-cells=<1>;
-+		#size-cells = <0>;
-+
-+		/* on-board RGMII PHY */
-+		mdio@0 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0>;
-+
-+			qds_phy1: ethernet-phy@5 {
-+				/* Atheros 8035 */
-+				reg = <5>;
-+			};
-+		};
-+	};
- };
++		if (PTR_ERR(gpiod) != -ENOENT)
++			pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
++			       fixed_link_node);
+ 		gpiod = NULL;
+ 	}
  
- &duart0 {
-@@ -164,6 +184,26 @@
- 			};
- 		};
- 	};
-+
-+	fpga@66 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "fsl,ls1028aqds-fpga", "fsl,fpga-qixis-i2c",
-+			     "simple-mfd";
-+		reg = <0x66>;
-+
-+		mux: mux-controller {
-+			compatible = "reg-mux";
-+			#mux-control-cells = <1>;
-+			mux-reg-masks = <0x54 0xf0>; /* 0: reg 0x54, bits 7:4 */
-+		};
-+	};
-+
-+};
-+
-+&enetc_port1 {
-+	phy-handle = <&qds_phy1>;
-+	phy-connection-type = "rgmii-id";
- };
- 
- &sai1 {
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 7975519b4f56..de71153fda00 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -536,6 +536,12 @@
- 				compatible = "fsl,enetc";
- 				reg = <0x000100 0 0 0 0>;
- 			};
-+			enetc_mdio_pf3: mdio@0,3 {
-+				compatible = "fsl,enetc-mdio";
-+				reg = <0x000300 0 0 0 0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
- 			ethernet@0,4 {
- 				compatible = "fsl,enetc-ptp";
- 				reg = <0x000400 0 0 0 0>;
 -- 
-2.17.1
+2.22.0
 
