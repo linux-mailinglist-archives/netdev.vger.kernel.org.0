@@ -2,133 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7AC07AD6C
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 18:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C939B7AE2B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 18:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731061AbfG3QUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 12:20:14 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37434 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbfG3QUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 12:20:14 -0400
-Received: by mail-lj1-f193.google.com with SMTP id z28so8423828ljn.4;
-        Tue, 30 Jul 2019 09:20:12 -0700 (PDT)
+        id S1727460AbfG3Qie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 12:38:34 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:32984 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfG3Qid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 12:38:33 -0400
+Received: by mail-ed1-f65.google.com with SMTP id i11so63147413edq.0
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 09:38:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LZrs3EXzgagsIRWCcK5WoYuGudeHWQiiXYHAwY61jDU=;
-        b=bztm95dBwDr9C9kSDpfKQcPwa2EypHieXjU6mFF73TIPVFDKcC+ZVsfd5MIFcmOQni
-         6AGtZxd9HPhpqBM05juVJGHPE+hVWeUJ1Fnw49h+YBITPeGKyVElOd1zUXW3qVgyAN/y
-         J+6kp9BfjQLTC+h276H7ZKL+dzzVushEH6yau7rU7nx20Z/q/MReNPKpPXOiCmQrTRyF
-         H4aQv/uOK1PETLR0Pfh5NvjdgMg1sqn2VBpFv2MzYDz8twUFNWifgNC16VqBdIF5pVdt
-         hXk24tfKJ7yW7tu3zEgVBVShz0r5w0VZ5PC/ALRl1Gq0qUJ33SUFW/fgyanzEAAPqJQP
-         qL5A==
+        bh=IEFe0aSQ4roEfzWjGEzF6LZL/QUHjIreCKeZCjz5VTE=;
+        b=IXoE5a20DoWjrdeQl5IslbOUiYCppt9jOWqSmJBTXVCfSgZEYx48gbJpqc93bhT+b6
+         hJBNo/H+JLNbJy0bOUI4vrHVoapXyM2ek6L9+6KD/PFA32sjbirq3oD4G7wS1Jm2v0Gn
+         s/q2Kf3SZWy5gDjV6ayID4KIwxmeAHEEF+/oD15KlV0Ajr6Z1goaYePBkP7935Kx7ozN
+         FQGtkhmolwJMRRZPAAxILDqQ3zHvLh7+rKldOJtl5LtnRGQ+EKpAcuxWw65M/+ewI6bg
+         o3MRcIjIHOmv990gsYeDdUuacPtgctT3zm106m4PeEbdjlZOcWyCpf4QFX/WykGYPhTK
+         8vXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LZrs3EXzgagsIRWCcK5WoYuGudeHWQiiXYHAwY61jDU=;
-        b=ijd0ln9JDqrA26OhREnviCZEjvANFOHs0cc6DI6ZvG5jB9uyVWzJKYJFgeTSv+/4jU
-         F7ftDzZ7zkvXXRPRVUfvuaVFhIALu6zkj46eYKj6A7CYAsZPcBflZrOanwvE6idQnQR/
-         aoVTLPVXjPe8cLNUJc8tWCg/ZJM/PxLvUqgMm39/Tv7JrHlKS5Zr0QZpAHARmsS/AD2t
-         XwzCfYPDUK4cgjXA85jAdnyKJSFw/ILO0S0aPoWvoLS/e9Ag5cPW1Z3vgf4heqHBfnTu
-         2kPRLnDmPuOjY/ZT0XOmN387f0XqgX+uLmBBG6aYfLrCtDDZoQM5XtNVrorvqSgAKnY3
-         i1Zg==
-X-Gm-Message-State: APjAAAW18YFQjSbKkDeVsqLQKzaaDFzA1A2GQXtyQSIkgbjCG5BoaDHU
-        0ZKcd4nU35XQ8IzXJ22Hu35Exe76b32EDJIEYuo=
-X-Google-Smtp-Source: APXvYqzTQaxZoBfOrS9yI46mqu2ma/TkyeR74iuHX1SlyTMwjGIa7kAWW2W4RvuHsFshA3b4kO+EgrJJZ6pEcRP1A5E=
-X-Received: by 2002:a2e:870f:: with SMTP id m15mr61727485lji.223.1564503612218;
- Tue, 30 Jul 2019 09:20:12 -0700 (PDT)
+        bh=IEFe0aSQ4roEfzWjGEzF6LZL/QUHjIreCKeZCjz5VTE=;
+        b=QO+2M5hTbiMx1vwOPWSNq0oZVf4vV6st0HXB9gfBW8QGM9kU3J+zWlsNg3gfFyId4L
+         BMx+8rhMxbmWV2h4gdRo2KfkeTgYUTU6fnpOOluGmjX9NZ8Bvcfs/04kuGw1FM7A7qsy
+         8m/zVtt9raNqr50VrQ9ewNotnUAQRBslQQJePvHNbXomolMo+9CX9iRpv6LvuleWqasI
+         rNzo9ZpTNL7I/icZj+li8W9Riu5hPi6qhL3eU1Yiei/FNtuOQkruZorgPWttSqfyJtgz
+         iGh1tWdOKBMeAJ9i0MxcRDEuayQ1WO6YH490PjqdBZEnEkMt1I0PXoJeHD+3Xj59GnDa
+         quoA==
+X-Gm-Message-State: APjAAAULKUdj5arOkq+34lGbWvK+2R3FXaYtqdpx5o/MD1USvk3oOl/Z
+        YTVXSElD4J1mE+hB4Pz3akWbcYfmnYlrx1MiV1E=
+X-Google-Smtp-Source: APXvYqzo4YeStjH95GAO1otH1zYS5Y7IFPORy4mGWctboZUnWyEpeMoED0FES6oftg1s8wT7nG5eAJlxxmnKcL1YEkY=
+X-Received: by 2002:aa7:d30b:: with SMTP id p11mr104851838edq.23.1564504712018;
+ Tue, 30 Jul 2019 09:38:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190730100429.32479-1-h.feurstein@gmail.com> <20190730100429.32479-5-h.feurstein@gmail.com>
- <20190730160032.GA1251@localhost>
-In-Reply-To: <20190730160032.GA1251@localhost>
-From:   Hubert Feurstein <h.feurstein@gmail.com>
-Date:   Tue, 30 Jul 2019 18:20:00 +0200
-Message-ID: <CAFfN3gUCqGuC7WB_UjYYNt+VWGfEBsdfgvPBqxoJi_xitH=yog@mail.gmail.com>
-Subject: Re: [PATCH 4/4] net: dsa: mv88e6xxx: add PTP support for MV88E6250 family
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+References: <20190729234934.23595-1-saeedm@mellanox.com> <20190729234934.23595-9-saeedm@mellanox.com>
+ <CA+FuTSfnikCV_J2cUEeafCaui8KxrK4njRR9rqgpo+5JhBxR9g@mail.gmail.com>
+In-Reply-To: <CA+FuTSfnikCV_J2cUEeafCaui8KxrK4njRR9rqgpo+5JhBxR9g@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 30 Jul 2019 12:37:55 -0400
+Message-ID: <CAF=yD-LgfHTJrfyaVfokKkZWwPpz4uxYDKA11+jgO5rAq1LamA@mail.gmail.com>
+Subject: Re: [net-next 08/13] net/mlx5e: Protect tc flows hashtable with rcu
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jianbo Liu <jianbol@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard,
-
-thank you for your comments.
-
-Am Di., 30. Juli 2019 um 18:00 Uhr schrieb Richard Cochran
-<richardcochran@gmail.com>:
-[...]
-> > -/* Raw timestamps are in units of 8-ns clock periods. */
-> > -#define CC_SHIFT     28
-> > -#define CC_MULT              (8 << CC_SHIFT)
-> > -#define CC_MULT_NUM  (1 << 9)
-> > -#define CC_MULT_DEM  15625ULL
-> > +/* The adjfine API clamps ppb between [-32,768,000, 32,768,000], and
+On Tue, Jul 30, 2019 at 12:16 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
 >
-> That is not true.
->
-> > + * therefore scaled_ppm between [-2,147,483,648, 2,147,483,647].
-> > + * Set the maximum supported ppb to a round value smaller than the maximum.
-> > + *
-> > + * Percentually speaking, this is a +/- 0.032x adjustment of the
-> > + * free-running counter (0.968x to 1.032x).
-> > + */
-> > +#define MV88E6XXX_MAX_ADJ_PPB        32000000
->
-> I had set an arbitrary limit of 1000 ppm.  I can't really see any
-> point in raising the limit.
->
-> > +/* Family MV88E6250:
-> > + * Raw timestamps are in units of 10-ns clock periods.
-> > + *
-> > + * clkadj = scaled_ppm * 10*2^28 / (10^6 * 2^16)
-> > + * simplifies to
-> > + * clkadj = scaled_ppm * 2^7 / 5^5
-> > + */
-> > +#define MV88E6250_CC_SHIFT   28
-> > +#define MV88E6250_CC_MULT    (10 << MV88E6250_CC_SHIFT)
-> > +#define MV88E6250_CC_MULT_NUM        (1 << 7)
-> > +#define MV88E6250_CC_MULT_DEM        3125ULL
-> > +
-> > +/* Other families:
-> > + * Raw timestamps are in units of 8-ns clock periods.
-> > + *
-> > + * clkadj = scaled_ppm * 8*2^28 / (10^6 * 2^16)
-> > + * simplifies to
-> > + * clkadj = scaled_ppm * 2^9 / 5^6
-> > + */
-> > +#define MV88E6XXX_CC_SHIFT   28
-> > +#define MV88E6XXX_CC_MULT    (8 << MV88E6XXX_CC_SHIFT)
-> > +#define MV88E6XXX_CC_MULT_NUM        (1 << 9)
-> > +#define MV88E6XXX_CC_MULT_DEM        15625ULL
+> On Mon, Jul 29, 2019 at 7:50 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
 > >
-> >  #define TAI_EVENT_WORK_INTERVAL msecs_to_jiffies(100)
+> > From: Vlad Buslov <vladbu@mellanox.com>
 > >
-> > @@ -179,24 +206,14 @@ static void mv88e6352_tai_event_work(struct work_struct *ugly)
-> >  static int mv88e6xxx_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+> > In order to remove dependency on rtnl lock, access to tc flows hashtable
+> > must be explicitly protected from concurrent flows removal.
+> >
+> > Extend tc flow structure with rcu to allow concurrent parallel access. Use
+> > rcu read lock to safely lookup flow in tc flows hash table, and take
+> > reference to it. Use rcu free for flow deletion to accommodate concurrent
+> > stats requests.
+> >
+> > Add new DELETED flow flag. Imlement new flow_flag_test_and_set() helper
+> > that is used to set a flag and return its previous value. Use it to
+> > atomically set the flag in mlx5e_delete_flower() to guarantee that flow can
+> > only be deleted once, even when same flow is deleted concurrently by
+> > multiple tasks.
+> >
+> > Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> > Reviewed-by: Jianbo Liu <jianbol@mellanox.com>
+> > Reviewed-by: Roi Dayan <roid@mellanox.com>
+> > Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> > ---
+>
+> > @@ -3492,16 +3507,32 @@ int mlx5e_delete_flower(struct net_device *dev, struct mlx5e_priv *priv,
 > >  {
-> >       struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
-> > -     int neg_adj = 0;
-> > -     u32 diff, mult;
-> > -     u64 adj;
-> > +     s64 adj;
+> >         struct rhashtable *tc_ht = get_tc_ht(priv, flags);
+> >         struct mlx5e_tc_flow *flow;
+> > +       int err;
 > >
-> > -     if (scaled_ppm < 0) {
-> > -             neg_adj = 1;
-> > -             scaled_ppm = -scaled_ppm;
-> > -     }
+> > +       rcu_read_lock();
+> >         flow = rhashtable_lookup_fast(tc_ht, &f->cookie, tc_ht_params);
+> > -       if (!flow || !same_flow_direction(flow, flags))
+> > -               return -EINVAL;
+> > +       if (!flow || !same_flow_direction(flow, flags)) {
+> > +               err = -EINVAL;
+> > +               goto errout;
+> > +       }
+> >
+> > +       /* Only delete the flow if it doesn't have MLX5E_TC_FLOW_DELETED flag
+> > +        * set.
+> > +        */
+> > +       if (flow_flag_test_and_set(flow, DELETED)) {
+> > +               err = -EINVAL;
+> > +               goto errout;
+> > +       }
+> >         rhashtable_remove_fast(tc_ht, &flow->node, tc_ht_params);
+> > +       rcu_read_unlock();
+> >
+> >         mlx5e_flow_put(priv, flow);
 >
-> Please don't re-write this logic.  It is written like that for a reason.
-I used the sja1105_ptp.c as a reference. So it is also wrong there.
+> Dereferencing flow outside rcu readside critical section? Does a build
+> with lockdep not complain?
 
-Hubert
+Eh no, it won't. The surprising part to me was to use a readside
+critical section when performing a write action on an RCU ptr. The
+DELETED flag ensures that multiple writers will not compete to call
+rhashtable_remove_fast. rcu_read_lock is a common pattern to do
+rhashtable lookup + delete.
+
+>
+> >
+> >         return 0;
+> > +
+> > +errout:
+> > +       rcu_read_unlock();
+> > +       return err;
+> >  }
+> >
+> >  int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+> > @@ -3517,8 +3548,10 @@ int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+> >         u64 bytes = 0;
+> >         int err = 0;
+> >
+> > -       flow = mlx5e_flow_get(rhashtable_lookup_fast(tc_ht, &f->cookie,
+> > -                                                    tc_ht_params));
+> > +       rcu_read_lock();
+> > +       flow = mlx5e_flow_get(rhashtable_lookup(tc_ht, &f->cookie,
+> > +                                               tc_ht_params));
+> > +       rcu_read_unlock();
+> >         if (IS_ERR(flow))
+> >                 return PTR_ERR(flow);
+>
+> Same, in code below this check?
+
+Never mind, sorry. I missed that this took a reference on the ptr
+returned from rhashtable_lookup.
