@@ -2,117 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEC4F7AC68
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 17:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32897AC70
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 17:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732450AbfG3P2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 11:28:20 -0400
-Received: from mail-eopbgr20064.outbound.protection.outlook.com ([40.107.2.64]:24899
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731021AbfG3P2U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 11:28:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n9geLBFU8NT4yOq5XtIp5USab+ejOVUwGuxJ34kS+X7psHo9hM99+KA08JLPBoLu334282msNCDl7BiMy3Dqj7Knds/JC75F4K/WRqyC/pKvB3EZIdm9S4s1F+VtpVj2aeulqq7BQYxJQPTKWdSfMxGGmLDM3lNuVHBlSnhCz3Bxb7QWVmp+8n2ZCUjVkTYjYBQeh+Kv9Apo4BJbdr+/3Xxw+cdQCbMyEyJJzcdVjPca4JxtCjubRt9KYhGH/iPFce/GspCXuy3zMg0nN9ETkG+5egThDux1q2YO1VeRYytw59aaxV22FkwYNIxGZDJwgERouDHNlqRG48tgvUzvIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wKp1rvLlRa+aSLPokwjQfQ95CU0nnyosbju1axMrYx0=;
- b=TYcB0Qf12sLzEDyT7jhlRwd9kcL0rHYrWK9ms+Di8f01K+5h0kLQbRBQxIeiNwjoCbTaipizQOFNjkd/xoEJlxshYcX76udV+vKszGMOykikjwGpjMuc9bCVTvvtbSwoc/tiF4zU7cEIekVJ3rSr/S2Ltk0iko55hE14HtQcgF5NKIc04hbXWiK+9D6PWeFH6JRY2/+2aCWsgQeHHZAlrn8H88N+OEO13+VaRkWDfo+eRzHqb7I5bs7F+HZIgNad+RG6HUunkaUFFstjmu8FuUW/spbGknMJ7fiW+xQ/BxSab9xl+rYBHdza+zk94MuGgeEJtbgHQGo9YzNJHaAs1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=nxp.com;dmarc=pass action=none header.from=nxp.com;dkim=pass
- header.d=nxp.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wKp1rvLlRa+aSLPokwjQfQ95CU0nnyosbju1axMrYx0=;
- b=q5IM+Db+jj1QbVwCamBqvhTB4uYOICAYXsbAqUaf2uB+4poKS7ltTOEmhDRZ+0MWIrmwUXsNBD8Ns/bAMLhuC6NJE0CaOVQCUZS9Uz1K3/NejqIvNPB8TO3PptvGIGseyj1cIiRX7MlNLy8zpzaCItE2jatC/5tmoV5/y3lpmnY=
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com (20.177.49.153) by
- VI1PR04MB4847.eurprd04.prod.outlook.com (20.177.49.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.15; Tue, 30 Jul 2019 15:28:15 +0000
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::e401:6546:3729:47c0]) by VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::e401:6546:3729:47c0%6]) with mapi id 15.20.2115.005; Tue, 30 Jul 2019
- 15:28:15 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     YueHaibing <yuehaibing@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] enetc: Fix build error without PHYLIB
-Thread-Topic: [PATCH] enetc: Fix build error without PHYLIB
-Thread-Index: AQHVRuN4FvRC8RANFUG8NxF+oLMasabjRz7w
-Date:   Tue, 30 Jul 2019 15:28:15 +0000
-Message-ID: <VI1PR04MB48802D5D08728D1392F4308896DC0@VI1PR04MB4880.eurprd04.prod.outlook.com>
-References: <20190730142959.50892-1-yuehaibing@huawei.com>
-In-Reply-To: <20190730142959.50892-1-yuehaibing@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=claudiu.manoil@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 404eb395-010e-46ba-9e9f-08d715028ac5
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR04MB4847;
-x-ms-traffictypediagnostic: VI1PR04MB4847:
-x-microsoft-antispam-prvs: <VI1PR04MB4847605F93CD40D1E280432296DC0@VI1PR04MB4847.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:590;
-x-forefront-prvs: 0114FF88F6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(396003)(376002)(366004)(136003)(189003)(199004)(13464003)(7696005)(478600001)(52536014)(8676002)(486006)(256004)(446003)(14444005)(81166006)(81156014)(25786009)(86362001)(5660300002)(11346002)(66476007)(4326008)(7736002)(66446008)(44832011)(6246003)(8936002)(66556008)(64756008)(76116006)(68736007)(66946007)(2501003)(6436002)(74316002)(229853002)(76176011)(102836004)(316002)(26005)(9686003)(2906002)(55016002)(476003)(305945005)(33656002)(186003)(66066001)(14454004)(53936002)(71200400001)(6116002)(3846002)(99286004)(110136005)(54906003)(71190400001)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB4847;H:VI1PR04MB4880.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: PN07bS8P45YDKPnNfigQo7sAodRoeEa1Q3+HxQLjRiTJVD5bDOhy9N2KqFWbgdOoFa+e4mG0yt5oDqxNOYac2IBEgjumjQDGEG5xoojI3/FD9kCT6XgTdkbDa1oeYn12pKdG9KzpRPGwLHHgXo2hikzOR3Q9fIBlhHCqOpim8ywjAsdzzwdWyFpdP8epWwEqPYDCaC5/C5KHkdEYAOsYhc1jsa9F8q/+Hpj36ORIAztDKlHgoztwsRgrv/XQD0m9WMW0JzZucDYj9JGkoy0rzdv0RQEP+Hm0kykZlUEAkiD7GswXwYqeDjiAUKG564qjhjPt4XxJEh+5vn5JUlwuXApAQalgGhcQD3WTnXIXsXfm0BXYZrQ4HBBwUewdVsulbYRrwVPJ8g6zRPjvH+JdNL+3ySIkNpj2g2xdDu60LFk=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 404eb395-010e-46ba-9e9f-08d715028ac5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jul 2019 15:28:15.7340
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: claudiu.manoil@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4847
+        id S1731143AbfG3PbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 11:31:07 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:33202 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731021AbfG3PbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 11:31:06 -0400
+Received: by mail-qt1-f194.google.com with SMTP id r6so59219568qtt.0
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 08:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=icQ+mmUwHlGo5WrRaYExQwbod/Jz68i28SEVBs5MWe0=;
+        b=TQAcMC8JLFSx1a3GX3PlPg86q7cbX6i8+ue1vGOYJkg/B7hCQb/49FmaadO8+aGcSn
+         Brz9eeXm2C7YvtHtDee/XOQWV2gf2fi6RAn6CYVULtbVCzbBX6bmeT2plzcv6hfriDQR
+         Vwqg9HSubXdL+SlkhQALukz6KLaaYpuzPB4Y/PxcFQ3OCus7vk169BqPcBMg2VCa//HN
+         yh12pjChhhSdW7mgjIWXaVM1UCLbbRwqtC5HLX4lHzU4uEenTkXSy+im0m+pA6m54OW3
+         1CSZwl9XVSavEOxFcff2NEymzqiM5IkkdfJ/yPaXf00QfHOmjVOU68U1C5l+TmyHYRQt
+         7GSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=icQ+mmUwHlGo5WrRaYExQwbod/Jz68i28SEVBs5MWe0=;
+        b=qVCViuMmPVoMNmajRaCh3kgd1zuXfbbtrIB24oxsZGcsX9/Y7sDqogzDKw6IYS9+pJ
+         DEnrpTVijTbNz4AROBDI/hWIVfPWNdzVJgdaN6I3NnfZrVaqRZAg/JpT4VTRZViUy3Ek
+         yfcGQznO7cGJEthk3ZSJ3rXyKVjj7K4KaCiO9Lqiqtk3fXlBkZXWh/MRvMuPtyPwRBZA
+         NgR5tbl2ZY8dYrQgIgFfY+Gq/GeAESoyKRGBorsLoWGZ7/f5Lkt8P9Q4wknNIMpcjRjE
+         nGn6KgiS5Kqv0QiP/lUauJ0RMOugil0xe65lTJ5fVaaEApH6ufvAEKtBW535pmMnXXEQ
+         dGFg==
+X-Gm-Message-State: APjAAAVmU3UIcW0KA90KvevKWZ/r7DJJrmJg8Awca0nUdF1h2BovRkqa
+        YswKO4kI3K8ULrEgWSShPB7FDQ==
+X-Google-Smtp-Source: APXvYqxWizCQ2lrtrTlT130eyj++JM/rzivWzH05iPty1SPyO9/8wH9PnKozyoEe5P7CKlh+ezMbhA==
+X-Received: by 2002:a0c:8602:: with SMTP id p2mr84787456qva.111.1564500665583;
+        Tue, 30 Jul 2019 08:31:05 -0700 (PDT)
+Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id c5sm30023404qkb.41.2019.07.30.08.31.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 08:31:04 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     davem@davemloft.net
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, David.Laight@ACULAB.COM,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
+Subject: [PATCH v3] net/socket: fix GCC8+ Wpacked-not-aligned warnings
+Date:   Tue, 30 Jul 2019 11:30:33 -0400
+Message-Id: <1564500633-7419-1-git-send-email-cai@lca.pw>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: YueHaibing <yuehaibing@huawei.com>
->Sent: Tuesday, July 30, 2019 5:30 PM
->To: Claudiu Manoil <claudiu.manoil@nxp.com>; davem@davemloft.net
->Cc: linux-kernel@vger.kernel.org; netdev@vger.kernel.org; YueHaibing
-><yuehaibing@huawei.com>
->Subject: [PATCH] enetc: Fix build error without PHYLIB
->
->If PHYLIB is not set, build enetc will fails:
->
->drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_open':
->enetc.c: undefined reference to `phy_disconnect'
->enetc.c: undefined reference to `phy_start'
->drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_close':
->enetc.c: undefined reference to `phy_stop'
->enetc.c: undefined reference to `phy_disconnect'
->drivers/net/ethernet/freescale/enetc/enetc_ethtool.o: undefined reference =
-to
->`phy_ethtool_get_link_ksettings'
->drivers/net/ethernet/freescale/enetc/enetc_ethtool.o: undefined reference =
-to
->`phy_ethtool_set_link_ksettings'
->drivers/net/ethernet/freescale/enetc/enetc_mdio.o: In function
->`enetc_mdio_probe':
->enetc_mdio.c: undefined reference to `mdiobus_alloc_size'
->enetc_mdio.c: undefined reference to `mdiobus_free'
->
->Reported-by: Hulk Robot <hulkci@huawei.com>
->Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet driv=
-ers")
->Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+There are a lot of those warnings with GCC8+ 64-bit,
 
-Acked-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+In file included from ./include/linux/sctp.h:42,
+                 from net/core/skbuff.c:47:
+./include/uapi/linux/sctp.h:395:1: warning: alignment 4 of 'struct
+sctp_paddr_change' is less than 8 [-Wpacked-not-aligned]
+ } __attribute__((packed, aligned(4)));
+ ^
+./include/uapi/linux/sctp.h:728:1: warning: alignment 4 of 'struct
+sctp_setpeerprim' is less than 8 [-Wpacked-not-aligned]
+ } __attribute__((packed, aligned(4)));
+ ^
+./include/uapi/linux/sctp.h:727:26: warning: 'sspp_addr' offset 4 in
+'struct sctp_setpeerprim' isn't aligned to 8 [-Wpacked-not-aligned]
+  struct sockaddr_storage sspp_addr;
+                          ^~~~~~~~~
+./include/uapi/linux/sctp.h:741:1: warning: alignment 4 of 'struct
+sctp_prim' is less than 8 [-Wpacked-not-aligned]
+ } __attribute__((packed, aligned(4)));
+ ^
+./include/uapi/linux/sctp.h:740:26: warning: 'ssp_addr' offset 4 in
+'struct sctp_prim' isn't aligned to 8 [-Wpacked-not-aligned]
+  struct sockaddr_storage ssp_addr;
+                          ^~~~~~~~
+./include/uapi/linux/sctp.h:792:1: warning: alignment 4 of 'struct
+sctp_paddrparams' is less than 8 [-Wpacked-not-aligned]
+ } __attribute__((packed, aligned(4)));
+ ^
+./include/uapi/linux/sctp.h:784:26: warning: 'spp_address' offset 4 in
+'struct sctp_paddrparams' isn't aligned to 8 [-Wpacked-not-aligned]
+  struct sockaddr_storage spp_address;
+                          ^~~~~~~~~~~
+./include/uapi/linux/sctp.h:905:1: warning: alignment 4 of 'struct
+sctp_paddrinfo' is less than 8 [-Wpacked-not-aligned]
+ } __attribute__((packed, aligned(4)));
+ ^
+./include/uapi/linux/sctp.h:899:26: warning: 'spinfo_address' offset 4
+in 'struct sctp_paddrinfo' isn't aligned to 8 [-Wpacked-not-aligned]
+  struct sockaddr_storage spinfo_address;
+                          ^~~~~~~~~~~~~~
+
+This is because the commit 20c9c825b12f ("[SCTP] Fix SCTP socket options
+to work with 32-bit apps on 64-bit kernels.") added "packed, aligned(4)"
+GCC attributes to some structures but one of the members, i.e, "struct
+sockaddr_storage" in those structures has the attribute,
+"aligned(__alignof__ (struct sockaddr *)" which is 8-byte on 64-bit
+systems, so the commit overwrites the designed alignments for
+"sockaddr_storage".
+
+To fix this, "struct sockaddr_storage" needs to be aligned to 4-byte as
+it is only used in those packed sctp structure which is part of UAPI,
+and "struct __kernel_sockaddr_storage" is used in some other
+places of UAPI that need not to change alignments in order to not
+breaking userspace.
+
+Use an implicit alignment for "struct __kernel_sockaddr_storage" so it
+can keep the same alignments as a member in both packed and un-packed
+structures without breaking UAPI.
+
+Suggested-by: David Laight <David.Laight@ACULAB.COM>
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+
+v3: Add some comments and rearrange the public member first per David.
+v2: Use an implicit alignment for "struct __kernel_sockaddr_storage".
+
+ include/uapi/linux/socket.h | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/include/uapi/linux/socket.h b/include/uapi/linux/socket.h
+index 8eb96021709c..c3409c8ec0dd 100644
+--- a/include/uapi/linux/socket.h
++++ b/include/uapi/linux/socket.h
+@@ -6,17 +6,24 @@
+  * Desired design of maximum size and alignment (see RFC2553)
+  */
+ #define _K_SS_MAXSIZE	128	/* Implementation specific max size */
+-#define _K_SS_ALIGNSIZE	(__alignof__ (struct sockaddr *))
+-				/* Implementation specific desired alignment */
+ 
+ typedef unsigned short __kernel_sa_family_t;
+ 
++/*
++ * The definition uses anonymous union and struct in order to control the
++ * default alignment.
++ */
+ struct __kernel_sockaddr_storage {
+-	__kernel_sa_family_t	ss_family;		/* address family */
+-	/* Following field(s) are implementation specific */
+-	char		__data[_K_SS_MAXSIZE - sizeof(unsigned short)];
++	union {
++		struct {
++			__kernel_sa_family_t	ss_family; /* address family */
++			/* Following field(s) are implementation specific */
++			char __data[_K_SS_MAXSIZE - sizeof(unsigned short)];
+ 				/* space to achieve desired size, */
+ 				/* _SS_MAXSIZE value minus size of ss_family */
+-} __attribute__ ((aligned(_K_SS_ALIGNSIZE)));	/* force desired alignment */
++		};
++		void *__align; /* implementation specific desired alignment */
++	};
++};
+ 
+ #endif /* _UAPI_LINUX_SOCKET_H */
+-- 
+1.8.3.1
+
