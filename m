@@ -2,89 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F027AA6D
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:00:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 027CB7AA6F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:00:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729321AbfG3OAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 10:00:31 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40611 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727323AbfG3OAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:00:30 -0400
-Received: by mail-wr1-f68.google.com with SMTP id r1so65898493wrl.7
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 07:00:29 -0700 (PDT)
+        id S1729341AbfG3OAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 10:00:45 -0400
+Received: from mail-lf1-f44.google.com ([209.85.167.44]:35853 "EHLO
+        mail-lf1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727323AbfG3OAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:00:44 -0400
+Received: by mail-lf1-f44.google.com with SMTP id q26so44828250lfc.3;
+        Tue, 30 Jul 2019 07:00:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OVJbTjwxJ2V7gEJ1EnH0FtfbT8cNqFpXv0RRwvyIbGo=;
-        b=D6/voHBS9dUFEITrTHGgDCMTH2ke7EsEqVZdZ93v1yLAuANCfSibdGPFfAsIbGPp+m
-         sO5PeIFsg7mBpdo65ea6RQDnw4TQ81wITBTUcjvYDA3TYMFMCji79v3FlEXWy5VqcOyc
-         JPGqK/l6Nrv4WsZzkV3FeOWuK8l9u/jLlvwRc=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bMy8+dulgQaBaijk1anMSQXHRDRkHWnBbw4vTm4odwg=;
+        b=Pyq1/qjpp/VnceAmo91bY/5v35EmOlekZhGI+oMmsRxIqAvoPOD9Yo9OcSVVpWZHEf
+         FMlqCrRAqSHFqN4Z4iSYPrN+f/ZqNM8iF8BXhr0ww6CrQsPfdzmmBSkR7kQD6I9IMXv8
+         htF1xk2D3gMHeIBwHvfAjSs4ntFv5oY54sHfkucZjV1TESC3ZFlcJJvy+SwMqiFo7WI7
+         5X87VF5aZLU/nMHMROQ5kcu2yaIR/kj96yVG9ggOS82VIpPeW+Qfh4HdsTN3w9JPBXt7
+         quVkv+Div03d37lxJwvUbgHTjWRUaHOcEvKxoUGdqZv3wubjk8xv+qf5LKf95RjpyuCU
+         jN/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OVJbTjwxJ2V7gEJ1EnH0FtfbT8cNqFpXv0RRwvyIbGo=;
-        b=tNL4+3eA7PAk9b+TLCE9QYMlSagIzybT5Uja/1cr0JFFiEvKrmgmqbdpD5pm0bjfYO
-         KoxkLbN2s3U3/PGV0tMyyXPjE+sZl+ogpcHf7BKdZf0t6pkFaOzDkXVDnwx2OfE60lKx
-         8YJB+1UhwPYyKp/Jh+nj4QR5cdNO0KCIhs2NbsGgDNfN0Artl+cLRJPsSe3ClqPmeTZ6
-         AQU2vQyp6Yzp6osWNzcQJAiLzXxGpTkBJLvYK5fSbc8Z2ZISS+OyGZWigFrcToUw81Qj
-         GTthZvQGbbnGZ+cWWDTWDEAq1zrceSRaHHAIpb6gYSlHwOl7z2AAkTiea7fIArAg0KCq
-         aYrg==
-X-Gm-Message-State: APjAAAVgWSmwf0kae6sZZUtM24eZd2DakFWfQq5ZVBabdTkygP36UnyJ
-        z7DapszEKTT5YqDupY1wwsYPUw==
-X-Google-Smtp-Source: APXvYqytpnI0ZY2uTT8feWzMH92iQ3CBWa0akOaYeEEvNfhhio0d1dj0S/CHj+0Fe0lYpC/qIYVafQ==
-X-Received: by 2002:adf:ec8e:: with SMTP id z14mr4445595wrn.269.1564495229044;
-        Tue, 30 Jul 2019 07:00:29 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id t140sm58302813wmt.0.2019.07.30.07.00.28
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 07:00:28 -0700 (PDT)
-Subject: Re: [PATCH net] net: bridge: mcast: don't delete permanent entries
- when fast leave is enabled
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org
-References: <20190730112100.18156-1-nikolay@cumulusnetworks.com>
- <4511701d-88c4-a937-2fbc-b557033a24ed@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <1b6cd3cf-0e01-2730-b8ad-d26e2355ce84@cumulusnetworks.com>
-Date:   Tue, 30 Jul 2019 17:00:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bMy8+dulgQaBaijk1anMSQXHRDRkHWnBbw4vTm4odwg=;
+        b=O5jNJJ3eTBkPmFD0h5l69icm6IZAPvGzAjv0B3Ah5Vbvw3Uu5N8v1bT2C68jeHidor
+         Tdw/a2F4trFkjU4YZKxGdm79okK9LNxs/nhprLSABJPk0OPi9r2NTCmoCiV1QZwrhY0Q
+         3ilhBTeqJY8iwXEnQyRjJfAkRZNGqqgYHG6PRYpcactjIGeGLN4BzT7TACIpmR193tOW
+         i0H2u7BuXxtwg8ETmu6YizXn4r/ShbhvYpA3XKQGcEb0FaYHwwUJf8NiS9348uQ1Xexl
+         WiUGS4oMxt2YxUYB8tOGJ0A/lvAgFItDccMuuMKHSSie7NPT9UeflcR2o0Am+F5Te+yQ
+         ZieA==
+X-Gm-Message-State: APjAAAXi5lqnRzdKkI7q0hLv57F1ZhUOwzqsUYYAAHk7jIVNw1UVo25c
+        IvzQOylZEoQiELUhmpBP4CWq2XC018elfZdQ/tE=
+X-Google-Smtp-Source: APXvYqwFxU2aJZupq15tPMGGPhkUeiRbVX/Ny/AeH8PilgWZ6eMHMSsYLghdUHcVU7IvMo2OXna8FsoXwIfybTJwoN4=
+X-Received: by 2002:ac2:5382:: with SMTP id g2mr53150361lfh.92.1564495242574;
+ Tue, 30 Jul 2019 07:00:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <4511701d-88c4-a937-2fbc-b557033a24ed@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190730100429.32479-1-h.feurstein@gmail.com> <20190730100429.32479-2-h.feurstein@gmail.com>
+ <20190730134924.GH28552@lunn.ch>
+In-Reply-To: <20190730134924.GH28552@lunn.ch>
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+Date:   Tue, 30 Jul 2019 16:00:31 +0200
+Message-ID: <CAFfN3gX3RMoe7_2EpoCtzO+gHTOxoH9j2WB7ZxuE6FKgPXK1fw@mail.gmail.com>
+Subject: Re: [PATCH 1/4] net: dsa: mv88e6xxx: add support for MV88E6220
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/07/2019 16:58, David Ahern wrote:
-> On 7/30/19 5:21 AM, Nikolay Aleksandrov wrote:
->> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
->> index 3d8deac2353d..f8cac3702712 100644
->> --- a/net/bridge/br_multicast.c
->> +++ b/net/bridge/br_multicast.c
->> @@ -1388,6 +1388,9 @@ br_multicast_leave_group(struct net_bridge *br,
->>  			if (!br_port_group_equal(p, port, src))
->>  				continue;
->>  
->> +			if (p->flags & MDB_PG_FLAGS_PERMANENT)
->> +				break;
->> +
->>  			rcu_assign_pointer(*pp, p->next);
->>  			hlist_del_init(&p->mglist);
->>  			del_timer(&p->timer);
-> 
-> Why 'break' and not 'continue' like you have with
-> 	if (!br_port_group_equal(p, port, src))
-> 
+Hi Andrew,
 
-Because we'll hit the goto out after this hunk always, no point in continuing
-if we matched a group and it's permanent, the break might as well be a goto out.
+[...]
+> Do the registers for the ports exist?
+Yes, they do and they return sane values.
 
+> > +     [MV88E6220] = {
+> > +             .prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6220,
+> > +             .family = MV88E6XXX_FAMILY_6250,
+> > +             .name = "Marvell 88E6220",
+> > +             .num_databases = 64,
+> > +
+> > +             /* Ports 2-4 are not routed to pins
+> > +              * => usable ports 0, 1, 5, 6
+> > +              */
+> > +             .num_ports = 7,
+>
+> I'm wondering if we should add something like
+>
+>                 .invalid_port_mask = BIT(2) | BIT(3) | BIT(4)
+>
+Would make sense. I'll add it to the next series.
+
+>
+> and
+>
+>         /* Setup Switch Port Registers */
+>         for (i = 0; i < mv88e6xxx_num_ports(chip); i++) {
+> +               if (chip->info->invalid_port_mask & BIT(i) &&
+> +                   !dsa_is_unused_port(ds, i))
+> +                   return -EINVAL;
+>                 if (dsa_is_unused_port(ds, i)) {
+>                         err = mv88e6xxx_port_set_state(chip, i,
+>                                                        BR_STATE_DISABLED);
+>
+>         Andrew
+
+Hubert
