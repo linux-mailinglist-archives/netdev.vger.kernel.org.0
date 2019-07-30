@@ -2,91 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA557A51E
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 11:48:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44A77A523
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 11:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731017AbfG3Jr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 05:47:29 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36590 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730150AbfG3Jr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 05:47:28 -0400
-Received: by mail-wr1-f67.google.com with SMTP id n4so65099295wrs.3;
-        Tue, 30 Jul 2019 02:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bCbdxxLbqxrpV82n9Yp3CBGNk09BtzYShH1n+PyQxZw=;
-        b=sDifU7u9jNRAq5kNlqnu/1rkZANl6J1APsRXOe4d7bIEp377J8Y7y2w5LrFDcQJSbH
-         lXX4OW5VlRxigCaqjpcukYysnA+fjS1u+Q/fG0wKdvMUulYcSnQxOZc1J/I8nfOePfZu
-         bWXI8CEyUfvCdtKDOMVT+79sIFILkj3WI+0aBnz3mcLoW35/zDQ93x/YKiRL0qXHVxbZ
-         m3qV3PP2fwReCTaK8OGWO3OJPbldUT21fo1e7y5QyOPC3bSPvS+2J/rOVKp6v8g7sLqf
-         3Gb+Ho+m/xFjU+Xx/pCODD5T+A8uDxISAOWxuej/+XwooJ2yDNYfwOXn/GBI/h02mLy5
-         mTWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bCbdxxLbqxrpV82n9Yp3CBGNk09BtzYShH1n+PyQxZw=;
-        b=boRfELNp8gOxYZSMGXl89U2rgBToqg0hnpyimB9YYU8sWcbdd8m+b1SBxtu8UG6Jsb
-         MNglM76fTMjzt/MQRaHAdp4xvfmQ5r50WkKcq54qvD2ko4ckeWXIUWDBGe13WxvgIiE7
-         CdFw8ztvSE0eZlnpcZpA77u9gIMUt/klmpP1mMlllT1n2NzJ3jBAL7CG+v5KjE+30OVg
-         pAJ6k2ALMv/sAiKLHEk+iSSC8LLMDw6RyMm7p1TVpaLBzh5uVLLcttaedfzXyuFZ0a1r
-         jTXpd4ZowPlFF1gwD+4p65Yqvci4o6JKzPsHx9M3fEhJlf0NB0dpPphsX9/NO9yVuqfv
-         3I0g==
-X-Gm-Message-State: APjAAAV4VClpGwqxgOZHe9rGeaiQe/38psPPnNepwLhSBn2GvkKIUfmh
-        IG1SJipdi0pgxuzxdACJYrVMA9NU
-X-Google-Smtp-Source: APXvYqxpuM1LWAHpIrorVL3CbA/q0uiJjOiAgTMu5yGGCSK7GRpI1zv6AkjqptzH0aucfiwlL9Jgdw==
-X-Received: by 2002:a5d:5452:: with SMTP id w18mr86200966wrv.327.1564480046500;
-        Tue, 30 Jul 2019 02:47:26 -0700 (PDT)
-Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id r12sm77235777wrt.95.2019.07.30.02.47.25
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 02:47:25 -0700 (PDT)
-From:   Hubert Feurstein <h.feurstein@gmail.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] net: phy: fixed_phy: print gpio error only if gpio node is present
-Date:   Tue, 30 Jul 2019 11:46:23 +0200
-Message-Id: <20190730094623.31640-1-h.feurstein@gmail.com>
-X-Mailer: git-send-email 2.22.0
+        id S1732081AbfG3Jsp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Jul 2019 05:48:45 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:25066 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728680AbfG3Jsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 05:48:45 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-174-SV6Xl8A9OrKA0tVNQBwUCg-1; Tue, 30 Jul 2019 10:48:38 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
+ (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue,
+ 30 Jul 2019 10:48:38 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 30 Jul 2019 10:48:38 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Stanislaw Gruszka' <sgruszka@redhat.com>,
+        Jian-Hong Pan <jian-hong@endlessm.com>
+CC:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@endlessm.com" <linux@endlessm.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] rtw88: pci: Use general byte arrays as the elements of RX
+ ring
+Thread-Topic: [PATCH] rtw88: pci: Use general byte arrays as the elements of
+ RX ring
+Thread-Index: AQHVRro3Kaj7ufhACkSCuQV9Pmu/hqbi59sQ
+Date:   Tue, 30 Jul 2019 09:48:38 +0000
+Message-ID: <962a8a8e735946d6b3944b7d0e228309@AcuMS.aculab.com>
+References: <20190725080925.6575-1-jian-hong@endlessm.com>
+ <20190730093533.GC3174@redhat.com>
+In-Reply-To: <20190730093533.GC3174@redhat.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MC-Unique: SV6Xl8A9OrKA0tVNQBwUCg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is perfectly ok to not have an gpio attached to the fixed-link node. So
-the driver should not throw an error message when the gpio is missing.
+From: Stanislaw Gruszka
+> Sent: 30 July 2019 10:36
+...
+> > +		len = pkt_stat.pkt_len + pkt_offset;
+> > +		skb = dev_alloc_skb(len);
+> > +		if (WARN_ONCE(!skb, "rx routine starvation\n"))
+> >  			goto next_rp;
+> >
+> >  		/* put the DMA data including rx_desc from phy to new skb */
+> > -		skb_put_data(new, skb->data, new_len);
+> > +		skb_put_data(skb, rx_desc, len);
+> 
+> Coping big packets it quite inefficient. What drivers usually do is
+> copy only for small packets and for big ones allocate new rx buf
+> (drop packet alloc if fail) and pas old buf to network stack via
+> skb_add_rx_frag(). See iwlmvm as example.
 
-Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
----
- drivers/net/phy/fixed_phy.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+If you have to do iommu setup/teardown then the breakeven point
+for (not) copying may be surprisingly large.
+You do need to do the measurements on a range of hardware.
+Coping is also likely to affect the L1 cache - unless you can
+copy quickly without polluting the cache.
 
-diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
-index 3ffe46df249e..7c5265fd2b94 100644
---- a/drivers/net/phy/fixed_phy.c
-+++ b/drivers/net/phy/fixed_phy.c
-@@ -216,8 +216,10 @@ static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
- 	if (IS_ERR(gpiod)) {
- 		if (PTR_ERR(gpiod) == -EPROBE_DEFER)
- 			return gpiod;
--		pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
--		       fixed_link_node);
-+
-+		if (PTR_ERR(gpiod) != -ENOENT)
-+			pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
-+			       fixed_link_node);
- 		gpiod = NULL;
- 	}
- 
--- 
-2.22.0
+It is all 'swings and roundabouts'.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
