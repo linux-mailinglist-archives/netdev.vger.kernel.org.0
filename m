@@ -2,71 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 627DF7A96B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 15:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0597A96D
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 15:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730927AbfG3NXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 09:23:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47634 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726096AbfG3NXG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 09:23:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rXRe9kHDGGLyA6ncp3ZI9KHQuqcnVK8NrDCC7iqaddA=; b=w6sW6BpyS5l6hMWAd9l8xOA83D
-        H4NPG9IckFh697Pl9FN1XsESmkSY3d9IgHRS679ncIkR21uK/Zevu4ZNgYWSfH7NCP01kaGc7FYfZ
-        KMTdhxY2Ec0urBfRCqMNodkUBet+58Cl5eZbFngzGr0R3XWr3Sw/zsGUbvaJ3Tq9aeV4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hsS5h-0007de-Fc; Tue, 30 Jul 2019 15:22:57 +0200
-Date:   Tue, 30 Jul 2019 15:22:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 2/4] enetc: Add mdio bus driver for the PCIe
- MDIO endpoint
-Message-ID: <20190730132257.GB28552@lunn.ch>
-References: <1564479919-18835-1-git-send-email-claudiu.manoil@nxp.com>
- <1564479919-18835-3-git-send-email-claudiu.manoil@nxp.com>
+        id S1730991AbfG3NXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 09:23:18 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:43055 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730886AbfG3NXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 09:23:18 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-124-aKarBs_DNLKUOTNrat4LJA-1; Tue, 30 Jul 2019 14:23:14 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 30 Jul 2019 14:23:14 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 30 Jul 2019 14:23:14 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Qian Cai' <cai@lca.pw>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "vyasevich@gmail.com" <vyasevich@gmail.com>,
+        "nhorman@tuxdriver.com" <nhorman@tuxdriver.com>,
+        "marcelo.leitner@gmail.com" <marcelo.leitner@gmail.com>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net/socket: fix GCC8+ Wpacked-not-aligned warnings
+Thread-Topic: [PATCH] net/socket: fix GCC8+ Wpacked-not-aligned warnings
+Thread-Index: AQHVRkudEsn++uUNgEOzf6EyOSA1VKbi3DOAgAA4+gCAABEycA==
+Date:   Tue, 30 Jul 2019 13:23:14 +0000
+Message-ID: <a4b03ad38f104bc0b2f9e256a9cade00@AcuMS.aculab.com>
+References: <1564431838-23051-1-git-send-email-cai@lca.pw>
+         <91237fd501de4ab895305c4d5666d822@AcuMS.aculab.com>
+ <1564492704.11067.28.camel@lca.pw>
+In-Reply-To: <1564492704.11067.28.camel@lca.pw>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1564479919-18835-3-git-send-email-claudiu.manoil@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+X-MC-Unique: aKarBs_DNLKUOTNrat4LJA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 12:45:17PM +0300, Claudiu Manoil wrote:
-> ENETC ports can manage the MDIO bus via local register
-> interface.  However there's also a centralized way
-> to manage the MDIO bus, via the MDIO PCIe endpoint
-> device integrated by the same root complex that also
-> integrates the ENETC ports (eth controllers).
-> 
-> Depending on board design and use case, centralized
-> access to MDIO may be better than using local ENETC
-> port registers.  For instance, on the LS1028A QDS board
-> where MDIO muxing is required.  Also, the LS1028A on-chip
-> switch doesn't have a local MDIO register interface.
-> 
-> The current patch registers the above PCIe endpoint as a
-> separate MDIO bus and provides a driver for it by re-using
-> the code used for local MDIO access.  It also allows the
-> ENETC port PHYs to be managed by this driver if the local
-> "mdio" node is missing from the ENETC port node.
-> 
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+RnJvbTogUWlhbiBDYWkgDQo+IFNlbnQ6IDMwIEp1bHkgMjAxOSAxNDoxOA0KPiBPbiBUdWUsIDIw
+MTktMDctMzAgYXQgMDk6MDEgKzAwMDAsIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBGcm9tOiBR
+aWFuIENhaQ0KPiA+ID4gU2VudDogMjkgSnVseSAyMDE5IDIxOjI0DQo+ID4NCj4gPiAuLg0KPiA+
+ID4gVG8gZml4IHRoaXMsICJzdHJ1Y3Qgc29ja2FkZHJfc3RvcmFnZSIgbmVlZHMgdG8gYmUgYWxp
+Z25lZCB0byA0LWJ5dGUgYXMNCj4gPiA+IGl0IGlzIG9ubHkgdXNlZCBpbiB0aG9zZSBwYWNrZWQg
+c2N0cCBzdHJ1Y3R1cmUgd2hpY2ggaXMgcGFydCBvZiBVQVBJLA0KPiA+ID4gYW5kICJzdHJ1Y3Qg
+X19rZXJuZWxfc29ja2FkZHJfc3RvcmFnZSIgaXMgdXNlZCBpbiBzb21lIG90aGVyDQo+ID4gPiBw
+bGFjZXMgb2YgVUFQSSB0aGF0IG5lZWQgbm90IHRvIGNoYW5nZSBhbGlnbm1lbnRzIGluIG9yZGVy
+IHRvIG5vdA0KPiA+ID4gYnJlYWtpbmcgdXNlcnNwYWNlLg0KPiA+ID4NCj4gPiA+IE9uZSBvcHRp
+b24gaXMgdXNlIHR5cGVkZWYgYmV0d2VlbiAic29ja2FkZHJfc3RvcmFnZSIgYW5kDQo+ID4gPiAi
+X19rZXJuZWxfc29ja2FkZHJfc3RvcmFnZSIgYnV0IGl0IG5lZWRzIHRvIGNoYW5nZSAzNSBvciAz
+NzAgbGluZXMgb2YNCj4gPiA+IGNvZGVzLiBUaGUgb3RoZXIgb3B0aW9uIGlzIHRvIGR1cGxpY2F0
+ZSB0aGlzIHNpbXBsZSAyLWZpZWxkIHN0cnVjdHVyZSB0bw0KPiA+ID4gaGF2ZSBhIHNlcGFyYXRl
+ICJzdHJ1Y3Qgc29ja2FkZHJfc3RvcmFnZSIgc28gaXQgY2FuIHVzZSBhIGRpZmZlcmVudA0KPiA+
+ID4gYWxpZ25tZW50IHRoYW4gIl9fa2VybmVsX3NvY2thZGRyX3N0b3JhZ2UiLiBBbHNvIHRoZSBz
+dHJ1Y3R1cmUgc2VlbXMNCj4gPiA+IHN0YWJsZSBlbm91Z2gsIHNvIGl0IHdpbGwgYmUgbG93LW1h
+aW50ZW5hbmNlIHRvIHVwZGF0ZSB0d28gc3RydWN0dXJlcyBpbg0KPiA+ID4gdGhlIGZ1dHVyZSBp
+biBjYXNlIG9mIGNoYW5nZXMuDQo+ID4NCj4gPiBEb2VzIGl0IGFsbCB3b3JrIGlmIHRoZSA4IGJ5
+dGUgYWxpZ25tZW50IGlzIGltcGxpY2l0LCBub3QgZXhwbGljaXQ/DQo+ID4gRm9yIGluc3RhbmNl
+IGlmIHVubmFtZWQgdW5pb24gYW5kIHN0cnVjdCBhcmUgdXNlZCBlZzoNCj4gPg0KPiA+IHN0cnVj
+dCBzb2NrYWRkcl9zdG9yYWdlIHsNCj4gPiAJdW5pb24gew0KPiA+IAkJdm9pZCAqIF9fcHRyO8Kg
+wqAvKiBGb3JjZSBhbGlnbm1lbnQgKi8NCj4gPiAJCXN0cnVjdCB7DQo+ID4gCQkJX19rZXJuZWxf
+c2FfZmFtaWx5X3QJc3NfZmFtaWx5OwkJLyogYWRkcmVzcyBmYW1pbHkgKi8NCj4gPiAJCQkvKiBG
+b2xsb3dpbmcgZmllbGQocykgYXJlIGltcGxlbWVudGF0aW9uIHNwZWNpZmljICovDQo+ID4gCQkJ
+Y2hhcglfX2RhdGFbX0tfU1NfTUFYU0laRSAtIHNpemVvZih1bnNpZ25lZCBzaG9ydCldOw0KPiA+
+IAkJCQkJLyogc3BhY2UgdG8gYWNoaWV2ZSBkZXNpcmVkIHNpemUsICovDQo+ID4gCQkJCQkvKiBf
+U1NfTUFYU0laRSB2YWx1ZSBtaW51cyBzaXplIG9mIHNzX2ZhbWlseSAqLw0KPiA+IAkJfTsNCj4g
+PiAJfTsNCj4gPiB9Ow0KPiA+DQo+ID4gSSBzdXNwZWN0IHVubmFtZWQgdW5pb25zIGFuZCBzdHJ1
+Y3RzIGhhdmUgdG8gYmUgYWxsb3dlZCBieSB0aGUgY29tcGlsZXIuDQo+IA0KPiBJIGJlbGlldmUg
+dGhpcyB3aWxsIHN1ZmZlciB0aGUgc2FtZSBwcm9ibGVtIGluIHRoYXQgd2lsbCBicmVhayBVQVBJ
+LA0KPiANCj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDE5MDcyNjIxMzA0NS5HTDYy
+MDRAbG9jYWxob3N0LmxvY2FsZG9tYWluLw0KDQpZb3UgYXJlIG1pc3NpbmcgdGhlIGJpdCB3aGVy
+ZSB0aGUgVUFQSSBzdHJ1Y3R1cmUgaXMgcGFja2VkLg0KSWYgdGhlIGNvbXBpbGVyIHdvbid0IGxl
+dCB5b3UgJ3BhY2snIGEgc3RydWN0dXJlIHRoYXQgY29udGFpbnMgc3RydWN0dXJlcw0KKHJhdGhl
+ciB0aGFuIGp1c3QgaW50ZWdlcnMpIHRoZW4gdGhlIGNvbXBpbGVyIGlzIGJyb2tlbiENCg0KVGhl
+IGhvcGUgaGVyZSB3YXMgdGhhdCBpdCB3b3VsZCBiZSBvayBpcyB0aGUgYWxpZ25tZW50IHdhcyBp
+bXBsaWNpdCBub3QgZXhwbGljaXQuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3Mg
+TGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQ
+VCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
