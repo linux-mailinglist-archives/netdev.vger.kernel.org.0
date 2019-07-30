@@ -2,139 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E03AF7AAE0
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:23:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7B77AB0E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731241AbfG3OXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 10:23:22 -0400
-Received: from sesbmg23.ericsson.net ([193.180.251.37]:63602 "EHLO
-        sesbmg23.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725929AbfG3OXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:23:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
-        q=dns/txt; i=@ericsson.com; t=1564496598; x=1567088598;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xzZm2LQXTQHz+42GuRIe5BF2uYaMGKYsWxhdm9sG8YQ=;
-        b=Dub/+n4JQfHn9phnpevEJiajQlRBeDP9SCyzkv7qkTKW3rUuwp3EuVZTaK7xVzb0
-        aJBgkqyrYCj7z1x8/XdRB9S/zfcngNDSwfVQUQxcEXgBcDHc5hxI1WtgoBvhtnBt
-        XMq5Jhn3/T8GCx8XmIJEaS4edF8BlNA9tERdnAVB3b0=;
-X-AuditID: c1b4fb25-399ff700000029f0-94-5d4052d6ab3a
-Received: from ESESSMB503.ericsson.se (Unknown_Domain [153.88.183.121])
-        by sesbmg23.ericsson.net (Symantec Mail Security) with SMTP id 21.97.10736.6D2504D5; Tue, 30 Jul 2019 16:23:18 +0200 (CEST)
-Received: from ESESBMR506.ericsson.se (153.88.183.202) by
- ESESSMB503.ericsson.se (153.88.183.191) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Tue, 30 Jul 2019 16:23:18 +0200
-Received: from ESESBMB505.ericsson.se (153.88.183.172) by
- ESESBMR506.ericsson.se (153.88.183.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Tue, 30 Jul 2019 16:23:18 +0200
-Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
- smtp.internal.ericsson.com (153.88.183.188) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Tue, 30 Jul 2019 16:23:18 +0200
-From:   Jon Maloy <jon.maloy@ericsson.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
-        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
-        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
-        <tipc-discussion@lists.sourceforge.net>
-Subject: [net-next  1/1] tipc: reduce risk of wakeup queue starvation
-Date:   Tue, 30 Jul 2019 16:23:18 +0200
-Message-ID: <1564496598-5080-1-git-send-email-jon.maloy@ericsson.com>
-X-Mailer: git-send-email 2.1.4
+        id S1731384AbfG3ObR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 10:31:17 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3254 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727785AbfG3ObR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 10:31:17 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 4D35179A98F3D92FA255;
+        Tue, 30 Jul 2019 22:31:14 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Jul 2019
+ 22:31:06 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <claudiu.manoil@nxp.com>, <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] enetc: Fix build error without PHYLIB
+Date:   Tue, 30 Jul 2019 22:29:59 +0800
+Message-ID: <20190730142959.50892-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOLMWRmVeSWpSXmKPExsUyM2J7pe61IIdYgxkzDCxuNPQwW8w538Ji
-        sWL3JFaLt69msVscWyBmseV8lsWV9rPsFo+vX2d24PDYsvImk8e7K2weuxd8ZvL4vEnOY/2W
-        rUwBrFFcNimpOZllqUX6dglcGbdfyxScFq34/ussSwPjLcEuRk4OCQETiXkvN7J0MXJxCAkc
-        ZZTY/HYNE4TzjVFi5sp3LHDO9GOz2SGcC4wSf2Z9YQfpZxPQkHg5rYMRxBYRMJZ4tbITrJ1Z
-        4DGjxJf7q9hAEsICrhJXFjxhBbFZBFQlNnzaATSWg4MXKD59lRvEHXIS54//ZAaxhQSUJeZ+
-        mMYEYvMKCEqcnPmEBcRmFpCQOPjiBfMERv5ZSFKzkKQWMDKtYhQtTi1Oyk03MtZLLcpMLi7O
-        z9PLSy3ZxAgM3oNbfqvuYLz8xvEQowAHoxIP75qt4rFCrIllxZW5hxglOJiVRHglz4nECvGm
-        JFZWpRblxxeV5qQWH2KU5mBREudd7/0vRkggPbEkNTs1tSC1CCbLxMEp1cDowGDquk//QXzv
-        rXknIitFGnXkF/746jrtIafW3JnhKV2+lzKFb3XeZKmTapp4plttqfBpm1TTdXeab5TzfWi5
-        mbbuMvP+fT4n9j4I4T2aFcZc9FGe2SwqdM5tw7Nb8w90rd6vuNLnME+q0J8tThKTH0d+YFUW
-        fzhl8+wT4U6Gp1v+/M8ujvivxFKckWioxVxUnAgA4SLCV1oCAAA=
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 365ad353c256 ("tipc: reduce risk of user starvation during
-link congestion") we allowed senders to add exactly one list of extra
-buffers to the link backlog queues during link congestion (aka
-"oversubscription"). However, the criteria for when to stop adding
-wakeup messages to the input queue when the overload abates is
-inaccurate, and may cause starvation problems during very high load.
+If PHYLIB is not set, build enetc will fails:
 
-Currently, we stop adding wakeup messages after 10 total failed attempts
-where we find that there is no space left in the backlog queue for a
-certain importance level. The counter for this is accumulated across all
-levels, which may lead the algorithm to leave the loop prematurely,
-although there may still be plenty of space available at some levels.
-The result is sometimes that messages near the wakeup queue tail are not
-added to the input queue as they should be.
+drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_open':
+enetc.c: undefined reference to `phy_disconnect'
+enetc.c: undefined reference to `phy_start'
+drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_close':
+enetc.c: undefined reference to `phy_stop'
+enetc.c: undefined reference to `phy_disconnect'
+drivers/net/ethernet/freescale/enetc/enetc_ethtool.o: undefined reference to `phy_ethtool_get_link_ksettings'
+drivers/net/ethernet/freescale/enetc/enetc_ethtool.o: undefined reference to `phy_ethtool_set_link_ksettings'
+drivers/net/ethernet/freescale/enetc/enetc_mdio.o: In function `enetc_mdio_probe':
+enetc_mdio.c: undefined reference to `mdiobus_alloc_size'
+enetc_mdio.c: undefined reference to `mdiobus_free'
 
-We now introduce a more exact algorithm, where we keep adding wakeup
-messages to a level as long as the backlog queue has free slots for
-the corresponding level, and stop at the moment there are no more such
-slots or when there are no more wakeup messages to dequeue.
-
-Fixes: 365ad35 ("tipc: reduce risk of user starvation during link congestion")
-Reported-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/tipc/link.c | 29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/freescale/enetc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 2c27477..dd3155b 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -854,18 +854,31 @@ static int link_schedule_user(struct tipc_link *l, struct tipc_msg *hdr)
-  */
- static void link_prepare_wakeup(struct tipc_link *l)
- {
-+	struct sk_buff_head *wakeupq = &l->wakeupq;
-+	struct sk_buff_head *inputq = l->inputq;
- 	struct sk_buff *skb, *tmp;
--	int imp, i = 0;
-+	struct sk_buff_head tmpq;
-+	int avail[5] = {0,};
-+	int imp = 0;
-+
-+	__skb_queue_head_init(&tmpq);
- 
--	skb_queue_walk_safe(&l->wakeupq, skb, tmp) {
-+	for (; imp <= TIPC_SYSTEM_IMPORTANCE; imp++)
-+		avail[imp] = l->backlog[imp].limit - l->backlog[imp].len;
-+
-+	skb_queue_walk_safe(wakeupq, skb, tmp) {
- 		imp = TIPC_SKB_CB(skb)->chain_imp;
--		if (l->backlog[imp].len < l->backlog[imp].limit) {
--			skb_unlink(skb, &l->wakeupq);
--			skb_queue_tail(l->inputq, skb);
--		} else if (i++ > 10) {
--			break;
--		}
-+		if (avail[imp] <= 0)
-+			continue;
-+		avail[imp]--;
-+		__skb_unlink(skb, wakeupq);
-+		__skb_queue_tail(&tmpq, skb);
- 	}
-+
-+	spin_lock_bh(&inputq->lock);
-+	skb_queue_splice_tail(&tmpq, inputq);
-+	spin_unlock_bh(&inputq->lock);
-+
- }
- 
- void tipc_link_reset(struct tipc_link *l)
+diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
+index ed0d010..46fdf36b 100644
+--- a/drivers/net/ethernet/freescale/enetc/Kconfig
++++ b/drivers/net/ethernet/freescale/enetc/Kconfig
+@@ -2,6 +2,7 @@
+ config FSL_ENETC
+ 	tristate "ENETC PF driver"
+ 	depends on PCI && PCI_MSI && (ARCH_LAYERSCAPE || COMPILE_TEST)
++	select PHYLIB
+ 	help
+ 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
+ 	  physical function (PF) devices, managing ENETC Ports at a privileged
 -- 
-2.1.4
+2.7.4
+
 
