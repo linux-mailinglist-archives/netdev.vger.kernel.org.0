@@ -2,205 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A6F79ED5
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 04:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED8979EED
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 04:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731416AbfG3CoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 22:44:02 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42885 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730921AbfG3CoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 22:44:02 -0400
-Received: by mail-pl1-f193.google.com with SMTP id ay6so28299715plb.9;
-        Mon, 29 Jul 2019 19:44:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Lic9FsBbFIhilgJH9jdHsI1bCHTQauGCm3mQSU4XvTM=;
-        b=VmG+Y5P5Dh2me3MuRE5xoeE8+31ZRDRtvUDuryelSgr1QOdkF5UR4sfAhfawGrnF4o
-         5z+N42GmX4JOKqZ419NY+2NeE03748lWU8fiklu8RZ45CTP6kfm07+wnuBPZD0l/m5eZ
-         sj/oDPdL0HQ6u9F5Hg+63dtbGim4BW6TYSL7dMhLzzjxpFh+aeB4uJjvYW9ZLnsBn1Cy
-         S4n5cNVSOCaep4vWkFG9oDjODxzzuZwA+Rwztr0UpO+gASp2OxeVjMX2U1or+lSZLknx
-         AtwaNIAqMlMZm2/n9t8nvsT0txtyJvMaBHXwN6XKLSfsykgh1nxG6imehh5Pjy7OYhtV
-         6rtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Lic9FsBbFIhilgJH9jdHsI1bCHTQauGCm3mQSU4XvTM=;
-        b=MGCGuaf42flvV47oOQOprayfWaepHmMAz5AdtuIVy5/R/CBOl8p04A/aDV2M9c/3sN
-         sdgUyzNqIrkkUvVBM/obK/CEbvnVVg7VDH52JjoSZmCI7bSUGDn0ZARt/DpcCUP8iGIX
-         HTu+93xzhZ1/aYP11LKtHSEXXYz1ksYvgPVlNP6nj71/BqJ9RftLMOAYMRfJygSqyC3K
-         SRQV3LhGXsN/3474I0n1kBm0itbnj0XVWy34fKENhkh64dqjmdVrEBMn2nIB6n0d9HiV
-         ICdNS0ktwpiIt8CIhtcmBpHYKHAbC0p/7pdAwTgbQuEa+uUVO1FrcjcoRpBFDP4Hn6uP
-         ZKGQ==
-X-Gm-Message-State: APjAAAVCzmiabYYOl2MGCIYGXcTNA9KZwZhV4zzwd+Y7ZjjfLl2KqsZI
-        6tXTR12NMRq5tINPLqrNIz4=
-X-Google-Smtp-Source: APXvYqzNN+4+CjaPSeMWQ2/PLSQRyBZtcEjOJ6XJ3AsKOmbbAHM9cei4O5VqaExHC48K6xXqNKYu5w==
-X-Received: by 2002:a17:902:1107:: with SMTP id d7mr11773332pla.184.1564454641476;
-        Mon, 29 Jul 2019 19:44:01 -0700 (PDT)
-Received: from localhost.localdomain (220-128-162-163.HINET-IP.hinet.net. [220.128.162.163])
-        by smtp.googlemail.com with ESMTPSA id v185sm70944442pfb.14.2019.07.29.19.43.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 19:44:01 -0700 (PDT)
-From:   Pei-Hsuan Hung <afcidk@gmail.com>
-Cc:     Pei-Hsuan Hung <afcidk@gmail.com>, trivial@kernel.org,
-        Russell Currey <ruscur@russell.cc>,
-        Sam Bobroff <sbobroff@linux.ibm.com>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Jeremy Kerr <jk@ozlabs.org>, Arnd Bergmann <arnd@arndb.de>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Brian Starkey <brian.starkey@arm.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        James Smart <james.smart@broadcom.com>,
-        Dick Kennedy <dick.kennedy@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH v2] Fix typo reigster to register
-Date:   Tue, 30 Jul 2019 10:42:32 +0800
-Message-Id: <20190730024235.26273-1-afcidk@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <liviu.dudau@arm.com>
-References: <liviu.dudau@arm.com>
-To:     unlisted-recipients:; (no To-header on input)
+        id S1731521AbfG3Cvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 22:51:36 -0400
+Received: from mail-eopbgr80071.outbound.protection.outlook.com ([40.107.8.71]:4231
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731382AbfG3Cvg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 22:51:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PqHUqMn6DKH2rN7JP/knjG5J5vKt3AHEifR7D3Uz97Yc6Aspq6blkvQhREndsip+ajKWOYz+oZDZjoP31f9JaFsfpuEWhPAkBwtSa+Gx8mVPMmJl6ZASYuOpurnyft1UomtSQ5lBrnqXyFLiti85t6xa0biMloCDxu/kKrsVr/1sROQYImOj6Nu82tcONdRn08Pg/bKiqlV4Lc3k9/BsggbMju23lpQ5MGjl70ES+m5gmJUyBBYtmiZlwEdBq8VDk6/TmKELoJQ/vgCPaikKDWIu+aCm0LGuclveRZ+rv3saPz38qLu19cSEFf4/nIdk6kMCSSBWJtVJYDR85FsJNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EuUS8vSYz9AEn3QxEUQ6xu1QBGPdZc1zIu0wrgDo0Vg=;
+ b=E77s7KVZdw6khVONJT+3+zxmPxD4rugIcdmb8dA5DYnN6zV5Dq5R4GjYBUkXzCFkHSnwqlgG+GpGhJBuJwAVWn7HAscpQBnQtS9VPljpetk454j99jC5/rSsHG0KqIZtOZLRRWPOV6XlfDO+a3wh2D64SnD2bOQdbwAl4n2ykCwc4JpHdrt7HqW/2Iy+zMeb8HG6SwYR8savPXPr1oZ45Gyqy6AkVnnwJOWAYQHpFwkYyIUfoKYpxNjo6jRyDBPKA8vf0XZH77/UzdDjYwnmWFxVBbWdZ/ZnmOsortLuaktQEVInZyscfyiXWpBfP4szEDti46N7ySxtLOiF0TRhFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=nxp.com;dmarc=pass action=none header.from=nxp.com;dkim=pass
+ header.d=nxp.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EuUS8vSYz9AEn3QxEUQ6xu1QBGPdZc1zIu0wrgDo0Vg=;
+ b=Ooadfo2azKpL0L2fhPAR+IVraCqPjH16vYYAN6R2Eo1XEIbNF5MFmCn0mVeTLuj+V7MvJtnH69wHONc8qN4eOM4Ju67TF1/jLTz3GzAuKm3PwFoISf3vsxkntFjCUDDzZTsNg83Vc0t86Ev1aY068vz6mUje7PlOj5S+1rd2R3I=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB5450.eurprd04.prod.outlook.com (20.178.105.19) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2115.10; Tue, 30 Jul 2019 02:51:30 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::6553:8d04:295c:774b]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::6553:8d04:295c:774b%5]) with mapi id 15.20.2115.005; Tue, 30 Jul 2019
+ 02:51:30 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "sean@geanix.com" <sean@geanix.com>
+CC:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH V2] can: flexcan: fix deadlock when using self wakeup
+Thread-Topic: [PATCH V2] can: flexcan: fix deadlock when using self wakeup
+Thread-Index: AQHVRoGwsLQOjsyzvkSdF4oGtikKDg==
+Date:   Tue, 30 Jul 2019 02:51:30 +0000
+Message-ID: <20190730024834.31182-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR06CA0210.apcprd06.prod.outlook.com
+ (2603:1096:4:68::18) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 533a2171-45fd-493b-eb6b-08d71498d2ac
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB7PR04MB5450;
+x-ms-traffictypediagnostic: DB7PR04MB5450:
+x-microsoft-antispam-prvs: <DB7PR04MB5450A55C843FDA1BA5FA3BE3E6DC0@DB7PR04MB5450.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0114FF88F6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(346002)(366004)(136003)(199004)(189003)(54534003)(5024004)(14444005)(256004)(66446008)(6512007)(50226002)(64756008)(81166006)(81156014)(8676002)(66946007)(66556008)(66476007)(316002)(110136005)(54906003)(5660300002)(8936002)(14454004)(53936002)(71200400001)(478600001)(305945005)(2906002)(86362001)(1076003)(25786009)(7736002)(71190400001)(4326008)(386003)(26005)(66066001)(6486002)(3846002)(6506007)(486006)(2616005)(476003)(68736007)(102836004)(186003)(99286004)(2201001)(52116002)(36756003)(2501003)(6116002)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5450;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: vJzYic87quyS6A1ySudui5INhcuUN8wiB6Ntx4xesUzGu3N+aLu3WQ9YgUVQkiYYWmb3Qq4L4QWgRvGEGiewECL32EVLCYuBEk8LLiaUonVYcCh1Ljjd7dpIIwqRkRrO4XQ++DdJqqH+qEljagvT2vzsZ98Bjytipv03EIbw4jUWf98ztvkgSATHZuYT/hEbj6fgpkVgm3eKYQffDARMQR2OAxK06ySEiwX0h/7obmqz0ZnlIzVy52QB1vmmUIPi6MjnEhO0gr1Rs7Z9kQW1Lz2E9vb7TUW++9UT2tGepHL9kvFAW8KeasXUX/CFyOM3WD4CKOtR9F9h0eiqr48Fozdlr6V65U8ifkY6T9w/EKg0zt4rX9Ky5EnrtmVoLF5UlaJbaPUBWlc5mUZvx/AybNDwGIwZ8peb7GPtGo8lDqo=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 533a2171-45fd-493b-eb6b-08d71498d2ac
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jul 2019 02:51:30.0715
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qiangqing.zhang@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5450
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Pei-Hsuan Hung <afcidk@gmail.com>
-Acked-by: Liviu Dudau <liviu.dudau@arm.com>
-Cc: trivial@kernel.org
+As reproted by Sean Nyekjaer below:
+When suspending, when there is still can traffic on the interfaces the
+flexcan immediately wakes the platform again. As it should :-). But it
+throws this error msg:
+[ 3169.378661] PM: noirq suspend of devices failed
+
+On the way down to suspend the interface that throws the error message does
+call flexcan_suspend but fails to call flexcan_noirq_suspend. That means th=
+e
+flexcan_enter_stop_mode is called, but on the way out of suspend the driver
+only calls flexcan_resume and skips flexcan_noirq_resume, thus it doesn't c=
+all
+flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with the
+current driver it can't recover from this even with a soft reboot, it requi=
+res
+a hard reboot.
+
+The best way to exit stop mode is in Wake Up interrupt context, and then
+suspend() and resume() functions can be symmetric. However, stop mode
+request and ack will be controlled by SCU(System Control Unit) firmware(man=
+age
+clock,power,stop mode, etc. by Cortex-M4 core) in coming i.MX8(QM/QXP). And=
+ SCU
+firmware interface can't be available in interrupt context.
+
+For compatibillity, the wake up mechanism can't be symmetric, so we need
+in_stop_mode hack.
+
+Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+Reported-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+
+Changelog:
+V1->V2:
+	* add Reported-by tag.
+	* rebase on patch: can:flexcan:fix stop mode acknowledgment.
 ---
-Hi Liviu, thanks for your reply.
-This patch is generated by a script so at first I didn't notice there is
-also a typo in the word coefficient. I've fixed the typo in this
-version.
+ drivers/net/can/flexcan.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
- arch/powerpc/kernel/eeh.c                           | 2 +-
- arch/powerpc/platforms/cell/spufs/switch.c          | 4 ++--
- drivers/extcon/extcon-rt8973a.c                     | 2 +-
- drivers/gpu/drm/arm/malidp_regs.h                   | 2 +-
- drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h | 2 +-
- drivers/scsi/lpfc/lpfc_hbadisc.c                    | 2 +-
- fs/userfaultfd.c                                    | 2 +-
- 7 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/powerpc/kernel/eeh.c b/arch/powerpc/kernel/eeh.c
-index c0e4b73191f3..d75c9c24ec4d 100644
---- a/arch/powerpc/kernel/eeh.c
-+++ b/arch/powerpc/kernel/eeh.c
-@@ -1030,7 +1030,7 @@ int __init eeh_ops_register(struct eeh_ops *ops)
- }
- 
- /**
-- * eeh_ops_unregister - Unreigster platform dependent EEH operations
-+ * eeh_ops_unregister - Unregister platform dependent EEH operations
-  * @name: name of EEH platform operations
-  *
-  * Unregister the platform dependent EEH operation callback
-diff --git a/arch/powerpc/platforms/cell/spufs/switch.c b/arch/powerpc/platforms/cell/spufs/switch.c
-index 5c3f5d088c3b..9548a086937b 100644
---- a/arch/powerpc/platforms/cell/spufs/switch.c
-+++ b/arch/powerpc/platforms/cell/spufs/switch.c
-@@ -574,7 +574,7 @@ static inline void save_mfc_rag(struct spu_state *csa, struct spu *spu)
- {
- 	/* Save, Step 38:
- 	 *     Save RA_GROUP_ID register and the
--	 *     RA_ENABLE reigster in the CSA.
-+	 *     RA_ENABLE register in the CSA.
- 	 */
- 	csa->priv1.resource_allocation_groupID_RW =
- 		spu_resource_allocation_groupID_get(spu);
-@@ -1227,7 +1227,7 @@ static inline void restore_mfc_rag(struct spu_state *csa, struct spu *spu)
- {
- 	/* Restore, Step 29:
- 	 *     Restore RA_GROUP_ID register and the
--	 *     RA_ENABLE reigster from the CSA.
-+	 *     RA_ENABLE register from the CSA.
- 	 */
- 	spu_resource_allocation_groupID_set(spu,
- 			csa->priv1.resource_allocation_groupID_RW);
-diff --git a/drivers/extcon/extcon-rt8973a.c b/drivers/extcon/extcon-rt8973a.c
-index 40c07f4d656e..e75c03792398 100644
---- a/drivers/extcon/extcon-rt8973a.c
-+++ b/drivers/extcon/extcon-rt8973a.c
-@@ -270,7 +270,7 @@ static int rt8973a_muic_get_cable_type(struct rt8973a_muic_info *info)
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index fcec8bcb53d6..1dbec868d3ea 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -282,6 +282,7 @@ struct flexcan_priv {
+ 	const struct flexcan_devtype_data *devtype_data;
+ 	struct regulator *reg_xceiver;
+ 	struct flexcan_stop_mode stm;
++	bool in_stop_mode;
+=20
+ 	/* Read and Write APIs */
+ 	u32 (*read)(void __iomem *addr);
+@@ -1635,6 +1636,8 @@ static int __maybe_unused flexcan_suspend(struct devi=
+ce *device)
+ 			err =3D flexcan_enter_stop_mode(priv);
+ 			if (err)
+ 				return err;
++
++			priv->in_stop_mode =3D true;
+ 		} else {
+ 			err =3D flexcan_chip_disable(priv);
+ 			if (err)
+@@ -1659,6 +1662,15 @@ static int __maybe_unused flexcan_resume(struct devi=
+ce *device)
+ 		netif_device_attach(dev);
+ 		netif_start_queue(dev);
+ 		if (device_may_wakeup(device)) {
++			if (priv->in_stop_mode) {
++				flexcan_enable_wakeup_irq(priv, false);
++				err =3D flexcan_exit_stop_mode(priv);
++				if (err)
++					return  err;
++
++				priv->in_stop_mode =3D false;
++			}
++
+ 			disable_irq_wake(dev->irq);
+ 		} else {
+ 			err =3D flexcan_chip_enable(priv);
+@@ -1674,6 +1686,11 @@ static int __maybe_unused flexcan_noirq_suspend(stru=
+ct device *device)
+ 	struct net_device *dev =3D dev_get_drvdata(device);
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
+=20
++	/* Need to enable wakeup interrupt in noirq suspend stage. Otherwise,
++	 * it will trigger continuously wakeup interrupt if the wakeup event
++	 * comes before noirq suspend stage, and simultaneously it has enter
++	 * the stop mode.
++	 */
+ 	if (netif_running(dev) && device_may_wakeup(device))
+ 		flexcan_enable_wakeup_irq(priv, true);
+=20
+@@ -1686,11 +1703,17 @@ static int __maybe_unused flexcan_noirq_resume(stru=
+ct device *device)
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
+ 	int err;
+=20
++	/* Need to exit stop mode in noirq resume stage. Otherwise, it will
++	 * trigger continuously wakeup interrupt if the wakeup event comes,
++	 * and simultaneously it has still in stop mode.
++	 */
+ 	if (netif_running(dev) && device_may_wakeup(device)) {
+ 		flexcan_enable_wakeup_irq(priv, false);
+ 		err =3D flexcan_exit_stop_mode(priv);
+ 		if (err)
+ 			return err;
++
++		priv->in_stop_mode =3D false;
  	}
- 	cable_type = adc & RT8973A_REG_ADC_MASK;
- 
--	/* Read Device 1 reigster to identify correct cable type */
-+	/* Read Device 1 register to identify correct cable type */
- 	ret = regmap_read(info->regmap, RT8973A_REG_DEV1, &dev1);
- 	if (ret) {
- 		dev_err(info->dev, "failed to read DEV1 register\n");
-diff --git a/drivers/gpu/drm/arm/malidp_regs.h b/drivers/gpu/drm/arm/malidp_regs.h
-index 993031542fa1..9b4f95d8ccec 100644
---- a/drivers/gpu/drm/arm/malidp_regs.h
-+++ b/drivers/gpu/drm/arm/malidp_regs.h
-@@ -145,7 +145,7 @@
- #define     MALIDP_SE_COEFFTAB_DATA_MASK	0x3fff
- #define     MALIDP_SE_SET_COEFFTAB_DATA(x) \
- 		((x) & MALIDP_SE_COEFFTAB_DATA_MASK)
--/* Enhance coeffents reigster offset */
-+/* Enhance coefficients register offset */
- #define MALIDP_SE_IMAGE_ENH			0x3C
- /* ENH_LIMITS offset 0x0 */
- #define     MALIDP_SE_ENH_LOW_LEVEL		24
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h
-index 99c6f7eefd85..d03c8f12a15c 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h
-@@ -58,7 +58,7 @@ struct fw_priv {
- 	/* 0x81: PCI-AP, 01:PCIe, 02: 92S-U,
- 	 * 0x82: USB-AP, 0x12: 72S-U, 03:SDIO */
- 	u8 hci_sel;
--	/* the same value as reigster value  */
-+	/* the same value as register value  */
- 	u8 chip_version;
- 	/* customer  ID low byte */
- 	u8 customer_id_0;
-diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
-index 28ecaa7fc715..42b125602d72 100644
---- a/drivers/scsi/lpfc/lpfc_hbadisc.c
-+++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
-@@ -6551,7 +6551,7 @@ lpfc_sli4_unregister_fcf(struct lpfc_hba *phba)
-  * lpfc_unregister_fcf_rescan - Unregister currently registered fcf and rescan
-  * @phba: Pointer to hba context object.
-  *
-- * This function unregisters the currently reigstered FCF. This function
-+ * This function unregisters the currently registered FCF. This function
-  * also tries to find another FCF for discovery by rescan the HBA FCF table.
-  */
- void
-diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
-index ccbdbd62f0d8..612dc1240f90 100644
---- a/fs/userfaultfd.c
-+++ b/fs/userfaultfd.c
-@@ -267,7 +267,7 @@ static inline bool userfaultfd_huge_must_wait(struct userfaultfd_ctx *ctx,
- #endif /* CONFIG_HUGETLB_PAGE */
- 
- /*
-- * Verify the pagetables are still not ok after having reigstered into
-+ * Verify the pagetables are still not ok after having registered into
-  * the fault_pending_wqh to avoid userland having to UFFDIO_WAKE any
-  * userfault that has already been resolved, if userfaultfd_read and
-  * UFFDIO_COPY|ZEROPAGE are being run simultaneously on two different
--- 
+=20
+ 	return 0;
+--=20
 2.17.1
 
