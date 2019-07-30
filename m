@@ -2,79 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76AEA7AB49
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:45:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A40BE7AB4C
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731516AbfG3Opu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 10:45:50 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:40486 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730143AbfG3Opu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:45:50 -0400
-Received: by mail-yb1-f195.google.com with SMTP id j6so1101137ybm.7
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 07:45:49 -0700 (PDT)
+        id S1731560AbfG3Opz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 10:45:55 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35598 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731546AbfG3Opy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:45:54 -0400
+Received: by mail-qk1-f193.google.com with SMTP id r21so46847628qke.2;
+        Tue, 30 Jul 2019 07:45:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E/guRCHmkoiQgbLkV2hP5gvAMj/4JhzXH6fZBt0bRt0=;
-        b=FMxw9VHQbaz5Pm+gKxft4hBckyun1hoRSl2ECYX3D07klrEVIGV++mIj/8WSxgYVoG
-         eF3dRnV5FO6jFDomolrgm9c2BvUFJMN4QqY3UeKTBjm5ZShZ6Xm/cLjPgEIqz8+c/bIX
-         dRspb2h7BrkEiNiwW2iWVfJ5adzCpEL/z87ch4I+zTAt86UOGxtLunwJXeob2ExGhhlU
-         W13lOe6Vk09hdwoki7rZSTEKjOB6aRuEM8p0lCxdYql6Ujcg3Ydy+tUs76nCzC50kNvZ
-         rMTp62jYZdX9/PnEmymS4VuaEp/tRD5wMC/ZJicPhqsu1Jbd6z2KALDSzw+yuF9ypo4x
-         6qqA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Gyy/wgw+NjLfDqJ8CTxLYMhmCESsXrdKPDwhF/BGKvo=;
+        b=qBd5PeI+kgGkUV1XPyp7VKPXUaBjXobIqLisOrVgBO7x16HzWWHIf2A7gisbRWHJz4
+         Lq+ijUNC1dp7udDOp9QYyuhDXxIrdAx2NTQ9sifYDrNZ6YZ3UcX3Kk7q3NZGkulavE9W
+         fJKRuI29T4/b/GCMcAJ7r84WmsUeOe66E0IjBMlye/QdConqGzdGMTUVHGaplZ2LEJOf
+         xqBH3mAWW6BZkBgacjgCoeWXfOKWGZ4UXYlZGSoV8adHXkV9O2QuK6U/Dxr4dckMJMRb
+         CweyNrjaiZBmTnDKeB80d0wZS8tTSwOK3jfxeWUCBtPt8loT471sXgfkpnIvg9PzDlkz
+         kgtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E/guRCHmkoiQgbLkV2hP5gvAMj/4JhzXH6fZBt0bRt0=;
-        b=aCVQ0Leccfrg91LTgsFBwVZwhmI86meTRmQrTN8FYY7MhP5+filEtR6iDx6zAXxOj4
-         QpwDX2COrqIi342O8whVHHQIZTIAVG4iU4hcXUhPjA7sBOz59ASICh5jUylOB5EqVpV8
-         F+aM5O6e50qSguUTx+jPAo5Hor0ddAphE48MLnCSZv1EIJjGnD/N8wD1zRypNAgTu8bV
-         8FXzuHSFjCjdm2OedSXUYbviOj9YQeH+fLWKn2eKKFPitKv96r2UUwcSPlH22ThoHbVM
-         RlPjEXgloL/rhBxbRnm67lrOS/yrAZfaetMNzA81ov7FmIGTFZ2JPVskmWYimGnSuOCT
-         0l6g==
-X-Gm-Message-State: APjAAAXPB87rvOAm6ec/+FAu6IEUZBbW5PiT76ayzPUpr7QF3aKPacfs
-        7GongtiAn3xJgyuM4SvC1rg4/ZA1
-X-Google-Smtp-Source: APXvYqwpuh1mDrlmqG89gGtmgYD3J4TcAg9FC3BtCybTbnVmTYjNXHipm6jLFsqLZPwtu987Qun9eg==
-X-Received: by 2002:a25:bc82:: with SMTP id e2mr69067236ybk.12.1564497948822;
-        Tue, 30 Jul 2019 07:45:48 -0700 (PDT)
-Received: from mail-yw1-f42.google.com (mail-yw1-f42.google.com. [209.85.161.42])
-        by smtp.gmail.com with ESMTPSA id s188sm14774640ywd.7.2019.07.30.07.45.46
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 07:45:47 -0700 (PDT)
-Received: by mail-yw1-f42.google.com with SMTP id u141so23871063ywe.4
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 07:45:46 -0700 (PDT)
-X-Received: by 2002:a81:9987:: with SMTP id q129mr69255613ywg.190.1564497946168;
- Tue, 30 Jul 2019 07:45:46 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Gyy/wgw+NjLfDqJ8CTxLYMhmCESsXrdKPDwhF/BGKvo=;
+        b=shg3KE2VlE6K8ccsJ3pIz6m72TYOm9AbFbzpkhd1rQYbY1LBkdmgniBBeDcO/8ZXvH
+         CcnVWBayfnbT5XqyD9fw+8L7Nxe1lJAsfUdvM3qt+aJauW52jf7AWz9zdOzWdZhzUwLC
+         Qc+WNNWr0lgPesmBNn8fIEi6vOK6LGU8/h2zY3e0YKdhPxeanNWy5xDWAu6GDcXqDwha
+         7R8VVCHO+gfeX4LZpIhJ4lYb31UF/aZ6T0LyL8B9EzkAP1Ck2I+hyv0QqY+znyfKdKwp
+         z0FZ2GPZDKLUVdmhwdwOnxOtcyXd/I9B968sAjxX1cqhYyhQ1S1Gx9Vk08dPlDV06VGS
+         vpFQ==
+X-Gm-Message-State: APjAAAXp1smBxAO1N9So/YBvguwA5ljYsdCazllxp1yGC68TWORk7TZV
+        4D07jHI7VpEgdAkQYS7ZYiQ=
+X-Google-Smtp-Source: APXvYqxLpvppITpqwpznGhoXST9yEXJiTxUooA40D6znKWWUb8zKhCb8lnntr0w6SDIGj3NP/ovI6A==
+X-Received: by 2002:ae9:ebc3:: with SMTP id b186mr78092642qkg.222.1564497953291;
+        Tue, 30 Jul 2019 07:45:53 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.172.104])
+        by smtp.gmail.com with ESMTPSA id b1sm3981716qkk.8.2019.07.30.07.45.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 07:45:52 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id EA87BC0AD9; Tue, 30 Jul 2019 11:45:49 -0300 (-03)
+Date:   Tue, 30 Jul 2019 11:45:49 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Qian Cai <cai@lca.pw>
+Cc:     davem@davemloft.net, vyasevich@gmail.com, nhorman@tuxdriver.com,
+        David.Laight@aculab.com, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net/socket: fix GCC8+ Wpacked-not-aligned warnings
+Message-ID: <20190730144549.GP6204@localhost.localdomain>
+References: <1564497488-3030-1-git-send-email-cai@lca.pw>
 MIME-Version: 1.0
-References: <20190730113226.39845-1-dkirjanov@suse.com>
-In-Reply-To: <20190730113226.39845-1-dkirjanov@suse.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 30 Jul 2019 10:45:09 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfnqV4zGvW+W0fh+=X-wm8rz1O5ZqGKXpxSVN1vPMD+sw@mail.gmail.com>
-Message-ID: <CA+FuTSfnqV4zGvW+W0fh+=X-wm8rz1O5ZqGKXpxSVN1vPMD+sw@mail.gmail.com>
-Subject: Re: [PATCH net-next] be2net: disable bh with spin_lock in be_process_mcc
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com,
-        Network Development <netdev@vger.kernel.org>,
-        Denis Kirjanov <kdav@linux-powerpc.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1564497488-3030-1-git-send-email-cai@lca.pw>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 7:33 AM Denis Kirjanov <kda@linux-powerpc.org> wrote:
->
-> Signed-off-by: Denis Kirjanov <kdav@linux-powerpc.org>
+On Tue, Jul 30, 2019 at 10:38:08AM -0400, Qian Cai wrote:
+> In file included from ./include/linux/sctp.h:42,
+>                  from net/core/skbuff.c:47:
+> ./include/uapi/linux/sctp.h:395:1: warning: alignment 4 of 'struct
+> sctp_paddr_change' is less than 8 [-Wpacked-not-aligned]
+>  } __attribute__((packed, aligned(4)));
+>  ^
+> ./include/uapi/linux/sctp.h:728:1: warning: alignment 4 of 'struct
+> sctp_setpeerprim' is less than 8 [-Wpacked-not-aligned]
+>  } __attribute__((packed, aligned(4)));
+>  ^
+> ./include/uapi/linux/sctp.h:727:26: warning: 'sspp_addr' offset 4 in
+> 'struct sctp_setpeerprim' isn't aligned to 8 [-Wpacked-not-aligned]
+>   struct sockaddr_storage sspp_addr;
+>                           ^~~~~~~~~
+> ./include/uapi/linux/sctp.h:741:1: warning: alignment 4 of 'struct
+> sctp_prim' is less than 8 [-Wpacked-not-aligned]
+>  } __attribute__((packed, aligned(4)));
+>  ^
+> ./include/uapi/linux/sctp.h:740:26: warning: 'ssp_addr' offset 4 in
+> 'struct sctp_prim' isn't aligned to 8 [-Wpacked-not-aligned]
+>   struct sockaddr_storage ssp_addr;
+>                           ^~~~~~~~
+> ./include/uapi/linux/sctp.h:792:1: warning: alignment 4 of 'struct
+> sctp_paddrparams' is less than 8 [-Wpacked-not-aligned]
+>  } __attribute__((packed, aligned(4)));
+>  ^
+> ./include/uapi/linux/sctp.h:784:26: warning: 'spp_address' offset 4 in
+> 'struct sctp_paddrparams' isn't aligned to 8 [-Wpacked-not-aligned]
+>   struct sockaddr_storage spp_address;
+>                           ^~~~~~~~~~~
+> ./include/uapi/linux/sctp.h:905:1: warning: alignment 4 of 'struct
+> sctp_paddrinfo' is less than 8 [-Wpacked-not-aligned]
+>  } __attribute__((packed, aligned(4)));
+>  ^
+> ./include/uapi/linux/sctp.h:899:26: warning: 'spinfo_address' offset 4
+> in 'struct sctp_paddrinfo' isn't aligned to 8 [-Wpacked-not-aligned]
+>   struct sockaddr_storage spinfo_address;
+>                           ^~~~~~~~~~~~~~
+> 
+> This is because the commit 20c9c825b12f ("[SCTP] Fix SCTP socket options
+> to work with 32-bit apps on 64-bit kernels.") added "packed, aligned(4)"
+> GCC attributes to some structures but one of the members, i.e, "struct
+> sockaddr_storage" in those structures has the attribute,
+> "aligned(__alignof__ (struct sockaddr *)" which is 8-byte on 64-bit
+> systems, so the commit overwrites the designed alignments for
+> "sockaddr_storage".
+> 
+> To fix this, "struct sockaddr_storage" needs to be aligned to 4-byte as
+> it is only used in those packed sctp structure which is part of UAPI,
+> and "struct __kernel_sockaddr_storage" is used in some other
+> places of UAPI that need not to change alignments in order to not
+> breaking userspace.
+> 
+> Use an implicit alignment for "struct __kernel_sockaddr_storage" so it
+> can keep the same alignments as a member in both packed and un-packed
+> structures without breaking UAPI.
+> 
+> Suggested-by: David Laight <David.Laight@ACULAB.COM>
+> Signed-off-by: Qian Cai <cai@lca.pw>
+> ---
+> 
+> v2: Use an implicit alignment for "struct __kernel_sockaddr_storage".
+> 
+>  include/uapi/linux/socket.h | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+> 
 
-This is a partial revert of the previous change to these lines in 2012
-in commit 072a9c486004 ("netpoll: revert 6bdb7fe3104 and fix be_poll()
-instead").
-
-The commit message is empty. Can you give some context as to why this
-is needed and correct?
+SCTP-wise, LGTM.
