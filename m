@@ -2,76 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8240D7A56A
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 12:03:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 898927A56F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 12:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732185AbfG3KDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 06:03:34 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58122 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725975AbfG3KDd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 06:03:33 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6F9598112E;
-        Tue, 30 Jul 2019 10:03:33 +0000 (UTC)
-Received: from [10.72.12.185] (ovpn-12-185.pek2.redhat.com [10.72.12.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C603C19C6A;
-        Tue, 30 Jul 2019 10:03:25 +0000 (UTC)
-Subject: Re: [PATCH v4 0/5] vsock/virtio: optimizations to increase the
- throughput
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190729095743-mutt-send-email-mst@kernel.org>
- <20190730094013.ruqjllqrjmkdnh5y@steredhat>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <fc568e3d-7af5-5895-89e8-32e35b0f9af4@redhat.com>
-Date:   Tue, 30 Jul 2019 18:03:24 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1732201AbfG3KEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 06:04:21 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:60059 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725947AbfG3KEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 06:04:21 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id ED71922008;
+        Tue, 30 Jul 2019 06:04:19 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 30 Jul 2019 06:04:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=4x/UZ/
+        xEBDLMoUYduJWBoXB4D8gSXgfle7LDtguVQOU=; b=yl+ByKipshbQWlcGGWaZ7A
+        G05dGg7yl/WKB0u+14NYk1HCjPyecJosakRL2pjT3GVEYVXJk4F8HuNpNZ6DbDGY
+        9K91qA0mvLCx2Dlvvv9SdQ5FwK00TbLKyruezdCr/YFZEHQYRG/OCgjprFMsIqaS
+        GmwkjaKzeG1jgILzFJJbWkaubUbV21+Kj5CXeaeUY4Eq5rZAeVdFbav+n2nPLJxT
+        gqdBZzSvZamOxYw/FDtc3a53iZiZYzgOIpwlnxtyuCBJfvMmwKlltmBd43xjz9US
+        jJm2UyHN9Xeu5R0o/Hxw81T+idqcHp5K4gFXcAvPdSpAbL0rSy4E3kB9m0MocVYA
+        ==
+X-ME-Sender: <xms:IxZAXbeWMqnU2swpdCtKedZnHJQIK7lPPYKkb17JmSpI9AansB-4WA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrleefgddvvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:IxZAXaL0ChDvMwGR4S1FpLnYDpVt8BTJRI9h68OW5uSeVQxHYh69Ng>
+    <xmx:IxZAXR0jhE9ElSUfUVggxCgnOmTnIoMqPtWRx_ArjfbWyggTk8mm9Q>
+    <xmx:IxZAXQq0KAaSWXYsx7HLqhfl6RrCon0-Imem2GaXThjU6Gm4ysdHCw>
+    <xmx:IxZAXajkh7oW-fYMdHL1Zn1ievzh8XZS60ESayIVm2eMLdws0k3lzg>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B1BB9380086;
+        Tue, 30 Jul 2019 06:04:18 -0400 (EDT)
+Date:   Tue, 30 Jul 2019 13:04:16 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
+Message-ID: <20190730100416.GA13250@splinter>
+References: <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
+ <20190729131420.tqukz55tz26jkg73@lx-anielsen.microsemi.net>
+ <3cc69103-d194-2eca-e7dd-e2fa6a730223@cumulusnetworks.com>
+ <20190729135205.oiuthcyesal4b4ct@lx-anielsen.microsemi.net>
+ <e4cd0db9-695a-82a7-7dc0-623ded66a4e5@cumulusnetworks.com>
+ <20190729143508.tcyebbvleppa242d@lx-anielsen.microsemi.net>
+ <20190729175136.GA28572@splinter>
+ <20190730062721.p4vrxo5sxbtulkrx@lx-anielsen.microsemi.net>
+ <20190730070626.GA508@splinter>
+ <20190730083027.biuzy7h5dbq7pik3@lx-anielsen.microsemi.net>
 MIME-Version: 1.0
-In-Reply-To: <20190730094013.ruqjllqrjmkdnh5y@steredhat>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 30 Jul 2019 10:03:33 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730083027.biuzy7h5dbq7pik3@lx-anielsen.microsemi.net>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 30, 2019 at 10:30:28AM +0200, Allan W. Nielsen wrote:
+> The 07/30/2019 10:06, Ido Schimmel wrote:
+> > As a bonus, existing drivers could benefit from it, as MDB entries are already
+> > notified by MAC.
+> Not sure I follow. When FDB entries are added, it also generates notification
+> events.
 
-On 2019/7/30 下午5:40, Stefano Garzarella wrote:
-> On Mon, Jul 29, 2019 at 09:59:23AM -0400, Michael S. Tsirkin wrote:
->> On Wed, Jul 17, 2019 at 01:30:25PM +0200, Stefano Garzarella wrote:
->>> This series tries to increase the throughput of virtio-vsock with slight
->>> changes.
->>> While I was testing the v2 of this series I discovered an huge use of memory,
->>> so I added patch 1 to mitigate this issue. I put it in this series in order
->>> to better track the performance trends.
->> Series:
->>
->> Acked-by: Michael S. Tsirkin <mst@redhat.com>
->>
->> Can this go into net-next?
->>
-> I think so.
-> Michael, Stefan thanks to ack the series!
->
-> Should I resend it with net-next tag?
->
-> Thanks,
-> Stefano
+I meant the switchdev notification sent to drivers:
 
+/* SWITCHDEV_OBJ_ID_PORT_MDB */
+struct switchdev_obj_port_mdb {
+	struct switchdev_obj obj;
+	unsigned char addr[ETH_ALEN];
+	u16 vid;
+};
 
-I think so.
+By extending MDB entries to also be keyed by MAC you basically get a lot
+of things for free without duplicating the same code for multicast FDBs.
 
-Thanks
-
+AFAICS, then only change in the fast path is in br_mdb_get() where you
+need to use DMAC as key in case Ethertype is not IPv4/IPv6.
