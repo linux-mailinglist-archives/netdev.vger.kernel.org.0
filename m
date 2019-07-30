@@ -2,171 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C10577A147
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 08:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E007A150
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 08:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729004AbfG3G1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 02:27:25 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:33527 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728981AbfG3G1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 02:27:25 -0400
-Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa4.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa4.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: J0cATDpZs7qRKgH9tpimCyLWaFwhPVNUT87pe13JM204EJlK7fa9U14roaUwlzPyPnfbmDiA3C
- zOFyxfROpZcyfJEqO+BuEV62VtyYpFPMmRttElC+t4jpYwwXcyP2wQjI+cLu0rmoZ5PiT/MMbg
- KZ/20nF3B3dDMpFjv7hjZibyqOtlQFflpDnWJeV8u/KjrjzAzQxxSBGS2K01dacqGzrciSWzFU
- BcJ6zQFD3t1rmQscvog+mNlvG8BltCVusUKeMqdzo9cNiMYISTpnZm1eb8uDCgwosKqFcvIMvU
- FE0=
-X-IronPort-AV: E=Sophos;i="5.64,325,1559545200"; 
-   d="scan'208";a="42450189"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2019 23:27:24 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 29 Jul 2019 23:27:23 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 29 Jul 2019 23:27:23 -0700
-Date:   Tue, 30 Jul 2019 08:27:22 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Ido Schimmel <idosch@idosch.org>
-CC:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-Message-ID: <20190730062721.p4vrxo5sxbtulkrx@lx-anielsen.microsemi.net>
-References: <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
- <b755f613-e6d8-a2e6-16cd-6f13ec0a6ddc@cumulusnetworks.com>
- <20190729121409.wa47uelw5f6l4vs4@lx-anielsen.microsemi.net>
- <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
- <20190729131420.tqukz55tz26jkg73@lx-anielsen.microsemi.net>
- <3cc69103-d194-2eca-e7dd-e2fa6a730223@cumulusnetworks.com>
- <20190729135205.oiuthcyesal4b4ct@lx-anielsen.microsemi.net>
- <e4cd0db9-695a-82a7-7dc0-623ded66a4e5@cumulusnetworks.com>
- <20190729143508.tcyebbvleppa242d@lx-anielsen.microsemi.net>
- <20190729175136.GA28572@splinter>
+        id S1727071AbfG3Gax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 02:30:53 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:46031 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726490AbfG3Gax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 02:30:53 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1hsLeq-0004Oa-69; Tue, 30 Jul 2019 08:30:48 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:595f:209f:a34b:fbc1] (unknown [IPv6:2a03:f580:87bc:d400:595f:209f:a34b:fbc1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5527743B56B;
+        Tue, 30 Jul 2019 06:30:44 +0000 (UTC)
+To:     Oliver Hartkopp <socketcan@hartkopp.net>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     linux-can@vger.kernel.org,
+        kernel test robot <rong.a.chen@intel.com>
+References: <20190729204056.2976-1-socketcan@hartkopp.net>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH net-next] can: fix ioctl function removal
+Message-ID: <79020cce-4f58-2104-a817-235e6d216528@pengutronix.de>
+Date:   Tue, 30 Jul 2019 08:30:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190729175136.GA28572@splinter>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190729204056.2976-1-socketcan@hartkopp.net>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="DBn7XNyJyxx3wl4DuIhL9wGMiKcLFY07b"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 07/29/2019 20:51, Ido Schimmel wrote:
-> Can you please clarify what you're trying to achieve? I just read the
-> thread again and my impression is that you're trying to locally receive
-> packets with a certain link layer multicast address.
-Yes. The thread is also a bit confusing because we half way through realized
-that we misunderstood how the multicast packets should be handled (sorry about
-that). To begin with we had a driver where multicast packets was only copied to
-the CPU if someone needed it. Andrew and Nikolay made us aware that this is not
-how other drivers are doing it, so we changed the driver to include the CPU in
-the default multicast flood-mask.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--DBn7XNyJyxx3wl4DuIhL9wGMiKcLFY07b
+Content-Type: multipart/mixed; boundary="ebDKpq1kSlPBM7D86uHsDXf6fU1GgRk16";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Oliver Hartkopp <socketcan@hartkopp.net>, davem@davemloft.net,
+ netdev@vger.kernel.org
+Cc: linux-can@vger.kernel.org, kernel test robot <rong.a.chen@intel.com>
+Message-ID: <79020cce-4f58-2104-a817-235e6d216528@pengutronix.de>
+Subject: Re: [PATCH net-next] can: fix ioctl function removal
+References: <20190729204056.2976-1-socketcan@hartkopp.net>
+In-Reply-To: <20190729204056.2976-1-socketcan@hartkopp.net>
 
-This changes the objective a bit. To begin with we needed to get more packets to
-the CPU (which could have been done using tc ingress rules and a trap action).
+--ebDKpq1kSlPBM7D86uHsDXf6fU1GgRk16
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-Now after we changed the driver, we realized that we need something to limit the
-flooding of certain L2 multicast packets. This is the new problem we are trying
-to solve!
+On 7/29/19 10:40 PM, Oliver Hartkopp wrote:
+> Commit 60649d4e0af ("can: remove obsolete empty ioctl() handler") repla=
+ced the
+> almost empty can_ioctl() function with sock_no_ioctl() which always ret=
+urns
+> -EOPNOTSUPP.
+>=20
+> Even though we don't have any ioctl() functions on socket/network layer=
+ we need
+> to return -ENOIOCTLCMD to be able to forward ioctl commands like SIOCGI=
+FINDEX
+> to the network driver layer.
+>=20
+> This patch fixes the wrong return codes in the CAN network layer protoc=
+ols.
+>=20
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
+> Fixes: 60649d4e0af ("can: remove obsolete empty ioctl() handler")
+> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
 
-Example: Say we have a bridge with 4 slave interfaces, then we want to install a
-forwarding rule saying that packets to a given L2-multicast MAC address, should
-only be flooded to 2 of the 4 ports.
+David Miller has already applied the patch.
 
-(instead of adding rules to get certain packets to the CPU, we are now adding
-other rules to prevent other packets from going to the CPU and other ports where
-they are not needed/wanted).
+| commit 473d924d7d46cb57aa4c1863261d18366af345af
+| Author: Oliver Hartkopp <socketcan@hartkopp.net>
+| Date:   Mon Jul 29 22:40:56 2019 +0200
 
-This is exactly the same thing as IGMP snooping does dynamically, but only for
-IP multicast.
+Thanks,
+Marc
 
-The "bridge mdb" allow users to manually/static add/del a port to a multicast
-group, but still it operates on IP multicast address (not L2 multicast
-addresses).
-
-> Nik suggested SIOCADDMULTI.
-It is not clear to me how this should be used to limit the flooding, maybe we
-can make some hacks, but as far as I understand the intend of this is maintain
-the list of addresses an interface should receive. I'm not sure this should
-influence how for forwarding decisions are being made.
-
-> and I suggested a tc filter to get the packet to the CPU.
-The TC solution is a good solution to the original problem where wanted to copy
-more frames to the CPU. But we were convinced that this is not the right
-approach, and that the CPU by default should receive all multicast packets, and
-we should instead try to find a way to limit the flooding of certain frames as
-an optimization.
-
-> If you now want to limit the ports to which this packet is flooded, then
-> you can use tc filters in *software*:
-> 
-> # tc qdisc add dev eth2 clsact
-> # tc filter add dev eth2 egress pref 1 flower skip_hw \
-> 	dst_mac 01:21:6C:00:00:01 action drop
-Yes. This can work in the SW bridge.
-
-> If you want to forward the packet in hardware and locally receive it,
-> you can chain several mirred action and then a trap action.
-I'm not I fully understand how this should be done, but it does sound like it
-becomes quite complicated. Also, as far as I understand it will mean that we
-will be using TCAM/ACL resources to do something that could have been done with
-a simple MAC entry.
-
-> Both options avoid HW egress ACLs which your design does not support.
-True, but what is wrong with expanding the functionality of the normal
-forwarding/MAC operations to allow multiple destinations?
-
-It is not an uncommon feature (I just browsed the manual of some common L2
-switches and they all has this feature).
-
-It seems to fit nicely into the existing user-interface:
-
-bridge fdb add    01:21:6C:00:00:01 port eth0
-bridge fdb append 01:21:6C:00:00:01 port eth1
-
-It seems that it can be added to the existing implementation with out adding
-significant complexity.
-
-It will be easy to offload in HW.
-
-I do not believe that it will be a performance issue, if this is a concern then
-we may have to do a bit of benchmarking, or we can make it a configuration
-option.
-
-Long story short, we (Horatiu and I) learned a lot from the discussion here, and
-I think we should try do a new patch with the learning we got. Then it is easier
-to see what it actually means to the exiting code, complexity, exiting drivers,
-performance, default behavioral, backwards compatibly, and other valid concerns.
-
-If the patch is no good, and cannot be fixed, then we will go back and look
-further into alternative solutions.
-
--- 
-/Allan
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
+--ebDKpq1kSlPBM7D86uHsDXf6fU1GgRk16--
+
+--DBn7XNyJyxx3wl4DuIhL9wGMiKcLFY07b
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl0/5BAACgkQWsYho5Hk
+nSAdlwf9FvQXprA9ijUqrNwvCNVM/h2siMdeeoUrg1SqzhgA7widx9raFr12K3Zu
+rDef8fGTPErEz6ARQpF6ThMhEd6N3qjplMsK/WHBz7LaGPy+6RtCLr4p8g7cR0XL
+EDb0b808S6onPQQJqjqBQGaBqRwBNsf1xshZPU5ECv5nMC9wtUitONw+DWfJeGZG
+cgYiTbobOAyPBXDkXcfuyWRxM6wGlf8VEcNZ4X6gYbYQW1ufpu9Yp6BevO+F/8kw
+OAFEcuX3WC04SIwH9hZBqIG2nH2Df6gzXJbVJtXjWvS48E4pGZoUa+EzqVSxJvgf
+s1gY216N6Z+3HW6FjcNTvsQYYVPdfA==
+=8Qnh
+-----END PGP SIGNATURE-----
+
+--DBn7XNyJyxx3wl4DuIhL9wGMiKcLFY07b--
