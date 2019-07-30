@@ -2,151 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8A779ECE
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 04:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A6F79ED5
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 04:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731382AbfG3CjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 22:39:24 -0400
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:39411 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730921AbfG3CjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 22:39:23 -0400
-X-IronPort-AV: E=Sophos;i="5.64,325,1559491200"; 
-   d="scan'208";a="72493080"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 30 Jul 2019 10:37:03 +0800
-Received: from G08CNEXCHPEKD03.g08.fujitsu.local (unknown [10.167.33.85])
-        by cn.fujitsu.com (Postfix) with ESMTP id 816394CDDAE4;
-        Tue, 30 Jul 2019 10:37:00 +0800 (CST)
-Received: from localhost.localdomain (10.167.226.33) by
- G08CNEXCHPEKD03.g08.fujitsu.local (10.167.33.89) with Microsoft SMTP Server
- (TLS) id 14.3.439.0; Tue, 30 Jul 2019 10:36:59 +0800
-From:   Su Yanjun <suyj.fnst@cn.fujitsu.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <suyj.fnst@cn.fujitsu.com>
-Subject: [PATCH net v2] net: ipv6: Fix a bug in ndisc_send_ns when netdev only has a global address
-Date:   Tue, 30 Jul 2019 10:35:15 +0800
-Message-ID: <1564454115-66184-1-git-send-email-suyj.fnst@cn.fujitsu.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.167.226.33]
-X-yoursite-MailScanner-ID: 816394CDDAE4.AE319
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: suyj.fnst@cn.fujitsu.com
-X-Spam-Status: No
+        id S1731416AbfG3CoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 22:44:02 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42885 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730921AbfG3CoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 22:44:02 -0400
+Received: by mail-pl1-f193.google.com with SMTP id ay6so28299715plb.9;
+        Mon, 29 Jul 2019 19:44:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Lic9FsBbFIhilgJH9jdHsI1bCHTQauGCm3mQSU4XvTM=;
+        b=VmG+Y5P5Dh2me3MuRE5xoeE8+31ZRDRtvUDuryelSgr1QOdkF5UR4sfAhfawGrnF4o
+         5z+N42GmX4JOKqZ419NY+2NeE03748lWU8fiklu8RZ45CTP6kfm07+wnuBPZD0l/m5eZ
+         sj/oDPdL0HQ6u9F5Hg+63dtbGim4BW6TYSL7dMhLzzjxpFh+aeB4uJjvYW9ZLnsBn1Cy
+         S4n5cNVSOCaep4vWkFG9oDjODxzzuZwA+Rwztr0UpO+gASp2OxeVjMX2U1or+lSZLknx
+         AtwaNIAqMlMZm2/n9t8nvsT0txtyJvMaBHXwN6XKLSfsykgh1nxG6imehh5Pjy7OYhtV
+         6rtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Lic9FsBbFIhilgJH9jdHsI1bCHTQauGCm3mQSU4XvTM=;
+        b=MGCGuaf42flvV47oOQOprayfWaepHmMAz5AdtuIVy5/R/CBOl8p04A/aDV2M9c/3sN
+         sdgUyzNqIrkkUvVBM/obK/CEbvnVVg7VDH52JjoSZmCI7bSUGDn0ZARt/DpcCUP8iGIX
+         HTu+93xzhZ1/aYP11LKtHSEXXYz1ksYvgPVlNP6nj71/BqJ9RftLMOAYMRfJygSqyC3K
+         SRQV3LhGXsN/3474I0n1kBm0itbnj0XVWy34fKENhkh64dqjmdVrEBMn2nIB6n0d9HiV
+         ICdNS0ktwpiIt8CIhtcmBpHYKHAbC0p/7pdAwTgbQuEa+uUVO1FrcjcoRpBFDP4Hn6uP
+         ZKGQ==
+X-Gm-Message-State: APjAAAVCzmiabYYOl2MGCIYGXcTNA9KZwZhV4zzwd+Y7ZjjfLl2KqsZI
+        6tXTR12NMRq5tINPLqrNIz4=
+X-Google-Smtp-Source: APXvYqzNN+4+CjaPSeMWQ2/PLSQRyBZtcEjOJ6XJ3AsKOmbbAHM9cei4O5VqaExHC48K6xXqNKYu5w==
+X-Received: by 2002:a17:902:1107:: with SMTP id d7mr11773332pla.184.1564454641476;
+        Mon, 29 Jul 2019 19:44:01 -0700 (PDT)
+Received: from localhost.localdomain (220-128-162-163.HINET-IP.hinet.net. [220.128.162.163])
+        by smtp.googlemail.com with ESMTPSA id v185sm70944442pfb.14.2019.07.29.19.43.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Jul 2019 19:44:01 -0700 (PDT)
+From:   Pei-Hsuan Hung <afcidk@gmail.com>
+Cc:     Pei-Hsuan Hung <afcidk@gmail.com>, trivial@kernel.org,
+        Russell Currey <ruscur@russell.cc>,
+        Sam Bobroff <sbobroff@linux.ibm.com>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jeremy Kerr <jk@ozlabs.org>, Arnd Bergmann <arnd@arndb.de>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Brian Starkey <brian.starkey@arm.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        James Smart <james.smart@broadcom.com>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: [PATCH v2] Fix typo reigster to register
+Date:   Tue, 30 Jul 2019 10:42:32 +0800
+Message-Id: <20190730024235.26273-1-afcidk@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <liviu.dudau@arm.com>
+References: <liviu.dudau@arm.com>
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the egress interface does not have a link local address, it can
-not communicate with other hosts.
-
-In RFC4861, 7.2.2 says
-"If the source address of the packet prompting the solicitation is the
-same as one of the addresses assigned to the outgoing interface, that
-address SHOULD be placed in the IP Source Address of the outgoing
-solicitation.  Otherwise, any one of the addresses assigned to the
-interface should be used."
-
-In this patch we try get a global address if we get ll address failed.
-
-Signed-off-by: Su Yanjun <suyj.fnst@cn.fujitsu.com>
+Signed-off-by: Pei-Hsuan Hung <afcidk@gmail.com>
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Cc: trivial@kernel.org
 ---
-Changes since V1:
-	- Change patch description and code optimization at 
-          David Ahern's suggestion
----
- include/net/addrconf.h |  2 ++
- net/ipv6/addrconf.c    | 34 ++++++++++++++++++++++++++++++++++
- net/ipv6/ndisc.c       |  9 ++++++---
- 3 files changed, 42 insertions(+), 3 deletions(-)
+Hi Liviu, thanks for your reply.
+This patch is generated by a script so at first I didn't notice there is
+also a typo in the word coefficient. I've fixed the typo in this
+version.
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index becdad5..ce1561e 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -107,6 +107,8 @@ int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
- 		      u32 banned_flags);
- int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
- 		    u32 banned_flags);
-+int ipv6_get_addr(struct net_device *dev, struct in6_addr *addr,
-+		    u32 banned_flags);
- bool inet_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2,
- 			  bool match_wildcard);
- bool inet_rcv_saddr_any(const struct sock *sk);
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 521e320..9467457 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1870,6 +1870,40 @@ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
- 	return err;
+ arch/powerpc/kernel/eeh.c                           | 2 +-
+ arch/powerpc/platforms/cell/spufs/switch.c          | 4 ++--
+ drivers/extcon/extcon-rt8973a.c                     | 2 +-
+ drivers/gpu/drm/arm/malidp_regs.h                   | 2 +-
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h | 2 +-
+ drivers/scsi/lpfc/lpfc_hbadisc.c                    | 2 +-
+ fs/userfaultfd.c                                    | 2 +-
+ 7 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/powerpc/kernel/eeh.c b/arch/powerpc/kernel/eeh.c
+index c0e4b73191f3..d75c9c24ec4d 100644
+--- a/arch/powerpc/kernel/eeh.c
++++ b/arch/powerpc/kernel/eeh.c
+@@ -1030,7 +1030,7 @@ int __init eeh_ops_register(struct eeh_ops *ops)
  }
  
-+int __ipv6_get_addr(struct inet6_dev *idev, struct in6_addr *addr,
-+		    u32 banned_flags)
-+{
-+	struct inet6_ifaddr *ifp;
-+	int err = -EADDRNOTAVAIL;
-+
-+	list_for_each_entry(ifp, &idev->addr_list, if_list) {
-+		if (ifp->scope == 0 &&
-+		    !(ifp->flags & banned_flags)) {
-+			*addr = ifp->addr;
-+			err = 0;
-+			break;
-+		}
-+	}
-+	return err;
-+}
-+
-+int ipv6_get_addr(struct net_device *dev, struct in6_addr *addr,
-+		  u32 banned_flags)
-+{
-+	struct inet6_dev *idev;
-+	int err = -EADDRNOTAVAIL;
-+
-+	rcu_read_lock();
-+	idev = __in6_dev_get(dev);
-+	if (idev) {
-+		read_lock_bh(&idev->lock);
-+		err = __ipv6_get_addr(idev, addr, banned_flags);
-+		read_unlock_bh(&idev->lock);
-+	}
-+	rcu_read_unlock();
-+	return err;
-+}
-+
- static int ipv6_count_addresses(const struct inet6_dev *idev)
+ /**
+- * eeh_ops_unregister - Unreigster platform dependent EEH operations
++ * eeh_ops_unregister - Unregister platform dependent EEH operations
+  * @name: name of EEH platform operations
+  *
+  * Unregister the platform dependent EEH operation callback
+diff --git a/arch/powerpc/platforms/cell/spufs/switch.c b/arch/powerpc/platforms/cell/spufs/switch.c
+index 5c3f5d088c3b..9548a086937b 100644
+--- a/arch/powerpc/platforms/cell/spufs/switch.c
++++ b/arch/powerpc/platforms/cell/spufs/switch.c
+@@ -574,7 +574,7 @@ static inline void save_mfc_rag(struct spu_state *csa, struct spu *spu)
  {
- 	const struct inet6_ifaddr *ifp;
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 083cc1c..156c027 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -603,11 +603,14 @@ void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
- 	int inc_opt = dev->addr_len;
- 	int optlen = 0;
- 	struct nd_msg *msg;
-+	u32 banned_flags = IFA_F_TENTATIVE | IFA_F_OPTIMISTIC;
- 
- 	if (!saddr) {
--		if (ipv6_get_lladdr(dev, &addr_buf,
--				   (IFA_F_TENTATIVE|IFA_F_OPTIMISTIC)))
--			return;
-+		if (ipv6_get_lladdr(dev, &addr_buf, banned_flags)) {
-+			/* try global address */
-+			if (ipv6_get_addr(dev, &addr_buf, banned_flags))
-+				return;
-+		}
- 		saddr = &addr_buf;
+ 	/* Save, Step 38:
+ 	 *     Save RA_GROUP_ID register and the
+-	 *     RA_ENABLE reigster in the CSA.
++	 *     RA_ENABLE register in the CSA.
+ 	 */
+ 	csa->priv1.resource_allocation_groupID_RW =
+ 		spu_resource_allocation_groupID_get(spu);
+@@ -1227,7 +1227,7 @@ static inline void restore_mfc_rag(struct spu_state *csa, struct spu *spu)
+ {
+ 	/* Restore, Step 29:
+ 	 *     Restore RA_GROUP_ID register and the
+-	 *     RA_ENABLE reigster from the CSA.
++	 *     RA_ENABLE register from the CSA.
+ 	 */
+ 	spu_resource_allocation_groupID_set(spu,
+ 			csa->priv1.resource_allocation_groupID_RW);
+diff --git a/drivers/extcon/extcon-rt8973a.c b/drivers/extcon/extcon-rt8973a.c
+index 40c07f4d656e..e75c03792398 100644
+--- a/drivers/extcon/extcon-rt8973a.c
++++ b/drivers/extcon/extcon-rt8973a.c
+@@ -270,7 +270,7 @@ static int rt8973a_muic_get_cable_type(struct rt8973a_muic_info *info)
  	}
+ 	cable_type = adc & RT8973A_REG_ADC_MASK;
  
+-	/* Read Device 1 reigster to identify correct cable type */
++	/* Read Device 1 register to identify correct cable type */
+ 	ret = regmap_read(info->regmap, RT8973A_REG_DEV1, &dev1);
+ 	if (ret) {
+ 		dev_err(info->dev, "failed to read DEV1 register\n");
+diff --git a/drivers/gpu/drm/arm/malidp_regs.h b/drivers/gpu/drm/arm/malidp_regs.h
+index 993031542fa1..9b4f95d8ccec 100644
+--- a/drivers/gpu/drm/arm/malidp_regs.h
++++ b/drivers/gpu/drm/arm/malidp_regs.h
+@@ -145,7 +145,7 @@
+ #define     MALIDP_SE_COEFFTAB_DATA_MASK	0x3fff
+ #define     MALIDP_SE_SET_COEFFTAB_DATA(x) \
+ 		((x) & MALIDP_SE_COEFFTAB_DATA_MASK)
+-/* Enhance coeffents reigster offset */
++/* Enhance coefficients register offset */
+ #define MALIDP_SE_IMAGE_ENH			0x3C
+ /* ENH_LIMITS offset 0x0 */
+ #define     MALIDP_SE_ENH_LOW_LEVEL		24
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h
+index 99c6f7eefd85..d03c8f12a15c 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/fw.h
+@@ -58,7 +58,7 @@ struct fw_priv {
+ 	/* 0x81: PCI-AP, 01:PCIe, 02: 92S-U,
+ 	 * 0x82: USB-AP, 0x12: 72S-U, 03:SDIO */
+ 	u8 hci_sel;
+-	/* the same value as reigster value  */
++	/* the same value as register value  */
+ 	u8 chip_version;
+ 	/* customer  ID low byte */
+ 	u8 customer_id_0;
+diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
+index 28ecaa7fc715..42b125602d72 100644
+--- a/drivers/scsi/lpfc/lpfc_hbadisc.c
++++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
+@@ -6551,7 +6551,7 @@ lpfc_sli4_unregister_fcf(struct lpfc_hba *phba)
+  * lpfc_unregister_fcf_rescan - Unregister currently registered fcf and rescan
+  * @phba: Pointer to hba context object.
+  *
+- * This function unregisters the currently reigstered FCF. This function
++ * This function unregisters the currently registered FCF. This function
+  * also tries to find another FCF for discovery by rescan the HBA FCF table.
+  */
+ void
+diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
+index ccbdbd62f0d8..612dc1240f90 100644
+--- a/fs/userfaultfd.c
++++ b/fs/userfaultfd.c
+@@ -267,7 +267,7 @@ static inline bool userfaultfd_huge_must_wait(struct userfaultfd_ctx *ctx,
+ #endif /* CONFIG_HUGETLB_PAGE */
+ 
+ /*
+- * Verify the pagetables are still not ok after having reigstered into
++ * Verify the pagetables are still not ok after having registered into
+  * the fault_pending_wqh to avoid userland having to UFFDIO_WAKE any
+  * userfault that has already been resolved, if userfaultfd_read and
+  * UFFDIO_COPY|ZEROPAGE are being run simultaneously on two different
 -- 
-2.7.4
-
-
+2.17.1
 
