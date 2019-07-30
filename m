@@ -2,100 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A777ABB0
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 16:59:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30AF97ABC6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 17:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731914AbfG3O7Q convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Jul 2019 10:59:16 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:47645 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728526AbfG3O7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 10:59:15 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-62-zMYVNYknPF2PhZEH6HfzKw-1; Tue, 30 Jul 2019 15:59:12 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue,
- 30 Jul 2019 15:59:12 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 30 Jul 2019 15:59:12 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Qian Cai' <cai@lca.pw>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "vyasevich@gmail.com" <vyasevich@gmail.com>,
-        "nhorman@tuxdriver.com" <nhorman@tuxdriver.com>,
-        "marcelo.leitner@gmail.com" <marcelo.leitner@gmail.com>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        id S1731222AbfG3PBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 11:01:00 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:59104 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729745AbfG3PBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 11:01:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=65E/ZXh4vz3P8VI73lH3jp+lf5tDRwhBiGW2ssQEd30=; b=DYScE28+ygzReT+7bGbOKgUdOU
+        BOwaFKuzKMd3f4dbnOlK0j1lR3bL9dT9mTbZzDJBgda9gxTFrnQnyJW4aNulFaY9ijZTnrXxxznv8
+        M1rsVPuV9q5f/pwMXr0ypqlI6C5aMwfCz130GlZalVg34IS8dGKu6Yn0zjV8Pj0GTVqxnVgr/sZ27
+        jFzIrFzqK5t/wQhrRjoFv57qxShs332W4Ax8QX4hr7E2eg5MCbljO2cDviT2oy0wdVQ4gCUeXDxIP
+        5NAFKs+zOXOtrKR+KZQ9yaZwIELUBohrgSVuLM6NYXVhlBFqgnoF2H9l+b4WJJMfaMPG8rgr24Yyw
+        sn02Uvqg==;
+Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=[192.168.1.17])
+        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hsTcW-0000Ic-JY; Tue, 30 Jul 2019 15:00:56 +0000
+Subject: Re: linux-next: Tree for Jul 30 (drivers/net/phy/mdio-octeon.c: i386)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] net/socket: fix GCC8+ Wpacked-not-aligned warnings
-Thread-Topic: [PATCH v2] net/socket: fix GCC8+ Wpacked-not-aligned warnings
-Thread-Index: AQHVRuR2hmPxRDJks0KkKUnxQ8wAw6bjPw9w
-Date:   Tue, 30 Jul 2019 14:59:12 +0000
-Message-ID: <69c6beab2d734ed88ce31a6381f85420@AcuMS.aculab.com>
-References: <1564497488-3030-1-git-send-email-cai@lca.pw>
-In-Reply-To: <1564497488-3030-1-git-send-email-cai@lca.pw>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        David Daney <david.daney@cavium.com>
+References: <20190730151527.08f611b8@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <5db8f58b-3f20-a7ba-fcae-18dd0aa7df50@infradead.org>
+Date:   Tue, 30 Jul 2019 08:00:54 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-MC-Unique: zMYVNYknPF2PhZEH6HfzKw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20190730151527.08f611b8@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qian Cai
-> Sent: 30 July 2019 15:38
-...
-> Use an implicit alignment for "struct __kernel_sockaddr_storage" so it
-> can keep the same alignments as a member in both packed and un-packed
-> structures without breaking UAPI.
+On 7/29/19 10:15 PM, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Suggested-by: David Laight <David.Laight@ACULAB.COM>
-...
-
-Although I suggested it needs a bit of tidy up.
-
-Add a comment maybe:
-
-/* The definition uses anonymous union and struct in order to
- * control the default alignment. */
-
->  struct __kernel_sockaddr_storage {
-> -	__kernel_sa_family_t	ss_family;		/* address family */
-> -	/* Following field(s) are implementation specific */
-> -	char		__data[_K_SS_MAXSIZE - sizeof(unsigned short)];
-> +	union {
-> +		void *__align; /* implementation specific desired alignment */
-
-Move the 'void *' below the struct so the first member is the 'public one.
-
-> +		struct {
-> +			__kernel_sa_family_t	ss_family; /* address family */
-> +			/* Following field(s) are implementation specific */
-> +			char __data[_K_SS_MAXSIZE - sizeof(unsigned short)];
->  				/* space to achieve desired size, */
->  				/* _SS_MAXSIZE value minus size of ss_family */
-> -} __attribute__ ((aligned(_K_SS_ALIGNSIZE)));	/* force desired alignment */
-> +			};
-> +		};
-> +};
+> Changes since 20190729:
 > 
->  #endif /* _UAPI_LINUX_SOCKET_H */
-> --
-> 1.8.3.1
 
-	David
+on i386:
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+../drivers/net/phy/mdio-octeon.c: In function ‘octeon_mdiobus_probe’:
+../drivers/net/phy/mdio-octeon.c:48:3: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   (u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
+   ^
+In file included from ../drivers/net/phy/mdio-octeon.c:14:0:
+../drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of function ‘writeq’; did you mean ‘writel’? [-Werror=implicit-function-declaration]
+ #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+                                    ^
+../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro ‘oct_mdio_writeq’
+  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+  ^~~~~~~~~~~~~~~
+../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+                                                ^
+../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro ‘oct_mdio_writeq’
+  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+  ^~~~~~~~~~~~~~~
+../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+                                                ^
+../drivers/net/phy/mdio-octeon.c:77:2: note: in expansion of macro ‘oct_mdio_writeq’
+  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+  ^~~~~~~~~~~~~~~
+../drivers/net/phy/mdio-octeon.c: In function ‘octeon_mdiobus_remove’:
+../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+                                                ^
+../drivers/net/phy/mdio-octeon.c:91:2: note: in expansion of macro ‘oct_mdio_writeq’
+  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+  ^~~~~~~~~~~~~~~
 
+
+
+-- 
+~Randy
