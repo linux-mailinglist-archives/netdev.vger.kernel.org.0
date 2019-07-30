@@ -2,111 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BAD47AA22
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 15:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 956B47AA4A
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 15:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727550AbfG3NuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 09:50:18 -0400
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:41184 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725871AbfG3NuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 09:50:18 -0400
-Received: by mail-ua1-f65.google.com with SMTP id 34so25465464uar.8;
-        Tue, 30 Jul 2019 06:50:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4+QxDKECEbt2nsi9n15vlp6tEfk79Z3ydNqFgvycDug=;
-        b=lbbXElZcWDWcO7idRfKRT150JkbaE34ZAm5/7WQDWq5VmH58byLnlTttxLjULzGnHi
-         juIjzfAjttSH+39RkV37/FitX0rPvUZjgqNlP8vrm00v0kNql78LyEheKW1AkIAmz4Hr
-         etUy5fge2yzDyv/fLs3IIaWr4M7LBfGOQVr8BtCESNX+Do6SoDJ2tS0KgeYravub+ozp
-         yHOS4INVM3CYGw8okECC5dy8I41Sk1AAsWaLM2PXz3FctBuH69ARB5Ddof1scefU7Gy3
-         TODHQ18+YhCJHQC2eSWwGl8MvutnGGuJaIIW9IOdwVbIQkc2oZQz5ap0aAEhFV5qTgRj
-         CuAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4+QxDKECEbt2nsi9n15vlp6tEfk79Z3ydNqFgvycDug=;
-        b=bCkG3t0qhhGwo5nOfK7XhY3XEnWBObuO5n/TsGojmBZDy4REDTO5o0rQxEsXOmKrbF
-         cU7swAePAy/LRxb/cTYyRVbKqyyfwDtHNQzeSr/+xC/F+emFKB0K5B/vfAuC+pRRFxjA
-         zCPglN+1zb5734xB/OUJbxFzbmX0He2Klbmp0nL9s9m4q21THsnyuomn6Mk23rii5lLG
-         WvadAX3CEz209ZSBhTxsmwRr64bMtyMkXn8S8qT31mSsnXdOssFyN85QaTGxLFFu/U0Z
-         Dote48J2WDj07hXUH0I0vItolS2kKHpUppPqlX1Uf3G8e8PDLm+4+d+paNOqvQjkU5DW
-         qzGg==
-X-Gm-Message-State: APjAAAXpBFZaWtvtAJNqgnpNhgqxV259JzQPxApWoMQ3G4yHn38Z7ymE
-        Mu1/tsWDo5Kc346pLsDcealx6zusn3yVe5rsaw==
-X-Google-Smtp-Source: APXvYqwkEJHqOLjuHTIoafDnOdIKrNbWPnbKSBkEO5P9hTVRtqu55CQkZC42IGzFpiT946+GSGCaYc2eG93E6sWtO0s=
-X-Received: by 2002:a9f:25e9:: with SMTP id 96mr57807432uaf.95.1564494616946;
- Tue, 30 Jul 2019 06:50:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190730122534.30687-1-rdong.ge@gmail.com> <20190730123542.zrsrfvcy7t2n3d4g@breakpoint.cc>
-In-Reply-To: <20190730123542.zrsrfvcy7t2n3d4g@breakpoint.cc>
-From:   Rundong Ge <rdong.ge@gmail.com>
-Date:   Tue, 30 Jul 2019 21:50:05 +0800
-Message-ID: <CAN1LvyqtbzycEggoCXaBu3Zf_jebTWLBXm3js6+r60274a61Tg@mail.gmail.com>
-Subject: Re: [PATCH] bridge:fragmented packets dropped by bridge
-To:     Florian Westphal <fw@strlen.de>
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        kadlec@netfilter.org, Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, nikolay@cumulusnetworks.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1728214AbfG3N5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 09:57:37 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:52326 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725871AbfG3N5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 09:57:37 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id EEE85C01EC;
+        Tue, 30 Jul 2019 13:57:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1564495056; bh=+Frtc0dG6BHyi2YIPiv1kiBX3xPQtzw2fnWMGHBYnQU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X73C+VCdT/Ev8CiZNgGQDfGtPAtpuQJMuBI/h3MHAWEFTOAj/pjdWdTfXxa1dRqIL
+         8nC6Ymu0Tn882kLdhCHjBQOsN1avF6ajt/K8wsGFruGajkqEzCH8JnW+XE2am3CExL
+         GF7NNmU4V0N0QOCj5l5sIsxZktNvKU9xs+3M15gBr/BhgkhnusjDCXcA70Z1RwOPOL
+         AjJIPc1lFmZuNTol9YAXGyKVYqyb/BwYxOL//EvFZjM15/pGMb7XTWA2eqTWGHrQU2
+         N3Rpchhz7bKHMXnIHgnIcN0Li579OaCSW0LS3mFsAHpcF5V8VoXCoHPuNWLP4BZMB+
+         zWEnSkh3OZjhg==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id E0BECA0057;
+        Tue, 30 Jul 2019 13:57:28 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jon Hunter <jonathanh@nvidia.com>
+Subject: [PATCH net] net: stmmac: Sync RX Buffer upon allocation
+Date:   Tue, 30 Jul 2019 15:57:16 +0200
+Message-Id: <3601e3ae4357d48b3294f42781d0f19095d1b00e.1564479382.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> How can a bridge forward a frame from A/B to mtu1300?
-It is free for user to set different MTU for bridge ports. In our case
-only tcp traffic between A/B and mtu 1300, and mss negotiation can
-make packets less than 1300.
+With recent changes that introduced support for Page Pool in stmmac, Jon
+reported that NFS boot was no longer working on an ARM64 based platform
+that had the IP behind an IOMMU.
 
-> What happens without netfilter or non-fragmented packets?
-Without br_netfilter it works fine, there is no defragmentation and
-refragmentation, fragmented packets will egress directly.
+As Page Pool API does not guarantee DMA syncing because of the use of
+DMA_ATTR_SKIP_CPU_SYNC flag, we have to explicit sync the whole buffer upon
+re-allocation because we are always re-using same pages.
 
-Florian Westphal <fw@strlen.de> =E4=BA=8E2019=E5=B9=B47=E6=9C=8830=E6=97=A5=
-=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=888:35=E5=86=99=E9=81=93=EF=BC=9A
->
-> Rundong Ge <rdong.ge@gmail.com> wrote:
-> > Given following setup:
-> > -modprobe br_netfilter
-> > -echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
-> > -brctl addbr br0
-> > -brctl addif br0 enp2s0
-> > -brctl addif br0 enp3s0
-> > -brctl addif br0 enp6s0
-> > -ifconfig enp2s0 mtu 1300
-> > -ifconfig enp3s0 mtu 1500
-> > -ifconfig enp6s0 mtu 1500
-> > -ifconfig br0 up
-> >
-> >                  multi-port
-> > mtu1500 - mtu1500|bridge|1500 - mtu1500
-> >   A                  |            B
-> >                    mtu1300
->
-> How can a bridge forward a frame from A/B to mtu1300?
->
-> > With netfilter defragmentation/conntrack enabled, fragmented
-> > packets from A will be defragmented in prerouting, and refragmented
-> > at postrouting.
->
-> Yes, but I don't see how that relates to the problem at hand.
->
-> > But in this scenario the bridge found the frag_max_size(1500) is
-> > larger than the dst mtu stored in the fake_rtable whitch is
-> > always equal to the bridge's mtu 1300, then packets will be dopped.
->
-> What happens without netfilter or non-fragmented packets?
->
-> > This modifies ip_skb_dst_mtu to use the out dev's mtu instead
-> > of bridge's mtu in bridge refragment.
->
-> It seems quite a hack?  The above setup should use a router, not a bridge=
-.
+In fact, ARM64 code invalidates the DMA area upon two situations [1]:
+	- sync_single_for_cpu(): Invalidates if direction != DMA_TO_DEVICE
+	- sync_single_for_device(): Invalidates if direction == DMA_FROM_DEVICE
+
+So, as we must invalidate both the current RX buffer and the newly allocated
+buffer we propose this fix.
+
+[1] arch/arm64/mm/cache.S
+
+Reported-by: Jon Hunter <jonathanh@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Fixes: 2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
+Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Jon Hunter <jonathanh@nvidia.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 98b1a5c6d537..9a4a56ad35cd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3271,9 +3271,11 @@ static inline int stmmac_rx_threshold_count(struct stmmac_rx_queue *rx_q)
+ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+ {
+ 	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+-	int dirty = stmmac_rx_dirty(priv, queue);
++	int len, dirty = stmmac_rx_dirty(priv, queue);
+ 	unsigned int entry = rx_q->dirty_rx;
+ 
++	len = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE) * PAGE_SIZE;
++
+ 	while (dirty-- > 0) {
+ 		struct stmmac_rx_buffer *buf = &rx_q->buf_pool[entry];
+ 		struct dma_desc *p;
+@@ -3291,6 +3293,13 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+ 		}
+ 
+ 		buf->addr = page_pool_get_dma_addr(buf->page);
++
++		/* Sync whole allocation to device. This will invalidate old
++		 * data.
++		 */
++		dma_sync_single_for_device(priv->device, buf->addr, len,
++					   DMA_FROM_DEVICE);
++
+ 		stmmac_set_desc_addr(priv, p, buf->addr);
+ 		stmmac_refill_desc3(priv, rx_q, p);
+ 
+@@ -3425,8 +3434,6 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			skb_copy_to_linear_data(skb, page_address(buf->page),
+ 						frame_len);
+ 			skb_put(skb, frame_len);
+-			dma_sync_single_for_device(priv->device, buf->addr,
+-						   frame_len, DMA_FROM_DEVICE);
+ 
+ 			if (netif_msg_pktdata(priv)) {
+ 				netdev_dbg(priv->dev, "frame received (%dbytes)",
+-- 
+2.7.4
+
