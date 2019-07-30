@@ -2,122 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23EE97A8D6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:41:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7FFB7A8E9
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730594AbfG3Ml2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 08:41:28 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45770 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729651AbfG3Ml1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:41:27 -0400
-Received: by mail-wr1-f66.google.com with SMTP id f9so65590126wre.12
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 05:41:26 -0700 (PDT)
+        id S1729940AbfG3MpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 08:45:22 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42497 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726986AbfG3MpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:45:22 -0400
+Received: by mail-ed1-f67.google.com with SMTP id v15so62467634eds.9
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 05:45:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BlP4513unQUdet+MKvQ2g15uNq4TvoNSOCqk6BEJf7o=;
-        b=gJ1Zv7I1MINBx3xVNBcaEWYgqiAI2Hxdpv8UWLgZ1l+KCYj74JMQWldehUfc6SIkAz
-         6wAw9qlPZq6SQKIeNsAhxvcBfOZEMvPvAc5Q0LHyJdD4gVZgojW4m+qLNz4GfrBixnVY
-         AKPWBhhHasuwPOKwO/HteYm4dTpfSYy2+WL0w=
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=XqRXzS8tuHZl8oC93VHtgriWIAlCqLKuRw/mcon2IGk=;
+        b=b9kmar6n0xEU6gj0fCgUOxflyDJ+VUPFvmQ/1KShAaeRxxMtVCrlXQmgLCwn59f77+
+         LeeP2FM1ZoL9fZqF6pBaMYebQ9yFdj70djgexlXOR+YpNdbY2RDEJvYiqQvUcsMTsIsa
+         pjeA+/APmcUZRMmt9ejvH9TOufIPEdgzN/ItvaPFiMGj/uedP+Ax+7Vjtjsh8WOSFXFx
+         fDSOep3QKAPju6VqSqs6AHyNdNCKAS8WagBSytj02O9URuIvmSswsycBJ3p8nR2YlhCw
+         YtLcJDDxXcXlBcjaEh7NUCN4ouUw1fqdWr6h29XrFiGEHJNILbuyizQIXfpEVOEX+ny9
+         CyTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BlP4513unQUdet+MKvQ2g15uNq4TvoNSOCqk6BEJf7o=;
-        b=DxMLjH/3C9HPjRL+Ssk83KfxoAj8iI2AUjHtPhvO0s+cz3LxnpQRehdXcn7EHNvJ/o
-         4JnYasazPivGOfe7hTP4mvmZduiVi8kwJba/JcMap9vtVB3NRejGa5+Q16xDXih1Xo9G
-         TJLK8Wr2gzPlfohgr5XHqkTdTAfyakiFsBuUif7xZZYxjgwSG+trE+hJ+EIlCy1rwyBD
-         1IL6PNby3aLFof5A4DKVOj/52BqlxQJuFmow15Np2lGWqZZrLco7YzR9CurGBhcsT9If
-         UlEQw6zvkGKtUO4KEUPmkOPw960SCjlLTONq5Bzn6/bL/DUFNWoY8aZx2TCU3Rnzz1OA
-         KtFg==
-X-Gm-Message-State: APjAAAWOWWo1zuXQC44pDSZPFMko2P2EPsE88pNj4Kk9yZ4BJvb4cjrM
-        Wgx+XX6yiZxAw+2Nre+HosXe+Fw/JZU=
-X-Google-Smtp-Source: APXvYqymLpYKBAlscHzFKItEq4jYCoeLBstlJUeaMgXHLDywH09H+q/A04KfrqhOZLQGA6w7A4n4MQ==
-X-Received: by 2002:a5d:5507:: with SMTP id b7mr12759586wrv.35.1564490485822;
-        Tue, 30 Jul 2019 05:41:25 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id g12sm94634989wrv.9.2019.07.30.05.41.24
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 05:41:25 -0700 (PDT)
-Subject: Re: [PATCH] bridge:fragmented packets dropped by bridge
-To:     Rundong Ge <rdong.ge@gmail.com>, davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, roopa@cumulusnetworks.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20190730122534.30687-1-rdong.ge@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <1dc87e69-628b-fd04-619a-8dbe5bdfa108@cumulusnetworks.com>
-Date:   Tue, 30 Jul 2019 15:41:23 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190730122534.30687-1-rdong.ge@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=XqRXzS8tuHZl8oC93VHtgriWIAlCqLKuRw/mcon2IGk=;
+        b=rgCb6qx3PfICQOIeWIOrobh4KibdXQuHdBeSRQg34i6n8/LRhqgL/R0tvU8IpYnrwn
+         l2lK+ZH3+YbbR9Rcb0wHUAYi/+TDgbhrVo95bQXLUzaHpcL+zKNYk566V1J7wBvOU4fF
+         zZkdGzLPVjjtLSXDgG3J5Uu5J4fC3dQzkpn8z2PaKlceo3tMXY1tdtHgcVIkUX8KUP2X
+         jvBDD7uOTNqSoiogHbrKqBdya6X91Jaz6qGy5HeOuBaMjZTwjTFSnnuOBMDadebsmRTx
+         nEAOWsV06v2i444/Pd7m0jovQge20DaWQ10n+NAG/pM9vv0PnTcLFrGwKL1LbFnubum3
+         J6mw==
+X-Gm-Message-State: APjAAAVo9mX0UoLa8e9dpFMR5aCOXY7j9x/rqR3i71MEgzJsKgbLPODf
+        8lZ8x9OpkDap0AsGzAlcAatpWJqE
+X-Google-Smtp-Source: APXvYqxAgOALNZlF9S2g5++V0b39cbIslrTpjLr5ZNMKI3syP5YI54F+ljQuB5sJNdeVXjwABblnRw==
+X-Received: by 2002:aa7:c692:: with SMTP id n18mr99186501edq.220.1564490720467;
+        Tue, 30 Jul 2019 05:45:20 -0700 (PDT)
+Received: from tegmen.arch.suse.de (nat.nue.novell.com. [195.135.221.2])
+        by smtp.gmail.com with ESMTPSA id k51sm16834557edb.7.2019.07.30.05.45.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 05:45:19 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
+To:     petkan@nucleusys.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Denis Kirjanov <kda@linux-powerpc.org>
+Subject: [PATCH] net: usb: pegasus: fix improper read if get_registers() fail
+Date:   Tue, 30 Jul 2019 14:45:05 +0200
+Message-Id: <20190730124505.130940-1-dkirjanov@suse.com>
+X-Mailer: git-send-email 2.12.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/07/2019 15:25, Rundong Ge wrote:
-> Given following setup:
-> -modprobe br_netfilter
-> -echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
-> -brctl addbr br0
-> -brctl addif br0 enp2s0
-> -brctl addif br0 enp3s0
-> -brctl addif br0 enp6s0
-> -ifconfig enp2s0 mtu 1300
-> -ifconfig enp3s0 mtu 1500
-> -ifconfig enp6s0 mtu 1500
-> -ifconfig br0 up
-> 
->                  multi-port
-> mtu1500 - mtu1500|bridge|1500 - mtu1500
->   A                  |            B
->                    mtu1300
-> 
-> With netfilter defragmentation/conntrack enabled, fragmented
-> packets from A will be defragmented in prerouting, and refragmented
-> at postrouting.
-> But in this scenario the bridge found the frag_max_size(1500) is
-> larger than the dst mtu stored in the fake_rtable whitch is
-> always equal to the bridge's mtu 1300, then packets will be dopped.
-> 
-> This modifies ip_skb_dst_mtu to use the out dev's mtu instead
-> of bridge's mtu in bridge refragment.
-> 
-> Signed-off-by: Rundong Ge <rdong.ge@gmail.com>
-> ---
->  include/net/ip.h | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/include/net/ip.h b/include/net/ip.h
-> index 29d89de..0512de3 100644
-> --- a/include/net/ip.h
-> +++ b/include/net/ip.h
-> @@ -450,6 +450,8 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
->  static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
->  					  const struct sk_buff *skb)
->  {
-> +	if ((skb_dst(skb)->flags & DST_FAKE_RTABLE) && skb->dev)
-> +		return min(skb->dev->mtu, IP_MAX_MTU);
->  	if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
->  		bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
->  
-> 
+get_registers() may fail with -ENOMEM and in this
+case we can read a garbage from the status variable tmp.
 
-I don't think this is correct, there's a reason why the bridge chooses the smallest
-possible MTU out of its members and this is simply a hack to circumvent it.
-If you really like to do so just set the bridge MTU manually, we've added support
-so it won't change automatically to the smallest, but then how do you pass packets
-1500 -> 1300 in this setup ?
+Reported-by: syzbot+3499a83b2d062ae409d4@syzkaller.appspotmail.com
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+---
+ drivers/net/usb/pegasus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-You're talking about the frag_size check in br_nf_ip_fragment(), right ?
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index 6d25dea5ad4b..f7d117d80cfb 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -282,7 +282,7 @@ static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
+ static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
+ {
+ 	int i;
+-	__u8 tmp;
++	__u8 tmp = 0;
+ 	__le16 retdatai;
+ 	int ret;
+ 
+-- 
+2.12.3
 
