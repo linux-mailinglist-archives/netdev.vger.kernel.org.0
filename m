@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0947AFA6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 19:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FF57AFAC
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 19:20:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729155AbfG3RSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 13:18:13 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52282 "EHLO
+        id S1730185AbfG3RUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 13:20:32 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52306 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728651AbfG3RSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 13:18:12 -0400
+        with ESMTP id S1726194AbfG3RUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 13:20:32 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3BADA12652B2F;
-        Tue, 30 Jul 2019 10:18:12 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 10:18:11 -0700 (PDT)
-Message-Id: <20190730.101811.1836331521043535108.davem@davemloft.net>
-To:     nikolay@cumulusnetworks.com
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net] net: bridge: mcast: don't delete permanent entries
- when fast leave is enabled
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 885E412652D89;
+        Tue, 30 Jul 2019 10:20:31 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 10:20:30 -0700 (PDT)
+Message-Id: <20190730.102030.2109749179893397150.davem@davemloft.net>
+To:     colin.king@canonical.com
+Cc:     petrm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][net-next][V2] mlxsw: spectrum_ptp: fix duplicated
+ check on orig_egr_types
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190730112100.18156-1-nikolay@cumulusnetworks.com>
-References: <20190730112100.18156-1-nikolay@cumulusnetworks.com>
+In-Reply-To: <20190730114752.24133-1-colin.king@canonical.com>
+References: <20190730114752.24133-1-colin.king@canonical.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jul 2019 10:18:12 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jul 2019 10:20:31 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Date: Tue, 30 Jul 2019 14:21:00 +0300
+From: Colin King <colin.king@canonical.com>
+Date: Tue, 30 Jul 2019 12:47:52 +0100
 
-> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-> index 3d8deac2353d..f8cac3702712 100644
-> --- a/net/bridge/br_multicast.c
-> +++ b/net/bridge/br_multicast.c
-> @@ -1388,6 +1388,9 @@ br_multicast_leave_group(struct net_bridge *br,
->  			if (!br_port_group_equal(p, port, src))
->  				continue;
->  
-> +			if (p->flags & MDB_PG_FLAGS_PERMANENT)
-> +				break;
-> +
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Currently are duplicated checks on orig_egr_types which are
+> redundant, I believe this is a typo and should actually be
+> orig_ing_types || orig_egr_types instead of the expression
+> orig_egr_types || orig_egr_types.  Fix these.
+> 
+> Addresses-Coverity: ("Same on both sides")
+> Fixes: c6b36bdd04b5 ("mlxsw: spectrum_ptp: Increase parsing depth when PTP is enabled")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Like David, I also don't understand why this can be a break.  Is it because
-permanent entries are always the last on the list?  Why will there be no
-other entries that might need to be processed on the list?
+Applied to net.
