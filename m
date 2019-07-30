@@ -2,108 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A7F7A855
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C64D17A896
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 14:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730308AbfG3MZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 08:25:39 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:36026 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728534AbfG3MZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:25:39 -0400
-Received: by mail-io1-f67.google.com with SMTP id o9so23964147iom.3;
-        Tue, 30 Jul 2019 05:25:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=s5yWI2xfBi7yZUvh5vbuUYKfiAIOr2+n9/J+pTBAvvA=;
-        b=oNRi4RrqZcCHcv3ihpvxRh05FVUCJujtgcfihPqzEIhibrVSyvLxH6ou+KPX3QcJW1
-         8odyqmb9Xy6OZW3Akl4mhb8QXyeta1TByczNxiawqeZqlsAEQgeNH4zWnRQNZjNaanng
-         0uyuZIy+8zTVFFxa0Ya/KrP2BWiVnBI9uP6oyFln1SImZYqFXKVsPFuT21tgQZ7JxlFX
-         Fs+CbA/+uEvCQ0ZUgz9IPY356ERlad9t/WiFeJ2j53Gucbi1JlQ9yIBQgH0c0Te24k7b
-         EffDwc1jhPKoAalhRJA+XcovRIjMe2TsRZptfp0V8HA2/1B5SE8WZ8hszhzXBdu/7690
-         DokQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=s5yWI2xfBi7yZUvh5vbuUYKfiAIOr2+n9/J+pTBAvvA=;
-        b=TMGbfHz7XYUaf0EEpYhojlH2AUFA8fqyYprqvHQp0O+q0TjwUdFbpgltjDLL9ujHyn
-         yeZ00voKnicZ84UCrXg6I8nSL+xZ6tvdaiYd7Bmn8Qryw+8NhG9WlsgxcuJZIvcuZB+J
-         JtHrkSSxBc4X5FV6x4qQWAoqzunbiYNj5mljYW6JnzNVi0/P5CXxlI9/t1MFRI8ANQdZ
-         wpMIEapsrfEYW7cXrkcrPqEjBI/YuhlWqPKb0mN3LTXLmLSrReCPiC5fBoQ8cYxHhb3D
-         cD5/6dvCJz7NfXVcBa7CtjQdMoxreac96H5y8a7dwievlDsY09rEbbmMquO8YCFjhHpG
-         oQIg==
-X-Gm-Message-State: APjAAAUbOB4VI52yGSCxBg4E9Ux5lxqkkngGvDEH5YFAJF1wOlefoLnN
-        wj4Dl2K7JSpkv3oJyPTAiA==
-X-Google-Smtp-Source: APXvYqyQH9tqYauuovKG4HR22AWdKr93hT9a4O67gZNyhFbLW2ujv+hKs4GCYjdavvE1y4Ujue7gVA==
-X-Received: by 2002:a6b:cd86:: with SMTP id d128mr106118586iog.234.1564489538291;
-        Tue, 30 Jul 2019 05:25:38 -0700 (PDT)
-Received: from ip-172-31-35-247.us-east-2.compute.internal (ec2-52-15-165-154.us-east-2.compute.amazonaws.com. [52.15.165.154])
-        by smtp.gmail.com with ESMTPSA id j23sm52454755ioo.6.2019.07.30.05.25.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 05:25:37 -0700 (PDT)
-From:   Rundong Ge <rdong.ge@gmail.com>
-To:     davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, roopa@cumulusnetworks.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, nikolay@cumulusnetworks.com,
-        linux-kernel@vger.kernel.org, rdong.ge@gmail.com
-Subject: [PATCH] bridge:fragmented packets dropped by bridge
-Date:   Tue, 30 Jul 2019 12:25:34 +0000
-Message-Id: <20190730122534.30687-1-rdong.ge@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729348AbfG3Mep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 08:34:45 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:9746 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726241AbfG3Meo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 08:34:44 -0400
+Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa3.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: TSh6xGslQ9l146S4CGMt2voFWYTBMZFjzfO0F+tyOSvlW8IqkZu39CbH8BeW2uVOwa8FqpNu2U
+ GOe+4WH1ohE0A3/Wo0vQNf0ORGdz/va7Ngy2+hN4JR6FKah3xwWFw2sR0Dz4OepiY78jqH0PLX
+ csxXCYV3So2uWZWAELCBc0g7zpdKKF/K8VVI7Kb+kTQLvXdBFG0JRVuA2k2HEY9SnV7evaW2B9
+ 53ygqY+n+2UhcHUL2wc6ItKg2n03Kgy5DSg1ebkjzhfHJ94PoBxXtFbew9FwgIHHNhnijEHLqG
+ emA=
+X-IronPort-AV: E=Sophos;i="5.64,326,1559545200"; 
+   d="scan'208";a="43277834"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jul 2019 05:34:43 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 30 Jul 2019 05:19:51 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Tue, 30 Jul 2019 05:19:51 -0700
+Date:   Tue, 30 Jul 2019 14:19:51 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Ido Schimmel <idosch@idosch.org>
+CC:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
+Message-ID: <20190730121950.pyxtu5k4qphmshy4@lx-anielsen.microsemi.net>
+References: <20190729131420.tqukz55tz26jkg73@lx-anielsen.microsemi.net>
+ <3cc69103-d194-2eca-e7dd-e2fa6a730223@cumulusnetworks.com>
+ <20190729135205.oiuthcyesal4b4ct@lx-anielsen.microsemi.net>
+ <e4cd0db9-695a-82a7-7dc0-623ded66a4e5@cumulusnetworks.com>
+ <20190729143508.tcyebbvleppa242d@lx-anielsen.microsemi.net>
+ <20190729175136.GA28572@splinter>
+ <20190730062721.p4vrxo5sxbtulkrx@lx-anielsen.microsemi.net>
+ <20190730070626.GA508@splinter>
+ <20190730083027.biuzy7h5dbq7pik3@lx-anielsen.microsemi.net>
+ <20190730100416.GA13250@splinter>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190730100416.GA13250@splinter>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given following setup:
--modprobe br_netfilter
--echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
--brctl addbr br0
--brctl addif br0 enp2s0
--brctl addif br0 enp3s0
--brctl addif br0 enp6s0
--ifconfig enp2s0 mtu 1300
--ifconfig enp3s0 mtu 1500
--ifconfig enp6s0 mtu 1500
--ifconfig br0 up
+The 07/30/2019 13:04, Ido Schimmel wrote:
+> On Tue, Jul 30, 2019 at 10:30:28AM +0200, Allan W. Nielsen wrote:
+> > The 07/30/2019 10:06, Ido Schimmel wrote:
+> > > As a bonus, existing drivers could benefit from it, as MDB entries are already
+> > > notified by MAC.
+> > Not sure I follow. When FDB entries are added, it also generates notification
+> > events.
+> 
+> I meant the switchdev notification sent to drivers:
+> 
+> /* SWITCHDEV_OBJ_ID_PORT_MDB */
+> struct switchdev_obj_port_mdb {
+> 	struct switchdev_obj obj;
+> 	unsigned char addr[ETH_ALEN];
+> 	u16 vid;
+> };
+> 
+> By extending MDB entries to also be keyed by MAC you basically get a lot
+> of things for free without duplicating the same code for multicast FDBs.
+Agree, this should be the same.
 
-                 multi-port
-mtu1500 - mtu1500|bridge|1500 - mtu1500
-  A                  |            B
-                   mtu1300
+> AFAICS, then only change in the fast path is in br_mdb_get() where you
+> need to use DMAC as key in case Ethertype is not IPv4/IPv6.
+That would be nice.
 
-With netfilter defragmentation/conntrack enabled, fragmented
-packets from A will be defragmented in prerouting, and refragmented
-at postrouting.
-But in this scenario the bridge found the frag_max_size(1500) is
-larger than the dst mtu stored in the fake_rtable whitch is
-always equal to the bridge's mtu 1300, then packets will be dopped.
-
-This modifies ip_skb_dst_mtu to use the out dev's mtu instead
-of bridge's mtu in bridge refragment.
-
-Signed-off-by: Rundong Ge <rdong.ge@gmail.com>
----
- include/net/ip.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 29d89de..0512de3 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -450,6 +450,8 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
- static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
- 					  const struct sk_buff *skb)
- {
-+	if ((skb_dst(skb)->flags & DST_FAKE_RTABLE) && skb->dev)
-+		return min(skb->dev->mtu, IP_MAX_MTU);
- 	if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
- 		bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
- 
 -- 
-1.8.3.1
-
+/Allan
