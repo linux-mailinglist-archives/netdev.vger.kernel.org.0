@@ -2,343 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 037427B4B9
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 23:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1219B7B4B8
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 23:03:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728562AbfG3VDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 17:03:09 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44559 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726078AbfG3VDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 17:03:09 -0400
-Received: by mail-qt1-f195.google.com with SMTP id 44so33352462qtg.11
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 14:03:08 -0700 (PDT)
+        id S1728515AbfG3VDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 17:03:05 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36111 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726078AbfG3VDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 17:03:05 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n4so67318795wrs.3
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 14:03:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XyvY8QNLkiiOVc68G9s8viaKF2VOmnT4a/++xZMWumE=;
-        b=CHqXYiXen/UPoKWU7oqUm+qd6I4NTxpD1C0G0Hed8fQiFKTB/sXMEQgt53VcM16G7k
-         rBAKNuHdhzHJXJCkMmmaqO0eBjJ8PZLJnfnUtCllDsHQ4BXP0yuNmeKqexrOtW0uoDen
-         9lajCyuDk+dT9I5dgdDRZkjkdskE8MP0K054Ql3Jd4LT2CRezzzxzE/gi2rFc6T7p4ut
-         B9wxnwzBnFJaqnvz3ftQUas+dyq/WipO3svh6MAaNcllcBxdIwdCN3Vk+adSJNtUEFT3
-         7QlOyzNbjjiSzLk0hYHdGiBzjZ2QDQnUIz5wUWIb3NczLQ1TTeS1pKUJMtvXJyIQGz7F
-         x8Iw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=FPr+LzpDg5/UlcmRNbQ05kmToPxklejST3vORmEqpjo=;
+        b=xVGfrxCBpXYDwatAAz0wvQ/FwhwYjBV7bQybvpJcsiBqdJ1EP7mV7MUbdbDjptUnfX
+         QCOt5cyWpVIKh9wa6yuJk2FCEw3zp/Sf0cpujCsAKrjUTQ2H3PKfNsd9Xe5M4+w3Ty0G
+         q9Wh1pWQgEXjGNFmiPizzwyzqewaLks8ljTESd8TBGJIcSunNwf0f4yDe0N8JV01lvRX
+         E0h7pumZ/RcCROmiftCRvrIIYymdobSdOXGfiY35qblP0K6EeWCBX/2Ub1G7EHAULuQd
+         rjim4YE+zKMcg6vS6RUexB5vpzslhcIEPbZhxMqSep3ZmAaSAn8dhyfKfP3fdph2k8Qc
+         jKJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XyvY8QNLkiiOVc68G9s8viaKF2VOmnT4a/++xZMWumE=;
-        b=uNesgtSZCjrR+9mow6jChJV/qDHnYxlEzf8gFJldxDEa+K30JFd4JCDFKNb56RSytb
-         dfEt2SKCE4UixCjT2HvOvdc+uFFFeQXZfp37chn2h2r05pnUWpnZtKjhA2STTl6gRUn7
-         ygLla+ljXuZWe8Q6Xr4ieGTEhBxYsTfSLwJ5ZCV4u8R0N67+nNUHEGtnaMDdh1o9aMlo
-         sLr6dVx05uRmYpDvMAWiR+mUjVLEf/wMEtznT8sPbyXBc1OM4+HL/40+TSiZ+myRAoJY
-         tThYZ17Rz+4vDMNQbRjcce7s45D1kPYcsoyGDTF1CZc/XbDbp4w2RGnw8U0WCjprhRTq
-         jJaA==
-X-Gm-Message-State: APjAAAVOk5QEuhBPQmVJWI7PxOSQzg8qoeI6s1SEBznmXZ1lKa/TEBMw
-        DuFoxt3VDlAZdbfAwGgQel+Uww==
-X-Google-Smtp-Source: APXvYqynwHLjSNfoHCsmYq/ZlGw8pVK36OlkPbgicz/uc87Gv/CbPoMhxVElYXHhFtIwSckOn9l43w==
-X-Received: by 2002:ac8:25c2:: with SMTP id f2mr83577843qtf.164.1564520588036;
-        Tue, 30 Jul 2019 14:03:08 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t26sm34668336qtc.95.2019.07.30.14.03.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 14:03:07 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com, ctakshak@fb.com, kernel-team@fb.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH bpf-next v2] tools: bpftool: add support for reporting the effective cgroup progs
-Date:   Tue, 30 Jul 2019 14:03:00 -0700
-Message-Id: <20190730210300.13113-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=FPr+LzpDg5/UlcmRNbQ05kmToPxklejST3vORmEqpjo=;
+        b=cKgspAEJyYvNPpgp/MmmFD48dNW9Wz5iBNeLm3ZwuIh4BjrlNZbPn1+Q/Ke5fndk26
+         n/DlDPSTlpnV9kh5n93wXZnQL7ErlaTMak1e6Kx2nObnXo8TXl+G5RF+uOZUw5TAbS6s
+         b+EVaH+MMtNa2lAEZ/tg+wYuOQKvoRHcHt/bzZGA3fAah1S0ABAMX97ukhv9xG4jSEDL
+         uVM/Wu2bIbgFSc3Ia75e9so98mz01gr47X8AUUoMdM47z57EbkRdD5HmZOOE4dZbMTd/
+         q86y2cwPIbOxvLcmyx3EsI4L7BhG+Nco2/iWttWoJeuUi+ZLJFELzVhsjkMqYgUugU1J
+         p28w==
+X-Gm-Message-State: APjAAAVGWdvX+aSS6v/9/uA+9D3ivstMUHuTDVQojM5QgOgwKSP3PbUy
+        epSxXySxK9c0ol1ftU/q8Sw=
+X-Google-Smtp-Source: APXvYqzAeUPE0I6WTi+2CaqccHTK7KQfiU+wMIlMGRvf3vNzJ4hJlq0e9k+jGoqVZ36U36in1RVyNw==
+X-Received: by 2002:adf:ed41:: with SMTP id u1mr123312712wro.162.1564520582852;
+        Tue, 30 Jul 2019 14:03:02 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id 5sm53767607wmg.42.2019.07.30.14.03.02
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 14:03:02 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 23:03:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next 3/3] netdevsim: create devlink and netdev
+ instances in namespace
+Message-ID: <20190730210301.GB2288@nanopsycho.orion>
+References: <20190727094459.26345-1-jiri@resnulli.us>
+ <20190727094459.26345-4-jiri@resnulli.us>
+ <20190729115906.6bc2176d@cakuba.netronome.com>
+ <20190730060655.GB2312@nanopsycho.orion>
+ <20190730101411.7dc1e83d@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730101411.7dc1e83d@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Takshak said in the original submission:
+Tue, Jul 30, 2019 at 07:14:11PM CEST, jakub.kicinski@netronome.com wrote:
+>On Tue, 30 Jul 2019 08:06:55 +0200, Jiri Pirko wrote:
+>> >> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+>> >> index 79c05af2a7c0..cdf53d0e0c49 100644
+>> >> --- a/drivers/net/netdevsim/netdevsim.h
+>> >> +++ b/drivers/net/netdevsim/netdevsim.h
+>> >> @@ -19,6 +19,7 @@
+>> >>  #include <linux/netdevice.h>
+>> >>  #include <linux/u64_stats_sync.h>
+>> >>  #include <net/devlink.h>
+>> >> +#include <net/net_namespace.h>  
+>> >
+>> >You can just do a forward declaration, no need to pull in the header.  
+>> 
+>> Sure, but why?
+>
+>Less time to compile the kernel after net_namespace.h was touched.
+>Don't we all spend more time that we would like to recompiling the
+>kernel? :(  Not a huge deal if you have a strong preference.
 
-With different bpf attach_flags available to attach bpf programs specially
-with BPF_F_ALLOW_OVERRIDE and BPF_F_ALLOW_MULTI, the list of effective
-bpf-programs available to any sub-cgroups really needs to be available for
-easy debugging.
-
-Using BPF_F_QUERY_EFFECTIVE flag, one can get the list of not only attached
-bpf-programs to a cgroup but also the inherited ones from parent cgroup.
-
-So a new option is introduced to use BPF_F_QUERY_EFFECTIVE query flag here
-to list all the effective bpf-programs available for execution at a specified
-cgroup.
-
-Reused modified test program test_cgroup_attach from tools/testing/selftests/bpf:
-  # ./test_cgroup_attach
-
-With old bpftool:
-
- # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/
-  ID       AttachType      AttachFlags     Name
-  271      egress          multi           pkt_cntr_1
-  272      egress          multi           pkt_cntr_2
-
-Attached new program pkt_cntr_4 in cg2 gives following:
-
- # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2
-  ID       AttachType      AttachFlags     Name
-  273      egress          override        pkt_cntr_4
-
-And with new "effective" option it shows all effective programs for cg2:
-
- # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2 effective
-  ID       AttachType      AttachFlags     Name
-  273      egress          override        pkt_cntr_4
-  271      egress          override        pkt_cntr_1
-  272      egress          override        pkt_cntr_2
-
-Compared to original submission use a local flag instead of global
-option.
-
-We need to clear query_flags on every command, in case batch mode
-wants to use varying settings.
-
-v2: (Takshak)
- - forbid duplicated flags;
- - fix cgroup path freeing.
-
-Signed-off-by: Takshak Chahande <ctakshak@fb.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
----
- .../bpftool/Documentation/bpftool-cgroup.rst  | 16 +++-
- tools/bpf/bpftool/bash-completion/bpftool     | 15 ++--
- tools/bpf/bpftool/cgroup.c                    | 83 ++++++++++++-------
- 3 files changed, 76 insertions(+), 38 deletions(-)
-
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-index 585f270c2d25..06a28b07787d 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-@@ -20,8 +20,8 @@ SYNOPSIS
- CGROUP COMMANDS
- ===============
- 
--|	**bpftool** **cgroup { show | list }** *CGROUP*
--|	**bpftool** **cgroup tree** [*CGROUP_ROOT*]
-+|	**bpftool** **cgroup { show | list }** *CGROUP* [**effective**]
-+|	**bpftool** **cgroup tree** [*CGROUP_ROOT*] [**effective**]
- |	**bpftool** **cgroup attach** *CGROUP* *ATTACH_TYPE* *PROG* [*ATTACH_FLAGS*]
- |	**bpftool** **cgroup detach** *CGROUP* *ATTACH_TYPE* *PROG*
- |	**bpftool** **cgroup help**
-@@ -35,13 +35,17 @@ CGROUP COMMANDS
- 
- DESCRIPTION
- ===========
--	**bpftool cgroup { show | list }** *CGROUP*
-+	**bpftool cgroup { show | list }** *CGROUP* [**effective**]
- 		  List all programs attached to the cgroup *CGROUP*.
- 
- 		  Output will start with program ID followed by attach type,
- 		  attach flags and program name.
- 
--	**bpftool cgroup tree** [*CGROUP_ROOT*]
-+		  If **effective** is specified retrieve effective programs that
-+		  will execute for events within a cgroup. This includes
-+		  inherited along with attached ones.
-+
-+	**bpftool cgroup tree** [*CGROUP_ROOT*] [**effective**]
- 		  Iterate over all cgroups in *CGROUP_ROOT* and list all
- 		  attached programs. If *CGROUP_ROOT* is not specified,
- 		  bpftool uses cgroup v2 mountpoint.
-@@ -50,6 +54,10 @@ DESCRIPTION
- 		  commands: it starts with absolute cgroup path, followed by
- 		  program ID, attach type, attach flags and program name.
- 
-+		  If **effective** is specified retrieve effective programs that
-+		  will execute for events within a cgroup. This includes
-+		  inherited along with attached ones.
-+
- 	**bpftool cgroup attach** *CGROUP* *ATTACH_TYPE* *PROG* [*ATTACH_FLAGS*]
- 		  Attach program *PROG* to the cgroup *CGROUP* with attach type
- 		  *ATTACH_TYPE* and optional *ATTACH_FLAGS*.
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 6b961a5ed100..df16c5415444 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -710,12 +710,15 @@ _bpftool()
-             ;;
-         cgroup)
-             case $command in
--                show|list)
--                    _filedir
--                    return 0
--                    ;;
--                tree)
--                    _filedir
-+                show|list|tree)
-+                    case $cword in
-+                        3)
-+                            _filedir
-+                            ;;
-+                        4)
-+                            COMPREPLY=( $( compgen -W 'effective' -- "$cur" ) )
-+                            ;;
-+                    esac
-                     return 0
-                     ;;
-                 attach|detach)
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index f3c05b08c68c..44352b5aca85 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -29,6 +29,8 @@
- 	"                        recvmsg4 | recvmsg6 | sysctl |\n"	       \
- 	"                        getsockopt | setsockopt }"
- 
-+static unsigned int query_flags;
-+
- static const char * const attach_type_strings[] = {
- 	[BPF_CGROUP_INET_INGRESS] = "ingress",
- 	[BPF_CGROUP_INET_EGRESS] = "egress",
-@@ -107,7 +109,8 @@ static int count_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type)
- 	__u32 prog_cnt = 0;
- 	int ret;
- 
--	ret = bpf_prog_query(cgroup_fd, type, 0, NULL, NULL, &prog_cnt);
-+	ret = bpf_prog_query(cgroup_fd, type, query_flags, NULL,
-+			     NULL, &prog_cnt);
- 	if (ret)
- 		return -1;
- 
-@@ -125,8 +128,8 @@ static int show_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type,
- 	int ret;
- 
- 	prog_cnt = ARRAY_SIZE(prog_ids);
--	ret = bpf_prog_query(cgroup_fd, type, 0, &attach_flags, prog_ids,
--			     &prog_cnt);
-+	ret = bpf_prog_query(cgroup_fd, type, query_flags, &attach_flags,
-+			     prog_ids, &prog_cnt);
- 	if (ret)
- 		return ret;
- 
-@@ -158,20 +161,34 @@ static int show_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type,
- static int do_show(int argc, char **argv)
- {
- 	enum bpf_attach_type type;
-+	const char *path;
- 	int cgroup_fd;
- 	int ret = -1;
- 
--	if (argc < 1) {
--		p_err("too few parameters for cgroup show");
--		goto exit;
--	} else if (argc > 1) {
--		p_err("too many parameters for cgroup show");
--		goto exit;
-+	query_flags = 0;
-+
-+	if (!REQ_ARGS(1))
-+		return -1;
-+	path = GET_ARG();
-+
-+	while (argc) {
-+		if (is_prefix(*argv, "effective")) {
-+			if (query_flags & BPF_F_QUERY_EFFECTIVE) {
-+				p_err("duplicated argument: %s", *argv);
-+				return -1;
-+			}
-+			query_flags |= BPF_F_QUERY_EFFECTIVE;
-+			NEXT_ARG();
-+		} else {
-+			p_err("expected no more arguments, 'effective', got: '%s'?",
-+			      *argv);
-+			return -1;
-+		}
- 	}
- 
--	cgroup_fd = open(argv[0], O_RDONLY);
-+	cgroup_fd = open(path, O_RDONLY);
- 	if (cgroup_fd < 0) {
--		p_err("can't open cgroup %s", argv[0]);
-+		p_err("can't open cgroup %s", path);
- 		goto exit;
- 	}
- 
-@@ -294,26 +311,37 @@ static char *find_cgroup_root(void)
- 
- static int do_show_tree(int argc, char **argv)
- {
--	char *cgroup_root;
-+	char *cgroup_root, *cgroup_alloced = NULL;
- 	int ret;
- 
--	switch (argc) {
--	case 0:
--		cgroup_root = find_cgroup_root();
--		if (!cgroup_root) {
-+	query_flags = 0;
-+
-+	if (!argc) {
-+		cgroup_alloced = find_cgroup_root();
-+		if (!cgroup_alloced) {
- 			p_err("cgroup v2 isn't mounted");
- 			return -1;
- 		}
--		break;
--	case 1:
--		cgroup_root = argv[0];
--		break;
--	default:
--		p_err("too many parameters for cgroup tree");
--		return -1;
-+		cgroup_root = cgroup_alloced;
-+	} else {
-+		cgroup_root = GET_ARG();
-+
-+		while (argc) {
-+			if (is_prefix(*argv, "effective")) {
-+				if (query_flags & BPF_F_QUERY_EFFECTIVE) {
-+					p_err("duplicated argument: %s", *argv);
-+					return -1;
-+				}
-+				query_flags |= BPF_F_QUERY_EFFECTIVE;
-+				NEXT_ARG();
-+			} else {
-+				p_err("expected no more arguments, 'effective', got: '%s'?",
-+				      *argv);
-+				return -1;
-+			}
-+		}
- 	}
- 
--
- 	if (json_output)
- 		jsonw_start_array(json_wtr);
- 	else
-@@ -338,8 +366,7 @@ static int do_show_tree(int argc, char **argv)
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
- 
--	if (argc == 0)
--		free(cgroup_root);
-+	free(cgroup_alloced);
- 
- 	return ret;
- }
-@@ -459,8 +486,8 @@ static int do_help(int argc, char **argv)
- 	}
- 
- 	fprintf(stderr,
--		"Usage: %s %s { show | list } CGROUP\n"
--		"       %s %s tree [CGROUP_ROOT]\n"
-+		"Usage: %s %s { show | list } CGROUP [**effective**]\n"
-+		"       %s %s tree [CGROUP_ROOT] [**effective**]\n"
- 		"       %s %s attach CGROUP ATTACH_TYPE PROG [ATTACH_FLAGS]\n"
- 		"       %s %s detach CGROUP ATTACH_TYPE PROG\n"
- 		"       %s %s help\n"
--- 
-2.21.0
-
+I removed it in v2. I don't care that much either :)
