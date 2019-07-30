@@ -2,106 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC937A0E6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 08:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCD907A108
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 08:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727723AbfG3GAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 02:00:37 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53973 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726206AbfG3GAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 02:00:37 -0400
-Received: by mail-wm1-f67.google.com with SMTP id x15so55862260wmj.3;
-        Mon, 29 Jul 2019 23:00:35 -0700 (PDT)
+        id S1727860AbfG3GFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 02:05:51 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37058 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbfG3GFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 02:05:50 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n9so39232838wrr.4
+        for <netdev@vger.kernel.org>; Mon, 29 Jul 2019 23:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4ztu+pimjN743C29mSszt2yGsEtnV4+Z/3nUKYXGTtQ=;
-        b=BpaIp+JtF+6eIAsvbjmiYoxlcsvAkOCrc9w/8PmLFI9t0AG1lJZi97ohUGWU83jbgk
-         +d5eXUe/+hP3FPPXjdXA/0n8vaqKc219X36ep5VwU0mNkXwimm5sDVtkFf70E29JrxN2
-         xShcoQ7ZlUXDJpd4Xe1y5g1Sv4czJ8ULB7BK5+lq3H4AIX+RqYuaWxBnvxmMkfpn645y
-         xBQIfbEaJAM/+uSYUcMu+2ZucCsBplZXcu6SchLe6bu1xqFDgBoPzqf2243Y7tZ3X8AS
-         9vCOaxtYIo/f+PABV2OO2NlqmBgv8uZWji/st8JlSWI/PZk4t34PDDkngiYcMX6w7v/a
-         GPZQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=7D7Tjwk/HO6/4Yt/x6Nc/qQhUHHBVP+CTGXJ6DRqToo=;
+        b=UTVTdiwwoOhD+NJTGTteF9N4+sD54qiJsYYu/CA4RzuCjAJzhqI0NGj2379bbVXfsn
+         Rg1ffY/NiyO1SVA677TlBwnYQcHShdEgLeTYpckovmdm7zm0U53R+D+DdQogHL5e2Bpc
+         DTvzbiMxLjLq43AqhauRI4ND3eUWVM0RLCcbrGxsrSTCfG2MPte/MUWCOYryja/5CaKC
+         6Uo8cmv8wpZjP522gGR9mQ51obokG1131PkN2z06aWxoq0StvsVPjT41B9SIYK1gcmDq
+         F9oGsV0yKZhuzk9OabzTAG8Tl1jAYC1X6xBzTT38KW/lqDPJrj4U/GykgleIkJ52yuFu
+         Prng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4ztu+pimjN743C29mSszt2yGsEtnV4+Z/3nUKYXGTtQ=;
-        b=nrrnV35mBlLsnwxygHVPgIpd7fPERbQL+At/PmE3dKZAmSJ9PlYOHk+3OlH9CZU8iQ
-         kuYDQ3hWhAVBg5pYOVrDensePGR5TRt4KvLKUnbqnZbNjRU+yPfpD/opOUpw2HAHOHxx
-         h7QETpeG6xZkSVTtTD0uGaOduIR27RtclZJmelufeU7dRvPNA7PQqzwnCfifBdBwjur0
-         A8vHkvTVcaAVxa/IOGPKOKfarh7bTNh3P7i357PTPe54znX/TZ+q1Zu6r1qJ6uyAqC9b
-         YeakB7chZnrOwhqUH1z95HlxiGOSEBqf/2MZct0YZzw5QXuCn7LEUaqwBYwoNWWic4wy
-         KdfA==
-X-Gm-Message-State: APjAAAWb7SOll+l/59PZ2DYNDlyVZU23LIjYXiaIGtmBdmnmFuBkhph7
-        NVcGCGvq2JifIx2LS9elULrcdEz2
-X-Google-Smtp-Source: APXvYqxjONCiW2vReiQWjQagiM+52KMDKfC+HZONk+g+xcwNev5z7RbBF96DpBc9Kfdp3o0g08LgXA==
-X-Received: by 2002:a1c:35c2:: with SMTP id c185mr101364338wma.58.1564466435081;
-        Mon, 29 Jul 2019 23:00:35 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:6c98:6a00:6f0a:eb31? (p200300EA8F4342006C986A006F0AEB31.dip0.t-ipconnect.de. [2003:ea:8f43:4200:6c98:6a00:6f0a:eb31])
-        by smtp.googlemail.com with ESMTPSA id h16sm68205312wrv.88.2019.07.29.23.00.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 23:00:34 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] net: phy: broadcom: set features explicitly
- for BCM54616S
-To:     Tao Ren <taoren@fb.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-References: <20190730002532.85509-1-taoren@fb.com>
- <20190730033558.GB20628@lunn.ch>
- <aff2728d-5db1-50fd-767c-29b355890323@fb.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <bdfe07d3-66b4-061a-a149-aa2aef94b9b7@gmail.com>
-Date:   Tue, 30 Jul 2019 08:00:24 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=7D7Tjwk/HO6/4Yt/x6Nc/qQhUHHBVP+CTGXJ6DRqToo=;
+        b=nMVT8r6xK19ZXdtFi/OfdfCW/tiWs6TXFqYEmiK8pHeU7ymmKHtN3MKlwQ8XKwKL4X
+         HQKsgGJ6qQDG8yIexoplkWCjvT4d0TXsOOX1EAQasF2q9am6+izgaL/j+3MBce9FDReO
+         mT/TviHk+5M3SkCRLhd7o/QshX7THeLJ3mOzrIRVkGTFoPdIMrnwYhXoeOCAqHjrMH3n
+         kVug2sd3++du6BBE+KK8EksmH3IU8ubd/+P+8cDcr2qwdK3Ki+i2gBZeVxuIB2VC0ITn
+         pXOCg+FlZXl1yPsc+hbXqIL3CxaVsTVhR4VzuE5cAje6m0QyWtUjnoJG5NDjyVSprcyq
+         aZJA==
+X-Gm-Message-State: APjAAAV7L5Z7Tdyn5mNOpOVTXH9HW0VhqC2K3o1Llr9CW1KYubFN2Hj4
+        7SReyGy4AauHNbw+4BIsRBI=
+X-Google-Smtp-Source: APXvYqzHzwfOHjE5w06CfCAdbY9+ZP/oSDdf6xorhmOfTcQ+M/uviuDsMokdgc5I+fgIj5M8X7L7ig==
+X-Received: by 2002:a5d:6583:: with SMTP id q3mr31671708wru.184.1564466748587;
+        Mon, 29 Jul 2019 23:05:48 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id o6sm131074586wra.27.2019.07.29.23.05.48
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 29 Jul 2019 23:05:48 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 08:05:47 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jakub.kicinski@netronome.com,
+        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next 1/3] net: devlink: allow to change namespaces
+Message-ID: <20190730060547.GA2312@nanopsycho.orion>
+References: <20190727094459.26345-1-jiri@resnulli.us>
+ <20190727094459.26345-2-jiri@resnulli.us>
+ <20190729.105216.2073541569967891866.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <aff2728d-5db1-50fd-767c-29b355890323@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190729.105216.2073541569967891866.davem@davemloft.net>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.07.2019 07:05, Tao Ren wrote:
-> On 7/29/19 8:35 PM, Andrew Lunn wrote:
->> On Mon, Jul 29, 2019 at 05:25:32PM -0700, Tao Ren wrote:
->>> BCM54616S feature "PHY_GBIT_FEATURES" was removed by commit dcdecdcfe1fc
->>> ("net: phy: switch drivers to use dynamic feature detection"). As dynamic
->>> feature detection doesn't work when BCM54616S is working in RGMII-Fiber
->>> mode (different sets of MII Control/Status registers being used), let's
->>> set "PHY_GBIT_FEATURES" for BCM54616S explicitly.
->>
->> Hi Tao
->>
->> What exactly does it get wrong?
->>
->>      Thanks
->> 	Andrew
-> 
-> Hi Andrew,
-> 
-> BCM54616S is set to RGMII-Fiber (1000Base-X) mode on my platform, and none of the features (1000BaseT/100BaseT/10BaseT) can be detected by genphy_read_abilities(), because the PHY only reports 1000BaseX_Full|Half ability in this mode.
-> 
-Are you going to use the PHY in copper or fibre mode?
-In case you use fibre mode, why do you need the copper modes set as supported?
-Or does the PHY just start in fibre mode and you want to switch it to copper mode?
+Mon, Jul 29, 2019 at 07:52:16PM CEST, davem@davemloft.net wrote:
+>From: Jiri Pirko <jiri@resnulli.us>
+>Date: Sat, 27 Jul 2019 11:44:57 +0200
+>
+>> +	if ((netns_pid_attr && (netns_fd_attr || netns_id_attr)) ||
+>> +	    (netns_fd_attr && (netns_pid_attr || netns_id_attr)) ||
+>> +	    (netns_id_attr && (netns_pid_attr || netns_fd_attr))) {
+>> +		NL_SET_ERR_MSG(info->extack, "multiple netns identifying attributes specified");
+>> +		return ERR_PTR(-EINVAL);
+>> +	}
+>
+>How about:
+>
+>	if (!!a + !!b + !!c > 1) {
+>	...
 
-> 
-> Thanks,
-> 
-> Tao
-> 
-Heiner
+I just copied the logic from the existing code. But sure :)
+
+
+>
+>> +
+>> +	if (netns_pid_attr) {
+>> +		net = get_net_ns_by_pid(nla_get_u32(netns_pid_attr));
+>> +	} else if (netns_fd_attr) {
+>> +		net = get_net_ns_by_fd(nla_get_u32(netns_fd_attr));
+>> +	} else if (netns_id_attr) {
+>> +		net = get_net_ns_by_id(sock_net(skb->sk),
+>> +				       nla_get_u32(netns_id_attr));
+>> +		if (!net)
+>> +			net = ERR_PTR(-EINVAL);
+>> +	}
+>> +	if (IS_ERR(net)) {
+>
+>I think this is going to be one of those cases where a compiler won't be able
+>to prove that 'net' is guaranteed to be initialized at this spot.  Please
+>rearrange this code somehow so that is unlikely to happen.
+
+It does not complain though. The function cannot be entered unless at
+least one is. I'll check again.
+
+
+>
+>Thanks.
