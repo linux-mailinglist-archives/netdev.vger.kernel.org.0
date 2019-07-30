@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7E379F79
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 05:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A661979F86
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 05:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727732AbfG3DMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jul 2019 23:12:10 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:55102 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbfG3DMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jul 2019 23:12:09 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x6U3BePq012141, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x6U3BePq012141
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Tue, 30 Jul 2019 11:11:41 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Tue, 30 Jul
- 2019 11:11:40 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Jian-Hong Pan <jian-hong@endlessm.com>,
-        David Laight <David.Laight@aculab.com>
-CC:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] rtw88: pci: Use general byte arrays as the elements of RX ring
-Thread-Topic: [PATCH] rtw88: pci: Use general byte arrays as the elements of
- RX ring
-Thread-Index: AQHVQsDFA5h+OZuaBU+XsMB5k0fq7qbaiPcAgAFfSQCAADO7gIAABNsAgAZbryA=
-Date:   Tue, 30 Jul 2019 03:11:39 +0000
-Message-ID: <F7CD281DE3E379468C6D07993EA72F84D1881C54@RTITMBSVM04.realtek.com.tw>
-References: <20190725080925.6575-1-jian-hong@endlessm.com>
- <06d713fff7434dfb9ccab32c2e2112e2@AcuMS.aculab.com>
- <CAPpJ_ecAAw=1X=7+MOw-VVH0ZKBr6rcRub6JnEqgNbZ6Hxt=ag@mail.gmail.com>
- <c2cdffd30923459e8773379fc2927e1d@AcuMS.aculab.com>
- <CAPpJ_eey7+KCMFj2YVQD8ziWR_xf-==k9MYb49-32Z5E6vTdHA@mail.gmail.com>
-In-Reply-To: <CAPpJ_eey7+KCMFj2YVQD8ziWR_xf-==k9MYb49-32Z5E6vTdHA@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.183]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726863AbfG3Dcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jul 2019 23:32:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46524 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726167AbfG3Dcf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jul 2019 23:32:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4mF6Hbr7QczI5PcOmjlA7L0RwfQ/3SFLBSWGVwkXv38=; b=gl2jYAwRKtxW1hFrk0nYA0J6zJ
+        VXk4mYKObWiOxItwiQkA0ZRZa/vns5vAAeVzGlYH5e1vUs3T5kyKnHtxGP9x+ISgb4y6Rm3mSnvcg
+        Fjo7hOYf8XIHQ5z2wpIoit01PZFX3y5HFOpxmEyex+fVfykWCBO24O+s/A5WWlSz/9yg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hsIsH-0005Te-Ox; Tue, 30 Jul 2019 05:32:29 +0200
+Date:   Tue, 30 Jul 2019 05:32:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: phy_led_triggers: Fix a possible null-pointer
+ dereference in phy_led_trigger_change_speed()
+Message-ID: <20190730033229.GA20628@lunn.ch>
+References: <20190729092424.30928-1-baijiaju1990@gmail.com>
+ <20190729134553.GC4110@lunn.ch>
+ <f603f3c3-f7c9-8dff-5f30-74174282819c@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f603f3c3-f7c9-8dff-5f30-74174282819c@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+ID4gPiBXaGlsZSBhbGxvY2F0aW5nIGFsbCA1MTIgYnVmZmVycyBpbiBvbmUgYmxvY2sgKGp1
-c3Qgb3ZlciA0TUIpDQo+ID4gPiA+IGlzIHByb2JhYmx5IG5vdCBhIGdvb2QgaWRlYSwgeW91IG1h
-eSBuZWVkIHRvIGFsbG9jYXRlZCAoYW5kIGRtYSBtYXApDQo+ID4gPiA+IHRoZW4gaW4gZ3JvdXBz
-Lg0KPiA+ID4NCj4gPiA+IFRoYW5rcyBmb3IgcmV2aWV3aW5nLiAgQnV0IGdvdCBxdWVzdGlvbnMg
-aGVyZSB0byBkb3VibGUgY29uZmlybSB0aGUNCj4gaWRlYS4NCj4gPiA+IEFjY29yZGluZyB0byBv
-cmlnaW5hbCBjb2RlLCBpdCBhbGxvY2F0ZXMgNTEyIHNrYnMgZm9yIFJYIHJpbmcgYW5kIGRtYQ0K
-PiA+ID4gbWFwcGluZyBvbmUgYnkgb25lLiAgU28sIHRoZSBuZXcgY29kZSBhbGxvY2F0ZXMgbWVt
-b3J5IGJ1ZmZlciA1MTINCj4gPiA+IHRpbWVzIHRvIGdldCA1MTIgYnVmZmVyIGFycmF5cy4gIFdp
-bGwgdGhlIDUxMiBidWZmZXJzIGFycmF5cyBiZSBpbiBvbmUNCj4gPiA+IGJsb2NrPyAgRG8geW91
-IG1lYW4gYWdncmVnYXRlIHRoZSBidWZmZXJzIGFzIGEgc2NhdHRlcmxpc3QgYW5kIHVzZQ0KPiA+
-ID4gZG1hX21hcF9zZz8NCj4gPg0KPiA+IElmIHlvdSBtYWxsb2MgYSBidWZmZXIgb2Ygc2l6ZSAo
-ODE5MiszMikgdGhlIGFsbG9jYXRvciB3aWxsIGVpdGhlcg0KPiA+IHJvdW5kIGl0IHVwIHRvIGEg
-d2hvbGUgbnVtYmVyIG9mIChvZnRlbiA0aykgcGFnZXMgb3IgdG8gYSBwb3dlciBvZg0KPiA+IDIg
-b2YgcGFnZXMgLSBzbyBlaXRoZXIgMTJrIG9mIDE2ay4NCj4gPiBJIHRoaW5rIHRoZSBMaW51eCBh
-bGxvY2F0b3IgZG9lcyB0aGUgbGF0dGVyLg0KPiA+IFNvbWUgb2YgdGhlIGFsbG9jYXRvcnMgYWxz
-byAnc3RlYWwnIGEgYml0IGZyb20gdGhlIGZyb250IG9mIHRoZSBidWZmZXINCj4gPiBmb3IgJ3Jl
-ZCB0YXBlJy4NCj4gPg0KPiA+IE9UT0ggbWFsbG9jIHRoZSBzcGFjZSAxNSBidWZmZXJzIGFuZCB0
-aGUgYWxsb2NhdG9yIHdpbGwgcm91bmQgdGhlDQo+ID4gMTUqKDgxOTIgKyAzMikgdXAgdG8gMzIq
-NGsgLSBhbmQgeW91IHdhc3RlIHVuZGVyIDhrIGFjcm9zcyBhbGwgdGhlDQo+ID4gYnVmZmVycy4N
-Cj4gPg0KPiA+IFlvdSB0aGVuIGRtYV9tYXAgdGhlIGxhcmdlIGJ1ZmZlciBhbmQgc3BsaXQgaW50
-byB0aGUgYWN0dWFsIHJ4IGJ1ZmZlcnMuDQo+ID4gUmVwZWF0IHVudGlsIHlvdSd2ZSBmaWxsZWQg
-dGhlIGVudGlyZSByaW5nLg0KPiA+IFRoZSBvbmx5IGNvbXBsaWNhdGlvbiBpcyByZW1lbWJlcmlu
-ZyB0aGUgYmFzZSBhZGRyZXNzIChhbmQgc2l6ZSkgZm9yDQo+ID4gdGhlIGRtYV91bm1hcCBhbmQg
-ZnJlZS4NCj4gPiBBbHRob3VnaCB0aGVyZSBpcyBwbGVudHkgb2YgcGFkZGluZyB0byBleHRlbmQg
-dGhlIGJ1ZmZlciBzdHJ1Y3R1cmUNCj4gPiBzaWduaWZpY2FudGx5IHdpdGhvdXQgdXNpbmcgbW9y
-ZSBtZW1vcnkuDQo+ID4gQWxsb2NhdGUgaW4gMTUncyBhbmQgeW91IChwcm9iYWJseSkgaGF2ZSA1
-MTIgYnl0ZXMgcGVyIGJ1ZmZlci4NCj4gPiBBbGxvY2F0ZSBpbiAzMSdzIGFuZCB5b3UgaGF2ZSAy
-NTYgYnl0ZXMuDQo+ID4NCj4gPiBUaGUgcHJvYmxlbSBpcyB0aGF0IGxhcmdlciBhbGxvY2F0ZXMg
-YXJlIG1vcmUgbGlrZWx5IHRvIGZhaWwNCj4gPiAoZXNwZWNpYWxseSBpZiB0aGUgc3lzdGVtIGhh
-cyBiZWVuIHJ1bm5pbmcgZm9yIHNvbWUgdGltZSkuDQo+ID4gU28geW91IGFsbW9zdCBjZXJ0YWlu
-bHkgd2FudCB0byBiZSBhYmxlIHRvIGZhbGwgYmFjayB0byBzbWFsbGVyDQo+ID4gYWxsb2NhdGVz
-IGV2ZW4gdGhvdWdoIHRoZXkgdXNlIG1vcmUgbWVtb3J5Lg0KPiA+DQo+ID4gSSBhbHNvIHdvbmRl
-ciBpZiB5b3UgYWN0dWFsbHkgbmVlZCA1MTIgOGsgcnggYnVmZmVycyB0byBjb3Zlcg0KPiA+IGlu
-dGVycnVwdCBsYXRlbmN5Pw0KPiA+IEkndmUgbm90IGRvbmUgYW55IG1lYXN1cmVtZW50cyBmb3Ig
-MjAgeWVhcnMhDQo+IA0KPiBUaGFua3MgZm9yIHRoZSBleHBsYW5hdGlvbi4NCj4gSSBhbSBub3Qg
-c3VyZSB0aGUgY29tYmluYXRpb24gb2YgNTEyIDhrIFJYIGJ1ZmZlcnMuICBNYXliZSBSZWFsdGVr
-DQo+IGZvbGtzIGNhbiBnaXZlIHVzIHNvbWUgaWRlYS4NCj4gVG9ueSBDaHVhbmcgYW55IGNvbW1l
-bnQ/DQo+IA0KPiBKaWFuLUhvbmcgUGFuDQo+IA0KDQo1MTIgUlggYnVmZmVycyBpcyBub3QgbmVj
-ZXNzYXJ5IEkgdGhpbmsuIEJ1dCBJIGhhdmVuJ3QgaGFkIGEgY2hhbmNlIHRvDQp0ZXN0IGlmIHJl
-ZHVjZSB0aGUgbnVtYmVyIG9mIFJYIFNLQnMgY291bGQgYWZmZWN0IHRoZSBsYXRlbmN5Lg0KSSBj
-YW4gcnVuIHNvbWUgdGhyb3VnaHB1dCB0ZXN0cyBhbmQgdGhlbiBkZWNpZGUgYSBtaW5pbXVtIG51
-bWJlcnMNCnRoYXQgUlggcmluZyByZXF1aXJlcy4gT3IgaWYgeW91IGNhbiB0cnkgaXQuDQoNClRo
-YW5rcy4NCllhbi1Ic3Vhbg0K
+On Tue, Jul 30, 2019 at 10:25:36AM +0800, Jia-Ju Bai wrote:
+> 
+> 
+> On 2019/7/29 21:45, Andrew Lunn wrote:
+> >On Mon, Jul 29, 2019 at 05:24:24PM +0800, Jia-Ju Bai wrote:
+> >>In phy_led_trigger_change_speed(), there is an if statement on line 48
+> >>to check whether phy->last_triggered is NULL:
+> >>     if (!phy->last_triggered)
+> >>
+> >>When phy->last_triggered is NULL, it is used on line 52:
+> >>     led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
+> >>
+> >>Thus, a possible null-pointer dereference may occur.
+> >>
+> >>To fix this bug, led_trigger_event(&phy->last_triggered->trigger,
+> >>LED_OFF) is called when phy->last_triggered is not NULL.
+> >>
+> >>This bug is found by a static analysis tool STCheck written by us.
+> >Who is 'us'?
+> 
+> Me and my colleague...
+
+Well, we can leave it very vague, giving no idea who 'us' is. But
+often you want to name the company behind it, or the university, or
+the sponsor, etc.
+
+    Andrew
