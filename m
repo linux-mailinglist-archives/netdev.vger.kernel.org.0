@@ -2,199 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A91097A11A
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 08:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C10577A147
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 08:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727860AbfG3GI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 02:08:59 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:36796 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726071AbfG3GI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 02:08:59 -0400
-Received: by mail-wm1-f65.google.com with SMTP id g67so51355687wme.1;
-        Mon, 29 Jul 2019 23:08:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vXZFEIMyaqjf8/yrqJ6vwTJxuzdckyXlhrvkpantsso=;
-        b=elZONvUUCYTDmcJU9mza3ggivxr19sNxWYIHKROEzHzbtb/By7dPj5oVq9Uz+S7Yia
-         blb7vR2pYTB/D4lfs0VGV5HS4JC3JKk3Tq+4IefhKh+J39G/F2AyLAfLFssTBq1MzwsD
-         cLdcs0lezF/xU23FcXciATuA7Km/59Ru4Q3EMxo2LiPTkuRxFI8AThEjkTDyWov2Zhpj
-         /eu8FjhtIGL8+oKIkZVcmdvIf9Jn+5/lB2PPXNzNz25x5YxDRobWkmWmIxOwFp/iwgOf
-         Kg4pR0WC4nlWSg9xFbRxVslZwOVkP9oXIISu1xGsFouwbcLlbr0uXf7fEVZWuPuytCEN
-         kIwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vXZFEIMyaqjf8/yrqJ6vwTJxuzdckyXlhrvkpantsso=;
-        b=ho5SgsRh39CJbk4eeh4IgwGXkBSvWJYyTq1oOLu3+ggwnqh4zXSsY+ClZQ7QOwRNWt
-         KVhFbHRdb7aYkk50d0U+Yw7h4fZgpZN3apAhdPvuVQ02QNLXORZgTCcDD+x8ZISO82Sg
-         3oxEkxS66uS1n1MU1IFR5df3G/CfjZcKFKCr0q66j2Lb+4owplJ3bPZnBggTJ4Wv7Jcp
-         FWHcNvIPxEPavKexb3LQc8LQ0XgMiC43Y5pI3A1Nh7IKTFRdKvD3BsRQdj1uu2zTnu3r
-         DN2h2O5r7dnH/Bi26da/iwhEvn3ZyOpoYttU8vGYnAH37JG2Hh/ssBssiuhPy/d4Czah
-         KU2Q==
-X-Gm-Message-State: APjAAAU0BfwMy4QSpJuAwQvNBmu3CpoW6ycb5MnO+MrfafcMi53rueYI
-        bdq0hfoWft7JB5Bd7n/fwtQ=
-X-Google-Smtp-Source: APXvYqxOu7yvFESpqlzA9IufS7zMteNlDKZbTxtDGKRZRFO+mQw50T/NEGukqh/OrgM3pWFERoGJJg==
-X-Received: by 2002:a1c:6c01:: with SMTP id h1mr3271003wmc.30.1564466936465;
-        Mon, 29 Jul 2019 23:08:56 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:4200:6c98:6a00:6f0a:eb31? (p200300EA8F4342006C986A006F0AEB31.dip0.t-ipconnect.de. [2003:ea:8f43:4200:6c98:6a00:6f0a:eb31])
-        by smtp.googlemail.com with ESMTPSA id o6sm131096259wra.27.2019.07.29.23.08.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jul 2019 23:08:55 -0700 (PDT)
-Subject: Re: [RFC] net: phy: read link status twice when
- phy_check_link_status()
-To:     liuyonglong <liuyonglong@huawei.com>, andrew@lunn.ch,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com, salil.mehta@huawei.com,
-        yisen.zhuang@huawei.com, shiju.jose@huawei.com
-References: <1564134831-24962-1-git-send-email-liuyonglong@huawei.com>
- <92f42ee8-3659-87a7-ac96-d312a98046ba@gmail.com>
- <4b4ba599-f160-39e7-d611-45ac53268389@huawei.com>
- <a0b26e4b-e288-cf44-049a-7d0b7f5696eb@gmail.com>
- <1d4be6ad-ffe6-2325-ceab-9f35da617ee9@huawei.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <5087ee34-5776-f02b-d7e5-bce005ba3b92@gmail.com>
-Date:   Tue, 30 Jul 2019 08:08:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729004AbfG3G1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 02:27:25 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:33527 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728981AbfG3G1Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 02:27:25 -0400
+Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa4.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa4.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: J0cATDpZs7qRKgH9tpimCyLWaFwhPVNUT87pe13JM204EJlK7fa9U14roaUwlzPyPnfbmDiA3C
+ zOFyxfROpZcyfJEqO+BuEV62VtyYpFPMmRttElC+t4jpYwwXcyP2wQjI+cLu0rmoZ5PiT/MMbg
+ KZ/20nF3B3dDMpFjv7hjZibyqOtlQFflpDnWJeV8u/KjrjzAzQxxSBGS2K01dacqGzrciSWzFU
+ BcJ6zQFD3t1rmQscvog+mNlvG8BltCVusUKeMqdzo9cNiMYISTpnZm1eb8uDCgwosKqFcvIMvU
+ FE0=
+X-IronPort-AV: E=Sophos;i="5.64,325,1559545200"; 
+   d="scan'208";a="42450189"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2019 23:27:24 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 29 Jul 2019 23:27:23 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Mon, 29 Jul 2019 23:27:23 -0700
+Date:   Tue, 30 Jul 2019 08:27:22 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Ido Schimmel <idosch@idosch.org>
+CC:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
+Message-ID: <20190730062721.p4vrxo5sxbtulkrx@lx-anielsen.microsemi.net>
+References: <20190726120214.c26oj5vks7g5ntwu@soft-dev3.microsemi.net>
+ <b755f613-e6d8-a2e6-16cd-6f13ec0a6ddc@cumulusnetworks.com>
+ <20190729121409.wa47uelw5f6l4vs4@lx-anielsen.microsemi.net>
+ <95315f9e-0d31-2d34-ba50-11e1bbc1465c@cumulusnetworks.com>
+ <20190729131420.tqukz55tz26jkg73@lx-anielsen.microsemi.net>
+ <3cc69103-d194-2eca-e7dd-e2fa6a730223@cumulusnetworks.com>
+ <20190729135205.oiuthcyesal4b4ct@lx-anielsen.microsemi.net>
+ <e4cd0db9-695a-82a7-7dc0-623ded66a4e5@cumulusnetworks.com>
+ <20190729143508.tcyebbvleppa242d@lx-anielsen.microsemi.net>
+ <20190729175136.GA28572@splinter>
 MIME-Version: 1.0
-In-Reply-To: <1d4be6ad-ffe6-2325-ceab-9f35da617ee9@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190729175136.GA28572@splinter>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.07.2019 06:03, liuyonglong wrote:
-> 
-> 
-> On 2019/7/30 4:57, Heiner Kallweit wrote:
->> On 29.07.2019 05:59, liuyonglong wrote:
->>>
->>>
->>> On 2019/7/27 2:14, Heiner Kallweit wrote:
->>>> On 26.07.2019 11:53, Yonglong Liu wrote:
->>>>> According to the datasheet of Marvell phy and Realtek phy, the
->>>>> copper link status should read twice, or it may get a fake link
->>>>> up status, and cause up->down->up at the first time when link up.
->>>>> This happens more oftem at Realtek phy.
->>>>>
->>>> This is not correct, there is no fake link up status.
->>>> Read the comment in genphy_update_link, only link-down events
->>>> are latched. Means if the first read returns link up, then there
->>>> is no need for a second read. And in polling mode we don't do a
->>>> second read because we want to detect also short link drops.
->>>>
->>>> It would be helpful if you could describe your actual problem
->>>> and whether you use polling or interrupt mode.
->>>>
->>>
->>> [   44.498633] hns3 0000:bd:00.1 eth5: net open
->>> [   44.504273] hns3 0000:bd:00.1: reg=0x1, data=0x79ad -> called from phy_start_aneg
->>> [   44.532348] hns3 0000:bd:00.1: reg=0x1, data=0x798d -> called from phy_state_machine,update link.
->>
->> This should not happen. The PHY indicates link up w/o having aneg finished.
->>
->>>
->>> According to the datasheet:
->>> reg 1.5=0 now, means copper auto-negotiation not complete
->>> reg 1.2=1 now, means link is up
->>>
->>> We can see that, when we read the link up, the auto-negotiation
->>> is not complete yet, so the speed is invalid.
->>>
->>> I don't know why this happen, maybe this state is keep from bios?
->>> Or we may do something else in the phy initialize to fix it?
->>> And also confuse that why read twice can fix it?
->>>
->> I suppose that basically any delay would do.
->>
->>> [   44.554063] hns3 0000:bd:00.1: invalid speed (-1)
->>> [   44.560412] hns3 0000:bd:00.1 eth5: failed to adjust link.
->>> [   45.194870] hns3 0000:bd:00.1 eth5: link up
->>> [   45.574095] hns3 0000:bd:00.1: phyid=3, reg=0x1, data=0x7989
->>> [   46.150051] hns3 0000:bd:00.1 eth5: link down
->>> [   46.598074] hns3 0000:bd:00.1: phyid=3, reg=0x1, data=0x7989
->>> [   47.622075] hns3 0000:bd:00.1: phyid=3, reg=0x1, data=0x79a9
->>> [   48.646077] hns3 0000:bd:00.1: phyid=3, reg=0x1, data=0x79ad
->>> [   48.934050] hns3 0000:bd:00.1 eth5: link up
->>> [   49.702140] hns3 0000:bd:00.1: phyid=3, reg=0x1, data=0x79ad
->>>
->>>>> I add a fake status read, and can solve this problem.
->>>>>
->>>>> I also see that in genphy_update_link(), had delete the fake
->>>>> read in polling mode, so I don't know whether my solution is
->>>>> correct.
->>>>>
->>
->> Can you test whether the following fixes the issue for you?
->> Also it would be interesting which exact PHY models you tested
->> and whether you built the respective PHY drivers or whether you
->> rely on the genphy driver. Best use the second patch to get the
->> needed info. It may make sense anyway to add the call to
->> phy_attached_info() to the hns3 driver.
->>
-> 
-> [   40.100716] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: attached PHY driver [RTL8211F Gigabit Ethernet] (mii_bus:phy_addr=mii-0000:bd:00.3:07, irq=POLL)
-> [   40.932133] hns3 0000:bd:00.3 eth7: net open
-> [   40.932458] hns3 0000:bd:00.3: invalid speed (-1)
-> [   40.932541] 8021q: adding VLAN 0 to HW filter on device eth7
-> [   40.937149] hns3 0000:bd:00.3 eth7: failed to adjust link.
-> 
-> [   40.662050] Generic PHY mii-0000:bd:00.2:05: attached PHY driver [Generic PHY] (mii_bus:phy_addr=mii-0000:bd:00.2:05, irq=POLL)
-> [   41.563511] hns3 0000:bd:00.2 eth6: net open
-> [   41.563853] hns3 0000:bd:00.2: invalid speed (-1)
-> [   41.563943] 8021q: adding VLAN 0 to HW filter on device eth6
-> [   41.568578] IPv6: ADDRCONF(NETDEV_CHANGE): eth6: link becomes ready
-> [   41.568898] hns3 0000:bd:00.2 eth6: failed to adjust link.
-> 
-> I am using RTL8211F, but you can see that, both genphy driver and
-> RTL8211F driver have the same issue.
-> 
->>
->> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->> index 6b5cb87f3..fbecfe210 100644
->> --- a/drivers/net/phy/phy_device.c
->> +++ b/drivers/net/phy/phy_device.c
->> @@ -1807,7 +1807,8 @@ int genphy_read_status(struct phy_device *phydev)
->>  
->>  	linkmode_zero(phydev->lp_advertising);
->>  
->> -	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
->> +	if (phydev->autoneg == AUTONEG_ENABLE &&
->> +	    (phydev->autoneg_complete || phydev->link)) {
->>  		if (phydev->is_gigabit_capable) {
->>  			lpagb = phy_read(phydev, MII_STAT1000);
->>  			if (lpagb < 0)
->>
-> 
-> I have try this patch, have no effect. I suppose that at this time,
-> the autoneg actually not complete yet.
-> 
-> Maybe the wrong phy state is passed from bios? Invalid speed just
-> happen at the first time when ethX up, after that, repeat the
-> ifconfig down/ifconfig up command can not see that again.
-> 
-> So I think the bios should power off the phy(writing reg 1.11 to 1)
-> before it starts the OS? Or any other way to fix this in the OS?
-> 
-To get a better idea of whats going on it would be good to see a full
-MDIO trace. Can you enable MDIO tracing via the following sysctl file
-/sys/kernel/debug/tracing/events/mdio/enable
-and provide the generated trace?
+The 07/29/2019 20:51, Ido Schimmel wrote:
+> Can you please clarify what you're trying to achieve? I just read the
+> thread again and my impression is that you're trying to locally receive
+> packets with a certain link layer multicast address.
+Yes. The thread is also a bit confusing because we half way through realized
+that we misunderstood how the multicast packets should be handled (sorry about
+that). To begin with we had a driver where multicast packets was only copied to
+the CPU if someone needed it. Andrew and Nikolay made us aware that this is not
+how other drivers are doing it, so we changed the driver to include the CPU in
+the default multicast flood-mask.
 
-Due to polling mode each second entries will be generated, so you
-better stop network after the issue occurred.
+This changes the objective a bit. To begin with we needed to get more packets to
+the CPU (which could have been done using tc ingress rules and a trap action).
 
-> 
-> 
-> 
+Now after we changed the driver, we realized that we need something to limit the
+flooding of certain L2 multicast packets. This is the new problem we are trying
+to solve!
 
-Heiner
+Example: Say we have a bridge with 4 slave interfaces, then we want to install a
+forwarding rule saying that packets to a given L2-multicast MAC address, should
+only be flooded to 2 of the 4 ports.
+
+(instead of adding rules to get certain packets to the CPU, we are now adding
+other rules to prevent other packets from going to the CPU and other ports where
+they are not needed/wanted).
+
+This is exactly the same thing as IGMP snooping does dynamically, but only for
+IP multicast.
+
+The "bridge mdb" allow users to manually/static add/del a port to a multicast
+group, but still it operates on IP multicast address (not L2 multicast
+addresses).
+
+> Nik suggested SIOCADDMULTI.
+It is not clear to me how this should be used to limit the flooding, maybe we
+can make some hacks, but as far as I understand the intend of this is maintain
+the list of addresses an interface should receive. I'm not sure this should
+influence how for forwarding decisions are being made.
+
+> and I suggested a tc filter to get the packet to the CPU.
+The TC solution is a good solution to the original problem where wanted to copy
+more frames to the CPU. But we were convinced that this is not the right
+approach, and that the CPU by default should receive all multicast packets, and
+we should instead try to find a way to limit the flooding of certain frames as
+an optimization.
+
+> If you now want to limit the ports to which this packet is flooded, then
+> you can use tc filters in *software*:
+> 
+> # tc qdisc add dev eth2 clsact
+> # tc filter add dev eth2 egress pref 1 flower skip_hw \
+> 	dst_mac 01:21:6C:00:00:01 action drop
+Yes. This can work in the SW bridge.
+
+> If you want to forward the packet in hardware and locally receive it,
+> you can chain several mirred action and then a trap action.
+I'm not I fully understand how this should be done, but it does sound like it
+becomes quite complicated. Also, as far as I understand it will mean that we
+will be using TCAM/ACL resources to do something that could have been done with
+a simple MAC entry.
+
+> Both options avoid HW egress ACLs which your design does not support.
+True, but what is wrong with expanding the functionality of the normal
+forwarding/MAC operations to allow multiple destinations?
+
+It is not an uncommon feature (I just browsed the manual of some common L2
+switches and they all has this feature).
+
+It seems to fit nicely into the existing user-interface:
+
+bridge fdb add    01:21:6C:00:00:01 port eth0
+bridge fdb append 01:21:6C:00:00:01 port eth1
+
+It seems that it can be added to the existing implementation with out adding
+significant complexity.
+
+It will be easy to offload in HW.
+
+I do not believe that it will be a performance issue, if this is a concern then
+we may have to do a bit of benchmarking, or we can make it a configuration
+option.
+
+Long story short, we (Horatiu and I) learned a lot from the discussion here, and
+I think we should try do a new patch with the learning we got. Then it is easier
+to see what it actually means to the exiting code, complexity, exiting drivers,
+performance, default behavioral, backwards compatibly, and other valid concerns.
+
+If the patch is no good, and cannot be fixed, then we will go back and look
+further into alternative solutions.
+
+-- 
+/Allan
+
+
