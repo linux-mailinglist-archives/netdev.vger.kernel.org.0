@@ -2,112 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E0367A948
-	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 15:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 627DF7A96B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jul 2019 15:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730677AbfG3NS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 09:18:28 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:39428 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729404AbfG3NS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 09:18:28 -0400
-Received: by mail-qk1-f195.google.com with SMTP id w190so46521374qkc.6
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 06:18:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ewsU2Iz9ZvWQ7yxtRP3AUwr1AgiOeqjo56vMzVcYHuo=;
-        b=rtRmgbLtKNxNy3El0o5zpb7dxbyqN5faJ2ERC0XTB0O9iOe4Q7bnA5JLOFdQ9pUacw
-         foT2sL1Sm3yuo4K/TDrl21zgBfHB/ba0tn/ibvUzjj2CG22EmQmBt0DCTOi5b439RnC8
-         BEv8KBVmahympZOaKlES3v4AV+ixec1z9hBAgAd0jRMSCy4fa9Q6PsCWB5KAmp9kh4CK
-         TJC6XfihMHU5ZBbHLW7WUdBLieLLk+e9s6zaoRDvVsLaxahAtIEXD2NE9x5h1r6R/ypu
-         zcyPIaHVlj+NizORmMKtWnAwXEkbHFAltyBrpFeCcaa8DDjdUW/7IqJZQqAJ/Gubgo8J
-         VmbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ewsU2Iz9ZvWQ7yxtRP3AUwr1AgiOeqjo56vMzVcYHuo=;
-        b=PN7P9EsWQLArR6qsL1zZgwams4PwqlbZKD57SosTQr1PPvwghMS0gC015WPWFLIHLy
-         5PAMqImYmZhkxjmECRkOVuWRuwVpOf4FNwGEiURPgOuTdlPECakq7LqYuNoBMEFVGjdj
-         a84cU8BSiiAYm7LV0aaVY40PgGKZOTSJO3BFRS0lEhjTDLPxAlzh3OMQDBf5PhslaIPM
-         Wpv636RIVBbVEyUaJdvTBhKdUsmonrzi+lwMYAA6++M7kbHrZ6Eh/EsGg7wPuFfT69OG
-         r+Xh5bojiw/IAVHgVsKgxlAO8VuatEmbEB1MYUjtuxecplQn04sbtkT2wzeoB6TbSoAK
-         4ivg==
-X-Gm-Message-State: APjAAAXRwm7Ct5er6O7W9Eg/Di/pg8ixD9ExzlJ/QwYsyqy4F+bfiqY2
-        CXwQT3Y/sZQyMD6vYlrBdzaUGA==
-X-Google-Smtp-Source: APXvYqz4e7NmVI/4iejFlWWPdB49DwIlIfmJBMGUkQb+rhBNDLlrPJ9/lD2SOVjYXpnER+IkI+BGzA==
-X-Received: by 2002:a37:490d:: with SMTP id w13mr71871178qka.179.1564492707191;
-        Tue, 30 Jul 2019 06:18:27 -0700 (PDT)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id t2sm36523130qth.33.2019.07.30.06.18.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 06:18:26 -0700 (PDT)
-Message-ID: <1564492704.11067.28.camel@lca.pw>
-Subject: Re: [PATCH] net/socket: fix GCC8+ Wpacked-not-aligned warnings
-From:   Qian Cai <cai@lca.pw>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "vyasevich@gmail.com" <vyasevich@gmail.com>,
-        "nhorman@tuxdriver.com" <nhorman@tuxdriver.com>,
-        "marcelo.leitner@gmail.com" <marcelo.leitner@gmail.com>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Tue, 30 Jul 2019 09:18:24 -0400
-In-Reply-To: <91237fd501de4ab895305c4d5666d822@AcuMS.aculab.com>
-References: <1564431838-23051-1-git-send-email-cai@lca.pw>
-         <91237fd501de4ab895305c4d5666d822@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730927AbfG3NXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 09:23:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47634 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726096AbfG3NXG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 09:23:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=rXRe9kHDGGLyA6ncp3ZI9KHQuqcnVK8NrDCC7iqaddA=; b=w6sW6BpyS5l6hMWAd9l8xOA83D
+        H4NPG9IckFh697Pl9FN1XsESmkSY3d9IgHRS679ncIkR21uK/Zevu4ZNgYWSfH7NCP01kaGc7FYfZ
+        KMTdhxY2Ec0urBfRCqMNodkUBet+58Cl5eZbFngzGr0R3XWr3Sw/zsGUbvaJ3Tq9aeV4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hsS5h-0007de-Fc; Tue, 30 Jul 2019 15:22:57 +0200
+Date:   Tue, 30 Jul 2019 15:22:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 2/4] enetc: Add mdio bus driver for the PCIe
+ MDIO endpoint
+Message-ID: <20190730132257.GB28552@lunn.ch>
+References: <1564479919-18835-1-git-send-email-claudiu.manoil@nxp.com>
+ <1564479919-18835-3-git-send-email-claudiu.manoil@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1564479919-18835-3-git-send-email-claudiu.manoil@nxp.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-07-30 at 09:01 +0000, David Laight wrote:
-> From: Qian Cai
-> > Sent: 29 July 2019 21:24
+On Tue, Jul 30, 2019 at 12:45:17PM +0300, Claudiu Manoil wrote:
+> ENETC ports can manage the MDIO bus via local register
+> interface.  However there's also a centralized way
+> to manage the MDIO bus, via the MDIO PCIe endpoint
+> device integrated by the same root complex that also
+> integrates the ENETC ports (eth controllers).
 > 
-> ..
-> > To fix this, "struct sockaddr_storage" needs to be aligned to 4-byte as
-> > it is only used in those packed sctp structure which is part of UAPI,
-> > and "struct __kernel_sockaddr_storage" is used in some other
-> > places of UAPI that need not to change alignments in order to not
-> > breaking userspace.
-> > 
-> > One option is use typedef between "sockaddr_storage" and
-> > "__kernel_sockaddr_storage" but it needs to change 35 or 370 lines of
-> > codes. The other option is to duplicate this simple 2-field structure to
-> > have a separate "struct sockaddr_storage" so it can use a different
-> > alignment than "__kernel_sockaddr_storage". Also the structure seems
-> > stable enough, so it will be low-maintenance to update two structures in
-> > the future in case of changes.
+> Depending on board design and use case, centralized
+> access to MDIO may be better than using local ENETC
+> port registers.  For instance, on the LS1028A QDS board
+> where MDIO muxing is required.  Also, the LS1028A on-chip
+> switch doesn't have a local MDIO register interface.
 > 
-> Does it all work if the 8 byte alignment is implicit, not explicit?
-> For instance if unnamed union and struct are used eg:
+> The current patch registers the above PCIe endpoint as a
+> separate MDIO bus and provides a driver for it by re-using
+> the code used for local MDIO access.  It also allows the
+> ENETC port PHYs to be managed by this driver if the local
+> "mdio" node is missing from the ENETC port node.
 > 
-> struct sockaddr_storage {
-> 	union {
-> 		void * __ptr;  /* Force alignment */
-> 		struct {
-> 			__kernel_sa_family_t	ss_family;		/*
-> address family */
-> 			/* Following field(s) are implementation specific */
-> 			char	__data[_K_SS_MAXSIZE - sizeof(unsigned
-> short)];
-> 					/* space to achieve desired size, */
-> 					/* _SS_MAXSIZE value minus size of
-> ss_family */
-> 		};
-> 	};
-> };
-> 
-> I suspect unnamed unions and structs have to be allowed by the compiler.
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 
-I believe this will suffer the same problem in that will break UAPI,
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-https://lore.kernel.org/lkml/20190726213045.GL6204@localhost.localdomain/
+    Andrew
