@@ -2,100 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 934C37C1C6
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 14:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95E177C216
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 14:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728482AbfGaMl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 08:41:26 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:36593 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726931AbfGaMl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 08:41:26 -0400
-Received: by mail-qt1-f196.google.com with SMTP id z4so66400973qtc.3
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 05:41:25 -0700 (PDT)
+        id S2387488AbfGaMqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 08:46:05 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:36334 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727338AbfGaMqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 08:46:05 -0400
+Received: by mail-qk1-f193.google.com with SMTP id g18so49071507qkl.3;
+        Wed, 31 Jul 2019 05:46:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ssT+JujOxDwS6NEpfq2Ge7MRteKET9yZx/jW5aTaxrI=;
-        b=CV7jH3veMykUxgu+H5gGaJEiM7dHfRA3AWXtjSYfzu48EjQ0oDP+S8cs1UxQbidp/W
-         MqKLYekmIDfV2RBQHTtrwRlnUCc5krtCPt3AASFeznsZkr+ipQT/XuC+Xn6vABBkKIFP
-         enujxa2gQmDcqqBPQMXqNzw5a+lpfG5eB2A37iznAHNxxA9jQHhaTnP+cwJR1UO9lidY
-         SP65bUUa5WqhqoZCyAGPCKh7SUkgLjT8qHxGXbgc7GA59ln/8F06imsHF08LgdqgZvE2
-         /+AQjQMxZnEgE6iMjDFEfdphXGCtwyg1L1ebJpvApgpgereLtbGxAEtwqnD5666T6XAv
-         R7qA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vLpkXNHhxEM17yvb6EI7BaAyJql2ESScNq7hPZTMJs8=;
+        b=ClvLvbodde1OBQTL4cQEBUNATjh4NuCJLeyvO1xkzFujlkmlPl481j/C5Q4FC2++7J
+         Ufj012+IsGSqvuJS1BCFoYow+/YP08kbDl5u1t3TUBZYuHJk/FbOqlXLeypb1bv/Z2IT
+         /wNTsGr4lU7b6XJ3w+94St8xJyzVe4arR3y9BNiDaPWwtoIWnk9brl1rHRmZaOdJ3H9h
+         mWa1D8FNQnWd+tAhz3R2oMqgkZ8vWL630qOJU9OOCpf0VqW6RCkApG3zM9rKQzQMnrSL
+         8Fcm5ee94IpOazEbCNxxjHilgFoDtTdYJeH1c7UlKof4tAHfmzNLMRG16wIx7Jiyo/C2
+         qrSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ssT+JujOxDwS6NEpfq2Ge7MRteKET9yZx/jW5aTaxrI=;
-        b=Ax+mDGA0Ic9cY2iZKt6Ir0aaZMdzCcwSIeWnrXX5QcQ36V4YTjgzuy8Ok52ts/yHFl
-         nQ94V4eZkSyOIzK3zEOSUpC/so1P5IDBydfNUB3sXSUlVwoIi4HibJg90FIbBQpwx5pr
-         VvWvpQOUhzfSRfhWWTO5KwWD0DIHpOKSueeWyAx/ay+6EZZR5Og7nu73JDtpHiG/B/EY
-         d3G7AhExDltDYgwgpb1yYWbToUuULPEis6dNr/0EK54eA5fwxO4pdPbgLTk2AI/3r1Kx
-         OMFHJjE/sAlVyGlC5DJhMMsV8DZE/ciVtoLNP53fxS4KAwts0W4PdsOHHkgWmspPSSRE
-         aoLw==
-X-Gm-Message-State: APjAAAV5vC9K3Z/wuBBqiGyRREGsqgA/yOSWkgqeDV2W9rj83cnILsfW
-        RiJhEtLh6m8pzoQlliPES3Zh6w==
-X-Google-Smtp-Source: APXvYqwbN0Zcgw/rqJW/uUJyj5pJV/gEvjkDyEf6dYni+Q8BnL4R5HKzXod/DVe6ENOwDm8+CZT9Rw==
-X-Received: by 2002:a0c:acab:: with SMTP id m40mr88924921qvc.52.1564576884920;
-        Wed, 31 Jul 2019 05:41:24 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
-        by smtp.gmail.com with ESMTPSA id u4sm29623865qkb.16.2019.07.31.05.41.24
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 31 Jul 2019 05:41:24 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hsnv2-0006PN-6Q; Wed, 31 Jul 2019 09:41:24 -0300
-Date:   Wed, 31 Jul 2019 09:41:24 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH V2 4/9] vhost: reset invalidate_count in
- vhost_set_vring_num_addr()
-Message-ID: <20190731124124.GD3946@ziepe.ca>
-References: <20190731084655.7024-1-jasowang@redhat.com>
- <20190731084655.7024-5-jasowang@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vLpkXNHhxEM17yvb6EI7BaAyJql2ESScNq7hPZTMJs8=;
+        b=U5ICnvsBlauiUHadi+tOWGX04VeUKwgY6uzrz4ZiiIrX8LJQThkoy6OFscJi+vg9nG
+         K17h6+K0yJjuf57XhNN7cfBoMUkG+SXb6koIsMRjgiay78EPqc2NGH0FeFtTSfuc8Ha1
+         O9zM32M1sEWTb1NPItrV0rEgMfZipf6AlIXrUNI08GkT0u9GMuEvorCKcJJltOazINiO
+         5k6TiNeD8dbvyyXOnIk3fn2GLRP/TkZgOu/bJUC5op9WpIeaExVF0q24Y6UdD6bmypzC
+         eVBCtrRwjoWnMYAWzCbf6IrytZBIy8L7V4TW0PbVJuBFjSyWmTRsjy/oeCI8GdZtbP+9
+         QMZg==
+X-Gm-Message-State: APjAAAUHrCEi8YheKzk7RynSOqJB539/ZT//7317aVZzp+M6VvbYR3Kb
+        1KbX+F+kFSuoEWmAelcDzYP2Dg5mDV3MDEt3TLA=
+X-Google-Smtp-Source: APXvYqz4OpyytBFMjrUi+2Ek+BzAgpYTbK35jF6eoPLPS76d/m951mKVWT1i986GzTd6nwpG3luXSXILDNLnc74lcCg=
+X-Received: by 2002:a37:6146:: with SMTP id v67mr64646448qkb.493.1564577163571;
+ Wed, 31 Jul 2019 05:46:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190731084655.7024-5-jasowang@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20190724051043.14348-1-kevin.laatz@intel.com> <20190730085400.10376-1-kevin.laatz@intel.com>
+ <20190730085400.10376-4-kevin.laatz@intel.com>
+In-Reply-To: <20190730085400.10376-4-kevin.laatz@intel.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 31 Jul 2019 14:45:52 +0200
+Message-ID: <CAJ+HfNgqZFnikLMNYo7wE3fqyyZzgsQXuix905SQ+iRo8FfqpA@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH bpf-next v4 03/11] libbpf: add flags to
+ umem config
+To:     Kevin Laatz <kevin.laatz@intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        ciara.loftus@intel.com,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 04:46:50AM -0400, Jason Wang wrote:
-> The vhost_set_vring_num_addr() could be called in the middle of
-> invalidate_range_start() and invalidate_range_end(). If we don't reset
-> invalidate_count after the un-registering of MMU notifier, the
-> invalidate_cont will run out of sync (e.g never reach zero). This will
-> in fact disable the fast accessor path. Fixing by reset the count to
-> zero.
-> 
-> Reported-by: Michael S. Tsirkin <mst@redhat.com>
+On Tue, 30 Jul 2019 at 19:43, Kevin Laatz <kevin.laatz@intel.com> wrote:
+>
+> This patch adds a 'flags' field to the umem_config and umem_reg structs.
+> This will allow for more options to be added for configuring umems.
+>
+> The first use for the flags field is to add a flag for unaligned chunks
+> mode. These flags can either be user-provided or filled with a default.
+>
+> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
+> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+>
+> ---
+> v2:
+>   - Removed the headroom check from this patch. It has moved to the
+>     previous patch.
+>
+> v4:
+>   - modified chunk flag define
+> ---
+>  tools/include/uapi/linux/if_xdp.h | 9 +++++++--
+>  tools/lib/bpf/xsk.c               | 3 +++
+>  tools/lib/bpf/xsk.h               | 2 ++
+>  3 files changed, 12 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux=
+/if_xdp.h
+> index faaa5ca2a117..a691802d7915 100644
+> --- a/tools/include/uapi/linux/if_xdp.h
+> +++ b/tools/include/uapi/linux/if_xdp.h
+> @@ -17,6 +17,10 @@
+>  #define XDP_COPY       (1 << 1) /* Force copy-mode */
+>  #define XDP_ZEROCOPY   (1 << 2) /* Force zero-copy mode */
+>
+> +/* Flags for xsk_umem_config flags */
+> +#define XDP_UMEM_UNALIGNED_CHUNK_FLAG_SHIFT 15
+> +#define XDP_UMEM_UNALIGNED_CHUNK_FLAG (1 << XDP_UMEM_UNALIGNED_CHUNK_FLA=
+G_SHIFT)
+> +
+>  struct sockaddr_xdp {
+>         __u16 sxdp_family;
+>         __u16 sxdp_flags;
+> @@ -49,8 +53,9 @@ struct xdp_mmap_offsets {
+>  #define XDP_OPTIONS                    8
+>
+>  struct xdp_umem_reg {
+> -       __u64 addr; /* Start of packet data area */
+> -       __u64 len; /* Length of packet data area */
+> +       __u64 addr;     /* Start of packet data area */
+> +       __u64 len:48;   /* Length of packet data area */
+> +       __u64 flags:16; /* Flags for umem */
 
-Did Michael report this as well?
+So, the flags member moved from struct sockaddr_xdp to struct
+xdp_umem_reg. Makes sense. However, I'm not a fan of the bitfield. Why
+not just add the flags member after the last member (headroom) and
+deal with it in xsk.c/xsk_setsockopt and libbpf? The bitfield
+preserves the size, but makes it hard to read/error prone IMO.
 
-> Fixes: 7f466032dc9e ("vhost: access vq metadata through kernel virtual address")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
->  drivers/vhost/vhost.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 2a3154976277..2a7217c33668 100644
-> +++ b/drivers/vhost/vhost.c
-> @@ -2073,6 +2073,10 @@ static long vhost_vring_set_num_addr(struct vhost_dev *d,
->  		d->has_notifier = false;
->  	}
->  
-> +	/* reset invalidate_count in case we are in the middle of
-> +	 * invalidate_start() and invalidate_end().
-> +	 */
-> +	vq->invalidate_count = 0;
->  	vhost_uninit_vq_maps(vq);
->  #endif
->  
+
+Bj=C3=B6rn
+
+
+>         __u32 chunk_size;
+>         __u32 headroom;
+>  };
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index 5007b5d4fd2c..5e7e4d420ee0 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -116,6 +116,7 @@ static void xsk_set_umem_config(struct xsk_umem_confi=
+g *cfg,
+>                 cfg->comp_size =3D XSK_RING_CONS__DEFAULT_NUM_DESCS;
+>                 cfg->frame_size =3D XSK_UMEM__DEFAULT_FRAME_SIZE;
+>                 cfg->frame_headroom =3D XSK_UMEM__DEFAULT_FRAME_HEADROOM;
+> +               cfg->flags =3D XSK_UMEM__DEFAULT_FLAGS;
+>                 return;
+>         }
+>
+> @@ -123,6 +124,7 @@ static void xsk_set_umem_config(struct xsk_umem_confi=
+g *cfg,
+>         cfg->comp_size =3D usr_cfg->comp_size;
+>         cfg->frame_size =3D usr_cfg->frame_size;
+>         cfg->frame_headroom =3D usr_cfg->frame_headroom;
+> +       cfg->flags =3D usr_cfg->flags;
+>  }
+>
+>  static int xsk_set_xdp_socket_config(struct xsk_socket_config *cfg,
+> @@ -182,6 +184,7 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, void=
+ *umem_area, __u64 size,
+>         mr.len =3D size;
+>         mr.chunk_size =3D umem->config.frame_size;
+>         mr.headroom =3D umem->config.frame_headroom;
+> +       mr.flags =3D umem->config.flags;
+>
+>         err =3D setsockopt(umem->fd, SOL_XDP, XDP_UMEM_REG, &mr, sizeof(m=
+r));
+>         if (err) {
+> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+> index 833a6e60d065..44a03d8c34b9 100644
+> --- a/tools/lib/bpf/xsk.h
+> +++ b/tools/lib/bpf/xsk.h
+> @@ -170,12 +170,14 @@ LIBBPF_API int xsk_socket__fd(const struct xsk_sock=
+et *xsk);
+>  #define XSK_UMEM__DEFAULT_FRAME_SHIFT    12 /* 4096 bytes */
+>  #define XSK_UMEM__DEFAULT_FRAME_SIZE     (1 << XSK_UMEM__DEFAULT_FRAME_S=
+HIFT)
+>  #define XSK_UMEM__DEFAULT_FRAME_HEADROOM 0
+> +#define XSK_UMEM__DEFAULT_FLAGS 0
+>
+>  struct xsk_umem_config {
+>         __u32 fill_size;
+>         __u32 comp_size;
+>         __u32 frame_size;
+>         __u32 frame_headroom;
+> +       __u32 flags;
+>  };
+>
+>  /* Flags for the libbpf_flags field. */
+> --
+> 2.17.1
+>
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
