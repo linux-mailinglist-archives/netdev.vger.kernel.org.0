@@ -2,107 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21B217B6FC
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 02:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCD37B728
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 02:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387529AbfGaAVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 20:21:44 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43474 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728121AbfGaAVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 20:21:43 -0400
-Received: by mail-qt1-f194.google.com with SMTP id w17so20518395qto.10
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 17:21:43 -0700 (PDT)
+        id S1726134AbfGaAXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 20:23:43 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:46555 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725947AbfGaAXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 20:23:43 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c3so7595066pfa.13
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 17:23:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=zZuVIM8QeDsvHulJTgwwSmVbK1Pr+l5Dyla7hZ8EFwg=;
-        b=YlnCXahE7T3HbfquvfIE4Nb7ZxledzCWkncuYT1RAH2rRAOjnmvoFqwB2dnqN27Jh+
-         A5GRS1GjQSsFTd//RfN/7nIR2yPPXHOxdlPlbcgpnUbKNSVXy8Ohr/HFd8UtRTe51iC2
-         C4rQXKADVIkNkutwUO/poItq2OZY2OK1owOuFqm6OUParARyMD9XfuQ1dCJq6ToxA3mn
-         8gzHQ35svUUcaKaSYInFMWMB4W9ARI55JgIy8aj3dw9vpECkYbjhuiBv+vFNlvhQCH2k
-         IMFt80EyHJzMYkHBXhsfalcDvYDEun787MUzZzehWLJpOqUwLxJqlEHNchfJmbQM90D8
-         E/KA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vx0Uf+iivZfhQ5eaxpeA+I7ZUhlEpyzb2ZwTHUiqkMM=;
+        b=Zjn8zMSiL40/pSef6bwBxavl0IfUJuDGb4pd7HQYqGCEYl77OdcAcO6lkeaMnexajw
+         ADyNMLyxqWhL1CIAj+vTRWNNS1MkazU2dvYTD1ZCQ3+cKIcQgr5uG/AhmSC8z6eJ7QFN
+         0T+/bWJzA1fKiDrRjM0gHdu9ees0YbgdqLMTGuYeP6oLrh6JDFhJhmESykzlH1b07OBV
+         e54SoIUizrEmwB9AK9loTpPJoMLmrF+UdSVSwgByStlXd52wyePEi1KFP5Kv9kX0tgFT
+         VrDvZW7HqWIyz0tiwu6FGmOJWaEHoLyGRNlOSSVAR6uK9utjR+RrPvY0LiZXogABf+AL
+         D+tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=zZuVIM8QeDsvHulJTgwwSmVbK1Pr+l5Dyla7hZ8EFwg=;
-        b=mkhNz+ArkfmIKF4SLU3jWOn3gIG8u9r/mQvliJdTeMle8ieTCbJxQBD6wpKWtkoCXr
-         zi8OTv6il7G6FSbvkmYMakMROJK3uMOeZ6OUZSEgstROUhdKCOmg+blczpeO1KVKesk0
-         jZ9fUNg6M/5SAlyRp4ZmpzDjFPxgsvoze897PdkW1FUEXTSwZadPq7UwwQzuHm62mYCI
-         JCDthsI8KqmLocBphZrH7t1VT6oujZRksHAIF0dTQ2/ckL43WIybmhTWekvE3V3igQQj
-         TLBhPVTKKrbBEVr8ozblI6z54b4oIrI3IL0UBaE20S9RaY8H2rCrL3uai2USS+e4998I
-         EJvw==
-X-Gm-Message-State: APjAAAUcTtZbYDJIsxJHjbVrNKYj7mLtaoqNAbwcTM6ln8rGsAp4Zmil
-        3QCXeBLpBTiKYcgz8JPT1RlRHA==
-X-Google-Smtp-Source: APXvYqz928PF9WpXi6Qo5dBYR/bjI2MVi1C5o3EqzqDoLBW0LylinIUJOI9mO3yoInO6tSzuI9e1Cg==
-X-Received: by 2002:ac8:40cc:: with SMTP id f12mr82158214qtm.256.1564532502789;
-        Tue, 30 Jul 2019 17:21:42 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z18sm30324878qka.12.2019.07.30.17.21.41
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 17:21:42 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 17:21:30 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, wenxu@ucloud.cn, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, saeedm@mellanox.com,
-        gerlitz.or@gmail.com, paulb@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH nf] netfilter: nf_tables: map basechain priority to
- hardware priority
-Message-ID: <20190730172130.1f11de90@cakuba.netronome.com>
-In-Reply-To: <20190730105417.14538-1-pablo@netfilter.org>
-References: <20190730105417.14538-1-pablo@netfilter.org>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vx0Uf+iivZfhQ5eaxpeA+I7ZUhlEpyzb2ZwTHUiqkMM=;
+        b=VykO2OfUKKbh1oPOr+4wD+Pk0Ry2sPVVdWLR1Noi/oA+2X8WcvzbzrDLZnCPM1iFOi
+         Y3O9awXd/LpkXwFNGK3n2aA2/0ZkWwP5PfTSSNwWP4smlaWkwg8mIn8lsws9wTLauLkK
+         NDayH6yAglzRdqgVhcWqOikIOY5RsJ39KZHBMH+N3U6lSV4oeDj1ylWB77bOMCPh1K6i
+         8cPFjtVmJNPFbYQWTdZcB9RsFlJJ8xwUEjqt7FbwQyVNJT+sMxnY2fs7Q/933fqraOd5
+         8Ev+U+2xIa8LhBVl5/w7wrwQLdxru84zg7eAD6J3thekqP5Ogk4BIsHt1dFmX3IM+M36
+         jLwA==
+X-Gm-Message-State: APjAAAWGg/TBi/j0X5BcZDjqPQHLUiHRDoMq471YN/Xl4W86GMfMhhWQ
+        SgWxiOGLy0NEvQQohNbFd2Q=
+X-Google-Smtp-Source: APXvYqz17CMXvZNVD3gBEo09GskKaUkUvECR+04yvKtQICkImtf4BbyblLBpludwycS0UhnLq5mnPA==
+X-Received: by 2002:a62:3283:: with SMTP id y125mr45248126pfy.83.1564532622301;
+        Tue, 30 Jul 2019 17:23:42 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::3:af4b])
+        by smtp.gmail.com with ESMTPSA id o13sm7315pje.28.2019.07.30.17.23.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 17:23:41 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 17:23:39 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load XDP
+Message-ID: <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
+References: <20190730184821.10833-1-danieltimlee@gmail.com>
+ <20190730155915.5bbe3a03@cakuba.netronome.com>
+ <20190730231754.efh3fj4mnsbv445l@ast-mbp>
+ <20190730170725.279761e7@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730170725.279761e7@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jul 2019 12:54:17 +0200, Pablo Neira Ayuso wrote:
-> This patch maps basechain netfilter priorities from -8192 to 8191 to
-> hardware priority 0xC000 + 1. tcf_auto_prio() uses 0xC000 if the user
-> specifies no priority, then it subtract 1 for each new tcf_proto object.
-> This patch uses the hardware priority range from 0xC000 to 0xFFFF for
-> netfilter.
+On Tue, Jul 30, 2019 at 05:07:25PM -0700, Jakub Kicinski wrote:
+> On Tue, 30 Jul 2019 16:17:56 -0700, Alexei Starovoitov wrote:
+> > On Tue, Jul 30, 2019 at 03:59:15PM -0700, Jakub Kicinski wrote:
+> > > On Wed, 31 Jul 2019 03:48:19 +0900, Daniel T. Lee wrote:  
+> > > > Currently, bpftool net only supports dumping progs loaded on the
+> > > > interface. To load XDP prog on interface, user must use other tool
+> > > > (eg. iproute2). By this patch, with `bpftool net (un)load`, user can
+> > > > (un)load XDP prog on interface.  
+> > > 
+> > > I don't understand why using another tool is a bad thing :(
+> > > What happened to the Unix philosophy?
+> > > 
+> > > I remain opposed to duplicating iproute2's functionality under 
+> > > bpftool net :( The way to attach bpf programs in the networking
+> > > subsystem is through the iproute2 commends - ip and tc.. 
+> > > 
+> > > It seems easy enough to add a feature to bpftool but from 
+> > > a perspective of someone adding a new feature to the kernel, 
+> > > and wanting to update user space components it's quite painful :(
+> > > 
+> > > So could you describe to me in more detail why this is a good idea?
+> > > Perhaps others can chime in?  
+> > 
+> > I don't think it has anything to do with 'unix philosophy'.
+> > Here the proposal to teach bpftool to attach xdp progs.
+> > I see nothing wrong with that.
 > 
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> ---
-> This follows a rather conservative approach, I could just expose the
-> 2^16 hardware priority range, but we may need to split this priority
-> range among the ethtool_rx, tc and netfilter subsystems to start with
-> and it should be possible to extend the priority range later on.
+> Nothing meaning you disagree it's duplicated effort and unnecessary 
+> LoC the community has to maintain, review, test..?
+
+I don't see duplicated effort.
+
+> > Another reason is iproute2 is still far away from adopting libbpf.
+> > So all the latest goodness like BTF, introspection, etc will not
+> > be available to iproute2 users for some time.
 > 
-> By netfilter priority, I'm refering to the basechain priority:
+> Duplicating the same features in bpftool will only diminish the
+> incentive for moving iproute2 to libbpf. 
+
+not at all. why do you think so?
+
+> And for folks who deal
+> with a wide variety of customers, often novices maintaining two
+> ways of doing the same thing is a hassle :(
+
+It's not the same thing.
+I'm talking about my experience dealing with 'wide variety of bpf customers'.
+They only have a fraction of their time to learn one tool.
+Making every bpf customer learn ten tools is not an option.
+
+> > Even when iproute2 is ready it would be convenient for folks like me
+> > (who need to debug stuff in production) to remember cmd line of
+> > bpftool only to introspect the server. Debugging often includes
+> > detaching/attaching progs. Not only doing 'bpftool p s'.
 > 
-> 	add chain x y { type filter hook ingress device eth0 priority 0; }
->                                                              ^^^^^^^^^^^
+> Let's just put the two commands next to each other:
 > 
-> This is no transparently mapped to hardware, this patch shifts it to
-> make it fit into the 0xC000 + 1 .. 0xFFFF hardware priority range.
+>        ip link set xdp $PROG dev $DEV
+> 
+> bpftool net attach xdp $PROG dev $DEV
+> 
+> Are they that different?
 
-Mmm.. so the ordering of tables is intended to be decided by priority
-and not block type (nft, tc, ethtool)?  I was always expecting we 
-would just follow the software order when it comes to inter-subsystem
-decisions.  So ethtool first, then XDP, then TC, then nft, then
-bridging etc. TC vs NFT based on:
+yes.
+they're different tools with they own upgrade/rollout cycle
 
-static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
-				    struct packet_type **ppt_prev)
-{
-...
-	if (static_branch_unlikely(&ingress_needed_key)) {
-		skb = sch_handle_ingress(skb, &pt_prev, &ret, orig_dev);
-		if (!skb)
-			goto out;
+> 
+> > If bpftool was taught to do equivalent of 'ip link' that would be
+> > very different story and I would be opposed to that.
+> 
+> Yes, that'd be pretty clear cut, only the XDP stuff is a bit more 
+> of a judgement call.
 
-		if (nf_ingress(skb, &pt_prev, &ret, orig_dev) < 0)
-			goto out;
-	}
+bpftool must be able to introspect every aspect of bpf programming.
+That includes detaching and attaching anywhere.
+Anyone doing 'bpftool p s' should be able to switch off particular
+prog id without learning ten different other tools.
+iproute2 is a small bit of it. There is cgroup and tracing too.
+bpftool should be one tool to do everything directly related to bpf.
 
-Are they solid use cases for choosing the ordering arbitrarily?
