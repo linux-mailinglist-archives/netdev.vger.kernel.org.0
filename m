@@ -2,42 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C457CE45
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 22:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B74247CEBB
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 22:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730510AbfGaU0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 16:26:53 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37360 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728136AbfGaU0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 16:26:53 -0400
-Received: by mail-qt1-f194.google.com with SMTP id y26so67873946qto.4;
-        Wed, 31 Jul 2019 13:26:52 -0700 (PDT)
+        id S1726865AbfGaUgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 16:36:49 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35339 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727857AbfGaUgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 16:36:48 -0400
+Received: by mail-pg1-f196.google.com with SMTP id s1so26339538pgr.2;
+        Wed, 31 Jul 2019 13:36:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+3m34La6ccE3Dbo0nKkW6PAk5aFsT9gCe5QCc84QY/M=;
+        b=EFmwE6xHJZlI7fbJj4ayQvxsXiguUUOE/YUP+QGUdsdsqzIBCNFzDXIfMHIIReAeq0
+         YxhAhukgJsf9Zk6f6yV8s2LP8u0sSr3FNuF8EyxKSURPID2YZC8Lbo6cduEjaNrfdCwf
+         DDLHx35Gdmi2wKQrsQFGdxEic/BLubYM2PdbA3n+K81Up9x+c+BTo+EUmFexA3wLK1m3
+         HTdCvaEPFAiwwj9xS/aDlE76GEOL8mwW7ic1UhN2QVquK+WFAQH9I/3g+WFQQCGFh/i7
+         YgzaMh2a0V/ot/+SNV3Vet++cuduT7j8egp6XJg1gKkL7jCKsSeeDqSN4CHI6M9V8jx9
+         7pRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nexwj/gyEdfGcFhtgJkuEvqAxLsbVQicvOBgvCJpGfM=;
-        b=D9jgJbYsefhU1bp4dHus8py68/b5IqFtti2ZA0IWtdNeTXXzgHoSvZgwyATaRbMo1I
-         Y2ZCvsQkNKiv3MfwEoO16AvmHiVqDynglfC0pMvczN8idqyL5Mue63+1gp7WH8Ey6Zl5
-         q4otDS5gwreCRXddS9examugoB0OmqicTmHXCzevjo/B0Z4WIaAQvRK0HHiWWSKDv73h
-         SJNPXEYWiUALSViuZZDV6klbePjHei9zkLbp/WMrrRTy1DJyXpb4s8CuT0xBMAgxVSWJ
-         I2H6gKlCtVeQZYR2tKUDWHpUvstIUcQNUuXHWepTCde40wxp4JGtVGFZ0yiepChrzfAm
-         y4ww==
-X-Gm-Message-State: APjAAAXxEtv4W0WR0m/laJUHCGRRHEsNz2JcwmRfQqSc+67bMUvLcr9w
-        YNYoizlbjZMkCq1Q4gfVD8Z0/nUP5Rd4r7OdTvQ=
-X-Google-Smtp-Source: APXvYqxrQwILyzcU6or5m1F0P2T2g+2d1hVZgeveWHo/LNI028WFf469HVX7i9p/CxTB96w3vHftaMn2P+OT3OV3MzY=
-X-Received: by 2002:aed:33a4:: with SMTP id v33mr84957899qtd.18.1564604812113;
- Wed, 31 Jul 2019 13:26:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-4-arnd@arndb.de>
- <20190731202343.GA14817@roeck-us.net>
-In-Reply-To: <20190731202343.GA14817@roeck-us.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 31 Jul 2019 22:26:35 +0200
-Message-ID: <CAK8P3a2=gqeCMtdzdqg4d1n6v1-cdaHObeUoVXeB+=Okwd1rqA@mail.gmail.com>
-Subject: Re: [PATCH 03/14] watchdog: pnx4008_wdt: allow compile-testing
-To:     Guenter Roeck <linux@roeck-us.net>
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+3m34La6ccE3Dbo0nKkW6PAk5aFsT9gCe5QCc84QY/M=;
+        b=FoQwXb2Gd4fRQC3kd1b2VQ1KEJks1rGHoyJPJtOl9fz5dT2smrp2je2LCVpDRx8oGp
+         n3a8Th9bpxbdYV6upCl7M5vXT8bZJ0rG6uzqTG+bujq2tMVDzllKCApuC2M8lL4j2sUf
+         xDj5cD2sN+6yVlsNjbESKoAxaY8M224KynxrVViQYUxRDtzzmzl6aJfRUetDGFPIjgB+
+         d+SDev05KcL0hGvcMYlsidLr0Pwfg1Bmo6xaS5v59dyj+YRPmE+l+FPrPKNm7sR+hvyL
+         kaTCIYHvDAyq/n3c+QvOxxWhqc3xZcfSi3mcpLaOXaEZVPcvlZVQTYjhwf0He0lg/2TS
+         C12w==
+X-Gm-Message-State: APjAAAUJHMxv/QuhNpH6cwqz9Ke2QpUrj8n7l5HFfn95ewOrgT/A4ilU
+        VzqFPu6/IZY5O9PRfNfRjx0=
+X-Google-Smtp-Source: APXvYqybC01d0TByWxoDrJxw7C9lUUE3ShsoXGzUiQlHPWLWfdxiLqpUEK75wQICNDQ0Ydie1eRIGg==
+X-Received: by 2002:a63:e907:: with SMTP id i7mr113621516pgh.84.1564605407843;
+        Wed, 31 Jul 2019 13:36:47 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id h16sm77972581pfo.34.2019.07.31.13.36.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 Jul 2019 13:36:47 -0700 (PDT)
+Date:   Wed, 31 Jul 2019 13:36:46 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Arnd Bergmann <arnd@arndb.de>
 Cc:     soc@kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Vladimir Zapolskiy <vz@mleia.com>,
         Sylvain Lemieux <slemieux.tyco@gmail.com>,
@@ -56,29 +65,40 @@ Cc:     soc@kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>,
         linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
         LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 03/14] watchdog: pnx4008_wdt: allow compile-testing
+Message-ID: <20190731203646.GB14817@roeck-us.net>
+References: <20190731195713.3150463-1-arnd@arndb.de>
+ <20190731195713.3150463-4-arnd@arndb.de>
+ <20190731202343.GA14817@roeck-us.net>
+ <CAK8P3a2=gqeCMtdzdqg4d1n6v1-cdaHObeUoVXeB+=Okwd1rqA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2=gqeCMtdzdqg4d1n6v1-cdaHObeUoVXeB+=Okwd1rqA@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 10:23 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Wed, Jul 31, 2019 at 09:56:45PM +0200, Arnd Bergmann wrote:
-> > The only thing that prevents building this driver on other
-> > platforms is the mach/hardware.h include, which is not actually
-> > used here at all, so remove the line and allow CONFIG_COMPILE_TEST.
+On Wed, Jul 31, 2019 at 10:26:35PM +0200, Arnd Bergmann wrote:
+> On Wed, Jul 31, 2019 at 10:23 PM Guenter Roeck <linux@roeck-us.net> wrote:
 > >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->
-> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
->
-> What is the plan for this patch ? Push through watchdog
-> or through your branch ?
+> > On Wed, Jul 31, 2019 at 09:56:45PM +0200, Arnd Bergmann wrote:
+> > > The only thing that prevents building this driver on other
+> > > platforms is the mach/hardware.h include, which is not actually
+> > > used here at all, so remove the line and allow CONFIG_COMPILE_TEST.
+> > >
+> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> >
+> > Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+> >
+> > What is the plan for this patch ? Push through watchdog
+> > or through your branch ?
+> 
+> I would prefer my branch so I can apply the final patch without waiting
+> for another release. Not in a hurry though, so if some other maintainer
 
-I would prefer my branch so I can apply the final patch without waiting
-for another release. Not in a hurry though, so if some other maintainer
-wants to take the respective driver patch through their tree instead of the
-arm-soc one, I'll just wait anyway.
+Ok with me.
 
-        Arnd
+Guenter
