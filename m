@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 831557B7A5
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 147827B7AC
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbfGaBgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 21:36:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49258 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726136AbfGaBgr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jul 2019 21:36:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=MbVNcIqleGWDajEIzwbSrkr9UJ2vlKBIQWs7BCgs3Qk=; b=uKiCIlvCjadlgle851de+bSidr
-        L+ClxfKg5jnk5yCPW2X8DH+7FvSUHNPBsCxjts2ILx7hHkhovl3GiFk58BHdK1l1oJ5cuFmLEZfQg
-        JX3N8fTjHfLsWIp1rnCUuB5PKECKrVr+zPJMigo2OjJ40dP2TVA+g7EHsXk5BY80CT24=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hsdXg-0003Cz-DV; Wed, 31 Jul 2019 03:36:36 +0200
-Date:   Wed, 31 Jul 2019 03:36:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tao Ren <taoren@fb.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-Subject: Re: [PATCH net-next 2/2] net: phy: broadcom: add 1000Base-X support
- for BCM54616S
-Message-ID: <20190731013636.GC25700@lunn.ch>
-References: <20190730002549.86824-1-taoren@fb.com>
- <CA+h21hq1+E6-ScFx425hXwTPTZHTVZbBuAm7RROFZTBOFvD8vQ@mail.gmail.com>
- <3987251b-9679-dfbe-6e15-f991c2893bac@fb.com>
- <CA+h21ho1KOGS3WsNBHzfHkpSyE4k5HTE1tV9wUtnkZhjUZGeUw@mail.gmail.com>
- <e8f85ef3-1216-8efb-a54d-84426234fe82@fb.com>
+        id S1726781AbfGaBij convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Jul 2019 21:38:39 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:28224 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726766AbfGaBii (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 21:38:38 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6V1WEtw000878
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:38:37 -0700
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0b-00082601.pphosted.com with ESMTP id 2u2uy0s36w-12
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:38:37 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 30 Jul 2019 18:38:30 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id B7640760C3C; Tue, 30 Jul 2019 18:38:27 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf 0/2] bpf: fix bug in x64 JIT
+Date:   Tue, 30 Jul 2019 18:38:25 -0700
+Message-ID: <20190731013827.2445262-1-ast@kernel.org>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e8f85ef3-1216-8efb-a54d-84426234fe82@fb.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-31_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=416 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1907310013
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The INTF_SEL pins report correct mode (RGMII-Fiber) on my machine,
-> but there are 2 "sub-modes" (1000Base-X and 100Base-FX) and I
-> couldn't find a proper/safe way to auto-detect which "sub-mode" is
-> active. The datasheet just describes instructions to enable a
-> specific mode, but it doesn't say 1000Base-X/100Base-FX mode will be
-> auto-selected. And that's why I came up with the patch to specify
-> 1000Base-X mode.
+Fix bug in computation of the jump offset to 1st instruction in BPF JIT
+and add 2 tests.
 
-Fibre does not perform any sort of auto-negotiation. I assume you have
-an SFP connected? When using PHYLINK, the sfp driver will get the
-supported baud rate from SFP EEPROM to determine what speed could be
-used. However, there is currently no mainline support for having a
-chain MAC-PHY-SFP. For that you need Russells out of tree patches.
+Alexei Starovoitov (2):
+  bpf: fix x64 JIT code generation for jmp to 1st insn
+  selftests/bpf: tests for jmp to 1st insn
 
-      Andrew
+ arch/x86/net/bpf_jit_comp.c                   |  7 +++--
+ tools/testing/selftests/bpf/verifier/loops1.c | 28 +++++++++++++++++++
+ 2 files changed, 32 insertions(+), 3 deletions(-)
+
+-- 
+2.20.0
+
