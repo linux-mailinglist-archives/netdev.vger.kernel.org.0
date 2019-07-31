@@ -2,119 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D6E07D12B
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 00:32:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC297D139
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 00:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727796AbfGaWb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 18:31:56 -0400
-Received: from mail-pg1-f182.google.com ([209.85.215.182]:37386 "EHLO
-        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbfGaWb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 18:31:56 -0400
-Received: by mail-pg1-f182.google.com with SMTP id i70so22036094pgd.4
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 15:31:56 -0700 (PDT)
+        id S1727360AbfGaWhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 18:37:47 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46961 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726224AbfGaWhr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 18:37:47 -0400
+Received: by mail-wr1-f65.google.com with SMTP id z1so71371111wru.13
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 15:37:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pXH5GE2Tor3TKPsP6nqKUf18cs/dsSsv6Yk6A7HJd4U=;
-        b=f8nxv9ZJJu8Trz3rsHR+9kuSGPSIiLtltsHUqJNoqLJT35sMtIkQfQPr0MOsa347GN
-         5TgaESQLf4iwow41Q3zgm+dJp0Suz0+htWGbvCynPwSf3bkBqzl6vevy+ng3HpRVSCwW
-         uhx4lIukX89WJ1Y5VseJtRA50w5BaSh7pjSvfBvI1chYzIu0I6XRgwMIodi8loYTtURn
-         kL9Ssf5uEuzd9C+wXZPB0OqzMfh/Ug5GG8h+tbIJKem+pK3RlggVtvuX69mBAH+TFm0L
-         sHsQ3/om9BNE8wKycnEm/sHImUpzJLd1wHllEBO+/T4B61mNxG5lc75+hhJtDmPhn05x
-         1Hcg==
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8pO/u2UxpYHbGHBioUPH5ZDqgJG5rCQHhYtZqabYo9c=;
+        b=FNvzT+uty1VdREz96XmSva9/UJ/IXQR5sKeWKIhPAqYqXDOCJYHedUXYipW1Tbe516
+         qxsa6nYng2ns9XPDaxtuW/bUKB2peYQx4E28ufCPnXKRjQpEzaFJH7pKACpfoHv5r/4H
+         z1HsCI9BSlXsiCdodDErv+ZtTrL2LHt43yNJQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pXH5GE2Tor3TKPsP6nqKUf18cs/dsSsv6Yk6A7HJd4U=;
-        b=jSR6t61pYpyYSIlwE7kBX4ne2NWo9K7PtMxSKbLSKIg5GPcxGIPWoKND8a/rOGJZG2
-         RCBo7BvR1OP/dylJ4qHRYxOkUZVIclu7zLyvn8jryr/lX/zgXZt0lsJPygCruYmfGjBO
-         FLpBd2u6ewzzLJo67tmuRsyMifIXYq4kEHHhPQhK1Cd4vdS9J8qpMwcWhJTQBTkdHt+V
-         f20TUOrXOgGrPl3lrcGvmbJAaKstP+uhO/4y6/MXgbcp8vr66KNyJilBFrEsxIXDcZWW
-         p1C/xO/ZxJtmA8G2cDimE7cblyIO0QpDv1JrIEbzvIZsqoEyuHFUqbn0ansXtlZLKOjx
-         ZwZw==
-X-Gm-Message-State: APjAAAWx54DNOF3uIeYpggQI0rfRHYzkLxdCAWSlkZrqdENb7AjSEfbD
-        fLA3sGO95cTJbnYFqspFwEc=
-X-Google-Smtp-Source: APXvYqz5jWTN/4wyiVe4m4CsekRnq2YQZATj3+qlzGipKJnPXBeRKVRG6sZnAaxQ1uBV5hgOApuklA==
-X-Received: by 2002:a17:90a:d996:: with SMTP id d22mr5152605pjv.86.1564612315615;
-        Wed, 31 Jul 2019 15:31:55 -0700 (PDT)
-Received: from [172.27.227.172] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id l44sm2799417pje.29.2019.07.31.15.31.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 31 Jul 2019 15:31:54 -0700 (PDT)
-Subject: Re: [patch net-next 0/3] net: devlink: Finish network namespace
- support
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, sthemmin@microsoft.com, mlxsw@mellanox.com
-References: <20190727094459.26345-1-jiri@resnulli.us>
- <eebd6bc7-6466-2c93-4077-72a39f3b8596@gmail.com>
- <20190730060817.GD2312@nanopsycho.orion>
- <8f5afc58-1cbc-9e9a-aa15-94d1bafcda22@gmail.com>
- <20190731150233.432d3c86@cakuba.netronome.com>
- <45803ed3-0328-9409-4351-6c26ba8af3cd@gmail.com>
- <20190731152805.4110ec41@cakuba.netronome.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <de94a881-cb87-e251-d55c-9f40d24b08d5@gmail.com>
-Date:   Wed, 31 Jul 2019 16:31:52 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8pO/u2UxpYHbGHBioUPH5ZDqgJG5rCQHhYtZqabYo9c=;
+        b=Cn6sKEei04venAqL+cvfm9Ex4/ByzJ56j+1sV02FhBzhznxK/FmehTUi4BmmMZfuyi
+         u+9ar528xeYhaGwlqjtk+nKgdPBFLeyDGn1CynYVNy0NH//Kf4hZXYykClxi/yF7WXh3
+         hgNkP34O0bcBgH+UJuajuKvJpyK/it+TiZCJea8IM5cx7vrcyef59JJ08TdtQQw3Fsyb
+         dLn99BSXFTlTnTrCnlpUtrSooqXU+biOk73VqRyxiiVH90k5rJ89r/LASqOLU43ef3iO
+         r3LdIqeSgWxYTdKDufWXNOpdtfLvOJDjaVK8wxplGYJYp8bmlRSDU/IS6L+8e8sch+x6
+         1/Vg==
+X-Gm-Message-State: APjAAAWhCM0y5XOyyvUjHkpUtpj9gQvhXNsgFbTTbR5qCZG3Jbe8TWvT
+        9BG07VAoXVJuSOzvGyA6pIOd1CzKzQg3Ag==
+X-Google-Smtp-Source: APXvYqw8qX2v2sXxeZN4OXiZScjziWVk/Pl36/MT/wFA4ZGEvtCBTs00LArm2LP+DQNbyJy3HH02wg==
+X-Received: by 2002:a5d:4205:: with SMTP id n5mr127937612wrq.52.1564612663863;
+        Wed, 31 Jul 2019 15:37:43 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id p18sm69045718wrm.16.2019.07.31.15.37.42
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 31 Jul 2019 15:37:43 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        michael-dev <michael-dev@fami-braun.de>
+Subject: [PATCH net v2] net: bridge: move vlan init/deinit to NETDEV_REGISTER/UNREGISTER
+Date:   Thu,  1 Aug 2019 01:37:36 +0300
+Message-Id: <20190731223736.18856-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190731183623.20127-1-nikolay@cumulusnetworks.com>
+References: <20190731183623.20127-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
-In-Reply-To: <20190731152805.4110ec41@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/31/19 4:28 PM, Jakub Kicinski wrote:
-> On Wed, 31 Jul 2019 16:07:31 -0600, David Ahern wrote:
->> On 7/31/19 4:02 PM, Jakub Kicinski wrote:
->>> Can you elaborate further? Ports for most purposes are represented by
->>> netdevices. Devlink port instances expose global topological view of
->>> the ports which is primarily relevant if you can see the entire ASIC.
->>> I think the global configuration and global view of resources is still
->>> the most relevant need, so in your diagram you must account for some
->>> "all-seeing" instance, e.g.:
->>>
->>>    namespace 1 |  namespace 2  | ... | namespace N
->>>                |               |     |
->>>   { ports 1 }  |   { ports 2 } | ... | { ports N }
->>>                |               |     |
->>> subdevlink 1   | subdevlink 2  | ... |  subdevlink N
->>>          \______      |              _______/
->>>                  master ASIC devlink
->>>   =================================================
->>>                    driver
->>>
->>> No?
->>
->> sure, there could be a master devlink visible to the user if that makes
->> sense or the driver can account for it behind the scenes as the sum of
->> the devlink instances.
->>
->> The goal is to allow ports within an asic [1] to be divided across
->> network namespace where each namespace sees a subset of the ports. This
->> allows creating multiple logical switches from a single physical asic.
->>
->> [1] within constraints imposed by the driver/hardware - for example to
->> account for resources shared by a set of ports. e.g., front panel ports
->> 1 - 4 have shared resources and must always be in the same devlink instance.
-> 
-> So the ASIC would start out all partitioned? Presumably some would
-> still like to use it non-partitioned? What follows there must be a top
-> level instance to decide on partitioning, and moving resources between
-> sub-instances.
-> 
-> Right now I don't think there is much info in devlink ports which would
-> be relevant without full view of the ASIC..
-> 
+Most of the bridge device's vlan init bugs come from the fact that it's
+done in the wrong place, way too early in ndo_init() before the device is
+even assigned an ifindex. That makes error handling harder, especially for
+older kernels which don't have bridge ndo_uninit callback. It also
+introduces another bug when the bridge's dev_addr is added as fdb in the
+the initial default pvid on vlan initialization, the fdb notification has
+ifindex/NDA_MASTER both equal to 0 (see example below) which really
+makes no sense for user-space[0]. Usually user-space software would ignore
+such entries, but they are actually valid and will eventually have all
+necessary attributes. I chose to change the order because this can be
+backported to all kernels even pre-ndo_uninit ones without many changes
+and it keeps init/deinit symmetric. As a bonus this allows us to keep
+the vlan init/deinit entirely in br_vlan.c and remove those exports.
+It makes much more sense to send a notification *after* the device has
+registered and has a proper ifindex allocated rather than before when
+there's a chance that the registration might still fail.
 
-not sure how it would play out. really just 'thinking out loud' about
-the above use case to make sure devlink with proper namespace support
-allows it - or does not prevent it.
+For the demonstration below a small change to iproute2 for printing all fdb
+notifications is added, because it contained a workaround not to show
+entries with ifindex == 0.
+Command executed while monitoring: $ ip l add br0 type bridge
+Before (both ifindex and master == 0):
+$ bridge monitor fdb
+36:7e:8a:b3:56:ba dev * vlan 1 master * permanent
+
+After (proper br0 ifindex):
+$ bridge monitor fdb
+e6:2a:ae:7a:b7:48 dev br0 vlan 1 master br0 permanent
+
+v2: on error in br_vlan_init set br->vlgrp to NULL
+
+[0] https://bugzilla.kernel.org/show_bug.cgi?id=204389
+
+Reported-by: michael-dev <michael-dev@fami-braun.de>
+Fixes: 5be5a2df40f0 ("bridge: Add filtering support for default_pvid")
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+I tried a few different approaches to resolve this but they were all
+unsuitable for some kernels, this approach can go to stables easily
+and IMO is the way this had to be done from the start. Alternatively
+we could move only the br_vlan_add and pair it with a br_vlan_del of
+default_pvid on the same events, but I don't think it hurts to move
+the whole init/deinit there as it'd help older stable releases as well.
+
+I also tested the br_vlan_init error handling after the move by always
+returning errors from all over it. Since errors at NETDEV_REGISTER cause
+NETDEV_UNREGISTER we can deinit vlans properly for all cases regardless
+why it happened (e.g. device destruction or init error).
+
+ net/bridge/br.c         |  5 ++++-
+ net/bridge/br_device.c  | 10 ----------
+ net/bridge/br_private.h | 19 ++++---------------
+ net/bridge/br_vlan.c    | 25 ++++++++++++++++++-------
+ 4 files changed, 26 insertions(+), 33 deletions(-)
+
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index d164f63a4345..8a8f9e5f264f 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -37,12 +37,15 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
+ 	int err;
+ 
+ 	if (dev->priv_flags & IFF_EBRIDGE) {
++		err = br_vlan_bridge_event(dev, event, ptr);
++		if (err)
++			return notifier_from_errno(err);
++
+ 		if (event == NETDEV_REGISTER) {
+ 			/* register of bridge completed, add sysfs entries */
+ 			br_sysfs_addbr(dev);
+ 			return NOTIFY_DONE;
+ 		}
+-		br_vlan_bridge_event(dev, event, ptr);
+ 	}
+ 
+ 	/* not a port of a bridge */
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index 681b72862c16..b3e3de2ecf95 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -135,18 +135,9 @@ static int br_dev_init(struct net_device *dev)
+ 		return err;
+ 	}
+ 
+-	err = br_vlan_init(br);
+-	if (err) {
+-		free_percpu(br->stats);
+-		br_mdb_hash_fini(br);
+-		br_fdb_hash_fini(br);
+-		return err;
+-	}
+-
+ 	err = br_multicast_init_stats(br);
+ 	if (err) {
+ 		free_percpu(br->stats);
+-		br_vlan_flush(br);
+ 		br_mdb_hash_fini(br);
+ 		br_fdb_hash_fini(br);
+ 	}
+@@ -161,7 +152,6 @@ static void br_dev_uninit(struct net_device *dev)
+ 
+ 	br_multicast_dev_del(br);
+ 	br_multicast_uninit_stats(br);
+-	br_vlan_flush(br);
+ 	br_mdb_hash_fini(br);
+ 	br_fdb_hash_fini(br);
+ 	free_percpu(br->stats);
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index e8cf03b43b7d..96dd1c68d73f 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -872,7 +872,6 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
+ int br_vlan_add(struct net_bridge *br, u16 vid, u16 flags,
+ 		bool *changed, struct netlink_ext_ack *extack);
+ int br_vlan_delete(struct net_bridge *br, u16 vid);
+-void br_vlan_flush(struct net_bridge *br);
+ struct net_bridge_vlan *br_vlan_find(struct net_bridge_vlan_group *vg, u16 vid);
+ void br_recalculate_fwd_mask(struct net_bridge *br);
+ int __br_vlan_filter_toggle(struct net_bridge *br, unsigned long val);
+@@ -881,7 +880,6 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto);
+ int br_vlan_set_proto(struct net_bridge *br, unsigned long val);
+ int br_vlan_set_stats(struct net_bridge *br, unsigned long val);
+ int br_vlan_set_stats_per_port(struct net_bridge *br, unsigned long val);
+-int br_vlan_init(struct net_bridge *br);
+ int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val);
+ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
+ 			       struct netlink_ext_ack *extack);
+@@ -894,8 +892,8 @@ int nbp_get_num_vlan_infos(struct net_bridge_port *p, u32 filter_mask);
+ void br_vlan_get_stats(const struct net_bridge_vlan *v,
+ 		       struct br_vlan_stats *stats);
+ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event);
+-void br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+-			  void *ptr);
++int br_vlan_bridge_event(struct net_device *dev, unsigned long event,
++			 void *ptr);
+ 
+ static inline struct net_bridge_vlan_group *br_vlan_group(
+ 					const struct net_bridge *br)
+@@ -988,19 +986,10 @@ static inline int br_vlan_delete(struct net_bridge *br, u16 vid)
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static inline void br_vlan_flush(struct net_bridge *br)
+-{
+-}
+-
+ static inline void br_recalculate_fwd_mask(struct net_bridge *br)
+ {
+ }
+ 
+-static inline int br_vlan_init(struct net_bridge *br)
+-{
+-	return 0;
+-}
+-
+ static inline int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
+ 			       bool *changed, struct netlink_ext_ack *extack)
+ {
+@@ -1085,8 +1074,8 @@ static inline void br_vlan_port_event(struct net_bridge_port *p,
+ {
+ }
+ 
+-static inline void br_vlan_bridge_event(struct net_device *dev,
+-					unsigned long event, void *ptr)
++static inline int br_vlan_bridge_event(struct net_device *dev,
++				       unsigned long event, void *ptr)
+ {
+ }
+ #endif
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index a544e161c7fa..6a17408b4eb8 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -709,7 +709,7 @@ int br_vlan_delete(struct net_bridge *br, u16 vid)
+ 	return __vlan_del(v);
+ }
+ 
+-void br_vlan_flush(struct net_bridge *br)
++static void br_vlan_flush(struct net_bridge *br)
+ {
+ 	struct net_bridge_vlan_group *vg;
+ 
+@@ -721,6 +721,8 @@ void br_vlan_flush(struct net_bridge *br)
+ 	br_fdb_delete_by_port(br, NULL, 0, 1);
+ 
+ 	vg = br_vlan_group(br);
++	if (!vg)
++		return;
+ 	__vlan_flush(vg);
+ 	RCU_INIT_POINTER(br->vlgrp, NULL);
+ 	synchronize_rcu();
+@@ -1054,7 +1056,7 @@ int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val)
+ 	return err;
+ }
+ 
+-int br_vlan_init(struct net_bridge *br)
++static int br_vlan_init(struct net_bridge *br)
+ {
+ 	struct net_bridge_vlan_group *vg;
+ 	int ret = -ENOMEM;
+@@ -1083,6 +1085,8 @@ int br_vlan_init(struct net_bridge *br)
+ 	return ret;
+ 
+ err_vlan_add:
++	RCU_INIT_POINTER(br->vlgrp, NULL);
++	synchronize_rcu();
+ 	vlan_tunnel_deinit(vg);
+ err_tunnel_init:
+ 	rhashtable_destroy(&vg->vlan_hash);
+@@ -1469,13 +1473,19 @@ static void nbp_vlan_set_vlan_dev_state(struct net_bridge_port *p, u16 vid)
+ }
+ 
+ /* Must be protected by RTNL. */
+-void br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+-			  void *ptr)
++int br_vlan_bridge_event(struct net_device *dev, unsigned long event, void *ptr)
+ {
+ 	struct netdev_notifier_changeupper_info *info;
+-	struct net_bridge *br;
++	struct net_bridge *br = netdev_priv(dev);
++	int ret = 0;
+ 
+ 	switch (event) {
++	case NETDEV_REGISTER:
++		ret = br_vlan_init(br);
++		break;
++	case NETDEV_UNREGISTER:
++		br_vlan_flush(br);
++		break;
+ 	case NETDEV_CHANGEUPPER:
+ 		info = ptr;
+ 		br_vlan_upper_change(dev, info->upper_dev, info->linking);
+@@ -1483,12 +1493,13 @@ void br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+ 
+ 	case NETDEV_CHANGE:
+ 	case NETDEV_UP:
+-		br = netdev_priv(dev);
+ 		if (!br_opt_get(br, BROPT_VLAN_BRIDGE_BINDING))
+-			return;
++			break;
+ 		br_vlan_link_state_change(dev, br);
+ 		break;
+ 	}
++
++	return ret;
+ }
+ 
+ /* Must be protected by RTNL. */
+-- 
+2.21.0
+
