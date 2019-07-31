@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5837BB9A
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 10:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4617BB94
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 10:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728120AbfGaI0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 04:26:20 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42630 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727736AbfGaIZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 04:25:47 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x1so18732415wrr.9;
-        Wed, 31 Jul 2019 01:25:46 -0700 (PDT)
+        id S1727903AbfGaIZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 04:25:50 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51758 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727802AbfGaIZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 04:25:49 -0400
+Received: by mail-wm1-f67.google.com with SMTP id 207so59800522wma.1;
+        Wed, 31 Jul 2019 01:25:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Nie3vRCAA3P2WBFQINaLTshvz2jl1k5/q8MQmGfrr+k=;
-        b=cZBhSKOvmACLS//fFwYciUrtPk5+8xzmapM5YG9MeLci6M/AbV5f5DPxmzorEqe8hO
-         C0bdCTbU8UeQa/LipkiA/f5IXh9ij8yMsQ1G4y9qZAbfoebax0+PhkCBAaEIAqA1oO9X
-         FKUJvBuK5bPkEzJy6t24Uw5DSnr2B3uMFMBkW3SilpuHkkaY8mNAWagnh3QsjqFuFLrT
-         Ektr9a/2S6JiZ5sxDHjB081Z9otgQPb3t3GZuf3NXc/kvxHEn8a9JBdanuSxXw5Tx/Dz
-         lHGBkxdDvY1p6cbiS9/2rs2JXwPgI4tuD9ikOR2/czZmd5IDe6egFW92/bofahc3TSfS
-         O7GA==
+        bh=P6ek7nCICloFfkqqmazjjgTrHsnrmhfYJ1DCm67jzWo=;
+        b=fwRJHyPAgvG2HVANNI5oru7wb9ZEELk200qyHKkBMZMdPB/MYbp1BQmynFAKIarO3E
+         5QmzW8wq5sH/Sn1zGB3ZfTmsLErvg3+wRD/+lkbNms5PMHzZMl74KnUiGh+eUlzghPja
+         Ro4oQ1Te1cZHmNa4yPvSbo8RMYekAlDRn893/DS62iZJrhqiTdZkj+S08l6sZZN+4ZPF
+         QRuuDnFJbLMHdB4tHZIEZCyEL3cEViOJGco4Dr8IFWdeSWv5RIzG0dObOXEcHTXHw5gj
+         Yh7e10pIrxCsBenstH6ESFddpe/iDoK8M9TvFQobmPSA8Knwl1oifLPxkIJbiGfKAnhw
+         +P3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Nie3vRCAA3P2WBFQINaLTshvz2jl1k5/q8MQmGfrr+k=;
-        b=DcmndTg+1iPChF6Ycdi3WRGBKzHWuERzuCgLPm/7BNPWAgsThvNIZJCFqqZClIrcdU
-         yfBk/ScrE8OqsNQ4mTu2O9LtETVES0Q5/SnTJgyKJHELMw3jYiBfg3WUa7X4iiyp1b7N
-         3tuUzArVJbPQeRezHfSm8QOdmmJO5+iUoaiP7JE+Sm2eBQCjP0yrZ007IWm0pZe6z/cH
-         SMBlX1Cw9y45gtZYLoaMF7fYn8Rmk04TgoAIJTi4mr1y2U/EUaB+ZXTDk5qxzyk9L0uU
-         WfIuSaS2WkeiKK19wB+Rt5sQWeZBnketiPB+1wyccG+IoeplgpvkBGzYTbGvpSEpm5zt
-         ZB5g==
-X-Gm-Message-State: APjAAAW9vTDNgn2yZodNnj0XJKy59gWRjr5ZbHBsS/F9K6ttqmWS8RAO
-        ZrK8Uo/a4K7oem3ZVt8QPmgpZFWO+48=
-X-Google-Smtp-Source: APXvYqwV3U51huq3cZ+eVl5YsV2JSBa4m12WPYbJVaYkEDyRZp9cHR75ZSXonFtQZ9v2I9po/BkoZA==
-X-Received: by 2002:a5d:5647:: with SMTP id j7mr56381028wrw.191.1564561545735;
-        Wed, 31 Jul 2019 01:25:45 -0700 (PDT)
+        bh=P6ek7nCICloFfkqqmazjjgTrHsnrmhfYJ1DCm67jzWo=;
+        b=pKMBhc6ejXIAmTCa8GjrTvBf5yGJ4h/i6i+WRt9pWaMqProeW8t53IdYR7l/sA4NK2
+         FlRm4lMJOKQjSycnLWCYPmVgRBDgkpmkd/+pEQLtixWsrVVnAYPGn62AlYRw/1f4sQTG
+         a39MA8fL0oS3fTX5ZITPARZTw1FrmbDLqRrLZHsFaDXu+zqPXVsd1VcXymV5rTNMwfAQ
+         MyAX++QM8GV8G6nVxedu8lmfFcMuq8GHqNbOWtwwmS0MH6Yy8ISdnv7eC5igk7aEbmpR
+         8Rpnsy5ZQgauFvqQklsUHO0KBy7IbF2ZuX9XXW1MVbYo1CQkTNa6dLQkCjxGCds6mF2A
+         0IXA==
+X-Gm-Message-State: APjAAAXt2g1+ZsjL91TLN0riVmOojEANbRDKfQELZmeiGlFkgp5Dk26X
+        rzyLQeoTmuSUZA+Rutsqy+3mqsUEDwI=
+X-Google-Smtp-Source: APXvYqwNd/1iCGmmS4m5hrC0ENbW1WABEWYgEB5eBdOpPjhGk2I7hMFJco+zTMkQBOHp1LLgoclolg==
+X-Received: by 2002:a1c:6c08:: with SMTP id h8mr20660524wmc.62.1564561546821;
+        Wed, 31 Jul 2019 01:25:46 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id c78sm93223959wmd.16.2019.07.31.01.25.44
+        by smtp.gmail.com with ESMTPSA id c78sm93223959wmd.16.2019.07.31.01.25.45
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 01:25:45 -0700 (PDT)
+        Wed, 31 Jul 2019 01:25:46 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
@@ -52,9 +52,9 @@ Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: [PATCH net-next v2 2/6] dt-bindings: net: dsa: marvell: add 6220 model to the 6250 family
-Date:   Wed, 31 Jul 2019 10:23:47 +0200
-Message-Id: <20190731082351.3157-3-h.feurstein@gmail.com>
+Subject: [PATCH net-next v2 3/6] net: dsa: mv88e6xxx: introduce invalid_port_mask in mv88e6xxx_info
+Date:   Wed, 31 Jul 2019 10:23:48 +0200
+Message-Id: <20190731082351.3157-4-h.feurstein@gmail.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190731082351.3157-1-h.feurstein@gmail.com>
 References: <20190731082351.3157-1-h.feurstein@gmail.com>
@@ -65,27 +65,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MV88E6220 is part of the MV88E6250 family.
+With this it is possible to mark certain chip ports as invalid. This is
+required for example for the MV88E6220 (which is in general a MV88E6250
+with 7 ports) but the ports 2-4 are not routed to pins.
+
+If a user configures an invalid port, an error is returned.
 
 Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Documentation/devicetree/bindings/net/dsa/marvell.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c |  9 +++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h | 10 ++++++++++
+ 2 files changed, 19 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/marvell.txt b/Documentation/devicetree/bindings/net/dsa/marvell.txt
-index 6f9538974bb9..30c11fea491b 100644
---- a/Documentation/devicetree/bindings/net/dsa/marvell.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/marvell.txt
-@@ -22,7 +22,7 @@ which is at a different MDIO base address in different switch families.
- - "marvell,mv88e6190"	: Switch has base address 0x00. Use with models:
- 			  6190, 6190X, 6191, 6290, 6390, 6390X
- - "marvell,mv88e6250"	: Switch has base address 0x08 or 0x18. Use with model:
--			  6250
-+			  6220, 6250
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index c8c176da0f1c..9fdcc21f0858 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2469,6 +2469,14 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
  
- Required properties:
- - compatible		: Should be one of "marvell,mv88e6085",
+ 	/* Setup Switch Port Registers */
+ 	for (i = 0; i < mv88e6xxx_num_ports(chip); i++) {
++		/* Prevent the use of an invalid port. */
++		if (mv88e6xxx_is_invalid_port(chip, i) &&
++		    !dsa_is_unused_port(ds, i)) {
++			dev_err(chip->dev, "port %d is invalid\n", i);
++			err = -EINVAL;
++			goto unlock;
++		}
++
+ 		if (dsa_is_unused_port(ds, i)) {
+ 			err = mv88e6xxx_port_set_state(chip, i,
+ 						       BR_STATE_DISABLED);
+@@ -4270,6 +4278,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		 */
+ 		.num_ports = 7,
+ 		.num_internal_phys = 2,
++		.invalid_port_mask = BIT(2) | BIT(3) | BIT(4),
+ 		.max_vid = 4095,
+ 		.port_base_addr = 0x08,
+ 		.phy_base_addr = 0x00,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 2cc508a1cc32..359d258d7151 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -106,6 +106,11 @@ struct mv88e6xxx_info {
+ 	unsigned int g2_irqs;
+ 	bool pvt;
+ 
++	/* Mark certain ports as invalid. This is required for example for the
++	 * MV88E6220 (which is in general a MV88E6250 with 7 ports) but the
++	 * ports 2-4 are not routet to pins.
++	 */
++	unsigned int invalid_port_mask;
+ 	/* Multi-chip Addressing Mode.
+ 	 * Some chips respond to only 2 registers of its own SMI device address
+ 	 * when it is non-zero, and use indirect access to internal registers.
+@@ -571,6 +576,11 @@ static inline unsigned int mv88e6xxx_num_gpio(struct mv88e6xxx_chip *chip)
+ 	return chip->info->num_gpio;
+ }
+ 
++static inline bool mv88e6xxx_is_invalid_port(struct mv88e6xxx_chip *chip, int port)
++{
++	return (chip->info->invalid_port_mask & BIT(port)) != 0;
++}
++
+ int mv88e6xxx_read(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val);
+ int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val);
+ int mv88e6xxx_update(struct mv88e6xxx_chip *chip, int addr, int reg,
 -- 
 2.22.0
 
