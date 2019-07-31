@@ -2,106 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7D57B7AA
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6C77B7D1
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfGaBig convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Jul 2019 21:38:36 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45194 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726628AbfGaBif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 21:38:35 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6V1ZIlB015088
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:38:34 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u2wkkrs27-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:38:34 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 30 Jul 2019 18:38:32 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id C47A9760C3C; Tue, 30 Jul 2019 18:38:31 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf 2/2] selftests/bpf: tests for jmp to 1st insn
-Date:   Tue, 30 Jul 2019 18:38:27 -0700
-Message-ID: <20190731013827.2445262-3-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190731013827.2445262-1-ast@kernel.org>
-References: <20190731013827.2445262-1-ast@kernel.org>
+        id S1727513AbfGaBwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 21:52:43 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:32937 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfGaBwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 21:52:43 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f20so21817398pgj.0
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:52:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BfCyrhNuzIz7zMfIxFPsUxkcXLLnH1B7jinChY5NNYw=;
+        b=q+Y8Ti8MeMDyuFY+s+KxmfGiDtTy24GTdibFPwhm21arDI7+TiHIrPkI0SKjA1LxJJ
+         VMx49bA+7E4OS/hJuxLHJP+pOstVg8KFvVNWt/XSaISH083EQQ9C7MjO4l7ktkJFBncH
+         4/rnGF/WIweq3AQ6k6EyilnsHVuptI7WVTbtMFpLxXgLx2bshlw5gDAaMlgscHGKWpJo
+         eZMSf7Hl6wtAbxx1KZk6v9/yBiooXfLDZPVMEEfQn3fnI7hYqztYCfX1wCZdr+jKCZ5E
+         HQrAcj3/iYn9luiNBQeC9cYtB7c2RuaGwjV9gHbqK1TcI0kRjs/q3V9ky7XGIRFNOptb
+         l0sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BfCyrhNuzIz7zMfIxFPsUxkcXLLnH1B7jinChY5NNYw=;
+        b=SlvnsqzohnMUIJSzmDGcoBd/EcO/8tcfNfPl/cThKYj6+eoSrQlJabcfh3m10vG3XA
+         Mh7n+8Dpjdakg4PKk0c0BoB6iohWoP+iFXgzNYUqyTHUUgtVrMzVesQfdCgtVFI+jh2l
+         /x+m9QCJvnArpFnPMZeCvEC9/WB6dlBpHI1CIAz8+jhFMwSrvD2GC39EiGX1dfW8Wk7t
+         CNvKxRV750hKHJhxYMbBEEVfwrvRVPb3SORMof7TnAxJ7FhvbBrqeMOS0kjeCMcJOjDG
+         KYSkjMKDAd7vFnruIGxjsSgB7AsW66mn4i1BK9X5Zdsu2XT08Q8Mezpz+1oxcohc8wFy
+         0vsg==
+X-Gm-Message-State: APjAAAUYHe3ypNLgqGFCgSJumntdHH241e8sRlt95jwJ3F5g3EVnS0W2
+        NNMwBuXAenjAwhto+RV52oE=
+X-Google-Smtp-Source: APXvYqxZv8AJvgAQ+D5NwAqmUEXBYD6uUGaLsDnqTJAo5EkU5Wju65yYfGq1O83qXyK6AFXA7RBeNw==
+X-Received: by 2002:a17:90a:17a6:: with SMTP id q35mr348311pja.118.1564537962329;
+        Tue, 30 Jul 2019 18:52:42 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::3:af4b])
+        by smtp.gmail.com with ESMTPSA id 65sm69390586pgf.30.2019.07.30.18.52.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jul 2019 18:52:41 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 18:52:40 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load XDP
+Message-ID: <20190731015238.3kq3r7rlascv7tzs@ast-mbp>
+References: <20190730184821.10833-1-danieltimlee@gmail.com>
+ <20190730155915.5bbe3a03@cakuba.netronome.com>
+ <20190730231754.efh3fj4mnsbv445l@ast-mbp>
+ <20190730170725.279761e7@cakuba.netronome.com>
+ <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
+ <20190730182144.1355bf50@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-31_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1907310013
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730182144.1355bf50@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add 2 tests that check JIT code generation to jumps to 1st insn.
-1st test is similar to syzbot reproducer.
-The backwards branch is never taken at runtime.
-2nd test has branch to 1st insn that executes.
-The test is written as two bpf functions, since it's not possible
-to construct valid single bpf program that jumps to 1st insn.
+On Tue, Jul 30, 2019 at 06:21:44PM -0700, Jakub Kicinski wrote:
+> > > Duplicating the same features in bpftool will only diminish the
+> > > incentive for moving iproute2 to libbpf.   
+> > 
+> > not at all. why do you think so?
+> 
+> Because iproute2's BPF has fallen behind so the simplest thing is to
+> just contribute to bpftool. But iproute2 is the tool set for Linux
+> networking, we can't let it bit rot :(
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/verifier/loops1.c | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
+where were you when a lot of libbpf was copy pasted into iproute2 ?!
+Now it diverged a lot and it's difficult to move iproute2 back to the main
+train which is libbpf.
+Same thing with at least 5 copy-pastes of samples/bpf/bpf_load.c
+that spawned a bunch of different bpf loaders.
 
-diff --git a/tools/testing/selftests/bpf/verifier/loops1.c b/tools/testing/selftests/bpf/verifier/loops1.c
-index 5e980a5ab69d..1fc4e61e9f9f 100644
---- a/tools/testing/selftests/bpf/verifier/loops1.c
-+++ b/tools/testing/selftests/bpf/verifier/loops1.c
-@@ -159,3 +159,31 @@
- 	.errstr = "loop detected",
- 	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
- },
-+{
-+	"not-taken loop with back jump to 1st insn",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, 123),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 4, -2),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.retval = 123,
-+},
-+{
-+	"taken loop with back jump to 1st insn",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_1, 10),
-+	BPF_MOV64_IMM(BPF_REG_2, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_SUB, BPF_REG_1, 1),
-+	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, -3),
-+	BPF_MOV64_REG(BPF_REG_0, BPF_REG_2),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.retval = 55,
-+},
--- 
-2.20.0
+> IMHO vaguely competent users of Linux networking will know ip link.
+> If they are not vaguely competent, they should not attach XDP programs
+> to interfaces by hand...
+
+I'm a prime example of moderately competent linux user who
+doesn't know iproute2. I'm not joking.
+I don't know tc syntax and always use my cheat sheet of ip/tc commands
+to do anything.
+
+> > 
+> > bpftool must be able to introspect every aspect of bpf programming.
+> > That includes detaching and attaching anywhere.
+> > Anyone doing 'bpftool p s' should be able to switch off particular
+> > prog id without learning ten different other tools.
+> 
+> I think the fact that we already have an implementation in iproute2,
+> which is at the risk of bit rot is more important to me that the
+> hypothetical scenario where everyone knows to just use bpftool (for
+> XDP, for TC it's still iproute2 unless there's someone crazy enough 
+> to reimplement the TC functionality :))
+
+I think you're missing the point that iproute2 is still necessary
+to configure it.
+bpftool should be able to attach/detach from anything.
+But configuring that thing (whether it's cgroup or tc/xdp) is
+a job of corresponding apis and tools.
+
+> I'm not sure we can settle our differences over email :)
+> I have tremendous respect for all the maintainers I CCed here, 
+> if nobody steps up to agree with me I'll concede the bpftool net
+> battle entirely :)
+
+we can keep arguing forever. Respect to ease-of-use only comes
+from the pain of operational experience. I don't think I can
+convey that pain in the email either.
 
