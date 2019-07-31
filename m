@@ -2,210 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E96427C8CB
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 18:35:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F957C8D0
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 18:35:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbfGaQfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 12:35:15 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35200 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727571AbfGaQfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 12:35:15 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y4so70418100wrm.2;
-        Wed, 31 Jul 2019 09:35:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=yAjEQyZodCr08YAboEYwoqZJvAo0oHxkikmOr+pozrQ=;
-        b=R60oGN5kWvEbHesJPw/XvDID5/dDGBW2ltPHWrTjo/r6I0wREmVwpyI79G4Jw2lkkT
-         TsRo/AfXHnLh8J7hJYZieYA0nj2EwU/6MjccGyeAF5trdBquCafCwTMnfmM4sGf1Wakt
-         WPjH4MKNZ4ZxRqb6og7hYZVwr52kPui8+vA7oa6kTjahSwMYIHk6hShU11cdNKlRalxT
-         3N/M2kuVcY7e69FOX4qQvylYkO5GQhwg4jN7zhl4kHdk9Eb9nqwsJWncERuRyQ7dLBcL
-         uGzE70Ydq1bFQ7NJBXHEPvkssNF/nOmDGDFC8X2jv+VWIn3eVhmC2w8KUiH+snu+prUY
-         8qzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=yAjEQyZodCr08YAboEYwoqZJvAo0oHxkikmOr+pozrQ=;
-        b=Dz+sGen2ubroP9pseHwR+26En40eAItG2B+XZJGV8Py0gPEsPfRogrznjO4mlK2GhR
-         52JPe5Rwqkrrxx6pxYDxyDE+DlArl/DzwiVG/FSSCkqxr/7wR97NtulrnbjhhpJ8TTFp
-         ENtH/DfNZoi9Fx0O8C0veGKfp0kXBH7Gj+qKQH723rW4kV9JeJoDq99nDvjzsvDIp6Bh
-         YISNfMsmEUxdQj3PGyGUDSmovmC8l9JjvPr2F0eDVi8jG1jY8IdvFqIjGCqPe+G83D57
-         fnDunOOHcEhdrd4QTrEGXY1MJDh2mD1v0qejcIDpasrH4eI0+AF9o2Fniv8rkHSsbcsC
-         HS9w==
-X-Gm-Message-State: APjAAAXj4+Gx4nwyeB1lLNrLYeCAZC1r5bu9fbqHAngXE4owDmAEkZux
-        oW5liM7f3KRizPNEyo1SQoA=
-X-Google-Smtp-Source: APXvYqy99Kyk9xLby2T0bVAd+GOAXz9UpXHXC0+PRE1TqCjVllfYJ7+I3EnWVdrP2U5sxtCh0KLANg==
-X-Received: by 2002:adf:de90:: with SMTP id w16mr795512wrl.217.1564590911914;
-        Wed, 31 Jul 2019 09:35:11 -0700 (PDT)
-Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
-        by smtp.gmail.com with ESMTPSA id w23sm73532989wmi.45.2019.07.31.09.35.10
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 09:35:11 -0700 (PDT)
-Date:   Wed, 31 Jul 2019 09:35:09 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     David Miller <davem@davemloft.net>, devel@driverdev.osuosl.org,
-        andrew@lunn.ch, f.fainelli@gmail.com,
-        kernel-build-reports@lists.linaro.org, netdev@vger.kernel.org,
-        willy@infradead.org, broonie@kernel.org,
-        linux-next@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        hkallweit1@gmail.com
-Subject: Re: next/master build: 221 builds: 11 failed, 210 passed, 13 errors,
- 1174 warnings (next-20190731)
-Message-ID: <20190731163509.GA90028@archlinux-threadripper>
-References: <5d41767d.1c69fb81.d6304.4c8c@mx.google.com>
- <20190731112441.GB4369@sirena.org.uk>
- <20190731113522.GA3426@kroah.com>
- <20190731.084824.2244928058443049.davem@davemloft.net>
- <20190731160043.GA15520@kroah.com>
+        id S1729517AbfGaQfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 12:35:37 -0400
+Received: from smtprelay0134.hostedemail.com ([216.40.44.134]:35456 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726817AbfGaQfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 12:35:37 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id C43F68368EF7;
+        Wed, 31 Jul 2019 16:35:34 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2393:2525:2553:2559:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4605:5007:6119:7903:9025:10004:10400:10848:11232:11233:11658:11914:12043:12297:12555:12740:12760:12895:13019:13069:13311:13357:13439:14096:14097:14180:14181:14581:14659:14721:21060:21080:21451:21627:21740:30054:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.14.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:32,LUA_SUMMARY:none
+X-HE-Tag: hall11_87d69988b0f62
+X-Filterd-Recvd-Size: 2454
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf18.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 31 Jul 2019 16:35:33 +0000 (UTC)
+Message-ID: <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
+Subject: Re: [PATCH] net: sctp: Rename fallthrough label to unhandled
+From:   Joe Perches <joe@perches.com>
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 31 Jul 2019 09:35:31 -0700
+In-Reply-To: <20190731121646.GD9823@hmswarspite.think-freely.org>
+References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
+         <20190731111932.GA9823@hmswarspite.think-freely.org>
+         <eac3fe457d553a2b366e1c1898d47ae8c048087c.camel@perches.com>
+         <20190731121646.GD9823@hmswarspite.think-freely.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190731160043.GA15520@kroah.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 06:00:43PM +0200, Greg KH wrote:
-> On Wed, Jul 31, 2019 at 08:48:24AM -0700, David Miller wrote:
-> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Date: Wed, 31 Jul 2019 13:35:22 +0200
+On Wed, 2019-07-31 at 08:16 -0400, Neil Horman wrote:
+> On Wed, Jul 31, 2019 at 04:32:43AM -0700, Joe Perches wrote:
+> > On Wed, 2019-07-31 at 07:19 -0400, Neil Horman wrote:
+> > > On Tue, Jul 30, 2019 at 10:04:37PM -0700, Joe Perches wrote:
+> > > > fallthrough may become a pseudo reserved keyword so this only use of
+> > > > fallthrough is better renamed to allow it.
+> > > > 
+> > > > Signed-off-by: Joe Perches <joe@perches.com>
+> > > Are you referring to the __attribute__((fallthrough)) statement that gcc
+> > > supports?  If so the compiler should by all rights be able to differentiate
+> > > between a null statement attribute and a explicit goto and label without the
+> > > need for renaming here.  Or are you referring to something else?
 > > 
-> > > On Wed, Jul 31, 2019 at 12:24:41PM +0100, Mark Brown wrote:
-> > >> On Wed, Jul 31, 2019 at 04:07:41AM -0700, kernelci.org bot wrote:
-> > >> 
-> > >> Today's -next fails to build an ARM allmodconfig due to:
-> > >> 
-> > >> > allmodconfig (arm, gcc-8) ― FAIL, 1 error, 40 warnings, 0 section mismatches
-> > >> > 
-> > >> > Errors:
-> > >> >     drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of function 'writeq'; did you mean 'writel'? [-Werror=implicit-function-declaration]
-> > >> 
-> > >> as a result of the changes that introduced:
-> > >> 
-> > >> WARNING: unmet direct dependencies detected for MDIO_OCTEON
-> > >>   Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=m] && MDIO_BUS [=m] && 64BIT && HAS_IOMEM [=y] && OF_MDIO [=m]
-> > >>   Selected by [m]:
-> > >>   - OCTEON_ETHERNET [=m] && STAGING [=y] && (CAVIUM_OCTEON_SOC && NETDEVICES [=y] || COMPILE_TEST [=y])
-> > >> 
-> > >> which is triggered by the staging OCTEON_ETHERNET driver which misses a
-> > >> 64BIT dependency but added COMPILE_TEST in 171a9bae68c72f2
-> > >> (staging/octeon: Allow test build on !MIPS).
-> > > 
-> > > A patch was posted for this, but it needs to go through the netdev tree
-> > > as that's where the offending patches are coming from.
+> > Hi.
 > > 
-> > I didn't catch that, was netdev CC:'d?
-> 
-> Nope, just you :(
-> 
-> I'll resend it now and cc: netdev.
-> 
-> thanks,
-> 
-> greg k-h
+> > I sent after this a patch that adds
+> > 
+> > # define fallthrough                    __attribute__((__fallthrough__))
+> > 
+> > https://lore.kernel.org/patchwork/patch/1108577/
+> > 
+> > So this rename is a prerequisite to adding this #define.
+> > 
+> why not just define __fallthrough instead, like we do for all the other
+> attributes we alias (i.e. __read_mostly, __protected_by, __unused, __exception,
+> etc)
 
-If it is this patch:
+Because it's not as intelligible when used as a statement.
 
-https://lore.kernel.org/netdev/20190731160219.GA2114@kroah.com/
 
-It doesn't resolve that issue. I applied it and tested on next-20190731.
 
-$ make -j$(nproc) -s ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- O=out distclean allyesconfig drivers/net/phy/
-
-WARNING: unmet direct dependencies detected for MDIO_OCTEON
-  Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=y] && MDIO_BUS [=y] && 64BIT && HAS_IOMEM [=y] && OF_MDIO [=y]
-  Selected by [y]:
-  - OCTEON_ETHERNET [=y] && STAGING [=y] && (CAVIUM_OCTEON_SOC || COMPILE_TEST [=y]) && NETDEVICES [=y]
-../drivers/net/phy/mdio-octeon.c: In function 'octeon_mdiobus_probe':
-../drivers/net/phy/mdio-octeon.c:48:3: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-   48 |   (u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
-      |   ^
-In file included from ../drivers/net/phy/mdio-octeon.c:14:
-../drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of function 'writeq'; did you mean 'writeb'? [-Werror=implicit-function-declaration]
-  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
-      |                                    ^~~~~~
-../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro 'oct_mdio_writeq'
-   56 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-      |  ^~~~~~~~~~~~~~~
-../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
-      |                                                ^
-../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro 'oct_mdio_writeq'
-   56 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-      |  ^~~~~~~~~~~~~~~
-../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
-      |                                                ^
-../drivers/net/phy/mdio-octeon.c:77:2: note: in expansion of macro 'oct_mdio_writeq'
-   77 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-      |  ^~~~~~~~~~~~~~~
-../drivers/net/phy/mdio-octeon.c: In function 'octeon_mdiobus_remove':
-../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
-      |                                                ^
-../drivers/net/phy/mdio-octeon.c:91:2: note: in expansion of macro 'oct_mdio_writeq'
-   91 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-      |  ^~~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-make[3]: *** [../scripts/Makefile.build:274: drivers/net/phy/mdio-octeon.o] Error 1
-make[3]: *** Waiting for unfinished jobs....
-make[2]: *** [../Makefile:1780: drivers/net/phy/] Error 2
-make[1]: *** [/home/nathan/cbl/linux-next/Makefile:330: __build_one_by_one] Error 2
-make: *** [Makefile:179: sub-make] Error 2
-
-This is the diff that I came up with to solve the errors plus the casting
-warnings but it doesn't feel proper to me. If you all feel otherwise, I
-can draft up a formal commit message.
-
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 20f14c5fbb7e..ed2edf4b5b0e 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -159,7 +159,7 @@ config MDIO_MSCC_MIIM
- 
- config MDIO_OCTEON
- 	tristate "Octeon and some ThunderX SOCs MDIO buses"
--	depends on 64BIT
-+	depends on 64BIT || COMPILE_TEST
- 	depends on HAS_IOMEM && OF_MDIO
- 	select MDIO_CAVIUM
- 	help
-diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
-index ed5f9bb5448d..4b71b733edb4 100644
---- a/drivers/net/phy/mdio-cavium.h
-+++ b/drivers/net/phy/mdio-cavium.h
-@@ -108,8 +108,10 @@ static inline u64 oct_mdio_readq(u64 addr)
- 	return cvmx_read_csr(addr);
- }
- #else
--#define oct_mdio_writeq(val, addr)	writeq(val, (void *)addr)
--#define oct_mdio_readq(addr)		readq((void *)addr)
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+
-+#define oct_mdio_writeq(val, addr)	writeq(val, (void *)(uintptr_t)addr)
-+#define oct_mdio_readq(addr)		readq((void *)(uintptr_t)addr)
- #endif
- 
- int cavium_mdiobus_read(struct mii_bus *bus, int phy_id, int regnum);
-diff --git a/drivers/net/phy/mdio-octeon.c b/drivers/net/phy/mdio-octeon.c
-index 8327382aa568..ab0d8ab588e4 100644
---- a/drivers/net/phy/mdio-octeon.c
-+++ b/drivers/net/phy/mdio-octeon.c
-@@ -45,7 +45,7 @@ static int octeon_mdiobus_probe(struct platform_device *pdev)
- 	}
- 
- 	bus->register_base =
--		(u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
-+		(u64)(uintptr_t)devm_ioremap(&pdev->dev, mdio_phys, regsize);
- 	if (!bus->register_base) {
- 		dev_err(&pdev->dev, "dev_ioremap failed\n");
- 		return -ENOMEM;
