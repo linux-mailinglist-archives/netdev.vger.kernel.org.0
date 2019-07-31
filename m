@@ -2,90 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 251397D12C
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 00:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6E07D12B
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 00:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbfGaWcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 18:32:09 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41306 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbfGaWcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 18:32:09 -0400
-Received: by mail-qk1-f196.google.com with SMTP id v22so50449813qkj.8
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 15:32:08 -0700 (PDT)
+        id S1727796AbfGaWb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 18:31:56 -0400
+Received: from mail-pg1-f182.google.com ([209.85.215.182]:37386 "EHLO
+        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726073AbfGaWb4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 18:31:56 -0400
+Received: by mail-pg1-f182.google.com with SMTP id i70so22036094pgd.4
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 15:31:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=hge73k4oZKuYPScmd5aYHU82prGHQKIJnS5yCT+PDa8=;
-        b=gAcq3NJRZ7sdMa5wCXP06TK+lnz55q4X9YMbczTfSyNuXL2Zuup9790lK6fy35QwjT
-         475oeAp+OpZWKt9bB1XQAa2P7szx7kmSDp8DN+nX/3+nBAxq1xJBz7ErQxwbvqIg1hAp
-         BrlelGtwwndgXyJaGQ3wDIcGAYCDmvW97CUvv7UpgYAuO1oqUN6IuoXYaeULDFGjtbXy
-         Kv4k0K9vA8L5pX5F1GAZ1Eeifoc4MJo5zkRt8ArY6V9PsESCRugUZ5IjiL18Qr9Zd5Hd
-         COs9x3rawb2KinmsJ07DYAh4vTXNVEKGMT2OiCK1t/3Cmm2DxoaME6TDrMUUeLsJSDnG
-         C5aw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pXH5GE2Tor3TKPsP6nqKUf18cs/dsSsv6Yk6A7HJd4U=;
+        b=f8nxv9ZJJu8Trz3rsHR+9kuSGPSIiLtltsHUqJNoqLJT35sMtIkQfQPr0MOsa347GN
+         5TgaESQLf4iwow41Q3zgm+dJp0Suz0+htWGbvCynPwSf3bkBqzl6vevy+ng3HpRVSCwW
+         uhx4lIukX89WJ1Y5VseJtRA50w5BaSh7pjSvfBvI1chYzIu0I6XRgwMIodi8loYTtURn
+         kL9Ssf5uEuzd9C+wXZPB0OqzMfh/Ug5GG8h+tbIJKem+pK3RlggVtvuX69mBAH+TFm0L
+         sHsQ3/om9BNE8wKycnEm/sHImUpzJLd1wHllEBO+/T4B61mNxG5lc75+hhJtDmPhn05x
+         1Hcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=hge73k4oZKuYPScmd5aYHU82prGHQKIJnS5yCT+PDa8=;
-        b=TbZT0jI/p0TJ3gnTKVc7/CEsaGI2bIgdD+JcNLmHh0MkFyrDS434/XnnisTOBxM+G5
-         MXyvhHl0Jz8zZAvOkbvytfMvHjGj6aJMGjcgQ2hdUhoC9zbj5P2cjg54vVkKbe9UQ40A
-         td6aF6ST3/2vtWUUegvYnWUXru5nWZznBfblxuhuJ7vF48pHu8nyXCaPra6Ljsuu/FoZ
-         Eqt2bUvWW30OPtLnCgSFcCwU009rM4f0x+ympDuoZOoyJYC+W62pEVkUztdi0kEpkJyM
-         yWtCB50AYR9vYP7AOEO6OHLU4WMHYC/7E9uztNCBzhyBTEatThR1eEK9gQT40QqTasV0
-         04Rw==
-X-Gm-Message-State: APjAAAUEXvTUTj3yYFVKgg0a7f7mn9+VqcSQumeUQLwW6Nl/s+D65nvY
-        e6+AyVyO4lz2UWdi9jrP+BwcId+c7v4=
-X-Google-Smtp-Source: APXvYqzxa3CcVUiGaO3csF0HNNA0b9m7XQ5vIjQQepMJ8vtfjRgIdNKXf4qn6juQPGPAcbEbIfd02g==
-X-Received: by 2002:a37:4ac3:: with SMTP id x186mr79641940qka.138.1564612328328;
-        Wed, 31 Jul 2019 15:32:08 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q56sm35338498qtq.64.2019.07.31.15.32.02
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 15:32:03 -0700 (PDT)
-Date:   Wed, 31 Jul 2019 15:31:48 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Takshak Chahande <ctakshak@fb.com>
-Cc:     <netdev@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <rdna@fb.com>, <kernel-team@fb.com>, <hechaol@fb.com>
-Subject: Re: [PATCH bpf v2] libbpf : make libbpf_num_possible_cpus function
- thread safe
-Message-ID: <20190731153148.2e8bc1a7@cakuba.netronome.com>
-In-Reply-To: <20190731221055.1478201-1-ctakshak@fb.com>
-References: <20190731221055.1478201-1-ctakshak@fb.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pXH5GE2Tor3TKPsP6nqKUf18cs/dsSsv6Yk6A7HJd4U=;
+        b=jSR6t61pYpyYSIlwE7kBX4ne2NWo9K7PtMxSKbLSKIg5GPcxGIPWoKND8a/rOGJZG2
+         RCBo7BvR1OP/dylJ4qHRYxOkUZVIclu7zLyvn8jryr/lX/zgXZt0lsJPygCruYmfGjBO
+         FLpBd2u6ewzzLJo67tmuRsyMifIXYq4kEHHhPQhK1Cd4vdS9J8qpMwcWhJTQBTkdHt+V
+         f20TUOrXOgGrPl3lrcGvmbJAaKstP+uhO/4y6/MXgbcp8vr66KNyJilBFrEsxIXDcZWW
+         p1C/xO/ZxJtmA8G2cDimE7cblyIO0QpDv1JrIEbzvIZsqoEyuHFUqbn0ansXtlZLKOjx
+         ZwZw==
+X-Gm-Message-State: APjAAAWx54DNOF3uIeYpggQI0rfRHYzkLxdCAWSlkZrqdENb7AjSEfbD
+        fLA3sGO95cTJbnYFqspFwEc=
+X-Google-Smtp-Source: APXvYqz5jWTN/4wyiVe4m4CsekRnq2YQZATj3+qlzGipKJnPXBeRKVRG6sZnAaxQ1uBV5hgOApuklA==
+X-Received: by 2002:a17:90a:d996:: with SMTP id d22mr5152605pjv.86.1564612315615;
+        Wed, 31 Jul 2019 15:31:55 -0700 (PDT)
+Received: from [172.27.227.172] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id l44sm2799417pje.29.2019.07.31.15.31.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 Jul 2019 15:31:54 -0700 (PDT)
+Subject: Re: [patch net-next 0/3] net: devlink: Finish network namespace
+ support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, sthemmin@microsoft.com, mlxsw@mellanox.com
+References: <20190727094459.26345-1-jiri@resnulli.us>
+ <eebd6bc7-6466-2c93-4077-72a39f3b8596@gmail.com>
+ <20190730060817.GD2312@nanopsycho.orion>
+ <8f5afc58-1cbc-9e9a-aa15-94d1bafcda22@gmail.com>
+ <20190731150233.432d3c86@cakuba.netronome.com>
+ <45803ed3-0328-9409-4351-6c26ba8af3cd@gmail.com>
+ <20190731152805.4110ec41@cakuba.netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <de94a881-cb87-e251-d55c-9f40d24b08d5@gmail.com>
+Date:   Wed, 31 Jul 2019 16:31:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190731152805.4110ec41@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 31 Jul 2019 15:10:55 -0700, Takshak Chahande wrote:
-> Having static variable `cpus` in libbpf_num_possible_cpus function
-> without guarding it with mutex makes this function thread-unsafe.
+On 7/31/19 4:28 PM, Jakub Kicinski wrote:
+> On Wed, 31 Jul 2019 16:07:31 -0600, David Ahern wrote:
+>> On 7/31/19 4:02 PM, Jakub Kicinski wrote:
+>>> Can you elaborate further? Ports for most purposes are represented by
+>>> netdevices. Devlink port instances expose global topological view of
+>>> the ports which is primarily relevant if you can see the entire ASIC.
+>>> I think the global configuration and global view of resources is still
+>>> the most relevant need, so in your diagram you must account for some
+>>> "all-seeing" instance, e.g.:
+>>>
+>>>    namespace 1 |  namespace 2  | ... | namespace N
+>>>                |               |     |
+>>>   { ports 1 }  |   { ports 2 } | ... | { ports N }
+>>>                |               |     |
+>>> subdevlink 1   | subdevlink 2  | ... |  subdevlink N
+>>>          \______      |              _______/
+>>>                  master ASIC devlink
+>>>   =================================================
+>>>                    driver
+>>>
+>>> No?
+>>
+>> sure, there could be a master devlink visible to the user if that makes
+>> sense or the driver can account for it behind the scenes as the sum of
+>> the devlink instances.
+>>
+>> The goal is to allow ports within an asic [1] to be divided across
+>> network namespace where each namespace sees a subset of the ports. This
+>> allows creating multiple logical switches from a single physical asic.
+>>
+>> [1] within constraints imposed by the driver/hardware - for example to
+>> account for resources shared by a set of ports. e.g., front panel ports
+>> 1 - 4 have shared resources and must always be in the same devlink instance.
 > 
-> If multiple threads accessing this function, in the current form; it
-> leads to incrementing the static variable value `cpus` in the multiple
-> of total available CPUs.
+> So the ASIC would start out all partitioned? Presumably some would
+> still like to use it non-partitioned? What follows there must be a top
+> level instance to decide on partitioning, and moving resources between
+> sub-instances.
 > 
-> Used local stack variable to calculate the number of possible CPUs and
-> then updated the static variable using WRITE_ONCE().
+> Right now I don't think there is much info in devlink ports which would
+> be relevant without full view of the ASIC..
 > 
-> Changes since v1:
->  * added stack variable to calculate cpus
->  * serialized static variable update using WRITE_ONCE()
->  * fixed Fixes tag
-> 
-> Fixes: 6446b3155521 ("bpf: add a new API libbpf_num_possible_cpus()")
-> Signed-off-by: Takshak Chahande <ctakshak@fb.com>
 
-Perhaps we would have a little less code churn if the static variable
-was renamed (e.g. to saved_cpus), but functionally looks good, so:
-
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-
-(FWIW I think Andrey's comment does not apply to the networking and BPF
-trees so if you respin please keep the changelog in the commit message.)
+not sure how it would play out. really just 'thinking out loud' about
+the above use case to make sure devlink with proper namespace support
+allows it - or does not prevent it.
