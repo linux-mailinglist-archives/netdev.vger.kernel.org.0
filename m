@@ -2,206 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FE17C121
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 14:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B9257C1AA
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 14:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727418AbfGaMW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 08:22:29 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:46077 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726696AbfGaMW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 08:22:29 -0400
-Received: by mail-pl1-f195.google.com with SMTP id y8so30439813plr.12;
-        Wed, 31 Jul 2019 05:22:28 -0700 (PDT)
+        id S2387944AbfGaMjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 08:39:39 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:45879 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726158AbfGaMji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 08:39:38 -0400
+Received: by mail-qk1-f194.google.com with SMTP id s22so49095745qkj.12
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 05:39:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BARg4dgRj/eeBMzSYjIXsyCBQnffvLr7GTQzYLrEu3w=;
-        b=Wt0pU8JNIIJ+EGbiXSG8NrBYPOMzG/9e27ujtkIHfFPJmLoo2fk2xXS+iNkIpwlDwF
-         AmHLikz5JE56rmkHyfEn82ZbgorukbUnXY+A7Y/+w4oEcviRvozMDzHdLIE+krPKiXQ7
-         kNouteCK281XHHYCtAF29gLdWfmxhJdwlf9b/HfNCy7FrRSJm2dskGLpyMdSV/Lmhrb+
-         ivkheRPxTMK5eFJS4llWvH1FBGUARBjyODavP7C9FVQHz/XC1mvybXypIOjKvVioZ+9s
-         YQnngG5m0xdfiP90POx3EteeNeTawAni0PpKp7wwSNgnO3OlXc2uPVTm+19YiEXzM6lR
-         yJ9Q==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ntHuD78E1C49ZvRvAJ6XgDuP1G4iMkkai3jqPaZStVQ=;
+        b=QYLt5oLxRfkO8iVQlcM8CFDLc+4aB1oq1G5gPzD6FWEByB19Sd3Eq075eKqH5NmW7r
+         yXUDMxL5fze2A5G71ENrhWbScZuetvwRZCvr7X56doCnXI9uRYUnRWTYeIM3gRLiUeyi
+         /eh7SRWLFZtd2zOIxcaSfePSYA3z8PqF8WyX2YtQr70udr1hR6V+9yQyJWWOm0FhCYn3
+         RrLimA3hfR0j6oFPuGpOrXLDhZfmxhVa2mCfh5ZGJrV7tIaubv2+pcRGOH8HyUhlMu/X
+         gRA+wBoXedUidty3leb/SYk1yPOT9L3tkNi4HVKQb4piuEQsqs8j7Li0axrda17mfn/2
+         BcXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BARg4dgRj/eeBMzSYjIXsyCBQnffvLr7GTQzYLrEu3w=;
-        b=t9qOIyj3/vv45D4Izrb7dWQ/l6mM6CachBQXWbMdF/+OLkA1dkd1WAhxvEAdnbVeOY
-         5mcRWtMDJEw6y4xfntaM66xjRNe4YIwa7etAyDhQ3ksomBmggDPjvYv7qR6qblvtiTWJ
-         00Rg5U95CtoVnIYaxYRh8oHda4NOEQbxvsvDTXCBMFn6hT5eM1oTx1h2BOlqkM7dFgXZ
-         ho6pFQgeYAqNdD3YlFiFaDvJzaiQ5DmdpWF11JoB4ZAre9hEAWvOCjmel4njlYndVQw2
-         f7W5Kzx5X4ZhWM3GMLJIxDjHUlxASdiyVsUbwMKATaihJTfnJnfz5SdxyoVWfBP3BffU
-         BnnA==
-X-Gm-Message-State: APjAAAU+ADrDgOaBwx/C4QeuiDzRYTRqJG9WYZ8XoVSCzmWPAtNRHl3l
-        Vd8JB34njbANJroZqKj95LQ=
-X-Google-Smtp-Source: APXvYqzoLYMtQVZ0QolFwexSga3N5HBdBGndW6QMs9UQYoPr38zfLjEwYuQoTgqDUcxCl9dd8fgsww==
-X-Received: by 2002:a17:902:2be8:: with SMTP id l95mr111781698plb.231.1564575748499;
-        Wed, 31 Jul 2019 05:22:28 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id c23sm62040683pgj.62.2019.07.31.05.22.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 05:22:27 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH 2/2] cnic: Use refcount_t for refcount
-Date:   Wed, 31 Jul 2019 20:22:24 +0800
-Message-Id: <20190731122224.1003-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ntHuD78E1C49ZvRvAJ6XgDuP1G4iMkkai3jqPaZStVQ=;
+        b=JfLVLdn5Z17KrjjO+gkxvPGRUlDNtvqFTf1oCBEgYT4u4mVzHvCbzemVKHCp4PxJad
+         5PFwqfNGMmz4NEVoOrMRnhOqD2OLVWVmmhI3n/R4Dt7LlTIDobSDyzuCG9s5Fq89hXyv
+         u7VXt/+V84zEkmrXVAGwCUg29vahIWHki1hljJk+x1fUFYCiU7OnQ7Hfey0zyJTXm0DL
+         34egohPLM0wItFuV/ksTNRllrhqshvA+M22lgq2pi3qx9haDmhLG+p0nDlTOD2OoBwpU
+         TvUFqDuLtF/pt+rPoGZwvGkIAexNgHbm+2Rcm36aUWrGCWVXR+VkR/djXCTl7pb5wNqw
+         hiyw==
+X-Gm-Message-State: APjAAAXXGzZCYBNd3SdVMavB6OfGlQnSxTdp8M5xKXMepprxXUgDbwyR
+        AhDG4LuvYbnZrZK7eC8rXw2cZbeEsKQ=
+X-Google-Smtp-Source: APXvYqx/s09x34m2m60hGEG8oq9rNNiSt1/4j5qtIhV1B9Qgz5W3aPna7RR3oLU+V41Ml5DJ6UJ2Ng==
+X-Received: by 2002:a05:620a:1648:: with SMTP id c8mr79693913qko.106.1564576777216;
+        Wed, 31 Jul 2019 05:39:37 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id m12sm27127419qkk.123.2019.07.31.05.39.36
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 31 Jul 2019 05:39:36 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hsntH-0006OW-WA; Wed, 31 Jul 2019 09:39:36 -0300
+Date:   Wed, 31 Jul 2019 09:39:35 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+Message-ID: <20190731123935.GC3946@ziepe.ca>
+References: <20190731084655.7024-1-jasowang@redhat.com>
+ <20190731084655.7024-8-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190731084655.7024-8-jasowang@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-refcount_t is better for reference counters since its
-implementation can prevent overflows.
-So convert atomic_t ref counters to refcount_t.
+On Wed, Jul 31, 2019 at 04:46:53AM -0400, Jason Wang wrote:
+> We used to use RCU to synchronize MMU notifier with worker. This leads
+> calling synchronize_rcu() in invalidate_range_start(). But on a busy
+> system, there would be many factors that may slow down the
+> synchronize_rcu() which makes it unsuitable to be called in MMU
+> notifier.
+> 
+> A solution is SRCU but its overhead is obvious with the expensive full
+> memory barrier. Another choice is to use seqlock, but it doesn't
+> provide a synchronization method between readers and writers. The last
+> choice is to use vq mutex, but it need to deal with the worst case
+> that MMU notifier must be blocked and wait for the finish of swap in.
+> 
+> So this patch switches use a counter to track whether or not the map
+> was used. The counter was increased when vq try to start or finish
+> uses the map. This means, when it was even, we're sure there's no
+> readers and MMU notifier is synchronized. When it was odd, it means
+> there's a reader we need to wait it to be even again then we are
+> synchronized. 
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/broadcom/cnic.c    | 26 ++++++++++++-------------
- drivers/net/ethernet/broadcom/cnic_if.h |  6 +++---
- 2 files changed, 16 insertions(+), 16 deletions(-)
+You just described a seqlock.
 
-diff --git a/drivers/net/ethernet/broadcom/cnic.c b/drivers/net/ethernet/broadcom/cnic.c
-index 57dc3cbff36e..215777d63cda 100644
---- a/drivers/net/ethernet/broadcom/cnic.c
-+++ b/drivers/net/ethernet/broadcom/cnic.c
-@@ -141,22 +141,22 @@ static int cnic_uio_close(struct uio_info *uinfo, struct inode *inode)
- 
- static inline void cnic_hold(struct cnic_dev *dev)
- {
--	atomic_inc(&dev->ref_count);
-+	refcount_inc(&dev->ref_count);
- }
- 
- static inline void cnic_put(struct cnic_dev *dev)
- {
--	atomic_dec(&dev->ref_count);
-+	refcount_dec(&dev->ref_count);
- }
- 
- static inline void csk_hold(struct cnic_sock *csk)
- {
--	atomic_inc(&csk->ref_count);
-+	refcount_inc(&csk->ref_count);
- }
- 
- static inline void csk_put(struct cnic_sock *csk)
- {
--	atomic_dec(&csk->ref_count);
-+	refcount_dec(&csk->ref_count);
- }
- 
- static struct cnic_dev *cnic_from_netdev(struct net_device *netdev)
-@@ -177,12 +177,12 @@ static struct cnic_dev *cnic_from_netdev(struct net_device *netdev)
- 
- static inline void ulp_get(struct cnic_ulp_ops *ulp_ops)
- {
--	atomic_inc(&ulp_ops->ref_count);
-+	refcount_inc(&ulp_ops->ref_count);
- }
- 
- static inline void ulp_put(struct cnic_ulp_ops *ulp_ops)
- {
--	atomic_dec(&ulp_ops->ref_count);
-+	refcount_dec(&ulp_ops->ref_count);
- }
- 
- static void cnic_ctx_wr(struct cnic_dev *dev, u32 cid_addr, u32 off, u32 val)
-@@ -494,7 +494,7 @@ int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops)
- 	}
- 	read_unlock(&cnic_dev_lock);
- 
--	atomic_set(&ulp_ops->ref_count, 0);
-+	refcount_set(&ulp_ops->ref_count, 0);
- 	rcu_assign_pointer(cnic_ulp_tbl[ulp_type], ulp_ops);
- 	mutex_unlock(&cnic_lock);
- 
-@@ -545,12 +545,12 @@ int cnic_unregister_driver(int ulp_type)
- 
- 	mutex_unlock(&cnic_lock);
- 	synchronize_rcu();
--	while ((atomic_read(&ulp_ops->ref_count) != 0) && (i < 20)) {
-+	while ((refcount_read(&ulp_ops->ref_count) != 0) && (i < 20)) {
- 		msleep(100);
- 		i++;
- 	}
- 
--	if (atomic_read(&ulp_ops->ref_count) != 0)
-+	if (refcount_read(&ulp_ops->ref_count) != 0)
- 		pr_warn("%s: Failed waiting for ref count to go to zero\n",
- 			__func__);
- 	return 0;
-@@ -3596,7 +3596,7 @@ static int cnic_cm_create(struct cnic_dev *dev, int ulp_type, u32 cid,
- 	}
- 
- 	csk1 = &cp->csk_tbl[l5_cid];
--	if (atomic_read(&csk1->ref_count))
-+	if (refcount_read(&csk1->ref_count))
- 		return -EAGAIN;
- 
- 	if (test_and_set_bit(SK_F_INUSE, &csk1->flags))
-@@ -3651,7 +3651,7 @@ static int cnic_cm_destroy(struct cnic_sock *csk)
- 	csk_hold(csk);
- 	clear_bit(SK_F_INUSE, &csk->flags);
- 	smp_mb__after_atomic();
--	while (atomic_read(&csk->ref_count) != 1)
-+	while (refcount_read(&csk->ref_count) != 1)
- 		msleep(1);
- 	cnic_cm_cleanup(csk);
- 
-@@ -5432,11 +5432,11 @@ static void cnic_free_dev(struct cnic_dev *dev)
- {
- 	int i = 0;
- 
--	while ((atomic_read(&dev->ref_count) != 0) && i < 10) {
-+	while ((refcount_read(&dev->ref_count) != 0) && i < 10) {
- 		msleep(100);
- 		i++;
- 	}
--	if (atomic_read(&dev->ref_count) != 0)
-+	if (refcount_read(&dev->ref_count) != 0)
- 		netdev_err(dev->netdev, "Failed waiting for ref count to go to zero\n");
- 
- 	netdev_info(dev->netdev, "Removed CNIC device\n");
-diff --git a/drivers/net/ethernet/broadcom/cnic_if.h b/drivers/net/ethernet/broadcom/cnic_if.h
-index 789e5c7e9311..5232a05ac7ba 100644
---- a/drivers/net/ethernet/broadcom/cnic_if.h
-+++ b/drivers/net/ethernet/broadcom/cnic_if.h
-@@ -300,7 +300,7 @@ struct cnic_sock {
- #define SK_F_CLOSING		7
- #define SK_F_HW_ERR		8
- 
--	atomic_t ref_count;
-+	refcount_t ref_count;
- 	u32 state;
- 	struct kwqe kwqe1;
- 	struct kwqe kwqe2;
-@@ -335,7 +335,7 @@ struct cnic_dev {
- #define CNIC_F_CNIC_UP		1
- #define CNIC_F_BNX2_CLASS	3
- #define CNIC_F_BNX2X_CLASS	4
--	atomic_t	ref_count;
-+	refcount_t	ref_count;
- 	u8		mac_addr[ETH_ALEN];
- 
- 	int		max_iscsi_conn;
-@@ -378,7 +378,7 @@ struct cnic_ulp_ops {
- 				  char *data, u16 data_size);
- 	int (*cnic_get_stats)(void *ulp_ctx);
- 	struct module *owner;
--	atomic_t ref_count;
-+	refcount_t ref_count;
- };
- 
- int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops);
--- 
-2.20.1
+We've been talking about providing this as some core service from mmu
+notifiers because nearly every use of this API needs it.
 
+IMHO this gets the whole thing backwards, the common pattern is to
+protect the 'shadow pte' data with a seqlock (usually open coded),
+such that the mmu notififer side has the write side of that lock and
+the read side is consumed by the thread accessing or updating the SPTE.
+
+
+> Reported-by: Michael S. Tsirkin <mst@redhat.com>
+> Fixes: 7f466032dc9e ("vhost: access vq metadata through kernel virtual address")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>  drivers/vhost/vhost.c | 145 ++++++++++++++++++++++++++----------------
+>  drivers/vhost/vhost.h |   7 +-
+>  2 files changed, 94 insertions(+), 58 deletions(-)
+> 
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index cfc11f9ed9c9..db2c81cb1e90 100644
+> +++ b/drivers/vhost/vhost.c
+> @@ -324,17 +324,16 @@ static void vhost_uninit_vq_maps(struct vhost_virtqueue *vq)
+>  
+>  	spin_lock(&vq->mmu_lock);
+>  	for (i = 0; i < VHOST_NUM_ADDRS; i++) {
+> -		map[i] = rcu_dereference_protected(vq->maps[i],
+> -				  lockdep_is_held(&vq->mmu_lock));
+> +		map[i] = vq->maps[i];
+>  		if (map[i]) {
+>  			vhost_set_map_dirty(vq, map[i], i);
+> -			rcu_assign_pointer(vq->maps[i], NULL);
+> +			vq->maps[i] = NULL;
+>  		}
+>  	}
+>  	spin_unlock(&vq->mmu_lock);
+>  
+> -	/* No need for synchronize_rcu() or kfree_rcu() since we are
+> -	 * serialized with memory accessors (e.g vq mutex held).
+> +	/* No need for synchronization since we are serialized with
+> +	 * memory accessors (e.g vq mutex held).
+>  	 */
+>  
+>  	for (i = 0; i < VHOST_NUM_ADDRS; i++)
+> @@ -362,6 +361,44 @@ static bool vhost_map_range_overlap(struct vhost_uaddr *uaddr,
+>  	return !(end < uaddr->uaddr || start > uaddr->uaddr - 1 + uaddr->size);
+>  }
+>  
+> +static void inline vhost_vq_access_map_begin(struct vhost_virtqueue *vq)
+> +{
+> +	int ref = READ_ONCE(vq->ref);
+
+Is a lock/single threaded supposed to be held for this?
+
+> +
+> +	smp_store_release(&vq->ref, ref + 1);
+> +	/* Make sure ref counter is visible before accessing the map */
+> +	smp_load_acquire(&vq->ref);
+
+release/acquire semantics are intended to protect blocks of related
+data, so reading something with acquire and throwing away the result
+is nonsense.
+
+> +}
+> +
+> +static void inline vhost_vq_access_map_end(struct vhost_virtqueue *vq)
+> +{
+> +	int ref = READ_ONCE(vq->ref);
+
+If the write to vq->ref is not locked this algorithm won't work, if it
+is locked the READ_ONCE is not needed.
+
+> +	/* Make sure vq access is done before increasing ref counter */
+> +	smp_store_release(&vq->ref, ref + 1);
+> +}
+> +
+> +static void inline vhost_vq_sync_access(struct vhost_virtqueue *vq)
+> +{
+> +	int ref;
+> +
+> +	/* Make sure map change was done before checking ref counter */
+> +	smp_mb();
+
+This is probably smp_rmb after reading ref, and if you are setting ref
+with smp_store_release then this should be smp_load_acquire() without
+an explicit mb.
+
+> +	ref = READ_ONCE(vq->ref);
+> +	if (ref & 0x1) {
+> +		/* When ref change, we are sure no reader can see
+> +		 * previous map */
+> +		while (READ_ONCE(vq->ref) == ref) {
+> +			set_current_state(TASK_RUNNING);
+> +			schedule();
+> +		}
+> +	}
+
+This is basically read_seqcount_begin()' with a schedule instead of
+cpu_relax
+
+
+> +	/* Make sure ref counter was checked before any other
+> +	 * operations that was dene on map. */
+> +	smp_mb();
+
+should be in a smp_load_acquire()
+
+> +}
+> +
+>  static void vhost_invalidate_vq_start(struct vhost_virtqueue *vq,
+>  				      int index,
+>  				      unsigned long start,
+> @@ -376,16 +413,15 @@ static void vhost_invalidate_vq_start(struct vhost_virtqueue *vq,
+>  	spin_lock(&vq->mmu_lock);
+>  	++vq->invalidate_count;
+>  
+> -	map = rcu_dereference_protected(vq->maps[index],
+> -					lockdep_is_held(&vq->mmu_lock));
+> +	map = vq->maps[index];
+>  	if (map) {
+>  		vhost_set_map_dirty(vq, map, index);
+> -		rcu_assign_pointer(vq->maps[index], NULL);
+> +		vq->maps[index] = NULL;
+>  	}
+>  	spin_unlock(&vq->mmu_lock);
+>  
+>  	if (map) {
+> -		synchronize_rcu();
+> +		vhost_vq_sync_access(vq);
+
+What prevents racing with vhost_vq_access_map_end here?
+
+>  		vhost_map_unprefetch(map);
+>  	}
+>  }
+
+Overall I don't like it. 
+
+We are trying to get rid of these botique mmu notifier patterns in
+drivers. 
+
+Jason
