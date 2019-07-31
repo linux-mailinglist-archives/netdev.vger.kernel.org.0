@@ -2,48 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61DF37CC05
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EB4B7CC11
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730230AbfGaSba (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 14:31:30 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:36462 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728325AbfGaSb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:31:26 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g67so56611694wme.1
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 11:31:23 -0700 (PDT)
+        id S1730348AbfGaSgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 14:36:48 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39325 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726980AbfGaSgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:36:48 -0400
+Received: by mail-wm1-f65.google.com with SMTP id u25so50381932wmc.4
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 11:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jvbPu4YBYO12LCpE//3PfLYjJ0yC3CUYvT15uCxwmXA=;
+        b=O8kU7Qu9qVR758Jz8QyNZCragqjTNCly5T/5LOi68NsNIfKMKldX0XQQG/FeIDAz7S
+         xsGy2BbNE73i9/bDJ8odymQUkhLiuBwTew0dW21QKBqwa7Yq44lfAUD/FkzxXOvdGdaJ
+         rpnv2BJHlAF0Pvd7FKY7nlGImGMhVkzZNSeWM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JsmSO9sltbmYLrawEo4owrilCK99z9Mx4i8KduJVJQ0=;
-        b=g9UcFU8WhMoYqtiUAbkh3gHCsx1pJGjACzUVAJ84ghJGfdyvzdVE8+9c0+xsieYs7c
-         hnKTBgJHVJspfnLxEHFFHhhTfj0JFYKNhIt8Dp1+M7EmXrh/GEhxDLpTmWW1v1JLzBkT
-         DpYEjW8M8C22LLhcQKu5kCw5GLPXh084zIAxX5QPeKMiLgEYgEYWT/OX7MK6xsQ12ib7
-         vrjqTqkRQezrV1zOE70U31ySzxrMOAhTJGpO1qSf3W172XVJccWGFodq0aqsUZCko/U1
-         j1/WAeXmhDNN/VUaP8MHTNeTjGKa631HuZUE8/RgwYAgSM+j808PSx0XIYjRZdXrzKKJ
-         lM2A==
-X-Gm-Message-State: APjAAAWrsSM+YeQpiUVtkhhpCX3myhCYabEN98h0hsxa3VmNE3yygbCJ
-        If3EOc9x9FOBlaAUHK57f1rgdHcq+0A=
-X-Google-Smtp-Source: APXvYqy8gXPCPq26kwcsAHq6VNbEk7l53I+ZHTkO6Ay0SjYDjoVJnjXZsBwj5sPUalR9gv8OxdwEKg==
-X-Received: by 2002:a1c:4d05:: with SMTP id o5mr108072774wmh.129.1564597882675;
-        Wed, 31 Jul 2019 11:31:22 -0700 (PDT)
-Received: from mcroce-redhat.redhat.com (host221-208-dynamic.27-79-r.retail.telecomitalia.it. [79.27.208.221])
-        by smtp.gmail.com with ESMTPSA id v65sm77908137wme.31.2019.07.31.11.31.21
+        bh=jvbPu4YBYO12LCpE//3PfLYjJ0yC3CUYvT15uCxwmXA=;
+        b=no7S2ji6m6fcwDOjI5nks96JX8QDBxD7Z3YRfsxq16VTZBWQsNPaP1OoAKsWOv6x9Y
+         zUIVEeZe6JA1UyNklNr4SMIUc4V9UXJXv7ylsdrbL0yLmuwARqtOLfJqL4OGCPY0TwK0
+         Dh2OGCrug6ms27LxxhcDlLCtiX0/vhFDruXqEBAXsuicGEZsv6w+d+LC8GFoR1zFr+as
+         llQndorKFF6B4QVCbZOBEymt49nbg1JmE0AV7cjRXPbStNOLbKRsLyeJtHovPpSwb3B/
+         qW+Nkm2MUnJFOvBKugOqqLukDriMdYZhWrrDNiPeohnqIlhS0SWmZWPh+31AhTGsIbgX
+         cejw==
+X-Gm-Message-State: APjAAAVDbgE/O5HzIwoK8b+ncrTbsvb+2r98CWmxg/geLX4NJnXwUC5y
+        MBBcydGcZ+vnMkrUhBKUNaKzv+S0mZv9tg==
+X-Google-Smtp-Source: APXvYqzQLxDV9jTF74wccbrK4ElNxiUfRhoLLD96o6qCfVRVev15yQBNIcXfck3nXFZNnA0MbJ7J+g==
+X-Received: by 2002:a1c:c742:: with SMTP id x63mr118261665wmf.0.1564598204358;
+        Wed, 31 Jul 2019 11:36:44 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id c11sm117220457wrq.45.2019.07.31.11.36.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 11:31:22 -0700 (PDT)
-From:   Matteo Croce <mcroce@redhat.com>
+        Wed, 31 Jul 2019 11:36:43 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@free-electrons.com>,
-        linux-kernel@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net] mvpp2: fix panic on module removal
-Date:   Wed, 31 Jul 2019 20:31:16 +0200
-Message-Id: <20190731183116.4791-1-mcroce@redhat.com>
+Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        michael-dev <michael-dev@fami-braun.de>
+Subject: [PATCH net] net: bridge: move vlan init/deinit to NETDEV_REGISTER/UNREGISTER
+Date:   Wed, 31 Jul 2019 21:36:23 +0300
+Message-Id: <20190731183623.20127-1-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,105 +58,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mvpp2 uses a delayed workqueue to gather traffic statistics.
-On module removal the workqueue can be destroyed before calling
-cancel_delayed_work_sync() on its works.
-Fix it by moving the destroy_workqueue() call after mvpp2_port_remove().
+Most of the bridge device's vlan init bugs come from the fact that it's
+done in the wrong place, way too early in ndo_init() before the device is
+even assigned an ifindex. That makes error handling harder, especially for
+older kernels which don't have bridge ndo_uninit callback. It also
+introduces another bug when the bridge's dev_addr is added as fdb in the
+the initial default pvid on vlan initialization, the fdb notification has
+ifindex/NDA_MASTER both equal to 0 (see example below) which really
+makes no sense for user-space[0]. Usually user-space software would ignore
+such entries, but they are actually valid and will eventually have all
+necessary attributes. I chose to change the order because this can be
+backported to all kernels even pre-ndo_uninit ones without many changes
+and it keeps init/deinit symmetric. As a bonus this allows us to keep
+the vlan init/deinit entirely in br_vlan.c and remove those exports.
+It makes much more sense to send a notification *after* the device has
+registered and has a proper ifindex allocated rather than before when
+there's a chance that the registration might still fail.
 
-    # rmmod mvpp2
-    [ 2743.311722] mvpp2 f4000000.ethernet eth1: phy link down 10gbase-kr/10Gbps/Full
-    [ 2743.320063] mvpp2 f4000000.ethernet eth1: Link is Down
-    [ 2743.572263] mvpp2 f4000000.ethernet eth2: phy link down sgmii/1Gbps/Full
-    [ 2743.580076] mvpp2 f4000000.ethernet eth2: Link is Down
-    [ 2744.102169] mvpp2 f2000000.ethernet eth0: phy link down 10gbase-kr/10Gbps/Full
-    [ 2744.110441] mvpp2 f2000000.ethernet eth0: Link is Down
-    [ 2744.115614] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-    [ 2744.115615] Mem abort info:
-    [ 2744.115616]   ESR = 0x96000005
-    [ 2744.115617]   Exception class = DABT (current EL), IL = 32 bits
-    [ 2744.115618]   SET = 0, FnV = 0
-    [ 2744.115619]   EA = 0, S1PTW = 0
-    [ 2744.115620] Data abort info:
-    [ 2744.115621]   ISV = 0, ISS = 0x00000005
-    [ 2744.115622]   CM = 0, WnR = 0
-    [ 2744.115624] user pgtable: 4k pages, 39-bit VAs, pgdp=0000000422681000
-    [ 2744.115626] [0000000000000000] pgd=0000000000000000, pud=0000000000000000
-    [ 2744.115630] Internal error: Oops: 96000005 [#1] SMP
-    [ 2744.115632] Modules linked in: mvpp2(-) algif_hash af_alg nls_iso8859_1 nls_cp437 vfat fat xhci_plat_hcd m25p80 spi_nor xhci_hcd mtd usbcore i2c_mv64xxx sfp usb_common marvell10g phy_generic spi_orion mdio_i2c i2c_core mvmdio phylink sbsa_gwdt ip_tables x_tables autofs4 [last unloaded: mvpp2]
-    [ 2744.115654] CPU: 3 PID: 8357 Comm: kworker/3:2 Not tainted 5.3.0-rc2 #1
-    [ 2744.115655] Hardware name: Marvell 8040 MACCHIATOBin Double-shot (DT)
-    [ 2744.115665] Workqueue: events_power_efficient phylink_resolve [phylink]
-    [ 2744.115669] pstate: a0000085 (NzCv daIf -PAN -UAO)
-    [ 2744.115675] pc : __queue_work+0x9c/0x4d8
-    [ 2744.115677] lr : __queue_work+0x170/0x4d8
-    [ 2744.115678] sp : ffffff801001bd50
-    [ 2744.115680] x29: ffffff801001bd50 x28: ffffffc422597600
-    [ 2744.115684] x27: ffffff80109ae6f0 x26: ffffff80108e4018
-    [ 2744.115688] x25: 0000000000000003 x24: 0000000000000004
-    [ 2744.115691] x23: ffffff80109ae6e0 x22: 0000000000000017
-    [ 2744.115694] x21: ffffffc42c030000 x20: ffffffc42209e8f8
-    [ 2744.115697] x19: 0000000000000000 x18: 0000000000000000
-    [ 2744.115699] x17: 0000000000000000 x16: 0000000000000000
-    [ 2744.115701] x15: 0000000000000010 x14: ffffffffffffffff
-    [ 2744.115702] x13: ffffff8090e2b95f x12: ffffff8010e2b967
-    [ 2744.115704] x11: ffffff8010906000 x10: 0000000000000040
-    [ 2744.115706] x9 : ffffff80109223b8 x8 : ffffff80109223b0
-    [ 2744.115707] x7 : ffffffc42bc00068 x6 : 0000000000000000
-    [ 2744.115709] x5 : ffffffc42bc00000 x4 : 0000000000000000
-    [ 2744.115710] x3 : 0000000000000000 x2 : 0000000000000000
-    [ 2744.115712] x1 : 0000000000000008 x0 : ffffffc42c030000
-    [ 2744.115714] Call trace:
-    [ 2744.115716]  __queue_work+0x9c/0x4d8
-    [ 2744.115718]  delayed_work_timer_fn+0x28/0x38
-    [ 2744.115722]  call_timer_fn+0x3c/0x180
-    [ 2744.115723]  expire_timers+0x60/0x168
-    [ 2744.115724]  run_timer_softirq+0xbc/0x1e8
-    [ 2744.115727]  __do_softirq+0x128/0x320
-    [ 2744.115731]  irq_exit+0xa4/0xc0
-    [ 2744.115734]  __handle_domain_irq+0x70/0xc0
-    [ 2744.115735]  gic_handle_irq+0x58/0xa8
-    [ 2744.115737]  el1_irq+0xb8/0x140
-    [ 2744.115738]  console_unlock+0x3a0/0x568
-    [ 2744.115740]  vprintk_emit+0x200/0x2a0
-    [ 2744.115744]  dev_vprintk_emit+0x1c8/0x1e4
-    [ 2744.115747]  dev_printk_emit+0x6c/0x7c
-    [ 2744.115751]  __netdev_printk+0x104/0x1d8
-    [ 2744.115752]  netdev_printk+0x60/0x70
-    [ 2744.115756]  phylink_resolve+0x38c/0x3c8 [phylink]
-    [ 2744.115758]  process_one_work+0x1f8/0x448
-    [ 2744.115760]  worker_thread+0x54/0x500
-    [ 2744.115762]  kthread+0x12c/0x130
-    [ 2744.115764]  ret_from_fork+0x10/0x1c
-    [ 2744.115768] Code: aa1403e0 97fffbbe aa0003f5 b4000700 (f9400261)
+For the demonstration below a small change to iproute2 for printing all fdb
+notifications is added, because it contained a workaround not to show
+entries with ifindex == 0.
+Command executed while monitoring: $ ip l add br0 type bridge
+Before (both ifindex and master == 0):
+$ bridge monitor fdb
+36:7e:8a:b3:56:ba dev * vlan 1 master * permanent
 
-Fixes: 118d6298f6f0 ("net: mvpp2: add ethtool GOP statistics")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
+After (proper br0 ifindex):
+$ bridge monitor fdb
+e6:2a:ae:7a:b7:48 dev br0 vlan 1 master br0 permanent
+
+[0] https://bugzilla.kernel.org/show_bug.cgi?id=204389
+
+Reported-by: michael-dev <michael-dev@fami-braun.de>
+Fixes: 5be5a2df40f0 ("bridge: Add filtering support for default_pvid")
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I tried a few different approaches to resolve this but they were all
+unsuitable for some kernels, this approach can go to stables easily
+and IMO is the way this had to be done from the start. Alternatively
+we could move only the br_vlan_add and pair it with a br_vlan_del of
+default_pvid on the same events, but I don't think it hurts to move
+the whole init/deinit there as it'd help older stable releases as well.
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index c51f1d5b550b..5002d51fc9d6 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -5760,7 +5760,6 @@ static int mvpp2_remove(struct platform_device *pdev)
- 	mvpp2_dbgfs_cleanup(priv);
+I also tested the br_vlan_init error handling after the move by always
+returning errors from all over it. Since errors at NETDEV_REGISTER cause
+NETDEV_UNREGISTER we can deinit vlans properly for all cases regardless
+why it happened (e.g. device destruction or init error).
+
+ net/bridge/br.c         |  5 ++++-
+ net/bridge/br_device.c  | 10 ----------
+ net/bridge/br_private.h | 19 ++++---------------
+ net/bridge/br_vlan.c    | 23 ++++++++++++++++-------
+ 4 files changed, 24 insertions(+), 33 deletions(-)
+
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index d164f63a4345..8a8f9e5f264f 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -37,12 +37,15 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
+ 	int err;
  
- 	flush_workqueue(priv->stats_queue);
--	destroy_workqueue(priv->stats_queue);
- 
- 	fwnode_for_each_available_child_node(fwnode, port_fwnode) {
- 		if (priv->port_list[i]) {
-@@ -5770,6 +5769,8 @@ static int mvpp2_remove(struct platform_device *pdev)
- 		i++;
+ 	if (dev->priv_flags & IFF_EBRIDGE) {
++		err = br_vlan_bridge_event(dev, event, ptr);
++		if (err)
++			return notifier_from_errno(err);
++
+ 		if (event == NETDEV_REGISTER) {
+ 			/* register of bridge completed, add sysfs entries */
+ 			br_sysfs_addbr(dev);
+ 			return NOTIFY_DONE;
+ 		}
+-		br_vlan_bridge_event(dev, event, ptr);
  	}
  
-+	destroy_workqueue(priv->stats_queue);
-+
- 	for (i = 0; i < MVPP2_BM_POOLS_NUM; i++) {
- 		struct mvpp2_bm_pool *bm_pool = &priv->bm_pools[i];
+ 	/* not a port of a bridge */
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index 681b72862c16..b3e3de2ecf95 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -135,18 +135,9 @@ static int br_dev_init(struct net_device *dev)
+ 		return err;
+ 	}
  
+-	err = br_vlan_init(br);
+-	if (err) {
+-		free_percpu(br->stats);
+-		br_mdb_hash_fini(br);
+-		br_fdb_hash_fini(br);
+-		return err;
+-	}
+-
+ 	err = br_multicast_init_stats(br);
+ 	if (err) {
+ 		free_percpu(br->stats);
+-		br_vlan_flush(br);
+ 		br_mdb_hash_fini(br);
+ 		br_fdb_hash_fini(br);
+ 	}
+@@ -161,7 +152,6 @@ static void br_dev_uninit(struct net_device *dev)
+ 
+ 	br_multicast_dev_del(br);
+ 	br_multicast_uninit_stats(br);
+-	br_vlan_flush(br);
+ 	br_mdb_hash_fini(br);
+ 	br_fdb_hash_fini(br);
+ 	free_percpu(br->stats);
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index e8cf03b43b7d..96dd1c68d73f 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -872,7 +872,6 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
+ int br_vlan_add(struct net_bridge *br, u16 vid, u16 flags,
+ 		bool *changed, struct netlink_ext_ack *extack);
+ int br_vlan_delete(struct net_bridge *br, u16 vid);
+-void br_vlan_flush(struct net_bridge *br);
+ struct net_bridge_vlan *br_vlan_find(struct net_bridge_vlan_group *vg, u16 vid);
+ void br_recalculate_fwd_mask(struct net_bridge *br);
+ int __br_vlan_filter_toggle(struct net_bridge *br, unsigned long val);
+@@ -881,7 +880,6 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto);
+ int br_vlan_set_proto(struct net_bridge *br, unsigned long val);
+ int br_vlan_set_stats(struct net_bridge *br, unsigned long val);
+ int br_vlan_set_stats_per_port(struct net_bridge *br, unsigned long val);
+-int br_vlan_init(struct net_bridge *br);
+ int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val);
+ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
+ 			       struct netlink_ext_ack *extack);
+@@ -894,8 +892,8 @@ int nbp_get_num_vlan_infos(struct net_bridge_port *p, u32 filter_mask);
+ void br_vlan_get_stats(const struct net_bridge_vlan *v,
+ 		       struct br_vlan_stats *stats);
+ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event);
+-void br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+-			  void *ptr);
++int br_vlan_bridge_event(struct net_device *dev, unsigned long event,
++			 void *ptr);
+ 
+ static inline struct net_bridge_vlan_group *br_vlan_group(
+ 					const struct net_bridge *br)
+@@ -988,19 +986,10 @@ static inline int br_vlan_delete(struct net_bridge *br, u16 vid)
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static inline void br_vlan_flush(struct net_bridge *br)
+-{
+-}
+-
+ static inline void br_recalculate_fwd_mask(struct net_bridge *br)
+ {
+ }
+ 
+-static inline int br_vlan_init(struct net_bridge *br)
+-{
+-	return 0;
+-}
+-
+ static inline int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
+ 			       bool *changed, struct netlink_ext_ack *extack)
+ {
+@@ -1085,8 +1074,8 @@ static inline void br_vlan_port_event(struct net_bridge_port *p,
+ {
+ }
+ 
+-static inline void br_vlan_bridge_event(struct net_device *dev,
+-					unsigned long event, void *ptr)
++static inline int br_vlan_bridge_event(struct net_device *dev,
++				       unsigned long event, void *ptr)
+ {
+ }
+ #endif
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index a544e161c7fa..266c1214b9f9 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -709,7 +709,7 @@ int br_vlan_delete(struct net_bridge *br, u16 vid)
+ 	return __vlan_del(v);
+ }
+ 
+-void br_vlan_flush(struct net_bridge *br)
++static void br_vlan_flush(struct net_bridge *br)
+ {
+ 	struct net_bridge_vlan_group *vg;
+ 
+@@ -721,6 +721,8 @@ void br_vlan_flush(struct net_bridge *br)
+ 	br_fdb_delete_by_port(br, NULL, 0, 1);
+ 
+ 	vg = br_vlan_group(br);
++	if (!vg)
++		return;
+ 	__vlan_flush(vg);
+ 	RCU_INIT_POINTER(br->vlgrp, NULL);
+ 	synchronize_rcu();
+@@ -1054,7 +1056,7 @@ int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val)
+ 	return err;
+ }
+ 
+-int br_vlan_init(struct net_bridge *br)
++static int br_vlan_init(struct net_bridge *br)
+ {
+ 	struct net_bridge_vlan_group *vg;
+ 	int ret = -ENOMEM;
+@@ -1469,13 +1471,19 @@ static void nbp_vlan_set_vlan_dev_state(struct net_bridge_port *p, u16 vid)
+ }
+ 
+ /* Must be protected by RTNL. */
+-void br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+-			  void *ptr)
++int br_vlan_bridge_event(struct net_device *dev, unsigned long event, void *ptr)
+ {
+ 	struct netdev_notifier_changeupper_info *info;
+-	struct net_bridge *br;
++	struct net_bridge *br = netdev_priv(dev);
++	int ret = 0;
+ 
+ 	switch (event) {
++	case NETDEV_REGISTER:
++		ret = br_vlan_init(br);
++		break;
++	case NETDEV_UNREGISTER:
++		br_vlan_flush(br);
++		break;
+ 	case NETDEV_CHANGEUPPER:
+ 		info = ptr;
+ 		br_vlan_upper_change(dev, info->upper_dev, info->linking);
+@@ -1483,12 +1491,13 @@ void br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+ 
+ 	case NETDEV_CHANGE:
+ 	case NETDEV_UP:
+-		br = netdev_priv(dev);
+ 		if (!br_opt_get(br, BROPT_VLAN_BRIDGE_BINDING))
+-			return;
++			break;
+ 		br_vlan_link_state_change(dev, br);
+ 		break;
+ 	}
++
++	return ret;
+ }
+ 
+ /* Must be protected by RTNL. */
 -- 
 2.21.0
 
