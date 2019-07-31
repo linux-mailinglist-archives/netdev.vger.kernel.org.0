@@ -2,99 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D24C7B76B
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C017B782
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbfGaBK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 21:10:28 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35783 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbfGaBK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 21:10:28 -0400
-Received: by mail-pf1-f194.google.com with SMTP id u14so30826327pfn.2
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:10:27 -0700 (PDT)
+        id S1727519AbfGaBWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 21:22:00 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38309 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727491AbfGaBWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 21:22:00 -0400
+Received: by mail-qk1-f195.google.com with SMTP id a27so48050000qkk.5
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:21:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=hmYwmB7S/DH+BSYT5btCmZHKNN4HrJ3ME8asduYbfZo=;
-        b=q1S5TWnl6TFhkNoDrZsWCPA7F+3q1hcKBsx9DB2X4A9G4fW/FLcDNni4l3UgUZEJhT
-         Bb+5oeSvCgNhpHYfjNkPTr3siUYcYKzNFsSIVj1VSxqoAHqjIY/lx1/damLLv4rxY6ZC
-         LwjWzP7h1hbnwoQdRk1a+7edukla0cgAOQecDO6VJUJh+8Ni1Ab92+Ybzgm6/+Q6wFPy
-         8flmbOXrPHUfslnAGChrrBsG2kUTvZ8FS1EZbnUsQcIqnrEKqwUWhdT4BEyQLgmaoCA2
-         sWi1P8MINeXYxXSeixhLbCUuT+qxZgck3YQRUxKDAenBFB9lFjiIwqsZd/Ba83IKjmpB
-         ZTkg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=8e2MbRkVwFshGJy8jHNU0lxsFiicJRQkfLnguyMaD8w=;
+        b=amq+y8LsiqI8nEEWcPiEiV5w/J2kF6Z7YaFNQspWlgKarMAWSSaMd9h/Mz7FhSUt0G
+         F72Aue2S1opOfDFuWM/P9gYYyO8XBXBRHEdrCg450b0XrxJdtUwahbEIkeu/RwMngjHE
+         sedFEwYIGV3JQe/UcNbEnvnBg5vZZ0amFTmsMu2TXw3ydDI3GntW9TSbem2k/+nNgzOy
+         BqE9FztlEJM/DrJAeS/+G+Y6xVSUv64Rmb4kgHLuiImvIrccPSsw8shIue1DXsIjbWy+
+         sr6Iw8B+Dymt7PO0/ZeQgu7S881n4f4LLIihzz79CH4MzD0wnXxkafBf2dlaucNQSILs
+         aRwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=hmYwmB7S/DH+BSYT5btCmZHKNN4HrJ3ME8asduYbfZo=;
-        b=t8fvROwqE5ooGi1u9762DxodxJuBMOSclkjq9Zh4Mi3vDCY50tYBrU04obGUrmZ+QM
-         BDpq3Dm4192At70Zm1g/Kq1PT3clzULIAgWHKeYaXU4ENdjHjndqnVEkv72CeJZnSHV5
-         cSa+HbcEjvpT7OFG7r21j1/3FdHXvfFrgWaCz/ZzX80lYzEd/A8Ik+2DPwSlNHPqtE8w
-         CAAIPMlSXX2aR0wbkwYzo6gMMUSjF5nr9AZcU059xC8gbacKUO6LTl6MZy1Y5BZTcbCn
-         zJ5qoyymwVxXT0KlxKjONsjoUndC274JsDBzb+Q2/k3NkBdGcOewVno/j+uVysUeJQXc
-         SB2Q==
-X-Gm-Message-State: APjAAAXiXr4U+3OgNVlqKEihP9EYKWm+iFTFQkUbZyWNhPHEVVrilWgi
-        gfpOaqeXUC4Q38lkNSCwGQM4lRMcdt42uA==
-X-Google-Smtp-Source: APXvYqxPZZNNeX4hObYQ+x4dlrTk6KMQP2Jeh5daIvHv5qVw/osgqzggRNgvRA/9X4Jl1lKflVPdfA==
-X-Received: by 2002:a17:90a:4806:: with SMTP id a6mr231865pjh.38.1564535427579;
-        Tue, 30 Jul 2019 18:10:27 -0700 (PDT)
-Received: from Shannons-MBP.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id k22sm71487871pfk.157.2019.07.30.18.10.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Jul 2019 18:10:26 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 15/19] ionic: Add netdev-event handling
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190722214023.9513-1-snelson@pensando.io>
- <20190722214023.9513-16-snelson@pensando.io>
- <20190730163947.3e730f25@hermes.lan>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <087179c7-4cc4-f77b-1d6e-915c6c4877c6@pensando.io>
-Date:   Tue, 30 Jul 2019 18:10:25 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=8e2MbRkVwFshGJy8jHNU0lxsFiicJRQkfLnguyMaD8w=;
+        b=D2pZ27+cAVf/CP+Gzjq/Rl1dkM7P6cvkMso3DZU3aI63sJJy46Kl19M1CAvRjBoZY9
+         l+TEH7GybEL02lH52xikM/gFe7eHWoUXsiMZ655QbaMkf1gem/RER7wE2hEAFIgoygAp
+         IC2CA+ozT415g8qESk0ErDR9urQFj3JS4NYrSBnP2fWVlfENigbFnq+OVJgSizfdsUL4
+         zUnRFJQIjItabjUIK5PZpaoDt+cK/l6LTojVTHOQQi3ILM6dxU8gUKcjGzrY9yAig+82
+         E1Af73uyOTFtKt71K0uIINI700/hMWxmZWpV3aYPwm5TPMcvCKfjP0ua9CcCEvvBkmzL
+         C13Q==
+X-Gm-Message-State: APjAAAWeWnImNIlgdVq49cMtARqKWvrrTec5P1B+5DuLTNHqbxCoCjsi
+        W4IMb0XcsQdR2+Nws1dRB6LpNQ==
+X-Google-Smtp-Source: APXvYqxKaWE7X20NIzhdysKSTq2YtDXu97GQKDosGFwKdTkrQuGBdckVixC2n665TQY74DRJnds/gQ==
+X-Received: by 2002:a37:85c2:: with SMTP id h185mr81843298qkd.353.1564536119235;
+        Tue, 30 Jul 2019 18:21:59 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x42sm34288821qth.24.2019.07.30.18.21.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 18:21:58 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 18:21:44 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load
+ XDP
+Message-ID: <20190730182144.1355bf50@cakuba.netronome.com>
+In-Reply-To: <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
+References: <20190730184821.10833-1-danieltimlee@gmail.com>
+        <20190730155915.5bbe3a03@cakuba.netronome.com>
+        <20190730231754.efh3fj4mnsbv445l@ast-mbp>
+        <20190730170725.279761e7@cakuba.netronome.com>
+        <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190730163947.3e730f25@hermes.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/19 4:39 PM, Stephen Hemminger wrote:
-> On Mon, 22 Jul 2019 14:40:19 -0700
-> Shannon Nelson <snelson@pensando.io> wrote:
->
->> +
->> +static void ionic_lif_set_netdev_info(struct lif *lif)
->> +{
->> +	struct ionic_admin_ctx ctx = {
->> +		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
->> +		.cmd.lif_setattr = {
->> +			.opcode = CMD_OPCODE_LIF_SETATTR,
->> +			.index = cpu_to_le16(lif->index),
->> +			.attr = IONIC_LIF_ATTR_NAME,
->> +		},
->> +	};
->> +
->> +	strlcpy(ctx.cmd.lif_setattr.name, lif->netdev->name,
->> +		sizeof(ctx.cmd.lif_setattr.name));
->> +
->> +	dev_info(lif->ionic->dev, "NETDEV_CHANGENAME %s %s\n",
->> +		 lif->name, ctx.cmd.lif_setattr.name);
->> +
-> There is already a kernel message for this. Repeating the same thing in the
-> driver is redundant.
+On Tue, 30 Jul 2019 17:23:39 -0700, Alexei Starovoitov wrote:
+> On Tue, Jul 30, 2019 at 05:07:25PM -0700, Jakub Kicinski wrote:
+> > Nothing meaning you disagree it's duplicated effort and unnecessary=20
+> > LoC the community has to maintain, review, test..? =20
+>=20
+> I don't see duplicated effort.
 
-True, except for the lif name information.  But since that really is 
-debugging information, and I was getting tired of seeing those redundant 
-messages, I was planning to remove them soon anyway. Thanks for the 
-extra nudge.
+Could you walk me through a scenario where, say, a new xdp attachment
+flag is added? How can there be support in both bpftool and iproute2=20
+for specifying it without modifying both?
 
-sln
+How can we say we want to make iproute2 use libbpf instead of it's own
+library to avoid duplicated effort on the back end, and at the same time
+claim having two tools do the same thing is no duplication =F0=9F=A4=AF
 
+> > Duplicating the same features in bpftool will only diminish the
+> > incentive for moving iproute2 to libbpf.  =20
+>=20
+> not at all. why do you think so?
+
+Because iproute2's BPF has fallen behind so the simplest thing is to
+just contribute to bpftool. But iproute2 is the tool set for Linux
+networking, we can't let it bit rot :(
+
+Admittedly that's just me reading the tea leaves.
+
+> > And for folks who deal
+> > with a wide variety of customers, often novices maintaining two
+> > ways of doing the same thing is a hassle :( =20
+>=20
+> It's not the same thing.
+> I'm talking about my experience dealing with 'wide variety of bpf custome=
+rs'.
+> They only have a fraction of their time to learn one tool.
+> Making every bpf customer learn ten tools is not an option.
+
+IMHO vaguely competent users of Linux networking will know ip link.
+If they are not vaguely competent, they should not attach XDP programs
+to interfaces by hand...
+
+> > Let's just put the two commands next to each other:
+> >=20
+> >        ip link set xdp $PROG dev $DEV
+> >=20
+> > bpftool net attach xdp $PROG dev $DEV
+> >=20
+> > Are they that different? =20
+>=20
+> yes.
+> they're different tools with they own upgrade/rollout cycle
+
+I think this came up when bpftool net was added and I never really
+understood it.
+
+> > > If bpftool was taught to do equivalent of 'ip link' that would be
+> > > very different story and I would be opposed to that. =20
+> >=20
+> > Yes, that'd be pretty clear cut, only the XDP stuff is a bit more=20
+> > of a judgement call. =20
+>=20
+> bpftool must be able to introspect every aspect of bpf programming.
+> That includes detaching and attaching anywhere.
+> Anyone doing 'bpftool p s' should be able to switch off particular
+> prog id without learning ten different other tools.
+
+I think the fact that we already have an implementation in iproute2,
+which is at the risk of bit rot is more important to me that the
+hypothetical scenario where everyone knows to just use bpftool (for
+XDP, for TC it's still iproute2 unless there's someone crazy enough=20
+to reimplement the TC functionality :))
+
+I'm not sure we can settle our differences over email :)
+I have tremendous respect for all the maintainers I CCed here,=20
+if nobody steps up to agree with me I'll concede the bpftool net
+battle entirely :)
