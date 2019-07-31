@@ -2,196 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3C367BD2A
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 11:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93C047BD54
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 11:36:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728584AbfGaJ3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 05:29:31 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:59512 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727209AbfGaJ3a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 05:29:30 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6F3358552A;
-        Wed, 31 Jul 2019 09:29:29 +0000 (UTC)
-Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 03B8A100032A;
-        Wed, 31 Jul 2019 09:29:22 +0000 (UTC)
-Date:   Wed, 31 Jul 2019 11:29:21 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        brouer@redhat.com
-Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load
- XDP
-Message-ID: <20190731112818.79e767e4@carbon>
-In-Reply-To: <20190731015238.3kq3r7rlascv7tzs@ast-mbp>
-References: <20190730184821.10833-1-danieltimlee@gmail.com>
-        <20190730155915.5bbe3a03@cakuba.netronome.com>
-        <20190730231754.efh3fj4mnsbv445l@ast-mbp>
-        <20190730170725.279761e7@cakuba.netronome.com>
-        <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
-        <20190730182144.1355bf50@cakuba.netronome.com>
-        <20190731015238.3kq3r7rlascv7tzs@ast-mbp>
+        id S2387469AbfGaJgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 05:36:37 -0400
+Received: from mail-eopbgr690064.outbound.protection.outlook.com ([40.107.69.64]:28097
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726791AbfGaJgh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 05:36:37 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hhxui4unY7j3++fmP4ROBRQxMKikIGHLjMH/5ghpREk4P6qyY6cIgdUs3CJXSYoDG+n1fD4pQn9lmTSHvTptFoFXSVuTvlO+qPA9zBtmrGUhzjovOQRsQv4adi5LBD3DoaSUAA2ze5rqSCVGIEbNvUnfUK9nlUuBt8VH3wrb7gPHjSK6ByKXE+CoPuINqRnziS7shCHkaMkLn+V9QOdYT/OEoWXlFqasTXT7JIuX4uzHabgDwDpqYLbnOwqypSbKPwCNddJC27Dicfmc4SCnOEewlgXfX5QrHpz97SST1epwkSypGPjF1Glu5g+assNa8YSMbctlzUqkIPLqaCefFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9yf92BXfP+wHJsMYT4iWMO0WjCDKv0Ep4u+bd5uCaso=;
+ b=cruak1YfEG7pgRGG1wDo90AnRxjTC74MzOKIvRVEuPw8vc/lBJhsVbv693Md6NDa1J9mvyZD7z4K3jBxwmNi97d41Exfngn8UrMgAx7KHXQfaH/WM600c7MphJMg2BFtPVtZPSuoDudDrG9zgiA1YEo0TT16K1HeX2N7d8AvBYC1zNzsZKkIjAFAXQbiXs+s7a8ltMaIjKSAPeECUHQgTa1YikWf7nTiJG3+LHjFNn++z23h4z9Tbcij+ygh9+WZY7WnSqIglGPb/sWcovlpp7jtkuRHmMPoTiAWuvyE5tOCw8qjcSMNBZe/DsIOGVWDCrH/gepBfgJmbtT2fs+1TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=gmail.com
+ smtp.mailfrom=xilinx.com;dmarc=bestguesspass action=none
+ header.from=xilinx.com;dkim=none (message not signed);arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9yf92BXfP+wHJsMYT4iWMO0WjCDKv0Ep4u+bd5uCaso=;
+ b=IVF9t3jBJ+0oEl8S3SFniLg8nPXs6/454JnC9lqq3IG5ZQZ6e5H5Tm6gQTFGwvvrfKc2VKenEJjLzlpNdpDCbarD0g/attl1oCYM9TH5QlIgDikyzqOiwakr6bVzyoPCWSDjZypyVdY8O7ctzl8f408IzFtMLyD3zKzhu97mRek=
+Received: from MWHPR0201CA0047.namprd02.prod.outlook.com
+ (2603:10b6:301:73::24) by BYAPR02MB4757.namprd02.prod.outlook.com
+ (2603:10b6:a03:4e::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2115.10; Wed, 31 Jul
+ 2019 09:36:34 +0000
+Received: from CY1NAM02FT028.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::209) by MWHPR0201CA0047.outlook.office365.com
+ (2603:10b6:301:73::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2136.12 via Frontend
+ Transport; Wed, 31 Jul 2019 09:36:34 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ CY1NAM02FT028.mail.protection.outlook.com (10.152.75.132) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2115.10
+ via Frontend Transport; Wed, 31 Jul 2019 09:36:33 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1hsl28-00073A-C5; Wed, 31 Jul 2019 02:36:32 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1hsl23-0003o0-8D; Wed, 31 Jul 2019 02:36:27 -0700
+Received: from xsj-pvapsmtp01 (maildrop.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x6V9aNtE005093;
+        Wed, 31 Jul 2019 02:36:24 -0700
+Received: from [10.140.6.13] (helo=xhdharinik40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1hsl1z-0003my-Ak; Wed, 31 Jul 2019 02:36:23 -0700
+From:   Harini Katakam <harini.katakam@xilinx.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net
+Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        harinikatakamlinux@gmail.com, harini.katakam@xilinx.com,
+        radhey.shyam.pandey@xilinx.com
+Subject: [PATCH 0/2] Fix GMII2RGMII private field
+Date:   Wed, 31 Jul 2019 15:06:17 +0530
+Message-Id: <1564565779-29537-1-git-send-email-harini.katakam@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(136003)(396003)(2980300002)(199004)(189003)(126002)(486006)(2616005)(16586007)(8676002)(81156014)(426003)(2906002)(476003)(81166006)(47776003)(70586007)(70206006)(356004)(63266004)(44832011)(7696005)(51416003)(36386004)(305945005)(336012)(106002)(26005)(4744005)(6666004)(8936002)(4326008)(107886003)(48376002)(186003)(478600001)(5660300002)(50466002)(50226002)(9786002)(316002)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR02MB4757;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Wed, 31 Jul 2019 09:29:29 +0000 (UTC)
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c34c3b34-cdbc-4826-f897-08d7159a9373
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:BYAPR02MB4757;
+X-MS-TrafficTypeDiagnostic: BYAPR02MB4757:
+X-Microsoft-Antispam-PRVS: <BYAPR02MB47573946DAD500A368809570C9DF0@BYAPR02MB4757.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Forefront-PRVS: 011579F31F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: mlelyaOvFV7pxDx7g9CfOkC7aMqlWPCRMqB+J5K147/qOGZwq1SpfvlL+yUAUMt7AddqFEEcgoqRiA8vxH8NAFEgPB8nNRQBNCohpruPa3lZ68yABWHkZAW044tYmiBS7KS1lRhp/Uek+ruNGQKlDRCRHjB2KWVKbopykDmeiD/Q11L4V/UQXYclGoc16l0jyZsWl5gQ4Jd3UPaI2rIs6P38XjsbwscKPEBsCP3OemYD6EzTYtfbQVEeAXHdYSwEYRCbuQx16MkXXCgQ/BY+IyF30kbpXjg6REuXLqaU6Ota3WB/HsV0oxMdO53pQ+0G4MajYRppN1D5xkOA6h8dhydv+vFIKs/pF59/XS5kwZF7WAyQV02ofNvBfiyBSwUi7bH55GdOBon0NdEMxDmACvBTLOYyFkZfLu4nA13+Jm0=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2019 09:36:33.4858
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c34c3b34-cdbc-4826-f897-08d7159a9373
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4757
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jul 2019 18:52:40 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+Fix the usage of external phy's priv field by gmii2rgmii driver.
 
-> On Tue, Jul 30, 2019 at 06:21:44PM -0700, Jakub Kicinski wrote:
-> > > > Duplicating the same features in bpftool will only diminish the
-> > > > incentive for moving iproute2 to libbpf.     
-> > > 
-> > > not at all. why do you think so?  
-> > 
-> > Because iproute2's BPF has fallen behind so the simplest thing is to
-> > just contribute to bpftool. But iproute2 is the tool set for Linux
-> > networking, we can't let it bit rot :(  
-> 
-> where were you when a lot of libbpf was copy pasted into iproute2 ?!
-> Now it diverged a lot and it's difficult to move iproute2 back to the main
-> train which is libbpf.
+Based on net-next.
 
-I hope we all agree that libbpf it the way forward.  I really hope we
-can convert iproute2 into using libbpf.  It is challenging because
-iproute2 ELF files use another map-layout, and I guess we need to stay
-backward compatible.
+Harini Katakam (2):
+  include: mdio: Add private field to mdio structure
+  net: gmii2rgmii: Switch priv field in mdio device structure
 
-> Same thing with at least 5 copy-pastes of samples/bpf/bpf_load.c
-> that spawned a bunch of different bpf loaders.
-
-I'm also to blame here... as I ran with bpf_load.c and based my
-prototype-kernel github project on it.  And it seems that it have
-gotten enough Google entropy, that people find that first. E.g. I have
-pull requests that add new tools, which I have not merged, as I want to
-switch to libbpf first.
-
-Recently I've added a README[1] that warn about this issue, and point
-people to xdp-tutorial[2] instead.
-
-[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/samples/bpf/README.rst
-[2] https://github.com/xdp-project/xdp-tutorial
-
- Quote[1]:
-   "WARNING: This directory contains its own out-of-date BPF
-    ELF-loader (in bpf_load.c). Instead people should use libbpf."
-
-> > IMHO vaguely competent users of Linux networking will know ip link.
-> > If they are not vaguely competent, they should not attach XDP programs
-> > to interfaces by hand...  
-> 
-> I'm a prime example of moderately competent linux user who
-> doesn't know iproute2. I'm not joking.
-> I don't know tc syntax and always use my cheat sheet of ip/tc commands
-> to do anything.
-
-I agree... I also need to lookup the TC commands used for attaching BPF
-programs every time.  It is a pain, and I've often made mistakes that
-cause several tc filter's to get attached, which leads to strange
-behavior.  (AFAIK you have to remember to use both prio and handle when
-removing the old, before adding the new).
-
- 
-> > > 
-> > > bpftool must be able to introspect every aspect of bpf programming.
-> > > That includes detaching and attaching anywhere.
-> > > Anyone doing 'bpftool p s' should be able to switch off particular
-> > > prog id without learning ten different other tools.  
-> > 
-> > I think the fact that we already have an implementation in iproute2,
-> > which is at the risk of bit rot is more important to me that the
-> > hypothetical scenario where everyone knows to just use bpftool (for
-> > XDP, for TC it's still iproute2 unless there's someone crazy enough 
-> > to reimplement the TC functionality :))  
-> 
-> I think you're missing the point that iproute2 is still necessary
-> to configure it.
-> bpftool should be able to attach/detach from anything.
-> But configuring that thing (whether it's cgroup or tc/xdp) is
-> a job of corresponding apis and tools.
-> 
-> > I'm not sure we can settle our differences over email :)
-> > I have tremendous respect for all the maintainers I CCed here, 
-> > if nobody steps up to agree with me I'll concede the bpftool net
-> > battle entirely :)  
-> 
-> we can keep arguing forever. Respect to ease-of-use only comes
-> from the pain of operational experience. I don't think I can
-> convey that pain in the email either.
-
-Let me try to convey some pain...
-
-Regarding operational experience.  I have a customer using this:
- https://github.com/xdp-project/xdp-cpumap-tc
-
-The project combines TC and XDP (with CPUMAP redirect).  It has been a
-*HUGE* pain that we needed to use iproute2 tc commands to attach and
-load TC BPF-programs.
-
-(Issue#1)
-The iproute2 tc BPF loader uses another ELF-layout for maps.  This was
-worked around, by keeping XDP and TC BPF-progs in different C-file
-using different struct's for maps.  And avoiding to use map features,
-that iproute2 doesn't know about... although we found a workaround for
-using more advanced map features via load-order and pinning see issue#3
-sub-problem(2).
-
-(Issue#2)
-As this is a C-prog I would really prefer using a library, instead of
-having to call cmdline utilities, see C-code doing this[3].  This lead
-to several issues.  E.g. they had installed too old version of iproute2
-on their systems, after installing newer version (in /usr/local) it was
-not first in $PATH for root.  Load order also matters see issue#3.
-
-[3] https://github.com/xdp-project/xdp-cpumap-tc/blob/master/src/common_user.c#L381-L493
-
-(Issue#3)
-Next to get TC and XDP programs to cooperate, pinned maps via bpffs is
-used.  And iproute2 dictates that pinned maps are located in directory
-/sys/fs/bpf/tc/globals/.  What could go wrong, it's only a static dir path.
-
-Sub-problem(1): If XDP loads _before_ any tc-bpf cmd, then the subdirs
-are not created, leading to replicating mkdir creation in C[4].  Else
-the XDP load will fail.  (Troubleshooting this was complicated by 
-
-[4] https://github.com/xdp-project/xdp-cpumap-tc/commit/25e7e56699cd75a4a
-
-Sub-problem(2): We really want to load XDP first, because libbpf
-creates maps in a better way, e.g. with "name" (and BTF info).
-The "name" part was needed by libbpf to find a given map (to avoid
-depending on the order maps are defined in C/ELF file) via helper
-bpf_object__find_map_fd_by_name().  To handle TC noname case, I had to
-code up this workaround[5], which depend on extracting the name of the
-pinned file name.
-
-[5] https://github.com/xdp-project/xdp-cpumap-tc/blob/master/src/xdp_iphash_to_cpu_user.c#L117-L131
-
-
-Experience/conclusion: Getting XDP and TC to cooperate suck, primarily
-because iproute2 tc is based on a separate BPF-ELF loader, which is
-features are not in sync / lacking behind.  Calling cmdline binaries
-from C also sucks, and I would prefer some libbpf TC attach function,
-but most pain comes from the slight differences between ELF-loaders.
+ drivers/net/phy/xilinx_gmii2rgmii.c | 4 ++--
+ include/linux/mdio.h                | 3 +++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.7.4
+
