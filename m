@@ -2,78 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 064397B86B
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 06:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CC357B86F
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 06:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727489AbfGaEMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 00:12:33 -0400
-Received: from mail-lj1-f181.google.com ([209.85.208.181]:36161 "EHLO
-        mail-lj1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbfGaEMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 00:12:33 -0400
-Received: by mail-lj1-f181.google.com with SMTP id i21so64209778ljj.3;
-        Tue, 30 Jul 2019 21:12:32 -0700 (PDT)
+        id S1727766AbfGaEOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 00:14:54 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:46558 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbfGaEOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 00:14:54 -0400
+Received: by mail-lf1-f68.google.com with SMTP id z15so42103243lfh.13;
+        Tue, 30 Jul 2019 21:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hG19nbQy+AVdG3V4usBpGCc3Y7/Fo49/v/D0tj7mJjk=;
-        b=fsmjYkSR0COLxibp9N55+udLVwPk8oPdc/sSwnHW1DjJZW97AbTCjlICWaKcIwKTXs
-         1hvNsbmJJ+Z7K8fQ2Tz06tlkATWHfcevmaaPXRYhC+JhDx9m+vNyyPf8ulg9xuP1SzyG
-         GOx8ZQTCoExZQF1TJNsukG3R4AkAiacdIYVjpOxfQ161kc5fHtwsqs5zOVOZbq76Kphs
-         1qGQYrZrT8j6dD/gH27rDZTJRbQ3f0O2ouXX9NZNlZ54CEYo0O/8eDVuIdTL5MgI1xQc
-         n+JAsLBrkBQsx2iIZDbTuWiyFHgC7uXDaA7vtF09J3iLuBUUHiwJrch1GfSNofKDAke8
-         kMCA==
+        bh=BhM3atlnHqiOWZuy75jidRKog9hbo8iOvI6mHc361Lc=;
+        b=DYCHTF7bTh/A0rg/VDkvjBKiiZuvXE8Zjqp0S9WiBi9n8nmteYdZhIqGI2yeG4kAZD
+         Ta907O/DX4Mz8PZZv0Fm5wDAoep8504nTIhhelLaFqNzu4AOyGGNGMP1WmMwJVKW85N4
+         dYKWYQwZ3oJfCLcU8J4KIKOUjenk8Udp3SdSXgBK/G88TVJ1FUBsuGv+BwSwJvWvtX4j
+         7mLb04B/NhBR6PsmDC9u+9G3gBVu2g/NQsXm7vMKG+2JIawuY+iY9ikRj2wlYbSG8fId
+         2Y02YVscSUtH6puo0C1ZfIFoZFUVUMOpUWidfkPkWFMnphe0oHOok7eWGCIO6rh09mfe
+         PmAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hG19nbQy+AVdG3V4usBpGCc3Y7/Fo49/v/D0tj7mJjk=;
-        b=qyvQLNwRWFct8+/+C7VToNlBAkFgDAWik4MJIHjCY8AlAH7JuLjByuv84LuSAUoHug
-         z0siusSOvYMMT6FmmXgxRtgjMBJeMd6NnNAwIx2TLMDpPgpK61bY9NXAtt1wmXEo8oe2
-         MVl1W6G8HHy89LLCT/JME15Fosj9bCNQlAIel/Pmzigm5SAo/Wh3XQGFO0FmlS3hT6LN
-         q8zD+1l/C8ZEGyuak6j/J8GKtAXI5j02UTdljLiUYYI8UbNF1Ek9o77xt7phvrhjUT/1
-         s/QUA53/oWyfeuvBTF2cryPBIlvYsp9y74upgKBFMtbUVkkyzlN6rFo8nWYnnXuemoha
-         fSQA==
-X-Gm-Message-State: APjAAAW7+HP9ddpCZ5seyQScS2MR+StTmNF577XlR5bopfSZ45bYWDd+
-        izHRrwUXS5JpxLXPdA11RWztGZIGly+vcF5vrUPeDA==
-X-Google-Smtp-Source: APXvYqyARbzaS7CSkEyAESuMZyx9Z1IsGeI3J4rq5a9HkrFhw+V6G1HOEOFhw2tKThcn2BFYWMx6+hPBtML8p4q2ksM=
-X-Received: by 2002:a2e:7818:: with SMTP id t24mr34958384ljc.210.1564546351131;
- Tue, 30 Jul 2019 21:12:31 -0700 (PDT)
+        bh=BhM3atlnHqiOWZuy75jidRKog9hbo8iOvI6mHc361Lc=;
+        b=k/Fuc111EZUu2dCUtF8hprarwhd2ACh6MSvBVk32P0u9bPjsUhMKYad3d8G3cCq7sK
+         yug0Ij4ORouQKpsgpOLG9gveYsFS8cwGgLzpWc5haGIBpy8l8ETIzssRFP5lMS56dxR/
+         BfbnNg4dh0oCQq8L6Dh2vN+J2d0LYtHHa4W0qjfXYQ6jikHFYYT5qWi1wBdsDVyvdJGl
+         FCR9ygX/elJZSKwhn8rSs2/ML7sAEN6kTWCnjPVE1vZ0EicJdgZOn94y6zKOd3tf4170
+         ce4GM6BxqUQ1pjProB8yF/WSPQlL22hKnXwZHpES4WWR9Cg/aljB2CWbrfC4oIO6Sh3b
+         5cTw==
+X-Gm-Message-State: APjAAAWcnb2AZvKiE9sV4Jk5H+9DHeHgHj5FVYcbfG7PU/2L2rm6Kvct
+        F5wD8EherAekWxtIbrhpBkVGuZQjjlCKzYKH5Qza6Q==
+X-Google-Smtp-Source: APXvYqyfdAMlC3upkY8aGPrje/zFk4w21fAow3+RYy79qjk0WETDnJFnIve4w8QMub7jvdOGgjxoAmCY5bf0I/APkd0=
+X-Received: by 2002:ac2:465e:: with SMTP id s30mr9866498lfo.19.1564546492479;
+ Tue, 30 Jul 2019 21:14:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190729165918.92933-1-ppenkov.kernel@gmail.com>
- <20190729204755.iu5wp3xisu42vkky@ast-mbp> <CAG4SDVV9oBYkXqof=FoD0DeRY=+tSwZo3E1jhqMnF8F8+bVTbg@mail.gmail.com>
-In-Reply-To: <CAG4SDVV9oBYkXqof=FoD0DeRY=+tSwZo3E1jhqMnF8F8+bVTbg@mail.gmail.com>
+References: <20190730180541.212452-1-andriin@fb.com>
+In-Reply-To: <20190730180541.212452-1-andriin@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 30 Jul 2019 21:12:19 -0700
-Message-ID: <CAADnVQKKb=5n-rsa9Gr-i=5bti=xxhjv17gGs51PmHt4FY_jfg@mail.gmail.com>
-Subject: Re: [bpf-next,v2 0/6] Introduce a BPF helper to generate SYN cookies
-To:     Petar Penkov <ppenkov@google.com>
-Cc:     Petar Penkov <ppenkov.kernel@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Tue, 30 Jul 2019 21:14:41 -0700
+Message-ID: <CAADnVQJJy2dmEXLkjeawOrxP54PtnAf71H_gBTGf2wdiF0b0yA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] selftests/bpf: fix clearing buffered output
+ between tests/subtests
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 4:46 PM Petar Penkov <ppenkov@google.com> wrote:
->>
-> > What is cpu utilization at this rate?
-> > Is it cpu or nic limited if you crank up the syn flood?
-> > Original 7M with all cores or single core?
-> My receiver was configured with 16rx queues and 16 cores. 7M all cores
-> are at 100% so I believe this case is CPU limited. At XDP, all cores
-> are at roughly 40%. I couldn't reliably generate higher SYN flood rate
-> than that, and the highest numbers I could see for XDP did not go past
-> 10.65Mpps with ~42% utilization on each core. I think I am hitting a
-> NIC limit here since the CPUs are free.
+On Tue, Jul 30, 2019 at 11:17 AM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Clear buffered output once test or subtests finishes even if test was
+> successful. Not doing this leads to accumulation of output from previous
+> tests and on first failed tests lots of irrelevant output will be
+> dumped, greatly confusing things.
+>
+> v1->v2: fix Fixes tag, add more context to patch
+>
+> Fixes: 3a516a0a3a7b ("selftests/bpf: add sub-tests support for test_progs")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Applied. Thanks!
+Applied. Thanks
