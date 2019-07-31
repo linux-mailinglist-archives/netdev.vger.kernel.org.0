@@ -2,284 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26E247BB90
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 10:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 456407BBAB
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 10:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728079AbfGaI0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 04:26:00 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55575 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727946AbfGaIZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 04:25:53 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a15so59786993wmj.5;
-        Wed, 31 Jul 2019 01:25:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ivGcJv42u9xsKXcWxc1pwTe15jdiFq07eZU/Ce/ZJDg=;
-        b=TTVQalGPI/gXVk9TBMwBE7O7E07KJdxhVNfqiZUNQvkVAJrEua5Dk0oadr3RlwiqOg
-         Nm6OMlbF9cV7HJhjSDwFt++12poRJEjTgOgBSiVkrH78sdE082zopKmnAMAEAnxJBzr6
-         48PboFTVeQAJsgl8pYpKMiuYY/FGIkMu3Vqaqhdi8oC3vR6ZLIfLW/uWId9XNAvFVQ6c
-         fYzOQ42jmO3i1uhpB1niVJFJvJa0xlk9ZbJ3bWwrk8xC4ZJfOXEwpc2/gMYAr/0N/Fau
-         zmiZ/x6uzz8WJH1UvwwiocCvrwPGC+mNwDdaX5WcBGQfN5fsJpK5d2oVf5Gv+8MZH6+f
-         BXKQ==
+        id S1726966AbfGaI3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 04:29:06 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:33470 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725209AbfGaI3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 04:29:06 -0400
+Received: by mail-io1-f71.google.com with SMTP id 132so74484635iou.0
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 01:29:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ivGcJv42u9xsKXcWxc1pwTe15jdiFq07eZU/Ce/ZJDg=;
-        b=dhPkiPdevULyPQ7uswQjr8hMjzoJklXJ0AxDET1hiyDU4gqINWJSebRtIdRjUyycZo
-         7/MWMMrXiFiou/MVtxi1RmcHdkc5WTEvTPS/T25qMXyDma4/2vdjy3jIf2BnSAgUyC2x
-         hQFmgtyVzZh7JFC2bQ6QYDRaibjLsetNaDFm/rsumKT2tcoTkVfcRd8EBbjv7lmFq5H3
-         SHmck6jNRPY8DeVXFImuZnNdraxZ3iEciwrh0jnN8iRfGgHCndNva8O6IQBWjlxXxWsp
-         OB9phagjaoc6UKjqCDItAODvsEPNcgJGu6REkLTjWmy3ujnsK9Plnn3WqFkROoo215C7
-         kZ5A==
-X-Gm-Message-State: APjAAAV6OKCxP9mN4JTEtfnqiJzgBDKv8AOAB3BsMmENvhF9c+ZUbWDR
-        Ff52l/TuuffaKvt32X1VXlA9hEnpJoU=
-X-Google-Smtp-Source: APXvYqwz+yc8zkVNN/feyEHRqL/AEMz13uLWrgyHp+IJT1Xc7OxDf7XKEhueMoWf61mpNG6w9dIfAA==
-X-Received: by 2002:a05:600c:214c:: with SMTP id v12mr109623683wml.28.1564561550263;
-        Wed, 31 Jul 2019 01:25:50 -0700 (PDT)
-Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id c78sm93223959wmd.16.2019.07.31.01.25.49
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 01:25:49 -0700 (PDT)
-From:   Hubert Feurstein <h.feurstein@gmail.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: [PATCH net-next v2 6/6] net: dsa: mv88e6xxx: add PTP support for MV88E6250 family
-Date:   Wed, 31 Jul 2019 10:23:51 +0200
-Message-Id: <20190731082351.3157-7-h.feurstein@gmail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190731082351.3157-1-h.feurstein@gmail.com>
-References: <20190731082351.3157-1-h.feurstein@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=eNbeoCj6QOku4yDwlW9DCGJXvWWlE2k5qE8OUf3NKS4=;
+        b=dwCrnsK1MUBYpFtWc8krZIc630Y/Scs8Z/j5yesdEZFEv3jvZ6eavglGOCTg2vUXWd
+         GjMmjaE8VH0AEpJzZAgk5/N2tJdT4aNy2pyokGAW+Sa+p7UkiizXrMWvjrV7fvVQwl7w
+         vaIi1Qnl2/58GuVJTz+xAzQ8BCVJOBxclaERxW6QKNlKUWhtwIF0jO0nFkGr1FKNacVC
+         GVETpgdFFQYquCmfLBDBCiSE60AxaonRgWuw7P8VIvjytXrh0JIfUfZzrdFu1jeyOfCM
+         fBf90XUDktNz42BDeoi3TpyfSCS0YP2lAOoKN0msyFrf0v7djZCBq9TUu+cO7I689u/h
+         +EOw==
+X-Gm-Message-State: APjAAAV69DZ3QnmRc3o0fhr5U3skQZC69/kln7E03MSwAVDIBkG3sPmE
+        B+aupvHAZF/qjhfdHMgT0fco5Hwe4Ovcf0qem8PIVNQtZ0wS
+X-Google-Smtp-Source: APXvYqzT43YkTR/n3sFhVK85q65sc1ppXLi1My8waUwut0HWS9xw/+8Fuz24+AAQVbehd0RkG12wBJzr3Wf9lOZH+QP4d6kDsWtp
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5d:8ccc:: with SMTP id k12mr28954439iot.141.1564561745439;
+ Wed, 31 Jul 2019 01:29:05 -0700 (PDT)
+Date:   Wed, 31 Jul 2019 01:29:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000010fb45058ef5eb52@google.com>
+Subject: KASAN: invalid-free in tls_sk_proto_cleanup
+From:   syzbot <syzbot+f5731e2256eb5130dbd6@syzkaller.appspotmail.com>
+To:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
+        davejwatson@fb.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds PTP support for the MV88E6250 family.
+Hello,
 
-Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
+syzbot found the following crash on:
+
+HEAD commit:    fde50b96 Add linux-next specific files for 20190726
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15ea7f3fa00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4b58274564b354c1
+dashboard link: https://syzkaller.appspot.com/bug?extid=f5731e2256eb5130dbd6
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+f5731e2256eb5130dbd6@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: double-free or invalid-free in tls_sk_proto_cleanup+0x216/0x3e0  
+net/tls/tls_main.c:300
+
+CPU: 0 PID: 19107 Comm: syz-executor.4 Not tainted 5.3.0-rc1-next-20190726  
+#53
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.cold+0xd4/0x306 mm/kasan/report.c:351
+  kasan_report_invalid_free+0x65/0xa0 mm/kasan/report.c:444
+  __kasan_slab_free+0x13a/0x150 mm/kasan/common.c:427
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:456
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3756
+  tls_sk_proto_cleanup+0x216/0x3e0 net/tls/tls_main.c:300
+  tls_sk_proto_unhash+0x90/0x3f0 net/tls/tls_main.c:330
+  tcp_set_state+0x5b9/0x7d0 net/ipv4/tcp.c:2235
+  tcp_done+0xe2/0x320 net/ipv4/tcp.c:3824
+  tcp_reset+0x132/0x500 net/ipv4/tcp_input.c:4080
+  tcp_validate_incoming+0xa2d/0x1660 net/ipv4/tcp_input.c:5440
+  tcp_rcv_established+0x6b5/0x1e70 net/ipv4/tcp_input.c:5648
+  tcp_v6_do_rcv+0x41e/0x12c0 net/ipv6/tcp_ipv6.c:1356
+  sk_backlog_rcv include/net/sock.h:945 [inline]
+  __release_sock+0x129/0x390 net/core/sock.c:2418
+  release_sock+0x59/0x1c0 net/core/sock.c:2934
+  sk_stream_wait_memory+0x65a/0xfc0 net/core/stream.c:149
+  tls_sw_sendmsg+0x673/0x17b0 net/tls/tls_sw.c:1054
+  inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  __sys_sendto+0x262/0x380 net/socket.c:1952
+  __do_sys_sendto net/socket.c:1964 [inline]
+  __se_sys_sendto net/socket.c:1960 [inline]
+  __x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fcee5e02c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
+RDX: ffffffffffffffc1 RSI: 00000000200005c0 RDI: 0000000000000003
+RBP: 000000000075bf20 R08: 0000000000000000 R09: 1201000000003618
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fcee5e036d4
+R13: 00000000004c77c1 R14: 00000000004dcf38 R15: 00000000ffffffff
+
+Allocated by task 19107:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc mm/kasan/common.c:486 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:459
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:500
+  __do_kmalloc mm/slab.c:3655 [inline]
+  __kmalloc_track_caller+0x15f/0x760 mm/slab.c:3670
+  kmemdup+0x27/0x60 mm/util.c:120
+  kmemdup include/linux/string.h:477 [inline]
+  tls_set_sw_offload+0xb3a/0x1567 net/tls/tls_sw.c:2361
+  do_tls_setsockopt_conf net/tls/tls_main.c:581 [inline]
+  do_tls_setsockopt net/tls/tls_main.c:630 [inline]
+  tls_setsockopt+0x4d5/0x8d0 net/tls/tls_main.c:649
+  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3130
+  __sys_setsockopt+0x261/0x4c0 net/socket.c:2084
+  __do_sys_setsockopt net/socket.c:2100 [inline]
+  __se_sys_setsockopt net/socket.c:2097 [inline]
+  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2097
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 19107:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:448
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:456
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3756
+  tls_sk_proto_cleanup+0x216/0x3e0 net/tls/tls_main.c:300
+  tls_sk_proto_unhash+0x90/0x3f0 net/tls/tls_main.c:330
+  tcp_set_state+0x5b9/0x7d0 net/ipv4/tcp.c:2235
+  tcp_done+0xe2/0x320 net/ipv4/tcp.c:3824
+  tcp_reset+0x132/0x500 net/ipv4/tcp_input.c:4080
+  tcp_validate_incoming+0xa2d/0x1660 net/ipv4/tcp_input.c:5440
+  tcp_rcv_established+0x6b5/0x1e70 net/ipv4/tcp_input.c:5648
+  tcp_v6_do_rcv+0x41e/0x12c0 net/ipv6/tcp_ipv6.c:1356
+  sk_backlog_rcv include/net/sock.h:945 [inline]
+  __release_sock+0x129/0x390 net/core/sock.c:2418
+  release_sock+0x59/0x1c0 net/core/sock.c:2934
+  wait_on_pending_writer+0x20f/0x420 net/tls/tls_main.c:91
+  tls_sk_proto_cleanup+0x2c5/0x3e0 net/tls/tls_main.c:295
+  tls_sk_proto_unhash+0x90/0x3f0 net/tls/tls_main.c:330
+  tcp_set_state+0x5b9/0x7d0 net/ipv4/tcp.c:2235
+  tcp_done+0xe2/0x320 net/ipv4/tcp.c:3824
+  tcp_reset+0x132/0x500 net/ipv4/tcp_input.c:4080
+  tcp_validate_incoming+0xa2d/0x1660 net/ipv4/tcp_input.c:5440
+  tcp_rcv_established+0x6b5/0x1e70 net/ipv4/tcp_input.c:5648
+  tcp_v6_do_rcv+0x41e/0x12c0 net/ipv6/tcp_ipv6.c:1356
+  sk_backlog_rcv include/net/sock.h:945 [inline]
+  __release_sock+0x129/0x390 net/core/sock.c:2418
+  release_sock+0x59/0x1c0 net/core/sock.c:2934
+  sk_stream_wait_memory+0x65a/0xfc0 net/core/stream.c:149
+  tls_sw_sendmsg+0x673/0x17b0 net/tls/tls_sw.c:1054
+  inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  __sys_sendto+0x262/0x380 net/socket.c:1952
+  __do_sys_sendto net/socket.c:1964 [inline]
+  __se_sys_sendto net/socket.c:1960 [inline]
+  __x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff88808ff1c500
+  which belongs to the cache kmalloc-32 of size 32
+The buggy address is located 0 bytes inside of
+  32-byte region [ffff88808ff1c500, ffff88808ff1c520)
+The buggy address belongs to the page:
+page:ffffea00023fc700 refcount:1 mapcount:0 mapping:ffff8880aa4001c0  
+index:0xffff88808ff1cfc1
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea0002a12308 ffffea0002912208 ffff8880aa4001c0
+raw: ffff88808ff1cfc1 ffff88808ff1c000 0000000100000024 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88808ff1c400: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+  ffff88808ff1c480: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+> ffff88808ff1c500: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+                    ^
+  ffff88808ff1c580: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+  ffff88808ff1c600: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+==================================================================
+
+
 ---
- drivers/net/dsa/mv88e6xxx/chip.c |  4 ++
- drivers/net/dsa/mv88e6xxx/chip.h |  4 ++
- drivers/net/dsa/mv88e6xxx/ptp.c  | 79 +++++++++++++++++++++++++++-----
- drivers/net/dsa/mv88e6xxx/ptp.h  |  2 +
- 4 files changed, 78 insertions(+), 11 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 75cfa1f2060b..4a79e389eb8b 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3522,6 +3522,8 @@ static const struct mv88e6xxx_ops mv88e6250_ops = {
- 	.reset = mv88e6250_g1_reset,
- 	.vtu_getnext = mv88e6250_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6250_g1_vtu_loadpurge,
-+	.avb_ops = &mv88e6352_avb_ops,
-+	.ptp_ops = &mv88e6250_ptp_ops,
- 	.phylink_validate = mv88e6065_phylink_validate,
- };
- 
-@@ -4318,6 +4320,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.atu_move_port_mask = 0xf,
- 		.dual_chip = true,
- 		.tag_protocol = DSA_TAG_PROTO_DSA,
-+		.ptp_support = true,
- 		.ops = &mv88e6250_ops,
- 	},
- 
-@@ -4363,6 +4366,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.atu_move_port_mask = 0xf,
- 		.dual_chip = true,
- 		.tag_protocol = DSA_TAG_PROTO_DSA,
-+		.ptp_support = true,
- 		.ops = &mv88e6250_ops,
- 	},
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index e7b88e9643b9..8c6d3c906197 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -539,6 +539,10 @@ struct mv88e6xxx_ptp_ops {
- 	int arr1_sts_reg;
- 	int dep_sts_reg;
- 	u32 rx_filters;
-+	u32 cc_shift;
-+	u32 cc_mult;
-+	u32 cc_mult_num;
-+	u32 cc_mult_dem;
- };
- 
- #define STATS_TYPE_PORT		BIT(0)
-diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
-index a1ff182c8737..073cbd0bb91b 100644
---- a/drivers/net/dsa/mv88e6xxx/ptp.c
-+++ b/drivers/net/dsa/mv88e6xxx/ptp.c
-@@ -15,11 +15,31 @@
- #include "hwtstamp.h"
- #include "ptp.h"
- 
--/* Raw timestamps are in units of 8-ns clock periods. */
--#define CC_SHIFT	28
--#define CC_MULT		(8 << CC_SHIFT)
--#define CC_MULT_NUM	(1 << 9)
--#define CC_MULT_DEM	15625ULL
-+#define MV88E6XXX_MAX_ADJ_PPB	1000000
-+
-+/* Family MV88E6250:
-+ * Raw timestamps are in units of 10-ns clock periods.
-+ *
-+ * clkadj = scaled_ppm * 10*2^28 / (10^6 * 2^16)
-+ * simplifies to
-+ * clkadj = scaled_ppm * 2^7 / 5^5
-+ */
-+#define MV88E6250_CC_SHIFT	28
-+#define MV88E6250_CC_MULT	(10 << MV88E6250_CC_SHIFT)
-+#define MV88E6250_CC_MULT_NUM	(1 << 7)
-+#define MV88E6250_CC_MULT_DEM	3125ULL
-+
-+/* Other families:
-+ * Raw timestamps are in units of 8-ns clock periods.
-+ *
-+ * clkadj = scaled_ppm * 8*2^28 / (10^6 * 2^16)
-+ * simplifies to
-+ * clkadj = scaled_ppm * 2^9 / 5^6
-+ */
-+#define MV88E6XXX_CC_SHIFT	28
-+#define MV88E6XXX_CC_MULT	(8 << MV88E6XXX_CC_SHIFT)
-+#define MV88E6XXX_CC_MULT_NUM	(1 << 9)
-+#define MV88E6XXX_CC_MULT_DEM	15625ULL
- 
- #define TAI_EVENT_WORK_INTERVAL msecs_to_jiffies(100)
- 
-@@ -179,6 +199,7 @@ static void mv88e6352_tai_event_work(struct work_struct *ugly)
- static int mv88e6xxx_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
-+	const struct mv88e6xxx_ptp_ops *ptp_ops = chip->info->ops->ptp_ops;
- 	int neg_adj = 0;
- 	u32 diff, mult;
- 	u64 adj;
-@@ -187,10 +208,11 @@ static int mv88e6xxx_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 		neg_adj = 1;
- 		scaled_ppm = -scaled_ppm;
- 	}
--	mult = CC_MULT;
--	adj = CC_MULT_NUM;
-+
-+	mult = ptp_ops->cc_mult;
-+	adj = ptp_ops->cc_mult_num;
- 	adj *= scaled_ppm;
--	diff = div_u64(adj, CC_MULT_DEM);
-+	diff = div_u64(adj, ptp_ops->cc_mult_dem);
- 
- 	mv88e6xxx_reg_lock(chip);
- 
-@@ -324,6 +346,37 @@ const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {
- 		(1 << HWTSTAMP_FILTER_PTP_V2_EVENT) |
- 		(1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
- 		(1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ),
-+	.cc_shift = MV88E6XXX_CC_SHIFT,
-+	.cc_mult = MV88E6XXX_CC_MULT,
-+	.cc_mult_num = MV88E6XXX_CC_MULT_NUM,
-+	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
-+};
-+
-+const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops = {
-+	.clock_read = mv88e6352_ptp_clock_read,
-+	.ptp_enable = mv88e6352_ptp_enable,
-+	.ptp_verify = mv88e6352_ptp_verify,
-+	.event_work = mv88e6352_tai_event_work,
-+	.port_enable = mv88e6352_hwtstamp_port_enable,
-+	.port_disable = mv88e6352_hwtstamp_port_disable,
-+	.n_ext_ts = 1,
-+	.arr0_sts_reg = MV88E6XXX_PORT_PTP_ARR0_STS,
-+	.arr1_sts_reg = MV88E6XXX_PORT_PTP_ARR1_STS,
-+	.dep_sts_reg = MV88E6XXX_PORT_PTP_DEP_STS,
-+	.rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_SYNC) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_SYNC) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_EVENT) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
-+		(1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ),
-+	.cc_shift = MV88E6250_CC_SHIFT,
-+	.cc_mult = MV88E6250_CC_MULT,
-+	.cc_mult_num = MV88E6250_CC_MULT_NUM,
-+	.cc_mult_dem = MV88E6250_CC_MULT_DEM,
- };
- 
- const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {
-@@ -347,6 +400,10 @@ const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {
- 		(1 << HWTSTAMP_FILTER_PTP_V2_EVENT) |
- 		(1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
- 		(1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ),
-+	.cc_shift = MV88E6XXX_CC_SHIFT,
-+	.cc_mult = MV88E6XXX_CC_MULT,
-+	.cc_mult_num = MV88E6XXX_CC_MULT_NUM,
-+	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
- };
- 
- static u64 mv88e6xxx_ptp_clock_read(const struct cyclecounter *cc)
-@@ -384,8 +441,8 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
- 	memset(&chip->tstamp_cc, 0, sizeof(chip->tstamp_cc));
- 	chip->tstamp_cc.read	= mv88e6xxx_ptp_clock_read;
- 	chip->tstamp_cc.mask	= CYCLECOUNTER_MASK(32);
--	chip->tstamp_cc.mult	= CC_MULT;
--	chip->tstamp_cc.shift	= CC_SHIFT;
-+	chip->tstamp_cc.mult	= ptp_ops->cc_mult;
-+	chip->tstamp_cc.shift	= ptp_ops->cc_shift;
- 
- 	timecounter_init(&chip->tstamp_tc, &chip->tstamp_cc,
- 			 ktime_to_ns(ktime_get_real()));
-@@ -397,7 +454,6 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
- 	chip->ptp_clock_info.owner = THIS_MODULE;
- 	snprintf(chip->ptp_clock_info.name, sizeof(chip->ptp_clock_info.name),
- 		 "%s", dev_name(chip->dev));
--	chip->ptp_clock_info.max_adj	= 1000000;
- 
- 	chip->ptp_clock_info.n_ext_ts	= ptp_ops->n_ext_ts;
- 	chip->ptp_clock_info.n_per_out	= 0;
-@@ -413,6 +469,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
- 	}
- 	chip->ptp_clock_info.pin_config = chip->pin_config;
- 
-+	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
- 	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
- 	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
- 	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
-diff --git a/drivers/net/dsa/mv88e6xxx/ptp.h b/drivers/net/dsa/mv88e6xxx/ptp.h
-index 58cbd21d58f6..269d5d16a466 100644
---- a/drivers/net/dsa/mv88e6xxx/ptp.h
-+++ b/drivers/net/dsa/mv88e6xxx/ptp.h
-@@ -149,6 +149,7 @@ void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip);
- 				      ptp_clock_info)
- 
- extern const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops;
-+extern const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops;
- extern const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops;
- 
- #else /* !CONFIG_NET_DSA_MV88E6XXX_PTP */
-@@ -168,6 +169,7 @@ static inline void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip)
- }
- 
- static const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {};
-+static const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops = {};
- static const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {};
- 
- #endif /* CONFIG_NET_DSA_MV88E6XXX_PTP */
--- 
-2.22.0
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
