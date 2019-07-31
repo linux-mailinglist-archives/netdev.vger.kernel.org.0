@@ -2,147 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7AF57CC7D
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3237CC84
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729886AbfGaTIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 15:08:17 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:46424 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbfGaTIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 15:08:17 -0400
-Received: by mail-ed1-f68.google.com with SMTP id d4so66786901edr.13
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 12:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3SxWjACIDWjy2kZPugWAeoKbit4LgM+rwBGOms1xL04=;
-        b=vRzgqOIugS3yUECVs7i4m8aYfsQSTtff5EFxlvm59J1tY9jS7zFScDqMcBW3q0l7Yf
-         6WJOpihBdACTtni3NJXQwQqwSzEJ2As9geMIWs5TEgCpTcTOhj1OOGULBO8P+T77v/U2
-         pcTN4eOAtBu6nNug+ZgXgkhhrJgFuZdyMJXNO3MZfSgFsUvs5rdjX28e0VNvvBu8JKFv
-         DFCZ97WmJ0ZWH751Idz268EfAsP6ySymVhyH6avm/C4WpEIf8yFz9KE/qzX+xjHkFQiG
-         UfdiUxfe5Z3LoXLIuB/MZ8Wp+wdBRUDA0yts7EEQGDKNNtTCJQc71VQn30tGiz/GjLW6
-         zdUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3SxWjACIDWjy2kZPugWAeoKbit4LgM+rwBGOms1xL04=;
-        b=BC6J/hoZC5qkHtyiARPM919746wSOuRNiADlxTOR5GaHpv8TOtKhODfa64CmmKpR5z
-         hUMt7LOujE7M9YUNPvE+lGN9eq3tZfTPX+HKXwgSpQ2Vq7TUTysKLMLgVE3JgfGJv8HT
-         JAhnfqCzQQoDePcSyMtR7OSmoJ3hm/gf6Ja3ATIZ/ykeyBqFMUEdxJPsf4WjxWwkrbVu
-         Vc10ls6GtbmL7m4Sc1Nho40+joShiECk6OFkH/IEQDpwZV0yAVxPbIB1bc3RtYiZr+ZB
-         PTnHHHnziyBmNRckuKGSzEtGMinUJA7H3SAYPbdmmJ6N3kSKBYu700sljw3j4oPxL5fs
-         /zGg==
-X-Gm-Message-State: APjAAAX/NrxkikU1dSBo9LvRCKMnkOQozNkcUJj//RqLGGWEJCB0MDAS
-        10AGEwAv+xU5hS4FjUxDcvLJ3Z3xiOhFhEqCKj8=
-X-Google-Smtp-Source: APXvYqxEn72/U9TOHcVDesXZxKzlXh9IvgJb1NvRa6rVjqXz4Nqdb5XE4mYyteum8UpGa+/UdqXEzjgOfCU0IaIDVDA=
-X-Received: by 2002:a50:9153:: with SMTP id f19mr110680280eda.70.1564600095481;
- Wed, 31 Jul 2019 12:08:15 -0700 (PDT)
+        id S1728974AbfGaTJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 15:09:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57666 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726073AbfGaTJm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 15:09:42 -0400
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 79061217F5
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 19:09:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564600180;
+        bh=5sbq1CUz/4Np8diMsPeYBJ+i1aJj9MKsghvG1UWBzjg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=EZHhqpan5TKtpQ81oKj2cKstineoX3GVqcoD1rjnhWw5RVfbdFLFCKTanF5OehRSW
+         8TQ2MuDoWX2jmbV2Dae5nCcCv29C/K5OsMB9sm1vxJGaAO15N9x3A195qJZF63jmlj
+         JfJeMOXlLCcPc1TTIJ7EWgPOk06X3UAQnocRvKI8=
+Received: by mail-wm1-f41.google.com with SMTP id p74so61926927wme.4
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 12:09:40 -0700 (PDT)
+X-Gm-Message-State: APjAAAWz+498Dq36v2loubCpXurEW4yTpuqWP1Kulrj/1huv4daQBIBE
+        3cquNgFb6FjShyCOFRMyMoiFrsTXiuQSPsHVmZ1vGQ==
+X-Google-Smtp-Source: APXvYqx4zb8LrcibSKUodOi60ie226tvSHupyQ0d4LTQVRZ4SeTKKUMFrOQKYUOpT8Ag2AxIjIWeCiufncu+lKbqMAs=
+X-Received: by 2002:a1c:9a53:: with SMTP id c80mr51242084wme.173.1564600178852;
+ Wed, 31 Jul 2019 12:09:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190730211258.13748-1-jakub.kicinski@netronome.com>
- <CA+FuTSdN41z5PVfyT5Z-ApnKQ9CYcDSnr4VGZnsgA-iAEK12Ow@mail.gmail.com> <20190731111213.35237adc@cakuba.netronome.com>
-In-Reply-To: <20190731111213.35237adc@cakuba.netronome.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 31 Jul 2019 15:07:39 -0400
-Message-ID: <CAF=yD-+1jUkwXxyOyiH6qwheLTDNQupS_qg+Ra4WbtSogXp4nQ@mail.gmail.com>
-Subject: Re: [oss-drivers] Re: [PATCH net-next] net/tls: prevent skb_orphan()
- from leaking TLS plain text with offload
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com, Eric Dumazet <edumazet@google.com>,
-        borisp@mellanox.com, aviadye@mellanox.com, davejwatson@fb.com,
-        John Fastabend <john.fastabend@gmail.com>,
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com> <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+ <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com> <CALCETrWBnH4Q43POU8cQ7YMjb9LioK28FDEQf7aHZbdf1eBZWg@mail.gmail.com>
+ <0DE7F23E-9CD2-4F03-82B5-835506B59056@fb.com> <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
+ <201907021115.DCD56BBABB@keescook> <CALCETrXTta26CTtEDnzvtd03-WOGdXcnsAogP8JjLkcj4-mHvg@mail.gmail.com>
+ <4A7A225A-6C23-4C0F-9A95-7C6C56B281ED@fb.com> <CALCETrX2bMnwC6_t4b_G-hzJSfMPrkK4YKs5ebcecv2LJ0rt3w@mail.gmail.com>
+ <514D5453-0AEE-420F-AEB6-3F4F58C62E7E@fb.com> <1DE886F3-3982-45DE-B545-67AD6A4871AB@amacapital.net>
+ <7F51F8B8-CF4C-4D82-AAE1-F0F28951DB7F@fb.com> <77354A95-4107-41A7-8936-D144F01C3CA4@fb.com>
+ <369476A8-4CE1-43DA-9239-06437C0384C7@fb.com> <CALCETrUpVMrk7aaf0trfg9AfZ4fy279uJgZH7V+gZzjFw=hUxA@mail.gmail.com>
+ <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com>
+In-Reply-To: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Wed, 31 Jul 2019 12:09:27 -0700
+X-Gmail-Original-Message-ID: <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
+Message-ID: <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 2:12 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
+On Wed, Jul 31, 2019 at 1:10 AM Song Liu <songliubraving@fb.com> wrote:
 >
-> On Wed, 31 Jul 2019 11:57:10 -0400, Willem de Bruijn wrote:
-> > On Tue, Jul 30, 2019 at 5:13 PM Jakub Kicinski wrote:
-> > > sk_validate_xmit_skb() and drivers depend on the sk member of
-> > > struct sk_buff to identify segments requiring encryption.
-> > > Any operation which removes or does not preserve the original TLS
-> > > socket such as skb_orphan() or skb_clone() will cause clear text
-> > > leaks.
-> > >
-> > > Make the TCP socket underlying an offloaded TLS connection
-> > > mark all skbs as decrypted, if TLS TX is in offload mode.
-> > > Then in sk_validate_xmit_skb() catch skbs which have no socket
-> > > (or a socket with no validation) and decrypted flag set.
-> > >
-> > > Note that CONFIG_SOCK_VALIDATE_XMIT, CONFIG_TLS_DEVICE and
-> > > sk->sk_validate_xmit_skb are slightly interchangeable right now,
-> > > they all imply TLS offload. The new checks are guarded by
-> > > CONFIG_TLS_DEVICE because that's the option guarding the
-> > > sk_buff->decrypted member.
-> > >
-> > > Second, smaller issue with orphaning is that it breaks
-> > > the guarantee that packets will be delivered to device
-> > > queues in-order. All TLS offload drivers depend on that
-> > > scheduling property. This means skb_orphan_partial()'s
-> > > trick of preserving partial socket references will cause
-> > > issues in the drivers. We need a full orphan, and as a
-> > > result netem delay/throttling will cause all TLS offload
-> > > skbs to be dropped.
-> > >
-> > > Reusing the sk_buff->decrypted flag also protects from
-> > > leaking clear text when incoming, decrypted skb is redirected
-> > > (e.g. by TC).
-> > >
-> > > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 >
-> > > diff --git a/net/core/sock.c b/net/core/sock.c
-> > > index d57b0cc995a0..b0c10b518e65 100644
-> > > --- a/net/core/sock.c
-> > > +++ b/net/core/sock.c
-> > > @@ -1992,6 +1992,22 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
-> > >  }
-> > >  EXPORT_SYMBOL(skb_set_owner_w);
-> > >
-> > > +static bool can_skb_orphan_partial(const struct sk_buff *skb)
-> > > +{
-> > > +#ifdef CONFIG_TLS_DEVICE
-> > > +       /* Drivers depend on in-order delivery for crypto offload,
-> > > +        * partial orphan breaks out-of-order-OK logic.
-> > > +        */
-> > > +       if (skb->decrypted)
-> > > +               return false;
-> > > +#endif
-> > > +#ifdef CONFIG_INET
-> > > +       if (skb->destructor == tcp_wfree)
-> > > +               return true;
-> > > +#endif
-> > > +       return skb->destructor == sock_wfree;
-> > > +}
-> > > +
+>
+> > On Jul 30, 2019, at 1:24 PM, Andy Lutomirski <luto@kernel.org> wrote:
 > >
-> > Just insert the skb->decrypted check into skb_orphan_partial for less
-> > code churn?
+> > On Mon, Jul 29, 2019 at 10:07 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >> Hi Andy,
+> >>
+> >>> On Jul 27, 2019, at 11:20 AM, Song Liu <songliubraving@fb.com> wrote:
+> >>>
+> >>> Hi Andy,
+> >>>
+> >>>
 >
-> Okie.. skb_orphan_partial() is a little ugly but will do.
+> [...]
 >
-> > I also think that this is an independent concern from leaking plain
-> > text, so perhaps could be a separate patch.
-
-Just a suggestion and very much depending on how much uglier it
-becomes otherwise ;)
-
-> Do you mean the out-of-order stuff is a separate concern?
+> >>>
+> >>
+> >> I would like more comments on this.
+> >>
+> >> Currently, bpf permission is more or less "root or nothing", which we
+> >> would like to change.
+> >>
+> >> The short term goal is to separate bpf from root, in other words, it is
+> >> "all or nothing". Special user space utilities, such as systemd, would
+> >> benefit from this. Once this is implemented, systemd can call sys_bpf()
+> >> when it is not running as root.
+> >
+> > As generally nasty as Linux capabilities are, this sounds like a good
+> > use for CAP_BPF_ADMIN.
 >
-> It is, I had them separate at the first try, but GSO code looks at
-> the destructor and IIRC only copies the socket if its still tcp_wfree.
-> If we let partial orphan be we have to do temporary hairy stuff in
-> tcp_gso_segment(). It's easier to just deal with partial orphan here.
+> I actually agree CAP_BPF_ADMIN makes sense. The hard part is to make
+> existing tools (setcap, getcap, etc.) and libraries aware of the new CAP.
 
-Okay, sounds good.
+It's been done before -- it's not that hard.  IMO the main tricky bit
+would be try be somewhat careful about defining exactly what
+CAP_BPF_ADMIN does.
+
+> > I don't see why you need to invent a whole new mechanism for this.
+> > The entire cgroup ecosystem outside bpf() does just fine using the
+> > write permission on files in cgroupfs to control access.  Why can't
+> > bpf() do the same thing?
+>
+> It is easier to use write permission for BPF_PROG_ATTACH. But it is
+> not easy to do the same for other bpf commands: BPF_PROG_LOAD and
+> BPF_MAP_*. A lot of these commands don't have target concept. Maybe
+> we should have target concept for all these commands. But that is a
+> much bigger project. OTOH, "all or nothing" model allows all these
+> commands at once.
+
+For BPF_PROG_LOAD, I admit I've never understood why permission is
+required at all.  I think that CAP_SYS_ADMIN or similar should be
+needed to get is_priv in the verifier, but I think that should mainly
+be useful for tracing, and that requires lots of privilege anyway.
+BPF_MAP_* is probably the trickiest part.  One solution would be some
+kind of bpffs, but I'm sure other solutions are possible.
