@@ -2,179 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDCF07B83E
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 05:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E297B840
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 05:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfGaDcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 23:32:55 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:37927 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbfGaDcz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 23:32:55 -0400
-Received: by mail-oi1-f194.google.com with SMTP id v186so49633273oie.5
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 20:32:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=cvFCPVmzmMV6AwVsWFrxEaW+OTUo2ZA/3qrTMLI6lCk=;
-        b=gdDCScrqwmz/2dLR4WwDxaRvptrsi6JLx0HXqTmRGpni7IQxi9Staa5kxUTuPDJtyG
-         44YFwbJA3V2cFVk6xMZv0JcvH0sTVMaK+gvTk07/46zXAWYvjG8Rn8b5AEx7W2Oc2bJm
-         2peVOK6m1zRSF7Np+4Ll9JvBil4KlVEg49t9k64SeKoo1WPIzf+0sXWJdCQvN6+TggF4
-         CWsgaA9UxMSfVJJOkK+lgMkLw9ur7DkiuTRAShlWzZpBBsWrwAoKDg5DsC9/cnlQG0Fk
-         3a2JFUzkyq+GlvSZ7Cji12pFFAJ+VE/1PsD6VfBTRjc9gw2yK2om7xgxqsEC2THMED5R
-         iaCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=cvFCPVmzmMV6AwVsWFrxEaW+OTUo2ZA/3qrTMLI6lCk=;
-        b=EYYHFw7i4s3ztsbgSiD0gQ/0nxMnLV1ow2j6Z3xF1fYYO/cVdTv+1o71a38OsFemVE
-         Hq4IXjjwvTwnygo0iQ7naxEwOaIoFoDHUshNIBiA0wnGTgt/BJ7A413xrTabVuLWnjyQ
-         t+4fKnIo3kYAIpMakCT00l45a12q5oSLuCff26Rv9OgvqkuwZGjq+cwwuSvI5HMFkERU
-         W30HZCsFRCNs2botRaU0qJLKWpfrFzmv7fqgBOIIh66cG6KPyaJ2voMLlCVN0o1IjXRL
-         LK5Zq7KY7YxvyLT1XirJHuysTcuG83bXd6uZ3ddJmxGHycVen9ziYeWAOJ0IrFIaHrBM
-         LATg==
-X-Gm-Message-State: APjAAAWC5G5z+II5jOLBO9tdRSUclKV0EI139nEJvLYPxVZCvb0Hie0g
-        /+SyNUM2nvrX7OA/hsKzi6f3ssuOcy0HKrZsZ/s=
-X-Google-Smtp-Source: APXvYqyI41EyRinmLPn7dzzPA4KedF2blbOGxyjb6qKRUh8AGS2/dkoMDrf4I4A9Jx2SBUXs/Yzry3hlaOsz1i8hfHQ=
-X-Received: by 2002:aca:b554:: with SMTP id e81mr34656561oif.7.1564543973848;
- Tue, 30 Jul 2019 20:32:53 -0700 (PDT)
+        id S1727318AbfGaDdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 23:33:53 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:35926 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725851AbfGaDdw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 23:33:52 -0400
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.53])
+        by Forcepoint Email with ESMTP id 011A4E5A6231014557A5;
+        Wed, 31 Jul 2019 11:33:51 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 31 Jul 2019 11:33:50 +0800
+Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
+ (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Wed, 31
+ Jul 2019 11:33:50 +0800
+Subject: Re: [RFC] net: phy: read link status twice when
+ phy_check_link_status()
+To:     Heiner Kallweit <hkallweit1@gmail.com>, <andrew@lunn.ch>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
+References: <1564134831-24962-1-git-send-email-liuyonglong@huawei.com>
+ <92f42ee8-3659-87a7-ac96-d312a98046ba@gmail.com>
+ <4b4ba599-f160-39e7-d611-45ac53268389@huawei.com>
+ <a0b26e4b-e288-cf44-049a-7d0b7f5696eb@gmail.com>
+ <1d4be6ad-ffe6-2325-ceab-9f35da617ee9@huawei.com>
+ <5087ee34-5776-f02b-d7e5-bce005ba3b92@gmail.com>
+ <03708d00-a8d9-4a9d-4188-9fe0e38de2b8@huawei.com>
+ <9a0a8094-42ee-0a18-0e9a-d3ca783d6d4b@gmail.com>
+From:   liuyonglong <liuyonglong@huawei.com>
+Message-ID: <6add4874-fd2b-9b21-cd78-80b6dde4dd53@huawei.com>
+Date:   Wed, 31 Jul 2019 11:33:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-References: <CAO42Z2yN=FfueKAjb0KjY8-CdiKuvkJDr2iJdJR4XdKM90HJRg@mail.gmail.com>
- <93c401b9-bf8b-4d49-9c3b-72d09073444e@cn.fujitsu.com> <CAO42Z2x163LCaYrB2ZEm9i-A=Pw1xcudbGSua5TxxEHdc4=O2g@mail.gmail.com>
- <8e63c39f-3117-7446-e204-df076f43a454@gmail.com> <CAO42Z2we930YTmMUkaWXZOqFQVFxH=bd=y+JFXG8V0Y736kzug@mail.gmail.com>
-In-Reply-To: <CAO42Z2we930YTmMUkaWXZOqFQVFxH=bd=y+JFXG8V0Y736kzug@mail.gmail.com>
-From:   Mark Smith <markzzzsmith@gmail.com>
-Date:   Wed, 31 Jul 2019 13:32:27 +1000
-Message-ID: <CAO42Z2yKHJgCEToC=Sj_cGPwbc7Zs8wM+wUuN4ZWRhYgxkv2eQ@mail.gmail.com>
-Subject: Fwd: net: ipv6: Fix a bug in ndisc_send_ns when netdev only has a
- global address
-To:     David Ahern <dsahern@gmail.com>,
-        Su Yanjun <suyj.fnst@cn.fujitsu.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9a0a8094-42ee-0a18-0e9a-d3ca783d6d4b@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.57.37.248]
+X-ClientProxiedBy: dggeme712-chm.china.huawei.com (10.1.199.108) To
+ dggeme760-chm.china.huawei.com (10.3.19.106)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Re-sending in text format due to Gmail preserving the HTML email I
-received and vger (quite reasonably) rejecting my response.
 
 
----------- Forwarded message ---------
-From: Mark Smith <markzzzsmith@gmail.com>
-Date: Wed, 31 Jul 2019 at 12:23
-Subject: Re: net: ipv6: Fix a bug in ndisc_send_ns when netdev only
-has a global address
-To: David Ahern <dsahern@gmail.com>
-Cc: Su Yanjun <suyj.fnst@cn.fujitsu.com>, <netdev@vger.kernel.org>
+On 2019/7/31 3:04, Heiner Kallweit wrote:
+> On 30.07.2019 08:35, liuyonglong wrote:
+>> :/sys/kernel/debug/tracing$ cat trace
+>> # tracer: nop
+>> #
+>> # entries-in-buffer/entries-written: 45/45   #P:128
+>> #
+>> #                              _-----=> irqs-off
+>> #                             / _----=> need-resched
+>> #                            | / _---=> hardirq/softirq
+>> #                            || / _--=> preempt-depth
+>> #                            ||| /     delay
+>> #           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
+>> #              | |       |   ||||       |         |
+>>     kworker/64:2-1028  [064] ....   172.295687: mdio_access: mii-0000:bd:00.0 read  phy:0x01 reg:0x02 val:0x001c
+>>     kworker/64:2-1028  [064] ....   172.295726: mdio_access: mii-0000:bd:00.0 read  phy:0x01 reg:0x03 val:0xc916
+>>     kworker/64:2-1028  [064] ....   172.296902: mdio_access: mii-0000:bd:00.0 read  phy:0x01 reg:0x01 val:0x79ad
+>>     kworker/64:2-1028  [064] ....   172.296938: mdio_access: mii-0000:bd:00.0 read  phy:0x01 reg:0x0f val:0x2000
+>>     kworker/64:2-1028  [064] ....   172.321213: mdio_access: mii-0000:bd:00.0 read  phy:0x01 reg:0x00 val:0x1040
+>>     kworker/64:2-1028  [064] ....   172.343209: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x02 val:0x001c
+>>     kworker/64:2-1028  [064] ....   172.343245: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x03 val:0xc916
+>>     kworker/64:2-1028  [064] ....   172.343882: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x79ad
+>>     kworker/64:2-1028  [064] ....   172.343918: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x0f val:0x2000
+>>     kworker/64:2-1028  [064] ....   172.362658: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+>>     kworker/64:2-1028  [064] ....   172.385961: mdio_access: mii-0000:bd:00.2 read  phy:0x05 reg:0x02 val:0x001c
+>>     kworker/64:2-1028  [064] ....   172.385996: mdio_access: mii-0000:bd:00.2 read  phy:0x05 reg:0x03 val:0xc916
+>>     kworker/64:2-1028  [064] ....   172.386646: mdio_access: mii-0000:bd:00.2 read  phy:0x05 reg:0x01 val:0x79ad
+>>     kworker/64:2-1028  [064] ....   172.386681: mdio_access: mii-0000:bd:00.2 read  phy:0x05 reg:0x0f val:0x2000
+>>     kworker/64:2-1028  [064] ....   172.411286: mdio_access: mii-0000:bd:00.2 read  phy:0x05 reg:0x00 val:0x1040
+>>     kworker/64:2-1028  [064] ....   172.433225: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x02 val:0x001c
+>>     kworker/64:2-1028  [064] ....   172.433260: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x03 val:0xc916
+>>     kworker/64:2-1028  [064] ....   172.433887: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
+>>     kworker/64:2-1028  [064] ....   172.433922: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x0f val:0x2000
+>>     kworker/64:2-1028  [064] ....   172.452862: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
+>>         ifconfig-1324  [011] ....   177.325585: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+>>   kworker/u257:0-8     [012] ....   177.325642: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x04 val:0x01e1
+>>   kworker/u257:0-8     [012] ....   177.325654: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x04 val:0x05e1
+>>   kworker/u257:0-8     [012] ....   177.325708: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x79ad
+>>   kworker/u257:0-8     [012] ....   177.325744: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x09 val:0x0200
+>>   kworker/u257:0-8     [012] ....   177.325779: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+>>   kworker/u257:0-8     [012] ....   177.325788: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1240
+>>   kworker/u257:0-8     [012] ....   177.325843: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x798d
+> 
+> What I think that happens here:
+> Writing 0x1240 to BMCR starts aneg. When reading BMSR immediately after that then the PHY seems to have cleared
+> the "aneg complete" bit already, but not yet the "link up" bit. This results in the false "link up" notification.
+> The following patch is based on the fact that in case of enabled aneg we can't have a valid link if aneg isn't
+> finished. Could you please test whether this works for you?
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 6b5cb87f3..7ddd91df9 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1774,6 +1774,12 @@ int genphy_update_link(struct phy_device *phydev)
+>  	phydev->link = status & BMSR_LSTATUS ? 1 : 0;
+>  	phydev->autoneg_complete = status & BMSR_ANEGCOMPLETE ? 1 : 0;
+>  
+> +	/* Consider the case that autoneg was started and "aneg complete"
+> +	 * bit has been reset, but "link up" bit not yet.
+> +	 */
+> +	if (phydev->autoneg == AUTONEG_ENABLE && !phydev->autoneg_complete)
+> +		phydev->link = 0;
+> +
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(genphy_update_link);
+> 
+
+This patch can solve the issue! Will it be upstream?
+
+So it's nothing to do with the bios, and just the PHY's own behavior,
+the "link up" bit can not reset immediately，right?
+
+ps: It will take 1 second more to make the link up for RTL8211F when 0x798d happend.
 
 
-Hi David,
-
-
-On Wed., 31 Jul. 2019, 00:11 David Ahern, <dsahern@gmail.com> wrote:
->
-> On 7/30/19 4:28 AM, Mark Smith wrote:
-> > Hi Su,
-> >
-
-
->
-> <snip>
-
-
->
-> >>> This patch is not the correct solution to this issue.
-> >>>
-> >
-> > <snip>
-> >
-> >> In linux implementation, one interface may have no link local address if
-> >> kernel config
-> >>
-> >> *addr_gen_mode* is set to IN6_ADDR_GEN_MODE_NONE. My patch is to fix
-> >> this problem.
-> >>
-> >
-> > So this "IN6_ADDR_GEN_MODE_NONE" behaviour doesn't comply with RFC 4291.
-> >
-> > As RFC 4291 says,
-> >
-> > "All interfaces are *required* to have *at least one* Link-Local
-> > unicast address."
-> >
-> > That's not an ambiguous requirement.
->
-> Interesting. Going back to the original commit:
->
-> commit bc91b0f07ada5535427373a4e2050877bcc12218
-> Author: Jiri Pirko <jiri@resnulli.us>
-> Date:   Fri Jul 11 21:10:18 2014 +0200
->
->     ipv6: addrconf: implement address generation modes
->
->     This patch introduces a possibility for userspace to set various (so far
->     two) modes of generating addresses. This is useful for example for
->     NetworkManager because it can set the mode to NONE and take care of link
->     local addresses itself. That allow it to have the interface up,
->     monitoring carrier but still don't have any addresses on it.
->
-> So the intention of IN6_ADDR_GEN_MODE_NONE was for userspace to control
-> it. If an LLA is required (4291 says yes, 4861 suggests no) then the
-> current behavior is correct and if IN6_ADDR_GEN_MODE_NONE is used by an
-> admin some userspace agent is required to add it for IPv6 to work on
-> that link.
->
-
-Ok. That seems to be saying that IN6_ADDR_GEN_MODE_NONE means that the
-kernel is not going perform any address configuration on the interface
-for any prefixes.
-
-That would then place the RFC 4291 burden to generate at least one LL
-address for the interface onto the user space application that has
-taken over performing IPv6 address configuration on an interface.
-
-
-> <snip>
-> >
-> > It is an IPv6 enabled interface, so it requires a link-local address,
-> > per RFC 4291. RFC 4291 doesn't exclude any interfaces types from the
-> > LL address requirement.
->
-> There is no 'link' for loopback, so really no point in generating an LLA
-> for it.
->
-
-If your 'link' mean something physical, then I agree, the loopback
-virtual interface doesn't have a link.
-
-From IPv6's perspective, there is a link attached, because the
-interface is operationally UP and IPv6 can send and receive packets
-over it. They just happen to be returned to the sender by the
-link-layer below the IPv6 layer. This behaviour is functionally no
-different to when a physical loopback cable/plug is plugged into a
-physical interface.
-
-IPv6 tries to be fairly generic with definitions such as 'link' and
-'interface' to be future proof. Here's the RFC 8200 definitons:
-
-"link         a communication facility or medium over which nodes can
-                communicate at the link layer, i.e., the layer
-                immediately below IPv6.  Examples are Ethernets [...];
-                and internet-layer or higher-layer "tunnels",
-                such as tunnels over IPv4 or IPv6 itself.
-
-interface    a node's attachment to a link."
-
-The loopback virtual interface is providing both "a communication
-facility [...] over which nodes can communicate at the link layer,
-i.e., the layer immediately below IPv6" and an "attachment to a link".
-
-So the loopback virtual interface is by definition a interface per the
-IPv6 specification, and therefore requires a link-local address to be
-compliant.
-
-
-Regards,
-Mark.
