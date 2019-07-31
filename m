@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 403C87B91D
+	by mail.lfdr.de (Postfix) with ESMTP id AF8407B91E
 	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 07:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbfGaFj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 01:39:56 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:35953 "EHLO
+        id S1726844AbfGaFkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 01:40:00 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:59895 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725866AbfGaFjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 01:39:55 -0400
+        by vger.kernel.org with ESMTP id S1725866AbfGaFj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 01:39:58 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 0E6642D4F;
-        Wed, 31 Jul 2019 01:39:54 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id B66BC2D52;
+        Wed, 31 Jul 2019 01:39:56 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 31 Jul 2019 01:39:54 -0400
+  by compute4.internal (MEProxy); Wed, 31 Jul 2019 01:39:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=from
-        :to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm3; bh=f6SwHiquskKyzal6BVgx/Zrb83
-        M7d3YW34Dxd8xOi/I=; b=g7MN1DY1j9rZdpYORY8nL/SkjVPP9amQQ6Ol+aXOL1
-        75Cgfy18cKd6+ssH0oOz3n7yYP+nlnPSqod16gcxdXcMx9pE14K2SFSf6/luls5u
-        JphFHxcZh/ovi/Q4uGC7Og/ct+1NnN9zCnNk3sa1m+ocS2693kgbjimy3t4qegds
-        hZII0pm/H8nklvVIkOOQ3JrwKtCZ7u4DGygNFPhNSA7lKtbH5vxxCsmkOGl7YT5W
-        RBbJSRWOqsaK2lK1GMWmf9PMZnZxHagbU29IJaGEtPyserJhpVEoRXthPev7LbGi
-        eXngVDCjC0WBidytA0t07ccGFSO9lGSFuVCl8wBYw8uA==
+        :to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=fm3; bh=gzCwHI80UKMbA
+        e03aKRbEI+0U6moZg+RRW+kG2jIiTc=; b=TIiZbS4zZNCx0TJkxaouR2jrPaQg0
+        aSaWMyz8IOhi8gEMOjKM7jtNvn/SCqFNxCVIl21hNPtl/vcN9aNADcdUpdi96b6K
+        cClhaUiOoqI4aIO+5VKV7nsudyfHBeE0rq0kymesRbbvjvUUoxffdfJzZ+8vmsrE
+        zQbbKRcPNLaf8odDqdRs3u4VcOf/yVZlDq+wSc/wi+MoJnKKumBAyJZEmki/CO/f
+        i3Ne40g7mblcmiKRdOkt7p1zRBNjIXDqT2ONhVRKxL6WzRwoHdafA1uXbC9tolvI
+        IKSZS3f/K0sD4PALzGA4sg1wuUqxHU3UpefvuJUG7P3TFS/GTiW9lcEIQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=f6SwHiquskKyzal6B
-        Vgx/Zrb83M7d3YW34Dxd8xOi/I=; b=i5xBkoT3kOfJ7Fozu8U1x3mCDqVDbaGJi
-        hW5j7MVRghRgV4UUqd7BsH+FN1J5Ffey9ZReBvuVB51o9kaDcNQ/tJGbJ1cdw3m1
-        jFJcbTap/SsQj4NW7jmsyhcVwGAcN5fwekb6ohoymp4NjfnNCOdtccLepKOo/169
-        /7jgkGAWQzcX1gMu3UdiGLLpMnuzOhghv6uqG+KqRdnPzp0drOrRM3cvb70dUcUl
-        mveg0t1PJ+C4DvGiVpbFo0iwbQWzvxeGJb0rRUAmglkQwwqpfRBYBFkoEqRUkdNi
-        NI2P0sJCs3ehdBaCR0St9p7NktQyf5qW/iv9aPQ7xRgqeACnHvtUg==
-X-ME-Sender: <xms:qClBXZXWhe-ZQDDEHt39xzZJV1vT5Nk1WP4T8AYQICf5aoyLv9SzqA>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=gzCwHI80UKMbAe03aKRbEI+0U6moZg+RRW+kG2jIiTc=; b=SzvYdEQr
+        DdO9hzcugcpWDGtKehyAZKfsfc6wmKnVhyiG07U+EO22Oz9upZJwTivWhnpE6pO3
+        fGvmHMFMU7Ybbc3vtjTxbD2Ayl3ZHeSFhbtzHOBdZJsi9x616z045P9oMHsUU4Vh
+        80ryEKMvgxo9h/e6amrd0IgWgZ74GyoB+XAfDFkMWcXFZnNWTF9HzSySxX/OB+F3
+        0fHXuQTJislvqOQHXeDbvir2ve1GwZAghw1j2vfwhQ2IVpkfyEulNyccdO3UT4qU
+        2U8X+44MrXOg6KTaDqBJsFAqhePUcLMSc6S5k0qGlWGEHt6+byI/HniUuVFysmUM
+        SBsjlAV0DQqs3Q==
+X-ME-Sender: <xms:rClBXZuvRNfpG6M1luPTw8vLz11Zm9kcj8o1E27WzLawTupVpn3mlg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrleeggdelkecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpeetnhgurhgvficulfgvfhhfvghrhicuoegrnhgurhgvfiesrghjrdhi
-    ugdrrghuqeenucffohhmrghinhepohiilhgrsghsrdhorhhgnecukfhppedvtddvrdekud
-    drudekrdeftdenucfrrghrrghmpehmrghilhhfrhhomheprghnughrvgifsegrjhdrihgu
-    rdgruhenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:qClBXTpGDNuSmIbPncJh21n4Sf0ss0RejHuzWA4hv3rAOLNcRuRxMw>
-    <xmx:qClBXaVOdGKEcDyq-7JxJ0S_ajEy6NdCoqsQTywn439lc82Dng4C5w>
-    <xmx:qClBXUGdN3rrLeLl3XtvCSrNpwfDySjv8adf7tD_SwRNJ9jE38lxGw>
-    <xmx:qilBXVZcJHTBJAO8KEKpy2dp-GtEoJUAEkilKJiKZf9U4ox-z_TfPQ>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpeetnhgurhgvficulfgvfhhfvghrhicuoegrnhgurhgvfiesrghj
+    rdhiugdrrghuqeenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecukfhppe
+    dvtddvrdekuddrudekrdeftdenucfrrghrrghmpehmrghilhhfrhhomheprghnughrvgif
+    segrjhdrihgurdgruhenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:rClBXQZQwtIvoaDmdF8gUzY4Ti5BcQ21j-z1dG6zLIFDtF_Z0pVjZA>
+    <xmx:rClBXUX07zP0L5TMNASHIyENDCpZtliRMy5miC0Pf81boQNj8sBjvA>
+    <xmx:rClBXc7q1FUua0ZvSS1gKnkC18NVPOAyKfa0n467ics4IzFa9l5TcQ>
+    <xmx:rClBXe0BSoOSNc-SAi16YnYhmIXh6jpd2xaLsewMUtheIArCuXtasQ>
 Received: from mistburn.au.ibm.com (bh02i525f01.au.ibm.com [202.81.18.30])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 05C728005C;
-        Wed, 31 Jul 2019 01:39:47 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 915FE80060;
+        Wed, 31 Jul 2019 01:39:52 -0400 (EDT)
 From:   Andrew Jeffery <andrew@aj.id.au>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Jeffery <andrew@aj.id.au>, davem@davemloft.net,
@@ -57,10 +58,12 @@ Cc:     Andrew Jeffery <andrew@aj.id.au>, davem@davemloft.net,
         andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 0/4] net: phy: Add AST2600 MDIO support
-Date:   Wed, 31 Jul 2019 15:09:55 +0930
-Message-Id: <20190731053959.16293-1-andrew@aj.id.au>
+Subject: [PATCH net-next v2 1/4] dt-bindings: net: Add aspeed,ast2600-mdio binding
+Date:   Wed, 31 Jul 2019 15:09:56 +0930
+Message-Id: <20190731053959.16293-2-andrew@aj.id.au>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190731053959.16293-1-andrew@aj.id.au>
+References: <20190731053959.16293-1-andrew@aj.id.au>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,35 +71,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The AST2600 splits out the MDIO bus controller from the MAC into its own
+IP block and rearranges the register layout. Add a new binding to
+describe the new hardware.
 
-v2 of the ASPEED MDIO series addresses comments from Rob on the devicetree
-bindings and Andrew on the driver itself.
+Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
 
-v1 of the series can be found here:
-
-http://patchwork.ozlabs.org/cover/1138140/
-
-Please review!
-
-Andrew
-
-Andrew Jeffery (4):
-  dt-bindings: net: Add aspeed,ast2600-mdio binding
-  net: phy: Add mdio-aspeed
-  net: ftgmac100: Add support for DT phy-handle property
-  net: ftgmac100: Select ASPEED MDIO driver for the AST2600
-
- .../bindings/net/aspeed,ast2600-mdio.yaml     |  45 +++++
- drivers/net/ethernet/faraday/Kconfig          |   1 +
- drivers/net/ethernet/faraday/ftgmac100.c      |  37 ++++-
- drivers/net/phy/Kconfig                       |  13 ++
- drivers/net/phy/Makefile                      |   1 +
- drivers/net/phy/mdio-aspeed.c                 | 157 ++++++++++++++++++
- 6 files changed, 250 insertions(+), 4 deletions(-)
+---
+v2:
+* aspeed: Utilise mdio.yaml
+* aspeed: Drop status from example
+---
+ .../bindings/net/aspeed,ast2600-mdio.yaml     | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
- create mode 100644 drivers/net/phy/mdio-aspeed.c
 
+diff --git a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
+new file mode 100644
+index 000000000000..71808e78a495
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/aspeed,ast2600-mdio.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED AST2600 MDIO Controller
++
++maintainers:
++  - Andrew Jeffery <andrew@aj.id.au>
++
++description: |+
++  The ASPEED AST2600 MDIO controller is the third iteration of ASPEED's MDIO
++  bus register interface, this time also separating out the controller from the
++  MAC.
++
++allOf:
++  - $ref: "mdio.yaml#"
++
++properties:
++  compatible:
++    const: aspeed,ast2600-mdio
++  reg:
++    maxItems: 1
++    description: The register range of the MDIO controller instance
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++
++examples:
++  - |
++    mdio0: mdio@1e650000 {
++            compatible = "aspeed,ast2600-mdio";
++            reg = <0x1e650000 0x8>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            ethphy0: ethernet-phy@0 {
++                    compatible = "ethernet-phy-ieee802.3-c22";
++                    reg = <0>;
++            };
++    };
 -- 
 2.20.1
 
