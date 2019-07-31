@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E787CD4E
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 605C87CD70
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 22:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729389AbfGaT6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 15:58:15 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34920 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728326AbfGaT6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 15:58:14 -0400
-Received: by mail-pg1-f196.google.com with SMTP id s1so26288426pgr.2
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 12:58:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5bjb4JCgRmc6cDqWEKZXjJBZg68tTw2wpBsWp1Ed+Ko=;
-        b=n8QF3B+TRFRoNtoeVT7fNLvdOQu0RiuQcEaMnOR3pFExgEVIYOch1KrCEM4ZjgJn/Z
-         ds0XtGl8Ayrc1bLpnUduM+kUkvq6rn049Onc9CBPFsPrgv0XowE+nOqy+k5p438jitI4
-         9jsDdSlvKMuxLIgxVOpqdRtVfokUbuaAzwwDuoVLCHxx6Z7vlVS5V5DKdefSLGs5fEM+
-         dWy7CAZdXBmefNHgQ0RcsB7Pz8eZkcxqOpTKTZe2ZtqmSQsr6Hqa3lxBgIPhf2FeIVRo
-         ASzjgYkaLz7JCGD3+67hWKISvtxIkEnZsregg0n/0PcETROXmu40oWa3a2d5/zNS9bL7
-         JuYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5bjb4JCgRmc6cDqWEKZXjJBZg68tTw2wpBsWp1Ed+Ko=;
-        b=qTGoZDyPOJZH1O/NbIjK17jPXrHnG8OvwQgEL/l+w8O951ONQ6aAbZNs5jgIIQLoY1
-         dOgk8H8EUphl6gxemkv43g4xwkqLzZPsEGv76a3FJS3zHuR/rkzQN756xGYuL9U8IvPR
-         bWpeNLKAEP9ruX37yfbIKoxzxFwX73BJidBvD/87LYIGj4/+9c0vP9sBJEzPBeCpgEeZ
-         rgMEcIGL5RRuAY8gTRxSQ5NjGW7nR9vrFCEC/QdrP7+M/TRG0dsqx7o2oOut9BiIbFMq
-         yV2Zjd75sjtn7NcqkdLIzMcBCvQv0YMhKN4dXZQ0EaAesMBI7cYhTCVTmBtGQ/873vDg
-         49oQ==
-X-Gm-Message-State: APjAAAX64zTorTE71gtuRkmbyUrhAIJrKcjsiPNbWYwCArt1m+Hq43cd
-        Pc3Yqx6AR+J0BuZA5JEGe3lL+DqA
-X-Google-Smtp-Source: APXvYqz9WfzpgULzxvNAw3Qoy+gXUKLalyxGfoCT06CyYIiOsvrHyBU9fs/XW9y8/OjXZzDu31kBBQ==
-X-Received: by 2002:a63:c03:: with SMTP id b3mr51943488pgl.23.1564603093414;
-        Wed, 31 Jul 2019 12:58:13 -0700 (PDT)
-Received: from [172.27.227.172] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id u16sm2567095pgm.83.2019.07.31.12.58.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 31 Jul 2019 12:58:12 -0700 (PDT)
-Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
-From:   David Ahern <dsahern@gmail.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-References: <20190730085734.31504-1-jiri@resnulli.us>
- <20190730085734.31504-2-jiri@resnulli.us>
- <20190730153952.73de7f00@cakuba.netronome.com>
- <20190731192627.GB2324@nanopsycho>
- <c4f83be2-adee-1595-f241-de4c26ea55ca@gmail.com>
- <20190731194502.GC2324@nanopsycho>
- <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
-Message-ID: <89dc6908-68b8-5b0d-0ef7-1eaf1e4e886b@gmail.com>
-Date:   Wed, 31 Jul 2019 13:58:10 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1730309AbfGaUAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 16:00:09 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:34817 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbfGaUAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 16:00:08 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1Mo6WJ-1ihbS32Skt-00pgri; Wed, 31 Jul 2019 21:59:24 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     soc@kernel.org, linux-arm-kernel@lists.infradead.org,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Guenter Roeck <linux@roeck-us.net>, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Subject: [PATCH 04/14] serial: lpc32xx_hs: allow compile-testing
+Date:   Wed, 31 Jul 2019 21:56:46 +0200
+Message-Id: <20190731195713.3150463-5-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+In-Reply-To: <20190731195713.3150463-1-arnd@arndb.de>
+References: <20190731195713.3150463-1-arnd@arndb.de>
 MIME-Version: 1.0
-In-Reply-To: <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:FgQXWHBg8JwiLqFUWJflxqSabbAP8JCw6bQWgIJ0su4bbGS+nRK
+ 0kUqcrfqJfWTc10p+TkInneDvk18LhtSmF5HyllYlbCgM6NIe2ax1LYFHpLJUPtftTqVfHY
+ LT8kDYequkxI5Lbi1wDejhDPoHyerdsb7xvK8eoFciT5n0YokYA8TO/pNPuR18xFg1KR67C
+ ohO68gbXz9QjaHkKemAWQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:9zXs2NceyDg=:N9NkeMAe628aOvT2TIb/xb
+ PWR1SJ+Jn/xnW7MzNM80nxT0HFhj0IH9hRJO7YpP3nO1nzkVmMIuBW8MfuEjzvna4yYuw/NrN
+ Xdgphu9Ry1EE8S2qqTWWjhUDz545qonpnL1oJEOm/Hr5xdROH7H2WeLZJpQCtnxVxQ8Wh5hqY
+ nU5h7ie3lhbyDKd1IWAhOejvlfNepdIKHF1pDyXuAnlgQUVMople/U1mBLmt0NoxdvF/6Mcer
+ 8tH++YghoErbfk2yDkMI2HYS3ZeTBZRbPO2ZX3iDLbDarWtrQvzDqEVMyG8Y6EUmP0b4qyFjN
+ PwLeOGDMs4lB0+cFHs97ILEblNeqmOzk14Ox/7D0BPmUuVaxPFJuCwl6Uh4bTDBi8TlEtcnsF
+ qKLNzlhsV4qv+KM3IKY+XI8kOnePo6K95sFf+QHEEqVuX8oAp63/X9aVVWFpNTIHW6Va2GEm5
+ rWdpIHl6eOJoB+r3wgOJizmqDyGRWK5+D7E47X3Bac211kWk2upDTiYsqftygCXSHNH6sKjd1
+ AQJoQbtKh20u9ADOyh9GW2ko1Az6jrllCmcnPqt1XDs9uHtH/ygJG0Gn7GWFngWKjOpGMOcj0
+ CGy7SaTzt3GuiyKDn9gHxUEXhOjsb4aCnEX5bWyLhHzocWJcLWujmLb48VzchIKZJgwZWu7lf
+ UkS5FB881G9+x8p0cLogi/HR4km/FxXNvseAnDybpGdJN33PMpOBWTcW0/y9Clg0W5ImRhw22
+ ktX8KghGubpyC+mg1c2YtkHDcs3NhemMbCnviw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/31/19 1:46 PM, David Ahern wrote:
-> On 7/31/19 1:45 PM, Jiri Pirko wrote:
->>> check. e.g., what happens if a resource controller has been configured
->>> for the devlink instance and it is moved to a namespace whose existing
->>> config exceeds those limits?
->>
->> It's moved with all the values. The whole instance is moved.
->>
-> 
-> The values are moved, but the FIB in a namespace could already contain
-> more routes than the devlink instance allows.
-> 
+The only thing that prevents building this driver on other
+platforms is the mach/hardware.h include, which is not actually
+used here at all, so remove the line and allow CONFIG_COMPILE_TEST.
 
-From a quick test your recent refactoring to netdevsim broke the
-resource controller. It was, and is intended to be, per network namespace.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/serial/Kconfig      | 3 ++-
+ drivers/tty/serial/lpc32xx_hs.c | 2 --
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 3083dbae35f7..518aac902e4b 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -739,7 +739,8 @@ config SERIAL_PNX8XXX_CONSOLE
+ 
+ config SERIAL_HS_LPC32XX
+ 	tristate "LPC32XX high speed serial port support"
+-	depends on ARCH_LPC32XX && OF
++	depends on ARCH_LPC32XX || COMPILE_TEST
++	depends on OF
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the LPC32XX high speed serial ports (up to 900kbps).
+diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
+index f4e27d0ad947..7f14cd8fac47 100644
+--- a/drivers/tty/serial/lpc32xx_hs.c
++++ b/drivers/tty/serial/lpc32xx_hs.c
+@@ -25,8 +25,6 @@
+ #include <linux/irq.h>
+ #include <linux/gpio.h>
+ #include <linux/of.h>
+-#include <mach/platform.h>
+-#include <mach/hardware.h>
+ 
+ /*
+  * High Speed UART register offsets
+-- 
+2.20.0
+
