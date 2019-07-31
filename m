@@ -2,77 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB957BBD2
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 10:38:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32897BC12
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 10:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727941AbfGaIiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 04:38:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:32910 "EHLO mx1.redhat.com"
+        id S1727349AbfGaIrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 04:47:03 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48758 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726168AbfGaIiB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 04:38:01 -0400
+        id S1725857AbfGaIrC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 04:47:02 -0400
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CD99FC007359;
-        Wed, 31 Jul 2019 08:38:00 +0000 (UTC)
-Received: from gondolin (dhcp-192-232.str.redhat.com [10.33.192.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 30EE16012E;
-        Wed, 31 Jul 2019 08:37:54 +0000 (UTC)
-Date:   Wed, 31 Jul 2019 10:37:51 +0200
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        devel@driverdev.osuosl.org, linux-input@vger.kernel.org,
-        kvm@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        virtualization@lists.linux-foundation.org,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        linux-mtd@lists.infradead.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, linux-fsdevel@vger.kernel.org,
-        ceph-devel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux1394-devel@lists.sourceforge.net,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 12/29] compat_ioctl: move drivers to compat_ptr_ioctl
-Message-ID: <20190731103751.3cc53132.cohuck@redhat.com>
-In-Reply-To: <20190730195227.742215-1-arnd@arndb.de>
-References: <20190730192552.4014288-1-arnd@arndb.de>
-        <20190730195227.742215-1-arnd@arndb.de>
-Organization: Red Hat GmbH
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by mx1.redhat.com (Postfix) with ESMTPS id BD25E30C1346;
+        Wed, 31 Jul 2019 08:47:02 +0000 (UTC)
+Received: from hp-dl380pg8-01.lab.eng.pek2.redhat.com (hp-dl380pg8-01.lab.eng.pek2.redhat.com [10.73.8.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A0E2600CC;
+        Wed, 31 Jul 2019 08:46:57 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, jgg@ziepe.ca
+Subject: [PATCH V2 0/9] Fixes for metadata accelreation
+Date:   Wed, 31 Jul 2019 04:46:46 -0400
+Message-Id: <20190731084655.7024-1-jasowang@redhat.com>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Wed, 31 Jul 2019 08:38:01 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 31 Jul 2019 08:47:02 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jul 2019 21:50:28 +0200
-Arnd Bergmann <arnd@arndb.de> wrote:
+Hi all:
 
-> Each of these drivers has a copy of the same trivial helper function to
-> convert the pointer argument and then call the native ioctl handler.
-> 
-> We now have a generic implementation of that, so use it.
-> 
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> Reviewed-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
-> Reviewed-by: Jiri Kosina <jkosina@suse.cz>
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
+This series try to fix several issues introduced by meta data
+accelreation series. Please review.
 
->  drivers/vfio/vfio.c               | 39 +++----------------------------
+Changes from V1:
 
-vfio changes:
+- Try not use RCU to syncrhonize MMU notifier with vhost worker
+- set dirty pages after no readers
+- return -EAGAIN only when we find the range is overlapped with
+  metadata
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Jason Wang (9):
+  vhost: don't set uaddr for invalid address
+  vhost: validate MMU notifier registration
+  vhost: fix vhost map leak
+  vhost: reset invalidate_count in vhost_set_vring_num_addr()
+  vhost: mark dirty pages during map uninit
+  vhost: don't do synchronize_rcu() in vhost_uninit_vq_maps()
+  vhost: do not use RCU to synchronize MMU notifier with worker
+  vhost: correctly set dirty pages in MMU notifiers callback
+  vhost: do not return -EAGIAN for non blocking invalidation too early
+
+ drivers/vhost/vhost.c | 232 +++++++++++++++++++++++++++---------------
+ drivers/vhost/vhost.h |   8 +-
+ 2 files changed, 154 insertions(+), 86 deletions(-)
+
+-- 
+2.18.1
+
