@@ -2,113 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1AC97CC60
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:58:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2AF7CC6B
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729742AbfGaS6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 14:58:33 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42762 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbfGaS6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:58:32 -0400
-Received: by mail-lf1-f68.google.com with SMTP id s19so48213216lfb.9;
-        Wed, 31 Jul 2019 11:58:30 -0700 (PDT)
+        id S1730683AbfGaTDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 15:03:13 -0400
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:36137 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729857AbfGaTDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 15:03:13 -0400
+Received: by mail-ua1-f68.google.com with SMTP id v20so27403285uao.3
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 12:03:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dfwzkRB1EXz9VJ9dIrQ8xrDksaj8jIaBGeToAqjBxZk=;
-        b=pzLaZSqD+v/3JZCkSsk26AW9Eo6y04oP3JAgPhEImxaH9ddeYCWVvB8eE6kmMjRI4d
-         rt4DHIZa2LTcO2qPndNHSZAro2OhrMCdzmtPEK31DeOSt5fIwBfaagONkrDkPNzNWm0X
-         FAtWHZ7xW728jw5/yPivXHvK5zD0DGH8EcceObQX16TopnjWoONXiYxTYxwYLy5d6ksa
-         hJ2RX8Xp/YkcGwbbesTaUJd4lP/xgmxynw9hxATOBhfhZDkYWNnjsnX1pcx1kbl+lR0J
-         xI+0wdN0jW31N0gb918hny0FGKON0xDN90qzGd49fef5J2qL/OdsiyB1Wp9+Ivy3NLQ8
-         eYhg==
+        d=lca.pw; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=J5/+IUoPptMz/YeYl61+AP3g0++j4c3MOC/Y5yEL2qE=;
+        b=HATQcLFPHZEzIoIUXwWPccuYHMZ+4nnFAzajfaPcfN3EwltBjedf8FD0RE8hmYFRx7
+         4RGOTw6JRUJ5Mntnm6Ze+biSI6fsEgWFeqc6SDP0j0x6NYKDUyZRfFR4M96N3rG5k9DT
+         CfCXnfwNC8vEsHbYhyL+ArGfhqYOct/UYpZ7B68hSo99HGyW6s/0pSTf72e90DB0EIye
+         7xBUW681oTpYSdaUj0WP13i6xRzsmtwGcGa108EiAPvIcThJXXF0+Vlm5v317dHnFTTY
+         zrHO1D8r8g9hz+xjDiVoBECYGmdREzVqWjuAI80aqnsg9bzo3tBqd1Pz/1lp1shFI1Di
+         Y+4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dfwzkRB1EXz9VJ9dIrQ8xrDksaj8jIaBGeToAqjBxZk=;
-        b=rB+OfkQXxo3EQtJKPKbtvhCt/QiuoYY6q9q2/InI5+24ptVVv3oQknuOoapHGRFBmX
-         mJySKLvcStxY2EKHoieL42dhLsbcjSIvUJHi5EyNWcS4heMohzGdNND+OjuXGDK+Ew4z
-         X57QnLbvTBjSDel2msX+trogPFoNBQK7I7wuw5JwxKIfRWCpkfnXBccP529OGwlqK6Xw
-         Xbv6RDOZgMqUnsF7IUfz8EQUgOgM3ccF5z8R8xERe8rgt8M6KXnnWBJHDP2XgOjYXqPW
-         2Nqftpi7KrUKTXHXB3qSyXLLVnz8pJ1r5Q/CDqt2ieAmYmK6m0yD1xSKNFRzkBSTYfuL
-         j+iA==
-X-Gm-Message-State: APjAAAXX3cfxGQYmm2fhOeAFfY1PzfLvgCnxExYPA/PobJ6yr5Urnfmf
-        XrBe3p2uiFPNB/KrciZ+xGk8flr6VtH4/ELucNI=
-X-Google-Smtp-Source: APXvYqyFQ94uSoTGnAuzPo6MIkxbHzT0H4KE5R2Xg4xbuewViQmMLg86l+y4c8ByxzzHkTp9v1x+8LRm7BJJaEoAHVg=
-X-Received: by 2002:ac2:4351:: with SMTP id o17mr38095219lfl.100.1564599510043;
- Wed, 31 Jul 2019 11:58:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190721213116.23476-1-mic@digikod.net> <20190721213116.23476-7-mic@digikod.net>
- <20190727014048.3czy3n2hi6hfdy3m@ast-mbp.dhcp.thefacebook.com> <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
-In-Reply-To: <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 31 Jul 2019 11:58:18 -0700
-Message-ID: <CAADnVQLqkfVijWoOM29PxCL_yK6K0fr8B89r4c5EKgddevJhGQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v10 06/10] bpf,landlock: Add a new map type: inode
-To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mickael.salaun@ssi.gouv.fr>
-Cc:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=J5/+IUoPptMz/YeYl61+AP3g0++j4c3MOC/Y5yEL2qE=;
+        b=cZaAZHWFSBVlr5eV226YT/l41QwQjvDYon7MeaI8IDlsE2SCPwoI/Dr8RfySoA6+XZ
+         4/iXlalzSVGoA7vD5s/M5Enb1Ag95aOzz8fNVfe/DcoJKwqP5Uf/DW2E62/xMtaAVrVO
+         BFcHXgjPoWOOBCobxTsPuqrWACw6WqO4hMSb1aZlle+GAxagiikH5N4qt7DOh44CObnO
+         w8uh0TuSMAcs8sGimA7IGbZ4oqFQYOZb7hvaRgTrebvX1ZW4HKRZpjDYe+Pumtv4qzXq
+         YTUqduVsGbkBFDL/vVDWKW7aSDgFRtGCNDD93GQ/sxxmJMFm/cxIoYVW3wCDX4UCkPXa
+         Gs6w==
+X-Gm-Message-State: APjAAAX/04H68SDr5Ydhai8FmYr5preJkYl4tNunSwAMKfgRmCc9rl9L
+        7sKIWJOpkWlMBDmSGgaNCVOrPA==
+X-Google-Smtp-Source: APXvYqxLrPoBT6tozNTlLxfWSGNpbXIDJEQxqIF21mwBqXnn9Ziv/BwZfVt42oSoyl9MpzGphibvWg==
+X-Received: by 2002:ab0:3007:: with SMTP id f7mr30759872ual.12.1564599791912;
+        Wed, 31 Jul 2019 12:03:11 -0700 (PDT)
+Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id n187sm69530779vkd.9.2019.07.31.12.03.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 Jul 2019 12:03:11 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     davem@davemloft.net
+Cc:     saeedm@mellanox.com, tariqt@mellanox.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
+Subject: [PATCH] net/mlx5e: always initialize frag->last_in_page
+Date:   Wed, 31 Jul 2019 15:02:53 -0400
+Message-Id: <1564599773-9474-1-git-send-email-cai@lca.pw>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 11:46 AM Micka=C3=ABl Sala=C3=BCn
-<mickael.salaun@ssi.gouv.fr> wrote:
-> >> +    for (i =3D 0; i < htab->n_buckets; i++) {
-> >> +            head =3D select_bucket(htab, i);
-> >> +            hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
-> >> +                    landlock_inode_remove_map(*((struct inode **)l->k=
-ey), map);
-> >> +            }
-> >> +    }
-> >> +    htab_map_free(map);
-> >> +}
-> >
-> > user space can delete the map.
-> > that will trigger inode_htab_map_free() which will call
-> > landlock_inode_remove_map().
-> > which will simply itereate the list and delete from the list.
->
-> landlock_inode_remove_map() removes the reference to the map (being
-> freed) from the inode (with an RCU lock).
+The commit 069d11465a80 ("net/mlx5e: RX, Enhance legacy Receive Queue
+memory scheme") introduced an undefined behaviour below due to
+"frag->last_in_page" is only initialized in
+mlx5e_init_frags_partition() when,
 
-I'm going to ignore everything else for now and focus only on this bit,
-since it's fundamental issue to address before this discussion can
-go any further.
-rcu_lock is not a spin_lock. I'm pretty sure you know this.
-But you're arguing that it's somehow protecting from the race
-I mentioned above?
+if (next_frag.offset + frag_info[f].frag_stride > PAGE_SIZE)
+
+or after bailed out the loop,
+
+for (i = 0; i < mlx5_wq_cyc_get_size(&rq->wqe.wq); i++)
+
+As the result, there could be some "frag" have uninitialized
+value of "last_in_page".
+
+Later, get_frag() obtains those "frag" and check "rag->last_in_page" in
+mlx5e_put_rx_frag() and triggers the error during boot. Fix it by always
+initializing "frag->last_in_page" to "false" in
+mlx5e_init_frags_partition().
+
+UBSAN: Undefined behaviour in
+drivers/net/ethernet/mellanox/mlx5/core/en_rx.c:325:12
+load of value 170 is not a valid value for type 'bool' (aka '_Bool')
+Call trace:
+ dump_backtrace+0x0/0x264
+ show_stack+0x20/0x2c
+ dump_stack+0xb0/0x104
+ __ubsan_handle_load_invalid_value+0x104/0x128
+ mlx5e_handle_rx_cqe+0x8e8/0x12cc [mlx5_core]
+ mlx5e_poll_rx_cq+0xca8/0x1a94 [mlx5_core]
+ mlx5e_napi_poll+0x17c/0xa30 [mlx5_core]
+ net_rx_action+0x248/0x940
+ __do_softirq+0x350/0x7b8
+ irq_exit+0x200/0x26c
+ __handle_domain_irq+0xc8/0x128
+ gic_handle_irq+0x138/0x228
+ el1_irq+0xb8/0x140
+ arch_cpu_idle+0x1a4/0x348
+ do_idle+0x114/0x1b0
+ cpu_startup_entry+0x24/0x28
+ rest_init+0x1ac/0x1dc
+ arch_call_rest_init+0x10/0x18
+ start_kernel+0x4d4/0x57c
+
+Fixes: 069d11465a80 ("net/mlx5e: RX, Enhance legacy Receive Queue memory scheme")
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 47eea6b3a1c3..96f5110a9b43 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -336,6 +336,7 @@ static void mlx5e_init_frags_partition(struct mlx5e_rq *rq)
+ 
+ 	next_frag.di = &rq->wqe.di[0];
+ 	next_frag.offset = 0;
++	next_frag.last_in_page = false;
+ 	prev = NULL;
+ 
+ 	for (i = 0; i < mlx5_wq_cyc_get_size(&rq->wqe.wq); i++) {
+-- 
+1.8.3.1
+
