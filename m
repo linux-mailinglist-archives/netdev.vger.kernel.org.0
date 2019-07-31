@@ -2,145 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0CE47CB9D
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C707CBDB
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:24:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728380AbfGaSMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 14:12:30 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:38974 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727723AbfGaSM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:12:29 -0400
-Received: by mail-qk1-f193.google.com with SMTP id w190so49923383qkc.6
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 11:12:29 -0700 (PDT)
+        id S1729561AbfGaSXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 14:23:52 -0400
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:34317 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726469AbfGaSXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:23:52 -0400
+Received: by mail-yb1-f193.google.com with SMTP id q5so12623421ybp.1
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 11:23:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=opJCMVmYYyfdmu8hXBlLsOgXE8xalFUlA5qwyk0wKXs=;
-        b=ZtOMUJ2d0H6KovWa3Loui4/Djr/QwatTIG10qFNBeB5sX7Ic4yvetRuUmlnO9CZYQh
-         n64EckavLOdbQY4mRJ3a4KDLlRR6PS28ndlT3HmPVN32QNkMtkDkF1jlCREF8epxgDBP
-         Oa/Bn+bcmLp3Vk+ai1/cAbfyQBDRlBjNLZJCGyfw6esVX/EhPH5IKDAMtRGiw4/NZjyW
-         AwbvykoKZy61vqPdTnsHgFlrla1cgeVcWGglIQAdCcBSnMD+mXLyZagHyYFaEQoNwZkS
-         M5YCw1MGcxxdHpvwN36D+ruzlbRLfdz/6caTTq7fn7h9WUekXXGCjQZMBzGwlHNGyRR1
-         +guA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8di294UA/9UkIQ1KpvqgEL5wdc0IuRXwzoXUWwxH6dA=;
+        b=Io+mGAXR0SAFZNohmg1/dv90LkR+0Q2HUOAkgJCv3Idaub8NR0hHAn93Ugq0Lj4mm1
+         VQyHWTssqw4b5yxYO9Bkg3LZ3OjSf5XK7Es29AKDyYpjgfQ9Ei9xcohpORQJts6w14tt
+         n4dBMo31MvvWWqfp1fCcyqhfiQCjaZZhIOQjjBe1S1tGtj1vqvuBk1E9n1JbZGLZ0aXd
+         jVSDcN9fPvHUyBTY7bFmil8AEUA9Mvxrgu1/1lSdIzE77ksnxgTh+YEY2mDE5NhJCy1w
+         ZMURUSx7Ys6K9kkpsYqxjU7Q6MjEqfB+WuICCTM4BeBmaUDqi/lFD0aaw+yxf7pxKpYO
+         iKWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=opJCMVmYYyfdmu8hXBlLsOgXE8xalFUlA5qwyk0wKXs=;
-        b=MJZp8HZXfyZqHJaxJCZ6ss1wU0LMpKVbJq/iwLsBa+rR4vb1CX70kL5auCeDXbUQA3
-         A1B1u4L0p+b8dHSCTxdoFpfxPfxvBeY8T7kbfN1EXQPjQc1fYcrfqDtHcs1w38a3gYdV
-         pxlfJCw7VL3lLyQdnbNlbkhxRqMUnS1y05ZiXVmZdUXrlqYeF/2BcOjUGzlm3QJugp94
-         vHQX9+CgDE3+SfyT11trQtcNg22ZLGSX/D8XaXbKZ6ePNybcjoKdLkVG+6gtPucdvK25
-         A1ZX/5fQ59m9AxEyfb5sIHofichI5ukkLKJHKOElVkMjEuTA9hwUGWKUc1CJjOiS0qGk
-         A1hA==
-X-Gm-Message-State: APjAAAXsADcbGKM7iqDWPOWY1jCTFyBXk2Ber0nzdh66QgzUtgaEzqdo
-        XIz5nvh9B7g31itev2z2mCoMWKzINzM=
-X-Google-Smtp-Source: APXvYqzrVIw6puIILKmLnKGO55KT1z+s04RjDgYtKwV+ookB9I9DC73bBxb/2XAqZx637dJ0RUx48w==
-X-Received: by 2002:a37:bd7:: with SMTP id 206mr82384485qkl.440.1564596748722;
-        Wed, 31 Jul 2019 11:12:28 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 39sm37897544qts.41.2019.07.31.11.12.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 11:12:28 -0700 (PDT)
-Date:   Wed, 31 Jul 2019 11:12:13 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com, Eric Dumazet <edumazet@google.com>,
-        borisp@mellanox.com, aviadye@mellanox.com, davejwatson@fb.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Subject: Re: [oss-drivers] Re: [PATCH net-next] net/tls: prevent
- skb_orphan() from leaking TLS plain text with offload
-Message-ID: <20190731111213.35237adc@cakuba.netronome.com>
-In-Reply-To: <CA+FuTSdN41z5PVfyT5Z-ApnKQ9CYcDSnr4VGZnsgA-iAEK12Ow@mail.gmail.com>
-References: <20190730211258.13748-1-jakub.kicinski@netronome.com>
-        <CA+FuTSdN41z5PVfyT5Z-ApnKQ9CYcDSnr4VGZnsgA-iAEK12Ow@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8di294UA/9UkIQ1KpvqgEL5wdc0IuRXwzoXUWwxH6dA=;
+        b=MC8P2lR6FjcS+bZI6iqPFPwtWHqu+gMXQs919PhsUrpDHStmv0YFMomzgcPxeciYTC
+         UymzKbZaUAbe6tppWGVlfyOfoY52JHanBCc76YQVyqqoKKreDeK/o0n4XFhULhdFkeqV
+         5Vd1pcnevLoN+90afZCPdgJg5FygF6ICjT98B11bUf+tzBTuVtjIbifOkgQvhpiZTC47
+         YVzwemiBsUOrw7hlz8AfxfZ0hTxD69ijAN7ZgNzf4CeO2jqwK5eAMrgDpZYIN/SzQq3c
+         zkzfxeKyTR+Lam2sJboM0DDVG6r5OFgJrEXoz5zrFx9Lyd8CZ5Dz5QL2LEHrWIGIRWRN
+         X+LA==
+X-Gm-Message-State: APjAAAVP13VGo6puM1NdH26+YsjDy1K5y9CdnifA+L+0opmAKBQ91qW2
+        My7v0WaW/LSkhHkb4Z333KBvU4BkdEMagGGunA==
+X-Google-Smtp-Source: APXvYqy+IRSysyNmoXVjFNsI5rafbimN/SjLsY/ouDcD4kMgk41E8gpJalMIsnMRwjkbck/goE3c9NkC9BpmN0vaT6E=
+X-Received: by 2002:a25:d38c:: with SMTP id e134mr31944373ybf.349.1564597431520;
+ Wed, 31 Jul 2019 11:23:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190730184821.10833-1-danieltimlee@gmail.com>
+ <20190730184821.10833-2-danieltimlee@gmail.com> <20190731120805.1091d5c9@carbon>
+In-Reply-To: <20190731120805.1091d5c9@carbon>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Thu, 1 Aug 2019 03:23:40 +0900
+Message-ID: <CAEKGpziq3fGWHxibHSkM48sR=6A-_oBJkiy3kKRQq4m-6s-2Mg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] tools: bpftool: add net load command to load XDP on interface
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 31 Jul 2019 11:57:10 -0400, Willem de Bruijn wrote:
-> On Tue, Jul 30, 2019 at 5:13 PM Jakub Kicinski wrote:
-> > sk_validate_xmit_skb() and drivers depend on the sk member of
-> > struct sk_buff to identify segments requiring encryption.
-> > Any operation which removes or does not preserve the original TLS
-> > socket such as skb_orphan() or skb_clone() will cause clear text
-> > leaks.
-> >
-> > Make the TCP socket underlying an offloaded TLS connection
-> > mark all skbs as decrypted, if TLS TX is in offload mode.
-> > Then in sk_validate_xmit_skb() catch skbs which have no socket
-> > (or a socket with no validation) and decrypted flag set.
-> >
-> > Note that CONFIG_SOCK_VALIDATE_XMIT, CONFIG_TLS_DEVICE and
-> > sk->sk_validate_xmit_skb are slightly interchangeable right now,
-> > they all imply TLS offload. The new checks are guarded by
-> > CONFIG_TLS_DEVICE because that's the option guarding the
-> > sk_buff->decrypted member.
-> >
-> > Second, smaller issue with orphaning is that it breaks
-> > the guarantee that packets will be delivered to device
-> > queues in-order. All TLS offload drivers depend on that
-> > scheduling property. This means skb_orphan_partial()'s
-> > trick of preserving partial socket references will cause
-> > issues in the drivers. We need a full orphan, and as a
-> > result netem delay/throttling will cause all TLS offload
-> > skbs to be dropped.
-> >
-> > Reusing the sk_buff->decrypted flag also protects from
-> > leaking clear text when incoming, decrypted skb is redirected
-> > (e.g. by TC).
-> >
-> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+On Wed, Jul 31, 2019 at 7:08 PM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> On Wed, 31 Jul 2019 03:48:20 +0900
+> "Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+>
+> > By this commit, using `bpftool net load`, user can load XDP prog on
+> > interface. New type of enum 'net_load_type' has been made, as stated at
+> > cover-letter, the meaning of 'load' is, prog will be loaded on interface.
+>
+> Why the keyword "load" ?
+> Why not "attach" (and "detach")?
+>
+> For BPF there is a clear distinction between the "load" and "attach"
+> steps.  I know this is under subcommand "net", but to follow the
+> conversion of other subcommands e.g. "prog" there are both "load" and
+> "attach" commands.
+>
+>
+> > BPF prog will be loaded through libbpf 'bpf_set_link_xdp_fd'.
+>
+> Again this is a "set" operation, not a "load" operation.
 
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index d57b0cc995a0..b0c10b518e65 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -1992,6 +1992,22 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
-> >  }
-> >  EXPORT_SYMBOL(skb_set_owner_w);
+From earlier at cover-letter, I thought using the same word 'load' might give
+confusion since XDP program is not considered as 'bpf_attach_type' and can't
+be attached with 'BPF_PROG_ATTACH'.
+
+But, according to the feedback from you and Andrii Nakryiko, replacing
+the word 'load' as 'attach' would be more clear and more consistent.
+
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+>
+> [...]
+> >  static int do_show(int argc, char **argv)
+> >  {
+> >       struct bpf_attach_info attach_info = {};
+> > @@ -305,13 +405,17 @@ static int do_help(int argc, char **argv)
 > >
-> > +static bool can_skb_orphan_partial(const struct sk_buff *skb)
-> > +{
-> > +#ifdef CONFIG_TLS_DEVICE
-> > +       /* Drivers depend on in-order delivery for crypto offload,
-> > +        * partial orphan breaks out-of-order-OK logic.
-> > +        */
-> > +       if (skb->decrypted)
-> > +               return false;
-> > +#endif
-> > +#ifdef CONFIG_INET
-> > +       if (skb->destructor == tcp_wfree)
-> > +               return true;
-> > +#endif
-> > +       return skb->destructor == sock_wfree;
-> > +}
-> > +  
-> 
-> Just insert the skb->decrypted check into skb_orphan_partial for less
-> code churn?
+> >       fprintf(stderr,
+> >               "Usage: %s %s { show | list } [dev <devname>]\n"
+> > +             "       %s %s load PROG LOAD_TYPE <devname>\n"
+>
+> The "PROG" here does it correspond to the 'bpftool prog' syntax?:
+>
+>  PROG := { id PROG_ID | pinned FILE | tag PROG_TAG }
+>
 
-Okie.. skb_orphan_partial() is a little ugly but will do.
+Yes. By using the same 'prog_parse_fd' from 'bpftool prog',
+user can 'attach' XDP prog with id, pinned file or tag.
 
-> I also think that this is an independent concern from leaking plain
-> text, so perhaps could be a separate patch.
+> >               "       %s %s help\n"
+> > +             "\n"
+> > +             "       " HELP_SPEC_PROGRAM "\n"
+> > +             "       LOAD_TYPE := { xdp | xdpgeneric | xdpdrv | xdpoffload }\n"
+> >               "Note: Only xdp and tc attachments are supported now.\n"
+> >               "      For progs attached to cgroups, use \"bpftool cgroup\"\n"
+> >               "      to dump program attachments. For program types\n"
+> >               "      sk_{filter,skb,msg,reuseport} and lwt/seg6, please\n"
+> >               "      consult iproute2.\n",
+>
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
 
-Do you mean the out-of-order stuff is a separate concern?
+And about the enum 'NET_LOAD_TYPE_XDP_DRIVE',
+'DRIVER' looks more clear to understand.
 
-It is, I had them separate at the first try, but GSO code looks at
-the destructor and IIRC only copies the socket if its still tcp_wfree.
-If we let partial orphan be we have to do temporary hairy stuff in
-tcp_gso_segment(). It's easier to just deal with partial orphan here.
+Will change to it right away.
+
+Thanks for the review.
