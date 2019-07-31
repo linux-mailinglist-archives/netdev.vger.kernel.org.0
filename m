@@ -2,77 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6B27C016
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 13:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A6C7C01F
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 13:37:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726862AbfGaLf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 07:35:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41834 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726909AbfGaLfZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 07:35:25 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 94AC6206A2;
-        Wed, 31 Jul 2019 11:35:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564572925;
-        bh=lux5DZPmxvBAoBQ0d6YhXntq6x2LZoKUchiyEmnGTQU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uSDRohHUPNOb+f9HhmfWB7Bwg39eYk3Ch35FM+/DZX7rsQrZdVBAbpyT/V0mHW13o
-         g5/k/OZykPTdPtj7gpE3FSjHOF+HBureoFs2AfJX5Ve0Z670jDfLMx/3UXeJb53WkY
-         3tIzRdwkZF1PkkJOb5wldYBGN5oosfezOYi0A6HY=
-Date:   Wed, 31 Jul 2019 13:35:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel-build-reports@lists.linaro.org
-Subject: Re: next/master build: 221 builds: 11 failed, 210 passed, 13 errors,
- 1174 warnings (next-20190731)
-Message-ID: <20190731113522.GA3426@kroah.com>
-References: <5d41767d.1c69fb81.d6304.4c8c@mx.google.com>
- <20190731112441.GB4369@sirena.org.uk>
+        id S1726787AbfGaLgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 07:36:39 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:39047 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725921AbfGaLgj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 07:36:39 -0400
+Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hsmuG-0001kn-7d; Wed, 31 Jul 2019 07:36:34 -0400
+Date:   Wed, 31 Jul 2019 07:36:04 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net] drop_monitor: Add missing uAPI file to MAINTAINERS
+ file
+Message-ID: <20190731113604.GC9823@hmswarspite.think-freely.org>
+References: <20190731063819.10001-1-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190731112441.GB4369@sirena.org.uk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190731063819.10001-1-idosch@idosch.org>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 12:24:41PM +0100, Mark Brown wrote:
-> On Wed, Jul 31, 2019 at 04:07:41AM -0700, kernelci.org bot wrote:
+On Wed, Jul 31, 2019 at 09:38:19AM +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> Today's -next fails to build an ARM allmodconfig due to:
+> Fixes: 6e43650cee64 ("add maintainer for network drop monitor kernel service")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> > allmodconfig (arm, gcc-8) — FAIL, 1 error, 40 warnings, 0 section mismatches
-> > 
-> > Errors:
-> >     drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of function 'writeq'; did you mean 'writel'? [-Werror=implicit-function-declaration]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 9f5b8bd4faf9..b540794cbd91 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11137,6 +11137,7 @@ L:	netdev@vger.kernel.org
+>  S:	Maintained
+>  W:	https://fedorahosted.org/dropwatch/
+>  F:	net/core/drop_monitor.c
+> +F:	include/uapi/linux/net_dropmon.h
+>  
+>  NETWORKING DRIVERS
+>  M:	"David S. Miller" <davem@davemloft.net>
+> -- 
+> 2.21.0
 > 
-> as a result of the changes that introduced:
 > 
-> WARNING: unmet direct dependencies detected for MDIO_OCTEON
->   Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=m] && MDIO_BUS [=m] && 64BIT && HAS_IOMEM [=y] && OF_MDIO [=m]
->   Selected by [m]:
->   - OCTEON_ETHERNET [=m] && STAGING [=y] && (CAVIUM_OCTEON_SOC && NETDEVICES [=y] || COMPILE_TEST [=y])
-> 
-> which is triggered by the staging OCTEON_ETHERNET driver which misses a
-> 64BIT dependency but added COMPILE_TEST in 171a9bae68c72f2
-> (staging/octeon: Allow test build on !MIPS).
+Acked-by: Neil Horman <nhorman@tuxdriver.com>
 
-A patch was posted for this, but it needs to go through the netdev tree
-as that's where the offending patches are coming from.
-
-thanks,
-
-greg k-h
