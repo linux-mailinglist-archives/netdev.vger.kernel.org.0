@@ -2,137 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 353D67CC4B
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1AC97CC60
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 20:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729643AbfGaSvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 14:51:08 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55337 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726960AbfGaSvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:51:07 -0400
-Received: by mail-wm1-f66.google.com with SMTP id a15so61905703wmj.5;
-        Wed, 31 Jul 2019 11:51:05 -0700 (PDT)
+        id S1729742AbfGaS6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 14:58:33 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:42762 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbfGaS6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 14:58:32 -0400
+Received: by mail-lf1-f68.google.com with SMTP id s19so48213216lfb.9;
+        Wed, 31 Jul 2019 11:58:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TIq//3WBvHqO99YVQvLeZ50v6iDly2l9GsQRTcXr4CU=;
-        b=CyPRLG609W1sq1ut05WWPgwwnrpx5iSeNBPqSvSTfJC3S3DV3HR/nGphe0hFxcmafO
-         q6PF7zrIUDkRNJe4QUG4g6zy4YP4AVJN5XfzOvrw7m30iD1SCzYLLgqtwYa9e58hWNft
-         CDtLXu8HdzDldZDDzg/o9ph644TnThNpEFgKKbQMmAj8pJDFhGVRO2XLbW3MBjZSIMsi
-         8Szyv/SfbREdsF2ljJZlhhukLPfRhBWHhfmww+A5teEhiJoKdtpPVOilfeEjyiw0jbuT
-         A6v2yhigJjWZiRXEF74HPMG8D67KaG/i7srTfs8yiT7x6pvNF5I+zqD0PeFySEexWQpl
-         g5FA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dfwzkRB1EXz9VJ9dIrQ8xrDksaj8jIaBGeToAqjBxZk=;
+        b=pzLaZSqD+v/3JZCkSsk26AW9Eo6y04oP3JAgPhEImxaH9ddeYCWVvB8eE6kmMjRI4d
+         rt4DHIZa2LTcO2qPndNHSZAro2OhrMCdzmtPEK31DeOSt5fIwBfaagONkrDkPNzNWm0X
+         FAtWHZ7xW728jw5/yPivXHvK5zD0DGH8EcceObQX16TopnjWoONXiYxTYxwYLy5d6ksa
+         hJ2RX8Xp/YkcGwbbesTaUJd4lP/xgmxynw9hxATOBhfhZDkYWNnjsnX1pcx1kbl+lR0J
+         xI+0wdN0jW31N0gb918hny0FGKON0xDN90qzGd49fef5J2qL/OdsiyB1Wp9+Ivy3NLQ8
+         eYhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TIq//3WBvHqO99YVQvLeZ50v6iDly2l9GsQRTcXr4CU=;
-        b=Ksat5yvpTJQQVKMKs9S/eyIy7WbtfuA4/wVJWRY2bCrAKIBe7anjoY9b33vlv2WUz2
-         MtsMgkmkQGPD+vwXwxl2+2QtKEWP7ZwlGujlZtdzaRcHWOXhrwq+JbBtoM0oPOgJaY8c
-         gLeA6LmKajk1Fi570zkJ1oSMzoRUZVxfbKuR9BVT2rU8K/LFKUiSqNDgFlUzhu+F5X59
-         KbV8gNcablxdgvl6htjlXqyPd6Qv1yczu01Op/PRS4jJPpli1dmo8YXnDmnNK+rldABM
-         4kqCavDxqCycR2vHefkZveNx+hW83KqgNGuMNDVRZt2GKNAcdlRuA/kAtKDC52jCpp1P
-         Hk0Q==
-X-Gm-Message-State: APjAAAX2xlDA+U7V5Knq4mn3tuYBA067olRxPge8neLGB78HZ5xTNRPH
-        zKTbnQzrU3VWyT00y9urS4o=
-X-Google-Smtp-Source: APXvYqwT3vvKCphGwPAkg3s6juYAFATCs84O8st2n9NhxyeSzVKnAtJ+JFmzCZMNEF2070f4dGarbQ==
-X-Received: by 2002:a1c:cb0a:: with SMTP id b10mr110648132wmg.41.1564599065059;
-        Wed, 31 Jul 2019 11:51:05 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:4f8:222:2f1b::2])
-        by smtp.gmail.com with ESMTPSA id o20sm174722993wrh.8.2019.07.31.11.51.03
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 11:51:04 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     davem@davemloft.net
-Cc:     andrew@lunn.ch, broonie@kernel.org, devel@driverdev.osuosl.org,
-        f.fainelli@gmail.com, gregkh@linuxfoundation.org,
-        hkallweit1@gmail.com, kernel-build-reports@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-next@vger.kernel.org,
-        natechancellor@gmail.com, netdev@vger.kernel.org,
-        willy@infradead.org, kbuild test robot <lkp@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] net: mdio-octeon: Fix build error and Kconfig warning
-Date:   Wed, 31 Jul 2019 11:50:24 -0700
-Message-Id: <20190731185023.20954-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190731.094150.851749535529247096.davem@davemloft.net>
-References: <20190731.094150.851749535529247096.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dfwzkRB1EXz9VJ9dIrQ8xrDksaj8jIaBGeToAqjBxZk=;
+        b=rB+OfkQXxo3EQtJKPKbtvhCt/QiuoYY6q9q2/InI5+24ptVVv3oQknuOoapHGRFBmX
+         mJySKLvcStxY2EKHoieL42dhLsbcjSIvUJHi5EyNWcS4heMohzGdNND+OjuXGDK+Ew4z
+         X57QnLbvTBjSDel2msX+trogPFoNBQK7I7wuw5JwxKIfRWCpkfnXBccP529OGwlqK6Xw
+         Xbv6RDOZgMqUnsF7IUfz8EQUgOgM3ccF5z8R8xERe8rgt8M6KXnnWBJHDP2XgOjYXqPW
+         2Nqftpi7KrUKTXHXB3qSyXLLVnz8pJ1r5Q/CDqt2ieAmYmK6m0yD1xSKNFRzkBSTYfuL
+         j+iA==
+X-Gm-Message-State: APjAAAXX3cfxGQYmm2fhOeAFfY1PzfLvgCnxExYPA/PobJ6yr5Urnfmf
+        XrBe3p2uiFPNB/KrciZ+xGk8flr6VtH4/ELucNI=
+X-Google-Smtp-Source: APXvYqyFQ94uSoTGnAuzPo6MIkxbHzT0H4KE5R2Xg4xbuewViQmMLg86l+y4c8ByxzzHkTp9v1x+8LRm7BJJaEoAHVg=
+X-Received: by 2002:ac2:4351:: with SMTP id o17mr38095219lfl.100.1564599510043;
+ Wed, 31 Jul 2019 11:58:30 -0700 (PDT)
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+References: <20190721213116.23476-1-mic@digikod.net> <20190721213116.23476-7-mic@digikod.net>
+ <20190727014048.3czy3n2hi6hfdy3m@ast-mbp.dhcp.thefacebook.com> <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
+In-Reply-To: <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 31 Jul 2019 11:58:18 -0700
+Message-ID: <CAADnVQLqkfVijWoOM29PxCL_yK6K0fr8B89r4c5EKgddevJhGQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v10 06/10] bpf,landlock: Add a new map type: inode
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mickael.salaun@ssi.gouv.fr>
+Cc:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        Linux API <linux-api@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-arm allyesconfig warns:
+On Wed, Jul 31, 2019 at 11:46 AM Micka=C3=ABl Sala=C3=BCn
+<mickael.salaun@ssi.gouv.fr> wrote:
+> >> +    for (i =3D 0; i < htab->n_buckets; i++) {
+> >> +            head =3D select_bucket(htab, i);
+> >> +            hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
+> >> +                    landlock_inode_remove_map(*((struct inode **)l->k=
+ey), map);
+> >> +            }
+> >> +    }
+> >> +    htab_map_free(map);
+> >> +}
+> >
+> > user space can delete the map.
+> > that will trigger inode_htab_map_free() which will call
+> > landlock_inode_remove_map().
+> > which will simply itereate the list and delete from the list.
+>
+> landlock_inode_remove_map() removes the reference to the map (being
+> freed) from the inode (with an RCU lock).
 
-WARNING: unmet direct dependencies detected for MDIO_OCTEON
-  Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=y] && MDIO_BUS [=y]
-&& 64BIT && HAS_IOMEM [=y] && OF_MDIO [=y]
-  Selected by [y]:
-  - OCTEON_ETHERNET [=y] && STAGING [=y] && (CAVIUM_OCTEON_SOC &&
-NETDEVICES [=y] || COMPILE_TEST [=y])
-
-and errors:
-
-In file included from ../drivers/net/phy/mdio-octeon.c:14:
-../drivers/net/phy/mdio-octeon.c: In function 'octeon_mdiobus_probe':
-../drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of
-function 'writeq'; did you mean 'writeb'?
-[-Werror=implicit-function-declaration]
-  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
-      |                                    ^~~~~~
-../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro
-'oct_mdio_writeq'
-   56 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-      |  ^~~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-
-This allows MDIO_OCTEON to be built with COMPILE_TEST as well and
-includes the proper header for readq/writeq. This does not address
-the several -Wint-to-pointer-cast and -Wpointer-to-int-cast warnings
-that appeared as a result of commit 171a9bae68c7 ("staging/octeon:
-Allow test build on !MIPS") in these files.
-
-Fixes: 171a9bae68c7 ("staging/octeon: Allow test build on !MIPS")
-Reported-by: kbuild test robot <lkp@intel.com>
-Reported-by: Mark Brown <broonie@kernel.org>
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/phy/Kconfig       | 2 +-
- drivers/net/phy/mdio-cavium.h | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 20f14c5fbb7e..ed2edf4b5b0e 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -159,7 +159,7 @@ config MDIO_MSCC_MIIM
- 
- config MDIO_OCTEON
- 	tristate "Octeon and some ThunderX SOCs MDIO buses"
--	depends on 64BIT
-+	depends on 64BIT || COMPILE_TEST
- 	depends on HAS_IOMEM && OF_MDIO
- 	select MDIO_CAVIUM
- 	help
-diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
-index ed5f9bb5448d..b7f89ad27465 100644
---- a/drivers/net/phy/mdio-cavium.h
-+++ b/drivers/net/phy/mdio-cavium.h
-@@ -108,6 +108,8 @@ static inline u64 oct_mdio_readq(u64 addr)
- 	return cvmx_read_csr(addr);
- }
- #else
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+
- #define oct_mdio_writeq(val, addr)	writeq(val, (void *)addr)
- #define oct_mdio_readq(addr)		readq((void *)addr)
- #endif
--- 
-2.22.0
-
+I'm going to ignore everything else for now and focus only on this bit,
+since it's fundamental issue to address before this discussion can
+go any further.
+rcu_lock is not a spin_lock. I'm pretty sure you know this.
+But you're arguing that it's somehow protecting from the race
+I mentioned above?
