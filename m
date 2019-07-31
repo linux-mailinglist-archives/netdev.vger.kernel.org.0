@@ -2,174 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFF37C82E
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 18:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E96427C8CB
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 18:35:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729709AbfGaQIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 12:08:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52354 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726526AbfGaQIo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 12:08:44 -0400
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51510206A3;
-        Wed, 31 Jul 2019 16:08:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564589323;
-        bh=WAbIhLASr4HTtdR9ravIERTChOPpIFMTIBTHgYf/DsM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=voCEdTTwgdgDUsyOjJhdQWJWFfTiMS0gs6bLzsXhFvDCtYcKYh9sECeK98JaU32pL
-         LjwlA4InjmKn8msUdy+U1H1eUgNSFa0ND92uxVnYVE75pZdpr1yJTracnbE08QiQNx
-         QaY6JGNBPqwff8qujBa7WhZTsL1uMTh8kNMksdP8=
-Date:   Wed, 31 Jul 2019 17:08:37 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Justin He <Justin.He@arm.com>
-Subject: Re: [PATCH 1/2] arm64: Add support for function error injection
-Message-ID: <20190731160836.qmzlk3ndbahwhfmu@willie-the-truck>
-References: <20190716111301.1855-1-leo.yan@linaro.org>
- <20190716111301.1855-2-leo.yan@linaro.org>
+        id S1728436AbfGaQfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 12:35:15 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35200 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727571AbfGaQfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 12:35:15 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y4so70418100wrm.2;
+        Wed, 31 Jul 2019 09:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=yAjEQyZodCr08YAboEYwoqZJvAo0oHxkikmOr+pozrQ=;
+        b=R60oGN5kWvEbHesJPw/XvDID5/dDGBW2ltPHWrTjo/r6I0wREmVwpyI79G4Jw2lkkT
+         TsRo/AfXHnLh8J7hJYZieYA0nj2EwU/6MjccGyeAF5trdBquCafCwTMnfmM4sGf1Wakt
+         WPjH4MKNZ4ZxRqb6og7hYZVwr52kPui8+vA7oa6kTjahSwMYIHk6hShU11cdNKlRalxT
+         3N/M2kuVcY7e69FOX4qQvylYkO5GQhwg4jN7zhl4kHdk9Eb9nqwsJWncERuRyQ7dLBcL
+         uGzE70Ydq1bFQ7NJBXHEPvkssNF/nOmDGDFC8X2jv+VWIn3eVhmC2w8KUiH+snu+prUY
+         8qzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=yAjEQyZodCr08YAboEYwoqZJvAo0oHxkikmOr+pozrQ=;
+        b=Dz+sGen2ubroP9pseHwR+26En40eAItG2B+XZJGV8Py0gPEsPfRogrznjO4mlK2GhR
+         52JPe5Rwqkrrxx6pxYDxyDE+DlArl/DzwiVG/FSSCkqxr/7wR97NtulrnbjhhpJ8TTFp
+         ENtH/DfNZoi9Fx0O8C0veGKfp0kXBH7Gj+qKQH723rW4kV9JeJoDq99nDvjzsvDIp6Bh
+         YISNfMsmEUxdQj3PGyGUDSmovmC8l9JjvPr2F0eDVi8jG1jY8IdvFqIjGCqPe+G83D57
+         fnDunOOHcEhdrd4QTrEGXY1MJDh2mD1v0qejcIDpasrH4eI0+AF9o2Fniv8rkHSsbcsC
+         HS9w==
+X-Gm-Message-State: APjAAAXj4+Gx4nwyeB1lLNrLYeCAZC1r5bu9fbqHAngXE4owDmAEkZux
+        oW5liM7f3KRizPNEyo1SQoA=
+X-Google-Smtp-Source: APXvYqy99Kyk9xLby2T0bVAd+GOAXz9UpXHXC0+PRE1TqCjVllfYJ7+I3EnWVdrP2U5sxtCh0KLANg==
+X-Received: by 2002:adf:de90:: with SMTP id w16mr795512wrl.217.1564590911914;
+        Wed, 31 Jul 2019 09:35:11 -0700 (PDT)
+Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id w23sm73532989wmi.45.2019.07.31.09.35.10
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 31 Jul 2019 09:35:11 -0700 (PDT)
+Date:   Wed, 31 Jul 2019 09:35:09 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>, devel@driverdev.osuosl.org,
+        andrew@lunn.ch, f.fainelli@gmail.com,
+        kernel-build-reports@lists.linaro.org, netdev@vger.kernel.org,
+        willy@infradead.org, broonie@kernel.org,
+        linux-next@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        hkallweit1@gmail.com
+Subject: Re: next/master build: 221 builds: 11 failed, 210 passed, 13 errors,
+ 1174 warnings (next-20190731)
+Message-ID: <20190731163509.GA90028@archlinux-threadripper>
+References: <5d41767d.1c69fb81.d6304.4c8c@mx.google.com>
+ <20190731112441.GB4369@sirena.org.uk>
+ <20190731113522.GA3426@kroah.com>
+ <20190731.084824.2244928058443049.davem@davemloft.net>
+ <20190731160043.GA15520@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190716111301.1855-2-leo.yan@linaro.org>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190731160043.GA15520@kroah.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 16, 2019 at 07:13:00PM +0800, Leo Yan wrote:
-> This patch implement regs_set_return_value() and
-> override_function_with_return() to support function error injection
-> for arm64.
+On Wed, Jul 31, 2019 at 06:00:43PM +0200, Greg KH wrote:
+> On Wed, Jul 31, 2019 at 08:48:24AM -0700, David Miller wrote:
+> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Date: Wed, 31 Jul 2019 13:35:22 +0200
+> > 
+> > > On Wed, Jul 31, 2019 at 12:24:41PM +0100, Mark Brown wrote:
+> > >> On Wed, Jul 31, 2019 at 04:07:41AM -0700, kernelci.org bot wrote:
+> > >> 
+> > >> Today's -next fails to build an ARM allmodconfig due to:
+> > >> 
+> > >> > allmodconfig (arm, gcc-8) ― FAIL, 1 error, 40 warnings, 0 section mismatches
+> > >> > 
+> > >> > Errors:
+> > >> >     drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of function 'writeq'; did you mean 'writel'? [-Werror=implicit-function-declaration]
+> > >> 
+> > >> as a result of the changes that introduced:
+> > >> 
+> > >> WARNING: unmet direct dependencies detected for MDIO_OCTEON
+> > >>   Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=m] && MDIO_BUS [=m] && 64BIT && HAS_IOMEM [=y] && OF_MDIO [=m]
+> > >>   Selected by [m]:
+> > >>   - OCTEON_ETHERNET [=m] && STAGING [=y] && (CAVIUM_OCTEON_SOC && NETDEVICES [=y] || COMPILE_TEST [=y])
+> > >> 
+> > >> which is triggered by the staging OCTEON_ETHERNET driver which misses a
+> > >> 64BIT dependency but added COMPILE_TEST in 171a9bae68c72f2
+> > >> (staging/octeon: Allow test build on !MIPS).
+> > > 
+> > > A patch was posted for this, but it needs to go through the netdev tree
+> > > as that's where the offending patches are coming from.
+> > 
+> > I didn't catch that, was netdev CC:'d?
 > 
-> In the exception flow, arm64's general register x30 contains the value
-> for the link register; so we can just update pt_regs::pc with it rather
-> than redirecting execution to a dummy function that returns.
+> Nope, just you :(
 > 
-> This patch is heavily inspired by the commit 7cd01b08d35f ("powerpc:
-> Add support for function error injection").
+> I'll resend it now and cc: netdev.
 > 
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> ---
->  arch/arm64/Kconfig                       |  1 +
->  arch/arm64/include/asm/error-injection.h | 13 +++++++++++++
->  arch/arm64/include/asm/ptrace.h          |  5 +++++
->  arch/arm64/lib/Makefile                  |  2 ++
->  arch/arm64/lib/error-inject.c            | 19 +++++++++++++++++++
->  5 files changed, 40 insertions(+)
->  create mode 100644 arch/arm64/include/asm/error-injection.h
->  create mode 100644 arch/arm64/lib/error-inject.c
+> thanks,
 > 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 697ea0510729..a6d9e622977d 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -142,6 +142,7 @@ config ARM64
->  	select HAVE_EFFICIENT_UNALIGNED_ACCESS
->  	select HAVE_FTRACE_MCOUNT_RECORD
->  	select HAVE_FUNCTION_TRACER
-> +	select HAVE_FUNCTION_ERROR_INJECTION
->  	select HAVE_FUNCTION_GRAPH_TRACER
->  	select HAVE_GCC_PLUGINS
->  	select HAVE_HW_BREAKPOINT if PERF_EVENTS
-> diff --git a/arch/arm64/include/asm/error-injection.h b/arch/arm64/include/asm/error-injection.h
-> new file mode 100644
-> index 000000000000..da057e8ed224
-> --- /dev/null
-> +++ b/arch/arm64/include/asm/error-injection.h
-> @@ -0,0 +1,13 @@
-> +/* SPDX-License-Identifier: GPL-2.0+ */
-> +
-> +#ifndef __ASM_ERROR_INJECTION_H_
-> +#define __ASM_ERROR_INJECTION_H_
-> +
-> +#include <linux/compiler.h>
-> +#include <linux/linkage.h>
-> +#include <asm/ptrace.h>
-> +#include <asm-generic/error-injection.h>
-> +
-> +void override_function_with_return(struct pt_regs *regs);
-> +
-> +#endif /* __ASM_ERROR_INJECTION_H_ */
+> greg k-h
 
-Why isn't this prototype in the asm-generic header? Seems weird to have to
-duplicate it for each architecture.
+If it is this patch:
 
-> diff --git a/arch/arm64/include/asm/ptrace.h b/arch/arm64/include/asm/ptrace.h
-> index dad858b6adc6..3aafbbe218a2 100644
-> --- a/arch/arm64/include/asm/ptrace.h
-> +++ b/arch/arm64/include/asm/ptrace.h
-> @@ -294,6 +294,11 @@ static inline unsigned long regs_return_value(struct pt_regs *regs)
->  	return regs->regs[0];
->  }
->  
-> +static inline void regs_set_return_value(struct pt_regs *regs, unsigned long rc)
-> +{
-> +	regs->regs[0] = rc;
-> +}
-> +
->  /**
->   * regs_get_kernel_argument() - get Nth function argument in kernel
->   * @regs:	pt_regs of that context
-> diff --git a/arch/arm64/lib/Makefile b/arch/arm64/lib/Makefile
-> index 33c2a4abda04..f182ccb0438e 100644
-> --- a/arch/arm64/lib/Makefile
-> +++ b/arch/arm64/lib/Makefile
-> @@ -33,3 +33,5 @@ UBSAN_SANITIZE_atomic_ll_sc.o	:= n
->  lib-$(CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE) += uaccess_flushcache.o
->  
->  obj-$(CONFIG_CRC32) += crc32.o
-> +
-> +obj-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
-> diff --git a/arch/arm64/lib/error-inject.c b/arch/arm64/lib/error-inject.c
-> new file mode 100644
-> index 000000000000..35661c2de4b0
-> --- /dev/null
-> +++ b/arch/arm64/lib/error-inject.c
-> @@ -0,0 +1,19 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/error-injection.h>
-> +#include <linux/kprobes.h>
-> +
-> +void override_function_with_return(struct pt_regs *regs)
-> +{
-> +	/*
-> +	 * 'regs' represents the state on entry of a predefined function in
-> +	 * the kernel/module and which is captured on a kprobe.
-> +	 *
-> +	 * 'regs->regs[30]' contains the the link register for the probed
+https://lore.kernel.org/netdev/20190731160219.GA2114@kroah.com/
 
-extra "the"
+It doesn't resolve that issue. I applied it and tested on next-20190731.
 
-> +	 * function and assign it to 'regs->pc', so when kprobe returns
-> +	 * back from exception it will override the end of probed function
-> +	 * and drirectly return to the predefined function's caller.
+$ make -j$(nproc) -s ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- O=out distclean allyesconfig drivers/net/phy/
 
-directly
+WARNING: unmet direct dependencies detected for MDIO_OCTEON
+  Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=y] && MDIO_BUS [=y] && 64BIT && HAS_IOMEM [=y] && OF_MDIO [=y]
+  Selected by [y]:
+  - OCTEON_ETHERNET [=y] && STAGING [=y] && (CAVIUM_OCTEON_SOC || COMPILE_TEST [=y]) && NETDEVICES [=y]
+../drivers/net/phy/mdio-octeon.c: In function 'octeon_mdiobus_probe':
+../drivers/net/phy/mdio-octeon.c:48:3: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   48 |   (u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
+      |   ^
+In file included from ../drivers/net/phy/mdio-octeon.c:14:
+../drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of function 'writeq'; did you mean 'writeb'? [-Werror=implicit-function-declaration]
+  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+      |                                    ^~~~~~
+../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro 'oct_mdio_writeq'
+   56 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+      |  ^~~~~~~~~~~~~~~
+../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+      |                                                ^
+../drivers/net/phy/mdio-octeon.c:56:2: note: in expansion of macro 'oct_mdio_writeq'
+   56 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+      |  ^~~~~~~~~~~~~~~
+../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+      |                                                ^
+../drivers/net/phy/mdio-octeon.c:77:2: note: in expansion of macro 'oct_mdio_writeq'
+   77 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+      |  ^~~~~~~~~~~~~~~
+../drivers/net/phy/mdio-octeon.c: In function 'octeon_mdiobus_remove':
+../drivers/net/phy/mdio-cavium.h:111:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+      |                                                ^
+../drivers/net/phy/mdio-octeon.c:91:2: note: in expansion of macro 'oct_mdio_writeq'
+   91 |  oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
+      |  ^~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+make[3]: *** [../scripts/Makefile.build:274: drivers/net/phy/mdio-octeon.o] Error 1
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [../Makefile:1780: drivers/net/phy/] Error 2
+make[1]: *** [/home/nathan/cbl/linux-next/Makefile:330: __build_one_by_one] Error 2
+make: *** [Makefile:179: sub-make] Error 2
 
-> +	 */
-> +	regs->pc = regs->regs[30];
+This is the diff that I came up with to solve the errors plus the casting
+warnings but it doesn't feel proper to me. If you all feel otherwise, I
+can draft up a formal commit message.
 
-I suppose we could be all fancy and do:
-
-	instruction_pointer_set(regs, procedure_link_pointer(regs));
-
-How about that?
-
-Will
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 20f14c5fbb7e..ed2edf4b5b0e 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -159,7 +159,7 @@ config MDIO_MSCC_MIIM
+ 
+ config MDIO_OCTEON
+ 	tristate "Octeon and some ThunderX SOCs MDIO buses"
+-	depends on 64BIT
++	depends on 64BIT || COMPILE_TEST
+ 	depends on HAS_IOMEM && OF_MDIO
+ 	select MDIO_CAVIUM
+ 	help
+diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
+index ed5f9bb5448d..4b71b733edb4 100644
+--- a/drivers/net/phy/mdio-cavium.h
++++ b/drivers/net/phy/mdio-cavium.h
+@@ -108,8 +108,10 @@ static inline u64 oct_mdio_readq(u64 addr)
+ 	return cvmx_read_csr(addr);
+ }
+ #else
+-#define oct_mdio_writeq(val, addr)	writeq(val, (void *)addr)
+-#define oct_mdio_readq(addr)		readq((void *)addr)
++#include <linux/io-64-nonatomic-lo-hi.h>
++
++#define oct_mdio_writeq(val, addr)	writeq(val, (void *)(uintptr_t)addr)
++#define oct_mdio_readq(addr)		readq((void *)(uintptr_t)addr)
+ #endif
+ 
+ int cavium_mdiobus_read(struct mii_bus *bus, int phy_id, int regnum);
+diff --git a/drivers/net/phy/mdio-octeon.c b/drivers/net/phy/mdio-octeon.c
+index 8327382aa568..ab0d8ab588e4 100644
+--- a/drivers/net/phy/mdio-octeon.c
++++ b/drivers/net/phy/mdio-octeon.c
+@@ -45,7 +45,7 @@ static int octeon_mdiobus_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	bus->register_base =
+-		(u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
++		(u64)(uintptr_t)devm_ioremap(&pdev->dev, mdio_phys, regsize);
+ 	if (!bus->register_base) {
+ 		dev_err(&pdev->dev, "dev_ioremap failed\n");
+ 		return -ENOMEM;
