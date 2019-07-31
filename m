@@ -2,135 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B78A27C693
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 17:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6BE7C6A1
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 17:32:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727201AbfGaPaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 11:30:15 -0400
-Received: from mail-eopbgr20045.outbound.protection.outlook.com ([40.107.2.45]:38791
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725914AbfGaPaP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 11:30:15 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SagZVr2cb3aeal6+lUMrlaWf5M+QnYxu7pau7hSunmUOUgkmdSq7hLgyIbZuzF/7kIkvJtSk2nuPuvcRWMnhN1VoHz8LD3n014E36DnkC1P2qaW9Oe23dr1j0+SBzesRL/8Gw2Yv1PWiyIJGOi93KrjlYTtkN4wwwrQ3ORPt2XFrzQ1ftx2pGa6+wMcMdGhGM93EvMf8TmFaBrX09B1FnEOtja7jazFHVGEeqWBr8aUY3A7blmfkVEATLuvODC8wCPpOGsybTTEadbFuMjwAQuRCCi06UsNR+PWzfK2cU/h2voo2LnXP/YZKMyDw2bOGgQcbaUlhPljNuhTrx+mrvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qq2SOy7q1kCuAj3H4ExAN82mh3spfvhdmNAgJMhtIYA=;
- b=nUrDkUpPZLZQ/cSse5lKptIYzGHT7PAUIyYdBaPXYlYYKndBk6tO6DGmxlLBTpUqy1tgqfG5Cedvpf14VRnvR2+HJ3GjtFMsquXarNMYkaUm2mze9EOJZDPEi4KndAfcnAdWCyohaRtXWp5Lo4f6OSDegJzbnO9zl9UwfXQpzgDTxSLpNYU9FUpM799luAL84mC10Zn+3FHgtVHPtWFy5g9kxaX1ODFqd+OiknnGzPokB2UCO9lo1+yIJgiNfFAD4fBLTfPlE7hpRFPrBT7rwJVppZZYqbYCWbny3dpZe4infzSSNJKW79cxyyETmdqOnEzAKdW0Bpqd7dHJ3mhwMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=nxp.com;dmarc=pass action=none header.from=nxp.com;dkim=pass
- header.d=nxp.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qq2SOy7q1kCuAj3H4ExAN82mh3spfvhdmNAgJMhtIYA=;
- b=aFgn8sD0FQELUeBKVdaOuLth38rMrokGKHMznGaiZW/3pEKTa2rTWZP48YtyXmrFFHukMwaxrdQiCqKaJFLQukJNeL7knw/BjTMxFpYx7i3ix7AC2c6ahglyGjsQQlXzDza8FxhoFK2IuPcivy+nEPptKbcc9PNg+fIe9Ny5Chg=
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com (20.177.49.153) by
- VI1PR04MB5853.eurprd04.prod.outlook.com (20.178.204.207) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2115.10; Wed, 31 Jul 2019 15:30:11 +0000
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::e401:6546:3729:47c0]) by VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::e401:6546:3729:47c0%6]) with mapi id 15.20.2115.005; Wed, 31 Jul 2019
- 15:30:11 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH net-next v4 0/4] enetc: Add mdio bus driver for the PCIe
- MDIO endpoint
-Thread-Topic: [PATCH net-next v4 0/4] enetc: Add mdio bus driver for the PCIe
- MDIO endpoint
-Thread-Index: AQHVRruXkrgGFGQQ+EaBpGk24PJNNKbjXq0AgAACjQCAAXagAA==
-Date:   Wed, 31 Jul 2019 15:30:10 +0000
-Message-ID: <VI1PR04MB48808FF2BC4DBA4A6C32DB2D96DF0@VI1PR04MB4880.eurprd04.prod.outlook.com>
-References: <1564479919-18835-1-git-send-email-claudiu.manoil@nxp.com>
-        <20190730.094436.855806617449032791.davem@davemloft.net>
- <20190730.095344.401137621326119500.davem@davemloft.net>
-In-Reply-To: <20190730.095344.401137621326119500.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=claudiu.manoil@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4a7ba191-28ef-4976-c87f-08d715cbfa05
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR04MB5853;
-x-ms-traffictypediagnostic: VI1PR04MB5853:
-x-microsoft-antispam-prvs: <VI1PR04MB58534B177C9ECB230707E43D96DF0@VI1PR04MB5853.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 011579F31F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(136003)(396003)(366004)(199004)(189003)(13464003)(99286004)(81166006)(81156014)(7736002)(8936002)(8676002)(7696005)(55016002)(71190400001)(76176011)(52536014)(76116006)(9686003)(71200400001)(25786009)(66946007)(66556008)(5660300002)(4326008)(86362001)(54906003)(64756008)(316002)(53936002)(33656002)(66476007)(68736007)(66446008)(6246003)(74316002)(256004)(66066001)(6506007)(478600001)(102836004)(6116002)(6916009)(3846002)(26005)(186003)(2906002)(229853002)(476003)(11346002)(486006)(305945005)(446003)(44832011)(6436002)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5853;H:VI1PR04MB4880.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Bi89f8jvDFh3PdfcsFOFNYhc8Hgdp8Eqp08OAygCiTsnuuuJrVIxG3eEzaYIYXbWj1FtApth48tyyrGtQRXy6isxf9i1LCg9HHJiaZDUZ4qsPEYBLsEQWx916HD+VSznj/DI+wKJv1K7iBLPvEvoKXPXKwQns61686UNUrPZlqQPEFdFSECvQeiKTJ25XptgqC/ifDiT5A3CbQWojOYo8TekuYmdf3tSIzYYx8K4R6rICjCVL6SGVaLLxKhoSWlwAFPG4nWwsPdrWtCImON3eaRDidspaSf4tTO0aLb0ePpDjJU72bYM0WfBZPFeCdhrvUIB+CgUUMDBIVFd5pXQe5gqM6EvRPIwgDw82SCkWVUT3BbIUs7586QgW/YTPA7KeD4fm4idwTgXdmkUjXeniX615DA4fzSASoIfwDHtx5g=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728737AbfGaPb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 11:31:59 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:37172 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726993AbfGaPb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 11:31:59 -0400
+Received: by mail-io1-f67.google.com with SMTP id q22so17391869iog.4
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 08:31:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mUN1pvMl8svBUjCaR0OxnSiYPVvf6+NNwTE7JqyHeGo=;
+        b=Lz/OoRSBQngNq7qk2Ls23OczsyfF+YccBluCPWG7IS7H2uuPnlh1HSGyfgXfwgGlES
+         cVL2dXXA7Fhc4epnBjF0cO1zMIQ5f3Pn6flq9z88B6QJPH6EbMIx9wTNvpq5yRvjWqyc
+         wpgsnb5DDxaigNDWgbA/vmbkhmMOF4JBZU/4Bk11OUt1nDfwbNY7SsZF72Nc5/nmMCwE
+         yGTwQfUViPaZ0//I4K21aNpX+U9cFpehlX+JN5PI558d9qtExMGTbAv2ZgVVWRAmkWt8
+         YF0aPFQ5DNHkEGfwmEvmJanvVR26ZoEuPjy7iKpYk84Ya/KQh+EsPapOIbwr+r7TguNI
+         uNVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mUN1pvMl8svBUjCaR0OxnSiYPVvf6+NNwTE7JqyHeGo=;
+        b=qEumVh+rUcb3Gqyy5u1G8vo8ORoGmxMwyV93rr//dREY6xTqqD7pylSO4Rzti9Chb7
+         NO1L24XXPUW5Pabd/Kfg0H49OKfaBoyJw52Qi6NssNFukZUO8a1UUp8O10fakwcoJR8P
+         u7Q/5OT42gfHGMLqEfXoRrEHnZrWfl4TNDWdDlHmznWkibeGis9byO5uVhXTuaCiTBA5
+         rwshmPVaquZ61LSk7Fg1zx1oAabr2vX9kfpD4N17xVg5wTMx4KgyelfJ/jEbfftaZ/4Z
+         oHfns/1v5k9sBgZr8E2VZjj6Qzxf6F4MxhpmuR5Tiogfu7fMSkTmHsIx9rlhfaovzBtU
+         c8tw==
+X-Gm-Message-State: APjAAAVIYjAYRp9gXGHor0e6/XK1JeWxjGUO24ga06ElQp1oZff8Y7/+
+        2z/oleBPCaSUXZVLQOZYqJ2RGlvrY18z+aY88a4Yxw==
+X-Google-Smtp-Source: APXvYqw2UXK6ZDLM4RK1EtyppjWajVOjmU7VeSiTcfg7vyOElSybY1Vr7ei0QqNz3/vdV59RExuEHrI8732XCga8lek=
+X-Received: by 2002:a5e:c241:: with SMTP id w1mr106076388iop.58.1564587118129;
+ Wed, 31 Jul 2019 08:31:58 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a7ba191-28ef-4976-c87f-08d715cbfa05
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2019 15:30:11.2472
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: claudiu.manoil@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5853
+References: <0000000000004c2416058c594b30@google.com> <24282.1562074644@warthog.procyon.org.uk>
+ <CACT4Y+YjdV8CqX5=PzKsHnLsJOzsydqiq3igYDm_=nSdmFo2YQ@mail.gmail.com>
+ <20330.1564583454@warthog.procyon.org.uk> <CACT4Y+Y4cRgaRPJ_gz_53k85inDKq+X+bWmOTv1gPLo=Yod1=A@mail.gmail.com>
+ <22318.1564586386@warthog.procyon.org.uk>
+In-Reply-To: <22318.1564586386@warthog.procyon.org.uk>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 31 Jul 2019 17:31:45 +0200
+Message-ID: <CACT4Y+bjLBwVK_6fz2H8fXm0baAVX+vRJ4UbVWG_7yNUO-SOUg@mail.gmail.com>
+Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
+To:     David Howells <dhowells@redhat.com>
+Cc:     syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        linux-afs@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: David Miller <davem@davemloft.net>
->Sent: Tuesday, July 30, 2019 7:54 PM
->To: Claudiu Manoil <claudiu.manoil@nxp.com>
->Cc: andrew@lunn.ch; robh+dt@kernel.org; Leo Li <leoyang.li@nxp.com>;
->Alexandru Marginean <alexandru.marginean@nxp.com>;
->netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
->kernel@lists.infradead.org; linux-kernel@vger.kernel.org
->Subject: Re: [PATCH net-next v4 0/4] enetc: Add mdio bus driver for the PC=
-Ie
->MDIO endpoint
+On Wed, Jul 31, 2019 at 5:19 PM David Howells <dhowells@redhat.com> wrote:
 >
->From: David Miller <davem@davemloft.net>
->Date: Tue, 30 Jul 2019 09:44:36 -0700 (PDT)
+> Dmitry Vyukov <dvyukov@google.com> wrote:
 >
->> From: Claudiu Manoil <claudiu.manoil@nxp.com>
->> Date: Tue, 30 Jul 2019 12:45:15 +0300
->>
->>> First patch fixes a sparse issue and cleans up accessors to avoid
->>> casting to __iomem.
->>> Second patch just registers the PCIe endpoint device containing
->>> the MDIO registers as a standalone MDIO bus driver, to allow
->>> an alternative way to control the MDIO bus.  The same code used
->>> by the ENETC ports (eth controllers) to manage MDIO via local
->>> registers applies and is reused.
->>>
->>> Bindings are provided for the new MDIO node, similarly to ENETC
->>> port nodes bindings.
->>>
->>> Last patch enables the ENETC port 1 and its RGMII PHY on the
->>> LS1028A QDS board, where the MDIO muxing configuration relies
->>> on the MDIO support provided in the first patch.
->>  ...
->>
->> Series applied, thank you.
+> > Please send a patch for testing that enables this tracing
+> > unconditionally. This should have the same effect. There is no way to
+> > hook into a middle of the automated process and arbitrary tune things.
 >
->Actually this doesn't compile, I had to revert:
->
+> I don't know how to do that off hand.  Do you have an example?
 
-Sorry, I overlooked the module part.  Turns out I have to define a separate
-module for this driver (mdio), refactor common code between the mdio module
-and the enetc-pf module, clean up the Makefile...  and do more checks.
+Few messages above I asked it to test:
+https://groups.google.com/d/msg/syzkaller-bugs/gEnZkmEWf1s/r2_X_KVQAQAJ
+
+Basically, git repo + branch + patch. Here are the docs:
+https://github.com/google/syzkaller/blob/master/docs/syzbot.md#testing-patches
+
+
+> Anyway, I think rxrpc_local_processor() is broken with respect to refcounting
+> as it gets scheduled when usage==0, but that doesn't stop it being rescheduled
+> again by a network packet before it manages to close the UDP socket.
+>
+> David
