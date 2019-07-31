@@ -2,149 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06C017B782
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5247B797
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 03:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727519AbfGaBWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 21:22:00 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:38309 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727491AbfGaBWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 21:22:00 -0400
-Received: by mail-qk1-f195.google.com with SMTP id a27so48050000qkk.5
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 18:21:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=8e2MbRkVwFshGJy8jHNU0lxsFiicJRQkfLnguyMaD8w=;
-        b=amq+y8LsiqI8nEEWcPiEiV5w/J2kF6Z7YaFNQspWlgKarMAWSSaMd9h/Mz7FhSUt0G
-         F72Aue2S1opOfDFuWM/P9gYYyO8XBXBRHEdrCg450b0XrxJdtUwahbEIkeu/RwMngjHE
-         sedFEwYIGV3JQe/UcNbEnvnBg5vZZ0amFTmsMu2TXw3ydDI3GntW9TSbem2k/+nNgzOy
-         BqE9FztlEJM/DrJAeS/+G+Y6xVSUv64Rmb4kgHLuiImvIrccPSsw8shIue1DXsIjbWy+
-         sr6Iw8B+Dymt7PO0/ZeQgu7S881n4f4LLIihzz79CH4MzD0wnXxkafBf2dlaucNQSILs
-         aRwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=8e2MbRkVwFshGJy8jHNU0lxsFiicJRQkfLnguyMaD8w=;
-        b=D2pZ27+cAVf/CP+Gzjq/Rl1dkM7P6cvkMso3DZU3aI63sJJy46Kl19M1CAvRjBoZY9
-         l+TEH7GybEL02lH52xikM/gFe7eHWoUXsiMZ655QbaMkf1gem/RER7wE2hEAFIgoygAp
-         IC2CA+ozT415g8qESk0ErDR9urQFj3JS4NYrSBnP2fWVlfENigbFnq+OVJgSizfdsUL4
-         zUnRFJQIjItabjUIK5PZpaoDt+cK/l6LTojVTHOQQi3ILM6dxU8gUKcjGzrY9yAig+82
-         E1Af73uyOTFtKt71K0uIINI700/hMWxmZWpV3aYPwm5TPMcvCKfjP0ua9CcCEvvBkmzL
-         C13Q==
-X-Gm-Message-State: APjAAAWeWnImNIlgdVq49cMtARqKWvrrTec5P1B+5DuLTNHqbxCoCjsi
-        W4IMb0XcsQdR2+Nws1dRB6LpNQ==
-X-Google-Smtp-Source: APXvYqxKaWE7X20NIzhdysKSTq2YtDXu97GQKDosGFwKdTkrQuGBdckVixC2n665TQY74DRJnds/gQ==
-X-Received: by 2002:a37:85c2:: with SMTP id h185mr81843298qkd.353.1564536119235;
-        Tue, 30 Jul 2019 18:21:59 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id x42sm34288821qth.24.2019.07.30.18.21.57
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 30 Jul 2019 18:21:58 -0700 (PDT)
-Date:   Tue, 30 Jul 2019 18:21:44 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load
- XDP
-Message-ID: <20190730182144.1355bf50@cakuba.netronome.com>
-In-Reply-To: <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
-References: <20190730184821.10833-1-danieltimlee@gmail.com>
-        <20190730155915.5bbe3a03@cakuba.netronome.com>
-        <20190730231754.efh3fj4mnsbv445l@ast-mbp>
-        <20190730170725.279761e7@cakuba.netronome.com>
-        <20190731002338.d4lp2grsmm3aaav3@ast-mbp>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1726508AbfGaBZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 21:25:56 -0400
+Received: from mail-eopbgr1320101.outbound.protection.outlook.com ([40.107.132.101]:35882
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725911AbfGaBZz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jul 2019 21:25:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bEH6c27w+PM3nfGYEpFiDEjzn9DUnEK7N6WZVBUP5F5/sD+Rcnzo5eFlDNm2kAQC7LzcltmUOnO1YtV3B/jGTuN02ewPPFYQ0JunWwwhd9HF2F617yVIfB0tAZ2fJJZ+UVhDGlhRaTBShgA9npgkBUNODWzvLpyDLA7s56oqj/228su8G5nqshcLSQcSsWnyMHg0j9mhcbMtgdSYaw46xmjRMbFDwFNhJHLqYiP5CVWlfIIkar2vUAdI8ghtTC0jrloGvUWiWVw7LCxFLtkKtFqIHmu3xwYybgvF9F/80YZeBNYa9HkeRMLpSOQIamtNMTU+ltd/88boTqy6qiEncg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=thm68vWJDTJqC+ZV40mX//nMUgdYsUcdxVCjvVDMtbc=;
+ b=nxJrgKhWQIU27ktpOPGKu2QM/NuyOZ63kdJto5b0kIxSU8tdNISRItvwcByJnQRxAxhaUcjNG1Z8UIGICBXiq+qO+A/2nwb3Mp57awybsw6LVUJu/XY4OorvzeksZJ5Tu+oMjhTFEblCVtgKhrZbktb2Ogki2Gfv/UGFM5wzGnhQTj6kpHhTZOY/ASu73/ivNnWjUOL997FA2iRFN7cG7SsqKUYSZ4TxBIzAkldbJkHHhok9nRd0V5/q/mDiWKN9Lwv/ynbZcxWn3+aZQeXnZ8dYdwf4QFlnlQL7zFJtB5cJYk9b/zFpRR1x6L2I+v+CMRgYpwnR9Uzn3sZrdJqMKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=thm68vWJDTJqC+ZV40mX//nMUgdYsUcdxVCjvVDMtbc=;
+ b=NuBjPQ/K+EyRrVqp7BoHyqCVmVxRcpZd/fV8iGcBHlGZyPjPPs0TJxnVcqpW1V5/GetRg4BQufZeoX/HUvoAZz2lHexgZqJ4ekjH5GDWibQA5CPULwzPQQiIUmWbojfO7iTu+Xh65nUmHhlqpmf2jHsx5ERM47IKow5BRYCOJoc=
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
+ PU1P153MB0139.APCP153.PROD.OUTLOOK.COM (10.170.188.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.3; Wed, 31 Jul 2019 01:25:46 +0000
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+ ([fe80::d44e:57b7:d8fc:e91c]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+ ([fe80::d44e:57b7:d8fc:e91c%8]) with mapi id 15.20.2157.001; Wed, 31 Jul 2019
+ 01:25:46 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Sunil Muthuswamy <sunilmut@microsoft.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "olaf@aepfle.de" <olaf@aepfle.de>,
+        "apw@canonical.com" <apw@canonical.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        vkuznets <vkuznets@redhat.com>,
+        "marcelo.cerri@canonical.com" <marcelo.cerri@canonical.com>
+Subject: [PATCH v2 net] hv_sock: Fix hang when a connection is closed
+Thread-Topic: [PATCH v2 net] hv_sock: Fix hang when a connection is closed
+Thread-Index: AdVHPmu2nCw89Ds2Tx6HccJLUcFnXg==
+Date:   Wed, 31 Jul 2019 01:25:45 +0000
+Message-ID: <PU1P153MB01696DDD3A3F601370701DD2BFDF0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-07-31T01:25:42.9249599Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5fb33ce5-3f70-4230-92d8-446001a362ef;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=decui@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:1:c0f7:3271:ccd8:4d01]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f875bf19-0189-4eb7-6107-08d71556034c
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:PU1P153MB0139;
+x-ms-traffictypediagnostic: PU1P153MB0139:|PU1P153MB0139:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <PU1P153MB01399350552811B6F45317E1BFDF0@PU1P153MB0139.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 011579F31F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(396003)(366004)(39860400002)(136003)(376002)(54534003)(51234002)(199004)(189003)(52536014)(316002)(486006)(7416002)(10090500001)(10290500003)(25786009)(81166006)(81156014)(305945005)(4326008)(5660300002)(110136005)(68736007)(186003)(8676002)(2906002)(66446008)(64756008)(66556008)(2501003)(74316002)(1511001)(6116002)(33656002)(66946007)(54906003)(6506007)(66476007)(22452003)(71200400001)(14444005)(71190400001)(76116006)(6436002)(478600001)(7736002)(53936002)(8990500004)(86362001)(256004)(14454004)(99286004)(476003)(7696005)(55016002)(9686003)(8936002)(102836004)(46003);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0139;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: rO7CYCcEHk8JKSQf/pzsEjaHBDT4Rxf1IvOjsj0WZevs9Lz1yJ3+GVYI+Tu5W03bCpoh0zz+1zMD4lPYOlPNsAmrXzuBAoHNOiRNF3ljIMGzcZ1cy/MDbJt8EGk3Z3J/GSCDEskyJNPItPPCW2vbLFC024Xp0Cz+9UgY5+Wk++TP2sIzKOf+tZkI62KCSLuA2MhEqDByBcg3G3EaFu8m+swxbM+pO9NPOx8r2CH0r8g2n1DgmI/cHNLiVDpPcV9LSEBsLbbNmA74n0GiDicJRFPCDC4vg/59W4mvB4jHnqnYv6HnuoKOdNUjoLBgShMAAQsvSEjR8EnPP2S8Bm0rJD3QfCtd383glmEWbuIc0hO94WB006bAOc1LQqqrZqeZ6WQbh7R2IJlcYh0+TWw2rKBvs+oFCckTIXXV492PsUc=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f875bf19-0189-4eb7-6107-08d71556034c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2019 01:25:45.8275
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: E6dZU1lHIMdHnIGLvTcVfBDnvb22Pth1kbvGOcvZBs3K+6BbWfKZyk0h031jxQiTeCST3xLK2MQfXEBfzsKAVg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0139
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jul 2019 17:23:39 -0700, Alexei Starovoitov wrote:
-> On Tue, Jul 30, 2019 at 05:07:25PM -0700, Jakub Kicinski wrote:
-> > Nothing meaning you disagree it's duplicated effort and unnecessary=20
-> > LoC the community has to maintain, review, test..? =20
->=20
-> I don't see duplicated effort.
 
-Could you walk me through a scenario where, say, a new xdp attachment
-flag is added? How can there be support in both bpftool and iproute2=20
-for specifying it without modifying both?
+There is a race condition for an established connection that is being close=
+d
+by the guest: the refcnt is 4 at the end of hvs_release() (Note: here the
+'remove_sock' is false):
 
-How can we say we want to make iproute2 use libbpf instead of it's own
-library to avoid duplicated effort on the back end, and at the same time
-claim having two tools do the same thing is no duplication =F0=9F=A4=AF
+1 for the initial value;
+1 for the sk being in the bound list;
+1 for the sk being in the connected list;
+1 for the delayed close_work.
 
-> > Duplicating the same features in bpftool will only diminish the
-> > incentive for moving iproute2 to libbpf.  =20
->=20
-> not at all. why do you think so?
+After hvs_release() finishes, __vsock_release() -> sock_put(sk) *may*
+decrease the refcnt to 3.
 
-Because iproute2's BPF has fallen behind so the simplest thing is to
-just contribute to bpftool. But iproute2 is the tool set for Linux
-networking, we can't let it bit rot :(
+Concurrently, hvs_close_connection() runs in another thread:
+  calls vsock_remove_sock() to decrease the refcnt by 2;
+  call sock_put() to decrease the refcnt to 0, and free the sk;
+  next, the "release_sock(sk)" may hang due to use-after-free.
 
-Admittedly that's just me reading the tea leaves.
+In the above, after hvs_release() finishes, if hvs_close_connection() runs
+faster than "__vsock_release() -> sock_put(sk)", then there is not any issu=
+e,
+because at the beginning of hvs_close_connection(), the refcnt is still 4.
 
-> > And for folks who deal
-> > with a wide variety of customers, often novices maintaining two
-> > ways of doing the same thing is a hassle :( =20
->=20
-> It's not the same thing.
-> I'm talking about my experience dealing with 'wide variety of bpf custome=
-rs'.
-> They only have a fraction of their time to learn one tool.
-> Making every bpf customer learn ten tools is not an option.
+The issue can be resolved if an extra reference is taken when the
+connection is established.
 
-IMHO vaguely competent users of Linux networking will know ip link.
-If they are not vaguely competent, they should not attach XDP programs
-to interfaces by hand...
+Fixes: a9eeb998c28d ("hv_sock: Add support for delayed close")
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+Cc: stable@vger.kernel.org
 
-> > Let's just put the two commands next to each other:
-> >=20
-> >        ip link set xdp $PROG dev $DEV
-> >=20
-> > bpftool net attach xdp $PROG dev $DEV
-> >=20
-> > Are they that different? =20
->=20
-> yes.
-> they're different tools with they own upgrade/rollout cycle
+---
 
-I think this came up when bpftool net was added and I never really
-understood it.
+Changes in v2:=20
+  Changed the location of the sock_hold() call.=20
+  Updated the changelog accordingly.
+ =20
+  Thanks Sunil for the suggestion!
 
-> > > If bpftool was taught to do equivalent of 'ip link' that would be
-> > > very different story and I would be opposed to that. =20
-> >=20
-> > Yes, that'd be pretty clear cut, only the XDP stuff is a bit more=20
-> > of a judgement call. =20
->=20
-> bpftool must be able to introspect every aspect of bpf programming.
-> That includes detaching and attaching anywhere.
-> Anyone doing 'bpftool p s' should be able to switch off particular
-> prog id without learning ten different other tools.
 
-I think the fact that we already have an implementation in iproute2,
-which is at the risk of bit rot is more important to me that the
-hypothetical scenario where everyone knows to just use bpftool (for
-XDP, for TC it's still iproute2 unless there's someone crazy enough=20
-to reimplement the TC functionality :))
+With the proper kernel debugging options enabled, first a warning can
+appear:
 
-I'm not sure we can settle our differences over email :)
-I have tremendous respect for all the maintainers I CCed here,=20
-if nobody steps up to agree with me I'll concede the bpftool net
-battle entirely :)
+kworker/1:0/4467 is freeing memory ..., with a lock still held there!
+stack backtrace:
+Workqueue: events vmbus_onmessage_work [hv_vmbus]
+Call Trace:
+ dump_stack+0x67/0x90
+ debug_check_no_locks_freed.cold.52+0x78/0x7d
+ slab_free_freelist_hook+0x85/0x140
+ kmem_cache_free+0xa5/0x380
+ __sk_destruct+0x150/0x260
+ hvs_close_connection+0x24/0x30 [hv_sock]
+ vmbus_onmessage_work+0x1d/0x30 [hv_vmbus]
+ process_one_work+0x241/0x600
+ worker_thread+0x3c/0x390
+ kthread+0x11b/0x140
+ ret_from_fork+0x24/0x30
+
+and then the following release_sock(sk) can hang:
+
+watchdog: BUG: soft lockup - CPU#1 stuck for 22s! [kworker/1:0:4467]
+...
+irq event stamp: 62890
+CPU: 1 PID: 4467 Comm: kworker/1:0 Tainted: G        W         5.2.0+ #39
+Workqueue: events vmbus_onmessage_work [hv_vmbus]
+RIP: 0010:queued_spin_lock_slowpath+0x2b/0x1e0
+...
+Call Trace:
+ do_raw_spin_lock+0xab/0xb0
+ release_sock+0x19/0xb0
+ vmbus_onmessage_work+0x1d/0x30 [hv_vmbus]
+ process_one_work+0x241/0x600
+ worker_thread+0x3c/0x390
+ kthread+0x11b/0x140
+ ret_from_fork+0x24/0x30
+
+ net/vmw_vsock/hyperv_transport.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transp=
+ort.c
+index f2084e3f7aa4..9d864ebeb7b3 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -312,6 +312,11 @@ static void hvs_close_connection(struct vmbus_channel =
+*chan)
+ 	lock_sock(sk);
+ 	hvs_do_close_lock_held(vsock_sk(sk), true);
+ 	release_sock(sk);
++
++	/* Release the refcnt for the channel that's opened in
++	 * hvs_open_connection().
++	 */
++	sock_put(sk);
+ }
+=20
+ static void hvs_open_connection(struct vmbus_channel *chan)
+@@ -407,6 +412,9 @@ static void hvs_open_connection(struct vmbus_channel *c=
+han)
+ 	}
+=20
+ 	set_per_channel_state(chan, conn_from_host ? new : sk);
++
++	/* This reference will be dropped by hvs_close_connection(). */
++	sock_hold(conn_from_host ? new : sk);
+ 	vmbus_set_chn_rescind_callback(chan, hvs_close_connection);
+=20
+ 	/* Set the pending send size to max packet size to always get
+--=20
+2.19.1
+
