@@ -2,61 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE257C60E
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 17:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89BC17C66A
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 17:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729732AbfGaPTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 11:19:50 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41918 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726691AbfGaPTt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 11:19:49 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 534D2308FC4B;
-        Wed, 31 Jul 2019 15:19:49 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A9DE5D9C5;
-        Wed, 31 Jul 2019 15:19:47 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CACT4Y+Y4cRgaRPJ_gz_53k85inDKq+X+bWmOTv1gPLo=Yod1=A@mail.gmail.com>
-References: <CACT4Y+Y4cRgaRPJ_gz_53k85inDKq+X+bWmOTv1gPLo=Yod1=A@mail.gmail.com> <0000000000004c2416058c594b30@google.com> <24282.1562074644@warthog.procyon.org.uk> <CACT4Y+YjdV8CqX5=PzKsHnLsJOzsydqiq3igYDm_=nSdmFo2YQ@mail.gmail.com> <20330.1564583454@warthog.procyon.org.uk>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        linux-afs@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <22317.1564586386.1@warthog.procyon.org.uk>
-Date:   Wed, 31 Jul 2019 16:19:46 +0100
-Message-ID: <22318.1564586386@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Wed, 31 Jul 2019 15:19:49 +0000 (UTC)
+        id S1729895AbfGaPYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 11:24:23 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39064 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728922AbfGaPYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 11:24:18 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 040C412665369;
+        Wed, 31 Jul 2019 08:24:17 -0700 (PDT)
+Date:   Wed, 31 Jul 2019 08:24:12 -0700 (PDT)
+Message-Id: <20190731.082412.820196099656249955.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net 0/2] mlxsw: Two small fixes
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190731063315.9381-1-idosch@idosch.org>
+References: <20190731063315.9381-1-idosch@idosch.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 31 Jul 2019 08:24:18 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry Vyukov <dvyukov@google.com> wrote:
+From: Ido Schimmel <idosch@idosch.org>
+Date: Wed, 31 Jul 2019 09:33:13 +0300
 
-> Please send a patch for testing that enables this tracing
-> unconditionally. This should have the same effect. There is no way to
-> hook into a middle of the automated process and arbitrary tune things.
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Patch #1 from Jiri fixes the error path of the module initialization
+> function. Found during manual code inspection.
+> 
+> Patch #2 from Petr further reduces the default shared buffer pool sizes
+> in order to work around a problem that was originally described in
+> commit e891ce1dd2a5 ("mlxsw: spectrum_buffers: Reduce pool size on
+> Spectrum-2").
 
-I don't know how to do that off hand.  Do you have an example?
-
-Anyway, I think rxrpc_local_processor() is broken with respect to refcounting
-as it gets scheduled when usage==0, but that doesn't stop it being rescheduled
-again by a network packet before it manages to close the UDP socket.
-
-David
+Series applied and queued up for -stable, thanks.
