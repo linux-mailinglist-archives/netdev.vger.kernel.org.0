@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B507D02F
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 23:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B1F17D049
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 23:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729292AbfGaVmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 17:42:06 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33585 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728189AbfGaVmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 17:42:06 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n190so1278056pgn.0;
-        Wed, 31 Jul 2019 14:42:06 -0700 (PDT)
+        id S1731026AbfGaVu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 17:50:29 -0400
+Received: from mail-pf1-f177.google.com ([209.85.210.177]:36607 "EHLO
+        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731018AbfGaVu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 17:50:29 -0400
+Received: by mail-pf1-f177.google.com with SMTP id r7so32603748pfl.3
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 14:50:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9p9WvHXoxlLbYWbCg+NginBLDGupg9fXAky3S1UEaX4=;
-        b=CL3InGugDJjm/WCiKfFJYSXuiQvQaUa8Cuh4AWx+CmFJ+69BClL30PnTnG+L0BaUe3
-         0zjl5yLLlOj0THI333BOWDEjai1exXSKfWvoBjgT6EADVpxQJ6pahDUIO7icCnl2P6ID
-         D9yzOVtuGXwXjPNHAv7C0mtli6r7+Fz4LUb9BYHuF2XfJa6sttNVubaflp7/lUEGEUfP
-         y7KBzaXHuEW7DcIDXp7ntxEWQW6+6LOuv5S8IPzIV0rTHK7rrhVuyxzhWHD7/sJYTh8E
-         GTcaPN+Ii6pjEmryTXOVvQ4NF6yB4EQoUstF+3eGMYiBPvv8lTrm1Dff6imj/x34QPD8
-         E8kg==
+        bh=OBFfBjDvU34xdXTVY/xLpCxY7K4fviIo35LVZq71XQU=;
+        b=c1E66hnsZxMjKWHOj8BaJak6ThAWlcEGYhoBrt4Wz9ZwDDTeNahvPqnwqV/QNd8qG+
+         3cliGfOwdh1dCg+TEsYPXweDnfUmFZIscsh2gsckbURmfl3tbPMqYWoM/W1JlcWouai2
+         3AS8lIVqsSWG9qqXxEmsCZleb8BYxOjFb+PqRIHQPg+hR5rGDzd5SLYVYD3CwAk5b+3W
+         NrMiTGlVtrjOJOvbZ+wq2srythbsHEp2QSX7bLU4ERX6yBTWsu5ZKbiS9E0njP4swWaM
+         Pp0pwMtWuO30fJrL3D/3a89ij6stz4F/YoCtj+Z+5ELNwJwlTFlAIuW8JjwhPs0LVC30
+         a6UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=9p9WvHXoxlLbYWbCg+NginBLDGupg9fXAky3S1UEaX4=;
-        b=tCs+yHmUBHdXmgYBKiY+H7fsD4wDL0nl6cXXOR7u5b9AhrA4LrYG1SVv9i/bZlu9nP
-         lo2WvBHs/JQwva2kZSDMv/vz9Z7qvcX1J5HIQde7EtxH2NFS1E6XlcfisZxyB/domrT6
-         cw9NUN7/UDRyEA0dQdXjXWcmtXQAODIJC9s8CJ0wk38t6FjmecbslmxzluFfnx+MFQCI
-         KLRm9MwU7dOIfewr7uQVLXqkrVj73D86UFS9mn4MW3qG/tUju9iWJsIvK/gU0K4diCL0
-         ccA8gkuIfI3b4OiKu2k9+CI6X+Ok79Skx++hEQaH/SrgHhY3DmMkxblb4luyEpjBGH1y
-         T28A==
-X-Gm-Message-State: APjAAAVUVB0zkLiYYrm0pT4zFD/yrfTQDr403nTb/zxWvSECQyNINhk9
-        Ikw8FQpBe8d8S3EV3pPprYNW2zDU
-X-Google-Smtp-Source: APXvYqz0WrTX6sGWLnRtQfzthNqaPcLqG+VLyMyOuA0v9DWEfQ1lM3hZ4vQbFkrfLAiYLiWrNZ8F/g==
-X-Received: by 2002:a63:5048:: with SMTP id q8mr114161150pgl.446.1564609325331;
-        Wed, 31 Jul 2019 14:42:05 -0700 (PDT)
+        bh=OBFfBjDvU34xdXTVY/xLpCxY7K4fviIo35LVZq71XQU=;
+        b=WKfdeXSOyeuLPsM+i9ukqi5CNVXd+QTh2YDOLhSU2nFotVpDSgh4eGGAgwLiyDrT2s
+         I2HVTTF/tfiUZfFba2fRSeyy62Os5WvSYlRBP7pcZl5DwoInXEJ1TH/rdIPYXK11GbzX
+         AOe3XXdeHjEz2CIKgJJgQi5un04IojIVXnnvo4sbQDpcw9XcK5AlUZihYjcICqaybdhW
+         TJEvP9hKyVaidYy9DE/hy1frAEphjJlxN2GXKvjF8bpKx3wea11X59VH70ymw4qNkXUm
+         1z2PulnWmdHYKRxFMLfjk1kTybW1FGDARjoz6JMjIyukBGgpqQ4zFcOUtnG1oBM/o88r
+         0Iww==
+X-Gm-Message-State: APjAAAXoIN4Pq42zd+nCHpMY1SCvm8UTqn3tJCgKIKhYKlucgTJsD6eD
+        b3baIOL+RaDFmZiq2NhRB0c=
+X-Google-Smtp-Source: APXvYqzuJWY2RqSaKSGzp0SSePK9mmPqf1foe3m9/uyS1BTyyMypfZ0Mtr/vRq5+dUY9Y7EKqsm4Bw==
+X-Received: by 2002:a17:90a:2385:: with SMTP id g5mr5125620pje.12.1564609828644;
+        Wed, 31 Jul 2019 14:50:28 -0700 (PDT)
 Received: from [172.27.227.172] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id o9sm39374330pgv.19.2019.07.31.14.42.03
+        by smtp.googlemail.com with ESMTPSA id u3sm2616318pjn.5.2019.07.31.14.50.27
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 31 Jul 2019 14:42:04 -0700 (PDT)
-Subject: Re: [PATCH net v3] net: ipv6: Fix a bug in ndisc_send_ns when netdev
- only has a global address
-To:     Su Yanjun <suyj.fnst@cn.fujitsu.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1564537972-76503-1-git-send-email-suyj.fnst@cn.fujitsu.com>
+        Wed, 31 Jul 2019 14:50:27 -0700 (PDT)
+Subject: Re: [patch net-next 0/3] net: devlink: Finish network namespace
+ support
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
+        mlxsw@mellanox.com
+References: <20190727094459.26345-1-jiri@resnulli.us>
+ <eebd6bc7-6466-2c93-4077-72a39f3b8596@gmail.com>
+ <20190730060817.GD2312@nanopsycho.orion>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d599b296-5122-6b72-8869-5c457c2f9e3c@gmail.com>
-Date:   Wed, 31 Jul 2019 15:42:01 -0600
+Message-ID: <8f5afc58-1cbc-9e9a-aa15-94d1bafcda22@gmail.com>
+Date:   Wed, 31 Jul 2019 15:50:26 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <1564537972-76503-1-git-send-email-suyj.fnst@cn.fujitsu.com>
+In-Reply-To: <20190730060817.GD2312@nanopsycho.orion>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -66,36 +69,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/19 7:52 PM, Su Yanjun wrote:
-> When the egress interface does not have a link local address, it can
-> not communicate with other hosts.
+On 7/30/19 12:08 AM, Jiri Pirko wrote:
+> Mon, Jul 29, 2019 at 10:17:25PM CEST, dsahern@gmail.com wrote:
+>> On 7/27/19 3:44 AM, Jiri Pirko wrote:
+>>> From: Jiri Pirko <jiri@mellanox.com>
+>>>
+>>> Devlink from the beginning counts with network namespaces, but the
+>>> instances has been fixed to init_net. The first patch allows user
+>>> to move existing devlink instances into namespaces:
+>>>
+>>
+>> so you intend for an asic, for example, to have multiple devlink
+>> instances where each instance governs a set of related ports (e.g.,
+>> ports that share a set of hardware resources) and those instances can be
+>> managed from distinct network namespaces?
 > 
-> In RFC4861, 7.2.2 says
-> "If the source address of the packet prompting the solicitation is the
-> same as one of the addresses assigned to the outgoing interface, that
-> address SHOULD be placed in the IP Source Address of the outgoing
-> solicitation.  Otherwise, any one of the addresses assigned to the
-> interface should be used."
-> 
-> In this patch we try get a global address if we get ll address failed.
-> 
-> Signed-off-by: Su Yanjun <suyj.fnst@cn.fujitsu.com>
-> ---
-> Changes since V2:
-> 	- Let banned_flags under the scope of its use.
-> ---
->  include/net/addrconf.h |  2 ++
->  net/ipv6/addrconf.c    | 34 ++++++++++++++++++++++++++++++++++
->  net/ipv6/ndisc.c       | 10 +++++++---
->  3 files changed, 43 insertions(+), 3 deletions(-)
-> 
+> No, no multiple devlink instances for asic intended.
 
+So it should be allowed for an asic to have resources split across
+network namespaces. e.g., something like this:
 
-This change looks fine to me given the RFC reference, so for that part:
-Reviewed-by: David Ahern <dsahern@gmail.com>
+   namespace 1 |  namespace 2  | ... | namespace N
+               |               |     |
+  { ports 1 }  |   { ports 2 } | ... | { ports N }
+               |               |     |
+   devlink 1   |    devlink 2  | ... |  devlink N
+  =================================================
+                   driver
 
-Bigger picture is the issue Mark raised that a different RFC says all
-links should have an LLA, so use of IN6_ADDR_GEN_MODE_NONE means
-userspace is expected to create and add the LLA. Lack of an LLA is a
-misconfigured system. If that is enforced via some to be developed
-patch, then this patch would not be needed.
