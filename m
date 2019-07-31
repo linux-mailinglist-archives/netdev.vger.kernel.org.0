@@ -2,67 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3000B7CEE6
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 22:42:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB50A7CF31
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 22:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730908AbfGaUl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 16:41:58 -0400
-Received: from mga09.intel.com ([134.134.136.24]:2714 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730858AbfGaUlz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 16:41:55 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Jul 2019 13:41:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,331,1559545200"; 
-   d="scan'208";a="323901052"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga004.jf.intel.com with ESMTP; 31 Jul 2019 13:41:49 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 16/16] ice: Bump version number
-Date:   Wed, 31 Jul 2019 13:41:47 -0700
-Message-Id: <20190731204147.8582-17-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190731204147.8582-1-jeffrey.t.kirsher@intel.com>
-References: <20190731204147.8582-1-jeffrey.t.kirsher@intel.com>
+        id S1730655AbfGaU6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 16:58:45 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:45646 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726417AbfGaU6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 16:58:45 -0400
+Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hsvg9-0007ME-TG; Wed, 31 Jul 2019 16:58:40 -0400
+Date:   Wed, 31 Jul 2019 16:58:04 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sctp: Rename fallthrough label to unhandled
+Message-ID: <20190731205804.GE9823@hmswarspite.think-freely.org>
+References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
+ <20190731111932.GA9823@hmswarspite.think-freely.org>
+ <eac3fe457d553a2b366e1c1898d47ae8c048087c.camel@perches.com>
+ <20190731121646.GD9823@hmswarspite.think-freely.org>
+ <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
+On Wed, Jul 31, 2019 at 09:35:31AM -0700, Joe Perches wrote:
+> On Wed, 2019-07-31 at 08:16 -0400, Neil Horman wrote:
+> > On Wed, Jul 31, 2019 at 04:32:43AM -0700, Joe Perches wrote:
+> > > On Wed, 2019-07-31 at 07:19 -0400, Neil Horman wrote:
+> > > > On Tue, Jul 30, 2019 at 10:04:37PM -0700, Joe Perches wrote:
+> > > > > fallthrough may become a pseudo reserved keyword so this only use of
+> > > > > fallthrough is better renamed to allow it.
+> > > > > 
+> > > > > Signed-off-by: Joe Perches <joe@perches.com>
+> > > > Are you referring to the __attribute__((fallthrough)) statement that gcc
+> > > > supports?  If so the compiler should by all rights be able to differentiate
+> > > > between a null statement attribute and a explicit goto and label without the
+> > > > need for renaming here.  Or are you referring to something else?
+> > > 
+> > > Hi.
+> > > 
+> > > I sent after this a patch that adds
+> > > 
+> > > # define fallthrough                    __attribute__((__fallthrough__))
+> > > 
+> > > https://lore.kernel.org/patchwork/patch/1108577/
+> > > 
+> > > So this rename is a prerequisite to adding this #define.
+> > > 
+> > why not just define __fallthrough instead, like we do for all the other
+> > attributes we alias (i.e. __read_mostly, __protected_by, __unused, __exception,
+> > etc)
+> 
+> Because it's not as intelligible when used as a statement.
+I think thats somewhat debatable.  __fallthrough to me looks like an internal
+macro, whereas fallthrough looks like a comment someone forgot to /* */
 
-Update driver version to 0.7.5
+Neil
 
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 8a8f9170e219..c26e6a102dac 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -9,7 +9,7 @@
- #include "ice_lib.h"
- #include "ice_dcb_lib.h"
- 
--#define DRV_VERSION	"0.7.4-k"
-+#define DRV_VERSION	"0.7.5-k"
- #define DRV_SUMMARY	"Intel(R) Ethernet Connection E800 Series Linux Driver"
- const char ice_drv_ver[] = DRV_VERSION;
- static const char ice_driver_string[] = DRV_SUMMARY;
--- 
-2.21.0
-
+> 
+> 
+> 
+> 
