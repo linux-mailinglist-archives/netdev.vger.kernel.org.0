@@ -2,142 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA5667C9D8
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 19:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30EBD7CA2B
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 19:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730493AbfGaREe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 13:04:34 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:45228 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729097AbfGaREd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 13:04:33 -0400
-Received: by mail-qt1-f194.google.com with SMTP id x22so62382715qtp.12;
-        Wed, 31 Jul 2019 10:04:32 -0700 (PDT)
+        id S1728718AbfGaRTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 13:19:12 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:44325 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726942AbfGaRTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 13:19:12 -0400
+Received: by mail-qt1-f193.google.com with SMTP id 44so36323293qtg.11;
+        Wed, 31 Jul 2019 10:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lqvJbiJ0ViYrKCHlWuUGRI0Vk4anl27aep+PR9BDs+A=;
-        b=tXxIAc53CSuZJBIX1g5xzEWAYBBLKY/cXcS7/18hagcnmxknic4QI3+xtya1EyRCg6
-         iEsAauTbSkMMI7+/BF0Wp1No+hL9RgmPjrJZf3UQwFFCfH27MBycms/V/Db4HcGiJs/D
-         Vsj9jFLpkgx2myvgBIc2FBs4iiaCPUTDk3Bg4u7Pa/6+JcHxEtdtoUsWRHlXGbUsILDt
-         8epP++AB2E+lIzvMuG4f8SrPAZOicHi+J8zTP2BZ54gOru+gvBQpfL/+Rmes42HoC8Gc
-         7iltFpnWz5rUbpU1tE1PqtnOXAdGVMsvmntSlkKDvRMbmB5TuKbVwJvXmf7W2+WfOHeE
-         0f/Q==
+         :cc;
+        bh=Vut+5SeKuwpmKhsOF9oU2Lng89koznQFCQaV72q2LU0=;
+        b=ih56czYcuESrpyj0QPqSlmg1K/i3SbpONEJLka7Gdd33DQRsvzyRqIjXCs3hXEcTjZ
+         RW9DpX8aRvJ0xOu+e1Xj0xL6hsjybOG+Kkj1FpffEXOAyTZXAmquc8vYoqzBLks9VxjN
+         ND0FicxKvmdab8B69jyoESSe3YkaIeZpKqgFOOpRpOzpfWZkfMEZJyZe08VlBNtbPgmv
+         tPpfSPwxLfpfSM58mijETtX0gRYQWshdB5Do7nOpdtraUs+DjmHd1MjcFKk/bkst+5O7
+         PxaaLVKR/iSRA07G5SD7mMsOjDyM+X+2GqzbePeFLEGuThfzqYnfwsllPXaon15/Lstf
+         4tXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lqvJbiJ0ViYrKCHlWuUGRI0Vk4anl27aep+PR9BDs+A=;
-        b=GuQ0a+JsF4HNzBOf39Doe7H/beBEy9SU+x/jCn5hSLF9/uuWk33xTCgPNPEQ7Uu1QW
-         FLxpH2VUWevK0ql4PQFSeTBy4aWp6esz04tFdy4O1k9lP/JoFqVzZCDdZlSlryZtyFIi
-         6zZ4/m53sHxSR0aDQw0/fRky30kyh5+1+CiFsEhCIB5veLb8kfoZC9DD1aGSSFfxVPM5
-         v+1U9C5zUcHJ7ppSpuUZmpEcKkZbU3ipeYrG+JraN9o9IuOBaTAOCrpEBmDidwvdTDTI
-         Mq42UyXyTNQyVZ4Lb3ra53YIjwFnKvvVweTEJQiVtIeXGL9S45fWqpGnGJLjFaXlf9qk
-         7SkA==
-X-Gm-Message-State: APjAAAXz4I4/JfYLD8gAm156k+bBk1D7eP/7KuOx7RaQ7QmI2aCo7/e1
-        3BJfn6qGPKE0Jl0jp+gqS9hAnl+FRBgX1AxspLUoB0fucHg=
-X-Google-Smtp-Source: APXvYqwy3ZmLY6pIjLa4qrVxnHYguShOGr9R5V8LdkI11Hm5N6g+XEEdjPRgBtvzFXuGRnbYmgE32fzMJ8kolOLW+To=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr84694203qta.171.1564592672034;
- Wed, 31 Jul 2019 10:04:32 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=Vut+5SeKuwpmKhsOF9oU2Lng89koznQFCQaV72q2LU0=;
+        b=r7rdLnfTDr89981ul3H3Eqbbh8W8O1lblJouiy7SwRBStSUXi4kPDN2kmdOhQEr/wy
+         93t7M3bk3xROS8z7bSs/6VccUEcpDWe7H7d/J97yqEg+LSECzEMI+pN61FNQAFfRHcyI
+         GHiCJssqcCWgwL6xJkBHLz3GTo8gdAz4yOgsbJpkLjBBtFAeF5k5yduoegk10Cc2Wuip
+         87f8Qaq4wMZ6nc11T/b95XO/o/38tFWH0qZTUCvaQoyWyk17JzXZAGwG2ATZU4wkYtnx
+         BZ/cRMpRb0w6myQXVRB/HkWKeI5W1XPEjMnL39SNwdh1qnKoZVvP4ICCkFCxou17ASXg
+         7sSw==
+X-Gm-Message-State: APjAAAUHGbzIJMhm5qIds9WbXqklfH9I0ErbJlNDty4Lugn5CTkADRyH
+        pHqVBNv3pquwqDNgKCA1xSq5S5GqJb7GBJ7mHxw=
+X-Google-Smtp-Source: APXvYqxInSQiHD5IMjegweTtiNlen9k3On+wJwxkv9Vr7aN8iNTGd1sCJ6NLemC79U+PeZu2WD/9OkZcDv313xy1Yso=
+X-Received: by 2002:ac8:21b7:: with SMTP id 52mr84527111qty.59.1564593550813;
+ Wed, 31 Jul 2019 10:19:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190726203747.1124677-1-andriin@fb.com> <20190726203747.1124677-2-andriin@fb.com>
- <20190726212152.GA24397@mini-arch> <CAEf4BzYDvZENJqrT0KKpHbfHNCdObB9p4ZcJqQj3+rM_1ESF3g@mail.gmail.com>
- <20190726220119.GE24397@mini-arch> <CAEf4Bzbj6RWUo8Q7wgMnbL=T7V2yK2=gbdO3sSfxJ71Gp6jeYA@mail.gmail.com>
- <3D822EE0-C033-4192-B505-A30E5EC23BC3@linux.ibm.com>
-In-Reply-To: <3D822EE0-C033-4192-B505-A30E5EC23BC3@linux.ibm.com>
+References: <20190730195408.670063-1-andriin@fb.com> <20190730195408.670063-3-andriin@fb.com>
+ <4AB53FC1-5390-4BC7-83B4-7DDBAFD78ABC@fb.com> <CAEf4BzYE9xnyFjmN3+-LgkkOomt383OPNXVhSCO4PncAu20wgw@mail.gmail.com>
+ <AA9B5489-425E-4FAE-BE01-F0F65679DF00@fb.com> <CAEf4Bza3cAoZJE+24_MBiv-8yYtAaTkAez5xq1v12cLW1-RGcw@mail.gmail.com>
+ <4D2E1082-5013-4A50-B75D-AB88FDCAAC52@fb.com>
+In-Reply-To: <4D2E1082-5013-4A50-B75D-AB88FDCAAC52@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 31 Jul 2019 10:04:20 -0700
-Message-ID: <CAEf4BzbQ3JF9s_LsOEeVUoXDR57USdNFvQ4E=5vUzQ=sAPuUaQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/9] selftests/bpf: prevent headers to be
- compiled as C code
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     Stanislav Fomichev <sdf@fomichev.me>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+Date:   Wed, 31 Jul 2019 10:18:59 -0700
+Message-ID: <CAEf4Bzb6swYtf7J_m1bZo6o+aT1AcCXZX5ZBw7Uja=Tne2LCuw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 02/12] libbpf: implement BPF CO-RE offset
+ relocation algorithm
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 6:21 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+On Wed, Jul 31, 2019 at 1:30 AM Song Liu <songliubraving@fb.com> wrote:
 >
-> > Am 27.07.2019 um 20:53 schrieb Andrii Nakryiko <andrii.nakryiko@gmail.c=
-om>:
+>
+>
+> > On Jul 30, 2019, at 11:52 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 > >
-> > On Fri, Jul 26, 2019 at 3:01 PM Stanislav Fomichev <sdf@fomichev.me> wr=
-ote:
+> > On Tue, Jul 30, 2019 at 10:19 PM Song Liu <songliubraving@fb.com> wrote:
 > >>
-> >> On 07/26, Andrii Nakryiko wrote:
-> >>> On Fri, Jul 26, 2019 at 2:21 PM Stanislav Fomichev <sdf@fomichev.me> =
-wrote:
-> >>>>
-> >>>> On 07/26, Andrii Nakryiko wrote:
-> >>>>> Apprently listing header as a normal dependency for a binary output
-> >>>>> makes it go through compilation as if it was C code. This currently
-> >>>>> works without a problem, but in subsequent commits causes problems =
-for
-> >>>>> differently generated test.h for test_progs. Marking those headers =
-as
-> >>>>> order-only dependency solves the issue.
-> >>>> Are you sure it will not result in a situation where
-> >>>> test_progs/test_maps is not regenerated if tests.h is updated.
-> >>>>
-> >>>> If I read the following doc correctly, order deps make sense for
-> >>>> directories only:
-> >>>> https://www.gnu.org/software/make/manual/html_node/Prerequisite-Type=
-s.html
-> >>>>
-> >>>> Can you maybe double check it with:
-> >>>> * make
-> >>>> * add new prog_tests/test_something.c
-> >>>> * make
-> >>>> to see if the binary is regenerated with test_something.c?
-> >>>
-> >>> Yeah, tested that, it triggers test_progs rebuild.
-> >>>
-> >>> Ordering is still preserved, because test.h is dependency of
-> >>> test_progs.c, which is dependency of test_progs binary, so that's why
-> >>> it works.
-> >>>
-> >>> As to why .h file is compiled as C file, I have no idea and ideally
-> >>> that should be fixed somehow.
-> >> I guess that's because it's a prerequisite and we have a target that
-> >> puts all prerequisites when calling CC:
 > >>
-> >> test_progs: a.c b.c tests.h
-> >>        gcc a.c b.c tests.h -o test_progs
 > >>
-> >> So gcc compiles each input file.
+> >>> On Jul 30, 2019, at 6:00 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >>>
+> >>> On Tue, Jul 30, 2019 at 5:39 PM Song Liu <songliubraving@fb.com> wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>>> On Jul 30, 2019, at 12:53 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >>>>>
+> >>>>> This patch implements the core logic for BPF CO-RE offsets relocations.
+> >>>>> Every instruction that needs to be relocated has corresponding
+> >>>>> bpf_offset_reloc as part of BTF.ext. Relocations are performed by trying
+> >>>>> to match recorded "local" relocation spec against potentially many
+> >>>>> compatible "target" types, creating corresponding spec. Details of the
+> >>>>> algorithm are noted in corresponding comments in the code.
+> >>>>>
+> >>>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> [...]
+>
+> >>>>
+> >>>
+> >>> I just picked the most succinct and non-repetitive form. It's
+> >>> immediately apparent which type it's implicitly converted to, so I
+> >>> felt there is no need to repeat it. Also, just (void *) is much
+> >>> shorter. :)
+> >>
+> >> _All_ other code in btf.c converts the pointer to the target type.
 > >
-> > If that's really a definition of the rule, then it seems not exactly
-> > correct. What if some of the prerequisites are some object files,
-> > directories, etc. I'd say the rule should only include .c files. I'll
-> > add it to my TODO list to go and check how all this is defined
-> > somewhere, but for now I'm leaving everything as is in this patch.
+> > Most in libbpf.c doesn't, though. Also, I try to preserve pointer
+> > constness for uses that don't modify BTF types (pretty much all of
+> > them in libbpf), so it becomes really verbose, despite extremely short
+> > variable names:
 > >
+> > const struct btf_member *m = (const struct btf_member *)(t + 1);
 >
-> I believe it=E2=80=99s an implicit built-in rule, which is defined by mak=
-e
-> itself here:
->
-> https://git.savannah.gnu.org/cgit/make.git/tree/default.c?h=3D4.2.1#n131
->
-> The observed behavior arises because these rules use $^ all over the
-> place. My 2c is that it would be better to make the rule explicit,
-> because it would cost just an extra line, but it would be immediately
-> obvious why the code is correct w.r.t. rebuilds.
+> I don't think being verbose is a big problem here. Overusing
 
-Thanks for pointing this out, Ilya! I agree, I'd rather have a simple
-explicit rule in Makefile that having to guess where this is coming
-from and why it doesn't work as you'd expect it to. If no one else
-adds that first, I'll eventually get to this.
+Problem is too big and strong word to describe this :). It hurts
+readability and will often quite artificially force either wrapping
+the line or unnecessarily splitting declaration and assignment. Void *
+on the other hand is short and usually is in the same line as target
+type declaration, if not, you'll have to find local variable
+declaration to double-check type, if you are unsure.
+
+Using (void *) + implicit cast to target pointer type is not
+unprecedented in libbpf:
+
+$ rg ' = \((const )?struct \w+ \*\)' tools/lib/bpf/ | wc -l
+52
+$ rg ' = \((const )?void \*\)' tools/lib/bpf/  | wc -l
+35
+
+52 vs 35 is majority overall, but not by a landslide.
+
+> (void *) feels like a bigger problem.
+
+Why do you feel it's a problem? void * conveys that we have a piece of
+memory that we will need to reinterpret as some concrete pointer type.
+That's what we are doing, skipping btf_type and then interpreting
+memory after common btf_type prefix is some other type, depending on
+actual BTF kind. I don't think void * is misleading in any way.
+
+In any case, if you still feel strongly about this after all my
+arguments, please let me know and I will convert them in this patch
+set. It's not like I'm opposed to use duplicate type names (though it
+does feel sort of Java-like before it got limited type inference),
+it's just in practice it leads to unnecessarily verbose code which
+doesn't really improve anything.
 
 >
-> Best regards,
-> Ilya
+> >
+> > Add one or two levels of nestedness and you are wrapping this line.
+> >
+> >> In some cases, it is not apparent which type it is converted to,
+> >> for example:
+> >>
+> >> +       m = (void *)(targ_type + 1);
+> >>
+> >> I would suggest we do implicit conversion whenever possible.
+> >
+> > Implicit conversion (`m = targ_type + 1;`) is a compilation error,
+> > that won't work.
+>
+> I misused "implicit" here. I actually meant to say
+>
+>         m = ((const struct btf_member *)(t + 1);
+
+Ah, so you meant explicit, yep. It's either `void *` or `const struct
+something *` then.
+
+>
+>
+>
