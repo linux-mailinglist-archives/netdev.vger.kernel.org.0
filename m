@@ -2,122 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAED27B872
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 06:16:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00AC77B8B8
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 06:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727784AbfGaEQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 00:16:28 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35333 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbfGaEQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 00:16:28 -0400
-Received: by mail-lj1-f195.google.com with SMTP id x25so64271506ljh.2;
-        Tue, 30 Jul 2019 21:16:27 -0700 (PDT)
+        id S1728717AbfGaEbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 00:31:00 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42304 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726601AbfGaEbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 00:31:00 -0400
+Received: by mail-pl1-f193.google.com with SMTP id ay6so29919843plb.9;
+        Tue, 30 Jul 2019 21:30:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6OtUnKT18Ci+lW6CmCVbqoSRAd+jTdoTx9bwjfNStg0=;
-        b=sSESjRp3/NtS2obfX3VWzd2a6LNc9UDYGMMc0gZWt2kVjognYQ7acaBb7Oq8MfaTyd
-         G/7GgTrJd31nvPU6+BsuJBPwhzkKWWiK2qJfpudTRmfRcbT971PsBnzHHWjzXqkQpT3b
-         45+Yw8YmqC8T1pylIhZWDG+OjB7ETefQx48Sl+omJAQHO5MQedrh1wh6/0VNTq1tOMS+
-         nMRZTvj200UEcLUq8rGqYuA+t4VSe9GsBTKCJuSSXGEn7HAnTZ6frSzMIYjEm3SppcQ3
-         wm+KWXDtUusroi1BUMk+wMbzRCuL0pAGGtIBBjQB1A0rxDN/mpqTTVryGo1TtdnKeB7Y
-         1d1A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aWCo57+BoaXzwl2WEeJkLPW0p2pUCHqK296Egq73VYU=;
+        b=qq+qornHhhh0pApQAe9cYHwBq5LyJ0Ccjx7+I8odAR01HaM7EVQJoEAPCN3MI+78uL
+         pweEHxtyieA4zlJS8avkFxacc9PICcIK7Qxipm6vSeevCDodrpiI6tIZEx+SHDj1SmnA
+         PV5v0KC8rU1R59gpc03p0+aZE8UL7fNImxwxFvtTbVg9fRSL5rEoDG2uGEbxUClUIz34
+         cS4YX1hBH3+QP08ElUMl5d3lCMBu6IviuXtPdPSidpr75u4Wgu/WLErMXc0HAHzCl1kg
+         G4QGvNzXtuqgQrS6rWiKuIb7Tl1Yd+XPM+PW1hLKtR8Qdtb9yfTZEisCtDL1XDGJKIN3
+         dOfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6OtUnKT18Ci+lW6CmCVbqoSRAd+jTdoTx9bwjfNStg0=;
-        b=gxdNalPzSoKppZeXIomQ5vafUEaKMFkhaqDSB7iKE6yBQ3gx1lbf1/ohYuPsRxGUZw
-         XqS2LRzn2DWMV+m5DPk6tDQmFw/XP93oV/ts8b/UZl4r3mMzG16Y31lFECoWT3zNdc5I
-         cbRFr0apIRIzCbauxP73zqP2IfgywA8gECd9B7ZOVOLffyoGUg0DfeglDiG4D3UHRDkF
-         Ol0mGm4/S5n/QwcZhwKI1Kh5A/WcefnVQmWxues4TPF02yHm4F2O/mxQXJq81ukqV2Vj
-         YRn3e5wVwPe2qYmJ1DB21L5hSp3pQikBFtjvGGlL4b911QrLntXhWr8nuikS1xfHRtpk
-         inoA==
-X-Gm-Message-State: APjAAAVVGTS+84faTDBmUm+V96EdHMUI0Dr4gdLsGBFkJEu0y3VKYXlA
-        OrB5sozRSGDA44E2NyqaUupUMFiNhoi2crB599P0mQ==
-X-Google-Smtp-Source: APXvYqybghqdMu7GOys3yy53mEz/3zRrEkH+cjwUB/8hgv9smh3kkOG9Uv+zpl0H51/y0oxJXTUrxFrgS8asUAaKDPY=
-X-Received: by 2002:a2e:7818:: with SMTP id t24mr34966442ljc.210.1564546586604;
- Tue, 30 Jul 2019 21:16:26 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aWCo57+BoaXzwl2WEeJkLPW0p2pUCHqK296Egq73VYU=;
+        b=lfECd4HfO6D25sJDqsljxkPpXOM5fPY5Ug92prDL1DQZ5MXu/rjhozmlcQwPvEDAal
+         4tlQQmbpwByjmSRRnUwJiEp3waDMOJ5qPLfYblGc7HaclWISe7hHJb0BbPs4Jo+th4eW
+         RSxIqicf+t6M4K3Zj9z2vjo7/HpX/sawBZQTlpXFAXbJzJIYx32GAQQstbJJ5V/8XhGf
+         8CSAOzl5mCFm75SIx+uXfw5tKI2kdk+Iz7i+3HkCwo+ZcRaYP4/+jxEi6h6wC2AHwxkm
+         9+8DQGKrqJUIsiGyyvy6q+Wvh6KdpteEQfdKTA1f3pyKTJ0ZjRKi5SixGZYbPspV8uR4
+         pDrw==
+X-Gm-Message-State: APjAAAX9w36YsPOXcOqVE4Vogn9CgCs0ILdbcKzeLzXc360fOt2wD62t
+        G+bMKaxMY77vhT+5XVJr/Qw=
+X-Google-Smtp-Source: APXvYqx0iYkTtR3C6HQ0OZ5glSnx1Nwsfo9AImrQoC8dMXuWWMuBfLojlmn6g31v1mOP2S6R8Oc82g==
+X-Received: by 2002:a17:902:7c90:: with SMTP id y16mr120348323pll.238.1564547459509;
+        Tue, 30 Jul 2019 21:30:59 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id h1sm84205792pfg.55.2019.07.30.21.30.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 21:30:58 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 21:30:56 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Subject: Re: [PATCH 4/4] net: dsa: mv88e6xxx: add PTP support for MV88E6250
+ family
+Message-ID: <20190731043056.GA1482@localhost>
+References: <20190730100429.32479-1-h.feurstein@gmail.com>
+ <20190730100429.32479-5-h.feurstein@gmail.com>
+ <20190730160032.GA1251@localhost>
+ <CAFfN3gUCqGuC7WB_UjYYNt+VWGfEBsdfgvPBqxoJi_xitH=yog@mail.gmail.com>
+ <20190730171246.GB1251@localhost>
+ <CA+h21hqWO=qT6EuQOVgX=J1=m60AWT6EGvQgfzGS=BNNq1cyTg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190730210300.13113-1-jakub.kicinski@netronome.com> <20190730220053.GA69301@ctakshak-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20190730220053.GA69301@ctakshak-mbp.dhcp.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 30 Jul 2019 21:16:15 -0700
-Message-ID: <CAADnVQJapeA8dqA1hZ=r-Qk8h9i+ZfApvSiSshCeqOBAAEBzRQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] tools: bpftool: add support for reporting the
- effective cgroup progs
-To:     Takshak Chahande <ctakshak@fb.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hqWO=qT6EuQOVgX=J1=m60AWT6EGvQgfzGS=BNNq1cyTg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 3:01 PM Takshak Chahande <ctakshak@fb.com> wrote:
->
-> Jakub Kicinski <jakub.kicinski@netronome.com> wrote on Tue [2019-Jul-30 14:03:00 -0700]:
-> > Takshak said in the original submission:
-> >
-> > With different bpf attach_flags available to attach bpf programs specially
-> > with BPF_F_ALLOW_OVERRIDE and BPF_F_ALLOW_MULTI, the list of effective
-> > bpf-programs available to any sub-cgroups really needs to be available for
-> > easy debugging.
-> >
-> > Using BPF_F_QUERY_EFFECTIVE flag, one can get the list of not only attached
-> > bpf-programs to a cgroup but also the inherited ones from parent cgroup.
-> >
-> > So a new option is introduced to use BPF_F_QUERY_EFFECTIVE query flag here
-> > to list all the effective bpf-programs available for execution at a specified
-> > cgroup.
-> >
-> > Reused modified test program test_cgroup_attach from tools/testing/selftests/bpf:
-> >   # ./test_cgroup_attach
-> >
-> > With old bpftool:
-> >
-> >  # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/
-> >   ID       AttachType      AttachFlags     Name
-> >   271      egress          multi           pkt_cntr_1
-> >   272      egress          multi           pkt_cntr_2
-> >
-> > Attached new program pkt_cntr_4 in cg2 gives following:
-> >
-> >  # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2
-> >   ID       AttachType      AttachFlags     Name
-> >   273      egress          override        pkt_cntr_4
-> >
-> > And with new "effective" option it shows all effective programs for cg2:
-> >
-> >  # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2 effective
-> >   ID       AttachType      AttachFlags     Name
-> >   273      egress          override        pkt_cntr_4
-> >   271      egress          override        pkt_cntr_1
-> >   272      egress          override        pkt_cntr_2
-> >
-> > Compared to original submission use a local flag instead of global
-> > option.
-> >
-> > We need to clear query_flags on every command, in case batch mode
-> > wants to use varying settings.
-> >
-> > v2: (Takshak)
-> >  - forbid duplicated flags;
-> >  - fix cgroup path freeing.
-> >
-> > Signed-off-by: Takshak Chahande <ctakshak@fb.com>
-> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-...
->
-> Reviewed-by: Takshak Chahande <ctakshak@fb.com>
+On Tue, Jul 30, 2019 at 11:46:51PM +0300, Vladimir Oltean wrote:
 
-Applied. Thanks
+> Technically it is not "not true".
+
+[Sigh]  The statement was:
+
+    The adjfine API clamps ppb between [-32,768,000, 32,768,000]
+
+The adjfine API does NOT clamp to that range.  That statement is
+simply false.
+
+> And what is the reason for the neg_adj thing? Can you give an example
+> of when does the "normal way" of doing signed arithmetics not work?
+
+The detail from years ago escape me ATM, but I needed to use div_u64.
+Maybe div_s64 was broken.
+
+But that is not the point.  Changing the adjfine() logic for this
+driver is out of scope for this series.  If someone thinks the logic
+needs changing, then that must carefully explained and justified in
+the changelog of a patch implementing that _one_ change.
+
+Thanks,
+Richard
+
