@@ -2,80 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88BA47B9CA
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 08:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 797997B9F8
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 08:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387414AbfGaGjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 02:39:22 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:54173 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727645AbfGaGjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 02:39:22 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8A96822221;
-        Wed, 31 Jul 2019 02:39:21 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 31 Jul 2019 02:39:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=MyyuOpM+MAMbX7tA0
-        tPPOJvZs6IuGHk3LNzG1sJukE0=; b=SEkjiOBD91PKrN3mnv4qRBpgv9DRjrS/6
-        Hf0+U35KW8etRFlOJZKNRpL3hzlg6iC4a6E5OF6DSzhh43uWx2jadXtvhQHKDqAO
-        HNEgPqiAgqcnuOmUjRVIxFpvhC95Z7YP2UTPpH56Ex+WtBl1gp3/oX1bLuCeRfpI
-        uccko5JC7sbE9JDkgssjAn50OQPmZcqfSul8cF/zX/agXCBRDCF+TBX0588+5edY
-        JwbdwZRC9MuvvN2/n1bbks2rjPlI1WOGwWHoSS+A/9dcCjft1WW2AFKFrGTryowO
-        K4Dt5uLoetM8tMeBQC6ujy3I3NLL8CNH0mAkY5WW18I9yR9iGdtTA==
-X-ME-Sender: <xms:mTdBXXPDIaJc4q5ysiuaZLgTk4XbRW0NAEwi1Q7Qdy9OzMCC5re6Cg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrleeggddutdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuffhomhgrihhnpehfvgguohhrrghhohhsthgvugdrohhrghenucfkph
-    epudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiugho
-    shgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:mTdBXeR2qAfnLIhTuIVjBeZA0FgBO_oAZq7xFzrkeLOFl2amk5uN-Q>
-    <xmx:mTdBXZCAuv6Wi318-EKMYlt6LzB6xhnf9qk44gPxtQAv8dbH5dVJ2w>
-    <xmx:mTdBXdi8PUIsjUhRVedxWrb-_fNdQYXNo8m_GTXSrDOGEegHRjCsiQ>
-    <xmx:mTdBXR8hK_Gz3wCCxv1orYOwtq3vnjklxJpDVwSxbrY0cF_W6LwMug>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id AEDAB380087;
-        Wed, 31 Jul 2019 02:39:19 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] drop_monitor: Add missing uAPI file to MAINTAINERS file
-Date:   Wed, 31 Jul 2019 09:38:19 +0300
-Message-Id: <20190731063819.10001-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
+        id S2387630AbfGaGwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 02:52:46 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:33700 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387623AbfGaGwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 02:52:45 -0400
+Received: by mail-qk1-f194.google.com with SMTP id r6so48474111qkc.0;
+        Tue, 30 Jul 2019 23:52:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AyqD19CU3qCrLhy/A3KHIHiiFH5U7sqBesHojs94Vpo=;
+        b=juVgYaHDrWUwsRcd+AnWe7GXC9e+ooMOsyyB1YqSvkjrWUJBjuUZWFusyOxQTsWhjn
+         otmNIS9xpRnS+QcB5u3qWVdcBOYNCZLDy2Q/tNWnF858RJTGkXqVQZX6p0ddyhp6o+fP
+         ESCNUEUqMf+JYtZwiUE8Fb8xL8HyTTBBp9tuUxi9nycVDrQ6+E7qqIqU20XXtpUV0qp8
+         vo19PmIbL/YboujolohXxGNz9sX/EmmTA+jPv0HYvASRcvXwYtr2VbSpjFYWqaM11Dw3
+         IsPBI9CiRC4WLZ4U0QzWPqLoS0qeX8o/3iLpZ5mOU47TwkfVKADAZ3ssJzgs5TcP8RWG
+         fU0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AyqD19CU3qCrLhy/A3KHIHiiFH5U7sqBesHojs94Vpo=;
+        b=gG+dLPf74CtwShWup6IwRyUiCtbuXzWLgA43mPrP1wECJEGbonxhN5Zm/K8h6Bw4Yh
+         M1Jcakb9zySPQIL/IZ3Liy12q7p7q6CUOE2UZxqf9dn1WL4ooh4IhW97L8y+oZjlTvnQ
+         s3/ZvzUIg5Zpa7T2YU+MHVwf6zeA5R3u+vRZjR8mkLOwaIB6X8rauWB2wNhZ2k+P7TPX
+         ZEAlC4R8rsGAP9OOix5Strwj/EvNkc8LLASqYQctUHZvSKVreyJDNIb35AyjiGRCWYm/
+         mJDE5JzmJojGOfo2fJgxtN4rtKHTskR52xrPDz/2DN3UAnDYoFvFcSfKLvAkAwOrejo8
+         Uk6g==
+X-Gm-Message-State: APjAAAX0Rl8oEzVMW6/04qQZbeLCjaN5hI5Uvis//vM7FYHCGPABCIBr
+        wEVd3P24hCK23HqGQAN8MkIJ6qE/Hl9Izccg3P51tvcYSts=
+X-Google-Smtp-Source: APXvYqwhnSmVpZtt44CWiPzGfBmJ+FZeSTe1+UDu6v+C47C31vgLP6AF6iw/JZaf0RCXlJ7fubcETJB4Agf+o8hrrrY=
+X-Received: by 2002:a37:660d:: with SMTP id a13mr52485134qkc.36.1564555964742;
+ Tue, 30 Jul 2019 23:52:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190730195408.670063-1-andriin@fb.com> <20190730195408.670063-3-andriin@fb.com>
+ <4AB53FC1-5390-4BC7-83B4-7DDBAFD78ABC@fb.com> <CAEf4BzYE9xnyFjmN3+-LgkkOomt383OPNXVhSCO4PncAu20wgw@mail.gmail.com>
+ <AA9B5489-425E-4FAE-BE01-F0F65679DF00@fb.com>
+In-Reply-To: <AA9B5489-425E-4FAE-BE01-F0F65679DF00@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 30 Jul 2019 23:52:33 -0700
+Message-ID: <CAEf4Bza3cAoZJE+24_MBiv-8yYtAaTkAez5xq1v12cLW1-RGcw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 02/12] libbpf: implement BPF CO-RE offset
+ relocation algorithm
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Tue, Jul 30, 2019 at 10:19 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Jul 30, 2019, at 6:00 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Jul 30, 2019 at 5:39 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >>
+> >>
+> >>> On Jul 30, 2019, at 12:53 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >>>
+> >>> This patch implements the core logic for BPF CO-RE offsets relocations.
+> >>> Every instruction that needs to be relocated has corresponding
+> >>> bpf_offset_reloc as part of BTF.ext. Relocations are performed by trying
+> >>> to match recorded "local" relocation spec against potentially many
+> >>> compatible "target" types, creating corresponding spec. Details of the
+> >>> algorithm are noted in corresponding comments in the code.
+> >>>
+> >>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> >>> ---
+> >>> tools/lib/bpf/libbpf.c | 915 ++++++++++++++++++++++++++++++++++++++++-
+> >>> tools/lib/bpf/libbpf.h |   1 +
+> >>> 2 files changed, 909 insertions(+), 7 deletions(-)
+> >>>
+> >>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> >
+> > [...]
+> >
+> > Please trim irrelevant parts. It doesn't matter with desktop Gmail,
+> > but pretty much everywhere else is very hard to work with.
+>
+> This won't be a problem if the patch is shorter. ;)
+>
+> >
+> >>> +
+> >>> +     for (i = 1; i < spec->raw_len; i++) {
+> >>> +             t = skip_mods_and_typedefs(btf, id, &id);
+> >>> +             if (!t)
+> >>> +                     return -EINVAL;
+> >>> +
+> >>> +             access_idx = spec->raw_spec[i];
+> >>> +
+> >>> +             if (btf_is_composite(t)) {
+> >>> +                     const struct btf_member *m = (void *)(t + 1);
+> >>
+> >> Why (void *) instead of (const struct btf_member *)? There are a few more
+> >> in the rest of the patch.
+> >>
+> >
+> > I just picked the most succinct and non-repetitive form. It's
+> > immediately apparent which type it's implicitly converted to, so I
+> > felt there is no need to repeat it. Also, just (void *) is much
+> > shorter. :)
+>
+> _All_ other code in btf.c converts the pointer to the target type.
 
-Fixes: 6e43650cee64 ("add maintainer for network drop monitor kernel service")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+Most in libbpf.c doesn't, though. Also, I try to preserve pointer
+constness for uses that don't modify BTF types (pretty much all of
+them in libbpf), so it becomes really verbose, despite extremely short
+variable names:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9f5b8bd4faf9..b540794cbd91 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11137,6 +11137,7 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- W:	https://fedorahosted.org/dropwatch/
- F:	net/core/drop_monitor.c
-+F:	include/uapi/linux/net_dropmon.h
- 
- NETWORKING DRIVERS
- M:	"David S. Miller" <davem@davemloft.net>
--- 
-2.21.0
+const struct btf_member *m = (const struct btf_member *)(t + 1);
 
+Add one or two levels of nestedness and you are wrapping this line.
+
+> In some cases, it is not apparent which type it is converted to,
+> for example:
+>
+> +       m = (void *)(targ_type + 1);
+>
+> I would suggest we do implicit conversion whenever possible.
+
+Implicit conversion (`m = targ_type + 1;`) is a compilation error,
+that won't work.
+
+>
+> Thanks,
+> Song
