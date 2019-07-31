@@ -2,82 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E0A7BEAD
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 12:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6607BF2E
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 13:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727591AbfGaKyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 06:54:53 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:46378 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725209AbfGaKyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 06:54:53 -0400
-Received: by mail-vs1-f67.google.com with SMTP id r3so45812871vsr.13
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 03:54:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=CN6bGVNT6PwUD35aJJc0dJRuvFhfXbJfUlSVRS9yF0w=;
-        b=czP2MZklSJu0CVZreSFr8XvP6QlklmjWzSNJsOxrzgOATc+B75//4Jr2sfH5QDpRpo
-         aNAEEExAT/cWq77wSJNrptlR4qLObSC6qg86PXz2HHs93rL0XyGo4CklzczmF+78L0ve
-         XY6+BOSvJZf7W7j6rhwiOJjJdFRLuGup5yU3XkX1Yf8ejI8oyG+Th1pyg5v0TltCcTLY
-         bgQMiC/DdtIm/0vI0EXdZd7UTz4nihJ2lMbYAnw3tEDnFG/ONWpJVatrsn6EMUvG7lti
-         LE62lwFHMnEE73dZb9G7tyHpqSa07UVIWVgEtXSul1afg5+ECgFxYVeitn6i9+CcwwR5
-         URNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=CN6bGVNT6PwUD35aJJc0dJRuvFhfXbJfUlSVRS9yF0w=;
-        b=J7hyNto4eNvLfx9i4gKqUEtb5EfEvpcPfYp583PeU+KUZm6IHe/RfitNfGUuZHYyA1
-         AsCHH+EOSXEFcEysa/GVEuPdM9398cEhSzbAWdlLOtaba/8ma5epfHM07kijwsnkQXjQ
-         jKXcA/IXMna47Ja3ik3unGacu4HqjSz5oUIp97XGfeSM025Pio9Pi9zmRvlbNlBWvgGq
-         2zoRirrxeiF6OMwvw5o8ouCGoTaVEWwwDaKbwkTQKIBeRo0GockrHNAlnPSAWs3nuvpb
-         7k2TmuStPYw2hMS0eVN4ZOvEbbZZEXvG6PABrNOfpmsTgT9ePhBQI2InMbh/uzDC6Cgx
-         uWxw==
-X-Gm-Message-State: APjAAAVDh/sUo9XIVRuO+W9jgyRnQ3UxQCaZ173d8dZ3/ZT6SyOY7Nmr
-        bifN3j0snw4cuhLmP9mVqRcyNOJLH657Ubf7chc=
-X-Google-Smtp-Source: APXvYqzpmnUO3qECLe9prky/vDLIcKoA/vRPBYsLNc2tanHLG910uyq9Iw3tnY0Yx21n/mOc+UO65mefdAQULcivgWg=
-X-Received: by 2002:a67:ee12:: with SMTP id f18mr61807817vsp.186.1564570492332;
- Wed, 31 Jul 2019 03:54:52 -0700 (PDT)
+        id S2387515AbfGaLUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 07:20:14 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:38667 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbfGaLUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 07:20:13 -0400
+Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hsmeG-0001W9-GP; Wed, 31 Jul 2019 07:20:05 -0400
+Date:   Wed, 31 Jul 2019 07:19:32 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sctp: Rename fallthrough label to unhandled
+Message-ID: <20190731111932.GA9823@hmswarspite.think-freely.org>
+References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
 MIME-Version: 1.0
-Received: by 2002:ab0:2616:0:0:0:0:0 with HTTP; Wed, 31 Jul 2019 03:54:51
- -0700 (PDT)
-X-Originating-IP: [2620:113:80c0:5::2222]
-In-Reply-To: <CA+FuTSfnqV4zGvW+W0fh+=X-wm8rz1O5ZqGKXpxSVN1vPMD+sw@mail.gmail.com>
-References: <20190730113226.39845-1-dkirjanov@suse.com> <CA+FuTSfnqV4zGvW+W0fh+=X-wm8rz1O5ZqGKXpxSVN1vPMD+sw@mail.gmail.com>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Wed, 31 Jul 2019 13:54:51 +0300
-Message-ID: <CAOJe8K2TE-g=MwEHH82e1UryANymFbtgE60Ltpf9pwaHLVDSfA@mail.gmail.com>
-Subject: Re: [PATCH net-next] be2net: disable bh with spin_lock in be_process_mcc
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com,
-        Network Development <netdev@vger.kernel.org>,
-        Denis Kirjanov <kdav@linux-powerpc.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/19, Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
-> On Tue, Jul 30, 2019 at 7:33 AM Denis Kirjanov <kda@linux-powerpc.org>
-> wrote:
->>
->> Signed-off-by: Denis Kirjanov <kdav@linux-powerpc.org>
->
-> This is a partial revert of the previous change to these lines in 2012
-> in commit 072a9c486004 ("netpoll: revert 6bdb7fe3104 and fix be_poll()
-> instead").
->
-> The commit message is empty. Can you give some context as to why this
-> is needed and correct?
+On Tue, Jul 30, 2019 at 10:04:37PM -0700, Joe Perches wrote:
+> fallthrough may become a pseudo reserved keyword so this only use of
+> fallthrough is better renamed to allow it.
+> 
+> Signed-off-by: Joe Perches <joe@perches.com>
+Are you referring to the __attribute__((fallthrough)) statement that gcc
+supports?  If so the compiler should by all rights be able to differentiate
+between a null statement attribute and a explicit goto and label without the
+need for renaming here.  Or are you referring to something else?
 
-The idea was just to make some cleanup. Now I've checked that be_process_mcc
-is invoked in 3 different places and always with BHs disabled except
-the be_poll function but since it's invoked from softirq with BHs
-disabled it won't hurt.
+Neil
 
-
->
+> ---
+>  net/sctp/sm_make_chunk.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+> index 36bd8a6e82df..3fdcaa2fbf12 100644
+> --- a/net/sctp/sm_make_chunk.c
+> +++ b/net/sctp/sm_make_chunk.c
+> @@ -2152,7 +2152,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
+>  	case SCTP_PARAM_SET_PRIMARY:
+>  		if (net->sctp.addip_enable)
+>  			break;
+> -		goto fallthrough;
+> +		goto unhandled;
+>  
+>  	case SCTP_PARAM_HOST_NAME_ADDRESS:
+>  		/* Tell the peer, we won't support this param.  */
+> @@ -2163,11 +2163,11 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
+>  	case SCTP_PARAM_FWD_TSN_SUPPORT:
+>  		if (ep->prsctp_enable)
+>  			break;
+> -		goto fallthrough;
+> +		goto unhandled;
+>  
+>  	case SCTP_PARAM_RANDOM:
+>  		if (!ep->auth_enable)
+> -			goto fallthrough;
+> +			goto unhandled;
+>  
+>  		/* SCTP-AUTH: Secion 6.1
+>  		 * If the random number is not 32 byte long the association
+> @@ -2184,7 +2184,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
+>  
+>  	case SCTP_PARAM_CHUNKS:
+>  		if (!ep->auth_enable)
+> -			goto fallthrough;
+> +			goto unhandled;
+>  
+>  		/* SCTP-AUTH: Section 3.2
+>  		 * The CHUNKS parameter MUST be included once in the INIT or
+> @@ -2200,7 +2200,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
+>  
+>  	case SCTP_PARAM_HMAC_ALGO:
+>  		if (!ep->auth_enable)
+> -			goto fallthrough;
+> +			goto unhandled;
+>  
+>  		hmacs = (struct sctp_hmac_algo_param *)param.p;
+>  		n_elt = (ntohs(param.p->length) -
+> @@ -2223,7 +2223,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
+>  			retval = SCTP_IERROR_ABORT;
+>  		}
+>  		break;
+> -fallthrough:
+> +unhandled:
+>  	default:
+>  		pr_debug("%s: unrecognized param:%d for chunk:%d\n",
+>  			 __func__, ntohs(param.p->type), cid);
+> -- 
+> 2.15.0
+> 
+> 
