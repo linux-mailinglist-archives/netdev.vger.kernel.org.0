@@ -2,161 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9997C0F9
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 14:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56E597C11D
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 14:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbfGaMRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 08:17:08 -0400
-Received: from correo.us.es ([193.147.175.20]:40362 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbfGaMRH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 08:17:07 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BD6BE6CB67
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 14:17:05 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id ACACC1150DE
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 14:17:05 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A05111150B9; Wed, 31 Jul 2019 14:17:05 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 84D1DDA732;
-        Wed, 31 Jul 2019 14:17:03 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 31 Jul 2019 14:17:03 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [47.60.32.83])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 5FACE4265A2F;
-        Wed, 31 Jul 2019 14:17:02 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     marcelo.leitner@gmail.com, wenxu@ucloud.cn, jiri@resnulli.us,
-        saeedm@mellanox.com, gerlitz.or@gmail.com, paulb@mellanox.com,
-        netdev@vger.kernel.org, jakub.kicinski@netronome.com
-Subject: [PATCH nf,v2] netfilter: nf_tables: map basechain priority to hardware priority
-Date:   Wed, 31 Jul 2019 14:16:56 +0200
-Message-Id: <20190731121656.27951-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726907AbfGaMWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 08:22:10 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:44466 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726696AbfGaMWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 08:22:10 -0400
+Received: by mail-pf1-f194.google.com with SMTP id t16so31750573pfe.11;
+        Wed, 31 Jul 2019 05:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/WhRLhyHKPVlSn0ft137jcQ9Dc8L0yG6Eomi5u0Uve4=;
+        b=G9Th19cXxFLEY0eWy4b36hovCKplPcpeA+XhnBXiv7QbYrVy1hzqpyo5nwK56in2hB
+         C48FfFah7jyOxjLibTg7aBiJcQPSEmQX9jQHgeyWSh/rQxVFBTHZ0KfGiqrQpH3y5mLK
+         XVqISWlFAY/Cwxl7l/6FmYVr0l2UfDuJRg/MzVopFXJWHFIfl4JNnL6jHc+wwK9aODjR
+         II3sypJKJ0dE0tt7Fy97lUjcQEGWA26nmVYN6sspkAWHR1sU/RO7ZSe4qUi0AyMr+47p
+         YZVlwd+QSlLfmMOitSlWJhalGsnvR7AZ4SQTy6+1bnd3FEZytaOy7fefGW1yFKYutpXz
+         q/CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/WhRLhyHKPVlSn0ft137jcQ9Dc8L0yG6Eomi5u0Uve4=;
+        b=AOX/3O6nwqoNrxg+31G06izJO5xEWjas8NkeLWrJPXJ/jNLBUigXb9yfqOEO7m+jvq
+         Kla91zFfZQaDa1HWeOzV/o26RmgeaQrAwscDcEXEN7bYPe8f3/VA1tlXBDpEHZeVjn+S
+         6tld10wwFW8P7WlEwNLqLnFh42wd7H90P7JcusHLgDT/q3VAU5rN/8zV6Qbj5KoAASJb
+         W7AvhMaxU1HJ3W5PdBba/WhcxQ9XFcfcKJ3T4CumP51bDzvsRfl088rfedhh05Vi7HZ0
+         EqYiaDd926PHNuEo6Go6Qf4ExS63MQVRlTYGpZ3di5ELIEuewKOY08wYF3dwLJ/ucp/U
+         2qhw==
+X-Gm-Message-State: APjAAAWJI7h/0RhD+KM6j8wtKPPW8uSt4b51xvBVnkgEr/i5g1UQgRVj
+        yBRjmYcXdmTJhemH41lS4mHp/geh9U8=
+X-Google-Smtp-Source: APXvYqwgtYu4rJeY9ihvyr/5Pb65i1L2LtHE56XVxVG8KiloX5ApwkyUZU+AbxKtqRwd5NAdoX9CSQ==
+X-Received: by 2002:a65:63c4:: with SMTP id n4mr112425132pgv.44.1564575730049;
+        Wed, 31 Jul 2019 05:22:10 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id z68sm62791422pgz.88.2019.07.31.05.22.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 31 Jul 2019 05:22:09 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH 1/2] bnxt_en: Use refcount_t for refcount
+Date:   Wed, 31 Jul 2019 20:22:03 +0800
+Message-Id: <20190731122203.948-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds initial support for offloading basechains using the
-priority range from -8192 to 8191.
+refcount_t is better for reference counters since its
+implementation can prevent overflows.
+So convert atomic_t ref counters to refcount_t.
 
-The software priority -8192 is mapped to the hardware priority
-0xC000 + 1. tcf_auto_prio() uses 0xC000 if the user specifies no
-priority, then it subtracts 1 for each new tcf_proto object. This patch
-reserves the hardware priority range from 0xC000 to 0xFFFF for
-netfilter.
-
-The software to hardware priority mapping is not exposed to userspace,
-so it should be possible to update this / extend the range of supported
-priorities later on.
-
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
-v2: fix indent in priority assignment - Marcelo Leitner.
-    Missing << 16 bitshift.
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 8 ++++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
- include/net/netfilter/nf_tables_offload.h |  2 ++
- net/netfilter/nf_tables_api.c             |  4 ++++
- net/netfilter/nf_tables_offload.c         | 31 ++++++++++++++++++++++++++++---
- 3 files changed, 34 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
-index 3196663a10e3..2d497394021e 100644
---- a/include/net/netfilter/nf_tables_offload.h
-+++ b/include/net/netfilter/nf_tables_offload.h
-@@ -73,4 +73,6 @@ int nft_flow_rule_offload_commit(struct net *net);
- 	(__reg)->key		= __key;				\
- 	memset(&(__reg)->mask, 0xff, (__reg)->len);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index fc77caf0a076..eb7ed34639e2 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -49,7 +49,7 @@ static int bnxt_register_dev(struct bnxt_en_dev *edev, int ulp_id,
+ 			return -ENOMEM;
+ 	}
  
-+u16 nft_chain_offload_priority(struct nft_base_chain *basechain);
-+
- #endif
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 605a7cfe7ca7..9cf0fecf5cb9 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -1662,6 +1662,10 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+-	atomic_set(&ulp->ref_count, 0);
++	refcount_set(&ulp->ref_count, 0);
+ 	ulp->handle = handle;
+ 	rcu_assign_pointer(ulp->ulp_ops, ulp_ops);
  
- 		chain->flags |= NFT_BASE_CHAIN | flags;
- 		basechain->policy = NF_ACCEPT;
-+		if (chain->flags & NFT_CHAIN_HW_OFFLOAD &&
-+		    !nft_chain_offload_priority(basechain))
-+			return -EOPNOTSUPP;
-+
- 		flow_block_init(&basechain->flow_block);
- 	} else {
- 		chain = kzalloc(sizeof(*chain), GFP_KERNEL);
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 64f5fd5f240e..a79efd49c8a8 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -103,10 +103,11 @@ void nft_offload_update_dependency(struct nft_offload_ctx *ctx,
- }
+@@ -87,7 +87,7 @@ static int bnxt_unregister_dev(struct bnxt_en_dev *edev, int ulp_id)
+ 	synchronize_rcu();
+ 	ulp->max_async_event_id = 0;
+ 	ulp->async_events_bmap = NULL;
+-	while (atomic_read(&ulp->ref_count) != 0 && i < 10) {
++	while (refcount_read(&ulp->ref_count) != 0 && i < 10) {
+ 		msleep(100);
+ 		i++;
+ 	}
+@@ -246,12 +246,12 @@ static int bnxt_send_msg(struct bnxt_en_dev *edev, int ulp_id,
  
- static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
--					 __be16 proto,
--					struct netlink_ext_ack *extack)
-+					 __be16 proto, int priority,
-+					 struct netlink_ext_ack *extack)
+ static void bnxt_ulp_get(struct bnxt_ulp *ulp)
  {
- 	common->protocol = proto;
-+	common->prio = priority << 16;
- 	common->extack = extack;
+-	atomic_inc(&ulp->ref_count);
++	refcount_inc(&ulp->ref_count);
  }
  
-@@ -124,6 +125,28 @@ static int nft_setup_cb_call(struct nft_base_chain *basechain,
- 	return 0;
- }
- 
-+/* Available priorities for hardware offload range: -8192..8191 */
-+#define NFT_BASECHAIN_OFFLOAD_PRIO_MAX		(SHRT_MAX / 4)
-+#define NFT_BASECHAIN_OFFLOAD_PRIO_MIN		(SHRT_MIN / 4)
-+#define NFT_BASECHAIN_OFFLOAD_PRIO_RANGE	(USHRT_MAX / 4)
-+/* tcf_auto_prio() uses 0xC000 as base, then subtract one for each new chain. */
-+#define NFT_BASECHAIN_OFFLOAD_HW_PRIO_BASE	(0xC000 + 1)
-+
-+u16 nft_chain_offload_priority(struct nft_base_chain *basechain)
-+{
-+	u16 prio;
-+
-+	if (basechain->ops.priority < NFT_BASECHAIN_OFFLOAD_PRIO_MIN ||
-+	    basechain->ops.priority > NFT_BASECHAIN_OFFLOAD_PRIO_MAX)
-+		return 0;
-+
-+	/* map netfilter chain priority to hardware priority. */
-+	prio = basechain->ops.priority + NFT_BASECHAIN_OFFLOAD_PRIO_MAX +
-+		NFT_BASECHAIN_OFFLOAD_HW_PRIO_BASE;
-+
-+	return prio;
-+}
-+
- static int nft_flow_offload_rule(struct nft_trans *trans,
- 				 enum flow_cls_command command)
+ static void bnxt_ulp_put(struct bnxt_ulp *ulp)
  {
-@@ -142,7 +165,9 @@ static int nft_flow_offload_rule(struct nft_trans *trans,
- 	if (flow)
- 		proto = flow->proto;
+-	atomic_dec(&ulp->ref_count);
++	refcount_dec(&ulp->ref_count);
+ }
  
--	nft_flow_offload_common_init(&cls_flow.common, proto, &extack);
-+	nft_flow_offload_common_init(&cls_flow.common, proto,
-+				     nft_chain_offload_priority(basechain),
-+				     &extack);
- 	cls_flow.command = command;
- 	cls_flow.cookie = (unsigned long) rule;
- 	if (flow)
+ void bnxt_ulp_stop(struct bnxt *bp)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+index cd78453d0bf0..fc4aa582d190 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+@@ -52,7 +52,7 @@ struct bnxt_ulp {
+ 	u16		max_async_event_id;
+ 	u16		msix_requested;
+ 	u16		msix_base;
+-	atomic_t	ref_count;
++	refcount_t	ref_count;
+ };
+ 
+ struct bnxt_en_dev {
 -- 
-2.11.0
+2.20.1
 
