@@ -2,82 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB50A7CF31
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 22:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8A07CF4F
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 23:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730655AbfGaU6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 16:58:45 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:45646 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbfGaU6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 16:58:45 -0400
-Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hsvg9-0007ME-TG; Wed, 31 Jul 2019 16:58:40 -0400
-Date:   Wed, 31 Jul 2019 16:58:04 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sctp: Rename fallthrough label to unhandled
-Message-ID: <20190731205804.GE9823@hmswarspite.think-freely.org>
-References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
- <20190731111932.GA9823@hmswarspite.think-freely.org>
- <eac3fe457d553a2b366e1c1898d47ae8c048087c.camel@perches.com>
- <20190731121646.GD9823@hmswarspite.think-freely.org>
- <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
+        id S1729091AbfGaVFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 17:05:15 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:39268 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726755AbfGaVFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 17:05:15 -0400
+Received: by mail-wr1-f66.google.com with SMTP id x4so18022133wrt.6
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 14:05:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=hDbHbE5Zv9TcvZT2Mae0eiMoON8N6QMf+zZr/r3HZhw=;
+        b=rCWTu+sgjg8tVi3c48PAjRByRc5M5cwIEnwqCjbGNQE3/mA7TZ1O5HuyeNMblTBbZs
+         thqb9TioxJM+mrhzOPSgTX96eRALHGEn2Ewca9lutFvp0OKR4StoiOHxgqky2NsWydDG
+         ArhFjN/6E5xZStgwl4xbxiQdPi2c5IY6z/LkhJR9xDv1QL11E9FOIB4KMEZwdQkVrXt5
+         YF1qMBxmw4aJ5NEl55rt4h0Uy/QAmnfGzTvMXNuQ8pfUkCRr7dIuh76WljYuVZVxLtAQ
+         0dGDkMMdnG63wz6og3Qh//fXOWeZGun9SJpHMhrY4QFXuSXhiA2fvShzJq4XOf/BWliW
+         wCyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=hDbHbE5Zv9TcvZT2Mae0eiMoON8N6QMf+zZr/r3HZhw=;
+        b=emaV4loMQel0seVpGGlKjbroZ6Gfn0YS9N1EQLUZsxIG/gXrNgaVWM5maUSgQequ8L
+         iXwVtHNfWhcR6fgJ6qXK8y3LmujhTYT6UNlM9uvQEfe/RUeGa8nKAT892H+9M+Ia8OaU
+         xWLeLKTtqY/HKw2YnkUDOmY/SwdTSPKP2Cd6TJsarxfXD4XS9ImuYEvopbPhqoKWRv1f
+         Q6H083+wOnksEZLyLHkF54k0p5hr+IuvMO9aHuu2xBiHDOxtAN3B7iI4SD97FZ8beI4f
+         q1ljRv/HSiFY9eVW0wymyolEKps3XFwTiWs1LFsc/OzkyLiGRXKa0i9kUiYskef8RcXS
+         rn3g==
+X-Gm-Message-State: APjAAAXWeYdlOGjXgt7B7nPw4mzMcM0aNo7yyfAcXs/kWURNejHk9CsE
+        MW9fFe8T6nA81LJRTNR6pkE=
+X-Google-Smtp-Source: APXvYqwHDOqAImjC7Tozwi2eOooA97CGveMRSDzbFZ3MXFCh14mMdtXIFFUY2ds/H+rgGyvIdSHO3g==
+X-Received: by 2002:adf:df8b:: with SMTP id z11mr79322430wrl.62.1564607113309;
+        Wed, 31 Jul 2019 14:05:13 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f43:4200:ec44:8c7f:aacb:2a8? (p200300EA8F434200EC448C7FAACB02A8.dip0.t-ipconnect.de. [2003:ea:8f43:4200:ec44:8c7f:aacb:2a8])
+        by smtp.googlemail.com with ESMTPSA id x185sm64818377wmg.46.2019.07.31.14.05.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 Jul 2019 14:05:12 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        liuyonglong <liuyonglong@huawei.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] net: phy: fix race in genphy_update_link
+Message-ID: <19122a98-cfcd-424c-a598-e034c1a9349d@gmail.com>
+Date:   Wed, 31 Jul 2019 23:05:10 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 09:35:31AM -0700, Joe Perches wrote:
-> On Wed, 2019-07-31 at 08:16 -0400, Neil Horman wrote:
-> > On Wed, Jul 31, 2019 at 04:32:43AM -0700, Joe Perches wrote:
-> > > On Wed, 2019-07-31 at 07:19 -0400, Neil Horman wrote:
-> > > > On Tue, Jul 30, 2019 at 10:04:37PM -0700, Joe Perches wrote:
-> > > > > fallthrough may become a pseudo reserved keyword so this only use of
-> > > > > fallthrough is better renamed to allow it.
-> > > > > 
-> > > > > Signed-off-by: Joe Perches <joe@perches.com>
-> > > > Are you referring to the __attribute__((fallthrough)) statement that gcc
-> > > > supports?  If so the compiler should by all rights be able to differentiate
-> > > > between a null statement attribute and a explicit goto and label without the
-> > > > need for renaming here.  Or are you referring to something else?
-> > > 
-> > > Hi.
-> > > 
-> > > I sent after this a patch that adds
-> > > 
-> > > # define fallthrough                    __attribute__((__fallthrough__))
-> > > 
-> > > https://lore.kernel.org/patchwork/patch/1108577/
-> > > 
-> > > So this rename is a prerequisite to adding this #define.
-> > > 
-> > why not just define __fallthrough instead, like we do for all the other
-> > attributes we alias (i.e. __read_mostly, __protected_by, __unused, __exception,
-> > etc)
-> 
-> Because it's not as intelligible when used as a statement.
-I think thats somewhat debatable.  __fallthrough to me looks like an internal
-macro, whereas fallthrough looks like a comment someone forgot to /* */
+In phy_start_aneg() autoneg is started, and immediately after that
+link and autoneg status are read. As reported in [0] it can happen that
+at time of this read the PHY has reset the "aneg complete" bit but not
+yet the "link up" bit, what can result in a false link-up detection.
+To fix this don't report link as up if we're in aneg mode and PHY
+doesn't signal "aneg complete".
 
-Neil
+[0] https://marc.info/?t=156413509900003&r=1&w=2
 
-> 
-> 
-> 
-> 
+Fixes: 4950c2ba49cc ("net: phy: fix autoneg mismatch case in genphy_read_status")
+Reported-by: liuyonglong <liuyonglong@huawei.com>
+Tested-by: liuyonglong <liuyonglong@huawei.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/phy_device.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 6b5cb87f3..7ddd91df9 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1774,6 +1774,12 @@ int genphy_update_link(struct phy_device *phydev)
+ 	phydev->link = status & BMSR_LSTATUS ? 1 : 0;
+ 	phydev->autoneg_complete = status & BMSR_ANEGCOMPLETE ? 1 : 0;
+ 
++	/* Consider the case that autoneg was started and "aneg complete"
++	 * bit has been reset, but "link up" bit not yet.
++	 */
++	if (phydev->autoneg == AUTONEG_ENABLE && !phydev->autoneg_complete)
++		phydev->link = 0;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(genphy_update_link);
+-- 
+2.22.0
+
