@@ -2,221 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BCF57C56F
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 16:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43ED07C5F4
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 17:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388169AbfGaOzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 10:55:31 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:36649 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388075AbfGaOza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 10:55:30 -0400
-Received: by mail-lj1-f194.google.com with SMTP id i21so65928634ljj.3;
-        Wed, 31 Jul 2019 07:55:28 -0700 (PDT)
+        id S1728651AbfGaPSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 11:18:47 -0400
+Received: from mail-io1-f41.google.com ([209.85.166.41]:33702 "EHLO
+        mail-io1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728226AbfGaPSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 11:18:45 -0400
+Received: by mail-io1-f41.google.com with SMTP id z3so18215577iog.0;
+        Wed, 31 Jul 2019 08:18:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Z+hRd98x5TV3xKbm4IgKfN0HNypL+IKEJ8fZRsTiix0=;
-        b=fvVGLBSFsBeCBbnAFgMoGV4TPLTvo+6xoI2Hvax7N4ReE4xjlKMrgKGz/x44aYgJQQ
-         HBNms7NhIT17yeS954cS+log+VeGl0T5OgofXv+MgCMI9r/lh97ZlpjO+jFKm4GgcrF1
-         V4+FyBD0eB6oDNjWK+lgsjszwZmt55x092LDcZDdD/623SJ8sHXp8gJlV++eXfeMpOqA
-         XmbQ+VwXFzzI8oxD4BzLq0znoqzisSSm9SNpO4BhfF5E/00R0O42uJN++S5kC0Ylb7P/
-         lMTBwWCtQWrDxWdSurU1DYP4dDm3sonbWhsk0L6UA26lsQkqA9yfxlNIn97JfVqY9/JM
-         htVg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=xuzQG46X17DsEpMfhQGwH6+7cSvNDOWNUULAqRblVrE=;
+        b=G8cVLquixj9RJ5F5DWhx6mOs8B+caqB1IGByYL8abw/1gBpACEU5BpYF8+NgotXC0c
+         kKFV0rfirAAyP1gXl5HsIPjwuIAgD6W3pwYE37ceM86I+WBcmmGB6FALWXa2pbTFhsAI
+         j9dMpX123uZAoJktmdulPiM/Im15dZjEJR/gEkbqmrdlYkk/cNQXSuvH79gDb63wb7jC
+         DR10MLq6Q44IP34Qg1k00FENeVQ374/hDv78ASzDgvMq4m6w4lZL1yBwTpb4b0IS0pbT
+         AGIOY0ljrVqg9Wpfg2MptFcrVEB9coViK9KJnyEEB7gI5WHMvEzhmUNPCPqQnOxL+dVB
+         h/9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Z+hRd98x5TV3xKbm4IgKfN0HNypL+IKEJ8fZRsTiix0=;
-        b=M7ICN+Gc6Sxh/EzO5+UuPT9f61eRN8APndwAE+zBPdSyGjG1krqh3JrRWGGcdDL5zl
-         N7tHO9ll4RNXJP7nPbBFrXFUuZavtVbYShkicwxVnQOkmXdK9muLecZZyzmtLQOI2eTB
-         n8hJmnAUrwexkDc6C9MJXesFXX2r3N5K6GLd/tN6IPKj1y4dTNlM1fcFOu4p5JnsGWHA
-         BXY1XkTzEnTY8tFWt1Ja7P02bYBsfERVwovkBH+1PT+JUJpw3Xl+Oo7uifX1Hz/NFsU3
-         8RC/vvWwmh5KSmjSQ6a2sB/ds3G3hnO7AQ0S9KxMILOuPuwD/+3uYPc4k1Jjuz4hlNnK
-         lIWw==
-X-Gm-Message-State: APjAAAXxe5P3UNPbnje8HivpzTKhRDREk0XqYQSJStIQhyi5jLV/v1q2
-        c33lDZn+ZtbGHtmh/ge+KQY=
-X-Google-Smtp-Source: APXvYqzykQOfJKE2+s8Z9PdCeuLmIeuPmPCh8PdDa326fgulb9QTYSesVp7dRtsjEFi6EP9kH+9kIw==
-X-Received: by 2002:a2e:8849:: with SMTP id z9mr25234956ljj.203.1564584927631;
-        Wed, 31 Jul 2019 07:55:27 -0700 (PDT)
-Received: from localhost.localdomain (77.241.141.68.bredband.3.dk. [77.241.141.68])
-        by smtp.gmail.com with ESMTPSA id j7sm15647799lji.27.2019.07.31.07.55.25
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xuzQG46X17DsEpMfhQGwH6+7cSvNDOWNUULAqRblVrE=;
+        b=YWerkMsG+rUekFLSvsTPMqcF7iX/uuG9UrH9Dgb3i2S2CYx8/5ujPxYyJUSZGWZ6PV
+         AuBoePJ8aPJ9MKiUofPKpuRHdOt0bl8KRClmeZdVPtm5jk9XuADbdjIRYew5xCyFR7kH
+         /Al+KffoqSVPrYxm3wXnQ00qVUoi5dLW753h1PB4Fmuy5TBkMU8XHO2GRMrPIVA/03/a
+         Gwy8xZFGPJZUGaIG362Jo/2fmK2+UmPkjHiUqdmRxjVJWjBIAzKpNP6NSpAwq8txLx0O
+         +wOoD1bFvn0e0Xol2O/hnXpQd+RebdZOlxgtBAMLxSDqoSmsnWBVN5lPuVNPR9exN771
+         mqTw==
+X-Gm-Message-State: APjAAAXPGnj5wXpfXiGBxXwLu4wQRS6I9nVE5KlRYwftqmsB4vf1Z48b
+        PvWqJzwMKE1G3GdG7UY49N0QrcDK
+X-Google-Smtp-Source: APXvYqxOFT93yS6bZ+rjOjuZjbsCKjPMDY24dDZN+q//o80Gi+2JowsiHkq+n8GrBvsuD0LMbsA7dg==
+X-Received: by 2002:a5d:8d12:: with SMTP id p18mr1923906ioj.251.1564585996161;
+        Wed, 31 Jul 2019 08:13:16 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:d4eb:7c00:40f8:97e? ([2601:284:8200:5cfb:d4eb:7c00:40f8:97e])
+        by smtp.googlemail.com with ESMTPSA id t4sm51695019iop.0.2019.07.31.08.13.14
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 31 Jul 2019 07:55:27 -0700 (PDT)
-From:   Tomas Bortoli <tomasbortoli@gmail.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, linux-can@vger.kernel.org
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        alexios.zavras@intel.com, tglx@linutronix.de, allison@lohutok.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller@googlegroups.com, Tomas Bortoli <tomasbortoli@gmail.com>
-Subject: [PATCH] peak_usb: Fix info-leaks to USB devices
-Date:   Wed, 31 Jul 2019 10:54:47 -0400
-Message-Id: <20190731145447.29270-1-tomasbortoli@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        Wed, 31 Jul 2019 08:13:15 -0700 (PDT)
+Subject: Re: Reminder: 99 open syzbot bugs in net subsystem
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>, dvyukov@google.com,
+        netdev@vger.kernel.org, fw@strlen.de, i.maximets@samsung.com,
+        edumazet@google.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+References: <20190724163014.GC673@sol.localdomain>
+ <20190724.111225.2257475150626507655.davem@davemloft.net>
+ <20190724183710.GF213255@gmail.com>
+ <20190724.130928.1854327585456756387.davem@davemloft.net>
+ <20190724210950.GH213255@gmail.com>
+ <1e07462d-61e2-9885-edd0-97a82dd7883e@gmail.com>
+ <20190731025722.GE687@sol.localdomain>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5b38eb74-43d0-c7d7-88e1-103a4f82333f@gmail.com>
+Date:   Wed, 31 Jul 2019 09:13:11 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <20190731025722.GE687@sol.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Uninitialized Kernel memory can leak to USB devices.
+On 7/30/19 8:57 PM, Eric Biggers wrote:
+> syzbot finds a lot of security bugs, and security bugs are important.  And the
+> bugs are still there regardless of whether they're reported by human or bot.
+> 
+> Also, there *are* bugs being fixed because of these reminders; some subsystem
+> maintainers have even fixed all the bugs in their subsystem.  But I can
+> understand that for subsystems with a lot of open bug reports it's overwhelming.
+> 
+> What I'll try doing next time (if there *is* a next time; it isn't actually my
+> job to do any of this, I just care about the security and reliability of
+> Linux...) is for subsystems with lots of open bug reports, only listing the ones
+> actually seen in the last week or so, and perhaps also spending some more time
+> manually checking those bugs.  That should cut down the noise a lot.
 
-Fix by using kzalloc() instead of kmalloc() on the affected buffers.
+I don't think anyone questions the overall value of syzbot. It's the
+maintenance of bug reports that needs refining.
 
-Signed-off-by: Tomas Bortoli <tomasbortoli@gmail.com>
-Reported-by: syzbot+d6a5a1a3657b596ef132@syzkaller.appspotmail.com
-Reported-by: syzbot+513e4d0985298538bf9b@syzkaller.appspotmail.com
----
-Crash logs:
-1.
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x7ef/0x1f50 drivers/usb/core/urb.c:405
-CPU: 0 PID: 3359 Comm: kworker/0:2 Not tainted 5.2.0-rc4+ #7
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x191/0x1f0 lib/dump_stack.c:113
- kmsan_report+0x162/0x2d0 mm/kmsan/kmsan.c:611
- kmsan_internal_check_memory+0x974/0xa80 mm/kmsan/kmsan.c:705
- kmsan_handle_urb+0x28/0x40 mm/kmsan/kmsan_hooks.c:617
- usb_submit_urb+0x7ef/0x1f50 drivers/usb/core/urb.c:405
- usb_start_wait_urb+0x143/0x410 drivers/usb/core/message.c:58
- usb_internal_control_msg drivers/usb/core/message.c:102 [inline]
- usb_control_msg+0x49f/0x7f0 drivers/usb/core/message.c:156
- pcan_usb_pro_send_req+0x26b/0x3e0 drivers/net/can/usb/peak_usb/pcan_usb_pro.c:336
- pcan_usb_fd_drv_loaded drivers/net/can/usb/peak_usb/pcan_usb_fd.c:460 [inline]
- pcan_usb_fd_init+0x16ee/0x1900 drivers/net/can/usb/peak_usb/pcan_usb_fd.c:885
- peak_usb_create_dev drivers/net/can/usb/peak_usb/pcan_usb_core.c:809 [inline]
- peak_usb_probe+0x1416/0x1b20 drivers/net/can/usb/peak_usb/pcan_usb_core.c:907
- usb_probe_interface+0xd19/0x1310 drivers/usb/core/driver.c:361
- really_probe+0x1344/0x1d90 drivers/base/dd.c:513
- driver_probe_device+0x1ba/0x510 drivers/base/dd.c:670
- __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:777
- bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
- __device_attach+0x489/0x750 drivers/base/dd.c:843
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:890
-2.
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x7ef/0x1f50 /drivers/usb/core/urb.c:405
-CPU: 1 PID: 3814 Comm: kworker/1:2 Not tainted 5.2.0+ #15
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- __dump_stack /lib/dump_stack.c:77 [inline]
- dump_stack+0x191/0x1f0 /lib/dump_stack.c:113
- kmsan_report+0x162/0x2d0 /mm/kmsan/kmsan_report.c:109
- kmsan_internal_check_memory+0x974/0xa80 /mm/kmsan/kmsan.c:551
- kmsan_handle_urb+0x28/0x40 /mm/kmsan/kmsan_hooks.c:621
- usb_submit_urb+0x7ef/0x1f50 /drivers/usb/core/urb.c:405
- usb_start_wait_urb+0x143/0x410 /drivers/usb/core/message.c:58
- usb_internal_control_msg /drivers/usb/core/message.c:102 [inline]
- usb_control_msg+0x49f/0x7f0 /drivers/usb/core/message.c:156
- pcan_usb_pro_send_req /drivers/net/can/usb/peak_usb/pcan_usb_pro.c:336 [inline]
- pcan_usb_pro_drv_loaded /drivers/net/can/usb/peak_usb/pcan_usb_pro.c:504 [inline]
- pcan_usb_pro_init+0x1319/0x1720 /drivers/net/can/usb/peak_usb/pcan_usb_pro.c:894
- peak_usb_create_dev /drivers/net/can/usb/peak_usb/pcan_usb_core.c:809 [inline]
- peak_usb_probe+0x1416/0x1b20 /drivers/net/can/usb/peak_usb/pcan_usb_core.c:907
- usb_probe_interface+0xd19/0x1310 /drivers/usb/core/driver.c:361
- really_probe+0x1344/0x1d90 /drivers/base/dd.c:513
- driver_probe_device+0x1ba/0x510 /drivers/base/dd.c:670
- __device_attach_driver+0x5b8/0x790 /drivers/base/dd.c:777
- bus_for_each_drv+0x28e/0x3b0 /drivers/base/bus.c:454
- __device_attach+0x489/0x750 /drivers/base/dd.c:843
- device_initial_probe+0x4a/0x60 /drivers/base/dd.c:890
- bus_probe_device+0x131/0x390 /drivers/base/bus.c:514
- device_add+0x25b5/0x2df0 /drivers/base/core.c:2111
- usb_set_configuration+0x309f/0x3710 /drivers/usb/core/message.c:2027
- generic_probe+0xe7/0x280 /drivers/usb/core/generic.c:210
- usb_probe_device+0x146/0x200 /drivers/usb/core/driver.c:266
- really_probe+0x1344/0x1d90 /drivers/base/dd.c:513
- driver_probe_device+0x1ba/0x510 /drivers/base/dd.c:670
- __device_attach_driver+0x5b8/0x790 /drivers/base/dd.c:777
- bus_for_each_drv+0x28e/0x3b0 /drivers/base/bus.c:454
- __device_attach+0x489/0x750 /drivers/base/dd.c:843
- device_initial_probe+0x4a/0x60 /drivers/base/dd.c:890
- bus_probe_device+0x131/0x390 /drivers/base/bus.c:514
- device_add+0x25b5/0x2df0 /drivers/base/core.c:2111
- usb_new_device+0x23e5/0x2fb0 /drivers/usb/core/hub.c:2534
- hub_port_connect /drivers/usb/core/hub.c:5089 [inline]
- hub_port_connect_change /drivers/usb/core/hub.c:5204 [inline]
- port_event /drivers/usb/core/hub.c:5350 [inline]
- hub_event+0x5853/0x7320 /drivers/usb/core/hub.c:5432
- process_one_work+0x1572/0x1f00 /kernel/workqueue.c:2269
- worker_thread+0x111b/0x2460 /kernel/workqueue.c:2415
- kthread+0x4b5/0x4f0 /kernel/kthread.c:256
- ret_from_fork+0x35/0x40 /arch/x86/entry/entry_64.S:355
-Uninit was created at:
- kmsan_save_stack_with_flags /mm/kmsan/kmsan.c:187 [inline]
- kmsan_internal_poison_shadow+0x53/0xa0 /mm/kmsan/kmsan.c:146
- kmsan_slab_alloc+0xaa/0x120 /mm/kmsan/kmsan_hooks.c:175
- slab_alloc_node /mm/slub.c:2771 [inline]
- slab_alloc /mm/slub.c:2780 [inline]
- kmem_cache_alloc_trace+0x873/0xa50 /mm/slub.c:2797
- kmalloc /./include/linux/slab.h:547 [inline]
- pcan_usb_pro_drv_loaded /drivers/net/can/usb/peak_usb/pcan_usb_pro.c:497 [inline]
- pcan_usb_pro_init+0xe96/0x1720 /drivers/net/can/usb/peak_usb/pcan_usb_pro.c:894
- peak_usb_create_dev /drivers/net/can/usb/peak_usb/pcan_usb_core.c:809 [inline]
- peak_usb_probe+0x1416/0x1b20 /drivers/net/can/usb/peak_usb/pcan_usb_core.c:907
- usb_probe_interface+0xd19/0x1310 /drivers/usb/core/driver.c:361
- really_probe+0x1344/0x1d90 /drivers/base/dd.c:513
- driver_probe_device+0x1ba/0x510 /drivers/base/dd.c:670
- __device_attach_driver+0x5b8/0x790 /drivers/base/dd.c:777
- bus_for_each_drv+0x28e/0x3b0 /drivers/base/bus.c:454
- __device_attach+0x489/0x750 /drivers/base/dd.c:843
- device_initial_probe+0x4a/0x60 /drivers/base/dd.c:890
- bus_probe_device+0x131/0x390 /drivers/base/bus.c:514
- device_add+0x25b5/0x2df0 /drivers/base/core.c:2111
- usb_set_configuration+0x309f/0x3710 /drivers/usb/core/message.c:2027
- generic_probe+0xe7/0x280 /drivers/usb/core/generic.c:210
- usb_probe_device+0x146/0x200 /drivers/usb/core/driver.c:266
- really_probe+0x1344/0x1d90 /drivers/base/dd.c:513
- driver_probe_device+0x1ba/0x510 /drivers/base/dd.c:670
- __device_attach_driver+0x5b8/0x790 /drivers/base/dd.c:777
- bus_for_each_drv+0x28e/0x3b0 /drivers/base/bus.c:454
- __device_attach+0x489/0x750 /drivers/base/dd.c:843
- device_initial_probe+0x4a/0x60 /drivers/base/dd.c:890
- bus_probe_device+0x131/0x390 /drivers/base/bus.c:514
- device_add+0x25b5/0x2df0 /drivers/base/core.c:2111
- usb_new_device+0x23e5/0x2fb0 /drivers/usb/core/hub.c:2534
- hub_port_connect /drivers/usb/core/hub.c:5089 [inline]
- hub_port_connect_change /drivers/usb/core/hub.c:5204 [inline]
- port_event /drivers/usb/core/hub.c:5350 [inline]
- hub_event+0x5853/0x7320 /drivers/usb/core/hub.c:5432
- process_one_work+0x1572/0x1f00 /kernel/workqueue.c:2269
- worker_thread+0x111b/0x2460 /kernel/workqueue.c:2415
- kthread+0x4b5/0x4f0 /kernel/kthread.c:256
- ret_from_fork+0x35/0x40 /arch/x86/entry/entry_64.S:355
-Bytes 2-15 of 16 are uninitialized
-Memory access of size 16 starts at ffff8881030286e0
-==================================================================
+As an example, this one:
 
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c  | 2 +-
- drivers/net/can/usb/peak_usb/pcan_usb_pro.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+https://syzkaller.appspot.com/bug?id=079bd8408abd95b492f127edf0df44ddc09d9405
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-index 34761c3a6286..47cc1ff5b88e 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-@@ -841,7 +841,7 @@ static int pcan_usb_fd_init(struct peak_usb_device *dev)
- 			goto err_out;
- 
- 		/* allocate command buffer once for all for the interface */
--		pdev->cmd_buffer_addr = kmalloc(PCAN_UFD_CMD_BUFFER_SIZE,
-+		pdev->cmd_buffer_addr = kzalloc(PCAN_UFD_CMD_BUFFER_SIZE,
- 						GFP_KERNEL);
- 		if (!pdev->cmd_buffer_addr)
- 			goto err_out_1;
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-index 178bb7cff0c1..53cb2f72bdd0 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-@@ -494,7 +494,7 @@ static int pcan_usb_pro_drv_loaded(struct peak_usb_device *dev, int loaded)
- 	u8 *buffer;
- 	int err;
- 
--	buffer = kmalloc(PCAN_USBPRO_FCT_DRVLD_REQ_LEN, GFP_KERNEL);
-+	buffer = kzalloc(PCAN_USBPRO_FCT_DRVLD_REQ_LEN, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
--- 
-2.11.0
+was in reality a very short-lived bug in net-next but because bpf-next
+managed to merge net-next in the small time window, the bug life seems
+more extended that it apparently was (fuzzy words since we do not know
+which commit fixed it).
 
+Also, there is inconsistency with the report. It shows a bisected commit of:
+
+commit f40b6ae2b612446dc970d7b51eeec47bd1619f82
+Author: David Ahern <dsahern@gmail.com>
+Date: Thu May 23 03:27:55 2019 +0000
+
+  ipv6: Move pcpu cached routes to fib6_nh
+
+yet the report shows an entry in net tree on April 27. Even the net
+instance on June 14 is questionable given that the above commit is only
+in net-next on June 14.
+
+Taking all of those references out and there are 2 'real', unique
+reports - the linux-next on May 31 and the net-next on June 5.
+
+Given that nothing has appeared in the last 8 weeks it seems clear to me
+that this bug has been fixed we just don't know by which commit.
+
+If there is a way to reduce to some of that information or even to have
+a button on that console that says 'apparently fixed' and close it would
+be a help.
