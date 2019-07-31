@@ -2,127 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7243E7B84F
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 05:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0067B860
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 06:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728649AbfGaDnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 23:43:20 -0400
-Received: from gateway36.websitewelcome.com ([50.116.124.69]:43689 "EHLO
-        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726440AbfGaDnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 23:43:19 -0400
-X-Greylist: delayed 1295 seconds by postgrey-1.27 at vger.kernel.org; Tue, 30 Jul 2019 23:43:19 EDT
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway36.websitewelcome.com (Postfix) with ESMTP id 7E052400C36A9
-        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 21:45:54 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id sfBPhPke22qH7sfBPhRtgw; Tue, 30 Jul 2019 22:21:43 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JZa60ylvm+eCKxMYHzCsmVyqzVieyNrvKXOd9GTyrWU=; b=mlDAmvPQ5ZlgygqxoD/58+hbnK
-        7FVF8v2txhdly2ZA6NR1thUAFLGctTQA75DfIRl04kw1jB342fjvsDLE7UpzhZL5U0Yo7lyDGqSn8
-        TYbMXSjPZmcjuJouENx0WypzRwLQ7uyMjfPoASc+PXM3IzWa/h/6s6lPi/HJzzEowk6/Xv2Nefgnc
-        R7gvW8u1a2ZEr1EiUN/4F10Ky9L+aBipzoV9dyl9YT6TQWTECR3YT3bHaKRrS8rcYiiH3eNBCS9UR
-        nDP/CIFqS4PHYwz8bRfo0PsR7Ysus0WtheoYETS/5veuOFDs6lN0JwrW0VpXwEgzLPRyKDRtcFnPf
-        RGJ4fOiQ==;
-Received: from [187.192.11.120] (port=60258 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hsfBO-003qTS-Mx; Tue, 30 Jul 2019 22:21:42 -0500
-Date:   Tue, 30 Jul 2019 22:21:41 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Chas Williams <3chas3@gmail.com>
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] atm: iphase: Fix Spectre v1 vulnerability
-Message-ID: <20190731032141.GA30246@embeddedor>
+        id S1725916AbfGaEAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 00:00:03 -0400
+Received: from sonic311-15.consmr.mail.bf2.yahoo.com ([74.6.131.125]:39391
+        "EHLO sonic311-15.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725290AbfGaEAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 00:00:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1564545602; bh=tPdyM4f7Tq8kspt5syr9wxbiHLUxanV8lkCr2Pkkkas=; h=Date:From:Reply-To:Subject:From:Subject; b=p9SMeA90MTgTmzRPjrgdyoTEsOkI8DXMuwjcqB4YlZYJXq+GSbVUIQpucPEKvghy4n4CsrQotlYCDD95Sj+rs2DfxiHtgpiyJ7vtOiueYIb3VFAURkFhjDRhGuyqMz5YkGrpfszHgT17W6WeAr2ZO5rvHAWZMISYCu21DACVHlb/08SFSKNqo8o1o8TIYXw+j4Wt0jz7ZTPh2hctkE47IOqfO3WuSf52VV5lTYmnOez2IeLNYw9KqQT+CHvG0VOovUm6+HcDJ7eUaRBM8hJ4wZJk9M82nsy1mdlbF17+EJxvdiRiadCm9rIYAKfOp8RMDtqy49DTsrcpZTUwPOHS3g==
+X-YMail-OSG: wnzhVF4VM1nBvs0apqgm5pCXnTxJrSQhQuFiWH09iEJkWeMv1RAq6I_okVWfY4J
+ Z_MHcvrdDQP92N0TuMQSJTBrfdpSfhczDgeOYnRYyCfudpRcT6kIaA4GCV7ERChQe3PAyEQh9nog
+ GEk.Y3X1xdyTERnNvTwvgnQ.y7EKWyxZJKJrHJBB33d5DpUI7MC4Zy_N8PeU6ZPvbERYtnAWqXxD
+ cWg8Ccii5.wkWXjyPQ.x7d48XfqrPa4JIayeTFgCKUaxhdllUHhEYwc4hg0oi60njDX.ep7Al19e
+ xuX2igvz_qpwPu0rQuH181lFPKGJbZquNJq36vnYhvqJ5WH1.hfTH27RCVXgBlf6Ofz56RFfXnh4
+ 6E1HMjRUt3gLMmK11_PclfwLsyo5w1swg0KmO5M23Qu4kdML6wiF1VVFkevruwkVHSakkMQeGewp
+ 0HHito7ts8VcM6zdcLTm_5k7uKBTyNrruu2..gRRsZkDE8TEUtRdwPdOL75HpgFweDoo5hzNKdPc
+ GaAPf3uEQbgQ8EWNSadFQIVcWLkPuGZIcA.ODGQvz1J40ETjIYPLy_zODkZ9rhcP_LOxsFVI9y50
+ O9plTsGGcbZl.cB32V0rpplUtMtXq9DIvONtBzbitoQAIODBZcK1kkoWY4UQi6DhTmkgQGWBJDGG
+ LSxR1XSvs5G67CSmZxB2fYfew5pFRPgz21ruNyceHyanKmeta0GRAN_GdN1vJtsDlHzDBvbFpEpO
+ 0GM4.q.0WF65d8KhfQh1YdXRgzO.MIVWuvsmcouanL37GPi8TlcCekdOBYvoxywzekrQOi9szzeS
+ vMsDzJbwam1Xz8rTWQ8IGK81Iif6uVEYZYHNVZ2ik6bHL_3SRe4eUElStAnYp0c39dUcMGlVo9cX
+ XHd1tAq_iFRHFGY0kBA8_NP9GjVawPDVA0DMbL_S_pMynqGpJJCHyVMPmdzx_sP2pMXxTu7_aTY1
+ FbzQc63K.5qWqKc6nT0fyOn0hBpIt0EeFCDRlgdEZo7PuNUTj4uKfytAu3BtFY77.YsormrvdWpU
+ f5.o_RZBhnWc973xxRdrval22CKqJ9EuNlaR.qV4nHve6A68I8hfLaejp3oyAa3kBqlgtZeDbryq
+ s9boWAWdfyOXz52SvqKW_Skvh2et5m.NeImNR46Lqtt1G5yh8Oxl05g39MXGNeXx71f4KVryORTp
+ 2t.s1nqj7kgUoTQvUY9hoz_ZXxYLhWl9B4nXLzk4JJ24-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.bf2.yahoo.com with HTTP; Wed, 31 Jul 2019 04:00:02 +0000
+Date:   Wed, 31 Jul 2019 03:59:59 +0000 (UTC)
+From:   Aisha Gaddafi <gaddafiaisha25552@aol.com>
+Reply-To: gaisha983@gmail.com
+Message-ID: <764547688.69337.1564545599554@mail.yahoo.com>
+Subject: Dear Friend,
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.192.11.120
-X-Source-L: No
-X-Exim-ID: 1hsfBO-003qTS-Mx
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [187.192.11.120]:60258
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 3
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-board is controlled by user-space, hence leading to a potential
-exploitation of the Spectre variant 1 vulnerability.
+Dear Friend,
 
-This issue was detected with the help of Smatch:
+I came across your e-mail contact prior a private search while in need of 
+your assistance. My name is Aisha  Gaddafi a single Mother and a Widow with 
+three Children. I am the only biological Daughter of late Libyan President 
+(Late Colonel Muammar Gaddafi).
 
-drivers/atm/iphase.c:2765 ia_ioctl() warn: potential spectre issue 'ia_dev' [r] (local cap)
-drivers/atm/iphase.c:2774 ia_ioctl() warn: possible spectre second half.  'iadev'
-drivers/atm/iphase.c:2782 ia_ioctl() warn: possible spectre second half.  'iadev'
-drivers/atm/iphase.c:2816 ia_ioctl() warn: possible spectre second half.  'iadev'
-drivers/atm/iphase.c:2823 ia_ioctl() warn: possible spectre second half.  'iadev'
-drivers/atm/iphase.c:2830 ia_ioctl() warn: potential spectre issue '_ia_dev' [r] (local cap)
-drivers/atm/iphase.c:2845 ia_ioctl() warn: possible spectre second half.  'iadev'
-drivers/atm/iphase.c:2856 ia_ioctl() warn: possible spectre second half.  'iadev'
+I have investment funds worth Twenty Seven Million Five Hundred Thousand 
+United State Dollar ($27.500.000.00 ) and i need a trusted investment 
+Manager/Partner because of my current refugee status, however, I am 
+interested in you for investment project assistance in your country, may be 
+from there, we can build business relationship in the nearest future.
 
-Fix this by sanitizing board before using it to index ia_dev and _ia_dev
+I am willing to negotiate investment/business profit sharing ratio with you 
+base on the future investment earning profits.
 
-Notice that given that speculation windows are large, the policy is
-to kill the speculation on the first load and not worry if it can be
-completed with a dependent load/store [1].
+If you are willing to handle this project on my behalf kindly reply urgent 
+to enable me provide you more information about the investment funds.
 
-[1] https://lore.kernel.org/lkml/20180423164740.GY17484@dhcp22.suse.cz/
+Your Urgent Reply Will Be Appreciated.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/atm/iphase.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
-index 302cf0ba1600..8c7a996d1f16 100644
---- a/drivers/atm/iphase.c
-+++ b/drivers/atm/iphase.c
-@@ -63,6 +63,7 @@
- #include <asm/byteorder.h>  
- #include <linux/vmalloc.h>
- #include <linux/jiffies.h>
-+#include <linux/nospec.h>
- #include "iphase.h"		  
- #include "suni.h"		  
- #define swap_byte_order(x) (((x & 0xff) << 8) | ((x & 0xff00) >> 8))
-@@ -2760,8 +2761,11 @@ static int ia_ioctl(struct atm_dev *dev, unsigned int cmd, void __user *arg)
-    }
-    if (copy_from_user(&ia_cmds, arg, sizeof ia_cmds)) return -EFAULT; 
-    board = ia_cmds.status;
--   if ((board < 0) || (board > iadev_count))
--         board = 0;    
-+
-+	if ((board < 0) || (board > iadev_count))
-+		board = 0;
-+	board = array_index_nospec(board, iadev_count + 1);
-+
-    iadev = ia_dev[board];
-    switch (ia_cmds.cmd) {
-    case MEMDUMP:
--- 
-2.22.0
-
+Best Regards
+Mrs Aisha Gaddafi
+(gaisha983@gmail.com)
