@@ -2,141 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 181187B66A
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 01:55:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B2E7B67D
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 02:07:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbfG3Xzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jul 2019 19:55:55 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43357 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbfG3Xzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 19:55:54 -0400
-Received: by mail-qt1-f196.google.com with SMTP id w17so20468020qto.10;
-        Tue, 30 Jul 2019 16:55:54 -0700 (PDT)
+        id S1728177AbfGaAHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jul 2019 20:07:40 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35053 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726167AbfGaAHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jul 2019 20:07:40 -0400
+Received: by mail-qk1-f195.google.com with SMTP id r21so47979565qke.2
+        for <netdev@vger.kernel.org>; Tue, 30 Jul 2019 17:07:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BAS1jR9kQ+jEv6874mbWddUX6IcIjaF90D5mmnAcTdI=;
-        b=gdhtLJ0wPb0aImm55wIJI4nBZspTFRnuQ0LeH7l2JGMXAuTJLYJB9B/XIKpyWQwfkz
-         LGx1kqbLtNfxxKPrDmirf5vg+0avq1++vqTAemgyDeHD1w2I+KQ55/NAiIDvRGz1eiAw
-         dLfLrBtFO8glVswLHEom3i8zq78shvyyUX4KgqQej1us4oWrRWCMhx3yWCCge6yawtHk
-         WWuaMRKeeW/BPk8Y+860BPmMET6+nlp4JU4pT5/SKF5JnV8IWTADnJMwASHf1LRFz02v
-         P919toyIG2TvLl+/QxAstmuFegYTnTlviBXm3E1yAmyyErosqlRLV7FvCuO5cgWBkBe2
-         3iew==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=1p3DaCLg9S/tgmzxpBDiiC5B+Zd96jER2OLDmXrqQF4=;
+        b=nzMPrDnMyxR1657uPgIX6XTe6EnEOWzIzfrXScYYsYjRaubIf+37cLxh84+bwmwqZ8
+         VN3knUnhkkyKA3s1vGfVlU0p/668HHa9x+DtfiAaIAixcc0Opx10GgASVSW/0tHq7z7J
+         l/0bABq0cxSwDJXtdXrqY8fYgqb4eNZJh/d+ppTryTACQV2mirOY4ETGp8487cMlWdP0
+         +XkbrsNQ2oEgnRRrIoILG21K/QngkWDm8mPW7aRd3COeuBDOh+sKOHnCwWpiDsgzNTCO
+         C6HSYO0svJd9AMM6Ps/yrr945Fq2vv5r4w8yqHwyv+9Kjgu9yQGOpQGDPV5fho1o6VSj
+         PiGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BAS1jR9kQ+jEv6874mbWddUX6IcIjaF90D5mmnAcTdI=;
-        b=Ik4MQlVSkyrN242AaPGpJJO/Y5E5rWNUHcXIUw6SphY5IcB6hcGij4dFdgRYVeqthM
-         8qtlxMZYnVFbj4R9klNgaJvzpngQmf0kYOq1JXiwgYvtyjmqSbroXIRvnEqbZm2f198K
-         I7vfjUot+7PFNhW/90kh1a+BFZrVj7E8SptmZuLU6C+QlCSvarDmbtH4PwsPCj6Ex444
-         /4dUfY2BiXr24WfQSvUuCHLvMYKr1HFguQNa0vUfQVb3uf2j+rbcgiIFgtqD3DQuIBqI
-         kOzb63P6AbJJBQhGZb2dJpNVvlhnD+q7ma57GWJqhvg0nEik3hf2j6ltKcCMV78EVoP6
-         Ms8g==
-X-Gm-Message-State: APjAAAUPjNdscg+cV9j3/M3dj4fjZZnyv6HDqhDHU6fRBzuiMN+Q7saj
-        B1TRegPmG3JloO+pUChDOQ1Nbpxp+fzoH864+aI=
-X-Google-Smtp-Source: APXvYqwflKyCUa/RbF7eUC4qlIg5/U7e5e2aHpbvXfuF/UWaUZJAGAzAwRAfDrUxnQK/dqwdmaeCcGbZuKh/d6HLPaE=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr80988932qty.141.1564530953721;
- Tue, 30 Jul 2019 16:55:53 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=1p3DaCLg9S/tgmzxpBDiiC5B+Zd96jER2OLDmXrqQF4=;
+        b=fBnTu84nQNsCAXdg/rX9U7M4HVNeMv7x2J+3DrcbqAVBtP9m1F4aJc8f0v4sjSij6h
+         5uJ7iDEDdOqAZEvj8CESxD6gwiYIgTtnXN9xpaJzN5nB45tLNxo4NbMssACSn+3CcgpL
+         /UCuu49Dkbfk94qwx6em4Ucr6g50qiy8euEj8jhJmavpE9qwwob2zChpqiKVVe+rcNjL
+         KKnHhhLJ90pEvKKJ0xXBbB9VXnC7Tm8rxuOvqSI4qzFH3JYCSo1Y3vwpe5J1w7OY7dlw
+         zopY4W6Dj2yuWvMnfzHJ3zo6CgdKgt5HRLV67FNLU4alWE2iO0mVY5XmNK04suPklfwP
+         e9fg==
+X-Gm-Message-State: APjAAAXWkdxOFaCmiF1Mt4onaa8k9YmkqR5xcgVJl+Q4renn6GObntne
+        r8WvK52Y3sqAsmS+UU4W/+Ntvw==
+X-Google-Smtp-Source: APXvYqzrI7zQraol46Q7KVyvrLpSVDbBKZZPHa3T5VCbttsxZ7F257plRW+t2/5UMWrkn4Z3RNVZCQ==
+X-Received: by 2002:a05:620a:705:: with SMTP id 5mr19103251qkc.330.1564531659120;
+        Tue, 30 Jul 2019 17:07:39 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z19sm30775951qtu.43.2019.07.30.17.07.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 30 Jul 2019 17:07:38 -0700 (PDT)
+Date:   Tue, 30 Jul 2019 17:07:25 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] tools: bpftool: add net (un)load command to load
+ XDP
+Message-ID: <20190730170725.279761e7@cakuba.netronome.com>
+In-Reply-To: <20190730231754.efh3fj4mnsbv445l@ast-mbp>
+References: <20190730184821.10833-1-danieltimlee@gmail.com>
+        <20190730155915.5bbe3a03@cakuba.netronome.com>
+        <20190730231754.efh3fj4mnsbv445l@ast-mbp>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190730195408.670063-1-andriin@fb.com> <20190730195408.670063-3-andriin@fb.com>
- <9C1CFF6F-F661-46F4-B6EB-B42D7F4204F0@fb.com>
-In-Reply-To: <9C1CFF6F-F661-46F4-B6EB-B42D7F4204F0@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Jul 2019 16:55:42 -0700
-Message-ID: <CAEf4BzZpcP1aBwrz8DbToQ=nVUukPwiG-PBCFGZNb2wXg_msnA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 02/12] libbpf: implement BPF CO-RE offset
- relocation algorithm
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 4:44 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jul 30, 2019, at 12:53 PM, Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > This patch implements the core logic for BPF CO-RE offsets relocations.
-> > Every instruction that needs to be relocated has corresponding
-> > bpf_offset_reloc as part of BTF.ext. Relocations are performed by trying
-> > to match recorded "local" relocation spec against potentially many
-> > compatible "target" types, creating corresponding spec. Details of the
-> > algorithm are noted in corresponding comments in the code.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> > tools/lib/bpf/libbpf.c | 915 ++++++++++++++++++++++++++++++++++++++++-
-> > tools/lib/bpf/libbpf.h |   1 +
-> > 2 files changed, 909 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index ead915aec349..75da90928257 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -38,6 +38,7 @@
+On Tue, 30 Jul 2019 16:17:56 -0700, Alexei Starovoitov wrote:
+> On Tue, Jul 30, 2019 at 03:59:15PM -0700, Jakub Kicinski wrote:
+> > On Wed, 31 Jul 2019 03:48:19 +0900, Daniel T. Lee wrote:  
+> > > Currently, bpftool net only supports dumping progs loaded on the
+> > > interface. To load XDP prog on interface, user must use other tool
+> > > (eg. iproute2). By this patch, with `bpftool net (un)load`, user can
+> > > (un)load XDP prog on interface.  
+> > 
+> > I don't understand why using another tool is a bad thing :(
+> > What happened to the Unix philosophy?
+> > 
+> > I remain opposed to duplicating iproute2's functionality under 
+> > bpftool net :( The way to attach bpf programs in the networking
+> > subsystem is through the iproute2 commends - ip and tc.. 
+> > 
+> > It seems easy enough to add a feature to bpftool but from 
+> > a perspective of someone adding a new feature to the kernel, 
+> > and wanting to update user space components it's quite painful :(
+> > 
+> > So could you describe to me in more detail why this is a good idea?
+> > Perhaps others can chime in?  
+> 
+> I don't think it has anything to do with 'unix philosophy'.
+> Here the proposal to teach bpftool to attach xdp progs.
+> I see nothing wrong with that.
 
-[...]
+Nothing meaning you disagree it's duplicated effort and unnecessary 
+LoC the community has to maintain, review, test..?
 
-> >
-> > -static const struct btf_type *skip_mods_and_typedefs(const struct btf *btf,
-> > -                                                  __u32 id)
-> > +static const struct btf_type *
-> > +skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id)
-> > {
-> >       const struct btf_type *t = btf__type_by_id(btf, id);
-> >
-> > +     if (res_id)
-> > +             *res_id = id;
-> > +
-> >       while (true) {
-> >               switch (BTF_INFO_KIND(t->info)) {
-> >               case BTF_KIND_VOLATILE:
-> >               case BTF_KIND_CONST:
-> >               case BTF_KIND_RESTRICT:
-> >               case BTF_KIND_TYPEDEF:
-> > +                     if (res_id)
-> > +                             *res_id = t->type;
-> >                       t = btf__type_by_id(btf, t->type);
->
-> So btf->types[*res_id] == retval, right? Then with retval and btf, we can
-> calculate *res_id without this change?
+> Another reason is iproute2 is still far away from adopting libbpf.
+> So all the latest goodness like BTF, introspection, etc will not
+> be available to iproute2 users for some time.
 
-Unless I'm missing something very clever here, no. btf->types is array
-of pointers (it's an index into a variable-sized types). This function
-returns `struct btf_type *`, which is one of the **values** stored in
-that array. You are claiming that by having value of one of array
-elements you can easily find element's index? If it was possible to do
-in O(1), we wouldn't have so many algorithms and data structures for
-search and indexing. You can do that only with linear search, not some
-clever pointer arithmetic or at least binary search. So I'm not sure
-what you are proposing here...
+Duplicating the same features in bpftool will only diminish the
+incentive for moving iproute2 to libbpf. And for folks who deal
+with a wide variety of customers, often novices maintaining two
+ways of doing the same thing is a hassle :(
 
-The way BTF is defined, struct btf_type doesn't know its own type ID,
-which is often inconvenient and requires to keep track of that ID, if
-it's necessary, but that's how it is.
+> Even when iproute2 is ready it would be convenient for folks like me
+> (who need to debug stuff in production) to remember cmd line of
+> bpftool only to introspect the server. Debugging often includes
+> detaching/attaching progs. Not only doing 'bpftool p s'.
 
-But then again, what are we trying to achieve here? Eliminate
-returning id and pointer? I could always return id and easily look up
-pointer, but having both is super convenient and makes code simpler
-and shorter, so I'd like to keep it.
+Let's just put the two commands next to each other:
 
->
-> >                       break;
-> >               default:
-> > @@ -1044,7 +1051,7 @@ static const struct btf_type *skip_mods_and_typedefs(const struct btf *btf,
-> > static bool get_map_field_int(const char *map_name, const struct btf *btf,
-> >                             const struct btf_type *def,
-> >                             const struct btf_member *m, __u32 *res) {
+       ip link set xdp $PROG dev $DEV
 
-[...]
+bpftool net attach xdp $PROG dev $DEV
+
+Are they that different?
+
+> If bpftool was taught to do equivalent of 'ip link' that would be
+> very different story and I would be opposed to that.
+
+Yes, that'd be pretty clear cut, only the XDP stuff is a bit more 
+of a judgement call.
