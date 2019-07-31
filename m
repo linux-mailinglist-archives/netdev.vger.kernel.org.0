@@ -2,124 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB3237CC84
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC7E7CC8B
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728974AbfGaTJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 15:09:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57666 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726073AbfGaTJm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 15:09:42 -0400
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 79061217F5
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 19:09:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564600180;
-        bh=5sbq1CUz/4Np8diMsPeYBJ+i1aJj9MKsghvG1UWBzjg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EZHhqpan5TKtpQ81oKj2cKstineoX3GVqcoD1rjnhWw5RVfbdFLFCKTanF5OehRSW
-         8TQ2MuDoWX2jmbV2Dae5nCcCv29C/K5OsMB9sm1vxJGaAO15N9x3A195qJZF63jmlj
-         JfJeMOXlLCcPc1TTIJ7EWgPOk06X3UAQnocRvKI8=
-Received: by mail-wm1-f41.google.com with SMTP id p74so61926927wme.4
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 12:09:40 -0700 (PDT)
-X-Gm-Message-State: APjAAAWz+498Dq36v2loubCpXurEW4yTpuqWP1Kulrj/1huv4daQBIBE
-        3cquNgFb6FjShyCOFRMyMoiFrsTXiuQSPsHVmZ1vGQ==
-X-Google-Smtp-Source: APXvYqx4zb8LrcibSKUodOi60ie226tvSHupyQ0d4LTQVRZ4SeTKKUMFrOQKYUOpT8Ag2AxIjIWeCiufncu+lKbqMAs=
-X-Received: by 2002:a1c:9a53:: with SMTP id c80mr51242084wme.173.1564600178852;
- Wed, 31 Jul 2019 12:09:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190627201923.2589391-1-songliubraving@fb.com>
- <20190627201923.2589391-2-songliubraving@fb.com> <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
- <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com> <CALCETrWBnH4Q43POU8cQ7YMjb9LioK28FDEQf7aHZbdf1eBZWg@mail.gmail.com>
- <0DE7F23E-9CD2-4F03-82B5-835506B59056@fb.com> <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
- <201907021115.DCD56BBABB@keescook> <CALCETrXTta26CTtEDnzvtd03-WOGdXcnsAogP8JjLkcj4-mHvg@mail.gmail.com>
- <4A7A225A-6C23-4C0F-9A95-7C6C56B281ED@fb.com> <CALCETrX2bMnwC6_t4b_G-hzJSfMPrkK4YKs5ebcecv2LJ0rt3w@mail.gmail.com>
- <514D5453-0AEE-420F-AEB6-3F4F58C62E7E@fb.com> <1DE886F3-3982-45DE-B545-67AD6A4871AB@amacapital.net>
- <7F51F8B8-CF4C-4D82-AAE1-F0F28951DB7F@fb.com> <77354A95-4107-41A7-8936-D144F01C3CA4@fb.com>
- <369476A8-4CE1-43DA-9239-06437C0384C7@fb.com> <CALCETrUpVMrk7aaf0trfg9AfZ4fy279uJgZH7V+gZzjFw=hUxA@mail.gmail.com>
- <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com>
-In-Reply-To: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Wed, 31 Jul 2019 12:09:27 -0700
-X-Gmail-Original-Message-ID: <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
-Message-ID: <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        id S1730820AbfGaTLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 15:11:07 -0400
+Received: from smtp-out.ssi.gouv.fr ([86.65.182.90]:62535 "EHLO
+        smtp-out.ssi.gouv.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726073AbfGaTLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 15:11:07 -0400
+Received: from smtp-out.ssi.gouv.fr (localhost [127.0.0.1])
+        by smtp-out.ssi.gouv.fr (Postfix) with ESMTP id C4A35D0006F;
+        Wed, 31 Jul 2019 21:11:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ssi.gouv.fr;
+        s=20160407; t=1564600272;
+        bh=SfyOReVnNROKfZwttu5Z/yffmm1NmOYb+Llaggymyc8=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To:From:Subject;
+        b=K+A6FnWZ2vYNRnksB4DVngotvdOUnevIk1RgwU8g3acfbqfGiL+9aaVddGfaKtmBd
+         uyGl5LKbVpIhgAmJATK1quDSGs/yrgbPD3vZypBh4eV1IOprFYM3TcN6fCpGP9iwB+
+         buoLb8CFqVJFSQ9t3CGsOa6QfT35DGjx3zKHlWnjzdizlRyxmuvGdEzBXKzNTImfS4
+         cbUnlvyRDylsexMyiSnZRHK49fG+hix0qdkrLm+QnPmLjw5OT9wfojYgHZ51zZDP9x
+         YnTpRJDKUpZCNREaLFcyHUZZF4CznTLXSlXhyqbiErIEHjFrPFCNMVTaaGnCDp/VpT
+         qQQB+ogiJJWUQ==
+Subject: Re: [PATCH bpf-next v10 06/10] bpf,landlock: Add a new map type:
+ inode
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
         Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
+        David Drysdale <drysdale@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
         Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+References: <20190721213116.23476-1-mic@digikod.net>
+ <20190721213116.23476-7-mic@digikod.net>
+ <20190727014048.3czy3n2hi6hfdy3m@ast-mbp.dhcp.thefacebook.com>
+ <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
+ <CAADnVQLqkfVijWoOM29PxCL_yK6K0fr8B89r4c5EKgddevJhGQ@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>
+Message-ID: <59e8fab9-34df-0ebe-ca6b-8b34bf582b75@ssi.gouv.fr>
+Date:   Wed, 31 Jul 2019 21:11:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:52.0) Gecko/20100101
+ Thunderbird/52.9.0
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQLqkfVijWoOM29PxCL_yK6K0fr8B89r4c5EKgddevJhGQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 1:10 AM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jul 30, 2019, at 1:24 PM, Andy Lutomirski <luto@kernel.org> wrote:
-> >
-> > On Mon, Jul 29, 2019 at 10:07 PM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >> Hi Andy,
-> >>
-> >>> On Jul 27, 2019, at 11:20 AM, Song Liu <songliubraving@fb.com> wrote:
-> >>>
-> >>> Hi Andy,
-> >>>
-> >>>
->
-> [...]
->
-> >>>
-> >>
-> >> I would like more comments on this.
-> >>
-> >> Currently, bpf permission is more or less "root or nothing", which we
-> >> would like to change.
-> >>
-> >> The short term goal is to separate bpf from root, in other words, it is
-> >> "all or nothing". Special user space utilities, such as systemd, would
-> >> benefit from this. Once this is implemented, systemd can call sys_bpf()
-> >> when it is not running as root.
-> >
-> > As generally nasty as Linux capabilities are, this sounds like a good
-> > use for CAP_BPF_ADMIN.
->
-> I actually agree CAP_BPF_ADMIN makes sense. The hard part is to make
-> existing tools (setcap, getcap, etc.) and libraries aware of the new CAP.
 
-It's been done before -- it's not that hard.  IMO the main tricky bit
-would be try be somewhat careful about defining exactly what
-CAP_BPF_ADMIN does.
 
-> > I don't see why you need to invent a whole new mechanism for this.
-> > The entire cgroup ecosystem outside bpf() does just fine using the
-> > write permission on files in cgroupfs to control access.  Why can't
-> > bpf() do the same thing?
+On 31/07/2019 20:58, Alexei Starovoitov wrote:
+> On Wed, Jul 31, 2019 at 11:46 AM Micka=C3=ABl Sala=C3=BCn
+> <mickael.salaun@ssi.gouv.fr> wrote:
+>>>> +    for (i =3D 0; i < htab->n_buckets; i++) {
+>>>> +            head =3D select_bucket(htab, i);
+>>>> +            hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
+>>>> +                    landlock_inode_remove_map(*((struct inode **)l->k=
+ey), map);
+>>>> +            }
+>>>> +    }
+>>>> +    htab_map_free(map);
+>>>> +}
+>>>
+>>> user space can delete the map.
+>>> that will trigger inode_htab_map_free() which will call
+>>> landlock_inode_remove_map().
+>>> which will simply itereate the list and delete from the list.
+>>
+>> landlock_inode_remove_map() removes the reference to the map (being
+>> freed) from the inode (with an RCU lock).
 >
-> It is easier to use write permission for BPF_PROG_ATTACH. But it is
-> not easy to do the same for other bpf commands: BPF_PROG_LOAD and
-> BPF_MAP_*. A lot of these commands don't have target concept. Maybe
-> we should have target concept for all these commands. But that is a
-> much bigger project. OTOH, "all or nothing" model allows all these
-> commands at once.
+> I'm going to ignore everything else for now and focus only on this bit,
+> since it's fundamental issue to address before this discussion can
+> go any further.
+> rcu_lock is not a spin_lock. I'm pretty sure you know this.
+> But you're arguing that it's somehow protecting from the race
+> I mentioned above?
+>
 
-For BPF_PROG_LOAD, I admit I've never understood why permission is
-required at all.  I think that CAP_SYS_ADMIN or similar should be
-needed to get is_priv in the verifier, but I think that should mainly
-be useful for tracing, and that requires lots of privilege anyway.
-BPF_MAP_* is probably the trickiest part.  One solution would be some
-kind of bpffs, but I'm sure other solutions are possible.
+I was just clarifying your comment to avoid misunderstanding about what
+is being removed.
+
+As said in the full response, there is currently a race but, if I add a
+bpf_map_inc() call when the map is referenced by inode->security, then I
+don't see how a race could occur because such added map could only be
+freed in a security_inode_free() (as long as it retains a reference to
+this inode).
+
+
+--
+Micka=C3=ABl Sala=C3=BCn
+ANSSI/SDE/ST/LAM
+
+Les donn=C3=A9es =C3=A0 caract=C3=A8re personnel recueillies et trait=C3=A9=
+es dans le cadre de cet =C3=A9change, le sont =C3=A0 seule fin d=E2=80=99ex=
+=C3=A9cution d=E2=80=99une relation professionnelle et s=E2=80=99op=C3=A8re=
+nt dans cette seule finalit=C3=A9 et pour la dur=C3=A9e n=C3=A9cessaire =C3=
+=A0 cette relation. Si vous souhaitez faire usage de vos droits de consulta=
+tion, de rectification et de suppression de vos donn=C3=A9es, veuillez cont=
+acter contact.rgpd@sgdsn.gouv.fr. Si vous avez re=C3=A7u ce message par err=
+eur, nous vous remercions d=E2=80=99en informer l=E2=80=99exp=C3=A9diteur e=
+t de d=C3=A9truire le message. The personal data collected and processed du=
+ring this exchange aims solely at completing a business relationship and is=
+ limited to the necessary duration of that relationship. If you wish to use=
+ your rights of consultation, rectification and deletion of your data, plea=
+se contact: contact.rgpd@sgdsn.gouv.fr. If you have received this message i=
+n error, we thank you for informing the sender and destroying the message.
