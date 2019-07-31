@@ -2,211 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF96A7C957
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 18:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA5667C9D8
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 19:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729868AbfGaQ6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 12:58:36 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38862 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729836AbfGaQ6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 12:58:36 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y15so32216768pfn.5
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 09:58:36 -0700 (PDT)
+        id S1730493AbfGaREe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 13:04:34 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45228 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729097AbfGaREd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 13:04:33 -0400
+Received: by mail-qt1-f194.google.com with SMTP id x22so62382715qtp.12;
+        Wed, 31 Jul 2019 10:04:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=BbYGW1om6PC71p94etYGN3/okI4rSt3mD1Fla+dsCZI=;
-        b=gcYhN/gR9O1Pe9ZLLVnRXrYNlqcViNsBD9U+GWnDzGiTqP8BVudlcK6mYTh5KrhO1w
-         aPil5ZmAZyWrMboSY/Y4EWCOKqTrOByXbdolL7wrTtQQigNu3FCKkYHuY/f8LOCXZn1u
-         ag8qe88aaYi4cK4Mfe8I/EeGUX2kgbjRo2JPexbLBAxz/4y8a14v3Vg1RNt/bIRzUwcG
-         vcvAbuxpYD56GqmAnN1CoBopaj00u0e2dPBhLKzQ8gki7fyFmQ9T2Gf65RoFjifXYT5N
-         ZJY+aIxyu6kEy2OB53kVekkt/E7IokVuCTGKJ1lXzFJ9A3wj7gq/JRJAFrWHV39z7cGm
-         xIiA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lqvJbiJ0ViYrKCHlWuUGRI0Vk4anl27aep+PR9BDs+A=;
+        b=tXxIAc53CSuZJBIX1g5xzEWAYBBLKY/cXcS7/18hagcnmxknic4QI3+xtya1EyRCg6
+         iEsAauTbSkMMI7+/BF0Wp1No+hL9RgmPjrJZf3UQwFFCfH27MBycms/V/Db4HcGiJs/D
+         Vsj9jFLpkgx2myvgBIc2FBs4iiaCPUTDk3Bg4u7Pa/6+JcHxEtdtoUsWRHlXGbUsILDt
+         8epP++AB2E+lIzvMuG4f8SrPAZOicHi+J8zTP2BZ54gOru+gvBQpfL/+Rmes42HoC8Gc
+         7iltFpnWz5rUbpU1tE1PqtnOXAdGVMsvmntSlkKDvRMbmB5TuKbVwJvXmf7W2+WfOHeE
+         0f/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BbYGW1om6PC71p94etYGN3/okI4rSt3mD1Fla+dsCZI=;
-        b=r2V8fEJWa724p8W2BlhOdtU9sUk0RbTIVpocKqdvDQHnIzOBIL/F0IjzwfJixD9kp3
-         0y1GnrnlFFkTMd4Ib4hsEPUNOJlB/2b6dFuSzt6z5IBBW2MP8MniTfi7tPcB2v6CdilX
-         6xVpWu0O4jweCAgQm9HARoJpDkhok/ZgXFmrjEBs5TQad1v7f6xn4QfBLMJiHvALcGT1
-         B91hm/9eTNDYZET1yXVwIr1km4BjzgXxMKcf3vpJgsT+zzBS2t4wy4ofOVuvDo2wPiwD
-         y29yUTn/ZdQD/I6Lc7tSBxrskkyKsEH/Lb/2Y9x1PW1aro/92GXYJ70FlKIbq/BAyR6u
-         DdsQ==
-X-Gm-Message-State: APjAAAUxm6eEjut6G04qr0uzSBjD1MpxYZrhhzppdFKrlxB+zaZ2oM8t
-        ScF8iqbI0mSaCsgEq4FwWee+ow==
-X-Google-Smtp-Source: APXvYqyt4Vp+5qcTUWTv9ZC5LXoMgRwNq9/qEfHAcFZBWQDCFk9UuJV9yUPdKUQAFbAsce0aLp0V9Q==
-X-Received: by 2002:a65:464d:: with SMTP id k13mr103144274pgr.99.1564592315501;
-        Wed, 31 Jul 2019 09:58:35 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li1433-81.members.linode.com. [45.33.106.81])
-        by smtp.gmail.com with ESMTPSA id i124sm128217887pfe.61.2019.07.31.09.58.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 31 Jul 2019 09:58:34 -0700 (PDT)
-Date:   Thu, 1 Aug 2019 00:58:26 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Justin He <Justin.He@arm.com>
-Subject: Re: [PATCH 1/2] arm64: Add support for function error injection
-Message-ID: <20190731165826.GG16088@leoy-ThinkPad-X240s>
-References: <20190716111301.1855-1-leo.yan@linaro.org>
- <20190716111301.1855-2-leo.yan@linaro.org>
- <20190731160836.qmzlk3ndbahwhfmu@willie-the-truck>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lqvJbiJ0ViYrKCHlWuUGRI0Vk4anl27aep+PR9BDs+A=;
+        b=GuQ0a+JsF4HNzBOf39Doe7H/beBEy9SU+x/jCn5hSLF9/uuWk33xTCgPNPEQ7Uu1QW
+         FLxpH2VUWevK0ql4PQFSeTBy4aWp6esz04tFdy4O1k9lP/JoFqVzZCDdZlSlryZtyFIi
+         6zZ4/m53sHxSR0aDQw0/fRky30kyh5+1+CiFsEhCIB5veLb8kfoZC9DD1aGSSFfxVPM5
+         v+1U9C5zUcHJ7ppSpuUZmpEcKkZbU3ipeYrG+JraN9o9IuOBaTAOCrpEBmDidwvdTDTI
+         Mq42UyXyTNQyVZ4Lb3ra53YIjwFnKvvVweTEJQiVtIeXGL9S45fWqpGnGJLjFaXlf9qk
+         7SkA==
+X-Gm-Message-State: APjAAAXz4I4/JfYLD8gAm156k+bBk1D7eP/7KuOx7RaQ7QmI2aCo7/e1
+        3BJfn6qGPKE0Jl0jp+gqS9hAnl+FRBgX1AxspLUoB0fucHg=
+X-Google-Smtp-Source: APXvYqwy3ZmLY6pIjLa4qrVxnHYguShOGr9R5V8LdkI11Hm5N6g+XEEdjPRgBtvzFXuGRnbYmgE32fzMJ8kolOLW+To=
+X-Received: by 2002:ac8:2d56:: with SMTP id o22mr84694203qta.171.1564592672034;
+ Wed, 31 Jul 2019 10:04:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190731160836.qmzlk3ndbahwhfmu@willie-the-truck>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20190726203747.1124677-1-andriin@fb.com> <20190726203747.1124677-2-andriin@fb.com>
+ <20190726212152.GA24397@mini-arch> <CAEf4BzYDvZENJqrT0KKpHbfHNCdObB9p4ZcJqQj3+rM_1ESF3g@mail.gmail.com>
+ <20190726220119.GE24397@mini-arch> <CAEf4Bzbj6RWUo8Q7wgMnbL=T7V2yK2=gbdO3sSfxJ71Gp6jeYA@mail.gmail.com>
+ <3D822EE0-C033-4192-B505-A30E5EC23BC3@linux.ibm.com>
+In-Reply-To: <3D822EE0-C033-4192-B505-A30E5EC23BC3@linux.ibm.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 31 Jul 2019 10:04:20 -0700
+Message-ID: <CAEf4BzbQ3JF9s_LsOEeVUoXDR57USdNFvQ4E=5vUzQ=sAPuUaQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/9] selftests/bpf: prevent headers to be
+ compiled as C code
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Will,
+On Wed, Jul 31, 2019 at 6:21 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+>
+> > Am 27.07.2019 um 20:53 schrieb Andrii Nakryiko <andrii.nakryiko@gmail.c=
+om>:
+> >
+> > On Fri, Jul 26, 2019 at 3:01 PM Stanislav Fomichev <sdf@fomichev.me> wr=
+ote:
+> >>
+> >> On 07/26, Andrii Nakryiko wrote:
+> >>> On Fri, Jul 26, 2019 at 2:21 PM Stanislav Fomichev <sdf@fomichev.me> =
+wrote:
+> >>>>
+> >>>> On 07/26, Andrii Nakryiko wrote:
+> >>>>> Apprently listing header as a normal dependency for a binary output
+> >>>>> makes it go through compilation as if it was C code. This currently
+> >>>>> works without a problem, but in subsequent commits causes problems =
+for
+> >>>>> differently generated test.h for test_progs. Marking those headers =
+as
+> >>>>> order-only dependency solves the issue.
+> >>>> Are you sure it will not result in a situation where
+> >>>> test_progs/test_maps is not regenerated if tests.h is updated.
+> >>>>
+> >>>> If I read the following doc correctly, order deps make sense for
+> >>>> directories only:
+> >>>> https://www.gnu.org/software/make/manual/html_node/Prerequisite-Type=
+s.html
+> >>>>
+> >>>> Can you maybe double check it with:
+> >>>> * make
+> >>>> * add new prog_tests/test_something.c
+> >>>> * make
+> >>>> to see if the binary is regenerated with test_something.c?
+> >>>
+> >>> Yeah, tested that, it triggers test_progs rebuild.
+> >>>
+> >>> Ordering is still preserved, because test.h is dependency of
+> >>> test_progs.c, which is dependency of test_progs binary, so that's why
+> >>> it works.
+> >>>
+> >>> As to why .h file is compiled as C file, I have no idea and ideally
+> >>> that should be fixed somehow.
+> >> I guess that's because it's a prerequisite and we have a target that
+> >> puts all prerequisites when calling CC:
+> >>
+> >> test_progs: a.c b.c tests.h
+> >>        gcc a.c b.c tests.h -o test_progs
+> >>
+> >> So gcc compiles each input file.
+> >
+> > If that's really a definition of the rule, then it seems not exactly
+> > correct. What if some of the prerequisites are some object files,
+> > directories, etc. I'd say the rule should only include .c files. I'll
+> > add it to my TODO list to go and check how all this is defined
+> > somewhere, but for now I'm leaving everything as is in this patch.
+> >
+>
+> I believe it=E2=80=99s an implicit built-in rule, which is defined by mak=
+e
+> itself here:
+>
+> https://git.savannah.gnu.org/cgit/make.git/tree/default.c?h=3D4.2.1#n131
+>
+> The observed behavior arises because these rules use $^ all over the
+> place. My 2c is that it would be better to make the rule explicit,
+> because it would cost just an extra line, but it would be immediately
+> obvious why the code is correct w.r.t. rebuilds.
 
-Thanks for reviewing.
+Thanks for pointing this out, Ilya! I agree, I'd rather have a simple
+explicit rule in Makefile that having to guess where this is coming
+from and why it doesn't work as you'd expect it to. If no one else
+adds that first, I'll eventually get to this.
 
-On Wed, Jul 31, 2019 at 05:08:37PM +0100, Will Deacon wrote:
-> On Tue, Jul 16, 2019 at 07:13:00PM +0800, Leo Yan wrote:
-> > This patch implement regs_set_return_value() and
-> > override_function_with_return() to support function error injection
-> > for arm64.
-> > 
-> > In the exception flow, arm64's general register x30 contains the value
-> > for the link register; so we can just update pt_regs::pc with it rather
-> > than redirecting execution to a dummy function that returns.
-> > 
-> > This patch is heavily inspired by the commit 7cd01b08d35f ("powerpc:
-> > Add support for function error injection").
-> > 
-> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> > ---
-> >  arch/arm64/Kconfig                       |  1 +
-> >  arch/arm64/include/asm/error-injection.h | 13 +++++++++++++
-> >  arch/arm64/include/asm/ptrace.h          |  5 +++++
-> >  arch/arm64/lib/Makefile                  |  2 ++
-> >  arch/arm64/lib/error-inject.c            | 19 +++++++++++++++++++
-> >  5 files changed, 40 insertions(+)
-> >  create mode 100644 arch/arm64/include/asm/error-injection.h
-> >  create mode 100644 arch/arm64/lib/error-inject.c
-> > 
-> > diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> > index 697ea0510729..a6d9e622977d 100644
-> > --- a/arch/arm64/Kconfig
-> > +++ b/arch/arm64/Kconfig
-> > @@ -142,6 +142,7 @@ config ARM64
-> >  	select HAVE_EFFICIENT_UNALIGNED_ACCESS
-> >  	select HAVE_FTRACE_MCOUNT_RECORD
-> >  	select HAVE_FUNCTION_TRACER
-> > +	select HAVE_FUNCTION_ERROR_INJECTION
-> >  	select HAVE_FUNCTION_GRAPH_TRACER
-> >  	select HAVE_GCC_PLUGINS
-> >  	select HAVE_HW_BREAKPOINT if PERF_EVENTS
-> > diff --git a/arch/arm64/include/asm/error-injection.h b/arch/arm64/include/asm/error-injection.h
-> > new file mode 100644
-> > index 000000000000..da057e8ed224
-> > --- /dev/null
-> > +++ b/arch/arm64/include/asm/error-injection.h
-> > @@ -0,0 +1,13 @@
-> > +/* SPDX-License-Identifier: GPL-2.0+ */
-> > +
-> > +#ifndef __ASM_ERROR_INJECTION_H_
-> > +#define __ASM_ERROR_INJECTION_H_
-> > +
-> > +#include <linux/compiler.h>
-> > +#include <linux/linkage.h>
-> > +#include <asm/ptrace.h>
-> > +#include <asm-generic/error-injection.h>
-> > +
-> > +void override_function_with_return(struct pt_regs *regs);
-> > +
-> > +#endif /* __ASM_ERROR_INJECTION_H_ */
-> 
-> Why isn't this prototype in the asm-generic header? Seems weird to have to
-> duplicate it for each architecture.
-
-Yeah.  When I spin for new version patches, will try to refactor in
-the asm-generic header.
-
-> > diff --git a/arch/arm64/include/asm/ptrace.h b/arch/arm64/include/asm/ptrace.h
-> > index dad858b6adc6..3aafbbe218a2 100644
-> > --- a/arch/arm64/include/asm/ptrace.h
-> > +++ b/arch/arm64/include/asm/ptrace.h
-> > @@ -294,6 +294,11 @@ static inline unsigned long regs_return_value(struct pt_regs *regs)
-> >  	return regs->regs[0];
-> >  }
-> >  
-> > +static inline void regs_set_return_value(struct pt_regs *regs, unsigned long rc)
-> > +{
-> > +	regs->regs[0] = rc;
-> > +}
-> > +
-> >  /**
-> >   * regs_get_kernel_argument() - get Nth function argument in kernel
-> >   * @regs:	pt_regs of that context
-> > diff --git a/arch/arm64/lib/Makefile b/arch/arm64/lib/Makefile
-> > index 33c2a4abda04..f182ccb0438e 100644
-> > --- a/arch/arm64/lib/Makefile
-> > +++ b/arch/arm64/lib/Makefile
-> > @@ -33,3 +33,5 @@ UBSAN_SANITIZE_atomic_ll_sc.o	:= n
-> >  lib-$(CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE) += uaccess_flushcache.o
-> >  
-> >  obj-$(CONFIG_CRC32) += crc32.o
-> > +
-> > +obj-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
-> > diff --git a/arch/arm64/lib/error-inject.c b/arch/arm64/lib/error-inject.c
-> > new file mode 100644
-> > index 000000000000..35661c2de4b0
-> > --- /dev/null
-> > +++ b/arch/arm64/lib/error-inject.c
-> > @@ -0,0 +1,19 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include <linux/error-injection.h>
-> > +#include <linux/kprobes.h>
-> > +
-> > +void override_function_with_return(struct pt_regs *regs)
-> > +{
-> > +	/*
-> > +	 * 'regs' represents the state on entry of a predefined function in
-> > +	 * the kernel/module and which is captured on a kprobe.
-> > +	 *
-> > +	 * 'regs->regs[30]' contains the the link register for the probed
-> 
-> extra "the"
-
-Will fix.
-
-> > +	 * function and assign it to 'regs->pc', so when kprobe returns
-> > +	 * back from exception it will override the end of probed function
-> > +	 * and drirectly return to the predefined function's caller.
-> 
-> directly
-
-Will fix.
-
-> > +	 */
-> > +	regs->pc = regs->regs[30];
-> 
-> I suppose we could be all fancy and do:
-> 
-> 	instruction_pointer_set(regs, procedure_link_pointer(regs));
-> 
-> How about that?
-
-Ah, good point.  Will change to use the common APIs.
-
-Thanks,
-Leo Yan
+>
+> Best regards,
+> Ilya
