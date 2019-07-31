@@ -2,181 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B39B07CB13
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 19:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472A97CB44
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 19:59:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730042AbfGaRyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 13:54:35 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:60010 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726232AbfGaRye (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 13:54:34 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x6VHrlOx004195;
-        Wed, 31 Jul 2019 20:53:47 +0300
-Date:   Wed, 31 Jul 2019 20:53:47 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     hujunwei <hujunwei4@huawei.com>
-cc:     wensong@linux-vs.org, horms@verge.net.au, pablo@netfilter.org,
-        kadlec@blackhole.kfki.hu, Florian Westphal <fw@strlen.de>,
-        davem@davemloft.net, Florian Westphal <fw@strlen.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Mingfangsen <mingfangsen@huawei.com>,
-        wangxiaogang3@huawei.com, xuhanbing@huawei.com
-Subject: Re: [PATCH net v3] ipvs: Improve robustness to the ipvs sysctl
-In-Reply-To: <5fd55d18-f4e2-a6b4-5c54-db76c05be5df@huawei.com>
-Message-ID: <alpine.LFD.2.21.1907312052310.3631@ja.home.ssi.bg>
-References: <1997375e-815d-137f-20c9-0829a8587ee9@huawei.com> <4a0476d3-57a4-50e0-cae8-9dffc4f4d556@huawei.com> <5fd55d18-f4e2-a6b4-5c54-db76c05be5df@huawei.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1727403AbfGaR6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 13:58:51 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:34330 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727000AbfGaR6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 13:58:50 -0400
+Received: by mail-yw1-f67.google.com with SMTP id q128so25298397ywc.1
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 10:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kle/jIqFf1IBE1ChD4Ekr3jmYwXu/5ocoCRxbcDWju8=;
+        b=eE8FsgX7scWFsv3ZMwBZQ7axOCEi+d10t8w6hFWXlivn3IMzmsGuTmyWHXdxPCwRKv
+         o+y8WWvSNtpaGElI7rzmnGJO4ic98MrxUyhjnEiDbhAjk+2YVXO1iRYlrnxtxQFqiCQ2
+         DQPgEFSaZS6nf3TaVpT9xi7XiX5dhLwrV+3ag=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kle/jIqFf1IBE1ChD4Ekr3jmYwXu/5ocoCRxbcDWju8=;
+        b=S8Znv+PAS6lg+S9M+kMce8SVJzdMlu/99wN2bnCD0RY3jIUj3f7cmoJ+FH12uUL0oi
+         1Si2OyBiHxZz7JxkaWILkpl8u9izhDtJHqwQWsaB/nTCUs7gecU5LJTRZ1AOzmsgqkQ2
+         1/HXS8YXNW+Ybob51OdsJ019LvWQGNNptnLNQJ6GpmSP9tBvlHP31wmEDWrZQcAf8xQh
+         WdCWiAayOTWDuRWghvWcHMdtJ/wx/YUr99vkvaxRKn6ibp2+JNQPU2KG2QyHz0QDoaLa
+         5YYR7hsOvOy4qbcAuKfFLuD3Y4PW0zv3EYwLXywojQr/4NQWQ1sJyibw33FYuH1H+06r
+         Lz6A==
+X-Gm-Message-State: APjAAAXoSseWAeeoUkE58TVQu7QrqJDScjpAcbHCZWLviPcLHuSOGdS5
+        kIN1GtSEimNd3u0lZzHERnS4v5JmDT7gJK0zYVayzw==
+X-Google-Smtp-Source: APXvYqwWX1s49fHEyXmj/CofKnB+QyLedV3m2fr3vgSBgPElXrzY9e4fYwGTyrZZNe4IbQYauEVPw9LEIb0HRbPGyEM=
+X-Received: by 2002:a81:9a01:: with SMTP id r1mr70879517ywg.490.1564595929908;
+ Wed, 31 Jul 2019 10:58:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20190731122224.1003-1-hslester96@gmail.com>
+In-Reply-To: <20190731122224.1003-1-hslester96@gmail.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 31 Jul 2019 10:58:38 -0700
+Message-ID: <CACKFLinuFebDgJN=BgK5e-bNaFqNpk61teva0=2xMH6R_iT39g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] cnic: Use refcount_t for refcount
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 31, 2019 at 5:22 AM Chuhong Yuan <hslester96@gmail.com> wrote:
 
-	Hello,
+>  static void cnic_ctx_wr(struct cnic_dev *dev, u32 cid_addr, u32 off, u32 val)
+> @@ -494,7 +494,7 @@ int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops)
+>         }
+>         read_unlock(&cnic_dev_lock);
+>
+> -       atomic_set(&ulp_ops->ref_count, 0);
+> +       refcount_set(&ulp_ops->ref_count, 0);
+>         rcu_assign_pointer(cnic_ulp_tbl[ulp_type], ulp_ops);
+>         mutex_unlock(&cnic_lock);
+>
 
-On Thu, 1 Aug 2019, hujunwei wrote:
+Willem's comment applies here too.  The driver needs to be modified to
+count from 1 to use refcount_t.
 
-> From: Junwei Hu <hujunwei4@huawei.com>
-> 
-> The ipvs module parse the user buffer and save it to sysctl,
-> then check if the value is valid. invalid value occurs
-> over a period of time.
-> Here, I add a variable, struct ctl_table tmp, used to read
-> the value from the user buffer, and save only when it is valid.
-> I delete proc_do_sync_mode and use extra1/2 in table for the
-> proc_dointvec_minmax call.
-> 
-> Fixes: f73181c8288f ("ipvs: add support for sync threads")
-> Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
-> Acked-by: Julian Anastasov <ja@ssi.bg>
-
-	Yep, Acked-by: Julian Anastasov <ja@ssi.bg>
-
-> ---
-> V1->V2:
-> - delete proc_do_sync_mode and use proc_dointvec_minmax call.
-> V2->V3:
-> - update git version
-> ---
->  net/netfilter/ipvs/ip_vs_ctl.c | 69 +++++++++++++++++-----------------
->  1 file changed, 35 insertions(+), 34 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-> index 060565e7d227..72189559a1cd 100644
-> --- a/net/netfilter/ipvs/ip_vs_ctl.c
-> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
-> @@ -1737,12 +1737,18 @@ proc_do_defense_mode(struct ctl_table *table, int write,
->  	int val = *valp;
->  	int rc;
-> 
-> -	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-> +	struct ctl_table tmp = {
-> +		.data = &val,
-> +		.maxlen = sizeof(int),
-> +		.mode = table->mode,
-> +	};
-> +
-> +	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
->  	if (write && (*valp != val)) {
-> -		if ((*valp < 0) || (*valp > 3)) {
-> -			/* Restore the correct value */
-> -			*valp = val;
-> +		if (val < 0 || val > 3) {
-> +			rc = -EINVAL;
->  		} else {
-> +			*valp = val;
->  			update_defense_level(ipvs);
->  		}
->  	}
-> @@ -1756,33 +1762,20 @@ proc_do_sync_threshold(struct ctl_table *table, int write,
->  	int *valp = table->data;
->  	int val[2];
->  	int rc;
-> +	struct ctl_table tmp = {
-> +		.data = &val,
-> +		.maxlen = table->maxlen,
-> +		.mode = table->mode,
-> +	};
-> 
-> -	/* backup the value first */
->  	memcpy(val, valp, sizeof(val));
-> -
-> -	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-> -	if (write && (valp[0] < 0 || valp[1] < 0 ||
-> -	    (valp[0] >= valp[1] && valp[1]))) {
-> -		/* Restore the correct value */
-> -		memcpy(valp, val, sizeof(val));
-> -	}
-> -	return rc;
-> -}
-> -
-> -static int
-> -proc_do_sync_mode(struct ctl_table *table, int write,
-> -		     void __user *buffer, size_t *lenp, loff_t *ppos)
-> -{
-> -	int *valp = table->data;
-> -	int val = *valp;
-> -	int rc;
-> -
-> -	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-> -	if (write && (*valp != val)) {
-> -		if ((*valp < 0) || (*valp > 1)) {
-> -			/* Restore the correct value */
-> -			*valp = val;
-> -		}
-> +	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
-> +	if (write) {
-> +		if (val[0] < 0 || val[1] < 0 ||
-> +		    (val[0] >= val[1] && val[1]))
-> +			rc = -EINVAL;
-> +		else
-> +			memcpy(valp, val, sizeof(val));
->  	}
->  	return rc;
->  }
-> @@ -1795,12 +1788,18 @@ proc_do_sync_ports(struct ctl_table *table, int write,
->  	int val = *valp;
->  	int rc;
-> 
-> -	rc = proc_dointvec(table, write, buffer, lenp, ppos);
-> +	struct ctl_table tmp = {
-> +		.data = &val,
-> +		.maxlen = sizeof(int),
-> +		.mode = table->mode,
-> +	};
-> +
-> +	rc = proc_dointvec(&tmp, write, buffer, lenp, ppos);
->  	if (write && (*valp != val)) {
-> -		if (*valp < 1 || !is_power_of_2(*valp)) {
-> -			/* Restore the correct value */
-> +		if (val < 1 || !is_power_of_2(val))
-> +			rc = -EINVAL;
-> +		else
->  			*valp = val;
-> -		}
->  	}
->  	return rc;
->  }
-> @@ -1860,7 +1859,9 @@ static struct ctl_table vs_vars[] = {
->  		.procname	= "sync_version",
->  		.maxlen		= sizeof(int),
->  		.mode		= 0644,
-> -		.proc_handler	= proc_do_sync_mode,
-> +		.proc_handler	= proc_dointvec_minmax,
-> +		.extra1		= SYSCTL_ZERO,
-> +		.extra2		= SYSCTL_ONE,
->  	},
->  	{
->  		.procname	= "sync_ports",
-> -- 
-> 2.21.GIT
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+Thanks.
