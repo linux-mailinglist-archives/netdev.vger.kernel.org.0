@@ -2,80 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C89A7C7E1
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 17:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36127C7FA
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 18:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730323AbfGaP7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 11:59:10 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:50084 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730160AbfGaP7J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 11:59:09 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 6753393EB0F19B20B741;
-        Wed, 31 Jul 2019 23:59:05 +0800 (CST)
-Received: from [127.0.0.1] (10.184.191.73) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Wed, 31 Jul 2019
- 23:58:54 +0800
-Subject: Re: [PATCH net v2] ipvs: Improve robustness to the ipvs sysctl
-To:     Julian Anastasov <ja@ssi.bg>
-CC:     <wensong@linux-vs.org>, <horms@verge.net.au>,
-        <pablo@netfilter.org>, <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>, <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        <lvs-devel@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <coreteam@netfilter.org>, Mingfangsen <mingfangsen@huawei.com>,
-        <wangxiaogang3@huawei.com>, <xuhanbing@huawei.com>
-References: <1997375e-815d-137f-20c9-0829a8587ee9@huawei.com>
- <4a0476d3-57a4-50e0-cae8-9dffc4f4d556@huawei.com>
- <alpine.LFD.2.21.1907302226340.4897@ja.home.ssi.bg>
-From:   hujunwei <hujunwei4@huawei.com>
-Message-ID: <484fef63-710a-701e-3151-eefaf3b9b1ca@huawei.com>
-Date:   Wed, 31 Jul 2019 23:58:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <alpine.LFD.2.21.1907302226340.4897@ja.home.ssi.bg>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        id S1729575AbfGaQAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 12:00:21 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39660 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727276AbfGaQAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 12:00:21 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D8A401264F95F;
+        Wed, 31 Jul 2019 09:00:20 -0700 (PDT)
+Date:   Wed, 31 Jul 2019 09:00:20 -0700 (PDT)
+Message-Id: <20190731.090020.971567041397094932.davem@davemloft.net>
+To:     johannes@sipsolutions.net
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: pull-request: mac80211-next 2019-07-31
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190731155057.23035-1-johannes@sipsolutions.net>
+References: <20190731155057.23035-1-johannes@sipsolutions.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.191.73]
-X-CFilter-Loop: Reflected
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 31 Jul 2019 09:00:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Julian
+From: Johannes Berg <johannes@sipsolutions.net>
+Date: Wed, 31 Jul 2019 17:50:56 +0200
 
-On 2019/7/31 3:29, Julian Anastasov wrote:
+> There's a fair number of changes here, so I thought I'd get them out.
+> I've included two Intel driver cleanups because Luca is on vacation,
+> I'm covering for him, and doing it all in one tree let me merge all
+> of the patches at once (including mac80211 that depends on that);
+> Kalle is aware.
 > 
-> 	Hello,
+> Also, though this isn't very interesting yet, I've started looking at
+> weaning the wireless subsystem off the RTNL for all operations, as it
+> can cause significant lock contention, especially with slow USB devices.
+> The real patches for that are some way off, but one preparation here is
+> to use generic netlink's parallel_ops=true, to avoid trading one place
+> with contention for another in the future, and to avoid adding more
+> genl_family_attrbuf() usage (since that's no longer possible with the
+> parallel_ops setting).
 > 
-> On Tue, 30 Jul 2019, hujunwei wrote:
-> 
->> From: Junwei Hu <hujunwei4@huawei.com>
->>
->> The ipvs module parse the user buffer and save it to sysctl,
->> then check if the value is valid. invalid value occurs
->> over a period of time.
->> Here, I add a variable, struct ctl_table tmp, used to read
->> the value from the user buffer, and save only when it is valid.
->> I delete proc_do_sync_mode and use extra1/2 in table for the
->> proc_dointvec_minmax call.
->>
->> Fixes: f73181c8288f ("ipvs: add support for sync threads")
->> Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
-> 
-> 	Looks good to me, thanks!
-> 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
-> 
-> 	BTW, why ip_vs_zero_all everywhere? Due to old git version?
-> 
+> Please pull and let me know if there's any problem.
 
-I will update the git version and send the patch v3.
+Pulled, thanks Johannes.
 
-Regards,
-Junwei
-
+I'm sure people like Florian Westphal will also appreciate your RTNL
+elimination work...
