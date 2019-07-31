@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2473C7CD65
-	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E787CD4E
+	for <lists+netdev@lfdr.de>; Wed, 31 Jul 2019 21:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730205AbfGaT70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 15:59:26 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:44131 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726755AbfGaT7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 15:59:25 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M60HD-1hzmMa1S2t-007WQU; Wed, 31 Jul 2019 21:58:51 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     soc@kernel.org, linux-arm-kernel@lists.infradead.org,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 03/14] watchdog: pnx4008_wdt: allow compile-testing
-Date:   Wed, 31 Jul 2019 21:56:45 +0200
-Message-Id: <20190731195713.3150463-4-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190731195713.3150463-1-arnd@arndb.de>
-References: <20190731195713.3150463-1-arnd@arndb.de>
+        id S1729389AbfGaT6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 15:58:15 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34920 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728326AbfGaT6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 15:58:14 -0400
+Received: by mail-pg1-f196.google.com with SMTP id s1so26288426pgr.2
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 12:58:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5bjb4JCgRmc6cDqWEKZXjJBZg68tTw2wpBsWp1Ed+Ko=;
+        b=n8QF3B+TRFRoNtoeVT7fNLvdOQu0RiuQcEaMnOR3pFExgEVIYOch1KrCEM4ZjgJn/Z
+         ds0XtGl8Ayrc1bLpnUduM+kUkvq6rn049Onc9CBPFsPrgv0XowE+nOqy+k5p438jitI4
+         9jsDdSlvKMuxLIgxVOpqdRtVfokUbuaAzwwDuoVLCHxx6Z7vlVS5V5DKdefSLGs5fEM+
+         dWy7CAZdXBmefNHgQ0RcsB7Pz8eZkcxqOpTKTZe2ZtqmSQsr6Hqa3lxBgIPhf2FeIVRo
+         ASzjgYkaLz7JCGD3+67hWKISvtxIkEnZsregg0n/0PcETROXmu40oWa3a2d5/zNS9bL7
+         JuYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5bjb4JCgRmc6cDqWEKZXjJBZg68tTw2wpBsWp1Ed+Ko=;
+        b=qTGoZDyPOJZH1O/NbIjK17jPXrHnG8OvwQgEL/l+w8O951ONQ6aAbZNs5jgIIQLoY1
+         dOgk8H8EUphl6gxemkv43g4xwkqLzZPsEGv76a3FJS3zHuR/rkzQN756xGYuL9U8IvPR
+         bWpeNLKAEP9ruX37yfbIKoxzxFwX73BJidBvD/87LYIGj4/+9c0vP9sBJEzPBeCpgEeZ
+         rgMEcIGL5RRuAY8gTRxSQ5NjGW7nR9vrFCEC/QdrP7+M/TRG0dsqx7o2oOut9BiIbFMq
+         yV2Zjd75sjtn7NcqkdLIzMcBCvQv0YMhKN4dXZQ0EaAesMBI7cYhTCVTmBtGQ/873vDg
+         49oQ==
+X-Gm-Message-State: APjAAAX64zTorTE71gtuRkmbyUrhAIJrKcjsiPNbWYwCArt1m+Hq43cd
+        Pc3Yqx6AR+J0BuZA5JEGe3lL+DqA
+X-Google-Smtp-Source: APXvYqz9WfzpgULzxvNAw3Qoy+gXUKLalyxGfoCT06CyYIiOsvrHyBU9fs/XW9y8/OjXZzDu31kBBQ==
+X-Received: by 2002:a63:c03:: with SMTP id b3mr51943488pgl.23.1564603093414;
+        Wed, 31 Jul 2019 12:58:13 -0700 (PDT)
+Received: from [172.27.227.172] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id u16sm2567095pgm.83.2019.07.31.12.58.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 Jul 2019 12:58:12 -0700 (PDT)
+Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
+From:   David Ahern <dsahern@gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        sthemmin@microsoft.com, mlxsw@mellanox.com
+References: <20190730085734.31504-1-jiri@resnulli.us>
+ <20190730085734.31504-2-jiri@resnulli.us>
+ <20190730153952.73de7f00@cakuba.netronome.com>
+ <20190731192627.GB2324@nanopsycho>
+ <c4f83be2-adee-1595-f241-de4c26ea55ca@gmail.com>
+ <20190731194502.GC2324@nanopsycho>
+ <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
+Message-ID: <89dc6908-68b8-5b0d-0ef7-1eaf1e4e886b@gmail.com>
+Date:   Wed, 31 Jul 2019 13:58:10 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:9yUamtnf2TIEri8xToHi2HP0bNeq2o/bMYTbPMW/vg0ZGIzRlVZ
- urODGWophHwj2kamStrDk3IZ7zSpCTCX5t4sMnfLpIcxs9wmaHvSSDo+bNqZzwGdy5UYYR9
- e0Y4xZ9D2FHcXdSkv/oCMKk2yUHxFcbeBUTKPhHw7pX66dppRRr1TufSUvH+5QEVggfcs8Z
- 6oMvoTmm1FtZK8+0oW/wg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:klU/jRvYVso=:PV42qGK6cAWld/OjjZOFZ1
- zGMpHnObvYTQrIpVxVh6vZz9g4QDbJfZyHjqGV0KF05shbnRpDiouYuKEl+7RdTrLXQfq6OUE
- 3iGxoYpQ3HBCtxT3DWbqWWLjzoj7ATK7zwEPmUzqzrqjdRYzJszfhNAkX2yI5YVG3GmeBz7yz
- 9RDZV4vuOZy22/0qG81uXna7kipOrx0kN2s5FikkKplOevEqJ5tLa4h47HbmthkC8KXX7zbgY
- pV8i3+EJvVZRSaDGhptWUul3T1jBR2b7BO9BWPZmbjlxSVhOASs7lsyj+eHcuceoXxIJkpoby
- 7jns4DopRRhHvLL9wlR9ZhyFDkRbdO10LDreatLj5aTesK9vI3kXEjSfxlHluovG3Sm6QKYRF
- SsmRaoxRh7iE87EyMCkT62zLke0BDT/e7RQv10/x5qVYHLOpOHtZfMVaeh4dcS60FyguGq1Fd
- 3ZzSA/0jVKSDYqdV5txFh/RZ4uwjHFxMsqS451Oz7732M9uDtqR/CDUNN+MlQKcXzJwbAGxMp
- dN/OymhwlkaxUFRN1E+sGRFvkVQ9MSPkAOc6KurE8C1j+ohNT7WqJgapbfcUiNpDiXpiDxUyg
- OGFd2tSeUG/ZzHAGSoQjoTxD08FMp+mpwJN3uF+xl+fiNsAqYJ3JEC4ZzIkQYYCsZHSoOrZhj
- +/i+eKY1tw950RZ1mXRqF+97hNuHJvmGGLacoaAjuOdNIxSHQXg065UQavatOfy/ovlux6y0Y
- LxMR5+Bjw4qB9h6YFWvXSUmP198oby4rMT3eBg==
+In-Reply-To: <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only thing that prevents building this driver on other
-platforms is the mach/hardware.h include, which is not actually
-used here at all, so remove the line and allow CONFIG_COMPILE_TEST.
+On 7/31/19 1:46 PM, David Ahern wrote:
+> On 7/31/19 1:45 PM, Jiri Pirko wrote:
+>>> check. e.g., what happens if a resource controller has been configured
+>>> for the devlink instance and it is moved to a namespace whose existing
+>>> config exceeds those limits?
+>>
+>> It's moved with all the values. The whole instance is moved.
+>>
+> 
+> The values are moved, but the FIB in a namespace could already contain
+> more routes than the devlink instance allows.
+> 
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/watchdog/Kconfig       | 2 +-
- drivers/watchdog/pnx4008_wdt.c | 1 -
- 2 files changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index 8188963a405b..a45f9e3e442b 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -551,7 +551,7 @@ config OMAP_WATCHDOG
- 
- config PNX4008_WATCHDOG
- 	tristate "LPC32XX Watchdog"
--	depends on ARCH_LPC32XX
-+	depends on ARCH_LPC32XX || COMPILE_TEST
- 	select WATCHDOG_CORE
- 	help
- 	  Say Y here if to include support for the watchdog timer
-diff --git a/drivers/watchdog/pnx4008_wdt.c b/drivers/watchdog/pnx4008_wdt.c
-index 7b446b696f2b..e0ea133c1690 100644
---- a/drivers/watchdog/pnx4008_wdt.c
-+++ b/drivers/watchdog/pnx4008_wdt.c
-@@ -30,7 +30,6 @@
- #include <linux/of.h>
- #include <linux/delay.h>
- #include <linux/reboot.h>
--#include <mach/hardware.h>
- 
- /* WatchDog Timer - Chapter 23 Page 207 */
- 
--- 
-2.20.0
-
+From a quick test your recent refactoring to netdevsim broke the
+resource controller. It was, and is intended to be, per network namespace.
