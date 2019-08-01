@@ -2,408 +2,441 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 700237E6EF
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 01:50:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B150E7E6F3
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 01:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390500AbfHAXug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 19:50:36 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:41252 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731376AbfHAXuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 19:50:35 -0400
-Received: by mail-pf1-f193.google.com with SMTP id m30so34974931pff.8;
-        Thu, 01 Aug 2019 16:50:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ILltP4pawog108CDtnFkAicndYwTMJ/m9ELSEhuHDyI=;
-        b=SXUCWFB5ON9vIMhIrlJZXXRIoCIq6Pq9upabWftfXgZ7EYOUHPRXS0AUM2Lt21zvF3
-         YMaa1QSHVh/rxtsKTgAdgXRWkdVa2h5MDiGm8TOb0KlC40vHVnbDzr4UB3AdVbRzYyrx
-         zjvPVEFxT03XLqLYnB4Doup7VQJFmpuSTkS9RCGrkXzeAie+Yi3Q2Onw4Ww/k7vweIxq
-         Qj0rScSVkYcBbzlPK+k2xSz+9KgqDpuVTSfkr00uM6omkXsTZEH23xsJL087f35Pq5fd
-         XoTp91sWy7a3DN+RiHrmQ1FV1bEsz2bSoXVR9hFzYVz8ymj/x0VMASrNgeTZj0jXPjdx
-         2g2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ILltP4pawog108CDtnFkAicndYwTMJ/m9ELSEhuHDyI=;
-        b=tHZtP4bQlZ32Q69bmmAS3KK/wVtGdGVxMZQO43I4ULdKOh+TGvu6DSM7DDVWMNLZ5i
-         Fffq1eOhjLn5t5dziF39DvU0B9s6efmSDqrh6NxKZxez1DKqS1T8kAF+wz6Yx0IQaUty
-         3mpNa9lereRwj/I/kKIvoBjXfzTXEuEIVNZ7JJWOLvSwCz/xKG0h1DXpsQToHuA+YvVw
-         2iw5v6X9fi6Dp9mT3Z8LjRmixu6lFDAcNi5a2/M6+WxHG9wSGNNcc2VfeLn8VQ6240FZ
-         xBY6g8h28/YsjJA03UW30AjojEwAPuF4BKJPD76OciUhOptH0QTQXS1RXINBpj/oOK5U
-         y3rQ==
-X-Gm-Message-State: APjAAAU0SQH15MmM81iFccCBmMmZ73Rn22gZ1rqxbZ8nmx4PuXd8pLan
-        2VtRKSaKmR/X4P9B4Dku1BI=
-X-Google-Smtp-Source: APXvYqwLIqNlzTskCENRwMCBIVFqYC9TSZtTD8L32HszKlkfDfLYxq2zGdFLSLscM32fVRiNqzZXEw==
-X-Received: by 2002:a17:90a:cb81:: with SMTP id a1mr1300543pju.81.1564703434521;
-        Thu, 01 Aug 2019 16:50:34 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:f96b])
-        by smtp.gmail.com with ESMTPSA id i7sm4911043pjk.24.2019.08.01.16.50.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 01 Aug 2019 16:50:33 -0700 (PDT)
-Date:   Thu, 1 Aug 2019 16:50:32 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, yhs@fb.com, songliubraving@fb.com,
-        andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 02/12] libbpf: implement BPF CO-RE offset
- relocation algorithm
-Message-ID: <20190801235030.bzssmwzuvzdy7h7t@ast-mbp.dhcp.thefacebook.com>
-References: <20190801064803.2519675-1-andriin@fb.com>
- <20190801064803.2519675-3-andriin@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190801064803.2519675-3-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+        id S2390500AbfHAXwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 19:52:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38756 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731376AbfHAXwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Aug 2019 19:52:47 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A070206B8;
+        Thu,  1 Aug 2019 23:52:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564703565;
+        bh=DFl30OH+MA1bej2chXCi9YuPFDsmKkWXl61N7HADA0A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=1X2tbmSD8rANjfNz8HuwzYKDHOrjII3tKg5n+X7rnCedx8ZPAwdIBK4JP9e3g+02e
+         GM6iLEcbUW9ToCGlKifhYpv51P9XQrgZ9vs8uKZuIyNSLRRtCqAFns2o1uUyX/blyB
+         69IJ5ehxLCec5X0HiqKExhDl/eJ/KTwweNOq1l2I=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] selftests: Add l2tp tests
+Date:   Thu,  1 Aug 2019 16:54:21 -0700
+Message-Id: <20190801235421.8344-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 11:47:53PM -0700, Andrii Nakryiko wrote:
-> This patch implements the core logic for BPF CO-RE offsets relocations.
-> Every instruction that needs to be relocated has corresponding
-> bpf_offset_reloc as part of BTF.ext. Relocations are performed by trying
-> to match recorded "local" relocation spec against potentially many
-> compatible "target" types, creating corresponding spec. Details of the
-> algorithm are noted in corresponding comments in the code.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-...
-> +		if (btf_is_composite(t)) {
-> +			const struct btf_member *m = (void *)(t + 1);
-> +			__u32 offset;
-> +
-> +			if (access_idx >= BTF_INFO_VLEN(t->info))
-> +				return -EINVAL;
-> +
-> +			m = &m[access_idx];
-> +
-> +			if (BTF_INFO_KFLAG(t->info)) {
-> +				if (BTF_MEMBER_BITFIELD_SIZE(m->offset))
-> +					return -EINVAL;
-> +				offset = BTF_MEMBER_BIT_OFFSET(m->offset);
-> +			} else {
-> +				offset = m->offset;
-> +			}
+From: David Ahern <dsahern@gmail.com>
 
-very similar logic exists in btf_dump.c
-probably makes sense to make a common helper at some point.
+Add IPv4 and IPv6 l2tp tests. Current set is over IP and with
+IPsec.
 
-> +static size_t bpf_core_essential_name_len(const char *name)
-> +{
-> +	size_t n = strlen(name);
-> +	int i = n - 3;
-> +
-> +	while (i > 0) {
-> +		if (name[i] == '_' && name[i + 1] == '_' && name[i + 2] == '_')
-> +			return i;
-> +		i--;
-> +	}
-> +	return n;
-> +}
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+The ipsec tests expose a netdev refcount leak that I have not had
+time to track down, but the tests themselves are good.
 
-that's a bit of an eye irritant. How about?
-	size_t n = strlen(name);
-	int i, cnt = 0;
+ tools/testing/selftests/net/l2tp.sh | 382 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 382 insertions(+)
+ create mode 100644 tools/testing/selftests/net/l2tp.sh
 
-	for (i = n - 1; i >= 0; i--) {
-		if (name[i] == '_') {
-                    cnt++;
-                } else {
-                   if (cnt == 3)
-                      return i + 1;
-                   cnt = 0;
-                }
-	}
-	return n;
-
-> +	case BTF_KIND_ARRAY: {
-> +		const struct btf_array *loc_a, *targ_a;
-> +
-> +		loc_a = (void *)(local_type + 1);
-> +		targ_a = (void *)(targ_type + 1);
-> +		local_id = loc_a->type;
-> +		targ_id = targ_a->type;
-
-can we add a helper like:
-const struct btf_array *btf_array(cosnt struct btf_type *t)
-{
-        return (const struct btf_array *)(t + 1);
-}
-
-then above will be:
-	case BTF_KIND_ARRAY: {
-		local_id = btf_array(local_type)->type;
-		targ_id = btf_array(targ_type)->type;
-
-and a bunch of code in btf.c and btf_dump.c would be cleaner as well?
-
-> +		goto recur;
-> +	}
-> +	default:
-> +		pr_warning("unexpected kind %d relocated, local [%d], target [%d]\n",
-> +			   kind, local_id, targ_id);
-> +		return 0;
-> +	}
-> +}
-> +
-> +/* 
-> + * Given single high-level named field accessor in local type, find
-> + * corresponding high-level accessor for a target type. Along the way,
-> + * maintain low-level spec for target as well. Also keep updating target
-> + * offset.
-> + *
-> + * Searching is performed through recursive exhaustive enumeration of all
-> + * fields of a struct/union. If there are any anonymous (embedded)
-> + * structs/unions, they are recursively searched as well. If field with
-> + * desired name is found, check compatibility between local and target types,
-> + * before returning result.
-> + *
-> + * 1 is returned, if field is found.
-> + * 0 is returned if no compatible field is found.
-> + * <0 is returned on error.
-> + */
-> +static int bpf_core_match_member(const struct btf *local_btf,
-> +				 const struct bpf_core_accessor *local_acc,
-> +				 const struct btf *targ_btf,
-> +				 __u32 targ_id,
-> +				 struct bpf_core_spec *spec,
-> +				 __u32 *next_targ_id)
-> +{
-> +	const struct btf_type *local_type, *targ_type;
-> +	const struct btf_member *local_member, *m;
-> +	const char *local_name, *targ_name;
-> +	__u32 local_id;
-> +	int i, n, found;
-> +
-> +	targ_type = skip_mods_and_typedefs(targ_btf, targ_id, &targ_id);
-> +	if (!targ_type)
-> +		return -EINVAL;
-> +	if (!btf_is_composite(targ_type))
-> +		return 0;
-> +
-> +	local_id = local_acc->type_id;
-> +	local_type = btf__type_by_id(local_btf, local_id);
-> +	local_member = (void *)(local_type + 1);
-> +	local_member += local_acc->idx;
-> +	local_name = btf__name_by_offset(local_btf, local_member->name_off);
-> +
-> +	n = BTF_INFO_VLEN(targ_type->info);
-> +	m = (void *)(targ_type + 1);
-
-new btf_member() helper?
-
-> +	for (i = 0; i < n; i++, m++) {
-> +		__u32 offset;
-> +
-> +		/* bitfield relocations not supported */
-> +		if (BTF_INFO_KFLAG(targ_type->info)) {
-> +			if (BTF_MEMBER_BITFIELD_SIZE(m->offset))
-> +				continue;
-> +			offset = BTF_MEMBER_BIT_OFFSET(m->offset);
-> +		} else {
-> +			offset = m->offset;
-> +		}
-> +		if (offset % 8)
-> +			continue;
-
-same bit of code again?
-definitely could use a helper.
-
-> +	for (i = 0; i < local_spec->len; i++, local_acc++, targ_acc++) {
-> +		targ_type = skip_mods_and_typedefs(targ_spec->btf, targ_id,
-> +						   &targ_id);
-> +		if (!targ_type)
-> +			return -EINVAL;
-> +
-> +		if (local_acc->name) {
-> +			matched = bpf_core_match_member(local_spec->btf,
-> +							local_acc,
-> +							targ_btf, targ_id,
-> +							targ_spec, &targ_id);
-> +			if (matched <= 0)
-> +				return matched;
-> +		} else {
-> +			/* for i=0, targ_id is already treated as array element
-> +			 * type (because it's the original struct), for others
-> +			 * we should find array element type first
-> +			 */
-> +			if (i > 0) {
-> +				const struct btf_array *a;
-> +
-> +				if (!btf_is_array(targ_type))
-> +					return 0;
-> +
-> +				a = (void *)(targ_type + 1);
-> +				if (local_acc->idx >= a->nelems)
-> +					return 0;
-
-am I reading it correctly that the local spec requested out-of-bounds
-index in the target array type?
-Why this is 'ignore' instead of -EINVAL?
-
-> +/*
-> + * Probe few well-known locations for vmlinux kernel image and try to load BTF
-> + * data out of it to use for target BTF.
-> + */
-> +static struct btf *bpf_core_find_kernel_btf(void)
-> +{
-> +	const char *locations[] = {
-> +		"/lib/modules/%1$s/vmlinux-%1$s",
-> +		"/usr/lib/modules/%1$s/kernel/vmlinux",
-> +	};
-> +	char path[PATH_MAX + 1];
-> +	struct utsname buf;
-> +	struct btf *btf;
-> +	int i, err;
-> +
-> +	err = uname(&buf);
-> +	if (err) {
-> +		pr_warning("failed to uname(): %d\n", err);
-
-defensive programming ?
-I think uname() can fail only if &buf points to non-existing page like null.
-
-> +		return ERR_PTR(err);
-> +	}
-> +
-> +	for (i = 0; i < ARRAY_SIZE(locations); i++) {
-> +		snprintf(path, PATH_MAX, locations[i], buf.release);
-> +		pr_debug("attempting to load kernel BTF from '%s'\n", path);
-
-I think this debug message would have been more useful after access().
-
-> +
-> +		if (access(path, R_OK))
-> +			continue;
-> +
-> +		btf = btf__parse_elf(path, NULL);
-> +		if (IS_ERR(btf))
-> +			continue;
-> +
-> +		pr_debug("successfully loaded kernel BTF from '%s'\n", path);
-> +		return btf;
-> +	}
-> +
-> +	pr_warning("failed to find valid kernel BTF\n");
-> +	return ERR_PTR(-ESRCH);
-> +}
-> +
-> +/* Output spec definition in the format:
-> + * [<type-id>] (<type-name>) + <raw-spec> => <offset>@<spec>,
-> + * where <spec> is a C-syntax view of recorded field access, e.g.: x.a[3].b
-> + */
-> +static void bpf_core_dump_spec(int level, const struct bpf_core_spec *spec)
-> +{
-> +	const struct btf_type *t;
-> +	const char *s;
-> +	__u32 type_id;
-> +	int i;
-> +
-> +	type_id = spec->spec[0].type_id;
-> +	t = btf__type_by_id(spec->btf, type_id);
-> +	s = btf__name_by_offset(spec->btf, t->name_off);
-> +	libbpf_print(level, "[%u] (%s) + ", type_id, s);
-
-imo extra []() don't improve readability of the dump.
-
-> +
-> +	for (i = 0; i < spec->raw_len; i++)
-> +		libbpf_print(level, "%d%s", spec->raw_spec[i],
-> +			     i == spec->raw_len - 1 ? " => " : ":");
-> +
-> +	libbpf_print(level, "%u @ &x", spec->offset);
-> +
-> +	for (i = 0; i < spec->len; i++) {
-> +		if (spec->spec[i].name)
-> +			libbpf_print(level, ".%s", spec->spec[i].name);
-> +		else
-> +			libbpf_print(level, "[%u]", spec->spec[i].idx);
-> +	}
-> +
-> +}
-> +
-> +static size_t bpf_core_hash_fn(const void *key, void *ctx)
-> +{
-> +	return (size_t)key;
-> +}
-> +
-> +static bool bpf_core_equal_fn(const void *k1, const void *k2, void *ctx)
-> +{
-> +	return k1 == k2;
-> +}
-> +
-> +static void *u32_to_ptr(__u32 x)
-> +{
-> +	return (void *)(uintptr_t)x;
-> +}
-
-u32 to pointer on 64-bit arch?!
-That surely needs a comment.
-
-> +
-> +/* 
-> + * CO-RE relocate single instruction.
-> + *
-> + * The outline and important points of the algorithm:
-> + * 1. For given local type, find corresponding candidate target types.
-> + *    Candidate type is a type with the same "essential" name, ignoring
-> + *    everything after last triple underscore (___). E.g., `sample`,
-> + *    `sample___flavor_one`, `sample___flavor_another_one`, are all candidates
-> + *    for each other. Names with triple underscore are referred to as
-> + *    "flavors" and are useful, among other things, to allow to
-> + *    specify/support incompatible variations of the same kernel struct, which
-> + *    might differ between different kernel versions and/or build
-> + *    configurations.
-> + *
-> + *    N.B. Struct "flavors" could be generated by bpftool's BTF-to-C
-> + *    converter, when deduplicated BTF of a kernel still contains more than
-> + *    one different types with the same name. In that case, ___2, ___3, etc
-> + *    are appended starting from second name conflict. But start flavors are
-> + *    also useful to be defined "locally", in BPF program, to extract same
-> + *    data from incompatible changes between different kernel
-> + *    versions/configurations. For instance, to handle field renames between
-> + *    kernel versions, one can use two flavors of the struct name with the
-> + *    same common name and use conditional relocations to extract that field,
-> + *    depending on target kernel version.
-
-there are actual kernel types that have ___ in the name.
-Ex: struct lmc___media
-We probably need to revisit this 'flavor' convention.
-
-> +	for (i = 0, j = 0; i < cand_ids->len; i++) {
-> +		cand_id = cand_ids->data[i];
-> +		cand_type = btf__type_by_id(targ_btf, cand_id);
-> +		cand_name = btf__name_by_offset(targ_btf, cand_type->name_off);
-> +
-> +		err = bpf_core_spec_match(&local_spec, targ_btf,
-> +					  cand_id, &cand_spec);
-> +		if (err < 0) {
-> +			pr_warning("prog '%s': relo #%d: failed to match spec ",
-> +				   prog_name, relo_idx);
-> +			bpf_core_dump_spec(LIBBPF_WARN, &local_spec);
-> +			libbpf_print(LIBBPF_WARN,
-> +				     " to candidate #%d [%d] (%s): %d\n",
-> +				     i, cand_id, cand_name, err);
-> +			return err;
-> +		}
-> +		if (err == 0) {
-> +			pr_debug("prog '%s': relo #%d: candidate #%d [%d] (%s) doesn't match spec ",
-> +				 prog_name, relo_idx, i, cand_id, cand_name);
-> +			bpf_core_dump_spec(LIBBPF_DEBUG, &local_spec);
-> +			libbpf_print(LIBBPF_DEBUG, "\n");
-> +			continue;
-> +		}
-> +
-> +		pr_debug("prog '%s': relo #%d: candidate #%d matched as spec ",
-> +			 prog_name, relo_idx, i);
-
-did you mention that you're going to make a helper for this debug dumps?
+diff --git a/tools/testing/selftests/net/l2tp.sh b/tools/testing/selftests/net/l2tp.sh
+new file mode 100644
+index 000000000000..5782433886fc
+--- /dev/null
++++ b/tools/testing/selftests/net/l2tp.sh
+@@ -0,0 +1,382 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# L2TPv3 tunnel between 2 hosts
++#
++#            host-1          |   router   |     host-2
++#                            |            |
++#      lo          l2tp      |            |      l2tp           lo
++# 172.16.101.1  172.16.1.1   |            | 172.16.1.2    172.16.101.2
++#  fc00:101::1   fc00:1::1   |            |   fc00:1::2    fc00:101::2
++#                            |            |
++#                  eth0      |            |     eth0
++#                10.1.1.1    |            |   10.1.2.1
++#              2001:db8:1::1 |            | 2001:db8:2::1
++
++VERBOSE=0
++PAUSE_ON_FAIL=no
++
++which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
++
++################################################################################
++#
++log_test()
++{
++	local rc=$1
++	local expected=$2
++	local msg="$3"
++
++	if [ ${rc} -eq ${expected} ]; then
++		printf "TEST: %-60s  [ OK ]\n" "${msg}"
++		nsuccess=$((nsuccess+1))
++	else
++		ret=1
++		nfail=$((nfail+1))
++		printf "TEST: %-60s  [FAIL]\n" "${msg}"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
++}
++
++run_cmd()
++{
++	local ns
++	local cmd
++	local out
++	local rc
++
++	ns="$1"
++	shift
++	cmd="$*"
++
++	if [ "$VERBOSE" = "1" ]; then
++		printf "    COMMAND: $cmd\n"
++	fi
++
++	out=$(eval ip netns exec ${ns} ${cmd} 2>&1)
++	rc=$?
++	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
++		echo "    $out"
++	fi
++
++	[ "$VERBOSE" = "1" ] && echo
++
++	return $rc
++}
++
++################################################################################
++# create namespaces and interconnects
++
++create_ns()
++{
++	local ns=$1
++	local addr=$2
++	local addr6=$3
++
++	[ -z "${addr}" ] && addr="-"
++	[ -z "${addr6}" ] && addr6="-"
++
++	ip netns add ${ns}
++
++	ip -netns ${ns} link set lo up
++	if [ "${addr}" != "-" ]; then
++		ip -netns ${ns} addr add dev lo ${addr}
++	fi
++	if [ "${addr6}" != "-" ]; then
++		ip -netns ${ns} -6 addr add dev lo ${addr6}
++	fi
++
++	ip -netns ${ns} ro add unreachable default metric 8192
++	ip -netns ${ns} -6 ro add unreachable default metric 8192
++
++	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.accept_dad=0
++}
++
++# create veth pair to connect namespaces and apply addresses.
++connect_ns()
++{
++	local ns1=$1
++	local ns1_dev=$2
++	local ns1_addr=$3
++	local ns1_addr6=$4
++	local ns2=$5
++	local ns2_dev=$6
++	local ns2_addr=$7
++	local ns2_addr6=$8
++
++	ip -netns ${ns1} li add ${ns1_dev} type veth peer name tmp
++	ip -netns ${ns1} li set ${ns1_dev} up
++	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}
++	ip -netns ${ns2} li set ${ns2_dev} up
++
++	if [ "${ns1_addr}" != "-" ]; then
++		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}
++		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr}
++	fi
++
++	if [ "${ns1_addr6}" != "-" ]; then
++		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}
++		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}
++	fi
++}
++
++################################################################################
++# test setup
++
++cleanup()
++{
++	local ns
++
++	for ns in host-1 host-2 router
++	do
++		ip netns del ${ns} 2>/dev/null
++	done
++}
++
++setup_l2tp_ipv4()
++{
++	#
++	# configure l2tpv3 tunnel on host-1
++	#
++	ip -netns host-1 l2tp add tunnel tunnel_id 1041 peer_tunnel_id 1042 \
++			 encap ip local 10.1.1.1 remote 10.1.2.1
++	ip -netns host-1 l2tp add session name l2tp4 tunnel_id 1041 \
++			 session_id 1041 peer_session_id 1042
++	ip -netns host-1 link set dev l2tp4 up
++	ip -netns host-1 addr add dev l2tp4 172.16.1.1 peer 172.16.1.2
++
++	#
++	# configure l2tpv3 tunnel on host-2
++	#
++	ip -netns host-2 l2tp add tunnel tunnel_id 1042 peer_tunnel_id 1041 \
++			 encap ip local 10.1.2.1 remote 10.1.1.1
++	ip -netns host-2 l2tp add session name l2tp4 tunnel_id 1042 \
++			 session_id 1042 peer_session_id 1041
++	ip -netns host-2 link set dev l2tp4 up
++	ip -netns host-2 addr add dev l2tp4 172.16.1.2 peer 172.16.1.1
++
++	#
++	# add routes to loopback addresses
++	#
++	ip -netns host-1 ro add 172.16.101.2/32 via 172.16.1.2
++	ip -netns host-2 ro add 172.16.101.1/32 via 172.16.1.1
++}
++
++setup_l2tp_ipv6()
++{
++	#
++	# configure l2tpv3 tunnel on host-1
++	#
++	ip -netns host-1 l2tp add tunnel tunnel_id 1061 peer_tunnel_id 1062 \
++			 encap ip local 2001:db8:1::1 remote 2001:db8:2::1
++	ip -netns host-1 l2tp add session name l2tp6 tunnel_id 1061 \
++			 session_id 1061 peer_session_id 1062
++	ip -netns host-1 link set dev l2tp6 up
++	ip -netns host-1 addr add dev l2tp6 fc00:1::1 peer fc00:1::2
++
++	#
++	# configure l2tpv3 tunnel on host-2
++	#
++	ip -netns host-2 l2tp add tunnel tunnel_id 1062 peer_tunnel_id 1061 \
++			 encap ip local 2001:db8:2::1 remote 2001:db8:1::1
++	ip -netns host-2 l2tp add session name l2tp6 tunnel_id 1062 \
++			 session_id 1062 peer_session_id 1061
++	ip -netns host-2 link set dev l2tp6 up
++	ip -netns host-2 addr add dev l2tp6 fc00:1::2 peer fc00:1::1
++
++	#
++	# add routes to loopback addresses
++	#
++	ip -netns host-1 -6 ro add fc00:101::2/128 via fc00:1::2
++	ip -netns host-2 -6 ro add fc00:101::1/128 via fc00:1::1
++}
++
++setup()
++{
++	# start clean
++	cleanup
++
++	set -e
++	create_ns host-1 172.16.101.1/32 fc00:101::1/128
++	create_ns host-2 172.16.101.2/32 fc00:101::2/128
++	create_ns router
++
++	connect_ns host-1 eth0 10.1.1.1/24 2001:db8:1::1/64 \
++	           router eth1 10.1.1.2/24 2001:db8:1::2/64
++
++	connect_ns host-2 eth0 10.1.2.1/24 2001:db8:2::1/64 \
++	           router eth2 10.1.2.2/24 2001:db8:2::2/64
++
++	ip -netns host-1 ro add 10.1.2.0/24 via 10.1.1.2
++	ip -netns host-1 -6 ro add 2001:db8:2::/64 via 2001:db8:1::2
++
++	ip -netns host-2 ro add 10.1.1.0/24 via 10.1.2.2
++	ip -netns host-2 -6 ro add 2001:db8:1::/64 via 2001:db8:2::2
++
++	setup_l2tp_ipv4
++	setup_l2tp_ipv6
++	set +e
++}
++
++setup_ipsec()
++{
++	#
++	# IPv4
++	#
++	run_cmd host-1 ip xfrm policy add \
++		src 10.1.1.1 dst 10.1.2.1 dir out \
++		tmpl proto esp mode transport
++
++	run_cmd host-1 ip xfrm policy add \
++		src 10.1.2.1 dst 10.1.1.1 dir in \
++		tmpl proto esp mode transport
++
++	run_cmd host-2 ip xfrm policy add \
++		src 10.1.1.1 dst 10.1.2.1 dir in \
++		tmpl proto esp mode transport
++
++	run_cmd host-2 ip xfrm policy add \
++		src 10.1.2.1 dst 10.1.1.1 dir out \
++		tmpl proto esp mode transport
++
++	ip -netns host-1 xfrm state add \
++		src 10.1.1.1 dst 10.1.2.1 \
++		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	ip -netns host-1 xfrm state add \
++		src 10.1.2.1 dst 10.1.1.1 \
++		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	ip -netns host-2 xfrm state add \
++		src 10.1.1.1 dst 10.1.2.1 \
++		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	ip -netns host-2 xfrm state add \
++		src 10.1.2.1 dst 10.1.1.1 \
++		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	#
++	# IPV6
++	#
++	run_cmd host-1 ip -6 xfrm policy add \
++		src 2001:db8:1::1 dst 2001:db8:2::1 dir out \
++		tmpl proto esp mode transport
++
++	run_cmd host-1 ip -6 xfrm policy add \
++		src 2001:db8:2::1 dst 2001:db8:1::1 dir in \
++		tmpl proto esp mode transport
++
++	run_cmd host-2 ip -6 xfrm policy add \
++		src 2001:db8:1::1 dst 2001:db8:2::1 dir in \
++		tmpl proto esp mode transport
++
++	run_cmd host-2 ip -6 xfrm policy add \
++		src 2001:db8:2::1 dst 2001:db8:1::1 dir out \
++		tmpl proto esp mode transport
++
++	ip -netns host-1 -6 xfrm state add \
++		src 2001:db8:1::1 dst 2001:db8:2::1 \
++		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	ip -netns host-1 -6 xfrm state add \
++		src 2001:db8:2::1 dst 2001:db8:1::1 \
++		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	ip -netns host-2 -6 xfrm state add \
++		src 2001:db8:1::1 dst 2001:db8:2::1 \
++		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++
++	ip -netns host-2 -6 xfrm state add \
++		src 2001:db8:2::1 dst 2001:db8:1::1 \
++		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
++		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
++}
++
++teardown_ipsec()
++{
++	run_cmd host-1 ip xfrm state flush
++	run_cmd host-1 ip xfrm policy flush
++	run_cmd host-2 ip xfrm state flush
++	run_cmd host-2 ip xfrm policy flush
++}
++
++################################################################################
++# generate traffic through tunnel for various cases
++
++run_ping()
++{
++	local desc="$1"
++
++	run_cmd host-1 ping -c1 -w1 172.16.1.2
++	log_test $? 0 "IPv4 basic L2TP tunnel ${desc}"
++
++	run_cmd host-1 ping -c1 -w1 -I 172.16.101.1 172.16.101.2
++	log_test $? 0 "IPv4 route through L2TP tunnel ${desc}"
++
++	run_cmd host-1 ${ping6} -c1 -w1 fc00:1::2
++	log_test $? 0 "IPv6 basic L2TP tunnel ${desc}"
++
++	run_cmd host-1 ${ping6} -c1 -w1 -I fc00:101::1 fc00:101::2
++	log_test $? 0 "IPv6 route through L2TP tunnel ${desc}"
++}
++
++run_tests()
++{
++	local desc
++
++	setup
++	run_ping
++
++	setup_ipsec
++	run_ping "- with IPsec"
++	run_cmd host-1 ping -c1 -w1 172.16.1.2
++	log_test $? 0 "IPv4 basic L2TP tunnel ${desc}"
++
++	run_cmd host-1 ping -c1 -w1 -I 172.16.101.1 172.16.101.2
++	log_test $? 0 "IPv4 route through L2TP tunnel ${desc}"
++
++	run_cmd host-1 ${ping6} -c1 -w1 fc00:1::2
++	log_test $? 0 "IPv6 basic L2TP tunnel - with IPsec"
++
++	run_cmd host-1 ${ping6} -c1 -w1 -I fc00:101::1 fc00:101::2
++	log_test $? 0 "IPv6 route through L2TP tunnel - with IPsec"
++
++	teardown_ipsec
++	run_ping "- after IPsec teardown"
++}
++
++################################################################################
++# main
++
++declare -i nfail=0
++declare -i nsuccess=0
++
++while getopts :pv o
++do
++	case $o in
++		p) PAUSE_ON_FAIL=yes;;
++		v) VERBOSE=$(($VERBOSE + 1));;
++		*) exit 1;;
++	esac
++done
++
++run_tests
++cleanup
++
++printf "\nTests passed: %3d\n" ${nsuccess}
++printf "Tests failed: %3d\n"   ${nfail}
+-- 
+2.11.0
 
