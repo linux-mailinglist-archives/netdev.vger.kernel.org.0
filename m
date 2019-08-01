@@ -2,81 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C11C17DF59
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 17:47:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFEA67DF7D
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 17:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732004AbfHAPrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 11:47:18 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:37330 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731954AbfHAPrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 11:47:16 -0400
-Received: by mail-lj1-f195.google.com with SMTP id z28so15657005ljn.4;
-        Thu, 01 Aug 2019 08:47:15 -0700 (PDT)
+        id S1732105AbfHAPxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 11:53:37 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:34722 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729162AbfHAPxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 11:53:37 -0400
+Received: by mail-lf1-f66.google.com with SMTP id b29so43399083lfq.1
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 08:53:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lCj6BU5/ZMgt4jyMNQkUOtitc9bUzmVkTnQAmv8I740=;
-        b=V1xxENASM3HEAUHtcf7tehcJ3DnGklpRr1RYXS90FrxbuifcGm2QPlXO9/sPwFhnt5
-         c6tb7vADWDN2ZJuw4ZlToi67EaFnW750EYHiC7yku6tH34OS3oAlnmdMoxTy4nfSco5p
-         tf/HdZZ9B3Pt56uxcW9mJN9WB66iW/sFhpsRCvIOsVNpNLx/JG+zQ2KyHibddLZFKKYv
-         OGQfKJ0qSZpkT65ejW37kMO5Oyowv9O0J2bI67iA/qxpn/HqfCdoWHBIdE2Ks56nDr5H
-         A83kURWiD/ALAcvGJshVrGMW1FYYeMMKjdihHdxj5ioCYAaJQvWGr+czW9kCPPYmi0gz
-         ufPQ==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jOies/q8GNu6zMRJDNga96FSVWyO2X9XensDmj1AZZY=;
+        b=JCfUKgCbIl3b8Om0ozKmxK3ZkAX7v5HdGpeskesaFuP4NVGJl/awlJnYAPCtEVSloc
+         lzcOj6CeND6AuD80dr4q1nJBDmRFU2KqlXk9+ptF9UyEfTbMir9PajC+w3TevrMU1QoH
+         5DhGRwdIMNBej8DEM2/cRH4RJvSjQ8ijfcZ6NPBCDsO/9awA61b+xRtL/izy/7RChYgz
+         xTwQzNHzisQ2LYNZskcc+ZWMrodoblpe5iCPH3IT6NXa5X/R9AccGBJEJPnLdMVO54Am
+         kK8utE4/RrvLlDgPlD3Taj9+1QnLV4AmRZXmPVkCyhvXdMHhxVJppbxOVcR7A9M2e9A2
+         zOAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lCj6BU5/ZMgt4jyMNQkUOtitc9bUzmVkTnQAmv8I740=;
-        b=chtbxlFKTBMvtR0+dmGjdH5lZ9tfHl/dbsAAHKl1UEfr+1yJzqXCJm1NbRYeVr0u7j
-         MyV6posUBGKA9vQT36sWb5HltW6oovKcAUYpCMjXhVN11HWVgf8ID4TNTJ+drtZ0MorK
-         Q37B09ePIeB39i6NBEuiZb28FwneM6ESxkLoFY9wxPEb3WqQ4wQTTWjXKxXJo2kwdtOY
-         53KyIW1vw8bnahoLmkK4VKPmnM3fEpQaUn1ilnbHhvgmgKnWhunJLpmrYxHyA9yOIWhj
-         szVrcWxPygcLiGz1hYOYDM9c01CoGlGscm9ZWZUxC4z0pT/fp2LU9ypl+2ItTbbnK0+v
-         8E/g==
-X-Gm-Message-State: APjAAAV+il8/nUcJMu/B40bKWhkyz+fv7pH48zd5OZ4hAY4I/8shweDa
-        cl28bAt6ZOFs85du2GjCPu75mDJnCXGdkQvpvmKNhg==
-X-Google-Smtp-Source: APXvYqzN1BM/sG57ipVFj5YxWtMYpv5T90sMkiV6iO5k4kngRd5yZQgXIshPwS7Ol7Wo05X0bW+dVozNfopVr3QSEGs=
-X-Received: by 2002:a2e:9e81:: with SMTP id f1mr69237153ljk.29.1564674434724;
- Thu, 01 Aug 2019 08:47:14 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=jOies/q8GNu6zMRJDNga96FSVWyO2X9XensDmj1AZZY=;
+        b=ou6BF0fLYluLED1KO9dy5XEC0wzhnTlmJ2RkCaAhD44XONxphBgaQ3A4aCnQYdh5Yo
+         cuD5bbfAY6zsLOy7Qdh9PS91RKmhl3mHjTpxoN5p/6ExlPJ9qO3iMaj9v4sW2uQrZcZU
+         CHsq3WToutEYLnwSjKBqTJt1v8LuLF4H7zEXrSDATQ8pU6zsqY6g909TsuErPoqoPRU0
+         VzS5zrZ8ICICHRGnEMANxOeNwwse+GRM7qNT64wBQDypum8b/U/T2XoGyPULkuWBcv3m
+         aVBuJlewBh/7IEaDaQHe9qXBklbIjnAGTs3sm7QGpzaORtwlOFKY82bXsXlM4qHjCtey
+         IxZQ==
+X-Gm-Message-State: APjAAAXmP13iK0W1+GmIYEuYpp6yo385NSVQd32lhbf3C3GHwLPHHPsQ
+        HgigegHqYOTiiOwdVGQBS8BdzQ==
+X-Google-Smtp-Source: APXvYqzp9NIlaxkTBvMmj+xKyDzpb+n9dCj96Ve4HvOBx6VdwDWSrusU3JCFMHB8k+qhxDs91gSPrA==
+X-Received: by 2002:a19:5f46:: with SMTP id a6mr63906353lfj.142.1564674814647;
+        Thu, 01 Aug 2019 08:53:34 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:6ee:d28:6484:8b6b:cce6:b9f0])
+        by smtp.gmail.com with ESMTPSA id q4sm16666213lje.99.2019.08.01.08.53.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Aug 2019 08:53:34 -0700 (PDT)
+Subject: Re: [PATCH v2 10/11] vsock_test: skip read() in test_stream*close
+ tests on a VMCI host
+To:     Stefano Garzarella <sgarzare@redhat.com>, netdev@vger.kernel.org
+Cc:     kvm@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        virtualization@lists.linux-foundation.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        linux-kernel@vger.kernel.org
+References: <20190801152541.245833-1-sgarzare@redhat.com>
+ <20190801152541.245833-11-sgarzare@redhat.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <79ffb2a6-8ed2-cce2-7704-ed872446c0fe@cogentembedded.com>
+Date:   Thu, 1 Aug 2019 18:53:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-References: <20190801072405.2835116-1-andriin@fb.com>
-In-Reply-To: <20190801072405.2835116-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 1 Aug 2019 08:47:03 -0700
-Message-ID: <CAADnVQKG40B5XcjViNK5_XbJmm-26T7+iBtgD4p2Uif85Xorjg@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: set BTF FD for prog only when there is
- supported .BTF.ext data
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrey Ignatov <rdna@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190801152541.245833-11-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 1, 2019 at 12:41 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> 5d01ab7bac46 ("libbpf: fix erroneous multi-closing of BTF FD")
-> introduced backwards-compatibility issue, manifesting itself as -E2BIG
-> error returned on program load due to unknown non-zero btf_fd attribute
-> value for BPF_PROG_LOAD sys_bpf() sub-command.
->
-> This patch fixes bug by ensuring that we only ever associate BTF FD with
-> program if there is a BTF.ext data that was successfully loaded into
-> kernel, which automatically means kernel supports func_info/line_info
-> and associated BTF FD for progs (checked and ensured also by BTF
-> sanitization code).
->
-> Fixes: 5d01ab7bac46 ("libbpf: fix erroneous multi-closing of BTF FD")
-> Reported-by: Andrey Ignatov <rdna@fb.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Hello!
 
-Applied. Thanks
+On 08/01/2019 06:25 PM, Stefano Garzarella wrote:
+
+> When VMCI transport is used, if the guest closes a connection,
+> all data is gone and EOF is returned, so we should skip the read
+> of data written by the peer before closing the connection.
+> 
+> Reported-by: Jorgen Hansen <jhansen@vmware.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  tools/testing/vsock/vsock_test.c | 26 ++++++++++++++++++++++++--
+>  1 file changed, 24 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+> index cb606091489f..64adf45501ca 100644
+> --- a/tools/testing/vsock/vsock_test.c
+> +++ b/tools/testing/vsock/vsock_test.c
+[...]
+> @@ -79,16 +80,27 @@ static void test_stream_client_close_server(const struct test_opts *opts)
+>  		exit(EXIT_FAILURE);
+>  	}
+>  
+> +	local_cid = vsock_get_local_cid(fd);
+> +
+>  	control_expectln("CLOSED");
+>  
+>  	send_byte(fd, -EPIPE);
+> -	recv_byte(fd, 1);
+> +
+> +	/* Skip the read of data wrote by the peer if we are on VMCI and
+
+   s/wrote/written/?
+
+> +	 * we are on the host side, because when the guest closes a
+> +	 * connection, all data is gone and EOF is returned.
+> +	 */
+> +	if (!(opts->transport == TEST_TRANSPORT_VMCI &&
+> +	    local_cid == VMADDR_CID_HOST))
+> +		recv_byte(fd, 1);
+> +
+>  	recv_byte(fd, 0);
+>  	close(fd);
+>  }
+[...]
+
+MBR, Sergei
