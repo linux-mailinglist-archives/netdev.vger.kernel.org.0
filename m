@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D267E307
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 21:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E017E30F
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 21:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388405AbfHATIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 15:08:07 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34186 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388391AbfHATIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 15:08:05 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n9so28493934pgc.1
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 12:08:05 -0700 (PDT)
+        id S2388465AbfHATIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 15:08:24 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36576 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388398AbfHATIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 15:08:06 -0400
+Received: by mail-pg1-f196.google.com with SMTP id l21so34714396pgm.3
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 12:08:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pilwiguV3zYj8l554M+/WPSO9NsoW5k7wuDa7fNfA6w=;
-        b=d6B/+IF2td2vWdeD1vHpN67OOORdAJgapUv5FRYJObQONKvpaPjeW4VAODVXerCjz2
-         FWXNpGwkp0iiuCfmurndet6Kfax4WomOZnD7nWwfy5MzHsT0lM9IoFZYPG7ljKLn+62a
-         P0VR9InVbW5m5z7oCKP/42G3CAwOeXjn7cwo4=
+        bh=3OVjdcXCPwuFsvnheb2FVh3Xzrvqr6Atdn2Iwx7oV+0=;
+        b=Tg5UJX47uPAFj3X9l1nh1kTacYdQYspCbtB0tQ+L4p4sqSi1mcgIlqOMXWybeOWD8r
+         WBGI54twdOSlHNtgdKgT1k9x3hZhXHHtR1ixan505WuTw+8t1taQ/fAPr9pSEPBv9H47
+         AUQ8EYiEi7lbcdm/ZCCIv7ECf0bcU7CUko1dM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pilwiguV3zYj8l554M+/WPSO9NsoW5k7wuDa7fNfA6w=;
-        b=R5WibK0mLHvFIXLvBvbCA/GQ77viil/1nmKMQKEX9w4Vlk3wtYcgRPAkJTyQGyEkW9
-         EyJ31dGbUmVqj+Z3faVl8r1sCHtqOoBE6RFqUAowMP5d2PY47FDJfcXxKvDtBGhf6fKD
-         9rS7zgQxXs5BeeYDunNqD5VAMVVAxjr6v4ef5Fn9q57UhXPlmS38YQOUFCxhReW42bOd
-         iYcNkgkgqU/xHRAbp9f9jmHFVLmKPU3VItFj3xkTYjE0vguxTDT4Cgc1pbhqXc5JYWjp
-         n5f5n7aUblOJJ9W6yv1OO2D1tgsn0KbgEHySJwSGKm2WEQOK5r22vO8uF3DpDzoYp/Z8
-         yHcw==
-X-Gm-Message-State: APjAAAXaEOwlXIzVKr8zuvaOMJ4RofMo4KlrWXVGd/EhMtSTa46BhHQ0
-        8Uwcp8xj+ijESbZVEkOaV+1qbw==
-X-Google-Smtp-Source: APXvYqya0xPGEx4FHuIQWcvBMlzvjW5V53jWKyyxK/a26lJsfdRk/AV9SmfdSj4m5cFVS5OymvlNKQ==
-X-Received: by 2002:a63:121b:: with SMTP id h27mr105425276pgl.335.1564686484632;
-        Thu, 01 Aug 2019 12:08:04 -0700 (PDT)
+        bh=3OVjdcXCPwuFsvnheb2FVh3Xzrvqr6Atdn2Iwx7oV+0=;
+        b=bq+yQguOiYgl2iluqAaekQO8EemKxg0y2lIq9phXC3d9SwVHwebj1JzmEJA6nNFytz
+         a5tAOop+8ER0+u7KjnoS5APoNAzKiCsFXGN0FBG7i8Edd8t4H4ph6Ur0ToWJjUUckcor
+         qGq10mM8wAaMAjUcZb8eqoKGUC04Z43MlxwcwF4XpXDth4zfbHs0m4Yje5NixuOsOZZl
+         PH1lBoh1Mm+wfqBZzRzRZ351wmxBg4pnzo8IXHt+P51ODxhjljCVyNRYqmyAxLwhGxIz
+         EM88rqosoKHy2k+WqQMfaB8Wq1E9GXHUGmfDWnmO1DyZFcZ9Na4JcdKLLxd3Vt9PnrT0
+         CVpQ==
+X-Gm-Message-State: APjAAAWCPpU22fRDWQoTxHY1Rhvy2jOukuUB7Lcvtfkmq81FZmI8OuK4
+        6Pn15eSZtJbw3JMBzR6OEJ6dlg==
+X-Google-Smtp-Source: APXvYqySqv4UWFLApIVrgFow3MNR0qCXgidPdh04SBiV2KFLAPagBOPHeNSxD7x8jsrFtFme+4yWWg==
+X-Received: by 2002:a17:90a:350c:: with SMTP id q12mr334860pjb.46.1564686486184;
+        Thu, 01 Aug 2019 12:08:06 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id 81sm67893704pfa.86.2019.08.01.12.08.03
+        by smtp.gmail.com with ESMTPSA id e13sm91452970pff.45.2019.08.01.12.08.05
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 01 Aug 2019 12:08:04 -0700 (PDT)
+        Thu, 01 Aug 2019 12:08:05 -0700 (PDT)
 From:   Matthias Kaehlcke <mka@chromium.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -52,9 +52,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
         Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v4 1/4] dt-bindings: net: phy: Add subnode for LED configuration
-Date:   Thu,  1 Aug 2019 12:07:56 -0700
-Message-Id: <20190801190759.28201-2-mka@chromium.org>
+Subject: [PATCH v4 2/4] net: phy: Add function to retrieve LED configuration from the DT
+Date:   Thu,  1 Aug 2019 12:07:57 -0700
+Message-Id: <20190801190759.28201-3-mka@chromium.org>
 X-Mailer: git-send-email 2.22.0.770.g0f2c4a37fd-goog
 In-Reply-To: <20190801190759.28201-1-mka@chromium.org>
 References: <20190801190759.28201-1-mka@chromium.org>
@@ -65,89 +65,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LED behavior of some Ethernet PHYs is configurable. Add an
-optional 'leds' subnode with a child node for each LED to be
-configured. The binding aims to be compatible with the common
-LED binding (see devicetree/bindings/leds/common.txt).
+Add a phylib function for retrieving PHY LED configuration that
+is specified in the device tree using the generic binding. LEDs
+can be configured to be 'on' for a certain link speed or to blink
+when there is TX/RX activity.
 
-A LED can be configured to be 'on' when a link with a certain speed
-is active, or to blink on RX/TX activity. For the configuration to
-be effective it needs to be supported by the hardware and the
-corresponding PHY driver.
-
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 ---
 Changes in v4:
 - patch added to the series
 ---
- .../devicetree/bindings/net/ethernet-phy.yaml | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ drivers/net/phy/phy_device.c | 50 ++++++++++++++++++++++++++++++++++++
+ include/linux/phy.h          | 15 +++++++++++
+ 2 files changed, 65 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index f70f18ff821f..81c5aacc89a5 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -153,6 +153,38 @@ properties:
-       Delay after the reset was deasserted in microseconds. If
-       this property is missing the delay will be skipped.
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 6b5cb87f3866..b4b48de45712 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2188,6 +2188,56 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+ 	return phydrv->config_intr && phydrv->ack_interrupt;
+ }
  
-+patternProperties:
-+  "^leds$":
-+    type: object
-+    description:
-+      Subnode with configuration of the PHY LEDs.
++int of_get_phy_led_cfg(struct phy_device *phydev, int led,
++		       struct phy_led_config *cfg)
++{
++	struct device_node *np, *child;
++	const char *trigger;
++	int ret;
 +
-+    patternProperties:
-+      "^led@[0-9]+$":
-+        type: object
-+        description:
-+          Subnode with the configuration of a single PHY LED.
++	if (!IS_ENABLED(CONFIG_OF_MDIO))
++		return -ENOENT;
 +
-+    properties:
-+      reg:
-+        description:
-+          The ID number of the LED, typically corresponds to a hardware ID.
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
++	np = of_find_node_by_name(phydev->mdio.dev.of_node, "leds");
++	if (!np)
++		return -ENOENT;
 +
-+      linux,default-trigger:
-+        description:
-+          This parameter, if present, is a string specifying the trigger
-+          assigned to the LED. Supported triggers are:
-+            "phy_link_10m_active" - LED will be on when a 10Mb/s link is active
-+            "phy_link_100m_active" - LED will be on when a 100Mb/s link is active
-+            "phy_link_1g_active" - LED will be on when a 1Gb/s link is active
-+            "phy_link_10g_active" - LED will be on when a 10Gb/s link is active
-+            "phy_activity" - LED will blink when data is received or transmitted
-+        $ref: "/schemas/types.yaml#/definitions/string"
++	for_each_child_of_node(np, child) {
++		u32 val;
 +
-+    required:
-+      - reg
++		if (!of_property_read_u32(child, "reg", &val)) {
++			if (val == (u32)led)
++				break;
++		}
++	}
 +
- required:
-   - reg
++	if (!child)
++		return -ENOENT;
++
++	ret = of_property_read_string(child, "linux,default-trigger",
++				      &trigger);
++	if (ret)
++		return ret;
++
++	if (!strcmp(trigger, "phy_link_10m_active")) {
++		cfg->trigger = PHY_LED_LINK_10M;
++	} else if (!strcmp(trigger, "phy_link_100m_active")) {
++		cfg->trigger = PHY_LED_LINK_100M;
++	} else if (!strcmp(trigger, "phy_link_1g_active")) {
++		cfg->trigger = PHY_LED_LINK_1G;
++	} else if (!strcmp(trigger, "phy_link_10g_active")) {
++		cfg->trigger = PHY_LED_LINK_10G;
++	}  else if (!strcmp(trigger, "phy_activity")) {
++		cfg->trigger = PHY_LED_ACTIVITY;
++	} else {
++		phydev_warn(phydev, "trigger '%s' for LED%d is invalid\n",
++			    trigger, led);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /**
+  * phy_probe - probe and init a PHY device
+  * @dev: device to probe and init
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 462b90b73f93..b4693415be31 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1176,6 +1176,21 @@ int phy_ethtool_set_link_ksettings(struct net_device *ndev,
+ 				   const struct ethtool_link_ksettings *cmd);
+ int phy_ethtool_nway_reset(struct net_device *ndev);
  
-@@ -173,5 +205,20 @@ examples:
-             reset-gpios = <&gpio1 4 1>;
-             reset-assert-us = <1000>;
-             reset-deassert-us = <2000>;
++enum phy_led_trigger {
++	PHY_LED_LINK_10M,
++	PHY_LED_LINK_100M,
++	PHY_LED_LINK_1G,
++	PHY_LED_LINK_10G,
++	PHY_LED_ACTIVITY,
++};
 +
-+            leds {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
++struct phy_led_config {
++	enum phy_led_trigger trigger;
++};
 +
-+                led@0 {
-+                    reg = <0>;
-+                    linux,default-trigger = "phy_link_1g_active";
-+                };
++int of_get_phy_led_cfg(struct phy_device *phydev, int led,
++		       struct phy_led_config *cfg);
 +
-+                led@1 {
-+                    reg = <1>;
-+                    linux,default-trigger = "phy_activity";
-+                };
-+            };
-         };
-     };
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ int __init mdio_bus_init(void);
+ void mdio_bus_exit(void);
 -- 
 2.22.0.770.g0f2c4a37fd-goog
 
