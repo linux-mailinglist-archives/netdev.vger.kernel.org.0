@@ -2,312 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3877D4A1
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 06:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A434A7D4B2
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 07:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728770AbfHAErp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 00:47:45 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:58138 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726612AbfHAErp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 00:47:45 -0400
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id A20BA412E2;
-        Thu,  1 Aug 2019 12:47:38 +0800 (CST)
-Subject: Re: [PATCH net-next v5 6/6] netfilter: nf_tables_offload: support
- indr block call
-To:     Yunsheng Lin <linyunsheng@huawei.com>, jiri@resnulli.us,
-        pablo@netfilter.org, fw@strlen.de, jakub.kicinski@netronome.com
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
- <1564628627-10021-7-git-send-email-wenxu@ucloud.cn>
- <71694067-b07f-bed6-c472-4ec37dbeba3d@huawei.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <6aa3104f-b675-a4bd-e01b-51de55c18fe8@ucloud.cn>
-Date:   Thu, 1 Aug 2019 12:47:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+        id S1729260AbfHAFC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 01:02:26 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54300 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728774AbfHAFC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Aug 2019 01:02:26 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 218028A004;
+        Thu,  1 Aug 2019 05:02:25 +0000 (UTC)
+Received: from [10.72.12.66] (ovpn-12-66.pek2.redhat.com [10.72.12.66])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CC4F4600C4;
+        Thu,  1 Aug 2019 05:02:19 +0000 (UTC)
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     mst@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <20190731084655.7024-1-jasowang@redhat.com>
+ <20190731084655.7024-8-jasowang@redhat.com> <20190731123935.GC3946@ziepe.ca>
+ <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
+ <20190731193057.GG3946@ziepe.ca>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
+Date:   Thu, 1 Aug 2019 13:02:18 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <71694067-b07f-bed6-c472-4ec37dbeba3d@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190731193057.GG3946@ziepe.ca>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0NJQkJCQ0lOT0xMTVlXWShZQU
-        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OBA6GSo6Dzg2Lk85OjIQISIy
-        HC0wCjVVSlVKTk1PTUhPQ05CSE5PVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBSktKSU83Bg++
-X-HM-Tid: 0a6c4b8145b82086kuqya20ba412e2
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Thu, 01 Aug 2019 05:02:25 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 8/1/2019 11:58 AM, Yunsheng Lin wrote:
-> On 2019/8/1 11:03, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
+On 2019/8/1 上午3:30, Jason Gunthorpe wrote:
+> On Wed, Jul 31, 2019 at 09:28:20PM +0800, Jason Wang wrote:
+>> On 2019/7/31 下午8:39, Jason Gunthorpe wrote:
+>>> On Wed, Jul 31, 2019 at 04:46:53AM -0400, Jason Wang wrote:
+>>>> We used to use RCU to synchronize MMU notifier with worker. This leads
+>>>> calling synchronize_rcu() in invalidate_range_start(). But on a busy
+>>>> system, there would be many factors that may slow down the
+>>>> synchronize_rcu() which makes it unsuitable to be called in MMU
+>>>> notifier.
+>>>>
+>>>> A solution is SRCU but its overhead is obvious with the expensive full
+>>>> memory barrier. Another choice is to use seqlock, but it doesn't
+>>>> provide a synchronization method between readers and writers. The last
+>>>> choice is to use vq mutex, but it need to deal with the worst case
+>>>> that MMU notifier must be blocked and wait for the finish of swap in.
+>>>>
+>>>> So this patch switches use a counter to track whether or not the map
+>>>> was used. The counter was increased when vq try to start or finish
+>>>> uses the map. This means, when it was even, we're sure there's no
+>>>> readers and MMU notifier is synchronized. When it was odd, it means
+>>>> there's a reader we need to wait it to be even again then we are
+>>>> synchronized.
+>>> You just described a seqlock.
 >>
->> nftable support indr-block call. It makes nftable an offload vlan
->> and tunnel device.
+>> Kind of, see my explanation below.
 >>
->> nft add table netdev firewall
->> nft add chain netdev firewall aclout { type filter hook ingress offload device mlx_pf0vf0 priority - 300 \; }
->> nft add rule netdev firewall aclout ip daddr 10.0.0.1 fwd to vlan0
->> nft add chain netdev firewall aclin { type filter hook ingress device vlan0 priority - 300 \; }
->> nft add rule netdev firewall aclin ip daddr 10.0.0.7 fwd to mlx_pf0vf0
 >>
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->> v5: add nft_get_default_block
+>>> We've been talking about providing this as some core service from mmu
+>>> notifiers because nearly every use of this API needs it.
 >>
->>  include/net/netfilter/nf_tables_offload.h |   2 +
->>  net/netfilter/nf_tables_api.c             |   7 ++
->>  net/netfilter/nf_tables_offload.c         | 156 +++++++++++++++++++++++++-----
->>  3 files changed, 141 insertions(+), 24 deletions(-)
+>> That would be very helpful.
 >>
->> diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
->> index 3196663..ac69087 100644
->> --- a/include/net/netfilter/nf_tables_offload.h
->> +++ b/include/net/netfilter/nf_tables_offload.h
->> @@ -63,6 +63,8 @@ struct nft_flow_rule {
->>  struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule);
->>  void nft_flow_rule_destroy(struct nft_flow_rule *flow);
->>  int nft_flow_rule_offload_commit(struct net *net);
->> +bool nft_indr_get_default_block(struct net_device *dev,
->> +				struct flow_indr_block_info *info);
->>  
->>  #define NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
->>  	(__reg)->base_offset	=					\
->> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
->> index 605a7cf..6a1d0b2 100644
->> --- a/net/netfilter/nf_tables_api.c
->> +++ b/net/netfilter/nf_tables_api.c
->> @@ -7593,6 +7593,11 @@ static void __net_exit nf_tables_exit_net(struct net *net)
->>  	.exit	= nf_tables_exit_net,
->>  };
->>  
->> +static struct flow_indr_get_block_entry get_block_entry = {
->> +	.get_block_cb = nft_indr_get_default_block,
->> +	.list = LIST_HEAD_INIT(get_block_entry.list),
->> +};
->> +
->>  static int __init nf_tables_module_init(void)
->>  {
->>  	int err;
->> @@ -7624,6 +7629,7 @@ static int __init nf_tables_module_init(void)
->>  		goto err5;
->>  
->>  	nft_chain_route_init();
->> +	flow_indr_add_default_block_cb(&get_block_entry);
->>  	return err;
->>  err5:
->>  	rhltable_destroy(&nft_objname_ht);
->> @@ -7640,6 +7646,7 @@ static int __init nf_tables_module_init(void)
->>  
->>  static void __exit nf_tables_module_exit(void)
->>  {
->> +	flow_indr_del_default_block_cb(&get_block_entry);
->>  	nfnetlink_subsys_unregister(&nf_tables_subsys);
->>  	unregister_netdevice_notifier(&nf_tables_flowtable_notifier);
->>  	nft_chain_filter_fini();
->> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
->> index 64f5fd5..59c9629 100644
->> --- a/net/netfilter/nf_tables_offload.c
->> +++ b/net/netfilter/nf_tables_offload.c
->> @@ -171,24 +171,114 @@ static int nft_flow_offload_unbind(struct flow_block_offload *bo,
->>  	return 0;
->>  }
->>  
->> +static int nft_block_setup(struct nft_base_chain *basechain,
->> +			   struct flow_block_offload *bo,
->> +			   enum flow_block_command cmd)
->> +{
->> +	int err;
->> +
->> +	switch (cmd) {
->> +	case FLOW_BLOCK_BIND:
->> +		err = nft_flow_offload_bind(bo, basechain);
->> +		break;
->> +	case FLOW_BLOCK_UNBIND:
->> +		err = nft_flow_offload_unbind(bo, basechain);
->> +		break;
->> +	default:
->> +		WARN_ON_ONCE(1);
->> +		err = -EOPNOTSUPP;
->> +	}
->> +
->> +	return err;
->> +}
->> +
->> +static int nft_block_offload_cmd(struct nft_base_chain *chain,
->> +				 struct net_device *dev,
->> +				 enum flow_block_command cmd)
->> +{
->> +	struct netlink_ext_ack extack = {};
->> +	struct flow_block_offload bo = {};
->> +	int err;
->> +
->> +	bo.net = dev_net(dev);
->> +	bo.block = &chain->flow_block;
->> +	bo.command = cmd;
->> +	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
->> +	bo.extack = &extack;
->> +	INIT_LIST_HEAD(&bo.cb_list);
->> +
->> +	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
->> +	if (err < 0)
->> +		return err;
->> +
->> +	return nft_block_setup(chain, &bo, cmd);
->> +}
->> +
->> +static void nft_indr_block_ing_cmd(struct net_device *dev,
->> +				   struct flow_block *flow_block,
->> +				   flow_indr_block_bind_cb_t *cb,
->> +				   void *cb_priv,
->> +				   enum flow_block_command cmd)
->> +{
->> +	struct netlink_ext_ack extack = {};
->> +	struct flow_block_offload bo = {};
->> +	struct nft_base_chain *chain;
->> +
->> +	if (flow_block)
->> +		return;
-> Maybe "if (!flow_block)" ?
+>>
+>>> IMHO this gets the whole thing backwards, the common pattern is to
+>>> protect the 'shadow pte' data with a seqlock (usually open coded),
+>>> such that the mmu notififer side has the write side of that lock and
+>>> the read side is consumed by the thread accessing or updating the SPTE.
+>>
+>> Yes, I've considered something like that. But the problem is, mmu notifier
+>> (writer) need to wait for the vhost worker to finish the read before it can
+>> do things like setting dirty pages and unmapping page.  It looks to me
+>> seqlock doesn't provide things like this.
+> The seqlock is usually used to prevent a 2nd thread from accessing the
+> VA while it is being changed by the mm. ie you use something seqlocky
+> instead of the ugly mmu_notifier_unregister/register cycle.
 
 
-yes it's a mistake. Thx!
+Yes, so we have two mappings:
+
+[1] vring address to VA
+[2] VA to PA
+
+And have several readers and writers
+
+1) set_vring_num_addr(): writer of both [1] and [2]
+2) MMU notifier: reader of [1] writer of [2]
+3) GUP: reader of [1] writer of [2]
+4) memory accessors: reader of [1] and [2]
+
+Fortunately, 1) 3) and 4) have already synchronized through vq->mutex. 
+We only need to deal with synchronization between 2) and each of the reset:
+Sync between 1) and 2): For mapping [1], I do 
+mmu_notifier_unregister/register. This help to avoid holding any lock to 
+do overlap check. Anyway we only care about one or three pages , but the 
+whole guest memory could be several TBs. For mapping [2], both 1) and 2) 
+are writers, so use spinlock (mmu_lock) to synchronize.
+Sync between 2) and 3): For mapping [1], both are readers, no need any 
+synchronization. For mapping [2], both 2) and 3) are writers, so 
+synchronize through spinlock (mmu_lock);
+Sync between 2) and 4): For mapping [1], both are readers, no need any 
+synchronization. For mapping [2], synchronize through RCU (or something 
+simliar to seqlock).
+
+You suggestion is about the synchronization of [1] which may make sense, 
+but it could be done on top as an optimization. What this path tries to 
+do is to not use RCU for [2]. Of course, the simplest way is to use vq 
+mutex in 2) but it means:
+- we must hold vq lock to check range overlap
+- since the critical section was increased, the worst case is to wait 
+guest memory to be swapped in, this could be even slower than 
+synchronize_rcu().
+
 
 >
->> +
->> +	chain = container_of(flow_block, struct nft_base_chain, flow_block);
->> +
->> +	bo.net = dev_net(dev);
->> +	bo.block = flow_block;
->> +	bo.command = cmd;
->> +	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
->> +	bo.extack = &extack;
->> +	INIT_LIST_HEAD(&bo.cb_list);
->> +
->> +	cb(dev, cb_priv, TC_SETUP_BLOCK, &bo);
->> +
->> +	nft_block_setup(chain, &bo, cmd);
->> +}
->> +
->> +static int nft_indr_block_offload_cmd(struct nft_base_chain *chain,
->> +				      struct net_device *dev,
->> +				      enum flow_block_command cmd)
->> +{
->> +	struct flow_block_offload bo = {};
->> +	struct netlink_ext_ack extack = {};
->> +
->> +	bo.net = dev_net(dev);
->> +	bo.block = &chain->flow_block;
->> +	bo.command = cmd;
->> +	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
->> +	bo.extack = &extack;
->> +	INIT_LIST_HEAD(&bo.cb_list);
->> +
->> +	flow_indr_block_call(&chain->flow_block, dev, nft_indr_block_ing_cmd,
->> +			     &bo, cmd);
->> +
->> +	if (list_empty(&bo.cb_list))
->> +		return -EOPNOTSUPP;
->> +
->> +	return nft_block_setup(chain, &bo, cmd);
->> +}
->> +
->>  #define FLOW_SETUP_BLOCK TC_SETUP_BLOCK
->>  
->>  static int nft_flow_offload_chain(struct nft_trans *trans,
->>  				  enum flow_block_command cmd)
->>  {
->>  	struct nft_chain *chain = trans->ctx.chain;
->> -	struct netlink_ext_ack extack = {};
->> -	struct flow_block_offload bo = {};
->>  	struct nft_base_chain *basechain;
->>  	struct net_device *dev;
->> -	int err;
->>  
->>  	if (!nft_is_base_chain(chain))
->>  		return -EOPNOTSUPP;
->>  
->>  	basechain = nft_base_chain(chain);
->>  	dev = basechain->ops.dev;
->> -	if (!dev || !dev->netdev_ops->ndo_setup_tc)
->> +	if (!dev)
->>  		return -EOPNOTSUPP;
->>  
->>  	/* Only default policy to accept is supported for now. */
->> @@ -197,26 +287,10 @@ static int nft_flow_offload_chain(struct nft_trans *trans,
->>  	    nft_trans_chain_policy(trans) != NF_ACCEPT)
->>  		return -EOPNOTSUPP;
->>  
->> -	bo.command = cmd;
->> -	bo.block = &basechain->flow_block;
->> -	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
->> -	bo.extack = &extack;
->> -	INIT_LIST_HEAD(&bo.cb_list);
->> -
->> -	err = dev->netdev_ops->ndo_setup_tc(dev, FLOW_SETUP_BLOCK, &bo);
->> -	if (err < 0)
->> -		return err;
->> -
->> -	switch (cmd) {
->> -	case FLOW_BLOCK_BIND:
->> -		err = nft_flow_offload_bind(&bo, basechain);
->> -		break;
->> -	case FLOW_BLOCK_UNBIND:
->> -		err = nft_flow_offload_unbind(&bo, basechain);
->> -		break;
->> -	}
->> -
->> -	return err;
->> +	if (dev->netdev_ops->ndo_setup_tc)
->> +		return nft_block_offload_cmd(basechain, dev, cmd);
->> +	else
->> +		return nft_indr_block_offload_cmd(basechain, dev, cmd);
->>  }
->>  
->>  int nft_flow_rule_offload_commit(struct net *net)
->> @@ -266,3 +340,37 @@ int nft_flow_rule_offload_commit(struct net *net)
->>  
->>  	return err;
->>  }
->> +
->> +bool nft_indr_get_default_block(struct net_device *dev,
->> +				struct flow_indr_block_info *info)
->> +{
->> +	struct net *net = dev_net(dev);
->> +	const struct nft_table *table;
->> +	const struct nft_chain *chain;
->> +
->> +	rcu_read_lock();
->> +
->> +	list_for_each_entry_rcu(table, &net->nft.tables, list) {
->> +		if (table->family != NFPROTO_NETDEV)
->> +			continue;
->> +
->> +		list_for_each_entry_rcu(chain, &table->chains, list) {
->> +			if (nft_is_base_chain(chain)) {
->> +				struct nft_base_chain *basechain;
->> +
->> +				basechain = nft_base_chain(chain);
->> +				if (!strncmp(basechain->dev_name, dev->name,
->> +					     IFNAMSIZ)) {
->> +					info->flow_block = &basechain->flow_block;
->> +					info->ing_cmd_cb = nft_indr_block_ing_cmd;
->> +					rcu_read_unlock();
->> +					return true;
->> +				}
->> +			}
->> +		}
->> +	}
->> +
->> +	rcu_read_unlock();
->> +
->> +	return false;
->> +}
->>
+> You are supposed to use something simple like a spinlock or mutex
+> inside the invalidate_range_start to serialized tear down of the SPTEs
+> with their accessors.
+
+
+Technically yes, but we probably can't afford that for vhost fast path, 
+the atomics eliminate almost all the performance improvement brought by 
+this patch on a machine without SMAP.
+
+
 >
+>> write_seqcount_begin()
+>>
+>> map = vq->map[X]
+>>
+>> write or read through map->addr directly
+>>
+>> write_seqcount_end()
+>>
+>>
+>> There's no rmb() in write_seqcount_begin(), so map could be read before
+>> write_seqcount_begin(), but it looks to me now that this doesn't harm at
+>> all, maybe we can try this way.
+> That is because it is a write side lock, not a read lock. IIRC
+> seqlocks have weaker barriers because the write side needs to be
+> serialized in some other way.
+
+
+Yes. Having a hard thought of the code, it looks to me 
+write_seqcount_begin()/end() is sufficient here:
+
+- Notifier will only assign NULL to map, so it doesn't harm to read map 
+before seq, then we will fallback to normal copy_from/to_user() slow 
+path earlier
+- if we write through map->addr, it should be done before increasing the 
+seqcount because of the smp_wmb() in write_seqcount_end()
+- if we read through map->addr which also contain a store to a pointer, 
+we have a good data dependency so smp_wmb() also work here.
+
+
+>
+> The requirement I see is you need invalidate_range_start to block
+> until another thread exits its critical section (ie stops accessing
+> the SPTEs).
+
+
+Yes.
+
+
+>
+> That is a spinlock/mutex.
+
+
+Or a semantics similar to RCU.
+
+
+>
+> You just can't invent a faster spinlock by open coding something with
+> barriers, it doesn't work.
+>
+> Jason
+
+
+If write_seqlock() works here, we can simply wait for seqcount to move 
+advance in MMU notifier. The original idea is to use RCU which solves 
+this perfectly. But as pointed out it could be slow.
+
+Thanks
+
