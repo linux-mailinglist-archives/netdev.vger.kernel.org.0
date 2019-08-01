@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 495FE7D40F
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DC17D411
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727865AbfHADtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:49:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52818 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726118AbfHADts (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 23:49:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=PCDCXPclZrwxUwVB2c1/+btvEFjLvl7BH9rUBUTKiAU=; b=43DuNY+pWH5AkPKI3hZaLtmM2U
-        x6RirTgfV4Xge3j5URn48cNp0djrarhSL5zqZAbwGguqU4QXejlwmWjJJId4nbUASuZ1jtL7qA4oS
-        L9b5XMeKTJsyjWcdA8EIJg6FCciYHmRS7CGu909sVJ0d/NSm4apIltL4eXgqXjG3YePM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ht266-0001Ic-HX; Thu, 01 Aug 2019 05:49:46 +0200
-Date:   Thu, 1 Aug 2019 05:49:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Hubert Feurstein <h.feurstein@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: Re: [PATCH net-next v2 6/6] net: dsa: mv88e6xxx: add PTP support for
- MV88E6250 family
-Message-ID: <20190801034946.GF2713@lunn.ch>
-References: <20190731082351.3157-1-h.feurstein@gmail.com>
- <20190731082351.3157-7-h.feurstein@gmail.com>
+        id S1728677AbfHADu1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 31 Jul 2019 23:50:27 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51915 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbfHADu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 23:50:26 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x713oNq1011577, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x713oNq1011577
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Thu, 1 Aug 2019 11:50:23 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0439.000; Thu, 1 Aug 2019 11:50:23 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Kevin Lo <kevlo@kevlo.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net] r8152: fix typo in register name
+Thread-Topic: [PATCH net] r8152: fix typo in register name
+Thread-Index: AQHVSBnx4tIb950KqkiLftgBqq9xpKblpvVg
+Date:   Thu, 1 Aug 2019 03:50:21 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18CD97D@RTITMBSVM03.realtek.com.tw>
+References: <20190801032938.GA22256@ns.kevlo.org>
+In-Reply-To: <20190801032938.GA22256@ns.kevlo.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190731082351.3157-7-h.feurstein@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 10:23:51AM +0200, Hubert Feurstein wrote:
-> This adds PTP support for the MV88E6250 family.
+> From: Kevin Lo [mailto:kevlo@kevlo.org]
+> Sent: Thursday, August 01, 2019 11:30 AM
+> To: Hayes Wang
+> Cc: netdev@vger.kernel.org
+> Subject: [PATCH net] r8152: fix typo in register name
 > 
-> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
+> It is likely that PAL_BDC_CR should be PLA_BDC_CR.
+> 
+> Signed-off-by: Kevin Lo <kevlo@kevlo.org>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Hayes Wang <hayeswang@realtek.com>
 
-    Andrew
+Best Regards,
+Hayes
+
+
