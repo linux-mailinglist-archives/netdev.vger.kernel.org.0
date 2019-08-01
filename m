@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E917D429
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D61997D430
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729702AbfHAD5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:57:55 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3287 "EHLO huawei.com"
+        id S1730394AbfHAD6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:58:42 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3727 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728419AbfHAD5y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 23:57:54 -0400
+        id S1729744AbfHAD54 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 23:57:56 -0400
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 747D9A86CF3BF4E64737;
+        by Forcepoint Email with ESMTP id 8BFDFC55DA64281F1E59;
         Thu,  1 Aug 2019 11:57:51 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
@@ -23,9 +23,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 06/12] net: hns3: minor cleanup in hns3_clean_rx_ring
-Date:   Thu, 1 Aug 2019 11:55:39 +0800
-Message-ID: <1564631745-36733-7-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 07/12] net: hns3: minior error handling change for hclge_tm_schd_info_init
+Date:   Thu, 1 Aug 2019 11:55:40 +0800
+Message-ID: <1564631745-36733-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
 References: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
@@ -40,86 +40,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yunsheng Lin <linyunsheng@huawei.com>
 
-The unused_count variable is used to indicate how many
-RX BD need attaching new buffer in hns3_clean_rx_ring,
-and the clean_count variable has the similar meaning.
+When hclge_tm_schd_info_update calls hclge_tm_schd_info_init to
+initialize the schedule info, hdev->tm_info.num_pg and
+hdev->tx_sch_mode is not changed, which makes the checking in
+hclge_tm_schd_info_init unnecessary.
 
-This patch removes the clean_count variable and use
-unused_count to uniformly indicate the RX BD that need
-attaching new buffer.
-
-This patch also clean up some coding style related to
-variable assignment in hns3_clean_rx_ring.
+So this patch moves the hdev->tm_info.num_pg and hdev->tx_sch_mode
+checking into hclge_tm_schd_init and changes the return type of
+hclge_tm_schd_info_init from int to void.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Reviewed-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 79973a0..ed05fb9 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2909,24 +2909,22 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
- 		       void (*rx_fn)(struct hns3_enet_ring *, struct sk_buff *))
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 3f41fa2..f30d112 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -650,12 +650,8 @@ static void hclge_pfc_info_init(struct hclge_dev *hdev)
+ 	}
+ }
+ 
+-static int hclge_tm_schd_info_init(struct hclge_dev *hdev)
++static void hclge_tm_schd_info_init(struct hclge_dev *hdev)
  {
- #define RCB_NOF_ALLOC_RX_BUFF_ONCE 16
--	int recv_pkts, recv_bds, clean_count, err;
- 	int unused_count = hns3_desc_unused(ring);
- 	struct sk_buff *skb = ring->skb;
--	int num;
-+	int recv_pkts = 0;
-+	int recv_bds = 0;
-+	int err, num;
+-	if ((hdev->tx_sch_mode != HCLGE_FLAG_TC_BASE_SCH_MODE) &&
+-	    (hdev->tm_info.num_pg != 1))
+-		return -EINVAL;
+-
+ 	hclge_tm_pg_info_init(hdev);
  
- 	num = readl_relaxed(ring->tqp->io_base + HNS3_RING_RX_RING_FBDNUM_REG);
- 	rmb(); /* Make sure num taken effect before the other data is touched */
+ 	hclge_tm_tc_info_init(hdev);
+@@ -663,8 +659,6 @@ static int hclge_tm_schd_info_init(struct hclge_dev *hdev)
+ 	hclge_tm_vport_info_update(hdev);
  
--	recv_pkts = 0, recv_bds = 0, clean_count = 0;
- 	num -= unused_count;
- 	unused_count -= ring->pending_buf;
+ 	hclge_pfc_info_init(hdev);
+-
+-	return 0;
+ }
  
- 	while (recv_pkts < budget && recv_bds < num) {
- 		/* Reuse or realloc buffers */
--		if (clean_count + unused_count >= RCB_NOF_ALLOC_RX_BUFF_ONCE) {
--			hns3_nic_alloc_rx_buffers(ring,
--						  clean_count + unused_count);
--			clean_count = 0;
-+		if (unused_count >= RCB_NOF_ALLOC_RX_BUFF_ONCE) {
-+			hns3_nic_alloc_rx_buffers(ring, unused_count);
- 			unused_count = hns3_desc_unused(ring) -
- 					ring->pending_buf;
- 		}
-@@ -2940,7 +2938,7 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
- 			goto out;
- 		} else if (unlikely(err)) {  /* Do jump the err */
- 			recv_bds += ring->pending_buf;
--			clean_count += ring->pending_buf;
-+			unused_count += ring->pending_buf;
- 			ring->skb = NULL;
- 			ring->pending_buf = 0;
- 			continue;
-@@ -2948,7 +2946,7 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
+ static int hclge_tm_pg_to_pri_map(struct hclge_dev *hdev)
+@@ -1428,15 +1422,15 @@ int hclge_tm_init_hw(struct hclge_dev *hdev, bool init)
  
- 		rx_fn(ring, skb);
- 		recv_bds += ring->pending_buf;
--		clean_count += ring->pending_buf;
-+		unused_count += ring->pending_buf;
- 		ring->skb = NULL;
- 		ring->pending_buf = 0;
+ int hclge_tm_schd_init(struct hclge_dev *hdev)
+ {
+-	int ret;
+-
+ 	/* fc_mode is HCLGE_FC_FULL on reset */
+ 	hdev->tm_info.fc_mode = HCLGE_FC_FULL;
+ 	hdev->fc_mode_last_time = hdev->tm_info.fc_mode;
  
-@@ -2957,8 +2955,8 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
+-	ret = hclge_tm_schd_info_init(hdev);
+-	if (ret)
+-		return ret;
++	if (hdev->tx_sch_mode != HCLGE_FLAG_TC_BASE_SCH_MODE &&
++	    hdev->tm_info.num_pg != 1)
++		return -EINVAL;
++
++	hclge_tm_schd_info_init(hdev);
  
- out:
- 	/* Make all data has been write before submit */
--	if (clean_count + unused_count > 0)
--		hns3_nic_alloc_rx_buffers(ring, clean_count + unused_count);
-+	if (unused_count > 0)
-+		hns3_nic_alloc_rx_buffers(ring, unused_count);
- 
- 	return recv_pkts;
+ 	return hclge_tm_init_hw(hdev, true);
  }
 -- 
 2.7.4
