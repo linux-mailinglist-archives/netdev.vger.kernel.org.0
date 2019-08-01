@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8257D437
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6E917D429
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729338AbfHAD5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:57:54 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3723 "EHLO huawei.com"
+        id S1729702AbfHAD5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:57:55 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3287 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728171AbfHAD5y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728419AbfHAD5y (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Jul 2019 23:57:54 -0400
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6F71627422940C6723FD;
+        by Forcepoint Email with ESMTP id 747D9A86CF3BF4E64737;
         Thu,  1 Aug 2019 11:57:51 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
+        <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 05/12] net: hns3: remove unnecessary variable in hclge_get_mac_vlan_cmd_status()
-Date:   Thu, 1 Aug 2019 11:55:38 +0800
-Message-ID: <1564631745-36733-6-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 06/12] net: hns3: minor cleanup in hns3_clean_rx_ring
+Date:   Thu, 1 Aug 2019 11:55:39 +0800
+Message-ID: <1564631745-36733-7-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
 References: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,110 +38,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-The local variable return_status in hclge_get_mac_val_cmd_status()
-is useless. So this patch returns the error code directly, instead of
-using this variable. Also, replace some '%d' with '%u' in
-hclge_get_mac_val_cmd_status().
+The unused_count variable is used to indicate how many
+RX BD need attaching new buffer in hns3_clean_rx_ring,
+and the clean_count variable has the similar meaning.
 
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+This patch removes the clean_count variable and use
+unused_count to uniformly indicate the RX BD that need
+attaching new buffer.
+
+This patch also clean up some coding style related to
+variable assignment in hns3_clean_rx_ring.
+
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Reviewed-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 50 +++++++++++-----------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 855b65e..4317c8f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -6268,7 +6268,6 @@ static int hclge_get_mac_vlan_cmd_status(struct hclge_vport *vport,
- 					 enum hclge_mac_vlan_tbl_opcode op)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 79973a0..ed05fb9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2909,24 +2909,22 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
+ 		       void (*rx_fn)(struct hns3_enet_ring *, struct sk_buff *))
  {
- 	struct hclge_dev *hdev = vport->back;
--	int return_status = -EIO;
+ #define RCB_NOF_ALLOC_RX_BUFF_ONCE 16
+-	int recv_pkts, recv_bds, clean_count, err;
+ 	int unused_count = hns3_desc_unused(ring);
+ 	struct sk_buff *skb = ring->skb;
+-	int num;
++	int recv_pkts = 0;
++	int recv_bds = 0;
++	int err, num;
  
- 	if (cmdq_resp) {
- 		dev_err(&hdev->pdev->dev,
-@@ -6279,52 +6278,53 @@ static int hclge_get_mac_vlan_cmd_status(struct hclge_vport *vport,
+ 	num = readl_relaxed(ring->tqp->io_base + HNS3_RING_RX_RING_FBDNUM_REG);
+ 	rmb(); /* Make sure num taken effect before the other data is touched */
  
- 	if (op == HCLGE_MAC_VLAN_ADD) {
- 		if ((!resp_code) || (resp_code == 1)) {
--			return_status = 0;
-+			return 0;
- 		} else if (resp_code == HCLGE_ADD_UC_OVERFLOW) {
--			return_status = -ENOSPC;
- 			dev_err(&hdev->pdev->dev,
- 				"add mac addr failed for uc_overflow.\n");
-+			return -ENOSPC;
- 		} else if (resp_code == HCLGE_ADD_MC_OVERFLOW) {
--			return_status = -ENOSPC;
- 			dev_err(&hdev->pdev->dev,
- 				"add mac addr failed for mc_overflow.\n");
--		} else {
--			dev_err(&hdev->pdev->dev,
--				"add mac addr failed for undefined, code=%d.\n",
--				resp_code);
-+			return -ENOSPC;
- 		}
-+
-+		dev_err(&hdev->pdev->dev,
-+			"add mac addr failed for undefined, code=%u.\n",
-+			resp_code);
-+		return -EIO;
- 	} else if (op == HCLGE_MAC_VLAN_REMOVE) {
- 		if (!resp_code) {
--			return_status = 0;
-+			return 0;
- 		} else if (resp_code == 1) {
--			return_status = -ENOENT;
- 			dev_dbg(&hdev->pdev->dev,
- 				"remove mac addr failed for miss.\n");
--		} else {
--			dev_err(&hdev->pdev->dev,
--				"remove mac addr failed for undefined, code=%d.\n",
--				resp_code);
-+			return -ENOENT;
- 		}
-+
-+		dev_err(&hdev->pdev->dev,
-+			"remove mac addr failed for undefined, code=%u.\n",
-+			resp_code);
-+		return -EIO;
- 	} else if (op == HCLGE_MAC_VLAN_LKUP) {
- 		if (!resp_code) {
--			return_status = 0;
-+			return 0;
- 		} else if (resp_code == 1) {
--			return_status = -ENOENT;
- 			dev_dbg(&hdev->pdev->dev,
- 				"lookup mac addr failed for miss.\n");
--		} else {
--			dev_err(&hdev->pdev->dev,
--				"lookup mac addr failed for undefined, code=%d.\n",
--				resp_code);
-+			return -ENOENT;
- 		}
--	} else {
--		return_status = -EINVAL;
-+
- 		dev_err(&hdev->pdev->dev,
--			"unknown opcode for get_mac_vlan_cmd_status,opcode=%d.\n",
--			op);
-+			"lookup mac addr failed for undefined, code=%u.\n",
-+			resp_code);
-+		return -EIO;
- 	}
+-	recv_pkts = 0, recv_bds = 0, clean_count = 0;
+ 	num -= unused_count;
+ 	unused_count -= ring->pending_buf;
  
--	return return_status;
-+	dev_err(&hdev->pdev->dev,
-+		"unknown opcode for get_mac_vlan_cmd_status, opcode=%d.\n", op);
-+
-+	return -EINVAL;
+ 	while (recv_pkts < budget && recv_bds < num) {
+ 		/* Reuse or realloc buffers */
+-		if (clean_count + unused_count >= RCB_NOF_ALLOC_RX_BUFF_ONCE) {
+-			hns3_nic_alloc_rx_buffers(ring,
+-						  clean_count + unused_count);
+-			clean_count = 0;
++		if (unused_count >= RCB_NOF_ALLOC_RX_BUFF_ONCE) {
++			hns3_nic_alloc_rx_buffers(ring, unused_count);
+ 			unused_count = hns3_desc_unused(ring) -
+ 					ring->pending_buf;
+ 		}
+@@ -2940,7 +2938,7 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
+ 			goto out;
+ 		} else if (unlikely(err)) {  /* Do jump the err */
+ 			recv_bds += ring->pending_buf;
+-			clean_count += ring->pending_buf;
++			unused_count += ring->pending_buf;
+ 			ring->skb = NULL;
+ 			ring->pending_buf = 0;
+ 			continue;
+@@ -2948,7 +2946,7 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
+ 
+ 		rx_fn(ring, skb);
+ 		recv_bds += ring->pending_buf;
+-		clean_count += ring->pending_buf;
++		unused_count += ring->pending_buf;
+ 		ring->skb = NULL;
+ 		ring->pending_buf = 0;
+ 
+@@ -2957,8 +2955,8 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
+ 
+ out:
+ 	/* Make all data has been write before submit */
+-	if (clean_count + unused_count > 0)
+-		hns3_nic_alloc_rx_buffers(ring, clean_count + unused_count);
++	if (unused_count > 0)
++		hns3_nic_alloc_rx_buffers(ring, unused_count);
+ 
+ 	return recv_pkts;
  }
- 
- static int hclge_update_desc_vfid(struct hclge_desc *desc, int vfid, bool clr)
 -- 
 2.7.4
 
