@@ -2,97 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8457D29F
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 03:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434707D2C4
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 03:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729274AbfHABLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 21:11:55 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34837 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbfHABLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 21:11:55 -0400
-Received: by mail-io1-f67.google.com with SMTP id m24so140632055ioo.2
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 18:11:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KYjXgzbuA5VPSZKIaaDEIbincCvTUENizjgRBJ7u4z4=;
-        b=RgQxS6GBfA4EGZjcP+2D999s7JHocAxj1o95Dt/vl2W/PqeNe8sw92zwrZATiNxzlr
-         wQIcRKfMscwRkwj/Ii+Xe8T/Iy4qTV11dmZXRLq4Z4I6bEe2K7i14sg717sCnn2w2Qol
-         XYVhMQRR1lxWdRSOsAHKrW7lQkmF05hG6pT1UAEzN5tqAnY4y/EWcX5TGNaAv5Otu7Mh
-         OodKsjzc2FmWtg0KjZM9TcEDI0OpNDm+VEvyYCaP9v8bK4ca90562teAN7M+F67gtFzg
-         0/zLH/wQypo10GV0PISVqZ6M+Hp3RM0NY3FfCyTk1x4+cAo4uvzYvWHlZEp+p0VCbl5h
-         FLFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KYjXgzbuA5VPSZKIaaDEIbincCvTUENizjgRBJ7u4z4=;
-        b=uEwkblHdFcbql0URmZ87WF94T+Ub3wKNPdxWVcowVVao3LFJJkYnbRY889j2lBV09z
-         1FG4wJWIiW32AVabQNID8Mx4Fprw0cqBdXFE1vaTLF5Fgxq/06k9Ksq+b9aD8+TtQ7cP
-         0bJ/Dd3adMp/GuZpLY9d/ZAaMPzBuNc5wvM1l9jlAaRMvpVMFs5KT1u9Q1kQjSO7Ve/y
-         ygi4mah1oxOseGHQHC4xazxdHUQZBVY857FCR0GJMqytbSOi63PgLdm54LifDkzM+9r3
-         s0kfjJnvhMMEZfj6+Vr96VS+SnVTDyvGenXxj59oyD00zpuBu4VG4KWEMHoojI0JSuCC
-         RzNw==
-X-Gm-Message-State: APjAAAUm7svQtGeUV1XqsCx+FV0qNOUhZ6emASRsrXAsUcsmokCyw/iO
-        b4rJMVrbONfdIIwgz+qjRwFUGjJnoK+gGy55QLE=
-X-Google-Smtp-Source: APXvYqxFjhzMfSW7riJmYRdYdg1Q5uZNdag8E3JKRzS5+x8s3vPkCONkVvGPtH2nfSyHG1vfGPvqaLb66m7AYJvUU4w=
-X-Received: by 2002:a6b:dd17:: with SMTP id f23mr100290864ioc.213.1564621914239;
- Wed, 31 Jul 2019 18:11:54 -0700 (PDT)
+        id S1729440AbfHABVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 21:21:09 -0400
+Received: from ozlabs.org ([203.11.71.1]:44055 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726817AbfHABVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 21:21:09 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45zXYX3txyz9sDQ;
+        Thu,  1 Aug 2019 11:21:04 +1000 (AEST)
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Nick Desaulniers <ndesaulniers@google.com>, kvalo@codeaurora.org,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH -next] iwlwifi: dbg: work around clang bug by marking debug strings static
+In-Reply-To: <20190712001708.170259-1-ndesaulniers@google.com>
+References: <20190712001708.170259-1-ndesaulniers@google.com>
+Date:   Thu, 01 Aug 2019 11:21:01 +1000
+Message-ID: <874l31r88y.fsf@concordia.ellerman.id.au>
 MIME-Version: 1.0
-References: <20190801004506.9049-1-stephen@networkplumber.org>
-In-Reply-To: <20190801004506.9049-1-stephen@networkplumber.org>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Wed, 31 Jul 2019 18:11:42 -0700
-Message-ID: <CAA93jw6aRwUt=r9EAeRmZmJJ=KbDTsdxyb8DQWCX4NWkOUsnbA@mail.gmail.com>
-Subject: Re: [RFC iproute2 0/4] Revert tc batchsize feature
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
-        chrism@mellanox.com,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Does this fix my longstanding issue with piping commands into it? :P
+Nick Desaulniers <ndesaulniers@google.com> writes:
+> Commit r353569 in prerelease Clang-9 is producing a linkage failure:
+>
+> ld: drivers/net/wireless/intel/iwlwifi/fw/dbg.o:
+> in function `_iwl_fw_dbg_apply_point':
+> dbg.c:(.text+0x827a): undefined reference to `__compiletime_assert_2387'
 
-( https://github.com/tohojo/flent/issues/146 )
+This breakage is also seen in older GCC versions (v4.6.3 at least):
 
-On Wed, Jul 31, 2019 at 5:46 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> The batchsize feature of tc might save a few cycles but it
-> is a maintaince nightmare, it has uninitialized variables and
-> poor error handling.
->
-> This patch set reverts back to the original state.
-> Please don't resubmit original code. Go back to the drawing
-> board and do something generic.  For example, the routing
-> daemons have figured out that by using multiple threads and
-> turning off the netlink ACK they can update millions of routes
-> quickly.
->
-> Stephen Hemminger (4):
->   Revert "tc: Remove pointless assignments in batch()"
->   Revert "tc: flush after each command in batch mode"
->   Revert "tc: fix batch force option"
->   Revert "tc: Add batchsize feature for filter and actions"
->
->  tc/m_action.c  |  65 ++++++----------
->  tc/tc.c        | 201 ++++---------------------------------------------
->  tc/tc_common.h |   7 +-
->  tc/tc_filter.c | 129 ++++++++++++-------------------
->  4 files changed, 87 insertions(+), 315 deletions(-)
->
+  drivers/net/wireless/intel/iwlwifi/fw/dbg.c: In function 'iwl_fw_dbg_info_apply.isra.10':
+  drivers/net/wireless/intel/iwlwifi/fw/dbg.c:2445:3: error: call to '__compiletime_assert_2446' declared with attribute error: BUILD_BUG_ON failed: err_str[sizeof(err_str) - 2] != '\n'
+  drivers/net/wireless/intel/iwlwifi/fw/dbg.c:2451:3: error: call to '__compiletime_assert_2452' declared with attribute error: BUILD_BUG_ON failed: err_str[sizeof(err_str) - 2] != '\n'
+  drivers/net/wireless/intel/iwlwifi/fw/dbg.c: In function '_iwl_fw_dbg_apply_point':
+  drivers/net/wireless/intel/iwlwifi/fw/dbg.c:2789:5: error: call to '__compiletime_assert_2790' declared with attribute error: BUILD_BUG_ON failed: invalid_ap_str[sizeof(invalid_ap_str) - 2] != '\n'
+  drivers/net/wireless/intel/iwlwifi/fw/dbg.c:2800:5: error: call to '__compiletime_assert_2801' declared with attribute error: BUILD_BUG_ON failed: invalid_ap_str[sizeof(invalid_ap_str) - 2] != '\n'
+ 
+  http://kisskb.ellerman.id.au/kisskb/buildresult/13902155/
 
 
---=20
+Luca, you said this was already fixed in your internal tree, and the fix
+would appear soon in next, but I don't see anything in linux-next?
 
-Dave T=C3=A4ht
-CTO, TekLibre, LLC
-http://www.teklibre.com
-Tel: 1-831-205-9740
+cheers
