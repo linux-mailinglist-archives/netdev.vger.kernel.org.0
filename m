@@ -2,62 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC4F7D72E
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 10:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D7537D79E
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 10:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731064AbfHAIUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 04:20:13 -0400
-Received: from verein.lst.de ([213.95.11.211]:41407 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728146AbfHAIUM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Aug 2019 04:20:12 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 21DE768AFE; Thu,  1 Aug 2019 10:20:05 +0200 (CEST)
-Date:   Thu, 1 Aug 2019 10:20:04 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jerome Glisse <jglisse@redhat.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Christoph Hellwig <hch@infradead.org>, john.hubbard@gmail.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
+        id S1729140AbfHAI3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 04:29:35 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:42717 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727506AbfHAI3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 04:29:35 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q10so33606067pff.9
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 01:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jOjfA74AUeA8KTWH+Deq++K0nrzDD6cUg7RiKRcAgeQ=;
+        b=OenH9eI0I3TWqX5f2AYWDVPL1pKTT7RAEggxtMHYdkl8k/mRA0APtISZb2rEkBVpWn
+         k2dFgDbtEWeGBL70n9WRSwwZph63yAglKjPbXA+D268ziVr8AEVM1KqWhRaXDZ/kVx8X
+         /2RyvNaIWVp9Rbs7YStZOtvXzLJ2QIQT9g1cpWDsYOh9m4mKsZjIo+u5j6dQMQ5qiJVf
+         HHOGp1vomSb/eqptnQDKgb3oKiklLrcqQBe0kcYzItFdAiwc5OVaDzvSpqrvnlrjBFu9
+         M39r2bgdHox/femOFj+H0Fw1eFtbc94oJa+BA/Xz2zVyyUGtyQleuzc87xPyhCGXZnCM
+         M2Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jOjfA74AUeA8KTWH+Deq++K0nrzDD6cUg7RiKRcAgeQ=;
+        b=gq/KowVY0OoipM6jcdIoTNRYpA9Sqqz5UffBQ6ZhESqtl4D8zuzN6PEqhsp4rkxMy9
+         IXc0Zkoo2R7QXkTq/jaPYMENbrrd9ZbJRuE4eo1solKxpQdw4hCbWqKMi1UqPVB9I3kf
+         C3DrLpB8UJvP5dPzOVLqN6auAwX6l6oXMKOiSdcE62DbCt/Z4066UQvOyjjBmyS73pse
+         AAaIKZJ8KxXpCPvHRKLqL9nIHvzuLOE0eBgCQ6kE7iA4bw/WoUm/sibUbP/k+clcjMb8
+         CnoOqhYNQi37DcVyhU/13OhKbb3cF8FTMExU88LHTeGAPtcTs1ndLRZW+mod/Gier4zV
+         G7oQ==
+X-Gm-Message-State: APjAAAVcQI7P977Sz/BnFlvH+OoVTeo+CH7UVAfm1IROUBIguyBGUWzi
+        c2c1eeI4mNaY11CJmhnY7FVpZ4HH7xqwFg==
+X-Google-Smtp-Source: APXvYqwKuF9sQXeXLuXmWv7fHApr7FscmLx6pweQRcJXXR84EQyqr48jizXBJbq4pdtRQicmo+2XRA==
+X-Received: by 2002:a63:a66:: with SMTP id z38mr22643094pgk.247.1564648174517;
+        Thu, 01 Aug 2019 01:29:34 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id f20sm83833522pgg.56.2019.08.01.01.29.31
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 01 Aug 2019 01:29:33 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stefano Brivio <sbrivio@redhat.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>, ceph-devel@vger.kernel.org,
-        kvm@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-cifs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, samba-technical@lists.samba.org,
-        v9fs-developer@lists.sourceforge.net,
-        virtualization@lists.linux-foundation.org,
-        John Hubbard <jhubbard@nvidia.com>,
-        Minwoo Im <minwoo.im.dev@gmail.com>
-Subject: Re: [PATCH 03/12] block: bio_release_pages: use flags arg instead
- of bool
-Message-ID: <20190801082004.GA17348@lst.de>
-References: <20190724042518.14363-1-jhubbard@nvidia.com> <20190724042518.14363-4-jhubbard@nvidia.com> <20190724053053.GA18330@infradead.org> <20190729205721.GB3760@redhat.com> <20190730102557.GA1700@lst.de> <20190730155702.GB10366@redhat.com>
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] ipv4/route: do not check saddr dev if iif is LOOPBACK_IFINDEX
+Date:   Thu,  1 Aug 2019 16:29:00 +0800
+Message-Id: <20190801082900.27216-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190730155702.GB10366@redhat.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 11:57:02AM -0400, Jerome Glisse wrote:
-> Other user can also add page that are not coming from GUP but need to
-> have a reference see __blkdev_direct_IO()
+Jianlin reported a bug that for IPv4, ip route get from src_addr would fail
+if src_addr is not an address on local system.
 
-Except for the zero page case I mentioned in my last mail explicitly,
-and the KVEC/PIPE type iov vecs from the original mail what other
-pages do you see to get added?
+\# ip route get 1.1.1.1 from 2.2.2.2
+RTNETLINK answers: Invalid argument
+
+While IPv6 would get the default route
+
+\# ip -6 route get 1111::1 from 2222::2
+1111::1 from 2222::2 via fe80:52:0:4982::1fe dev eth0 proto ra src \
+	2620::2cf:e2ff:fe40:37 metric 1024 hoplimit 64 pref medium
+
+Fix it by disabling the __ip_dev_find() check if iif is LOOPBACK_IFINDEX.
+
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ net/ipv4/route.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 517300d587a7..1be78e8f9e3c 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -2512,7 +2512,8 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
+ 			goto make_route;
+ 		}
+ 
+-		if (!(fl4->flowi4_flags & FLOWI_FLAG_ANYSRC)) {
++		if (!(fl4->flowi4_flags & FLOWI_FLAG_ANYSRC) &&
++		    fl4->flowi4_iif != LOOPBACK_IFINDEX) {
+ 			/* It is equivalent to inet_addr_type(saddr) == RTN_LOCAL */
+ 			if (!__ip_dev_find(net, fl4->saddr, false))
+ 				goto out;
+-- 
+2.19.2
+
