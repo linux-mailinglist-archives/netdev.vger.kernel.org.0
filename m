@@ -2,151 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 886707D95F
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 12:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3A77D9A0
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 12:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730736AbfHAK2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 06:28:47 -0400
-Received: from smtprelay0088.hostedemail.com ([216.40.44.88]:39263 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730649AbfHAK2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 06:28:47 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 9705A18122414;
-        Thu,  1 Aug 2019 10:28:45 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3874:4321:4605:5007:7514:8957:9010:10004:10848:11026:11232:11233:11473:11657:11658:11914:12043:12291:12296:12297:12438:12555:12683:12740:12760:12895:12986:13095:13439:14181:14659:14721:21080:21427:21433:21450:21451:21627:30054:30070:30085:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
-X-HE-Tag: wash33_2f3fa9b28402d
-X-Filterd-Recvd-Size: 5314
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf07.hostedemail.com (Postfix) with ESMTPA;
-        Thu,  1 Aug 2019 10:28:44 +0000 (UTC)
-Message-ID: <209f7fe62e2a79cd8c02b104b8e3babdd16bff30.camel@perches.com>
-Subject: Re: [PATCH net] ibmveth: use net_err_ratelimited when
- set_multicast_list
-From:   Joe Perches <joe@perches.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        "David S . Miller" <davem@davemloft.net>
-Date:   Thu, 01 Aug 2019 03:28:43 -0700
-In-Reply-To: <20190801090347.8258-1-liuhangbin@gmail.com>
-References: <20190801090347.8258-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1730381AbfHAKsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 06:48:00 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38226 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728783AbfHAKr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 06:47:59 -0400
+Received: by mail-wr1-f68.google.com with SMTP id g17so73051315wrr.5
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 03:47:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Qw6j853wZUG0P4ng1fQNKfQUl03rC9IHR3/FL4fgPwk=;
+        b=Su6gMItDCbEiPYNTn5tPh0lKE+1AskxssGfdLHNVAmc2Z7Pkh85kZwXislxpuXdtDx
+         tViSlRN8jIjyjgckcu5ELOIu3GMauG1XohPm9HdmRxKdF3hCpCQ7ovmONSLOzsGt/0a0
+         AzIYQFy83L3PAVMWSW/F2y6IZyNRYgQ1rgWI6XvBAxdd0rwwbZTIDUvhYU0+ZcfwyKZx
+         AbK0vHtWpNKRMOUMmqqlQ736z1ZjclJk6RUZJ6Fmqcr6c3RyDmpZdKnUdUkf5LD4zRbV
+         G+E2P9OCQrMRS11tqhFc89t1MntgDhHj3jiaK5Id7q5JMGqfMfXyBLk9RROxatRN1Cqs
+         lbBg==
+X-Gm-Message-State: APjAAAXY8SunD22Hq9UPgu8wcEoj6wXAd5fnCpZkPi+s3NnhPOLi/KwE
+        Bt2AINfz30X7HcGtlBOL27ataw==
+X-Google-Smtp-Source: APXvYqxw85Z/h+/LijJBZKEF9X3Av4FcGm9GhgdFvPrI4Hc/B6vXckRANX/RaJawe7pCHRv8hHxJ0Q==
+X-Received: by 2002:adf:e8c8:: with SMTP id k8mr36986014wrn.285.1564656477234;
+        Thu, 01 Aug 2019 03:47:57 -0700 (PDT)
+Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
+        by smtp.gmail.com with ESMTPSA id h8sm75520711wmf.12.2019.08.01.03.47.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 01 Aug 2019 03:47:56 -0700 (PDT)
+Date:   Thu, 1 Aug 2019 12:47:54 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
+Message-ID: <20190801104754.lb3ju5xjfmnxioii@steredhat>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-2-sgarzare@redhat.com>
+ <20190729095956-mutt-send-email-mst@kernel.org>
+ <20190729153656.zk4q4rob5oi6iq7l@steredhat>
+ <20190729114302-mutt-send-email-mst@kernel.org>
+ <20190729161903.yhaj5rfcvleexkhc@steredhat>
+ <20190729165056.r32uzj6om3o6vfvp@steredhat>
+ <20190729143622-mutt-send-email-mst@kernel.org>
+ <20190730093539.dcksure3vrykir3g@steredhat>
+ <20190730163807-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190730163807-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-08-01 at 17:03 +0800, Hangbin Liu wrote:
-> When setting lots of multicast list on ibmveth, e.g. add 3000 membership on a
-> multicast group, the following error message flushes our log file
+On Tue, Jul 30, 2019 at 04:42:25PM -0400, Michael S. Tsirkin wrote:
+> On Tue, Jul 30, 2019 at 11:35:39AM +0200, Stefano Garzarella wrote:
+
+(...)
+
+> > 
+> > The problem here is the compatibility. Before this series virtio-vsock
+> > and vhost-vsock modules had the RX buffer size hard-coded
+> > (VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE = 4K). So, if we send a buffer smaller
+> > of 4K, there might be issues.
 > 
-> 8507    [  901.478251] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
-> ...
-> 1718386 [ 5636.808658] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
+> Shouldn't be if they are following the spec. If not let's fix
+> the broken parts.
 > 
-> We got 1.5 million lines of messages in 1.3h. Let's replace netdev_err() by
-> net_err_ratelimited() to avoid this issue. I don't use netdev_err_once() in
-> case h_multicast_ctrl() return different lpar_rc types.
+> > 
+> > Maybe it is the time to add add 'features' to virtio-vsock device.
+> > 
+> > Thanks,
+> > Stefano
 > 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  drivers/net/ethernet/ibm/ibmveth.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+> Why would a remote care about buffer sizes?
 > 
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-> index d654c234aaf7..3b9406a4ca92 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.c
-> +++ b/drivers/net/ethernet/ibm/ibmveth.c
-> @@ -1446,9 +1446,11 @@ static void ibmveth_set_multicast_list(struct net_device *netdev)
->  						   IbmVethMcastAddFilter,
->  						   mcast_addr);
->  			if (lpar_rc != H_SUCCESS) {
-> -				netdev_err(netdev, "h_multicast_ctrl rc=%ld "
-> -					   "when adding an entry to the filter "
-> -					   "table\n", lpar_rc);
-> +				net_err_ratelimited("%s %s%s: h_multicast_ctrl rc=%ld when adding an entry to the filter table\n",
-> +						    ibmveth_driver_name,
-> +						    netdev_name(netdev),
-> +						    netdev_reg_state(netdev),
-> +						    lpar_rc);
+> Let's first see what the issues are. If they exist
+> we can either fix the bugs, or code the bug as a feature in spec.
+> 
 
-Perhaps add the netdev_<level>_ratelimited variants and use that instead
+The vhost_transport '.stream_enqueue' callback
+[virtio_transport_stream_enqueue()] calls the virtio_transport_send_pkt_info(),
+passing the user message. This function allocates a new packet, copying
+the user message, but (before this series) it limits the packet size to
+the VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE (4K):
 
-Somthing like:
+static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+					  struct virtio_vsock_pkt_info *info)
+{
+ ...
+	/* we can send less than pkt_len bytes */
+	if (pkt_len > VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE)
+		pkt_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
 
----
- include/linux/netdevice.h | 54 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+	/* virtio_transport_get_credit might return less than pkt_len credit */
+	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 88292953aa6f..37116019e14f 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4737,6 +4737,60 @@ do {								\
- #define netdev_info_once(dev, fmt, ...) \
- 	netdev_level_once(KERN_INFO, dev, fmt, ##__VA_ARGS__)
- 
-+#define netdev_level_ratelimited(netdev_level, dev, fmt, ...)		\
-+do {									\
-+	static DEFINE_RATELIMIT_STATE(_rs,				\
-+				      DEFAULT_RATELIMIT_INTERVAL,	\
-+				      DEFAULT_RATELIMIT_BURST);		\
-+	if (__ratelimit(&_rs))						\
-+		netdev_level(dev, fmt, ##__VA_ARGS__);			\
-+} while (0)
-+
-+#define netdev_emerg_ratelimited(dev, fmt, ...)				\
-+	netdev_level_ratelimited(netdev_emerg, dev, fmt, ##__VA_ARGS__)
-+#define netdev_alert_ratelimited(dev, fmt, ...)				\
-+	netdev_level_ratelimited(netdev_alert, dev, fmt, ##__VA_ARGS__)
-+#define netdev_crit_ratelimited(dev, fmt, ...)				\
-+	netdev_level_ratelimited(netdev_crit, dev, fmt, ##__VA_ARGS__)
-+#define netdev_err_ratelimited(dev, fmt, ...)				\
-+	netdev_level_ratelimited(netdev_err, dev, fmt, ##__VA_ARGS__)
-+#define netdev_warn_ratelimited(dev, fmt, ...)				\
-+	netdev_level_ratelimited(netdev_warn, dev, fmt, ##__VA_ARGS__)
-+#define netdev_notice_ratelimited(dev, fmt, ...)			\
-+	netdev_level_ratelimited(netdev_notice, dev, fmt, ##__VA_ARGS__)
-+#define netdev_info_ratelimited(dev, fmt, ...)				\
-+	netdev_level_ratelimited(netdev_info, dev, fmt, ##__VA_ARGS__)
-+
-+#if defined(CONFIG_DYNAMIC_DEBUG)
-+/* descriptor check is first to prevent flooding with "callbacks suppressed" */
-+#define netdev_dbg_ratelimited(dev, fmt, ...)				\
-+do {									\
-+	static DEFINE_RATELIMIT_STATE(_rs,				\
-+				      DEFAULT_RATELIMIT_INTERVAL,	\
-+				      DEFAULT_RATELIMIT_BURST);		\
-+	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);			\
-+	if (DYNAMIC_DEBUG_BRANCH(descriptor) &&				\
-+	    __ratelimit(&_rs))						\
-+		__dynamic_netdev_dbg(&descriptor, dev, fmt,		\
-+				     ##__VA_ARGS__);			\
-+} while (0)
-+#elif defined(DEBUG)
-+#define netdev_dbg_ratelimited(dev, fmt, ...)				\
-+do {									\
-+	static DEFINE_RATELIMIT_STATE(_rs,				\
-+				      DEFAULT_RATELIMIT_INTERVAL,	\
-+				      DEFAULT_RATELIMIT_BURST);		\
-+	if (__ratelimit(&_rs))						\
-+		netdev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
-+} while (0)
-+#else
-+#define netdev_dbg_ratelimited(dev, fmt, ...)				\
-+do {									\
-+	if (0)								\
-+		netdev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
-+} while (0)
-+#endif
-+
- #define MODULE_ALIAS_NETDEV(device) \
- 	MODULE_ALIAS("netdev-" device)
- 
+	/* Do not send zero length OP_RW pkt */
+	if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
+		return pkt_len;
+ ...
+}
+
+then it queues the packet for the TX worker calling .send_pkt()
+[vhost_transport_send_pkt() in the vhost_transport case]
+
+The main function executed by the TX worker is
+vhost_transport_do_send_pkt() that picks up a buffer from the virtqueue
+and it tries to copy the packet (up to 4K) on it.  If the buffer
+allocated from the guest will be smaller then 4K, I think here it will
+be discarded with an error:
+
+static void
+vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+				struct vhost_virtqueue *vq)
+{
+ ...
+		nbytes = copy_to_iter(pkt->buf, pkt->len, &iov_iter);
+		if (nbytes != pkt->len) {
+			virtio_transport_free_pkt(pkt);
+			vq_err(vq, "Faulted on copying pkt buf\n");
+			break;
+		}
+ ...
+}
 
 
+This series changes this behavior since now we will split the packet in
+vhost_transport_do_send_pkt() depending on the buffer found in the
+virtqueue.
+
+We didn't change the buffer size in this series, so we still backward
+compatible, but if we will use buffers smaller than 4K, we should
+encounter the error described above.
+
+How do you suggest we proceed if we want to change the buffer size?
+Maybe adding a feature to "support any buffer size"?
+
+Thanks,
+Stefano
