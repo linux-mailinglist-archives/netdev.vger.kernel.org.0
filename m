@@ -2,102 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB7E7D427
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0F17D419
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730005AbfHAD6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:58:03 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:39554 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729822AbfHAD6A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 23:58:00 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id B659D202895F335DEBBF;
-        Thu,  1 Aug 2019 11:57:56 +0800 (CST)
-Received: from localhost.localdomain (10.67.212.132) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 1 Aug 2019 11:57:46 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 12/12] net: hns3: activate reset timer when calling reset_event
-Date:   Thu, 1 Aug 2019 11:55:45 +0800
-Message-ID: <1564631745-36733-13-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
-References: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
+        id S1728171AbfHAD4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:56:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52884 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726641AbfHADz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 23:55:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Y1QlX2yE7yvhO9Y6IQdrLu7V2tiqtVgXwBkJSh4jYHg=; b=yNJoXUHia1doAfiLkZ7DnjfnK2
+        DlsR52pVLSHbKp0s/pjmV6L1gaWDbQ6nlSfwl47jeGtYrwsMa5QfRALq7DLdZpyzf4zab2Fw/KOPb
+        Lo0lyATAVgDSUowhIZ9zC7yAt0IT7zszT23ki4epttXDyxDLlDZQaJAl9ouyLcDfL5BE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ht2Bx-0001OG-16; Thu, 01 Aug 2019 05:55:49 +0200
+Date:   Thu, 1 Aug 2019 05:55:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andrew Jeffery <andrew@aj.id.au>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, robh+dt@kernel.org,
+        mark.rutland@arm.com, joel@jms.id.au, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 3/4] net: ftgmac100: Add support for DT
+ phy-handle property
+Message-ID: <20190801035549.GH2713@lunn.ch>
+References: <20190731053959.16293-1-andrew@aj.id.au>
+ <20190731053959.16293-4-andrew@aj.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.212.132]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190731053959.16293-4-andrew@aj.id.au>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling hclge_reset_event() within HCLGE_RESET_INTERVAL,
-it returns directly now. If no one call it again, then the
-error which needs a reset to fix it can not be fixed.
+On Wed, Jul 31, 2019 at 03:09:58PM +0930, Andrew Jeffery wrote:
+> phy-handle is necessary for the AST2600 which separates the MDIO
+> controllers from the MAC.
+> 
+> I've tried to minimise the intrusion of supporting the AST2600 to the
+> FTGMAC100 by leaving in place the existing MDIO support for the embedded
+> MDIO interface. The AST2400 and AST2500 continue to be supported this
+> way, as it avoids breaking/reworking existing devicetrees.
+> 
+> The AST2600 support by contrast requires the presence of the phy-handle
+> property in the MAC devicetree node to specify the appropriate PHY to
+> associate with the MAC. In the event that someone wants to specify the
+> MDIO bus topology under the MAC node on an AST2400 or AST2500, the
+> current auto-probe approach is done conditional on the absence of an
+> "mdio" child node of the MAC.
+> 
+> Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
 
-So this patch activates the reset timer for this case, and
-adds checking in the end of the reset procedure to make this
-error fixed earlier.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Reviewed-by: Peng Li <lipeng321@huawei.com>
----
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index c4841c3..b7399f5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3517,7 +3517,15 @@ static void hclge_reset(struct hclge_dev *hdev)
- 	hdev->reset_fail_cnt = 0;
- 	hdev->rst_stats.reset_done_cnt++;
- 	ae_dev->reset_type = HNAE3_NONE_RESET;
--	del_timer(&hdev->reset_timer);
-+
-+	/* if default_reset_request has a higher level reset request,
-+	 * it should be handled as soon as possible. since some errors
-+	 * need this kind of reset to fix.
-+	 */
-+	hdev->reset_level = hclge_get_reset_level(ae_dev,
-+						  &hdev->default_reset_request);
-+	if (hdev->reset_level != HNAE3_NONE_RESET)
-+		set_bit(hdev->reset_level, &hdev->reset_request);
- 
- 	return;
- 
-@@ -3552,9 +3560,10 @@ static void hclge_reset_event(struct pci_dev *pdev, struct hnae3_handle *handle)
- 		handle = &hdev->vport[0].nic;
- 
- 	if (time_before(jiffies, (hdev->last_reset_time +
--				  HCLGE_RESET_INTERVAL)))
-+				  HCLGE_RESET_INTERVAL))) {
-+		mod_timer(&hdev->reset_timer, jiffies + HCLGE_RESET_INTERVAL);
- 		return;
--	else if (hdev->default_reset_request)
-+	} else if (hdev->default_reset_request)
- 		hdev->reset_level =
- 			hclge_get_reset_level(ae_dev,
- 					      &hdev->default_reset_request);
-@@ -3584,6 +3593,12 @@ static void hclge_reset_timer(struct timer_list *t)
- {
- 	struct hclge_dev *hdev = from_timer(hdev, t, reset_timer);
- 
-+	/* if default_reset_request has no value, it means that this reset
-+	 * request has already be handled, so just return here
-+	 */
-+	if (!hdev->default_reset_request)
-+		return;
-+
- 	dev_info(&hdev->pdev->dev,
- 		 "triggering reset in reset timer\n");
- 	hclge_reset_event(hdev->pdev, NULL);
--- 
-2.7.4
-
+    Andrew
