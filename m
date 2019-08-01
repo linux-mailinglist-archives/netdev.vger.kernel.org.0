@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F167D7E473
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 22:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 668AA7E474
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 22:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbfHAUp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 16:45:27 -0400
-Received: from mail-qk1-f180.google.com ([209.85.222.180]:41029 "EHLO
-        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727127AbfHAUp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 16:45:27 -0400
-Received: by mail-qk1-f180.google.com with SMTP id t187so455316qke.8
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 13:45:26 -0700 (PDT)
+        id S1732878AbfHAUpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 16:45:31 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40051 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727127AbfHAUpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 16:45:30 -0400
+Received: by mail-qk1-f194.google.com with SMTP id s145so53148829qke.7
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 13:45:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=starry.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qbsur90HsseJH2gF5FLSwo5gMlfND7QY1zUeFsWY12E=;
-        b=HiBltp8lV+xaU0dbb9bCsVabvLaJGTBM/SjNNGy9M4+EhD+e574QlQ3wu13WKd/BVz
-         oa/1F2rbmMjeABEv0ZxRQ9/QUyPYwMKrmz6QVEF1jN/fKLB9LWi0oJTBpbXGocoiEZFr
-         GlU7/ed3HLcGYYcXGKBpqytgV46EeE5/0VIHI=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=f/9yTZ0Ue7j6Tn2THMVYQdLlVot0FQzq0AJj/HStoA4=;
+        b=KORIZMZoY1KY2nQJsCLHreLSYSOY/Zk9fXEbsiZI0FkfUvrvRHJAkEwLK78pC39HAW
+         xrLdZ1R/Fd6CqBsHTyvFur92p/pOAsJYfuuydkQdAMxkoglcH62lZUkoQGsE3WBmsUJC
+         yFMUmJCwqHZnVfJlime3tpD2dxAx1yEpMBMwo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qbsur90HsseJH2gF5FLSwo5gMlfND7QY1zUeFsWY12E=;
-        b=hyo+mQ8Xx9QIqfHN68VrBeQFG/TYCO6Cp4FRwW6ECVxBXI9fzyqU1SxHi5WS+8Df7c
-         7H/3YmvLgiLJVtzWvme/uz+Ui+YycTO1kQpaEc2dinxRqohW2RjR3qw1iyOS5hRtjvZU
-         qvlfuCHpd5+T615nqbFgBXxYPwTeuPatSySVSlr9LPjWuB89JZwxgiUPrehgxgeQJCKu
-         cuNmB4Y0ayp6PnySzt5vXvW9Q/hKbidEBintIaSkG5mBpwKwbMZ6huti0JEgbRUDLDFr
-         XAu3gQEq6k0zfktTRhipByWuRl3HW7ELyelDUZg9pN2AQH+idJl1pB6gCJAfJQwwTMdN
-         +GGA==
-X-Gm-Message-State: APjAAAUDc9R9QcEgGpqWOau0zqL4uDSxzZQLboXC9PhRYU6CwOOSWNsB
-        EOVBjnwV7D5HlMC3OuAFc8EewDvAv4M=
-X-Google-Smtp-Source: APXvYqwT8IWzj0xuwvbNlcAlYvBhlduO8AdARrAHWpwnJDiQNlPbVEm0dJsSdDs/fRumdLx6FmS0Ig==
-X-Received: by 2002:a05:620a:44:: with SMTP id t4mr88449732qkt.189.1564692326107;
-        Thu, 01 Aug 2019 13:45:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=f/9yTZ0Ue7j6Tn2THMVYQdLlVot0FQzq0AJj/HStoA4=;
+        b=gwcIxMtVRghcsfYUpejZgPUb3Yb8LIFsE10nBeXnX0JUBQsOpsnx/Dqf6mBvuR4EgA
+         iEGzBCXbSJcPKHyNmBMCmVMTleJ5rWpI5zQiya38LfYGCGhiy+qI/727ZJ7Vy3pjrtir
+         GeiJ5rUaZ9xOgsxd8/NZ0G9HrNTn+L7yBv4/4rT9sTga2lR95gmr7ZtffsPYErIgJ9mb
+         v2Jf7AnbuPrInPaH4gq7vLpfTCiVW/Tp6Xg0CJflJxrkFckAjsqtAjaRK6ngJSH2vEek
+         P9otB4SWijWyfyXhnKYUq3uqIeDKpITKg+7xp10z8k/daOWOjvtJ8FevhISUAJczJPgi
+         gasQ==
+X-Gm-Message-State: APjAAAWYiImqsNSU5T4orajFkiOdXp48kXwzQYhAAxcO5ElOUZc4Xo2Y
+        eApkDVkJIBkfcYrZEY2IapGAyCw6Rh8=
+X-Google-Smtp-Source: APXvYqzd+9sQkVWdPDIPdPz3AbsD24+5IkwIR71AExg2a5md1nT4P694lAcrgmr2qbCxmezsvI/BVQ==
+X-Received: by 2002:ae9:f443:: with SMTP id z3mr88709399qkl.203.1564692329588;
+        Thu, 01 Aug 2019 13:45:29 -0700 (PDT)
 Received: from localhost.localdomain (205-201-16-55.starry-inc.net. [205.201.16.55])
-        by smtp.gmail.com with ESMTPSA id b23sm42724059qte.19.2019.08.01.13.45.25
+        by smtp.gmail.com with ESMTPSA id b23sm42724059qte.19.2019.08.01.13.45.28
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 13:45:25 -0700 (PDT)
+        Thu, 01 Aug 2019 13:45:28 -0700 (PDT)
 From:   Matt Pelland <mpelland@starry.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, maxime.chevallier@bootlin.com,
-        antoine.tenart@bootlin.com
-Subject: [PATCH] net: mvpp2: Implement RXAUI Support
-Date:   Thu,  1 Aug 2019 16:45:21 -0400
-Message-Id: <20190801204523.26454-1-mpelland@starry.com>
+        antoine.tenart@bootlin.com, Matt Pelland <mpelland@starry.com>
+Subject: [PATCH 1/2] net: mvpp2: implement RXAUI support
+Date:   Thu,  1 Aug 2019 16:45:22 -0400
+Message-Id: <20190801204523.26454-2-mpelland@starry.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190801204523.26454-1-mpelland@starry.com>
+References: <20190801204523.26454-1-mpelland@starry.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -56,13 +58,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set implements support for configuring Marvell's mvpp2 hardware for
-RXAUI operation. There are two other patches necessary for this to work
-correctly that concern Marvell's cp110 comphy that were emailed to the general
-linux-kernel mailing list earlier on. I can post them here if need be. This
-patch set was successfully tested on a Marvell Armada 7040 based platform.
+Marvell's mvpp2 packet processor supports RXAUI on port zero in a
+similar manner to the existing 10G protocols that have already been
+implemented. This patch implements the miscellaneous extra configuration
+steps required for RXAUI operation.
 
-Cheers,
-Matt
+Signed-off-by: Matt Pelland <mpelland@starry.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  1 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 30 +++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 4d9564ba68f6..256e7c796631 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -481,6 +481,7 @@
+ #define MVPP22_XLG_CTRL4_REG			0x184
+ #define     MVPP22_XLG_CTRL4_FWD_FC		BIT(5)
+ #define     MVPP22_XLG_CTRL4_FWD_PFC		BIT(6)
++#define     MVPP22_XLG_CTRL4_USE_XPCS		BIT(8)
+ #define     MVPP22_XLG_CTRL4_MACMODSELECT_GMAC	BIT(12)
+ #define     MVPP22_XLG_CTRL4_EN_IDLE_CHECK	BIT(14)
+ 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index e9d8ffe897e9..8b633af4a684 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -968,6 +968,7 @@ mvpp2_shared_interrupt_mask_unmask(struct mvpp2_port *port, bool mask)
+ static bool mvpp2_is_xlg(phy_interface_t interface)
+ {
+ 	return interface == PHY_INTERFACE_MODE_10GKR ||
++	       interface == PHY_INTERFACE_MODE_RXAUI ||
+ 	       interface == PHY_INTERFACE_MODE_XAUI;
+ }
+ 
+@@ -1008,6 +1009,27 @@ static void mvpp22_gop_init_sgmii(struct mvpp2_port *port)
+ 	}
+ }
+ 
++static void mvpp22_gop_init_rxaui(struct mvpp2_port *port)
++{
++	struct mvpp2 *priv = port->priv;
++	void __iomem *xpcs = priv->iface_base + MVPP22_XPCS_BASE(port->gop_id);
++	u32 val;
++
++	val = readl(xpcs + MVPP22_XPCS_CFG0);
++	val &= ~MVPP22_XPCS_CFG0_RESET_DIS;
++	writel(val, xpcs + MVPP22_XPCS_CFG0);
++
++	val = readl(xpcs + MVPP22_XPCS_CFG0);
++	val &= ~(MVPP22_XPCS_CFG0_PCS_MODE(0x3) |
++		 MVPP22_XPCS_CFG0_ACTIVE_LANE(0x3));
++	val |= MVPP22_XPCS_CFG0_ACTIVE_LANE(2);
++	writel(val, xpcs + MVPP22_XPCS_CFG0);
++
++	val = readl(xpcs + MVPP22_XPCS_CFG0);
++	val |= MVPP22_XPCS_CFG0_RESET_DIS;
++	writel(val, xpcs + MVPP22_XPCS_CFG0);
++}
++
+ static void mvpp22_gop_init_10gkr(struct mvpp2_port *port)
+ {
+ 	struct mvpp2 *priv = port->priv;
+@@ -1053,6 +1075,9 @@ static int mvpp22_gop_init(struct mvpp2_port *port)
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+ 		mvpp22_gop_init_sgmii(port);
+ 		break;
++	case PHY_INTERFACE_MODE_RXAUI:
++		mvpp22_gop_init_rxaui(port);
++		break;
+ 	case PHY_INTERFACE_MODE_10GKR:
+ 		if (port->gop_id != 0)
+ 			goto invalid_conf;
+@@ -4570,6 +4595,7 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
+ 	switch (state->interface) {
+ 	case PHY_INTERFACE_MODE_10GKR:
+ 	case PHY_INTERFACE_MODE_XAUI:
++	case PHY_INTERFACE_MODE_RXAUI:
+ 		if (port->gop_id != 0)
+ 			goto empty_set;
+ 		break;
+@@ -4592,6 +4618,7 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
+ 	switch (state->interface) {
+ 	case PHY_INTERFACE_MODE_10GKR:
+ 	case PHY_INTERFACE_MODE_XAUI:
++	case PHY_INTERFACE_MODE_RXAUI:
+ 	case PHY_INTERFACE_MODE_NA:
+ 		if (port->gop_id == 0) {
+ 			phylink_set(mask, 10000baseT_Full);
+@@ -4744,6 +4771,9 @@ static void mvpp2_xlg_config(struct mvpp2_port *port, unsigned int mode,
+ 	ctrl4 |= MVPP22_XLG_CTRL4_FWD_FC | MVPP22_XLG_CTRL4_FWD_PFC |
+ 		 MVPP22_XLG_CTRL4_EN_IDLE_CHECK;
+ 
++	if (state->interface == PHY_INTERFACE_MODE_RXAUI)
++		ctrl4 |= MVPP22_XLG_CTRL4_USE_XPCS;
++
+ 	if (old_ctrl0 != ctrl0)
+ 		writel(ctrl0, port->base + MVPP22_XLG_CTRL0_REG);
+ 	if (old_ctrl4 != ctrl4)
+-- 
+2.21.0
 
