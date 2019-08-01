@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E287D256
+	by mail.lfdr.de (Postfix) with ESMTP id 57F8A7D257
 	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 02:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728150AbfHAApO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 20:45:14 -0400
-Received: from mail-pf1-f178.google.com ([209.85.210.178]:46570 "EHLO
-        mail-pf1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbfHAApO (ORCPT
+        id S1728242AbfHAApP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 20:45:15 -0400
+Received: from mail-pg1-f182.google.com ([209.85.215.182]:45763 "EHLO
+        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727348AbfHAApO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 20:45:14 -0400
-Received: by mail-pf1-f178.google.com with SMTP id c3so9667431pfa.13
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 17:45:13 -0700 (PDT)
+Received: by mail-pg1-f182.google.com with SMTP id o13so32913383pgp.12
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 17:45:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/N06suFqQG/VUR1RT9/8JxihrYyE4RhXxxatZIyfBts=;
-        b=ULdMFEwUsbE46yE3nf1nJntUAjiy6CYuOeCvLp7GvEm0IIYo2Vc4dK8JKyWeuAIRDq
-         HvpjyCQ8WR4DkXktnYTzTmMW5V9ovloJVLSqCAf7UG//Gfwibd2T4g3GNeiiKvd9X1Kt
-         ZiWwXDmr+Z5CvJOmBKthS2QkAhVZgOa5nzOrTMa+vqzRbgtbUZYKuuPw8M0EO2P18PTp
-         Flm2A/9qCX+VnRra7lccSkV0HppSR76PhSuMTvvCAJN24cHhQC6BQDqFdMW69Jiz0B4K
-         n/K1pWtXzgyCfbwoZZLWNWy9C7gAInqH33jvF6emrYTfBdfNJftq7UgRUAE3iQ7V5YGx
-         /J/g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sWr/XTVtoSVqeHm5XWxCB4dM+MZPu5eIKyrimvUgDzo=;
+        b=fAojip6TuKbk0sMOXwM+shTH8xJmvqHTsz9V5Nx2wcL9f8SV4qfPxsXLlexHAP9mhj
+         sOUMfk6wmsqdPlore6Sbb641KZlpegk+zrShTufrVaH+0JOhcMG99nR/QgQOJ19ol/rL
+         Ny0v+BnEQY6LrZAgQCC89GnxTc665yOcUdTZeXFr9hBWjmrICgFRxZA27nWdYn0kTdhP
+         mkMFaMwSv88c9m9Ty4c1uj5ddanyLQiAL0xY81ApWoDyOnq1gR+S6ys1frNiN71/iEhh
+         A/3y9UEqXsDpLzvgfDBY0Z+wJBFgCeYAarLRGKRCyJdJrGtwO+AekjrzSYMK2mPfYsZB
+         ncGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/N06suFqQG/VUR1RT9/8JxihrYyE4RhXxxatZIyfBts=;
-        b=XN4dkr1JaFGCXjP8q2hAqbmHB0b04ICA8B5GlhMMCvtd7rHjU82KjvPk47KoEmkAS3
-         ulf2BIKSXkEkVYWSBeqsXnZ6KgvgdEg62ccQnFrwl8iofrcwsnnaB6LPUDIwi+3XW9xr
-         QMI9WAdcFxIHEbCDYGUp5lePC1ZyJ2ZdQaX0XN0KGLAhB2NqY+xE9jSwrLkOsVpgRWNo
-         KzlWUpfmHcmNqQGajjWqUB6fh9pm7uqoyGMeTK4ZF03aOZhSqF9Jr/mQLbcxXVXPfdkx
-         1ZAkxtgCw7S5qJxDeI0dSaGqg7j9zpHt4NXr8Y5C2u4qbxOYDLALdsSHUlDu5M90MHvD
-         vy/g==
-X-Gm-Message-State: APjAAAUI1vBKFJUZKZrjm6cEUwnWqPKY9TOV4okpZvbkOo0LTO5ADV81
-        wAiadnxtavF0IwN7lgS2861RLSwY
-X-Google-Smtp-Source: APXvYqytJ+Y1Fjt46vhnIx43VvSIRlhYB3GAAd4I4sqyT9lZLVkSDasacvsIKotE0P4k4KHDam775Q==
-X-Received: by 2002:a17:90a:2041:: with SMTP id n59mr5389306pjc.6.1564620313264;
-        Wed, 31 Jul 2019 17:45:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sWr/XTVtoSVqeHm5XWxCB4dM+MZPu5eIKyrimvUgDzo=;
+        b=rzbEslxZaSKfkVfpRKtbRhocbaOiWpcq95XjQ3NbcfxJD8kaZFlnXifQgcVJxRdtB0
+         0Ay8KD6Oguh7n0xDVEpYcsLw4xkGtyjRDv+BhCh0ezooBaQmti+4hWccyVepJpRy14Kw
+         JYe2+qz9O8HJkqTgxAOz858omC0+liNKNKQG3z1UTgXVw3HefekvBLiU35XQKvNInt2q
+         MQqdoi32ovrNSnZaegmJ3DQMKKz24ULUZKS+6zubU6F7SS2tTuMp7Tx1o0vC8CqIoqTt
+         3YH9CkOeYDTDSDzsenX2/n8mO1eEKr//b5TC30cGbQfK+XmDQevot0KMY9Y5FBThgJzQ
+         teTQ==
+X-Gm-Message-State: APjAAAUaWE4dUldy7ZKw2qz5j1YtCp40oRl+aHve2/iv/4GVSPemNaos
+        GB4XW+L7cXfKKVcZAZqnvDeY9stS
+X-Google-Smtp-Source: APXvYqybQpm5kJQ7MkJqKbwllbx6JxC05GxtPoKNZ4WQBA+YdOXyXkME34jZU0kNs+Qu9KC398wuwQ==
+X-Received: by 2002:aa7:8189:: with SMTP id g9mr50996604pfi.143.1564620314027;
+        Wed, 31 Jul 2019 17:45:14 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f32sm2435978pgb.21.2019.07.31.17.45.12
+        by smtp.gmail.com with ESMTPSA id f32sm2435978pgb.21.2019.07.31.17.45.13
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 31 Jul 2019 17:45:12 -0700 (PDT)
+        Wed, 31 Jul 2019 17:45:13 -0700 (PDT)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     jiri@resnulli.us, chrism@mellanox.com
 Cc:     netdev@vger.kernel.org,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [RFC iproute2 0/4] Revert tc batchsize feature
-Date:   Wed, 31 Jul 2019 17:45:02 -0700
-Message-Id: <20190801004506.9049-1-stephen@networkplumber.org>
+Subject: [RFC iproute2 1/4] Revert "tc: Remove pointless assignments in batch()"
+Date:   Wed, 31 Jul 2019 17:45:03 -0700
+Message-Id: <20190801004506.9049-2-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190801004506.9049-1-stephen@networkplumber.org>
+References: <20190801004506.9049-1-stephen@networkplumber.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,26 +61,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The batchsize feature of tc might save a few cycles but it
-is a maintaince nightmare, it has uninitialized variables and
-poor error handling. 
+This reverts commit 6358bbc381c6e38465838370bcbbdeb77ec3565a.
+---
+ tc/tc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This patch set reverts back to the original state.
-Please don't resubmit original code. Go back to the drawing
-board and do something generic.  For example, the routing
-daemons have figured out that by using multiple threads and
-turning off the netlink ACK they can update millions of routes
-quickly.
-
-Stephen Hemminger (4):
-  Revert "tc: Remove pointless assignments in batch()"
-  Revert "tc: flush after each command in batch mode"
-  Revert "tc: fix batch force option"
-  Revert "tc: Add batchsize feature for filter and actions"
-
- tc/m_action.c  |  65 ++++++----------
- tc/tc.c        | 201 ++++---------------------------------------------
- tc/tc_common.h |   7 +-
- tc/tc_filter.c | 129 ++++++++++++-------------------
- 4 files changed, 87 insertions(+), 315 deletions(-)
+diff --git a/tc/tc.c b/tc/tc.c
+index 64e342dd85bf..1f23971ae4b9 100644
+--- a/tc/tc.c
++++ b/tc/tc.c
+@@ -326,11 +326,11 @@ static int batch(const char *name)
+ 	struct batch_buf *head = NULL, *tail = NULL, *buf_pool = NULL;
+ 	char *largv[100], *largv_next[100];
+ 	char *line, *line_next = NULL;
++	bool bs_enabled_next = false;
+ 	bool bs_enabled = false;
+ 	bool lastline = false;
+ 	int largc, largc_next;
+ 	bool bs_enabled_saved;
+-	bool bs_enabled_next;
+ 	int batchsize = 0;
+ 	size_t len = 0;
+ 	int ret = 0;
+@@ -359,6 +359,7 @@ static int batch(const char *name)
+ 		goto Exit;
+ 	largc = makeargs(line, largv, 100);
+ 	bs_enabled = batchsize_enabled(largc, largv);
++	bs_enabled_saved = bs_enabled;
+ 	do {
+ 		if (getcmdline(&line_next, &len, stdin) == -1)
+ 			lastline = true;
+@@ -394,6 +395,7 @@ static int batch(const char *name)
+ 		len = 0;
+ 		bs_enabled_saved = bs_enabled;
+ 		bs_enabled = bs_enabled_next;
++		bs_enabled_next = false;
+ 
+ 		if (largc == 0) {
+ 			largc = largc_next;
+-- 
+2.20.1
 
