@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F08E7DA8C
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 13:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C2F7DAAD
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 13:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730946AbfHALrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 07:47:17 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:34497 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbfHALrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 07:47:16 -0400
-Received: by mail-lj1-f195.google.com with SMTP id p17so69068098ljg.1
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 04:47:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZjmvCfksO5i4OgPdHptucLhtzAqpKuPPbM9IMLKAEX8=;
-        b=MY6C2gAG/m2nm+IynEElGBBKP4JEYyRwvweVvnmSYYmeZKw4q6kSCJrIJWQQHZLqo0
-         gJ4pbCQtF3//ZduCkGtF364PxSGLDkve0H/LEUNduLts291E9JuZpCjoh6OMT7h0QbLD
-         D8xXy8y+i1bd9PCx4UjpIgULetu6UdCF2BMCdiA7Dv0t++lKlqjKZf0AOtcLVgwaDpBU
-         XWFURIxMZewXsBgY8WJvTHTa7z+4mDpFygm0Not0hReZCxYnwCyM9OTJOL5vG3KNN2yq
-         FXLdPPDNZh+BAtzAqQJBzYGmQBrH1l5cqE3x7G+C/JyvuP7pP6aVIAtQW9GcjOr8oVpq
-         pv1A==
-X-Gm-Message-State: APjAAAVEXvDSnuPh+hGGh9DvyteRsXZD0ieWFQD5xaCHz8Hc0Kpq4bt3
-        mKdqns+0AdjyK/PortSxHrUxkQmuDbE9nA3ySbVg9r8Y
-X-Google-Smtp-Source: APXvYqzUmKsMptn1owkPtGVZ2cOYw1oDcBkPsCahi9gmMdekV5W29oI32q6fTgnFRW7p/WoxZoXccmXgZ/bRHJED5Fc=
-X-Received: by 2002:a2e:9643:: with SMTP id z3mr68846819ljh.43.1564660034911;
- Thu, 01 Aug 2019 04:47:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731183116.4791-1-mcroce@redhat.com> <20190801071801.GF3579@kwain>
-In-Reply-To: <20190801071801.GF3579@kwain>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Thu, 1 Aug 2019 13:46:39 +0200
-Message-ID: <CAGnkfhyx7MHaG=YNhS7VrzsBqhVCPw5VeHPM7SFpiLeq3cb5Gw@mail.gmail.com>
-Subject: Re: [PATCH net] mvpp2: fix panic on module removal
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@free-electrons.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        id S1731082AbfHALw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 07:52:57 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:53324 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730514AbfHALw5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Aug 2019 07:52:57 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 867A51A0105;
+        Thu,  1 Aug 2019 13:52:54 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A0F51A0074;
+        Thu,  1 Aug 2019 13:52:54 +0200 (CEST)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 14B04205E3;
+        Thu,  1 Aug 2019 13:52:54 +0200 (CEST)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     andrew@lunn.ch, Rob Herring <robh+dt@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>, alexandru.marginean@nxp.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v5 0/5] enetc: Add mdio bus driver for the PCIe MDIO endpoint
+Date:   Thu,  1 Aug 2019 14:52:48 +0300
+Message-Id: <1564660373-4607-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 1, 2019 at 9:18 AM Antoine Tenart
-<antoine.tenart@bootlin.com> wrote:
->
-> Hi Matteo,
->
-> On Wed, Jul 31, 2019 at 08:31:16PM +0200, Matteo Croce wrote:
-> >
-> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > index c51f1d5b550b..5002d51fc9d6 100644
-> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > @@ -5760,7 +5760,6 @@ static int mvpp2_remove(struct platform_device *pdev)
-> >       mvpp2_dbgfs_cleanup(priv);
-> >
-> >       flush_workqueue(priv->stats_queue);
-> > -     destroy_workqueue(priv->stats_queue);
-> >
-> >       fwnode_for_each_available_child_node(fwnode, port_fwnode) {
-> >               if (priv->port_list[i]) {
-> > @@ -5770,6 +5769,8 @@ static int mvpp2_remove(struct platform_device *pdev)
-> >               i++;
-> >       }
->
-> Shouldn't you also move flush_workqueue() here?
->
+First patch fixes a sparse issue and cleans up accessors to avoid
+casting to __iomem.  The second one cleans up the Makefile, to make
+it easier to add new entries.
 
-I think that that flush it's unneeded at all, as all port remove calls
-cancel_delayed_work_sync().
+Third patch just registers the PCIe endpoint device containing
+the MDIO registers as a standalone MDIO bus driver, to provide
+an alternative way to control the MDIO bus.  The same code used
+by the ENETC ports (eth controllers) to manage MDIO via local
+registers applies and is reused.
 
-I tried removing it and it doesn't crash on rmmod.
+Bindings are provided for the new MDIO node, similarly to ENETC
+port nodes bindings.
 
---
-Matteo Croce
-per aspera ad upstream
+Last patch enables the ENETC port 1 and its RGMII PHY on the
+LS1028A QDS board, where the MDIO muxing configuration relies
+on the MDIO support provided in the first patch.
+
+Changes since v0:
+v1 - fixed mdio bus allocation
+v2 - cleaned up accessors to avoid casting
+v3 - fixed spelling (mostly commit message)
+v4 - fixed err path check blunder
+v5 - fixed loadble module build, provided separate kbuild module
+     for the driver
+
+
+Claudiu Manoil (5):
+  enetc: Clean up local mdio bus allocation
+  enetc: Clean up makefile
+  enetc: Add mdio bus driver for the PCIe MDIO endpoint
+  dt-bindings: net: fsl: enetc: Add bindings for the central MDIO PCIe
+    endpoint
+  arm64: dts: fsl: ls1028a: Enable eth port1 on the ls1028a QDS board
+
+ .../devicetree/bindings/net/fsl-enetc.txt     |  42 +++++++-
+ .../boot/dts/freescale/fsl-ls1028a-qds.dts    |  40 +++++++
+ .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |   6 ++
+ drivers/net/ethernet/freescale/enetc/Kconfig  |   9 ++
+ drivers/net/ethernet/freescale/enetc/Makefile |  19 ++--
+ .../net/ethernet/freescale/enetc/enetc_mdio.c |  97 ++++++++---------
+ .../net/ethernet/freescale/enetc/enetc_mdio.h |  12 +++
+ .../ethernet/freescale/enetc/enetc_pci_mdio.c | 101 ++++++++++++++++++
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |   5 +-
+ 9 files changed, 264 insertions(+), 67 deletions(-)
+ create mode 100644 drivers/net/ethernet/freescale/enetc/enetc_mdio.h
+ create mode 100644 drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+
+-- 
+2.17.1
+
