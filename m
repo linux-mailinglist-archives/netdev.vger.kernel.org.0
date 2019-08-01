@@ -2,58 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E24227E086
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 18:49:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 936587E091
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 18:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732294AbfHAQtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 12:49:01 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56958 "EHLO
+        id S1733194AbfHAQvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 12:51:17 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56976 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbfHAQtB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 12:49:01 -0400
+        with ESMTP id S1725804AbfHAQvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 12:51:15 -0400
 Received: from localhost (unknown [IPv6:2603:3004:624:eb00::2d06])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 489AD153F102B;
-        Thu,  1 Aug 2019 09:48:59 -0700 (PDT)
-Date:   Thu, 01 Aug 2019 12:48:51 -0400 (EDT)
-Message-Id: <20190801.124851.1301999897687804145.davem@davemloft.net>
-To:     xiangxia.m.yue@gmail.com
-Cc:     roid@mellanox.com, saeedm@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net/mlx5e: Allow dropping specific tunnel
- packets
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4B958153F1035;
+        Thu,  1 Aug 2019 09:51:15 -0700 (PDT)
+Date:   Thu, 01 Aug 2019 12:51:14 -0400 (EDT)
+Message-Id: <20190801.125114.1466241781699884892.davem@davemloft.net>
+To:     liuhangbin@gmail.com
+Cc:     netdev@vger.kernel.org, tlfalcon@linux.ibm.com
+Subject: Re: [PATCH net] ibmveth: use net_err_ratelimited when
+ set_multicast_list
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1564648859-17369-1-git-send-email-xiangxia.m.yue@gmail.com>
-References: <1564648859-17369-1-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20190801090347.8258-1-liuhangbin@gmail.com>
+References: <20190801090347.8258-1-liuhangbin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 01 Aug 2019 09:49:00 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 01 Aug 2019 09:51:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: xiangxia.m.yue@gmail.com
-Date: Thu,  1 Aug 2019 16:40:59 +0800
+From: Hangbin Liu <liuhangbin@gmail.com>
+Date: Thu,  1 Aug 2019 17:03:47 +0800
 
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> When setting lots of multicast list on ibmveth, e.g. add 3000 membership on a
+> multicast group, the following error message flushes our log file
 > 
-> In some case, we don't want to allow specific tunnel packets
-> to host that can avoid to take up high CPU (e.g network attacks).
-> But other tunnel packets which not matched in hardware will be
-> sent to host too.
+> 8507    [  901.478251] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
+> ...
+> 1718386 [ 5636.808658] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
 > 
->     $ tc filter add dev vxlan_sys_4789 \
-> 	    protocol ip chain 0 parent ffff: prio 1 handle 1 \
-> 	    flower dst_ip 1.1.1.100 ip_proto tcp dst_port 80 \
-> 	    enc_dst_ip 2.2.2.100 enc_key_id 100 enc_dst_port 4789 \
-> 	    action tunnel_key unset pipe action drop
+> We got 1.5 million lines of messages in 1.3h. Let's replace netdev_err() by
+> net_err_ratelimited() to avoid this issue. I don't use netdev_err_once() in
+> case h_multicast_ctrl() return different lpar_rc types.
 > 
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Saeed, please pick this up.
+Let's work on fixing what causes this problem, or adding a retry
+mechanism, rather than making the message less painful.
 
-Thank you.
+What is worse is that these failures are not in any way communicated
+back up the callchain to show that the operation didn't complete
+sucessfully.
+
+This is a real mess in behavior and error handling, don't make it
+worse please.
