@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D337E2BB
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 20:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB657E2BA
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 20:55:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387855AbfHASzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2387864AbfHASzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 1 Aug 2019 14:55:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50134 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:50140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387776AbfHASzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2387777AbfHASzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Aug 2019 14:55:16 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 55E5121783;
+        by mail.kernel.org (Postfix) with ESMTPSA id 88CD6217D4;
         Thu,  1 Aug 2019 18:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1564685714;
-        bh=P8IOtQ87YmrCFt4jqkbAwxWNkZCtTatntk2PRimfzKg=;
+        bh=//yN3fKaHjNl4t6I5kfOJyxHzSdJCJQjx4ZyQ3/eGdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KiG6Lln55U60ObBp9LWUkk8M9oQzoIwrMn5+0awHBIwlSAV5SPAg2ZYQxtxdJkSRV
-         l/iqltWWrnlqkfqC3ceLgEQ77JYU3z9ERmBArlQnlbvRmZHbEL7lqJYstp0Wsb8NnM
-         eDQAJLSaz6+bhuE2xogcqlb+ICb/ojai+Tr1o7Ck=
+        b=qijJeNlt/6p9bBh9Xv8RnIOuZF8bzdubn+0PSV7GGp51N0QvCmFwxpYofDhlf7pcF
+         PGobNcyFh74DvlgU0hVOfh1DvWf0K8/YEc0Dcho+2NeH0GpD6L07AIbbv6b49X5bJq
+         rGxKfx9eHVhA+vMSlvCDlJf+GBotY+hL84IX3JuA=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 12/15] selftests: Add ipv6 runtime tests to fcnal-test
-Date:   Thu,  1 Aug 2019 11:56:45 -0700
-Message-Id: <20190801185648.27653-13-dsahern@kernel.org>
+Subject: [PATCH net-next 13/15] selftests: Add ipv4 netfilter tests to fcnal-test
+Date:   Thu,  1 Aug 2019 11:56:46 -0700
+Message-Id: <20190801185648.27653-14-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190801185648.27653-1-dsahern@kernel.org>
 References: <20190801185648.27653-1-dsahern@kernel.org>
@@ -39,227 +39,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add IPv6 runtime tests where passive (no traffic flowing) and active
-(with traffic) sockets are expected to be reset on device deletes.
+Add netfilter tests to send tcp reset or icmp unreachable for a port.
+Initial tests are VRF only.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 188 +++++++++++++++++++++++++++++-
- 1 file changed, 187 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/fcnal-test.sh | 69 ++++++++++++++++++++++++++++++-
+ 1 file changed, 68 insertions(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index b8bdab733ecd..dcfe0b13dfe9 100755
+index dcfe0b13dfe9..6f56c91e2d66 100755
 --- a/tools/testing/selftests/net/fcnal-test.sh
 +++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -2935,6 +2935,191 @@ ipv6_addr_bind()
+@@ -3120,6 +3120,72 @@ ipv6_runtime()
  }
  
  ################################################################################
-+# IPv6 runtime tests
++# netfilter blocking connections
 +
-+ipv6_rt()
++netfilter_tcp_reset()
 +{
-+	local desc="$1"
-+	local varg="-6 $2"
-+	local with_vrf="yes"
 +	local a
 +
-+	#
-+	# server tests
-+	#
-+	for a in ${NSA_IP6} ${VRF_IP6}
++	for a in ${NSA_IP} ${VRF_IP}
 +	do
 +		log_start
-+		run_cmd nettest ${varg} -s &
++		run_cmd nettest -s &
 +		sleep 1
-+		run_cmd_nsb nettest ${varg} -r ${a} &
-+		sleep 3
-+		run_cmd ip link del ${VRF}
-+		sleep 1
-+		log_test_addr ${a} 0 0 "${desc}, global server"
-+
-+		setup ${with_vrf}
++		run_cmd_nsb nettest -r ${a}
++		log_test_addr ${a} $? 1 "Global server, reject with TCP-reset on Rx"
 +	done
-+
-+	for a in ${NSA_IP6} ${VRF_IP6}
-+	do
-+		log_start
-+		run_cmd nettest ${varg} -d ${VRF} -s &
-+		sleep 1
-+		run_cmd_nsb nettest ${varg} -r ${a} &
-+		sleep 3
-+		run_cmd ip link del ${VRF}
-+		sleep 1
-+		log_test_addr ${a} 0 0 "${desc}, VRF server"
-+
-+		setup ${with_vrf}
-+	done
-+
-+	for a in ${NSA_IP6} ${VRF_IP6}
-+	do
-+		log_start
-+		run_cmd nettest ${varg} -d ${NSA_DEV} -s &
-+		sleep 1
-+		run_cmd_nsb nettest ${varg} -r ${a} &
-+		sleep 3
-+		run_cmd ip link del ${VRF}
-+		sleep 1
-+		log_test_addr ${a} 0 0 "${desc}, enslaved device server"
-+
-+		setup ${with_vrf}
-+	done
-+
-+	#
-+	# client test
-+	#
-+	log_start
-+	run_cmd_nsb nettest ${varg} -s &
-+	sleep 1
-+	run_cmd nettest ${varg} -d ${VRF} -r ${NSB_IP6} &
-+	sleep 3
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test  0 0 "${desc}, VRF client"
-+
-+	setup ${with_vrf}
-+
-+	log_start
-+	run_cmd_nsb nettest ${varg} -s &
-+	sleep 1
-+	run_cmd nettest ${varg} -d ${NSA_DEV} -r ${NSB_IP6} &
-+	sleep 3
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test  0 0 "${desc}, enslaved device client"
-+
-+	setup ${with_vrf}
-+
-+
-+	#
-+	# local address tests
-+	#
-+	for a in ${NSA_IP6} ${VRF_IP6}
-+	do
-+		log_start
-+		run_cmd nettest ${varg} -s &
-+		sleep 1
-+		run_cmd nettest ${varg} -d ${VRF} -r ${a} &
-+		sleep 3
-+		run_cmd ip link del ${VRF}
-+		sleep 1
-+		log_test_addr ${a} 0 0 "${desc}, global server, VRF client"
-+
-+		setup ${with_vrf}
-+	done
-+
-+	for a in ${NSA_IP6} ${VRF_IP6}
-+	do
-+		log_start
-+		run_cmd nettest ${varg} -d ${VRF} -s &
-+		sleep 1
-+		run_cmd nettest ${varg} -d ${VRF} -r ${a} &
-+		sleep 3
-+		run_cmd ip link del ${VRF}
-+		sleep 1
-+		log_test_addr ${a} 0 0 "${desc}, VRF server and client"
-+
-+		setup ${with_vrf}
-+	done
-+
-+	a=${NSA_IP6}
-+	log_start
-+	run_cmd nettest ${varg} -s &
-+	sleep 1
-+	run_cmd nettest ${varg} -d ${NSA_DEV} -r ${a} &
-+	sleep 3
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test_addr ${a} 0 0 "${desc}, global server, device client"
-+
-+	setup ${with_vrf}
-+
-+	log_start
-+	run_cmd nettest ${varg} -d ${VRF} -s &
-+	sleep 1
-+	run_cmd nettest ${varg} -d ${NSA_DEV} -r ${a} &
-+	sleep 3
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test_addr ${a} 0 0 "${desc}, VRF server, device client"
-+
-+	setup ${with_vrf}
-+
-+	log_start
-+	run_cmd nettest ${varg} -d ${NSA_DEV} -s &
-+	sleep 1
-+	run_cmd nettest ${varg} -d ${NSA_DEV} -r ${a} &
-+	sleep 3
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test_addr ${a} 0 0 "${desc}, device server, device client"
 +}
 +
-+ipv6_ping_rt()
++netfilter_icmp()
 +{
-+	local with_vrf="yes"
++	local stype="$1"
++	local arg
 +	local a
 +
-+	a=${NSA_IP6}
-+	log_start
-+	run_cmd_nsb ${ping6} -f ${a} &
-+	sleep 3
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test_addr ${a} 0 0 "Device delete with active traffic - ping in"
++	[ "${stype}" = "UDP" ] && arg="-D"
 +
-+	setup ${with_vrf}
-+
-+	log_start
-+	run_cmd ${ping6} -f ${NSB_IP6} -I ${VRF} &
-+	sleep 1
-+	run_cmd ip link del ${VRF}
-+	sleep 1
-+	log_test_addr ${a} 0 0 "Device delete with active traffic - ping out"
++	for a in ${NSA_IP} ${VRF_IP}
++	do
++		log_start
++		run_cmd nettest ${arg} -s &
++		sleep 1
++		run_cmd_nsb nettest ${arg} -r ${a}
++		log_test_addr ${a} $? 1 "Global ${stype} server, Rx reject icmp-port-unreach"
++	done
 +}
 +
-+ipv6_runtime()
++ipv4_netfilter()
 +{
-+	log_section "Run time tests - ipv6"
++	which nettest >/dev/null
++	if [ $? -ne 0 ]; then
++		log_error "nettest not found; skipping tests"
++		return
++	fi
++
++	log_section "IPv4 Netfilter"
++	log_subsection "TCP reset"
 +
 +	setup "yes"
-+	ipv6_ping_rt
++	run_cmd iptables -A INPUT -p tcp --dport 12345 -j REJECT --reject-with tcp-reset
 +
-+	setup "yes"
-+	ipv6_rt "TCP active socket"  "-n -1"
++	netfilter_tcp_reset
 +
-+	setup "yes"
-+	ipv6_rt "TCP passive socket" "-i"
++	log_start
++	log_subsection "ICMP unreachable"
 +
-+	setup "yes"
-+	ipv6_rt "UDP active socket"  "-D -n -1"
++	log_start
++	run_cmd iptables -F
++	run_cmd iptables -A INPUT -p tcp --dport 12345 -j REJECT --reject-with icmp-port-unreachable
++	run_cmd iptables -A INPUT -p udp --dport 12345 -j REJECT --reject-with icmp-port-unreachable
++
++	netfilter_icmp "TCP"
++	netfilter_icmp "UDP"
++
++	log_start
++	iptables -F
 +}
 +
 +################################################################################
  # usage
  
  usage()
-@@ -2955,7 +3140,7 @@ EOF
+@@ -3139,7 +3205,7 @@ EOF
+ ################################################################################
  # main
  
- TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_addr_bind ipv4_runtime"
--TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind"
-+TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind ipv6_runtime"
+-TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_addr_bind ipv4_runtime"
++TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_addr_bind ipv4_runtime ipv4_netfilter"
+ TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind ipv6_runtime"
  PAUSE_ON_FAIL=no
  PAUSE=no
+@@ -3183,6 +3249,7 @@ do
+ 	ipv4_udp|udp)    ipv4_udp;;
+ 	ipv4_bind|bind)  ipv4_addr_bind;;
+ 	ipv4_runtime)    ipv4_runtime;;
++	ipv4_netfilter)  ipv4_netfilter;;
  
-@@ -3003,6 +3188,7 @@ do
+ 	ipv6_ping|ping6) ipv6_ping;;
  	ipv6_tcp|tcp6)   ipv6_tcp;;
- 	ipv6_udp|udp6)   ipv6_udp;;
- 	ipv6_bind|bind6) ipv6_addr_bind;;
-+	ipv6_runtime)    ipv6_runtime;;
- 
- 	# setup namespaces and config, but do not run any tests
- 	setup)		 setup; exit 0;;
 -- 
 2.11.0
 
