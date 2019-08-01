@@ -2,129 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 674737DE9A
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 17:16:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8B7C7DECF
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 17:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731129AbfHAPQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 11:16:28 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42887 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729812AbfHAPQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 11:16:28 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q10so34237672pff.9
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 08:16:28 -0700 (PDT)
+        id S1732491AbfHAPZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 11:25:25 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33300 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729162AbfHAPZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 11:25:25 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n9so74156922wru.0
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 08:25:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ktOjTolCX0/cq35DDrCOuasG6WIhz9NP5X6Q9aR6Jks=;
-        b=iQuAmAe3OFMmSnmhUa/2nX3HCNq1DomcjwaSOr1HB04sc8l0VhLbk/8YoXhi2zrymL
-         SToTedeB73u8a6EqtorOOdCjt0pkV9hf5x4HfaFukUdRkYTJuuoYxvic5PKoEeUvzS7u
-         Z1D6V944NKdVxkaaun/jxkuBpXmR0FT3ermDSM4oDdVtUXI38kiUVYS+7S3jXWdyrvxU
-         6EIGmbu1ahA38PkQTMWgAqODlG4iBLk7DcJQ8fhplin/TgjnU2AVy3i5fwDBrU1YBL2T
-         cyyoh5JoiPvZbnJEcMkpxv8da4eHgi/9u5sBGByOdRm/XMmE187VmEMeYsF0KWKodLca
-         Aikw==
+        d=cumulusnetworks.com; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jN+visfm/JVvW47OK9SNg6KFhK5M3NjJ7kMqd0bwt2o=;
+        b=fa0Lc6jlYXBAImlnDD+gQdo7H8iu30h/vkDH/jchBKD/To6phuNW85Nnx1MH4OZ5EF
+         tc9BBWieW+q5W+OaQsY+eINTsnfq45tXIXAJh+BvVR/NNA9lIjipS4YkZXSEZBfc6RYv
+         t48Ypi5u10WLWwBYN9iF7hWa+X0af2mTGuzqo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ktOjTolCX0/cq35DDrCOuasG6WIhz9NP5X6Q9aR6Jks=;
-        b=UvtNRgnPg7Gh7md8DsjMqgKIUC2o+c4iqtUrL/JW4EFKOPqCbpGniXIT0wfGl86/zZ
-         /unMvFGkwcibVoYP+Q6VULNxzo6AWScJrRqBftodJTO2zzd3Gh4+5wPNyHj85O2LwV8d
-         AjZFBicWDhFwi8ouGyvOlxm4Q09u8L9iT8Oa9cUrGIlQw+uyQ909kQEfYKhlWK/+ADEh
-         dqwxj/3UeA5wy6DnVuQruzKjaQGlq+0jbc9Zhdp+fsArAm6GTW46jzF5xnKbpZF5wf7c
-         jlKdhvisxAYTyqn5I3X8fc0RKkThqiOGORI4H7q/+4J70HHo9qjyPx+I4zN7/Na6eaTv
-         n5NA==
-X-Gm-Message-State: APjAAAUIJtrFShcgq/siVTUGVYNnChDXAAwL9yYr5tHJoRZpqPOHM2pA
-        aZd9tSHyhty6bgDa2RPJ6/0x/kox
-X-Google-Smtp-Source: APXvYqy3S4KSsYgRPfo3A9M2zL+AqDu5n3URNj8Ygzf+4qIekU++SCkYJX2upGD9nTo+TOroClW/qw==
-X-Received: by 2002:a17:90a:8c06:: with SMTP id a6mr9481346pjo.45.1564672587513;
-        Thu, 01 Aug 2019 08:16:27 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id u1sm68469662pgi.28.2019.08.01.08.16.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 08:16:27 -0700 (PDT)
-Date:   Thu, 1 Aug 2019 08:16:20 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org
-Subject: Re: [PATCH iproute2-next] ip tunnel: add json output
-Message-ID: <20190801081620.6b25d23c@hermes.lan>
-In-Reply-To: <7090709d3ddace589952a128fb62f6603e2da9e8.1564653511.git.aclaudi@redhat.com>
-References: <7090709d3ddace589952a128fb62f6603e2da9e8.1564653511.git.aclaudi@redhat.com>
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jN+visfm/JVvW47OK9SNg6KFhK5M3NjJ7kMqd0bwt2o=;
+        b=cCnnC0hIOUWGP38b1HJ664NvkcqovKillOk/9DE4KZfAsRbiZqcMWOoOrWN9d0ifha
+         /m6qXGwRsa8dWEAHvJjoDswAfS4Uo1t2wZOeL5MqUYCMPF1jbdsPiu90jJiRL40PjZhn
+         geWm9iuwoBHofVV3KcSnCVRhaD4VcPr1OOmjJXaHPc96bbt1SKGp0ULGeMa4leOAxs+Z
+         yvgd4imsP+/Kk04mAUxLk2B9n8o95amo5GGhR27elZW09pc6wdqeZC+zBpr9F1HxxoJU
+         CEeP/dDtD/WJF9xboc9v+5+lkwwrl1AhlOe/qOKJZwmtCPsKIcIkU3QQt9MC25ib75C8
+         X+yw==
+X-Gm-Message-State: APjAAAXWtbDXAS/lLAS3cc+r2HzEo24h4bx045qi+vvdCSxIyRP6Chr1
+        4XPSz/hGD52B9IjJQ/jM66/A6A==
+X-Google-Smtp-Source: APXvYqy3AzQj7ZRUKUARpPdJMBXtIMqOYS2ZWg0qrSxm8qsNQXKAOJCG5lc1wvUIVZ3/1RpHxRAbPw==
+X-Received: by 2002:adf:f2d0:: with SMTP id d16mr44642500wrp.221.1564673122364;
+        Thu, 01 Aug 2019 08:25:22 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id s3sm73593060wmh.27.2019.08.01.08.25.20
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Aug 2019 08:25:21 -0700 (PDT)
+Subject: Re: [net-next,rfc] net: bridge: mdb: Extend with multicast LLADDR
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>, idosch@mellanox.com,
+        andrew@lunn.ch, allan.nielsen@microchip.com
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com, petrm@mellanox.com,
+        tglx@linutronix.de, fw@strlen.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <1564663840-27721-1-git-send-email-horatiu.vultur@microchip.com>
+ <f758fdbf-4e0a-57b3-f13d-23e893ba7458@cumulusnetworks.com>
+ <1db865a6-9deb-fbd2-dee6-83609fcc2d95@cumulusnetworks.com>
+ <696c9bcc-f7e3-3d22-69c4-cdf4f37280a9@cumulusnetworks.com>
+Message-ID: <10768371-da37-7829-a427-8c65a0929138@cumulusnetworks.com>
+Date:   Thu, 1 Aug 2019 18:25:19 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <696c9bcc-f7e3-3d22-69c4-cdf4f37280a9@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  1 Aug 2019 12:12:58 +0200
-Andrea Claudi <aclaudi@redhat.com> wrote:
-
-> Add json support on iptunnel and ip6tunnel.
-> The plain text output format should remain the same.
+On 01/08/2019 17:15, Nikolay Aleksandrov wrote:
+> On 01/08/2019 17:11, Nikolay Aleksandrov wrote:
+>> On 01/08/2019 17:07, Nikolay Aleksandrov wrote:
+>>> Hi Horatiu,
+>>> Overall I think MDB is the right way, we'd like to contain the multicast code.
+>>> A few comments below.
+>>>
+>>> On 01/08/2019 15:50, Horatiu Vultur wrote:
+>> [snip]
+>>>>
+>>>> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+>>>> Co-developed-by: Allan W. Nielsen <allan.nielsen@microchip.com>
+>>>> Signed-off-by: Allan W. Nielsen <allan.nielsen@microchip.com>
+>>>> ---
+>>>>  include/linux/if_bridge.h      |  1 +
+>>>>  include/uapi/linux/if_bridge.h |  1 +
+>>>>  net/bridge/br_device.c         |  7 +++++--
+>>>>  net/bridge/br_forward.c        |  3 ++-
+>>>>  net/bridge/br_input.c          | 13 ++++++++++--
+>>>>  net/bridge/br_mdb.c            | 47 +++++++++++++++++++++++++++++++++++-------
+>>>>  net/bridge/br_multicast.c      |  4 +++-
+>>>>  net/bridge/br_private.h        |  3 ++-
+>>>>  8 files changed, 64 insertions(+), 15 deletions(-)
+>>>>
+>>>
+>>> Overall I don't think we need this BR_PKT_MULTICAST_L2, we could do the below much
+>>> easier and without the checks if you use a per-mdb flag that says it's to be treated
+>>> as a MULTICAST_L2 entry. Then you remove all of the BR_PKT_MULTICAST_L2 code (see the
+>>> attached patch based on this one for example). and continue processing it as it is processed today.
+>>> We'll keep the fast-path with minimal number of new conditionals.
+>>>
+>>> Something like the patch I've attached to this reply, note that it is not complete
+>>> just to show the intent, you'll have to re-work br_mdb_notify() to make it proper
+>>> and there're most probably other details I've missed. If you find even better/less
+>>> complex way to do it then please do.
+>>>
+>>> Cheers,
+>>>  Nik
+>>
+>> Oops, I sent back your original patch. Here's the actually changed version
+>> I was talking about.
+>>
+>> Thanks,
+>>  Nik
+>>
+>>
+>>
 > 
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  ip/ip6tunnel.c | 82 +++++++++++++++++++++++++++++++--------------
->  ip/iptunnel.c  | 90 +++++++++++++++++++++++++++++++++-----------------
->  ip/tunnel.c    | 42 +++++++++++++++++------
->  3 files changed, 148 insertions(+), 66 deletions(-)
+> The querier exists change is a hack just to get the point, I'd prefer
+> to re-write that portion in a better way which makes more sense, i.e.
+> get that check out of there since it doesn't mean that an actual querier
+> exists. :)
 > 
-> diff --git a/ip/ip6tunnel.c b/ip/ip6tunnel.c
-> index d7684a673fdc4..f2b9710c1320f 100644
-> --- a/ip/ip6tunnel.c
-> +++ b/ip/ip6tunnel.c
-> @@ -71,57 +71,90 @@ static void usage(void)
->  static void print_tunnel(const void *t)
->  {
->  	const struct ip6_tnl_parm2 *p = t;
-> -	char s1[1024];
-> -	char s2[1024];
-> +	SPRINT_BUF(b1);
->  
->  	/* Do not use format_host() for local addr,
->  	 * symbolic name will not be useful.
->  	 */
-> -	printf("%s: %s/ipv6 remote %s local %s",
-> -	       p->name,
-> -	       tnl_strproto(p->proto),
-> -	       format_host_r(AF_INET6, 16, &p->raddr, s1, sizeof(s1)),
-> -	       rt_addr_n2a_r(AF_INET6, 16, &p->laddr, s2, sizeof(s2)));
-> +	open_json_object(NULL);
-> +	print_string(PRINT_ANY, "ifname", "%s: ", p->name);
 
-Print this using color for interface name?
+TBH, I'm inclined to just use proto == 0 *internally* as this even though it's reserved,
+we're not putting it on the wire or using it to construct packets, it's just internal
+use which can change into a flag if some day that value needs to be used. Obviously
+to user-space we need it to be a flag, we can't expose or configure it as a proto value
+without making it permanent uapi. I haven't looked into detail how feasible this is,
+just a thought that might make it simpler.
 
 
-> +	snprintf(b1, sizeof(b1), "%s/ipv6", tnl_strproto(p->proto));
-> +	print_string(PRINT_ANY, "mode", "%s ", b1);
-> +	print_string(PRINT_ANY,
-> +		     "remote",
-> +		     "remote %s ",
-> +		     format_host_r(AF_INET6, 16, &p->raddr, b1, sizeof(b1)));
-> +	print_string(PRINT_ANY,
-> +		     "local",
-> +		     "local %s",
-> +		     rt_addr_n2a_r(AF_INET6, 16, &p->laddr, b1, sizeof(b1)));
-> +
->  	if (p->link) {
->  		const char *n = ll_index_to_name(p->link);
->  
->  		if (n)
-> -			printf(" dev %s", n);
-> +			print_string(PRINT_ANY, "link", " dev %s", n);
->  	}
->  
->  	if (p->flags & IP6_TNL_F_IGN_ENCAP_LIMIT)
-> -		printf(" encaplimit none");
-> +		print_bool(PRINT_ANY,
-> +			   "ip6_tnl_f_ign_encap_limit",
-> +			   " encaplimit none",
-> +			   true);
 
-For flags like this, print_null is more typical JSON than a boolean
-value. Null is better for presence flag. Bool is better if both true and
-false are printed.
