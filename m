@@ -2,56 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC1D7D41E
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 889DD7D439
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729066AbfHAD4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:56:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52912 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728150AbfHAD4h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 23:56:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=0ftkQ50H0Q5kMGTL7ceL+8GzaH8L2e4CWla38W5PLJA=; b=PJXpslUg39PLYXATYaYeK4JXtA
-        Zy1b+XuAb3Xwp5VzH+yRbUkUAUcSs8C7XfeH7ZslSFpBHm4kIAOWdPV6bmtXCH8Livb9luhhRoeft
-        XGexq4Q9WkSBepUYcdHurtp8ax6awp4n2pEf+o/1aYDNWRMmrN473LGb4m5L1jBZ19P0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ht2CZ-0001Qd-T6; Thu, 01 Aug 2019 05:56:27 +0200
-Date:   Thu, 1 Aug 2019 05:56:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andrew Jeffery <andrew@aj.id.au>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, robh+dt@kernel.org,
-        mark.rutland@arm.com, joel@jms.id.au, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 4/4] net: ftgmac100: Select ASPEED MDIO
- driver for the AST2600
-Message-ID: <20190801035627.GI2713@lunn.ch>
-References: <20190731053959.16293-1-andrew@aj.id.au>
- <20190731053959.16293-5-andrew@aj.id.au>
+        id S1729465AbfHAD7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:59:05 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3729 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727360AbfHAD7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 23:59:04 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id C833F5DC7DC61FD087D6;
+        Thu,  1 Aug 2019 11:59:01 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Thu, 1 Aug 2019
+ 11:59:00 +0800
+Subject: Re: [PATCH net-next v5 6/6] netfilter: nf_tables_offload: support
+ indr block call
+To:     <wenxu@ucloud.cn>, <jiri@resnulli.us>, <pablo@netfilter.org>,
+        <fw@strlen.de>, <jakub.kicinski@netronome.com>
+CC:     <netfilter-devel@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
+ <1564628627-10021-7-git-send-email-wenxu@ucloud.cn>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <71694067-b07f-bed6-c472-4ec37dbeba3d@huawei.com>
+Date:   Thu, 1 Aug 2019 11:58:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190731053959.16293-5-andrew@aj.id.au>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <1564628627-10021-7-git-send-email-wenxu@ucloud.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 03:09:59PM +0930, Andrew Jeffery wrote:
-> Ensures we can talk to a PHY via MDIO on the AST2600, as the MDIO
-> controller is now separate from the MAC.
+On 2019/8/1 11:03, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
 > 
-> Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
+> nftable support indr-block call. It makes nftable an offload vlan
+> and tunnel device.
+> 
+> nft add table netdev firewall
+> nft add chain netdev firewall aclout { type filter hook ingress offload device mlx_pf0vf0 priority - 300 \; }
+> nft add rule netdev firewall aclout ip daddr 10.0.0.1 fwd to vlan0
+> nft add chain netdev firewall aclin { type filter hook ingress device vlan0 priority - 300 \; }
+> nft add rule netdev firewall aclin ip daddr 10.0.0.7 fwd to mlx_pf0vf0
+> 
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
+> v5: add nft_get_default_block
+> 
+>  include/net/netfilter/nf_tables_offload.h |   2 +
+>  net/netfilter/nf_tables_api.c             |   7 ++
+>  net/netfilter/nf_tables_offload.c         | 156 +++++++++++++++++++++++++-----
+>  3 files changed, 141 insertions(+), 24 deletions(-)
+> 
+> diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+> index 3196663..ac69087 100644
+> --- a/include/net/netfilter/nf_tables_offload.h
+> +++ b/include/net/netfilter/nf_tables_offload.h
+> @@ -63,6 +63,8 @@ struct nft_flow_rule {
+>  struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule);
+>  void nft_flow_rule_destroy(struct nft_flow_rule *flow);
+>  int nft_flow_rule_offload_commit(struct net *net);
+> +bool nft_indr_get_default_block(struct net_device *dev,
+> +				struct flow_indr_block_info *info);
+>  
+>  #define NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
+>  	(__reg)->base_offset	=					\
+> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+> index 605a7cf..6a1d0b2 100644
+> --- a/net/netfilter/nf_tables_api.c
+> +++ b/net/netfilter/nf_tables_api.c
+> @@ -7593,6 +7593,11 @@ static void __net_exit nf_tables_exit_net(struct net *net)
+>  	.exit	= nf_tables_exit_net,
+>  };
+>  
+> +static struct flow_indr_get_block_entry get_block_entry = {
+> +	.get_block_cb = nft_indr_get_default_block,
+> +	.list = LIST_HEAD_INIT(get_block_entry.list),
+> +};
+> +
+>  static int __init nf_tables_module_init(void)
+>  {
+>  	int err;
+> @@ -7624,6 +7629,7 @@ static int __init nf_tables_module_init(void)
+>  		goto err5;
+>  
+>  	nft_chain_route_init();
+> +	flow_indr_add_default_block_cb(&get_block_entry);
+>  	return err;
+>  err5:
+>  	rhltable_destroy(&nft_objname_ht);
+> @@ -7640,6 +7646,7 @@ static int __init nf_tables_module_init(void)
+>  
+>  static void __exit nf_tables_module_exit(void)
+>  {
+> +	flow_indr_del_default_block_cb(&get_block_entry);
+>  	nfnetlink_subsys_unregister(&nf_tables_subsys);
+>  	unregister_netdevice_notifier(&nf_tables_flowtable_notifier);
+>  	nft_chain_filter_fini();
+> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+> index 64f5fd5..59c9629 100644
+> --- a/net/netfilter/nf_tables_offload.c
+> +++ b/net/netfilter/nf_tables_offload.c
+> @@ -171,24 +171,114 @@ static int nft_flow_offload_unbind(struct flow_block_offload *bo,
+>  	return 0;
+>  }
+>  
+> +static int nft_block_setup(struct nft_base_chain *basechain,
+> +			   struct flow_block_offload *bo,
+> +			   enum flow_block_command cmd)
+> +{
+> +	int err;
+> +
+> +	switch (cmd) {
+> +	case FLOW_BLOCK_BIND:
+> +		err = nft_flow_offload_bind(bo, basechain);
+> +		break;
+> +	case FLOW_BLOCK_UNBIND:
+> +		err = nft_flow_offload_unbind(bo, basechain);
+> +		break;
+> +	default:
+> +		WARN_ON_ONCE(1);
+> +		err = -EOPNOTSUPP;
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> +static int nft_block_offload_cmd(struct nft_base_chain *chain,
+> +				 struct net_device *dev,
+> +				 enum flow_block_command cmd)
+> +{
+> +	struct netlink_ext_ack extack = {};
+> +	struct flow_block_offload bo = {};
+> +	int err;
+> +
+> +	bo.net = dev_net(dev);
+> +	bo.block = &chain->flow_block;
+> +	bo.command = cmd;
+> +	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+> +	bo.extack = &extack;
+> +	INIT_LIST_HEAD(&bo.cb_list);
+> +
+> +	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	return nft_block_setup(chain, &bo, cmd);
+> +}
+> +
+> +static void nft_indr_block_ing_cmd(struct net_device *dev,
+> +				   struct flow_block *flow_block,
+> +				   flow_indr_block_bind_cb_t *cb,
+> +				   void *cb_priv,
+> +				   enum flow_block_command cmd)
+> +{
+> +	struct netlink_ext_ack extack = {};
+> +	struct flow_block_offload bo = {};
+> +	struct nft_base_chain *chain;
+> +
+> +	if (flow_block)
+> +		return;
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Maybe "if (!flow_block)" ?
 
-    Andrew
+> +
+> +	chain = container_of(flow_block, struct nft_base_chain, flow_block);
+> +
+> +	bo.net = dev_net(dev);
+> +	bo.block = flow_block;
+> +	bo.command = cmd;
+> +	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+> +	bo.extack = &extack;
+> +	INIT_LIST_HEAD(&bo.cb_list);
+> +
+> +	cb(dev, cb_priv, TC_SETUP_BLOCK, &bo);
+> +
+> +	nft_block_setup(chain, &bo, cmd);
+> +}
+> +
+> +static int nft_indr_block_offload_cmd(struct nft_base_chain *chain,
+> +				      struct net_device *dev,
+> +				      enum flow_block_command cmd)
+> +{
+> +	struct flow_block_offload bo = {};
+> +	struct netlink_ext_ack extack = {};
+> +
+> +	bo.net = dev_net(dev);
+> +	bo.block = &chain->flow_block;
+> +	bo.command = cmd;
+> +	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+> +	bo.extack = &extack;
+> +	INIT_LIST_HEAD(&bo.cb_list);
+> +
+> +	flow_indr_block_call(&chain->flow_block, dev, nft_indr_block_ing_cmd,
+> +			     &bo, cmd);
+> +
+> +	if (list_empty(&bo.cb_list))
+> +		return -EOPNOTSUPP;
+> +
+> +	return nft_block_setup(chain, &bo, cmd);
+> +}
+> +
+>  #define FLOW_SETUP_BLOCK TC_SETUP_BLOCK
+>  
+>  static int nft_flow_offload_chain(struct nft_trans *trans,
+>  				  enum flow_block_command cmd)
+>  {
+>  	struct nft_chain *chain = trans->ctx.chain;
+> -	struct netlink_ext_ack extack = {};
+> -	struct flow_block_offload bo = {};
+>  	struct nft_base_chain *basechain;
+>  	struct net_device *dev;
+> -	int err;
+>  
+>  	if (!nft_is_base_chain(chain))
+>  		return -EOPNOTSUPP;
+>  
+>  	basechain = nft_base_chain(chain);
+>  	dev = basechain->ops.dev;
+> -	if (!dev || !dev->netdev_ops->ndo_setup_tc)
+> +	if (!dev)
+>  		return -EOPNOTSUPP;
+>  
+>  	/* Only default policy to accept is supported for now. */
+> @@ -197,26 +287,10 @@ static int nft_flow_offload_chain(struct nft_trans *trans,
+>  	    nft_trans_chain_policy(trans) != NF_ACCEPT)
+>  		return -EOPNOTSUPP;
+>  
+> -	bo.command = cmd;
+> -	bo.block = &basechain->flow_block;
+> -	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+> -	bo.extack = &extack;
+> -	INIT_LIST_HEAD(&bo.cb_list);
+> -
+> -	err = dev->netdev_ops->ndo_setup_tc(dev, FLOW_SETUP_BLOCK, &bo);
+> -	if (err < 0)
+> -		return err;
+> -
+> -	switch (cmd) {
+> -	case FLOW_BLOCK_BIND:
+> -		err = nft_flow_offload_bind(&bo, basechain);
+> -		break;
+> -	case FLOW_BLOCK_UNBIND:
+> -		err = nft_flow_offload_unbind(&bo, basechain);
+> -		break;
+> -	}
+> -
+> -	return err;
+> +	if (dev->netdev_ops->ndo_setup_tc)
+> +		return nft_block_offload_cmd(basechain, dev, cmd);
+> +	else
+> +		return nft_indr_block_offload_cmd(basechain, dev, cmd);
+>  }
+>  
+>  int nft_flow_rule_offload_commit(struct net *net)
+> @@ -266,3 +340,37 @@ int nft_flow_rule_offload_commit(struct net *net)
+>  
+>  	return err;
+>  }
+> +
+> +bool nft_indr_get_default_block(struct net_device *dev,
+> +				struct flow_indr_block_info *info)
+> +{
+> +	struct net *net = dev_net(dev);
+> +	const struct nft_table *table;
+> +	const struct nft_chain *chain;
+> +
+> +	rcu_read_lock();
+> +
+> +	list_for_each_entry_rcu(table, &net->nft.tables, list) {
+> +		if (table->family != NFPROTO_NETDEV)
+> +			continue;
+> +
+> +		list_for_each_entry_rcu(chain, &table->chains, list) {
+> +			if (nft_is_base_chain(chain)) {
+> +				struct nft_base_chain *basechain;
+> +
+> +				basechain = nft_base_chain(chain);
+> +				if (!strncmp(basechain->dev_name, dev->name,
+> +					     IFNAMSIZ)) {
+> +					info->flow_block = &basechain->flow_block;
+> +					info->ing_cmd_cb = nft_indr_block_ing_cmd;
+> +					rcu_read_unlock();
+> +					return true;
+> +				}
+> +			}
+> +		}
+> +	}
+> +
+> +	rcu_read_unlock();
+> +
+> +	return false;
+> +}
+> 
+
