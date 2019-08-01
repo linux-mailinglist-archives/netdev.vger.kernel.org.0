@@ -2,77 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 311177D255
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 02:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E287D256
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 02:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbfHAAol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 20:44:41 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37823 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbfHAAol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 20:44:41 -0400
-Received: by mail-ot1-f66.google.com with SMTP id s20so6717747otp.4
-        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 17:44:41 -0700 (PDT)
+        id S1728150AbfHAApO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 20:45:14 -0400
+Received: from mail-pf1-f178.google.com ([209.85.210.178]:46570 "EHLO
+        mail-pf1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725942AbfHAApO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 20:45:14 -0400
+Received: by mail-pf1-f178.google.com with SMTP id c3so9667431pfa.13
+        for <netdev@vger.kernel.org>; Wed, 31 Jul 2019 17:45:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FwrY14/rA4YnTcEaKkYTP5TSJlckznr4xniXZWLqSIs=;
-        b=DBOI06OLegNR8ZR+FlLTPHMxEnpeXS+lrfvtmdV36VmJ7qv3AQzm84/2M5ZcbYEwTU
-         vBgC1+QMNkp517guFSzS6SjVGx2ZGO8FQ45mSuPuYqa6kA/n5xCSV2JK5Kob+hTzqprn
-         GhlqVSXdH8ibuNrj4lA0UYBgrf/SbvU9bnGcC3vLma7iEeP8z8XkQMtOZumLjBQb2RVP
-         NPcQFSv+BLQc7UdanpZ5sXkwIGrhs6o27wJ5Q1lupx5222DZ3D9HFZwzuWGRXEB5Frx0
-         Qa3ZTspE+B8Ibqxcu5NIFEyv1bgX1toOOjYf572sIU2gxD1ZOND9a7FrwP6ZgYE8X7JQ
-         XK0Q==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/N06suFqQG/VUR1RT9/8JxihrYyE4RhXxxatZIyfBts=;
+        b=ULdMFEwUsbE46yE3nf1nJntUAjiy6CYuOeCvLp7GvEm0IIYo2Vc4dK8JKyWeuAIRDq
+         HvpjyCQ8WR4DkXktnYTzTmMW5V9ovloJVLSqCAf7UG//Gfwibd2T4g3GNeiiKvd9X1Kt
+         ZiWwXDmr+Z5CvJOmBKthS2QkAhVZgOa5nzOrTMa+vqzRbgtbUZYKuuPw8M0EO2P18PTp
+         Flm2A/9qCX+VnRra7lccSkV0HppSR76PhSuMTvvCAJN24cHhQC6BQDqFdMW69Jiz0B4K
+         n/K1pWtXzgyCfbwoZZLWNWy9C7gAInqH33jvF6emrYTfBdfNJftq7UgRUAE3iQ7V5YGx
+         /J/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FwrY14/rA4YnTcEaKkYTP5TSJlckznr4xniXZWLqSIs=;
-        b=raIO1H1Dwmf0cebu+N+XFzY67U44R0agAfbNkzdPjq0N1cR7Re3DbT9z3Y8V6ImK9L
-         evI9v63l/Xe/e6MyOHaQmmPFx5u97KWcNcyXIT1xKyE9v/ZasosuNtXFnwqv/sOQZIyg
-         eCuoE1JL9IjjNJ4k0XtRtQhqCE2dhNxjOVQ36+qugMz55R7Agz6E0rS+C4zDrk7mSIee
-         BtB1rxZ6AqqC0N0T1L/mciIGDmL9eMj6VmOUc8MAHLG2cgCwfbh6Q2KFBn+eq4WfyVWa
-         ppplRx8clvYX+z0T9GrZIV0NoYaqkMVwMB6HTsKeka7jL27pE+GKLcYOBW+MwaS2Vo0C
-         HGzQ==
-X-Gm-Message-State: APjAAAW4zUrYudbib2mdaLlhyhzcmrlFMea9ibsDIPI9iPWNAYHBMkY2
-        L692oX/iBDwMjTN5nd6eKsREJ1kpW592gxMYw1s=
-X-Google-Smtp-Source: APXvYqy4ReT1PSjiPMdKfowY/Vf2trazFcklqLwGG/eDnfSY8h71ohr6BEUMDkMO0N1gn4LGUh8bACs897RSlI7C6bo=
-X-Received: by 2002:a05:6830:1155:: with SMTP id x21mr47592882otq.336.1564620280804;
- Wed, 31 Jul 2019 17:44:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/N06suFqQG/VUR1RT9/8JxihrYyE4RhXxxatZIyfBts=;
+        b=XN4dkr1JaFGCXjP8q2hAqbmHB0b04ICA8B5GlhMMCvtd7rHjU82KjvPk47KoEmkAS3
+         ulf2BIKSXkEkVYWSBeqsXnZ6KgvgdEg62ccQnFrwl8iofrcwsnnaB6LPUDIwi+3XW9xr
+         QMI9WAdcFxIHEbCDYGUp5lePC1ZyJ2ZdQaX0XN0KGLAhB2NqY+xE9jSwrLkOsVpgRWNo
+         KzlWUpfmHcmNqQGajjWqUB6fh9pm7uqoyGMeTK4ZF03aOZhSqF9Jr/mQLbcxXVXPfdkx
+         1ZAkxtgCw7S5qJxDeI0dSaGqg7j9zpHt4NXr8Y5C2u4qbxOYDLALdsSHUlDu5M90MHvD
+         vy/g==
+X-Gm-Message-State: APjAAAUI1vBKFJUZKZrjm6cEUwnWqPKY9TOV4okpZvbkOo0LTO5ADV81
+        wAiadnxtavF0IwN7lgS2861RLSwY
+X-Google-Smtp-Source: APXvYqytJ+Y1Fjt46vhnIx43VvSIRlhYB3GAAd4I4sqyT9lZLVkSDasacvsIKotE0P4k4KHDam775Q==
+X-Received: by 2002:a17:90a:2041:: with SMTP id n59mr5389306pjc.6.1564620313264;
+        Wed, 31 Jul 2019 17:45:13 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id f32sm2435978pgb.21.2019.07.31.17.45.12
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 31 Jul 2019 17:45:12 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     jiri@resnulli.us, chrism@mellanox.com
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [RFC iproute2 0/4] Revert tc batchsize feature
+Date:   Wed, 31 Jul 2019 17:45:02 -0700
+Message-Id: <20190801004506.9049-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1558140881-91716-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CAJ3xEMhAEMBBW=s_iWA=qD23w8q4PWzWT-QowGBNtCJJzHUysA@mail.gmail.com>
- <CAMDZJNV6S5Wk5jsS5DiHMYGywU2df0Lyey9QYzcdwGZDJbjSeg@mail.gmail.com>
- <CAJ3xEMgc6j=+AxRUwdYOT6_cP69fY-ThVVbF+4EqtZGQ+-Sjnw@mail.gmail.com>
- <CAMDZJNU=8BHZJs95knTzuCv=7X3BXbqHrZAznOOcK2m_7QO2Pw@mail.gmail.com> <CAJ3xEMj43wFacxR1bfqG8B0yVPiPyCh=DT5S3TojV8S8ZHaDsA@mail.gmail.com>
-In-Reply-To: <CAJ3xEMj43wFacxR1bfqG8B0yVPiPyCh=DT5S3TojV8S8ZHaDsA@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Thu, 1 Aug 2019 08:44:04 +0800
-Message-ID: <CAMDZJNWZ=s-yf7vho0zHySD01uOZzbUdcFmgu+Rk=p-nRoHN=A@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5e: Allow removing representors netdev to other namespace
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-Cc:     Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 12:49 PM Or Gerlitz <gerlitz.or@gmail.com> wrote:
->
-> On Wed, May 22, 2019 at 4:26 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> > I review the reps of netronome nfp codes,  nfp does't set the
-> > NETIF_F_NETNS_LOCAL to netdev->features.
-> > And I changed the OFED codes which used for our product environment,
-> > and then send this patch to upstream.
->
-> The real question here is if we can provide the required separation when
-> vport rep netdevs are put into different name-spaces -- this needs deeper
-> thinking. Technically you can do that with this one liner patch but we have
-> to see if/what assumptions could be broken as of that.
-Hi Or,
-Can we add a mode parm for allowing user to switch it off/on ?
+The batchsize feature of tc might save a few cycles but it
+is a maintaince nightmare, it has uninitialized variables and
+poor error handling. 
+
+This patch set reverts back to the original state.
+Please don't resubmit original code. Go back to the drawing
+board and do something generic.  For example, the routing
+daemons have figured out that by using multiple threads and
+turning off the netlink ACK they can update millions of routes
+quickly.
+
+Stephen Hemminger (4):
+  Revert "tc: Remove pointless assignments in batch()"
+  Revert "tc: flush after each command in batch mode"
+  Revert "tc: fix batch force option"
+  Revert "tc: Add batchsize feature for filter and actions"
+
+ tc/m_action.c  |  65 ++++++----------
+ tc/tc.c        | 201 ++++---------------------------------------------
+ tc/tc_common.h |   7 +-
+ tc/tc_filter.c | 129 ++++++++++++-------------------
+ 4 files changed, 87 insertions(+), 315 deletions(-)
+
