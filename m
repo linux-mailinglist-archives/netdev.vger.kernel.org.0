@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C387E2B7
+	by mail.lfdr.de (Postfix) with ESMTP id 4C5007E2B6
 	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 20:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387836AbfHASzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 14:55:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50166 "EHLO mail.kernel.org"
+        id S2387830AbfHASzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 14:55:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50168 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387779AbfHASzR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2387786AbfHASzR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Aug 2019 14:55:17 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BBC83217D6;
+        by mail.kernel.org (Postfix) with ESMTPSA id EEC33217D7;
         Thu,  1 Aug 2019 18:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564685714;
-        bh=1DoW/qVFmZftIw2OozF/zuDKbhjSGqK1T1rDnKTKuaU=;
+        s=default; t=1564685715;
+        bh=mE9zQ0inMMjEfjUFu6eWoxwX8FEHBsQupDBFLViOqJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W9qE0Ml84x6v+JdeUdWR33LMdbsqvzleOtRQWuPuxych5mypVmBPF725afFgw39o4
-         Aaz3k7PBAOJBGmfmlmzyGNIexkETviEmigEfuFa7hTZNHFJhG6wd1qjwZ0xOoEyfJe
-         VdwLgfZiA6Bs+caneRnzpvWcBATBTXh/ASH1wbfs=
+        b=n8ayHph07SxRxyA36u7K/8VnUUCEzrDBrI8AxIqES/bkzMsHrv3T9PMvwA+dsduul
+         aqUdccqRR5HYM/jgaEaPZbpekHUHKQ5Xd34J1a0INM43B0WDP9M8dtXDZojKPWxu8m
+         uBBIEfqsouzl8maXWD5+zTLT2EEg82PJE0eg31w8=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 14/15] selftests: Add ipv6 netfilter tests to fcnal-test
-Date:   Thu,  1 Aug 2019 11:56:47 -0700
-Message-Id: <20190801185648.27653-15-dsahern@kernel.org>
+Subject: [PATCH net-next 15/15] selftests: Add use case section to fcnal-test
+Date:   Thu,  1 Aug 2019 11:56:48 -0700
+Message-Id: <20190801185648.27653-16-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190801185648.27653-1-dsahern@kernel.org>
 References: <20190801185648.27653-1-dsahern@kernel.org>
@@ -39,104 +39,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add IPv6 netfilter tests to send tcp reset or icmp unreachable for a
-port. Initial tests are VRF only.
+Add use case section to fcnal-test.
+
+Initial test is VRF based with a bridge and vlans. The commands
+stem from bug reports fixed by:
+
+a173f066c7cf ("netfilter: bridge: Don't sabotage nf_hook calls from an l3mdev")
+cd6428988bf4 ("netfilter: bridge: Don't sabotage nf_hook calls for an l3mdev slave")
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 65 ++++++++++++++++++++++++++++++-
- 1 file changed, 64 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/fcnal-test.sh | 124 ++++++++++++++++++++++++++++++
+ 1 file changed, 124 insertions(+)
 
 diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 6f56c91e2d66..17eec10e06bf 100755
+index 17eec10e06bf..bd6b564382ec 100755
 --- a/tools/testing/selftests/net/fcnal-test.sh
 +++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -3185,6 +3185,68 @@ ipv4_netfilter()
- 	iptables -F
+@@ -3248,6 +3248,126 @@ ipv6_netfilter()
  }
  
-+netfilter_tcp6_reset()
+ ################################################################################
++# specific use cases
++
++# VRF only.
++# ns-A device enslaved to bridge. Verify traffic with and without
++# br_netfilter module loaded. Repeat with SVI on bridge.
++use_case_br()
 +{
-+	local a
++	setup "yes"
 +
-+	for a in ${NSA_IP6} ${VRF_IP6}
-+	do
-+		log_start
-+		run_cmd nettest -6 -s &
-+		sleep 1
-+		run_cmd_nsb nettest -6 -r ${a}
-+		log_test_addr ${a} $? 1 "Global server, reject with TCP-reset on Rx"
-+	done
-+}
++	setup_cmd ip link set ${NSA_DEV} down
++	setup_cmd ip addr del dev ${NSA_DEV} ${NSA_IP}/24
++	setup_cmd ip -6 addr del dev ${NSA_DEV} ${NSA_IP6}/64
 +
-+netfilter_icmp6()
-+{
-+	local stype="$1"
-+	local arg
-+	local a
++	setup_cmd ip link add br0 type bridge
++	setup_cmd ip addr add dev br0 ${NSA_IP}/24
++	setup_cmd ip -6 addr add dev br0 ${NSA_IP6}/64 nodad
 +
-+	[ "${stype}" = "UDP" ] && arg="$arg -D"
++	setup_cmd ip li set ${NSA_DEV} master br0
++	setup_cmd ip li set ${NSA_DEV} up
++	setup_cmd ip li set br0 up
++	setup_cmd ip li set br0 vrf ${VRF}
 +
-+	for a in ${NSA_IP6} ${VRF_IP6}
-+	do
-+		log_start
-+		run_cmd nettest -6 -s ${arg} &
-+		sleep 1
-+		run_cmd_nsb nettest -6 ${arg} -r ${a}
-+		log_test_addr ${a} $? 1 "Global ${stype} server, Rx reject icmp-port-unreach"
-+	done
-+}
++	rmmod br_netfilter 2>/dev/null
++	sleep 5 # DAD
 +
-+ipv6_netfilter()
-+{
-+	which nettest >/dev/null
-+	if [ $? -ne 0 ]; then
-+		log_error "nettest not found; skipping tests"
-+		return
++	run_cmd ip neigh flush all
++	run_cmd ping -c1 -w1 -I br0 ${NSB_IP}
++	log_test $? 0 "Bridge into VRF - IPv4 ping out"
++
++	run_cmd ip neigh flush all
++	run_cmd ${ping6} -c1 -w1 -I br0 ${NSB_IP6}
++	log_test $? 0 "Bridge into VRF - IPv6 ping out"
++
++	run_cmd ip neigh flush all
++	run_cmd_nsb ping -c1 -w1 ${NSA_IP}
++	log_test $? 0 "Bridge into VRF - IPv4 ping in"
++
++	run_cmd ip neigh flush all
++	run_cmd_nsb ${ping6} -c1 -w1 ${NSA_IP6}
++	log_test $? 0 "Bridge into VRF - IPv6 ping in"
++
++	modprobe br_netfilter
++	if [ $? -eq 0 ]; then
++		run_cmd ip neigh flush all
++		run_cmd ping -c1 -w1 -I br0 ${NSB_IP}
++		log_test $? 0 "Bridge into VRF with br_netfilter - IPv4 ping out"
++
++		run_cmd ip neigh flush all
++		run_cmd ${ping6} -c1 -w1 -I br0 ${NSB_IP6}
++		log_test $? 0 "Bridge into VRF with br_netfilter - IPv6 ping out"
++
++		run_cmd ip neigh flush all
++		run_cmd_nsb ping -c1 -w1 ${NSA_IP}
++		log_test $? 0 "Bridge into VRF with br_netfilter - IPv4 ping in"
++
++		run_cmd ip neigh flush all
++		run_cmd_nsb ${ping6} -c1 -w1 ${NSA_IP6}
++		log_test $? 0 "Bridge into VRF with br_netfilter - IPv6 ping in"
 +	fi
 +
-+	log_section "IPv6 Netfilter"
-+	log_subsection "TCP reset"
++	setup_cmd ip li set br0 nomaster
++	setup_cmd ip li add br0.100 link br0 type vlan id 100
++	setup_cmd ip li set br0.100 vrf ${VRF} up
++	setup_cmd ip    addr add dev br0.100 172.16.101.1/24
++	setup_cmd ip -6 addr add dev br0.100 2001:db8:101::1/64 nodad
 +
-+	setup "yes"
-+	run_cmd ip6tables -A INPUT -p tcp --dport 12345 -j REJECT --reject-with tcp-reset
++	setup_cmd_nsb ip li add vlan100 link ${NSB_DEV} type vlan id 100
++	setup_cmd_nsb ip addr add dev vlan100 172.16.101.2/24
++	setup_cmd_nsb ip -6 addr add dev vlan100 2001:db8:101::2/64 nodad
++	setup_cmd_nsb ip li set vlan100 up
++	sleep 1
 +
-+	netfilter_tcp6_reset
++	rmmod br_netfilter 2>/dev/null
 +
-+	log_subsection "ICMP unreachable"
++	run_cmd ip neigh flush all
++	run_cmd ping -c1 -w1 -I br0.100 172.16.101.2
++	log_test $? 0 "Bridge vlan into VRF - IPv4 ping out"
 +
-+	log_start
-+	run_cmd ip6tables -F
-+	run_cmd ip6tables -A INPUT -p tcp --dport 12345 -j REJECT --reject-with icmp6-port-unreachable
-+	run_cmd ip6tables -A INPUT -p udp --dport 12345 -j REJECT --reject-with icmp6-port-unreachable
++	run_cmd ip neigh flush all
++	run_cmd ${ping6} -c1 -w1 -I br0.100 2001:db8:101::2
++	log_test $? 0 "Bridge vlan into VRF - IPv6 ping out"
 +
-+	netfilter_icmp6 "TCP"
-+	netfilter_icmp6 "UDP"
++	run_cmd ip neigh flush all
++	run_cmd_nsb ping -c1 -w1 172.16.101.1
++	log_test $? 0 "Bridge vlan into VRF - IPv4 ping in"
 +
-+	log_start
-+	ip6tables -F
++	run_cmd ip neigh flush all
++	run_cmd_nsb ${ping6} -c1 -w1 2001:db8:101::1
++	log_test $? 0 "Bridge vlan into VRF - IPv6 ping in"
++
++	modprobe br_netfilter
++	if [ $? -eq 0 ]; then
++		run_cmd ip neigh flush all
++		run_cmd ping -c1 -w1 -I br0.100 172.16.101.2
++		log_test $? 0 "Bridge vlan into VRF with br_netfilter - IPv4 ping out"
++
++		run_cmd ip neigh flush all
++		run_cmd ${ping6} -c1 -w1 -I br0.100 2001:db8:101::2
++		log_test $? 0 "Bridge vlan into VRF with br_netfilter - IPv6 ping out"
++
++		run_cmd ip neigh flush all
++		run_cmd_nsb ping -c1 -w1 172.16.101.1
++		log_test $? 0 "Bridge vlan into VRF - IPv4 ping in"
++
++		run_cmd ip neigh flush all
++		run_cmd_nsb ${ping6} -c1 -w1 2001:db8:101::1
++		log_test $? 0 "Bridge vlan into VRF - IPv6 ping in"
++	fi
++
++	setup_cmd ip li del br0 2>/dev/null
++	setup_cmd_nsb ip li del vlan100 2>/dev/null
 +}
 +
- ################################################################################
++use_cases()
++{
++	log_section "Use cases"
++	use_case_br
++}
++
++################################################################################
  # usage
  
-@@ -3206,7 +3268,7 @@ EOF
- # main
+ usage()
+@@ -3269,6 +3389,8 @@ EOF
  
  TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_addr_bind ipv4_runtime ipv4_netfilter"
--TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind ipv6_runtime"
-+TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind ipv6_runtime ipv6_netfilter"
+ TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind ipv6_runtime ipv6_netfilter"
++TESTS_OTHER="use_cases"
++
  PAUSE_ON_FAIL=no
  PAUSE=no
  
-@@ -3256,6 +3318,7 @@ do
- 	ipv6_udp|udp6)   ipv6_udp;;
- 	ipv6_bind|bind6) ipv6_addr_bind;;
+@@ -3320,6 +3442,8 @@ do
  	ipv6_runtime)    ipv6_runtime;;
-+	ipv6_netfilter)  ipv6_netfilter;;
+ 	ipv6_netfilter)  ipv6_netfilter;;
  
++	use_cases)       use_cases;;
++
  	# setup namespaces and config, but do not run any tests
  	setup)		 setup; exit 0;;
+ 	vrf_setup)	 setup "yes"; exit 0;;
 -- 
 2.11.0
 
