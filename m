@@ -2,109 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4BD57D884
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 11:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 332067D897
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 11:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730886AbfHAJYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 05:24:37 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35052 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729449AbfHAJYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 05:24:36 -0400
-Received: by mail-ed1-f68.google.com with SMTP id w20so68466107edd.2
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 02:24:35 -0700 (PDT)
+        id S1729751AbfHAJbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 05:31:00 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44251 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725790AbfHAJa7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 05:30:59 -0400
+Received: by mail-pg1-f193.google.com with SMTP id i18so33846908pgl.11
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 02:30:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=uJNkOd++pppj92RNQe5KBNkfejV/glRIA4r/SLzP8s4=;
-        b=g4r85uAclV6cDzf5fvORykZhJ6uZOPZUY6zG01G626U9tjGOe08GLOKdpNff/h4gEp
-         8O8NCTC4rt72KsFOgQ/e3dy1wq/S5mudwl1fWXWup9hhJ+66fTugEAWMz0H3EZ3yptZL
-         eIaPIvX2kVj/IXq+ywEabvQ02GS5IxZrq/3DsD6IPtlMWsqyc8KsvyZI9noVSk9qx1HF
-         VysN3xSzQIPGRHjlXxp4JKpT6Leph6Kq0Y5JKaGKCKhtjLW7FqmgqkllBIco4JG0DErR
-         brNBAoryHStxMHT14nBdLdywE8uNASk4riqklYGtgOk4TH06G3ruuC68lV8gP3ddyzdF
-         Y9yw==
+        bh=+rhMnLA+w80mi30OPe/rIR1GZHk3iZBFbYGSHMHQdRI=;
+        b=SGi/oia8tw6HXa1+GrtpX5/moXS+XyvOHdE9Wyr9dmkZGiNp5h67SkbkVMWejd/na2
+         tcAzpw9FzDrC7jV47M0MagTbYPcxFEKmqOcA5U7WvMTM/6SFYNNTKdxR1P2BCf1YueNk
+         Rc4zC5STjjq/5ARS6KNadI+EjgZFKy64/vQoHWIX7w7Sm5zm9q38X7P7f4WnnPTq6J2O
+         cAx7+ludn3qS6BsIuvwPlfkNduyWKHWv5DJa9pa5Mi/XuqBpJIBlv/5pfORTVK+YNWgD
+         wYG/m/EpfMUMvhqYo4OcMfBasF7Ipc/QSDlQY0cvDc1gqy2G8LBa6dFH6JNNrcOWLZrQ
+         hV1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uJNkOd++pppj92RNQe5KBNkfejV/glRIA4r/SLzP8s4=;
-        b=WcegDekGuxCnxPFek30sbaujEufxM04bY+t41HZDNQ3shX95cXnRjadOd7UqWh/8UJ
-         m244qqKMTgW6L6QEdu1bJ7/k5ZGiADjjJfV2yEJsMAOE5EvuZH+0Hg6OGPlDvvO+hKtq
-         frwpPlbVZ6d7Q9/IcdSiSzBhN/WUhl72rB8ihXUpdwJXoZePGlIwt2MC2O2ZAiqqkMU3
-         6U2CORTML6P626V86AYygjDyn+zmTtE+JguSgTH/A6F390NbudMnf5GlLb9aXtysn641
-         GitMGBj/zhZiNSCDWaMY8Ty17uO13F6raUmCWr49mOk/qzL7E3pMXP8FEX5aUOyKym14
-         j1Cw==
-X-Gm-Message-State: APjAAAWNz7x8oQV/dsfBR6Ah9gd3CRVVUx6HSXRqAjy6Pqkr1rKeEqKY
-        gw9TQkUgKI2PNczjmknOObw=
-X-Google-Smtp-Source: APXvYqzGl0IWvEhiBwg9Iq1A/QYB49PWn4ghmag1VSZ67z3eyNPoAG3yjCj3a+K6rqJkJWB6M8Oseg==
-X-Received: by 2002:a17:906:684e:: with SMTP id a14mr100128691ejs.156.1564651475318;
-        Thu, 01 Aug 2019 02:24:35 -0700 (PDT)
-Received: from tegmen.arch.suse.de (charybdis-ext.suse.de. [195.135.221.2])
-        by smtp.gmail.com with ESMTPSA id w14sm17856075eda.69.2019.08.01.02.24.34
+        bh=+rhMnLA+w80mi30OPe/rIR1GZHk3iZBFbYGSHMHQdRI=;
+        b=MQ+s2/Gwr6rPJmo6nDDYhiaYpoNOme/7ZJGeXKwZ5NDy12DoQ7JGW2ad2wT4pDcPTD
+         atwcFjPrsMLKYEFT9dEU1LNP1m72ML0x6L1IuQDIJ+BnhTGBQ9En/5kf+eeu6uuOCnBE
+         LSr3AI/XWJ3BshQtUW3Kj9ksQAuEwWubwwCO64Gt0exac5L4Hp0x9N24vsEmx3j8JFsK
+         kykA1i2qEpp5D/FTupp4I5hP5+Ivu2iNufSMY6INKGgcG9Ohy0+65aLbw0Ne5y0cEnSg
+         n+9J6RsYEabXVc1J1qpaY5BRg5RXAj6Qi5+EYESh7hdvFZxZ4vakEMhjgP/k3+3vrxgg
+         MY5A==
+X-Gm-Message-State: APjAAAUj4sHMrMhWIMDAV6+HSIkz72kP5Te9n7Ky2ulYhsNX/yVUbFv8
+        w6fbL8+8pxVBmzuzYmgt+jE=
+X-Google-Smtp-Source: APXvYqwfXBCAX+JG/099IDn8UwfxBCdH9C4T1LA3kp25hsxVnuWMoUDGzYsqPeqUQXPfpO9rjL6BoA==
+X-Received: by 2002:a17:90a:8c06:: with SMTP id a6mr7740687pjo.45.1564651859214;
+        Thu, 01 Aug 2019 02:30:59 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([203.100.54.194])
+        by smtp.gmail.com with ESMTPSA id f6sm72357603pga.50.2019.08.01.02.30.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 01 Aug 2019 02:24:34 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
-To:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com
-Cc:     netdev@vger.kernel.org, Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [PATCH v2 net-next] be2net: disable bh with spin_lock in be_process_mcc
-Date:   Thu,  1 Aug 2019 11:24:20 +0200
-Message-Id: <20190801092420.34502-1-dkirjanov@suse.com>
-X-Mailer: git-send-email 2.12.3
+        Thu, 01 Aug 2019 02:30:57 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     roid@mellanox.com, saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next] net/mlx5e: Allow dropping specific tunnel packets
+Date:   Thu,  1 Aug 2019 16:40:59 +0800
+Message-Id: <1564648859-17369-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-be_process_mcc() is invoked in 3 different places and
-always with BHs disabled except the be_poll function
-but since it's invoked from softirq with BHs
-disabled it won't hurt.
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-v1->v2: added explanation to the patch
+In some case, we don't want to allow specific tunnel packets
+to host that can avoid to take up high CPU (e.g network attacks).
+But other tunnel packets which not matched in hardware will be
+sent to host too.
 
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+    $ tc filter add dev vxlan_sys_4789 \
+	    protocol ip chain 0 parent ffff: prio 1 handle 1 \
+	    flower dst_ip 1.1.1.100 ip_proto tcp dst_port 80 \
+	    enc_dst_ip 2.2.2.100 enc_key_id 100 enc_dst_port 4789 \
+	    action tunnel_key unset pipe action drop
+
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- drivers/net/ethernet/emulex/benet/be_cmds.c | 4 ++--
- drivers/net/ethernet/emulex/benet/be_main.c | 2 --
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
-index ef5d61d57597..9365218f4d3b 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.c
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
-@@ -550,7 +550,7 @@ int be_process_mcc(struct be_adapter *adapter)
- 	int num = 0, status = 0;
- 	struct be_mcc_obj *mcc_obj = &adapter->mcc_obj;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index f3ed028..25d423e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -2485,7 +2485,8 @@ static bool actions_match_supported(struct mlx5e_priv *priv,
  
--	spin_lock(&adapter->mcc_cq_lock);
-+	spin_lock_bh(&adapter->mcc_cq_lock);
+ 	if (flow_flag_test(flow, EGRESS) &&
+ 	    !((actions & MLX5_FLOW_CONTEXT_ACTION_DECAP) ||
+-	      (actions & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP)))
++	      (actions & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP) ||
++	      (actions & MLX5_FLOW_CONTEXT_ACTION_DROP)))
+ 		return false;
  
- 	while ((compl = be_mcc_compl_get(adapter))) {
- 		if (compl->flags & CQE_FLAGS_ASYNC_MASK) {
-@@ -566,7 +566,7 @@ int be_process_mcc(struct be_adapter *adapter)
- 	if (num)
- 		be_cq_notify(adapter, mcc_obj->cq.id, mcc_obj->rearm_cq, num);
- 
--	spin_unlock(&adapter->mcc_cq_lock);
-+	spin_unlock_bh(&adapter->mcc_cq_lock);
- 	return status;
- }
- 
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 2edb86ec9fe9..4d8e40ac66d2 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -5630,9 +5630,7 @@ static void be_worker(struct work_struct *work)
- 	 * mcc completions
- 	 */
- 	if (!netif_running(adapter->netdev)) {
--		local_bh_disable();
- 		be_process_mcc(adapter);
--		local_bh_enable();
- 		goto reschedule;
- 	}
- 
+ 	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
 -- 
-2.12.3
+1.8.3.1
 
