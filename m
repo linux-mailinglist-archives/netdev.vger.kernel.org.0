@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7FAC7D42E
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3037D7D422
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730216AbfHAD62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:58:28 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:39556 "EHLO huawei.com"
+        id S1729954AbfHAD6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:58:02 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3688 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729837AbfHAD57 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 23:57:59 -0400
+        id S1729786AbfHAD6B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 23:58:01 -0400
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id B0B05C60DECD380EE615;
+        by Forcepoint Email with ESMTP id 82BC4E3B6AD18570666C;
         Thu,  1 Aug 2019 11:57:56 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
@@ -22,9 +22,9 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 10/12] net: hns3: fix some reset handshake issue
-Date:   Thu, 1 Aug 2019 11:55:43 +0800
-Message-ID: <1564631745-36733-11-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 11/12] net: hns3: clear reset interrupt status in hclge_irq_handle()
+Date:   Thu, 1 Aug 2019 11:55:44 +0800
+Message-ID: <1564631745-36733-12-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
 References: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,234 +37,201 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the driver sets handshake status to tell the hardware
-that the driver have downed the netdev and it can continue with
-reset process. The driver will clear the handshake status when
-re-initializing the CMDQ, and does not recover this status
-when reset fail, which may cause the hardware to wait for
-the handshake status to be set and not being able to continue
-with reset process.
+Currently, the reset interrupt is cleared in the reset task, which
+is too late. Since, when the hardware finish the previous reset,
+it can begin to do a new global/IMP reset, if this new coming reset
+type is same as the previous one, the driver will clear them together,
+then driver can not get that there is another reset, but the hardware
+still wait for the driver to deal with the second one.
 
-So this patch delays clearing handshake status just before UP,
-and recovers this status when reset fail.
+So this patch clears PF's reset interrupt status in the
+hclge_irq_handle(), the hardware waits for handshaking from
+driver before doing reset, so the driver and hardware deal with reset
+one by one.
 
-BTW, this patch adds a new function hclge(vf)_reset_handshake() to
-deal with the reset handshake issue, and renames
-HCLGE(VF)_NIC_CMQ_ENABLE to HCLGE(VF)_NIC_SW_RST_RDY which
-represents this register bit more accurately.
+BTW, when VF doing global/IMP reset, it reads PF's reset interrupt
+register to get that whether PF driver's re-initialization is done,
+since VF's re-initialization should be done after PF's. So we add
+a new command and a register bit to do that. When VF receive reset
+interrupt, it sets up this bit, and PF finishes re-initialization
+send command to clear this bit, then VF do re-initialization.
 
-Fixes: ada13ee3db7b ("net: hns3: add handshake with hardware while doing reset")
+Fixes: 4ed340ab8f49 ("net: hns3: Add reset process in hclge_main")
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Reviewed-by: Peng Li <lipeng321@huawei.com>
+Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  7 +++--
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  7 +++--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 23 ++++++++++++++--
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  4 ++-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  7 +++--
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 31 +++++++++++++++++-----
- 6 files changed, 64 insertions(+), 15 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  8 +++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 34 ++++++++++++++++++++--
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 29 +++++++++++-------
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  3 ++
+ 4 files changed, 61 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-index c20b972..ecf58cf 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-@@ -103,14 +103,17 @@ static void hclge_cmd_config_regs(struct hclge_cmq_ring *ring)
- 	dma_addr_t dma = ring->desc_dma_addr;
- 	struct hclge_dev *hdev = ring->dev;
- 	struct hclge_hw *hw = &hdev->hw;
-+	u32 reg_val;
- 
- 	if (ring->ring_type == HCLGE_TYPE_CSQ) {
- 		hclge_write_dev(hw, HCLGE_NIC_CSQ_BASEADDR_L_REG,
- 				lower_32_bits(dma));
- 		hclge_write_dev(hw, HCLGE_NIC_CSQ_BASEADDR_H_REG,
- 				upper_32_bits(dma));
--		hclge_write_dev(hw, HCLGE_NIC_CSQ_DEPTH_REG,
--				ring->desc_num >> HCLGE_NIC_CMQ_DESC_NUM_S);
-+		reg_val = hclge_read_dev(hw, HCLGE_NIC_CSQ_DEPTH_REG);
-+		reg_val &= HCLGE_NIC_SW_RST_RDY;
-+		reg_val |= ring->desc_num >> HCLGE_NIC_CMQ_DESC_NUM_S;
-+		hclge_write_dev(hw, HCLGE_NIC_CSQ_DEPTH_REG, reg_val);
- 		hclge_write_dev(hw, HCLGE_NIC_CSQ_HEAD_REG, 0);
- 		hclge_write_dev(hw, HCLGE_NIC_CSQ_TAIL_REG, 0);
- 	} else {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index cfa77dd..63cf9a7 100644
+index 63cf9a7..dade20a 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -907,8 +907,11 @@ struct hclge_serdes_lb_cmd {
- #define HCLGE_NIC_CRQ_DEPTH_REG		0x27020
- #define HCLGE_NIC_CRQ_TAIL_REG		0x27024
- #define HCLGE_NIC_CRQ_HEAD_REG		0x27028
--#define HCLGE_NIC_CMQ_EN_B		16
--#define HCLGE_NIC_CMQ_ENABLE		BIT(HCLGE_NIC_CMQ_EN_B)
-+
-+/* this bit indicates that the driver is ready for hardware reset */
-+#define HCLGE_NIC_SW_RST_RDY_B		16
-+#define HCLGE_NIC_SW_RST_RDY		BIT(HCLGE_NIC_SW_RST_RDY_B)
-+
- #define HCLGE_NIC_CMQ_DESC_NUM		1024
- #define HCLGE_NIC_CMQ_DESC_NUM_S	3
+@@ -86,6 +86,7 @@ enum hclge_opcode_type {
+ 	HCLGE_OPC_QUERY_PF_RSRC		= 0x0023,
+ 	HCLGE_OPC_QUERY_VF_RSRC		= 0x0024,
+ 	HCLGE_OPC_GET_CFG_PARAM		= 0x0025,
++	HCLGE_OPC_PF_RST_DONE		= 0x0026,
  
+ 	HCLGE_OPC_STATS_64_BIT		= 0x0030,
+ 	HCLGE_OPC_STATS_32_BIT		= 0x0031,
+@@ -878,6 +879,13 @@ struct hclge_reset_cmd {
+ 	u8 rsv[22];
+ };
+ 
++#define HCLGE_PF_RESET_DONE_BIT		BIT(0)
++
++struct hclge_pf_rst_done_cmd {
++	u8 pf_rst_done;
++	u8 rsv[23];
++};
++
+ #define HCLGE_CMD_SERDES_SERIAL_INNER_LOOP_B	BIT(0)
+ #define HCLGE_CMD_SERDES_PARALLEL_INNER_LOOP_B	BIT(2)
+ #define HCLGE_CMD_SERDES_DONE_B			BIT(0)
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 4317c8f..abe4cee 100644
+index abe4cee..c4841c3 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3274,6 +3274,19 @@ static int hclge_reset_prepare_down(struct hclge_dev *hdev)
- 	return ret;
- }
- 
-+static void hclge_reset_handshake(struct hclge_dev *hdev, bool enable)
-+{
-+	u32 reg_val;
-+
-+	reg_val = hclge_read_dev(&hdev->hw, HCLGE_NIC_CSQ_DEPTH_REG);
-+	if (enable)
-+		reg_val |= HCLGE_NIC_SW_RST_RDY;
-+	else
-+		reg_val &= ~HCLGE_NIC_SW_RST_RDY;
-+
-+	hclge_write_dev(&hdev->hw, HCLGE_NIC_CSQ_DEPTH_REG, reg_val);
-+}
-+
- static int hclge_reset_prepare_wait(struct hclge_dev *hdev)
- {
- #define HCLGE_RESET_SYNC_TIME 100
-@@ -3322,8 +3335,7 @@ static int hclge_reset_prepare_wait(struct hclge_dev *hdev)
- 
- 	/* inform hardware that preparatory work is done */
- 	msleep(HCLGE_RESET_SYNC_TIME);
--	hclge_write_dev(&hdev->hw, HCLGE_NIC_CSQ_DEPTH_REG,
--			HCLGE_NIC_CMQ_ENABLE);
-+	hclge_reset_handshake(hdev, true);
- 	dev_info(&hdev->pdev->dev, "prepare wait ok\n");
- 
- 	return ret;
-@@ -3354,6 +3366,10 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
- 	}
- 
- 	hclge_clear_reset_cause(hdev);
-+
-+	/* recover the handshake status when reset fail */
-+	hclge_reset_handshake(hdev, true);
-+
- 	dev_err(&hdev->pdev->dev, "Reset fail!\n");
- 	return false;
- }
-@@ -3372,6 +3388,9 @@ static int hclge_reset_prepare_up(struct hclge_dev *hdev)
+@@ -2876,10 +2876,15 @@ static irqreturn_t hclge_misc_irq_handle(int irq, void *data)
  		break;
  	}
  
-+	/* clear up the handshake status after re-initialize done */
-+	hclge_reset_handshake(hdev, false);
+-	/* clear the source of interrupt if it is not cause by reset */
++	hclge_clear_event_cause(hdev, event_cause, clearval);
 +
- 	return ret;
++	/* Enable interrupt if it is not cause by reset. And when
++	 * clearval equal to 0, it means interrupt status may be
++	 * cleared by hardware before driver reads status register.
++	 * For this case, vector0 interrupt also should be enabled.
++	 */
+ 	if (!clearval ||
+ 	    event_cause == HCLGE_VECTOR0_EVENT_MBX) {
+-		hclge_clear_event_cause(hdev, event_cause, clearval);
+ 		hclge_enable_vector(&hdev->misc_vector, true);
+ 	}
+ 
+@@ -3253,7 +3258,13 @@ static void hclge_clear_reset_cause(struct hclge_dev *hdev)
+ 	if (!clearval)
+ 		return;
+ 
+-	hclge_write_dev(&hdev->hw, HCLGE_MISC_RESET_STS_REG, clearval);
++	/* For revision 0x20, the reset interrupt source
++	 * can only be cleared after hardware reset done
++	 */
++	if (hdev->pdev->revision == 0x20)
++		hclge_write_dev(&hdev->hw, HCLGE_MISC_RESET_STS_REG,
++				clearval);
++
+ 	hclge_enable_vector(&hdev->misc_vector, true);
  }
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-index 8f21eb3..55d3c78 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-@@ -97,7 +97,9 @@ static void hclgevf_cmd_config_regs(struct hclgevf_cmq_ring *ring)
- 		reg_val = (u32)((ring->desc_dma_addr >> 31) >> 1);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_BASEADDR_H_REG, reg_val);
- 
--		reg_val = (ring->desc_num >> HCLGEVF_NIC_CMQ_DESC_NUM_S);
-+		reg_val = hclgevf_read_dev(hw, HCLGEVF_NIC_CSQ_DEPTH_REG);
-+		reg_val &= HCLGEVF_NIC_SW_RST_RDY;
-+		reg_val |= (ring->desc_num >> HCLGEVF_NIC_CMQ_DESC_NUM_S);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_DEPTH_REG, reg_val);
- 
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_HEAD_REG, 0);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-index 127a434..f830eef 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-@@ -244,8 +244,11 @@ struct hclgevf_cfg_tx_queue_pointer_cmd {
- #define HCLGEVF_NIC_CRQ_DEPTH_REG	0x27020
- #define HCLGEVF_NIC_CRQ_TAIL_REG	0x27024
- #define HCLGEVF_NIC_CRQ_HEAD_REG	0x27028
--#define HCLGEVF_NIC_CMQ_EN_B		16
--#define HCLGEVF_NIC_CMQ_ENABLE		BIT(HCLGEVF_NIC_CMQ_EN_B)
-+
-+/* this bit indicates that the driver is ready for hardware reset */
-+#define HCLGEVF_NIC_SW_RST_RDY_B	16
-+#define HCLGEVF_NIC_SW_RST_RDY		BIT(HCLGEVF_NIC_SW_RST_RDY_B)
-+
- #define HCLGEVF_NIC_CMQ_DESC_NUM	1024
- #define HCLGEVF_NIC_CMQ_DESC_NUM_S	3
- #define HCLGEVF_NIC_CMDQ_INT_SRC_REG	0x27100
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index ae0e6a6..340d89e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1426,6 +1426,20 @@ static int hclgevf_reset_wait(struct hclgevf_dev *hdev)
- 	return 0;
+@@ -3374,6 +3385,18 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
+ 	return false;
  }
  
-+static void hclgevf_reset_handshake(struct hclgevf_dev *hdev, bool enable)
++static int hclge_set_rst_done(struct hclge_dev *hdev)
 +{
-+	u32 reg_val;
++	struct hclge_pf_rst_done_cmd *req;
++	struct hclge_desc desc;
 +
-+	reg_val = hclgevf_read_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG);
-+	if (enable)
-+		reg_val |= HCLGEVF_NIC_SW_RST_RDY;
-+	else
-+		reg_val &= ~HCLGEVF_NIC_SW_RST_RDY;
++	req = (struct hclge_pf_rst_done_cmd *)desc.data;
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_PF_RST_DONE, false);
++	req->pf_rst_done |= HCLGE_PF_RESET_DONE_BIT;
 +
-+	hclgevf_write_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG,
-+			  reg_val);
++	return hclge_cmd_send(&hdev->hw, &desc, 1);
 +}
 +
- static int hclgevf_reset_stack(struct hclgevf_dev *hdev)
+ static int hclge_reset_prepare_up(struct hclge_dev *hdev)
  {
- 	int ret;
-@@ -1448,7 +1462,14 @@ static int hclgevf_reset_stack(struct hclgevf_dev *hdev)
- 	if (ret)
- 		return ret;
- 
--	return hclgevf_notify_client(hdev, HNAE3_RESTORE_CLIENT);
-+	ret = hclgevf_notify_client(hdev, HNAE3_RESTORE_CLIENT);
-+	if (ret)
-+		return ret;
-+
-+	/* clear handshake status with IMP */
-+	hclgevf_reset_handshake(hdev, false);
-+
-+	return 0;
- }
- 
- static int hclgevf_reset_prepare_wait(struct hclgevf_dev *hdev)
-@@ -1474,8 +1495,7 @@ static int hclgevf_reset_prepare_wait(struct hclgevf_dev *hdev)
- 	set_bit(HCLGEVF_STATE_CMD_DISABLE, &hdev->state);
- 	/* inform hardware that preparatory work is done */
- 	msleep(HCLGEVF_RESET_SYNC_TIME);
--	hclgevf_write_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG,
--			  HCLGEVF_NIC_CMQ_ENABLE);
-+	hclgevf_reset_handshake(hdev, true);
- 	dev_info(&hdev->pdev->dev, "prepare reset(%d) wait done, ret:%d\n",
- 		 hdev->reset_type, ret);
- 
-@@ -1484,6 +1504,8 @@ static int hclgevf_reset_prepare_wait(struct hclgevf_dev *hdev)
- 
- static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
- {
-+	/* recover handshake status with IMP when reset fail */
-+	hclgevf_reset_handshake(hdev, true);
- 	hdev->rst_stats.rst_fail_cnt++;
- 	dev_err(&hdev->pdev->dev, "failed to reset VF(%d)\n",
- 		hdev->rst_stats.rst_fail_cnt);
-@@ -1494,9 +1516,6 @@ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
- 	if (hclgevf_is_reset_pending(hdev)) {
- 		set_bit(HCLGEVF_RESET_PENDING, &hdev->reset_state);
- 		hclgevf_reset_task_schedule(hdev);
--	} else {
--		hclgevf_write_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG,
--				  HCLGEVF_NIC_CMQ_ENABLE);
+ 	int ret = 0;
+@@ -3384,6 +3407,11 @@ static int hclge_reset_prepare_up(struct hclge_dev *hdev)
+ 	case HNAE3_FLR_RESET:
+ 		ret = hclge_set_all_vf_rst(hdev, false);
+ 		break;
++	case HNAE3_GLOBAL_RESET:
++		/* fall through */
++	case HNAE3_IMP_RESET:
++		ret = hclge_set_rst_done(hdev);
++		break;
+ 	default:
+ 		break;
  	}
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 340d89e..ce82b2b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -1396,19 +1396,22 @@ static int hclgevf_reset_wait(struct hclgevf_dev *hdev)
+ 	u32 val;
+ 	int ret;
  
+-	/* wait to check the hardware reset completion status */
+-	val = hclgevf_read_dev(&hdev->hw, HCLGEVF_RST_ING);
+-	dev_info(&hdev->pdev->dev, "checking vf resetting status: %x\n", val);
+-
+ 	if (hdev->reset_type == HNAE3_FLR_RESET)
+ 		return hclgevf_flr_poll_timeout(hdev,
+ 						HCLGEVF_RESET_WAIT_US,
+ 						HCLGEVF_RESET_WAIT_CNT);
+-
+-	ret = readl_poll_timeout(hdev->hw.io_base + HCLGEVF_RST_ING, val,
+-				 !(val & HCLGEVF_RST_ING_BITS),
+-				 HCLGEVF_RESET_WAIT_US,
+-				 HCLGEVF_RESET_WAIT_TIMEOUT_US);
++	else if (hdev->reset_type == HNAE3_VF_RESET)
++		ret = readl_poll_timeout(hdev->hw.io_base +
++					 HCLGEVF_VF_RST_ING, val,
++					 !(val & HCLGEVF_VF_RST_ING_BIT),
++					 HCLGEVF_RESET_WAIT_US,
++					 HCLGEVF_RESET_WAIT_TIMEOUT_US);
++	else
++		ret = readl_poll_timeout(hdev->hw.io_base +
++					 HCLGEVF_RST_ING, val,
++					 !(val & HCLGEVF_RST_ING_BITS),
++					 HCLGEVF_RESET_WAIT_US,
++					 HCLGEVF_RESET_WAIT_TIMEOUT_US);
+ 
+ 	/* hardware completion status should be available by this time */
+ 	if (ret) {
+@@ -1886,7 +1889,7 @@ static void hclgevf_clear_event_cause(struct hclgevf_dev *hdev, u32 regclr)
+ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
+ 						      u32 *clearval)
+ {
+-	u32 cmdq_src_reg, rst_ing_reg;
++	u32 val, cmdq_src_reg, rst_ing_reg;
+ 
+ 	/* fetch the events from their corresponding regs */
+ 	cmdq_src_reg = hclgevf_read_dev(&hdev->hw,
+@@ -1902,6 +1905,12 @@ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
+ 		cmdq_src_reg &= ~BIT(HCLGEVF_VECTOR0_RST_INT_B);
+ 		*clearval = cmdq_src_reg;
+ 		hdev->rst_stats.vf_rst_cnt++;
++		/* set up VF hardware reset status, its PF will clear
++		 * this status when PF has initialized done.
++		 */
++		val = hclgevf_read_dev(&hdev->hw, HCLGEVF_VF_RST_ING);
++		hclgevf_write_dev(&hdev->hw, HCLGEVF_VF_RST_ING,
++				  val | HCLGEVF_VF_RST_ING_BIT);
+ 		return HCLGEVF_VECTOR0_EVENT_RST;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+index 5a9e309..f0736b0 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+@@ -103,6 +103,9 @@
+ 	(HCLGEVF_FUN_RST_ING_BIT | HCLGEVF_GLOBAL_RST_ING_BIT | \
+ 	 HCLGEVF_CORE_RST_ING_BIT | HCLGEVF_IMP_RST_ING_BIT)
+ 
++#define HCLGEVF_VF_RST_ING		0x07008
++#define HCLGEVF_VF_RST_ING_BIT		BIT(16)
++
+ #define HCLGEVF_RSS_IND_TBL_SIZE		512
+ #define HCLGEVF_RSS_SET_BITMAP_MSK	0xffff
+ #define HCLGEVF_RSS_KEY_SIZE		40
 -- 
 2.7.4
 
