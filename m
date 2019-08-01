@@ -2,99 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EABCD7D82D
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 11:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4BD57D884
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 11:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730887AbfHAJED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 05:04:03 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34847 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730567AbfHAJED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 05:04:03 -0400
-Received: by mail-pg1-f194.google.com with SMTP id s1so27500189pgr.2
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 02:04:02 -0700 (PDT)
+        id S1730886AbfHAJYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 05:24:37 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:35052 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729449AbfHAJYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 05:24:36 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w20so68466107edd.2
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 02:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HlVpE3JrUPgt5bwXt1zctS/JyyAdQ6iVTMPgL+U1A68=;
-        b=rj9gdite46Ds2xIDExQzcVm5w3jgDsTXHAowLfVHxE+rUN+Wy0n+14OrFwivxUKvj+
-         HN+0FuUv99H+zDCdZ/NzaHKFBLwaN3iwxzjse2b1yLO0J62CNL8aEtWXBcxeaUc9qwsh
-         NQn2KvIvDzYp8yIRCSygmEmBHuFwpK1Zm54lg384Elu7CKAHSZ1cbtNW2v97EGPLZqNQ
-         GSpBBuFGFtKmb5AWPgaqPd0Ce8PplPnP5M2HLM6QPfaA0Y9Vcsf0ljzQpigdRezUx/nx
-         RxfNliKM2bblNNBee6qkJ9GVuEFLfWb++l8ngfTZ4AExALR2ubFUNrVqVjv/FtqXerc/
-         875A==
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=uJNkOd++pppj92RNQe5KBNkfejV/glRIA4r/SLzP8s4=;
+        b=g4r85uAclV6cDzf5fvORykZhJ6uZOPZUY6zG01G626U9tjGOe08GLOKdpNff/h4gEp
+         8O8NCTC4rt72KsFOgQ/e3dy1wq/S5mudwl1fWXWup9hhJ+66fTugEAWMz0H3EZ3yptZL
+         eIaPIvX2kVj/IXq+ywEabvQ02GS5IxZrq/3DsD6IPtlMWsqyc8KsvyZI9noVSk9qx1HF
+         VysN3xSzQIPGRHjlXxp4JKpT6Leph6Kq0Y5JKaGKCKhtjLW7FqmgqkllBIco4JG0DErR
+         brNBAoryHStxMHT14nBdLdywE8uNASk4riqklYGtgOk4TH06G3ruuC68lV8gP3ddyzdF
+         Y9yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HlVpE3JrUPgt5bwXt1zctS/JyyAdQ6iVTMPgL+U1A68=;
-        b=QALEuHPyMZhZPE7aIRHPnj+xt+u6ro7asu19641rSegMjM1TspN2bS5xkZhIVYKhzH
-         j/TzSoyGVGuWMYRBktwiKsES2gJ2k9snwq7MdaT7jVj6fFsSRzeH6+nuOkr/4wQpr9AA
-         LORQtpt7YP5wmw9pA4yOJEoSmmYpVLLJnks/lXqMofHAjWCdKAKwsh4cCfmI7hLHiKft
-         HMUcZtlCqZW+iXmalm7DgbN9Gjl1TjmDbaHdF2Kzthi+ISjdHEo0OTIHb2mBS+r2U7A3
-         bMvJdm1lSPjM98/QOaJ1cHGMDHIAI5PPikkfcqE+kq9zycVNSEpmzKOUJQfRMWO+xFLz
-         dIBQ==
-X-Gm-Message-State: APjAAAVvAZH5DTZoN1VshId/SkAtgZQC6eUSnZ+m53FCqemOb9x+ZEuk
-        t4A+91A79LTeCMZ7Sx3JXzJfW5nTTV/8kw==
-X-Google-Smtp-Source: APXvYqwkMNjzjbpYJh5IknyStm2IN3nFzBqSrV5pcZI2Cn4Je75TseUPlWSv8WukDPtpehO5317Kcg==
-X-Received: by 2002:a17:90a:3ac2:: with SMTP id b60mr7533869pjc.74.1564650242313;
-        Thu, 01 Aug 2019 02:04:02 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j128sm74951333pfg.28.2019.08.01.02.04.00
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 02:04:01 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] ibmveth: use net_err_ratelimited when set_multicast_list
-Date:   Thu,  1 Aug 2019 17:03:47 +0800
-Message-Id: <20190801090347.8258-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=uJNkOd++pppj92RNQe5KBNkfejV/glRIA4r/SLzP8s4=;
+        b=WcegDekGuxCnxPFek30sbaujEufxM04bY+t41HZDNQ3shX95cXnRjadOd7UqWh/8UJ
+         m244qqKMTgW6L6QEdu1bJ7/k5ZGiADjjJfV2yEJsMAOE5EvuZH+0Hg6OGPlDvvO+hKtq
+         frwpPlbVZ6d7Q9/IcdSiSzBhN/WUhl72rB8ihXUpdwJXoZePGlIwt2MC2O2ZAiqqkMU3
+         6U2CORTML6P626V86AYygjDyn+zmTtE+JguSgTH/A6F390NbudMnf5GlLb9aXtysn641
+         GitMGBj/zhZiNSCDWaMY8Ty17uO13F6raUmCWr49mOk/qzL7E3pMXP8FEX5aUOyKym14
+         j1Cw==
+X-Gm-Message-State: APjAAAWNz7x8oQV/dsfBR6Ah9gd3CRVVUx6HSXRqAjy6Pqkr1rKeEqKY
+        gw9TQkUgKI2PNczjmknOObw=
+X-Google-Smtp-Source: APXvYqzGl0IWvEhiBwg9Iq1A/QYB49PWn4ghmag1VSZ67z3eyNPoAG3yjCj3a+K6rqJkJWB6M8Oseg==
+X-Received: by 2002:a17:906:684e:: with SMTP id a14mr100128691ejs.156.1564651475318;
+        Thu, 01 Aug 2019 02:24:35 -0700 (PDT)
+Received: from tegmen.arch.suse.de (charybdis-ext.suse.de. [195.135.221.2])
+        by smtp.gmail.com with ESMTPSA id w14sm17856075eda.69.2019.08.01.02.24.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Aug 2019 02:24:34 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
+To:     sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com
+Cc:     netdev@vger.kernel.org, Denis Kirjanov <kda@linux-powerpc.org>
+Subject: [PATCH v2 net-next] be2net: disable bh with spin_lock in be_process_mcc
+Date:   Thu,  1 Aug 2019 11:24:20 +0200
+Message-Id: <20190801092420.34502-1-dkirjanov@suse.com>
+X-Mailer: git-send-email 2.12.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting lots of multicast list on ibmveth, e.g. add 3000 membership on a
-multicast group, the following error message flushes our log file
+be_process_mcc() is invoked in 3 different places and
+always with BHs disabled except the be_poll function
+but since it's invoked from softirq with BHs
+disabled it won't hurt.
 
-8507    [  901.478251] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
-...
-1718386 [ 5636.808658] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
+v1->v2: added explanation to the patch
 
-We got 1.5 million lines of messages in 1.3h. Let's replace netdev_err() by
-net_err_ratelimited() to avoid this issue. I don't use netdev_err_once() in
-case h_multicast_ctrl() return different lpar_rc types.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 ---
- drivers/net/ethernet/ibm/ibmveth.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/emulex/benet/be_cmds.c | 4 ++--
+ drivers/net/ethernet/emulex/benet/be_main.c | 2 --
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index d654c234aaf7..3b9406a4ca92 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1446,9 +1446,11 @@ static void ibmveth_set_multicast_list(struct net_device *netdev)
- 						   IbmVethMcastAddFilter,
- 						   mcast_addr);
- 			if (lpar_rc != H_SUCCESS) {
--				netdev_err(netdev, "h_multicast_ctrl rc=%ld "
--					   "when adding an entry to the filter "
--					   "table\n", lpar_rc);
-+				net_err_ratelimited("%s %s%s: h_multicast_ctrl rc=%ld when adding an entry to the filter table\n",
-+						    ibmveth_driver_name,
-+						    netdev_name(netdev),
-+						    netdev_reg_state(netdev),
-+						    lpar_rc);
- 			}
- 		}
+diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
+index ef5d61d57597..9365218f4d3b 100644
+--- a/drivers/net/ethernet/emulex/benet/be_cmds.c
++++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
+@@ -550,7 +550,7 @@ int be_process_mcc(struct be_adapter *adapter)
+ 	int num = 0, status = 0;
+ 	struct be_mcc_obj *mcc_obj = &adapter->mcc_obj;
+ 
+-	spin_lock(&adapter->mcc_cq_lock);
++	spin_lock_bh(&adapter->mcc_cq_lock);
+ 
+ 	while ((compl = be_mcc_compl_get(adapter))) {
+ 		if (compl->flags & CQE_FLAGS_ASYNC_MASK) {
+@@ -566,7 +566,7 @@ int be_process_mcc(struct be_adapter *adapter)
+ 	if (num)
+ 		be_cq_notify(adapter, mcc_obj->cq.id, mcc_obj->rearm_cq, num);
+ 
+-	spin_unlock(&adapter->mcc_cq_lock);
++	spin_unlock_bh(&adapter->mcc_cq_lock);
+ 	return status;
+ }
+ 
+diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
+index 2edb86ec9fe9..4d8e40ac66d2 100644
+--- a/drivers/net/ethernet/emulex/benet/be_main.c
++++ b/drivers/net/ethernet/emulex/benet/be_main.c
+@@ -5630,9 +5630,7 @@ static void be_worker(struct work_struct *work)
+ 	 * mcc completions
+ 	 */
+ 	if (!netif_running(adapter->netdev)) {
+-		local_bh_disable();
+ 		be_process_mcc(adapter);
+-		local_bh_enable();
+ 		goto reschedule;
+ 	}
  
 -- 
-2.19.2
+2.12.3
 
