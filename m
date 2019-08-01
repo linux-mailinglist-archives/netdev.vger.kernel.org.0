@@ -2,90 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85CFB7E3C0
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 22:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AF077E46D
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 22:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388860AbfHAUIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 16:08:20 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:46224 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387891AbfHAUIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 16:08:20 -0400
-Received: by mail-qk1-f193.google.com with SMTP id r4so52971000qkm.13;
-        Thu, 01 Aug 2019 13:08:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=B+yDfdKT+RmatLe61Ax4/UEmkLt8JT8gE8mDRLs1ASo=;
-        b=F2DtJQPVW600MwUqAoGNDBJim0olwalXuP0oaVzNa0fuigELEEjv1TPS9O2t4zW1XQ
-         pXpruzdZOB/VBi3a/Ru2xZqOapjbUY0dPt4Dayk+xHSRgZZVajTvGk70Z2HIA5Y5cMwl
-         ambxZXgnsb/qDkp7nYq3cJFgRehXf/PvlySs2VBmdpH+M5ZDNJxP9VCfgdVNdKV17ZGT
-         ES8W4E3m+l2EhVQavzX1ZQ+2ImO1izjQsAj5HIa8nYb0s2XUwvrhRfs4a+oxfu/a5Z1X
-         VDRc8KtlnltBx/XBJhhIbBM1tf19KqXDgLfg7P/EJ+wO60b9kMWEw1/tLyFLRY/BaNsl
-         MQaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=B+yDfdKT+RmatLe61Ax4/UEmkLt8JT8gE8mDRLs1ASo=;
-        b=tzFMZAqFY6Z+tpYUWi3cNkkiME2slEhp9tvMYtuGe6g+kSMLqXIUWAxiUjAelqEANg
-         0bmgslLtaeJALEuhXWCPMBi4yHz6zu2EbA+mM0jCfEVxzQ6lXTF2mqv5SPabTTWDMtiP
-         fXNQf1oFhzQzUPmlxOkYZXdr5loc28WNYLVJbc4EFcPab10EI3xZpRZ4vfSDfalIk0Lg
-         3kEMJGy+9Y8eZo1wBFvKmns/A87mWuRORAp/iYA2q8Sl8ou8BABsfe5IQ+ArvuO+D6Tz
-         EgOn5ZiqIocCPiKURSVErxZkquYk88rzT3DD+gRYs8ZtUce0/IvUyGy6ld49aa0NJpj1
-         /MUw==
-X-Gm-Message-State: APjAAAWhm6LLaZJiI5IRZZQtx6RMNKVcUK4UOwbXB2Sq5C2HpwKKy0D1
-        pIpNH+iTk5eV9HBrq3++tLs=
-X-Google-Smtp-Source: APXvYqxqpChOnoBfs+GBxQM4vK6z+sYjBISy2ym7G3Sq1RF3r0v+c1tE3tcbulGCOi3Xo0MFPdQASA==
-X-Received: by 2002:a37:680e:: with SMTP id d14mr88871406qkc.207.1564690099390;
-        Thu, 01 Aug 2019 13:08:19 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id q73sm17611144qke.90.2019.08.01.13.08.18
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 13:08:18 -0700 (PDT)
-Date:   Thu, 1 Aug 2019 16:08:17 -0400
-Message-ID: <20190801160817.GB9619@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        davem@davemloft.net, bridge@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        allan.nielsen@microchip.com
-Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-In-Reply-To: <20190801194801.rqv5jvb5vxjo2dor@soft-dev3.microsemi.net>
-References: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
- <20190801151739.GB32290@t480s.localdomain>
- <20190801194801.rqv5jvb5vxjo2dor@soft-dev3.microsemi.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S1730457AbfHAUnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 16:43:51 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:60718 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725846AbfHAUnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 16:43:51 -0400
+Received: from localhost (c-24-20-22-31.hsd1.or.comcast.net [24.20.22.31])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D0C915408812;
+        Thu,  1 Aug 2019 13:43:48 -0700 (PDT)
+Date:   Thu, 01 Aug 2019 16:43:45 -0400 (EDT)
+Message-Id: <20190801.164345.1007767435484564146.davem@davemloft.net>
+To:     vivien.didelot@gmail.com
+Cc:     linux-kernel@vger.kernel.org, rasmus.villemoes@prevas.dk,
+        f.fainelli@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/5] net: dsa: mv88e6xxx: avoid some redundant
+ VTU operations
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190801183637.24841-1-vivien.didelot@gmail.com>
+References: <20190801183637.24841-1-vivien.didelot@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 01 Aug 2019 13:43:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
+From: Vivien Didelot <vivien.didelot@gmail.com>
+Date: Thu,  1 Aug 2019 14:36:32 -0400
 
-On Thu, 1 Aug 2019 21:48:02 +0200, Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
-> > I'm a bit late in the conversation. Isn't this what you want?
-> > 
-> >     ip address add <multicast IPv4 address> dev br0 autojoin
-> > 
+> The mv88e6xxx driver currently uses a mv88e6xxx_vtu_get wrapper to get a
+> single entry and uses a boolean to eventually initialize a fresh one.
 > 
-> Not really, I was looking in a way to register the ports to link layer
-> multicast address. Sorry for the confusion, my description of the patch
-> was totally missleaning.
+> However the fresh entry is only needed in one place and mv88e6xxx_vtu_getnext
+> is simple enough to call it directly. Doing so makes the code easier to read,
+> especially for the return code expected by switchdev to honor software VLANs.
 > 
-> If you follow this thread you will get a better idea what we wanted to
-> achive. We got some really good comments and based on these we send a
-> RFC[1]. 
+> In addition to not loading the VTU again when an entry is already correctly
+> programmed, this also allows to avoid programming the broadcast entries
+> again when updating a port's membership, from e.g. tagged to untagged.
+> 
+> This patch series removes the mv88e6xxx_vtu_get wrapper in favor of direct
+> calls to mv88e6xxx_vtu_getnext, and also renames the _mv88e6xxx_port_vlan_add
+> and _mv88e6xxx_port_vlan_del helpers using an old underscore prefix convention.
+> 
+> In case the port's membership is already correctly programmed in hardware,
+> the following debug message may be printed:
+> 
+>     [  745.989884] mv88e6085 2188000.ethernet-1:00: p4: already a member of VLAN 42
 
-OK great! Keep me in the loop, I enjoy bridge and multicast very much ;-)
-
-
-Thanks,
-
-	Vivien
+Series applied, thanks Vivien.
