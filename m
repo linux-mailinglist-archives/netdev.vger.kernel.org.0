@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 585197D6FF
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 10:11:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C237D700
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 10:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729922AbfHAILo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 04:11:44 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41877 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729011AbfHAILn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 04:11:43 -0400
-Received: by mail-pg1-f194.google.com with SMTP id x15so23372644pgg.8
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 01:11:43 -0700 (PDT)
+        id S1730941AbfHAILq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 04:11:46 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36189 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730094AbfHAILp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 04:11:45 -0400
+Received: by mail-pg1-f193.google.com with SMTP id l21so33716070pgm.3
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 01:11:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vEtmXeighSIVM7ic4S/tG/PqsVIb5LKbs2vS934whlk=;
-        b=T2ioY61qnRM7UWbjNKIaZc5rbJsDvFJG0zk6LpJeEV4HfrgD6E7GoPcpYlpx/WpEF3
-         wpR4UKvtLsU1I5gejwdHwJeoH4isrk4LYJ+TT7/DyLB79KN7b0W3g4ciBWOt6Qup8BWx
-         RLq8rwdZDWxdt3xXat3XQPlLaU8Q/bdFJt2c4lJnUhdLj9kWNc1TyBTTrfV5lGchuUFN
-         LgiFKcKZWLPGgkJRuFlCewz9ILR16q05WpzZv2wo5DMvYtW3P4G3HFnBA9J4k2AZmyl0
-         Q+bmfTqaGocgAIAvCHm8O3IHUIG3YMQNBWuVCZq/tDwnR7WMNImGet8twvs36T5He9zT
-         CzYA==
+        bh=Ww2Edgc2Mn17QxdgJWaSNqf+cyOs86DTpg9N3pfAuBk=;
+        b=H+61pHfEhMjq6Jv0YGksBEEQxVXQ/5uHF4QFspij1yWfSddIxNsPb9iL7xAH8Ru2uL
+         370RrHcEqWsz4Q2kajMJC+fdOvZhRl+5vQuhkW8DuHyrqYUzcHAXNIZBbIgtObbscaoD
+         EICBzFaFhLAZmxntkL9sqYTE6kB7ujjtUj4IdE9qmSoKNSzwRIgRMd7JaMTgAxGe2SE1
+         MK068jPixO7+TlERe4d0ifi5PMac8ydE/dIqwRyQwUrP9AM3VwGp4k0Zh3irbtk6YYya
+         TKW0CEp0kkhZbRjBu9GuGIwcSp5jLlFH7Q9rENhvb6LXFLSDervYD1YDNYbO5XyAOTZE
+         mTbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vEtmXeighSIVM7ic4S/tG/PqsVIb5LKbs2vS934whlk=;
-        b=UpvRJarNEPeZxW3E91gocQFNR1ySDpfMKRVJTVJAq9HRbFmNmFzqkvmOfxkm+YoFSn
-         HAcErqy/fzs7blj/UFmg2DutC2QOcmmy1N6u05nAEg8MCaXezZx1LwvyAoJ0L29lFlMB
-         7ZTSG7XkS1aRjv8kvDUoWoi/OCAdMcQ9uTi1xVRFLeQ23VX95ZvgKNG1fMRccogqleIn
-         lXCYaGS7IdHR0jKnkTqCZQOvm1MoelmNMqzb026SfChiE6opA8iMypy9jrblFt9RqAl1
-         yK1uYB1i2zSBGsU0nOz+qW1ouuBvLNKetXhuXcPWeZYrPlg962vgm86W8DCwck4DkuJv
-         1I3Q==
-X-Gm-Message-State: APjAAAWrRyMxGrsgWkbTUMzMN0oE6d3KRSN8EL/3jOp9ZDxqdEQjohjP
-        KICJA6JhR0VBuIo2AJhlKg==
-X-Google-Smtp-Source: APXvYqwKyNPohaM1Egm8wuyHPQxm0JzlTCn3uOVpfsb1PYRfJBDZGWfWKmgq47juJoV+ZBpz6VDTug==
-X-Received: by 2002:aa7:90d8:: with SMTP id k24mr51526471pfk.115.1564647102766;
-        Thu, 01 Aug 2019 01:11:42 -0700 (PDT)
+        bh=Ww2Edgc2Mn17QxdgJWaSNqf+cyOs86DTpg9N3pfAuBk=;
+        b=dlmu4qFksSnqkU25OTKBFPrFcr+mzL3Ezu7oxg55QXCYa06QhcA+WcDeztxwEinQTF
+         R9Vv84gqXDBjZ3zMx8iPeG8eic6kHRAMJoYSGq7L7pgq2NaNnLimoKfV4c1OOVo7Hscl
+         jPdPPHZEkzU4h32R/11X56NPMj4bPhk/y2cfvruukEcN945v6emyTkuJ/CY5qFhMxNbz
+         y7IRNHIRPB+iHZPaBhvLTm+XmEjs7ro8Kv5U3OOWcKr7CblpMHTl+3T034pTndw6Oxgt
+         KDXUM/1hRFwLjXbcLb6O+5lTmi8DQlOmgCThysZ11OFZtChQ7pu8eU2ysCck+ZZwcy/B
+         8nhQ==
+X-Gm-Message-State: APjAAAUfI9xpGebdD2hkLWIlmARCciufgu/+B5d0oxZky2vbaDVDFu+a
+        VihpqERFC4uDCPQrgT1yzQ==
+X-Google-Smtp-Source: APXvYqzeTM9tWJQSPt4Q9YM4LGa9aDK4GglDg6aBIvapqUst/iJwUWrTzhYwNRM433ofRADPqMIL/A==
+X-Received: by 2002:a63:66c5:: with SMTP id a188mr117233966pgc.127.1564647104551;
+        Thu, 01 Aug 2019 01:11:44 -0700 (PDT)
 Received: from localhost.localdomain ([211.196.191.92])
-        by smtp.gmail.com with ESMTPSA id br18sm3917286pjb.20.2019.08.01.01.11.41
+        by smtp.gmail.com with ESMTPSA id br18sm3917286pjb.20.2019.08.01.01.11.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 01:11:42 -0700 (PDT)
+        Thu, 01 Aug 2019 01:11:44 -0700 (PDT)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org
-Subject: [v2,1/2] tools: bpftool: add net attach command to attach XDP on interface
-Date:   Thu,  1 Aug 2019 17:11:32 +0900
-Message-Id: <20190801081133.13200-2-danieltimlee@gmail.com>
+Subject: [v2,2/2] tools: bpftool: add net detach command to detach XDP on interface
+Date:   Thu,  1 Aug 2019 17:11:33 +0900
+Message-Id: <20190801081133.13200-3-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190801081133.13200-1-danieltimlee@gmail.com>
 References: <20190801081133.13200-1-danieltimlee@gmail.com>
@@ -61,74 +61,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By this commit, using `bpftool net attach`, user can attach XDP prog on
-interface. New type of enum 'net_attach_type' has been made, as stated at
-cover-letter, the meaning of 'attach' is, prog will be attached on interface.
-
-BPF prog will be attached through libbpf 'bpf_set_link_xdp_fd'.
+By this commit, using `bpftool net detach`, the attached XDP prog can
+be detached. Detaching the BPF prog will be done through libbpf
+'bpf_set_link_xdp_fd' with the progfd set to -1.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
 Changes in v2:
-  - command 'load' changed to 'attach' for the consistency
-  - 'NET_ATTACH_TYPE_XDP_DRIVE' changed to 'NET_ATTACH_TYPE_XDP_DRIVER'
+  - command 'unload' changed to 'detach' for the consistency
 
- tools/bpf/bpftool/net.c | 107 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 106 insertions(+), 1 deletion(-)
+ tools/bpf/bpftool/net.c | 55 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 54 insertions(+), 1 deletion(-)
 
 diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-index 67e99c56bc88..f3b57660b303 100644
+index f3b57660b303..2ae9a613b05c 100644
 --- a/tools/bpf/bpftool/net.c
 +++ b/tools/bpf/bpftool/net.c
-@@ -55,6 +55,35 @@ struct bpf_attach_info {
- 	__u32 flow_dissector_id;
- };
- 
-+enum net_attach_type {
-+	NET_ATTACH_TYPE_XDP,
-+	NET_ATTACH_TYPE_XDP_GENERIC,
-+	NET_ATTACH_TYPE_XDP_DRIVER,
-+	NET_ATTACH_TYPE_XDP_OFFLOAD,
-+	__MAX_NET_ATTACH_TYPE
-+};
-+
-+static const char * const attach_type_strings[] = {
-+	[NET_ATTACH_TYPE_XDP] = "xdp",
-+	[NET_ATTACH_TYPE_XDP_GENERIC] = "xdpgeneric",
-+	[NET_ATTACH_TYPE_XDP_DRIVER] = "xdpdrv",
-+	[NET_ATTACH_TYPE_XDP_OFFLOAD] = "xdpoffload",
-+	[__MAX_NET_ATTACH_TYPE] = NULL,
-+};
-+
-+static enum net_attach_type parse_attach_type(const char *str)
-+{
-+	enum net_attach_type type;
-+
-+	for (type = 0; type < __MAX_NET_ATTACH_TYPE; type++) {
-+		if (attach_type_strings[type] &&
-+		   is_prefix(str, attach_type_strings[type]))
-+			return type;
-+	}
-+
-+	return __MAX_NET_ATTACH_TYPE;
-+}
-+
- static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
- {
- 	struct bpf_netdev_t *netinfo = cookie;
-@@ -223,6 +252,77 @@ static int query_flow_dissector(struct bpf_attach_info *attach_info)
+@@ -281,6 +281,31 @@ static int parse_attach_args(int argc, char **argv, int *progfd,
  	return 0;
  }
  
-+static int parse_attach_args(int argc, char **argv, int *progfd,
++static int parse_detach_args(int argc, char **argv,
 +			     enum net_attach_type *attach_type, int *ifindex)
 +{
-+	if (!REQ_ARGS(3))
++	if (!REQ_ARGS(2))
 +		return -EINVAL;
-+
-+	*progfd = prog_parse_fd(&argc, &argv);
-+	if (*progfd < 0)
-+		return *progfd;
 +
 +	*attach_type = parse_attach_type(*argv);
 +	if (*attach_type == __MAX_NET_ATTACH_TYPE) {
@@ -149,34 +106,24 @@ index 67e99c56bc88..f3b57660b303 100644
 +	return 0;
 +}
 +
-+static int do_attach_detach_xdp(int *progfd, enum net_attach_type *attach_type,
-+				int *ifindex)
-+{
-+	__u32 flags;
-+	int err;
-+
-+	flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+	if (*attach_type == NET_ATTACH_TYPE_XDP_GENERIC)
-+		flags |= XDP_FLAGS_SKB_MODE;
-+	if (*attach_type == NET_ATTACH_TYPE_XDP_DRIVER)
-+		flags |= XDP_FLAGS_DRV_MODE;
-+	if (*attach_type == NET_ATTACH_TYPE_XDP_OFFLOAD)
-+		flags |= XDP_FLAGS_HW_MODE;
-+
-+	err = bpf_set_link_xdp_fd(*ifindex, *progfd, flags);
-+
-+	return err;
-+}
-+
-+static int do_attach(int argc, char **argv)
+ static int do_attach_detach_xdp(int *progfd, enum net_attach_type *attach_type,
+ 				int *ifindex)
+ {
+@@ -323,6 +348,31 @@ static int do_attach(int argc, char **argv)
+ 	return 0;
+ }
+ 
++static int do_detach(int argc, char **argv)
 +{
 +	enum net_attach_type attach_type;
 +	int err, progfd, ifindex;
 +
-+	err = parse_attach_args(argc, argv, &progfd, &attach_type, &ifindex);
++	err = parse_detach_args(argc, argv, &attach_type, &ifindex);
 +	if (err)
 +		return err;
 +
++	/* to detach xdp prog */
++	progfd = -1;
 +	if (is_prefix("xdp", attach_type_strings[attach_type]))
 +		err = do_attach_detach_xdp(&progfd, &attach_type, &ifindex);
 +
@@ -194,30 +141,29 @@ index 67e99c56bc88..f3b57660b303 100644
  static int do_show(int argc, char **argv)
  {
  	struct bpf_attach_info attach_info = {};
-@@ -305,13 +405,17 @@ static int do_help(int argc, char **argv)
- 
+@@ -406,6 +456,7 @@ static int do_help(int argc, char **argv)
  	fprintf(stderr,
  		"Usage: %s %s { show | list } [dev <devname>]\n"
-+		"       %s %s attach PROG LOAD_TYPE <devname>\n"
+ 		"       %s %s attach PROG LOAD_TYPE <devname>\n"
++		"       %s %s detach LOAD_TYPE <devname>\n"
  		"       %s %s help\n"
-+		"\n"
-+		"       " HELP_SPEC_PROGRAM "\n"
-+		"       LOAD_TYPE := { xdp | xdpgeneric | xdpdrv | xdpoffload }\n"
- 		"Note: Only xdp and tc attachments are supported now.\n"
- 		"      For progs attached to cgroups, use \"bpftool cgroup\"\n"
+ 		"\n"
+ 		"       " HELP_SPEC_PROGRAM "\n"
+@@ -415,7 +466,8 @@ static int do_help(int argc, char **argv)
  		"      to dump program attachments. For program types\n"
  		"      sk_{filter,skb,msg,reuseport} and lwt/seg6, please\n"
  		"      consult iproute2.\n",
--		bin_name, argv[-2], bin_name, argv[-2]);
-+		bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2]);
+-		bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2]);
++		bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2],
++		bin_name, argv[-2]);
  
  	return 0;
  }
-@@ -319,6 +423,7 @@ static int do_help(int argc, char **argv)
- static const struct cmd cmds[] = {
+@@ -424,6 +476,7 @@ static const struct cmd cmds[] = {
  	{ "show",	do_show },
  	{ "list",	do_show },
-+	{ "attach",	do_attach },
+ 	{ "attach",	do_attach },
++	{ "detach",	do_detach },
  	{ "help",	do_help },
  	{ 0 }
  };
