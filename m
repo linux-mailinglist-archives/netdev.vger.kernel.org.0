@@ -2,90 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF18A7D34D
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 04:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C5997D37F
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:04:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728171AbfHACWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 22:22:20 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37580 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726079AbfHACWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 22:22:20 -0400
-Received: by mail-ed1-f66.google.com with SMTP id w13so67645227eds.4;
-        Wed, 31 Jul 2019 19:22:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sC9WSjHIf3YYqrZ48Ho9EQniwjdamSmLDkL+UgHsgsE=;
-        b=llXl0uA66CPHwc937gj8nqBMKzMjpnrttJor3IogjY5x4XNbctuL16+HpHVNLkvSHJ
-         dASGPohwTOLRrOIbesMNK7aHBkEj3ZGLJmG2FJnf4eRm1fHXUvgxzGkDftTIHc1VHDmZ
-         j5BqHd9erS6VkcaY97iG2yCqyRLY92B5zj0taBeypB+2Pbw7c+AnlTnxcwNWI3g5nydm
-         ABDm823hVpYbhF2Afs1V7P6h4O5mNUWpvvMtHv2cI9v0X4YNt5IYkPGbWuAqBHztDuXZ
-         k8BiSmE0GwfdAIM1X3RgZzDMiMxwDz2f5OG8kK/QwNmSt3WLqz9v8W+Jn8JK5CLYJ0w5
-         b3Yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sC9WSjHIf3YYqrZ48Ho9EQniwjdamSmLDkL+UgHsgsE=;
-        b=tU0rgSE85FriElE0AXX7S5LqYbZzXII2mIk/pNthu77pZuRggi3ApPZzf+hfM+i1y2
-         C8sMlLYEejCEYGjNRet12HOs2atYFgbKOPYOkBwpyKQp0sLfKeRB9SKXwDaKDJmFXLZF
-         c985DMDr1/NEO2ugPqrK8EyZMQllJAwepKG972+WjH9sOX7pZdkw6ZlsdZEUQ58g9Ojw
-         A/9gx3iKH+MTANw6ctC9jmyXhqoyW3mg/qBwcYxc7tw6APIdYSJamW2U6biNoSCRLmW5
-         fj+GQVDtqrVW1CC8YWKGuBUxxWF754roMZ1TZhfHNP0QNT9cotuBkheiYXIlfLJLQSGp
-         3Ldw==
-X-Gm-Message-State: APjAAAWDB042oJcPAR4EyZ/p22sjS4Kphn4IMrWVNcnS18XGPQQHKeAP
-        Pt5UUEwYy97CherU6iImNCAYdtHu/7CAD1SIito=
-X-Google-Smtp-Source: APXvYqyQZSotBC5QpJ3UAQIVqYBxSYe/ET0fiP9HIck+vOonE/4njZIWinONYh1FY5DYJRQwr6Pbh5mNC4Vg8lC2aEk=
-X-Received: by 2002:a05:6402:896:: with SMTP id e22mr106635474edy.202.1564626138515;
- Wed, 31 Jul 2019 19:22:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731122224.1003-1-hslester96@gmail.com> <CACKFLinuFebDgJN=BgK5e-bNaFqNpk61teva0=2xMH6R_iT39g@mail.gmail.com>
-In-Reply-To: <CACKFLinuFebDgJN=BgK5e-bNaFqNpk61teva0=2xMH6R_iT39g@mail.gmail.com>
-From:   Chuhong Yuan <hslester96@gmail.com>
-Date:   Thu, 1 Aug 2019 10:22:07 +0800
-Message-ID: <CANhBUQ1J8hXBZv4x3pJhG_08ZS1zR=9Uj2EUta2sgtyND_QKPw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] cnic: Use refcount_t for refcount
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1728469AbfHADD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:03:58 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:39593 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728340AbfHADD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Jul 2019 23:03:57 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 012E4417BA;
+        Thu,  1 Aug 2019 11:03:47 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     jiri@resnulli.us, pablo@netfilter.org, fw@strlen.de,
+        jakub.kicinski@netronome.com
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v5 0/6] flow_offload: add indr-block in nf_table_offload
+Date:   Thu,  1 Aug 2019 11:03:41 +0800
+Message-Id: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVIS0hCQkJCS0tDSkxDTFlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pi46ERw5Lzg0OkgLDTIQEDhC
+        SQMwC0JVSlVKTk1PTUlDTUlDSUpJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlISEs3Bg++
+X-HM-Tid: 0a6c4b2232a52086kuqy012e4417ba
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michael Chan <michael.chan@broadcom.com> =E4=BA=8E2019=E5=B9=B48=E6=9C=881=
-=E6=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8A=E5=8D=881:58=E5=86=99=E9=81=93=EF=BC=
-=9A
->
-> On Wed, Jul 31, 2019 at 5:22 AM Chuhong Yuan <hslester96@gmail.com> wrote=
-:
->
-> >  static void cnic_ctx_wr(struct cnic_dev *dev, u32 cid_addr, u32 off, u=
-32 val)
-> > @@ -494,7 +494,7 @@ int cnic_register_driver(int ulp_type, struct cnic_=
-ulp_ops *ulp_ops)
-> >         }
-> >         read_unlock(&cnic_dev_lock);
-> >
-> > -       atomic_set(&ulp_ops->ref_count, 0);
-> > +       refcount_set(&ulp_ops->ref_count, 0);
-> >         rcu_assign_pointer(cnic_ulp_tbl[ulp_type], ulp_ops);
-> >         mutex_unlock(&cnic_lock);
-> >
->
-> Willem's comment applies here too.  The driver needs to be modified to
-> count from 1 to use refcount_t.
->
-> Thanks.
+From: wenxu <wenxu@ucloud.cn>
 
-I have revised this problem but find the other two refcounts -
-cnic_dev::ref_count
-and cnic_sock::ref_count have no set.
-I am not sure where to initialize them to 1.
+This series patch make nftables offload support the vlan and
+tunnel device offload through indr-block architecture.
 
-Besides, should ulp_ops->ref_count be set to 0 when unregistered?
+The first four patches mv tc indr block to flow offload and
+rename to flow-indr-block.
+Because the new flow-indr-block can't get the tcf_block
+directly. The fifthe patch provide a callback list to get 
+flow_block of each subsystem immediately when the device
+register and contain a block.
+The last patch make nf_tables_offload support flow-indr-block.
+
+wenxu (6):
+  cls_api: modify the tc_indr_block_ing_cmd parameters.
+  cls_api: replace block with flow_block in tc_indr_block_dev
+  cls_api: add flow_indr_block_call function
+  flow_offload: move tc indirect block to flow offload
+  flow_offload: support get flow_block immediately
+  netfilter: nf_tables_offload: support indr block call
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  10 +-
+ .../net/ethernet/netronome/nfp/flower/offload.c    |  11 +-
+ include/net/flow_offload.h                         |  48 ++++
+ include/net/netfilter/nf_tables_offload.h          |   2 +
+ include/net/pkt_cls.h                              |  35 ---
+ include/net/sch_generic.h                          |   3 -
+ net/core/flow_offload.c                            | 251 ++++++++++++++++++++
+ net/netfilter/nf_tables_api.c                      |   7 +
+ net/netfilter/nf_tables_offload.c                  | 156 +++++++++++--
+ net/sched/cls_api.c                                | 255 ++++-----------------
+ 10 files changed, 497 insertions(+), 281 deletions(-)
+
+-- 
+1.8.3.1
+
