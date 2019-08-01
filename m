@@ -2,183 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFF57E33B
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 21:17:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B14A27E37A
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 21:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388598AbfHATRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 15:17:42 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40051 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbfHATRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 15:17:42 -0400
-Received: by mail-qk1-f194.google.com with SMTP id s145so52935776qke.7;
-        Thu, 01 Aug 2019 12:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=sRRiRudfVesVn/6GMaai5lXBbVTh+LZyVmU+cspSzXM=;
-        b=oP/qcp7e7SDYkq4SklR2U463DOEjUG4XH1YJwo0VEXBwicGboi5pGMn9abgg1uE6Xj
-         fRhU7NN5gxmDrnvq2yP/Cbd18TjvIpe+oVr0tv0H3Z/bRc04MMMeIGxtdBimifVARFAZ
-         16UNH5EY/Ds7R3HDg4JY0C3nKuulhZ9fBhGkpfLNMn+krDlZQ5YhexVczp+M/AxYX457
-         Z+nWS9w5zyF2p3XiT6fipxcUJixAslkf0NJ5+aZ77DkOGS2/zawWMKVM3E6zIplMZe3O
-         FqSqbOuiacf4qjJngTBhzjbXTm4PxSioxliQWYbDhyJsosAp2WaV9vvKcon/rOTdCY+l
-         Aaqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=sRRiRudfVesVn/6GMaai5lXBbVTh+LZyVmU+cspSzXM=;
-        b=LHIZ68GeXKKLHT/XG/UU6Oy0ihng908E2LuEQzYsc7KlEPVUXqdTxl/hhnQgZGW/89
-         ktWtpU0SEDdgKeBVCjiCa6Y343qmmulTKLVy+Po6ZG7yZ+UayvBCANPE9QfpD1BdZKdp
-         SSn8KbRlRRIOx7A1zAioKx2CY/qikowo23eb+G8dfcgFXngwJfqrq+Fs8hrmNWFmtZ7r
-         QoTR/uvtmMDUVxUuGldJyGJAlKCFQr1vQRwgUPMCUvlVK7pGjqThi1T9K06euQ8wRvrz
-         8/kuqtdF7kIpRkfMCsujhPzfvITHVw4TRl7U0OpxKvcULEyFE268EeJjDJIH738izyim
-         xIfQ==
-X-Gm-Message-State: APjAAAVsttshSdrng75rsZzU2FyU8UYzRSulAUJ0tuySgvOdCR65LcJe
-        WFUWL+ien40lDxWGaD7PNlM=
-X-Google-Smtp-Source: APXvYqwbb+2/P206McEARDR/PpaP7VGFQSLFT8WPG1r9AaOcQVeVBRt8JCgiRpqNZSS57GaRn0zqwg==
-X-Received: by 2002:a05:620a:1404:: with SMTP id d4mr87093639qkj.228.1564687060980;
-        Thu, 01 Aug 2019 12:17:40 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id w25sm29324472qto.87.2019.08.01.12.17.39
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 12:17:40 -0700 (PDT)
-Date:   Thu, 1 Aug 2019 15:17:39 -0400
-Message-ID: <20190801151739.GB32290@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        davem@davemloft.net, bridge@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        allan.nielsen@microchip.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
+        id S2388721AbfHATsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 15:48:17 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:56704 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388609AbfHATsQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 15:48:16 -0400
+Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa5.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: vh3SLtMYu6k4fqJwhEDyt9vB+HTFrRtUMMAYRXhLpZz/G5/KmnyRPtQ6KVry3TRiuG/YK8jJ6m
+ Hmmubl6WlDk9ohCjUswhFHuMTZM87QrjuHgT5KK5bJp1D+97sKARTYHu8+7muTpHWb/lLDu5dk
+ cPUxkt7wFbyTQQasCcHEtlXbNlEtnrRbwYD5p7ftCdqVf8b4S+EGJkr9Srwa+Mq+tkxTw52vru
+ LvKk+ztTVLe8MhJ664jNcB16AfSCI9HzS0glqLH/PkY5H1hpzbcmhxuj5GHFJkkOa1WJdyNZyK
+ gvs=
+X-IronPort-AV: E=Sophos;i="5.64,335,1559545200"; 
+   d="scan'208";a="42100612"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Aug 2019 12:48:15 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 1 Aug 2019 12:48:07 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 1 Aug 2019 12:48:08 -0700
+Date:   Thu, 1 Aug 2019 21:48:02 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+CC:     <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <davem@davemloft.net>, <bridge@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <allan.nielsen@microchip.com>
 Subject: Re: [PATCH] net: bridge: Allow bridge to joing multicast groups
-In-Reply-To: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
+Message-ID: <20190801194801.rqv5jvb5vxjo2dor@soft-dev3.microsemi.net>
 References: <1564055044-27593-1-git-send-email-horatiu.vultur@microchip.com>
+ <20190801151739.GB32290@t480s.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190801151739.GB32290@t480s.localdomain>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
+Hi Vivien,
 
-On Thu, 25 Jul 2019 13:44:04 +0200, Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
-> There is no way to configure the bridge, to receive only specific link
-> layer multicast addresses. From the description of the command 'bridge
-> fdb append' is supposed to do that, but there was no way to notify the
-> network driver that the bridge joined a group, because LLADDR was added
-> to the unicast netdev_hw_addr_list.
+The 08/01/2019 15:17, Vivien Didelot wrote:
+> External E-Mail
 > 
-> Therefore update fdb_add_entry to check if the NLM_F_APPEND flag is set
-> and if the source is NULL, which represent the bridge itself. Then add
-> address to multicast netdev_hw_addr_list for each bridge interfaces.
-> And then the .ndo_set_rx_mode function on the driver is called. To notify
-> the driver that the list of multicast mac addresses changed.
+> I'm a bit late in the conversation. Isn't this what you want?
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  net/bridge/br_fdb.c | 49 ++++++++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 46 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-> index b1d3248..d93746d 100644
-> --- a/net/bridge/br_fdb.c
-> +++ b/net/bridge/br_fdb.c
-> @@ -175,6 +175,29 @@ static void fdb_add_hw_addr(struct net_bridge *br, const unsigned char *addr)
->  	}
->  }
->  
-> +static void fdb_add_hw_maddr(struct net_bridge *br, const unsigned char *addr)
-> +{
-> +	int err;
-> +	struct net_bridge_port *p;
-> +
-> +	ASSERT_RTNL();
-> +
-> +	list_for_each_entry(p, &br->port_list, list) {
-> +		if (!br_promisc_port(p)) {
-> +			err = dev_mc_add(p->dev, addr);
-> +			if (err)
-> +				goto undo;
-> +		}
-> +	}
-> +
-> +	return;
-> +undo:
-> +	list_for_each_entry_continue_reverse(p, &br->port_list, list) {
-> +		if (!br_promisc_port(p))
-> +			dev_mc_del(p->dev, addr);
-> +	}
-> +}
-> +
->  /* When a static FDB entry is deleted, the HW address from that entry is
->   * also removed from the bridge private HW address list and updates all
->   * the ports with needed information.
-> @@ -192,13 +215,27 @@ static void fdb_del_hw_addr(struct net_bridge *br, const unsigned char *addr)
->  	}
->  }
->  
-> +static void fdb_del_hw_maddr(struct net_bridge *br, const unsigned char *addr)
-> +{
-> +	struct net_bridge_port *p;
-> +
-> +	ASSERT_RTNL();
-> +
-> +	list_for_each_entry(p, &br->port_list, list) {
-> +		if (!br_promisc_port(p))
-> +			dev_mc_del(p->dev, addr);
-> +	}
-> +}
-> +
->  static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
->  		       bool swdev_notify)
->  {
->  	trace_fdb_delete(br, f);
->  
-> -	if (f->is_static)
-> +	if (f->is_static) {
->  		fdb_del_hw_addr(br, f->key.addr.addr);
-> +		fdb_del_hw_maddr(br, f->key.addr.addr);
-> +	}
->  
->  	hlist_del_init_rcu(&f->fdb_node);
->  	rhashtable_remove_fast(&br->fdb_hash_tbl, &f->rhnode,
-> @@ -843,13 +880,19 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->  			fdb->is_local = 1;
->  			if (!fdb->is_static) {
->  				fdb->is_static = 1;
-> -				fdb_add_hw_addr(br, addr);
-> +				if (flags & NLM_F_APPEND && !source)
-> +					fdb_add_hw_maddr(br, addr);
-> +				else
-> +					fdb_add_hw_addr(br, addr);
->  			}
->  		} else if (state & NUD_NOARP) {
->  			fdb->is_local = 0;
->  			if (!fdb->is_static) {
->  				fdb->is_static = 1;
-> -				fdb_add_hw_addr(br, addr);
-> +				if (flags & NLM_F_APPEND && !source)
-> +					fdb_add_hw_maddr(br, addr);
-> +				else
-> +					fdb_add_hw_addr(br, addr);
->  			}
->  		} else {
->  			fdb->is_local = 0;
-> -- 
-> 2.7.4
+>     ip address add <multicast IPv4 address> dev br0 autojoin
 > 
 
-I'm a bit late in the conversation. Isn't this what you want?
+Not really, I was looking in a way to register the ports to link layer
+multicast address. Sorry for the confusion, my description of the patch
+was totally missleaning.
 
-    ip address add <multicast IPv4 address> dev br0 autojoin
+If you follow this thread you will get a better idea what we wanted to
+achive. We got some really good comments and based on these we send a
+RFC[1]. 
 
+> 
+> Thanks,
+> Vivien
 
-Thanks,
-Vivien
+[1] https://patchwork.ozlabs.org/patch/1140468/
+
+-- 
+/Horatiu
