@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D65077E2B9
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 20:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB957E2C2
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 20:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387793AbfHASzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 14:55:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50086 "EHLO mail.kernel.org"
+        id S2387930AbfHASzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 14:55:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50092 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732904AbfHASzP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Aug 2019 14:55:15 -0400
+        id S1732969AbfHASzO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Aug 2019 14:55:14 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DBD8C20838;
-        Thu,  1 Aug 2019 18:55:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 30EBE2087E;
+        Thu,  1 Aug 2019 18:55:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1564685712;
-        bh=4NLfFPdyBeyGx+yIh0lfaszCKYRxoQh33Ci7qtyGaCg=;
+        bh=9o6a9xledfK9oLnZ30AHSfvs7wXUfWdJJcnsn88kMrs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJR2ZrFDIEuTkGZ3kIIloRczswgHrE5Xv8zy0xsUjpLLNRpEMGtH+d29F60eMoxCE
-         LSG2wIX6IyRyMBFV4b/sSAKQ7zk8I99S5rzF41hoNKkZwbF0j2s/iWPVRiLOyls1tf
-         Wxg9ogbeZqmzUABhyFUrgjZIEcmh2MmoyGPyvmRw=
+        b=Eu1aL0q23jwWsmBfHrP8boPVYI7VHRmDDv9b+mU1+ZUmUXjepl9KWAw/1sp4L5/24
+         VeHgvd4VB82rR5opEJYv4BRfTvwxyWynBmpDv1rL+OuSUX55lNBqj1bcOCyPwiMotu
+         +oO9ihFo9sVlRzvybnE7KrAyvZbKmOHFgDroK1is=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 01/15] selftests: Add nettest
-Date:   Thu,  1 Aug 2019 11:56:34 -0700
-Message-Id: <20190801185648.27653-2-dsahern@kernel.org>
+Subject: [PATCH net-next 02/15] selftests: Setup for functional tests for fib and socket lookups
+Date:   Thu,  1 Aug 2019 11:56:35 -0700
+Message-Id: <20190801185648.27653-3-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190801185648.27653-1-dsahern@kernel.org>
 References: <20190801185648.27653-1-dsahern@kernel.org>
@@ -39,1805 +39,556 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add nettest - a simple program with an implementation for various networking
-APIs. nettest is used for tcp, udp and raw functional tests for both IPv4
-and IPv6.
-
-Point of this command versus existing utilities:
-- controlled implementation of the APIs and the order in which they
-  are called,
-- ability to verify ingress device, local and remote addresses,
-- timeout for controlled test length,
-- ability to discriminate a timeout from a system call failure, and
-- simplicity with test scripts.
-
-The command returns:
-  0  on success,
-  1  for any system call failure, and
-  2  on timeout.
+Initial commit for functional test suite for fib and socket lookups.
+This commit contains the namespace setup, networking config, test options
+and other basic infrastructure.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/Makefile  |    2 +-
- tools/testing/selftests/net/nettest.c | 1756 +++++++++++++++++++++++++++++++++
- 2 files changed, 1757 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/nettest.c
+ tools/testing/selftests/net/Makefile      |   2 +-
+ tools/testing/selftests/net/fcnal-test.sh | 520 ++++++++++++++++++++++++++++++
+ 2 files changed, 521 insertions(+), 1 deletion(-)
+ create mode 100755 tools/testing/selftests/net/fcnal-test.sh
 
 diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 1b24e36b4047..ba9ee36c9e94 100644
+index ba9ee36c9e94..70f2d6656170 100644
 --- a/tools/testing/selftests/net/Makefile
 +++ b/tools/testing/selftests/net/Makefile
-@@ -12,7 +12,7 @@ TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_a
+@@ -10,7 +10,7 @@ TEST_PROGS += fib_tests.sh fib-onlink-tests.sh pmtu.sh udpgso.sh ip_defrag.sh
+ TEST_PROGS += udpgso_bench.sh fib_rule_tests.sh msg_zerocopy.sh psock_snd.sh
+ TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_any.sh
  TEST_PROGS += test_vxlan_fdb_changelink.sh so_txtime.sh ipv6_flowlabel.sh
- TEST_PROGS += tcp_fastopen_backup_key.sh
+-TEST_PROGS += tcp_fastopen_backup_key.sh
++TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh
  TEST_PROGS_EXTENDED := in_netns.sh
--TEST_GEN_FILES =  socket
-+TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES =  socket nettest
  TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
- TEST_GEN_FILES += tcp_mmap tcp_inq psock_snd txring_overwrite
- TEST_GEN_FILES += udpgso udpgso_bench_tx udpgso_bench_rx ip_defrag
-diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-new file mode 100644
-index 000000000000..9278f8460d75
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+new file mode 100755
+index 000000000000..22cfbd2fd09c
 --- /dev/null
-+++ b/tools/testing/selftests/net/nettest.c
-@@ -0,0 +1,1756 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* nettest - used for functional tests of networking APIs
-+ *
-+ * Copyright (c) 2013-2019 David Ahern <dsahern@gmail.com>. All rights reserved.
-+ */
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -0,0 +1,520 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Copyright (c) 2019 David Ahern <dsahern@gmail.com>. All rights reserved.
++#
++# IPv4 and IPv6 functional tests focusing on VRF and routing lookups
++# for various permutations:
++#   1. icmp, tcp, udp and netfilter
++#   2. client, server, no-server
++#   3. global address on interface
++#   4. global address on 'lo'
++#   5. remote and local traffic
++#   6. VRF and non-VRF permutations
++#
++# Setup:
++#                     ns-A     |     ns-B
++# No VRF case:
++#    [ lo ]         [ eth1 ]---|---[ eth1 ]      [ lo ]
++#                                                remote address
++# VRF case:
++#         [ red ]---[ eth1 ]---|---[ eth1 ]      [ lo ]
++#
++# ns-A:
++#     eth1: 172.16.1.1/24, 2001:db8:1::1/64
++#       lo: 127.0.0.1/8, ::1/128
++#           172.16.2.1/32, 2001:db8:2::1/128
++#      red: 127.0.0.1/8, ::1/128
++#           172.16.3.1/32, 2001:db8:3::1/128
++#
++# ns-B:
++#     eth1: 172.16.1.2/24, 2001:db8:1::2/64
++#      lo2: 127.0.0.1/8, ::1/128
++#           172.16.2.2/32, 2001:db8:2::2/128
++#
++# server / client nomenclature relative to ns-A
 +
-+#define _GNU_SOURCE
-+#include <features.h>
-+#include <sys/types.h>
-+#include <sys/ioctl.h>
-+#include <sys/socket.h>
-+#include <linux/tcp.h>
-+#include <arpa/inet.h>
-+#include <net/if.h>
-+#include <netinet/in.h>
-+#include <netdb.h>
-+#include <fcntl.h>
-+#include <libgen.h>
-+#include <limits.h>
-+#include <stdarg.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <time.h>
-+#include <errno.h>
++VERBOSE=0
 +
-+#ifndef IPV6_UNICAST_IF
-+#define IPV6_UNICAST_IF         76
-+#endif
-+#ifndef IPV6_MULTICAST_IF
-+#define IPV6_MULTICAST_IF       17
-+#endif
++NSA_DEV=eth1
++NSB_DEV=eth1
++VRF=red
++VRF_TABLE=1101
 +
-+#define DEFAULT_PORT 12345
++# IPv4 config
++NSA_IP=172.16.1.1
++NSB_IP=172.16.1.2
++VRF_IP=172.16.3.1
 +
-+#ifndef MAX
-+#define MAX(a, b)  ((a) > (b) ? (a) : (b))
-+#endif
-+#ifndef MIN
-+#define MIN(a, b)  ((a) < (b) ? (a) : (b))
-+#endif
++# IPv6 config
++NSA_IP6=2001:db8:1::1
++NSB_IP6=2001:db8:1::2
++VRF_IP6=2001:db8:3::1
 +
-+struct sock_args {
-+	/* local address */
-+	union {
-+		struct in_addr  in;
-+		struct in6_addr in6;
-+	} local_addr;
++NSA_LO_IP=172.16.2.1
++NSB_LO_IP=172.16.2.2
++NSA_LO_IP6=2001:db8:2::1
++NSB_LO_IP6=2001:db8:2::2
 +
-+	/* remote address */
-+	union {
-+		struct in_addr  in;
-+		struct in6_addr in6;
-+	} remote_addr;
-+	int scope_id;  /* remote scope; v6 send only */
++MCAST=ff02::1
++# set after namespace create
++NSA_LINKIP6=
++NSB_LINKIP6=
 +
-+	struct in_addr grp;     /* multicast group */
++NSA=ns-A
++NSB=ns-B
 +
-+	unsigned int has_local_ip:1,
-+		     has_remote_ip:1,
-+		     has_grp:1,
-+		     has_expected_laddr:1,
-+		     has_expected_raddr:1,
-+		     bind_test_only:1;
++NSA_CMD="ip netns exec ${NSA}"
++NSB_CMD="ip netns exec ${NSB}"
 +
-+	unsigned short port;
++which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
 +
-+	int type;      /* DGRAM, STREAM, RAW */
-+	int protocol;
-+	int version;   /* AF_INET/AF_INET6 */
++################################################################################
++# utilities
 +
-+	int use_setsockopt;
-+	int use_cmsg;
-+	const char *dev;
-+	int ifindex;
-+	const char *password;
-+
-+	/* expected addresses and device index for connection */
-+	int expected_ifindex;
-+
-+	/* local address */
-+	union {
-+		struct in_addr  in;
-+		struct in6_addr in6;
-+	} expected_laddr;
-+
-+	/* remote address */
-+	union {
-+		struct in_addr  in;
-+		struct in6_addr in6;
-+	} expected_raddr;
-+};
-+
-+static int server_mode;
-+static unsigned int prog_timeout = 5;
-+static unsigned int interactive;
-+static int iter = 1;
-+static char *msg = "Hello world!";
-+static int msglen;
-+static int quiet;
-+static int try_broadcast = 1;
-+
-+static char *timestamp(char *timebuf, int buflen)
++log_test()
 +{
-+	time_t now;
++	local rc=$1
++	local expected=$2
++	local msg="$3"
 +
-+	now = time(NULL);
-+	if (strftime(timebuf, buflen, "%T", localtime(&now)) == 0) {
-+		memset(timebuf, 0, buflen);
-+		strncpy(timebuf, "00:00:00", buflen-1);
-+	}
++	[ "${VERBOSE}" = "1" ] && echo
 +
-+	return timebuf;
-+}
-+
-+static void log_msg(const char *format, ...)
-+{
-+	char timebuf[64];
-+	va_list args;
-+
-+	if (quiet)
-+		return;
-+
-+	fprintf(stdout, "%s %s:",
-+		timestamp(timebuf, sizeof(timebuf)),
-+		server_mode ? "server" : "client");
-+	va_start(args, format);
-+	vfprintf(stdout, format, args);
-+	va_end(args);
-+
-+	fflush(stdout);
-+}
-+
-+static void log_error(const char *format, ...)
-+{
-+	char timebuf[64];
-+	va_list args;
-+
-+	if (quiet)
-+		return;
-+
-+	fprintf(stderr, "%s %s:",
-+		timestamp(timebuf, sizeof(timebuf)),
-+		server_mode ? "server" : "client");
-+	va_start(args, format);
-+	vfprintf(stderr, format, args);
-+	va_end(args);
-+
-+	fflush(stderr);
-+}
-+
-+static void log_err_errno(const char *fmt, ...)
-+{
-+	char timebuf[64];
-+	va_list args;
-+
-+	if (quiet)
-+		return;
-+
-+	fprintf(stderr, "%s %s: ",
-+		timestamp(timebuf, sizeof(timebuf)),
-+		server_mode ? "server" : "client");
-+	va_start(args, fmt);
-+	vfprintf(stderr, fmt, args);
-+	va_end(args);
-+
-+	fprintf(stderr, ": %d: %s\n", errno, strerror(errno));
-+	fflush(stderr);
-+}
-+
-+static void log_address(const char *desc, struct sockaddr *sa)
-+{
-+	char addrstr[64];
-+
-+	if (quiet)
-+		return;
-+
-+	if (sa->sa_family == AF_INET) {
-+		struct sockaddr_in *s = (struct sockaddr_in *) sa;
-+
-+		log_msg("%s %s:%d",
-+			desc,
-+			inet_ntop(AF_INET, &s->sin_addr, addrstr,
-+				  sizeof(addrstr)),
-+			ntohs(s->sin_port));
-+
-+	} else if (sa->sa_family == AF_INET6) {
-+		struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
-+
-+		log_msg("%s [%s]:%d",
-+			desc,
-+			inet_ntop(AF_INET6, &s6->sin6_addr, addrstr,
-+				  sizeof(addrstr)),
-+			ntohs(s6->sin6_port));
-+	}
-+
-+	printf("\n");
-+
-+	fflush(stdout);
-+}
-+
-+static int tcp_md5sig(int sd, void *addr, socklen_t alen, const char *password)
-+{
-+	struct tcp_md5sig md5sig;
-+	int keylen = password ? strlen(password) : 0;
-+	int rc;
-+
-+	memset(&md5sig, 0, sizeof(md5sig));
-+	memcpy(&md5sig.tcpm_addr, addr, alen);
-+	md5sig.tcpm_keylen = keylen;
-+
-+	if (keylen)
-+		memcpy(md5sig.tcpm_key, password, keylen);
-+
-+	rc = setsockopt(sd, IPPROTO_TCP, TCP_MD5SIG, &md5sig, sizeof(md5sig));
-+	if (rc < 0) {
-+		/* ENOENT is harmless. Returned when a password is cleared */
-+		if (errno == ENOENT)
-+			rc = 0;
-+		else
-+			log_err_errno("setsockopt(TCP_MD5SIG)");
-+	}
-+
-+	return rc;
-+}
-+
-+static int tcp_md5_remote(int sd, struct sock_args *args)
-+{
-+	struct sockaddr_in sin = {
-+		.sin_family = AF_INET,
-+	};
-+	struct sockaddr_in6 sin6 = {
-+		.sin6_family = AF_INET6,
-+	};
-+	void *addr;
-+	int alen;
-+
-+	switch (args->version) {
-+	case AF_INET:
-+		sin.sin_port = htons(args->port);
-+		sin.sin_addr = args->remote_addr.in;
-+		addr = &sin;
-+		alen = sizeof(sin);
-+		break;
-+	case AF_INET6:
-+		sin6.sin6_port = htons(args->port);
-+		sin6.sin6_addr = args->remote_addr.in6;
-+		addr = &sin6;
-+		alen = sizeof(sin6);
-+		break;
-+	default:
-+		log_error("unknown address family\n");
-+		exit(1);
-+	}
-+
-+	if (tcp_md5sig(sd, addr, alen, args->password))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static int get_ifidx(const char *ifname)
-+{
-+	struct ifreq ifdata;
-+	int sd, rc;
-+
-+	if (!ifname || *ifname == '\0')
-+		return 0;
-+
-+	memset(&ifdata, 0, sizeof(ifdata));
-+
-+	strcpy(ifdata.ifr_name, ifname);
-+
-+	sd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
-+	if (sd < 0) {
-+		log_err_errno("socket failed");
-+		return 0;
-+	}
-+
-+	rc = ioctl(sd, SIOCGIFINDEX, (char *)&ifdata);
-+	close(sd);
-+	if (rc != 0) {
-+		log_err_errno("ioctl(SIOCGIFINDEX) failed");
-+		return 0;
-+	}
-+
-+	return ifdata.ifr_ifindex;
-+}
-+
-+static int bind_to_device(int sd, const char *name)
-+{
-+	int rc;
-+
-+	rc = setsockopt(sd, SOL_SOCKET, SO_BINDTODEVICE, name, strlen(name)+1);
-+	if (rc < 0)
-+		log_err_errno("setsockopt(SO_BINDTODEVICE)");
-+
-+	return rc;
-+}
-+
-+static int get_bind_to_device(int sd, char *name, size_t len)
-+{
-+	int rc;
-+	socklen_t optlen = len;
-+
-+	name[0] = '\0';
-+	rc = getsockopt(sd, SOL_SOCKET, SO_BINDTODEVICE, name, &optlen);
-+	if (rc < 0)
-+		log_err_errno("setsockopt(SO_BINDTODEVICE)");
-+
-+	return rc;
-+}
-+
-+static int check_device(int sd, struct sock_args *args)
-+{
-+	int ifindex = 0;
-+	char name[32];
-+
-+	if (get_bind_to_device(sd, name, sizeof(name)))
-+		*name = '\0';
++	if [ ${rc} -eq ${expected} ]; then
++		nsuccess=$((nsuccess+1))
++		printf "TEST: %-70s  [ OK ]\n" "${msg}"
 +	else
-+		ifindex = get_ifidx(name);
++		nfail=$((nfail+1))
++		printf "TEST: %-70s  [FAIL]\n" "${msg}"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
 +
-+	log_msg("    bound to device %s/%d\n",
-+		*name ? name : "<none>", ifindex);
++	if [ "${PAUSE}" = "yes" ]; then
++		echo
++		echo "hit enter to continue, 'q' to quit"
++		read a
++		[ "$a" = "q" ] && exit 1
++	fi
 +
-+	if (!args->expected_ifindex)
-+		return 0;
-+
-+	if (args->expected_ifindex != ifindex) {
-+		log_error("Device index mismatch: expected %d have %d\n",
-+			  args->expected_ifindex, ifindex);
-+		return 1;
-+	}
-+
-+	log_msg("Device index matches: expected %d have %d\n",
-+		args->expected_ifindex, ifindex);
-+
-+	return 0;
++	kill_procs
 +}
 +
-+static int set_pktinfo_v4(int sd)
++log_test_addr()
 +{
-+	int one = 1;
-+	int rc;
++	local addr=$1
++	local rc=$2
++	local expected=$3
++	local msg="$4"
++	local astr
 +
-+	rc = setsockopt(sd, SOL_IP, IP_PKTINFO, &one, sizeof(one));
-+	if (rc < 0 && rc != -ENOTSUP)
-+		log_err_errno("setsockopt(IP_PKTINFO)");
-+
-+	return rc;
++	astr=$(addr2str ${addr})
++	log_test $rc $expected "$msg - ${astr}"
 +}
 +
-+static int set_recvpktinfo_v6(int sd)
++log_section()
 +{
-+	int one = 1;
-+	int rc;
-+
-+	rc = setsockopt(sd, SOL_IPV6, IPV6_RECVPKTINFO, &one, sizeof(one));
-+	if (rc < 0 && rc != -ENOTSUP)
-+		log_err_errno("setsockopt(IPV6_RECVPKTINFO)");
-+
-+	return rc;
++	echo
++	echo "###########################################################################"
++	echo "$*"
++	echo "###########################################################################"
++	echo
 +}
 +
-+static int set_recverr_v4(int sd)
++log_subsection()
 +{
-+	int one = 1;
-+	int rc;
-+
-+	rc = setsockopt(sd, SOL_IP, IP_RECVERR, &one, sizeof(one));
-+	if (rc < 0 && rc != -ENOTSUP)
-+		log_err_errno("setsockopt(IP_RECVERR)");
-+
-+	return rc;
++	echo
++	echo "#################################################################"
++	echo "$*"
++	echo
 +}
 +
-+static int set_recverr_v6(int sd)
++log_start()
 +{
-+	int one = 1;
-+	int rc;
++	# make sure we have no test instances running
++	kill_procs
 +
-+	rc = setsockopt(sd, SOL_IPV6, IPV6_RECVERR, &one, sizeof(one));
-+	if (rc < 0 && rc != -ENOTSUP)
-+		log_err_errno("setsockopt(IPV6_RECVERR)");
-+
-+	return rc;
++	if [ "${VERBOSE}" = "1" ]; then
++		echo
++		echo "#######################################################"
++	fi
 +}
 +
-+static int set_unicast_if(int sd, int ifindex, int version)
++log_debug()
 +{
-+	int opt = IP_UNICAST_IF;
-+	int level = SOL_IP;
-+	int rc;
-+
-+	ifindex = htonl(ifindex);
-+
-+	if (version == AF_INET6) {
-+		opt = IPV6_UNICAST_IF;
-+		level = SOL_IPV6;
-+	}
-+	rc = setsockopt(sd, level, opt, &ifindex, sizeof(ifindex));
-+	if (rc < 0)
-+		log_err_errno("setsockopt(IP_UNICAST_IF)");
-+
-+	return rc;
++	if [ "${VERBOSE}" = "1" ]; then
++		echo
++		echo "$*"
++		echo
++	fi
 +}
 +
-+static int set_multicast_if(int sd, int ifindex)
++show_hint()
 +{
-+	struct ip_mreqn mreq = { .imr_ifindex = ifindex };
-+	int rc;
-+
-+	rc = setsockopt(sd, SOL_IP, IP_MULTICAST_IF, &mreq, sizeof(mreq));
-+	if (rc < 0)
-+		log_err_errno("setsockopt(IP_MULTICAST_IF)");
-+
-+	return rc;
++	if [ "${VERBOSE}" = "1" ]; then
++		echo "HINT: $*"
++		echo
++	fi
 +}
 +
-+static int set_membership(int sd, uint32_t grp, uint32_t addr, const char *dev)
++kill_procs()
 +{
-+	uint32_t if_addr = addr;
-+	struct ip_mreqn mreq;
-+	int rc;
-+
-+	if (addr == htonl(INADDR_ANY) && !dev) {
-+		log_error("Either local address or device needs to be given for multicast membership\n");
-+		return -1;
-+	}
-+
-+	mreq.imr_multiaddr.s_addr = grp;
-+	mreq.imr_address.s_addr = if_addr;
-+	mreq.imr_ifindex = dev ? get_ifidx(dev) : 0;
-+
-+	rc = setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
-+	if (rc < 0) {
-+		log_err_errno("setsockopt(IP_ADD_MEMBERSHIP)");
-+		return -1;
-+	}
-+
-+	return 0;
++	killall nettest ping ping6 >/dev/null 2>&1
++	sleep 1
 +}
 +
-+static int set_broadcast(int sd)
++do_run_cmd()
 +{
-+	unsigned int one = 1;
-+	int rc = 0;
++	local cmd="$*"
++	local out
 +
-+	if (setsockopt(sd, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one)) != 0) {
-+		log_err_errno("setsockopt(SO_BROADCAST)");
-+		rc = -1;
-+	}
++	if [ "$VERBOSE" = "1" ]; then
++		echo "COMMAND: ${cmd}"
++	fi
 +
-+	return rc;
++	out=$($cmd 2>&1)
++	rc=$?
++	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
++		echo "$out"
++	fi
++
++	return $rc
 +}
 +
-+static int set_reuseport(int sd)
++run_cmd()
 +{
-+	unsigned int one = 1;
-+	int rc = 0;
-+
-+	if (setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one)) != 0) {
-+		log_err_errno("setsockopt(SO_REUSEPORT)");
-+		rc = -1;
-+	}
-+
-+	return rc;
++	do_run_cmd ${NSA_CMD} $*
 +}
 +
-+static int set_reuseaddr(int sd)
++run_cmd_nsb()
 +{
-+	unsigned int one = 1;
-+	int rc = 0;
-+
-+	if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) != 0) {
-+		log_err_errno("setsockopt(SO_REUSEADDR)");
-+		rc = -1;
-+	}
-+
-+	return rc;
++	do_run_cmd ${NSB_CMD} $*
 +}
 +
-+static int str_to_uint(const char *str, int min, int max, unsigned int *value)
++setup_cmd()
 +{
-+	int number;
-+	char *end;
++	local cmd="$*"
++	local rc
 +
-+	errno = 0;
-+	number = (unsigned int) strtoul(str, &end, 0);
-+
-+	/* entire string should be consumed by conversion
-+	 * and value should be between min and max
-+	 */
-+	if (((*end == '\0') || (*end == '\n')) && (end != str) &&
-+	    (errno != ERANGE) && (min <= number) && (number <= max)) {
-+		*value = number;
-+		return 0;
-+	}
-+
-+	return -1;
++	run_cmd ${cmd}
++	rc=$?
++	if [ $rc -ne 0 ]; then
++		# show user the command if not done so already
++		if [ "$VERBOSE" = "0" ]; then
++			echo "setup command: $cmd"
++		fi
++		echo "failed. stopping tests"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue"
++			read a
++		fi
++		exit $rc
++	fi
 +}
 +
-+static int expected_addr_match(struct sockaddr *sa, void *expected,
-+			       const char *desc)
++setup_cmd_nsb()
 +{
-+	char addrstr[64];
-+	int rc = 0;
++	local cmd="$*"
++	local rc
 +
-+	if (sa->sa_family == AF_INET) {
-+		struct sockaddr_in *s = (struct sockaddr_in *) sa;
-+		struct in_addr *exp_in = (struct in_addr *) expected;
++	run_cmd_nsb ${cmd}
++	rc=$?
++	if [ $rc -ne 0 ]; then
++		# show user the command if not done so already
++		if [ "$VERBOSE" = "0" ]; then
++			echo "setup command: $cmd"
++		fi
++		echo "failed. stopping tests"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue"
++			read a
++		fi
++		exit $rc
++	fi
++}
 +
-+		if (s->sin_addr.s_addr != exp_in->s_addr) {
-+			log_error("%s address does not match expected %s",
-+				  desc,
-+				  inet_ntop(AF_INET, exp_in,
-+					    addrstr, sizeof(addrstr)));
-+			rc = 1;
++# set sysctl values in NS-A
++set_sysctl()
++{
++	echo "SYSCTL: $*"
++	echo
++	run_cmd sysctl -q -w $*
++}
++
++################################################################################
++# Setup for tests
++
++addr2str()
++{
++	case "$1" in
++	127.0.0.1) echo "loopback";;
++	::1) echo "IPv6 loopback";;
++
++	${NSA_IP})	echo "ns-A IP";;
++	${NSA_IP6})	echo "ns-A IPv6";;
++	${NSA_LO_IP})	echo "ns-A loopback IP";;
++	${NSA_LO_IP6})	echo "ns-A loopback IPv6";;
++	${NSA_LINKIP6}|${NSA_LINKIP6}%*) echo "ns-A IPv6 LLA";;
++
++	${NSB_IP})	echo "ns-B IP";;
++	${NSB_IP6})	echo "ns-B IPv6";;
++	${NSB_LO_IP})	echo "ns-B loopback IP";;
++	${NSB_LO_IP6})	echo "ns-B loopback IPv6";;
++	${NSB_LINKIP6}|${NSB_LINKIP6}%*) echo "ns-B IPv6 LLA";;
++
++	${VRF_IP})	echo "VRF IP";;
++	${VRF_IP6})	echo "VRF IPv6";;
++
++	${MCAST}%*)	echo "multicast IP";;
++
++	*) echo "unknown";;
++	esac
++}
++
++get_linklocal()
++{
++	local ns=$1
++	local dev=$2
++	local addr
++
++	addr=$(ip -netns ${ns} -6 -br addr show dev ${dev} | \
++	awk '{
++		for (i = 3; i <= NF; ++i) {
++			if ($i ~ /^fe80/)
++				print $i
 +		}
-+	} else if (sa->sa_family == AF_INET6) {
-+		struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
-+		struct in6_addr *exp_in = (struct in6_addr *) expected;
++	}'
++	)
++	addr=${addr/\/*}
 +
-+		if (memcmp(&s6->sin6_addr, exp_in, sizeof(*exp_in))) {
-+			log_error("%s address does not match expected %s",
-+				  desc,
-+				  inet_ntop(AF_INET6, exp_in,
-+					    addrstr, sizeof(addrstr)));
-+			rc = 1;
-+		}
-+	} else {
-+		log_error("%s address does not match expected - unknown family",
-+			  desc);
-+		rc = 1;
-+	}
++	[ -z "$addr" ] && return 1
 +
-+	if (!rc)
-+		log_msg("%s address matches expected\n", desc);
++	echo $addr
 +
-+	return rc;
++	return 0
 +}
 +
-+static int show_sockstat(int sd, struct sock_args *args)
++################################################################################
++# create namespaces and vrf
++
++create_vrf()
 +{
-+	struct sockaddr_in6 local_addr, remote_addr;
-+	socklen_t alen = sizeof(local_addr);
-+	struct sockaddr *sa;
-+	const char *desc;
-+	int rc = 0;
++	local ns=$1
++	local vrf=$2
++	local table=$3
++	local addr=$4
++	local addr6=$5
 +
-+	desc = server_mode ? "server local:" : "client local:";
-+	sa = (struct sockaddr *) &local_addr;
-+	if (getsockname(sd, sa, &alen) == 0) {
-+		log_address(desc, sa);
++	ip -netns ${ns} link add ${vrf} type vrf table ${table}
++	ip -netns ${ns} link set ${vrf} up
++	ip -netns ${ns} route add vrf ${vrf} unreachable default metric 8192
++	ip -netns ${ns} -6 route add vrf ${vrf} unreachable default metric 8192
 +
-+		if (args->has_expected_laddr) {
-+			rc = expected_addr_match(sa, &args->expected_laddr,
-+						 "local");
-+		}
-+	} else {
-+		log_err_errno("getsockname failed");
-+	}
++	ip -netns ${ns} addr add 127.0.0.1/8 dev ${vrf}
++	ip -netns ${ns} -6 addr add ::1 dev ${vrf} nodad
++	if [ "${addr}" != "-" ]; then
++		ip -netns ${ns} addr add dev ${vrf} ${addr}
++	fi
++	if [ "${addr6}" != "-" ]; then
++		ip -netns ${ns} -6 addr add dev ${vrf} ${addr6}
++	fi
 +
-+	sa = (struct sockaddr *) &remote_addr;
-+	desc = server_mode ? "server peer:" : "client peer:";
-+	if (getpeername(sd, sa, &alen) == 0) {
-+		log_address(desc, sa);
-+
-+		if (args->has_expected_raddr) {
-+			rc |= expected_addr_match(sa, &args->expected_raddr,
-+						 "remote");
-+		}
-+	} else {
-+		log_err_errno("getpeername failed");
-+	}
-+
-+	return rc;
++	ip -netns ${ns} ru del pref 0
++	ip -netns ${ns} ru add pref 32765 from all lookup local
++	ip -netns ${ns} -6 ru del pref 0
++	ip -netns ${ns} -6 ru add pref 32765 from all lookup local
 +}
 +
-+static int get_index_from_cmsg(struct msghdr *m)
++create_ns()
 +{
-+	struct cmsghdr *cm;
-+	int ifindex = 0;
-+	char buf[64];
++	local ns=$1
++	local addr=$2
++	local addr6=$3
 +
-+	for (cm = (struct cmsghdr *)CMSG_FIRSTHDR(m);
-+	     m->msg_controllen != 0 && cm;
-+	     cm = (struct cmsghdr *)CMSG_NXTHDR(m, cm)) {
++	ip netns add ${ns}
 +
-+		if (cm->cmsg_level == SOL_IP &&
-+		    cm->cmsg_type == IP_PKTINFO) {
-+			struct in_pktinfo *pi;
++	ip -netns ${ns} link set lo up
++	if [ "${addr}" != "-" ]; then
++		ip -netns ${ns} addr add dev lo ${addr}
++	fi
++	if [ "${addr6}" != "-" ]; then
++		ip -netns ${ns} -6 addr add dev lo ${addr6}
++	fi
 +
-+			pi = (struct in_pktinfo *)(CMSG_DATA(cm));
-+			inet_ntop(AF_INET, &pi->ipi_addr, buf, sizeof(buf));
-+			ifindex = pi->ipi_ifindex;
-+		} else if (cm->cmsg_level == SOL_IPV6 &&
-+			   cm->cmsg_type == IPV6_PKTINFO) {
-+			struct in6_pktinfo *pi6;
++	ip -netns ${ns} ro add unreachable default metric 8192
++	ip -netns ${ns} -6 ro add unreachable default metric 8192
 +
-+			pi6 = (struct in6_pktinfo *)(CMSG_DATA(cm));
-+			inet_ntop(AF_INET6, &pi6->ipi6_addr, buf, sizeof(buf));
-+			ifindex = pi6->ipi6_ifindex;
-+		}
-+	}
-+
-+	if (ifindex) {
-+		log_msg("    pktinfo: ifindex %d dest addr %s\n",
-+			ifindex, buf);
-+	}
-+	return ifindex;
++	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
 +}
 +
-+static int send_msg_no_cmsg(int sd, void *addr, socklen_t alen)
++# create veth pair to connect namespaces and apply addresses.
++connect_ns()
 +{
-+	int err;
++	local ns1=$1
++	local ns1_dev=$2
++	local ns1_addr=$3
++	local ns1_addr6=$4
++	local ns2=$5
++	local ns2_dev=$6
++	local ns2_addr=$7
++	local ns2_addr6=$8
 +
-+again:
-+	err = sendto(sd, msg, msglen, 0, addr, alen);
-+	if (err < 0) {
-+		if (errno == EACCES && try_broadcast) {
-+			try_broadcast = 0;
-+			if (!set_broadcast(sd))
-+				goto again;
-+			errno = EACCES;
-+		}
++	ip -netns ${ns1} li add ${ns1_dev} type veth peer name tmp
++	ip -netns ${ns1} li set ${ns1_dev} up
++	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}
++	ip -netns ${ns2} li set ${ns2_dev} up
 +
-+		log_err_errno("sendto failed");
-+		return 1;
-+	}
++	if [ "${ns1_addr}" != "-" ]; then
++		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}
++		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr}
++	fi
 +
-+	return 0;
++	if [ "${ns1_addr6}" != "-" ]; then
++		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}
++		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}
++	fi
 +}
 +
-+static int send_msg_cmsg(int sd, void *addr, socklen_t alen,
-+			 int ifindex, int version)
++cleanup()
 +{
-+	unsigned char cmsgbuf[64];
-+	struct iovec iov[2];
-+	struct cmsghdr *cm;
-+	struct msghdr m;
-+	int err;
++	# explicit cleanups to check those code paths
++	ip netns | grep -q ${NSA}
++	if [ $? -eq 0 ]; then
++		ip -netns ${NSA} link delete ${VRF}
++		ip -netns ${NSA} ro flush table ${VRF_TABLE}
 +
-+	iov[0].iov_base = msg;
-+	iov[0].iov_len = msglen;
-+	m.msg_iov = iov;
-+	m.msg_iovlen = 1;
-+	m.msg_name = (caddr_t)addr;
-+	m.msg_namelen = alen;
++		ip -netns ${NSA} addr flush dev ${NSA_DEV}
++		ip -netns ${NSA} -6 addr flush dev ${NSA_DEV}
++		ip -netns ${NSA} link set dev ${NSA_DEV} down
++		ip -netns ${NSA} link del dev ${NSA_DEV}
 +
-+	memset(cmsgbuf, 0, sizeof(cmsgbuf));
-+	cm = (struct cmsghdr *)cmsgbuf;
-+	m.msg_control = (caddr_t)cm;
++		ip netns del ${NSA}
++	fi
 +
-+	if (version == AF_INET) {
-+		struct in_pktinfo *pi;
-+
-+		cm->cmsg_level = SOL_IP;
-+		cm->cmsg_type = IP_PKTINFO;
-+		cm->cmsg_len = CMSG_LEN(sizeof(struct in_pktinfo));
-+		pi = (struct in_pktinfo *)(CMSG_DATA(cm));
-+		pi->ipi_ifindex = ifindex;
-+
-+		m.msg_controllen = cm->cmsg_len;
-+
-+	} else if (version == AF_INET6) {
-+		struct in6_pktinfo *pi6;
-+
-+		cm->cmsg_level = SOL_IPV6;
-+		cm->cmsg_type = IPV6_PKTINFO;
-+		cm->cmsg_len = CMSG_LEN(sizeof(struct in6_pktinfo));
-+
-+		pi6 = (struct in6_pktinfo *)(CMSG_DATA(cm));
-+		pi6->ipi6_ifindex = ifindex;
-+
-+		m.msg_controllen = cm->cmsg_len;
-+	}
-+
-+again:
-+	err = sendmsg(sd, &m, 0);
-+	if (err < 0) {
-+		if (errno == EACCES && try_broadcast) {
-+			try_broadcast = 0;
-+			if (!set_broadcast(sd))
-+				goto again;
-+			errno = EACCES;
-+		}
-+
-+		log_err_errno("sendmsg failed");
-+		return 1;
-+	}
-+
-+	return 0;
++	ip netns del ${NSB}
 +}
 +
-+
-+static int send_msg(int sd, void *addr, socklen_t alen, struct sock_args *args)
++setup()
 +{
-+	if (args->type == SOCK_STREAM) {
-+		if (write(sd, msg, msglen) < 0) {
-+			log_err_errno("write failed sending msg to peer");
-+			return 1;
-+		}
-+	} else if (args->ifindex && args->use_cmsg) {
-+		if (send_msg_cmsg(sd, addr, alen, args->ifindex, args->version))
-+			return 1;
-+	} else {
-+		if (send_msg_no_cmsg(sd, addr, alen))
-+			return 1;
-+	}
++	local with_vrf=${1}
 +
-+	log_msg("Sent message:\n");
-+	log_msg("    %.24s%s\n", msg, msglen > 24 ? " ..." : "");
++	# make sure we are starting with a clean slate
++	kill_procs
++	cleanup 2>/dev/null
 +
-+	return 0;
-+}
++	log_debug "Configuring network namespaces"
++	set -e
 +
-+static int socket_read_dgram(int sd, struct sock_args *args)
-+{
-+	unsigned char addr[sizeof(struct sockaddr_in6)];
-+	struct sockaddr *sa = (struct sockaddr *) addr;
-+	socklen_t alen = sizeof(addr);
-+	struct iovec iov[2];
-+	struct msghdr m = {
-+		.msg_name = (caddr_t)addr,
-+		.msg_namelen = alen,
-+		.msg_iov = iov,
-+		.msg_iovlen = 1,
-+	};
-+	unsigned char cmsgbuf[256];
-+	struct cmsghdr *cm = (struct cmsghdr *)cmsgbuf;
-+	char buf[16*1024];
-+	int ifindex;
-+	int len;
++	create_ns ${NSA} ${NSA_LO_IP}/32 ${NSA_LO_IP6}/128
++	create_ns ${NSB} ${NSB_LO_IP}/32 ${NSB_LO_IP6}/128
++	connect_ns ${NSA} ${NSA_DEV} ${NSA_IP}/24 ${NSA_IP6}/64 \
++		   ${NSB} ${NSB_DEV} ${NSB_IP}/24 ${NSB_IP6}/64
 +
-+	iov[0].iov_base = (caddr_t)buf;
-+	iov[0].iov_len = sizeof(buf);
++	NSA_LINKIP6=$(get_linklocal ${NSA} ${NSA_DEV})
++	NSB_LINKIP6=$(get_linklocal ${NSB} ${NSB_DEV})
 +
-+	memset(cmsgbuf, 0, sizeof(cmsgbuf));
-+	m.msg_control = (caddr_t)cm;
-+	m.msg_controllen = sizeof(cmsgbuf);
++	# tell ns-A how to get to remote addresses of ns-B
++	if [ "${with_vrf}" = "yes" ]; then
++		create_vrf ${NSA} ${VRF} ${VRF_TABLE} ${VRF_IP} ${VRF_IP6}
 +
-+	len = recvmsg(sd, &m, 0);
-+	if (len == 0) {
-+		log_msg("peer closed connection.\n");
-+		return 0;
-+	} else if (len < 0) {
-+		log_msg("failed to read message: %d: %s\n",
-+			errno, strerror(errno));
-+		return -1;
-+	}
++		ip -netns ${NSA} link set dev ${NSA_DEV} vrf ${VRF}
++		ip -netns ${NSA} ro add vrf ${VRF} ${NSB_LO_IP}/32 via ${NSB_IP} dev ${NSA_DEV}
++		ip -netns ${NSA} -6 ro add vrf ${VRF} ${NSB_LO_IP6}/128 via ${NSB_IP6} dev ${NSA_DEV}
 +
-+	buf[len] = '\0';
-+
-+	log_address("Message from:", sa);
-+	log_msg("    %.24s%s\n", buf, len > 24 ? " ..." : "");
-+
-+	ifindex = get_index_from_cmsg(&m);
-+	if (args->expected_ifindex) {
-+		if (args->expected_ifindex != ifindex) {
-+			log_error("Device index mismatch: expected %d have %d\n",
-+				  args->expected_ifindex, ifindex);
-+			return -1;
-+		}
-+		log_msg("Device index matches: expected %d have %d\n",
-+			args->expected_ifindex, ifindex);
-+	}
-+
-+	if (!interactive && server_mode) {
-+		if (sa->sa_family == AF_INET6) {
-+			struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
-+			struct in6_addr *in6 = &s6->sin6_addr;
-+
-+			if (IN6_IS_ADDR_V4MAPPED(in6)) {
-+				const uint32_t *pa = (uint32_t *) &in6->s6_addr;
-+				struct in_addr in4;
-+				struct sockaddr_in *sin;
-+
-+				sin = (struct sockaddr_in *) addr;
-+				pa += 3;
-+				in4.s_addr = *pa;
-+				sin->sin_addr = in4;
-+				sin->sin_family = AF_INET;
-+				if (send_msg_cmsg(sd, addr, alen,
-+						  ifindex, AF_INET) < 0)
-+					goto out_err;
-+			}
-+		}
-+again:
-+		iov[0].iov_len = len;
-+
-+		if (args->version == AF_INET6) {
-+			struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
-+
-+			if (args->dev) {
-+				/* avoid PKTINFO conflicts with bindtodev */
-+				if (sendto(sd, buf, len, 0,
-+					   (void *) addr, alen) < 0)
-+					goto out_err;
-+			} else {
-+				/* kernel is allowing scope_id to be set to VRF
-+				 * index for LLA. for sends to global address
-+				 * reset scope id
-+				 */
-+				s6->sin6_scope_id = ifindex;
-+				if (sendmsg(sd, &m, 0) < 0)
-+					goto out_err;
-+			}
-+		} else {
-+			int err;
-+
-+			err = sendmsg(sd, &m, 0);
-+			if (err < 0) {
-+				if (errno == EACCES && try_broadcast) {
-+					try_broadcast = 0;
-+					if (!set_broadcast(sd))
-+						goto again;
-+					errno = EACCES;
-+				}
-+				goto out_err;
-+			}
-+		}
-+		log_msg("Sent message:\n");
-+		log_msg("    %.24s%s\n", buf, len > 24 ? " ..." : "");
-+	}
-+
-+	return 1;
-+out_err:
-+	log_err_errno("failed to send msg to peer");
-+	return -1;
-+}
-+
-+static int socket_read_stream(int sd)
-+{
-+	char buf[1024];
-+	int len;
-+
-+	len = read(sd, buf, sizeof(buf)-1);
-+	if (len == 0) {
-+		log_msg("client closed connection.\n");
-+		return 0;
-+	} else if (len < 0) {
-+		log_msg("failed to read message\n");
-+		return -1;
-+	}
-+
-+	buf[len] = '\0';
-+	log_msg("Incoming message:\n");
-+	log_msg("    %.24s%s\n", buf, len > 24 ? " ..." : "");
-+
-+	if (!interactive && server_mode) {
-+		if (write(sd, buf, len) < 0) {
-+			log_err_errno("failed to send buf");
-+			return -1;
-+		}
-+		log_msg("Sent message:\n");
-+		log_msg("     %.24s%s\n", buf, len > 24 ? " ..." : "");
-+	}
-+
-+	return 1;
-+}
-+
-+static int socket_read(int sd, struct sock_args *args)
-+{
-+	if (args->type == SOCK_STREAM)
-+		return socket_read_stream(sd);
-+
-+	return socket_read_dgram(sd, args);
-+}
-+
-+static int stdin_to_socket(int sd, int type, void *addr, socklen_t alen)
-+{
-+	char buf[1024];
-+	int len;
-+
-+	if (fgets(buf, sizeof(buf), stdin) == NULL)
-+		return 0;
-+
-+	len = strlen(buf);
-+	if (type == SOCK_STREAM) {
-+		if (write(sd, buf, len) < 0) {
-+			log_err_errno("failed to send buf");
-+			return -1;
-+		}
-+	} else {
-+		int err;
-+
-+again:
-+		err = sendto(sd, buf, len, 0, addr, alen);
-+		if (err < 0) {
-+			if (errno == EACCES && try_broadcast) {
-+				try_broadcast = 0;
-+				if (!set_broadcast(sd))
-+					goto again;
-+				errno = EACCES;
-+			}
-+			log_err_errno("failed to send msg to peer");
-+			return -1;
-+		}
-+	}
-+	log_msg("Sent message:\n");
-+	log_msg("    %.24s%s\n", buf, len > 24 ? " ..." : "");
-+
-+	return 1;
-+}
-+
-+static void set_recv_attr(int sd, int version)
-+{
-+	if (version == AF_INET6) {
-+		set_recvpktinfo_v6(sd);
-+		set_recverr_v6(sd);
-+	} else {
-+		set_pktinfo_v4(sd);
-+		set_recverr_v4(sd);
-+	}
-+}
-+
-+static int msg_loop(int client, int sd, void *addr, socklen_t alen,
-+		    struct sock_args *args)
-+{
-+	struct timeval timeout = { .tv_sec = prog_timeout }, *ptval = NULL;
-+	fd_set rfds;
-+	int nfds;
-+	int rc;
-+
-+	if (args->type != SOCK_STREAM)
-+		set_recv_attr(sd, args->version);
-+
-+	if (msg) {
-+		msglen = strlen(msg);
-+
-+		/* client sends first message */
-+		if (client) {
-+			if (send_msg(sd, addr, alen, args))
-+				return 1;
-+		}
-+		if (!interactive) {
-+			ptval = &timeout;
-+			if (!prog_timeout)
-+				timeout.tv_sec = 5;
-+		}
-+	}
-+
-+	nfds = interactive ? MAX(fileno(stdin), sd)  + 1 : sd + 1;
-+	while (1) {
-+		FD_ZERO(&rfds);
-+		FD_SET(sd, &rfds);
-+		if (interactive)
-+			FD_SET(fileno(stdin), &rfds);
-+
-+		rc = select(nfds, &rfds, NULL, NULL, ptval);
-+		if (rc < 0) {
-+			if (errno == EINTR)
-+				continue;
-+
-+			rc = 1;
-+			log_err_errno("select failed");
-+			break;
-+		} else if (rc == 0) {
-+			log_error("Timed out waiting for response\n");
-+			rc = 2;
-+			break;
-+		}
-+
-+		if (FD_ISSET(sd, &rfds)) {
-+			rc = socket_read(sd, args);
-+			if (rc < 0) {
-+				rc = 1;
-+				break;
-+			}
-+			if (rc == 0)
-+				break;
-+		}
-+
-+		rc = 0;
-+
-+		if (FD_ISSET(fileno(stdin), &rfds)) {
-+			if (stdin_to_socket(sd, args->type, addr, alen) <= 0)
-+				break;
-+		}
-+
-+		if (interactive)
-+			continue;
-+
-+		if (iter != -1) {
-+			--iter;
-+			if (iter == 0)
-+				break;
-+		}
-+
-+		log_msg("Going into quiet mode\n");
-+		quiet = 1;
-+
-+		if (client) {
-+			if (send_msg(sd, addr, alen, args)) {
-+				rc = 1;
-+				break;
-+			}
-+		}
-+	}
-+
-+	return rc;
-+}
-+
-+static int msock_init(struct sock_args *args, int server)
-+{
-+	uint32_t if_addr = htonl(INADDR_ANY);
-+	struct sockaddr_in laddr = {
-+		.sin_family = AF_INET,
-+		.sin_port = htons(args->port),
-+	};
-+	int one = 1;
-+	int sd;
-+
-+	if (!server && args->has_local_ip)
-+		if_addr = args->local_addr.in.s_addr;
-+
-+	sd = socket(PF_INET, SOCK_DGRAM, 0);
-+	if (sd < 0) {
-+		log_err_errno("socket");
-+		return -1;
-+	}
-+
-+	if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR,
-+		       (char *)&one, sizeof(one)) < 0) {
-+		log_err_errno("Setting SO_REUSEADDR error");
-+		goto out_err;
-+	}
-+
-+	if (setsockopt(sd, SOL_SOCKET, SO_BROADCAST,
-+		       (char *)&one, sizeof(one)) < 0)
-+		log_err_errno("Setting SO_BROADCAST error");
-+
-+	if (args->dev && bind_to_device(sd, args->dev) != 0)
-+		goto out_err;
-+	else if (args->use_setsockopt &&
-+		 set_multicast_if(sd, args->ifindex))
-+		goto out_err;
-+
-+	laddr.sin_addr.s_addr = if_addr;
-+
-+	if (bind(sd, (struct sockaddr *) &laddr, sizeof(laddr)) < 0) {
-+		log_err_errno("bind failed");
-+		goto out_err;
-+	}
-+
-+	if (server &&
-+	    set_membership(sd, args->grp.s_addr,
-+			   args->local_addr.in.s_addr, args->dev))
-+		goto out_err;
-+
-+	return sd;
-+out_err:
-+	close(sd);
-+	return -1;
-+}
-+
-+static int msock_server(struct sock_args *args)
-+{
-+	return msock_init(args, 1);
-+}
-+
-+static int msock_client(struct sock_args *args)
-+{
-+	return msock_init(args, 0);
-+}
-+
-+static int bind_socket(int sd, struct sock_args *args)
-+{
-+	struct sockaddr_in serv_addr = {
-+		.sin_family = AF_INET,
-+	};
-+	struct sockaddr_in6 serv6_addr = {
-+		.sin6_family = AF_INET6,
-+	};
-+	void *addr;
-+	socklen_t alen;
-+
-+	if (!args->has_local_ip && args->type == SOCK_RAW)
-+		return 0;
-+
-+	switch (args->version) {
-+	case AF_INET:
-+		serv_addr.sin_port = htons(args->port);
-+		serv_addr.sin_addr = args->local_addr.in;
-+		addr = &serv_addr;
-+		alen = sizeof(serv_addr);
-+		break;
-+
-+	case AF_INET6:
-+		serv6_addr.sin6_port = htons(args->port);
-+		serv6_addr.sin6_addr = args->local_addr.in6;
-+		addr = &serv6_addr;
-+		alen = sizeof(serv6_addr);
-+		break;
-+
-+	default:
-+		log_error("Invalid address family\n");
-+		return -1;
-+	}
-+
-+	if (bind(sd, addr, alen) < 0) {
-+		log_err_errno("error binding socket");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int lsock_init(struct sock_args *args)
-+{
-+	long flags;
-+	int sd;
-+
-+	sd = socket(args->version, args->type, args->protocol);
-+	if (sd < 0) {
-+		log_err_errno("Error opening socket");
-+		return  -1;
-+	}
-+
-+	if (set_reuseaddr(sd) != 0)
-+		goto err;
-+
-+	if (set_reuseport(sd) != 0)
-+		goto err;
-+
-+	if (args->dev && bind_to_device(sd, args->dev) != 0)
-+		goto err;
-+	else if (args->use_setsockopt &&
-+		 set_unicast_if(sd, args->ifindex, args->version))
-+		goto err;
-+
-+	if (bind_socket(sd, args))
-+		goto err;
-+
-+	if (args->bind_test_only)
-+		goto out;
-+
-+	if (args->type == SOCK_STREAM && listen(sd, 1) < 0) {
-+		log_err_errno("listen failed");
-+		goto err;
-+	}
-+
-+	flags = fcntl(sd, F_GETFL);
-+	if ((flags < 0) || (fcntl(sd, F_SETFL, flags|O_NONBLOCK) < 0)) {
-+		log_err_errno("Failed to set non-blocking option");
-+		goto err;
-+	}
-+
-+	if (fcntl(sd, F_SETFD, FD_CLOEXEC) < 0)
-+		log_err_errno("Failed to set close-on-exec flag");
-+
-+out:
-+	return sd;
-+
-+err:
-+	close(sd);
-+	return -1;
-+}
-+
-+static int do_server(struct sock_args *args)
-+{
-+	struct timeval timeout = { .tv_sec = prog_timeout }, *ptval = NULL;
-+	unsigned char addr[sizeof(struct sockaddr_in6)] = {};
-+	socklen_t alen = sizeof(addr);
-+	int lsd, csd = -1;
-+
-+	fd_set rfds;
-+	int rc;
-+
-+	if (prog_timeout)
-+		ptval = &timeout;
-+
-+	if (args->has_grp)
-+		lsd = msock_server(args);
++		ip -netns ${NSB} ro add ${VRF_IP}/32 via ${NSA_IP} dev ${NSB_DEV}
++		ip -netns ${NSB} -6 ro add ${VRF_IP6}/128 via ${NSA_IP6} dev ${NSB_DEV}
 +	else
-+		lsd = lsock_init(args);
++		ip -netns ${NSA} ro add ${NSB_LO_IP}/32 via ${NSB_IP} dev ${NSA_DEV}
++		ip -netns ${NSA} ro add ${NSB_LO_IP6}/128 via ${NSB_IP6} dev ${NSA_DEV}
++	fi
 +
-+	if (lsd < 0)
-+		return 1;
 +
-+	if (args->bind_test_only) {
-+		close(lsd);
-+		return 0;
-+	}
++	# tell ns-B how to get to remote addresses of ns-A
++	ip -netns ${NSB} ro add ${NSA_LO_IP}/32 via ${NSA_IP} dev ${NSB_DEV}
++	ip -netns ${NSB} ro add ${NSA_LO_IP6}/128 via ${NSA_IP6} dev ${NSB_DEV}
 +
-+	if (args->type != SOCK_STREAM) {
-+		rc = msg_loop(0, lsd, (void *) addr, alen, args);
-+		close(lsd);
-+		return rc;
-+	}
++	set +e
 +
-+	if (args->password && tcp_md5_remote(lsd, args)) {
-+		close(lsd);
-+		return -1;
-+	}
-+
-+	while (1) {
-+		log_msg("\n");
-+		log_msg("waiting for client connection.\n");
-+		FD_ZERO(&rfds);
-+		FD_SET(lsd, &rfds);
-+
-+		rc = select(lsd+1, &rfds, NULL, NULL, ptval);
-+		if (rc == 0) {
-+			rc = 2;
-+			break;
-+		}
-+
-+		if (rc < 0) {
-+			if (errno == EINTR)
-+				continue;
-+
-+			log_err_errno("select failed");
-+			break;
-+		}
-+
-+		if (FD_ISSET(lsd, &rfds)) {
-+
-+			csd = accept(lsd, (void *) addr, &alen);
-+			if (csd < 0) {
-+				log_err_errno("accept failed");
-+				break;
-+			}
-+
-+			rc = show_sockstat(csd, args);
-+			if (rc)
-+				break;
-+
-+			rc = check_device(csd, args);
-+			if (rc)
-+				break;
-+		}
-+
-+		rc = msg_loop(0, csd, (void *) addr, alen, args);
-+		close(csd);
-+
-+		if (!interactive)
-+			break;
-+	}
-+
-+	close(lsd);
-+
-+	return rc;
++	sleep 1
 +}
 +
-+static int wait_for_connect(int sd)
++################################################################################
++# usage
++
++usage()
 +{
-+	struct timeval _tv = { .tv_sec = prog_timeout }, *tv = NULL;
-+	fd_set wfd;
-+	int val = 0, sz = sizeof(val);
-+	int rc;
++	cat <<EOF
++usage: ${0##*/} OPTS
 +
-+	FD_ZERO(&wfd);
-+	FD_SET(sd, &wfd);
-+
-+	if (prog_timeout)
-+		tv = &_tv;
-+
-+	rc = select(FD_SETSIZE, NULL, &wfd, NULL, tv);
-+	if (rc == 0) {
-+		log_error("connect timed out\n");
-+		return -2;
-+	} else if (rc < 0) {
-+		log_err_errno("select failed");
-+		return -3;
-+	}
-+
-+	if (getsockopt(sd, SOL_SOCKET, SO_ERROR, &val, (socklen_t *)&sz) < 0) {
-+		log_err_errno("getsockopt(SO_ERROR) failed");
-+		return -4;
-+	}
-+
-+	if (val != 0) {
-+		log_error("connect failed: %d: %s\n", val, strerror(val));
-+		return -1;
-+	}
-+
-+	return 0;
++	-4          IPv4 tests only
++	-6          IPv6 tests only
++	-t <test>   Test name/set to run
++	-p          Pause on fail
++	-P          Pause after each test
++	-v          Be verbose
++EOF
 +}
 +
-+static int connectsock(void *addr, socklen_t alen, struct sock_args *args)
-+{
-+	int sd, rc = -1;
-+	long flags;
++################################################################################
++# main
 +
-+	sd = socket(args->version, args->type, args->protocol);
-+	if (sd < 0) {
-+		log_err_errno("Failed to create socket");
-+		return -1;
-+	}
++TESTS_IPV4=""
++TESTS_IPV6=""
++PAUSE_ON_FAIL=no
++PAUSE=no
 +
-+	flags = fcntl(sd, F_GETFL);
-+	if ((flags < 0) || (fcntl(sd, F_SETFL, flags|O_NONBLOCK) < 0)) {
-+		log_err_errno("Failed to set non-blocking option");
-+		goto err;
-+	}
++while getopts :46t:pPvh o
++do
++	case $o in
++		4) TESTS=ipv4;;
++		6) TESTS=ipv6;;
++		t) TESTS=$OPTARG;;
++		p) PAUSE_ON_FAIL=yes;;
++		P) PAUSE=yes;;
++		v) VERBOSE=1;;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
 +
-+	if (set_reuseport(sd) != 0)
-+		goto err;
++# make sure we don't pause twice
++[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
 +
-+	if (args->dev && bind_to_device(sd, args->dev) != 0)
-+		goto err;
-+	else if (args->use_setsockopt &&
-+		 set_unicast_if(sd, args->ifindex, args->version))
-+		goto err;
++#
++# show user test config
++#
++if [ -z "$TESTS" ]; then
++	TESTS="$TESTS_IPV4 $TESTS_IPV6 $TESTS_OTHER"
++elif [ "$TESTS" = "ipv4" ]; then
++	TESTS="$TESTS_IPV4"
++elif [ "$TESTS" = "ipv6" ]; then
++	TESTS="$TESTS_IPV6"
++fi
 +
-+	if (args->has_local_ip && bind_socket(sd, args))
-+		goto err;
++declare -i nfail=0
++declare -i nsuccess=0
 +
-+	if (args->type != SOCK_STREAM)
-+		goto out;
++for t in $TESTS
++do
++	case $t in
++	# setup namespaces and config, but do not run any tests
++	setup)		 setup; exit 0;;
++	vrf_setup)	 setup "yes"; exit 0;;
 +
-+	if (args->password && tcp_md5sig(sd, addr, alen, args->password))
-+		goto err;
++	help)            echo "Test names: $TESTS"; exit 0;;
++	esac
++done
 +
-+	if (args->bind_test_only)
-+		goto out;
++cleanup 2>/dev/null
 +
-+	if (connect(sd, addr, alen) < 0) {
-+		if (errno != EINPROGRESS) {
-+			log_err_errno("Failed to connect to remote host");
-+			rc = -1;
-+			goto err;
-+		}
-+		rc = wait_for_connect(sd);
-+		if (rc < 0)
-+			goto err;
-+	}
-+out:
-+	return sd;
-+
-+err:
-+	close(sd);
-+	return rc;
-+}
-+
-+static int do_client(struct sock_args *args)
-+{
-+	struct sockaddr_in sin = {
-+		.sin_family = AF_INET,
-+	};
-+	struct sockaddr_in6 sin6 = {
-+		.sin6_family = AF_INET6,
-+	};
-+	void *addr;
-+	int alen;
-+	int rc = 0;
-+	int sd;
-+
-+	if (!args->has_remote_ip && !args->has_grp) {
-+		fprintf(stderr, "remote IP or multicast group not given\n");
-+		return 1;
-+	}
-+
-+	switch (args->version) {
-+	case AF_INET:
-+		sin.sin_port = htons(args->port);
-+		if (args->has_grp)
-+			sin.sin_addr = args->grp;
-+		else
-+			sin.sin_addr = args->remote_addr.in;
-+		addr = &sin;
-+		alen = sizeof(sin);
-+		break;
-+	case AF_INET6:
-+		sin6.sin6_port = htons(args->port);
-+		sin6.sin6_addr = args->remote_addr.in6;
-+		sin6.sin6_scope_id = args->scope_id;
-+		addr = &sin6;
-+		alen = sizeof(sin6);
-+		break;
-+	}
-+
-+	if (args->has_grp)
-+		sd = msock_client(args);
-+	else
-+		sd = connectsock(addr, alen, args);
-+
-+	if (sd < 0)
-+		return -sd;
-+
-+	if (args->bind_test_only)
-+		goto out;
-+
-+	if (args->type == SOCK_STREAM) {
-+		rc = show_sockstat(sd, args);
-+		if (rc != 0)
-+			goto out;
-+	}
-+
-+	rc = msg_loop(1, sd, addr, alen, args);
-+
-+out:
-+	close(sd);
-+
-+	return rc;
-+}
-+
-+enum addr_type {
-+	ADDR_TYPE_LOCAL,
-+	ADDR_TYPE_REMOTE,
-+	ADDR_TYPE_MCAST,
-+	ADDR_TYPE_EXPECTED_LOCAL,
-+	ADDR_TYPE_EXPECTED_REMOTE,
-+};
-+
-+static int convert_addr(struct sock_args *args, const char *_str,
-+			enum addr_type atype)
-+{
-+	int family = args->version;
-+	struct in6_addr *in6;
-+	struct in_addr  *in;
-+	const char *desc;
-+	char *str, *dev;
-+	void *addr;
-+	int rc = 0;
-+
-+	str = strdup(_str);
-+	if (!str)
-+		return -ENOMEM;
-+
-+	switch (atype) {
-+	case ADDR_TYPE_LOCAL:
-+		desc = "local";
-+		addr = &args->local_addr;
-+		break;
-+	case ADDR_TYPE_REMOTE:
-+		desc = "remote";
-+		addr = &args->remote_addr;
-+		break;
-+	case ADDR_TYPE_MCAST:
-+		desc = "mcast grp";
-+		addr = &args->grp;
-+		break;
-+	case ADDR_TYPE_EXPECTED_LOCAL:
-+		desc = "expected local";
-+		addr = &args->expected_laddr;
-+		break;
-+	case ADDR_TYPE_EXPECTED_REMOTE:
-+		desc = "expected remote";
-+		addr = &args->expected_raddr;
-+		break;
-+	default:
-+		log_error("unknown address type");
-+		exit(1);
-+	}
-+
-+	switch (family) {
-+	case AF_INET:
-+		in  = (struct in_addr *) addr;
-+		if (str) {
-+			if (inet_pton(AF_INET, str, in) == 0) {
-+				log_error("Invalid %s IP address\n", desc);
-+				rc = -1;
-+				goto out;
-+			}
-+		} else {
-+			in->s_addr = htonl(INADDR_ANY);
-+		}
-+		break;
-+
-+	case AF_INET6:
-+		dev = strchr(str, '%');
-+		if (dev) {
-+			*dev = '\0';
-+			dev++;
-+		}
-+
-+		in6 = (struct in6_addr *) addr;
-+		if (str) {
-+			if (inet_pton(AF_INET6, str, in6) == 0) {
-+				log_error("Invalid %s IPv6 address\n", desc);
-+				rc = -1;
-+				goto out;
-+			}
-+		} else {
-+			*in6 = in6addr_any;
-+		}
-+		if (dev) {
-+			args->scope_id = get_ifidx(dev);
-+			if (args->scope_id < 0) {
-+				log_error("Invalid scope on %s IPv6 address\n",
-+					  desc);
-+				rc = -1;
-+				goto out;
-+			}
-+		}
-+		break;
-+
-+	default:
-+		log_error("Invalid address family\n");
-+	}
-+
-+out:
-+	free(str);
-+	return rc;
-+}
-+
-+static char *random_msg(int len)
-+{
-+	int i, n = 0, olen = len + 1;
-+	char *m;
-+
-+	if (len <= 0)
-+		return NULL;
-+
-+	m = malloc(olen);
-+	if (!m)
-+		return NULL;
-+
-+	while (len > 26) {
-+		i = snprintf(m + n, olen - n, "%.26s",
-+			     "abcdefghijklmnopqrstuvwxyz");
-+		n += i;
-+		len -= i;
-+	}
-+	i = snprintf(m + n, olen - n, "%.*s", len,
-+		     "abcdefghijklmnopqrstuvwxyz");
-+	return m;
-+}
-+
-+#define GETOPT_STR  "sr:l:p:t:g:P:DRn:M:d:SCi6L:0:1:2:Fbq"
-+
-+static void print_usage(char *prog)
-+{
-+	printf(
-+	"usage: %s OPTS\n"
-+	"Required:\n"
-+	"    -r addr       remote address to connect to (client mode only)\n"
-+	"    -p port       port to connect to (client mode)/listen on (server mode)\n"
-+	"                  (default: %d)\n"
-+	"    -s            server mode (default: client mode)\n"
-+	"    -t            timeout seconds (default: none)\n"
-+	"\n"
-+	"Optional:\n"
-+	"    -F            Restart server loop\n"
-+	"    -6            IPv6 (default is IPv4)\n"
-+	"    -P proto      protocol for socket: icmp, ospf (default: none)\n"
-+	"    -D|R          datagram (D) / raw (R) socket (default stream)\n"
-+	"    -l addr       local address to bind to\n"
-+	"\n"
-+	"    -d dev        bind socket to given device name\n"
-+	"    -S            use setsockopt (IP_UNICAST_IF or IP_MULTICAST_IF)\n"
-+	"                  to set device binding\n"
-+	"    -C            use cmsg and IP_PKTINFO to specify device binding\n"
-+	"\n"
-+	"    -L len        send random message of given length\n"
-+	"    -n num        number of times to send message\n"
-+	"\n"
-+	"    -M password   use MD5 sum protection\n"
-+	"    -g grp        multicast group (e.g., 239.1.1.1)\n"
-+	"    -i            interactive mode (default is echo and terminate)\n"
-+	"\n"
-+	"    -0 addr       Expected local address\n"
-+	"    -1 addr       Expected remote address\n"
-+	"    -2 dev        Expected device name (or index) to receive packet\n"
-+	"\n"
-+	"    -b            Bind test only.\n"
-+	"    -q            Be quiet. Run test without printing anything.\n"
-+	, prog, DEFAULT_PORT);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	struct sock_args args = {
-+		.version = AF_INET,
-+		.type    = SOCK_STREAM,
-+		.port    = DEFAULT_PORT,
-+	};
-+	struct protoent *pe;
-+	unsigned int tmp;
-+	int forever = 0;
-+
-+	/* process inputs */
-+	extern char *optarg;
-+	int rc = 0;
-+
-+	/*
-+	 * process input args
-+	 */
-+
-+	while ((rc = getopt(argc, argv, GETOPT_STR)) != -1) {
-+		switch (rc) {
-+		case 's':
-+			server_mode = 1;
-+			break;
-+		case 'F':
-+			forever = 1;
-+			break;
-+		case 'l':
-+			args.has_local_ip = 1;
-+			if (convert_addr(&args, optarg, ADDR_TYPE_LOCAL) < 0)
-+				return 1;
-+			break;
-+		case 'r':
-+			args.has_remote_ip = 1;
-+			if (convert_addr(&args, optarg, ADDR_TYPE_REMOTE) < 0)
-+				return 1;
-+			break;
-+		case 'p':
-+			if (str_to_uint(optarg, 1, 65535, &tmp) != 0) {
-+				fprintf(stderr, "Invalid port\n");
-+				return 1;
-+			}
-+			args.port = (unsigned short) tmp;
-+			break;
-+		case 't':
-+			if (str_to_uint(optarg, 0, INT_MAX,
-+					&prog_timeout) != 0) {
-+				fprintf(stderr, "Invalid timeout\n");
-+				return 1;
-+			}
-+			break;
-+		case 'D':
-+			args.type = SOCK_DGRAM;
-+			break;
-+		case 'R':
-+			args.type = SOCK_RAW;
-+			args.port = 0;
-+			break;
-+		case 'P':
-+			pe = getprotobyname(optarg);
-+			if (pe) {
-+				args.protocol = pe->p_proto;
-+			} else {
-+				if (str_to_uint(optarg, 0, 0xffff, &tmp) != 0) {
-+					fprintf(stderr, "Invalid potocol\n");
-+					return 1;
-+				}
-+				args.protocol = tmp;
-+			}
-+			break;
-+		case 'n':
-+			iter = atoi(optarg);
-+			break;
-+		case 'L':
-+			msg = random_msg(atoi(optarg));
-+			break;
-+		case 'M':
-+			args.password = optarg;
-+			break;
-+		case 'S':
-+			args.use_setsockopt = 1;
-+			break;
-+		case 'C':
-+			args.use_cmsg = 1;
-+			break;
-+		case 'd':
-+			args.dev = optarg;
-+			args.ifindex = get_ifidx(optarg);
-+			if (args.ifindex < 0) {
-+				fprintf(stderr, "Invalid device name\n");
-+				return 1;
-+			}
-+			break;
-+		case 'i':
-+			interactive = 1;
-+			break;
-+		case 'g':
-+			args.has_grp = 1;
-+			if (convert_addr(&args, optarg, ADDR_TYPE_MCAST) < 0)
-+				return 1;
-+			args.type = SOCK_DGRAM;
-+			break;
-+		case '6':
-+			args.version = AF_INET6;
-+			break;
-+		case 'b':
-+			args.bind_test_only = 1;
-+			break;
-+		case '0':
-+			args.has_expected_laddr = 1;
-+			if (convert_addr(&args, optarg,
-+					 ADDR_TYPE_EXPECTED_LOCAL))
-+				return 1;
-+			break;
-+		case '1':
-+			args.has_expected_raddr = 1;
-+			if (convert_addr(&args, optarg,
-+					 ADDR_TYPE_EXPECTED_REMOTE))
-+				return 1;
-+
-+			break;
-+		case '2':
-+			if (str_to_uint(optarg, 0, 0x7ffffff, &tmp) != 0) {
-+				tmp = get_ifidx(optarg);
-+				if (tmp < 0) {
-+					fprintf(stderr,
-+						"Invalid device index\n");
-+					return 1;
-+				}
-+			}
-+			args.expected_ifindex = (int)tmp;
-+			break;
-+		case 'q':
-+			quiet = 1;
-+			break;
-+		default:
-+			print_usage(argv[0]);
-+			return 1;
-+		}
-+	}
-+
-+	if (args.password &&
-+	    (!args.has_remote_ip || args.type != SOCK_STREAM)) {
-+		log_error("MD5 passwords apply to TCP only and require a remote ip for the password\n");
-+		return 1;
-+	}
-+
-+	if ((args.use_setsockopt || args.use_cmsg) && !args.ifindex) {
-+		fprintf(stderr, "Device binding not specified\n");
-+		return 1;
-+	}
-+	if (args.use_setsockopt || args.use_cmsg)
-+		args.dev = NULL;
-+
-+	if (iter == 0) {
-+		fprintf(stderr, "Invalid number of messages to send\n");
-+		return 1;
-+	}
-+
-+	if (args.type == SOCK_STREAM && !args.protocol)
-+		args.protocol = IPPROTO_TCP;
-+	if (args.type == SOCK_DGRAM && !args.protocol)
-+		args.protocol = IPPROTO_UDP;
-+
-+	if ((args.type == SOCK_STREAM || args.type == SOCK_DGRAM) &&
-+	     args.port == 0) {
-+		fprintf(stderr, "Invalid port number\n");
-+		return 1;
-+	}
-+
-+	if (!server_mode && !args.has_grp &&
-+	    !args.has_remote_ip && !args.has_local_ip) {
-+		fprintf(stderr,
-+			"Local (server mode) or remote IP (client IP) required\n");
-+		return 1;
-+	}
-+
-+	if (interactive) {
-+		prog_timeout = 0;
-+		msg = NULL;
-+	}
-+
-+	if (server_mode) {
-+		do {
-+			rc = do_server(&args);
-+		} while (forever);
-+
-+		return rc;
-+	}
-+	return do_client(&args);
-+}
++printf "\nTests passed: %3d\n" ${nsuccess}
++printf "Tests failed: %3d\n"   ${nfail}
 -- 
 2.11.0
 
